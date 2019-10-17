@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+import set from 'lodash/set';
+import findIndex from 'lodash/findIndex';
+
 import { RootState } from 'src/store';
+
 import CheckboxGrid, {
   CheckboxGridOption
 } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
-import findIndex from 'lodash/findIndex';
-
 import {
   getOrthologueAttributes,
   getOrthologueSearchTerm,
@@ -14,26 +16,24 @@ import {
   getOrthologueShowAll,
   getOrthologueApplyToAllSpecies,
   getSelectedAttributes
-} from '../../../../../state/attributes/attributesSelector';
-
+} from 'src/content/app/custom-download/state/attributes/attributesSelector';
 import {
   setOrthologueAttributes,
   setOrthologueSearchTerm,
   fetchOrthologueSpecies,
-  setOrthologueSpecies,
+  updateOrthologueSpecies,
   setOrthologueShowBestMatches,
   setOrthologueShowAll,
   setOrthologueApplyToAllSpecies,
   updateSelectedAttributes
-} from '../../../../../state/attributes/attributesActions';
+} from 'src/content/app/custom-download/state/attributes/attributesActions';
 
 import Input from 'src/shared/components/input/Input';
-import set from 'lodash/set';
-import styles from './Orthologues.scss';
-
 import { orthologueAttributes } from 'src/content/app/custom-download/sample-data/orthologue';
 import JSONValue from 'src/shared/types/JSON';
 import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
+
+import styles from './Orthologues.scss';
 
 type ownProps = {
   hideUnchecked?: boolean;
@@ -89,7 +89,7 @@ const Orthologue = (props: Props) => {
 
     newOrthologueFilteredSpecies[modifiedSpeciesIndex].isChecked = status;
 
-    props.setOrthologueSpecies(newOrthologueFilteredSpecies);
+    props.updateOrthologueSpecies(newOrthologueFilteredSpecies);
 
     const newOrthologueAttributes: { [key: string]: AttributeWithOptions } = {
       ...props.orthologueAttributes
@@ -176,27 +176,25 @@ const Orthologue = (props: Props) => {
 };
 
 type DispatchProps = {
-  setOrthologueAttributes: (setOrthologueAttributes: {
+  setOrthologueAttributes: (attributes: {
     [key: string]: AttributeWithOptions;
   }) => void;
-  setOrthologueSearchTerm: (setOrthologueSearchTerm: string) => void;
-  setOrthologueSpecies: (setOrthologueSpecies: CheckboxGridOption[]) => void;
+  setOrthologueSearchTerm: (searchTerm: string) => void;
+  updateOrthologueSpecies: (species: CheckboxGridOption[]) => void;
   fetchOrthologueSpecies: (
     searchTerm: string,
-    orthologueSpecies: CheckboxGridOption[]
+    species: CheckboxGridOption[]
   ) => void;
-  setOrthologueShowBestMatches: (setOrthologueShowBestMatches: boolean) => void;
-  setOrthologueShowAll: (setOrthologueShowAll: boolean) => void;
-  setOrthologueApplyToAllSpecies: (
-    setOrthologueApplyToAllSpecies: boolean
-  ) => void;
-  updateSelectedAttributes: (updateSelectedAttributes: JSONValue) => void;
+  setOrthologueShowBestMatches: (showBestMatches: boolean) => void;
+  setOrthologueShowAll: (showAll: boolean) => void;
+  setOrthologueApplyToAllSpecies: (applyToAllSpecies: boolean) => void;
+  updateSelectedAttributes: (selectedAttributes: JSONValue) => void;
 };
 
 const mapDispatchToProps: DispatchProps = {
   setOrthologueAttributes,
   setOrthologueSearchTerm,
-  setOrthologueSpecies: setOrthologueSpecies.success,
+  updateOrthologueSpecies,
   fetchOrthologueSpecies,
   setOrthologueShowBestMatches,
   setOrthologueShowAll,

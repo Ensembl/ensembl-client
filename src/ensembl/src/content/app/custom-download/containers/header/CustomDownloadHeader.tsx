@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import {
+  PrimaryButton,
+  SecondaryButton
+} from 'src/shared/components/button/Button';
 
 import RoundButton from 'src/shared/components/round-button/RoundButton';
 
@@ -9,30 +12,49 @@ import Select, { Option } from 'src/shared/components/select/Select';
 
 import {
   getSelectedPreFilter,
-  getPreviewResult,
   getShowPreviewResult,
-  getDownloadType
-} from '../../state/customDownloadSelectors';
+  getDownloadType,
+  getPreviewResult,
+  getIsLoadingResult,
+  getCustomDownloadActiveGenomeId
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
 
 import { getSelectedFilters } from '../../state/filters/filtersSelector';
 import { getSelectedAttributes } from '../../state/attributes/attributesSelector';
-import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
 import JSONValue from 'src/shared/types/JSON';
 import {
   togglePreFiltersPanel,
   setShowPreview,
   setDownloadType
 } from '../../state/customDownloadActions';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as BackIcon } from 'static/img/shared/chevron-left.svg';
 
 import { fetchCustomDownloadResults } from './customDownloadHeaderHelper';
-
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { flattenObject } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
+import { getEndpointUrl } from './customDownloadHeaderHelper';
+import {
+  setPreviewResult,
+  setIsLoadingResult,
+  fetchPreviewResult
+} from 'src/content/app/custom-download/state/customDownloadActions';
 
 import styles from './CustomDownloadHeader.scss';
 
-type Props = StateProps & DispatchProps;
+type HeaderProps = {
+  selectedPreFilter: string;
+  preview: JSONValue;
+  showSummary: boolean;
+  downloadType: string;
+  selectedFilters: JSONValue;
+  selectedAttributes: JSONValue;
+  isLoadingResult: boolean;
+  activeGenomeId: string | null;
+  togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
+  setShowPreview: (setShowPreview: boolean) => void;
+  setDownloadType: (setDownloadType: string) => void;
+  fetchPreviewResult: (endpointURL: string) => void;
+  clearPreviewResult: () => void;
+  setIsLoadingResult: (isLoadingResult: boolean) => void;
+};
 
 const downloadTypeoptions = [
   {
@@ -47,10 +69,36 @@ const downloadTypeoptions = [
   }
 ];
 
-const Header = (props: Props) => {
+const Header = (props: HeaderProps) => {
   useEffect(() => {
-    props.setShowPreview(customDownloadStorageService.getShowPreview());
-  }, []);
+    const flatSelectedAttributes: { [key: string]: boolean } = flattenObject(
+      props.selectedAttributes
+    );
+
+    const totalSelectedAttributes = Object.keys(flatSelectedAttributes).length;
+    if (!totalSelectedAttributes && props.preview.results) {
+      props.clearPreviewResult();
+      return;
+    } else if (!totalSelectedAttributes) {
+      return;
+    }
+
+    const endpointURL = getEndpointUrl(
+      props.activeGenomeId,
+      flatSelectedAttributes,
+      props.selectedFilters
+    );
+
+    if (totalSelectedAttributes) {
+      props.setIsLoadingResult(true);
+      props.fetchPreviewResult(endpointURL);
+    }
+  }, [props.selectedAttributes, props.selectedFilters]);
+
+  useEffect(() => {
+    props.setIsLoadingResult(false);
+  }, [props.preview]);
+
   const filterOnClick = () => {
     props.togglePreFiltersPanel(true);
   };
@@ -67,6 +115,8 @@ const Header = (props: Props) => {
     ? (props.preview.resultCount as number)
     : 0;
 
+  const disablePreviewButton = resultCount === 0;
+
   const handleDownloadTypeSelect = (option: string) => {
     props.setDownloadType(option);
   };
@@ -81,39 +131,12 @@ const Header = (props: Props) => {
 
   const downloadButtonStatus = props.downloadType === '';
 
-  const disablePreviewButton = resultCount === 0;
-
-  const getFormattedResult = () => {
-    return (
-      <>
-        <span>{getCommaSeparatedNumber(resultCount)}</span> results
-      </>
-    );
-  };
-
   return (
     <div className={styles.wrapper}>
-      {!props.showSummary && (
-        <div className={styles.resultCounter}>{getFormattedResult()}</div>
-      )}
-
       {props.showSummary && (
         <>
           <div className={styles.backButton}>
-            <ImageButton
-              onClick={showFilters}
-              description={'Back'}
-              image={BackIcon}
-            />
-          </div>
-          <div className={styles.previewCounter}>
-            <div>
-              <span className={styles.boldResultCounter}>
-                {getCommaSeparatedNumber(resultCount)}
-              </span>
-              <span className={styles.resultsLabel}>results</span>
-            </div>
-            <div className={styles.saveConfiguration}>Save configuration</div>
+            <SecondaryButton onClick={showFilters}>Back</SecondaryButton>
           </div>
         </>
       )}
@@ -125,6 +148,10 @@ const Header = (props: Props) => {
         >
           {props.selectedPreFilter}
         </RoundButton>
+
+        <span className={styles.changeLink} onClick={filterOnClick}>
+          Change
+        </span>
       </div>
 
       {props.showSummary && (
@@ -144,12 +171,12 @@ const Header = (props: Props) => {
 
       <div className={styles.previewButton}>
         {!props.showSummary && (
-          <PrimaryButton
+          <SecondaryButton
             onClick={previewButtonOnClick}
             isDisabled={disablePreviewButton}
           >
-            Download summary
-          </PrimaryButton>
+            Preview download
+          </SecondaryButton>
         )}
         {props.showSummary && (
           <PrimaryButton
@@ -158,7 +185,8 @@ const Header = (props: Props) => {
               fetchCustomDownloadResults(
                 props.downloadType,
                 props.selectedAttributes,
-                props.selectedfilters
+                props.selectedFilters,
+                props.activeGenomeId
               );
             }}
           >
@@ -170,34 +198,24 @@ const Header = (props: Props) => {
   );
 };
 
-type DispatchProps = {
-  togglePreFiltersPanel: (togglePreFiltersPanel: boolean) => void;
-  setShowPreview: (setShowPreview: boolean) => void;
-  setDownloadType: (setDownloadType: string) => void;
-};
-
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   togglePreFiltersPanel,
   setShowPreview,
-  setDownloadType
+  setDownloadType,
+  fetchPreviewResult,
+  clearPreviewResult: () => setPreviewResult.success({}),
+  setIsLoadingResult
 };
 
-type StateProps = {
-  selectedPreFilter: string;
-  preview: JSONValue;
-  showSummary: boolean;
-  downloadType: string;
-  selectedfilters: JSONValue;
-  selectedAttributes: JSONValue;
-};
-
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   selectedPreFilter: getSelectedPreFilter(state),
   preview: getPreviewResult(state),
   showSummary: getShowPreviewResult(state),
   downloadType: getDownloadType(state),
-  selectedfilters: getSelectedFilters(state),
-  selectedAttributes: getSelectedAttributes(state)
+  selectedFilters: getSelectedFilters(state),
+  selectedAttributes: getSelectedAttributes(state),
+  isLoadingResult: getIsLoadingResult(state),
+  activeGenomeId: getCustomDownloadActiveGenomeId(state)
 });
 
 export default connect(

@@ -3,41 +3,41 @@ import { ActionType, getType } from 'typesafe-actions';
 import { RootAction } from 'src/objects';
 import * as customDownloadActions from './customDownloadActions';
 import {
+  CustomDownloadState,
+  getInitialCustomDownloadState,
+  CustomDownloadActiveConfigurations,
   ResultState,
-  defaultResultState,
-  PreFilterState,
-  defaultPreFilterState,
-  TabState,
-  defaultTabState,
-  PreviewDownloadState,
-  defaultPreviewDownloadState
+  defaultResultState
 } from './customDownloadState';
 
-import filters from './filters/filtersReducer';
-import attributes from './attributes/attributesReducer';
-import { combineReducers } from 'redux';
-
-function preFilter(
-  state: PreFilterState = defaultPreFilterState,
-  action: ActionType<RootAction>
-): PreFilterState {
+export function customDownload(
+  state: CustomDownloadState = getInitialCustomDownloadState(),
+  action: ActionType<typeof customDownloadActions>
+): CustomDownloadState {
   switch (action.type) {
-    case getType(customDownloadActions.updateSelectedPreFilter):
-      return { ...state, selectedPreFilter: action.payload };
-    case getType(customDownloadActions.togglePreFiltersPanel):
-      return { ...state, showPreFiltersPanel: action.payload };
-    default:
-      return state;
-  }
-}
-
-function tab(
-  state: TabState = defaultTabState,
-  action: ActionType<RootAction>
-): TabState {
-  switch (action.type) {
-    case getType(customDownloadActions.toggleTab):
-      return { ...state, selectedTab: action.payload };
+    case getType(customDownloadActions.updateActiveGenomeId):
+      return {
+        ...state,
+        activeGenomeId: action.payload
+      };
+    case getType(customDownloadActions.updateActiveConfigurationForGenome):
+      return {
+        ...state,
+        activeConfigurations: activeConfigurations(
+          state.activeConfigurations,
+          action
+        )
+      };
+    case getType(customDownloadActions.setIsLoadingResult):
+      return {
+        ...state,
+        result: result(state.result, action)
+      };
+    case getType(customDownloadActions.setPreviewResult.success):
+      return {
+        ...state,
+        result: result(state.result, action)
+      };
     default:
       return state;
   }
@@ -48,48 +48,35 @@ function result(
   action: ActionType<RootAction>
 ): ResultState {
   switch (action.type) {
-    case getType(customDownloadActions.setPreviewResult.success):
-      return {
-        ...state,
-        preview: action.payload
-      };
     case getType(customDownloadActions.setIsLoadingResult):
       return {
         ...state,
         isLoadingResult: action.payload
       };
-
+    case getType(customDownloadActions.setPreviewResult.success):
+      return {
+        ...state,
+        preview: action.payload
+      };
     default:
       return state;
   }
 }
 
-function previewDownload(
-  state: PreviewDownloadState = defaultPreviewDownloadState,
+function activeConfigurations(
+  state: CustomDownloadActiveConfigurations = getInitialCustomDownloadState()
+    .activeConfigurations,
   action: ActionType<RootAction>
-): PreviewDownloadState {
+): CustomDownloadActiveConfigurations {
   switch (action.type) {
-    case getType(customDownloadActions.setShowPreview):
+    case getType(customDownloadActions.updateActiveConfigurationForGenome):
       return {
         ...state,
-        showSummary: action.payload
-      };
-    case getType(customDownloadActions.setDownloadType):
-      return {
-        ...state,
-        downloadType: action.payload
-      };
-
+        [action.payload.activeGenomeId]: action.payload.data
+      } as CustomDownloadActiveConfigurations;
     default:
       return state;
   }
 }
 
-export default combineReducers({
-  filters,
-  attributes,
-  preFilter,
-  tab,
-  result,
-  previewDownload
-});
+export default customDownload;

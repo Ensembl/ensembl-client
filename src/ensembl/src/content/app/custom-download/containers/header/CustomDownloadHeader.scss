@@ -6,22 +6,10 @@
   position: relative;
 }
 
-.resultCounter {
-  position: absolute;
-  top: 50%;
-  left: 50px;
-  color: $black;
-  margin-top: -10px;
-
-  span {
-    font-weight: 700;
-  }
-}
-
 .selectedFilters {
   position: absolute;
   top: 50%;
-  left: 40%;
+  left: 50px;
   margin-top: -12px;
 }
 
@@ -32,31 +20,14 @@
   margin-top: -15px;
 }
 
-.previewCounter {
-  margin-left: 20px;
-  padding-top: 12px;
-  display: inline-block;
-}
-
-.boldResultCounter {
-  font-weight: bold;
-  margin-right: 2px;
-}
-
-.resultsLabel {
-  font-size: 11px;
-  color: $dark-grey;
-}
-.saveConfiguration {
-  font-size: 11px;
-  color: $dark-grey;
-}
-
 .backButton {
   height: 30px;
   width: 30px;
-  margin-left: 20px;
+  margin-left: -33px;
   display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 14px;
 }
 
 .downloadTypeSelectHolder {
@@ -82,4 +53,10 @@
   background-color: $medium-dark-grey;
   border-color: $medium-dark-grey;
   color: $white;
+}
+
+.changeLink {
+  cursor: pointer;
+  color: $blue;
+  margin-left: 30px;
 }

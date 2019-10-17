@@ -1,13 +1,15 @@
 import { RootState } from 'src/store';
+import { getCustomDownloadActiveGenomeConfiguration } from '../customDownloadSelectors';
 
-export const getFiltersAccordionExpandedPanel = (state: RootState) =>
-  state.customDownload.filters.expandedPanel;
+export const getFiltersAccordionExpandedPanels = (state: RootState) =>
+  getCustomDownloadActiveGenomeConfiguration(state).filters.expandedPanels ||
+  [];
 
 export const getFilters = (state: RootState) =>
-  state.customDownload.filters.filters;
+  getCustomDownloadActiveGenomeConfiguration(state).filters.filters;
 
 export const getSelectedFilters = (state: RootState) =>
-  state.customDownload.filters.selectedFilters;
+  getCustomDownloadActiveGenomeConfiguration(state).filters.selectedFilters;
 
 export const getFiltersUi = (state: RootState) =>
-  state.customDownload.filters.ui;
+  getCustomDownloadActiveGenomeConfiguration(state).filters.ui;

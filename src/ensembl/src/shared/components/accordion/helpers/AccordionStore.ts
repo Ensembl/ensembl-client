@@ -59,6 +59,12 @@ export default class AccordionStore {
     }
   };
 
+  public readonly setExpanded = (expanded: UUID[]): AccordionStore => {
+    return this.augment({
+      expanded: expanded
+    });
+  };
+
   public readonly isItemDisabled = (uuid: UUID): boolean => {
     const isExpanded = this.isItemExpanded(uuid);
     const isOnlyOneExpanded = this.expanded.length === 1;

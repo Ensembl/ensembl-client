@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import classNames from 'classnames';
+
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import { Modify } from 'src/shared/types/utility-types/modify';
+
 import styles from './CheckboxGrid.scss';
 
 export type CheckboxGridOption = {
@@ -8,16 +12,33 @@ export type CheckboxGridOption = {
   label: string;
 };
 
-export type CheckboxGridProps = {
+type AllProps = {
   options: CheckboxGridOption[];
   columns: number;
   hideUnchecked?: boolean;
-  hideLabel?: boolean;
   label: string;
+  hideLabel?: boolean;
+  isCollapsible?: boolean;
+  isCollapsed?: boolean;
   onChange: (status: boolean, id: string) => void;
+  onCollapse?: (collapsed: boolean) => void;
 };
 
+type NonCollapsibleProps = Modify<
+  AllProps,
+  {
+    isCollapsed?: false;
+    isCollapsible?: false;
+  }
+>;
+
+type CollapsibleProps = Modify<AllProps, { hideLabel?: false }>;
+
+export type CheckboxGridProps = NonCollapsibleProps | CollapsibleProps;
+
 const CheckboxGrid = (props: CheckboxGridProps) => {
+  const [collapsed, setCollapsed] = useState(props.isCollapsed);
+
   let options = [...props.options];
 
   if (props.hideUnchecked) {
@@ -48,15 +69,41 @@ const CheckboxGrid = (props: CheckboxGridProps) => {
     }
   }
 
+  const toggleCollapsedState = () => {
+    const newCollapsedState = !collapsed;
+    setCollapsed(newCollapsedState);
+    if (props.onCollapse) {
+      props.onCollapse(newCollapsedState);
+    }
+  };
+
   const singleGridStyle = {
     width: 100 / props.columns + '%'
   };
+
+  const checkboxGridContainerStyles = classNames(styles.checkboxGridContainer, {
+    [styles.collapsed]: collapsed
+  });
+
+  const collapseButtonStyles = classNames(styles.collapseButton, {
+    [styles.open]: !collapsed
+  });
   return (
     <>
-      {!props.hideLabel && (
-        <div className={styles.checkboxGridTitle}>{props.label}</div>
+      {!props.hideLabel && props.label && (
+        <div className={styles.checkboxGridHeader}>
+          <span className={styles.label}>{props.label}</span>
+          {props.isCollapsible && (
+            <span
+              className={styles.collapseButtonWrapper}
+              onClick={toggleCollapsedState}
+            >
+              <span className={collapseButtonStyles}></span>
+            </span>
+          )}
+        </div>
       )}
-      <div className={styles.checkboxGridContainer}>
+      <div className={checkboxGridContainerStyles}>
         {gridMatrix.map((columnLength: number, gridKey: number) => {
           return (
             <div key={gridKey} style={singleGridStyle}>

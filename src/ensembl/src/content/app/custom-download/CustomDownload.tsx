@@ -1,26 +1,48 @@
-import React, { FunctionComponent } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PreFilterPanel from 'src/content/app/custom-download/containers/pre-filters-panel/PreFilterPanel';
-import { getShowPreFilterPanel } from './state/customDownloadSelectors';
+import {
+  getShowPreFilterPanel,
+  getCustomDownloadActiveGenomeId
+} from './state/customDownloadSelectors';
 import { RootState } from 'src/store';
 import CustomDownloadHeader from './containers/header/CustomDownloadHeader';
 import CustomDownloadContent from './containers/content/CustomDownloadContent';
+import CustomDownloadAppBar from './containers/app-bar/CustomDownloadAppBar';
+import { setActiveGenomeId } from './state/customDownloadActions';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 type StateProps = {
-  showPreFiltersPanel: boolean;
+  shouldShowPreFilterPanel: boolean;
+  activeGenomeId: string | null;
+  committedItems: CommittedItem[];
 };
 
-type CustomDownloadProps = StateProps;
+type DispatchProps = {
+  setActiveGenomeId: (activeGenomeId: string) => void;
+};
 
-const CustomDownload: FunctionComponent<CustomDownloadProps> = (
-  props: CustomDownloadProps
-) => {
+type CustomDownloadProps = StateProps & DispatchProps;
+
+const CustomDownload = (props: CustomDownloadProps) => {
+  useEffect(() => {
+    if (!props.activeGenomeId && props.committedItems.length) {
+      props.setActiveGenomeId(props.committedItems[0].genome_id);
+    }
+  }, []);
+
+  if (!props.activeGenomeId) {
+    return null;
+  }
   return (
     <>
-      {props.showPreFiltersPanel && <PreFilterPanel />}
-      {!props.showPreFiltersPanel && (
+      <CustomDownloadAppBar onSpeciesSelect={props.setActiveGenomeId} />
+      {props.shouldShowPreFilterPanel && <PreFilterPanel />}
+      {!props.shouldShowPreFilterPanel && (
         <>
-          <CustomDownloadHeader /> <CustomDownloadContent />
+          <CustomDownloadHeader />
+          <CustomDownloadContent />
         </>
       )}
     </>
@@ -28,7 +50,16 @@ const CustomDownload: FunctionComponent<CustomDownloadProps> = (
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
-  showPreFiltersPanel: getShowPreFilterPanel(state)
+  shouldShowPreFilterPanel: getShowPreFilterPanel(state),
+  activeGenomeId: getCustomDownloadActiveGenomeId(state),
+  committedItems: getCommittedSpecies(state)
 });
 
-export default connect(mapStateToProps)(CustomDownload);
+const mapDispatchToProps: DispatchProps = {
+  setActiveGenomeId
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CustomDownload);

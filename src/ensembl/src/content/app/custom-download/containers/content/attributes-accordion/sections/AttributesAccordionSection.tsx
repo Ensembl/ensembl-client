@@ -23,9 +23,9 @@ import ContentBuilder from 'src/content/app/custom-download/components/content-b
 import JSONValue from 'src/shared/types/JSON';
 
 type ownProps = {
-  hideUnchecked?: boolean;
   hideTitles?: boolean;
   section: string;
+  showOverview?: boolean;
 };
 
 type Props = ownProps & StateProps & DispatchProps;
@@ -35,12 +35,10 @@ const AttributesAccordionSection = (props: Props) => {
     <ContentBuilder
       data={props.attributes[props.section] as AttributeWithContent}
       onChange={props.updateSelectedAttributes}
-      uiState={{
-        ...props.ui,
-        checkbox_grid: { hideUnchecked: props.hideUnchecked }
-      }}
+      uiState={props.ui}
       onUiChange={props.updateUi}
       selectedData={props.selectedAttributes}
+      showOverview={props.showOverview}
     />
   );
 };
