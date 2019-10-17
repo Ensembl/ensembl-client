@@ -26,37 +26,37 @@ impl TrainManagerTransitionImpl {
 }
 
 pub(super) struct TrainManagerTransition {
-    imp: Arc<Mutex<TrainManagerTransitionImpl>>,
+    imp: Arc<Mutex<f64>>,
     runner: ZhooshRunner,
     control: Option<ZhooshSequenceControl>,
-    zhoosh_fast: Zhoosh<Arc<Mutex<TrainManagerTransitionImpl>>,f64>,
-    zhoosh_slow: Zhoosh<Arc<Mutex<TrainManagerTransitionImpl>>,f64>
+    zhoosh_fast: Zhoosh<Arc<Mutex<f64>>,f64>,
+    zhoosh_slow: Zhoosh<Arc<Mutex<f64>>,f64>
 }
 
 impl TrainManagerTransition {
     pub(super) fn new() -> TrainManagerTransition {
         TrainManagerTransition {
-            imp: Arc::new(Mutex::new(TrainManagerTransitionImpl::new())),
+            imp: Arc::new(Mutex::new(1.)),
             control: None,
             runner: ZhooshRunner::new(),
-            zhoosh_fast: Zhoosh::new(MS_FADE_FAST,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<TrainManagerTransitionImpl>>,val| {
-                imp.lock().unwrap().set(val);
+            zhoosh_fast: Zhoosh::new(MS_FADE_FAST,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<f64>>,val| {
+                *imp.lock().unwrap() = val;
             }),
-            zhoosh_slow: Zhoosh::new(MS_FADE_SLOW,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<TrainManagerTransitionImpl>>,val| {
-                imp.lock().unwrap().set(val);
+            zhoosh_slow: Zhoosh::new(MS_FADE_SLOW,0.,0.,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,|imp: &mut Arc<Mutex<f64>>,val| {
+                *imp.lock().unwrap() = val;
             }),
         }
     }
 
     pub(super) fn get_prop(&self) -> f64 {
-        ok!(self.imp.lock()).get_prop()
+        *ok!(self.imp.lock())
     }
 
     pub(super) fn reset(&mut self) {
         if let Some(mut control) = self.control.take() {
             control.abandon();
         }
-        ok!(self.imp.lock()).set(0.);
+        *ok!(self.imp.lock()) = 0.;
     }
 
     pub(super) fn start(&mut self, t: f64, slow: bool) {
