@@ -22,19 +22,15 @@ import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trac
 
 import styles from '../TrackPanelModal.scss';
 
-type StateProps = {
+export type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
   exampleEnsObjects: EnsObject[];
   previouslyViewedObjects: PreviouslyViewedObject[];
-};
-
-type DispatchProps = {
   fetchExampleEnsObjects: (objectId: string) => void;
   updateTrackStatesAndSave: (trackStates: BrowserTrackStates) => void;
   closeTrackPanelModal: () => void;
   changeDrawerViewAndOpen: (drawerView: string) => void;
 };
-export type TrackPanelBookmarksProps = StateProps & DispatchProps;
 
 type ExampleLinksProps = Pick<
   TrackPanelBookmarksProps,

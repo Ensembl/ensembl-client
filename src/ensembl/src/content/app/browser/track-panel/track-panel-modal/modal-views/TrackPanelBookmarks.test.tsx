@@ -28,10 +28,10 @@ const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
   label: faker.random.word()
 });
 
-const closeTrackPanelModalMock = jest.fn();
-const updateTrackStatesAndSaveMock = jest.fn();
-const fetchExampleEnsObjectsMock = jest.fn();
-const changeDrawerViewAndOpenMock = jest.fn();
+const closeTrackPanelModal = jest.fn();
+const updateTrackStatesAndSave = jest.fn();
+const fetchExampleEnsObjects = jest.fn();
+const changeDrawerViewAndOpen = jest.fn();
 
 describe('<TrackPanelBookmarks />', () => {
   const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
@@ -46,10 +46,10 @@ describe('<TrackPanelBookmarks />', () => {
     previouslyViewedObjects: times(numberOfPreviouslyViewedObjects, () =>
       createPreviouslyViewedLink()
     ),
-    fetchExampleEnsObjects: fetchExampleEnsObjectsMock,
-    updateTrackStatesAndSave: updateTrackStatesAndSaveMock,
-    closeTrackPanelModal: closeTrackPanelModalMock,
-    changeDrawerViewAndOpen: changeDrawerViewAndOpenMock
+    fetchExampleEnsObjects,
+    updateTrackStatesAndSave,
+    closeTrackPanelModal,
+    changeDrawerViewAndOpen
   };
 
   let wrapper: any;
@@ -79,7 +79,7 @@ describe('<TrackPanelBookmarks />', () => {
       .first()
       .simulate('click');
 
-    expect(closeTrackPanelModalMock).toBeCalled();
+    expect(closeTrackPanelModal).toBeCalled();
   });
 
   it('shows the ellipsis only when the total objects is more than 20', () => {
@@ -120,7 +120,7 @@ describe('<TrackPanelBookmarks />', () => {
 
     wrapper.find(ImageButton).simulate('click');
 
-    expect(changeDrawerViewAndOpenMock).toBeCalled();
+    expect(changeDrawerViewAndOpen).toBeCalled();
   });
 
   it('renders correct number of links to example objects', () => {
@@ -138,6 +138,6 @@ describe('<TrackPanelBookmarks />', () => {
       .first()
       .simulate('click');
 
-    expect(closeTrackPanelModalMock).toBeCalled();
+    expect(closeTrackPanelModal).toBeCalled();
   });
 });

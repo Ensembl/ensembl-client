@@ -12,15 +12,11 @@ import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/
 
 import styles from './DrawerBookmarks.scss';
 
-type StateProps = {
+export type DrawerBookmarksProps = {
   previouslyViewedObjects: PreviouslyViewedObject[];
-};
-
-type DispatchProps = {
   closeTrackPanelModal: () => void;
   closeDrawer: () => void;
 };
-export type DrawerBookmarksProps = StateProps & DispatchProps;
 
 const DrawerBookmarks = (props: DrawerBookmarksProps) => {
   const limitedPreviouslyViewedObjects = props.previouslyViewedObjects.slice(
