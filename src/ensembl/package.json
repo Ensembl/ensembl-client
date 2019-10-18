@@ -45,7 +45,11 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "post-checkout": "echo $HUSKY_GIT_STDIN | ../../lfs-hooks/post-checkout $HUSKY_GIT_PARAMS",
+      "post-commit": "echo $HUSKY_GIT_STDIN | ../../lfs-hooks/post-commit $HUSKY_GIT_PARAMS",
+      "post-merge": "echo $HUSKY_GIT_STDIN | ../../lfs-hooks/post-merge $HUSKY_GIT_PARAMS",
+      "pre-push": "echo $HUSKY_GIT_STDIN | ../../lfs-hooks/pre-push $HUSKY_GIT_PARAMS"
     }
   },
   "dependencies": {
