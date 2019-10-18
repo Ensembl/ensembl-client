@@ -58,7 +58,7 @@ const CustomDownloadContent = (props: Props) => {
         </>
       )}
       {props.showSummary && (
-        <div>
+        <div className={styles.previewDownloadHolder}>
           <PreviewDownload />
         </div>
       )}

@@ -29,6 +29,11 @@
   grid-column-end: 5;
 }
 
+.previewDownloadHolder {
+  grid-column-start: 1;
+  grid-column-end: 5;
+}
+
 .exampleDataPanel {
   top: 10px;
   left: calc(50% - 300px);
