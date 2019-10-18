@@ -1,0 +1,2 @@
+src/ensembl/static/browser/browser-*.wasm filter=lfs diff=lfs merge=lfs -text
+src/ensembl/static/browser/browser.js filter=lfs diff=lfs merge=lfs -text
