@@ -97,6 +97,10 @@ fn custom_reset_event() -> Vec<Action> {
     vec![Action::Reset]
 }
 
+fn custom_reset_tracks_event() -> Vec<Action> {
+    vec![Action::ResetState]
+}
+
 fn custom_activity_outside_event() -> Vec<Action> {
     vec![Action::ActivityOutsideZMenu]
 }
@@ -119,6 +123,7 @@ fn custom_make_one_event_key(k: &String, v: &JSONValue, keys: &Vec<String>) -> V
             "stick" => every(v,|v| custom_stick_event(v)),
             "focus" => custom_focus_event(v,!keys.contains(&"goto".to_string())),
             "reset" => custom_reset_event(),
+            "default" => custom_reset_tracks_event(),
             _ => vec!{}
         },
         2 => return match parts[0] {
