@@ -3,7 +3,7 @@
 .wrapper {
   position: relative;
   display: grid;
-  grid-template-columns: 40px calc(50% - 50px) 10px calc(50% - 40px) 40px;
+  grid-template-columns: 40px 1fr 10px 1fr 40px;
 
   &.default {
     height: calc(100vh - 220px);
@@ -26,6 +26,11 @@
 
 .filtersHolder {
   grid-column-start: 3;
+  grid-column-end: 5;
+}
+
+.previewDownloadHolder {
+  grid-column-start: 2;
   grid-column-end: 5;
 }
 
