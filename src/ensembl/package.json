@@ -54,6 +54,7 @@
     "connected-react-router": "6.5.2",
     "core-js": "3.3.6",
     "dotenv": "8.2.0",
+    "ensembl-genome-browser": "git://github.com:azangru/throwaway-ensembl-static-assets.git#8eef58222ed8cc6bc24a0c49fd7398fecfed41da",
     "koa-proxy": "1.0.0-alpha.3",
     "lodash": "4.17.15",
     "query-string": "6.8.3",
