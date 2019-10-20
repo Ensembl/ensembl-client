@@ -1,0 +1,48 @@
+@import 'src/styles/common';
+
+.chromosomeNavigator {
+  svg {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .stick {
+    height: 4px;
+    fill: $light-grey;
+    stroke: $medium-dark-grey;
+    width: 100%;
+  }
+
+  .viewport {
+    height: 4px;
+    fill: white;
+    width: 50px;
+  }
+
+  .viewportBorder {
+    fill: none;
+    stroke: $dark-grey;
+  }
+
+  .focusPointer {
+    transform: translateX(100px);
+    fill: #ff9800; // FIXME: variable?
+
+    line {
+      stroke: #ff9800;
+    }
+  }
+
+  .centromere {
+    transform: translateX(50px);
+  }
+
+  .centromereRegion {
+    fill: $light-grey;
+    stroke: $light-grey;
+  }
+
+  .centromereCentre {
+    fill: $dark-grey;
+  }
+}
