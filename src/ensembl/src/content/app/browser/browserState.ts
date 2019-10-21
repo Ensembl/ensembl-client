@@ -26,17 +26,17 @@ export type CogList = {
   [key: string]: number;
 };
 
-export type RegionValidationError = {
+export type RegionValidationResult = {
   error_code: string | null;
   error_message: string | null;
   is_valid: boolean;
 };
 
-export type RegionValidationValueError = RegionValidationError & {
+export type RegionValidationValueResult = RegionValidationResult & {
   value: string | number;
 };
 
-export type RegionValidationRegionError = RegionValidationError & {
+export type RegionValidationRegionResult = RegionValidationResult & {
   region_code: string;
   region_name: string;
 };
@@ -49,12 +49,12 @@ export type RegionValidationMessage = Partial<{
 }>;
 
 export type RegionValidationResponse = Partial<{
-  end: RegionValidationValueError;
-  genome_id: RegionValidationValueError;
+  end: RegionValidationValueResult;
+  genome_id: RegionValidationValueResult;
   is_parseable: boolean;
   region_id: string;
-  region: RegionValidationRegionError;
-  start: RegionValidationValueError;
+  region: RegionValidationRegionResult;
+  start: RegionValidationValueResult;
   message: RegionValidationMessage;
 }>;
 

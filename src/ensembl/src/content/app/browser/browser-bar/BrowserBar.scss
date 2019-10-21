@@ -90,21 +90,9 @@
 }
 
 .browserInfoRegion {
-  form {
+  .chrLabel {
     display: inline-block;
-  }
-
-  label {
     margin-right: 5px;
-  }
-
-  input {
-    padding: 1px 6px;
-    width: 200px;
-  }
-
-  button {
-    margin-left: 10px;
   }
 
   span {
@@ -117,10 +105,7 @@
 }
 
 .chrCode {
-  appearance: none;
   background: $dark-blue;
-  border: none;
-  border-radius: 0;
   color: $white;
   cursor: pointer;
   display: inline-block;
@@ -128,8 +113,6 @@
   margin: 0 5px;
   padding: 1px 4px;
   text-align: center;
-  text-align-last: center;
-  width: auto;
 }
 
 .chrRegion {

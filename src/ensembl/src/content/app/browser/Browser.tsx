@@ -233,7 +233,11 @@ export const Browser = (props: BrowserProps) => {
   const shouldShowNavBar =
     props.browserActivated && props.browserNavOpened && !isDrawerOpened;
 
-  return props.activeGenomeId ? (
+  if (!props.activeGenomeId) {
+    return null;
+  }
+
+  return (
     <>
       <AppBar
         currentAppName={AppName.GENOME_BROWSER}
@@ -247,7 +251,7 @@ export const Browser = (props: BrowserProps) => {
           <ExampleObjectLinks {...props} />
         </section>
       )}
-      {props.browserQueryParams.focus && (
+      {!!props.browserQueryParams.focus && (
         <section className={styles.browser}>
           {browserBar}
           <div
@@ -266,7 +270,7 @@ export const Browser = (props: BrowserProps) => {
         </section>
       )}
     </>
-  ) : null;
+  );
 };
 
 export const ExampleObjectLinks = (props: BrowserProps) => {

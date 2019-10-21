@@ -2,38 +2,38 @@ import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import { BrowserRegionField } from './BrowserRegionField';
+import {
+  BrowserRegionField,
+  BrowserRegionFieldProps
+} from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { ChrLocation } from '../browserState';
-import { LoadingState } from 'src/shared/types/loading-state';
-import genomeKaryotypes from 'tests/data/browser/karyotypes';
-import { createValidationInfo } from 'tests/fixtures/browser';
-
-const defaultProps = {
-  activeGenomeId: faker.lorem.words(),
-  chrLocation: ['13', 2315086, 32400266] as ChrLocation,
-  genomeKaryotypes: genomeKaryotypes,
-  isDrawerOpened: false,
-  regionEditorActive: false,
-  regionFieldActive: false,
-  regionValidationInfo: null,
-  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
-  changeBrowserLocation: jest.fn(),
-  replace: jest.fn(),
-  resetRegionValidation: jest.fn(),
-  toggleRegionFieldActive: jest.fn(),
-  validateRegion: jest.fn()
-};
+import {
+  createValidationInfo,
+  createChrLocationValues
+} from 'tests/fixtures/browser';
 
 describe('<BrowserRegionField', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
+  const defaultProps: BrowserRegionFieldProps = {
+    activeGenomeId: faker.lorem.words(),
+    chrLocation: createChrLocationValues().tuppleValue,
+    isActive: false,
+    isDisabled: false,
+    isValidationInfoLoading: false,
+    validationInfo: null,
+    changeBrowserLocation: jest.fn(),
+    replace: jest.fn(),
+    resetRegionValidation: jest.fn(),
+    toggleRegionFieldActive: jest.fn(),
+    validateRegion: jest.fn()
+  };
+
   let wrapper: any;
-  const regionInput = '1:1-1000';
 
   beforeEach(() => {
     wrapper = mount(<BrowserRegionField {...defaultProps} />);
@@ -45,12 +45,12 @@ describe('<BrowserRegionField', () => {
     });
 
     test('contains submit and close buttons', () => {
-      expect(wrapper.find('.submitButton')).toHaveLength(1);
-      expect(wrapper.find('.closeButton')).toHaveLength(1);
+      expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
+      expect(wrapper.find('button[role="closeButton"]')).toHaveLength(1);
     });
 
     test('has an overlay on top when region editor is active', () => {
-      wrapper.setProps({ regionEditorActive: true });
+      wrapper.setProps({ isDisabled: true });
       expect(wrapper.find('.browserOverlay').length).toBe(1);
     });
   });
@@ -64,6 +64,7 @@ describe('<BrowserRegionField', () => {
     });
 
     test('applies correct value on change', () => {
+      const regionInput = createChrLocationValues().stringValue;
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
@@ -72,6 +73,7 @@ describe('<BrowserRegionField', () => {
     });
 
     test('validates region input on submit', () => {
+      const regionInput = createChrLocationValues().stringValue;
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
@@ -82,32 +84,38 @@ describe('<BrowserRegionField', () => {
     });
 
     test('resets region field when close button is clicked', () => {
+      const regionInput = createChrLocationValues().stringValue;
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
       jest.resetAllMocks();
 
-      wrapper.find('.closeButton').simulate('click');
+      wrapper.find('button[role="closeButton"]').simulate('click');
       expect(wrapper.find(Input).props().value).toBe('');
       expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(1);
       expect(wrapper.props().resetRegionValidation).toHaveBeenCalledTimes(1);
     });
 
     test('displays error message when validation fails', () => {
+      const startErrorMessage = faker.lorem.words();
+
       wrapper.setProps({
-        regionFieldActive: true,
-        regionValidationInfo: Object.assign({}, createValidationInfo(), {
-          start: {
-            error_code: null,
-            error_message: 'Start should be between 1 and 248956422',
-            is_valid: false,
-            value: 0
+        isActive: true,
+        validationInfo: {
+          ...createValidationInfo(),
+          ...{
+            start: {
+              error_code: null,
+              error_message: startErrorMessage,
+              is_valid: false,
+              value: 0
+            }
           }
-        })
+        }
       });
 
       wrapper.update();
-      expect(wrapper.find(Tooltip)).toHaveLength(1);
+      expect(wrapper.find(Tooltip).props().children).toBe(startErrorMessage);
     });
   });
 });

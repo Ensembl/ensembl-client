@@ -2,9 +2,9 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { BrowserNavStates, CogList } from '../browserState';
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
@@ -27,10 +27,7 @@ import {
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import { ChrLocation } from '../browserState';
-
-import { CircleLoader } from 'src/shared/components/loader/Loader';
-
+import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
 import { TrackStates } from '../track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
@@ -158,7 +155,7 @@ function getBrowserImageClasses(browserNavOpened: boolean): string {
   let classes = styles.browserStage;
 
   if (browserNavOpened === true) {
-    classes += ` ${styles.shorter}`;
+    classes += `${styles.shorter}`;
   }
 
   return classes;

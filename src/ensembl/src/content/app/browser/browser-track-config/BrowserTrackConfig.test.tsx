@@ -36,16 +36,6 @@ describe('<BrowserTrackConfig />', () => {
     wrapper = mount(<BrowserTrackConfig {...defaultProps} />);
   });
 
-  describe('rendering', () => {
-    test('renders the all tracks checkbox', () => {
-      expect(wrapper.find(Checkbox)).toHaveLength(1);
-    });
-
-    test('renders all the buttons', () => {
-      expect(wrapper.find('button')).toHaveLength(6);
-    });
-  });
-
   describe('behaviour', () => {
     test('sets all tracks to be updated when the all tracks checkbox is selected', () => {
       wrapper

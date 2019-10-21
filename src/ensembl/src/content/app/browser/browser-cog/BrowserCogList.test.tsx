@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import faker from 'faker';
 
 import { BrowserCogList } from './BrowserCogList';
 import BrowserCog from './BrowserCog';
@@ -14,10 +15,10 @@ describe('<BrowserCogList />', () => {
   const defaultProps = {
     browserActivated: true,
     browserCogList: 0,
-    browserCogTrackList: { 'track:gc': 491 },
+    browserCogTrackList: { 'track:gc': Math.random() },
     trackConfigNames: {},
     trackConfigLabel: {},
-    selectedCog: 'track:gene-other-fwd',
+    selectedCog: faker.lorem.words(),
     updateCogList: jest.fn(),
     updateCogTrackList: jest.fn(),
     updateSelectedCog: jest.fn()

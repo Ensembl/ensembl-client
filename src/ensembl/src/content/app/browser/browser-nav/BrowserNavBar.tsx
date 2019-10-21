@@ -25,7 +25,7 @@ import { GenomeKaryotype } from 'src/genome/genomeTypes';
 
 import styles from './BrowserNavBar.scss';
 
-type BrowserNavBarProps = {
+export type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
   chrLocation: ChrLocation | null;
   genomeKaryotypes: GenomeKaryotype[] | null;
@@ -46,7 +46,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
     []
   );
 
-  const shouldBeEnabled = (index: number) => {
+  const shouldNavIconBeEnabled = (index: number) => {
     const { browserNavStates, regionEditorActive, regionFieldActive } = props;
     const maxState = browserNavStates[index];
     const regionInputsActive = regionEditorActive || regionFieldActive;
@@ -65,7 +65,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            enabled={shouldBeEnabled(index)}
+            enabled={shouldNavIconBeEnabled(index)}
           />
         ))}
       </dd>

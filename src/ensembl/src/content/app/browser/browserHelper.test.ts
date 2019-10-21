@@ -1,27 +1,38 @@
+import faker from 'faker';
+
 import {
   getChrLocationFromStr,
   getChrLocationStr,
   getRegionFieldErrorMessages,
   getRegionEditorErrorMessages
 } from './browserHelper';
-import { createValidationInfo } from 'tests/fixtures/browser';
-import { RegionValidationResponse } from './browserState';
+import {
+  createValidationInfo,
+  createChrLocationValues
+} from 'tests/fixtures/browser';
+import {
+  RegionValidationResponse,
+  RegionValidationRegionResult,
+  RegionValidationValueResult
+} from './browserState';
 import { RegionErrors } from './browserConfig';
 
 describe('browserHelper', () => {
   describe('getChrLocationFromStr', () => {
     test('outputs ChrLocation when input received as string', () => {
-      expect(getChrLocationFromStr('10:1-10000')).toStrictEqual([
-        '10',
-        1,
-        10000
-      ]);
+      const chrLocationValues = createChrLocationValues();
+      expect(
+        getChrLocationFromStr(chrLocationValues.stringValue)
+      ).toStrictEqual(chrLocationValues.tuppleValue);
     });
   });
 
   describe('getChrLocationStr', () => {
+    const chrLocationValues = createChrLocationValues();
     test('outputs string when input received as ChrLocation', () => {
-      expect(getChrLocationStr(['10', 1, 10000])).toBe('10:1-10000');
+      expect(getChrLocationStr(chrLocationValues.tuppleValue)).toBe(
+        chrLocationValues.stringValue
+      );
     });
   });
 
@@ -29,26 +40,26 @@ describe('browserHelper', () => {
   const invalidRegionInfo: Partial<RegionValidationResponse> = {
     region: {
       error_code: null,
-      error_message: 'Could not find region aaa',
+      error_message: faker.lorem.words(),
       is_valid: false,
-      region_code: 'chromosome',
-      region_name: 'AAA'
+      region_code: faker.lorem.words(),
+      region_name: faker.lorem.words()
     }
   };
   const invalidStartInfo: Partial<RegionValidationResponse> = {
     start: {
       error_code: null,
-      error_message: 'Start should be between 1 and 248956422',
+      error_message: faker.lorem.words(),
       is_valid: false,
-      value: 0
+      value: faker.random.number()
     }
   };
   const invalidEndInfo: Partial<RegionValidationResponse> = {
     end: {
       error_code: null,
-      error_message: 'End should be between 1 and 248956422',
+      error_message: faker.lorem.words(),
       is_valid: false,
-      value: 2489564220
+      value: faker.random.number()
     }
   };
 
@@ -63,9 +74,12 @@ describe('browserHelper', () => {
 
     // this test case needs to be changed once the parse error message becomes available in the validaiton response
     test('returns error if region is not parseable', () => {
-      const newMockValidationInfo = Object.assign({}, mockValidationInfo, {
-        is_parseable: false
-      });
+      const newMockValidationInfo = {
+        ...mockValidationInfo,
+        ...{
+          is_parseable: false
+        }
+      };
 
       expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
         RegionErrors.PARSE_ERROR
@@ -73,38 +87,37 @@ describe('browserHelper', () => {
     });
 
     test('returns error if region is invalid', () => {
-      const newMockValidationInfo = Object.assign(
-        {},
-        mockValidationInfo,
+      const newMockValidationInfo = {
+        ...mockValidationInfo,
         invalidRegionInfo
-      );
+      };
 
       expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        'Could not find region aaa'
+        (newMockValidationInfo.region as RegionValidationRegionResult)
+          .error_message
       );
     });
 
     test('returns error if start is invalid', () => {
-      const newMockValidationInfo = Object.assign(
-        {},
-        mockValidationInfo,
-        invalidStartInfo
-      );
+      const newMockValidationInfo = {
+        ...mockValidationInfo,
+        ...invalidStartInfo
+      };
 
       expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        'Start should be between 1 and 248956422'
+        (newMockValidationInfo.start as RegionValidationValueResult)
+          .error_message
       );
     });
 
     test('returns error if end is invalid', () => {
-      const newMockValidationInfo = Object.assign(
-        {},
-        mockValidationInfo,
-        invalidEndInfo
-      );
+      const newMockValidationInfo = {
+        ...mockValidationInfo,
+        ...invalidEndInfo
+      };
 
       expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        'End should be between 1 and 248956422'
+        (newMockValidationInfo.end as RegionValidationValueResult).error_message
       );
     });
   });
@@ -125,31 +138,31 @@ describe('browserHelper', () => {
     });
 
     test('returns location start error message when start is invalid', () => {
-      const newMockValidationInfo = Object.assign(
-        {},
-        mockValidationInfo,
-        invalidStartInfo
-      );
+      const newMockValidationInfo = {
+        ...mockValidationInfo,
+        ...invalidStartInfo
+      };
 
       expect(getRegionEditorErrorMessages(newMockValidationInfo)).toStrictEqual(
         {
-          locationStartError: 'Start should be between 1 and 248956422',
+          locationStartError: (newMockValidationInfo.start as RegionValidationValueResult)
+            .error_message,
           locationEndError: null
         }
       );
     });
 
     test('returns location end error message when start is invalid', () => {
-      const newMockValidationInfo = Object.assign(
-        {},
-        mockValidationInfo,
-        invalidEndInfo
-      );
+      const newMockValidationInfo = {
+        ...mockValidationInfo,
+        ...invalidEndInfo
+      };
 
       expect(getRegionEditorErrorMessages(newMockValidationInfo)).toStrictEqual(
         {
           locationStartError: null,
-          locationEndError: 'End should be between 1 and 248956422'
+          locationEndError: (newMockValidationInfo.end as RegionValidationValueResult)
+            .error_message
         }
       );
     });

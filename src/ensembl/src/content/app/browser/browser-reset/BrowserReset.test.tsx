@@ -32,7 +32,7 @@ describe('<BrowserReset />', () => {
   });
 
   describe('behaviour', () => {
-    test('changes focus object when clicked on reset button', () => {
+    test('changes focus object when clicked', () => {
       const wrapper = mount(<BrowserReset {...defaultProps} />);
       wrapper.find(ImageButton).simulate('click');
       expect(wrapper.props().changeFocusObject).toHaveBeenCalledTimes(1);

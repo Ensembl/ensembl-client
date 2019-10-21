@@ -22,7 +22,6 @@ import {
   getRegionValidationLoadingStatus,
   getChrLocation
 } from '../browserSelectors';
-import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getChrLocationFromStr,
   getRegionFieldErrorMessages
@@ -38,14 +37,13 @@ import styles from './BrowserRegionField.scss';
 import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-type BrowserRegionFieldProps = {
+export type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation;
-  isDrawerOpened: boolean;
-  regionEditorActive: boolean;
-  regionFieldActive: boolean;
-  regionValidationInfo: RegionValidationResponse | null;
-  regionValidationLoadingStatus: LoadingState;
+  isActive: boolean;
+  isDisabled: boolean;
+  isValidationInfoLoading: boolean;
+  validationInfo: RegionValidationResponse | null;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
   replace: Replace;
   resetRegionValidation: () => void;
@@ -57,10 +55,9 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId } = props;
   const [regionFieldInput, setRegionFieldInput] = useState('');
   const [errorMessages, setErrorMessages] = useState<string | null>(null);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const activateForm = () => {
-    if (!props.regionFieldActive && !props.isDrawerOpened) {
+    if (!props.isDisabled) {
       props.toggleRegionFieldActive(true);
     }
   };
@@ -68,14 +65,13 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
   const getRegionInputWithRegion = (input: string) => {
-    const [region, ,] = props.chrLocation;
+    const [chrCode] = props.chrLocation;
 
-    return input.includes(':') ? input : `${region}:${input}`;
+    return input.includes(':') ? input : `${chrCode}:${input}`;
   };
 
   const closeForm = () => {
     setRegionFieldInput('');
-    setIsFormSubmitted(false);
     setErrorMessages(null);
 
     props.toggleRegionFieldActive(false);
@@ -86,20 +82,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     event.preventDefault();
 
     if (activeGenomeId && regionFieldInput && props.chrLocation) {
-      setIsFormSubmitted(true);
       props.validateRegion(getRegionInputWithRegion(regionFieldInput));
     }
-  };
-
-  const changeLocation = (inputValue: string) => {
-    if (!isFormSubmitted) {
-      return;
-    }
-
-    props.changeBrowserLocation(
-      props.activeGenomeId as string,
-      getChrLocationFromStr(getRegionInputWithRegion(inputValue))
-    );
   };
 
   const changeFocusObject = (inputValue: string) => {
@@ -116,18 +100,23 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     props.replace(urlFor.browser(params));
   };
 
-  const updateBrowser = () => {
-    if (!isFormSubmitted) {
-      return;
-    }
+  const resetForm = () => {
+    setRegionFieldInput('');
+    setErrorMessages(null);
+    props.toggleRegionFieldActive(false);
+  };
 
-    const [region, ,] = props.chrLocation;
+  const updateBrowser = () => {
+    const [chrCode] = props.chrLocation;
     const regionInput = regionFieldInput.includes(':')
       ? regionFieldInput.split(':')[0]
-      : region;
+      : chrCode;
 
-    if (regionInput === region) {
-      changeLocation(regionFieldInput);
+    if (regionInput === chrCode) {
+      props.changeBrowserLocation(
+        props.activeGenomeId as string,
+        getChrLocationFromStr(getRegionInputWithRegion(regionFieldInput))
+      );
     } else {
       changeFocusObject(regionFieldInput);
     }
@@ -136,44 +125,40 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   useEffect(() => () => props.resetRegionValidation(), []);
 
   useEffect(() => {
-    if (props.regionFieldActive) {
-      const { regionValidationInfo, regionValidationLoadingStatus } = props;
+    if (props.isActive) {
+      const { validationInfo, isValidationInfoLoading } = props;
 
-      if (regionValidationLoadingStatus !== LoadingState.LOADING) {
-        const errorMessages = getRegionFieldErrorMessages(regionValidationInfo);
+      if (!isValidationInfoLoading) {
+        const errorMessages = getRegionFieldErrorMessages(validationInfo);
 
         if (errorMessages) {
           setErrorMessages(errorMessages);
         } else {
-          setRegionFieldInput('');
-          setErrorMessages(null);
-          setIsFormSubmitted(false);
-          props.toggleRegionFieldActive(false);
-
+          resetForm();
           updateBrowser();
         }
       }
     }
-  }, [props.regionValidationInfo]);
+  }, [props.validationInfo]);
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
-    [browserStyles.semiOpaque]: props.regionEditorActive
+    [browserStyles.semiOpaque]: props.isDisabled
   });
 
-  const inputClassNames = classNames(browserNavBarStyles.inputText, {
+  const inputClassNames = classNames(styles.inputText, {
     [browserNavBarStyles.errorText]: errorMessages
   });
 
   const buttonsClassNames = classNames(
     browserNavBarStyles.browserNavBarButtons,
     {
-      [browserNavBarStyles.browserNavBarButtonsVisible]: props.regionFieldActive
+      [browserNavBarStyles.browserNavBarButtonsVisible]: props.isActive
     }
   );
 
   return (
     <div className={regionFieldClassNames}>
-      {props.regionEditorActive ? (
+      {props.isDisabled ? (
         <div className={browserStyles.browserOverlay}></div>
       ) : null}
       <form onSubmit={handleSubmit}>
@@ -187,10 +172,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
           className={inputClassNames}
         />
         <span className={buttonsClassNames}>
-          <button type="submit" className="submitButton">
+          <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
-          <button onClick={closeForm} className="closeButton">
+          <button onClick={closeForm} role="closeButton">
             <img src={clearIcon} alt="Clear changes" />
           </button>
         </span>
@@ -202,15 +187,17 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  regionEditorActive: getRegionEditorActive(state),
-  regionFieldActive: getRegionFieldActive(state),
-  regionValidationInfo: getRegionValidationInfo(state),
-  regionValidationLoadingStatus: getRegionValidationLoadingStatus(state),
-  chrLocation: getChrLocation(state) as ChrLocation,
-  isDrawerOpened: getIsDrawerOpened(state)
-});
+const mapStateToProps = (state: RootState) => {
+  return {
+    activeGenomeId: getBrowserActiveGenomeId(state),
+    chrLocation: getChrLocation(state) as ChrLocation,
+    isActive: getRegionFieldActive(state),
+    isDisabled: getRegionEditorActive(state),
+    isValidationInfoLoading:
+      getRegionValidationLoadingStatus(state) === LoadingState.LOADING,
+    validationInfo: getRegionValidationInfo(state)
+  };
+};
 
 const mapDispatchToProps = {
   changeBrowserLocation,

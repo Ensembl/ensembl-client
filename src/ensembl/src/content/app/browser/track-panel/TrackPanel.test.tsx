@@ -1,5 +1,4 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
@@ -14,7 +13,17 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import { TrackSet } from './trackPanelConfig';
 import { createGenomeCategories } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
-import configureStore from 'src/store';
+
+jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
+  <div>Track Panel</div>
+));
+jest.mock('./track-panel-list/TrackPanelList', () => () => (
+  <div>Track Panel List</div>
+));
+jest.mock('./track-panel-modal/TrackPanelModal', () => () => (
+  <div>Track Panel Modal</div>
+));
+jest.mock('../drawer/Drawer', () => () => <div>Drawer</div>);
 
 describe('<TrackPanel />', () => {
   afterEach(() => {
@@ -34,24 +43,18 @@ describe('<TrackPanel />', () => {
     trackStates: createTrackStates()
   };
 
-  const store = configureStore();
-
-  const wrappingComponent = (props: any) => (
-    <Provider store={store}>{props.children}</Provider>
-  );
-
   const mountBrowserImageComponent = (props?: Partial<TrackPanelProps>) =>
-    mount(<TrackPanel {...defaultProps} {...props} />, { wrappingComponent });
+    mount(<TrackPanel {...defaultProps} {...props} />);
 
   describe('rendering', () => {
-    test('track panel when active genome is present', () => {
+    test('renders track panel when active genome is present', () => {
       const wrapper = mountBrowserImageComponent({
         activeGenomeId: faker.lorem.words()
       });
       expect(wrapper.html()).not.toBe(null);
     });
 
-    test('track panel bar and track panel list when browser is activated and active feature is selected', () => {
+    test('renders track panel bar and track panel list when browser is activated and active feature is selected', () => {
       const wrapper = mountBrowserImageComponent({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
@@ -61,7 +64,7 @@ describe('<TrackPanel />', () => {
       expect(wrapper.find(TrackPanelList)).toHaveLength(1);
     });
 
-    test('track panel modal view when a track panel modal is selected', () => {
+    test('renders track panel modal view when a track panel modal is selected', () => {
       const wrapper = mountBrowserImageComponent({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
@@ -71,7 +74,7 @@ describe('<TrackPanel />', () => {
       expect(wrapper.find(TrackPanelModal)).toHaveLength(1);
     });
 
-    test('drawer when it is set to open', () => {
+    test('renders drawer when it is set to open', () => {
       const wrapper = mountBrowserImageComponent({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,

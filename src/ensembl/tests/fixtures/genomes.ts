@@ -1,7 +1,12 @@
 import faker from 'faker';
+import times from 'lodash/times';
 
 import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { GenomeTrackCategory } from 'src/genome/genomeTypes';
+import {
+  GenomeTrackCategory,
+  GenomeKaryotype,
+  GenomeKaryotypeType
+} from 'src/genome/genomeTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {
@@ -29,3 +34,12 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
     types: [TrackSet.EXPRESSION]
   }
 ];
+
+export const createGenomeKaryotypes = () =>
+  times(25, () => ({
+    is_chromosome: true,
+    is_circular: false,
+    length: faker.random.number(),
+    name: faker.lorem.words(),
+    type: GenomeKaryotypeType.CHROMOSOME
+  }));

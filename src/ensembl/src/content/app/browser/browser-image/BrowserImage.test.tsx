@@ -1,10 +1,20 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 
 import { BrowserImage, BrowserImageProps } from './BrowserImage';
+import BrowserCogList from '../browser-cog/BrowserCogList';
+import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
-import configureStore from 'src/store';
+
+jest.mock('../browser-cog/BrowserCogList', () => () => (
+  <div>BrowserCogList</div>
+));
+jest.mock('src/content/app/browser/zmenu', () => ({
+  ZmenuController: () => <div>ZmenuController</div>
+}));
+jest.mock('src/shared/components/loader/Loader', () => ({
+  CircleLoader: () => <div>CircleLoader</div>
+}));
 
 describe('<BrowserImage />', () => {
   afterEach(() => {
@@ -29,14 +39,8 @@ describe('<BrowserImage />', () => {
     changeHighlightedTrackId: jest.fn()
   };
 
-  const store = configureStore();
-
-  const wrappingComponent = (props: any) => (
-    <Provider store={store}>{props.children}</Provider>
-  );
-
   const mountBrowserImageComponent = (props?: Partial<BrowserImageProps>) =>
-    mount(<BrowserImage {...defaultProps} {...props} />, { wrappingComponent });
+    mount(<BrowserImage {...defaultProps} {...props} />);
 
   describe('rendering', () => {
     test('renders loader if browser is not activated', () => {
@@ -44,13 +48,24 @@ describe('<BrowserImage />', () => {
       expect(wrapper.find(CircleLoader)).toHaveLength(1);
     });
 
-    test('has an overlay on top when region field is active', () => {
-      const wrapper = mountBrowserImageComponent({ regionFieldActive: true });
-      expect(wrapper.find('.browserOverlay').length).toBe(1);
+    test('renders browser cog list', () => {
+      const wrapper = mountBrowserImageComponent();
+      expect(wrapper.find(BrowserCogList).length).toBe(1);
     });
 
-    test('has an overlay on top when region editor is active', () => {
-      const wrapper = mountBrowserImageComponent({ regionEditorActive: true });
+    test('renders zmenu controller', () => {
+      const wrapper = mountBrowserImageComponent();
+      expect(wrapper.find(ZmenuController).length).toBe(1);
+    });
+
+    test('has an overlay on top when either region field or region editor is active', () => {
+      const wrapper = mountBrowserImageComponent({ regionFieldActive: true });
+      expect(wrapper.find('.browserOverlay').length).toBe(1);
+
+      wrapper.setProps({
+        regionFieldActive: false,
+        regionEditorActive: true
+      });
       expect(wrapper.find('.browserOverlay').length).toBe(1);
     });
   });

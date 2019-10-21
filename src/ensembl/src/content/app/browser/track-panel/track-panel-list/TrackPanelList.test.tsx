@@ -1,16 +1,16 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
 import { TrackPanelList, TrackPanelListProps } from './TrackPanelList';
 import TrackPanelListItem from './TrackPanelListItem';
 
-import configureStore from 'src/store';
 import { createEnsObject } from 'tests/fixtures/ens-object';
 import { TrackSet } from '../trackPanelConfig';
 import { createGenomeCategories } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
+
+jest.mock('./TrackPanelListItem', () => () => <div>TrackPanelListItem</div>);
 
 describe('<TrackPanelList />', () => {
   afterEach(() => {
@@ -30,16 +30,8 @@ describe('<TrackPanelList />', () => {
     updateTrackStates: jest.fn()
   };
 
-  const store = configureStore();
-
-  const wrappingComponent = (props: any) => (
-    <Provider store={store}>{props.children}</Provider>
-  );
-
   const mountTrackPanelList = (props?: Partial<TrackPanelListProps>) =>
-    mount(<TrackPanelList {...defaultProps} {...props} />, {
-      wrappingComponent
-    });
+    mount(<TrackPanelList {...defaultProps} {...props} />);
 
   describe('rendering', () => {
     test('renders track panel items', () => {

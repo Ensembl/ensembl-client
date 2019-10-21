@@ -3,15 +3,20 @@ import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import ZmenuContent, {
+import {
+  ZmenuContent,
   ZmenuContentProps,
   ZmenuContentItem,
-  ZmenuContentItemProps
+  ZmenuContentItemProps,
+  ZmenuContentLine
 } from './ZmenuContent';
 
-import configureStore from 'src/store';
-import { Markup } from './zmenu-types';
+import {
+  Markup,
+  ZmenuContentItem as ZmenuContentItemType
+} from './zmenu-types';
 import { createZmenuContent } from 'tests/fixtures/browser';
+import configureStore from 'src/store';
 
 describe('<ZmenuContent />', () => {
   afterEach(() => {
@@ -19,33 +24,34 @@ describe('<ZmenuContent />', () => {
   });
 
   const store = configureStore();
-  const defaultProps: ZmenuContentProps = {
-    content: createZmenuContent()
-  };
-
   const wrappingComponent = (props: any) => (
     <Provider store={store}>{props.children}</Provider>
   );
+  const defaultProps: ZmenuContentProps = {
+    content: createZmenuContent()
+  };
+  let wrapper: any;
 
-  const mountZmenuContent = () =>
-    mount(<ZmenuContent {...defaultProps} />, {
-      wrappingComponent
-    });
+  beforeEach(() => {
+    wrapper = mount(<ZmenuContent {...defaultProps} />, { wrappingComponent });
+  });
 
   describe('rendering', () => {
-    test('renders zmenu content feature', () => {
-      const wrapper = mountZmenuContent();
-      expect(wrapper.find('.zmenuContentFeature')).toHaveLength(1);
-    });
+    test('renders the correct zmenu content information', () => {
+      const firstLineData = wrapper
+        .find(ZmenuContentLine)
+        .first()
+        .props()
+        .blocks.map((items: ZmenuContentItemType[]) => items[0].text);
 
-    test('renders zmenu content line', () => {
-      const wrapper = mountZmenuContent();
-      expect(wrapper.find('.zmenuContentLine')).toHaveLength(1);
-    });
-
-    test('renders zmenu content block', () => {
-      const wrapper = mountZmenuContent();
-      expect(wrapper.find('.zmenuContentBlock')).toHaveLength(2);
+      firstLineData.forEach((lineText: string) => {
+        expect(
+          wrapper
+            .find('.zmenuContentLine')
+            .first()
+            .text()
+        ).toContain(lineText);
+      });
     });
   });
 
@@ -57,7 +63,6 @@ describe('<ZmenuContent />', () => {
         text: faker.lorem.words(),
         changeFocusObject: jest.fn()
       };
-
       const wrapper = mount(<ZmenuContentItem {...props} />);
 
       wrapper.simulate('click');

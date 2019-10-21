@@ -2,36 +2,41 @@ import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import { BrowserRegionEditor } from './BrowserRegionEditor';
+import {
+  BrowserRegionEditor,
+  BrowserRegionEditorProps
+} from './BrowserRegionEditor';
 import Input from 'src/shared/components/input/Input';
 import Select from 'src/shared/components/select/Select';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import { ChrLocation } from '../browserState';
-import genomeKaryotypes from 'tests/data/browser/karyotypes';
+import { createGenomeKaryotypes } from 'tests/fixtures/genomes';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
-import { LoadingState } from 'src/shared/types/loading-state';
-import { createValidationInfo } from 'tests/fixtures/browser';
-
-const defaultProps = {
-  activeGenomeId: faker.lorem.words(),
-  chrLocation: ['13', 2315086, 32400266] as ChrLocation,
-  genomeKaryotypes,
-  regionEditorActive: false,
-  regionFieldActive: false,
-  regionValidationInfo: {},
-  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
-  changeBrowserLocation: jest.fn(),
-  replace: jest.fn(),
-  resetRegionValidation: jest.fn(),
-  toggleRegionEditorActive: jest.fn(),
-  validateRegion: jest.fn()
-};
+import {
+  createValidationInfo,
+  createChrLocationValues
+} from 'tests/fixtures/browser';
 
 describe('<BrowserRegionEditor', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
+
+  const initialChrLocation = createChrLocationValues().tuppleValue;
+  const defaultProps: BrowserRegionEditorProps = {
+    activeGenomeId: faker.lorem.words(),
+    chrLocation: initialChrLocation,
+    genomeKaryotypes: createGenomeKaryotypes(),
+    isActive: false,
+    isDisabled: false,
+    isValidationInfoLoading: false,
+    validationInfo: {},
+    changeBrowserLocation: jest.fn(),
+    replace: jest.fn(),
+    resetRegionValidation: jest.fn(),
+    toggleRegionEditorActive: jest.fn(),
+    validateRegion: jest.fn()
+  };
 
   let wrapper: any;
 
@@ -49,26 +54,26 @@ describe('<BrowserRegionEditor', () => {
     });
 
     test('contains submit and close buttons', () => {
-      expect(wrapper.find('.submitButton')).toHaveLength(1);
-      expect(wrapper.find('.closeButton')).toHaveLength(1);
+      expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
+      expect(wrapper.find('button[role="closeButton"]')).toHaveLength(1);
     });
 
     test('has an overlay on top when region field is active', () => {
-      wrapper.setProps({ regionFieldActive: true });
+      wrapper.setProps({ isDisabled: true });
       expect(wrapper.find('.browserOverlay').length).toBe(1);
     });
   });
 
   describe('behaviour', () => {
-    const locationStartInput = getCommaSeparatedNumber(10);
-    const locationEndInput = getCommaSeparatedNumber(10500);
-
     test('shows form buttons when focussed', () => {
       wrapper.find(Select).simulate('focus');
       expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
     test('applies correct value on change', () => {
+      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
+      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+
       // TODO:
       // Couldn't find a good way to test this for <Select />. So write tests once it is figured out.
 
@@ -98,18 +103,33 @@ describe('<BrowserRegionEditor', () => {
     });
 
     test('validates region input on submit', () => {
+      const [region] = initialChrLocation;
+      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
+      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+
       wrapper
         .find(Input)
         .first()
-        .simulate('change', { target: { value: getCommaSeparatedNumber(0) } });
+        .simulate('change', {
+          target: { value: locationStartInput }
+        });
+
+      wrapper
+        .find(Input)
+        .last()
+        .simulate('change', { target: { value: locationEndInput } });
 
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().validateRegion).toHaveBeenCalledTimes(1);
+      expect(wrapper.props().validateRegion).toHaveBeenCalledWith(
+        `${region}:${locationStartInput}-${locationEndInput}`
+      );
     });
 
     test('resets region editor form when close button is clicked', () => {
       const [, locationStart, locationEnd] = wrapper.props().chrLocation;
+      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
+      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
 
       wrapper
         .find(Input)
@@ -123,9 +143,7 @@ describe('<BrowserRegionEditor', () => {
           target: { value: locationEndInput }
         });
 
-      jest.resetAllMocks();
-
-      wrapper.find('.closeButton').simulate('click');
+      wrapper.find('button[role="closeButton"]').simulate('click');
 
       expect(
         wrapper
@@ -145,37 +163,57 @@ describe('<BrowserRegionEditor', () => {
     });
 
     test('displays the start error message when validation fails', () => {
+      const startErrorMessage = faker.lorem.words();
+
       wrapper.setProps({
-        regionEditorActive: true,
-        regionValidationInfo: Object.assign({}, createValidationInfo(), {
-          start: {
-            error_code: null,
-            error_message: 'Start should be between 1 and 248956422',
-            is_valid: false,
-            value: 0
+        isActive: true,
+        validationInfo: {
+          ...createValidationInfo(),
+          ...{
+            start: {
+              error_code: null,
+              error_message: startErrorMessage,
+              is_valid: false,
+              value: 0
+            }
           }
-        })
+        }
       });
 
       wrapper.update();
-      expect(wrapper.find('.startInputGroup').find(Tooltip)).toHaveLength(1);
+      expect(
+        wrapper
+          .find('[role="startInputGroup"]')
+          .find(Tooltip)
+          .props().children
+      ).toBe(startErrorMessage);
     });
 
     test('displays the end error message when validation fails', () => {
+      const endErrorMessage = faker.lorem.words();
+
       wrapper.setProps({
-        regionEditorActive: true,
-        regionValidationInfo: Object.assign({}, createValidationInfo(), {
-          end: {
-            error_code: null,
-            error_message: 'End should be between 1 and 248956422',
-            is_valid: false,
-            value: 0
+        isActive: true,
+        validationInfo: {
+          ...createValidationInfo(),
+          ...{
+            end: {
+              error_code: null,
+              error_message: endErrorMessage,
+              is_valid: false,
+              value: 0
+            }
           }
-        })
+        }
       });
 
       wrapper.update();
-      expect(wrapper.find('.endInputGroup').find(Tooltip)).toHaveLength(1);
+      expect(
+        wrapper
+          .find('[role="endInputGroup"]')
+          .find(Tooltip)
+          .props().children
+      ).toBe(endErrorMessage);
     });
   });
 });

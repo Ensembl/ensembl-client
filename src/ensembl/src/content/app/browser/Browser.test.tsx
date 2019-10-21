@@ -1,16 +1,19 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
 import { Browser, BrowserProps, ExampleObjectLinks } from './Browser';
 import BrowserImage from './browser-image/BrowserImage';
 import TrackPanel from './track-panel/TrackPanel';
-import AppBar from 'src/shared/components/app-bar/AppBar';
 
-import configureStore from 'src/store';
-
+jest.mock('./browser-bar/BrowserBar', () => () => <div>BrowserBar</div>);
+jest.mock('./browser-image/BrowserImage', () => () => <div>BrowserImage</div>);
+jest.mock('./browser-nav/BrowserNavBar', () => () => <div>BrowserNavBar</div>);
+jest.mock('./track-panel/TrackPanel', () => () => <div>TrackPanel</div>);
+jest.mock('src/shared/components/app-bar/AppBar', () => () => (
+  <div>AppBar</div>
+));
 jest.mock('static/browser/browser.js', () => {});
 
 describe('<Browser />', () => {
@@ -44,12 +47,8 @@ describe('<Browser />', () => {
     setDataFromUrlAndSave: jest.fn()
   };
 
-  const store = configureStore();
-
   const wrappingComponent = (props: any) => (
-    <MemoryRouter>
-      <Provider store={store}>{props.children}</Provider>
-    </MemoryRouter>
+    <MemoryRouter>{props.children}</MemoryRouter>
   );
 
   const mountBrowserComponent = (props?: Partial<BrowserProps>) =>
@@ -58,18 +57,31 @@ describe('<Browser />', () => {
   describe('rendering', () => {
     test('does not render when no activeGenomeId', () => {
       const wrapper = mountBrowserComponent({ activeGenomeId: null });
-      expect(wrapper.find(AppBar)).toHaveLength(0);
+      expect(wrapper.html()).toBe(null);
     });
 
-    test('renders links to example objects if there is no selected focus object', () => {
+    test('renders links to example objects only if there is no selected focus feature', () => {
       const wrapper = mountBrowserComponent();
       expect(wrapper.find(ExampleObjectLinks)).toHaveLength(1);
+
+      wrapper.setProps({
+        browserQueryParams: {
+          focus: faker.lorem.words()
+        }
+      });
+      expect(wrapper.find(ExampleObjectLinks)).toHaveLength(0);
     });
 
-    test('renders the genome browser and track panel when if there is a selected focus object', () => {
-      const wrapper = mountBrowserComponent({
+    test('renders the genome browser and track panel only when there is a selected focus feature', () => {
+      const wrapper = mountBrowserComponent();
+
+      expect(wrapper.find(BrowserImage)).toHaveLength(0);
+      expect(wrapper.find(TrackPanel)).toHaveLength(0);
+
+      wrapper.setProps({
         browserQueryParams: { focus: faker.lorem.words() }
       });
+
       expect(wrapper.find(BrowserImage)).toHaveLength(1);
       expect(wrapper.find(TrackPanel)).toHaveLength(1);
     });

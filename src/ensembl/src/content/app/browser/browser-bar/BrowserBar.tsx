@@ -102,9 +102,7 @@ export const BrowserBar = (props: BrowserBarProps) => {
     props.toggleBrowserNav();
   };
 
-  const [chrCode, chrStart, chrEnd] = props.actualChrLocation || [, , ,];
-  const displayChrRegion = !(chrStart === 0 && chrEnd === 0);
-
+  const [chrCode, chrStart, chrEnd] = props.actualChrLocation || [];
   const shouldShowTrackPanelTabs =
     props.activeGenomeId &&
     (props.isTrackPanelOpened ||
@@ -139,16 +137,16 @@ export const BrowserBar = (props: BrowserBarProps) => {
         <dl className={styles.browserInfoRight}>
           {props.actualChrLocation && (
             <dd className={browserRegionClassName}>
-              <label className="show-for-large">Chromosome</label>
+              <div className={`${styles.chrLabel} show-for-large`}>
+                Chromosome
+              </div>
               <div className={styles.chrLocationView} onClick={toggleNavigator}>
                 <div className={styles.chrCode}>{chrCode}</div>
-                {displayChrRegion ? (
-                  <div className={styles.chrRegion}>
-                    <span>{getCommaSeparatedNumber(chrStart as number)}</span>
-                    <span className={styles.chrSeparator}>-</span>
-                    <span>{getCommaSeparatedNumber(chrEnd as number)}</span>
-                  </div>
-                ) : null}
+                <div className={styles.chrRegion}>
+                  <span>{getCommaSeparatedNumber(chrStart as number)}</span>
+                  <span className={styles.chrSeparator}>-</span>
+                  <span>{getCommaSeparatedNumber(chrEnd as number)}</span>
+                </div>
               </div>
             </dd>
           )}

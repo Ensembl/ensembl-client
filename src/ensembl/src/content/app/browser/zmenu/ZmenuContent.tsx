@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 
 import { changeFocusObject } from 'src/content/app/browser/browserActions';
 
-import styles from './Zmenu.scss';
-
 import {
   ZmenuContentFeature as ZmenuContentFeatureType,
   ZmenuContentLine as ZmenuContentLineType,
@@ -13,6 +11,8 @@ import {
   ZmenuContentItem as ZmenuContentItemType,
   Markup
 } from './zmenu-types';
+
+import styles from './Zmenu.scss';
 
 export type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];
@@ -50,7 +50,7 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
   return <>{renderedContent}</>;
 };
 
-const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
+export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
   return (
     <p className={styles.zmenuContentFeature}>
       {props.lines.map((line, index) => (
@@ -60,7 +60,7 @@ const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
   );
 };
 
-const ZmenuContentLine = (props: ZmenuContentLineProps) => {
+export const ZmenuContentLine = (props: ZmenuContentLineProps) => {
   return (
     <span className={styles.zmenuContentLine}>
       {props.blocks.map((items, index) => (
@@ -70,7 +70,7 @@ const ZmenuContentLine = (props: ZmenuContentLineProps) => {
   );
 };
 
-const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
+export const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
     <span className={styles.zmenuContentBlock}>
       {props.items.map((item, index) => (
