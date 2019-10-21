@@ -1,0 +1,17 @@
+.textarea {
+  display: inline-block;
+  width: 100%;
+  border: none;
+  padding: 7px;
+  font-size: 16px;
+  border-radius: 2px;
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+}
+
+.disableResize {
+  resize: none;
+}
