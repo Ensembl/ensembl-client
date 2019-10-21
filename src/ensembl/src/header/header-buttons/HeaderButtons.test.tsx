@@ -2,9 +2,9 @@ import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 
 import { HeaderButtons } from './HeaderButtons';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 
 describe('<HeaderButtons />', () => {
   let toggleLaunchbarFn: () => void;
@@ -37,8 +37,6 @@ describe('<HeaderButtons />', () => {
       .filterWhere(
         (wrapper) => wrapper.prop('description') === 'Ensembl account'
       );
-    expect(launchbarButton.prop('buttonStatus')).toBe(
-      ImageButtonStatus.DISABLED
-    );
+    expect(launchbarButton.prop('buttonStatus')).toBe(Status.DISABLED);
   });
 });
