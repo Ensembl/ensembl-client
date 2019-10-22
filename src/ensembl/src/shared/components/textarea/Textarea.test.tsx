@@ -1,13 +1,13 @@
 import React from 'react';
 import { mount, render } from 'enzyme';
-
+import faker from 'faker';
 import Textarea from './Textarea';
 
 describe('<Textarea />', () => {
   const commonTextareaProps = {
-    id: 'testId',
-    name: 'testTextareaName',
-    className: 'testTextareaClass',
+    id: faker.random.word(),
+    name: faker.random.word(),
+    className: faker.random.word(),
     onChange: jest.fn(),
     onFocus: jest.fn(),
     onBlur: jest.fn()
@@ -22,11 +22,12 @@ describe('<Textarea />', () => {
     jest.resetAllMocks();
   });
 
+  const textareaValue = faker.random.words();
+
   describe('rendering', () => {
-    const TextareaValue = 'foo';
     const props = {
       ...commonTextareaProps,
-      value: TextareaValue
+      value: textareaValue
     };
 
     test('passes relevant props to the Textarea element', () => {
@@ -50,11 +51,10 @@ describe('<Textarea />', () => {
 
   describe('responding with data', () => {
     test('passes string value to onChange', () => {
-      const TextareaValue = 'foo';
-      const changedValue = TextareaValue + '1';
+      const changedValue = faker.random.words();
       const wrappedTextarea = getWrappedTextarea({
         ...commonTextareaProps,
-        value: TextareaValue
+        value: textareaValue
       });
 
       wrappedTextarea.simulate('change', { target: { value: changedValue } });
@@ -64,39 +64,36 @@ describe('<Textarea />', () => {
     });
 
     test('passes string value to onFocus', () => {
-      const TextareaValue = 'foo';
       const wrappedTextarea = getWrappedTextarea({
         ...commonTextareaProps,
-        value: TextareaValue
+        value: textareaValue
       });
 
       wrappedTextarea.simulate('focus');
       expect(commonTextareaProps.onFocus).toHaveBeenLastCalledWith(
-        TextareaValue
+        textareaValue
       );
     });
 
     test('passes string value to onBlur', () => {
-      const TextareaValue = 'foo';
       const wrappedTextarea = getWrappedTextarea({
         ...commonTextareaProps,
-        value: TextareaValue
+        value: textareaValue
       });
 
       wrappedTextarea.simulate('blur');
       expect(commonTextareaProps.onBlur).toHaveBeenLastCalledWith(
-        TextareaValue
+        textareaValue
       );
     });
   });
 
   describe('responding with events', () => {
     test('passes event to onChange', () => {
-      const TextareaValue = 'foo';
-      const changedValue = TextareaValue + '1';
+      const changedValue = faker.random.words();
       const wrappedTextarea = getWrappedTextarea({
         ...commonTextareaProps,
-        value: TextareaValue,
+        value: textareaValue,
         callbackWithEvent: true
       });
 
@@ -107,30 +104,28 @@ describe('<Textarea />', () => {
     });
 
     test('passes event to onFocus', () => {
-      const TextareaValue = 'foo';
       const wrappedTextarea = getWrappedTextarea({
         ...commonTextareaProps,
-        value: TextareaValue,
+        value: textareaValue,
         callbackWithEvent: true
       });
 
       wrappedTextarea.simulate('focus');
       expect(commonTextareaProps.onFocus.mock.calls[0][0].target.value).toBe(
-        TextareaValue
+        textareaValue
       );
     });
 
     test('passes event to onBlur', () => {
-      const TextareaValue = 'foo';
       const wrappedTextarea = getWrappedTextarea({
         ...commonTextareaProps,
-        value: TextareaValue,
+        value: textareaValue,
         callbackWithEvent: true
       });
 
       wrappedTextarea.simulate('blur');
       expect(commonTextareaProps.onBlur.mock.calls[0][0].target.value).toBe(
-        TextareaValue
+        textareaValue
       );
     });
   });
