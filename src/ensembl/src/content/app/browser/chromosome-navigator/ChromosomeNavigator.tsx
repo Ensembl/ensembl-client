@@ -13,9 +13,9 @@ const ChromosomeNavigator = () => {
             className={styles.centromereRegion}
             y="1"
             height="4"
-            width="8"
+            width="10"
           />
-          <circle className={styles.centromereCentre} cx="4" cy="3" r="2" />
+          <circle className={styles.centromereCentre} cx="5" cy="3" r="2" />
         </g>
         <g>
           <polyline
@@ -28,7 +28,7 @@ const ChromosomeNavigator = () => {
           />
         </g>
         <g className={styles.focusPointer}>
-          <line x1="5" y1="8" x2="5" y2="1" />
+          <line x1="5" y1="9" x2="5" y2="1" />
           <polygon points="0,16 5,8 10,16" />
         </g>
       </svg>
