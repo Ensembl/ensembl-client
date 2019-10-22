@@ -1,8 +1,44 @@
+// TODO: think about the name; perhaps something like MiniMap is a better option?
+
 import React from 'react';
+import useResizeObserver from 'use-resize-observer';
 
 import styles from './ChromosomeNavigator.scss';
 
-const ChromosomeNavigator = () => {
+type WrapperProps = {
+  length: number; // total number of nucleotides
+  viewportStart: number; // nucleotide position corresponding to the left border of genome browser
+  viewportEnd: number; // nucleotide position corresponding to the right border of genome browser
+  focusRegion: {
+    start: number; // start position of focus region
+    end: number; // end position of focus region
+  } | null;
+  centromere: {
+    start: number; // start position of the centromere
+    end: number; // end position of the centromere
+  } | null;
+};
+
+type ChromosomeNavigatorProps = WrapperProps & {
+  containerWidth: number; // width of the container, in pixels
+};
+
+const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
+  const [containerRef, containerWidth] = useResizeObserver();
+
+  return (
+    <div
+      ref={containerRef as React.RefObject<HTMLDivElement>}
+      className={styles.chromosomeNavigator}
+    >
+      {containerWidth ? (
+        <ChromosomeNavigator {...{ ...props, containerWidth }} />
+      ) : null}
+    </div>
+  );
+};
+
+const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
   return (
     <div className={styles.chromosomeNavigator}>
       <svg height="20">
@@ -36,4 +72,4 @@ const ChromosomeNavigator = () => {
   );
 };
 
-export default ChromosomeNavigator;
+export default ChromosomeNavigatorWrapper;
