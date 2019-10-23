@@ -1,0 +1,6 @@
+export const STICK_HEIGHT = 4;
+export const STICK_MARGIN_TOP = 1;
+
+export const CENTROMERE_RADIUS = 2;
+export const CENTROMERE_CENTER_Y = STICK_MARGIN_TOP + CENTROMERE_RADIUS;
+export const CENTROMERE_REGION_WIDTH = 10;
