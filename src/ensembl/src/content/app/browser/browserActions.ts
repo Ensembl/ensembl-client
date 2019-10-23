@@ -37,7 +37,7 @@ export type UpdateTrackStatesPayload = {
   genomeId: string;
   categoryName: string;
   trackId: string;
-  status: TrackActivityStatus; // TODO: update types so that actions do not depend on ImageButton types
+  status: TrackActivityStatus;
 };
 
 export type ParsedUrlPayload = {
