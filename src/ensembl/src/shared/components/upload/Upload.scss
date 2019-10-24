@@ -2,17 +2,25 @@
 
 .defaultUpload {
   border: 1px dashed $blue;
-  padding: 10px;
-  position: relative;
   color: $blue;
-  cursor: pointer;
+  display: inline-block;
+  position: relative;
+
+  label {
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
 }
 
 .fileInput {
-  width: 0.1px;
-  height: 0.1px;
   opacity: 0;
   overflow: hidden;
   position: absolute;
   z-index: -1;
+
+  &:focus + label {
+    border: 1px solid $dark-grey;
+  }
 }

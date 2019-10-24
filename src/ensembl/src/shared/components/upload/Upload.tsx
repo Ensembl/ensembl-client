@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import get from 'lodash/get';
 import forEach from 'lodash/forEach';
 import classNames from 'classnames';
@@ -21,6 +21,7 @@ type PropsForRespondingWithMultipleFiles = {
 type PropsForRespondingWithContent = {
   onChange: (content: string) => void;
   callbackWithFiles: false;
+  allowMultiple: true;
 };
 
 type OnChangeProps =
@@ -33,23 +34,16 @@ export type UploadProps = {
   name?: string;
   label: string;
   className?: string;
-  allowMultiple: boolean;
 } & OnChangeProps;
 
 const Upload = (props: UploadProps) => {
-  const ref = useRef<HTMLElement>(null);
   const [drag, setDrag] = useState(false);
 
   const fileReaders: FileReader[] = [];
   let totalPendingFilesToRead = 0;
   let dragCounter = 0;
 
-  const handleDrag = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDragIn = (e: DragEvent) => {
+  const handleDragIn = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     dragCounter++;
@@ -58,7 +52,7 @@ const Upload = (props: UploadProps) => {
     }
   };
 
-  const handleDragOut = (e: DragEvent) => {
+  const handleDragOut = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     dragCounter--;
@@ -67,7 +61,7 @@ const Upload = (props: UploadProps) => {
     }
   };
 
-  const handleDrop = (e: DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDrag(false);
@@ -100,28 +94,6 @@ const Upload = (props: UploadProps) => {
       dragCounter = 0;
     }
   };
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) {
-      return;
-    }
-    element.addEventListener('dragenter', handleDragIn);
-    element.addEventListener('dragleave', handleDragOut);
-    element.addEventListener('dragover', handleDrag);
-    element.addEventListener('drop', handleDrop);
-
-    return () => {
-      const element = ref.current;
-      if (!element) {
-        return;
-      }
-      element.removeEventListener('dragenter', handleDragIn);
-      element.removeEventListener('dragleave', handleDragOut);
-      element.removeEventListener('dragover', handleDrag);
-      element.removeEventListener('drop', handleDrop);
-    };
-  }, []);
 
   const handleFileRead = () => {
     totalPendingFilesToRead--;
@@ -165,7 +137,12 @@ const Upload = (props: UploadProps) => {
   const className = classNames(styles.defaultUpload, props.className);
 
   return (
-    <span className={className} ref={ref}>
+    <span
+      className={className}
+      onDragEnter={handleDragIn}
+      onDragLeave={handleDragOut}
+      onDrop={handleDrop}
+    >
       {drag && <Overlay />}
       <input
         type="file"
