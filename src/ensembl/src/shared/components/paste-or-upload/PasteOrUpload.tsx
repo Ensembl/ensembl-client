@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
-import styles from './PasteOrUpload.scss';
 import noop from 'lodash/noop';
 import get from 'lodash/get';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
+import Textarea from 'src/shared/components/textarea/Textarea';
+
+import styles from './PasteOrUpload.scss';
 
 type PasteOrUploadProps = {
   value: string | null;
@@ -19,12 +22,6 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
   const onChangeHandler = (value: string) => {
     props.onChange(value);
     showInput(true);
-  };
-
-  const onTextareaChangeHandler = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    props.onChange(event.target.value);
   };
 
   const onRemoveHandler = () => {
@@ -73,12 +70,12 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
       {shouldShowInput && (
         <div className={styles.fields}>
           <div className={styles.inputWrapper}>
-            <textarea
-              value={props.value || ''}
-              onChange={onTextareaChangeHandler}
-              className={styles.textInput}
+            <Textarea
+              onChange={props.onChange}
               placeholder={props.placeholder}
-            ></textarea>
+              value={props.value || ''}
+              resizable={false}
+            />
           </div>
         </div>
       )}

@@ -285,7 +285,7 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         <CheckboxWithTextfields
           label={entry.label}
           disabled={entry.disabled}
-          allowMultiple={true}
+          allowMultiple={false}
           onChange={(values: string[]) => onChangeHandler(currentPath, values)}
           values={values || []}
         />
