@@ -8,13 +8,14 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import imageButtonStyles from './ImageButton.scss';
 
-export enum ImageButtonStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  DISABLED = 'disabled',
-  DEFAULT = 'default',
-  HIGHLIGHTED = 'highlighted'
-}
+import { Status } from 'src/shared/types/status';
+
+export type ImageButtonStatus =
+  | Status.ACTIVE
+  | Status.INACTIVE
+  | Status.DISABLED
+  | Status.DEFAULT
+  | Status.HIGHLIGHTED;
 
 type Props = {
   buttonStatus: ImageButtonStatus;
@@ -32,9 +33,7 @@ const ImageButton = (props: Props) => {
   };
 
   const buttonProps =
-    props.buttonStatus === ImageButtonStatus.DISABLED
-      ? {}
-      : { onClick: handleClick };
+    props.buttonStatus === Status.DISABLED ? {} : { onClick: handleClick };
 
   const { classNames, ...rest } = props;
 
@@ -59,7 +58,7 @@ const ImageButton = (props: Props) => {
 };
 
 ImageButton.defaultProps = {
-  buttonStatus: ImageButtonStatus.DEFAULT,
+  buttonStatus: Status.DEFAULT,
   description: '',
   image: ''
 };
