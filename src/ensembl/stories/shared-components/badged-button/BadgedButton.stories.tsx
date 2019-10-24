@@ -7,9 +7,9 @@ import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
 import styles from './BadgedButton.stories.scss';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 
 const onClick = action('button-click');
 
@@ -32,7 +32,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
     <div className={styles.imageButtonWrapper}>
       <BadgedButton badgeContent={':)'}>
         <ImageButton
-          buttonStatus={ImageButtonStatus.HIGHLIGHTED}
+          buttonStatus={Status.HIGHLIGHTED}
           description={'enable/disable'}
           image={DownloadIcon}
           onClick={onClick}
@@ -44,7 +44,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
     <div className={styles.imageButtonWrapper}>
       <BadgedButton badgeContent={':)'} className={styles.badge}>
         <ImageButton
-          buttonStatus={ImageButtonStatus.HIGHLIGHTED}
+          buttonStatus={Status.HIGHLIGHTED}
           description={'enable/disable'}
           image={DownloadIcon}
           onClick={onClick}

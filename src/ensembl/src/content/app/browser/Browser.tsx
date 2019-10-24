@@ -12,7 +12,7 @@ import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 
 import { RootState } from 'src/store';
 import { ChrLocation, ChrLocations } from './browserState';
@@ -52,7 +52,6 @@ import {
 
 import browserStorageService from './browser-storage-service';
 import { TrackStates } from './track-panel/trackPanelConfig';
-import { AppName } from 'src/global/globalConfig';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -253,12 +252,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return props.activeGenomeId ? (
     <>
-      <AppBar
-        currentAppName={AppName.GENOME_BROWSER}
-        activeGenomeId={props.activeGenomeId}
-        onTabSelect={changeSelectedSpecies}
-      />
-
+      <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
           {browserBar}

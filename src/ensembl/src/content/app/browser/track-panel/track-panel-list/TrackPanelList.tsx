@@ -2,9 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
-import TrackPanelListItem from './TrackPanelListItem';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
-
 import {
   UpdateTrackStatesPayload,
   updateTrackStatesAndSave
@@ -23,6 +20,11 @@ import {
 } from '../../browserSelectors';
 import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
+
+import TrackPanelListItem from './TrackPanelListItem';
+
+import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelList.scss';
 
@@ -61,8 +63,8 @@ const TrackPanelList = (props: TrackPanelListProps) => {
   };
 
   // TODO: get default track status properly if it can ever be inactive
-  const getDefaultTrackStatus = () => {
-    return ImageButtonStatus.ACTIVE;
+  const getDefaultTrackStatus = (): TrackActivityStatus => {
+    return Status.ACTIVE;
   };
 
   const getTrackListItem = (
@@ -80,13 +82,13 @@ const TrackPanelList = (props: TrackPanelListProps) => {
       props.trackStates,
       `${activeGenomeId}.${categoryName}.${track_id}`,
       defaultTrackStatus
-    );
+    ) as TrackActivityStatus;
 
     return (
       <TrackPanelListItem
         categoryName={categoryName}
-        defaultTrackStatus={defaultTrackStatus as ImageButtonStatus}
-        trackStatus={trackStatus as ImageButtonStatus}
+        defaultTrackStatus={defaultTrackStatus}
+        trackStatus={trackStatus}
         key={track.track_id}
         track={track}
       >

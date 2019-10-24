@@ -10,7 +10,7 @@ use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::register_dom_events;
 use drivers::domel::{ register_user_events };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, Jumper };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, animate_jump_to };
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{
@@ -35,7 +35,6 @@ pub struct AppRunnerImpl {
     tc: Tácode,
     debug_reporter: BlackBoxDriver,
     browser_el: HtmlElement,
-    jumper: Rc<RefCell<Jumper>>,
     key: String
 }
 
@@ -79,8 +78,7 @@ impl AppRunner {
             tc: tc.clone(),
             debug_reporter,
             browser_el: browser_el.clone(),
-            key: key.to_string(),
-            jumper: Rc::new(RefCell::new(Jumper::new()))
+            key: key.to_string()
         })));
         out.init();
         let report = Report::new(&mut out);
@@ -178,6 +176,12 @@ impl AppRunner {
                 }
                 vec![]
             },2);
+            /* animations */
+            self.add_timer("animations",move |app,t,_| {
+                let actions = app.get_window().get_animator().tick(t);
+                app.run_actions(&actions,None);
+                vec![]
+            },0);
             /* jumping */
             self.add_timer("get-jump",move |app,_,_| {
                 let tm = app.get_window().get_train_manager();
@@ -186,11 +190,6 @@ impl AppRunner {
                 } else {
                     vec![]
                 }
-            },0);
-            let jumper = self.0.lock().unwrap().jumper.clone();
-            self.add_timer("do-jump",move |app,t,_| {
-                jumper.borrow_mut().tick(app,t);
-                vec![]
             },0);
             /* resize check */
             self.add_timer("resizer",move |app,_,_| {
@@ -244,8 +243,7 @@ impl AppRunner {
 
     pub fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
         let mut imp = self.0.lock().unwrap();
-        let jumper = imp.jumper.clone();
-        jumper.borrow_mut().jump(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
+        animate_jump_to(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
     }
 }
 

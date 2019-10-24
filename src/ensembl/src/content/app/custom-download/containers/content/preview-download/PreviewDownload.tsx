@@ -1,59 +1,50 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { RootState } from 'src/store';
-import { Link } from 'react-router-dom';
-import { getSelectedAttributes } from '../../../state/attributes/attributesSelector';
-import { getSelectedFilters } from '../../../state/filters/filtersSelector';
-
-import { ReactComponent as closeIcon } from 'static/img/track-panel/close.svg';
-import styles from './PreviewDownload.scss';
 import get from 'lodash/get';
+import { connect } from 'react-redux';
 
-import {
-  getProcessedAttributes,
-  flattenObject,
-  attributeDisplayNames,
-  getProcessedFilters
-} from '../result-holder/resultHolderHelper';
-
-import {
-  setShowPreview,
-  toggleTab
-} from '../../../state/customDownloadActions';
+import { RootState } from 'src/store';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-
+import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
+import CustomDownloadInfoCard from 'src/content/app/custom-download/components/info-card/CustomDownloadInfoCard';
+import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { setShowPreview } from 'src/content/app/custom-download/state/customDownloadActions';
+import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
+import { getProcessedFilters } from 'src/content/app/custom-download/containers/header/customDownloadHeaderHelper';
+import {
+  getCustomDownloadActiveGenomeId,
+  getPreviewResult
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
+import { getSelectedAttributes } from 'src/content/app/custom-download/state/attributes/attributesSelector';
+import { getSelectedFilters } from 'src/content/app/custom-download/state/filters/filtersSelector';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import JSONValue from 'src/shared/types/JSON';
 
-type StateProps = {
+import styles from './PreviewDownload.scss';
+
+type PreviewDownloadProps = {
   selectedAttributes: JSONValue;
   selectedFilters: JSONValue;
+  preview: JSONValue;
+  committedSpecies: CommittedItem | null;
+  setShowPreview: (showPreview: boolean) => void;
 };
 
-type DispatchProps = {
-  setShowPreview: (setShowPreview: boolean) => void;
-  toggleTab: (toggleTab: string) => void;
-};
-
-type Props = StateProps & DispatchProps;
-
-const PreviewDownload = (props: Props) => {
-  const changeView = (tab: string) => {
-    props.setShowPreview(false);
-    props.toggleTab(tab);
-  };
-
-  const attributesList: string[] = getProcessedAttributes(
-    flattenObject(props.selectedAttributes)
-  );
+const PreviewDownload = (props: PreviewDownloadProps) => {
+  const resultCount: number = props.preview.resultCount
+    ? (props.preview.resultCount as number)
+    : 0;
 
   const processedFilters = getProcessedFilters(props.selectedFilters);
   const gene_ids = get(
     processedFilters,
-    'protein_and_domain_families.family_or_domain_ids.limit_to_genes'
+    'protein_and_domain_families.family_or_domain_ids.limit_to_genes',
+    null
   );
-  const gene_biotypes = get(processedFilters, 'genes.gene_type.biotype');
-  const gene_source = get(processedFilters, 'genes.gene_source');
+  const gene_biotypes = get(processedFilters, 'genes.biotype', null);
+  const gene_source = get(processedFilters, 'genes.gene_source', null);
 
   return (
     <div className={styles.previewDownload}>
@@ -62,58 +53,50 @@ const PreviewDownload = (props: Props) => {
           description={'Close preview'}
           image={closeIcon}
           onClick={() => {
-            changeView('attributes');
+            props.setShowPreview(false);
           }}
         />
       </span>
       <table className={styles.previewDownloadTable}>
         <tbody>
           <tr className={styles.previewDownloadHeader}>
-            <td>Species</td>
-            <td>Attributes</td>
-            <td>Filters</td>
+            <td className={styles.species}>Species</td>
+            <td className={styles.example}>
+              <CustomDownloadInfoCard
+                title={'Example data to download'}
+                classNames={{ infoCardClassName: styles.exampleDataPanel }}
+              >
+                <PreviewCard />
+              </CustomDownloadInfoCard>
+            </td>
+            <td className={styles.filters}>
+              Filters
+              <div className={styles.resultCounter}>
+                <span>{getCommaSeparatedNumber(resultCount)}</span> results
+              </div>
+            </td>
           </tr>
           <tr>
             <td>
-              <div>Human</div>
               <div>
-                <Link to={'/app/species-selector'}>Change</Link>
+                {props.committedSpecies &&
+                  `${getDisplayName(props.committedSpecies)} ${
+                    props.committedSpecies.assembly_name
+                  }`}
               </div>
             </td>
+            <td></td>
             <td>
-              {attributesList.map((attribute, index) => {
-                return (
-                  <div key={index}>
-                    {attributeDisplayNames[attribute] || attribute}
-                  </div>
-                );
-              })}
-
-              <div
-                className={styles.changeLink}
-                onClick={() => {
-                  changeView('attributes');
-                }}
-              >
-                Change
-              </div>
-            </td>
-            <td>
+              {!(gene_ids || gene_biotypes || gene_source) && (
+                <div> No filters selected.</div>
+              )}
               {!!gene_ids && <div>Limit to genes: {gene_ids.join(', ')}</div>}
               {!!gene_biotypes && (
-                <div>Gene biotype: {gene_biotypes.join(', ')}</div>
+                <div>Gene biotype: {Object.keys(gene_biotypes).join(', ')}</div>
               )}
               {!!gene_source && (
-                <div>Gene source: {gene_source.join(', ')}</div>
+                <div>Gene source: {Object.keys(gene_source).join(', ')}</div>
               )}
-              <div
-                className={styles.changeLink}
-                onClick={() => {
-                  changeView('filter');
-                }}
-              >
-                Change
-              </div>
             </td>
           </tr>
         </tbody>
@@ -122,15 +105,23 @@ const PreviewDownload = (props: Props) => {
   );
 };
 
-const mapDispatchToProps: DispatchProps = {
-  setShowPreview,
-  toggleTab
+const mapDispatchToProps = {
+  setShowPreview
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  selectedAttributes: getSelectedAttributes(state),
-  selectedFilters: getSelectedFilters(state)
-});
+const mapStateToProps = (state: RootState) => {
+  const activeGenomeId = getCustomDownloadActiveGenomeId(state);
+  const committedSpecies = activeGenomeId
+    ? getCommittedSpeciesById(state, activeGenomeId)
+    : null;
+
+  return {
+    selectedAttributes: getSelectedAttributes(state),
+    selectedFilters: getSelectedFilters(state),
+    preview: getPreviewResult(state),
+    committedSpecies: committedSpecies
+  };
+};
 
 export default connect(
   mapStateToProps,

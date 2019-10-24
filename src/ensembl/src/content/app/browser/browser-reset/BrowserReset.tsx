@@ -7,6 +7,7 @@ import ImageButton, {
 
 import styles from './BrowserReset.scss';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { Status } from 'src/shared/types/status';
 
 type BrowserResetProps = {
   focusObject: EnsObject | null;
@@ -23,9 +24,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   }
 
   const getResetIconStatus = (): ImageButtonStatus => {
-    return props.isActive
-      ? ImageButtonStatus.ACTIVE
-      : ImageButtonStatus.DISABLED;
+    return props.isActive ? Status.ACTIVE : Status.DISABLED;
   };
 
   const handleClick = () => {

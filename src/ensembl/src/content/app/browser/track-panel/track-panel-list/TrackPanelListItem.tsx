@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactNode, useState, useEffect } from 'react';
+import React, { MouseEvent, ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -14,7 +14,8 @@ import ImageButton, {
 import {
   TrackItemColour,
   TrackItemColourKey,
-  TrackId
+  TrackId,
+  TrackActivityStatus
 } from '../trackPanelConfig';
 
 import {
@@ -37,13 +38,15 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
+import { Status } from 'src/shared/types/status';
+
 import styles from './TrackPanelListItem.scss';
 
 type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
-  trackStatus: ImageButtonStatus;
-  defaultTrackStatus: ImageButtonStatus;
+  trackStatus: TrackActivityStatus;
+  defaultTrackStatus: TrackActivityStatus;
   track: EnsObjectTrack;
 };
 
@@ -133,9 +136,7 @@ const TrackPanelListItem = (props: Props) => {
 
   const toggleTrack = () => {
     const newStatus =
-      trackStatus === ImageButtonStatus.ACTIVE
-        ? ImageButtonStatus.INACTIVE
-        : ImageButtonStatus.ACTIVE;
+      trackStatus === Status.ACTIVE ? Status.INACTIVE : Status.ACTIVE;
 
     updateGenomeBrowser(newStatus);
 
@@ -148,8 +149,7 @@ const TrackPanelListItem = (props: Props) => {
   };
 
   const updateGenomeBrowser = (status: ImageButtonStatus) => {
-    const currentTrackStatus =
-      status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
+    const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
 
     const payload = {
       [currentTrackStatus]: `${track.track_id}`
@@ -194,7 +194,7 @@ const TrackPanelListItem = (props: Props) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={Status.ACTIVE}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}

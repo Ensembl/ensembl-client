@@ -27,7 +27,7 @@ impl Desired {
         }
     }
 
-    fn clear(&mut self) {
+    pub fn clear(&mut self) {
         self.stick = None;
         self.bp_per_screen = None;
         self.middle = None;

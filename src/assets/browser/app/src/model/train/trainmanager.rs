@@ -22,10 +22,9 @@ use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::{ Desired, Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
-use super::{ Train, TrainId, TrainContext, TravellerCreator };
+use super::{ Train, TrainId, TrainContext, TrainManagerTransition, TravellerCreator };
 use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
-const MS_FADE : f64 = 200.;
 const AT_POSITION_NEAR_ENOUGH : f64 = 1.;
 const AT_ZOOM_NEAR_ENOUGH : f64 = 2.;
 
@@ -37,8 +36,7 @@ pub struct TrainManagerImpl {
     future_train: Option<Train>,
     transition_train: Option<Train>,
     /* progress of transition */
-    transition_start: Option<f64>,
-    transition_prop: Option<f64>, 
+    transition: TrainManagerTransition,
     /* current position/scale */
     desired: Desired,
     desired_context: TrainContext,
@@ -55,8 +53,7 @@ impl TrainManagerImpl {
             current_train: None,
             future_train: None,
             transition_train: None,
-            transition_start: None,
-            transition_prop: None,
+            transition: TrainManagerTransition::new(),
             desired: Desired::new(),
             desired_context: TrainContext::new(&None),
             focus_stick: AsyncValue::new(Some(None)),
@@ -69,7 +66,6 @@ impl TrainManagerImpl {
         // XXX: TOO SOON!
         if self.desired.is_ready() {
             let stick = self.desired.get_stick();
-            report.set_status("a-stick",&stick.get_name());
             report.set_status("i-stick",&stick.get_name());
         }
         let mut at_focus = false;
@@ -130,15 +126,12 @@ impl TrainManagerImpl {
     
     /* if there's a transition and it's reached endstop it is current */
     fn transition_maybe_done(&mut self, t: f64) {
-        if let Some(start) = self.transition_start {
-            if t-start < MS_FADE {
-                self.transition_prop = Some((t-start)/MS_FADE);
-            } else {
-                bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
-                self.current_train = self.transition_train.take();
-                self.transition_start = None;
-                self.transition_prop = None;
-            }
+        self.transition.update(t);
+        if self.transition.get_prop() >= 1. {
+            console!("transition done");
+            bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
+            self.current_train = self.transition_train.take();
+            self.transition.reset();
         }
     }
         
@@ -157,8 +150,14 @@ impl TrainManagerImpl {
         if ready && self.transition_train.is_none() {
             bb_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
             self.transition_train = self.future_train.take();
-            self.transition_start = Some(t);
-            self.transition_prop = Some(0.);
+            let mut slow = false;
+            if let (Some(transition_train),Some(current_train)) = (self.transition_train.as_ref(),self.current_train.as_ref()) {
+                if transition_train.get_train_id().get_stick() != current_train.get_train_id().get_stick() {
+                    slow = true;
+                }
+            }
+            console!("starting trnasition");
+            self.transition.start(t,slow);
         }
     }
     
@@ -284,7 +283,7 @@ impl TrainManagerImpl {
 
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self) {
-        if !self.desired.is_ready() { return; }
+        if !self.desired.is_ready() || self.focus_stick.get().is_none() { return; }
         let mut end_future = false;
         let mut new_future = false;
         let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
@@ -388,7 +387,7 @@ impl TrainManagerImpl {
     
     /* used by printer to set opacity */
     pub fn get_prop_trans(&self) -> f32 {
-        self.transition_prop.unwrap_or(0.) as f32
+        self.transition.get_prop() as f32
     }
     
     /* used by printer for actual printing */
@@ -417,6 +416,8 @@ impl TrainManagerImpl {
 
     pub fn update_reports(&self, report: &Report) {
         if let Some(train) = self.printing_train() {
+            let stick = train.get_train_id().get_stick();
+            report.set_status("a-stick",&stick.get_name());
             train.get_position().update_reports(report);
         }
     }

@@ -704,6 +704,7 @@ dependencies = [
  "tánaiste 0.1.1",
  "url 1.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "webgl_generator 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "zhoosh 0.1.1",
 ]
 
 [[package]]
@@ -2637,6 +2638,13 @@ version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.58 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "zhoosh"
+version = "0.1.1"
+dependencies = [
+ "owning_ref 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]

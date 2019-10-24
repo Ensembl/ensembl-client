@@ -8,6 +8,8 @@ import ImageHolder from './ImageHolder';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
+import { Status } from 'src/shared/types/status';
+
 jest.mock(
   'src/shared/components/tooltip/Tooltip',
   () => ({ children }: { children: any }) => (
@@ -26,7 +28,7 @@ describe('<ImageButton />', () => {
     it('has a buttonStatus set by default', () => {
       const wrapper = mount(<ImageButton />);
 
-      expect(wrapper.prop('buttonStatus')).toEqual(ImageButtonStatus.DEFAULT);
+      expect(wrapper.prop('buttonStatus')).toEqual(Status.DEFAULT);
     });
   });
 
@@ -71,17 +73,13 @@ describe('<ImageButton />', () => {
 
   describe('prop classNames', () => {
     it('always has the default className applied', () => {
-      const wrapper = mount(
-        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
-      );
+      const wrapper = mount(<ImageButton buttonStatus={Status.ACTIVE} />);
 
       expect(wrapper.find(ImageHolder).find('div.default')).toHaveLength(1);
     });
 
     it('applies the respective className depending on the button status', () => {
-      const wrapper = mount(
-        <ImageButton buttonStatus={ImageButtonStatus.ACTIVE} />
-      );
+      const wrapper = mount(<ImageButton buttonStatus={Status.ACTIVE} />);
 
       expect(wrapper.find(ImageHolder).find('div.active')).toHaveLength(1);
     });
@@ -102,10 +100,7 @@ describe('<ImageButton />', () => {
 
     it('does not call the onClick prop when clicked if the status is disabled', () => {
       const wrapper = mount(
-        <ImageButton
-          onClick={onClick}
-          buttonStatus={ImageButtonStatus.DISABLED}
-        />
+        <ImageButton onClick={onClick} buttonStatus={Status.DISABLED} />
       );
 
       wrapper.simulate('click');
