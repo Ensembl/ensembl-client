@@ -29,7 +29,6 @@ const Wrapper = (props: any) => {
 storiesOf('Components|Shared Components/Upload', module)
   .add('default', () => <Wrapper upload={Upload} />)
   .add('with custom label', () => <Wrapper upload={Upload} label={'Upload'} />)
-  .add('callback with content', () => <Wrapper upload={Upload} />)
   .add('callback with single file', () => (
     <Wrapper upload={Upload} callbackWithFiles={true} allowMultiple={false} />
   ))
