@@ -5,6 +5,8 @@ import times from 'lodash/times';
 import noop from 'lodash/noop';
 import Upload from './Upload';
 
+// import windowService from 'src/services/window-service';
+
 const onChange = jest.fn();
 
 const defaultProps = {
@@ -30,24 +32,23 @@ const addEventListener = jest.fn((_, evtHandler) => {
 const dummyFileReader = { addEventListener, readAsText, result: fileContents };
 
 describe('Upload', () => {
-  let wrapper: any;
+  let wrapper: any = renderUpload();
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.resetAllMocks();
     window.FileReader = jest.fn(() => dummyFileReader) as any;
-    wrapper = renderUpload();
   });
 
   describe('using the input', () => {
     it('always renders an input of type file', () => {
-      expect(wrapper.find('input')).toHaveLength(1);
+      expect(wrapper.find('input[type="file"]')).toHaveLength(1);
     });
 
     it('allows multiple files to be selected by default', () => {
       expect(wrapper.find('input').prop('multiple')).toBeTruthy();
     });
 
-    it('disabled multiple file selection if allowMultiple is set to false', () => {
+    it('disables multiple file selection if allowMultiple is set to false', () => {
       wrapper = renderUpload({ allowMultiple: false });
       expect(wrapper.find('input').prop('multiple')).toBeFalsy();
     });
@@ -56,6 +57,11 @@ describe('Upload', () => {
       wrapper.find('input').prop('onChange')({ target: { files: [files[0]] } });
       expect(FileReader).toHaveBeenCalled();
       expect(readAsText).toHaveBeenCalledWith(files[0]);
+    });
+
+    it('calls the readAsText multiple times based on the number of files', () => {
+      wrapper.find('input').prop('onChange')({ target: { files: files } });
+      expect(readAsText).toHaveBeenCalledTimes(files.length);
     });
   });
 
