@@ -10,7 +10,6 @@
     display: inline-block;
     padding: 5px 10px;
     cursor: pointer;
-    border: 1px solid transparent;
   }
 }
 
@@ -19,8 +18,4 @@
   overflow: hidden;
   position: absolute;
   z-index: -1;
-
-  &:focus + label {
-    border: 1px solid $dark-grey;
-  }
 }
