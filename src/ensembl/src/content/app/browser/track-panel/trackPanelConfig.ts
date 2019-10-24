@@ -1,4 +1,4 @@
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+import { Status } from 'src/shared/types/status';
 
 export enum TrackItemColour {
   BLUE = 'blue',
@@ -8,6 +8,8 @@ export enum TrackItemColour {
 }
 
 export type TrackItemColourKey = keyof typeof TrackItemColour;
+
+export type TrackActivityStatus = Status.ACTIVE | Status.INACTIVE;
 
 export enum TrackSet {
   GENOMIC = 'Genomic',
@@ -32,7 +34,7 @@ export type TrackPanelIcons = {
 export type TrackStates = {
   [genomeId: string]: {
     [categoryName: string]: {
-      [trackName: string]: ImageButtonStatus;
+      [trackName: string]: TrackActivityStatus;
     };
   };
 };
