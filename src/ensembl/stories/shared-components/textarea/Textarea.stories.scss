@@ -1,0 +1,14 @@
+@import 'src/styles/common';
+
+.customizedTextarea {
+  color: $blue;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 16px;
+  border: 1px solid $blue;
+}
+
+.defaultWrapper {
+  padding: 40px;
+  background: $light-grey;
+}

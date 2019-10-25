@@ -1,8 +1,4 @@
-import {
-  createAction,
-  createStandardAction,
-  createAsyncAction
-} from 'typesafe-actions';
+import { createAction, createStandardAction } from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
@@ -10,8 +6,10 @@ import isEqual from 'lodash/isEqual';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getChrLocationStr } from './browserHelper';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
 
@@ -19,8 +17,7 @@ import {
   BrowserNavStates,
   ChrLocation,
   CogList,
-  ChrLocations,
-  RegionValidationResponse
+  ChrLocations
 } from './browserState';
 import {
   getBrowserActiveGenomeId,
@@ -30,18 +27,17 @@ import {
   getChrLocation,
   getBrowserMessageCount
 } from './browserSelectors';
-import { getChrLocationStr } from './browserHelper';
-import browserStorageService from './browser-storage-service';
-import { RootState } from 'src/store';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
-import { TrackStates } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
+
+import { TrackStates } from './track-panel/trackPanelConfig';
+import { RootState } from 'src/store';
+import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
   categoryName: string;
   trackId: string;
-  status: ImageButtonStatus; // TODO: update types so that actions do not depend on ImageButton types
+  status: TrackActivityStatus;
 };
 
 export type ParsedUrlPayload = {

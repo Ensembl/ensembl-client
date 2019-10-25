@@ -11,10 +11,12 @@ use serde_json::Value as JSONValue;
 pub enum Action {
     Noop,
     Pos(Dot<f64,f64>,Option<f64>),
+    PosAnim(Dot<f64,f64>,Option<f64>),
     PosRange(f64,f64,f64),
     Move(Move<f64,f64>),
     Zoom(f64),
     ZoomTo(f64),
+    ZoomToAnim(f64),
     Resize(Dot<f64,f64>),
     AddComponent(String),
     SetStick(String),
@@ -44,8 +46,10 @@ impl Action {
             Action::SetStick(_) => 3,
             Action::Resize(_) => 5,
             Action::Pos(_,_) => 10,
+            Action::PosAnim(_,_) => 10,
             Action::PosRange(_,_,_) => 10,
             Action::ZoomTo(_) => 10,
+            Action::ZoomToAnim(_) => 10,
             Action::Move(_) => 10,
             Action::Zoom(_) => 10,
             Action::ActivityOutsideZMenu => 20,
@@ -59,7 +63,14 @@ impl Action {
     }
 }
 
-fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>) {
+fn cancel_animations(app: &mut App) {
+    app.get_window().get_animator().abandon_all();
+}
+
+fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>, anim: bool) {
+    if !anim {
+        cancel_animations(app);
+    }
     let train_manager = app.get_window().get_train_manager();
     let v = if let (Some(prop),Some(desired)) = (prop,train_manager.get_desired_position()) {
         Dot(desired.pos_prop_bp_to_origin(v.0,prop),v.1)
@@ -71,6 +82,7 @@ fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>) {
 }
 
 fn exe_pos_range_event(app: &mut App, x_start: f64, x_end: f64, y: f64) {
+    cancel_animations(app);
     let middle = Dot((x_start+x_end)/2.,y);
     app.update_position();
     app.intend_here();
@@ -81,6 +93,7 @@ fn exe_pos_range_event(app: &mut App, x_start: f64, x_end: f64, y: f64) {
 }
 
 fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
+    cancel_animations(app);
     if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
         let screen = app.get_screen().clone();
         let v = match v.direction().0 {
@@ -96,7 +109,10 @@ fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
     }
 }
 
-fn exe_zoom_event(app: &mut App, za: f64, by: bool) {
+fn exe_zoom_event(app: &mut App, za: f64, by: bool, anim: bool) {
+    if !anim {
+        cancel_animations(app);
+    }
     let train_manager = app.get_window().get_train_manager();
     let middle = train_manager.get_desired_position().map(|p| p.get_middle());
     let mut delta = 0.;
@@ -179,14 +195,12 @@ fn exe_set_focus(a: &mut App, id: &str) {
 
 fn exe_reset(a: &mut App) {
     let tm = a.get_window().get_train_manager();
-    tm.set_desired_context(&tm.get_desired_context());
     tm.jump_to_focus_object();
 }
 
 fn exe_jump_focus(a: &mut App, id: &str) {
     let mut tm = a.get_window().get_train_manager().clone();
     exe_set_focus(a,id);
-    tm.set_desired_context(&tm.get_desired_context());
     tm.jump_to_focus_object();
 }
 
@@ -201,11 +215,13 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
         }
         //console!("action {:?}",ev);
         match ev {
-            Action::Pos(v,prop) => exe_pos_event(cg,v,prop),
+            Action::Pos(v,prop) => exe_pos_event(cg,v,prop,false),
+            Action::PosAnim(v,prop) => exe_pos_event(cg,v,prop,true),
             Action::PosRange(x_start,x_end,y) => exe_pos_range_event(cg,x_start,x_end,y),
             Action::Move(va) => exe_move_event(cg,va),
-            Action::Zoom(za) => exe_zoom_event(cg,za,true),
-            Action::ZoomTo(za) => exe_zoom_event(cg,za,false),
+            Action::Zoom(za) => exe_zoom_event(cg,za,true,false),
+            Action::ZoomTo(za) => exe_zoom_event(cg,za,false,false),
+            Action::ZoomToAnim(za) => exe_zoom_event(cg,za,false,true),
             Action::Resize(sz) => exe_resize(cg,sz),
             Action::AddComponent(name) => exe_component_add(cg,&name),
             Action::SetStick(name) => exe_set_stick(cg,&name),

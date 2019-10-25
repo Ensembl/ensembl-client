@@ -1,6 +1,6 @@
 import { BrowserStorageService, StorageKeys } from './browser-storage-service';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
-import { TrackSet } from './track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
+import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 const mockStorageService = {
   get: jest.fn(),
@@ -18,12 +18,6 @@ const trackStates = {
     gc: 'inactive'
   }
 };
-
-const trackListToggleStates = {
-  'gene-feat': false
-};
-
-const SELECTED_TRACK_PANEL_TAB = TrackSet.VARIATION;
 
 describe('BrowserStorageService', () => {
   afterEach(() => {
@@ -73,7 +67,7 @@ describe('BrowserStorageService', () => {
       const toggledTrack = {
         homo_sapiens38: {
           'Genes & transcripts': {
-            'gene-pc-fwd': ImageButtonStatus.INACTIVE
+            'gene-pc-fwd': Status.INACTIVE as TrackActivityStatus
           }
         }
       };

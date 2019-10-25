@@ -7,32 +7,71 @@ import {
   AccordionItem,
   AccordionItemHeading,
   AccordionItemPanel,
-  AccordionItemButton
+  AccordionItemButton,
+  AccordionItemPermanentBlock
 } from 'src/shared/components/accordion';
 
-import styles from './FiltersAccordion.scss';
-
-import { getFiltersAccordionExpandedPanel } from '../../../state/filters/filtersSelector';
+import JSONValue from 'src/shared/types/JSON';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
+import FiltersAccordionSection from 'src/content/app/custom-download/containers/content/filter-accordion/sections/FiltersAccordionSection';
 import {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
   updateSelectedFilters
-} from '../../../state/filters/filtersActions';
+} from 'src/content/app/custom-download/state/filters/filtersActions';
+import {
+  getFiltersAccordionExpandedPanels,
+  getSelectedFilters
+} from 'src/content/app/custom-download/state/filters/filtersSelector';
+import { getPreviewResult } from 'src/content/app/custom-download/state/customDownloadSelectors';
 
-import customDownloadStorageService from 'src/content/app/custom-download/services/custom-download-storage-service';
-import JSONValue from 'src/shared/types/JSON';
+import { Status } from 'src/shared/types/status';
 
-import { Genes } from './sections';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
+import styles from './FiltersAccordion.scss';
 
-type Props = StateProps & DispatchProps;
+type FiltersAccordionProps = {
+  expandedPanels: string[];
+  selectedFilters: JSONValue;
+  preview: JSONValue;
+  setFiltersAccordionExpandedPanel: (expandedPanels: string[]) => void;
+  resetSelectedFilters: () => void;
+  updateSelectedFilters: (filters: JSONValue) => void;
+};
 
-const FiltersAccordion = (props: Props) => {
+const getSelectedFiltersCount = (
+  filters: JSONValue,
+  selectedFiltersCount = 0
+) => {
+  if (!filters) {
+    return 0;
+  }
+  Object.keys(filters).forEach((key: string) => {
+    if (typeof filters[key] === 'boolean' && filters[key] === true) {
+      selectedFiltersCount++;
+    } else if (typeof filters[key] === 'string' && filters[key] !== '') {
+      selectedFiltersCount++;
+    } else if (
+      Array.isArray(filters[key]) &&
+      (filters[key] as string[]).length > 0
+    ) {
+      selectedFiltersCount++;
+    } else if (typeof filters[key] === 'object') {
+      selectedFiltersCount = getSelectedFiltersCount(
+        filters[key] as JSONValue,
+        selectedFiltersCount
+      );
+    }
+  });
+
+  return selectedFiltersCount;
+};
+
+const FiltersAccordion = (props: FiltersAccordionProps) => {
   const formatAccordionTitle = (expandedPanel: string, title: string) => {
-    if (expandedPanel !== props.expandedPanel) {
+    if (expandedPanel !== props.expandedPanels[0]) {
       return <span>{title}</span>;
     }
 
@@ -44,22 +83,42 @@ const FiltersAccordion = (props: Props) => {
   };
 
   const accordionOnChange = (newExpandedPanels: string[]) => {
-    props.setFiltersAccordionExpandedPanel(newExpandedPanels[0]);
+    props.setFiltersAccordionExpandedPanel(newExpandedPanels);
   };
 
-  const onReset = () => {
-    props.resetSelectedFilters();
-    customDownloadStorageService.saveSelectedFilters({});
+  const resultCount: number = props.preview.resultCount
+    ? (props.preview.resultCount as number)
+    : 0;
+
+  const buildSection = (options: {
+    section: string;
+    showOverview?: boolean;
+  }) => {
+    return (
+      <FiltersAccordionSection
+        section={options.section}
+        showOverview={options.showOverview}
+      />
+    );
   };
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.filterHint}>
-        Filter the results to download only the information you need - the
-        filtered content will appear as rows in a table
-        <span className={styles.resetIcon} onClick={onReset}>
+      <div className={styles.header}>
+        <BadgedButton
+          badgeContent={String(getSelectedFiltersCount(props.selectedFilters))}
+          className={styles.titleBadge}
+        >
+          <div className={styles.title}>Filters</div>
+        </BadgedButton>
+
+        <div className={styles.resultCounter}>
+          <span>{getCommaSeparatedNumber(resultCount)}</span> results
+        </div>
+
+        <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={Status.ACTIVE}
             description={'Reset filters'}
             image={ResetIcon}
           />
@@ -67,7 +126,7 @@ const FiltersAccordion = (props: Props) => {
       </div>
 
       <Accordion
-        preExpanded={Array(1).fill(props.expandedPanel)}
+        preExpanded={props.expandedPanels}
         onChange={accordionOnChange}
       >
         <AccordionItem uuid={'genes'}>
@@ -77,8 +136,18 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <Genes />
+            {buildSection({ section: 'genes' })}
           </AccordionItemPanel>
+          <AccordionItemPermanentBlock>
+            {props.expandedPanels[0] !== 'genes' && (
+              <div className={styles.permanentBlock}>
+                {buildSection({
+                  section: 'genes',
+                  showOverview: true
+                })}
+              </div>
+            )}
+          </AccordionItemPermanentBlock>
         </AccordionItem>
 
         <AccordionItem uuid={'regions'}>
@@ -88,7 +157,9 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>Regions filters</div>
+            <div className={styles.temporaryContentPadding}>
+              Regions filters
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -99,7 +170,9 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>Variants filters</div>
+            <div className={styles.temporaryContentPadding}>
+              Variants filters
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -110,7 +183,9 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>Phenotypes filters</div>
+            <div className={styles.temporaryContentPadding}>
+              Phenotypes filters
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -121,7 +196,7 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>
+            <div className={styles.temporaryContentPadding}>
               Protein domains & families filters
             </div>
           </AccordionItemPanel>
@@ -134,7 +209,9 @@ const FiltersAccordion = (props: Props) => {
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.accordionItemPanel}>
-            <div className={styles.tempPadding}>Homologues filters</div>
+            <div className={styles.temporaryContentPadding}>
+              Homologues filters
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
       </Accordion>
@@ -142,26 +219,16 @@ const FiltersAccordion = (props: Props) => {
   );
 };
 
-type DispatchProps = {
-  setFiltersAccordionExpandedPanel: (
-    setFiltersAccordionExpandedPanel: string
-  ) => void;
-  resetSelectedFilters: () => void;
-  updateSelectedFilters: (filters: JSONValue) => void;
-};
-
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   setFiltersAccordionExpandedPanel,
   resetSelectedFilters,
   updateSelectedFilters
 };
 
-type StateProps = {
-  expandedPanel: string;
-};
-
-const mapStateToProps = (state: RootState): StateProps => ({
-  expandedPanel: getFiltersAccordionExpandedPanel(state)
+const mapStateToProps = (state: RootState) => ({
+  expandedPanels: getFiltersAccordionExpandedPanels(state),
+  selectedFilters: getSelectedFilters(state),
+  preview: getPreviewResult(state)
 });
 
 export default connect(

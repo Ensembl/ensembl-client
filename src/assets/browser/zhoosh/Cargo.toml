@@ -1,0 +1,7 @@
+[package]
+name = "zhoosh"
+version = "0.1.1"
+authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
+
+[dependencies]
+owning_ref = "*"

@@ -65,10 +65,10 @@ const LaunchbarContent = (props: LaunchbarProps) => (
             app="custom-download"
             description="Downloads"
             icon={CustomDownloadIcon}
-            enabled={isEnvironment([
-              Environment.DEVELOPMENT,
-              Environment.INTERNAL
-            ])}
+            enabled={
+              isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) &&
+              props.committedSpecies.length > 0
+            }
           />
         </div>
         <div className={styles.category}>

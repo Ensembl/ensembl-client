@@ -1,11 +1,10 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 import RoundButton, {
   RoundButtonStatus
 } from 'src/shared/components/round-button/RoundButton';
 
 import { getSelectedPreFilter } from '../../state/customDownloadSelectors';
-import customDownloadStorageService from '../../services/custom-download-storage-service';
 
 import {
   updateSelectedPreFilter,
@@ -21,23 +20,9 @@ type PreFilterPanelProps = StateProps & DispatchProps;
 const PreFilterPanel: FunctionComponent<PreFilterPanelProps> = (
   props: PreFilterPanelProps
 ) => {
-  useEffect(() => {
-    const preFilterFromLocalStorage = customDownloadStorageService.getSelectedPreFilter();
-    if (props.selectedPreFilter !== '' || !preFilterFromLocalStorage) {
-      return;
-    }
-    props.updateSelectedPreFilter(preFilterFromLocalStorage);
-    props.togglePreFiltersPanel(
-      customDownloadStorageService.getShowPreFilterPanel()
-    );
-  }, []);
-
   const filterOnClick = (filter: string) => {
     props.updateSelectedPreFilter(filter);
     props.togglePreFiltersPanel(false);
-
-    customDownloadStorageService.saveSelectedPreFilter(filter);
-    customDownloadStorageService.saveShowPreFilterPanel(false);
   };
 
   return (

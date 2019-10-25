@@ -20,6 +20,7 @@ extern crate base64;
 
 extern crate tánaiste;
 extern crate misc_algorithms;
+extern crate zhoosh;
 
 #[macro_use]
 mod util;

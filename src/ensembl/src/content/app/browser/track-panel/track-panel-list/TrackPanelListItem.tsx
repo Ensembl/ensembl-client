@@ -14,7 +14,8 @@ import ImageButton, {
 import {
   TrackItemColour,
   TrackItemColourKey,
-  TrackId
+  TrackId,
+  TrackActivityStatus
 } from '../trackPanelConfig';
 
 import {
@@ -37,14 +38,16 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
+import { Status } from 'src/shared/types/status';
+
 import styles from './TrackPanelListItem.scss';
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
-  trackStatus: ImageButtonStatus;
-  defaultTrackStatus: ImageButtonStatus;
+  trackStatus: TrackActivityStatus;
+  defaultTrackStatus: TrackActivityStatus;
   track: EnsObjectTrack;
 };
 
@@ -134,9 +137,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   const toggleTrack = () => {
     const newStatus =
-      trackStatus === ImageButtonStatus.ACTIVE
-        ? ImageButtonStatus.INACTIVE
-        : ImageButtonStatus.ACTIVE;
+      trackStatus === Status.ACTIVE ? Status.INACTIVE : Status.ACTIVE;
 
     updateGenomeBrowser(newStatus);
 
@@ -149,8 +150,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   };
 
   const updateGenomeBrowser = (status: ImageButtonStatus) => {
-    const currentTrackStatus =
-      status === ImageButtonStatus.ACTIVE ? 'on' : 'off';
+    const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
 
     const payload = {
       [currentTrackStatus]: `${track.track_id}`
@@ -195,7 +195,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={Status.ACTIVE}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}

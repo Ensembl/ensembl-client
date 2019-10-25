@@ -1,45 +1,64 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import styles from './CustomDownloadContent.scss';
-import {
-  getSelectedTab,
-  getShowPreviewResult,
-  getPreviewResult
-} from '../../state/customDownloadSelectors';
+import { RootState } from 'src/store';
 
 import AttributesAccordion from './attributes-accordion/AttributesAccordion';
 import FiltersAccordion from './filter-accordion/FiltersAccordion';
-import TabButtons from './tab-buttons/TabButtons';
-import ResultHolder from './result-holder/ResultHolder';
-import { RootState } from 'src/store';
+import Overlay from 'src/shared/components/overlay/Overlay';
+import CustomDownloadInfoCard from '../../components/info-card/CustomDownloadInfoCard';
+import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import PreviewDownload from './preview-download/PreviewDownload';
-import JSONValue from 'src/shared/types/JSON';
+import { getLaunchbarExpanded } from 'src/header/headerSelectors';
+import {
+  getShowPreviewResult,
+  getShowExampleData
+} from 'src/content/app/custom-download/state/customDownloadSelectors';
+import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
 
-type Props = {
-  selectedTab: string;
+import styles from './CustomDownloadContent.scss';
+
+type StateProps = {
   showSummary: boolean;
-  preview: JSONValue;
+  showExampleData: boolean;
+  launchBarExpanded: boolean;
 };
 
-const Content = (props: Props) => {
+type DispatchProps = {
+  setShowExampleData: (showExampleData: boolean) => void;
+};
+
+type Props = StateProps & DispatchProps;
+
+const CustomDownloadContent = (props: Props) => {
+  const wrapperHeightClassName = props.launchBarExpanded
+    ? styles.default
+    : styles.taller;
   return (
-    <div>
+    <div className={`${styles.wrapper} ${wrapperHeightClassName}`}>
+      {props.showExampleData && (
+        <>
+          <Overlay />
+          <CustomDownloadInfoCard
+            title={'Example data to download'}
+            classNames={{ infoCardClassName: styles.exampleDataPanel }}
+            onClose={() => props.setShowExampleData(false)}
+          >
+            <PreviewCard />
+          </CustomDownloadInfoCard>
+        </>
+      )}
       {!props.showSummary && (
-        <div>
-          <div className={styles.resultList}>
-            <ResultHolder />
+        <>
+          <div className={styles.attributesHolder}>
+            <AttributesAccordion />
           </div>
-          <div className={styles.tabList}>
-            <TabButtons />
+          <div className={styles.filtersHolder}>
+            <FiltersAccordion />
           </div>
-          <div className={styles.dataSelector}>
-            {props.selectedTab === 'attributes' && <AttributesAccordion />}
-            {props.selectedTab === 'filter' && <FiltersAccordion />}
-          </div>
-        </div>
+        </>
       )}
       {props.showSummary && (
-        <div>
+        <div className={styles.previewDownloadHolder}>
           <PreviewDownload />
         </div>
       )}
@@ -47,10 +66,17 @@ const Content = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState): Props => ({
-  selectedTab: getSelectedTab(state),
+const mapDispatchToProps: DispatchProps = {
+  setShowExampleData
+};
+
+const mapStateToProps = (state: RootState): StateProps => ({
   showSummary: getShowPreviewResult(state),
-  preview: getPreviewResult(state)
+  launchBarExpanded: getLaunchbarExpanded(state),
+  showExampleData: getShowExampleData(state)
 });
 
-export default connect(mapStateToProps)(Content);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CustomDownloadContent);

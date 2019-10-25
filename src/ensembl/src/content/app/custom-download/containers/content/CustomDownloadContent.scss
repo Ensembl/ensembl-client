@@ -1,15 +1,16 @@
 @import 'src/styles/common';
 
 .wrapper {
-  width: calc(100vw - 50px);
-  margin: 10px 20px 0 30px;
   position: relative;
-}
+  display: grid;
+  grid-template-columns: 40px 1fr 10px 1fr 40px;
 
-.resultList {
-  position: absolute;
-  width: 40%;
-  min-width: 40%;
+  &.default {
+    height: calc(100vh - 220px);
+  }
+  &.taller {
+    height: calc(100vh - 165px);
+  }
 }
 
 .tabList {
@@ -18,9 +19,22 @@
   width: 200px;
 }
 
-.dataSelector {
-  position: absolute;
-  left: calc(40% + 200px);
-  width: calc(60% - 200px);
-  min-width: 45%;
+.attributesHolder {
+  grid-column-start: 2;
+  grid-column-end: 3;
+}
+
+.filtersHolder {
+  grid-column-start: 3;
+  grid-column-end: 5;
+}
+
+.previewDownloadHolder {
+  grid-column-start: 2;
+  grid-column-end: 5;
+}
+
+.exampleDataPanel {
+  top: 10px;
+  left: calc(50% - 300px);
 }

@@ -12,4 +12,5 @@ import './loader/Loader.stories';
 import './checkbox/Checkbox.stories';
 import './round-button/RoundButton.stories';
 import './badged-button/BadgedButton.stories';
-import './species-tab-bar/SpeciesTabBar.stories';
+import './species-tabs-wrapper/SpeciesTabsWrapper.stories';
+import './textarea/Textarea.stories';

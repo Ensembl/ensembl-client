@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TrackPanelBarItem } from './trackPanelBarConfig';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelBarIcon.scss';
 
@@ -46,8 +46,8 @@ const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
     const { iconConfig, trackPanelModalView } = props;
 
     return iconConfig.name === trackPanelModalView && props.isTrackPanelOpened
-      ? ImageButtonStatus.HIGHLIGHTED
-      : ImageButtonStatus.ACTIVE;
+      ? Status.HIGHLIGHTED
+      : Status.ACTIVE;
   };
 
   return (
