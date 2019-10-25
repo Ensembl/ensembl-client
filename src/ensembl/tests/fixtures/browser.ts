@@ -5,14 +5,14 @@ import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
 import { RegionValidationResponse } from 'src/content/app/browser/browserState';
 
 export const createCogTrackList = (): CogList => ({
-  'track:contig': Math.random(),
-  'track:gc': Math.random(),
-  'track:gene-feat': Math.random(),
-  'track:gene-other-fwd': Math.random(),
-  'track:gene-other-rev': Math.random(),
-  'track:gene-pc-fwd': Math.random(),
-  'track:gene-pc-rev': Math.random(),
-  'track:variant': Math.random()
+  'track:contig': faker.random.number(),
+  'track:gc': faker.random.number(),
+  'track:gene-feat': faker.random.number(),
+  'track:gene-other-fwd': faker.random.number(),
+  'track:gene-other-rev': faker.random.number(),
+  'track:gene-pc-fwd': faker.random.number(),
+  'track:gene-pc-rev': faker.random.number(),
+  'track:variant': faker.random.number()
 });
 
 export const createTrackConfigLabel = () => ({
@@ -54,8 +54,8 @@ export const createZmenuContent = () => [
   }
 ];
 
-export const createValidationInfo = (): RegionValidationResponse => {
-  const randomValue = Math.random();
+export const createRegionValidationInfo = (): RegionValidationResponse => {
+  const randomValue = faker.random.number();
 
   return {
     end: {
@@ -75,18 +75,29 @@ export const createValidationInfo = (): RegionValidationResponse => {
       error_code: null,
       error_message: null,
       is_valid: true,
-      region_code: 'chromosome',
-      region_name: '13'
+      region_code: faker.lorem.words(),
+      region_name: faker.lorem.words()
     },
     region_id: faker.lorem.words(),
     start: {
       error_code: null,
       error_message: null,
       is_valid: true,
-      value: randomValue + Math.random()
+      value: randomValue + faker.random.number()
     }
   };
 };
+
+export const createRegionValidationResult = () => ({
+  errorMessages: {
+    genomeIdError: undefined,
+    regionParamError: undefined,
+    regionError: undefined,
+    startError: undefined,
+    endError: undefined
+  },
+  regionId: undefined
+});
 
 export const createChrLocationValues = () => {
   const region = faker.lorem.words();
@@ -94,7 +105,7 @@ export const createChrLocationValues = () => {
   const end = faker.random.number();
 
   return {
-    tuppleValue: [region, start, end] as ChrLocation,
+    tupleValue: [region, start, end] as ChrLocation,
     stringValue: `${region}:${start}-${end}`
   };
 };

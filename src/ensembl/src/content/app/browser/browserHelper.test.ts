@@ -3,18 +3,14 @@ import faker from 'faker';
 import {
   getChrLocationFromStr,
   getChrLocationStr,
-  getRegionFieldErrorMessages,
-  getRegionEditorErrorMessages
+  getRegionValidationResult
 } from './browserHelper';
 import {
-  createValidationInfo,
-  createChrLocationValues
+  createRegionValidationInfo,
+  createChrLocationValues,
+  createRegionValidationResult
 } from 'tests/fixtures/browser';
-import {
-  RegionValidationResponse,
-  RegionValidationRegionResult,
-  RegionValidationValueResult
-} from './browserState';
+import { RegionValidationResponse } from './browserState';
 import { RegionErrors } from './browserConfig';
 
 describe('browserHelper', () => {
@@ -23,53 +19,82 @@ describe('browserHelper', () => {
       const chrLocationValues = createChrLocationValues();
       expect(
         getChrLocationFromStr(chrLocationValues.stringValue)
-      ).toStrictEqual(chrLocationValues.tuppleValue);
+      ).toStrictEqual(chrLocationValues.tupleValue);
     });
   });
 
   describe('getChrLocationStr', () => {
     const chrLocationValues = createChrLocationValues();
     test('outputs string when input received as ChrLocation', () => {
-      expect(getChrLocationStr(chrLocationValues.tuppleValue)).toBe(
+      expect(getChrLocationStr(chrLocationValues.tupleValue)).toBe(
         chrLocationValues.stringValue
       );
     });
   });
 
-  const mockValidationInfo = createValidationInfo();
-  const invalidRegionInfo: Partial<RegionValidationResponse> = {
-    region: {
-      error_code: null,
-      error_message: faker.lorem.words(),
-      is_valid: false,
-      region_code: faker.lorem.words(),
-      region_name: faker.lorem.words()
-    }
-  };
-  const invalidStartInfo: Partial<RegionValidationResponse> = {
-    start: {
-      error_code: null,
-      error_message: faker.lorem.words(),
-      is_valid: false,
-      value: faker.random.number()
-    }
-  };
-  const invalidEndInfo: Partial<RegionValidationResponse> = {
-    end: {
-      error_code: null,
-      error_message: faker.lorem.words(),
-      is_valid: false,
-      value: faker.random.number()
-    }
-  };
+  describe('getRegionValidationResult', () => {
+    const mockValidationInfo = createRegionValidationInfo();
+    const regionError = faker.lorem.words();
+    const startError = faker.lorem.words();
+    const endError = faker.lorem.words();
+    const invalidRegionInfo: Partial<RegionValidationResponse> = {
+      region: {
+        error_code: null,
+        error_message: regionError,
+        is_valid: false,
+        region_code: faker.lorem.words(),
+        region_name: faker.lorem.words()
+      }
+    };
+    const invalidStartInfo: Partial<RegionValidationResponse> = {
+      start: {
+        error_code: null,
+        error_message: startError,
+        is_valid: false,
+        value: faker.random.number()
+      }
+    };
+    const invalidEndInfo: Partial<RegionValidationResponse> = {
+      end: {
+        error_code: null,
+        error_message: endError,
+        is_valid: false,
+        value: faker.random.number()
+      }
+    };
+    const mockValidationResult = createRegionValidationResult(); // all error messages are undefined by default
 
-  describe('getRegionFieldErrorMessages', () => {
-    test('returns no error message if validation is null', () => {
-      expect(getRegionFieldErrorMessages(null)).toBe(null);
+    test('returns all error messages as undefined', () => {
+      expect(getRegionValidationResult(null)).toStrictEqual(
+        mockValidationResult
+      );
     });
 
-    test('returns no error message if all inputs are valid', () => {
-      expect(getRegionFieldErrorMessages(mockValidationInfo)).toBe(null);
+    test('returns all error messages as undefined if all inputs are valid', () => {
+      expect(
+        getRegionValidationResult(mockValidationInfo).errorMessages
+      ).toStrictEqual(mockValidationResult.errorMessages);
+    });
+
+    test('returns errors if genome id and/or region missing error messages are in response', () => {
+      const genomeIdError = faker.lorem.words();
+      const regionParamError = faker.lorem.words();
+      const newMockValidationInfo = {
+        message: {
+          genome_id: genomeIdError,
+          region: regionParamError
+        }
+      };
+
+      expect(
+        getRegionValidationResult(newMockValidationInfo).errorMessages
+          .genomeIdError
+      ).toBe(genomeIdError);
+
+      expect(
+        getRegionValidationResult(newMockValidationInfo).errorMessages
+          .regionParamError
+      ).toBe(regionParamError);
     });
 
     // this test case needs to be changed once the parse error message becomes available in the validaiton response
@@ -81,21 +106,22 @@ describe('browserHelper', () => {
         }
       };
 
-      expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        RegionErrors.PARSE_ERROR
-      );
+      expect(
+        getRegionValidationResult(newMockValidationInfo).errorMessages
+          .regionError
+      ).toStrictEqual(RegionErrors.PARSE_ERROR);
     });
 
     test('returns error if region is invalid', () => {
       const newMockValidationInfo = {
         ...mockValidationInfo,
-        invalidRegionInfo
+        ...invalidRegionInfo
       };
 
-      expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        (newMockValidationInfo.region as RegionValidationRegionResult)
-          .error_message
-      );
+      expect(
+        getRegionValidationResult(newMockValidationInfo).errorMessages
+          .regionError
+      ).toStrictEqual(regionError);
     });
 
     test('returns error if start is invalid', () => {
@@ -104,10 +130,10 @@ describe('browserHelper', () => {
         ...invalidStartInfo
       };
 
-      expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        (newMockValidationInfo.start as RegionValidationValueResult)
-          .error_message
-      );
+      expect(
+        getRegionValidationResult(newMockValidationInfo).errorMessages
+          .startError
+      ).toBe(startError);
     });
 
     test('returns error if end is invalid', () => {
@@ -116,54 +142,20 @@ describe('browserHelper', () => {
         ...invalidEndInfo
       };
 
-      expect(getRegionFieldErrorMessages(newMockValidationInfo)).toBe(
-        (newMockValidationInfo.end as RegionValidationValueResult).error_message
-      );
-    });
-  });
-
-  describe('getRegionEditorErrorMessages', () => {
-    test('returns no error messages if validation is null', () => {
-      expect(getRegionEditorErrorMessages(null)).toStrictEqual({
-        locationStartError: null,
-        locationEndError: null
-      });
+      expect(
+        getRegionValidationResult(newMockValidationInfo).errorMessages.endError
+      ).toBe(endError);
     });
 
-    test('returns no error messages if all inputs are valid', () => {
-      expect(getRegionEditorErrorMessages(mockValidationInfo)).toStrictEqual({
-        locationStartError: null,
-        locationEndError: null
-      });
-    });
-
-    test('returns location start error message when start is invalid', () => {
+    test('returns region ID if it exists in response', () => {
+      const regionId = faker.lorem.words();
       const newMockValidationInfo = {
         ...mockValidationInfo,
-        ...invalidStartInfo
+        region_id: regionId
       };
 
-      expect(getRegionEditorErrorMessages(newMockValidationInfo)).toStrictEqual(
-        {
-          locationStartError: (newMockValidationInfo.start as RegionValidationValueResult)
-            .error_message,
-          locationEndError: null
-        }
-      );
-    });
-
-    test('returns location end error message when start is invalid', () => {
-      const newMockValidationInfo = {
-        ...mockValidationInfo,
-        ...invalidEndInfo
-      };
-
-      expect(getRegionEditorErrorMessages(newMockValidationInfo)).toStrictEqual(
-        {
-          locationStartError: null,
-          locationEndError: (newMockValidationInfo.end as RegionValidationValueResult)
-            .error_message
-        }
+      expect(getRegionValidationResult(newMockValidationInfo).regionId).toBe(
+        regionId
       );
     });
   });

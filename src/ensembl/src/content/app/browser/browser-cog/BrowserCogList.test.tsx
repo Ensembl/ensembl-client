@@ -15,7 +15,7 @@ describe('<BrowserCogList />', () => {
   const defaultProps = {
     browserActivated: true,
     browserCogList: 0,
-    browserCogTrackList: { 'track:gc': Math.random() },
+    browserCogTrackList: { 'track:gc': faker.random.number() },
     trackConfigNames: {},
     trackConfigLabel: {},
     selectedCog: faker.lorem.words(),

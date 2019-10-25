@@ -95,8 +95,6 @@ export type BrowserLocationState = Readonly<{
   actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
   regionEditorActive: boolean;
   regionFieldActive: boolean;
-  regionValidationInfo: RegionValidationResponse | null;
-  regionValidationLoadingStatus: LoadingState;
   isObjectInDefaultPosition: boolean;
 }>;
 
@@ -105,8 +103,6 @@ export const defaultBrowserLocationState: BrowserLocationState = {
   actualChrLocations: {},
   regionEditorActive: false,
   regionFieldActive: false,
-  regionValidationInfo: null,
-  regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
   isObjectInDefaultPosition: false
 };
 

@@ -80,12 +80,6 @@ export const getRegionEditorActive = (state: RootState) =>
 export const getRegionFieldActive = (state: RootState) =>
   state.browser.browserLocation.regionFieldActive;
 
-export const getRegionValidationInfo = (state: RootState) =>
-  state.browser.browserLocation.regionValidationInfo;
-
-export const getRegionValidationLoadingStatus = (state: RootState) =>
-  state.browser.browserLocation.regionValidationLoadingStatus;
-
 export const getBrowserMessageCount = (state: RootState) =>
   state.browser.browserEntity.messageCounter;
 

@@ -9,10 +9,10 @@ import {
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import {
-  createValidationInfo,
-  createChrLocationValues
-} from 'tests/fixtures/browser';
+import { ChrLocation } from '../browserState';
+import { createChrLocationValues } from 'tests/fixtures/browser';
+
+import * as browserHelper from '../browserHelper';
 
 describe('<BrowserRegionField', () => {
   afterEach(() => {
@@ -21,16 +21,12 @@ describe('<BrowserRegionField', () => {
 
   const defaultProps: BrowserRegionFieldProps = {
     activeGenomeId: faker.lorem.words(),
-    chrLocation: createChrLocationValues().tuppleValue,
+    chrLocation: createChrLocationValues().tupleValue,
     isActive: false,
     isDisabled: false,
-    isValidationInfoLoading: false,
-    validationInfo: null,
     changeBrowserLocation: jest.fn(),
-    replace: jest.fn(),
-    resetRegionValidation: jest.fn(),
-    toggleRegionFieldActive: jest.fn(),
-    validateRegion: jest.fn()
+    changeFocusObject: jest.fn(),
+    toggleRegionFieldActive: jest.fn()
   };
 
   let wrapper: any;
@@ -60,7 +56,9 @@ describe('<BrowserRegionField', () => {
       wrapper.find(Input).simulate('focus');
 
       // the activateForm function which fires on focus should call toggleRegionFieldActive
-      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(1);
+      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledWith(
+        true
+      );
     });
 
     test('applies correct value on change', () => {
@@ -74,48 +72,127 @@ describe('<BrowserRegionField', () => {
 
     test('validates region input on submit', () => {
       const regionInput = createChrLocationValues().stringValue;
+      const validateRegion = jest.fn();
+
+      jest
+        .spyOn(browserHelper, 'validateRegion')
+        .mockImplementation(validateRegion);
+
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
-
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().validateRegion).toHaveBeenCalled();
+      expect(validateRegion).toHaveBeenCalledWith({
+        regionInput,
+        genomeId: wrapper.props().activeGenomeId,
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function)
+      });
+
+      jest.restoreAllMocks();
     });
 
     test('resets region field when close button is clicked', () => {
       const regionInput = createChrLocationValues().stringValue;
+
       wrapper
         .find(Input)
         .simulate('change', { target: { value: regionInput } });
-      jest.resetAllMocks();
-
       wrapper.find('button[role="closeButton"]').simulate('click');
+
       expect(wrapper.find(Input).props().value).toBe('');
-      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledTimes(1);
-      expect(wrapper.props().resetRegionValidation).toHaveBeenCalledTimes(1);
+      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledWith(
+        false
+      );
     });
 
     test('displays error message when validation fails', () => {
-      const startErrorMessage = faker.lorem.words();
+      const regionInput = faker.lorem.words();
+      const startError = faker.lorem.words();
 
-      wrapper.setProps({
-        isActive: true,
-        validationInfo: {
-          ...createValidationInfo(),
-          ...{
-            start: {
-              error_code: null,
-              error_message: startErrorMessage,
-              is_valid: false,
-              value: 0
-            }
+      jest
+        .spyOn(browserHelper, 'validateRegion')
+        .mockImplementation(
+          async (params: {
+            regionInput: string;
+            genomeId: string | null;
+            onSuccess: (regionId: string) => void;
+            onError: (errorMessages: any) => void;
+          }) => {
+            params.onError({
+              startError
+            });
           }
-        }
+        );
+
+      wrapper
+        .find(Input)
+        .simulate('change', { target: { value: regionInput } });
+      wrapper.find('form').simulate('submit');
+
+      expect(wrapper.find(Tooltip).props().children).toBe(startError);
+
+      jest.restoreAllMocks();
+    });
+
+    describe('on validation success', () => {
+      const regionId = faker.lorem.words();
+
+      beforeEach(() => {
+        jest
+          .spyOn(browserHelper, 'validateRegion')
+          .mockImplementation(
+            async (params: {
+              regionInput: string;
+              genomeId: string | null;
+              onSuccess: (regionId: string) => void;
+              onError: (errorMessages: any) => void;
+            }) => {
+              params.onSuccess(regionId);
+            }
+          );
       });
 
-      wrapper.update();
-      expect(wrapper.find(Tooltip).props().children).toBe(startErrorMessage);
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      test('changes the focus object if regionInput has a stick/chromosome', () => {
+        const stick = faker.random.number();
+        const start = faker.random.number();
+        const end = faker.random.number();
+        const regionInput = `${stick}:${start}-${end}`;
+
+        wrapper
+          .find(Input)
+          .simulate('change', { target: { value: regionInput } });
+        wrapper.find('form').simulate('submit');
+
+        expect(wrapper.props().changeFocusObject).toHaveBeenCalledWith(
+          regionId
+        );
+      });
+
+      test('changes the browser location in same region if regionInput has only start and end (no stick/chromosome)', () => {
+        const start = faker.random.number();
+        const end = faker.random.number();
+        const regionInput = `${start}-${end}`;
+        const { activeGenomeId, chrLocation } = wrapper.props();
+        const [stick] = chrLocation;
+
+        wrapper
+          .find(Input)
+          .simulate('change', { target: { value: regionInput } });
+        wrapper.find('form').simulate('submit');
+
+        const newChrLocation: ChrLocation = [stick, start, end];
+
+        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalledWith(
+          activeGenomeId,
+          newChrLocation
+        );
+      });
     });
   });
 });

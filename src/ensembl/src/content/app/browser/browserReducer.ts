@@ -122,30 +122,6 @@ export function browserLocation(
       return { ...state, regionEditorActive: action.payload };
     case getType(browserActions.toggleRegionFieldActive):
       return { ...state, regionFieldActive: action.payload };
-    case getType(browserActions.fetchRegionValidationInfo.request):
-      return {
-        ...state,
-        regionValidationLoadingStatus: LoadingState.LOADING,
-        regionValidationInfo: null
-      };
-    case getType(browserActions.fetchRegionValidationInfo.failure):
-      return {
-        ...state,
-        regionValidationLoadingStatus: LoadingState.ERROR,
-        regionValidationInfo: null
-      };
-    case getType(browserActions.fetchRegionValidationInfo.success):
-      return {
-        ...state,
-        regionValidationLoadingStatus: LoadingState.SUCCESS,
-        regionValidationInfo: { ...action.payload }
-      };
-    case getType(browserActions.resetRegionValidation):
-      return {
-        ...state,
-        regionValidationLoadingStatus: LoadingState.NOT_REQUESTED,
-        regionValidationInfo: null
-      };
     case getType(browserActions.updateDefaultPositionFlag):
       return { ...state, isObjectInDefaultPosition: action.payload };
     default:

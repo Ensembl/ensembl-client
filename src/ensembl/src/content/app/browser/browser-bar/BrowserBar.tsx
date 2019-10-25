@@ -187,9 +187,6 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
             {ensObject.bio_type && ensObject.bio_type.toLowerCase()}
           </dd>
           <dd className={`show-for-large`}>{ensObject.strand} strand</dd>
-          <dd className={`show-for-large`}>
-            {getFormattedLocation(ensObject.location)}
-          </dd>
         </>
       )}
 

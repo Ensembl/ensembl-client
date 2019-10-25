@@ -1,5 +1,4 @@
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
-import { replace, Replace } from 'connected-react-router';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -7,35 +6,27 @@ import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
-import { ChrLocation, RegionValidationResponse } from '../browserState';
+import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
 import {
   getRegionEditorActive,
   getRegionFieldActive,
   getBrowserActiveGenomeId,
-  getChrLocation,
-  getRegionValidationInfo,
-  getRegionValidationLoadingStatus
+  getChrLocation
 } from '../browserSelectors';
 import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
 import {
   changeBrowserLocation,
-  toggleRegionEditorActive,
-  resetRegionValidation,
-  validateRegion
+  changeFocusObject,
+  toggleRegionEditorActive
 } from '../browserActions';
 import { GenomeKaryotype } from 'src/genome/genomeTypes';
-import { LoadingState } from 'src/shared/types/loading-state';
 
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
-import {
-  getRegionEditorErrorMessages,
-  getChrLocationStr
-} from '../browserHelper';
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import { validateRegion } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -46,21 +37,18 @@ import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 export type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
-  chrLocation: ChrLocation;
-  genomeKaryotypes: GenomeKaryotype[];
+  chrLocation: ChrLocation | null;
+  genomeKaryotypes: GenomeKaryotype[] | null;
   isActive: boolean;
   isDisabled: boolean;
-  isValidationInfoLoading: boolean;
-  validationInfo: RegionValidationResponse | null;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-  replace: Replace;
-  resetRegionValidation: () => void;
+  changeFocusObject: (objectId: string) => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
-  validateRegion: (region: string) => void;
 };
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
-  const [region, locationStart, locationEnd] = props.chrLocation;
+  const genomeKaryotypes = props.genomeKaryotypes as GenomeKaryotype[];
+  const [region, locationStart, locationEnd] = props.chrLocation as ChrLocation;
 
   const [chrInput, setChrInput] = useState(region);
   const [locationStartInput, setLocationStartInput] = useState(
@@ -77,7 +65,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   >(null);
 
   const getKaryotypeOptions = () =>
-    props.genomeKaryotypes.map(({ name }) => ({
+    genomeKaryotypes.map(({ name }) => ({
       value: name,
       label: name,
       isSelected: chrInput === name
@@ -87,7 +75,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     setChrInput(value);
     updateLocationStartInput('1');
 
-    const filteredKaryotypes = props.genomeKaryotypes.filter(
+    const filteredKaryotypes = genomeKaryotypes.filter(
       ({ name }) => name === value
     );
 
@@ -117,7 +105,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   };
 
   const updateAllInputs = () => {
-    const [region, locationStart, locationEnd] = props.chrLocation;
+    const [
+      region,
+      locationStart,
+      locationEnd
+    ] = props.chrLocation as ChrLocation;
     const locationStartStr = getCommaSeparatedNumber(locationStart);
     const locationEndStr = getCommaSeparatedNumber(locationEnd);
 
@@ -143,26 +135,20 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const changeLocation = (newChrLocation: ChrLocation) =>
     props.changeBrowserLocation(props.activeGenomeId as string, newChrLocation);
 
-  const changeFocusObject = (newChrLocation: ChrLocation) => {
-    const chrLocationStr = getChrLocationStr(newChrLocation);
-    const activeEnsObjectId = `${props.activeGenomeId}:region:${chrLocationStr}`;
-    const params = {
-      genomeId: props.activeGenomeId,
-      focus: activeEnsObjectId,
-      location: chrLocationStr
-    };
-
-    props.replace(urlFor.browser(params));
-  };
-
   const resetForm = () => {
     updateErrorMessages(null, null);
 
     props.toggleRegionEditorActive(false);
-    props.resetRegionValidation();
   };
 
-  const updateBrowser = () => {
+  const onValidationError = (errorMessages: any) => {
+    const { startError, endError } = errorMessages;
+    updateErrorMessages(startError, endError);
+  };
+
+  const onValidationSuccess = (regionId: string) => {
+    resetForm();
+
     const newChrLocation: ChrLocation = [
       chrInput,
       getNumberWithoutCommas(locationStartInput),
@@ -172,7 +158,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     if (chrInput === region) {
       changeLocation(newChrLocation);
     } else {
-      changeFocusObject(newChrLocation);
+      props.changeFocusObject(regionId);
     }
   };
 
@@ -184,38 +170,17 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const region = `${chrInput}:${locationStartInput}-${locationEndInput}`;
-    props.validateRegion(region);
+    validateRegion({
+      regionInput: `${chrInput}:${locationStartInput}-${locationEndInput}`,
+      genomeId: props.activeGenomeId,
+      onSuccess: onValidationSuccess,
+      onError: onValidationError
+    });
   };
 
   useEffect(() => {
     updateAllInputs();
   }, [props.chrLocation]);
-
-  useEffect(() => () => props.resetRegionValidation(), []);
-
-  useEffect(() => {
-    if (props.isActive) {
-      const { validationInfo, isValidationInfoLoading } = props;
-
-      if (!isValidationInfoLoading) {
-        const errorMessages = getRegionEditorErrorMessages(validationInfo);
-
-        if (
-          errorMessages.locationStartError ||
-          errorMessages.locationEndError
-        ) {
-          updateErrorMessages(
-            errorMessages.locationStartError,
-            errorMessages.locationEndError
-          );
-        } else {
-          resetForm();
-          updateBrowser();
-        }
-      }
-    }
-  }, [props.validationInfo]);
 
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
@@ -286,7 +251,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             value={locationEndInput}
             className={locationEndClassNames}
           ></Input>
-          {locationEndErrorMessage ? (
+          {!locationStartErrorMessage && locationEndErrorMessage ? (
             <Tooltip
               autoAdjust={true}
               container={locationEndRef.current}
@@ -312,22 +277,17 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId: getBrowserActiveGenomeId(state),
-    chrLocation: getChrLocation(state) as ChrLocation,
-    genomeKaryotypes: getGenomeKaryotypes(state) as GenomeKaryotype[],
+    chrLocation: getChrLocation(state),
+    genomeKaryotypes: getGenomeKaryotypes(state),
     isActive: getRegionEditorActive(state),
-    isDisabled: getRegionFieldActive(state),
-    isValidationInfoLoading:
-      getRegionValidationLoadingStatus(state) === LoadingState.LOADING,
-    validationInfo: getRegionValidationInfo(state)
+    isDisabled: getRegionFieldActive(state)
   };
 };
 
 const mpaDispatchToProps = {
   changeBrowserLocation,
-  replace,
-  resetRegionValidation,
-  toggleRegionEditorActive,
-  validateRegion
+  changeFocusObject,
+  toggleRegionEditorActive
 };
 
 export default connect(

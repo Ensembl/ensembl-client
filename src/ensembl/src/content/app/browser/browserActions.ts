@@ -36,7 +36,6 @@ import { RootState } from 'src/store';
 import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
 import { TrackStates } from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
-import apiService from 'src/services/api-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -297,34 +296,3 @@ export const toggleRegionEditorActive = createStandardAction(
 export const toggleRegionFieldActive = createStandardAction(
   'browser/toggle-region-field-active'
 )<boolean>();
-
-export const fetchRegionValidationInfo = createAsyncAction(
-  'browser/fetch_region_validation_request',
-  'browser/fetch_region_validation_success',
-  'browser/fetch_region_validation_error'
-)<string, RegionValidationResponse, Error>();
-
-export const validateRegion: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (region: string) => async (dispatch, getState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(getState());
-
-  try {
-    dispatch(
-      fetchRegionValidationInfo.request(
-        `genome_id=${activeGenomeId}&region=${region}`
-      )
-    );
-
-    const url = `/api/genome/region/validate?genome_id=${activeGenomeId}&region=${region}`;
-    const response = await apiService.fetch(url);
-
-    dispatch(fetchRegionValidationInfo.success(response));
-  } catch (error) {
-    dispatch(fetchRegionValidationInfo.failure(error));
-  }
-};
-
-export const resetRegionValidation = createStandardAction(
-  'browser/reset-region-validation'
-)();

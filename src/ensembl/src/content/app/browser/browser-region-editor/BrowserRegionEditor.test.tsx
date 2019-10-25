@@ -11,31 +11,29 @@ import Select from 'src/shared/components/select/Select';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { createGenomeKaryotypes } from 'tests/fixtures/genomes';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import {
-  createValidationInfo,
-  createChrLocationValues
-} from 'tests/fixtures/browser';
+  getCommaSeparatedNumber,
+  getNumberWithoutCommas
+} from 'src/shared/helpers/numberFormatter';
+import { createChrLocationValues } from 'tests/fixtures/browser';
+import * as browserHelper from '../browserHelper';
+import { ChrLocation } from '../browserState';
 
 describe('<BrowserRegionEditor', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  const initialChrLocation = createChrLocationValues().tuppleValue;
+  const initialChrLocation = createChrLocationValues().tupleValue;
   const defaultProps: BrowserRegionEditorProps = {
     activeGenomeId: faker.lorem.words(),
     chrLocation: initialChrLocation,
     genomeKaryotypes: createGenomeKaryotypes(),
-    isActive: false,
+    isActive: true,
     isDisabled: false,
-    isValidationInfoLoading: false,
-    validationInfo: {},
     changeBrowserLocation: jest.fn(),
-    replace: jest.fn(),
-    resetRegionValidation: jest.fn(),
-    toggleRegionEditorActive: jest.fn(),
-    validateRegion: jest.fn()
+    changeFocusObject: jest.fn(),
+    toggleRegionEditorActive: jest.fn()
   };
 
   let wrapper: any;
@@ -106,6 +104,11 @@ describe('<BrowserRegionEditor', () => {
       const [region] = initialChrLocation;
       const locationStartInput = getCommaSeparatedNumber(faker.random.number());
       const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+      const validateRegion = jest.fn();
+
+      jest
+        .spyOn(browserHelper, 'validateRegion')
+        .mockImplementation(validateRegion);
 
       wrapper
         .find(Input)
@@ -121,9 +124,12 @@ describe('<BrowserRegionEditor', () => {
 
       wrapper.find('form').simulate('submit');
 
-      expect(wrapper.props().validateRegion).toHaveBeenCalledWith(
-        `${region}:${locationStartInput}-${locationEndInput}`
-      );
+      expect(validateRegion).toHaveBeenCalledWith({
+        regionInput: `${region}:${locationStartInput}-${locationEndInput}`,
+        genomeId: wrapper.props().activeGenomeId,
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function)
+      });
     });
 
     test('resets region editor form when close button is clicked', () => {
@@ -162,58 +168,144 @@ describe('<BrowserRegionEditor', () => {
       expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
-    test('displays the start error message when validation fails', () => {
-      const startErrorMessage = faker.lorem.words();
-
-      wrapper.setProps({
-        isActive: true,
-        validationInfo: {
-          ...createValidationInfo(),
-          ...{
-            start: {
-              error_code: null,
-              error_message: startErrorMessage,
-              is_valid: false,
-              value: 0
-            }
-          }
-        }
+    describe('on validation failure', () => {
+      afterEach(() => {
+        jest.restoreAllMocks();
       });
 
-      wrapper.update();
-      expect(
+      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
+      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+      const startError = faker.lorem.words();
+      const endError = faker.lorem.words();
+
+      test('displays the start error message', () => {
+        jest
+          .spyOn(browserHelper, 'validateRegion')
+          .mockImplementation(
+            async (params: {
+              regionInput: string;
+              genomeId: string | null;
+              onSuccess: (regionId: string) => void;
+              onError: (errorMessages: any) => void;
+            }) => {
+              params.onError({
+                startError,
+                endError
+              });
+            }
+          );
+
         wrapper
-          .find('[role="startInputGroup"]')
-          .find(Tooltip)
-          .props().children
-      ).toBe(startErrorMessage);
+          .find(Input)
+          .first()
+          .simulate('change', { target: { value: locationStartInput } });
+
+        wrapper
+          .find(Input)
+          .last()
+          .simulate('change', {
+            target: { value: locationEndInput }
+          });
+
+        wrapper.find('form').simulate('submit');
+
+        expect(
+          wrapper
+            .find('[role="startInputGroup"]')
+            .find(Tooltip)
+            .props().children
+        ).toBe(startError);
+      });
+
+      test('displays the end error message', () => {
+        jest
+          .spyOn(browserHelper, 'validateRegion')
+          .mockImplementation(
+            async (params: {
+              regionInput: string;
+              genomeId: string | null;
+              onSuccess: (regionId: string) => void;
+              onError: (errorMessages: any) => void;
+            }) => {
+              params.onError({
+                endError
+              });
+            }
+          );
+
+        wrapper
+          .find(Input)
+          .first()
+          .simulate('change', { target: { value: locationStartInput } });
+
+        wrapper
+          .find(Input)
+          .last()
+          .simulate('change', {
+            target: { value: locationEndInput }
+          });
+
+        wrapper.find('form').simulate('submit');
+
+        expect(
+          wrapper
+            .find('[role="endInputGroup"]')
+            .find(Tooltip)
+            .props().children
+        ).toBe(endError);
+      });
     });
 
-    test('displays the end error message when validation fails', () => {
-      const endErrorMessage = faker.lorem.words();
+    describe('on validation success', () => {
+      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
+      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+      const regionId = faker.lorem.words();
 
-      wrapper.setProps({
-        isActive: true,
-        validationInfo: {
-          ...createValidationInfo(),
-          ...{
-            end: {
-              error_code: null,
-              error_message: endErrorMessage,
-              is_valid: false,
-              value: 0
+      beforeEach(() => {
+        jest
+          .spyOn(browserHelper, 'validateRegion')
+          .mockImplementation(
+            async (params: {
+              regionInput: string;
+              genomeId: string | null;
+              onSuccess: (regionId: string) => void;
+              onError: (errorMessages: any) => void;
+            }) => {
+              params.onSuccess(regionId);
             }
-          }
-        }
+          );
       });
 
-      wrapper.update();
-      expect(
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      // TODO: Test for focus object change.
+      // This can be done if <Select /> can be tested for change
+
+      test('changes the browser location in same region if stick/chromosome is the same', () => {
         wrapper
-          .find('[role="endInputGroup"]')
-          .find(Tooltip)
-          .props().children
-      ).toBe(endErrorMessage);
+          .find(Input)
+          .first()
+          .simulate('change', { target: { value: locationStartInput } });
+        wrapper
+          .find(Input)
+          .last()
+          .simulate('change', { target: { value: locationEndInput } });
+        wrapper.find('form').simulate('submit');
+
+        const [stick] = wrapper.props().chrLocation;
+        const newChrLocation: ChrLocation = [
+          stick,
+          getNumberWithoutCommas(locationStartInput),
+          getNumberWithoutCommas(locationEndInput)
+        ];
+
+        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalledWith(
+          wrapper.props().activeGenomeId,
+          newChrLocation
+        );
+      });
     });
   });
 });
