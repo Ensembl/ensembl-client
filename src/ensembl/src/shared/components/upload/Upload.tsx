@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import get from 'lodash/get';
-import forEach from 'lodash/forEach';
 import classNames from 'classnames';
 
 import windowService from 'src/services/window-service';
@@ -106,7 +105,7 @@ const Upload = (props: UploadProps) => {
 
       const { files } = e.dataTransfer;
 
-      forEach(files, (file) => {
+      [...files].forEach((file) => {
         const fileReader = windowService.getFileReader();
         fileReaders.push(fileReader);
         totalPendingFilesToRead++;
@@ -134,7 +133,7 @@ const Upload = (props: UploadProps) => {
       return;
     }
 
-    forEach(files, (file) => {
+    [...files].forEach((file) => {
       const fileReader = windowService.getFileReader();
       fileReaders.push(fileReader);
       totalPendingFilesToRead++;
@@ -170,7 +169,6 @@ const Upload = (props: UploadProps) => {
       onDragLeave={handleDragOut}
       onDragOver={handleDrag}
       onDrop={handleDrop}
-      htmlFor={props.id}
     >
       <input
         type="file"
@@ -189,7 +187,6 @@ Upload.defaultProps = {
   callbackWithFiles: false,
   allowMultiple: true,
   fileReaderMethod: FileReaderMethod.TEXT,
-  id: 'file',
   label: 'Click or Drag file here to upload'
 };
 

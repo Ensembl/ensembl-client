@@ -20,7 +20,6 @@ const Wrapper = (props: any) => {
 
   return (
     <div className={styles.defaultWrapper}>
-      <div></div>
       <Upload onChange={onchangeHandler} {...otherProps} />
     </div>
   );
