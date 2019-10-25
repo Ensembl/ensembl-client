@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
@@ -137,7 +138,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
       )}
       <div className={browserImageClassNames}>
         {props.regionEditorActive || props.regionFieldActive ? (
-          <div className={browserStyles.browserOverlay}></div>
+          <Overlay />
         ) : null}
         <div
           id={BROWSER_CONTAINER_ID}

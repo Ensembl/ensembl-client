@@ -16,7 +16,7 @@ describe('<BrowserCog />', () => {
 
   const defaultProps: BrowserCogProps = {
     cogActivated: true,
-    index: faker.lorem.words(),
+    trackId: faker.lorem.words(),
     updateSelectedCog: jest.fn()
   };
 

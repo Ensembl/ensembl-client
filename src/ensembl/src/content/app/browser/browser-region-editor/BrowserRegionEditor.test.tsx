@@ -9,8 +9,9 @@ import {
 import Input from 'src/shared/components/input/Input';
 import Select from 'src/shared/components/select/Select';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { createGenomeKaryotypes } from 'tests/fixtures/genomes';
+import { createGenomeKaryotype } from 'tests/fixtures/genomes';
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
@@ -18,6 +19,10 @@ import {
 import { createChrLocationValues } from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
 import { ChrLocation } from '../browserState';
+
+jest.mock('src/shared/components/overlay/Overlay', () => () => (
+  <div>Overlay</div>
+));
 
 describe('<BrowserRegionEditor', () => {
   afterEach(() => {
@@ -28,7 +33,7 @@ describe('<BrowserRegionEditor', () => {
   const defaultProps: BrowserRegionEditorProps = {
     activeGenomeId: faker.lorem.words(),
     chrLocation: initialChrLocation,
-    genomeKaryotypes: createGenomeKaryotypes(),
+    genomeKaryotype: createGenomeKaryotype(),
     isActive: true,
     isDisabled: false,
     changeBrowserLocation: jest.fn(),
@@ -58,7 +63,7 @@ describe('<BrowserRegionEditor', () => {
 
     test('has an overlay on top when region field is active', () => {
       wrapper.setProps({ isDisabled: true });
-      expect(wrapper.find('.browserOverlay').length).toBe(1);
+      expect(wrapper.find(Overlay).length).toBe(1);
     });
   });
 
@@ -68,40 +73,8 @@ describe('<BrowserRegionEditor', () => {
       expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
-    test('applies correct value on change', () => {
-      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
-      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
-
-      // TODO:
-      // Couldn't find a good way to test this for <Select />. So write tests once it is figured out.
-
-      wrapper
-        .find(Input)
-        .first()
-        .simulate('change', { target: { value: locationStartInput } });
-
-      expect(
-        wrapper
-          .find(Input)
-          .first()
-          .props().value
-      ).toBe(locationStartInput);
-
-      wrapper
-        .find(Input)
-        .last()
-        .simulate('change', { target: { value: locationEndInput } });
-
-      expect(
-        wrapper
-          .find(Input)
-          .last()
-          .props().value
-      ).toBe(locationEndInput);
-    });
-
     test('validates region input on submit', () => {
-      const [region] = initialChrLocation;
+      const [stick] = initialChrLocation;
       const locationStartInput = getCommaSeparatedNumber(faker.random.number());
       const locationEndInput = getCommaSeparatedNumber(faker.random.number());
       const validateRegion = jest.fn();
@@ -125,7 +98,7 @@ describe('<BrowserRegionEditor', () => {
       wrapper.find('form').simulate('submit');
 
       expect(validateRegion).toHaveBeenCalledWith({
-        regionInput: `${region}:${locationStartInput}-${locationEndInput}`,
+        regionInput: `${stick}:${locationStartInput}-${locationEndInput}`,
         genomeId: wrapper.props().activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
@@ -280,10 +253,10 @@ describe('<BrowserRegionEditor', () => {
         jest.restoreAllMocks();
       });
 
-      // TODO: Test for focus object change.
-      // This can be done if <Select /> can be tested for change
+      // TODO:
+      // Test focus object change on submission. This can be done if <Select /> value can be changed.
 
-      test('changes the browser location in same region if stick/chromosome is the same', () => {
+      test('changes the browser location in same region if stick is the same', () => {
         wrapper
           .find(Input)
           .first()

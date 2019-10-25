@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
@@ -14,13 +15,13 @@ import {
   getBrowserActiveGenomeId,
   getChrLocation
 } from '../browserSelectors';
-import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
+import { getGenomeKaryotype } from 'src/genome/genomeSelectors';
 import {
   changeBrowserLocation,
   changeFocusObject,
   toggleRegionEditorActive
 } from '../browserActions';
-import { GenomeKaryotype } from 'src/genome/genomeTypes';
+import { GenomeKaryotypeItem } from 'src/genome/genomeTypes';
 
 import {
   getCommaSeparatedNumber,
@@ -38,7 +39,7 @@ import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 export type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation | null;
-  genomeKaryotypes: GenomeKaryotype[] | null;
+  genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
   isDisabled: boolean;
   changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
@@ -47,10 +48,10 @@ export type BrowserRegionEditorProps = {
 };
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
-  const genomeKaryotypes = props.genomeKaryotypes as GenomeKaryotype[];
-  const [region, locationStart, locationEnd] = props.chrLocation as ChrLocation;
+  const genomeKaryotypes = props.genomeKaryotype as GenomeKaryotypeItem[];
+  const [stick, locationStart, locationEnd] = props.chrLocation as ChrLocation;
 
-  const [chrInput, setChrInput] = useState(region);
+  const [stickInput, setStickInput] = useState(stick);
   const [locationStartInput, setLocationStartInput] = useState(
     getCommaSeparatedNumber(locationStart)
   );
@@ -68,11 +69,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     genomeKaryotypes.map(({ name }) => ({
       value: name,
       label: name,
-      isSelected: chrInput === name
+      isSelected: stickInput === name
     }));
 
-  const updateRegionInput = (value: string) => {
-    setChrInput(value);
+  const updateStickInput = (value: string) => {
+    setStickInput(value);
     updateLocationStartInput('1');
 
     const filteredKaryotypes = genomeKaryotypes.filter(
@@ -113,7 +114,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     const locationStartStr = getCommaSeparatedNumber(locationStart);
     const locationEndStr = getCommaSeparatedNumber(locationEnd);
 
-    updateRegionInput(region);
+    updateStickInput(region);
     updateLocationStartInput(locationStartStr);
     updateLocationEndInput(locationEndStr);
   };
@@ -150,12 +151,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     resetForm();
 
     const newChrLocation: ChrLocation = [
-      chrInput,
+      stickInput,
       getNumberWithoutCommas(locationStartInput),
       getNumberWithoutCommas(locationEndInput)
     ];
 
-    if (chrInput === region) {
+    if (stickInput === stick) {
       changeLocation(newChrLocation);
     } else {
       props.changeFocusObject(regionId);
@@ -171,7 +172,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     event.preventDefault();
 
     validateRegion({
-      regionInput: `${chrInput}:${locationStartInput}-${locationEndInput}`,
+      regionInput: `${stickInput}:${locationStartInput}-${locationEndInput}`,
       genomeId: props.activeGenomeId,
       onSuccess: onValidationSuccess,
       onError: onValidationError
@@ -206,14 +207,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   return (
     <div className={regionEditorClassNames}>
-      {props.isDisabled ? (
-        <div className={browserStyles.browserOverlay}></div>
-      ) : null}
+      {props.isDisabled ? <Overlay /> : null}
       <form onSubmit={handleSubmit} onFocus={handleFocus}>
         <div className={styles.inputGroup}>
           <label className="show-for-large">Chr</label>
           <Select
-            onSelect={updateRegionInput}
+            onSelect={updateStickInput}
             options={getKaryotypeOptions()}
           ></Select>
         </div>
@@ -278,7 +277,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId: getBrowserActiveGenomeId(state),
     chrLocation: getChrLocation(state),
-    genomeKaryotypes: getGenomeKaryotypes(state),
+    genomeKaryotype: getGenomeKaryotype(state),
     isActive: getRegionEditorActive(state),
     isDisabled: getRegionFieldActive(state)
   };

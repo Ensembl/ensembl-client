@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+import { Status } from 'src/shared/types/status';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { TrackPanelBarItem } from 'src/content/app/browser/track-panel/track-panel-bar/trackPanelBarConfig';
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
@@ -10,8 +10,8 @@ import { ReactComponent as bookmarkIcon } from 'static/img/track-panel/bookmark.
 export const createTrackStates = (): TrackStates => ({
   triticum_aestivum_GCA_900519105_1: {
     [faker.lorem.words()]: {
-      [faker.lorem.words()]: ImageButtonStatus.ACTIVE,
-      [faker.lorem.words()]: ImageButtonStatus.INACTIVE
+      [faker.lorem.words()]: Status.ACTIVE,
+      [faker.lorem.words()]: Status.INACTIVE
     }
   }
 });

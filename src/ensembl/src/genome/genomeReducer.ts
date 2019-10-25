@@ -8,8 +8,8 @@ import {
   defaultGenomeInfoState,
   GenomeTrackCategoriesState,
   defaultGenomeTrackCategoriesState,
-  defaultGenomeKaryotypesState,
-  GenomeKaryotypesState
+  defaultGenomeKaryotypeState,
+  GenomeKaryotypeState
 } from './genomeState';
 import { GenomeInfoData } from './genomeTypes';
 
@@ -86,32 +86,32 @@ function genomeTrackCategories(
   }
 }
 
-function genomeKaryotypes(
-  state: GenomeKaryotypesState = defaultGenomeKaryotypesState,
+function genomeKaryotype(
+  state: GenomeKaryotypeState = defaultGenomeKaryotypeState,
   action: ActionType<typeof genomeActions>
-): GenomeKaryotypesState {
+): GenomeKaryotypeState {
   switch (action.type) {
-    case getType(genomeActions.fetchGenomeKaryotypesAsyncActions.failure):
+    case getType(genomeActions.fetchGenomeKaryotypeAsyncActions.failure):
       return {
         ...state,
-        genomeKaryotypesFetchFailed: true,
-        genomeKaryotypesFetching: false
+        genomeKaryotypeFetchFailed: true,
+        genomeKaryotypeFetching: false
       };
-    case getType(genomeActions.fetchGenomeKaryotypesAsyncActions.request):
+    case getType(genomeActions.fetchGenomeKaryotypeAsyncActions.request):
       return {
         ...state,
-        genomeKaryotypesFetchFailed: false,
-        genomeKaryotypesFetching: true
+        genomeKaryotypeFetchFailed: false,
+        genomeKaryotypeFetching: true
       };
-    case getType(genomeActions.fetchGenomeKaryotypesAsyncActions.success):
+    case getType(genomeActions.fetchGenomeKaryotypeAsyncActions.success):
       return {
         ...state,
-        genomeKaryotypesData: {
-          ...state.genomeKaryotypesData,
+        genomeKaryotypeData: {
+          ...state.genomeKaryotypeData,
           [action.payload.activeGenomeId]: [...action.payload.data]
         },
-        genomeKaryotypesFetchFailed: false,
-        genomeKaryotypesFetching: false
+        genomeKaryotypeFetchFailed: false,
+        genomeKaryotypeFetching: false
       };
     default:
       return state;
@@ -121,5 +121,5 @@ function genomeKaryotypes(
 export default combineReducers({
   genomeInfo,
   genomeTrackCategories,
-  genomeKaryotypes
+  genomeKaryotype
 });

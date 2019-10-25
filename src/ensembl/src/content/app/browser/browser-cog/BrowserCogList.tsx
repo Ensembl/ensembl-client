@@ -30,7 +30,7 @@ type BrowserCogListProps = {
   selectedCog: string | null;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
-  updateSelectedCog: (index: string | null) => void;
+  updateSelectedCog: (trackId: string | null) => void;
 };
 
 type BpaneScrollPayload = {
@@ -99,7 +99,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
           cogActivated={props.selectedCog === name}
-          index={name}
+          trackId={name}
           updateSelectedCog={props.updateSelectedCog}
         />
       </div>

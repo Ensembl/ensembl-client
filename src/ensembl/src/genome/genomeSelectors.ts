@@ -34,15 +34,15 @@ export const getGenomeTrackCategoriesFetching = (state: RootState) =>
 export const getGenomeTrackCategoriesFetchFailed = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesFetchFailed;
 
-export const getGenomeKaryotypes = (state: RootState) => {
+export const getGenomeKaryotype = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return activeGenomeId
-    ? state.genome.genomeKaryotypes.genomeKaryotypesData[activeGenomeId]
+    ? state.genome.genomeKaryotype.genomeKaryotypeData[activeGenomeId]
     : null;
 };
 
-export const getGenomeKaryotypesFetching = (state: RootState) =>
-  state.genome.genomeKaryotypes.genomeKaryotypesFetching;
+export const getGenomeKaryotypeFetching = (state: RootState) =>
+  state.genome.genomeKaryotype.genomeKaryotypeFetching;
 
-export const getGenomeKaryotypesFetchFailed = (state: RootState) =>
-  state.genome.genomeKaryotypes.genomeKaryotypesFetchFailed;
+export const getGenomeKaryotypeFetchFailed = (state: RootState) =>
+  state.genome.genomeKaryotype.genomeKaryotypeFetchFailed;

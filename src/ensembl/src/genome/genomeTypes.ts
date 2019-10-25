@@ -29,14 +29,14 @@ export type GenomeTrackCategories = {
   [genomeId: string]: GenomeTrackCategory[];
 };
 
-export enum GenomeKaryotypeType {
+export enum GenomeKaryotypeItemType {
   CHROMOSOME = 'chromosome'
 }
 
-export type GenomeKaryotype = {
+export type GenomeKaryotypeItem = {
   is_chromosome: boolean;
   is_circular: boolean;
   length: number;
   name: string;
-  type: GenomeKaryotypeType;
+  type: GenomeKaryotypeItemType;
 };

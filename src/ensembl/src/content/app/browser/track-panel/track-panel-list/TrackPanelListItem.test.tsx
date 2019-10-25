@@ -6,12 +6,11 @@ import {
   TrackPanelListItem,
   TrackPanelListItemProps
 } from './TrackPanelListItem';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { createMainTrackInfo } from 'tests/fixtures/track-panel';
 import browserMessagingService from '../../browser-messaging-service';
+import { createMainTrackInfo } from 'tests/fixtures/track-panel';
+import { Status } from 'src/shared/types/status';
 
 describe('<TrackPanelListItem />', () => {
   afterEach(() => {
@@ -20,8 +19,8 @@ describe('<TrackPanelListItem />', () => {
 
   const defaultProps: TrackPanelListItemProps = {
     categoryName: faker.lorem.words(),
-    trackStatus: ImageButtonStatus.ACTIVE,
-    defaultTrackStatus: ImageButtonStatus.ACTIVE,
+    trackStatus: Status.ACTIVE,
+    defaultTrackStatus: Status.ACTIVE,
     track: createMainTrackInfo(),
     activeGenomeId: faker.lorem.words(),
     isDrawerOpened: false,
@@ -47,10 +46,7 @@ describe('<TrackPanelListItem />', () => {
       jest.spyOn(browserMessagingService, 'send');
 
       mount(
-        <TrackPanelListItem
-          {...defaultProps}
-          trackStatus={ImageButtonStatus.INACTIVE}
-        />
+        <TrackPanelListItem {...defaultProps} trackStatus={Status.INACTIVE} />
       );
       expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
 

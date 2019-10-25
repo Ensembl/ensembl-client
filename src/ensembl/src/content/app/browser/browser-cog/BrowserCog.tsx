@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  CSSProperties,
-  useState,
-  useEffect
-} from 'react';
+import React, { useCallback, CSSProperties, useState, useEffect } from 'react';
 import analyticsTracking from 'src/services/analytics-service';
 
 import cogOnIcon from 'static/img/shared/cog-on.svg';
@@ -14,22 +8,20 @@ import { useTransition, animated } from 'react-spring';
 
 export type BrowserCogProps = {
   cogActivated: boolean;
-  index: string;
-  updateSelectedCog: (index: string | null) => void;
+  trackId: string;
+  updateSelectedCog: (trackId: string | null) => void;
 };
 
-const BrowserCog: FunctionComponent<BrowserCogProps> = (
-  props: BrowserCogProps
-) => {
-  const { cogActivated, updateSelectedCog, index } = props;
+const BrowserCog = (props: BrowserCogProps) => {
+  const { cogActivated, updateSelectedCog, trackId } = props;
 
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
-      updateSelectedCog(index);
+      updateSelectedCog(trackId);
 
       analyticsTracking.trackEvent({
         category: 'track_settings',
-        label: index,
+        label: trackId,
         action: 'opened'
       });
     } else {

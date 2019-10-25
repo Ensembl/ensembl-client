@@ -4,6 +4,7 @@ import classNames from 'classnames';
 
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
@@ -51,9 +52,9 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
   const getRegionInputWithRegion = (input: string) => {
-    const [chrCode] = chrLocation as ChrLocation;
+    const [stick] = chrLocation as ChrLocation;
 
-    return input.includes(':') ? input : `${chrCode}:${input}`;
+    return input.includes(':') ? input : `${stick}:${input}`;
   };
 
   const resetForm = () => {
@@ -71,12 +72,12 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const onValidationSuccess = (regionId: string) => {
     resetForm();
 
-    const [chrCode] = chrLocation as ChrLocation;
-    const regionInput = regionFieldInput.includes(':')
+    const [stick] = chrLocation as ChrLocation;
+    const stickInput = regionFieldInput.includes(':')
       ? regionFieldInput.split(':')[0]
-      : chrCode;
+      : stick;
 
-    if (regionInput === chrCode) {
+    if (stickInput === stick) {
       props.changeBrowserLocation(
         props.activeGenomeId as string,
         getChrLocationFromStr(getRegionInputWithRegion(regionFieldInput))
@@ -120,9 +121,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   return (
     <div className={regionFieldClassNames}>
-      {props.isDisabled ? (
-        <div className={browserStyles.browserOverlay}></div>
-      ) : null}
+      {props.isDisabled ? <Overlay /> : null}
       <form onSubmit={handleSubmit}>
         <label className="show-for-large">Region or location</label>
         <Input

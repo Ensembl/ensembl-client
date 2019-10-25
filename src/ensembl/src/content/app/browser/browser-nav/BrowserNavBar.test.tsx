@@ -18,7 +18,7 @@ describe('<BrowserNavBar />', () => {
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
           chrLocation={chrLocation}
-          genomeKaryotypes={[]}
+          genomeKaryotype={[]}
           isTrackPanelOpened={true}
           regionEditorActive={true}
           regionFieldActive={false}
@@ -33,7 +33,7 @@ describe('<BrowserNavBar />', () => {
         <BrowserNavBar
           browserNavStates={browserStates as BrowserNavStates}
           chrLocation={chrLocation}
-          genomeKaryotypes={[]}
+          genomeKaryotype={[]}
           isTrackPanelOpened={false}
           regionEditorActive={true}
           regionFieldActive={false}

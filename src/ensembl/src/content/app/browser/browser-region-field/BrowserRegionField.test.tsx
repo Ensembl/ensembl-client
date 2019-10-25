@@ -8,11 +8,16 @@ import {
 } from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
 import { createChrLocationValues } from 'tests/fixtures/browser';
 
 import * as browserHelper from '../browserHelper';
+
+jest.mock('src/shared/components/overlay/Overlay', () => () => (
+  <div>Overlay</div>
+));
 
 describe('<BrowserRegionField', () => {
   afterEach(() => {
@@ -47,7 +52,7 @@ describe('<BrowserRegionField', () => {
 
     test('has an overlay on top when region editor is active', () => {
       wrapper.setProps({ isDisabled: true });
-      expect(wrapper.find('.browserOverlay').length).toBe(1);
+      expect(wrapper.find(Overlay).length).toBe(1);
     });
   });
 

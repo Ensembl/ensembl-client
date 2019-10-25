@@ -4,8 +4,7 @@ import times from 'lodash/times';
 import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import {
   GenomeTrackCategory,
-  GenomeKaryotype,
-  GenomeKaryotypeType
+  GenomeKaryotypeItemType
 } from 'src/genome/genomeTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
@@ -35,11 +34,11 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
   }
 ];
 
-export const createGenomeKaryotypes = () =>
+export const createGenomeKaryotype = () =>
   times(25, () => ({
     is_chromosome: true,
     is_circular: false,
     length: faker.random.number(),
     name: faker.lorem.words(),
-    type: GenomeKaryotypeType.CHROMOSOME
+    type: GenomeKaryotypeItemType.CHROMOSOME
   }));

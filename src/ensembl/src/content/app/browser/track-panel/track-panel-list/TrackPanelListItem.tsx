@@ -7,9 +7,7 @@ import { RootState } from 'src/store';
 import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import {
   TrackItemColour,
@@ -17,6 +15,7 @@ import {
   TrackId,
   TrackActivityStatus
 } from '../trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 import {
   updateTrackStatesAndSave,
@@ -37,8 +36,6 @@ import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
-
-import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelListItem.scss';
 
@@ -149,7 +146,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     });
   };
 
-  const updateGenomeBrowser = (status: ImageButtonStatus) => {
+  const updateGenomeBrowser = (status: Status) => {
     const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
 
     const payload = {

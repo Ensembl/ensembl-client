@@ -7,12 +7,14 @@ import { Browser, BrowserProps, ExampleObjectLinks } from './Browser';
 import BrowserImage from './browser-image/BrowserImage';
 import TrackPanel from './track-panel/TrackPanel';
 
+import { createChrLocationValues } from 'tests/fixtures/browser';
+
 jest.mock('./browser-bar/BrowserBar', () => () => <div>BrowserBar</div>);
 jest.mock('./browser-image/BrowserImage', () => () => <div>BrowserImage</div>);
 jest.mock('./browser-nav/BrowserNavBar', () => () => <div>BrowserNavBar</div>);
 jest.mock('./track-panel/TrackPanel', () => () => <div>TrackPanel</div>);
-jest.mock('src/shared/components/app-bar/AppBar', () => () => (
-  <div>AppBar</div>
+jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
+  <div>BrowserAppBar</div>
 ));
 jest.mock('static/browser/browser.js', () => {});
 
@@ -27,11 +29,13 @@ describe('<Browser />', () => {
     allActiveEnsObjectIds: {
       [faker.lorem.words()]: faker.lorem.words()
     },
-    allChrLocations: { [faker.lorem.words()]: ['1', 10, 5000] },
+    allChrLocations: {
+      [faker.lorem.words()]: createChrLocationValues().tupleValue
+    },
     browserActivated: false,
     browserNavOpened: false,
     browserQueryParams: {},
-    chrLocation: ['1', 10, 5000],
+    chrLocation: createChrLocationValues().tupleValue,
     isDrawerOpened: false,
     isTrackPanelOpened: false,
     launchbarExpanded: false,
@@ -90,8 +94,13 @@ describe('<Browser />', () => {
   describe('behaviour', () => {
     test('fetches genome data when selected genome changes', () => {
       const wrapper = mountBrowserComponent({ activeGenomeId: null });
+      expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(0);
+
       wrapper.setProps({ activeGenomeId: faker.lorem.words() });
       expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(1);
+
+      wrapper.setProps({ activeGenomeId: faker.lorem.words() });
+      expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(2);
     });
 
     test('closes drawer when clicked on genome browser area', () => {

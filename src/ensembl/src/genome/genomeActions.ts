@@ -6,7 +6,7 @@ import { RootState } from 'src/store';
 import {
   GenomeInfoData,
   GenomeTrackCategories,
-  GenomeKaryotype
+  GenomeKaryotypeItem
 } from './genomeTypes';
 
 import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
@@ -14,7 +14,7 @@ import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import {
   getGenomeInfoById,
   getGenomeTrackCategories,
-  getGenomeKaryotypes
+  getGenomeKaryotype
 } from 'src/genome/genomeSelectors';
 import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
@@ -31,7 +31,7 @@ export const fetchGenomeData: ActionCreator<
   await Promise.all([
     dispatch(fetchGenomeInfo(genomeId)),
     dispatch(fetchGenomeTrackCategories(genomeId)),
-    dispatch(fetchGenomeKaryotypes(genomeId))
+    dispatch(fetchGenomeKaryotype(genomeId))
   ]);
 
   dispatch(ensureSpeciesIsCommitted(genomeId));
@@ -100,36 +100,36 @@ export const fetchGenomeTrackCategories: ActionCreator<
   }
 };
 
-export const fetchGenomeKaryotypesAsyncActions = createAsyncAction(
-  'genome/fetch_genome_karyotypes_request',
-  'genome/fetch_genome_karyotypes_success',
-  'genome/fetch_genome_karyotypes_failure'
+export const fetchGenomeKaryotypeAsyncActions = createAsyncAction(
+  'genome/fetch_genome_karyotype_request',
+  'genome/fetch_genome_karyotype_success',
+  'genome/fetch_genome_karyotype_failure'
 )<string, any, Error>();
 
-export const fetchGenomeKaryotypes: ActionCreator<
+export const fetchGenomeKaryotype: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
-    const currentGenomeKaryotypes:
-      | GenomeKaryotype[]
-      | null = getGenomeKaryotypes(getState());
+    const currentGenomeKaryotype:
+      | GenomeKaryotypeItem[]
+      | null = getGenomeKaryotype(getState());
 
-    if (currentGenomeKaryotypes) {
+    if (currentGenomeKaryotype) {
       return;
     }
 
-    dispatch(fetchGenomeKaryotypesAsyncActions.request(genomeId));
+    dispatch(fetchGenomeKaryotypeAsyncActions.request(genomeId));
 
     const url = `/api/genome/karyotype?genome_id=${genomeId}`;
     const response = await apiService.fetch(url);
 
     dispatch(
-      fetchGenomeKaryotypesAsyncActions.success({
+      fetchGenomeKaryotypeAsyncActions.success({
         data: response,
         activeGenomeId: getBrowserActiveGenomeId(getState())
       })
     );
   } catch (error) {
-    dispatch(fetchGenomeKaryotypesAsyncActions.failure(error));
+    dispatch(fetchGenomeKaryotypeAsyncActions.failure(error));
   }
 };

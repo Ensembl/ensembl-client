@@ -20,15 +20,15 @@ import {
 } from '../browserActions';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates, ChrLocation } from '../browserState';
-import { getGenomeKaryotypes } from 'src/genome/genomeSelectors';
-import { GenomeKaryotype } from 'src/genome/genomeTypes';
+import { getGenomeKaryotype } from 'src/genome/genomeSelectors';
+import { GenomeKaryotypeItem } from 'src/genome/genomeTypes';
 
 import styles from './BrowserNavBar.scss';
 
 export type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
   chrLocation: ChrLocation | null;
-  genomeKaryotypes: GenomeKaryotype[] | null;
+  genomeKaryotype: GenomeKaryotypeItem[] | null;
   isTrackPanelOpened: boolean;
   regionEditorActive: boolean;
   regionFieldActive: boolean;
@@ -71,7 +71,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
       </dd>
       <dd>{props.chrLocation ? <BrowserRegionField /> : null}</dd>
       <dd>
-        {props.chrLocation && props.genomeKaryotypes ? (
+        {props.chrLocation && props.genomeKaryotype ? (
           <BrowserRegionEditor />
         ) : null}
       </dd>
@@ -82,7 +82,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
 const mapStateToProps = (state: RootState) => ({
   browserNavStates: getBrowserNavStates(state),
   chrLocation: getChrLocation(state),
-  genomeKaryotypes: getGenomeKaryotypes(state),
+  genomeKaryotype: getGenomeKaryotype(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
   regionEditorActive: getRegionEditorActive(state),
   regionFieldActive: getRegionFieldActive(state)
