@@ -6,9 +6,11 @@
 }
 
 .customizedUpload {
-  border-color: $grey;
+  border-color: $red;
+  color: $red;
+}
 
-  label {
-    color: red;
-  }
+.customizedUploadActive {
+  border-color: $green;
+  color: $green;
 }

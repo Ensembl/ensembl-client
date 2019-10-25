@@ -1,16 +1,19 @@
 @import 'src/styles/common';
 
 .defaultUpload {
-  border: 1px dashed $blue;
+  border: 1px dashed $grey;
   color: $blue;
+  color: #33adff;
   display: inline-block;
   position: relative;
+  padding: 10px;
+  cursor: pointer;
+  transition: border 0.4s;
+}
 
-  label {
-    display: inline-block;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
+.defaultUploadActive {
+  border: 1px dashed $blue;
+  transition: border 0.4s;
 }
 
 .fileInput {

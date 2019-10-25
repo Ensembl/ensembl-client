@@ -3,9 +3,16 @@ import get from 'lodash/get';
 import forEach from 'lodash/forEach';
 import classNames from 'classnames';
 
-import Overlay from 'src/shared/components/overlay/Overlay';
+import windowService from 'src/services/window-service';
 
 import styles from './Upload.scss';
+
+export enum FileReaderMethod {
+  ARRAY_BUFFER = 'readAsArrayBuffer',
+  BINARY_STRING = 'readAsBinaryString',
+  DATA_URL = 'readAsDataURL',
+  TEXT = 'readAsText'
+}
 type PropsForRespondingWithASingleFile = {
   onChange: (file: File) => void;
   callbackWithFiles: true;
@@ -19,9 +26,9 @@ type PropsForRespondingWithMultipleFiles = {
 };
 
 type PropsForRespondingWithContent = {
-  onChange: (content: string) => void;
+  onChange: (contents: string[]) => void;
   callbackWithFiles: false;
-  allowMultiple: true;
+  fileReaderMethod: FileReaderMethod;
 };
 
 type OnChangeProps =
@@ -33,7 +40,11 @@ export type UploadProps = {
   id: string;
   name?: string;
   label: string;
-  className?: string;
+  classNames?: {
+    default?: string;
+    active?: string;
+  };
+  allowMultiple?: boolean;
 } & OnChangeProps;
 
 const Upload = (props: UploadProps) => {
@@ -41,12 +52,14 @@ const Upload = (props: UploadProps) => {
 
   const fileReaders: FileReader[] = [];
   let totalPendingFilesToRead = 0;
-  let dragCounter = 0;
 
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
   const handleDragIn = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dragCounter++;
     if (get(e, 'dataTransfer.items.length', 0) > 0) {
       setDrag(true);
     }
@@ -55,10 +68,21 @@ const Upload = (props: UploadProps) => {
   const handleDragOut = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    dragCounter--;
-    if (dragCounter === 0) {
-      setDrag(false);
+    setDrag(false);
+  };
+
+  const handleFileRead = () => {
+    totalPendingFilesToRead--;
+    // Do not return the content until all files are read
+    if (totalPendingFilesToRead > 0 || props.callbackWithFiles) {
+      return;
     }
+
+    const contents: string[] = fileReaders.map(
+      (fileReader) => fileReader.result as string
+    );
+
+    props.onChange(contents);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -83,30 +107,15 @@ const Upload = (props: UploadProps) => {
       const { files } = e.dataTransfer;
 
       forEach(files, (file) => {
-        const fileReader = new FileReader();
+        const fileReader = windowService.getFileReader();
         fileReaders.push(fileReader);
         totalPendingFilesToRead++;
         fileReader.onloadend = handleFileRead;
-        fileReader.readAsText(file);
+        fileReader[props.fileReaderMethod](file);
       });
 
       e.dataTransfer.clearData();
-      dragCounter = 0;
     }
-  };
-
-  const handleFileRead = () => {
-    totalPendingFilesToRead--;
-    // Do not return the content until all files are read
-    if (totalPendingFilesToRead > 0 || props.callbackWithFiles) {
-      return;
-    }
-
-    const content: string[] = fileReaders.map(
-      (fileReader) => fileReader.result as string
-    );
-
-    props.onChange(content.join('\n'));
   };
 
   const handleFileChosen = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,24 +135,43 @@ const Upload = (props: UploadProps) => {
     }
 
     forEach(files, (file) => {
-      const fileReader = new FileReader();
+      const fileReader = windowService.getFileReader();
       fileReaders.push(fileReader);
       totalPendingFilesToRead++;
       fileReader.onloadend = handleFileRead;
-      fileReader.readAsText(file);
+      fileReader[props.fileReaderMethod](file);
     });
   };
 
-  const className = classNames(styles.defaultUpload, props.className);
+  const getDefaultClassNames = () => {
+    if (!props.classNames || !props.classNames.default) {
+      return styles.defaultUpload;
+    }
+
+    return classNames(styles.defaultUpload, props.classNames.default);
+  };
+
+  const getActiveClassNames = () => {
+    if (!drag) {
+      return;
+    }
+
+    if (!props.classNames || !props.classNames.active) {
+      return styles.defaultUploadActive;
+    }
+
+    return classNames(styles.defaultUploadActive, props.classNames.active);
+  };
 
   return (
-    <span
-      className={className}
+    <label
+      className={`${getDefaultClassNames()} ${getActiveClassNames()}`}
       onDragEnter={handleDragIn}
       onDragLeave={handleDragOut}
+      onDragOver={handleDrag}
       onDrop={handleDrop}
+      htmlFor={props.id}
     >
-      {drag && <Overlay />}
       <input
         type="file"
         id={props.id}
@@ -152,14 +180,15 @@ const Upload = (props: UploadProps) => {
         onChange={(e) => handleFileChosen(e)}
         multiple={props.allowMultiple}
       />
-      <label htmlFor={props.id}>{props.label}</label>
-    </span>
+      {props.label}
+    </label>
   );
 };
 
 Upload.defaultProps = {
   callbackWithFiles: false,
   allowMultiple: true,
+  fileReaderMethod: FileReaderMethod.TEXT,
   id: 'file',
   label: 'Click or Drag file here to upload'
 };

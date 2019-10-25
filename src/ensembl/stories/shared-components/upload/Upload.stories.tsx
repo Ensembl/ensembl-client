@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import Upload from 'src/shared/components/upload/Upload';
+import Upload, { FileReaderMethod } from 'src/shared/components/upload/Upload';
 
 import styles from './Upload.stories.scss';
 
@@ -35,10 +35,25 @@ storiesOf('Components|Shared Components/Upload', module)
   .add('callback with multiple files', () => (
     <Wrapper upload={Upload} callbackWithFiles={true} />
   ))
+  .add('callback with data urls', () => (
+    <Wrapper upload={Upload} fileReaderMethod={FileReaderMethod.DATA_URL} />
+  ))
+  .add('callback with binary string', () => (
+    <Wrapper
+      upload={Upload}
+      fileReaderMethod={FileReaderMethod.BINARY_STRING}
+    />
+  ))
+  .add('callback with array buffer', () => (
+    <Wrapper upload={Upload} fileReaderMethod={FileReaderMethod.ARRAY_BUFFER} />
+  ))
   .add('customized upload', () => (
     <Wrapper
       upload={Upload}
       label="Upload here"
-      className={styles.customizedUpload}
+      classNames={{
+        default: styles.customizedUpload,
+        active: styles.customizedUploadActive
+      }}
     />
   ));
