@@ -14,9 +14,7 @@
   }
 
   .viewport {
-    height: 4px;
     fill: white;
-    width: 50px;
   }
 
   .viewportBorder {
@@ -25,7 +23,6 @@
   }
 
   .focusPointer {
-    transform: translateX(100px);
     fill: #ff9800; // FIXME: variable?
 
     line {
