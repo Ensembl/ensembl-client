@@ -15,7 +15,7 @@ storiesOf('Components|Genome Browser/ChromosomeNavigator', module).add(
         viewportEnd={500000}
         focusRegion={{
           start: 250000,
-          end: 260000
+          end: 255000
         }}
         centromere={{
           start: 150000,

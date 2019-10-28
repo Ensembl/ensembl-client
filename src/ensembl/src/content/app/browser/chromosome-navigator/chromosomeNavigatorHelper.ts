@@ -1,3 +1,6 @@
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { measureText } from 'src/shared/helpers/textHelpers';
+
 import * as constants from './chromosomeNavigatorConstants';
 
 type StyleCalculatorParams = {
@@ -15,6 +18,19 @@ type StyleCalculatorParams = {
   } | null;
 };
 
+type FocusPointerStyles = Array<{
+  arrowhead: {
+    points: string;
+  };
+  line: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  };
+  translateX: number;
+}> | null;
+
 export type CalculatedStyles = {
   viewport: {
     openingBracketShape: string;
@@ -26,18 +42,7 @@ export type CalculatedStyles = {
       height: number;
     };
   };
-  focusPointers: Array<{
-    arrowhead: {
-      points: string;
-    };
-    line: {
-      x1: number;
-      y1: number;
-      x2: number;
-      y2: number;
-    };
-    translateX: number;
-  }> | null;
+  focusPointers: FocusPointerStyles;
   centromere: {
     centre: {
       cx: number;
@@ -51,6 +56,13 @@ export type CalculatedStyles = {
       width: number;
     };
   } | null;
+  labels: Array<{
+    text: string;
+    styles: {
+      x: number;
+      y: number;
+    };
+  }> | null;
 };
 
 type Scale = (input: number) => number;
@@ -59,11 +71,14 @@ export const calculateStyles = (
   params: StyleCalculatorParams
 ): CalculatedStyles => {
   const scale = getScale(params.containerWidth, params.length);
+  const focusPointerStyles = getFocusPointerStyles(params, scale);
+  const labelStyles = getLabelStyles(params, focusPointerStyles);
 
   return {
     viewport: getViewportStyles(params, scale),
-    focusPointers: getFocusPointerStyles(params, scale),
-    centromere: getCentromereStyles(params, scale)
+    focusPointers: focusPointerStyles,
+    centromere: getCentromereStyles(params, scale),
+    labels: labelStyles
   };
 };
 
@@ -102,7 +117,6 @@ const getViewportStyles = (params: StyleCalculatorParams, scale: Scale) => {
   ].join(' ');
 
   const viewportWidth = viewportEndX - viewportStartX;
-  console.log('viewportEndX', viewportEndX, 'viewportStartX', viewportStartX);
 
   return {
     openingBracketShape,
@@ -204,5 +218,52 @@ const getCentromereStyles = (params: StyleCalculatorParams, scale: Scale) => {
         width: constants.CENTROMERE_REGION_WIDTH
       }
     };
+  }
+};
+
+const getLabelStyles = (
+  params: StyleCalculatorParams,
+  focusPointerStyles: FocusPointerStyles
+) => {
+  if (!focusPointerStyles || !params.focusRegion) {
+    return null;
+  }
+
+  if (focusPointerStyles.length === 1) {
+    // there is only one pointer at the focus region
+    const formattedStart = getCommaSeparatedNumber(params.focusRegion.start);
+    const formattedEnd = getCommaSeparatedNumber(params.focusRegion.end);
+    const labelText = `${formattedStart}-${formattedEnd}`;
+    const labelFont = '11px "IBM Plex Mono"';
+    const { width: labelWidth } = measureText({
+      text: labelText,
+      font: labelFont
+    });
+    const halfLabelWidth = Math.round(labelWidth / 2);
+    const labelX =
+      focusPointerStyles[0].translateX -
+      halfLabelWidth +
+      constants.POINTER_ARROWHEAD_WIDTH / 2;
+
+    return [
+      {
+        text: labelText,
+        styles: {
+          x: labelX,
+          y: -5
+        }
+      }
+    ];
+  } else {
+    // there are two pointers at the focus region
+    return [
+      {
+        text: 'Hello!',
+        styles: {
+          x: 100,
+          y: -5
+        }
+      }
+    ];
   }
 };

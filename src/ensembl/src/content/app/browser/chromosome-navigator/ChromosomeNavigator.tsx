@@ -81,6 +81,12 @@ export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
               <polygon points={pointerStyles.arrowhead.points} />
             </g>
           ))}
+        {calculatedStyles.labels &&
+          calculatedStyles.labels.map((label, index) => (
+            <text key={index} {...label.styles} className={styles.label}>
+              {label.text}
+            </text>
+          ))}
       </svg>
     </div>
   );
