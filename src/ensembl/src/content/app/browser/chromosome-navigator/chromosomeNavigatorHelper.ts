@@ -229,12 +229,13 @@ const getLabelStyles = (
     return null;
   }
 
+  const formattedStart = getCommaSeparatedNumber(params.focusRegion.start);
+  const formattedEnd = getCommaSeparatedNumber(params.focusRegion.end);
+  const labelFont = '11px "IBM Plex Mono"';
+
   if (focusPointerStyles.length === 1) {
     // there is only one pointer at the focus region
-    const formattedStart = getCommaSeparatedNumber(params.focusRegion.start);
-    const formattedEnd = getCommaSeparatedNumber(params.focusRegion.end);
     const labelText = `${formattedStart}-${formattedEnd}`;
-    const labelFont = '11px "IBM Plex Mono"';
     const { width: labelWidth } = measureText({
       text: labelText,
       font: labelFont
@@ -256,14 +257,64 @@ const getLabelStyles = (
     ];
   } else {
     // there are two pointers at the focus region
-    return [
-      {
-        text: 'Hello!',
-        styles: {
-          x: 100,
-          y: -5
+    const { width: label1Width } = measureText({
+      text: formattedStart,
+      font: labelFont
+    });
+    const { width: label2Width } = measureText({
+      text: formattedEnd,
+      font: labelFont
+    });
+    const provisionalLabel1X =
+      focusPointerStyles[0].translateX -
+      Math.round(label1Width / 2) +
+      constants.POINTER_ARROWHEAD_WIDTH / 2;
+    const provisionalLabel2X =
+      focusPointerStyles[1].translateX -
+      Math.round(label2Width / 2) +
+      constants.POINTER_ARROWHEAD_WIDTH / 2;
+
+    if (provisionalLabel1X + label1Width > provisionalLabel2X) {
+      // the labels will overlap; combine them in a single label
+      const labelText = `${formattedStart}-${formattedEnd}`;
+      const { width: labelWidth } = measureText({
+        text: labelText,
+        font: labelFont
+      });
+      const halfLabelWidth = Math.round(labelWidth / 2);
+      const midpoint =
+        focusPointerStyles[0].translateX +
+        (focusPointerStyles[1].translateX - focusPointerStyles[0].translateX) /
+          2;
+      const labelX =
+        midpoint - halfLabelWidth + constants.POINTER_ARROWHEAD_WIDTH / 2;
+
+      return [
+        {
+          text: labelText,
+          styles: {
+            x: labelX,
+            y: -5
+          }
         }
-      }
-    ];
+      ];
+    } else {
+      return [
+        {
+          text: formattedStart,
+          styles: {
+            x: provisionalLabel1X,
+            y: -5
+          }
+        },
+        {
+          text: formattedEnd,
+          styles: {
+            x: provisionalLabel2X,
+            y: -5
+          }
+        }
+      ];
+    }
   }
 };
