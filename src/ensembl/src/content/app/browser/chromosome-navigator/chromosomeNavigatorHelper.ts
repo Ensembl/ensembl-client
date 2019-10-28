@@ -38,7 +38,19 @@ export type CalculatedStyles = {
     };
     translateX: number;
   }> | null;
-  centromere: {} | null;
+  centromere: {
+    centre: {
+      cx: number;
+      cy: number;
+      r: number;
+    };
+    area: {
+      x: number;
+      y: number;
+      height: number;
+      width: number;
+    };
+  } | null;
 };
 
 type Scale = (input: number) => number;
@@ -171,6 +183,26 @@ const getCentromereStyles = (params: StyleCalculatorParams, scale: Scale) => {
   if (!params.centromere) {
     return null;
   } else {
-    return {};
+    const {
+      centromere: { start, end }
+    } = params;
+    const startPosition = scale(start);
+    const endPosition = scale(end);
+    const centromereCentreX = startPosition + (endPosition - startPosition) / 2;
+    const centromereCentreY =
+      constants.STICK_HEIGHT / 2 + constants.STICK_MARGIN_TOP;
+    return {
+      centre: {
+        cx: centromereCentreX,
+        cy: centromereCentreY,
+        r: constants.CENTROMERE_RADIUS
+      },
+      area: {
+        x: centromereCentreX - constants.CENTROMERE_REGION_WIDTH / 2,
+        y: constants.STICK_MARGIN_TOP,
+        height: constants.STICK_HEIGHT,
+        width: constants.CENTROMERE_REGION_WIDTH
+      }
+    };
   }
 };

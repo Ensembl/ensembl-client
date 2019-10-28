@@ -17,7 +17,10 @@ storiesOf('Components|Genome Browser/ChromosomeNavigator', module).add(
           start: 250000,
           end: 260000
         }}
-        centromere={null}
+        centromere={{
+          start: 150000,
+          end: 160000
+        }}
       />
     </div>
   )

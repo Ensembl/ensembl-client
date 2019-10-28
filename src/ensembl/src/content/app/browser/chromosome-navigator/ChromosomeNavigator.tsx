@@ -47,22 +47,17 @@ export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
     <div className={styles.chromosomeNavigator}>
       <svg height="20">
         <rect y="1" className={styles.stick} />
-        <rect
-          x={calculatedStyles.viewport.area.x}
-          y={calculatedStyles.viewport.area.y}
-          width={calculatedStyles.viewport.area.width}
-          height={calculatedStyles.viewport.area.height}
-          className={styles.viewport}
-        />
+        <rect {...calculatedStyles.viewport.area} className={styles.viewport} />
         {calculatedStyles.centromere && (
           <g className={styles.centromere}>
             <rect
+              {...calculatedStyles.centromere.area}
               className={styles.centromereRegion}
-              y="1"
-              height="4"
-              width="10"
             />
-            <circle className={styles.centromereCentre} cx="5" cy="3" r="2" />
+            <circle
+              {...calculatedStyles.centromere.centre}
+              className={styles.centromereCentre}
+            />
           </g>
         )}
         <g>
