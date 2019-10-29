@@ -35,12 +35,12 @@ export type CalculatedStyles = {
   viewport: {
     openingBracketShape: string;
     closingBracketShape: string;
-    area: {
+    areas: Array<{
       x: number;
       y: number;
       width: number;
       height: number;
-    };
+    }>;
   };
   focusPointers: FocusPointerStyles;
   centromere: {
@@ -123,18 +123,33 @@ const getViewportStyles = (params: StyleCalculatorParams, scale: Scale) => {
       VIEWPORT_BRACKET_HEIGHT}`
   ].join(' ');
 
-  const viewportWidth = viewportEndX - viewportStartX;
+  const areas = (viewportStartX < viewportEndX
+    ? [
+        {
+          x: viewportStartX,
+          width: viewportEndX - viewportStartX
+        }
+      ]
+    : [
+        {
+          x: 0,
+          width: viewportEndX
+        },
+        {
+          x: viewportStartX,
+          width: containerWidth - viewportStartX
+        }
+      ]
+  ).map((styles) => ({
+    ...styles,
+    y: constants.STICK_MARGIN_TOP,
+    height: constants.STICK_HEIGHT
+  }));
 
   return {
     openingBracketShape,
     closingBracketShape,
-    area: {
-      // FIXME: circular chromosomes
-      x: viewportStartX,
-      y: constants.STICK_MARGIN_TOP,
-      width: viewportWidth,
-      height: constants.STICK_HEIGHT
-    }
+    areas
   };
 };
 

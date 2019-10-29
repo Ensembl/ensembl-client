@@ -5,7 +5,7 @@ import useResizeObserver from 'use-resize-observer';
 
 import * as constants from './chromosomeNavigatorConstants';
 
-import { calculateStyles, CalculatedStyles } from './chromosomeNavigatorHelper';
+import { calculateStyles } from './chromosomeNavigatorHelper';
 
 import styles from './ChromosomeNavigator.scss';
 
@@ -53,7 +53,9 @@ export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
           width={props.containerWidth}
           className={styles.stick}
         />
-        <rect {...calculatedStyles.viewport.area} className={styles.viewport} />
+        {calculatedStyles.viewport.areas.map((area, index) => (
+          <rect {...area} key={index} className={styles.viewport} />
+        ))}
         {calculatedStyles.centromere && (
           <g className={styles.centromere}>
             <rect
