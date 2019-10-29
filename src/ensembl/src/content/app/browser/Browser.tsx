@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import find from 'lodash/find';
 import isEqual from 'lodash/isEqual';
 import upperFirst from 'lodash/upperFirst';
-
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
@@ -270,6 +270,47 @@ export const Browser: FunctionComponent<BrowserProps> = (
 
   return props.activeGenomeId ? (
     <>
+      <div
+        style={{
+          position: 'fixed',
+          height: '50px',
+          width: '50px',
+          zIndex: '100',
+          background: 'red',
+          top: '200px'
+        }}
+        onClick={() =>
+          browserMessagingService.send('bpane', {
+            off: ['track:gc', 'track:variant']
+          })
+        }
+      ></div>
+      <div
+        style={{
+          position: 'fixed',
+          height: '50px',
+          width: '50px',
+          zIndex: '100',
+          background: 'blue',
+          top: '250px'
+        }}
+        onClick={() => browserMessagingService.send('bpane', { default: true })}
+      ></div>
+      <div
+        style={{
+          position: 'fixed',
+          height: '50px',
+          width: '50px',
+          zIndex: '100',
+          background: 'green',
+          top: '300px'
+        }}
+        onClick={() =>
+          browserMessagingService.send('bpane', {
+            on: ['track:gc', 'track:variant']
+          })
+        }
+      ></div>
       <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
       {!props.browserQueryParams.focus && (
         <section className={styles.browser}>
