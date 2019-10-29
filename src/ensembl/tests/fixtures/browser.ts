@@ -3,6 +3,7 @@ import faker from 'faker';
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
 import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
 import { RegionValidationResponse } from 'src/content/app/browser/browserState';
+import { getChrLocationStr } from 'src/content/app/browser/browserHelper';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.random.number(),
@@ -100,12 +101,12 @@ export const createRegionValidationResult = () => ({
 });
 
 export const createChrLocationValues = () => {
-  const region = faker.lorem.words();
-  const start = faker.random.number();
-  const end = faker.random.number();
+  const tupleValue: ChrLocation = [
+    faker.lorem.words(),
+    faker.random.number(),
+    faker.random.number()
+  ];
+  const stringValue = getChrLocationStr(tupleValue);
 
-  return {
-    tupleValue: [region, start, end] as ChrLocation,
-    stringValue: `${region}:${start}-${end}`
-  };
+  return { stringValue, tupleValue };
 };

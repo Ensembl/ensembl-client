@@ -73,36 +73,15 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     }));
 
   const updateStickInput = (value: string) => {
-    setStickInput(value);
-    updateLocationStartInput('1');
-
     const filteredKaryotypes = genomeKaryotypes.filter(
       ({ name }) => name === value
     );
 
     if (filteredKaryotypes[0]) {
-      updateLocationEndInput(`${filteredKaryotypes[0].length}`);
+      setStickInput(value);
+      setLocationStartInput('1');
+      setLocationEndInput(`${filteredKaryotypes[0].length}`);
     }
-  };
-
-  const getUnformattedValue = (value: string) =>
-    getNumberWithoutCommas(value) || value;
-
-  const getFormattedValue = (value: string | number) =>
-    typeof value === 'number' ? getCommaSeparatedNumber(value) : value;
-
-  const updateLocationStartInput = (value: string) => {
-    const unformattedValue = getUnformattedValue(value);
-    const formattedValue = getFormattedValue(unformattedValue);
-
-    setLocationStartInput(formattedValue);
-  };
-
-  const updateLocationEndInput = (value: string) => {
-    const unformattedValue = getUnformattedValue(value);
-    const formattedValue = getFormattedValue(unformattedValue);
-
-    setLocationEndInput(formattedValue);
   };
 
   const updateAllInputs = () => {
@@ -114,9 +93,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     const locationStartStr = getCommaSeparatedNumber(locationStart);
     const locationEndStr = getCommaSeparatedNumber(locationEnd);
 
-    updateStickInput(region);
-    updateLocationStartInput(locationStartStr);
-    updateLocationEndInput(locationEndStr);
+    setStickInput(region);
+    setLocationStartInput(locationStartStr);
+    setLocationEndInput(locationEndStr);
   };
 
   const updateErrorMessages = (
@@ -224,7 +203,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           <label className="show-for-large">Start</label>
           <Input
             type="text"
-            onChange={updateLocationStartInput}
+            onChange={setLocationStartInput}
             value={locationStartInput}
             className={locationStartClassNames}
           ></Input>
@@ -246,7 +225,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           <label className="show-for-large">End</label>
           <Input
             type="text"
-            onChange={updateLocationEndInput}
+            onChange={setLocationEndInput}
             value={locationEndInput}
             className={locationEndClassNames}
           ></Input>
