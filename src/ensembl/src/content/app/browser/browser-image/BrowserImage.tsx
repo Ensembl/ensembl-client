@@ -34,7 +34,6 @@ import { TrackStates } from '../track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
-import browserStyles from '../Browser.scss';
 
 export type BrowserImageProps = {
   trackStates: TrackStates;
@@ -124,9 +123,8 @@ export const BrowserImage = (props: BrowserImageProps) => {
     };
   }, []);
 
-  const browserImageClassNames = classNames(styles.browserImagePlus, {
-    [browserStyles.semiOpaque]:
-      props.regionEditorActive || props.regionFieldActive
+  const browserContainerClassNames = classNames(styles.browserStage, {
+    [styles.shorter]: props.browserNavOpened
   });
 
   return (
@@ -136,13 +134,13 @@ export const BrowserImage = (props: BrowserImageProps) => {
           <CircleLoader />
         </div>
       )}
-      <div className={browserImageClassNames}>
+      <div className={styles.browserImagePlus}>
         {props.regionEditorActive || props.regionFieldActive ? (
           <Overlay />
         ) : null}
         <div
           id={BROWSER_CONTAINER_ID}
-          className={getBrowserImageClasses(props.browserNavOpened)}
+          className={browserContainerClassNames}
           ref={browserRef}
         />
         <BrowserCogList />
@@ -151,16 +149,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
     </>
   );
 };
-
-function getBrowserImageClasses(browserNavOpened: boolean): string {
-  let classes = styles.browserStage;
-
-  if (browserNavOpened === true) {
-    classes += `${styles.shorter}`;
-  }
-
-  return classes;
-}
 
 const mapStateToProps = (state: RootState) => ({
   browserCogTrackList: getBrowserCogTrackList(state),
