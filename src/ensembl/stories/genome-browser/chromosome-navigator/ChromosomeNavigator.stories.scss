@@ -11,3 +11,26 @@
     flex: 1 0 auto;
   }
 }
+
+.controls {
+  padding: 2em 4em;
+
+  label {
+    display: block;
+    display: flex;
+    align-items: center;
+  }
+
+  input {
+    margin-left: 0.5em;
+    width: 80%;
+  }
+}
+
+.controlsGroup {
+  margin-bottom: 1em;
+
+  div {
+    font-weight: bold;
+  }
+}
