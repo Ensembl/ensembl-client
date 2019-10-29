@@ -4,14 +4,33 @@ import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
-import merge from 'lodash/merge';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getChrLocationStr } from './browserHelper';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
+
+import {
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId,
+  getBrowserTrackStates,
+  getChrLocation,
+  getBrowserMessageCount,
+  getBrowserActiveEnsObjectIds
+} from './browserSelectors';
+
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
+
+import { RootState } from 'src/store';
+import {
+  BrowserTrackStates,
+  TrackStates
+} from './track-panel/trackPanelConfig';
+import { BROWSER_CONTAINER_ID } from './browser-constants';
 
 import {
   BrowserNavStates,
@@ -19,33 +38,14 @@ import {
   CogList,
   ChrLocations
 } from './browserState';
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
-  getBrowserTrackStates,
-  getChrLocation,
-  getBrowserMessageCount,
-  getBrowserActiveEnsObjectIds,
-  getBrowserActiveGenomeTrackStates
-} from './browserSelectors';
-
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
-
-import { getChrLocationStr } from './browserHelper';
-import browserStorageService from './browser-storage-service';
-import { RootState } from 'src/store';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
-import {
-  BrowserTrackStates,
-  TrackStates
-} from './track-panel/trackPanelConfig';
-import { BROWSER_CONTAINER_ID } from './browser-constants';
+import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
   categoryName: string;
   trackId: string;
-  status: ImageButtonStatus; // TODO: update types so that actions do not depend on ImageButton types
+  status: TrackActivityStatus;
 };
 
 export type ParsedUrlPayload = {
@@ -178,7 +178,7 @@ export const restoreBrowserTrackStates: ActionCreator<
 
   Object.values(mergedTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {
-      trackStates[trackId] === ImageButtonStatus.ACTIVE
+      trackStates[trackId] === Status.ACTIVE
         ? tracksToTurnOn.push(trackId)
         : tracksToTurnOff.push(trackId);
     });

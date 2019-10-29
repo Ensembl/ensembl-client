@@ -12,9 +12,7 @@ import {
 } from 'src/shared/components/accordion';
 
 import JSONValue from 'src/shared/types/JSON';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
@@ -29,6 +27,8 @@ import {
   getSelectedFilters
 } from 'src/content/app/custom-download/state/filters/filtersSelector';
 import { getPreviewResult } from 'src/content/app/custom-download/state/customDownloadSelectors';
+
+import { Status } from 'src/shared/types/status';
 
 import styles from './FiltersAccordion.scss';
 
@@ -118,7 +118,7 @@ const FiltersAccordion = (props: FiltersAccordionProps) => {
 
         <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={Status.ACTIVE}
             description={'Reset filters'}
             image={ResetIcon}
           />

@@ -13,14 +13,13 @@ import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { closeTrackPanelModal } from '../../trackPanelActions';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 
 import styles from '../TrackPanelModal.scss';
+import { Status } from 'src/shared/types/status';
 
 export type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
@@ -124,7 +123,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
                 <ImageButton
-                  buttonStatus={ImageButtonStatus.ACTIVE}
+                  buttonStatus={Status.ACTIVE}
                   description={'View all'}
                   image={EllipsisIcon}
                   onClick={() => props.changeDrawerViewAndOpen('bookmarks')}

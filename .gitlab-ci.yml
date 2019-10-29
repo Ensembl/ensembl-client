@@ -15,7 +15,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 Test:
-  image: node:10.16.0
+  image: node:12.13.0
   stage: test
 
   before_script:
@@ -32,7 +32,7 @@ Test:
   - /^feature\/.*$/
 
 Test_N_Build:
-  image: node:10.16.0
+  image: node:12.13.0
   stage: test_build_static
 
   before_script:
@@ -57,7 +57,7 @@ Test_N_Build:
   - master
 
 Test_N_Build:internal:
-  image: node:10.16.0
+  image: node:12.13.0
   stage: test_build_static
 
   before_script:
@@ -81,7 +81,7 @@ Test_N_Build:internal:
   - master
 
 Test_N_Build:feature:
-  image: node:10.16.0
+  image: node:12.13.0
   stage: test_build_static
 
   before_script:

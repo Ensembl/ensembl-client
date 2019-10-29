@@ -195,14 +195,12 @@ fn exe_set_focus(a: &mut App, id: &str) {
 
 fn exe_reset(a: &mut App) {
     let tm = a.get_window().get_train_manager();
-    tm.set_desired_context(&tm.get_desired_context());
     tm.jump_to_focus_object();
 }
 
 fn exe_jump_focus(a: &mut App, id: &str) {
     let mut tm = a.get_window().get_train_manager().clone();
     exe_set_focus(a,id);
-    tm.set_desired_context(&tm.get_desired_context());
     tm.jump_to_focus_object();
 }
 

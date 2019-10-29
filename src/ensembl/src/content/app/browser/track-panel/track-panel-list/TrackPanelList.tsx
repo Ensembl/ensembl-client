@@ -2,9 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
-import TrackPanelListItem from './TrackPanelListItem';
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
-
+import {
+  UpdateTrackStatesPayload,
+  updateTrackStatesAndSave
+} from 'src/content/app/browser/browserActions';
 import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
 import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
@@ -19,6 +20,11 @@ import {
 } from '../../browserSelectors';
 import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
+
+import TrackPanelListItem from './TrackPanelListItem';
+
+import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelList.scss';
 
@@ -56,8 +62,8 @@ const TrackPanelList = (props: TrackPanelListProps) => {
   };
 
   // TODO: get default track status properly if it can ever be inactive
-  const getDefaultTrackStatus = () => {
-    return ImageButtonStatus.ACTIVE;
+  const getDefaultTrackStatus = (): TrackActivityStatus => {
+    return Status.ACTIVE;
   };
 
   const getTrackListItem = (
@@ -69,7 +75,9 @@ const TrackPanelList = (props: TrackPanelListProps) => {
     }
 
     const { track_id } = track;
-    let trackStatus = getDefaultTrackStatus();
+
+    const defaultTrackStatus = getDefaultTrackStatus();
+    let trackStatus = defaultTrackStatus;
 
     if (activeEnsObject) {
       // FIXME: Temporary hack until we have a set of proper track names
@@ -78,20 +86,20 @@ const TrackPanelList = (props: TrackPanelListProps) => {
           props.trackStates,
           `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
           trackStatus
-        ) as ImageButtonStatus;
+        ) as TrackActivityStatus;
       } else {
         trackStatus = get(
           props.trackStates,
           `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
           trackStatus
-        ) as ImageButtonStatus;
+        ) as TrackActivityStatus;
       }
     }
 
     return (
       <TrackPanelListItem
         categoryName={categoryName}
-        defaultTrackStatus={trackStatus}
+        defaultTrackStatus={defaultTrackStatus}
         trackStatus={trackStatus}
         key={track.track_id}
         track={track}

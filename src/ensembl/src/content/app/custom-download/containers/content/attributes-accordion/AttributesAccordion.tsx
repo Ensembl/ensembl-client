@@ -19,9 +19,7 @@ import {
 } from 'src/content/app/custom-download/state/attributes/attributesActions';
 import { Orthologues } from './sections';
 import { setShowExampleData } from 'src/content/app/custom-download/state/customDownloadActions';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import JSONValue from 'src/shared/types/JSON';
 import AttributesAccordionSection from 'src/content/app/custom-download/containers/content/attributes-accordion/sections/AttributesAccordionSection';
@@ -29,6 +27,8 @@ import {
   getAttributesAccordionExpandedPanels,
   getSelectedAttributes
 } from 'src/content/app/custom-download/state/attributes/attributesSelector';
+
+import { Status } from 'src/shared/types/status';
 
 import styles from './AttributesAccordion.scss';
 
@@ -122,7 +122,7 @@ const AttributesAccordion = (props: Props) => {
         </span>
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            buttonStatus={Status.ACTIVE}
             description={'Reset attributes'}
             image={ResetIcon}
           />

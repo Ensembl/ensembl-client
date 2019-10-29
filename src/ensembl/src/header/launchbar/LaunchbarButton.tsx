@@ -5,6 +5,8 @@ import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
 
+import { Status } from 'src/shared/types/status';
+
 import styles from './Launchbar.scss';
 
 type LaunchbarButtonProps = {
@@ -27,9 +29,9 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   const imageButton = (
     <ImageButton
       classNames={{
-        [ImageButtonStatus.DEFAULT]: styles.launchbarButtonImage,
-        [ImageButtonStatus.ACTIVE]: styles.launchbarButtonSelectedImage,
-        [ImageButtonStatus.DISABLED]: styles.launchbarButtonDisabledImage
+        [Status.DEFAULT]: styles.launchbarButtonImage,
+        [Status.ACTIVE]: styles.launchbarButtonSelectedImage,
+        [Status.DISABLED]: styles.launchbarButtonDisabledImage
       }}
       buttonStatus={imageButtonStatus}
       description={props.description}
@@ -62,11 +64,11 @@ const getImageButtonStatus = ({
   isActive: boolean;
 }): ImageButtonStatus => {
   if (isDisabled) {
-    return ImageButtonStatus.DISABLED;
+    return Status.DISABLED;
   } else if (isActive) {
-    return ImageButtonStatus.ACTIVE;
+    return Status.ACTIVE;
   } else {
-    return ImageButtonStatus.DEFAULT;
+    return Status.DEFAULT;
   }
 };
 
