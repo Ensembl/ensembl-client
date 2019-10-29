@@ -3,6 +3,8 @@
 import React from 'react';
 import useResizeObserver from 'use-resize-observer';
 
+import * as constants from './chromosomeNavigatorConstants';
+
 import { calculateStyles, CalculatedStyles } from './chromosomeNavigatorHelper';
 
 import styles from './ChromosomeNavigator.scss';
@@ -28,6 +30,8 @@ type ChromosomeNavigatorProps = WrapperProps & {
 const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
   const [containerRef, containerWidth] = useResizeObserver();
 
+  console.log(containerWidth);
+
   return (
     <div
       ref={containerRef as React.RefObject<HTMLDivElement>}
@@ -41,12 +45,17 @@ const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
 };
 
 export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
+  console.log('props', props.containerWidth);
   const calculatedStyles = calculateStyles(props);
 
   return (
-    <div className={styles.chromosomeNavigator}>
-      <svg height="20">
-        <rect y="1" className={styles.stick} />
+    <div>
+      <svg height={constants.TOTAL_HEIGHT} width={props.containerWidth}>
+        <rect
+          y={constants.STICK_MARGIN_TOP}
+          width={props.containerWidth}
+          className={styles.stick}
+        />
         <rect {...calculatedStyles.viewport.area} className={styles.viewport} />
         {calculatedStyles.centromere && (
           <g className={styles.centromere}>

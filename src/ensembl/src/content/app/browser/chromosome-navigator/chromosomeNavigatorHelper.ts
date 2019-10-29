@@ -251,7 +251,7 @@ const getLabelStyles = (
         text: labelText,
         styles: {
           x: labelX,
-          y: -5
+          y: -9
         }
       }
     ];
@@ -274,7 +274,10 @@ const getLabelStyles = (
       Math.round(label2Width / 2) +
       constants.POINTER_ARROWHEAD_WIDTH / 2;
 
-    if (provisionalLabel1X + label1Width > provisionalLabel2X) {
+    if (
+      provisionalLabel1X + label1Width + constants.MIN_DISTANCE_BETWEEN_LABELS >
+      provisionalLabel2X
+    ) {
       // the labels will overlap; combine them in a single label
       const labelText = `${formattedStart}-${formattedEnd}`;
       const { width: labelWidth } = measureText({
@@ -294,7 +297,7 @@ const getLabelStyles = (
           text: labelText,
           styles: {
             x: labelX,
-            y: -5
+            y: -9
           }
         }
       ];
@@ -304,14 +307,14 @@ const getLabelStyles = (
           text: formattedStart,
           styles: {
             x: provisionalLabel1X,
-            y: -5
+            y: -9
           }
         },
         {
           text: formattedEnd,
           styles: {
             x: provisionalLabel2X,
-            y: -5
+            y: -9
           }
         }
       ];
