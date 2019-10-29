@@ -30,8 +30,6 @@ type ChromosomeNavigatorProps = WrapperProps & {
 const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
   const [containerRef, containerWidth] = useResizeObserver();
 
-  console.log(containerWidth);
-
   return (
     <div
       ref={containerRef as React.RefObject<HTMLDivElement>}
@@ -45,7 +43,6 @@ const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
 };
 
 export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
-  console.log('props', props.containerWidth);
   const calculatedStyles = calculateStyles(props);
 
   return (
