@@ -164,7 +164,8 @@ const getFocusPointerStyles = (params: StyleCalculatorParams, scale: Scale) => {
   const focusRegionStart = scale(start);
   const focusRegionEnd = scale(end);
   const shouldUseSinglePointer =
-    focusRegionEnd - focusRegionStart < 2 * constants.POINTER_ARROWHEAD_WIDTH;
+    Math.abs(focusRegionEnd - focusRegionStart) <
+    2 * constants.POINTER_ARROWHEAD_WIDTH;
 
   if (shouldUseSinglePointer) {
     const translateX =
@@ -301,8 +302,12 @@ const getLabelStyles = (
       constants.POINTER_ARROWHEAD_WIDTH / 2;
 
     if (
-      provisionalLabel1X + label1Width + constants.MIN_DISTANCE_BETWEEN_LABELS >
-      provisionalLabel2X
+      isOverlapping(
+        provisionalLabel1X,
+        label1Width,
+        provisionalLabel2X,
+        label2Width
+      )
     ) {
       // the labels will overlap; combine them in a single label
       const labelText = `${formattedStart}-${formattedEnd}`;
@@ -346,4 +351,15 @@ const getLabelStyles = (
       ];
     }
   }
+};
+
+const isOverlapping = (
+  label1X: number,
+  label1Width: number,
+  label2X: number,
+  label2Width: number
+) => {
+  return label1X < label2X
+    ? label1X + label1Width + constants.MIN_DISTANCE_BETWEEN_LABELS > label2X
+    : label2X + label2Width + constants.MIN_DISTANCE_BETWEEN_LABELS > label1X;
 };
