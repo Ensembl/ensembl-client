@@ -2,10 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
-import {
-  UpdateTrackStatesPayload,
-  updateTrackStatesAndSave
-} from 'src/content/app/browser/browserActions';
 import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
 import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';

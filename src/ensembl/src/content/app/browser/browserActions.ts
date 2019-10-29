@@ -147,12 +147,6 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const resetBrowserTrackStates: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
-  browserMessagingService.send('bpane', { default: true });
-};
-
 export const restoreBrowserTrackStates: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {

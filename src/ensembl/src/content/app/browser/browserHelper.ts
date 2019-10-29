@@ -1,4 +1,5 @@
 import { ChrLocation } from './browserState';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');
@@ -14,3 +15,7 @@ export function getChrLocationStr(
 
   return `${chrCode}:${startBp}-${endBp}`;
 }
+
+export const resetBrowserTrackStates = () => {
+  browserMessagingService.send('bpane', { default: true });
+};

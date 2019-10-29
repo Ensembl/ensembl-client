@@ -21,7 +21,6 @@ import {
   changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload,
-  resetBrowserTrackStates,
   restoreBrowserTrackStates
 } from './browserActions';
 import {
@@ -37,7 +36,11 @@ import {
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
-import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
+import {
+  getChrLocationFromStr,
+  getChrLocationStr,
+  resetBrowserTrackStates
+} from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -86,7 +89,6 @@ type DispatchProps = {
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
-  resetBrowserTrackStates: () => void;
   restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
@@ -170,7 +172,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
       location: chrLocation ? getChrLocationStr(chrLocation) : null
     };
 
-    props.resetBrowserTrackStates();
+    resetBrowserTrackStates();
     props.replace(urlFor.browser(params));
   };
 
@@ -354,7 +356,6 @@ const mapDispatchToProps: DispatchProps = {
   replace,
   toggleDrawer,
   setDataFromUrlAndSave,
-  resetBrowserTrackStates,
   restoreBrowserTrackStates
 };
 
