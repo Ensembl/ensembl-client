@@ -89,7 +89,12 @@ const getScale = (width: number, nucleotidesCount: number): Scale => {
 
 const getViewportStyles = (params: StyleCalculatorParams, scale: Scale) => {
   const { containerWidth } = params;
-  const { VIEWPORT_BRACKET_HEIGHT, VIEWPORT_BRACKET_BAR_WIDTH } = constants;
+  const {
+    STICK_MARGIN_TOP,
+    VIEWPORT_BRACKET_HEIGHT,
+    VIEWPORT_BRACKET_BAR_WIDTH
+  } = constants;
+  const bracketY = STICK_MARGIN_TOP - 1;
   const fullBracketsWidth = 2 * VIEWPORT_BRACKET_BAR_WIDTH; // opening bracket + closing bracket
   let viewportStartX, viewportEndX;
   viewportEndX = scale(params.viewportEnd);
@@ -104,16 +109,18 @@ const getViewportStyles = (params: StyleCalculatorParams, scale: Scale) => {
   }
 
   const openingBracketShape = [
-    `${viewportStartX + VIEWPORT_BRACKET_BAR_WIDTH},0`,
-    `${viewportStartX},0`,
-    `${viewportStartX},${VIEWPORT_BRACKET_HEIGHT}`,
-    `${viewportStartX + VIEWPORT_BRACKET_BAR_WIDTH},${VIEWPORT_BRACKET_HEIGHT}`
+    `${viewportStartX + VIEWPORT_BRACKET_BAR_WIDTH},${bracketY}`,
+    `${viewportStartX},${bracketY}`,
+    `${viewportStartX},${bracketY + VIEWPORT_BRACKET_HEIGHT}`,
+    `${viewportStartX + VIEWPORT_BRACKET_BAR_WIDTH},${bracketY +
+      VIEWPORT_BRACKET_HEIGHT}`
   ].join(' ');
   const closingBracketShape = [
-    `${viewportEndX - VIEWPORT_BRACKET_BAR_WIDTH},0`,
-    `${viewportEndX},0`,
-    `${viewportEndX},${VIEWPORT_BRACKET_HEIGHT}`,
-    `${viewportEndX - VIEWPORT_BRACKET_BAR_WIDTH},${VIEWPORT_BRACKET_HEIGHT}`
+    `${viewportEndX - VIEWPORT_BRACKET_BAR_WIDTH},${bracketY}`,
+    `${viewportEndX},${bracketY}`,
+    `${viewportEndX},${bracketY + VIEWPORT_BRACKET_HEIGHT}`,
+    `${viewportEndX - VIEWPORT_BRACKET_BAR_WIDTH},${bracketY +
+      VIEWPORT_BRACKET_HEIGHT}`
   ].join(' ');
 
   const viewportWidth = viewportEndX - viewportStartX;
@@ -170,17 +177,21 @@ const getFocusPointerStyles = (params: StyleCalculatorParams, scale: Scale) => {
 };
 
 const getArrowheadDefaultStyles = () => {
+  const {
+    STICK_MARGIN_TOP,
+    POINTER_ARROWHEAD_HEIGHT,
+    POINTER_ARROWHEAD_WIDTH
+  } = constants;
+  const arrowheadBottomY = STICK_MARGIN_TOP + POINTER_ARROWHEAD_HEIGHT * 2;
+  const arrowheadTopY = arrowheadBottomY - POINTER_ARROWHEAD_HEIGHT;
   const arrowheadPoints = [
-    `0,${constants.POINTER_ARROWHEAD_HEIGHT * 2}`,
-    `${constants.POINTER_ARROWHEAD_WIDTH / 2},${
-      constants.POINTER_ARROWHEAD_HEIGHT
-    }`,
-    `${constants.POINTER_ARROWHEAD_WIDTH},${constants.POINTER_ARROWHEAD_HEIGHT *
-      2}`
+    `0,${arrowheadBottomY}`,
+    `${POINTER_ARROWHEAD_WIDTH / 2},${arrowheadTopY}`,
+    `${POINTER_ARROWHEAD_WIDTH},${arrowheadBottomY}`
   ].join(' ');
   const lineStyles = {
     x1: constants.POINTER_ARROWHEAD_WIDTH / 2,
-    y1: constants.POINTER_ARROWHEAD_HEIGHT + 1,
+    y1: arrowheadTopY + 1,
     x2: constants.POINTER_ARROWHEAD_WIDTH / 2,
     y2: constants.STICK_MARGIN_TOP
   };
@@ -251,7 +262,7 @@ const getLabelStyles = (
         text: labelText,
         styles: {
           x: labelX,
-          y: -9
+          y: constants.LABEL_TOP_MARGIN
         }
       }
     ];
@@ -297,7 +308,7 @@ const getLabelStyles = (
           text: labelText,
           styles: {
             x: labelX,
-            y: -9
+            y: constants.LABEL_TOP_MARGIN
           }
         }
       ];
@@ -307,14 +318,14 @@ const getLabelStyles = (
           text: formattedStart,
           styles: {
             x: provisionalLabel1X,
-            y: -9
+            y: constants.LABEL_TOP_MARGIN
           }
         },
         {
           text: formattedEnd,
           styles: {
             x: provisionalLabel2X,
-            y: -9
+            y: constants.LABEL_TOP_MARGIN
           }
         }
       ];

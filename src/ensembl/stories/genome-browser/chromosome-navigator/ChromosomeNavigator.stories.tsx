@@ -18,7 +18,7 @@ storiesOf('Components|Genome Browser/ChromosomeNavigator', module).add(
           end: 20000
         }}
         centromere={{
-          start: 240000,
+          start: 150000,
           end: 160000
         }}
       />
