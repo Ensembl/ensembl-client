@@ -63,7 +63,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
 
   const shouldShowTrackName = trackConfigNames[selectedCog] || false;
   const shouldShowTrackLabels =
-    trackConfigLabel[selectedCog] !== false ? true : false;
+    selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
 
   const ref = useRef(null);
   useOutsideClick(ref, props.onClose);
