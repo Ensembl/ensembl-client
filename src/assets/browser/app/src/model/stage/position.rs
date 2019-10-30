@@ -123,6 +123,22 @@ impl Position {
         Dot(self.pos.0,self.pos.1)
     }
 
+    pub fn get_bumped_middle(&self) -> Dot<f64,f64> {
+        let left_bp = self.px_to_bp(self.min_x_bumper);
+        let right_bp = self.px_to_bp(self.max_x_bumper);
+        /*
+        inner centre is at self.pos.0
+        inner left is at self.pos.0 - bp_per_sc/2
+        inner right is at self.pos.0 + bp_per_sc/2
+        outer left is at self.pos.0 - bp_per_sc/2 - left_bp
+        outer right is at self.pos.0 + bp_per_sc/2 + right_bp
+        outer middle is at mean, ie (self.pos.0 - bp_per_sc/2 - left_bp + self.pos.0 + bp_per_sc/2 + right_bp)/2
+        so outer middle is at self.pos.0 + (right_bp-left_bp)/2
+        correction is to add (right_bp-left_bp)/2
+        */
+        Dot(self.pos.0+(right_bp-left_bp)/2.,self.pos.1)
+    }
+
     fn px_to_bp(&self, px: f64) -> f64 {
         px / self.screen_size.0 as f64 * self.zoom.get_screen_in_bp()
     }
