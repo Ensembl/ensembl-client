@@ -61,8 +61,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
 
   const selectedCog = props.selectedCog || '';
 
-  const shouldShowTrackName =
-    trackConfigNames[selectedCog] !== false ? true : false;
+  const shouldShowTrackName = trackConfigNames[selectedCog] || false;
   const shouldShowTrackLabels =
     trackConfigLabel[selectedCog] !== false ? true : false;
 
