@@ -84,41 +84,15 @@ const Upload = (props: UploadProps) => {
     props.onChange(contents);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleSelectedFiles = (
+    e: React.ChangeEvent<HTMLInputElement> | React.DragEvent
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     setDrag(false);
 
-    if (
-      e.dataTransfer &&
-      e.dataTransfer.files &&
-      e.dataTransfer.files.length > 0
-    ) {
-      if (props.callbackWithFiles) {
-        if (!props.allowMultiple) {
-          props.onChange(e.dataTransfer.files[0]);
-          return;
-        }
-        props.onChange(e.dataTransfer.files);
-        return;
-      }
-
-      const { files } = e.dataTransfer;
-
-      [...files].forEach((file) => {
-        const fileReader = windowService.getFileReader();
-        fileReaders.push(fileReader);
-        totalPendingFilesToRead++;
-        fileReader.onloadend = handleFileRead;
-        fileReader[props.fileReaderMethod](file);
-      });
-
-      e.dataTransfer.clearData();
-    }
-  };
-
-  const handleFileChosen = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files: FileList | null = get(e, 'target.files', null);
+    const files: FileList | null =
+      get(e, 'target.files') || get(e, 'dataTransfer.files') || null;
 
     if (!files) {
       return;
@@ -140,6 +114,10 @@ const Upload = (props: UploadProps) => {
       fileReader.onloadend = handleFileRead;
       fileReader[props.fileReaderMethod](file);
     });
+
+    if (e.type === 'drop') {
+      (e as React.DragEvent).dataTransfer.clearData();
+    }
   };
 
   const getDefaultClassNames = () => {
@@ -152,7 +130,7 @@ const Upload = (props: UploadProps) => {
 
   const getActiveClassNames = () => {
     if (!drag) {
-      return;
+      return '';
     }
 
     if (!props.classNames || !props.classNames.active) {
@@ -168,14 +146,14 @@ const Upload = (props: UploadProps) => {
       onDragEnter={handleDragIn}
       onDragLeave={handleDragOut}
       onDragOver={handleDrag}
-      onDrop={handleDrop}
+      onDrop={handleSelectedFiles}
     >
       <input
         type="file"
         id={props.id}
         name={props.name}
         className={styles.fileInput}
-        onChange={(e) => handleFileChosen(e)}
+        onChange={(e) => handleSelectedFiles(e)}
         multiple={props.allowMultiple}
       />
       {props.label}
