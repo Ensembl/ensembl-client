@@ -23,7 +23,7 @@ type WrapperProps = {
   } | null;
 };
 
-type ChromosomeNavigatorProps = WrapperProps & {
+export type ChromosomeNavigatorProps = WrapperProps & {
   containerWidth: number; // width of the container, in pixels
 };
 

@@ -3,7 +3,12 @@ import React from 'react';
 import { mount } from 'enzyme';
 import random from 'lodash/random';
 
-import { ChromosomeNavigator } from './ChromosomeNavigator';
+import * as textHelpers from 'src/shared/helpers/textHelpers';
+
+import {
+  ChromosomeNavigator,
+  ChromosomeNavigatorProps
+} from './ChromosomeNavigator';
 
 // using hard-coded values to simplify calculations
 const minimalProps = {
@@ -16,6 +21,15 @@ const minimalProps = {
 };
 
 describe('Chromosome Navigator', () => {
+  beforeEach(() => {
+    const mockMeasure: any = () => ({ width: 40 });
+    jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('basic rendering', () => {
     it('renders without focusRegion or centromere', () => {
       const wrapper = mount(<ChromosomeNavigator {...minimalProps} />);
@@ -57,21 +71,53 @@ describe('Chromosome Navigator', () => {
   });
 
   describe('viewport position', () => {
+    const getRenderedViewport = (props: ChromosomeNavigatorProps) => {
+      const wrapper = mount(<ChromosomeNavigator {...minimalProps} />);
+      const openingBracket = wrapper.find('.viewportBorder').at(0);
+      const closingBracket = wrapper.find('.viewportBorder').at(1);
+      const viewportAreas = wrapper.find('.viewport');
+      return {
+        wrapper,
+        openingBracket,
+        closingBracket,
+        viewportAreas
+      };
+    };
+
+    const assertBracketX = (bracket: any, position: number) => {
+      /*
+        A bracket is shaped like so: [ or like so: ]
+        To check the x-coordinate of the bracket, we want to check
+        the x-coordinate of the vertical bar of [
+        which is the second tuple of coordinates in the points prop
+      */
+      const bracketX = bracket
+        .props()
+        .points.split(' ')[1]
+        .split(',')[0];
+      expect(parseInt(bracketX, 10)).toBe(position);
+    };
+
+    const assertViewportAreas = (areas: any, assertions: any) => {
+      expect(areas.length).toBe(assertions.length);
+      assertions.forEach((assertion: any, index: number) => {
+        const { x, width } = assertion;
+        if (x !== undefined) {
+          expect(areas.at(index).props().x).toBe(x);
+        }
+        if (width !== undefined) {
+          expect(areas.at(index).props().width).toBe(width);
+        }
+      });
+    };
+
     describe('linear chromosome', () => {
       it('correctly positions viewport in the middle of chromosome', () => {
-        const wrapper = mount(<ChromosomeNavigator {...minimalProps} />);
-        const openingBracket = wrapper.find('.viewportBorder').at(0);
-        const closingBracket = wrapper.find('.viewportBorder').at(1);
-        const viewportArea = wrapper.find('.viewport').at(0);
-        const openingBracketX = openingBracket
-          .props()
-          .points.split(' ')[1]
-          .split(',')[0];
-        const closingBracketX = closingBracket
-          .props()
-          .points.split(' ')[1]
-          .split(',')[0];
-
+        const {
+          openingBracket,
+          closingBracket,
+          viewportAreas
+        } = getRenderedViewport(minimalProps);
         const expectedStartX =
           (minimalProps.containerWidth / minimalProps.length) *
           minimalProps.viewportStart;
@@ -79,10 +125,11 @@ describe('Chromosome Navigator', () => {
           (minimalProps.containerWidth / minimalProps.length) *
           minimalProps.viewportEnd;
 
-        expect(viewportArea.props().x).toBe(expectedStartX);
-        expect(viewportArea.props().width).toBe(expectedEndX - expectedStartX);
-        expect(openingBracketX).toBe(`${expectedStartX}`);
-        expect(closingBracketX).toBe(`${expectedEndX}`);
+        assertViewportAreas(viewportAreas, [
+          { x: expectedStartX, width: expectedEndX - expectedStartX }
+        ]);
+        assertBracketX(openingBracket, expectedStartX);
+        assertBracketX(closingBracket, expectedEndX);
       });
 
       it.skip('correctly positions viewport in the end of chromosome', () => {});
