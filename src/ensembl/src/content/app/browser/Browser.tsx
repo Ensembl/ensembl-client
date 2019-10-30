@@ -36,11 +36,7 @@ import {
 } from './browserSelectors';
 import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
-import {
-  getChrLocationFromStr,
-  getChrLocationStr,
-  resetBrowserTrackStates
-} from './browserHelper';
+import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -172,7 +168,6 @@ export const Browser: FunctionComponent<BrowserProps> = (
       location: chrLocation ? getChrLocationStr(chrLocation) : null
     };
 
-    resetBrowserTrackStates();
     props.replace(urlFor.browser(params));
   };
 

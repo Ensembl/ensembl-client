@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import { connect } from 'react-redux';
 
 import { changeFocusObject } from 'src/content/app/browser/browserActions';
-import { resetBrowserTrackStates } from 'src/content/app/browser/browserHelper';
 
 import styles from './Zmenu.scss';
 
@@ -93,7 +92,6 @@ const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   });
 
   const handleClick = () => {
-    resetBrowserTrackStates();
     props.changeFocusObject(id);
   };
 
