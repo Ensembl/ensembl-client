@@ -98,14 +98,22 @@ const getViewportStyles = (params: StyleCalculatorParams, scale: Scale) => {
   const fullBracketsWidth = 2 * VIEWPORT_BRACKET_BAR_WIDTH; // opening bracket + closing bracket
   let viewportStartX, viewportEndX;
   viewportEndX = scale(params.viewportEnd);
-  // let openBracketX, closeBracketX;
   if (viewportEndX < containerWidth - fullBracketsWidth) {
+    // we have not reached the end of the chromosome, and can calculate positions of the brackets left-to-right
     viewportStartX = scale(params.viewportStart);
-    viewportEndX = Math.max(viewportEndX, fullBracketsWidth);
+    viewportEndX =
+      viewportEndX >= viewportStartX
+        ? Math.max(viewportEndX, viewportStartX + fullBracketsWidth)
+        : viewportEndX;
   } else {
-    // ALSO, CONSIDER CIRCULAR CHROMOSOMES HERE
-    viewportStartX = scale(params.viewportStart); // FIXME
-    viewportEndX = Math.max(viewportEndX, fullBracketsWidth); // FIXME
+    // we are at the right end of the chromosome, and shoudl calculate positions of the brackets right-to-left
+    viewportStartX =
+      params.viewportStart <= params.viewportEnd
+        ? Math.min(
+            scale(params.viewportStart),
+            viewportEndX - fullBracketsWidth
+          )
+        : scale(params.viewportStart);
   }
 
   const openingBracketShape = [
