@@ -12,7 +12,6 @@
   margin: 20px 0 0 40px;
   height: 100%;
   columns: 4;
-  position: relative;
   width: calc(100% - 110px);
   display: flex;
   flex-direction: column;
@@ -25,23 +24,19 @@
     padding-right: 10px;
     text-overflow: ellipsis;
     overflow: hidden;
-    position: relative;
   }
 
   a {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    display: inline-block;
     font-size: 13px;
   }
 
   .previouslyViewedType {
     color: $dark-grey;
-    position: absolute;
     margin-left: 8px;
     font-size: 12px;
-    top: 1px;
     font-weight: 300;
   }
 }
