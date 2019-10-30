@@ -48,6 +48,11 @@ impl Position {
     pub fn get_screen_in_bp(&self) -> f64 {
         self.zoom.get_screen_in_bp()
     }
+
+    pub fn get_bumped_screen_in_bp(&self) -> f64 {
+        let delta = self.px_to_bp(self.min_x_bumper) + self.px_to_bp(self.max_x_bumper);
+        self.zoom.get_screen_in_bp()+delta
+    }
     
     pub fn set_screen_in_bp(&mut self, zoom: f64) {
         self.zoom.set_screen_in_bp(zoom);

@@ -50,7 +50,7 @@ impl Stick {
     }
     
     pub fn get_wrapping(&self) -> Wrapping {
-        Wrapping::new(36.,36.)
+        Wrapping::new(55.,55.) // XXX not hardwired. Why is this in Stick anyway?
     }
 }
 
