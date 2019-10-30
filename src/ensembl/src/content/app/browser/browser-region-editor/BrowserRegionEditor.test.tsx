@@ -16,7 +16,10 @@ import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
-import { createChrLocationValues } from 'tests/fixtures/browser';
+import {
+  createChrLocationValues,
+  createRegionValidationResult
+} from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
 import { ChrLocation } from '../browserState';
 
@@ -150,8 +153,15 @@ describe('<BrowserRegionEditor', () => {
       const locationEndInput = getCommaSeparatedNumber(faker.random.number());
       const startError = faker.lorem.words();
       const endError = faker.lorem.words();
+      const mockValidationResult = createRegionValidationResult();
 
       test('displays the start error message', () => {
+        const mockErrorMessages = {
+          ...mockValidationResult.errorMessages,
+          startError,
+          endError
+        };
+
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
@@ -159,12 +169,9 @@ describe('<BrowserRegionEditor', () => {
               regionInput: string;
               genomeId: string | null;
               onSuccess: (regionId: string) => void;
-              onError: (errorMessages: any) => void;
+              onError: (errorMessages: browserHelper.ErrorMessages) => void;
             }) => {
-              params.onError({
-                startError,
-                endError
-              });
+              params.onError(mockErrorMessages);
             }
           );
 
@@ -191,6 +198,11 @@ describe('<BrowserRegionEditor', () => {
       });
 
       test('displays the end error message', () => {
+        const mockErrorMessages = {
+          ...mockValidationResult.errorMessages,
+          endError
+        };
+
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
@@ -198,11 +210,9 @@ describe('<BrowserRegionEditor', () => {
               regionInput: string;
               genomeId: string | null;
               onSuccess: (regionId: string) => void;
-              onError: (errorMessages: any) => void;
+              onError: (errorMessages: browserHelper.ErrorMessages) => void;
             }) => {
-              params.onError({
-                endError
-              });
+              params.onError(mockErrorMessages);
             }
           );
 
@@ -242,7 +252,7 @@ describe('<BrowserRegionEditor', () => {
               regionInput: string;
               genomeId: string | null;
               onSuccess: (regionId: string) => void;
-              onError: (errorMessages: any) => void;
+              onError: (errorMessages: browserHelper.ErrorMessages) => void;
             }) => {
               params.onSuccess(regionId);
             }

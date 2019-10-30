@@ -24,6 +24,19 @@ export function getChrLocationStr(
   return `${chrCode}:${startBp}-${endBp}`;
 }
 
+export type ErrorMessages = {
+  genomeIdError: string | undefined;
+  regionParamError: string | undefined;
+  regionError: string | undefined;
+  startError: string | undefined;
+  endError: string | undefined;
+};
+
+export type ValidationResult = {
+  errorMessages: ErrorMessages;
+  regionId: string | undefined;
+};
+
 export const getRegionValidationResult = (
   validationInfo: RegionValidationResponse | null
 ) => {
@@ -77,7 +90,7 @@ export const validateRegion = async (params: {
   regionInput: string;
   genomeId: string | null;
   onSuccess: (regionId: string) => void;
-  onError: (errorMessageList: any) => void;
+  onError: (validationResult: ErrorMessages) => void;
 }) => {
   const { regionInput, genomeId, onSuccess = noop, onError = noop } = params;
 

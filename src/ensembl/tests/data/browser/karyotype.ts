@@ -3,7 +3,7 @@ import {
   GenomeKaryotypeItemType
 } from 'src/genome/genomeTypes';
 
-const genomeKaryotypes: GenomeKaryotypeItem[] = [
+const genomeKaryotype: GenomeKaryotypeItem[] = [
   {
     is_chromosome: true,
     is_circular: false,
@@ -181,4 +181,4 @@ const genomeKaryotypes: GenomeKaryotypeItem[] = [
   }
 ];
 
-export default genomeKaryotypes;
+export default genomeKaryotype;

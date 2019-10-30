@@ -11,7 +11,10 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
-import { createChrLocationValues } from 'tests/fixtures/browser';
+import {
+  createChrLocationValues,
+  createRegionValidationResult
+} from 'tests/fixtures/browser';
 
 import * as browserHelper from '../browserHelper';
 
@@ -115,6 +118,10 @@ describe('<BrowserRegionField', () => {
     test('displays error message when validation fails', () => {
       const regionInput = faker.lorem.words();
       const startError = faker.lorem.words();
+      const mockErrorMessages = {
+        ...createRegionValidationResult().errorMessages,
+        startError
+      };
 
       jest
         .spyOn(browserHelper, 'validateRegion')
@@ -123,11 +130,9 @@ describe('<BrowserRegionField', () => {
             regionInput: string;
             genomeId: string | null;
             onSuccess: (regionId: string) => void;
-            onError: (errorMessages: any) => void;
+            onError: (errorMessages: browserHelper.ErrorMessages) => void;
           }) => {
-            params.onError({
-              startError
-            });
+            params.onError(mockErrorMessages);
           }
         );
 
@@ -152,7 +157,7 @@ describe('<BrowserRegionField', () => {
               regionInput: string;
               genomeId: string | null;
               onSuccess: (regionId: string) => void;
-              onError: (errorMessages: any) => void;
+              onError: (errorMessages: browserHelper.ErrorMessages) => void;
             }) => {
               params.onSuccess(regionId);
             }

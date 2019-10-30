@@ -3,7 +3,10 @@ import faker from 'faker';
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
 import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
 import { RegionValidationResponse } from 'src/content/app/browser/browserState';
-import { getChrLocationStr } from 'src/content/app/browser/browserHelper';
+import {
+  getChrLocationStr,
+  ValidationResult
+} from 'src/content/app/browser/browserHelper';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.random.number(),
@@ -89,7 +92,7 @@ export const createRegionValidationInfo = (): RegionValidationResponse => {
   };
 };
 
-export const createRegionValidationResult = () => ({
+export const createRegionValidationResult = (): ValidationResult => ({
   errorMessages: {
     genomeIdError: undefined,
     regionParamError: undefined,

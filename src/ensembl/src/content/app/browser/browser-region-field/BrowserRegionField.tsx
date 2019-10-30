@@ -19,7 +19,11 @@ import {
   getRegionFieldActive,
   getChrLocation
 } from '../browserSelectors';
-import { getChrLocationFromStr, validateRegion } from '../browserHelper';
+import {
+  getChrLocationFromStr,
+  validateRegion,
+  ErrorMessages
+} from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -63,10 +67,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     props.toggleRegionFieldActive(false);
   };
 
-  const onValidationError = (errorMessages: any) => {
+  const onValidationError = (errorMessages: ErrorMessages) => {
     const { regionError, startError, endError } = errorMessages;
     const errorMessageToBeDisplayed = regionError || startError || endError;
-    setErrorMessage(errorMessageToBeDisplayed);
+    setErrorMessage(errorMessageToBeDisplayed as string);
   };
 
   const onValidationSuccess = (regionId: string) => {

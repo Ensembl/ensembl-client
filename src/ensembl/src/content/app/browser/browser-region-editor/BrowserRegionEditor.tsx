@@ -27,7 +27,7 @@ import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
-import { validateRegion } from '../browserHelper';
+import { validateRegion, ErrorMessages } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -48,7 +48,7 @@ export type BrowserRegionEditorProps = {
 };
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
-  const genomeKaryotypes = props.genomeKaryotype as GenomeKaryotypeItem[];
+  const genomeKaryotype = props.genomeKaryotype as GenomeKaryotypeItem[];
   const [stick, locationStart, locationEnd] = props.chrLocation as ChrLocation;
 
   const [stickInput, setStickInput] = useState(stick);
@@ -66,21 +66,21 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   >(null);
 
   const getKaryotypeOptions = () =>
-    genomeKaryotypes.map(({ name }) => ({
+    genomeKaryotype.map(({ name }) => ({
       value: name,
       label: name,
       isSelected: stickInput === name
     }));
 
   const updateStickInput = (value: string) => {
-    const filteredKaryotypes = genomeKaryotypes.filter(
+    const selectedKaryotypeItems = genomeKaryotype.filter(
       ({ name }) => name === value
     );
 
-    if (filteredKaryotypes[0]) {
+    if (selectedKaryotypeItems[0]) {
       setStickInput(value);
       setLocationStartInput('1');
-      setLocationEndInput(`${filteredKaryotypes[0].length}`);
+      setLocationEndInput(`${selectedKaryotypeItems[0].length}`);
     }
   };
 
@@ -121,8 +121,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     props.toggleRegionEditorActive(false);
   };
 
-  const onValidationError = (errorMessages: any) => {
-    const { startError, endError } = errorMessages;
+  const onValidationError = (errorMessages: ErrorMessages) => {
+    const { startError = null, endError = null } = errorMessages;
     updateErrorMessages(startError, endError);
   };
 
