@@ -22,10 +22,10 @@
   }
 
   .focusPointer {
-    fill: #ff9800; // FIXME: variable?
+    fill: $orange;
 
     line {
-      stroke: #ff9800;
+      stroke: $orange;
     }
   }
 
