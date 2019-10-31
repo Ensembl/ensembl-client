@@ -22,8 +22,7 @@ const generateFile = () => {
   return new Blob([fileContents], { type: 'text/plain' });
 };
 
-// const files = times(faker.random.number(10), () => generateFile());
-const files = times(10, () => generateFile());
+const files = times(faker.random.number(10), () => generateFile());
 const addEventListener = jest.fn((_, evtHandler) => {
   evtHandler();
 });
