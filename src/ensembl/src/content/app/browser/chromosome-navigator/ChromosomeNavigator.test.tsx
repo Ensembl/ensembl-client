@@ -1,9 +1,10 @@
 import React from 'react';
-// import faker from 'faker';
 import { mount } from 'enzyme';
 import random from 'lodash/random';
 
 import * as textHelpers from 'src/shared/helpers/textHelpers';
+
+import * as constants from './chromosomeNavigatorConstants';
 
 import {
   ChromosomeNavigator,
@@ -72,7 +73,7 @@ describe('Chromosome Navigator', () => {
 
   describe('viewport position', () => {
     const getRenderedViewport = (props: ChromosomeNavigatorProps) => {
-      const wrapper = mount(<ChromosomeNavigator {...minimalProps} />);
+      const wrapper = mount(<ChromosomeNavigator {...props} />);
       const openingBracket = wrapper.find('.viewportBorder').at(0);
       const closingBracket = wrapper.find('.viewportBorder').at(1);
       const viewportAreas = wrapper.find('.viewport');
@@ -111,8 +112,8 @@ describe('Chromosome Navigator', () => {
       });
     };
 
-    describe('linear chromosome', () => {
-      it('correctly positions viewport in the middle of chromosome', () => {
+    describe('in the middle of chromosome', () => {
+      it('is positioned correctly', () => {
         const {
           openingBracket,
           closingBracket,
@@ -132,13 +133,64 @@ describe('Chromosome Navigator', () => {
         assertBracketX(closingBracket, expectedEndX);
       });
 
-      it.skip('correctly positions viewport in the end of chromosome', () => {});
+      it('does not allow overlapping of brackets for small viewports', () => {
+        const scalingFactor = minimalProps.containerWidth / minimalProps.length;
+        const smallDistance = Math.floor(
+          (2 * constants.VIEWPORT_BRACKET_BAR_WIDTH) / scalingFactor
+        );
+        const randomDistance = random(smallDistance);
+        const viewportStart = 20000;
+        const viewportEnd = viewportStart + randomDistance;
 
-      it.skip('correctly positions small viewport', () => {});
+        const props = { ...minimalProps, viewportStart, viewportEnd };
+        const { openingBracket, closingBracket } = getRenderedViewport(props);
+
+        // we expect the viewport’s start to be defined by props.viewportStart,
+        // and the viewport’s end to be two bracket widths to the right of viewport start
+        const expectedStartX = scalingFactor * props.viewportStart;
+        const expectedEndX =
+          expectedStartX + 2 * constants.VIEWPORT_BRACKET_BAR_WIDTH;
+        assertBracketX(openingBracket, expectedStartX);
+        assertBracketX(closingBracket, expectedEndX);
+      });
+    });
+
+    describe('in the end of the chromosome', () => {
+      it('does not allow overlapping of brackets for small viewports', () => {
+        const scalingFactor = minimalProps.containerWidth / minimalProps.length;
+        const smallDistance = Math.floor(
+          (2 * constants.VIEWPORT_BRACKET_BAR_WIDTH) / scalingFactor
+        );
+        const randomDistance = random(smallDistance);
+        const viewportEnd = minimalProps.length;
+        const viewportStart = viewportEnd - randomDistance;
+
+        const props = { ...minimalProps, viewportStart, viewportEnd };
+        const { openingBracket, closingBracket } = getRenderedViewport(props);
+
+        // we expect the viewport’s end to be in the end of the chromosome,
+        // and the viewport’s start to be two bracket widths to the left of viewport end
+        const expectedEndX = scalingFactor * props.length;
+        const expectedStartX =
+          expectedEndX - 2 * constants.VIEWPORT_BRACKET_BAR_WIDTH;
+        assertBracketX(openingBracket, expectedStartX);
+        assertBracketX(closingBracket, expectedEndX);
+      });
     });
   });
 
-  describe('pointer position', () => {});
+  describe('pointer position', () => {
+    const assertPointerPositions = (pointers: any, positions: number[]) => {
+      expect(pointers.length).toBe(positions.length);
+      positions.forEach((position: number, index: number) => {
+        const transform = pointers
+          .at(index)
+          .props()
+          .transform.match(/translate\((\d+)\)/)[1];
+        expect(parseInt(transform, 10)).toBe(position);
+      });
+    };
+  });
 
   describe('centromere position', () => {});
 
