@@ -2,9 +2,11 @@ export const assetsUrl = '/static';
 export const imgBaseUrl = `${assetsUrl}/img`;
 
 export enum BreakpointWidth {
-  SMALL = 0,
-  MEDIUM = 900,
-  LARGE = 1400
+  PHONE = 0,
+  TABLET = 600,
+  LAPTOP = 900,
+  DESKTOP = 1400,
+  BIG_DESKTOP = 1800
 }
 
 export enum AppName {
