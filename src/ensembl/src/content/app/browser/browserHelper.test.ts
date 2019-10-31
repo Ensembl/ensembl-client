@@ -3,15 +3,14 @@ import faker from 'faker';
 import {
   getChrLocationFromStr,
   getChrLocationStr,
-  getRegionValidationResult
+  getRegionValidationMessages
 } from './browserHelper';
 import {
   createRegionValidationInfo,
   createChrLocationValues,
-  createRegionValidationResult
+  createRegionValidationMessages
 } from 'tests/fixtures/browser';
-import { RegionValidationResponse } from './browserState';
-import { RegionErrors } from './browserConfig';
+import { RegionValidationResponse } from './browserHelper';
 
 describe('browserHelper', () => {
   describe('getChrLocationFromStr', () => {
@@ -32,7 +31,7 @@ describe('browserHelper', () => {
     });
   });
 
-  describe('getRegionValidationResult', () => {
+  describe('getRegionValidationMessages', () => {
     const mockValidationInfo = createRegionValidationInfo();
     const regionError = faker.lorem.words();
     const startError = faker.lorem.words();
@@ -62,18 +61,18 @@ describe('browserHelper', () => {
         value: faker.random.number()
       }
     };
-    const mockValidationResult = createRegionValidationResult(); // all error messages are undefined by default
+    const mockValidationMessages = createRegionValidationMessages(); // all error messages are undefined by default
 
     test('returns all error messages as undefined', () => {
-      expect(getRegionValidationResult(null)).toStrictEqual(
-        mockValidationResult
+      expect(getRegionValidationMessages(null)).toStrictEqual(
+        mockValidationMessages
       );
     });
 
     test('returns all error messages as undefined if all inputs are valid', () => {
       expect(
-        getRegionValidationResult(mockValidationInfo).errorMessages
-      ).toStrictEqual(mockValidationResult.errorMessages);
+        getRegionValidationMessages(mockValidationInfo).errorMessages
+      ).toStrictEqual(mockValidationMessages.errorMessages);
     });
 
     test('returns errors if genome id and/or region missing error messages are in response', () => {
@@ -87,29 +86,29 @@ describe('browserHelper', () => {
       };
 
       expect(
-        getRegionValidationResult(newMockValidationInfo).errorMessages
+        getRegionValidationMessages(newMockValidationInfo).errorMessages
           .genomeIdError
       ).toBe(genomeIdError);
 
       expect(
-        getRegionValidationResult(newMockValidationInfo).errorMessages
+        getRegionValidationMessages(newMockValidationInfo).errorMessages
           .regionParamError
       ).toBe(regionParamError);
     });
 
     // this test case needs to be changed once the parse error message becomes available in the validaiton response
     test('returns error if region is not parseable', () => {
+      const parseError = faker.lorem.words();
       const newMockValidationInfo = {
-        ...mockValidationInfo,
-        ...{
-          is_parseable: false
+        message: {
+          parse: parseError
         }
       };
 
       expect(
-        getRegionValidationResult(newMockValidationInfo).errorMessages
-          .regionError
-      ).toStrictEqual(RegionErrors.PARSE_ERROR);
+        getRegionValidationMessages(newMockValidationInfo).errorMessages
+          .parseError
+      ).toBe(parseError);
     });
 
     test('returns error if region is invalid', () => {
@@ -119,7 +118,7 @@ describe('browserHelper', () => {
       };
 
       expect(
-        getRegionValidationResult(newMockValidationInfo).errorMessages
+        getRegionValidationMessages(newMockValidationInfo).errorMessages
           .regionError
       ).toStrictEqual(regionError);
     });
@@ -131,7 +130,7 @@ describe('browserHelper', () => {
       };
 
       expect(
-        getRegionValidationResult(newMockValidationInfo).errorMessages
+        getRegionValidationMessages(newMockValidationInfo).errorMessages
           .startError
       ).toBe(startError);
     });
@@ -143,7 +142,8 @@ describe('browserHelper', () => {
       };
 
       expect(
-        getRegionValidationResult(newMockValidationInfo).errorMessages.endError
+        getRegionValidationMessages(newMockValidationInfo).errorMessages
+          .endError
       ).toBe(endError);
     });
 
@@ -154,9 +154,10 @@ describe('browserHelper', () => {
         region_id: regionId
       };
 
-      expect(getRegionValidationResult(newMockValidationInfo).regionId).toBe(
-        regionId
-      );
+      expect(
+        getRegionValidationMessages(newMockValidationInfo).successMessages
+          .regionId
+      ).toBe(regionId);
     });
   });
 });

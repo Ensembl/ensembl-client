@@ -25,38 +25,6 @@ export type CogList = {
   [key: string]: number;
 };
 
-export type RegionValidationResult = {
-  error_code: string | null;
-  error_message: string | null;
-  is_valid: boolean;
-};
-
-export type RegionValidationValueResult = RegionValidationResult & {
-  value: string | number;
-};
-
-export type RegionValidationRegionResult = RegionValidationResult & {
-  region_code: string;
-  region_name: string;
-};
-
-export type RegionValidationMessage = Partial<{
-  error: string;
-  genome_id: string;
-  region: string;
-  region_code: string;
-}>;
-
-export type RegionValidationResponse = Partial<{
-  end: RegionValidationValueResult;
-  genome_id: RegionValidationValueResult;
-  is_parseable: boolean;
-  region_id: string;
-  region: RegionValidationRegionResult;
-  start: RegionValidationValueResult;
-  message: RegionValidationMessage;
-}>;
-
 export type BrowserState = Readonly<{
   browserActivated: boolean;
 }>;

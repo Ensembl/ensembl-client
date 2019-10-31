@@ -13,7 +13,7 @@ import Overlay from 'src/shared/components/overlay/Overlay';
 import { ChrLocation } from '../browserState';
 import {
   createChrLocationValues,
-  createRegionValidationResult
+  createRegionValidationMessages
 } from 'tests/fixtures/browser';
 
 import * as browserHelper from '../browserHelper';
@@ -119,7 +119,7 @@ describe('<BrowserRegionField', () => {
       const regionInput = faker.lorem.words();
       const startError = faker.lorem.words();
       const mockErrorMessages = {
-        ...createRegionValidationResult().errorMessages,
+        ...createRegionValidationMessages().errorMessages,
         startError
       };
 
@@ -130,7 +130,9 @@ describe('<BrowserRegionField', () => {
             regionInput: string;
             genomeId: string | null;
             onSuccess: (regionId: string) => void;
-            onError: (errorMessages: browserHelper.ErrorMessages) => void;
+            onError: (
+              errorMessages: browserHelper.RegionValidationErrors
+            ) => void;
           }) => {
             params.onError(mockErrorMessages);
           }
@@ -157,7 +159,9 @@ describe('<BrowserRegionField', () => {
               regionInput: string;
               genomeId: string | null;
               onSuccess: (regionId: string) => void;
-              onError: (errorMessages: browserHelper.ErrorMessages) => void;
+              onError: (
+                errorMessages: browserHelper.RegionValidationErrors
+              ) => void;
             }) => {
               params.onSuccess(regionId);
             }

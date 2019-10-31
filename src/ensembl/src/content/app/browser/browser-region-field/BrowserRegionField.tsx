@@ -22,7 +22,7 @@ import {
 import {
   getChrLocationFromStr,
   validateRegion,
-  ErrorMessages
+  RegionValidationErrors
 } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
@@ -67,9 +67,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     props.toggleRegionFieldActive(false);
   };
 
-  const onValidationError = (errorMessages: ErrorMessages) => {
-    const { regionError, startError, endError } = errorMessages;
-    const errorMessageToBeDisplayed = regionError || startError || endError;
+  const onValidationError = (errorMessages: RegionValidationErrors) => {
+    const { parseError, regionError, startError, endError } = errorMessages;
+    const errorMessageToBeDisplayed =
+      parseError || regionError || startError || endError;
     setErrorMessage(errorMessageToBeDisplayed as string);
   };
 

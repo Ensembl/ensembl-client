@@ -2,10 +2,10 @@ import faker from 'faker';
 
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
 import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
-import { RegionValidationResponse } from 'src/content/app/browser/browserState';
+import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
 import {
   getChrLocationStr,
-  ValidationResult
+  RegionValidationMessages
 } from 'src/content/app/browser/browserHelper';
 
 export const createCogTrackList = (): CogList => ({
@@ -74,7 +74,6 @@ export const createRegionValidationInfo = (): RegionValidationResponse => {
       is_valid: true,
       value: faker.lorem.words()
     },
-    is_parseable: true,
     region: {
       error_code: null,
       error_message: null,
@@ -92,15 +91,18 @@ export const createRegionValidationInfo = (): RegionValidationResponse => {
   };
 };
 
-export const createRegionValidationResult = (): ValidationResult => ({
+export const createRegionValidationMessages = (): RegionValidationMessages => ({
   errorMessages: {
-    genomeIdError: undefined,
-    regionParamError: undefined,
-    regionError: undefined,
-    startError: undefined,
-    endError: undefined
+    genomeIdError: null,
+    regionParamError: null,
+    parseError: null,
+    regionError: null,
+    startError: null,
+    endError: null
   },
-  regionId: undefined
+  successMessages: {
+    regionId: null
+  }
 });
 
 export const createChrLocationValues = () => {

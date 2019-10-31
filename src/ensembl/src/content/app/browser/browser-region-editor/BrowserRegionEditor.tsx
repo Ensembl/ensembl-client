@@ -27,7 +27,7 @@ import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
-import { validateRegion, ErrorMessages } from '../browserHelper';
+import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -121,7 +121,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     props.toggleRegionEditorActive(false);
   };
 
-  const onValidationError = (errorMessages: ErrorMessages) => {
+  const onValidationError = (errorMessages: RegionValidationErrors) => {
     const { startError = null, endError = null } = errorMessages;
     updateErrorMessages(startError, endError);
   };
