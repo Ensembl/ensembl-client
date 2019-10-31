@@ -172,13 +172,13 @@ const getFocusPointerStyles = (params: StyleCalculatorParams, scale: Scale) => {
   const focusRegionStart = scale(start);
   const focusRegionEnd = scale(end);
   const shouldUseSinglePointer =
-    Math.abs(focusRegionEnd - focusRegionStart) <
-    2 * constants.POINTER_ARROWHEAD_WIDTH;
+    Math.abs(focusRegionEnd - focusRegionStart) <=
+    constants.POINTER_ARROWHEAD_WIDTH;
 
   if (shouldUseSinglePointer) {
     const translateX =
       focusRegionStart +
-      (focusRegionEnd - focusRegionStart) / 2 -
+      Math.round((focusRegionEnd - focusRegionStart) / 2) -
       constants.POINTER_ARROWHEAD_WIDTH / 2;
     return [
       {
@@ -270,7 +270,10 @@ const getLabelStyles = (
 
   if (focusPointerStyles.length === 1) {
     // there is only one pointer at the focus region
-    const labelText = `${formattedStart}-${formattedEnd}`;
+    const labelText =
+      formattedStart === formattedEnd
+        ? formattedStart
+        : `${formattedStart}-${formattedEnd}`;
     const { width: labelWidth } = measureText({
       text: labelText,
       font: labelFont

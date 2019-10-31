@@ -3,6 +3,7 @@ import { mount } from 'enzyme';
 import random from 'lodash/random';
 
 import * as textHelpers from 'src/shared/helpers/textHelpers';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 import * as constants from './chromosomeNavigatorConstants';
 
@@ -19,6 +20,13 @@ const minimalProps = {
   viewportEnd: 20000,
   focusRegion: null,
   centromere: null
+};
+
+const scalingFactor = minimalProps.containerWidth / minimalProps.length;
+
+const isApproximatelyEqual = (num1: number, num2: number) => {
+  // account for rounding errors, which might make a difference of +/- 1
+  return Math.abs(num1 - num2) <= 1;
 };
 
 describe('Chromosome Navigator', () => {
@@ -134,7 +142,6 @@ describe('Chromosome Navigator', () => {
       });
 
       it('does not allow overlapping of brackets for small viewports', () => {
-        const scalingFactor = minimalProps.containerWidth / minimalProps.length;
         const smallDistance = Math.floor(
           (2 * constants.VIEWPORT_BRACKET_BAR_WIDTH) / scalingFactor
         );
@@ -153,11 +160,37 @@ describe('Chromosome Navigator', () => {
         assertBracketX(openingBracket, expectedStartX);
         assertBracketX(closingBracket, expectedEndX);
       });
+
+      it('draws two viewport areas if start position is greater than end position', () => {
+        // this emulates what we may encounter in circular chromosomes,
+        // when user pans past the nominal end position of the chromosome,
+        // and sees the end of the chromosome on the left side of canvas,
+        // continuing into the start of the chromosome on the right side of canvas
+        const chromosomeMidpoint = minimalProps.length / 2;
+        const props = {
+          ...minimalProps,
+          viewportStart: random(chromosomeMidpoint, minimalProps.length),
+          viewportEnd: random(chromosomeMidpoint)
+        };
+        const { viewportAreas } = getRenderedViewport(props);
+        const expectedViewportAreaStyles = [
+          {
+            x: 0,
+            width: Math.round(props.viewportEnd * scalingFactor)
+          },
+          {
+            x: Math.round(props.viewportStart * scalingFactor),
+            width: Math.round(
+              (props.length - props.viewportStart) * scalingFactor
+            )
+          }
+        ];
+        assertViewportAreas(viewportAreas, expectedViewportAreaStyles);
+      });
     });
 
     describe('in the end of the chromosome', () => {
       it('does not allow overlapping of brackets for small viewports', () => {
-        const scalingFactor = minimalProps.containerWidth / minimalProps.length;
         const smallDistance = Math.floor(
           (2 * constants.VIEWPORT_BRACKET_BAR_WIDTH) / scalingFactor
         );
@@ -180,6 +213,15 @@ describe('Chromosome Navigator', () => {
   });
 
   describe('pointer position', () => {
+    const getRenderedPointers = (props: ChromosomeNavigatorProps) => {
+      const wrapper = mount(<ChromosomeNavigator {...props} />);
+      const pointers = wrapper.find('.focusPointer');
+      return {
+        wrapper,
+        pointers
+      };
+    };
+
     const assertPointerPositions = (pointers: any, positions: number[]) => {
       expect(pointers.length).toBe(positions.length);
       positions.forEach((position: number, index: number) => {
@@ -187,19 +229,160 @@ describe('Chromosome Navigator', () => {
           .at(index)
           .props()
           .transform.match(/translate\((\d+)\)/)[1];
-        expect(parseInt(transform, 10)).toBe(position);
+        const actualPosition = parseInt(transform, 10);
+        expect(isApproximatelyEqual(position, actualPosition)).toBe(true);
       });
     };
+
+    it('displays two pointers when there is enough available space between them', () => {
+      const chromosomeMidpoint = minimalProps.length / 2;
+      const bufferZone = constants.POINTER_ARROWHEAD_WIDTH / scalingFactor + 1;
+      const focusRegionStart = random(chromosomeMidpoint - bufferZone);
+      const focusRegionEnd = random(
+        chromosomeMidpoint + bufferZone,
+        minimalProps.length
+      );
+      const props = {
+        ...minimalProps,
+        focusRegion: {
+          start: focusRegionStart,
+          end: focusRegionEnd
+        }
+      };
+      const { pointers } = getRenderedPointers(props);
+      const expectedFirstPointerX = Math.round(
+        focusRegionStart * scalingFactor - constants.POINTER_ARROWHEAD_WIDTH / 2
+      );
+      const expectedSecondPointerX = Math.round(
+        focusRegionEnd * scalingFactor - constants.POINTER_ARROWHEAD_WIDTH / 2
+      );
+
+      assertPointerPositions(pointers, [
+        expectedFirstPointerX,
+        expectedSecondPointerX
+      ]);
+    });
+
+    it('displays a single pointer when there is not enough space for two', () => {
+      const chromosomeMidpoint = minimalProps.length / 2;
+      const focusArea = Math.round(
+        0.9 * (constants.POINTER_ARROWHEAD_WIDTH / scalingFactor)
+      );
+      const focusRegionStart = chromosomeMidpoint;
+      const focusRegionEnd = random(
+        chromosomeMidpoint,
+        chromosomeMidpoint + focusArea
+      );
+      const props = {
+        ...minimalProps,
+        focusRegion: {
+          start: focusRegionStart,
+          end: focusRegionEnd
+        }
+      };
+      const { pointers } = getRenderedPointers(props);
+      const expectedPointerX = Math.round(
+        focusRegionStart * scalingFactor +
+          (focusRegionEnd * scalingFactor - focusRegionStart * scalingFactor) /
+            2 -
+          constants.POINTER_ARROWHEAD_WIDTH / 2
+      );
+
+      assertPointerPositions(pointers, [expectedPointerX]);
+    });
   });
 
-  describe('centromere position', () => {});
+  describe('labels', () => {
+    const getRenderedLabels = (props: ChromosomeNavigatorProps) => {
+      const wrapper = mount(<ChromosomeNavigator {...props} />);
+      const labels = wrapper.find('.label');
+      return {
+        wrapper,
+        labels
+      };
+    };
 
-  describe('labels', () => {});
+    const assertLabels = (labels: any, assertions: any) => {
+      expect(labels.length).toBe(assertions.length);
+      assertions.forEach((assertion: any, index: number) => {
+        const { x, text } = assertion;
+        if (x !== undefined) {
+          expect(labels.at(index).props().x).toBe(x);
+        }
+        if (text !== undefined) {
+          const actualText = labels.at(index).text();
+          expect(actualText).toEqual(text);
+        }
+      });
+    };
 
-  // // using hard-coded values to simplify calculations
-  // let defaultProps = {
-  //   containerWidth: 1000, // let's assume we have 1000-pixels-wide container
-  //   length: 1000000, // and a chromosome 1 million nucleotides long
-  //   viewPortStart: 200
-  // }
+    const props = {
+      ...minimalProps,
+      focusRegion: {
+        start: 30000,
+        end: 60000
+      }
+    };
+
+    it('displays two labels when there is enough space for them', () => {
+      const mockLabelWidth = 10;
+      const mockMeasure: any = () => ({ width: mockLabelWidth });
+      jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+
+      const { labels } = getRenderedLabels(props);
+      const expectedLabel1X =
+        props.focusRegion.start * scalingFactor - mockLabelWidth / 2;
+      const expectedLabel1Text = getCommaSeparatedNumber(
+        props.focusRegion.start
+      );
+      const expectedLabel2X =
+        props.focusRegion.end * scalingFactor - mockLabelWidth / 2;
+      const expectedLabel2Text = getCommaSeparatedNumber(props.focusRegion.end);
+      assertLabels(labels, [
+        { x: expectedLabel1X, text: expectedLabel1Text },
+        { x: expectedLabel2X, text: expectedLabel2Text }
+      ]);
+    });
+
+    it('displays a single label combining two positions when there is not enough space for two', () => {
+      const mockLabelWidth = 40;
+      const mockMeasure: any = () => ({ width: mockLabelWidth });
+      jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+      const { labels } = getRenderedLabels(props);
+
+      const midpointBetweenPointers =
+        props.focusRegion.start * scalingFactor +
+        (props.focusRegion.end * scalingFactor -
+          props.focusRegion.start * scalingFactor) /
+          2;
+      const expectedLabelX = midpointBetweenPointers - mockLabelWidth / 2;
+      const expectedLabelText =
+        getCommaSeparatedNumber(props.focusRegion.start) +
+        '-' +
+        getCommaSeparatedNumber(props.focusRegion.end);
+      assertLabels(labels, [{ x: expectedLabelX, text: expectedLabelText }]);
+    });
+
+    it('shows a single value when start and end position are the same', () => {
+      const mockLabelWidth = 40;
+      const mockMeasure: any = () => ({ width: mockLabelWidth });
+      jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
+
+      const focusPosition = 20000;
+      const props = {
+        ...minimalProps,
+        focusRegion: {
+          start: focusPosition,
+          end: focusPosition
+        }
+      };
+      const { labels } = getRenderedLabels(props);
+
+      const expectedLabelX = focusPosition * scalingFactor - mockLabelWidth / 2;
+      const expectedLabelText = getCommaSeparatedNumber(
+        props.focusRegion.start
+      );
+      assertLabels(labels, [{ x: expectedLabelX, text: expectedLabelText }]);
+    });
+  });
 });
