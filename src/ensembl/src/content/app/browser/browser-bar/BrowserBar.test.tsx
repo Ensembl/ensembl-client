@@ -31,7 +31,6 @@ jest.mock('../track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
 ));
 
 describe('<BrowserBar />', () => {
-  const dispatchBrowserLocation: any = jest.fn();
   const selectTrackPanelTab: any = jest.fn();
   const toggleBrowserNav: any = jest.fn();
   const toggleDrawer: any = jest.fn();
@@ -51,7 +50,6 @@ describe('<BrowserBar />', () => {
     selectedTrackPanelTab: TrackSet.GENOMIC,
     trackPanelModalOpened: false,
     trackPanelOpened: false,
-    dispatchBrowserLocation,
     selectTrackPanelTab,
     toggleBrowserNav,
     toggleDrawer,

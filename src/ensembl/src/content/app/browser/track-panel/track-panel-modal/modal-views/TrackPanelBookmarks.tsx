@@ -18,7 +18,7 @@ import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 
-import styles from '../TrackPanelModal.scss';
+import styles from './TrackPanelBookmarks.scss';
 import { Status } from 'src/shared/types/status';
 
 export type TrackPanelBookmarksProps = {
@@ -45,14 +45,14 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         });
 
         return (
-          <dd key={exampleObject.object_id}>
+          <div key={exampleObject.object_id} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
               {exampleObject.label}
             </Link>
             <span className={styles.previouslyViewedType}>
               {upperFirst(exampleObject.object_type)}
             </span>
-          </dd>
+          </div>
         );
       })}
     </div>
@@ -78,14 +78,14 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           });
 
           return (
-            <dd key={index}>
+            <div key={index} className={styles.linkHolder}>
               <Link to={path} onClick={props.closeTrackPanelModal}>
                 {previouslyViewedObject.label}
               </Link>
               <span className={styles.previouslyViewedType}>
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
-            </dd>
+            </div>
           );
         })}
     </div>
@@ -107,18 +107,18 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     <section className="trackPanelBookmarks">
       <h3>Bookmarks</h3>
       {exampleEnsObjects.length ? (
-        <dl className={styles.previouslyViewed}>
-          <dt>Example links</dt>
+        <>
+          <div className={styles.title}>Example links</div>
           <ExampleLinks
             exampleEnsObjects={exampleEnsObjects}
             activeGenomeId={activeGenomeId}
             closeTrackPanelModal={closeTrackPanelModal}
           />
-        </dl>
+        </>
       ) : null}
       {limitedPreviouslyViewedObjects.length ? (
-        <dl className={styles.previouslyViewed}>
-          <dt>
+        <>
+          <div className={styles.title}>
             Previously viewed
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
@@ -130,13 +130,13 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
                 />
               </span>
             )}
-          </dt>
+          </div>
           <PreviouslyViewedLinks
             previouslyViewedObjects={limitedPreviouslyViewedObjects}
             updateTrackStatesAndSave={updateTrackStatesAndSave}
             closeTrackPanelModal={closeTrackPanelModal}
           />
-        </dl>
+        </>
       ) : null}
     </section>
   );

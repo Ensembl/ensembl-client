@@ -252,17 +252,18 @@ export const updateMessageCounter = createStandardAction(
 
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (
-  genomeId: string,
-  activeEnsObjectId: string | null,
-  chrLocation: ChrLocation
-) => {
+> = (locationData: {
+  genomeId: string;
+  ensObjectId: string | null;
+  chrLocation: ChrLocation;
+}) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
-    const [chrCode, startBp, endBp] = chrLocation;
-    if (!activeEnsObjectId) {
-      activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-    }
+    const [chrCode, startBp, endBp] = locationData.chrLocation;
+
+    const activeEnsObjectId =
+      locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
+
     const messageCount = getBrowserMessageCount(state);
     const focusInstruction = activeEnsObjectId
       ? {
@@ -271,7 +272,7 @@ export const changeBrowserLocation: ActionCreator<
       : {};
 
     browserMessagingService.send('bpane', {
-      stick: `${genomeId}:${chrCode}`,
+      stick: `${locationData.genomeId}:${chrCode}`,
       goto: `${startBp}-${endBp}`,
       'message-counter': messageCount,
       ...focusInstruction

@@ -77,11 +77,11 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  changeBrowserLocation: (
-    genomeId: string,
-    ensObjectId: string | null,
-    chrLocation: ChrLocation
-  ) => void;
+  changeBrowserLocation: (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => void;
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
@@ -141,20 +141,20 @@ export const Browser: FunctionComponent<BrowserProps> = (
       props.changeFocusObject(focus);
     } else if (focus && chrLocation) {
       props.changeFocusObject(focus);
-      dispatchBrowserLocation(genomeId, focus, chrLocation);
+      props.changeBrowserLocation({
+        genomeId,
+        ensObjectId: focus,
+        chrLocation
+      });
     } else if (chrLocation) {
-      dispatchBrowserLocation(genomeId, focus, chrLocation);
+      props.changeBrowserLocation({
+        genomeId,
+        ensObjectId: focus,
+        chrLocation
+      });
     }
 
     props.setDataFromUrlAndSave(payload);
-  };
-
-  const dispatchBrowserLocation = (
-    genomeId: string,
-    focus: string | null,
-    chrLocation: ChrLocation
-  ) => {
-    props.changeBrowserLocation(genomeId, focus, chrLocation);
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
@@ -221,7 +221,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
     if (props.browserActivated && genomeId && chrLocation) {
-      dispatchBrowserLocation(genomeId, null, chrLocation);
+      props.changeBrowserLocation({ genomeId, chrLocation, ensObjectId: null });
     }
   }, [props.browserActivated]);
 
@@ -258,9 +258,7 @@ export const Browser: FunctionComponent<BrowserProps> = (
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
 
-  const browserBar = (
-    <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-  );
+  const browserBar = <BrowserBar />;
 
   const shouldShowNavBar =
     props.browserActivated && props.browserNavOpened && !isDrawerOpened;
