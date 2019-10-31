@@ -14,8 +14,7 @@ const defaultProps = {
 
 const event = { preventDefault: noop, stopPropagation: noop };
 
-const renderUpload = (props: any = defaultProps) =>
-  mount(<Upload {...props} />);
+const renderUpload = (props: any) => mount(<Upload {...props} />);
 
 const fileContents = faker.random.words();
 
@@ -23,7 +22,8 @@ const generateFile = () => {
   return new Blob([fileContents], { type: 'text/plain' });
 };
 
-const files = times(faker.random.number(10), () => generateFile());
+// const files = times(faker.random.number(10), () => generateFile());
+const files = times(10, () => generateFile());
 const addEventListener = jest.fn((_, evtHandler) => {
   evtHandler();
 });
@@ -37,12 +37,15 @@ const mockFileReader = {
 };
 
 describe('Upload', () => {
-  let wrapper: any = renderUpload();
-  windowService.getFileReader = jest.fn(() => mockFileReader) as any;
+  let wrapper: any;
+
+  beforeEach(() => {
+    wrapper = renderUpload(defaultProps);
+    windowService.getFileReader = jest.fn(() => mockFileReader) as any;
+  });
 
   afterEach(() => {
     jest.resetAllMocks();
-    windowService.getFileReader = jest.fn(() => mockFileReader) as any;
   });
 
   describe('using the input', () => {
@@ -55,18 +58,25 @@ describe('Upload', () => {
     });
 
     it('disables multiple file selection if allowMultiple is set to false', () => {
-      wrapper = renderUpload({ allowMultiple: false });
+      wrapper = renderUpload({ ...defaultProps, allowMultiple: false });
       expect(wrapper.find('input').prop('multiple')).toBeFalsy();
     });
 
-    it('calls the windowService.getFileReader when a file is selected', () => {
-      wrapper.find('input').prop('onChange')({ target: { files: [files[0]] } });
-      expect(windowService.getFileReader).toHaveBeenCalled();
-      expect(mockFileReader.readAsText).toHaveBeenCalledWith(files[0]);
+    it('calls the windowService.getFileReader for every file selected', () => {
+      wrapper.find('input').prop('onChange')({
+        ...event,
+        target: { files: files }
+      });
+
+      expect(windowService.getFileReader).toHaveBeenCalledTimes(files.length);
     });
 
     it('calls the readAsText multiple times based on the number of files', () => {
-      wrapper.find('input').prop('onChange')({ target: { files: files } });
+      wrapper.find('input').prop('onChange')({
+        ...event,
+        target: { files: files }
+      });
+
       expect(mockFileReader.readAsText).toHaveBeenCalledTimes(files.length);
     });
   });
@@ -78,16 +88,6 @@ describe('Upload', () => {
       expect(labelProps.onDragEnter).toBeTruthy();
       expect(labelProps.onDragLeave).toBeTruthy();
       expect(labelProps.onDrop).toBeTruthy();
-    });
-
-    it('calls windowService.getFileReader multiple times based on the number of files', () => {
-      const mockEvent = {
-        ...event,
-        dataTransfer: { files: files, clearData: noop }
-      };
-      wrapper.find('label').prop('onDrop')(mockEvent);
-
-      expect(windowService.getFileReader).toHaveBeenCalledTimes(files.length);
     });
 
     it('does not call the windowService.getFileReader when a file is just dragged in ', () => {

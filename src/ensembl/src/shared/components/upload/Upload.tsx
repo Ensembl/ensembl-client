@@ -6,6 +6,22 @@ import windowService from 'src/services/window-service';
 
 import styles from './Upload.scss';
 
+export type ReadFile = {
+  filename: string;
+  content: string | null | ArrayBuffer;
+  error: string | null;
+};
+
+const fileReaderErrorMessages: { [key: number]: string } = {
+  1: 'The file can not be found (NOT_FOUND_ERR).',
+  2: 'The operation is insecure (SECURITY_ERR).',
+  4: 'The I/O read operation failed (NOT_READABLE_ERR).'
+};
+
+const getFileReaderErrorMessage = (error_code: number) => {
+  return fileReaderErrorMessages[error_code] || 'Unable to read the file.';
+};
+
 export enum FileReaderMethod {
   ARRAY_BUFFER = 'readAsArrayBuffer',
   BINARY_STRING = 'readAsBinaryString',
@@ -25,7 +41,7 @@ type PropsForRespondingWithMultipleFiles = {
 };
 
 type PropsForRespondingWithContent = {
-  onChange: (contents: string[]) => void;
+  onChange: (files: ReadFile[]) => void;
   callbackWithFiles: false;
   fileReaderMethod: FileReaderMethod;
 };
@@ -49,9 +65,6 @@ export type UploadProps = {
 const Upload = (props: UploadProps) => {
   const [drag, setDrag] = useState(false);
 
-  const fileReaders: FileReader[] = [];
-  let totalPendingFilesToRead = 0;
-
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -70,25 +83,15 @@ const Upload = (props: UploadProps) => {
     setDrag(false);
   };
 
-  const handleFileRead = () => {
-    totalPendingFilesToRead--;
-    // Do not return the content until all files are read
-    if (totalPendingFilesToRead > 0 || props.callbackWithFiles) {
-      return;
-    }
-
-    const contents: string[] = fileReaders.map(
-      (fileReader) => fileReader.result as string
-    );
-
-    props.onChange(contents);
-  };
-
-  const handleSelectedFiles = (
+  const handleSelectedFiles = async (
     e: React.ChangeEvent<HTMLInputElement> | React.DragEvent
   ) => {
     e.preventDefault();
     e.stopPropagation();
+    const eventType = e.type;
+    if (eventType === 'drop') {
+      (e as React.DragEvent).dataTransfer.clearData();
+    }
     setDrag(false);
 
     const files: FileList | null =
@@ -97,6 +100,7 @@ const Upload = (props: UploadProps) => {
     if (!files) {
       return;
     }
+
     if (props.callbackWithFiles) {
       // Just consider the first file if allowMultiple is true
       if (!props.allowMultiple) {
@@ -107,17 +111,29 @@ const Upload = (props: UploadProps) => {
       return;
     }
 
-    [...files].forEach((file) => {
-      const fileReader = windowService.getFileReader();
-      fileReaders.push(fileReader);
-      totalPendingFilesToRead++;
-      fileReader.onloadend = handleFileRead;
-      fileReader[props.fileReaderMethod](file);
+    const filesToRead = props.allowMultiple
+      ? [...files]
+      : [...files].slice(0, 1);
+    const readFiles: ReadFile[] = [];
+
+    const promises = filesToRead.map((file) => {
+      const fileReader: FileReader = windowService.getFileReader();
+      return new Promise((resolve) => {
+        fileReader.onload = resolve;
+        fileReader.onerror = resolve;
+        fileReader[props.fileReaderMethod](file);
+      }).then(() => {
+        readFiles.push({
+          filename: file.name,
+          content: fileReader.result,
+          error: fileReader.error
+            ? getFileReaderErrorMessage(fileReader.error.code)
+            : null
+        });
+      });
     });
 
-    if (e.type === 'drop') {
-      (e as React.DragEvent).dataTransfer.clearData();
-    }
+    await Promise.all(promises).finally(() => props.onChange(readFiles));
   };
 
   const getDefaultClassNames = () => {
