@@ -61,15 +61,15 @@ describe('browserHelper', () => {
         value: faker.random.number()
       }
     };
-    const mockValidationMessages = createRegionValidationMessages(); // all error messages are undefined by default
+    const mockValidationMessages = createRegionValidationMessages(); // all error messages are null by default
 
-    test('returns all error messages as undefined', () => {
+    test('returns all error messages as null', () => {
       expect(getRegionValidationMessages(null)).toStrictEqual(
         mockValidationMessages
       );
     });
 
-    test('returns all error messages as undefined if all inputs are valid', () => {
+    test('returns all error messages as null if all inputs are valid', () => {
       expect(
         getRegionValidationMessages(mockValidationInfo).errorMessages
       ).toStrictEqual(mockValidationMessages.errorMessages);
