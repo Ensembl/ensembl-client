@@ -106,7 +106,7 @@ const getViewportStyles = (params: StyleCalculatorParams, scale: Scale) => {
         ? Math.max(viewportEndX, viewportStartX + fullBracketsWidth)
         : viewportEndX;
   } else {
-    // we are at the right end of the chromosome, and shoudl calculate positions of the brackets right-to-left
+    // we are at the right end of the chromosome, and should calculate positions of the brackets right-to-left
     viewportStartX =
       params.viewportStart <= params.viewportEnd
         ? Math.min(
@@ -231,29 +231,30 @@ const getArrowheadDefaultStyles = () => {
 const getCentromereStyles = (params: StyleCalculatorParams, scale: Scale) => {
   if (!params.centromere) {
     return null;
-  } else {
-    const {
-      centromere: { start, end }
-    } = params;
-    const startPosition = scale(start);
-    const endPosition = scale(end);
-    const centromereCentreX = startPosition + (endPosition - startPosition) / 2;
-    const centromereCentreY =
-      constants.STICK_HEIGHT / 2 + constants.STICK_MARGIN_TOP;
-    return {
-      centre: {
-        cx: centromereCentreX,
-        cy: centromereCentreY,
-        r: constants.CENTROMERE_RADIUS
-      },
-      area: {
-        x: centromereCentreX - constants.CENTROMERE_REGION_WIDTH / 2,
-        y: constants.STICK_MARGIN_TOP,
-        height: constants.STICK_HEIGHT,
-        width: constants.CENTROMERE_REGION_WIDTH
-      }
-    };
   }
+
+  const {
+    centromere: { start, end }
+  } = params;
+  const startPosition = scale(start);
+  const endPosition = scale(end);
+  const centromereCentreX = startPosition + (endPosition - startPosition) / 2;
+  const centromereCentreY =
+    constants.STICK_HEIGHT / 2 + constants.STICK_MARGIN_TOP;
+
+  return {
+    centre: {
+      cx: centromereCentreX,
+      cy: centromereCentreY,
+      r: constants.CENTROMERE_RADIUS
+    },
+    area: {
+      x: centromereCentreX - constants.CENTROMERE_REGION_WIDTH / 2,
+      y: constants.STICK_MARGIN_TOP,
+      height: constants.STICK_HEIGHT,
+      width: constants.CENTROMERE_REGION_WIDTH
+    }
+  };
 };
 
 const getLabelStyles = (
