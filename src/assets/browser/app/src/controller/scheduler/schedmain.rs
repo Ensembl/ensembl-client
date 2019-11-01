@@ -66,7 +66,7 @@ impl SchedulerMain {
     fn check_tempo(&mut self, burst: bool) {
         let now = browser_time();
         self.jank.detect(burst,now/1000.);
-        self.set_timesig(self.jank.gear());
+        //self.set_timesig(self.jank.gear());
     }
     
     pub(in super) fn beat(&mut self, new: Vec<SchedNewTask>, dels: Vec<u32>, allotment: f64) {
