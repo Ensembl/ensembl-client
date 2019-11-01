@@ -22,6 +22,19 @@ export const getSelectedTrackPanelTab = (state: RootState) =>
 export const getIsTrackPanelOpened = (state: RootState) =>
   getActiveTrackPanel(state).isTrackPanelOpened;
 
+export const getActiveGenomeBookmarks = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return (activeGenomeId && getActiveTrackPanel(state).bookmarks) || [];
+};
+
+export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+
+  return (
+    (activeGenomeId && getActiveTrackPanel(state).previouslyViewedObjects) || []
+  );
+};
+
 export const getHighlightedTrackId = (state: RootState) =>
   getActiveTrackPanel(state).highlightedTrackId;
 

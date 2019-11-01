@@ -5,7 +5,7 @@
   background: $light-grey;
   padding: 16px;
 
-  @media #{$breakpoint-large} {
+  @include for-desktop-up {
     width: calc(100vw - 356px);
   }
 

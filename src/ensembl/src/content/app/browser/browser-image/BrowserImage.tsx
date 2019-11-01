@@ -35,7 +35,7 @@ import { ChrLocation } from '../browserState';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { RootState } from 'src/store';
-import { TrackStates } from '../track-panel/trackPanelConfig';
+import { BrowserTrackStates } from '../track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 type StateProps = {
@@ -57,7 +57,7 @@ type DispatchProps = {
 };
 
 type OwnProps = {
-  trackStates: TrackStates;
+  trackStates: BrowserTrackStates;
 };
 
 type BrowserImageProps = StateProps & DispatchProps & OwnProps;
