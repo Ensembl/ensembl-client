@@ -12,6 +12,7 @@ import ProteinCodingGenes from './drawer-views/ProteinCodingGenes';
 import OtherGenes from './drawer-views/OtherGenes';
 import DrawerContigs from './drawer-views/DrawerContigs';
 import DrawerGC from './drawer-views/DrawerGC';
+import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 
 import closeIcon from 'static/img/shared/close.svg';
 
@@ -53,6 +54,8 @@ const Drawer = (props: DrawerProps) => {
         return <DrawerGC />;
       case 'snps-and-indels':
         return <SnpIndels />;
+      case 'bookmarks':
+        return <DrawerBookmarks />;
     }
   };
 

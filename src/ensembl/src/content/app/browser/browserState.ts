@@ -1,6 +1,6 @@
 import browserStorageService from './browser-storage-service';
 
-import { TrackStates } from './track-panel/trackPanelConfig';
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 
 const activeGenomeId = browserStorageService.getActiveGenomeId();
 const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
@@ -36,7 +36,7 @@ export const defaultBrowserState: BrowserState = {
 export type BrowserEntityState = Readonly<{
   activeGenomeId: string | null;
   activeEnsObjectIds: { [genomeId: string]: string };
-  trackStates: TrackStates;
+  trackStates: BrowserTrackStates;
   messageCounter: number;
 }>;
 

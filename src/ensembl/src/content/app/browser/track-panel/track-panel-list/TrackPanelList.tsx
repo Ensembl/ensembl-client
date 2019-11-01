@@ -2,12 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
-import {
-  UpdateTrackStatesPayload,
-  updateTrackStatesAndSave
-} from 'src/content/app/browser/browserActions';
 import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
-import { TrackSet, TrackStates } from '../trackPanelConfig';
+import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/genome/genomeTypes';
 import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 import { RootState } from 'src/store';
@@ -36,10 +32,9 @@ type TrackPanelListProps = {
   activeEnsObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
-  trackStates: TrackStates;
+  trackStates: BrowserTrackStates;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   changeDrawerView: (drawerView: string) => void;
-  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
 };
 
 const TrackPanelList = (props: TrackPanelListProps) => {
@@ -76,13 +71,26 @@ const TrackPanelList = (props: TrackPanelListProps) => {
     }
 
     const { track_id } = track;
-    const defaultTrackStatus = getDefaultTrackStatus();
 
-    const trackStatus = get(
-      props.trackStates,
-      `${activeGenomeId}.${categoryName}.${track_id}`,
-      defaultTrackStatus
-    ) as TrackActivityStatus;
+    const defaultTrackStatus = getDefaultTrackStatus();
+    let trackStatus = defaultTrackStatus;
+
+    if (activeEnsObject) {
+      // FIXME: Temporary hack until we have a set of proper track names
+      if (track_id.startsWith('track:gene')) {
+        trackStatus = get(
+          props.trackStates,
+          `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
+          trackStatus
+        ) as TrackActivityStatus;
+      } else {
+        trackStatus = get(
+          props.trackStates,
+          `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
+          trackStatus
+        ) as TrackActivityStatus;
+      }
+    }
 
     return (
       <TrackPanelListItem
@@ -145,8 +153,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = {
   changeDrawerView,
-  toggleDrawer,
-  updateTrackStates: updateTrackStatesAndSave
+  toggleDrawer
 };
 
 export default connect(

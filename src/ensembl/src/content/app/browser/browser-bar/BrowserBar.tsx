@@ -48,7 +48,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 
 import styles from './BrowserBar.scss';
 
-type StateProps = {
+export type BrowserBarProps = {
   activeGenomeId: string | null;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
@@ -63,9 +63,6 @@ type StateProps = {
   ensObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
   isFocusObjectInDefaultPosition: boolean;
-};
-
-type DispatchProps = {
   closeDrawer: () => void;
   selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   toggleBrowserNav: () => void;
@@ -73,12 +70,6 @@ type DispatchProps = {
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
   changeFocusObject: (objectId: string) => void;
 };
-
-type OwnProps = {
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-};
-
-export type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
 type BrowserInfoProps = {
   ensObject: EnsObject;
@@ -167,7 +158,6 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           <BrowserGenomeSelector
             activeGenomeId={props.activeGenomeId}
             browserActivated={props.browserActivated}
-            dispatchBrowserLocation={props.dispatchBrowserLocation}
             chrLocation={props.actualChrLocation}
             isDrawerOpened={isDrawerOpened}
             genomeSelectorActive={props.genomeSelectorActive}
@@ -246,7 +236,7 @@ export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
   </dd>
 );
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   breakpointWidth: getBreakpointWidth(state),
   browserActivated: getBrowserActivated(state),
@@ -263,7 +253,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   isFocusObjectInDefaultPosition: isFocusObjectPositionDefault(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   closeDrawer,
   selectTrackPanelTab,
   toggleBrowserNav,

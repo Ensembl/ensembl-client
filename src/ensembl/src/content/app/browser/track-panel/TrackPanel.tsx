@@ -10,38 +10,30 @@ import { RootState } from 'src/store';
 
 import {
   getIsTrackPanelOpened,
-  getIsTrackPanelModalOpened,
-  getSelectedTrackPanelTab
+  getIsTrackPanelModalOpened
 } from './trackPanelSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject,
-  getBrowserTrackStates
+  getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { toggleTrackPanel } from './trackPanelActions';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackSet, TrackStates } from './trackPanelConfig';
 
-import { GenomeTrackCategory } from 'src/genome/genomeTypes';
-import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
 type TrackPanelProps = {
   activeGenomeId: string | null;
-  breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
+  breakpointWidth: BreakpointWidth;
   isDrawerOpened: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  selectedTrackPanelTab: TrackSet;
-  genomeTrackCategories: GenomeTrackCategory[];
-  trackStates: TrackStates;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
@@ -98,17 +90,12 @@ const mapStateToProps = (state: RootState) => {
 
   return {
     activeGenomeId,
-    breakpointWidth: getBreakpointWidth(state),
     browserActivated: getBrowserActivated(state),
+    breakpointWidth: getBreakpointWidth(state),
     isDrawerOpened: getIsDrawerOpened(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-    genomeTrackCategories: activeGenomeId
-      ? getGenomeTrackCategoriesById(state, activeGenomeId)
-      : [],
-    isTrackPanelOpened: getIsTrackPanelOpened(state),
-    trackStates: getBrowserTrackStates(state)
+    isTrackPanelOpened: getIsTrackPanelOpened(state)
   };
 };
 
