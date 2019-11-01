@@ -114,7 +114,6 @@ const Upload = (props: UploadProps) => {
     const filesToRead = props.allowMultiple
       ? [...files]
       : [...files].slice(0, 1);
-    const readFiles: ReadFile[] = [];
 
     const promises = filesToRead.map((file) => {
       const fileReader: FileReader = windowService.getFileReader();
@@ -122,18 +121,17 @@ const Upload = (props: UploadProps) => {
         fileReader.onload = resolve;
         fileReader.onerror = resolve;
         fileReader[props.fileReaderMethod](file);
-      }).then(() => {
-        readFiles.push({
-          filename: file.name,
-          content: fileReader.result,
-          error: fileReader.error
-            ? getFileReaderErrorMessage(fileReader.error.code)
-            : null
-        });
-      });
+      }).then(() => ({
+        filename: file.name,
+        content: fileReader.result,
+        error: fileReader.error
+          ? getFileReaderErrorMessage(fileReader.error.code)
+          : null
+      }));
     });
 
-    await Promise.all(promises).finally(() => props.onChange(readFiles));
+    const results = await Promise.all(promises);
+    props.onChange(results);
   };
 
   const getDefaultClassNames = () => {
