@@ -15,13 +15,11 @@ import {
   TrackItemColour,
   TrackItemColourKey,
   TrackId,
+  BrowserTrackStates,
   TrackActivityStatus
 } from '../trackPanelConfig';
 
-import {
-  updateTrackStatesAndSave,
-  UpdateTrackStatesPayload
-} from 'src/content/app/browser/browserActions';
+import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
 
@@ -31,7 +29,10 @@ import {
 } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
 import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
-import { getBrowserActiveGenomeId } from '../../browserSelectors';
+import {
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId
+} from '../../browserSelectors';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
@@ -52,13 +53,14 @@ type OwnProps = {
 
 type PropsFromRedux = {
   activeGenomeId: string | null;
+  activeEnsObjectId: string | null;
   isDrawerOpened: boolean;
   drawerView: string;
   highlightedTrackId: string;
   isCollapsed: boolean;
   changeDrawerView: (drawerView: string) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
-  updateTrackStates: (payload: UpdateTrackStatesPayload) => void;
+  updateTrackStatesAndSave: (payload: BrowserTrackStates) => void;
   updateCollapsedTrackIds: (payload: {
     trackId: string;
     isCollapsed: boolean;
@@ -70,6 +72,7 @@ type Props = OwnProps & PropsFromRedux;
 const TrackPanelListItem = (props: Props) => {
   const {
     activeGenomeId,
+    activeEnsObjectId,
     categoryName,
     isDrawerOpened,
     drawerView,
@@ -140,12 +143,33 @@ const TrackPanelListItem = (props: Props) => {
 
     updateGenomeBrowser(newStatus);
 
-    props.updateTrackStates({
-      genomeId: activeGenomeId as string,
-      categoryName,
-      trackId: track.track_id,
-      status: newStatus
-    });
+    if (!activeGenomeId || !activeEnsObjectId) {
+      return;
+    }
+    // FIXME: Temporary hack until we have a set of proper track names
+    if (track.track_id.startsWith('track:gene')) {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          objectTracks: {
+            [activeEnsObjectId]: {
+              [categoryName]: {
+                [track.track_id]: newStatus
+              }
+            }
+          }
+        }
+      });
+    } else {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          commonTracks: {
+            [categoryName]: {
+              [track.track_id]: newStatus
+            }
+          }
+        }
+      });
+    }
   };
 
   const updateGenomeBrowser = (status: ImageButtonStatus) => {
@@ -216,6 +240,7 @@ const TrackPanelListItem = (props: Props) => {
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
+  activeEnsObjectId: getBrowserActiveEnsObjectId(state),
   isDrawerOpened: getIsDrawerOpened(state),
   drawerView: getDrawerView(state),
   highlightedTrackId: getHighlightedTrackId(state),
@@ -226,7 +251,7 @@ const mapDispatchToProps = {
   updateCollapsedTrackIds,
   changeDrawerView,
   toggleDrawer,
-  updateTrackStates: updateTrackStatesAndSave
+  updateTrackStatesAndSave: updateTrackStatesAndSave
 };
 
 export default connect(

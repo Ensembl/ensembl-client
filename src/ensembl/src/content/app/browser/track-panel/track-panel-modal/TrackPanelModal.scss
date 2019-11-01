@@ -8,6 +8,7 @@
   position: absolute;
   width: 320px;
   z-index: 100;
+  overflow: auto;
 
   &.shorter {
     height: calc(100vh - 177px);
@@ -35,22 +36,5 @@
   img {
     height: 15px;
     width: 15px;
-  }
-}
-
-.previouslyViewed {
-  margin-top: 60px;
-
-  a {
-    font-weight: $normal;
-  }
-
-  dt {
-    color: $dark-grey;
-    font-size: 12px;
-  }
-
-  dd {
-    margin: 15px 0 0 15px;
   }
 }

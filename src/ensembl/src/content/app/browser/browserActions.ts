@@ -3,6 +3,7 @@ import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
+import get from 'lodash/get';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -16,11 +17,19 @@ import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
-  getBrowserActiveEnsObjectIds,
   getBrowserTrackStates,
   getChrLocation,
-  getBrowserMessageCount
+  getBrowserMessageCount,
+  getBrowserActiveEnsObjectIds
 } from './browserSelectors';
+
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
+
+import { RootState } from 'src/store';
+import {
+  BrowserTrackStates,
+  TrackStates
+} from './track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from './browser-constants';
 
 import {
@@ -29,9 +38,8 @@ import {
   CogList,
   ChrLocations
 } from './browserState';
-import { TrackStates } from './track-panel/trackPanelConfig';
-import { RootState } from 'src/store';
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -80,10 +88,12 @@ export const setDataFromUrlAndSave: ActionCreator<
   browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
   chrLocation &&
     browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });
-  activeEnsObjectId &&
+
+  if (activeEnsObjectId) {
     browserStorageService.updateActiveEnsObjectIds({
       [activeGenomeId]: activeEnsObjectId
     });
+  }
 };
 
 export const fetchDataForLastVisitedObjects: ActionCreator<
@@ -109,15 +119,15 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
       return;
     }
     const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
-    const updatedActiveEnsObjectId = {
+    const updatedActiveEnsObjectIds = {
       ...currentActiveEnsObjectIds,
       [activeGenomeId]: activeEnsObjectId
     };
 
-    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectId));
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
     dispatch(fetchEnsObject(activeEnsObjectId));
 
-    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectId);
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectIds);
   };
 };
 
@@ -127,25 +137,51 @@ export const updateDefaultPositionFlag = createStandardAction(
 
 export const updateTrackStates = createStandardAction(
   'browser/update-tracks-state'
-)<TrackStates>();
+)<BrowserTrackStates>();
 
 export const updateTrackStatesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (payload: UpdateTrackStatesPayload) => (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
-  const stateFragment = {
-    [payload.genomeId]: {
-      [payload.categoryName]: {
-        [payload.trackId]: payload.status
-      }
-    }
-  };
-
-  dispatch(updateTrackStates(stateFragment));
+> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
+  dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
+};
+
+export const restoreBrowserTrackStates: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+
+  if (!activeGenomeId || !activeEnsObjectId) {
+    return;
+  }
+
+  const trackStatesFromStorage = browserStorageService.getTrackStates();
+  const mergedTrackStates = {
+    ...get(
+      trackStatesFromStorage,
+      `${activeGenomeId}.objectTracks.${activeEnsObjectId}`
+    ),
+    ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
+  } as TrackStates;
+
+  const tracksToTurnOff: string[] = [];
+  const tracksToTurnOn: string[] = [];
+
+  Object.values(mergedTrackStates).forEach((trackStates) => {
+    Object.keys(trackStates).forEach((trackId) => {
+      trackStates[trackId] === Status.ACTIVE
+        ? tracksToTurnOn.push(trackId)
+        : tracksToTurnOff.push(trackId);
+    });
+  });
+
+  browserMessagingService.send('bpane', {
+    off: tracksToTurnOff,
+    on: tracksToTurnOn
+  });
 };
 
 export const toggleBrowserNav = createStandardAction(
@@ -216,11 +252,18 @@ export const updateMessageCounter = createStandardAction(
 
 export const changeBrowserLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
-> = (genomeId: string, chrLocation: ChrLocation) => {
+> = (locationData: {
+  genomeId: string;
+  ensObjectId: string | null;
+  chrLocation: ChrLocation;
+}) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
-    const [chrCode, startBp, endBp] = chrLocation;
-    const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
+    const [chrCode, startBp, endBp] = locationData.chrLocation;
+
+    const activeEnsObjectId =
+      locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
+
     const messageCount = getBrowserMessageCount(state);
     const focusInstruction = activeEnsObjectId
       ? {
@@ -229,7 +272,7 @@ export const changeBrowserLocation: ActionCreator<
       : {};
 
     browserMessagingService.send('bpane', {
-      stick: `${genomeId}:${chrCode}`,
+      stick: `${locationData.genomeId}:${chrCode}`,
       goto: `${startBp}-${endBp}`,
       'message-counter': messageCount,
       ...focusInstruction
@@ -243,6 +286,8 @@ export const changeFocusObject: ActionCreator<
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const messageCount = getBrowserMessageCount(state);
+
+    dispatch(updatePreviouslyViewedObjectsAndSave());
 
     browserMessagingService.send('bpane', {
       focus: objectId,

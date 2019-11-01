@@ -15,4 +15,5 @@ import './badged-button/BadgedButton.stories';
 import './species-tab-bar/SpeciesTabBar.stories';
 import './paste-or-upload/PasteOrUpload.stories';
 import './species-tabs-wrapper/SpeciesTabsWrapper.stories';
+import './upload/Upload.stories';
 import './textarea/Textarea.stories';

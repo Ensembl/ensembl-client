@@ -30,6 +30,25 @@ export const changeDrawerView: ActionCreator<
   );
 };
 
+export const changeDrawerViewAndOpen: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (drawerView: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+  batch(() => {
+    dispatch(
+      changeDrawerViewForGenome({
+        [activeGenomeId]: drawerView
+      })
+    );
+
+    dispatch(toggleDrawer(true));
+  });
+};
+
 export const toggleDrawerForGenome = createAction(
   'drawer/toggle-drawer',
   (resolve) => {

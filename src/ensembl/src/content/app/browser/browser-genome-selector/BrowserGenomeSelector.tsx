@@ -1,15 +1,11 @@
-import React, {
-  FunctionComponent,
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useEffect
-} from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import { ChrLocation } from '../browserState';
 import { getChrLocationStr } from '../browserHelper';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { changeBrowserLocation } from 'src/content/app/browser/browserActions';
 
 import applyIcon from 'static/img/shared/apply.svg';
 import clearIcon from 'static/img/shared/clear.svg';
@@ -20,15 +16,17 @@ type BrowserGenomeSelectorProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   chrLocation: ChrLocation;
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => void;
   isDrawerOpened: boolean;
   genomeSelectorActive: boolean;
   toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
 };
 
-const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
-  props: BrowserGenomeSelectorProps
-) => {
+const BrowserGenomeSelector = (props: BrowserGenomeSelectorProps) => {
   const { activeGenomeId, chrLocation, isDrawerOpened } = props;
   const chrLocationStr = getChrLocationStr(chrLocation);
 
@@ -72,7 +70,11 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
     ) {
       closeForm();
 
-      props.dispatchBrowserLocation(activeGenomeId, [chrLocationInput, 0, 0]);
+      props.changeBrowserLocation({
+        genomeId: activeGenomeId,
+        ensObjectId: null,
+        chrLocation: [chrLocationInput, 0, 0]
+      });
     } else {
       const [chrCodeInput, chrRegionInput] = chrLocationInput.split(':');
       const [chrStartInput, chrEndInput] = chrRegionInput.split('-');
@@ -86,7 +88,11 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
 
         closeForm();
 
-        props.dispatchBrowserLocation(activeGenomeId, currChrLocation);
+        props.changeBrowserLocation({
+          genomeId: activeGenomeId,
+          chrLocation: currChrLocation,
+          ensObjectId: null
+        });
       }
     }
   };
@@ -129,4 +135,11 @@ const BrowserGenomeSelector: FunctionComponent<BrowserGenomeSelectorProps> = (
   ) : null;
 };
 
-export default BrowserGenomeSelector;
+const mapDispatchToProps = {
+  changeBrowserLocation
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(BrowserGenomeSelector);
