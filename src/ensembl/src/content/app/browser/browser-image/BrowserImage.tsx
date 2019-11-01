@@ -133,9 +133,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
         </div>
       )}
       <div className={styles.browserImagePlus}>
-        {props.regionEditorActive || props.regionFieldActive ? (
-          <Overlay />
-        ) : null}
         <div
           id={BROWSER_CONTAINER_ID}
           className={browserContainerClassNames}
@@ -143,6 +140,9 @@ export const BrowserImage = (props: BrowserImageProps) => {
         />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
+        {props.regionEditorActive || props.regionFieldActive ? (
+          <Overlay className={styles.browserImageOverlay} />
+        ) : null}
       </div>
     </>
   );
