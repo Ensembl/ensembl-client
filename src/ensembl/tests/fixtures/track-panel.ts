@@ -1,13 +1,13 @@
 import faker from 'faker';
 
 import { Status } from 'src/shared/types/status';
-import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { TrackPanelBarItem } from 'src/content/app/browser/track-panel/track-panel-bar/trackPanelBarConfig';
 import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
 
 import { ReactComponent as bookmarkIcon } from 'static/img/track-panel/bookmark.svg';
 
-export const createTrackStates = (): TrackStates => ({
+export const createTrackStates = (): BrowserTrackStates => ({
   triticum_aestivum_GCA_900519105_1: {
     [faker.lorem.words()]: {
       [faker.lorem.words()]: Status.ACTIVE,

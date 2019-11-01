@@ -37,7 +37,11 @@ export type BrowserRegionFieldProps = {
   chrLocation: ChrLocation | null;
   isActive: boolean;
   isDisabled: boolean;
-  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => void;
   changeFocusObject: (objectId: string) => void;
   toggleRegionFieldActive: (regionFieldActive: boolean) => void;
 };
@@ -83,10 +87,15 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
       : stick;
 
     if (stickInput === stick) {
-      props.changeBrowserLocation(
-        props.activeGenomeId as string,
-        getChrLocationFromStr(getRegionInputWithRegion(regionFieldInput))
+      const newChrLocation = getChrLocationFromStr(
+        getRegionInputWithRegion(regionFieldInput)
       );
+
+      props.changeBrowserLocation({
+        genomeId: props.activeGenomeId as string,
+        ensObjectId: null,
+        chrLocation: newChrLocation
+      });
     } else {
       props.changeFocusObject(regionId);
     }

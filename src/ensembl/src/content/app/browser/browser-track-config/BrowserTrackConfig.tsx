@@ -52,7 +52,8 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   const selectedCog = props.selectedCog || '';
 
   const shouldShowTrackName = trackConfigNames[selectedCog] || false;
-  const shouldShowTrackLabels = trackConfigLabel[selectedCog] || false;
+  const shouldShowTrackLabels =
+    selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
 
   const ref = useRef(null);
   useOutsideClick(ref, props.onClose);

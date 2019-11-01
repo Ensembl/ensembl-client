@@ -31,6 +31,8 @@ const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
     if (!props.isTrackPanelOpened) {
       props.toggleTrackPanel(true);
       newIconActiveState = true;
+    } else if (props.iconConfig.name !== props.trackPanelModalView) {
+      newIconActiveState = true;
     }
 
     if (newIconActiveState) {

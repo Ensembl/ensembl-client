@@ -20,7 +20,8 @@ import {
   changeBrowserLocation,
   changeFocusObject,
   setDataFromUrlAndSave,
-  ParsedUrlPayload
+  ParsedUrlPayload,
+  restoreBrowserTrackStates
 } from './browserActions';
 import {
   getBrowserNavOpened,
@@ -50,8 +51,7 @@ import {
 } from './drawer/drawerActions';
 
 import browserStorageService from './browser-storage-service';
-import { TrackStates } from './track-panel/trackPanelConfig';
-
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
@@ -72,10 +72,15 @@ export type BrowserProps = {
   launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
-  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => void;
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
   closeDrawer: () => void;
+  restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
   toggleDrawer: (isDrawerOpened: boolean) => void;
@@ -84,7 +89,7 @@ export type BrowserProps = {
 
 export const Browser = (props: BrowserProps) => {
   const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
-    TrackStates
+    BrowserTrackStates
   >({});
 
   const { isDrawerOpened, closeDrawer } = props;
@@ -111,20 +116,29 @@ export const Browser = (props: BrowserProps) => {
       chrLocation
     };
 
-    props.setDataFromUrlAndSave(payload);
-
-    if (chrLocation) {
-      dispatchBrowserLocation(genomeId, chrLocation);
-    } else if (focus) {
+    if (focus && !chrLocation) {
+      /*
+       changeFocusObject needs to be called before setDataFromUrlAndSave
+       in order to prevent creating an previouslyViewedObject entry
+       for the focus object that is viewed first.
+       */
       props.changeFocusObject(focus);
+    } else if (focus && chrLocation) {
+      props.changeFocusObject(focus);
+      props.changeBrowserLocation({
+        genomeId,
+        ensObjectId: focus,
+        chrLocation
+      });
+    } else if (chrLocation) {
+      props.changeBrowserLocation({
+        genomeId,
+        ensObjectId: focus,
+        chrLocation
+      });
     }
-  };
 
-  const dispatchBrowserLocation = (
-    genomeId: string,
-    chrLocation: ChrLocation
-  ) => {
-    props.changeBrowserLocation(genomeId, chrLocation);
+    props.setDataFromUrlAndSave(payload);
   };
 
   const changeSelectedSpecies = (genomeId: string) => {
@@ -178,6 +192,7 @@ export const Browser = (props: BrowserProps) => {
 
   useEffect(() => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
+    props.restoreBrowserTrackStates();
   }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
@@ -188,7 +203,7 @@ export const Browser = (props: BrowserProps) => {
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
     if (props.browserActivated && genomeId && chrLocation) {
-      dispatchBrowserLocation(genomeId, chrLocation);
+      props.changeBrowserLocation({ genomeId, chrLocation, ensObjectId: null });
     }
   }, [props.browserActivated]);
 
@@ -225,9 +240,7 @@ export const Browser = (props: BrowserProps) => {
     return launchbarExpanded ? styles.shorter : styles.taller;
   };
 
-  const browserBar = (
-    <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-  );
+  const browserBar = <BrowserBar />;
 
   const shouldShowNavBar =
     props.browserActivated && props.browserNavOpened && !isDrawerOpened;
@@ -256,7 +269,7 @@ export const Browser = (props: BrowserProps) => {
             <animated.div style={trackAnimation}>
               <div className={styles.browserImageWrapper} onClick={closeTrack}>
                 {shouldShowNavBar && <BrowserNavBar />}
-                <BrowserImage trackStates={trackStatesFromStorage} />
+                <BrowserImage />
               </div>
             </animated.div>
             <TrackPanel />
@@ -319,7 +332,8 @@ const mapDispatchToProps = {
   fetchGenomeData,
   replace,
   toggleDrawer,
-  setDataFromUrlAndSave
+  setDataFromUrlAndSave,
+  restoreBrowserTrackStates
 };
 
 export default connect(

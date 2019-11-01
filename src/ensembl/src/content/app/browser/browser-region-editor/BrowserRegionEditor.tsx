@@ -42,7 +42,11 @@ export type BrowserRegionEditorProps = {
   genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
   isDisabled: boolean;
-  changeBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
+  changeBrowserLocation: (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => void;
   changeFocusObject: (objectId: string) => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
 };
@@ -113,7 +117,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   };
 
   const changeLocation = (newChrLocation: ChrLocation) =>
-    props.changeBrowserLocation(props.activeGenomeId as string, newChrLocation);
+    props.changeBrowserLocation({
+      genomeId: props.activeGenomeId as string,
+      ensObjectId: null,
+      chrLocation: newChrLocation
+    });
 
   const resetForm = () => {
     updateErrorMessages(null, null);

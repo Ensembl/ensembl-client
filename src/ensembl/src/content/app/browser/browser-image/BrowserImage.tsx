@@ -30,13 +30,11 @@ import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/tr
 
 import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
-import { TrackStates } from '../track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
 
 export type BrowserImageProps = {
-  trackStates: TrackStates;
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
   regionEditorActive: boolean;

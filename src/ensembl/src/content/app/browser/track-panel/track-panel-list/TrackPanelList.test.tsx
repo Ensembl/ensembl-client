@@ -26,8 +26,7 @@ describe('<TrackPanelList />', () => {
     genomeTrackCategories: createGenomeCategories(),
     trackStates: createTrackStates(),
     toggleDrawer: jest.fn(),
-    changeDrawerView: jest.fn(),
-    updateTrackStates: jest.fn()
+    changeDrawerView: jest.fn()
   };
 
   const mountTrackPanelList = (props?: Partial<TrackPanelListProps>) =>

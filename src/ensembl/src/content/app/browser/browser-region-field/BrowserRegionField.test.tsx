@@ -192,20 +192,13 @@ describe('<BrowserRegionField', () => {
         const start = faker.random.number();
         const end = faker.random.number();
         const regionInput = `${start}-${end}`;
-        const { activeGenomeId, chrLocation } = wrapper.props();
-        const [stick] = chrLocation;
 
         wrapper
           .find(Input)
           .simulate('change', { target: { value: regionInput } });
         wrapper.find('form').simulate('submit');
 
-        const newChrLocation: ChrLocation = [stick, start, end];
-
-        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalledWith(
-          activeGenomeId,
-          newChrLocation
-        );
+        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalled();
       });
     });
   });

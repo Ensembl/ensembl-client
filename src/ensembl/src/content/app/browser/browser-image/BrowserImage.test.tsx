@@ -29,7 +29,6 @@ describe('<BrowserImage />', () => {
   });
 
   const defaultProps: BrowserImageProps = {
-    trackStates: {},
     browserCogTrackList: {},
     browserNavOpened: false,
     regionEditorActive: false,

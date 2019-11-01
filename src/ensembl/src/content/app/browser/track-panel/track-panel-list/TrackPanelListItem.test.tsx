@@ -23,13 +23,14 @@ describe('<TrackPanelListItem />', () => {
     defaultTrackStatus: Status.ACTIVE,
     track: createMainTrackInfo(),
     activeGenomeId: faker.lorem.words(),
+    activeEnsObjectId: faker.lorem.words(),
     isDrawerOpened: false,
     drawerView: 'bookmarks',
     highlightedTrackId: faker.lorem.words(),
     isCollapsed: false,
     changeDrawerView: jest.fn(),
     toggleDrawer: jest.fn(),
-    updateTrackStates: jest.fn(),
+    updateTrackStatesAndSave: jest.fn(),
     updateCollapsedTrackIds: jest.fn()
   };
 
@@ -90,7 +91,7 @@ describe('<TrackPanelListItem />', () => {
         .find('.eyeHolder')
         .find(ImageButton)
         .simulate('click');
-      expect(wrapper.props().updateTrackStates).toHaveBeenCalledTimes(1);
+      expect(wrapper.props().updateTrackStatesAndSave).toHaveBeenCalledTimes(1);
     });
   });
 });

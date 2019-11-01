@@ -32,15 +32,13 @@ describe('<TrackPanel />', () => {
 
   const defaultProps: TrackPanelProps = {
     activeGenomeId: null,
-    breakpointWidth: BreakpointWidth.LARGE,
     browserActivated: false,
+    breakpointWidth: BreakpointWidth.DESKTOP,
     isDrawerOpened: false,
     activeEnsObject: null,
     isTrackPanelModalOpened: false,
     isTrackPanelOpened: true,
-    selectedTrackPanelTab: TrackSet.GENOMIC,
-    genomeTrackCategories: createGenomeCategories(),
-    trackStates: createTrackStates()
+    toggleTrackPanel: jest.fn()
   };
 
   const mountBrowserImageComponent = (props?: Partial<TrackPanelProps>) =>

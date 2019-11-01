@@ -45,6 +45,7 @@ describe('<Browser />', () => {
     changeFocusObject: jest.fn(),
     changeDrawerView: jest.fn(),
     closeDrawer: jest.fn(),
+    restoreBrowserTrackStates: jest.fn(),
     fetchGenomeData: jest.fn(),
     replace: jest.fn(),
     toggleDrawer: jest.fn(),

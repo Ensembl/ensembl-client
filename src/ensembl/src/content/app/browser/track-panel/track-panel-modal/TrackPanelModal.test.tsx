@@ -13,7 +13,8 @@ describe('<TrackPanelModal />', () => {
   const defaultProps: TrackPanelModalProps = {
     launchbarExpanded: true,
     trackPanelModalView: 'search',
-    closeTrackPanelModal: jest.fn()
+    closeTrackPanelModal: jest.fn(),
+    closeDrawer: jest.fn()
   };
 
   describe('rendering', () => {

@@ -283,17 +283,7 @@ describe('<BrowserRegionEditor', () => {
           .simulate('change', { target: { value: locationEndInput } });
         wrapper.find('form').simulate('submit');
 
-        const [stick] = wrapper.props().chrLocation;
-        const newChrLocation: ChrLocation = [
-          stick,
-          getNumberWithoutCommas(locationStartInput),
-          getNumberWithoutCommas(locationEndInput)
-        ];
-
-        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalledWith(
-          wrapper.props().activeGenomeId,
-          newChrLocation
-        );
+        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalled();
       });
     });
   });

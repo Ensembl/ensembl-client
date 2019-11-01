@@ -1,12 +1,12 @@
 import { BreakpointWidth } from './globalConfig';
 
 export const getBreakpoint = (width: number): BreakpointWidth => {
-  if (width > BreakpointWidth.LARGE) {
-    return BreakpointWidth.LARGE;
-  } else if (width > BreakpointWidth.MEDIUM) {
-    return BreakpointWidth.MEDIUM;
+  if (width > BreakpointWidth.DESKTOP) {
+    return BreakpointWidth.DESKTOP;
+  } else if (width > BreakpointWidth.LAPTOP) {
+    return BreakpointWidth.LAPTOP;
   } else {
-    return BreakpointWidth.SMALL;
+    return BreakpointWidth.TABLET;
   }
 };
 

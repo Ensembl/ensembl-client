@@ -40,7 +40,7 @@
   &.browserInfoExpanded {
     width: calc(100vw - 36px);
 
-    @media #{$breakpoint-large} {
+    @include for-big-desktop-up {
       width: calc(100vw - 356px);
     }
   }

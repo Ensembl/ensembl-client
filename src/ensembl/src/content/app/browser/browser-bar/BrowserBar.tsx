@@ -62,7 +62,6 @@ export type BrowserBarProps = {
   toggleBrowserNav: () => void;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
   changeFocusObject: (objectId: string) => void;
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
 };
 
 type BrowserInfoProps = {
@@ -106,7 +105,7 @@ export const BrowserBar = (props: BrowserBarProps) => {
   const shouldShowTrackPanelTabs =
     props.activeGenomeId &&
     (props.isTrackPanelOpened ||
-      props.breakpointWidth === BreakpointWidth.LARGE);
+      props.breakpointWidth === BreakpointWidth.DESKTOP);
 
   const browserInfoClassName = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
