@@ -6,6 +6,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 const onChange = jest.fn();
 const onRemove = jest.fn();
+const onUpload = jest.fn();
 
 describe('<PasteOrUpload/>', () => {
   afterEach(() => {
@@ -16,7 +17,8 @@ describe('<PasteOrUpload/>', () => {
   const defaultProps = {
     value: null,
     onChange,
-    onRemove
+    onRemove,
+    onUpload
   };
 
   it('renders without error', () => {

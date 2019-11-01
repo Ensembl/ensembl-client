@@ -1,9 +1,11 @@
 import React from 'react';
 import { DivAttributes } from '../helpers/types';
-import { nextUuid } from '../helpers/uuid';
+
 import { Provider as ItemProvider, UUID } from './ItemContext';
-import defaultStyles from '../css/Accordion.scss';
 import classNames from 'classnames';
+import { nextUuid } from 'src/shared/helpers/uuid';
+
+import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;

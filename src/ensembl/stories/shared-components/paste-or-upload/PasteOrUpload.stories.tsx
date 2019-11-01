@@ -19,11 +19,16 @@ const Wrapper = (props: any) => {
     action('input-removed')();
   };
 
+  const handleOnUpload = (files: any) => {
+    action('files-uploaded')(files);
+  };
+
   return (
     <PasteOrUpload
       value={value}
       onChange={handleOnChange}
       onRemove={handleOnRemove}
+      onUpload={handleOnUpload}
       placeholder={'Paste data'}
     />
   );

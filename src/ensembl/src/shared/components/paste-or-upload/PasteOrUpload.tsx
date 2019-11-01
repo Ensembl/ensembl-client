@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import noop from 'lodash/noop';
-import get from 'lodash/get';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 import Textarea from 'src/shared/components/textarea/Textarea';
+import Upload, {
+  UploadProps,
+  ReadFile
+} from 'src/shared/components/upload/Upload';
 
 import styles from './PasteOrUpload.scss';
+import { nextUuid } from 'src/shared/helpers/uuid';
 
 type PasteOrUploadProps = {
   value: string | null;
   placeholder?: string;
+  uploadProps?: Omit<UploadProps, 'onChange' | 'callbackWithFiles' | 'id'>;
   onChange: (value: string) => void;
+  onUpload: (files: ReadFile[]) => void;
   onRemove: () => void;
 };
 
@@ -19,34 +25,11 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
   const [shouldShowInput, showInput] = useState(props.value !== null);
 
   const [shouldShowFileUpload, showFileUpload] = useState(false);
-  const onChangeHandler = (value: string) => {
-    props.onChange(value);
-    showInput(true);
-  };
 
   const onRemoveHandler = () => {
     showFileUpload(false);
     showInput(false);
     props.onRemove();
-  };
-
-  let fileReader: FileReader;
-  const handleFileRead = () => {
-    const content: string = fileReader.result as string;
-    showInput(true);
-    showFileUpload(false);
-    onChangeHandler(content);
-  };
-
-  const handleFileChosen = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file: File | null = get(e, 'target.files.0', null);
-
-    if (!file) {
-      return;
-    }
-    fileReader = new FileReader();
-    fileReader.onloadend = handleFileRead;
-    fileReader.readAsText(file);
   };
 
   return (
@@ -56,14 +39,13 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
           <div className={styles.textWrapper}>
             <span className={styles.pasteText} onClick={() => showInput(true)}>
               Paste data
-            </span>{' '}
-            or{' '}
-            <span
-              className={styles.uploadText}
-              onClick={() => showFileUpload(true)}
-            >
-              Upload file
             </span>
+            <span className={styles.orText}>or</span>
+            <Upload
+              onChange={props.onUpload}
+              {...props.uploadProps}
+              id={'upload_' + nextUuid()}
+            />
           </div>
         </div>
       )}
@@ -80,17 +62,6 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
         </div>
       )}
 
-      {shouldShowFileUpload && (
-        <div className={styles.fields}>
-          <div className={styles.fileUploadWrapper}>
-            <input
-              type="file"
-              className={styles.fileInput}
-              onChange={(e) => handleFileChosen(e)}
-            />
-          </div>
-        </div>
-      )}
       {(shouldShowInput || shouldShowFileUpload) && (
         <div className={styles.removeIconHolder}>
           <ImageButton
