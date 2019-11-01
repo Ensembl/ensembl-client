@@ -24,3 +24,7 @@
   height: 1px;
   width: 1px;
 }
+
+.defaultUpload:focus-within {
+  border: 1px dashed $black;
+}
