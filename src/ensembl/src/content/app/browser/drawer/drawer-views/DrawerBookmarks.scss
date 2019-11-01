@@ -11,7 +11,6 @@
 .linksWrapper {
   margin: 20px 0 0 40px;
   height: 100%;
-  columns: 4;
   width: calc(100% - 110px);
   display: flex;
   flex-direction: column;
@@ -20,7 +19,7 @@
 
   .linkHolder {
     margin: 5px 0 0 15px;
-    width: 200px;
+    width: 20%;
     padding-right: 10px;
     text-overflow: ellipsis;
     overflow: hidden;
