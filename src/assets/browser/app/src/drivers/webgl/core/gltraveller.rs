@@ -12,7 +12,6 @@ use model::train::TravellerId;
 #[derive(Clone)]
 pub struct GLTraveller {
     printer: GLPrinter,
-    idx: usize,
     dr: Rc<RefCell<Option<GLDrawing>>>,
     state: Rc<RefCell<bool>>,
     traveller_id: TravellerId
@@ -20,23 +19,22 @@ pub struct GLTraveller {
 
 impl PartialEq for GLTraveller {
     fn eq(&self, other: &GLTraveller) -> bool {
-        self.idx == other.idx
+        self.traveller_id == other.traveller_id
     }
 }
 impl Eq for GLTraveller {}
 
 impl Hash for GLTraveller {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.idx.hash(state);
+        self.traveller_id.hash(state);
     }
 }
 
 impl GLTraveller {    
     /* train/partyresponses */
-    pub(in super) fn new(printer: &GLPrinter, idx: usize, traveller_id: &TravellerId) -> GLTraveller {
+    pub(in super) fn new(printer: &GLPrinter,  traveller_id: &TravellerId) -> GLTraveller {
         GLTraveller {
             printer: printer.clone(),
-            idx,
             dr: Rc::new(RefCell::new(None)),
             state: Rc::new(RefCell::new(false)),
             traveller_id: traveller_id.clone()
@@ -75,6 +73,6 @@ impl DriverTraveller for GLTraveller {
 
 impl fmt::Debug for GLTraveller {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f,"{:?}[{}]",self.traveller_id,self.idx)
+        write!(f,"{:?}",self.traveller_id)
     }
 }
