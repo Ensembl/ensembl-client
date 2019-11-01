@@ -38,7 +38,7 @@ describe('<BrowserBar />', () => {
 
   const defaultProps = {
     activeGenomeId: faker.lorem.word(),
-    breakpointWidth: BreakpointWidth.LARGE,
+    breakpointWidth: BreakpointWidth.DESKTOP,
     browserActivated: true,
     browserNavOpened: false,
     chrLocation: ['13', 32275301, 32433493] as ChrLocation,
@@ -146,7 +146,7 @@ describe('<BrowserBar />', () => {
 
     test('hides TrackPanelTabs on small if TrackPanel is closed', () => {
       const renderedBrowserBar = mount(
-        renderBrowserBar({ breakpointWidth: BreakpointWidth.MEDIUM })
+        renderBrowserBar({ breakpointWidth: BreakpointWidth.LAPTOP })
       );
       expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(0);
     });

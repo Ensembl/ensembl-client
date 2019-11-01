@@ -111,7 +111,9 @@ const plugins = [
     }]
   }),
 
-  new RobotstxtPlugin()
+  new RobotstxtPlugin({
+    filePath: '../robots.txt'
+  })
 ];
 
 // prod specific configuration

@@ -10,8 +10,7 @@ import { RootState } from 'src/store';
 
 import {
   getIsTrackPanelOpened,
-  getIsTrackPanelModalOpened,
-  getSelectedTrackPanelTab
+  getIsTrackPanelModalOpened
 } from './trackPanelSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
@@ -19,7 +18,9 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-import { TrackSet } from './trackPanelConfig';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { toggleTrackPanel } from './trackPanelActions';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
@@ -28,14 +29,24 @@ import styles from './TrackPanel.scss';
 type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
+  breakpointWidth: BreakpointWidth;
   isDrawerOpened: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
+  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
 const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
+
+  useEffect(() => {
+    if (props.breakpointWidth !== BreakpointWidth.DESKTOP) {
+      props.toggleTrackPanel(false);
+    } else {
+      props.toggleTrackPanel(true);
+    }
+  }, [props.breakpointWidth, props.toggleTrackPanel]);
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
     config: { tension: 280, friction: 45 },
@@ -80,6 +91,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     browserActivated: getBrowserActivated(state),
+    breakpointWidth: getBreakpointWidth(state),
     isDrawerOpened: getIsDrawerOpened(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
@@ -87,4 +99,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export default connect(mapStateToProps)(TrackPanel);
+const mapDispatchToProps = {
+  toggleTrackPanel
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanel);
