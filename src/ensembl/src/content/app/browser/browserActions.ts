@@ -330,6 +330,10 @@ export const updateApplyToAll = createStandardAction(
   'browser/update-apply-to-all'
 )<boolean>();
 
-export const toggleGenomeSelector = createStandardAction(
-  'toggle-genome-selector'
+export const toggleRegionEditorActive = createStandardAction(
+  'browser/toggle-region-editor-active'
+)<boolean>();
+
+export const toggleRegionFieldActive = createStandardAction(
+  'browser/toggle-region-field-active'
 )<boolean>();

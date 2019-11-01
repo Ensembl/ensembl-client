@@ -7,9 +7,9 @@ import {
   updateCogList,
   updateCogTrackList,
   updateSelectedCog
-} from './browserActions';
+} from '../browserActions';
 import { RootState } from 'src/store';
-import { CogList } from './browserState';
+import { CogList } from '../browserState';
 import {
   getBrowserActivated,
   getBrowserCogList,
@@ -17,7 +17,7 @@ import {
   getTrackConfigNames,
   getTrackConfigLabel,
   getBrowserSelectedCog
-} from './browserSelectors';
+} from '../browserSelectors';
 
 import styles from './BrowserCogList.scss';
 
@@ -27,10 +27,10 @@ type BrowserCogListProps = {
   browserCogTrackList: CogList;
   trackConfigNames: { [key: string]: boolean };
   trackConfigLabel: { [key: string]: boolean };
-  selectedCog: any;
+  selectedCog: string | null;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
-  updateSelectedCog: (index: string | null) => void;
+  updateSelectedCog: (trackId: string | null) => void;
 };
 
 type BpaneScrollPayload = {
@@ -38,7 +38,7 @@ type BpaneScrollPayload = {
   track_y?: CogList;
 };
 
-const BrowserCogList = (props: BrowserCogListProps) => {
+export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
     const { delta_y, track_y } = payload;
@@ -99,7 +99,7 @@ const BrowserCogList = (props: BrowserCogListProps) => {
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
           cogActivated={props.selectedCog === name}
-          index={name}
+          trackId={name}
           updateSelectedCog={props.updateSelectedCog}
         />
       </div>

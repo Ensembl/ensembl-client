@@ -26,7 +26,7 @@ import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
-type TrackPanelProps = {
+export type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   breakpointWidth: BreakpointWidth;
@@ -37,7 +37,7 @@ type TrackPanelProps = {
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
-const TrackPanel = (props: TrackPanelProps) => {
+export const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const TrackPanel = (props: TrackPanelProps) => {
           <TrackPanelBar />
           <TrackPanelList />
           {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
-          {isDrawerOpened && <Drawer />}
+          {isDrawerOpened ? <Drawer /> : null}
         </div>
       ) : null}
     </animated.div>

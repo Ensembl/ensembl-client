@@ -28,3 +28,15 @@ export type GenomeInfoResponse = {
 export type GenomeTrackCategories = {
   [genomeId: string]: GenomeTrackCategory[];
 };
+
+export enum GenomeKaryotypeItemType {
+  CHROMOSOME = 'chromosome'
+}
+
+export type GenomeKaryotypeItem = {
+  is_chromosome: boolean;
+  is_circular: boolean;
+  length: number;
+  name: string;
+  type: GenomeKaryotypeItemType;
+};

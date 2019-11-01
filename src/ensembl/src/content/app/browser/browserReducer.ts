@@ -19,6 +19,8 @@ import {
 } from './browserState';
 import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
 
+import { LoadingState } from 'src/shared/types/loading-state';
+
 export function browserInfo(
   state: BrowserState = defaultBrowserState,
   action: ActionType<RootAction>
@@ -116,8 +118,10 @@ export function browserLocation(
           ...action.payload
         }
       };
-    case getType(browserActions.toggleGenomeSelector):
-      return { ...state, genomeSelectorActive: action.payload };
+    case getType(browserActions.toggleRegionEditorActive):
+      return { ...state, regionEditorActive: action.payload };
+    case getType(browserActions.toggleRegionFieldActive):
+      return { ...state, regionFieldActive: action.payload };
     case getType(browserActions.updateDefaultPositionFlag):
       return { ...state, isObjectInDefaultPosition: action.payload };
     default:

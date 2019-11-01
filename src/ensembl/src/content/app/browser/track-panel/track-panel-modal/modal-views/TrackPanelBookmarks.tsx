@@ -18,8 +18,9 @@ import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 
-import styles from './TrackPanelBookmarks.scss';
 import { Status } from 'src/shared/types/status';
+
+import styles from './TrackPanelBookmarks.scss';
 
 export type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;

@@ -1,50 +1,99 @@
-import React, { FunctionComponent } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { browserNavConfig, BrowserNavItem } from '../browserConfig';
+import BrowserNavIcon from './BrowserNavIcon';
+import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
+import BrowserRegionField from '../browser-region-field/BrowserRegionField';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates } from '../browserSelectors';
+import { browserNavConfig, BrowserNavItem } from '../browserConfig';
+import {
+  getBrowserNavStates,
+  getChrLocation,
+  getRegionEditorActive,
+  getRegionFieldActive
+} from '../browserSelectors';
+import {
+  toggleRegionEditorActive,
+  toggleRegionFieldActive
+} from '../browserActions';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
-import { BrowserNavStates } from '../browserState';
-
-import BrowserNavIcon from './BrowserNavIcon';
+import { BrowserNavStates, ChrLocation } from '../browserState';
+import { getGenomeKaryotype } from 'src/genome/genomeSelectors';
+import { GenomeKaryotypeItem } from 'src/genome/genomeTypes';
 
 import styles from './BrowserNavBar.scss';
 
-type StateProps = {
+export type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
+  chrLocation: ChrLocation | null;
+  genomeKaryotype: GenomeKaryotypeItem[] | null;
   isTrackPanelOpened: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
+  toggleRegionEditorActive: (regionEditorActive: boolean) => void;
+  toggleRegionFieldActive: (regionFieldActive: boolean) => void;
 };
 
-type BrowserNavBarProps = StateProps;
+export const BrowserNavBar = (props: BrowserNavBarProps) => {
+  // the region editor and field style should be reset so that it won't be opaque when nav bar is opened again
+  useEffect(
+    () => () => {
+      props.toggleRegionEditorActive(false);
+      props.toggleRegionFieldActive(false);
+    },
+    []
+  );
 
-export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
-  props: BrowserNavBarProps
-) => {
+  const shouldNavIconBeEnabled = (index: number) => {
+    const { browserNavStates, regionEditorActive, regionFieldActive } = props;
+    const maxState = browserNavStates[index];
+    const regionInputsActive = regionEditorActive || regionFieldActive;
+
+    return !maxState && !regionInputsActive;
+  };
+
   const className = classNames(styles.browserNavBar, {
     [styles.browserNavBarExpanded]: !props.isTrackPanelOpened
   });
 
   return (
-    <div className={className}>
-      <dl>
+    <dl className={className}>
+      <dd>
         {browserNavConfig.map((item: BrowserNavItem, index: number) => (
           <BrowserNavIcon
             key={item.name}
             browserNavItem={item}
-            maxState={props.browserNavStates[index]}
+            enabled={shouldNavIconBeEnabled(index)}
           />
         ))}
-      </dl>
-    </div>
+      </dd>
+      <dd>{props.chrLocation ? <BrowserRegionField /> : null}</dd>
+      <dd>
+        {props.chrLocation && props.genomeKaryotype ? (
+          <BrowserRegionEditor />
+        ) : null}
+      </dd>
+    </dl>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   browserNavStates: getBrowserNavStates(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state)
+  chrLocation: getChrLocation(state),
+  genomeKaryotype: getGenomeKaryotype(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  regionEditorActive: getRegionEditorActive(state),
+  regionFieldActive: getRegionFieldActive(state)
 });
 
-export default connect(mapStateToProps)(BrowserNavBar);
+const mapDispatchToProps = {
+  toggleRegionEditorActive,
+  toggleRegionFieldActive
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BrowserNavBar);

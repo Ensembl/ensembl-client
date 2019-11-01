@@ -10,7 +10,7 @@ import imageButtonStyles from './ImageButton.scss';
 
 import { Status } from 'src/shared/types/status';
 
-export type ImageButtonStatus =
+type ImageButtonStatus =
   | Status.ACTIVE
   | Status.INACTIVE
   | Status.DISABLED

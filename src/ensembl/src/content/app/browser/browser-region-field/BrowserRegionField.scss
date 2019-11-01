@@ -1,0 +1,19 @@
+@import 'src/styles/common';
+
+.browserRegionField {
+  position: relative;
+
+  input {
+    width: 200px;
+  }
+}
+
+.inputText {
+  &::placeholder {
+    color: $grey;
+  }
+}
+
+.chrLocationView {
+  display: inline-block;
+}

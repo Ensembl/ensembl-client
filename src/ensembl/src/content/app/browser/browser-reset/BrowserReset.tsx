@@ -1,15 +1,13 @@
 import React, { FunctionComponent } from 'react';
 
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import styles from './BrowserReset.scss';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
 
-type BrowserResetProps = {
+export type BrowserResetProps = {
   focusObject: EnsObject | null;
   changeFocusObject: (objectId: string) => void;
   isActive: boolean;
@@ -23,7 +21,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
     return null;
   }
 
-  const getResetIconStatus = (): ImageButtonStatus => {
+  const getResetIconStatus = () => {
     return props.isActive ? Status.ACTIVE : Status.DISABLED;
   };
 

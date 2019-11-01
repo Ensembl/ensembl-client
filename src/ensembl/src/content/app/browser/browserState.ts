@@ -60,14 +60,16 @@ export const defaultBrowserNavState: BrowserNavState = {
 export type BrowserLocationState = Readonly<{
   chrLocations: ChrLocations; // final location of the browser when user stopped dragging/zooming; used to update the url
   actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
-  genomeSelectorActive: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
   isObjectInDefaultPosition: boolean;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
   chrLocations,
   actualChrLocations: {},
-  genomeSelectorActive: false,
+  regionEditorActive: false,
+  regionFieldActive: false,
   isObjectInDefaultPosition: false
 };
 

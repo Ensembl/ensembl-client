@@ -7,7 +7,9 @@ import {
   GenomeInfoState,
   defaultGenomeInfoState,
   GenomeTrackCategoriesState,
-  defaultGenomeTrackCategoriesState
+  defaultGenomeTrackCategoriesState,
+  defaultGenomeKaryotypeState,
+  GenomeKaryotypeState
 } from './genomeState';
 import { GenomeInfoData } from './genomeTypes';
 
@@ -84,7 +86,40 @@ function genomeTrackCategories(
   }
 }
 
+function genomeKaryotype(
+  state: GenomeKaryotypeState = defaultGenomeKaryotypeState,
+  action: ActionType<typeof genomeActions>
+): GenomeKaryotypeState {
+  switch (action.type) {
+    case getType(genomeActions.fetchGenomeKaryotypeAsyncActions.failure):
+      return {
+        ...state,
+        genomeKaryotypeFetchFailed: true,
+        genomeKaryotypeFetching: false
+      };
+    case getType(genomeActions.fetchGenomeKaryotypeAsyncActions.request):
+      return {
+        ...state,
+        genomeKaryotypeFetchFailed: false,
+        genomeKaryotypeFetching: true
+      };
+    case getType(genomeActions.fetchGenomeKaryotypeAsyncActions.success):
+      return {
+        ...state,
+        genomeKaryotypeData: {
+          ...state.genomeKaryotypeData,
+          [action.payload.activeGenomeId]: [...action.payload.data]
+        },
+        genomeKaryotypeFetchFailed: false,
+        genomeKaryotypeFetching: false
+      };
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   genomeInfo,
-  genomeTrackCategories
+  genomeTrackCategories,
+  genomeKaryotype
 });
