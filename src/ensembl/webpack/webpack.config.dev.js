@@ -67,9 +67,7 @@ const devConfig = {
     // rules to proxy requests to the backend server in development
     proxy: {
       '/api': {
-        // IMPORTANT! NOTE: change this to the original url once the PR is approved
-        target: 'http://193.62.55.91:30667',
-        // target: 'https://staging-2020.ensembl.org',
+        target: 'https://staging-2020.ensembl.org',
         changeOrigin: true,
         secure: false
       },
