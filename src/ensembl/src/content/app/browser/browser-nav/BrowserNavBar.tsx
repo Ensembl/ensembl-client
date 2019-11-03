@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import BrowserNavIcon from './BrowserNavIcon';
+import BrowserNavBarMain from './BrowserNavBarMain';
 import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
 import BrowserRegionField from '../browser-region-field/BrowserRegionField';
 
@@ -69,12 +70,15 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
           />
         ))}
       </dd>
-      <dd>{props.chrLocation ? <BrowserRegionField /> : null}</dd>
-      <dd>
-        {props.chrLocation && props.genomeKaryotype ? (
-          <BrowserRegionEditor />
-        ) : null}
-      </dd>
+      <BrowserNavBarMain />
+      {/*
+        <dd>{props.chrLocation ? <BrowserRegionField /> : null}</dd>
+        <dd>
+          {props.chrLocation && props.genomeKaryotype ? (
+            <BrowserRegionEditor />
+          ) : null}
+        </dd>
+        */}
     </dl>
   );
 };
