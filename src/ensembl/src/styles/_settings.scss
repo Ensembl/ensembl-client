@@ -31,6 +31,7 @@ $medium-dark-grey: #9aa7b1;
 $dark-grey: #6f8190;
 
 $red: #d90000;
+$orange: #ff9900;
 
 $green: #47d147;
 
@@ -43,6 +44,7 @@ $global-box-shadow: $medium-light-grey;
   light-blue: $light-blue;
   dark-blue: $dark-blue;
   red: $red;
+  orange: $orange;
   dark-grey: $dark-grey;
   medium-dark-grey: $medium-dark-grey;
   grey: $grey;
@@ -66,4 +68,4 @@ $dark: 900;
 // Base Typography
 // ------------------
 
-$font-family-monospace: Consolas, 'Liberation Mono', Courier, monospace;
+$font-family-monospace: 'IBM Plex Mono', 'Liberation Mono', Courier, monospace;
