@@ -1,11 +1,21 @@
 // TODO: think about the name; perhaps something like MiniMap is a better option?
 
 import React from 'react';
+import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';
 
 import * as constants from './chromosomeNavigatorConstants';
 
 import { calculateStyles } from './chromosomeNavigatorHelper';
+
+import {
+  getActualChrLocation,
+  getDefaultChrLocation
+} from 'src/content/app/browser/browserSelectors';
+
+import { getKaryotypeItemLength } from 'src/genome/genomeSelectors';
+
+import { RootState } from 'src/store';
 
 import styles from './ChromosomeNavigator.scss';
 
@@ -27,7 +37,7 @@ export type ChromosomeNavigatorProps = WrapperProps & {
   containerWidth: number; // width of the container, in pixels
 };
 
-const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
+export const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
   const [containerRef, containerWidth] = useResizeObserver();
 
   return (
@@ -35,7 +45,7 @@ const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
       ref={containerRef as React.RefObject<HTMLDivElement>}
       className={styles.chromosomeNavigator}
     >
-      {containerWidth ? (
+      {containerWidth && props.length ? (
         <ChromosomeNavigator {...{ ...props, containerWidth }} />
       ) : null}
     </div>
@@ -100,4 +110,26 @@ export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
   );
 };
 
-export default ChromosomeNavigatorWrapper;
+const mapStateToProps = (state: RootState) => {
+  const [chromosomeName = null, start = 0, end = 0] =
+    getActualChrLocation(state) || [];
+  const defaultChrLocation = getDefaultChrLocation(state);
+  const focusRegion = defaultChrLocation
+    ? {
+        start: defaultChrLocation[1],
+        end: defaultChrLocation[2]
+      }
+    : null;
+  const length =
+    (chromosomeName && getKaryotypeItemLength(chromosomeName, state)) || 0;
+
+  return {
+    length,
+    viewportStart: start,
+    viewportEnd: end,
+    focusRegion,
+    centromere: null // FIXME
+  };
+};
+
+export default connect(mapStateToProps)(ChromosomeNavigatorWrapper);

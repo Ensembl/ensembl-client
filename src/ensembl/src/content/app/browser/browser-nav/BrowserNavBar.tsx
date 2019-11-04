@@ -4,14 +4,11 @@ import classNames from 'classnames';
 
 import BrowserNavIcon from './BrowserNavIcon';
 import BrowserNavBarMain from './BrowserNavBarMain';
-import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
-import BrowserRegionField from '../browser-region-field/BrowserRegionField';
 
 import { RootState } from 'src/store';
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 import {
   getBrowserNavStates,
-  getChrLocation,
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
@@ -20,16 +17,12 @@ import {
   toggleRegionFieldActive
 } from '../browserActions';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
-import { BrowserNavStates, ChrLocation } from '../browserState';
-import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
-import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
+import { BrowserNavStates } from '../browserState';
 
 import styles from './BrowserNavBar.scss';
 
 export type BrowserNavBarProps = {
   browserNavStates: BrowserNavStates;
-  chrLocation: ChrLocation | null;
-  genomeKaryotype: GenomeKaryotypeItem[] | null;
   isTrackPanelOpened: boolean;
   regionEditorActive: boolean;
   regionFieldActive: boolean;
@@ -46,6 +39,7 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
     },
     []
   );
+  // FIXME: do something to the above
 
   const shouldNavIconBeEnabled = (index: number) => {
     const { browserNavStates, regionEditorActive, regionFieldActive } = props;
@@ -71,22 +65,12 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
         ))}
       </dd>
       <BrowserNavBarMain />
-      {/*
-        <dd>{props.chrLocation ? <BrowserRegionField /> : null}</dd>
-        <dd>
-          {props.chrLocation && props.genomeKaryotype ? (
-            <BrowserRegionEditor />
-          ) : null}
-        </dd>
-        */}
     </dl>
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
   browserNavStates: getBrowserNavStates(state),
-  chrLocation: getChrLocation(state),
-  genomeKaryotype: getGenomeKaryotype(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
   regionEditorActive: getRegionEditorActive(state),
   regionFieldActive: getRegionFieldActive(state)
