@@ -6,6 +6,7 @@ import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import styles from './BrowserNavBarMain.scss';
+import style from 'react-syntax-highlighter/dist/styles/prism/xonokai';
 
 enum Content {
   CHROMOSOME,
@@ -23,7 +24,9 @@ const BrowserNavBarMain = () => {
     <div className={styles.browserNavBarMain}>
       <div className={styles.content}>
         {view === Content.CHROMOSOME ? (
-          <ChromosomeNavigator />
+          <div className={styles.contentChromosomeNavigator}>
+            <ChromosomeNavigator />
+          </div>
         ) : (
           <BrowserNavBarRegionSwitcher />
         )}

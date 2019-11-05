@@ -4,20 +4,8 @@
   display: flex;
   font-size: 12px;
   background: $light-grey;
-  padding: 16px;
+  padding: 16px 26px;
   position: relative;
-
-  @include for-desktop-up {
-    width: calc(100vw - 356px);
-  }
-
-  &.browserNavBarExpanded {
-    width: 100vw;
-  }
-
-  dd {
-    margin-left: 10px;
-  }
 
   form {
     display: inline-block;

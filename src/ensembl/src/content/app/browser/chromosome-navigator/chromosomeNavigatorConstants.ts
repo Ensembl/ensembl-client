@@ -1,7 +1,7 @@
 export const TOTAL_HEIGHT = 20;
 
 export const STICK_HEIGHT = 4;
-export const STICK_MARGIN_TOP = 10;
+export const STICK_MARGIN_TOP = 12;
 
 export const CENTROMERE_RADIUS = 2;
 export const CENTROMERE_CENTRE_Y = STICK_MARGIN_TOP + CENTROMERE_RADIUS;
@@ -14,5 +14,5 @@ export const POINTER_ARROWHEAD_WIDTH = 10;
 export const POINTER_ARROWHEAD_HEIGHT = 8;
 export const POINTER_LINE_LENGTH = 8;
 
-export const LABEL_TOP_MARGIN = 0;
+export const LABEL_TOP_MARGIN = STICK_MARGIN_TOP - 8;
 export const MIN_DISTANCE_BETWEEN_LABELS = 10;

@@ -1,13 +1,21 @@
 @import 'src/styles/common';
 
 .browserNavBarMain {
+  padding-left: 50px;
   display: flex;
   align-items: center;
   flex-grow: 1;
 }
 
 .content {
+  display: flex;
   flex-grow: 1;
+}
+
+.contentChromosomeNavigator {
+  flex-grow: 1;
+  max-width: 1400px;
+  margin: auto;
 }
 
 .contentSwitcherArea {
