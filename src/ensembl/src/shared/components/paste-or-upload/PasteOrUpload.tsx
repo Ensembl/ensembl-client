@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import noop from 'lodash/noop';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -22,34 +22,42 @@ type PasteOrUploadProps = {
 };
 
 const PasteOrUpload = (props: PasteOrUploadProps) => {
-  const [shouldShowInput, showInput] = useState(props.value !== null);
+  const [shouldShowTextarea, showTextarea] = useState(props.value !== null);
 
-  const [shouldShowFileUpload, showFileUpload] = useState(false);
+  useEffect(() => {
+    showTextarea(props.value !== null);
+  }, [props.value]);
 
   const onRemoveHandler = () => {
-    showFileUpload(false);
-    showInput(false);
+    showTextarea(false);
     props.onRemove();
   };
 
+  const handleUpload = (files: ReadFile[]) => {
+    props.onUpload(files);
+  };
+
   return (
-    <>
-      {!shouldShowInput && !shouldShowFileUpload && (
+    <div className={styles.wrapper}>
+      {!shouldShowTextarea && (
         <div className={styles.fields}>
           <div className={styles.textWrapper}>
-            <span className={styles.pasteText} onClick={() => showInput(true)}>
+            <span
+              className={styles.pasteText}
+              onClick={() => showTextarea(true)}
+            >
               Paste data
             </span>
             <span className={styles.orText}>or</span>
             <Upload
-              onChange={props.onUpload}
+              onChange={handleUpload}
               {...props.uploadProps}
               id={'upload_' + nextUuid()}
             />
           </div>
         </div>
       )}
-      {shouldShowInput && (
+      {shouldShowTextarea && (
         <div className={styles.fields}>
           <div className={styles.inputWrapper}>
             <Textarea
@@ -62,7 +70,7 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
         </div>
       )}
 
-      {(shouldShowInput || shouldShowFileUpload) && (
+      {shouldShowTextarea && (
         <div className={styles.removeIconHolder}>
           <ImageButton
             onClick={onRemoveHandler}
@@ -71,7 +79,7 @@ const PasteOrUpload = (props: PasteOrUploadProps) => {
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

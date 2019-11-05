@@ -6,20 +6,21 @@
   cursor: pointer;
 }
 
-.fileUploadWrapper {
-  float: left;
+.wrapper {
+  display: grid;
+  grid-template-columns: [fields] auto [remove-icon] 75px;
+}
+
+.fields {
+  grid-column: fields;
 }
 
 .removeIconHolder {
   height: 20px;
   width: 20px;
-  float: right;
-  margin-right: 2px;
-}
-
-.fields {
-  width: calc(100% - 75px);
-  float: left;
+  grid-column: remove-icon;
+  justify-self: end;
+  align-self: center;
 }
 
 .textInput {

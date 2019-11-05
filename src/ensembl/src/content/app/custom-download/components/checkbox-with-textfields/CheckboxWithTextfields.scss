@@ -1,23 +1,46 @@
+@import 'src/styles/common';
+
 .wrapperTable {
+  display: grid;
+  grid-template-columns: [checkbox] 200px [fields] minmax(
+      300px,
+      calc(100% - 300px)
+    );
+  grid-template-rows: auto [add-icon] 30px;
   padding-bottom: 20px;
   width: 100%;
-  td {
-    vertical-align: top;
-  }
 }
 .checkboxWrapper {
-  width: 200px;
-}
-
-.fieldsWrapper {
-  min-width: 300px;
-  max-width: calc(100% - 200px);
+  grid-column: checkbox;
 }
 
 .addIconHolder {
   height: 25px;
   width: 25px;
-  margin-top: 24px;
   float: right;
-  clear: right;
+  margin-right: -3px;
+}
+
+.errorWrapper {
+  display: grid;
+  grid-template-columns: [error-message] auto [remove-icon] 20px;
+}
+
+.errorContent {
+  grid-column: error-message;
+  margin-bottom: 15px;
+}
+
+.errorMessage {
+  color: $red;
+}
+
+.removeErrorIcon {
+  grid-column: remove-icon;
+  justify-self: end;
+}
+
+.pasteOrUploadWrapper + .pasteOrUploadWrapper,
+.pasteOrUploadWrapper + .errorWrapper {
+  margin-top: 15px;
 }
