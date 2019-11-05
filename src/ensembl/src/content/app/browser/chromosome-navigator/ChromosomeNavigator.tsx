@@ -126,10 +126,10 @@ const mapStateToProps = (state: RootState) => {
   const length =
     (chromosomeName && getKaryotypeItemLength(chromosomeName, state)) || 0;
 
-  // the code below is naughty: we are going to peek at the string that represents genome id
-  // — something which we are not supposed to do
+  // the code below is naughty and temporary (see ENSWBSITES-385):
+  // we are peeking at the string that represents genome id — something which we are not supposed to do
   const genomeId = getBrowserActiveGenomeId(state);
-  let centromere;
+  let centromere = null;
   if (chromosomeName && genomeId && genomeId.startsWith('homo_sapiens')) {
     centromere = centromeres.humanCentromeres[chromosomeName] || null;
   }
