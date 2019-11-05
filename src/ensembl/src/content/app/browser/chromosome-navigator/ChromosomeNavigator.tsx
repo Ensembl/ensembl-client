@@ -9,11 +9,14 @@ import * as constants from './chromosomeNavigatorConstants';
 import { calculateStyles } from './chromosomeNavigatorHelper';
 
 import {
+  getBrowserActiveGenomeId,
   getActualChrLocation,
   getDefaultChrLocation
 } from 'src/content/app/browser/browserSelectors';
 
 import { getKaryotypeItemLength } from 'src/genome/genomeSelectors';
+
+import * as centromeres from 'src/shared/data/centromeres';
 
 import { RootState } from 'src/store';
 
@@ -123,12 +126,20 @@ const mapStateToProps = (state: RootState) => {
   const length =
     (chromosomeName && getKaryotypeItemLength(chromosomeName, state)) || 0;
 
+  // the code below is naughty: we are going to peek at the string that represents genome id
+  // — something which we are not supposed to do
+  const genomeId = getBrowserActiveGenomeId(state);
+  let centromere;
+  if (chromosomeName && genomeId && genomeId.startsWith('homo_sapiens')) {
+    centromere = centromeres.humanCentromeres[chromosomeName] || null;
+  }
+
   return {
     length,
     viewportStart: start,
     viewportEnd: end,
     focusRegion,
-    centromere: null // FIXME
+    centromere
   };
 };
 
