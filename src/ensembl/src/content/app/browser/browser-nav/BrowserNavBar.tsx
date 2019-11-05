@@ -2,30 +2,20 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import BrowserNavIcon from './BrowserNavIcon';
+import BrowserNavBarControls from './BrowserNavBarControls';
 import BrowserNavBarMain from './BrowserNavBarMain';
 
 import { RootState } from 'src/store';
-import { browserNavConfig, BrowserNavItem } from '../browserConfig';
-import {
-  getBrowserNavStates,
-  getRegionEditorActive,
-  getRegionFieldActive
-} from '../browserSelectors';
 import {
   toggleRegionEditorActive,
   toggleRegionFieldActive
 } from '../browserActions';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
-import { BrowserNavStates } from '../browserState';
 
 import styles from './BrowserNavBar.scss';
 
 export type BrowserNavBarProps = {
-  browserNavStates: BrowserNavStates;
-  isTrackPanelOpened: boolean;
-  regionEditorActive: boolean;
-  regionFieldActive: boolean;
+  expanded: boolean;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
   toggleRegionFieldActive: (regionFieldActive: boolean) => void;
 };
@@ -41,39 +31,20 @@ export const BrowserNavBar = (props: BrowserNavBarProps) => {
   );
   // FIXME: do something to the above
 
-  const shouldNavIconBeEnabled = (index: number) => {
-    const { browserNavStates, regionEditorActive, regionFieldActive } = props;
-    const maxState = browserNavStates[index];
-    const regionInputsActive = regionEditorActive || regionFieldActive;
-
-    return !maxState && !regionInputsActive;
-  };
-
   const className = classNames(styles.browserNavBar, {
-    [styles.browserNavBarExpanded]: !props.isTrackPanelOpened
+    [styles.browserNavBarExpanded]: props.expanded
   });
 
   return (
-    <dl className={className}>
-      <dd>
-        {browserNavConfig.map((item: BrowserNavItem, index: number) => (
-          <BrowserNavIcon
-            key={item.name}
-            browserNavItem={item}
-            enabled={shouldNavIconBeEnabled(index)}
-          />
-        ))}
-      </dd>
+    <div className={className}>
+      <BrowserNavBarControls />
       <BrowserNavBarMain />
-    </dl>
+    </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
-  browserNavStates: getBrowserNavStates(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state),
-  regionEditorActive: getRegionEditorActive(state),
-  regionFieldActive: getRegionFieldActive(state)
+  expanded: !getIsTrackPanelOpened(state)
 });
 
 const mapDispatchToProps = {
