@@ -34,10 +34,10 @@ WASMNAME="browser-$WASMHASH.wasm"
 JSNAME="browser.js"
 rm -f $DEST/*.js $DEST/*.wasm
 
-if [ "$1" == "check" ] ; then
-  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
-else
+if [ "$1" != "check" ] && hash wasm-opt 2>/dev/null ; then
   wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $DEST/$WASMNAME
+else
+  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
 fi
 ls -lh $DEST/$WASMNAME
 cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
