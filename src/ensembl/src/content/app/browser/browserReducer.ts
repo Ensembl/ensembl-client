@@ -19,8 +19,6 @@ import {
 } from './browserState';
 import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
 
-import { LoadingState } from 'src/shared/types/loading-state';
-
 export function browserInfo(
   state: BrowserState = defaultBrowserState,
   action: ActionType<RootAction>

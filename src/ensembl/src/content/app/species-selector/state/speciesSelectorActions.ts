@@ -1,8 +1,4 @@
-import {
-  createAsyncAction,
-  createAction,
-  createStandardAction
-} from 'typesafe-actions';
+import { createAsyncAction, createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import find from 'lodash/find';
@@ -59,9 +55,9 @@ import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constant
 
 import { RootState } from 'src/store';
 
-export const setSearchText = createStandardAction(
-  'species_selector/set_search_text'
-)<string>();
+export const setSearchText = createAction('species_selector/set_search_text')<
+  string
+>();
 
 export const updateSearch: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -111,19 +107,17 @@ export const fetchAssembliesAsyncActions = createAsyncAction(
   'species_selector/assemblies_failure'
 )<undefined, { assemblies: Assembly[] }, Error>();
 
-export const setSelectedSpecies = createStandardAction(
+export const setSelectedSpecies = createAction(
   'species_selector/species_selected'
 )<SearchMatch | PopularSpecies>();
 
-export const clearSearchResults = createStandardAction(
+export const clearSearchResults = createAction(
   'species_selector/clear_search_results'
 )();
 
-export const clearSearch = createStandardAction(
-  'species_selector/clear_search'
-)();
+export const clearSearch = createAction('species_selector/clear_search')();
 
-export const clearSelectedSearchResult = createStandardAction(
+export const clearSelectedSearchResult = createAction(
   'species_selector/clear_selected_search_result'
 )();
 
@@ -216,7 +210,7 @@ export const handleSelectedSpecies: ActionCreator<
   dispatch(fetchAssemblies(genome_id));
 };
 
-export const updateCommittedSpecies = createStandardAction(
+export const updateCommittedSpecies = createAction(
   'species_selector/toggle_species_use'
 )<CommittedItem[]>();
 
@@ -312,16 +306,11 @@ export const deleteSpeciesAndSave: ActionCreator<
 
 export const changeAssembly = createAction(
   'species_selector/change_assembly',
-  (resolve) => {
-    return (assembly: Assembly) => {
-      return resolve(
-        assembly,
-        buildAnalyticsObject({
-          category: categories.ASSEMBLY_SELECTOR,
-          label: assembly.assembly_name,
-          action: 'select'
-        })
-      );
-    };
-  }
-);
+  (assembly: Assembly) => assembly,
+  (assembly: Assembly) =>
+    buildAnalyticsObject({
+      category: categories.ASSEMBLY_SELECTOR,
+      label: assembly.assembly_name,
+      action: 'select'
+    })
+)();
