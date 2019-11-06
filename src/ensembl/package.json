@@ -163,7 +163,8 @@
     "workbox-webpack-plugin": "4.3.1"
   },
   "browserslist": [
-    "last 2 versions",
-    "ie > 10"
+    "> 1% and last 2 versions",
+    "not dead",
+    "not ie 11"
   ]
 }
