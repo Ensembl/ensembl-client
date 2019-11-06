@@ -21,7 +21,13 @@ cargo +nightly web deploy --target=wasm32-unknown-unknown --release
 
 echo "SRC=$SRC"
 echo "DEST=$DEST"
-WASMHASH=$(md5sum $SRC/target/deploy/hellostdweb.wasm | cut -f1 -d' ');
+
+if hash md5 2>/dev/null; then
+  WASMHASH=$(md5 $SRC/target/deploy/hellostdweb.wasm | cut -f4 -d' ')
+else
+  WASMHASH=$(md5sum $SRC/target/deploy/hellostdweb.wasm | cut -f1 -d' ')
+fi
+
 echo "WASMHASH=$WASMHASH"
 
 WASMNAME="browser-$WASMHASH.wasm"
