@@ -36,8 +36,8 @@ export type BrowserTrackConfigProps = {
   trackConfigLabel: { [key: string]: boolean };
   trackConfigNames: { [key: string]: boolean };
   updateApplyToAll: (yn: boolean) => void;
-  updateTrackConfigLabel: (selectedCog: string | null, sense: boolean) => void;
-  updateTrackConfigNames: (selectedCog: string | null, sense: boolean) => void;
+  updateTrackConfigLabel: (selectedCog: string, sense: boolean) => void;
+  updateTrackConfigNames: (selectedCog: string, sense: boolean) => void;
   onClose: () => void;
 };
 

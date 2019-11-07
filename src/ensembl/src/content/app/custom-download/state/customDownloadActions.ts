@@ -1,8 +1,4 @@
-import {
-  createAction,
-  createAsyncAction,
-  createStandardAction
-} from 'typesafe-actions';
+import { createAction, createAsyncAction } from 'typesafe-actions';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -28,7 +24,7 @@ import { RootState } from 'src/store';
 export const filterActions = allFilterAccordionActions;
 export const attributesActions = allAttributeAccordionActions;
 
-export const updateActiveGenomeId = createStandardAction(
+export const updateActiveGenomeId = createAction(
   'custom-download/set-active-genome-id'
 )<string | null>();
 
@@ -49,18 +45,15 @@ export const setActiveGenomeId: ActionCreator<
 
 export const updateActiveConfigurationForGenome = createAction(
   'custom-download/update-active-configuration-for-genome',
-  (action) => (payload: {
-    activeGenomeId: string;
-    data: CustomDownloadStateForGenome;
-  }) => {
+  (payload: { activeGenomeId: string; data: CustomDownloadStateForGenome }) => {
     const { activeGenomeId, data } = payload;
 
     customDownloadStorageService.updateActiveConfigurationsForGenome({
       [activeGenomeId]: data
     });
-    return action({ activeGenomeId, data: cloneDeep(data) });
+    return { activeGenomeId, data: cloneDeep(data) };
   }
-);
+)();
 
 export const updateSelectedPreFilter: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -129,7 +122,7 @@ export const fetchPreviewResult: ActionCreator<
   }
 };
 
-export const setIsLoadingResult = createStandardAction(
+export const setIsLoadingResult = createAction(
   'custom-download/set-is-loading-result'
 )<boolean>();
 

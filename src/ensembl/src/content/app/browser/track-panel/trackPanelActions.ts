@@ -22,7 +22,7 @@ import {
 
 export const updateTrackPanelForGenome = createAction(
   'track-panel/update-track-panel',
-  (action) => (payload: {
+  (payload: {
     activeGenomeId: string;
     data: Partial<TrackPanelStateForGenome>;
   }) => {
@@ -31,9 +31,9 @@ export const updateTrackPanelForGenome = createAction(
     browserStorageService.updateTrackPanels({
       [activeGenomeId]: persistentTrackProperties
     });
-    return action({ activeGenomeId, data });
+    return { activeGenomeId, data };
   }
-);
+)();
 
 export const toggleTrackPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
