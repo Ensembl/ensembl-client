@@ -74,7 +74,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       category: 'recent_bookmark_link',
       label: objectType,
       action: 'clicked',
-      value: index
+      value: index + 1
     });
 
     props.closeTrackPanelModal();
