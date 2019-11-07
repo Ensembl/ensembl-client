@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.questionButton {
+.default {
   position: relative;
   display: flex;
   justify-content: center;
@@ -19,4 +19,11 @@
   *[class*='tooltip'] {
     max-width: 300px;
   }
+}
+
+.small {
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+  border: 2px solid $orange;
 }
