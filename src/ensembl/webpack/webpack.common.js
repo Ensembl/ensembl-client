@@ -43,7 +43,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
       // and extract the css for prod and minify it as external stylesheets
       {
         test: /.scss$/,
-        include: /src\/ensembl\/src(?!\/styles)/,
+        include: /src(?!\/styles)/,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
@@ -68,7 +68,7 @@ module.exports = (isDev, moduleRules, plugins) => ({
 
       {
         test: /.scss$/,
-        include: /src\/ensembl\/src\/styles/,
+        include: /src\/styles/,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
