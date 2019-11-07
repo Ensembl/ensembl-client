@@ -4,16 +4,11 @@ import classNames from 'classnames';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ReactComponent as QuestionIcon } from './icon_question.svg';
 
-import defaultStyles from './QuestionButton.scss';
-
-export enum QuestionButtonStyle {
-  SMALL = 'small'
-}
+import styles from './QuestionButton.scss';
 
 type Props = {
   helpText: React.ReactNode;
-  classNames?: { [key in QuestionButtonStyle]?: string };
-  style: QuestionButtonStyle;
+  style: string;
 };
 
 const QuestionButton = (props: Props) => {
@@ -27,11 +22,7 @@ const QuestionButton = (props: Props) => {
     setIsHovering(false);
   };
 
-  const styles = props.classNames
-    ? { ...defaultStyles, ...props.classNames }
-    : defaultStyles;
-
-  const className = classNames(defaultStyles.default, styles[props.style]);
+  const className = classNames(styles.default, styles[props.style]);
 
   return (
     <div
