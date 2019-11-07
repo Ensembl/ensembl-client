@@ -9,6 +9,7 @@ import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trac
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import analyticsTracking from 'src/services/analytics-service';
 
 import styles from './DrawerBookmarks.scss';
 
@@ -24,7 +25,14 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
     props.previouslyViewedObjects.length - 20
   );
 
-  const onClickHandler = () => {
+  const onClickHandler = (objectType: string, index: number) => {
+    analyticsTracking.trackEvent({
+      category: 'recent_bookmark_link',
+      label: objectType,
+      action: 'clicked',
+      value: index + 20
+    });
+
     props.closeTrackPanelModal();
     props.closeDrawer();
   };
@@ -44,7 +52,12 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
 
               return (
                 <span key={index} className={styles.linkHolder}>
-                  <Link to={path} onClick={onClickHandler}>
+                  <Link
+                    to={path}
+                    onClick={() =>
+                      onClickHandler(previouslyViewedObject.object_type, index)
+                    }
+                  >
                     {previouslyViewedObject.label}
                   </Link>
                   <span className={styles.previouslyViewedType}>

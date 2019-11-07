@@ -17,6 +17,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import analyticsTracking from 'src/services/analytics-service';
 
 import { Status } from 'src/shared/types/status';
 
@@ -68,6 +69,17 @@ type PreviouslyViewedLinksProps = Pick<
 >;
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
+  const onLinkClick = (objectType: string, index: number) => {
+    analyticsTracking.trackEvent({
+      category: 'recent_bookmark_link',
+      label: objectType,
+      action: 'clicked',
+      value: index
+    });
+
+    props.closeTrackPanelModal();
+  };
+
   return (
     <div>
       {[...props.previouslyViewedObjects]
@@ -80,7 +92,12 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
           return (
             <div key={index} className={styles.linkHolder}>
-              <Link to={path} onClick={props.closeTrackPanelModal}>
+              <Link
+                to={path}
+                onClick={() =>
+                  onLinkClick(previouslyViewedObject.object_type, index)
+                }
+              >
                 {previouslyViewedObject.label}
               </Link>
               <span className={styles.previouslyViewedType}>
@@ -103,6 +120,17 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
   } = props;
 
   const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
+
+  const onEllipsisClick = () => {
+    analyticsTracking.trackEvent({
+      category: 'recent_bookmark_link',
+      label: 'recent_bookmarks',
+      action: 'clicked',
+      value: previouslyViewedObjects.length
+    });
+
+    props.changeDrawerViewAndOpen('bookmarks');
+  };
 
   return (
     <section className="trackPanelBookmarks">
@@ -127,7 +155,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
                   buttonStatus={Status.ACTIVE}
                   description={'View all'}
                   image={EllipsisIcon}
-                  onClick={() => props.changeDrawerViewAndOpen('bookmarks')}
+                  onClick={onEllipsisClick}
                 />
               </span>
             )}

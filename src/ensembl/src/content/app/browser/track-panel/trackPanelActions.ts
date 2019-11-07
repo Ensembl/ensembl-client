@@ -131,13 +131,6 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       object_type: activeEnsObject.object_type,
       label: activeEnsObject.label
     });
-  } else {
-    // If it is already present, bump it to the end
-    const [previouslyViewedObject] = previouslyViewedObjects.splice(
-      existingIndex,
-      1
-    );
-    previouslyViewedObjects.push({ ...previouslyViewedObject });
   }
 
   // Limit the total number of previously viewed objects to 250
