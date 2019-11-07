@@ -34,10 +34,7 @@ describe('BrowserNavBarMain', () => {
     it('renders RegionSwitcher when user clicks on Change', () => {
       const wrapper = mount(<BrowserNavBarMain />);
       const changeButton = wrapper.find('.contentSwitcher');
-      act(() => {
-        changeButton.simulate('click');
-      });
-      wrapper.update();
+      changeButton.simulate('click');
       expect(wrapper.find(ChromosomeNavigator).length).toBe(0);
       expect(wrapper.find(BrowserNavBarRegionSwitcher).length).toBe(1);
     });
@@ -45,16 +42,10 @@ describe('BrowserNavBarMain', () => {
     it('renders chromosome visualization when user closes RegionSwitcher', () => {
       const wrapper = mount(<BrowserNavBarMain />);
       const changeButton = wrapper.find('.contentSwitcher');
-      act(() => {
-        changeButton.simulate('click');
-      });
-      wrapper.update();
+      changeButton.simulate('click');
 
       const closeButton = wrapper.find('.contentSwitcherClose');
-      act(() => {
-        closeButton.simulate('click');
-      });
-      wrapper.update();
+      closeButton.simulate('click');
 
       expect(wrapper.find(ChromosomeNavigator).length).toBe(1);
       expect(wrapper.find(BrowserNavBarRegionSwitcher).length).toBe(0);
