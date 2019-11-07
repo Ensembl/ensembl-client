@@ -7,7 +7,7 @@ import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import styles from './BrowserNavBarMain.scss';
 
-export enum Content {
+enum Content {
   CHROMOSOME,
   REGION_SWITCHER
 }
