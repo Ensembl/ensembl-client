@@ -123,7 +123,7 @@ const helpText = (
 const RightCorner = (props: RightCornerProps) => {
   switch (props.status) {
     case RightCornerStatus.INFO:
-      return <QuestionButton helpText={helpText} />;
+      return <QuestionButton helpText={helpText} style='small' />;
     case RightCornerStatus.CLEAR:
       return <ClearButton onClick={props.clear} />;
     default:
