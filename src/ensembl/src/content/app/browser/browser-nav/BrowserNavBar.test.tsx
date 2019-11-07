@@ -4,7 +4,7 @@ import { render } from 'enzyme';
 jest.mock('./BrowserNavBarControls', () => () => (
   <div>BrowserNavBarControls</div>
 ));
-jest.mock('./BrowserNavBarMain', () => () => <div>BrowserNavBarControls</div>);
+jest.mock('./BrowserNavBarMain', () => () => <div>BrowserNavBarMain</div>);
 
 import { BrowserNavBar } from './BrowserNavBar';
 

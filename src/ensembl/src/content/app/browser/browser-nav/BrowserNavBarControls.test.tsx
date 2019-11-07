@@ -34,7 +34,7 @@ describe('BrowserNavBarControls', () => {
     const controlButtons = wrapper.find(BrowserNavIcon);
     expect(controlButtons.length).toEqual(browserNavStates.length);
     controlButtons.forEach((button) => {
-      expect(button.props().enabled).toBe(false);
+      expect(button.prop('enabled')).toBe(false);
     });
   });
 
@@ -50,7 +50,7 @@ describe('BrowserNavBarControls', () => {
     const controlButtons = wrapper.find(BrowserNavIcon);
     controlButtons.forEach((button, index) => {
       const hasCausedMaximumEffect = browserNavStates[index];
-      expect(button.props().enabled).toBe(!hasCausedMaximumEffect);
+      expect(button.prop('enabled')).toBe(!hasCausedMaximumEffect);
     });
   });
 });
