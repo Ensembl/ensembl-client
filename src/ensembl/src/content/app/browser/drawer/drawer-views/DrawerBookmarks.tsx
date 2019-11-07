@@ -30,7 +30,7 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
       category: 'recent_bookmark_link',
       label: objectType,
       action: 'clicked',
-      value: index + 21
+      value: index + 1
     });
 
     props.closeTrackPanelModal();
