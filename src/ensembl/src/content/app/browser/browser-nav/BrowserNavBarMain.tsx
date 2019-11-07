@@ -15,7 +15,7 @@ export enum Content {
 const BrowserNavBarMain = () => {
   const [view, changeView] = useState<Content>(Content.CHROMOSOME);
 
-  const onChangeViewClick = (newView: Content) => {
+  const handleViewChange = (newView: Content) => {
     changeView(newView);
   };
 
@@ -30,7 +30,7 @@ const BrowserNavBarMain = () => {
           <BrowserNavBarRegionSwitcher />
         )}
       </div>
-      <ContentSwitcher currentView={view} onSwitch={onChangeViewClick} />
+      <ContentSwitcher currentView={view} onSwitch={handleViewChange} />
     </div>
   );
 };
