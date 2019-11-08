@@ -4,6 +4,7 @@ set -ev
 
 ASSET_REPO_NAME="throwaway-ensembl-static-assets"
 ASSET_REPO="git@github.com:azangru/$ASSET_REPO_NAME.git"
+NPM_ASSET_REPO="git://github.com/azangru/$ASSET_REPO_NAME.git"
 
 # Where is this script running?
 pushd $(dirname "${0}") > /dev/null
@@ -42,20 +43,19 @@ WASMNAME="browser-$WASMHASH.wasm"
 JSNAME="browser.js"
 rm -f $DEST/*.js $DEST/*.wasm
 
-if [ "$1" != "check" ] && hash wasm-opt 2>/dev/null ; then
-  wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $DEST/$WASMNAME
-else
-  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
-fi
-ls -lh $DEST/$WASMNAME
-cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
+# Fix hash in js
+sed -i -e "s~\"hellostdweb.wasm\"~\"/static/browser/$WASMNAME\"~g" $SRC/target/deploy/hellostdweb.js
 
-# Fix hash in destination js
-sed -i -e "s~\"hellostdweb.wasm\"~\"/static/browser/$WASMNAME\"~g" $DEST/$JSNAME
+#if [ "$1" != "check" ] && hash wasm-opt 2>/dev/null ; then
+#  wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $DEST/$WASMNAME
+#else
+#  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
+#fi
+#ls -lh $DEST/$WASMNAME
+#cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
 
 # Send to remote repository
 NOW=$(date +"%Y-%m-%d %H:%M")
-USER=$(whoami)
 BRANCH="$(git symbolic-ref HEAD 2>/dev/null)" || BRANCH="(anon. branch)"
 BRANCH=${BRANCH##refs/heads/}
 if [ "x$1" == "x" ] ; then
@@ -63,20 +63,21 @@ if [ "x$1" == "x" ] ; then
   GITDIR=$(mktemp -d)
   echo $GITDIR
   (
+    set -v
     cd $GITDIR
     git clone $ASSET_REPO
     cd $ASSET_REPO_NAME
-    mkdir -p assets/$WASMHASH
-    cp $SRC/target/deploy/hellostdweb.js assets/$WASMHASH/$JSNAME
-    wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o assets/$WASMHASH/$WASMNAME
     git rm browser.js *.wasm
     rm -f browser.js *.wasm
-    ln -s assets/$WASMHASH/$WASMNAME $WASMNAME
-    ln -s assets/$WASMHASH/$JSNAME $JSNAME
-    sed -i -e "s~\s*\"files\":.*~  \"files\": [\"browser.js\",\"browser-$WASMHASH.wasm\"]~" package.json    
-    git add assets/$WASMHASH $WASMNAME $JSNAME package.json
-    git commit -m "$BRANCH at $NOW by $USER"
+    cp $SRC/target/deploy/hellostdweb.js $JSNAME
+    wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $WASMNAME
+    git add $WASMNAME $JSNAME package.json
+    git commit -m "$BRANCH at $NOW"
     git push
+    git tag -a "wasm/$WASMHASH" -m "$BRANCH at $NOW"
+    git push origin tag "wasm/$WASMHASH"
+    sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$NPM_ASSET_REPO#wasm/$WASMHASH\",~" $SRC/../../../ensembl/package.json
   )
   echo rm -rf $GITDIR
 fi
+
