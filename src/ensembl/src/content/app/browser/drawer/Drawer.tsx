@@ -19,7 +19,7 @@ import closeIcon from 'static/img/shared/close.svg';
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type DrawerProps = {
   drawerView: string;

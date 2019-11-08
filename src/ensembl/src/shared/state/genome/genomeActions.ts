@@ -9,7 +9,7 @@ import {
   GenomeKaryotypeItem
 } from './genomeTypes';
 
-import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
+import { fetchExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectActions';
 
 import {
   getGenomeInfoById,

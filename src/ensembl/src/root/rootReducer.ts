@@ -7,7 +7,7 @@ import genome from '../shared/state/genome/genomeReducer';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
 import global from '../global/globalReducer';
 import header from '../header/headerReducer';
-import ensObjects from '../ens-object/ensObjectReducer';
+import ensObjects from '../shared/state/ens-object/ensObjectReducer';
 import speciesSelector from '../content/app/species-selector/state/speciesSelectorReducer';
 
 const rootReducer = (history: any) =>

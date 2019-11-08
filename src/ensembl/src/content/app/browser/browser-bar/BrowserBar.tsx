@@ -4,9 +4,9 @@ import classNames from 'classnames';
 
 import { TrackSet } from '../track-panel/trackPanelConfig';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
-import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 

@@ -22,7 +22,7 @@ import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { toggleTrackPanel } from './trackPanelActions';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 

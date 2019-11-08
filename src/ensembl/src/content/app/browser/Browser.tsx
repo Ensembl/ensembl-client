@@ -39,8 +39,8 @@ import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';

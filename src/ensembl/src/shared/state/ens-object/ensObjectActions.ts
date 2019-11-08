@@ -10,7 +10,7 @@ import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import {
   getEnsObjectLoadingStatus,
   getExampleEnsObjects
-} from 'src/ens-object/ensObjectSelectors';
+} from 'src/shared/state/ens-object/ensObjectSelectors';
 import { TrackId } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
 import { RootState } from 'src/store';

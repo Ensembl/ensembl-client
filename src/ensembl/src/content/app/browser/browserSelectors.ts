@@ -3,7 +3,7 @@ import { ChrLocation } from './browserState';
 
 import { getQueryParamsMap } from 'src/global/globalHelper';
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
-import { getEnsObjectById } from 'src/ens-object/ensObjectSelectors';
+import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 export const getBrowserActivated = (state: RootState) =>
   state.browser.browserInfo.browserActivated;
