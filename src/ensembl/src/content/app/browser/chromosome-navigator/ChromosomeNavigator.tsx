@@ -12,7 +12,7 @@ import {
   getDefaultChrLocation
 } from 'src/content/app/browser/browserSelectors';
 
-import { getKaryotypeItemLength } from 'src/genome/genomeSelectors';
+import { getKaryotypeItemLength } from 'src/shared/state/genome/genomeSelectors';
 
 import * as centromeres from 'src/shared/data/centromeres';
 
