@@ -1,5 +1,3 @@
-// TODO: think about the name; perhaps something like MiniMap is a better option?
-
 import React from 'react';
 import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';
