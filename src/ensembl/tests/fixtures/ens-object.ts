@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const createEnsObject = (objectType?: string): EnsObject => ({
   bio_type: faker.lorem.words(),

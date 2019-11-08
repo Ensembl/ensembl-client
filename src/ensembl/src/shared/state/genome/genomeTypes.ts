@@ -1,4 +1,4 @@
-import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 export type GenomeInfo = {

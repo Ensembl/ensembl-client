@@ -26,7 +26,7 @@ import {
   getHighlightedTrackId,
   isTrackCollapsed
 } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,

@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
 import { RootState } from 'src/store';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { fetchExampleEnsObjects } from 'src/ens-object/ensObjectActions';
-import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
+import { fetchExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectActions';
+import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import ImageButton from 'src/shared/components/image-button/ImageButton';

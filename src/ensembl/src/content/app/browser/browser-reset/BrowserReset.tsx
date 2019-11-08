@@ -4,7 +4,7 @@ import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg'
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import styles from './BrowserReset.scss';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
 
 export type BrowserResetProps = {

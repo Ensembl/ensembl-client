@@ -3,7 +3,7 @@ import get from 'lodash/get';
 import { getBrowserActiveGenomeInfo } from 'src/content/app/browser/browserSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { RootState } from '../store';
+import { RootState } from '../../../store';
 import { EnsObject } from './ensObjectTypes';
 
 export const getEnsObjectLoadingStatus = (
