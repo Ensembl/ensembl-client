@@ -20,8 +20,8 @@ import {
 } from '../browserActions';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 import { BrowserNavStates, ChrLocation } from '../browserState';
-import { getGenomeKaryotype } from 'src/genome/genomeSelectors';
-import { GenomeKaryotypeItem } from 'src/genome/genomeTypes';
+import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
+import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './BrowserNavBar.scss';
 

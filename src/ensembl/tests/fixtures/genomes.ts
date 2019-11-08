@@ -5,7 +5,7 @@ import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import {
   GenomeTrackCategory,
   GenomeKaryotypeItemType
-} from 'src/genome/genomeTypes';
+} from 'src/shared/state/genome/genomeTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {

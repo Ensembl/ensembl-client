@@ -4,7 +4,7 @@ import get from 'lodash/get';
 
 import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
 import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
-import { GenomeTrackCategory } from 'src/genome/genomeTypes';
+import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 import { EnsObjectTrack, EnsObject } from 'src/ens-object/ensObjectTypes';
 import { RootState } from 'src/store';
 import { getIsDrawerOpened } from '../../drawer/drawerSelectors';
@@ -15,7 +15,7 @@ import {
   getBrowserActiveGenomeId
 } from '../../browserSelectors';
 import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
-import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
+import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 
 import TrackPanelListItem from './TrackPanelListItem';
 

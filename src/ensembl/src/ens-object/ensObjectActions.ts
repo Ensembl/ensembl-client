@@ -5,8 +5,8 @@ import apiService from 'src/services/api-service';
 
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 
-import { GenomeInfoData } from 'src/genome/genomeTypes';
-import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { GenomeInfoData } from 'src/shared/state/genome/genomeTypes';
+import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import {
   getEnsObjectLoadingStatus,
   getExampleEnsObjects

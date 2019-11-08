@@ -43,7 +43,7 @@ import { getExampleEnsObjects } from 'src/ens-object/ensObjectSelectors';
 import { EnsObject } from 'src/ens-object/ensObjectTypes';
 import analyticsTracking from 'src/services/analytics-service';
 
-import { fetchGenomeData } from 'src/genome/genomeActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {
   changeDrawerView,
   closeDrawer,
