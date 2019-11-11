@@ -15,17 +15,25 @@
   height: 25px;
   width: 25px;
   float: right;
-  margin-right: -3px;
+  margin: 20px 7px 0 0;
 }
 
 .errorWrapper {
   display: grid;
-  grid-template-columns: [error-message] auto [remove-icon] 20px;
+  grid-template-columns: [error-message] auto [remove-icon] 20px 10px;
 }
 
 .errorContent {
   grid-column: error-message;
-  margin-bottom: 15px;
+  width: calc(100% - 55px);
+  background: $white;
+  padding: 10px;
+}
+
+.filename {
+  width: calc(100% - 85px);
+  background: #fff;
+  padding: 5px 10px;
 }
 
 .errorMessage {
@@ -35,6 +43,7 @@
 .removeErrorIcon {
   grid-column: remove-icon;
   justify-self: end;
+  align-self: center;
 }
 
 .pasteOrUploadWrapper + .pasteOrUploadWrapper,

@@ -129,7 +129,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
           ) {
             return (
               <div key={key} className={styles.pasteOrUploadWrapper}>
-                {!!entry && <div>{}</div>}
+                {typeof entry !== 'string' && entry && entry.filename && (
+                  <div className={styles.filename}>{entry.filename}</div>
+                )}
                 <PasteOrUpload
                   value={
                     typeof entry == 'string' || entry === null
@@ -148,8 +150,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
           return (
             <div key={key} className={styles.errorWrapper}>
               <span className={styles.errorContent}>
-                <div className={styles.fileName}>{entry.filename}</div>
-                <div className={styles.errorMessage}>{entry.error}</div>
+                <span
+                  className={styles.errorMessage}
+                >{`${entry.filename} - ${entry.error}`}</span>
               </span>
               <div className={styles.removeErrorIcon}>
                 <ImageButton
