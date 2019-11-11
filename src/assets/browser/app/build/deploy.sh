@@ -77,6 +77,7 @@ if [ "x$1" == "x" ] ; then
     git tag -a "wasm/$WASMHASH" -m "$BRANCH at $NOW"
     git push origin tag "wasm/$WASMHASH"
     sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$NPM_ASSET_REPO#wasm/$WASMHASH\",~" $SRC/../../../ensembl/package.json
+    rm $SRC/../../../ensembl/node_modules/ensembl-genome-browser
   )
   echo rm -rf $GITDIR
 fi
