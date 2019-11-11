@@ -1,6 +1,6 @@
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
-import { EnsObjectLocation } from 'src/ens-object/ensObjectTypes';
+import { EnsObjectLocation } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const getFormattedLocation = (location: EnsObjectLocation) => {
   const start = getCommaSeparatedNumber(location.start);

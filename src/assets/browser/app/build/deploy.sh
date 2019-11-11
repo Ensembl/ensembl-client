@@ -21,17 +21,23 @@ cargo +nightly web deploy --target=wasm32-unknown-unknown --release
 
 echo "SRC=$SRC"
 echo "DEST=$DEST"
-WASMHASH=$(md5sum $SRC/target/deploy/hellostdweb.wasm | cut -f1 -d' ');
+
+if hash md5 2>/dev/null; then
+  WASMHASH=$(md5 $SRC/target/deploy/hellostdweb.wasm | cut -f4 -d' ')
+else
+  WASMHASH=$(md5sum $SRC/target/deploy/hellostdweb.wasm | cut -f1 -d' ')
+fi
+
 echo "WASMHASH=$WASMHASH"
 
 WASMNAME="browser-$WASMHASH.wasm"
 JSNAME="browser.js"
 rm -f $DEST/*.js $DEST/*.wasm
 
-if [ "$1" == "check" ] ; then
-  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
-else
+if [ "$1" != "check" ] && hash wasm-opt 2>/dev/null ; then
   wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $DEST/$WASMNAME
+else
+  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
 fi
 ls -lh $DEST/$WASMNAME
 cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME

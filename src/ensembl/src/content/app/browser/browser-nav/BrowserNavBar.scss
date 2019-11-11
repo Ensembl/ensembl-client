@@ -2,14 +2,43 @@
 
 .browserNavBar {
   display: flex;
+  font-size: 12px;
   background: $light-grey;
-  padding: 16px;
+  padding: 16px 26px;
+  position: relative;
 
-  @include for-desktop-up {
-    width: calc(100vw - 356px);
+  form {
+    display: inline-block;
   }
 
-  &.browserNavBarExpanded {
-    width: 100vw;
+  label {
+    font-weight: 300;
+    margin: 0 5px 0 10px;
   }
+
+  input {
+    padding: 3px 9px;
+  }
+}
+
+.errorText {
+  color: $red;
+}
+
+.browserNavBarButtons {
+  display: inline-block;
+  visibility: hidden;
+
+  button {
+    margin-left: 10px;
+  }
+
+  img {
+    height: 18px;
+    width: 18px;
+  }
+}
+
+.browserNavBarButtonsVisible {
+  visibility: visible;
 }

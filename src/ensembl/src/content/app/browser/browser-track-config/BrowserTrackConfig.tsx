@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -29,29 +29,19 @@ import { CogList } from '../browserState';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
-type StateProps = {
+export type BrowserTrackConfigProps = {
   applyToAll: boolean;
   browserCogTrackList: CogList;
   selectedCog: string | null;
   trackConfigLabel: { [key: string]: boolean };
   trackConfigNames: { [key: string]: boolean };
-};
-
-type DispatchProps = {
   updateApplyToAll: (yn: boolean) => void;
-  updateTrackConfigLabel: (selectedCog: string | null, sense: boolean) => void;
-  updateTrackConfigNames: (selectedCog: string | null, sense: boolean) => void;
-};
-
-type OwnProps = {
+  updateTrackConfigLabel: (selectedCog: string, sense: boolean) => void;
+  updateTrackConfigNames: (selectedCog: string, sense: boolean) => void;
   onClose: () => void;
 };
 
-type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
-
-const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
-  props: BrowserTrackConfigProps
-) => {
+export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   const {
     applyToAll,
     browserCogTrackList,
@@ -148,8 +138,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
         <dd>
           <label htmlFor="trackConfig-trackName">Track name</label>
           <button
-            id="trackConfig-trackName"
-            className={styles.trackConfigSlider}
+            className={`${styles.trackConfigSlider} trackConfig-trackName`}
             onClick={toggleName}
           >
             <img src={nameIcon} />
@@ -158,8 +147,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
         <dd>
           <label htmlFor="trackConfig-featureLabels">Feature labels</label>
           <button
-            id="trackConfig-featureLabels"
-            className={styles.trackConfigSlider}
+            className={`${styles.trackConfigSlider} trackConfig-featureLabels`}
             onClick={toggleLabel}
           >
             <img src={labelIcon} />
@@ -192,7 +180,7 @@ const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   applyToAll: getApplyToAll(state),
   browserCogTrackList: getBrowserCogTrackList(state),
   selectedCog: getBrowserSelectedCog(state),
@@ -200,7 +188,7 @@ const mapStateToProps = (state: RootState): StateProps => ({
   trackConfigNames: getTrackConfigNames(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   updateApplyToAll,
   updateTrackConfigLabel,
   updateTrackConfigNames

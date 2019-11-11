@@ -169,8 +169,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
       return {
         bodyStyles: {
           left: '50%',
-          transform: `translateX(-100%) translateX(${TIP_HORIZONTAL_OFFSET}px) translateX(${TIP_WIDTH /
-            2}px)`,
+          transform: `translateX(calc(${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH /
+            2}px - 100%))`,
           bottom: `${parentHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
@@ -221,7 +221,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         bodyStyles: {
           left: `-${TIP_HEIGHT}px`,
           top: `50%`,
-          transform: `translateX(-100%) translateY(-100%) translateY(${TIP_HORIZONTAL_OFFSET}px)`
+          transform: `translateX(-100%) translateY(calc(-100% + ${TIP_HORIZONTAL_OFFSET}px))`
         },
         tipStyles: {
           left: 'calc(100% - 1px)',
@@ -235,7 +235,7 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
         bodyStyles: {
           left: 0,
           top: '50%',
-          transform: `translateX(-100%) translateX(-${TIP_HEIGHT}px) translateY(-${TIP_HORIZONTAL_OFFSET}px)`
+          transform: `translateX(calc(-100% - ${TIP_HEIGHT}px)) translateY(-${TIP_HORIZONTAL_OFFSET}px)`
         },
         tipStyles: {
           left: 'calc(100% - 1px)',

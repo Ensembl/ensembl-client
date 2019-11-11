@@ -22,7 +22,7 @@ import {
 
 export const updateTrackPanelForGenome = createAction(
   'track-panel/update-track-panel',
-  (action) => (payload: {
+  (payload: {
     activeGenomeId: string;
     data: Partial<TrackPanelStateForGenome>;
   }) => {
@@ -31,9 +31,9 @@ export const updateTrackPanelForGenome = createAction(
     browserStorageService.updateTrackPanels({
       [activeGenomeId]: persistentTrackProperties
     });
-    return action({ activeGenomeId, data });
+    return { activeGenomeId, data };
   }
-);
+)();
 
 export const toggleTrackPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -131,13 +131,6 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
       object_type: activeEnsObject.object_type,
       label: activeEnsObject.label
     });
-  } else {
-    // If it is already present, bump it to the end
-    const [previouslyViewedObject] = previouslyViewedObjects.splice(
-      existingIndex,
-      1
-    );
-    previouslyViewedObjects.push({ ...previouslyViewedObject });
   }
 
   // Limit the total number of previously viewed objects to 250

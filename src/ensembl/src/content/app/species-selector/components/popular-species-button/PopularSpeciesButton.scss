@@ -23,7 +23,6 @@ $button-gap: 1.4rem;
   height: $button-width;
   background: $blue;
   padding: 3px;
-  overflow: hidden; // <-- solely for IE11's sake; it seems that without this rule invisible parts of svg mignt be excaping the button and messing up layout
   cursor: pointer;
 
   svg {

@@ -1,4 +1,4 @@
-import { createAction, createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
@@ -12,7 +12,7 @@ import { getChrLocationStr } from './browserHelper';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
 
-import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
+import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 
 import {
   getBrowserActiveGenomeId,
@@ -54,7 +54,7 @@ export type ParsedUrlPayload = {
   chrLocation: ChrLocation | null;
 };
 
-export const updateBrowserActivated = createStandardAction(
+export const updateBrowserActivated = createAction(
   'browser/update-browser-activated'
 )<boolean>();
 
@@ -74,7 +74,7 @@ export const activateBrowser = () => {
   };
 };
 
-export const setDataFromUrl = createStandardAction('browser/set-data-from-url')<
+export const setDataFromUrl = createAction('browser/set-data-from-url')<
   ParsedUrlPayload
 >();
 
@@ -105,7 +105,7 @@ export const fetchDataForLastVisitedObjects: ActionCreator<
   activeEnsObjectIds.forEach((id) => dispatch(fetchEnsObject(id)));
 };
 
-export const updateBrowserActiveEnsObjectIds = createStandardAction(
+export const updateBrowserActiveEnsObjectIds = createAction(
   'browser/update-active-ens-object-ids'
 )<{ [objectId: string]: string }>();
 
@@ -131,13 +131,13 @@ export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
   };
 };
 
-export const updateDefaultPositionFlag = createStandardAction(
+export const updateDefaultPositionFlag = createAction(
   'browser/update-default-position-flag'
 )<boolean>();
 
-export const updateTrackStates = createStandardAction(
-  'browser/update-tracks-state'
-)<BrowserTrackStates>();
+export const updateTrackStates = createAction('browser/update-tracks-state')<
+  BrowserTrackStates
+>();
 
 export const updateTrackStatesAndSave: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -184,19 +184,19 @@ export const restoreBrowserTrackStates: ActionCreator<
   });
 };
 
-export const toggleBrowserNav = createStandardAction(
+export const toggleBrowserNav = createAction(
   'browser/toggle-browser-navigation'
 )();
 
-export const updateBrowserNavStates = createStandardAction(
+export const updateBrowserNavStates = createAction(
   'browser/update-browser-nav-states'
 )<BrowserNavStates>();
 
-export const updateChrLocation = createStandardAction(
+export const updateChrLocation = createAction(
   'browser/update-chromosome-location'
 )<ChrLocations>();
 
-export const updateActualChrLocation = createStandardAction(
+export const updateActualChrLocation = createAction(
   'browser/update-actual-chromosome-location'
 )<ChrLocations>();
 
@@ -246,7 +246,7 @@ export const setChrLocation: ActionCreator<
   };
 };
 
-export const updateMessageCounter = createStandardAction(
+export const updateMessageCounter = createAction(
   'browser/update-message-counter'
 )<number>();
 
@@ -296,40 +296,36 @@ export const changeFocusObject: ActionCreator<
   };
 };
 
-export const updateCogList = createStandardAction('browser/update-cog-list')<
-  number
+export const updateCogList = createAction('browser/update-cog-list')<number>();
+
+export const updateCogTrackList = createAction('browser/update-cog-track-list')<
+  CogList
 >();
 
-export const updateCogTrackList = createStandardAction(
-  'browser/update-cog-track-list'
-)<CogList>();
-
-export const updateSelectedCog = createStandardAction(
-  'browser/update-selected-cog'
-)<string | null>();
+export const updateSelectedCog = createAction('browser/update-selected-cog')<
+  string | null
+>();
 
 export const updateTrackConfigNames = createAction(
   'browser/update-track-config-names',
-  (resolve) => {
-    return (selectedCog: any, sense: boolean) => {
-      return resolve([selectedCog, sense]);
-    };
-  }
-);
+  (selectedCog: string, sense: boolean) =>
+    [selectedCog, sense] as [string, boolean]
+)();
 
 export const updateTrackConfigLabel = createAction(
   'browser/update-track-config-label',
-  (resolve) => {
-    return (selectedCog: any, sense: boolean) => {
-      return resolve([selectedCog, sense]);
-    };
-  }
-);
+  (selectedCog: string, sense: boolean) =>
+    [selectedCog, sense] as [string, boolean]
+)();
 
-export const updateApplyToAll = createStandardAction(
-  'browser/update-apply-to-all'
+export const updateApplyToAll = createAction('browser/update-apply-to-all')<
+  boolean
+>();
+
+export const toggleRegionEditorActive = createAction(
+  'browser/toggle-region-editor-active'
 )<boolean>();
 
-export const toggleGenomeSelector = createStandardAction(
-  'toggle-genome-selector'
+export const toggleRegionFieldActive = createAction(
+  'browser/toggle-region-field-active'
 )<boolean>();

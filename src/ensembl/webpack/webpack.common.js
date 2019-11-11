@@ -35,13 +35,6 @@ module.exports = (isDev, moduleRules, plugins) => ({
         exclude: /node_modules/
       },
 
-      // these libraries are distributed in a way that does not support IE11, and so require compilation
-      {
-        test: /.js$/,
-        loader: 'babel-loader',
-        include: /react-spring/
-      },
-
       // the loaders for styling
       // there are two sets of them: for global and component styles
       // a scss file will first be loaded via sass loader and transpiled
@@ -50,7 +43,6 @@ module.exports = (isDev, moduleRules, plugins) => ({
       // and extract the css for prod and minify it as external stylesheets
       {
         test: /.scss$/,
-        include: /src\/ensembl\/src(?!\/styles)/,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           {
@@ -60,29 +52,6 @@ module.exports = (isDev, moduleRules, plugins) => ({
               modules: {
                 localIdentName: '[local]__[name]__[hash:base64:5]'
               },
-            }
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              ident: 'postcss',
-              plugins: () => [postcssPresetEnv()]
-            }
-          },
-          'sass-loader'
-        ]
-      },
-
-      {
-        test: /.scss$/,
-        include: /src\/ensembl\/src\/styles/,
-        use: [
-          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 2,
-              sourceMap: true
             }
           },
           {

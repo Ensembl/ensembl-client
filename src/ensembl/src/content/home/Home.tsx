@@ -6,7 +6,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
-import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import { getEnabledCommittedSpecies } from '../app/species-selector/state/speciesSelectorSelectors';
 import {
   getPreviouslyViewedGenomeBrowserObjects,
@@ -17,7 +17,7 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { SimpleSelectedSpecies } from 'src/shared/components/selected-species';
 
-import { GenomeInfoData } from 'src/genome/genomeTypes';
+import { GenomeInfoData } from 'src/shared/state/genome/genomeTypes';
 import { CommittedItem } from '../app/species-selector/types/species-search';
 
 import styles from './Home.scss';

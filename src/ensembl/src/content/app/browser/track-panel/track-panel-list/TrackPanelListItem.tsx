@@ -7,9 +7,7 @@ import { RootState } from 'src/store';
 import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import {
   TrackItemColour,
@@ -18,6 +16,7 @@ import {
   BrowserTrackStates,
   TrackActivityStatus
 } from '../trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -27,7 +26,7 @@ import {
   getHighlightedTrackId,
   isTrackCollapsed
 } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,
@@ -39,10 +38,9 @@ import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
-import { Status } from 'src/shared/types/status';
-
 import styles from './TrackPanelListItem.scss';
 
+// the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
@@ -67,9 +65,9 @@ type PropsFromRedux = {
   }) => void;
 };
 
-type Props = OwnProps & PropsFromRedux;
+export type TrackPanelListItemProps = OwnProps & PropsFromRedux;
 
-const TrackPanelListItem = (props: Props) => {
+export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const {
     activeGenomeId,
     activeEnsObjectId,
@@ -172,7 +170,7 @@ const TrackPanelListItem = (props: Props) => {
     }
   };
 
-  const updateGenomeBrowser = (status: ImageButtonStatus) => {
+  const updateGenomeBrowser = (status: Status) => {
     const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
 
     const payload = {
@@ -251,7 +249,7 @@ const mapDispatchToProps = {
   updateCollapsedTrackIds,
   changeDrawerView,
   toggleDrawer,
-  updateTrackStatesAndSave: updateTrackStatesAndSave
+  updateTrackStatesAndSave
 };
 
 export default connect(

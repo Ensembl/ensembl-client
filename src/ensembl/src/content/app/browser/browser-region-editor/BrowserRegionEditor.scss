@@ -1,0 +1,14 @@
+@import 'src/styles/common';
+
+.browserRegionEditor {
+  position: relative;
+
+  input {
+    width: 120px;
+  }
+
+  .inputGroup {
+    display: inline-block;
+    position: relative;
+  }
+}

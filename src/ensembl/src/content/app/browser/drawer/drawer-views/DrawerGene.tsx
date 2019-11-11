@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from 'react';
 
-import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
 
