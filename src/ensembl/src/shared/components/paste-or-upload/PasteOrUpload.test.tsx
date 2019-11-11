@@ -3,6 +3,8 @@ import { mount } from 'enzyme';
 import PasteOrUpload from './PasteOrUpload';
 import faker from 'faker';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+import Textarea from 'src/shared/components/textarea/Textarea';
+import Upload from 'src/shared/components/upload/Upload';
 
 const onChange = jest.fn();
 const onRemove = jest.fn();
@@ -28,34 +30,36 @@ describe('<PasteOrUpload/>', () => {
     expect(wrapper).not.toThrow();
   });
 
-  it('displays the text "Paste data or Upload file"', () => {
+  it('displays the text "Paste data" by default', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} />);
 
-    expect(wrapper.text()).toBe('Paste data or Upload file');
+    expect(wrapper.text()).toContain('Paste data');
   });
 
-  it('does not display the text "Paste data or Upload file" when a value is passed', () => {
-    wrapper = mount(<PasteOrUpload {...defaultProps} value={'foo'} />);
-
-    expect(wrapper.find('.textarea')).toHaveLength(0);
-  });
-
-  it('does not display the textarea by default ', () => {
+  it('displays the Upload component by default', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} />);
-    expect(wrapper.find('textarea')).toHaveLength(0);
-  });
 
-  it('displays the textarea by default when a value is passed', () => {
+    expect(wrapper.find(Upload)).toHaveLength(1);
+  });
+  it('displays the Textarea by default when a value is passed', () => {
     wrapper = mount(
       <PasteOrUpload {...defaultProps} value={faker.random.words()} />
     );
-    expect(wrapper.find('textarea')).toHaveLength(1);
+    expect(wrapper.find(Textarea)).toHaveLength(1);
+  });
+
+  it('does not display the text "Paste data" or the Upload component when a value is passed', () => {
+    wrapper = mount(<PasteOrUpload {...defaultProps} value={'foo'} />);
+
+    expect(wrapper.text()).not.toContain('Paste data');
+
+    expect(wrapper.find(Upload)).toHaveLength(0);
   });
 
   it('shows the textarea on clicking the text "Paste data"', () => {
     wrapper = mount(<PasteOrUpload {...defaultProps} />);
     wrapper.find('.pasteText').simulate('click');
-    expect(wrapper.find('textarea')).toHaveLength(1);
+    expect(wrapper.find(Textarea)).toHaveLength(1);
   });
 
   it('does not display the remove icon by default', () => {
@@ -79,7 +83,7 @@ describe('<PasteOrUpload/>', () => {
         placeholder={placeholder}
       />
     );
-    expect(wrapper.find('textarea').prop('placeholder')).toBe(placeholder);
+    expect(wrapper.find(Textarea).prop('placeholder')).toBe(placeholder);
   });
 
   it('calls the onChange function with the current value when the textarea is changed', () => {

@@ -56,7 +56,7 @@ describe('<CheckboxWithTextfields />', () => {
     wrapper = mount(
       <CheckboxWithTextfields {...defaultProps} values={values} />
     );
-    expect(wrapper.find(PasteOrUpload)).toHaveLength(values.length);
+    expect(wrapper.find(PasteOrUpload).length).toBe(values.length);
   });
 
   it('does not show the Add button when allowMultiple is set to false', () => {
