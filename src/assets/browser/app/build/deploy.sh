@@ -46,19 +46,18 @@ rm -f $DEST/*.js $DEST/*.wasm
 # Fix hash in js
 sed -i -e "s~\"hellostdweb.wasm\"~\"/static/browser/$WASMNAME\"~g" $SRC/target/deploy/hellostdweb.js
 
-#if [ "$1" != "check" ] && hash wasm-opt 2>/dev/null ; then
-#  wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $DEST/$WASMNAME
-#else
-#  cp $SRC/target/deploy/hellostdweb.wasm $DEST/$WASMNAME
-#fi
-#ls -lh $DEST/$WASMNAME
-#cp $SRC/target/deploy/hellostdweb.js $DEST/$JSNAME
-
 # Send to remote repository
 NOW=$(date +"%Y-%m-%d %H:%M")
 BRANCH="$(git symbolic-ref HEAD 2>/dev/null)" || BRANCH="(anon. branch)"
 BRANCH=${BRANCH##refs/heads/}
+MODDIR="$SRC/../../../ensembl/node_modules/ensembl-genome-browser"
 if [ "x$1" == "x" ] ; then
+  if hash wasm-opt 2>/dev/null ; then
+    echo "Found wasm-opt: good"
+  else
+    echo "Refusing to deploy unoptimised WASM"
+    exit 1
+  fi
   echo "Sending to remote asset repo"
   GITDIR=$(mktemp -d)
   echo $GITDIR
@@ -77,8 +76,20 @@ if [ "x$1" == "x" ] ; then
     git tag -a "wasm/$WASMHASH" -m "$BRANCH at $NOW"
     git push origin tag "wasm/$WASMHASH"
     sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$NPM_ASSET_REPO#wasm/$WASMHASH\",~" $SRC/../../../ensembl/package.json
-    rm $SRC/../../../ensembl/node_modules/ensembl-genome-browser
+    rm -rf $MODDIR
   )
   echo rm -rf $GITDIR
+elif [ "x$1" == "xstrip" ] ; then
+  rm -f $MODDIR/browser.js $MODDIR/browser-*.wasm
+  if hash wasm-opt 2>/dev/null ; then
+    wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $MODDIR/$WASMNAME
+  else
+    cp $SRC/target/deploy/hellostdweb.wasm $MODDIR/$WASMNAME
+  fi
+  cp $SRC/target/deploy/hellostdweb.js $MODDIR/$JSNAME
+elif [ "x$1" == "xcheck" ] ; then
+  rm -f $MODDIR/browser.js $MODDIR/browser-*.wasm
+  cp $SRC/target/deploy/hellostdweb.wasm $MODDIR/$WASMNAME
+  cp $SRC/target/deploy/hellostdweb.js $MODDIR/$JSNAME
 fi
 
