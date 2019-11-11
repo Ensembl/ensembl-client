@@ -8,7 +8,7 @@
 
 .wrapper {
   display: grid;
-  grid-template-columns: [fields] auto [remove-icon] 75px;
+  grid-template-columns: [fields] auto [remove-icon] 75px 10px;
 }
 
 .fields {
