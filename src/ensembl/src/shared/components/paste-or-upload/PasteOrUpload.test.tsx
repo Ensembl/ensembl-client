@@ -104,4 +104,14 @@ describe('<PasteOrUpload/>', () => {
     wrapper.find(ImageButton).prop('onClick')();
     expect(onRemove).toBeCalled();
   });
+
+  it('passes the additional uploadProps to the Upload component', () => {
+    const uploadProps: any = {
+      foo: 'bar'
+    };
+    wrapper = mount(
+      <PasteOrUpload {...defaultProps} uploadProps={uploadProps} />
+    );
+    expect(wrapper.find(Upload).prop('foo')).toBe('bar');
+  });
 });
