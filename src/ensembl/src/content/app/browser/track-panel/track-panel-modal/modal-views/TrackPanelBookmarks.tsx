@@ -123,7 +123,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
   const onEllipsisClick = () => {
     analyticsTracking.trackEvent({
-      category: 'recent_bookmark_link',
+      category: 'drawer_open',
       label: 'recent_bookmarks',
       action: 'clicked',
       value: previouslyViewedObjects.length
