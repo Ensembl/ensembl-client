@@ -1,5 +1,15 @@
 #! /usr/bin/env python3
 
+# This script can be used to prune the ensembl-static-assets repo, removing
+# any WASM files which are unreferenced from ensembl-client. This is so
+# that this repo can be GCed and so kept to a sensible size. Note that this
+# script doesn't actually do the GC-ing itself, leaving it to you or to
+# github's default gc-ing schedule. You will probably need to do a
+# (git gc --prune=now) and then push it, though there's not a lot of info on
+# github about the right way to do this.
+#
+#
+
 import collections, optparse, os, re, subprocess, sys, tempfile
 
 CLIENT_REPO_NAME="ensembl-client"
@@ -52,6 +62,7 @@ with tempfile.TemporaryDirectory() as tmpdirname:
   print("tmpdir is {0}".format(tmpdirname))
   run(["git","clone",repo])
   os.chdir(CLIENT_REPO_NAME)
+
   # Get list of tags in use
   blobs = run(["git","rev-list","--all","--objects","src/ensembl/package.json"],stdout=subprocess.PIPE)
   for blob in blobs.split("\n"):
@@ -61,6 +72,7 @@ with tempfile.TemporaryDirectory() as tmpdirname:
     tag = extract_tag(parts[0])
     if tag:
       tags_in_use.add(tag)
+
   # get VIP wasms (used for warnings)
   for branch in vip_branches:
     run(["git","checkout",branch])
@@ -91,8 +103,8 @@ def restore_tags():
         run(["git","tag","-d",tagname],fail_ok=True)
         run(["git","tag",tagname,commit])
 
-tag_re = re.compile(r'tag: (.*)')
 # list tags in repo
+tag_re = re.compile(r'tag: (.*)')
 def list_tags():
   tags = {}
   untagged = []
@@ -109,6 +121,7 @@ def list_tags():
       untagged.append(parts[0])
   return (tags,untagged)
 
+# y/n for user
 def confirm(msg):
   while True:
     confirm = input(msg).lower().strip()
@@ -120,8 +133,6 @@ def confirm(msg):
     else:
       sys.stderr.write("Eh?\n")
     
-
-
 with tempfile.TemporaryDirectory() as tmpdirname:
   # Checkout asset repo
   os.chdir(tmpdirname)
@@ -133,7 +144,7 @@ with tempfile.TemporaryDirectory() as tmpdirname:
   # Set tags
   restore_tags()
 
-  # get squash commit list
+  # make squash commit list and delete tag
   origin = None
   unused = set()
   sed = []
@@ -142,13 +153,14 @@ with tempfile.TemporaryDirectory() as tmpdirname:
   for (wasm,blob) in tags_in_repo.items():
     if wasm.startswith("wasm/") and wasm not in tags_in_use:
       unused.add(blob)
+      run(["git","tag","-d",wasm],fail_ok=True)
   print('unused',unused)
   if 'root' not in tags_in_repo:
     sys.stderr.write("Could not find origin tag")
     sys.exit(1)
   origin = tags_in_repo['root']
 
-  # Write squash file
+  # squash
   squash_file = os.path.join(tmpdirname,"squashes")
   with open(squash_file,"w") as f:
     for githash in unused:
@@ -159,10 +171,10 @@ with tempfile.TemporaryDirectory() as tmpdirname:
   env['GIT_EDITOR'] = "cat"
   run(["git","rebase","-i",origin],env=env)
 
-  # Set tags
+  # Reset tags
   restore_tags()
 
-  # Check VIP branches are still in the repo
+  # Check VIP branch wasms are still in the repo
   (tags_in_repo,untagged) = list_tags()
   tags_in_repo = set(tags_in_repo.keys())
   warnings = False
@@ -187,4 +199,21 @@ with tempfile.TemporaryDirectory() as tmpdirname:
 
   # push
   run(["git","push","--force"])
+  run(["git","push","--tags","--force"])
+  (tags_local,untagged) = list_tags()
+  tags_local = set(tags_local.keys())
+
+with tempfile.TemporaryDirectory() as tmpdirname:
+  # Checkout asset repo (again) to aid pruning
+  os.chdir(tmpdirname)
+  repo = ASSET_REPO.format(ASSET_REPO_NAME)
+  print("tmpdir is {0}".format(tmpdirname))
+  run(["git","clone",repo])
+  os.chdir(ASSET_REPO_NAME)
+
+  # remove any unused tags from remote
+  tags_remote = set(run(["git","tag"],stdout=subprocess.PIPE).split("\n"))
+  for old_tag in tags_remote-tags_local:
+    if old_tag.startswith("wasm/"):
+      run(["git","push","origin",":"+old_tag])
 
