@@ -2,9 +2,10 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import { BrowserNavBarRegionSwitcher } from './BrowserNavBarRegionSwitcher';
-
 import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
 import BrowserRegionField from '../browser-region-field/BrowserRegionField';
+
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 jest.mock(
   'src/content/app/browser/browser-region-editor/BrowserRegionEditor',
@@ -16,6 +17,7 @@ jest.mock(
 );
 
 const props = {
+  breakpointWidth: BreakpointWidth.DESKTOP,
   toggleRegionEditorActive: jest.fn(),
   toggleRegionFieldActive: jest.fn()
 };
