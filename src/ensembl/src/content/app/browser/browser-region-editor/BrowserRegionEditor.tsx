@@ -5,13 +5,11 @@ import classNames from 'classnames';
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
-import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
 import {
   getRegionEditorActive,
-  getRegionFieldActive,
   getBrowserActiveGenomeId,
   getChrLocation
 } from '../browserSelectors';
@@ -28,12 +26,11 @@ import {
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import applyIcon from 'static/img/shared/apply.svg';
-import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserRegionEditor.scss';
-import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 export type BrowserRegionEditorProps = {
@@ -41,7 +38,6 @@ export type BrowserRegionEditorProps = {
   chrLocation: ChrLocation | null;
   genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
-  isDisabled: boolean;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -55,6 +51,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const genomeKaryotype = props.genomeKaryotype as GenomeKaryotypeItem[];
   const [stick, locationStart, locationEnd] = props.chrLocation as ChrLocation;
 
+  const formRef = useRef(null);
   const [stickInput, setStickInput] = useState(stick);
   const [locationStartInput, setLocationStartInput] = useState(
     getCommaSeparatedNumber(locationStart)
@@ -110,11 +107,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     setLocationEndErrorMessage(locationEndError);
   };
 
-  const handleFocus = () => {
-    if (!props.isDisabled) {
-      props.toggleRegionEditorActive(true);
-    }
-  };
+  const handleFocus = () => props.toggleRegionEditorActive(true);
 
   const changeLocation = (newChrLocation: ChrLocation) =>
     props.changeBrowserLocation({
@@ -155,6 +148,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     resetForm();
   };
 
+  useOutsideClick(formRef, closeForm);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -173,10 +168,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
 
-  const regionEditorClassNames = classNames(styles.browserRegionEditor, {
-    [browserStyles.semiOpaque]: props.isDisabled
-  });
-
   const locationStartClassNames = classNames({
     [browserNavBarStyles.errorText]: locationStartErrorMessage
   });
@@ -193,9 +184,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   );
 
   return (
-    <div className={regionEditorClassNames}>
-      {props.isDisabled ? <Overlay /> : null}
-      <form onSubmit={handleSubmit} onFocus={handleFocus}>
+    <div className={styles.browserRegionEditor}>
+      <form onSubmit={handleSubmit} onFocus={handleFocus} ref={formRef}>
         <div className={styles.inputGroup}>
           <label className="show-for-large">Chr</label>
           <Select
@@ -251,9 +241,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
-          <button onClick={closeForm} role="closeButton">
-            <img src={clearIcon} alt="Clear changes" />
-          </button>
         </span>
       </form>
     </div>
@@ -265,8 +252,7 @@ const mapStateToProps = (state: RootState) => {
     activeGenomeId: getBrowserActiveGenomeId(state),
     chrLocation: getChrLocation(state),
     genomeKaryotype: getGenomeKaryotype(state),
-    isActive: getRegionEditorActive(state),
-    isDisabled: getRegionFieldActive(state)
+    isActive: getRegionEditorActive(state)
   };
 };
 

@@ -9,7 +9,6 @@ import {
 import Input from 'src/shared/components/input/Input';
 import Select from 'src/shared/components/select/Select';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
@@ -18,10 +17,6 @@ import {
   createRegionValidationMessages
 } from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
-
-jest.mock('src/shared/components/overlay/Overlay', () => () => (
-  <div>Overlay</div>
-));
 
 describe('<BrowserRegionEditor', () => {
   afterEach(() => {
@@ -34,7 +29,6 @@ describe('<BrowserRegionEditor', () => {
     chrLocation: initialChrLocation,
     genomeKaryotype: createGenomeKaryotype(),
     isActive: true,
-    isDisabled: false,
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     toggleRegionEditorActive: jest.fn()
@@ -57,18 +51,12 @@ describe('<BrowserRegionEditor', () => {
 
     test('contains submit and close buttons', () => {
       expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
-      expect(wrapper.find('button[role="closeButton"]')).toHaveLength(1);
-    });
-
-    test('has an overlay on top when region field is active', () => {
-      wrapper.setProps({ isDisabled: true });
-      expect(wrapper.find(Overlay).length).toBe(1);
     });
   });
 
   describe('behaviour', () => {
     test('shows form buttons when focussed', () => {
-      wrapper.find(Select).simulate('focus');
+      wrapper.find('form').simulate('focus');
       expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
@@ -104,41 +92,7 @@ describe('<BrowserRegionEditor', () => {
       });
     });
 
-    test('resets region editor form when close button is clicked', () => {
-      const [, locationStart, locationEnd] = wrapper.props().chrLocation;
-      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
-      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
-
-      wrapper
-        .find(Input)
-        .first()
-        .simulate('change', { target: { value: locationStartInput } });
-
-      wrapper
-        .find(Input)
-        .last()
-        .simulate('change', {
-          target: { value: locationEndInput }
-        });
-
-      wrapper.find('button[role="closeButton"]').simulate('click');
-
-      expect(
-        wrapper
-          .find(Input)
-          .first()
-          .props().value
-      ).toBe(getCommaSeparatedNumber(locationStart));
-
-      expect(
-        wrapper
-          .find(Input)
-          .last()
-          .props().value
-      ).toBe(getCommaSeparatedNumber(locationEnd));
-
-      expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
-    });
+    // TODO: Test if the form is reset when clicked outside the form. Need to be able to mock useOutsideClick for this.
 
     describe('on validation failure', () => {
       afterEach(() => {
