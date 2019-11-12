@@ -30,4 +30,4 @@ with open(sys.argv[2]) as edit_file:
     new_contents.append(line)
 with open(sys.argv[2],"w") as edit_file:
   edit_file.write("".join(new_contents))
-
+sys.stderr.write("".join(new_contents))
