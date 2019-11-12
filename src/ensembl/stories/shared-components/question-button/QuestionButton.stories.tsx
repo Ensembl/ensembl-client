@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import QuestionButton, {QuestionButtonStyle} from 'src/shared/components/question-button/QuestionButton';
+import QuestionButton, {QuestionButtonOption} from 'src/shared/components/question-button/QuestionButton';
 
 storiesOf('Components|Shared Components/Question button', module)
   .add(
@@ -9,6 +9,6 @@ storiesOf('Components|Shared Components/Question button', module)
       <QuestionButton helpText="This is a hint" />
     ))
   .add(
-    'small', () => (
-      <QuestionButton helpText="This is a hint" style={QuestionButtonStyle.SMALL} />
+    'input', () => (
+      <QuestionButton helpText="This is a hint" styleOption={QuestionButtonOption.INPUT} />
     ));

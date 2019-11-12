@@ -6,14 +6,16 @@ import { ReactComponent as QuestionIcon } from './icon_question.svg';
 
 import defaultStyles from './QuestionButton.scss';
 
-export enum QuestionButtonStyle {
-  SMALL = 'small'
+// Extra styling options based on where the button is located
+export enum QuestionButtonOption {
+  INPUT = 'in-input-field',
+  INLINE = 'inline'
 }
 
 type Props = {
   helpText: React.ReactNode;
-  classNames?: { [key in QuestionButtonStyle]?: string };
-  style: QuestionButtonStyle;
+  styleOption?: QuestionButtonOption;
+  classNames?: { [key in QuestionButtonOption]?: string };
 };
 
 const QuestionButton = (props: Props) => {
@@ -31,7 +33,11 @@ const QuestionButton = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const className = classNames(defaultStyles.default, styles[props.style]);
+  const classParams = props.styleOption
+    ? [defaultStyles.default, styles[props.styleOption]]
+    : defaultStyles.default;
+
+  const className = classNames(classParams);
 
   return (
     <div
