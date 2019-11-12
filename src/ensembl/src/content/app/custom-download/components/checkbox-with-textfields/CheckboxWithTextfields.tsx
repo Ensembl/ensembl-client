@@ -30,10 +30,10 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     }
 
     setIsChecked(props.values.length > 0);
-    setShowAddButton(Boolean(props.values[props.values.length - 1]));
+    setShowAddButton(Boolean(filesAndValues[filesAndValues.length - 1]));
   }, [props.values]);
 
-  const handleCheckboxOnChange = (isChecked: boolean) => {
+  const checkboxOnChange = (isChecked: boolean) => {
     setIsChecked(isChecked);
     if (!isChecked && filesAndValues.length > 0) {
       props.onChange([]);
@@ -97,7 +97,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   };
 
   const handleOnRemove = (index: number) => {
-    const newValues: string[] = [...filesAndValues] as string[];
+    const newValues = [...filesAndValues];
 
     newValues.splice(index, 1);
     updateFilesAndValues(newValues);
@@ -114,7 +114,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
       <div className={styles.checkboxWrapper}>
         <Checkbox
           checked={isChecked}
-          onChange={handleCheckboxOnChange}
+          onChange={checkboxOnChange}
           label={props.label}
           disabled={props.disabled}
         />

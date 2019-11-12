@@ -47,6 +47,7 @@
 }
 
 .pasteOrUploadWrapper + .pasteOrUploadWrapper,
-.pasteOrUploadWrapper + .errorWrapper {
+.pasteOrUploadWrapper + .errorWrapper,
+.errorWrapper + .pasteOrUploadWrapper {
   margin-top: 15px;
 }
