@@ -62,7 +62,7 @@ if [ "x$1" == "x" ] ; then
   GITDIR=$(mktemp -d)
   echo $GITDIR
   (
-    set -v
+    set -ev
     cd $GITDIR
     git clone $ASSET_REPO
     cd $ASSET_REPO_NAME
@@ -75,10 +75,17 @@ if [ "x$1" == "x" ] ; then
     git push
     git tag -a "wasm/$WASMHASH" -m "$BRANCH at $NOW"
     git push origin tag "wasm/$WASMHASH"
-    sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$NPM_ASSET_REPO#wasm/$WASMHASH\",~" $SRC/../../../ensembl/package.json
     rm -rf $MODDIR
   )
   echo rm -rf $GITDIR
+  (
+    set -ev
+    cd "$SRC/../../../ensembl"
+    sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$NPM_ASSET_REPO#wasm/$WASMHASH\",~" package.json
+    npm install || true
+    2>&1 echo
+    (git diff package-lock.json | grep '^[+-]' | grep -v ensembl-genome-browser-assets.git | grep -v -- --- | grep -v +++) && ( 2>&1 echo "ERROR! package lock did not update cleanly, aborting" && exit 1 )
+  ) || exit 1
 elif [ "x$1" == "xstrip" ] ; then
   rm -f $MODDIR/browser.js $MODDIR/browser-*.wasm
   if hash wasm-opt 2>/dev/null ; then
