@@ -30,6 +30,10 @@ describe('BrowserNavBarMain', () => {
     jest.resetAllMocks();
   });
 
+  it('renders chromosome visualization by default for screens smaller than laptops', () => {
+    expect(wrapper.find(ChromosomeNavigator).length).toBe(0);
+  });
+
   it('renders chromosome visualization by default for laptops or bigger screens', () => {
     wrapper.setProps({ breakpointWidth: BreakpointWidth.LAPTOP });
 
