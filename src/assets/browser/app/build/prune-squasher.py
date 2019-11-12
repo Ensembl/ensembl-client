@@ -22,11 +22,13 @@ def match(subhash):
 new_contents = []
 pick_re = re.compile(r'pick\s+(\S+)\s')
 with open(sys.argv[2]) as edit_file:
-  for (i,line) in enumerate(edit_file.readlines()):
+  squash = False
+  for line in edit_file.readlines():
     m = pick_re.match(line)
-    if i>0 and m:
-      if match(m.group(1)):
+    if m:
+      if squash:
         line = pick_re.sub("squash {0} ".format(m.group(1)),line)
+      squash = match(m.group(1))
     new_contents.append(line)
 with open(sys.argv[2],"w") as edit_file:
   edit_file.write("".join(new_contents))
