@@ -1,11 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import {
-  BrowserNavBarMain,
-  BrowserNavBarMainProps,
-  ContentSwitcher
-} from './BrowserNavBarMain';
+import { BrowserNavBarMain, BrowserNavBarMainProps } from './BrowserNavBarMain';
 
 import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';

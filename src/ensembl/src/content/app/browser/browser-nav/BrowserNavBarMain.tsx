@@ -56,7 +56,7 @@ type ContentSwitcherProps = {
   onSwitch: (view: Content) => void;
 };
 
-export const ContentSwitcher = (props: ContentSwitcherProps) => {
+const ContentSwitcher = (props: ContentSwitcherProps) => {
   const switcherContent =
     props.currentView === Content.CHROMOSOME ? 'Change' : <CloseIcon />;
 
