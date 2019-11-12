@@ -12,6 +12,12 @@
   &::placeholder {
     color: $grey;
   }
+  &:focus::-webkit-input-placeholder {
+    color: transparent;
+  }
+  &:focus::-moz-placeholder {
+    color: transparent;
+  }
 }
 
 .chrLocationView {
