@@ -34,8 +34,8 @@ import collections, optparse, os, re, subprocess, sys, tempfile
 CLIENT_REPO_NAME="ensembl-client"
 CLIENT_REPO="https://github.com/Ensembl/{0}.git"
 
-ASSET_REPO_NAME="throwaway-ensembl-static-assets"
-ASSET_REPO="git@github.com:azangru/{0}.git"
+ASSET_REPO_NAME="ensembl-genome-browser-assets"
+ASSET_REPO="git@github.com:Ensembl/{0}.git"
 
 parser = optparse.OptionParser()
 parser.add_option("-n", "--dry-run", action="store_true", dest="dry", help="dry run", default=False)

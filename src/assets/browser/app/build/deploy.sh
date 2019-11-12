@@ -2,9 +2,9 @@
 
 set -ev
 
-ASSET_REPO_NAME="throwaway-ensembl-static-assets"
-ASSET_REPO="git@github.com:azangru/$ASSET_REPO_NAME.git"
-NPM_ASSET_REPO="git://github.com/azangru/$ASSET_REPO_NAME.git"
+ASSET_REPO_NAME="ensembl-genome-browser-assets"
+ASSET_REPO="https://github.com/Ensembl/$ASSET_REPO_NAME.git"
+NPM_ASSET_REPO="https://github.com/Ensembl/$ASSET_REPO_NAME.git"
 
 # Where is this script running?
 pushd $(dirname "${0}") > /dev/null
@@ -66,7 +66,7 @@ if [ "x$1" == "x" ] ; then
     cd $GITDIR
     git clone $ASSET_REPO
     cd $ASSET_REPO_NAME
-    git rm browser.js *.wasm
+    git rm browser.js *.wasm || true
     rm -f browser.js *.wasm
     cp $SRC/target/deploy/hellostdweb.js $JSNAME
     wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $WASMNAME
