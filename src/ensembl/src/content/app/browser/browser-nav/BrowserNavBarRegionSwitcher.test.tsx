@@ -17,21 +17,33 @@ jest.mock(
 );
 
 const props = {
-  breakpointWidth: BreakpointWidth.DESKTOP,
+  breakpointWidth: BreakpointWidth.TABLET,
   toggleRegionEditorActive: jest.fn(),
   toggleRegionFieldActive: jest.fn()
 };
 
 describe('BrowserNavBarRegionSwitcher', () => {
+  let wrapper: any;
+
+  beforeEach(() => {
+    wrapper = mount(<BrowserNavBarRegionSwitcher {...props} />);
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('renders correctly', () => {
-    const wrapper = mount(<BrowserNavBarRegionSwitcher {...props} />);
+  describe('rendering', () => {
+    it('renders only region field on smaller screens', () => {
+      expect(wrapper.find(BrowserRegionField).length).toBe(1);
+    });
 
-    expect(wrapper.find(BrowserRegionEditor).length).toBe(1);
-    expect(wrapper.find(BrowserRegionField).length).toBe(1);
+    it('renders both region field and region editor on big desktop screens', () => {
+      wrapper.setProps({ breakpointWidth: BreakpointWidth.BIG_DESKTOP });
+
+      expect(wrapper.find(BrowserRegionEditor).length).toBe(1);
+      expect(wrapper.find(BrowserRegionField).length).toBe(1);
+    });
   });
 
   it('calls cleanup functions on unmount', () => {

@@ -18,11 +18,11 @@ enum Content {
   REGION_SWITCHER
 }
 
-type BrowserNavBarMainProps = {
+export type BrowserNavBarMainProps = {
   breakpointWidth: BreakpointWidth;
 };
 
-const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
+export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
   const [view, changeView] = useState<Content>(Content.CHROMOSOME);
 
   const handleViewChange = (newView: Content) => {
@@ -56,7 +56,7 @@ type ContentSwitcherProps = {
   onSwitch: (view: Content) => void;
 };
 
-const ContentSwitcher = (props: ContentSwitcherProps) => {
+export const ContentSwitcher = (props: ContentSwitcherProps) => {
   const switcherContent =
     props.currentView === Content.CHROMOSOME ? 'Change' : <CloseIcon />;
 
