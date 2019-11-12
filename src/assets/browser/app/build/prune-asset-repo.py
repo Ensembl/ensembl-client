@@ -4,11 +4,30 @@
 # any WASM files which are unreferenced from ensembl-client. This is so
 # that this repo can be GCed and so kept to a sensible size. Note that this
 # script doesn't actually do the GC-ing itself, leaving it to you or to
-# github's default gc-ing schedule. You will probably need to do a
-# (git gc --prune=now) and then push it, though there's not a lot of info on
-# github about the right way to do this.
+# github.
 #
+# The script works out what needs to be kept by inspecting all versions of
+# package.json anywhere in the ensmebl-client repo. For each of these it
+# extracts the tag in use in that package.json. At this stage it also inspects
+# "VIP" branches (master and dev for now) and inspects which WASMs it
+# DEFINITELY doesn't want to delete as a double check for later. (They should
+# never be deleted by this script anyway). 
 #
+# The main tidying proceeds using a "non-interactive" interactive rebase. This
+# delegates its "editor" to prune-squasher.py which takes a list of commits
+# which can be squashed into the next one (no longer having a valid tag
+# themselves). It takes a list of commits to be squashed and squashes them.
+# Note that prune-squasher needs to mark the SUBSEQUENT commit to an unwanted
+# one as a squash as rebase squashes into the PREVIOUS commit.
+#
+# When this is done, the log is presented to the user for inspection and if
+# the user agrees the updated repo is force-pushed. There's then a final
+# fiddly step to remove tags on the remote (necessary for github to gc our
+# repo) by checking out the newly-pushed repo again and comparing the tags
+# which are there to what we expect and removing all others.
+# 
+# As rebasing removes tags there's a utility to restore tags to commits on
+# the basis of the wasm file they contain.
 
 import collections, optparse, os, re, subprocess, sys, tempfile
 
@@ -22,7 +41,7 @@ parser = optparse.OptionParser()
 parser.add_option("-n", "--dry-run", action="store_true", dest="dry", help="dry run", default=False)
 (options, args) = parser.parse_args()
 
-vip_branches = set(["master","dev","feature/use-npm-test"])
+vip_branches = set(["master","dev"])
 
 self_dir = os.path.dirname(os.path.abspath(__file__))
 
