@@ -8,11 +8,9 @@ CLIENT_REPO="https://github.com/Ensembl/{0}.git"
 ASSET_REPO_NAME="throwaway-ensembl-static-assets"
 ASSET_REPO="git@github.com:azangru/{0}.git"
 
-depline_re = re.compile(r'.*"ensembl-genome-browser":.*#(.*)"')
-tag_re = re.compile(r'tag: (wasm/.*)')
+self_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Generic means of running stuff
-
 def run(*args,**kwargs):
   if 'stderr' not in kwargs:
     kwargs['stderr'] = subprocess.PIPE
@@ -20,7 +18,7 @@ def run(*args,**kwargs):
   if 'fail_ok' in kwargs:
     fail_ok = kwargs['fail_ok']
     del kwargs['fail_ok']
-  print(args,kwargs)
+  print(" ".join(args[0]))
   proc = subprocess.run(*args,**kwargs)
   if proc.stderr != None:
     sys.stderr.write(proc.stderr.decode("utf8"))
@@ -30,11 +28,12 @@ def run(*args,**kwargs):
   return proc.stdout.decode("utf8") if proc.stdout else ""
 
 # Get list of tags in use
+depline_re = re.compile(r'.*"ensembl-genome-browser":.*#(.*)"')
 tags_in_use = set()
 with tempfile.TemporaryDirectory() as tmpdirname:
   os.chdir(tmpdirname)
   repo = CLIENT_REPO.format(CLIENT_REPO_NAME)
-  print(tmpdirname)
+  print("tmpdir is {0}".format(tmpdirname))
   run(["git","clone",repo])
   os.chdir(CLIENT_REPO_NAME)
   blobs = run(["git","rev-list","--all","--objects","src/ensembl/package.json"],stdout=subprocess.PIPE)
@@ -48,7 +47,7 @@ with tempfile.TemporaryDirectory() as tmpdirname:
       if m:
         tags_in_use.add(m.group(1))
 
-print('tags in use',tags_in_use)
+print('tags in use'," ".join(tags_in_use))
   
 # Ability to restore tags to rightful commits after rebase (kills tags)
 browser_re = re.compile(r'browser-(.*)\.wasm')
@@ -67,16 +66,18 @@ def restore_tags():
         run(["git","tag","-d",tagname],fail_ok=True)
         run(["git","tag",tagname,commit])
 
+tag_re = re.compile(r'tag: (wasm/.*)')
 with tempfile.TemporaryDirectory() as tmpdirname:
 #if 0:
   #tmpdirname = "/tmp/c"
   # Checkout asset repo
   os.chdir(tmpdirname)
   repo = ASSET_REPO.format(ASSET_REPO_NAME)
-  print(tmpdirname)
+  print("tmpdir is {0}".format(tmpdirname))
   run(["git","clone",repo])
   os.chdir(ASSET_REPO_NAME)
 
+  # Set tags
   restore_tags()
 
   # get squash commit list
@@ -102,13 +103,19 @@ with tempfile.TemporaryDirectory() as tmpdirname:
     sys.stderr.write("Could not find origin tag")
     sys.exit(1)
 
-  # 
+  # Write squash file
+  squash_file = os.path.join(tmpdirname,"squashes")
+  with open(squash_file,"w") as f:
+    for githash in unused:
+      f.write(githash+"\n")
+  prune_squasher = os.path.join(self_dir,"prune-squasher.py")
+  env = os.environ.copy()
+  env['GIT_SEQUENCE_EDITOR'] = "{0} {1}".format(prune_squasher,squash_file)
+  env['GIT_EDITOR'] = "cat"
+  run(["git","rebase","-i",origin],env=env)
 
+  # Set tags
+  restore_tags()
+
+  run(["git","log"])
  
-  # recommit old assets
-#  for tag in tag_order:
-#    cmd = """GIT_SEQUENCE_EDITOR="sed -i -e 's/^pick e751a6/squash e751a6/'"  git rebase -i e751a6^^""";
-#    print(cmd)
-#  run(["git","log"])
-
-
