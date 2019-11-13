@@ -56,7 +56,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import styles from './Browser.scss';
 
-import 'static/browser/browser.js';
+import 'ensembl-genome-browser';
 
 export type BrowserProps = {
   activeGenomeId: string | null;
