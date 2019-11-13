@@ -8,11 +8,8 @@ import { getBrowserActiveGenomeId } from '../browserSelectors';
 
 export const changeDrawerViewForGenome = createAction(
   'drawer/update-drawer-view',
-  (resolve) => {
-    return (drawerViewForGenome: { [genomeId: string]: string }) =>
-      resolve(drawerViewForGenome);
-  }
-);
+  (drawerViewForGenome: { [genomeId: string]: string }) => drawerViewForGenome
+)();
 
 export const changeDrawerView: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -30,13 +27,30 @@ export const changeDrawerView: ActionCreator<
   );
 };
 
+export const changeDrawerViewAndOpen: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (drawerView: string) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+  if (!activeGenomeId) {
+    return;
+  }
+  batch(() => {
+    dispatch(
+      changeDrawerViewForGenome({
+        [activeGenomeId]: drawerView
+      })
+    );
+
+    dispatch(toggleDrawer(true));
+  });
+};
+
 export const toggleDrawerForGenome = createAction(
   'drawer/toggle-drawer',
-  (resolve) => {
-    return (isDrawerOpenedForGenome: { [genomeId: string]: boolean }) =>
-      resolve(isDrawerOpenedForGenome);
-  }
-);
+  (isDrawerOpenedForGenome: { [genomeId: string]: boolean }) =>
+    isDrawerOpenedForGenome
+)();
 
 export const toggleDrawer: ActionCreator<
   ThunkAction<void, any, null, Action<string>>

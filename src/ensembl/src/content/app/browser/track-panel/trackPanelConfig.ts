@@ -32,11 +32,18 @@ export type TrackPanelIcons = {
 };
 
 export type TrackStates = {
-  [genomeId: string]: {
-    [categoryName: string]: {
-      [trackName: string]: TrackActivityStatus;
-    };
+  [categoryName: string]: {
+    [trackName: string]: TrackActivityStatus;
   };
+};
+
+export type GenomeTrackStates = {
+  commonTracks?: TrackStates;
+  objectTracks?: { [objctId: string]: TrackStates };
+};
+
+export type BrowserTrackStates = {
+  [genomeId: string]: GenomeTrackStates;
 };
 
 export enum TrackId {

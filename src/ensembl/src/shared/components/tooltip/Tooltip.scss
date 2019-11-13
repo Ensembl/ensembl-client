@@ -8,6 +8,7 @@ $fill-color: $dark-grey;
   padding: 6px 18px 8px;
   box-shadow: 2px 2px 5px $shadow-color;
   width: max-content; // not supported in IE or non-webkit Edge
+  box-sizing: content-box; // Safari doesn't seem to respect "width: max-content" if box-sizing is border-box
   cursor: default;
   color: $white;
   border-radius: 4px;

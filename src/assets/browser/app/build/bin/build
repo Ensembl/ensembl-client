@@ -29,6 +29,10 @@ case "$1" in
         echo "Running deploy check"
         $BASE/../deploy.sh check
         ;;
+    deploy-strip)
+        echo "Running deploy strip"
+        $BASE/../deploy.sh strip
+        ;;
     *)
         echo "Unknown command '$1'"
         ;;

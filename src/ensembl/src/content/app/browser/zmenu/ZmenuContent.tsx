@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 
 import { changeFocusObject } from 'src/content/app/browser/browserActions';
 
-import styles from './Zmenu.scss';
-
 import {
   ZmenuContentFeature as ZmenuContentFeatureType,
   ZmenuContentLine as ZmenuContentLineType,
@@ -14,7 +12,9 @@ import {
   Markup
 } from './zmenu-types';
 
-type ZmenuContentProps = {
+import styles from './Zmenu.scss';
+
+export type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];
 };
 
@@ -33,12 +33,12 @@ type ZmenuContentBlockProps = {
   id: string;
 };
 
-type ZmenuContentItemProps = ZmenuContentItemType & {
+export type ZmenuContentItemProps = ZmenuContentItemType & {
   changeFocusObject: (objectId: string) => void;
   id: string;
 };
 
-const ZmenuContent = (props: ZmenuContentProps) => {
+export const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
   const renderedContent = features.map((feature) => (
     <ZmenuContentFeature
@@ -50,7 +50,7 @@ const ZmenuContent = (props: ZmenuContentProps) => {
   return <>{renderedContent}</>;
 };
 
-const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
+export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
   return (
     <p className={styles.zmenuContentFeature}>
       {props.lines.map((line, index) => (
@@ -60,7 +60,7 @@ const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
   );
 };
 
-const ZmenuContentLine = (props: ZmenuContentLineProps) => {
+export const ZmenuContentLine = (props: ZmenuContentLineProps) => {
   return (
     <span className={styles.zmenuContentLine}>
       {props.blocks.map((items, index) => (
@@ -70,7 +70,7 @@ const ZmenuContentLine = (props: ZmenuContentLineProps) => {
   );
 };
 
-const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
+export const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
     <span className={styles.zmenuContentBlock}>
       {props.items.map((item, index) => (
@@ -80,7 +80,7 @@ const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   );
 };
 
-const ZmenuContentItem = (props: ZmenuContentItemProps) => {
+export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   const { text, markup, id } = props;
   const isFocusable = markup.includes(Markup.FOCUS);
 

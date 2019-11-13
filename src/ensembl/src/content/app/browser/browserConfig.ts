@@ -1,7 +1,3 @@
-import navigatorIcon from 'static/img/browser/navigator.svg';
-import navigatorSelectedIcon from 'static/img/browser/navigator-selected.svg';
-import navigatorGreyIcon from 'static/img/browser/navigator-grey.svg';
-
 import navigateUpIcon from 'static/img/browser/navigate-up.svg';
 import navigateUpOffIcon from 'static/img/browser/navigate-up-off.svg';
 
@@ -20,20 +16,6 @@ import navigateLeftOffIcon from 'static/img/browser/navigate-left-off.svg';
 import navigateRightIcon from 'static/img/browser/navigate-right.svg';
 import navigateRightOffIcon from 'static/img/browser/navigate-right-off.svg';
 
-export type BrowserInfoItem = {
-  description: string;
-  icon: {
-    default: string;
-    grey?: string;
-    selected?: string;
-  };
-  name: string;
-};
-
-export type BrowserInfoType = {
-  [key: string]: BrowserInfoItem;
-};
-
 export type BrowserNavItem = {
   description: string;
   detail: {
@@ -44,18 +26,6 @@ export type BrowserNavItem = {
     off: string;
   };
   name: string;
-};
-
-export const browserInfoConfig: BrowserInfoType = {
-  navigator: {
-    description: 'toggle browser navigation',
-    icon: {
-      default: navigatorIcon,
-      grey: navigatorGreyIcon,
-      selected: navigatorSelectedIcon
-    },
-    name: 'navigator'
-  }
 };
 
 export const browserNavConfig: BrowserNavItem[] = [
@@ -125,32 +95,4 @@ export const browserNavConfig: BrowserNavItem[] = [
     },
     name: 'navigate right'
   }
-];
-
-export const chrOptions: string[] = [
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-  '19',
-  '20',
-  '21',
-  '22',
-  'X',
-  'Y',
-  'MT'
 ];
