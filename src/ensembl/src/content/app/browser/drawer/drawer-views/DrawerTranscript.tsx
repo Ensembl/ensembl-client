@@ -2,9 +2,9 @@ import React, { FunctionComponent } from 'react';
 import get from 'lodash/get';
 import find from 'lodash/find';
 
-import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
 

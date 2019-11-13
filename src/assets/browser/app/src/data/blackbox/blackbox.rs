@@ -20,6 +20,17 @@ pub fn blackbox_tick(driver: &mut BlackBoxDriver) -> bool {
     driver.tick(&mut bb,now)
 }
 
+pub fn blackbox_count(stream: &str, name: &str, amt: u32, set: bool) {
+    let mut bb = BLACKBOX.lock().unwrap();
+    bb.count(stream,name,amt,set);
+}
+
+pub fn blackbox_reset_count(stream: &str, name: &str) {
+    let mut bb = BLACKBOX.lock().unwrap();
+    let now = browser_time();
+    bb.reset_count(stream,name,now);
+}
+
 pub fn blackbox_is_enabled(stream: &str) -> bool {
     let mut bb = BLACKBOX.lock().unwrap();
     bb.is_enabled(stream)

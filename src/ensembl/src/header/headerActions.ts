@@ -1,18 +1,14 @@
-import { createAction, createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import analyticsTracking from 'src/services/analytics-service';
 
-export const toggleAccount = createStandardAction('header/toggle-account')();
+export const toggleAccount = createAction('header/toggle-account')();
 
-export const toggleLaunchbar = createStandardAction(
-  'header/toggle-launchbar'
-)();
+export const toggleLaunchbar = createAction('header/toggle-launchbar')();
 
 export const changeCurrentApp = createAction(
   'header/change-current-app',
-  (resolve) => {
-    return (appName: string) => {
-      analyticsTracking.setAppDimension(appName);
-      return resolve(appName);
-    };
+  (appName: string) => {
+    analyticsTracking.setAppDimension(appName);
+    return appName;
   }
-);
+)();

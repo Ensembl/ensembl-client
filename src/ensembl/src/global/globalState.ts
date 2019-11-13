@@ -5,5 +5,5 @@ export type GlobalState = Readonly<{
 }>;
 
 export const defaultState: GlobalState = {
-  breakpointWidth: BreakpointWidth.LARGE
+  breakpointWidth: BreakpointWidth.DESKTOP
 };
