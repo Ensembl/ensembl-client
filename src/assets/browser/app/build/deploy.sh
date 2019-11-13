@@ -3,8 +3,8 @@
 set -ev
 
 ASSET_REPO_NAME="ensembl-genome-browser-assets"
-ASSET_REPO="https://github.com/Ensembl/$ASSET_REPO_NAME.git"
-NPM_ASSET_REPO="https://github.com/Ensembl/$ASSET_REPO_NAME.git"
+ASSET_REPO="git@github.com:Ensembl/$ASSET_REPO_NAME.git"
+RAW_ASSET_BASE="https://raw.githubusercontent.com/Ensembl/$ASSET_REPO_NAME/master"
 
 # Where is this script running?
 pushd $(dirname "${0}") > /dev/null
@@ -58,6 +58,20 @@ if [ "x$1" == "x" ] ; then
     echo "Refusing to deploy unoptimised WASM"
     exit 1
   fi
+  echo "Making tarball"
+  TARDIR=$(mktemp -d)
+  (
+    set -ev
+    cd $TARDIR
+    mkdir package
+    cd package
+    wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $WASMNAME
+    cp $SRC/target/deploy/hellostdweb.js $JSNAME
+    cp $SRC/build/package.json package.json
+    cd ..
+    tar -c -z -f assets-$WASMHASH.tar.gz package
+    cp assets-$WASMHASH.tar.gz /tmp
+  )
   echo "Sending to remote asset repo"
   GITDIR=$(mktemp -d)
   echo $GITDIR
@@ -66,25 +80,20 @@ if [ "x$1" == "x" ] ; then
     cd $GITDIR
     git clone $ASSET_REPO
     cd $ASSET_REPO_NAME
-    git rm browser.js *.wasm || true
-    rm -f browser.js *.wasm
-    cp $SRC/target/deploy/hellostdweb.js $JSNAME
-    wasm-opt -Os $SRC/target/deploy/hellostdweb.wasm -o $WASMNAME
-    git add $WASMNAME $JSNAME package.json
+    cp $TARDIR/assets-$WASMHASH.tar.gz .
+    git add assets-$WASMHASH.tar.gz
     git commit -m "$BRANCH at $NOW"
     git push
-    git tag -a "wasm/$WASMHASH" -m "$BRANCH at $NOW"
-    git push origin tag "wasm/$WASMHASH"
-    rm -rf $MODDIR
   )
-  echo rm -rf $GITDIR
+  rm -rf $GITDIR $TARDIR $MODDIR
+  RAW_URL="$RAW_ASSET_BASE/assets-$WASMHASH.tar.gz"
   (
     set -ev
     cd "$SRC/../../../ensembl"
-    sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$NPM_ASSET_REPO#wasm/$WASMHASH\",~" package.json
+    sed -i -e "s~.*ensembl-genome-browser.*~    \"ensembl-genome-browser\": \"$RAW_URL\",~" package.json
     npm install || true
     2>&1 echo
-    (git diff package-lock.json | grep '^[+-]' | grep -v ensembl-genome-browser-assets.git | grep -v -- --- | grep -v +++) && ( 2>&1 echo "ERROR! package lock did not update cleanly, aborting" && exit 1 )
+    (git diff package-lock.json | grep '^[+-]' | grep -v ensembl-genome-browser-assets | grep -v -- --- | grep -v +++ | grep -v '"integrity":') && ( 2>&1 echo "ERROR! package lock did not update cleanly, aborting" && exit 1 )
   ) || exit 1
 elif [ "x$1" == "xstrip" ] ; then
   rm -f $MODDIR/browser.js $MODDIR/browser-*.wasm
