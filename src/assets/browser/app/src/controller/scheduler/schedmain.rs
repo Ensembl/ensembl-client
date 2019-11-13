@@ -66,6 +66,13 @@ impl SchedulerMain {
     fn check_tempo(&mut self, burst: bool) {
         let now = browser_time();
         self.jank.detect(burst,now/1000.);
+        /* This is where jank-detection would be reflected in the scheduler.
+         * However, it turns out jank-detection is not the best way to do
+         * this and we really need a better scheduler. In the mean-time it's
+         * best not to detect jank at all. I'll leave this line here to
+         * indicate the architecture of this existing (old) scheduler for
+         * curious visitors or myself when reimplementing.
+         */
         //self.set_timesig(self.jank.gear());
     }
     
