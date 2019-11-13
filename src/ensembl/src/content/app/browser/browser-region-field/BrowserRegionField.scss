@@ -12,6 +12,11 @@
   &::placeholder {
     color: $grey;
   }
+  &:focus {
+    &::placeholder {
+      color: transparent;
+    }
+  }
 }
 
 .chrLocationView {
