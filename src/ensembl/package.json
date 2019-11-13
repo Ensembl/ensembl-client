@@ -54,7 +54,7 @@
     "connected-react-router": "6.5.2",
     "core-js": "3.3.6",
     "dotenv": "8.2.0",
-    "ensembl-genome-browser": "https://raw.githubusercontent.com/Ensembl/ensembl-genome-browser-assets/master/assets-4638fc286422bda2e65c08616b525002.tar.gz",
+    "ensembl-genome-browser": "https://raw.githubusercontent.com/Ensembl/ensembl-genome-browser-assets/master/assets-1cdabb861b07a31cc27ffa943baf4e10.tar.gz",
     "koa-proxy": "1.0.0-alpha.3",
     "lodash": "4.17.15",
     "query-string": "6.8.3",
