@@ -20,6 +20,7 @@ const mockWindowService: WindowServiceInterface = {
   getLocalStorage: () => mockLocalStorage,
   getSessionStorage: () => mockSessionStorage,
   getWindow: jest.fn(),
+  getFileReader: jest.fn(),
   getLocation: jest.fn()
 };
 

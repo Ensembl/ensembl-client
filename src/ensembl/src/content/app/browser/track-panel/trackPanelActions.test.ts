@@ -20,7 +20,9 @@ const trackPanelProperties: TrackPanelStateForGenome = {
   trackPanelModalView: faker.lorem.word(),
   highlightedTrackId: faker.lorem.word(),
   isTrackPanelOpened: faker.random.boolean(),
-  collapsedTrackIds: [faker.lorem.word()]
+  collapsedTrackIds: [faker.lorem.word()],
+  bookmarks: [],
+  previouslyViewedObjects: []
 };
 
 describe('track panel actions', () => {

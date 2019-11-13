@@ -1,14 +1,14 @@
 import faker from 'faker';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
-export const createEnsObject = (): EnsObject => ({
+export const createEnsObject = (objectType?: string): EnsObject => ({
   bio_type: faker.lorem.words(),
   label: faker.lorem.word(),
   object_id: faker.lorem.word(),
   genome_id: faker.lorem.word(),
   location: createLocation(),
-  object_type: 'gene',
+  object_type: objectType || 'gene',
   stable_id: faker.lorem.word(),
   versioned_stable_id: faker.lorem.word(),
   strand: 'forward',

@@ -1,0 +1,16 @@
+@import 'src/styles/common';
+
+.defaultWrapper {
+  padding: 40px;
+  background-color: $light-grey;
+}
+
+.customizedUpload {
+  border-color: $red;
+  color: $red;
+}
+
+.customizedUploadActive {
+  border-color: $green;
+  color: $green;
+}

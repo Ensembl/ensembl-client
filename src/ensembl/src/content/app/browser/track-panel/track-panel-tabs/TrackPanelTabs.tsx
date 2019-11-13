@@ -2,15 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { TrackSet } from '../trackPanelConfig';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './TrackPanelTabs.scss';
 
-type TrackPanelTabsProps = {
+export type TrackPanelTabsProps = {
   closeDrawer: () => void;
   ensObject: EnsObject;
   isDrawerOpened: boolean;
-  genomeSelectorActive: boolean;
   selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   selectedTrackPanelTab: TrackSet;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
@@ -20,7 +19,7 @@ type TrackPanelTabsProps = {
 
 const TrackPanelTabs = (props: TrackPanelTabsProps) => {
   const handleTabClick = (value: TrackSet) => {
-    if (props.genomeSelectorActive || !props.ensObject.genome_id) {
+    if (!props.ensObject.genome_id) {
       return;
     }
 

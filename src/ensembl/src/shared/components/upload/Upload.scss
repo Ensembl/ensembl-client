@@ -1,0 +1,30 @@
+@import 'src/styles/common';
+
+.defaultUpload {
+  border: 1px dashed $grey;
+  color: $blue;
+  color: #33adff;
+  display: inline-block;
+  position: relative;
+  padding: 10px;
+  cursor: pointer;
+  transition: border 0.4s;
+}
+
+.defaultUploadActive {
+  border: 1px dashed $blue;
+  transition: border 0.4s;
+}
+
+.fileInput {
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+  height: 1px;
+  width: 1px;
+}
+
+.defaultUpload:focus-within {
+  border: 1px dashed $black;
+}

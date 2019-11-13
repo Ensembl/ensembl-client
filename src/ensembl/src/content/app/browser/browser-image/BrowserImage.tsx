@@ -1,21 +1,19 @@
-import React, {
-  FunctionComponent,
-  useRef,
-  useEffect,
-  useCallback
-} from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
-import styles from './BrowserImage.scss';
-import { BrowserNavStates, CogList } from '../browserState';
-import BrowserCogList from '../BrowserCogList';
+import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
-  getBrowserActivated
+  getBrowserActivated,
+  getRegionEditorActive,
+  getRegionFieldActive
 } from '../browserSelectors';
 import {
   activateBrowser,
@@ -30,21 +28,18 @@ import {
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import { ChrLocation } from '../browserState';
-
-import { CircleLoader } from 'src/shared/components/loader/Loader';
-
+import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
-import { TrackStates } from '../track-panel/trackPanelConfig';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
-type StateProps = {
+import styles from './BrowserImage.scss';
+
+export type BrowserImageProps = {
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
   browserActivated: boolean;
-};
-
-type DispatchProps = {
   activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
@@ -55,12 +50,6 @@ type DispatchProps = {
   updateDefaultPositionFlag: (isDefaultPosition: boolean) => void;
   changeHighlightedTrackId: (trackId: string) => void;
 };
-
-type OwnProps = {
-  trackStates: TrackStates;
-};
-
-type BrowserImageProps = StateProps & DispatchProps & OwnProps;
 
 type BpaneOutPayload = {
   bumper?: BrowserNavStates;
@@ -78,9 +67,7 @@ const parseLocation = (location: ChrLocation) => {
   return [chromosome, start, end] as ChrLocation;
 };
 
-export const BrowserImage: FunctionComponent<BrowserImageProps> = (
-  props: BrowserImageProps
-) => {
+export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
@@ -134,6 +121,10 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
     };
   }, []);
 
+  const browserContainerClassNames = classNames(styles.browserStage, {
+    [styles.shorter]: props.browserNavOpened
+  });
+
   return (
     <>
       {!props.browserActivated && (
@@ -144,33 +135,28 @@ export const BrowserImage: FunctionComponent<BrowserImageProps> = (
       <div className={styles.browserImagePlus}>
         <div
           id={BROWSER_CONTAINER_ID}
-          className={getBrowserImageClasses(props.browserNavOpened)}
+          className={browserContainerClassNames}
           ref={browserRef}
         />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
+        {props.regionEditorActive || props.regionFieldActive ? (
+          <Overlay className={styles.browserImageOverlay} />
+        ) : null}
       </div>
     </>
   );
 };
 
-function getBrowserImageClasses(browserNavOpened: boolean): string {
-  let classes = styles.browserStage;
-
-  if (browserNavOpened === true) {
-    classes += ` ${styles.shorter}`;
-  }
-
-  return classes;
-}
-
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
-  browserActivated: getBrowserActivated(state)
+  browserActivated: getBrowserActivated(state),
+  regionEditorActive: getRegionEditorActive(state),
+  regionFieldActive: getRegionFieldActive(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   activateBrowser,
   updateBrowserActivated,
   updateBrowserNavStates,

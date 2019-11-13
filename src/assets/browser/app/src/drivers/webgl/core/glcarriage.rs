@@ -72,10 +72,10 @@ impl GLCarriage {
     }
 
     pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32, screen: &Screen, pos: &Position) -> HashMap<String,UniformValue> {
-        let bp_per_screen = pos.get_screen_in_bp();
+        let bp_per_screen = pos.get_bumped_screen_in_bp();
         let bp_per_leaf = leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
-        let middle_bp = pos.get_middle();
+        let middle_bp = pos.get_bumped_middle();
         let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
         let current_leaf_left = leaf.get_index() as f64;
         let screen_px = screen.get_size();
