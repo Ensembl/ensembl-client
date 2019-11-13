@@ -5,8 +5,14 @@ import uniq from 'lodash/uniq';
 
 import { RootState } from 'src/store';
 import { TrackSet } from './trackPanelConfig';
+import trackPanelStorageService from './track-panel-storage-service';
 import browserStorageService from '../browser-storage-service';
-import { getBrowserActiveGenomeId } from '../browserSelectors';
+import {
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObject
+} from '../browserSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from './trackPanelSelectors';
+
 import analyticsTracking from 'src/services/analytics-service';
 import { getActiveTrackPanel } from './trackPanelSelectors';
 import {
@@ -16,7 +22,7 @@ import {
 
 export const updateTrackPanelForGenome = createAction(
   'track-panel/update-track-panel',
-  (action) => (payload: {
+  (payload: {
     activeGenomeId: string;
     data: Partial<TrackPanelStateForGenome>;
   }) => {
@@ -25,9 +31,9 @@ export const updateTrackPanelForGenome = createAction(
     browserStorageService.updateTrackPanels({
       [activeGenomeId]: persistentTrackProperties
     });
-    return action({ activeGenomeId, data });
+    return { activeGenomeId, data };
   }
-);
+)();
 
 export const toggleTrackPanel: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
@@ -99,10 +105,57 @@ export const changeTrackPanelModalViewForGenome: ActionCreator<
   );
 };
 
+export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeEnsObject = getBrowserActiveEnsObject(state);
+  if (!activeGenomeId || !activeEnsObject) {
+    return;
+  }
+
+  const previouslyViewedObjects = [
+    ...getActiveGenomePreviouslyViewedObjects(state)
+  ];
+
+  const existingIndex = previouslyViewedObjects.findIndex(
+    (previouslyViewedObject) =>
+      previouslyViewedObject.object_id === activeEnsObject.object_id
+  );
+  if (existingIndex === -1) {
+    // IF it is not present, add it to the end
+    previouslyViewedObjects.push({
+      genome_id: activeEnsObject.genome_id,
+      object_id: activeEnsObject.object_id,
+      object_type: activeEnsObject.object_type,
+      label: activeEnsObject.label
+    });
+  }
+
+  // Limit the total number of previously viewed objects to 250
+  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-250);
+
+  trackPanelStorageService.updatePreviouslyViewedObjects({
+    [activeGenomeId]: limitedPreviouslyViewedObjects
+  });
+
+  dispatch(
+    updateTrackPanelForGenome({
+      activeGenomeId,
+      data: {
+        ...getActiveTrackPanel(state),
+        previouslyViewedObjects: limitedPreviouslyViewedObjects
+      }
+    })
+  );
+};
+
 export const changeHighlightedTrackId: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
     return;
@@ -112,7 +165,7 @@ export const changeHighlightedTrackId: ActionCreator<
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
-        ...getActiveTrackPanel(getState()),
+        ...getActiveTrackPanel(state),
         highlightedTrackId
       }
     })
@@ -122,7 +175,9 @@ export const changeHighlightedTrackId: ActionCreator<
 export const openTrackPanelModal: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const state = getState();
+
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
     return;
@@ -132,7 +187,7 @@ export const openTrackPanelModal: ActionCreator<
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
-        ...getActiveTrackPanel(getState()),
+        ...getActiveTrackPanel(state),
         isTrackPanelModalOpened: true,
         trackPanelModalView
       }
@@ -143,7 +198,8 @@ export const openTrackPanelModal: ActionCreator<
 export const closeTrackPanelModal: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
 > = () => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(getState());
+  const state = getState();
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
     return;
@@ -153,7 +209,7 @@ export const closeTrackPanelModal: ActionCreator<
     updateTrackPanelForGenome({
       activeGenomeId,
       data: {
-        ...getActiveTrackPanel(getState()),
+        ...getActiveTrackPanel(state),
         isTrackPanelModalOpened: false,
         trackPanelModalView: ''
       }

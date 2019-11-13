@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ImageButtonStatus } from 'src/shared/components/image-button/ImageButton';
+import { Status } from 'src/shared/types/status';
 
 type Props = {
-  buttonStatus: ImageButtonStatus;
+  buttonStatus: Status;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
-  classNames: { [key in ImageButtonStatus]?: string };
+  classNames: { [key in Status]?: string };
   description: string;
 };
 

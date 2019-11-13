@@ -25,7 +25,7 @@ import chevronRightIcon from 'static/img/shared/chevron-right.svg';
 
 import styles from './TrackPanelBar.scss';
 
-type TrackPanelBarProps = {
+export type TrackPanelBarProps = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
   isTrackPanelModalOpened: boolean;
@@ -38,7 +38,7 @@ type TrackPanelBarProps = {
   toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
 };
 
-const TrackPanelBar = (props: TrackPanelBarProps) => {
+export const TrackPanelBar = (props: TrackPanelBarProps) => {
   const moveTrackPanel = useCallback(() => {
     if (props.isDrawerOpened) {
       props.closeDrawer();

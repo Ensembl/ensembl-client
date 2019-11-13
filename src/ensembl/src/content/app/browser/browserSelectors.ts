@@ -2,8 +2,8 @@ import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
 
 import { getQueryParamsMap } from 'src/global/globalHelper';
-import { getGenomeInfo } from 'src/genome/genomeSelectors';
-import { getEnsObjectById } from 'src/ens-object/ensObjectSelectors';
+import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
+import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 export const getBrowserActivated = (state: RootState) =>
   state.browser.browserInfo.browserActivated;
@@ -36,6 +36,14 @@ export const getBrowserActiveEnsObject = (state: RootState) => {
 
 export const getBrowserTrackStates = (state: RootState) =>
   state.browser.browserEntity.trackStates;
+
+export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+
+  return activeGenomeId
+    ? state.browser.browserEntity.trackStates[activeGenomeId]
+    : null;
+};
 
 export const getBrowserQueryParams = (
   state: RootState
@@ -74,12 +82,14 @@ export const getDefaultChrLocation = (state: RootState) => {
   return [chromosome, start, end] as ChrLocation;
 };
 
-export const getBrowserMessageCount = (state: RootState): number => {
-  return state.browser.browserEntity.messageCounter;
-};
+export const getRegionEditorActive = (state: RootState) =>
+  state.browser.browserLocation.regionEditorActive;
 
-export const getGenomeSelectorActive = (state: RootState) =>
-  state.browser.browserLocation.genomeSelectorActive;
+export const getRegionFieldActive = (state: RootState) =>
+  state.browser.browserLocation.regionFieldActive;
+
+export const getBrowserMessageCount = (state: RootState) =>
+  state.browser.browserEntity.messageCounter;
 
 export const getBrowserCogList = (state: RootState) =>
   state.browser.trackConfig.browserCogList;

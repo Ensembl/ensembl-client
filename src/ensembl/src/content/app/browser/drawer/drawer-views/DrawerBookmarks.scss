@@ -1,0 +1,42 @@
+@import 'src/styles/common';
+
+.drawerTitle {
+  margin: 20px 0 0 30px;
+}
+
+.contentWrapper {
+  height: 80%;
+}
+
+.linksWrapper {
+  margin: 20px 0 0 40px;
+  height: 100%;
+  width: calc(100% - 110px);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  overflow-x: auto;
+
+  .linkHolder {
+    margin: 5px 0 0 15px;
+    width: 20%;
+    padding-right: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .previouslyViewedType {
+    color: $dark-grey;
+    margin-left: 8px;
+    font-size: 12px;
+    font-weight: 300;
+  }
+}

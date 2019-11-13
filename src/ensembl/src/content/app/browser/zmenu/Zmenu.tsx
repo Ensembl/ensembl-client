@@ -20,7 +20,7 @@ enum Direction {
   RIGHT = 'right'
 }
 
-type Props = ZmenuData & {
+export type ZmenuProps = ZmenuData & {
   browserRef: React.RefObject<HTMLDivElement>;
   onEnter: (id: string) => void;
   onLeave: (id: string) => void;
@@ -37,7 +37,7 @@ type GetInlineStylesParams = {
   anchorCoordinates: AnchorCoordinates;
 };
 
-const Zmenu = (props: Props) => {
+const Zmenu = (props: ZmenuProps) => {
   const onOutsideClick = () =>
     browserMessagingService.send('bpane', {
       id: props.id,
@@ -73,7 +73,7 @@ const Zmenu = (props: Props) => {
 };
 
 // choose how to position zmenu relative to its anchor point
-const chooseDirection = (params: Props) => {
+const chooseDirection = (params: ZmenuProps) => {
   const browserElement = params.browserRef.current as HTMLDivElement;
   const { width } = browserElement.getBoundingClientRect();
   const { x } = params.anchor_coordinates;
@@ -125,7 +125,7 @@ const getInverseDirection = (direction: Direction) => {
   }
 };
 
-const Tip = (props: TipProps) => {
+export const Tip = (props: TipProps) => {
   const halfBase = TIP_WIDTH / 2;
   let polygonPoints;
   const height = TIP_HEIGHT + TIP_EXTRA_HEIGHT;

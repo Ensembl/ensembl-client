@@ -1,7 +1,7 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { TrackStates } from './track-panel/trackPanelConfig';
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import { ChrLocations } from './browserState';
 import {
   TrackPanelState,
@@ -54,11 +54,11 @@ export class BrowserStorageService {
     this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
   }
 
-  public getTrackStates(): TrackStates {
+  public getTrackStates(): BrowserTrackStates {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }
 
-  public saveTrackStates(trackStates: TrackStates) {
+  public saveTrackStates(trackStates: BrowserTrackStates) {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }
 

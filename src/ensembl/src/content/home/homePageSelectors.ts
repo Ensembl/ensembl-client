@@ -8,7 +8,7 @@ import {
 import {
   getEnsObjectById,
   getEnsObjectLoadingStatus
-} from 'src/ens-object/ensObjectSelectors';
+} from 'src/shared/state/ens-object/ensObjectSelectors';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { LoadingState } from 'src/shared/types/loading-state';
 

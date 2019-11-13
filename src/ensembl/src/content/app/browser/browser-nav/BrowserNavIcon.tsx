@@ -7,29 +7,31 @@ import iconStyles from './BrowserNavIcon.scss';
 
 type BrowserNavIconProps = {
   browserNavItem: BrowserNavItem;
-  maxState: boolean;
+  enabled: boolean;
 };
 
 export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
-  const { browserNavItem, maxState } = props;
+  const { browserNavItem, enabled } = props;
   const { detail, icon } = browserNavItem;
 
   const navigateBrowser = () => {
-    if (maxState === false) {
+    if (enabled) {
       browserMessagingService.send('bpane', detail);
     }
   };
 
-  const iconUrl = maxState ? icon.off : icon.on;
+  const iconUrl = enabled ? icon.on : icon.off;
 
   return (
-    <dd className={iconStyles.browserNavIcon}>
-      <button title={browserNavItem.description} onClick={navigateBrowser}>
-        <img src={iconUrl} alt={browserNavItem.description} />
-      </button>
-    </dd>
+    <button
+      className={iconStyles.browserNavIcon}
+      title={browserNavItem.description}
+      onClick={navigateBrowser}
+    >
+      <img src={iconUrl} alt={browserNavItem.description} />
+    </button>
   );
 };
 
