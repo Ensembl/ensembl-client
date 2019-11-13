@@ -1,6 +1,6 @@
 export default {
   // Version numbers
-  app_version: '0.3.0',
+  app_version: '0.4.0',
 
   // Node environment
   isDevelopment: process.env.NODE_ENV === 'development',

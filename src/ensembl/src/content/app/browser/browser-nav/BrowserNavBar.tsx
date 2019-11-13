@@ -1,50 +1,34 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { browserNavConfig, BrowserNavItem } from '../browserConfig';
+import BrowserNavBarControls from './BrowserNavBarControls';
+import BrowserNavBarMain from './BrowserNavBarMain';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates } from '../browserSelectors';
 import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
-import { BrowserNavStates } from '../browserState';
-
-import BrowserNavIcon from './BrowserNavIcon';
 
 import styles from './BrowserNavBar.scss';
 
-type StateProps = {
-  browserNavStates: BrowserNavStates;
-  isTrackPanelOpened: boolean;
+export type BrowserNavBarProps = {
+  expanded: boolean;
 };
 
-type BrowserNavBarProps = StateProps;
-
-export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
-  props: BrowserNavBarProps
-) => {
+export const BrowserNavBar = (props: BrowserNavBarProps) => {
   const className = classNames(styles.browserNavBar, {
-    [styles.browserNavBarExpanded]: !props.isTrackPanelOpened
+    [styles.browserNavBarExpanded]: props.expanded
   });
 
   return (
     <div className={className}>
-      <dl>
-        {browserNavConfig.map((item: BrowserNavItem, index: number) => (
-          <BrowserNavIcon
-            key={item.name}
-            browserNavItem={item}
-            maxState={props.browserNavStates[index]}
-          />
-        ))}
-      </dl>
+      <BrowserNavBarControls />
+      <BrowserNavBarMain />
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  browserNavStates: getBrowserNavStates(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state)
+const mapStateToProps = (state: RootState) => ({
+  expanded: !getIsTrackPanelOpened(state)
 });
 
 export default connect(mapStateToProps)(BrowserNavBar);

@@ -1,26 +1,24 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { browserInfoConfig, BrowserInfoItem } from '../browserConfig';
 import { TrackSet } from '../track-panel/trackPanelConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
-import { getDisplayStableId } from 'src/ens-object/ensObjectHelpers';
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
-import {
-  toggleBrowserNav,
-  toggleGenomeSelector,
-  changeFocusObject
-} from '../browserActions';
+import { RootState } from 'src/store';
 import { ChrLocation } from '../browserState';
+
 import {
   getBrowserNavOpened,
   getChrLocation,
   getActualChrLocation,
   getDefaultChrLocation,
   getBrowserActivated,
-  getGenomeSelectorActive,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject,
   isFocusObjectPositionDefault
@@ -31,24 +29,21 @@ import {
   getIsTrackPanelModalOpened,
   getIsTrackPanelOpened
 } from '../track-panel/trackPanelSelectors';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+
+import { toggleBrowserNav, changeFocusObject } from '../browserActions';
 import {
   selectTrackPanelTab,
   toggleTrackPanel
 } from '../track-panel/trackPanelActions';
 import { closeDrawer } from '../drawer/drawerActions';
-import { RootState } from 'src/store';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
 
 import BrowserReset from '../browser-reset/BrowserReset';
-import BrowserGenomeSelector from '../browser-genome-selector/BrowserGenomeSelector';
 import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
-
-import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BreakpointWidth } from 'src/global/globalConfig';
 
 import styles from './BrowserBar.scss';
 
-type StateProps = {
+export type BrowserBarProps = {
   activeGenomeId: string | null;
   breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
@@ -59,50 +54,30 @@ type StateProps = {
   isDrawerOpened: boolean;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  genomeSelectorActive: boolean;
   ensObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
   isFocusObjectInDefaultPosition: boolean;
-};
-
-type DispatchProps = {
   closeDrawer: () => void;
   selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   toggleBrowserNav: () => void;
-  toggleGenomeSelector: (genomeSelectorActive: boolean) => void;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
   changeFocusObject: (objectId: string) => void;
 };
-
-type OwnProps = {
-  dispatchBrowserLocation: (genomeId: string, chrLocation: ChrLocation) => void;
-};
-
-export type BrowserBarProps = StateProps & DispatchProps & OwnProps;
 
 type BrowserInfoProps = {
   ensObject: EnsObject;
 };
 
-type BrowserNavigatorButtonProps = {
-  toggleNavigator: () => void;
-  navigator: BrowserInfoItem;
-  icon: string; // TODO: use inline SVG
-};
-
-export const BrowserBar: FunctionComponent<BrowserBarProps> = (
-  props: BrowserBarProps
-) => {
+export const BrowserBar = (props: BrowserBarProps) => {
   const { isDrawerOpened } = props;
 
   const shouldShowBrowserInfo = () => {
     const { defaultChrLocation } = props;
     const isLocationOfWholeChromosome = !defaultChrLocation;
 
-    return !(props.genomeSelectorActive || isLocationOfWholeChromosome);
+    return !isLocationOfWholeChromosome;
   };
 
-  const { navigator } = browserInfoConfig;
   const [showBrowserInfo, toggleShowBrowserInfo] = useState(
     shouldShowBrowserInfo()
   );
@@ -116,17 +91,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
   useEffect(() => {
     setBrowserInfoVisibility();
-  }, [props.defaultChrLocation, props.genomeSelectorActive]);
-
-  const getBrowserNavIcon = () => {
-    if (isDrawerOpened) {
-      return navigator.icon.grey as string;
-    } else if (props.browserNavOpened) {
-      return navigator.icon.selected as string;
-    } else {
-      return navigator.icon.default;
-    }
-  };
+  }, [props.defaultChrLocation]);
 
   const toggleNavigator = () => {
     if (isDrawerOpened) {
@@ -136,14 +101,19 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
     props.toggleBrowserNav();
   };
 
+  const [chrCode, chrStart, chrEnd] = props.actualChrLocation || [];
   const shouldShowTrackPanelTabs =
     props.activeGenomeId &&
     (props.isTrackPanelOpened ||
-      props.breakpointWidth === BreakpointWidth.LARGE);
+      props.breakpointWidth === BreakpointWidth.DESKTOP);
 
-  const className = classNames(styles.browserInfo, {
+  const browserInfoClassName = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
     [styles.browserInfoGreyed]: isDrawerOpened
+  });
+
+  const browserRegionClassName = classNames(styles.browserInfoRegion, {
+    [styles.browserInfoHidden]: isDrawerOpened
   });
 
   if (!(props.chrLocation && props.actualChrLocation && props.ensObject)) {
@@ -152,7 +122,7 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
 
   return (
     <div className={styles.browserBar}>
-      <div className={className}>
+      <div className={browserInfoClassName}>
         <dl className={styles.browserInfoLeft}>
           <BrowserReset
             focusObject={props.ensObject}
@@ -164,21 +134,20 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           {showBrowserInfo && <BrowserInfo ensObject={props.ensObject} />}
         </dl>
         <dl className={styles.browserInfoRight}>
-          <BrowserGenomeSelector
-            activeGenomeId={props.activeGenomeId}
-            browserActivated={props.browserActivated}
-            dispatchBrowserLocation={props.dispatchBrowserLocation}
-            chrLocation={props.actualChrLocation}
-            isDrawerOpened={isDrawerOpened}
-            genomeSelectorActive={props.genomeSelectorActive}
-            toggleGenomeSelector={props.toggleGenomeSelector}
-          />
-          {!props.genomeSelectorActive && props.ensObject.genome_id && (
-            <BrowserNavigatorButton
-              navigator={navigator}
-              toggleNavigator={toggleNavigator}
-              icon={getBrowserNavIcon()}
-            />
+          {props.actualChrLocation && (
+            <dd className={browserRegionClassName}>
+              <div className={`${styles.chrLabel} show-for-large`}>
+                Chromosome
+              </div>
+              <div className={styles.chrLocationView} onClick={toggleNavigator}>
+                <div className={styles.chrCode}>{chrCode}</div>
+                <div className={styles.chrRegion}>
+                  <span>{getCommaSeparatedNumber(chrStart as number)}</span>
+                  <span className={styles.chrSeparator}>-</span>
+                  <span>{getCommaSeparatedNumber(chrEnd as number)}</span>
+                </div>
+              </div>
+            </dd>
           )}
         </dl>
       </div>
@@ -187,7 +156,6 @@ export const BrowserBar: FunctionComponent<BrowserBarProps> = (
           closeDrawer={props.closeDrawer}
           ensObject={props.ensObject}
           isDrawerOpened={props.isDrawerOpened}
-          genomeSelectorActive={props.genomeSelectorActive}
           selectTrackPanelTab={props.selectTrackPanelTab}
           selectedTrackPanelTab={props.selectedTrackPanelTab}
           toggleTrackPanel={props.toggleTrackPanel}
@@ -238,15 +206,7 @@ export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
   );
 };
 
-export const BrowserNavigatorButton = (props: BrowserNavigatorButtonProps) => (
-  <dd className={styles.navigator}>
-    <button title={props.navigator.description} onClick={props.toggleNavigator}>
-      <img src={props.icon} alt={props.navigator.description} />
-    </button>
-  </dd>
-);
-
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state),
   breakpointWidth: getBreakpointWidth(state),
   browserActivated: getBrowserActivated(state),
@@ -255,7 +215,6 @@ const mapStateToProps = (state: RootState): StateProps => ({
   actualChrLocation: getActualChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
   ensObject: getBrowserActiveEnsObject(state),
-  genomeSelectorActive: getGenomeSelectorActive(state),
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
@@ -263,11 +222,10 @@ const mapStateToProps = (state: RootState): StateProps => ({
   isFocusObjectInDefaultPosition: isFocusObjectPositionDefault(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   closeDrawer,
   selectTrackPanelTab,
   toggleBrowserNav,
-  toggleGenomeSelector,
   toggleTrackPanel,
   changeFocusObject
 };

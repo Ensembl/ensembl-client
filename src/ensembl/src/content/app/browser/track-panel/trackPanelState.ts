@@ -1,13 +1,25 @@
-import pick from 'lodash/pick';
-
 import { TrackSet } from './trackPanelConfig';
 import browserStorageService from '../browser-storage-service';
+import pick from 'lodash/pick';
+
+export type PreviouslyViewedObject = {
+  genome_id: string;
+  object_id: string;
+  object_type: string;
+  label: string;
+};
+
+export type PreviouslyViewedObjects = {
+  [genomeId: string]: PreviouslyViewedObject[];
+};
 
 export type TrackPanelStateForGenome = Readonly<{
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
   selectedTrackPanelTab: TrackSet;
   trackPanelModalView: string;
+  bookmarks: PreviouslyViewedObject[];
+  previouslyViewedObjects: PreviouslyViewedObject[];
   highlightedTrackId: string;
   collapsedTrackIds: string[];
 }>;
@@ -18,6 +30,8 @@ export type TrackPanelState = Readonly<{
 
 export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   isTrackPanelModalOpened: false,
+  bookmarks: [],
+  previouslyViewedObjects: [],
   selectedTrackPanelTab: TrackSet.GENOMIC,
   trackPanelModalView: '',
   highlightedTrackId: '',
@@ -47,7 +61,8 @@ export const pickPersistentTrackPanelProperties = (
   const persistentProperties = [
     'selectedTrackPanelTab',
     'isTrackPanelOpened',
-    'collapsedTrackIds'
+    'collapsedTrackIds',
+    'previouslyViewedObjects'
   ];
   return pick(trackPanel, persistentProperties);
 };

@@ -6,62 +6,67 @@ import variables from 'src/styles/_settings.scss';
 
 const colours = [
   {
-    name: 'Ensembl black',
+    name: 'Black',
     variableName: '$black',
     value: variables['black']
   },
   {
-    name: 'Ensembl blue',
+    name: 'Blue',
     variableName: '$blue',
     value: variables['blue']
   },
   {
-    name: 'Ensembl dark blue',
+    name: 'Dark blue',
     variableName: '$dark-blue',
     value: variables['dark-blue']
   },
   {
-    name: 'Ensembl light blue',
+    name: 'Light blue',
     variableName: '$light-blue',
     value: variables['light-blue']
   },
   {
-    name: 'Ensembl red',
+    name: 'Red',
     variableName: '$red',
     value: variables['red']
   },
   {
-    name: 'Ensembl grey',
+    name: 'Orange',
+    variableName: '$orange',
+    value: variables['orange']
+  },
+  {
+    name: 'Grey',
     variableName: '$grey',
     value: variables['grey']
   },
   {
-    name: 'Ensembl medium dark grey',
+    name: 'Medium-dark grey',
     variableName: '$medium-dark-grey',
     value: variables['medium-dark-grey']
   },
   {
-    name: 'Ensembl dark grey',
+    name: 'Dark grey',
     variableName: '$dark-grey',
     value: variables['dark-grey']
   },
   {
-    name: 'Ensembl medium light grey',
+    name: 'Medium-light grey',
     variableName: '$medium-light-grey',
     value: variables['medium-light-grey']
   },
   {
-    name: 'Ensembl light grey',
+    name: 'Light grey',
     variableName: '$light-grey',
     value: variables['light-grey']
   },
   {
-    name: 'Ensembl green',
+    name: 'Green',
     variableName: '$green',
     value: variables['green']
   },
   {
-    name: 'Ensembl white',
+    name: 'White',
     variableName: '$white',
     value: variables['white']
   }
@@ -77,6 +82,6 @@ storiesOf('Design Primitives|Colours', module).add(
     </>
   ),
   {
-    notes: "Basic Ensembl palette as per Andrea's design mockups"
+    notes: "Basic palette as per Andrea's design mockups"
   }
 );

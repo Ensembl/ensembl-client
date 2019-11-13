@@ -10,41 +10,43 @@ import { RootState } from 'src/store';
 
 import {
   getIsTrackPanelOpened,
-  getIsTrackPanelModalOpened,
-  getSelectedTrackPanelTab
+  getIsTrackPanelModalOpened
 } from './trackPanelSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject,
-  getBrowserTrackStates
+  getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { toggleTrackPanel } from './trackPanelActions';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackSet, TrackStates } from './trackPanelConfig';
 
-import { GenomeTrackCategory } from 'src/genome/genomeTypes';
-import { getGenomeTrackCategoriesById } from 'src/genome/genomeSelectors';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './TrackPanel.scss';
 
-type TrackPanelProps = {
+export type TrackPanelProps = {
   activeGenomeId: string | null;
-  breakpointWidth: BreakpointWidth;
   browserActivated: boolean;
+  breakpointWidth: BreakpointWidth;
   isDrawerOpened: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
   isTrackPanelOpened: boolean;
-  selectedTrackPanelTab: TrackSet;
-  genomeTrackCategories: GenomeTrackCategory[];
-  trackStates: TrackStates;
+  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
-const TrackPanel = (props: TrackPanelProps) => {
+export const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
+
+  useEffect(() => {
+    if (props.breakpointWidth !== BreakpointWidth.DESKTOP) {
+      props.toggleTrackPanel(false);
+    } else {
+      props.toggleTrackPanel(true);
+    }
+  }, [props.breakpointWidth, props.toggleTrackPanel]);
 
   const [trackAnimation, setTrackAnimation] = useSpring(() => ({
     config: { tension: 280, friction: 45 },
@@ -76,7 +78,7 @@ const TrackPanel = (props: TrackPanelProps) => {
           <TrackPanelBar />
           <TrackPanelList />
           {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
-          {isDrawerOpened && <Drawer />}
+          {isDrawerOpened ? <Drawer /> : null}
         </div>
       ) : null}
     </animated.div>
@@ -88,18 +90,20 @@ const mapStateToProps = (state: RootState) => {
 
   return {
     activeGenomeId,
-    breakpointWidth: getBreakpointWidth(state),
     browserActivated: getBrowserActivated(state),
+    breakpointWidth: getBreakpointWidth(state),
     isDrawerOpened: getIsDrawerOpened(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-    genomeTrackCategories: activeGenomeId
-      ? getGenomeTrackCategoriesById(state, activeGenomeId)
-      : [],
-    isTrackPanelOpened: getIsTrackPanelOpened(state),
-    trackStates: getBrowserTrackStates(state)
+    isTrackPanelOpened: getIsTrackPanelOpened(state)
   };
 };
 
-export default connect(mapStateToProps)(TrackPanel);
+const mapDispatchToProps = {
+  toggleTrackPanel
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TrackPanel);

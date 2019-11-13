@@ -1,6 +1,6 @@
 import browserStorageService from './browser-storage-service';
 
-import { TrackStates } from './track-panel/trackPanelConfig';
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 
 const activeGenomeId = browserStorageService.getActiveGenomeId();
 const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
@@ -36,7 +36,7 @@ export const defaultBrowserState: BrowserState = {
 export type BrowserEntityState = Readonly<{
   activeGenomeId: string | null;
   activeEnsObjectIds: { [genomeId: string]: string };
-  trackStates: TrackStates;
+  trackStates: BrowserTrackStates;
   messageCounter: number;
 }>;
 
@@ -60,14 +60,16 @@ export const defaultBrowserNavState: BrowserNavState = {
 export type BrowserLocationState = Readonly<{
   chrLocations: ChrLocations; // final location of the browser when user stopped dragging/zooming; used to update the url
   actualChrLocations: ChrLocations; // transient locations that change while user is dragging or zooming
-  genomeSelectorActive: boolean;
+  regionEditorActive: boolean;
+  regionFieldActive: boolean;
   isObjectInDefaultPosition: boolean;
 }>;
 
 export const defaultBrowserLocationState: BrowserLocationState = {
   chrLocations,
   actualChrLocations: {},
-  genomeSelectorActive: false,
+  regionEditorActive: false,
+  regionFieldActive: false,
   isObjectInDefaultPosition: false
 };
 

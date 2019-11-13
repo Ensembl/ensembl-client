@@ -12,21 +12,22 @@ import ProteinCodingGenes from './drawer-views/ProteinCodingGenes';
 import OtherGenes from './drawer-views/OtherGenes';
 import DrawerContigs from './drawer-views/DrawerContigs';
 import DrawerGC from './drawer-views/DrawerGC';
+import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 
 import closeIcon from 'static/img/shared/close.svg';
 
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';
 
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
-type DrawerProps = {
+export type DrawerProps = {
   drawerView: string;
   ensObject: EnsObject | null;
   closeDrawer: () => void;
 };
 
-const Drawer = (props: DrawerProps) => {
+export const Drawer = (props: DrawerProps) => {
   const { ensObject, drawerView } = props;
 
   if (!ensObject) {
@@ -53,6 +54,8 @@ const Drawer = (props: DrawerProps) => {
         return <DrawerGC />;
       case 'snps-and-indels':
         return <SnpIndels />;
+      case 'bookmarks':
+        return <DrawerBookmarks />;
     }
   };
 

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde_json::Value as SerdeValue;
 use serde_json::Map as SerdeMap;
 use serde_json::Number as SerdeNumber;
@@ -44,7 +46,8 @@ pub struct BlackBoxReportStream {
     name: String,
     reports: Vec<BlackBoxReport>,
     elapsed: Vec<f64>,
-    metronome: Option<f64>
+    metronome: Option<f64>,
+    count: HashMap<String,u32>
 }
 
 impl BlackBoxReportStream {
@@ -53,7 +56,8 @@ impl BlackBoxReportStream {
             name: name.to_string(),
             reports: Vec::new(),
             elapsed: Vec::new(),
-            metronome: None
+            metronome: None,
+            count: HashMap::new()
         }
     }
     
@@ -92,6 +96,22 @@ impl BlackBoxReportStream {
         self.elapsed.clear();
     }
     
+    pub fn count(&mut self, name: &str, amt: u32, set: bool) {
+        if set {
+            *self.count.entry(name.to_string()).or_insert(0) = 0;
+        }
+        *self.count.entry(name.to_string()).or_insert(0) += amt;
+    }
+
+    pub fn reset_count(&mut self, name: &str, now: f64) {
+        let mut report = BlackBoxReport::new(
+            format!("count: {}={}",name,self.count.entry(name.to_string()).or_insert(0)),
+            "".to_string(),now
+        );
+        self.add_report(report);        
+        *self.count.entry(name.to_string()).or_insert(0) = 0;
+    }
+
     pub fn make_report(&mut self, with_dataset: bool) -> SerdeValue {
         let now = browser_time();
         self.make_elapsed_report(now,with_dataset);
