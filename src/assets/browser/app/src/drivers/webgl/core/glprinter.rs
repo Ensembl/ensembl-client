@@ -47,7 +47,6 @@ impl WebGLTrainPrinter {
 }
 
 pub struct GLPrinterBase {
-    sridx: usize,
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
     base_progs: GLProgs,
@@ -68,7 +67,6 @@ impl GLPrinterBase {
         let progs = GLProgs::new(&ctx_rc);
         let acm = AllCanvasAllocator::new(".bpane-container .managedcanvasholder");
         GLPrinterBase {
-            sridx: 0,
             canv_el: canv_el.clone(),
             acm, ctx: ctx_rc,
             base_progs: progs,
@@ -162,9 +160,7 @@ impl GLPrinterBase {
     }    
 
     fn make_driver_traveller(&mut self, pref: &GLPrinter, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
-        let idx = self.sridx;
-        self.sridx += 1;
-        let sr = GLTraveller::new(pref,idx,traveller_id);
+        let sr = GLTraveller::new(pref,traveller_id);
         if let Some(carriage) = self.carriages.get_mut(&traveller_id.get_carriage_id()) {
             carriage.new_sr(&sr);
         }
