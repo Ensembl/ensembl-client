@@ -184,14 +184,15 @@ impl GLPrinter {
 impl Printer for GLPrinter {
     fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
-        let prop = compo.get_prop_trans();
+        let prop_up = compo.get_prop_trans_up();
+        let prop_down = compo.get_prop_trans_down();
         compo.with_current_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),screen,train,1.-prop);
+            tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop_down);
         });
         compo.with_transition_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop);
+            tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop_up);
         });
         self.base.borrow_mut().prepare_all();
         compo.with_current_train(|train| {
