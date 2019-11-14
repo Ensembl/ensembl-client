@@ -73,6 +73,16 @@ fn zhoosh_min_speed() {
     assert_eq!(t1.0.lock().unwrap().len(),6);
 }
 
+#[test]
+fn zhoosh_limited_min_speed() {
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,2.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let mut seq = ZhooshSequence::new();
+    let (t1,_) = new_run(&mut seq,&z1,0.,10.,&[]);
+    run(seq,&now,0);
+    assert_eq!(t1.0.lock().unwrap().len(),11);
+}
+
 fn delay_start(prop: f64, delay1: f64, delay2: f64) -> i32 {
     let now = Arc::new(Mutex::new(0));
     let z1 = build_zhoosh(10.,0.,delay1,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);

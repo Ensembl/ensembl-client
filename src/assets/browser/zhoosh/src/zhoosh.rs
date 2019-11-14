@@ -25,7 +25,7 @@ impl<X,T> ZhooshImpl<X,T> {
     pub(super) fn prop_of(&self, prop: f64, distance: f64) -> f64 {
         if self.max_time == 0. { return 1.; }
         let speedup = if distance > 0. && self.min_speed > 0. {
-            self.min_speed / distance
+            (self.min_speed / distance).max(1.)
         } else {
             1.
         };
