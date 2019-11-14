@@ -71,7 +71,7 @@ impl GLCarriage {
         self.redraw_travellers(aca);
     }
 
-    pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32, screen: &Screen, pos: &Position) -> HashMap<String,UniformValue> {
+    pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32, screen: &Screen, pos: &Position) -> Vec<(&'static str,UniformValue)> {
         let bp_per_screen = pos.get_bumped_screen_in_bp();
         let bp_per_leaf = leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
@@ -79,15 +79,13 @@ impl GLCarriage {
         let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
         let current_leaf_left = leaf.get_index() as f64;
         let screen_px = screen.get_size();
-        hashmap_s! {
-            "uOpacity" => UniformValue::Float(opacity),
-            "uStageHpos" => UniformValue::Float((middle_leaf - current_leaf_left) as f32),
-            "uStageVpos" => UniformValue::Float(middle_bp.1 as f32),
-            "uStageZoom" => UniformValue::Float((2_f64/leaf_per_screen) as f32),
-            "uSize" => UniformValue::Vec2F(
-                screen_px.0 as f32/2.,
-                screen_px.1 as f32/2.)
-        }
+        vec![
+            ("uOpacity",UniformValue::Float(opacity)),
+            ("uStageHpos",UniformValue::Float((middle_leaf - current_leaf_left) as f32)),
+            ("uStageVpos",UniformValue::Float(middle_bp.1 as f32)),
+            ("uStageZoom",UniformValue::Float((2_f64/leaf_per_screen) as f32)),
+            ("uSize",UniformValue::Vec2F(screen_px.0 as f32/2.,screen_px.1 as f32/2.))
+        ]
     }
 
     pub fn set_context(&mut self, screen: &Screen, position: &Position, opacity: f32) {
