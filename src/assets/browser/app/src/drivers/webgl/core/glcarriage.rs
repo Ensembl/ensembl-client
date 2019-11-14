@@ -71,13 +71,13 @@ impl GLCarriage {
         self.redraw_travellers(aca);
     }
 
-    pub fn get_uniforms(&self, leaf: &Leaf, opacity: f32, screen: &Screen, pos: &Position) -> Vec<(&'static str,UniformValue)> {
+    pub fn get_uniforms(&self, opacity: f32, screen: &Screen, pos: &Position) -> Vec<(&'static str,UniformValue)> {
         let bp_per_screen = pos.get_bumped_screen_in_bp();
-        let bp_per_leaf = leaf.total_bp();
+        let bp_per_leaf = self.leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
         let middle_bp = pos.get_bumped_middle();
         let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
-        let current_leaf_left = leaf.get_index() as f64;
+        let current_leaf_left = self.leaf.get_index() as f64;
         let screen_px = screen.get_size();
         vec![
             ("uOpacity",UniformValue::Float(opacity)),
@@ -88,21 +88,14 @@ impl GLCarriage {
         ]
     }
 
-    pub fn set_context(&mut self, screen: &Screen, position: &Position, opacity: f32) {
-        let u = self.get_uniforms(&self.leaf, opacity, screen, position);
+    pub fn execute(&mut self, pt: &ProgramType, u: &Vec<(&'static str,UniformValue)>) {
         let progs = self.progs.as_mut().unwrap();
-        for k in &progs.order {
-            let prog = progs.map.get_mut(k).unwrap();
-            for (key, value) in &u {
-                if let Some(obj) = prog.get_object(key) {
-                    obj.set_uniform(None,*value);
-                }
+        let prog = progs.map.get_mut(pt).unwrap();
+        for (key, value) in u {
+            if let Some(obj) = prog.get_object(key) {
+                obj.set_uniform(None,*value);
             }
         }
-    }
-    
-    pub fn execute(&mut self, pt: &ProgramType) {
-        let prog = self.progs.as_mut().unwrap().map.get_mut(pt).unwrap();
         prog.execute(&self.ctx);
     }    
 }

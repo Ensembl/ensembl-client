@@ -6,10 +6,11 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
+use super::super::program::{ UniformValue };
 use model::driver::{ DriverTraveller, Printer };
 use model::stage::Screen;
 use composit::Compositor;
-use model::train::{ CarriageId, Train, TravellerId };
+use model::train::{ CarriageId, Carriage, Train, TravellerId };
 use super::super::drawing::{ AllCanvasAllocator };
 use dom::domutil;
 use types::{ Dot };
@@ -25,22 +26,20 @@ impl WebGLTrainPrinter {
     pub fn new() -> WebGLTrainPrinter {
         WebGLTrainPrinter {}
     }
-    
-    fn execute(&mut self, printer: &mut GLPrinterBase, carriage_ids: &Vec<CarriageId>) {
-        for pt in &printer.base_progs.order {
-            for carriage_id in carriage_ids.iter() {
-                if let Some(ref mut carriage) = printer.carriages.get_mut(carriage_id) {
-                    carriage.execute(&pt);
-                }
+        
+    fn execute(&mut self, printer: &mut GLPrinterBase, screen: &Screen,
+                     train: &mut Train, opacity: f32) {
+        let mut car_uni : Vec<(CarriageId,Vec<(&'static str,UniformValue)>)> = Vec::new();
+        for carriage_id in train.get_carriage_ids() {
+            if let Some(carriage) = printer.carriages.get_mut(carriage_id) {
+                let uniforms = carriage.get_uniforms(opacity, screen, train.get_position());
+                car_uni.push((carriage_id.clone(),uniforms));
             }
         }
-    }
-    
-    fn contextualize(&mut self, printer: &mut GLPrinterBase, screen: &Screen,
-                     train: &mut Train, opacity: f32) {
-        for carriage_id in train.get_carriage_ids() {
-            if let Some(ref mut carriage) = printer.carriages.get_mut(carriage_id) {
-                carriage.set_context(screen,train.get_position(),opacity);
+        for pt in &printer.base_progs.order {
+            for (carriage_id,uniforms) in &car_uni {
+                let carriage = unwrap!(printer.carriages.get_mut(carriage_id));
+                carriage.execute(&pt,&uniforms);
             }
         }
     }
@@ -184,23 +183,15 @@ impl GLPrinter {
 impl Printer for GLPrinter {
     fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
+        self.base.borrow_mut().prepare_all();
         let prop = compo.get_prop_trans();
         compo.with_current_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),screen,train,1.-prop);
+            tp.execute(&mut self.base.borrow_mut(),screen,train,1.-prop);
         });
         compo.with_transition_train(|train| {
             let mut tp = WebGLTrainPrinter::new();
-            tp.contextualize(&mut self.base.borrow_mut(),screen,train,prop);
-        });
-        self.base.borrow_mut().prepare_all();
-        compo.with_current_train(|train| {
-            let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),&train.get_carriage_ids().cloned().collect());
-        });
-        compo.with_transition_train(|train| {
-            let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),&train.get_carriage_ids().cloned().collect());
+            tp.execute(&mut self.base.borrow_mut(),screen,train,prop);
         });
     }
 
