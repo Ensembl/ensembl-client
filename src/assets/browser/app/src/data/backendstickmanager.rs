@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use composit::{ Stick, StickManager };
 use super::BackendConfig;

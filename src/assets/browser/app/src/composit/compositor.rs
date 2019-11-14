@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use hashbrown::HashSet;
 
 use composit::{ Stick, Scale, ComponentSet, StateManager };
 use model::driver::{ Printer };

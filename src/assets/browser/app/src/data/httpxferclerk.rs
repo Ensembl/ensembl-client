@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashSet;
+use hashbrown::HashSet;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 

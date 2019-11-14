@@ -1,5 +1,5 @@
 use std::cmp::{ min, Ordering };
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use dom::webgl::{
     WebGLRenderingContext as glctx,

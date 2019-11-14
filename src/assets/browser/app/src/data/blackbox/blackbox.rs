@@ -1,4 +1,4 @@
-use std::collections::{ HashMap, HashSet };
+use hashbrown::{ HashMap, HashSet };
 use std::sync::{ Arc, Mutex };
 
 use serde_json::Value as SerdeValue;

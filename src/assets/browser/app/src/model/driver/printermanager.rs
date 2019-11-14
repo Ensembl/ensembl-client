@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use hashbrown::HashMap;
 use std::rc::Rc;
 
 use composit::Compositor;

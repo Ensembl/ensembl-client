@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use super::super::program::{ ProgramAttribs, DataGroupIndex, ProgramType, PTSkin, CanvasWeave };
 use super::super::program::UniformValue;

@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 use std::cmp::{ Eq, PartialEq };
-use std::collections::HashMap;
+use hashbrown::HashMap;
 use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;

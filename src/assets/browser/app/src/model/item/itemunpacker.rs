@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 use controller::global::WindowState;
 use data::UnpackedProductConsumer;
 use super::{ DeliveredItem, UnpackedSubassembly, UnpackedSubassemblyConsumer, UnpackedProduct};

@@ -11,7 +11,7 @@
  * render.
  */
 
-use std::collections::HashSet;
+use hashbrown::HashSet;
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Stick, Scale, StateManager };

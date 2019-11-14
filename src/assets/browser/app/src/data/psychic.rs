@@ -1,4 +1,4 @@
-use std::collections::{ HashSet, HashMap };
+use hashbrown::{ HashSet, HashMap };
 
 use composit::{ Leaf, Scale, Stick };
 

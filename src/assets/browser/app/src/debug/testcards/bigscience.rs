@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use std::hash::Hasher;
-use std::collections::hash_map::DefaultHasher;
+use hashbrown::hash_map::DefaultHasher;
 use std::rc::Rc;
 
 use rand::distributions::Distribution;

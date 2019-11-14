@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use std::collections::{ HashMap, HashSet };
+use hashbrown::{ HashMap, HashSet };
 use composit::Leaf;
 use model::stage::{ Screen, Position };
 use types::Dot;

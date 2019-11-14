@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use hashbrown::HashMap;
 use std::rc::{ Rc, Weak };
 
 use stdweb::web::{ HtmlElement, window };

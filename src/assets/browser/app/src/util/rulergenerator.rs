@@ -1,5 +1,5 @@
 use std::cmp::max;
-use std::collections::HashSet;
+use hashbrown::HashSet;
 use std::iter::FromIterator;
 
 use composit::Leaf;

@@ -1,5 +1,5 @@
-use std::collections::HashMap;
-use std::collections::hash_map::Entry;
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
 
 use super::{ OneCanvasManager, FlatCanvas, AllCanvasAllocator };
 use super::super::program::{ CanvasCache, CanvasWeave };

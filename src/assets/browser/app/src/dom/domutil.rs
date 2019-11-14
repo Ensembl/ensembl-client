@@ -1,7 +1,7 @@
 // We keep these separate from the other utils partly because these imports
 // are very hairy.
 
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use itertools::Itertools;
 use serde_json::Value as JSONValue;

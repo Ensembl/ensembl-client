@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use stdweb::web::{ Element, INode, document };
 use stdweb::web::html_element::CanvasElement;

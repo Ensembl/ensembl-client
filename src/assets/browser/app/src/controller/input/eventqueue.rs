@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use std::collections::{ HashMap, HashSet };
+use hashbrown::{ HashMap, HashSet };
 use stdweb::web::{HtmlElement, IElement };
 use controller::input::Action;
 use controller::global::{ AppRunner, App };

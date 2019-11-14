@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use serde_json::Value as SerdeValue;
 use serde_json::Map as SerdeMap;

@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use std::collections::HashMap;
+use hashbrown::HashMap;
 
 use types::{ CPixel, RPixel, area_size, cpixel };
 use super::alloc::{ Ticket, Allocator };

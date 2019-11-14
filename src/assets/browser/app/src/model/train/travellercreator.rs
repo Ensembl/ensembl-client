@@ -1,6 +1,6 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
-use std::collections::hash_map::Entry;
+use hashbrown::HashMap;
+use hashbrown::hash_map::Entry;
 use std::rc::Rc;
 
 use model::driver::PrinterManager;

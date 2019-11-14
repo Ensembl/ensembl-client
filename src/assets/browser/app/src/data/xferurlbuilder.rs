@@ -1,4 +1,4 @@
-use std::collections::{ HashMap, HashSet };
+use hashbrown::{ HashMap, HashSet };
 use itertools::Itertools;
 
 use controller::global::WindowState;
