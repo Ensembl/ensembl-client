@@ -17,7 +17,7 @@ use model::train::TrainManager;
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 use zhoosh::{ Zhoosh, ZhooshSequenceControl, ZhooshStep };
 
-const ZHOOSH_TIME : f64 = 500.; /* ms */
+const ZHOOSH_TIME : f64 = 1000.; /* ms */
 const ZHOOSH_PAUSE : f64 = 200.; /* ms */
 
 struct Jumper {
@@ -37,7 +37,7 @@ impl Jumper {
         let location_zhoosh = action_zhoosh_pos(ZHOOSH_TIME,0.,ZHOOSH_PAUSE,|act,pos| {
             act.add(Action::PosAnim(pos,None));
         });
-        let zoom_zhoosh = action_zhoosh_zoom(ZHOOSH_TIME,0.,ZHOOSH_PAUSE,|act,pos| {
+        let zoom_zhoosh = action_zhoosh_zoom(ZHOOSH_TIME,3.,ZHOOSH_PAUSE,|act,pos| {
             act.add(Action::ZoomToAnim(pos));
         });
         let bang_zhoosh = action_zhoosh_bang(0.,|act,value| {
