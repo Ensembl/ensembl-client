@@ -15,9 +15,9 @@ use drivers::webgl::GLProgData;
 
 pub struct ProgramAttribs {
     pt: ProgramType,
-    pub bman: BatchManager,
+    bman: BatchManager,
     default_group: DataGroupIndex,
-    pub objects: Vec<Box<dyn Object>>,
+    objects: Vec<Box<dyn Object>>,
     main_idx: Option<usize>,
     object_names: HashMap<String,usize>,
     source: Vec<Rc<dyn Source>>,
@@ -118,6 +118,10 @@ impl Program {
             data: ProgramAttribs::new(pt,&src.uniforms,&prog),
             prog,
         }
+    }
+
+    pub fn get_type(&self) -> ProgramType {
+        self.data.pt
     }
 
     pub fn clean_instance(&self) -> Program {

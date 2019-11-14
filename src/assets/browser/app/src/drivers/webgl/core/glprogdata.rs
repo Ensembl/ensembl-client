@@ -22,7 +22,7 @@ impl GLProgData {
     pub fn canvas(&mut self) -> &mut CanvasIdx { &mut self.canvas }
         
     pub fn go(&mut self, progs: &mut GLProgs) {
-        for (_,ref mut prog) in progs.map.iter_mut() {
+        for prog in progs.each() {
             self.spot.into_objects(&mut prog.data);
             self.canvas.into_objects(&mut prog.data);
         }

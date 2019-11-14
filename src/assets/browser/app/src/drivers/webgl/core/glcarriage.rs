@@ -2,7 +2,7 @@ use hashbrown::{ HashMap, HashSet };
 use std::rc::Rc;
 
 use super::{ GLTraveller, GLProgs, GLProgInstances };
-use super::super::program::{ ProgramType, UniformValue };
+use super::super::program::{ Program, UniformValue };
 use model::stage::{ Position, Screen };
 use composit::Leaf;
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
@@ -88,9 +88,8 @@ impl GLCarriage {
         ]
     }
 
-    pub fn execute(&mut self, pt: &ProgramType, u: &Vec<(&'static str,UniformValue)>) {
-        let progs = self.progs.as_mut().unwrap();
-        let prog = progs.map.get_mut(pt).unwrap();
+    pub fn execute(&mut self, prog_idx: usize, u: &Vec<(&'static str,UniformValue)>) {
+        let prog = self.progs.as_mut().unwrap().each().get_mut(prog_idx).unwrap();
         for (key, value) in u {
             if let Some(obj) = prog.get_object(key) {
                 obj.set_uniform(None,*value);

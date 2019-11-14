@@ -6,7 +6,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
-use super::super::program::{ UniformValue };
+use super::super::program::{ UniformValue, ProgramType };
 use model::driver::{ DriverTraveller, Printer };
 use model::stage::Screen;
 use composit::Compositor;
@@ -36,10 +36,11 @@ impl WebGLTrainPrinter {
                 car_uni.push((carriage_id.clone(),uniforms));
             }
         }
-        for pt in &printer.base_progs.order {
+        let types = printer.base_progs.each();
+        for prog_idx in 0..types.len() {
             for (carriage_id,uniforms) in &car_uni {
                 let carriage = unwrap!(printer.carriages.get_mut(carriage_id));
-                carriage.execute(&pt,&uniforms);
+                carriage.execute(prog_idx,&uniforms);
             }
         }
     }
