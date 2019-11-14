@@ -9,13 +9,17 @@ pub trait ZhooshOps<T> {
 pub struct ZhooshLinearStdOps<T,U>(PhantomData<T>,PhantomData<U>);
 
 impl<T,U> ZhooshOps<T> for ZhooshLinearStdOps<T,U>
-            where T: Add<Output=T>, U: From<f64> + Into<f64>, for<'a> &'a T: Sized + Sub<Output=U> + Mul<U,Output=T> {
+            where T: Add<Output=T> + PartialOrd<T>, U: From<f64> + Into<f64>, for<'a> &'a T: Sized + Sub<Output=U> + Mul<U,Output=T> {
     fn interpolate(&self, prop: f64, from: &T, to: &T) -> T {
         from * (1.-prop).into() + to * prop.into()
     }
 
     fn distance(&self, from: &T, to: &T) -> f64 {
-        (to - from).into()
+        if to > from {
+            (to - from).into()
+        } else {
+            (from - to).into()
+        }
     }
 }
 
@@ -30,13 +34,17 @@ impl ZhooshPowf<f64> for f64 {
 pub struct ZhooshPropStdOps<T,U>(PhantomData<T>,PhantomData<U>);
 
 impl<T,U> ZhooshOps<T> for ZhooshPropStdOps<T,U> 
-    where T: Add<Output=T> + Mul<T,Output=T> + ZhooshPowf<T>, U: From<f64> + Into<f64>, for<'a> &'a T: Sized + Div<&'a T,Output=U> {
+    where T: Add<Output=T> + Mul<T,Output=T> + ZhooshPowf<T> + PartialOrd<T>, U: From<f64> + Into<f64>, for<'a> &'a T: Sized + Div<&'a T,Output=U> {
     fn interpolate(&self, prop: f64, from: &T, to: &T) -> T {
         from.zhoosh_powf(prop.into()) * to.zhoosh_powf((1.-prop).into())
     }
 
     fn distance(&self, from: &T, to: &T) -> f64 {
-        (to/from).into()
+        if to > from {
+            (to/from).into()
+        } else {
+            (from/to).into()
+        }
     }
 }
 

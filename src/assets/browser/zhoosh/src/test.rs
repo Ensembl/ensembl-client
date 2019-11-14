@@ -54,6 +54,26 @@ fn zhoosh_smoke() {
 }
 
 #[test]
+fn zhoosh_positive_distances_linear() {
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,20.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let mut seq = ZhooshSequence::new();
+    let (t1,_) = new_run(&mut seq,&z1,10.,0.,&[]);
+    run(seq,&now,0);
+    assert_eq!(t1.0.lock().unwrap().len(),6);
+}
+
+#[test]
+fn zhoosh_positive_distances_prop() {
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,20.,1.,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
+    let mut seq = ZhooshSequence::new();
+    let (t1,_) = new_run(&mut seq,&z1,1.,10.,&[]);
+    run(seq,&now,0);
+    assert_eq!(t1.0.lock().unwrap().len(),6);
+}
+
+#[test]
 fn zhoosh_abandon() {
     let now = Arc::new(Mutex::new(0));
     let z1 = build_zhoosh(10.,0.,1.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
