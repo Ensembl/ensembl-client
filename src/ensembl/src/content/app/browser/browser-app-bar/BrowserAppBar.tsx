@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
@@ -24,15 +25,20 @@ type BrowserAppBarProps = {
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
-  const speciesTabs = props.species.map((species, index) => (
-    <FocusableSelectedSpecies
-      key={index}
-      species={species}
-      isActive={species.genome_id === props.activeGenomeId}
-      onClick={() => props.onSpeciesSelect(species.genome_id)}
-    />
-  ));
-  const speciesSelectorLink = <Link to={urlFor.speciesSelector()}>Change</Link>;
+  const speciesTabs = useMemo(() => {
+    return props.species.map((species, index) => (
+      <FocusableSelectedSpecies
+        key={index}
+        species={species}
+        isActive={species.genome_id === props.activeGenomeId}
+        onClick={() => props.onSpeciesSelect(species.genome_id)}
+      />
+    ));
+  }, [props.species]);
+  const speciesSelectorLink = useMemo(() => {
+    return <Link to={urlFor.speciesSelector()}>Change</Link>;
+  }, []);
+
   const wrappedSpecies = (
     <SpeciesTabsWrapper
       isWrappable={false}
@@ -55,4 +61,4 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getBrowserActiveGenomeId(state)
 });
 
-export default connect(mapStateToProps)(BrowserAppBar);
+export default connect(mapStateToProps)(memo(BrowserAppBar, isEqual));

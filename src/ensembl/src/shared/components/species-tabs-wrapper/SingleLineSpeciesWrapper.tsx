@@ -1,4 +1,5 @@
-import React, { ReactElement, useState, useEffect, useRef } from 'react';
+import React, { ReactElement, useState, useEffect, useRef, memo } from 'react';
+import isEqual from 'lodash/isEqual';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 import { getSpeciesItemWidths } from './speciesTabsWrapperHelpers';
@@ -143,4 +144,4 @@ const SingleLineWrapper = (props: Props) => {
   );
 };
 
-export default SingleLineWrapper;
+export default memo(SingleLineWrapper, isEqual);

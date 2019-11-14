@@ -1,4 +1,4 @@
-import React, { memo, FunctionComponent } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import config from 'config';
@@ -35,7 +35,7 @@ export const Copyright = () => (
   </div>
 );
 
-export const Header: FunctionComponent<HeaderProps> = () => (
+export const Header = () => (
   <header>
     <div className={styles.topBar}>
       <div>
@@ -50,4 +50,4 @@ export const Header: FunctionComponent<HeaderProps> = () => (
   </header>
 );
 
-export default memo(Header);
+export default Header;

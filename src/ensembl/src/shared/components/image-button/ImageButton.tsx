@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { memo } from 'react';
+import isEqual from 'lodash/isEqual';
 
 import useHover from 'src/shared/hooks/useHover';
 
@@ -63,4 +64,4 @@ ImageButton.defaultProps = {
   image: ''
 };
 
-export default ImageButton;
+export default memo(ImageButton, isEqual);
