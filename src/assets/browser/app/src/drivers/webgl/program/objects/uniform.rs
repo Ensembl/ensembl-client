@@ -36,7 +36,7 @@ impl ObjectUniform {
     }
     
     fn calc_buffer(&mut self, ctx: &glctx)  {
-        if let None = self.buffer {
+        if self.buffer.is_none() {
             self.buffer = Some(ctx.get_uniform_location(&self.prog,&self.name));
         }
     }

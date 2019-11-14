@@ -33,6 +33,7 @@ impl GLDrawing {
 
     pub fn into_objects(&mut self, e: &mut GLProgInstances) {
         let mut di = self.drawings.iter();
+        if self.sr.get_shapes().len() == 0 { return; }
         for s in self.sr.get_shapes().iter() {
             let d = di.next();
             if let Some(geom_name) = s.get_geometry() {

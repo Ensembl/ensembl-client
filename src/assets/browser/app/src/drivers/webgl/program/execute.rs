@@ -146,6 +146,7 @@ impl Program {
     }
   
     pub fn execute(&mut self, ctx: &glctx) {
+        if self.size() == 0 { return; }
         self.use_program(ctx);
         for b in self.data.bman.batches() {
             let mut main = None;
