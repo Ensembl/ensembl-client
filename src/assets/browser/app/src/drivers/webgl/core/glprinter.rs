@@ -20,32 +20,6 @@ use stdweb::web::html_element::{
     CanvasElement
 };
 
-pub struct WebGLTrainPrinter{}
-
-impl WebGLTrainPrinter {
-    pub fn new() -> WebGLTrainPrinter {
-        WebGLTrainPrinter {}
-    }
-        
-    fn execute(&mut self, printer: &mut GLPrinterBase, screen: &Screen,
-                     train: &mut Train, opacity: f32) {
-        let mut car_uni : Vec<(CarriageId,Vec<(&'static str,UniformValue)>)> = Vec::new();
-        for carriage_id in train.get_carriage_ids() {
-            if let Some(carriage) = printer.carriages.get_mut(carriage_id) {
-                let uniforms = carriage.get_uniforms(opacity, screen, train.get_position());
-                car_uni.push((carriage_id.clone(),uniforms));
-            }
-        }
-        let types = printer.base_progs.each();
-        for prog_idx in 0..types.len() {
-            for (carriage_id,uniforms) in &car_uni {
-                let carriage = unwrap!(printer.carriages.get_mut(carriage_id));
-                carriage.execute(prog_idx,&uniforms);
-            }
-        }
-    }
-}
-
 pub struct GLPrinterBase {
     canv_el: HtmlElement,
     ctx: Rc<glctx>,
@@ -165,6 +139,23 @@ impl GLPrinterBase {
             carriage.new_sr(&sr);
         }
         Box::new(sr)
+    }
+
+    fn print_train(&mut self, screen: &Screen, train: &mut Train, opacity: f32) {
+        let mut car_uni : Vec<(CarriageId,Vec<(&'static str,UniformValue)>)> = Vec::new();
+        for carriage_id in train.get_carriage_ids() {
+            if let Some(carriage) = self.carriages.get_mut(carriage_id) {
+                let uniforms = carriage.get_uniforms(opacity, screen, train.get_position());
+                car_uni.push((carriage_id.clone(),uniforms));
+            }
+        }
+        let types = self.base_progs.each();
+        for prog_idx in 0..types.len() {
+            for (carriage_id,uniforms) in &car_uni {
+                let carriage = unwrap!(self.carriages.get_mut(carriage_id));
+                carriage.execute(prog_idx,&uniforms);
+            }
+        }
     }    
 }
 
@@ -178,21 +169,19 @@ impl GLPrinter {
         GLPrinter {
             base: Rc::new(RefCell::new(GLPrinterBase::new(canv_el)))
         }
-    }    
+    }
 }
 
-impl Printer for GLPrinter {
+impl Printer for GLPrinter {    
     fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
         self.base.borrow_mut().prepare_all();
         let prop = compo.get_prop_trans();
         compo.with_current_train(|train| {
-            let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),screen,train,1.-prop);
+            self.base.borrow_mut().print_train(screen,train,1.-prop);
         });
         compo.with_transition_train(|train| {
-            let mut tp = WebGLTrainPrinter::new();
-            tp.execute(&mut self.base.borrow_mut(),screen,train,prop);
+            self.base.borrow_mut().print_train(screen,train,prop);
         });
     }
 
