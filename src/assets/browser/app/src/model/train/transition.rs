@@ -3,7 +3,8 @@ use std::sync::{ Arc, Mutex };
 use zhoosh::{ Zhoosh, ZhooshOps, ZhooshRunner, ZhooshSequence, ZhooshSequenceControl, ZhooshShape, ZhooshStep, ZHOOSH_LINEAR_F64_OPS };
 
 const MS_FADE_FAST : f64 = 250.;
-const MS_FADE_SLOW : f64 = 2500.;
+const MS_FADE_SLOW : f64 = 2000.;
+const CROSSFADE_WHITENESS : f64 = 0.6; /* [0,1]. lower value => more dip to white */
 
 pub struct TrainManagerTransitionImpl {
     transition_prop: f64,
@@ -72,7 +73,7 @@ impl TrainManagerTransition {
             zhoosh_fast: Zhoosh::new(MS_FADE_FAST,0.,0.,ZhooshShape::Linear,CrossFader(1.0,0.0),|imp: &mut Arc<Mutex<CrossFade>>,val| {
                 *imp.lock().unwrap() = val;
             }),
-            zhoosh_slow: Zhoosh::new(MS_FADE_SLOW,0.,0.,ZhooshShape::Linear,CrossFader(0.6,1.0),|imp: &mut Arc<Mutex<CrossFade>>,val| {
+            zhoosh_slow: Zhoosh::new(MS_FADE_SLOW,0.,0.,ZhooshShape::Linear,CrossFader(CROSSFADE_WHITENESS,1.0),|imp: &mut Arc<Mutex<CrossFade>>,val| {
                 *imp.lock().unwrap() = val;
             }),
         }
@@ -102,3 +103,4 @@ impl TrainManagerTransition {
         self.runner.step(t);
     }
 }
+ 

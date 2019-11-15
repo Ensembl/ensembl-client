@@ -29,13 +29,17 @@ use types::{ Dot, DOWN, AsyncValue, Awaiting };
 const AT_POSITION_NEAR_ENOUGH : f64 = 1.;
 const AT_ZOOM_NEAR_ENOUGH : f64 = 2.;
 
+pub struct TrainSet {
+    current_train: Option<Train>,
+    future_train: Option<Train>,
+    transition_train: Option<Train>
+}
+
 pub struct TrainManagerImpl {
     printer: PrinterManager,
     traveller_creator: TravellerCreator,
     /* the trains themselves */
-    current_train: Option<Train>,
-    future_train: Option<Train>,
-    transition_train: Option<Train>,
+    trainset: TrainSet,
     /* progress of transition */
     transition: TrainManagerTransition,
     /* zmenus */
@@ -53,9 +57,11 @@ impl TrainManagerImpl {
         TrainManagerImpl {
             printer: printer.clone(),
             traveller_creator: traveller_creator.clone(),
-            current_train: None,
-            future_train: None,
-            transition_train: None,
+            trainset: TrainSet {
+                current_train: None,
+                future_train: None,
+                transition_train: None
+            },
             transition: TrainManagerTransition::new(),
             desired: Desired::new(),
             desired_context: TrainContext::new(&None),
@@ -133,8 +139,8 @@ impl TrainManagerImpl {
         self.transition.update(t);
         if self.transition.get_prop().get_prop_up() >= 1. {
             console!("transition done");
-            bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
-            self.current_train = self.transition_train.take();
+            bb_log!("trainmanager","transition done {:?}",self.trainset.transition_train.as_ref().map(|x| x.get_train_id().clone()));
+            self.trainset.current_train = self.trainset.transition_train.take();
             self.transition.reset();
         }
     }
@@ -144,18 +150,18 @@ impl TrainManagerImpl {
         if !self.desired.is_ready() { return; }
         /* is it ready? */
         let mut ready = false;
-        if let Some(ref mut future_train) = self.future_train {
+        if let Some(ref mut future_train) = self.trainset.future_train {
             if future_train.check_done() {
                 future_train.set_needs_refresh();
                 ready = true;
             }
         }
         /* if future ready, transition empty, start one */
-        if ready && self.transition_train.is_none() {
-            bb_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
-            self.transition_train = self.future_train.take();
+        if ready && self.trainset.transition_train.is_none() {
+            bb_log!("trainmanager","future train is transitioning {:?}",self.trainset.future_train.as_ref().map(|x| x.get_train_id().clone()));
+            self.trainset.transition_train = self.trainset.future_train.take();
             let mut slow = false;
-            if let (Some(transition_train),Some(current_train)) = (self.transition_train.as_ref(),self.current_train.as_ref()) {
+            if let (Some(transition_train),Some(current_train)) = (self.trainset.transition_train.as_ref(),self.trainset.current_train.as_ref()) {
                 if transition_train.get_train_id().get_stick() != current_train.get_train_id().get_stick() {
                     slow = true;
                 }
@@ -174,13 +180,13 @@ impl TrainManagerImpl {
 
     fn each_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
-        if let Some(ref mut current_train) = self.current_train {
+        if let Some(ref mut current_train) = self.trainset.current_train {
             cb(current_train);
         }
-        if let Some(ref mut transition_train) = self.transition_train {
+        if let Some(ref mut transition_train) = self.trainset.transition_train {
             cb(transition_train);
         }
-        if let Some(ref mut future_train) = self.future_train {
+        if let Some(ref mut future_train) = self.trainset.future_train {
             cb(future_train);
         }
     }
@@ -189,17 +195,17 @@ impl TrainManagerImpl {
                                   where F: FnMut(&mut Train) {
         if !self.desired.is_ready() { return; }
         let desired_stick = self.desired.get_stick();
-        if let Some(ref mut current_train) = self.current_train {
+        if let Some(ref mut current_train) = self.trainset.current_train {
             if desired_stick == current_train.get_train_id().get_stick() {
                 cb(current_train);
             }
         }
-        if let Some(ref mut transition_train) = self.transition_train {
+        if let Some(ref mut transition_train) = self.trainset.transition_train {
             if desired_stick == transition_train.get_train_id().get_stick() {
                 cb(transition_train);
             }
         }
-        if let Some(ref mut future_train) = self.future_train {
+        if let Some(ref mut future_train) = self.trainset.future_train {
             if desired_stick == future_train.get_train_id().get_stick() {
                 cb(future_train);
             }
@@ -208,11 +214,11 @@ impl TrainManagerImpl {
 
     fn best_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
-        if let Some(ref mut future_train) = self.future_train {
+        if let Some(ref mut future_train) = self.trainset.future_train {
             cb(future_train);
-        } else if let Some(ref mut transition_train) = self.transition_train {
+        } else if let Some(ref mut transition_train) = self.trainset.transition_train {
             cb(transition_train);
-        } else if let Some(ref mut current_train) = self.current_train {
+        } else if let Some(ref mut current_train) = self.trainset.current_train {
             cb(current_train);
         }
     }
@@ -235,9 +241,9 @@ impl TrainManagerImpl {
     
     /* current (or soon and inevitable) printing train. */
     fn printing_train(&self) -> Option<&Train> {
-        if let Some(ref transition_train) = self.transition_train {
+        if let Some(ref transition_train) = self.trainset.transition_train {
             Some(transition_train)
-        } else if let Some(ref current_train) = self.current_train {
+        } else if let Some(ref current_train) = self.trainset.current_train {
             Some(current_train)
         } else {
             None
@@ -246,9 +252,9 @@ impl TrainManagerImpl {
 
     /* current (or soon and inevitable) focus object */
     fn printing_context(&self) -> &TrainContext {
-        if let Some(ref transition_train) = self.transition_train {
+        if let Some(ref transition_train) = self.trainset.transition_train {
             transition_train.get_train_id().get_context()
-        } else if let Some(ref current_train) = self.current_train {
+        } else if let Some(ref current_train) = self.trainset.current_train {
             current_train.get_train_id().get_context()
         } else {
             &self.desired_context
@@ -257,26 +263,26 @@ impl TrainManagerImpl {
 
     /* Create future train */
     fn new_future(&mut self, scale: &Scale) {
-        if let Some(ref mut t) = self.future_train {
+        if let Some(ref mut t) = self.trainset.future_train {
             t.set_active(false);
         }
-        self.future_train = self.make_train(scale);
-        bb_log!("trainmanager","Creating future train {:?}",self.future_train.as_ref().map(|x| x.get_train_id()));
-        self.future_train.as_mut().unwrap().set_active(true);
+        self.trainset.future_train = self.make_train(scale);
+        bb_log!("trainmanager","Creating future train {:?}",self.trainset.future_train.as_ref().map(|x| x.get_train_id()));
+        self.trainset.future_train.as_mut().unwrap().set_active(true);
     }
     
     /* Abandon future train */
     fn end_future(&mut self) {
-        if let Some(ref mut t) = self.future_train {
+        if let Some(ref mut t) = self.trainset.future_train {
             bb_log!("trainmanager","Abandoning future train {:?}",t.get_train_id());
             t.set_active(false);
         }
-        self.future_train = None;
+        self.trainset.future_train = None;
     }
 
     fn future_matches_desired(&self) -> bool {
         let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
-        if let Some(future_train_id) = self.future_train.as_ref().map(|x| x.get_train_id().clone()) {
+        if let Some(future_train_id) = self.trainset.future_train.as_ref().map(|x| x.get_train_id().clone()) {
             return best_scale == *future_train_id.get_scale() &&
                 self.desired_context == *future_train_id.get_context() &&
                 self.desired.get_stick() == future_train_id.get_stick()
@@ -296,7 +302,7 @@ impl TrainManagerImpl {
                self.desired.get_stick() != printing_train.get_stick() ||
                self.printing_context() != &self.desired_context {
                 /* we're not currently showing the optimal scale */
-                if self.future_train.is_some() {
+                if self.trainset.future_train.is_some() {
                     /* there's a future train ... */
                     if !self.future_matches_desired() {
                         /* ... and that's not optimal either */
@@ -307,7 +313,7 @@ impl TrainManagerImpl {
                     /* there's no future, we need one */
                     new_future = true;
                 }
-            } else if self.future_train.is_some() {
+            } else if self.trainset.future_train.is_some() {
                 /* Future exists, but current is fine. Abandon future */
                 end_future = true;
             }
@@ -403,11 +409,11 @@ impl TrainManagerImpl {
     }
 
     pub fn get_current_train(&mut self) -> &mut Option<Train> {
-        &mut self.current_train
+        &mut self.trainset.current_train
     }
 
     pub fn get_transition_train(&mut self) -> &mut Option<Train> {
-        &mut self.transition_train
+        &mut self.trainset.transition_train
     }
 
     pub fn settle(&mut self) {
