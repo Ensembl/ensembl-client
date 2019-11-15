@@ -2,9 +2,11 @@ extern crate owning_ref;
 
 mod ops;
 mod runner;
+mod sequence;
 mod shapes;
 mod state;
 mod step;
+mod trigger;
 mod zhoosh;
 
 #[cfg(test)]
@@ -16,7 +18,8 @@ pub use self::ops::{
     ZHOOSH_PROP_F64_OPS, ZHOOSH_PROP_F32_OPS, ZHOOSH_PROP_I64_OPS, ZHOOSH_PROP_I32_OPS, ZHOOSH_PROP_U64_OPS, ZHOOSH_PROP_U32_OPS,
     ZHOOSH_EMPTY_OPS
 };
-pub use self::runner::{ ZhooshStepHandle, ZhooshSequence, ZhooshSequenceControl, ZhooshRunner };
+pub use self::runner::ZhooshRunner;
+pub use self::sequence::{ ZhooshStepHandle, ZhooshSequence, ZhooshSequenceControl };
 pub use self::shapes::ZhooshShape;
 pub use self::step::{ ZhooshStep, zhoosh_empty_step };
 pub use self::zhoosh::Zhoosh;

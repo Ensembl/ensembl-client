@@ -1,12 +1,8 @@
 use super::ops::ZHOOSH_EMPTY_OPS;
 use super::shapes::ZhooshShape;
-use super::runner::ZhooshStepHandle;
+use super::sequence::ZhooshStepHandle;
+use super::trigger::ZhooshTrigger;
 use super::zhoosh::Zhoosh;
-
-pub(super) struct ZhooshTrigger {
-    pub(super) prop: f64,
-    pub(super) handle: ZhooshStepHandle
-}
 
 struct ZhooshStepImpl<X,T> {
     zhoosh: Zhoosh<X,T>,
@@ -38,7 +34,7 @@ trait ZhooshStepTrait {
 
 impl<X,T> ZhooshStepTrait for ZhooshStepImpl<X,T> {
     fn add_trigger(&mut self, handle: &ZhooshStepHandle, prop: f64) {
-        self.after.push(ZhooshTrigger { handle: *handle, prop });
+        self.after.push(ZhooshTrigger::new(prop,*handle));
     }
 
     fn set(&mut self, prop: f64) {
