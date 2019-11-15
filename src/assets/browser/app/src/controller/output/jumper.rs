@@ -11,7 +11,7 @@ use controller::global::App;
 use controller::input::Action;
 use dom::domutil::browser_time;
 use types::{ Dot,LEFT, RIGHT };
-use model::stage::{ Position, bp_to_zoomfactor };
+use model::stage::{ Position, bp_to_zoomfactor, zoomfactor_to_bp };
 use model::train::TrainManager;
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
@@ -19,10 +19,11 @@ use zhoosh::{ Zhoosh, ZhooshSequenceControl, ZhooshStep };
 
 const ZHOOSH_TIME : f64 = 1000.; /* ms */
 const ZHOOSH_PAUSE : f64 = 100.; /* ms */
+const ZHOOSH_MIN_ZOOM : f64 = 3.; /* minimum zoom which should require full ZHOOSH_TIME */
+const ZHOOSH_MIN_MOVE : f64 = 0.25; /* minimum screenfulls which should require full ZHOOSH_TIME */
 
 struct Jumper {
     control: Option<ZhooshSequenceControl>,
-    location_zhoosh: Zhoosh<PendingActions,Dot<f64,f64>>,
     zoom_zhoosh: Zhoosh<PendingActions,f64>,
     bang_zhoosh: Zhoosh<PendingActions,Option<(String,Dot<f64,f64>,f64)>>,
     settled_zhoosh: Zhoosh<PendingActions,bool>
@@ -34,10 +35,7 @@ lazy_static! {
 
 impl Jumper {
     fn new() -> Jumper {
-        let location_zhoosh = action_zhoosh_pos(ZHOOSH_TIME,0.,0.,|act,pos| {
-            act.add(Action::PosAnim(pos,None));
-        });
-        let zoom_zhoosh = action_zhoosh_zoom(ZHOOSH_TIME,3.,0.,|act,pos| {
+        let zoom_zhoosh = action_zhoosh_zoom(ZHOOSH_TIME,ZHOOSH_MIN_ZOOM,0.,|act,pos| {
             act.add(Action::ZoomToAnim(pos));
         });
         let bang_zhoosh = action_zhoosh_bang(0.,|act,value| {
@@ -53,9 +51,19 @@ impl Jumper {
             }
         });
         Jumper {
-            location_zhoosh, zoom_zhoosh, bang_zhoosh, settled_zhoosh,
+            zoom_zhoosh, bang_zhoosh, settled_zhoosh,
             control: None
         }
+    }
+
+    fn new_location_zhoosh_for_scale(&self, current_zoomfactor: f64, dest_zoomfactor: f64) -> Zhoosh<PendingActions,Dot<f64,f64>> {
+        let current_bp = zoomfactor_to_bp(current_zoomfactor);
+        let dest_bp = zoomfactor_to_bp(dest_zoomfactor);
+        let bp_per_screen = current_bp.max(dest_bp);
+        let bp_min_speed = bp_per_screen * ZHOOSH_MIN_MOVE;
+        action_zhoosh_pos(ZHOOSH_TIME,bp_min_speed,0.,|act,pos| {
+            act.add(Action::PosAnim(pos,None));
+        })
     }
 
     fn is_offscreen_jump(&self, current_stick: &Stick, current_position: &Position, stick: &str, dest_pos: f64, dest_size: f64) -> bool {
@@ -85,7 +93,8 @@ impl Jumper {
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         let mut seq = animator.new_sequence();
-        let pos_z = animator.new_step(&mut seq,&self.location_zhoosh,current_middle,dest_pos);
+        let location_zhoosh = self.new_location_zhoosh_for_scale(current_zoom,dest_zoom);
+        let pos_z = animator.new_step(&mut seq,&location_zhoosh,current_middle,dest_pos);
         let mut zoom_z = animator.new_step(&mut seq,&self.zoom_zhoosh,current_zoom,dest_zoom);
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
         if dest_zoom < current_zoom {
