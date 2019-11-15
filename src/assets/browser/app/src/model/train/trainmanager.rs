@@ -12,6 +12,7 @@
  */
 
 use hashbrown::HashSet;
+use owning_ref::MutexGuardRefMut;
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Stick, Scale, StateManager };
@@ -393,18 +394,12 @@ impl TrainManagerImpl {
         self.transition.get_prop().get_prop_down() as f32
     }
 
-    /* used by printer for actual printing */
-    pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
-        if let Some(ref mut train) = self.current_train {
-            cb(train)
-        }
+    pub fn get_current_train(&mut self) -> &mut Option<Train> {
+        &mut self.current_train
     }
 
-    /* used by printer for actual printing */
-    pub fn with_transition_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
-        if let Some(ref mut train) = self.transition_train {
-            cb(train)
-        }
+    pub fn get_transition_train(&mut self) -> &mut Option<Train> {
+        &mut self.transition_train
     }
 
     pub fn settle(&mut self) {
@@ -538,12 +533,16 @@ impl TrainManager {
         self.0.lock().unwrap().get_prop_trans_down()
     }
 
-    pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
-        self.0.lock().unwrap().with_current_train(cb)
+    fn get_impl<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl> {
+        MutexGuardRefMut::new(self.0.lock().unwrap())
     }
 
-    pub fn with_transition_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
-        self.0.lock().unwrap().with_transition_train(cb)
+    pub fn get_current_train<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl,Option<Train>> {
+        self.get_impl().map_mut(|imp| imp.get_current_train())
+    }
+
+    pub fn get_transition_train<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl,Option<Train>> {
+        self.get_impl().map_mut(|imp| imp.get_transition_train())
     }
 
     pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {

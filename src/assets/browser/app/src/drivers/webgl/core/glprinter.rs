@@ -6,6 +6,7 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
+use super::glcamera::GLCamera;
 use super::super::program::{ UniformValue, ProgramType };
 use model::driver::{ DriverTraveller, Printer };
 use model::stage::Screen;
@@ -141,11 +142,11 @@ impl GLPrinterBase {
         Box::new(sr)
     }
 
-    fn print_train(&mut self, screen: &Screen, train: &mut Train, opacity: f32) {
+    fn print_train(&mut self, train: &mut Train, camera: &GLCamera) {
         let mut car_uni : Vec<(CarriageId,Vec<(&'static str,UniformValue)>)> = Vec::new();
         for carriage_id in train.get_carriage_ids() {
             if let Some(carriage) = self.carriages.get_mut(carriage_id) {
-                let uniforms = carriage.get_uniforms(opacity, screen, train.get_position());
+                let uniforms = carriage.get_uniforms(camera);
                 car_uni.push((carriage_id.clone(),uniforms));
             }
         }
@@ -175,14 +176,25 @@ impl GLPrinter {
 impl Printer for GLPrinter {    
     fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
-        let prop_up = compo.get_prop_trans_up();
-        let prop_down = compo.get_prop_trans_down();
-        compo.with_current_train(|train| {
-            self.base.borrow_mut().print_train(screen,train,prop_down);
-        });
-        compo.with_transition_train(|train| {
-            self.base.borrow_mut().print_train(screen,train,prop_up);
-        });
+        let mut window = compo.get_window();
+        let train_manager = window.get_train_manager();
+        /* get camera states */
+        let prop_down = train_manager.get_prop_trans_down();
+        let current_camera = train_manager.get_current_train().as_mut().as_mut().map(|train|
+            GLCamera::new(prop_down,screen,train.get_position())
+        );
+        let prop_up = train_manager.get_prop_trans_up();
+        let transition_camera = train_manager.get_transition_train().as_mut().as_mut().map(|train|
+            GLCamera::new(prop_up,screen,train.get_position())
+        );
+        /* draw them */
+        if let Some(train) = train_manager.get_current_train().as_mut() {
+            self.base.borrow_mut().print_train(train,&current_camera.unwrap());
+        }
+        if let Some(train) = train_manager.get_transition_train().as_mut() {
+            self.base.borrow_mut().print_train(train,&transition_camera.unwrap());
+        }
+        ; /* needed for borrow checker to be happy with window, oddly */
     }
 
     fn destroy(&mut self) {

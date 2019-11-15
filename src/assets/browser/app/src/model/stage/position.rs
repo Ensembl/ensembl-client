@@ -119,7 +119,6 @@ impl Position {
     }
 
     pub fn get_middle(&self) -> Dot<f64,f64> {
-        bb_log!("resize","get_middle={:?}",self.pos);
         Dot(self.pos.0,self.pos.1)
     }
 

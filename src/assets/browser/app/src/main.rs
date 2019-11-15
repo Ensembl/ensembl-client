@@ -18,6 +18,7 @@ extern crate hsl;
 extern crate url;
 extern crate base64;
 extern crate hashbrown;
+extern crate owning_ref;
 
 extern crate tánaiste;
 extern crate misc_algorithms;

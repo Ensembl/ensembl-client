@@ -3,6 +3,7 @@ mod glproginstances;
 mod glprogs;
 mod glprinter;
 mod glprogdata;
+mod glcamera;
 mod glcarriage;
 mod gltraveller;
 

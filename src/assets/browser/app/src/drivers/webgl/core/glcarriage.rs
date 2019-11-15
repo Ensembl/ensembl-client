@@ -2,6 +2,7 @@ use hashbrown::{ HashMap, HashSet };
 use std::rc::Rc;
 
 use super::{ GLTraveller, GLProgs, GLProgInstances };
+use super::glcamera::GLCamera;
 use super::super::program::{ Program, UniformValue };
 use model::stage::{ Position, Screen };
 use composit::Leaf;
@@ -71,16 +72,16 @@ impl GLCarriage {
         self.redraw_travellers(aca);
     }
 
-    pub fn get_uniforms(&self, opacity: f32, screen: &Screen, pos: &Position) -> Vec<(&'static str,UniformValue)> {
-        let bp_per_screen = pos.get_bumped_screen_in_bp();
+    pub(super) fn get_uniforms(&self, camera: &GLCamera) -> Vec<(&'static str,UniformValue)> {
+        let bp_per_screen = camera.get_position().get_bumped_screen_in_bp();
         let bp_per_leaf = self.leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
-        let middle_bp = pos.get_bumped_middle();
+        let middle_bp = camera.get_position().get_bumped_middle();
         let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
         let current_leaf_left = self.leaf.get_index() as f64;
-        let screen_px = screen.get_size();
+        let screen_px = camera.get_screen().get_size();
         vec![
-            ("uOpacity",UniformValue::Float(opacity)),
+            ("uOpacity",UniformValue::Float(camera.get_opacity())),
             ("uStageHpos",UniformValue::Float((middle_leaf - current_leaf_left) as f32)),
             ("uStageVpos",UniformValue::Float(middle_bp.1 as f32)),
             ("uStageZoom",UniformValue::Float((2_f64/leaf_per_screen) as f32)),

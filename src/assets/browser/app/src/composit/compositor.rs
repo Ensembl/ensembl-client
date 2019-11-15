@@ -48,10 +48,9 @@ impl Compositor {
         }
     }
 
-    pub fn get_zmr(&self) -> &ZMenuRegistry { &self.zmr }
+    pub fn get_window(&self) -> WindowState { self.window.clone() }
 
-    pub fn get_prop_trans_up(&mut self) -> f32 { self.window.get_train_manager().get_prop_trans_up() }
-    pub fn get_prop_trans_down(&mut self) -> f32 { self.window.get_train_manager().get_prop_trans_down() }
+    pub fn get_zmr(&self) -> &ZMenuRegistry { &self.zmr }
 
     fn prime_cache(&mut self, t: f64) {
         if self.prime_delay.is_none() {
@@ -121,14 +120,6 @@ impl Compositor {
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
     }
-
-    pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
-        self.window.get_train_manager().with_current_train(cb)
-    }
-
-    pub fn with_transition_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
-        self.window.get_train_manager().with_transition_train(cb)
-    }
     
     pub fn get_component_set(&mut self) -> &mut ComponentSet {
         &mut self.wanted_componentset
@@ -136,8 +127,9 @@ impl Compositor {
     
     pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer) {
         let mut zmls = ZMenuLeafSet::new();
-        self.with_current_train(|train| train.redraw_where_needed(printer,&mut zmls));
-        self.with_transition_train(|train| train.redraw_where_needed(printer,&mut zmls));
+        let tm = self.window.get_train_manager();
+        tm.get_current_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(printer,&mut zmls));
+        tm.get_transition_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(printer,&mut zmls));
         self.zmr.add_leafset(zmls);
     }
 

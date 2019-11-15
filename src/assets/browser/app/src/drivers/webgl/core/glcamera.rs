@@ -1,0 +1,29 @@
+use model::stage::{ Position, Screen };
+
+pub(super) struct GLCamera {
+    opacity: f32,
+    screen: Screen,
+    pos: Position
+}
+
+impl GLCamera {
+    pub(super) fn new(opacity: f32, screen: &Screen, pos: &Position) -> GLCamera {
+        GLCamera {
+            opacity,
+            screen: screen.clone(),
+            pos: pos.clone()
+        }
+    }
+
+    pub(super) fn get_opacity(&self) -> f32 { self.opacity }
+    pub(super) fn get_position(&self) -> &Position { &self.pos }
+    pub(super) fn get_screen(&self) -> &Screen { &self.screen }
+}
+
+impl PartialEq for GLCamera {
+    fn eq(&self, other: &Self) -> bool {
+        self.opacity == other.opacity && self.pos.get_middle() == other.pos.get_middle() && 
+        self.pos.get_screen_in_bp() == other.pos.get_screen_in_bp() &&
+        self.screen.get_size() == other.screen.get_size()
+    }
+}
