@@ -8,11 +8,13 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 use super::{ GLProgs, GLCarriage, GLTraveller };
 use super::glcamera::GLCamera;
 use super::super::program::{ UniformValue, ProgramType };
+use controller::global::WindowState;
 use model::driver::{ DriverTraveller, Printer };
 use model::stage::Screen;
 use composit::Compositor;
-use model::train::{ CarriageId, Carriage, Train, TravellerId };
+use model::train::{ CarriageId, Carriage, Train, TravellerId, TrainManager };
 use super::super::drawing::{ AllCanvasAllocator };
+use model::zmenu::{ ZMenuLeafSet };
 use dom::domutil;
 use types::{ Dot };
 
@@ -171,13 +173,20 @@ impl GLPrinter {
             base: Rc::new(RefCell::new(GLPrinterBase::new(canv_el)))
         }
     }
+
+    pub fn redraw_where_needed(&mut self, tm: &mut TrainManager) {
+        let mut zmls = ZMenuLeafSet::new();
+        tm.get_current_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(self,&mut zmls));
+        tm.get_transition_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(self,&mut zmls));
+        tm.add_zmenus(zmls);
+    }
 }
 
 impl Printer for GLPrinter {    
-    fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
-        compo.redraw_where_needed(self);
-        let mut window = compo.get_window();
-        let train_manager = window.get_train_manager();
+    fn print(&mut self, screen: &Screen, window: &mut WindowState) {
+        self.base.borrow_mut().prepare_all();
+        let mut train_manager = window.get_train_manager();
+        self.redraw_where_needed(&mut train_manager);
         /* get camera states */
         let prop_down = train_manager.get_prop_trans_down();
         let current_camera = train_manager.get_current_train().as_mut().as_mut().map(|train|

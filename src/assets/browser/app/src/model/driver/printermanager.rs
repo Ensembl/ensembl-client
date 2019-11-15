@@ -3,6 +3,7 @@ use hashbrown::HashMap;
 use std::rc::Rc;
 
 use composit::Compositor;
+use controller::global::WindowState;
 use model::stage::Screen;
 use model::train::{ CarriageId, TravellerId };
 use types::Dot;
@@ -35,8 +36,8 @@ impl Printer for PrinterManager {
     /* Print one run of objects from compositor with given stage and
      * state.
      */
-    fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
-        self.0.borrow_mut().printer.print(screen,compo);
+    fn print(&mut self, screen: &Screen, window: &mut WindowState) {
+        self.0.borrow_mut().printer.print(screen,window);
     }
     
     /* Finished with printer */

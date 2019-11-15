@@ -168,9 +168,8 @@ fn exe_set_state(a: &mut App, name: &str, on: bool) {
 
 fn exe_zmenu_click_check(app: &mut App, pos: &CPixel, currency: Option<f64>) {
     let screen = app.get_screen().clone();
-    let acts = app.with_compo(|co|
-            co.intersects(&screen,*pos)
-    ).iter().map(|isect| isect.display_action(pos)).collect();
+    let tm = app.get_window().get_train_manager();
+    let acts = tm.intersects(&screen,*pos).iter().map(|isect| isect.display_action(pos)).collect();
     app.run_actions(&acts,currency);
 }
 

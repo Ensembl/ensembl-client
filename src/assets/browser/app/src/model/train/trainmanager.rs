@@ -22,7 +22,7 @@ use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::{ Desired, Position, Screen };
 use model::supply::Product;
-use model::zmenu::{ ZMenuIntersection, ZMenuRegistry };
+use model::zmenu::{ ZMenuIntersection, ZMenuRegistry, ZMenuLeafSet };
 use super::{ Train, TrainId, TrainContext, TrainManagerTransition, TravellerCreator };
 use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
@@ -38,6 +38,8 @@ pub struct TrainManagerImpl {
     transition_train: Option<Train>,
     /* progress of transition */
     transition: TrainManagerTransition,
+    /* zmenus */
+    zmr: ZMenuRegistry,
     /* current position/scale */
     desired: Desired,
     desired_context: TrainContext,
@@ -59,7 +61,8 @@ impl TrainManagerImpl {
             desired_context: TrainContext::new(&None),
             focus_stick: AsyncValue::new(Some(None)),
             focus_location: AsyncValue::new(Some(None)),
-            pending_focus_jump: Awaiting::new()
+            pending_focus_jump: Awaiting::new(),
+            zmr: ZMenuRegistry::new()
         }
     }
     
@@ -373,13 +376,18 @@ impl TrainManagerImpl {
         }
     }
 
-    pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>, zmr: &ZMenuRegistry) -> HashSet<ZMenuIntersection> {
+    pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         if let Some(train) = self.printing_train() {
-            zmr.intersects(screen,train.get_position(),pos)
+            self.zmr.intersects(screen,train.get_position(),pos)
         } else {
             HashSet::new()
         }
     }
+
+    pub fn add_zmenus(&mut self, zmls: ZMenuLeafSet) {
+        self.zmr.add_leafset(zmls);
+    }
+
 
     /* ***************************************************************
      * Methods used by PRINTER to actually retrieve data for printing.
@@ -561,8 +569,12 @@ impl TrainManager {
         ok!(self.0.lock()).get_desired_position()
     }
 
-    pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>, zmr: &ZMenuRegistry) -> HashSet<ZMenuIntersection> {
-        ok!(self.0.lock()).intersects(screen,pos,zmr)
+    pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
+        ok!(self.0.lock()).intersects(screen,pos)
+    }
+
+    pub fn add_zmenus(&mut self, zms: ZMenuLeafSet) {
+        self.get_impl().add_zmenus(zms);
     }
 
     pub fn update_reports(&self, report: &Report) {

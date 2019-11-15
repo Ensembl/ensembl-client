@@ -18,7 +18,6 @@ const MS_PRIME_DELAY: f64 = 2000.;
 pub struct Compositor {
     window: WindowState,
     traveller_creator: TravellerCreator,
-    zmr: ZMenuRegistry,
     bp_per_screen: f64,
     updated: bool,
     prime_delay: Option<f64>,
@@ -35,7 +34,6 @@ impl Compositor {
         Compositor {
             traveller_creator: traveller_creator.clone(),
             window: window.clone(),
-            zmr: ZMenuRegistry::new(),
             bp_per_screen: 1.,
             updated: true,
             last_updated: None,
@@ -49,8 +47,6 @@ impl Compositor {
     }
 
     pub fn get_window(&self) -> WindowState { self.window.clone() }
-
-    pub fn get_zmr(&self) -> &ZMenuRegistry { &self.zmr }
 
     fn prime_cache(&mut self, t: f64) {
         if self.prime_delay.is_none() {
@@ -125,14 +121,6 @@ impl Compositor {
         &mut self.wanted_componentset
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer) {
-        let mut zmls = ZMenuLeafSet::new();
-        let tm = self.window.get_train_manager();
-        tm.get_current_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(printer,&mut zmls));
-        tm.get_transition_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(printer,&mut zmls));
-        self.zmr.add_leafset(zmls);
-    }
-
     fn add_product(&mut self, mut c: Product) {
         self.window.get_train_manager().add_component(&mut c);
         self.traveller_creator.add_source(c);
@@ -140,12 +128,7 @@ impl Compositor {
     
     pub fn update_state(&mut self, oom: &StateManager) {
         self.window.get_train_manager().update_state(oom);
-    }
-    
-    pub fn intersects(&mut self, screen: &Screen, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
-        let mut zmr = self.zmr.clone();
-        self.window.get_train_manager().intersects(screen,pos,&mut zmr)
-    }
+    }    
 }
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {

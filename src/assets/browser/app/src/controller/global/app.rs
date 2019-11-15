@@ -133,7 +133,7 @@ impl App {
         let oom = ok!(self.state.lock());
         let mut compo = ok!(self.compo.lock());
         compo.update_state(&oom);
-        ok!(self.printer.lock()).print(&self.screen,&mut compo);
+        ok!(self.printer.lock()).print(&self.screen,&mut self.window);
     }
     
     pub fn update_position(&mut self) {

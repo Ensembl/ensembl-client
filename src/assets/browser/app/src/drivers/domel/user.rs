@@ -59,9 +59,8 @@ impl UserEventListener {
     fn check_cursor(&mut self, pos: &CPixel) {
         let app = &mut self.app.lock().unwrap();
         let screen = app.get_screen().clone();
-        let zmenus = app.with_compo(|co|
-            co.intersects(&screen,*pos)
-        );
+        let tm = app.get_window().get_train_manager();
+        let zmenus = tm.intersects(&screen,*pos);
         let pointer = zmenus.len() > 0;
         if pointer != self.showing_pointer {
             let style = match pointer {
