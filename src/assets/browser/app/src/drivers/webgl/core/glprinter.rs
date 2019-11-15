@@ -175,13 +175,13 @@ impl GLPrinter {
 impl Printer for GLPrinter {    
     fn print(&mut self, screen: &Screen, compo: &mut Compositor) {
         compo.redraw_where_needed(self);
-        self.base.borrow_mut().prepare_all();
-        let prop = compo.get_prop_trans();
+        let prop_up = compo.get_prop_trans_up();
+        let prop_down = compo.get_prop_trans_down();
         compo.with_current_train(|train| {
-            self.base.borrow_mut().print_train(screen,train,1.-prop);
+            self.base.borrow_mut().print_train(screen,train,prop_down);
         });
         compo.with_transition_train(|train| {
-            self.base.borrow_mut().print_train(screen,train,prop);
+            self.base.borrow_mut().print_train(screen,train,prop_up);
         });
     }
 
