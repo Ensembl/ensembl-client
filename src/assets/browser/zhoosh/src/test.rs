@@ -13,12 +13,12 @@ fn build_zhoosh<U>(max_time: f64, min_speed: f64, delay: f64, shape: ZhooshShape
     Zhoosh::new(max_time,min_speed,delay,shape,ops,cb)
 }
 
-fn new_run(seq: &mut ZhooshSequence, z: &Zhoosh<TestProp,f64>, from: f64, to: f64, reqs: &[(ZhooshStepHandle,f64)]) -> (TestProp,ZhooshStepHandle) {
+fn new_run(seq: &mut ZhooshSequence, z: &Zhoosh<TestProp,f64>, from: f64, to: f64, reqs: &[(ZhooshStepHandle,f64,f64)]) -> (TestProp,ZhooshStepHandle) {
     let t = TestProp(Arc::new(Mutex::new(vec![])));
     let spec = ZhooshStep::new(z,t.clone(),from,to);
     let run = seq.add(spec);
-    for (after,after_prop) in reqs {
-        seq.add_trigger(&run,&after,*after_prop);
+    for (after,after_prop,delay) in reqs {
+        seq.add_trigger(&run,&after,*after_prop,*delay);
     }
     (t,run)
 }
@@ -47,7 +47,7 @@ fn zhoosh_smoke() {
     let z2 = build_zhoosh(10.,0.,1.,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
     let mut seq = ZhooshSequence::new();
     let (t1,step1) = new_run(&mut seq,&z1,0.,10.,&[]);
-    let (t2,_) = new_run(&mut seq,&z2,1.,10.,&[(step1,0.5)]);
+    let (t2,_) = new_run(&mut seq,&z2,1.,10.,&[(step1,0.5,0.)]);
     run(seq,&now,0);
     assert_eq!(vec![(1, 0.),(2,1.),(3,2.),( 4,3.),( 5,4.),( 6,5.),( 7,6.),( 8,7.),( 9,8.),(10,9.),(11,10.)],t1.0.lock().unwrap().clone());
     assert_eq!(vec![(7,10.),(8,8.),(9,6.),(10,5.),(11,4.),(12,3.),(13,3.),(14,2.),(15,2.),(16,1.),(17,1. )],t2.0.lock().unwrap().clone());
@@ -93,6 +93,27 @@ fn zhoosh_min_speed() {
     assert_eq!(t1.0.lock().unwrap().len(),6);
 }
 
+fn sequence_delay_case(step_delay: f64, first_delay: f64, second_delay: f64) -> i32 {
+    let now = Arc::new(Mutex::new(0));
+    let z1 = build_zhoosh(10.,0.,0.,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
+    let z2 = build_zhoosh(10.,0.,0.,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
+    let z3 = build_zhoosh(10.,0.,step_delay,ZhooshShape::Linear,ZHOOSH_PROP_F64_OPS,&now);
+    let mut seq = ZhooshSequence::new();
+    let (_,step1) = new_run(&mut seq,&z1,0.,10.,&[]);
+    let (_,step2) = new_run(&mut seq,&z2,0.,10.,&[]);
+    let (t3,_) = new_run(&mut seq,&z3,0.,10.,&[(step1,1.,first_delay),(step2,1.,second_delay)]);
+    run(seq,&now,0);
+    let out = t3.0.lock().unwrap();
+    out[0].0-10
+}
+
+#[test]
+fn zhoosh_sequence_delay() {
+    assert_eq!(3,sequence_delay_case(0.,1.,3.));
+    assert_eq!(4,sequence_delay_case(4.,1.,3.));
+    assert_eq!(0,sequence_delay_case(0.,0.,0.));
+}
+
 #[test]
 fn zhoosh_limited_min_speed() {
     let now = Arc::new(Mutex::new(0));
@@ -109,7 +130,7 @@ fn delay_start(prop: f64, delay1: f64, delay2: f64) -> i32 {
     let z2 = build_zhoosh(10.,0.,delay2,ZhooshShape::Linear,ZHOOSH_LINEAR_F64_OPS,&now);
     let mut seq = ZhooshSequence::new();
     let (_,step1) = new_run(&mut seq,&z1,0.,10.,&[]);
-    let (t2,_) = new_run(&mut seq,&z2,1.,10.,&[(step1,prop)]);
+    let (t2,_) = new_run(&mut seq,&z2,1.,10.,&[(step1,prop,0.)]);
     run(seq,&now,0);
     let v = t2.0.lock().unwrap()[0].0;
     v
@@ -141,9 +162,9 @@ fn zhoosh_multi_start() {
     let (_,step2) = new_run(&mut seq,&z2,1.,10.,&[]);
     let step3 = zhoosh_empty_step();
     let run3 = seq.add(step3);
-    seq.add_trigger(&run3,&step1,1.);
-    seq.add_trigger(&run3,&step2,0.5);
-    let (t4,_) = new_run(&mut seq,&z1,0.,10.,&[(run3,1.)]);
+    seq.add_trigger(&run3,&step1,1.,0.);
+    seq.add_trigger(&run3,&step2,0.5,0.);
+    let (t4,_) = new_run(&mut seq,&z1,0.,10.,&[(run3,1.,0.)]);
     run(seq,&now,0);
     print!("{:?}\n",t4.0.lock().unwrap());
     assert_eq!(t4.0.lock().unwrap().len(),11);

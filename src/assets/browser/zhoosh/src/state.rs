@@ -22,19 +22,23 @@ impl ZhooshStepState {
     pub(super) fn get_prop(&self) -> Option<f64> { self.prop }
 
     fn startable(&mut self, now: f64, handler: &ZhooshSequence) -> bool {
-        if let Some(delay_start) = self.delay {
+        if let Some(delay_end) = self.delay {
             /* dependency already triggered. awaiting a delay timeout? */
-            return now-delay_start >= self.spec.get_delay();
+            return now >= delay_end
         } else {
+            let mut delay = self.spec.get_delay();
             /* check dependencies */
             for trigger in self.spec.dependencies() {
                 if !trigger.ready(handler) {
                     return false;
                 }
+                if trigger.get_delay() > delay {
+                    delay = trigger.get_delay();
+                }
             }
-            if self.spec.get_delay() > 0. {
+            if delay > 0. {
                 /* start delay timer */
-                self.delay = Some(now);
+                self.delay = Some(now+delay);
                 return false;
             } else {
                 /* go immediate */

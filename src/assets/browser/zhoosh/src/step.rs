@@ -25,7 +25,7 @@ impl<X,T> ZhooshStepImpl<X,T> {
 }
 
 trait ZhooshStepTrait {
-    fn add_trigger(&mut self, after: &ZhooshStepHandle, after_prop: f64);
+    fn add_trigger(&mut self, after: &ZhooshStepHandle, after_prop: f64, delay: f64);
     fn set(&mut self, prop: f64);
     fn get_delay(&mut self) -> f64;
     fn calc_prop(&self,t : f64) -> f64;
@@ -33,8 +33,8 @@ trait ZhooshStepTrait {
 }
 
 impl<X,T> ZhooshStepTrait for ZhooshStepImpl<X,T> {
-    fn add_trigger(&mut self, handle: &ZhooshStepHandle, prop: f64) {
-        self.after.push(ZhooshTrigger::new(prop,*handle));
+    fn add_trigger(&mut self, handle: &ZhooshStepHandle, prop: f64, delay: f64) {
+        self.after.push(ZhooshTrigger::new(prop,delay,*handle));
     }
 
     fn set(&mut self, prop: f64) {
@@ -65,8 +65,8 @@ impl ZhooshStep {
         self.0.set(prop);
     }
 
-    pub(super) fn add_trigger(&mut self, after: &ZhooshStepHandle, after_prop: f64) {
-        self.0.add_trigger(after,after_prop);
+    pub(super) fn add_trigger(&mut self, after: &ZhooshStepHandle, after_prop: f64, delay: f64) {
+        self.0.add_trigger(after,after_prop,delay);
     }
 
     pub(super) fn get_delay(&mut self) -> f64 {

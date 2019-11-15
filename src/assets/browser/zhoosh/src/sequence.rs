@@ -68,9 +68,9 @@ impl ZhooshSequence {
         ZhooshStepHandle(self.runs.len()-1)
     }
 
-    pub fn add_trigger(&mut self, subject: &ZhooshStepHandle, after: &ZhooshStepHandle, after_prop: f64) {
+    pub fn add_trigger(&mut self, subject: &ZhooshStepHandle, after: &ZhooshStepHandle, after_prop: f64, delay: f64) {
         let mut subject = self.resolve_handle(&subject);
-        subject.get_spec().add_trigger(after,after_prop);
+        subject.get_spec().add_trigger(after,after_prop,delay);
     }
 
     pub fn run(self, runner: &mut ZhooshRunner) -> ZhooshSequenceControl {

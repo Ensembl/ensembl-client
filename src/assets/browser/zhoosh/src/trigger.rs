@@ -1,14 +1,17 @@
 use super::sequence::{ ZhooshSequence, ZhooshStepHandle };
 
 pub(super) struct ZhooshTrigger {
+    delay: f64,
     prop: f64,
     handle: ZhooshStepHandle
 }
 
 impl ZhooshTrigger {
-    pub(super) fn new(prop: f64, handle: ZhooshStepHandle) -> ZhooshTrigger {
-        ZhooshTrigger { prop, handle }
+    pub(super) fn new(prop: f64, delay: f64, handle: ZhooshStepHandle) -> ZhooshTrigger {
+        ZhooshTrigger { prop, handle, delay }
     }
+
+    pub(super) fn get_delay(&self) -> f64 { self.delay }
 
     pub(super) fn ready(&self, handler: &ZhooshSequence) -> bool {
         /* how far through is this dependency? */

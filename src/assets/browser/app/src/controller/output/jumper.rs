@@ -75,7 +75,7 @@ impl Jumper {
         let mut seq = animator.new_sequence();
         let bang_z = animator.new_step(&mut seq,&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
-        seq.add_trigger(&all_z,&bang_z,1.);
+        seq.add_trigger(&all_z,&bang_z,1.,0.);
         animator.run(seq);
     }
 
@@ -89,11 +89,11 @@ impl Jumper {
         let mut zoom_z = animator.new_step(&mut seq,&self.zoom_zhoosh,current_zoom,dest_zoom);
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
         if dest_zoom < current_zoom {
-            seq.add_trigger(&pos_z,&zoom_z,1.);
-            seq.add_trigger(&all_z,&pos_z,1.);
+            seq.add_trigger(&pos_z,&zoom_z,1.,0.);
+            seq.add_trigger(&all_z,&pos_z,1.,0.);
         } else {
-            seq.add_trigger(&zoom_z,&pos_z,1.);
-            seq.add_trigger(&all_z,&zoom_z,1.);
+            seq.add_trigger(&zoom_z,&pos_z,1.,0.);
+            seq.add_trigger(&all_z,&zoom_z,1.,0.);
         }
         self.control = Some(animator.run(seq));
     }
