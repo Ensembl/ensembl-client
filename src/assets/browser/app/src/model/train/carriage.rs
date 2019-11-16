@@ -1,3 +1,4 @@
+use std::sync::Mutex;
 use composit::{ Leaf, StateManager };
 use data::XferConsumer;
 use model::driver::Printer;
@@ -8,7 +9,7 @@ use super::{ CarriageId, TrainId, Traveller };
 pub struct Carriage {
     travellers: Vec<Traveller>,
     known_done: bool,
-    needs_rebuild: bool,
+    needs_rebuild: Mutex<bool>,
     id: CarriageId
 }
 
@@ -17,7 +18,7 @@ impl Carriage {
         Carriage {
             travellers: Vec::<Traveller>::new(),
             known_done: false,
-            needs_rebuild: false,
+            needs_rebuild: Mutex::new(false),
             id: CarriageId::new(leaf,train_id)
         }
     }
@@ -25,7 +26,7 @@ impl Carriage {
     pub fn get_id(&self) -> &CarriageId { &self.id }
 
     pub(in super) fn set_needs_refresh(&mut self) {
-        self.needs_rebuild = true;
+        *self.needs_rebuild.lock().unwrap() = true;
     }
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
@@ -44,7 +45,7 @@ impl Carriage {
             if !c.is_done() { return false; }
         }
         self.known_done = true;
-        self.needs_rebuild = true;
+        *self.needs_rebuild.lock().unwrap() = true;
         return true;
     }
     
@@ -56,7 +57,7 @@ impl Carriage {
             }
         }
         if redo {
-            self.needs_rebuild = true;
+            *self.needs_rebuild.lock().unwrap() = true;
         }
     }
     
@@ -67,10 +68,11 @@ impl Carriage {
         zml.redrawn();
     }
     
-    pub fn redraw_where_needed(&mut self, printer: &mut dyn Printer, zmls: &mut ZMenuLeafSet) {
+    pub fn redraw_where_needed(&self, printer: &mut dyn Printer, zmls: &mut ZMenuLeafSet) {
         let mut zml = ZMenuLeaf::new(&self.id.get_leaf());
-        if self.needs_rebuild {
-            self.needs_rebuild = false;
+        let mut needs_rebuild = self.needs_rebuild.lock().unwrap();
+        if *needs_rebuild {
+            *needs_rebuild = false;
             printer.redraw_carriage(&self.id);
             self.build_zmenu(&mut zml);
         }

@@ -12,7 +12,7 @@
  */
 
 use hashbrown::HashSet;
-use owning_ref::MutexGuardRefMut;
+use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Stick, Scale, StateManager };
@@ -33,6 +33,38 @@ pub struct TrainSet {
     current_train: Option<Train>,
     future_train: Option<Train>,
     transition_train: Option<Train>
+}
+
+impl TrainSet {
+    pub fn current(&self) -> &Option<Train> { &self.current_train }
+    pub fn transition(&self) -> &Option<Train> { &self.transition_train }
+
+    fn make_transition_current(&mut self) {
+        bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
+        self.current_train = self.transition_train.take();
+    }
+
+    fn make_future_transition(&mut self) {
+        self.transition_train = self.future_train.take();
+    }
+
+    fn end_future(&mut self) {
+        if let Some(ref mut t) = self.future_train {
+            bb_log!("trainmanager","Abandoning future train {:?}",t.get_train_id());
+            t.set_active(false);
+        }
+        self.future_train = None;
+    }
+
+    fn new_future(&mut self, train: Train) {
+        if let Some(ref mut t) = self.future_train {
+            t.set_active(false);
+        }
+        self.future_train = Some(train);
+        bb_log!("trainmanager","Creating future train {:?}",self.future_train.as_ref().map(|x| x.get_train_id()));
+        self.future_train.as_mut().unwrap().set_active(true);
+    }
+
 }
 
 pub struct TrainManagerImpl {
@@ -138,9 +170,7 @@ impl TrainManagerImpl {
     fn transition_maybe_done(&mut self, t: f64) {
         self.transition.update(t);
         if self.transition.get_prop().get_prop_up() >= 1. {
-            console!("transition done");
-            bb_log!("trainmanager","transition done {:?}",self.trainset.transition_train.as_ref().map(|x| x.get_train_id().clone()));
-            self.trainset.current_train = self.trainset.transition_train.take();
+            self.trainset.make_transition_current();
             self.transition.reset();
         }
     }
@@ -159,7 +189,7 @@ impl TrainManagerImpl {
         /* if future ready, transition empty, start one */
         if ready && self.trainset.transition_train.is_none() {
             bb_log!("trainmanager","future train is transitioning {:?}",self.trainset.future_train.as_ref().map(|x| x.get_train_id().clone()));
-            self.trainset.transition_train = self.trainset.future_train.take();
+            self.trainset.make_future_transition();
             let mut slow = false;
             if let (Some(transition_train),Some(current_train)) = (self.trainset.transition_train.as_ref(),self.trainset.current_train.as_ref()) {
                 if transition_train.get_train_id().get_stick() != current_train.get_train_id().get_stick() {
@@ -211,17 +241,6 @@ impl TrainManagerImpl {
             }
         }
     }
-
-    fn best_train<F>(&mut self, mut cb: F)
-                                  where F: FnMut(&mut Train) {
-        if let Some(ref mut future_train) = self.trainset.future_train {
-            cb(future_train);
-        } else if let Some(ref mut transition_train) = self.trainset.transition_train {
-            cb(transition_train);
-        } else if let Some(ref mut current_train) = self.trainset.current_train {
-            cb(current_train);
-        }
-    }
     
     pub fn manage_carriages(&mut self) {
         let mut tc = self.traveller_creator.clone();
@@ -260,26 +279,7 @@ impl TrainManagerImpl {
             &self.desired_context
         }
     }
-
-    /* Create future train */
-    fn new_future(&mut self, scale: &Scale) {
-        if let Some(ref mut t) = self.trainset.future_train {
-            t.set_active(false);
-        }
-        self.trainset.future_train = self.make_train(scale);
-        bb_log!("trainmanager","Creating future train {:?}",self.trainset.future_train.as_ref().map(|x| x.get_train_id()));
-        self.trainset.future_train.as_mut().unwrap().set_active(true);
-    }
     
-    /* Abandon future train */
-    fn end_future(&mut self) {
-        if let Some(ref mut t) = self.trainset.future_train {
-            bb_log!("trainmanager","Abandoning future train {:?}",t.get_train_id());
-            t.set_active(false);
-        }
-        self.trainset.future_train = None;
-    }
-
     fn future_matches_desired(&self) -> bool {
         let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
         if let Some(future_train_id) = self.trainset.future_train.as_ref().map(|x| x.get_train_id().clone()) {
@@ -325,8 +325,12 @@ impl TrainManagerImpl {
                 new_future = true;
             }
         }
-        if end_future { self.end_future(); }
-        if new_future { self.new_future(&best_scale); }
+        if end_future { self.trainset.end_future(); }
+        if new_future { 
+            if let Some(train) = self.make_train(&best_scale) {
+                self.trainset.new_future(train);
+            }
+        }
     }
 
     /* compositor notifies of bp/screen update (change trains?) */
@@ -408,12 +412,8 @@ impl TrainManagerImpl {
         self.transition.get_prop().get_prop_down() as f32
     }
 
-    pub fn get_current_train(&mut self) -> &mut Option<Train> {
-        &mut self.trainset.current_train
-    }
-
-    pub fn get_transition_train(&mut self) -> &mut Option<Train> {
-        &mut self.trainset.transition_train
+    pub fn get_trainset(&self) -> &TrainSet {
+        &self.trainset
     }
 
     pub fn settle(&mut self) {
@@ -547,16 +547,16 @@ impl TrainManager {
         self.0.lock().unwrap().get_prop_trans_down()
     }
 
-    fn get_impl<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl> {
+    fn get_impl_ref<'ret>(&'ret self) -> MutexGuardRef<'ret,TrainManagerImpl> {
+        MutexGuardRef::new(self.0.lock().unwrap())
+    }
+
+    fn get_impl_mut<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl> {
         MutexGuardRefMut::new(self.0.lock().unwrap())
     }
 
-    pub fn get_current_train<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl,Option<Train>> {
-        self.get_impl().map_mut(|imp| imp.get_current_train())
-    }
-
-    pub fn get_transition_train<'ret>(&'ret mut self) -> MutexGuardRefMut<'ret,TrainManagerImpl,Option<Train>> {
-        self.get_impl().map_mut(|imp| imp.get_transition_train())
+    pub fn get_trainset<'ret>(&'ret self) -> MutexGuardRef<'ret,TrainManagerImpl,TrainSet> {
+        self.get_impl_ref().map(|imp| imp.get_trainset())
     }
 
     pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
@@ -580,7 +580,7 @@ impl TrainManager {
     }
 
     pub fn add_zmenus(&mut self, zms: ZMenuLeafSet) {
-        self.get_impl().add_zmenus(zms);
+        self.get_impl_mut().add_zmenus(zms);
     }
 
     pub fn update_reports(&self, report: &Report) {

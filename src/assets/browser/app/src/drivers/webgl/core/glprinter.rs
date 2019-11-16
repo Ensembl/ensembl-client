@@ -7,12 +7,13 @@ use stdweb::web::{ HtmlElement, Element, INode, IElement };
 
 use super::{ GLProgs, GLCarriage, GLTraveller };
 use super::glcamera::GLCamera;
+use super::gltrainprinter::GLTrainPrinter;
 use super::super::program::{ UniformValue, ProgramType };
 use controller::global::WindowState;
 use model::driver::{ DriverTraveller, Printer };
 use model::stage::Screen;
 use composit::Compositor;
-use model::train::{ CarriageId, Carriage, Train, TravellerId, TrainManager };
+use model::train::{ CarriageId, Carriage, Train, TrainSet, TravellerId, TrainManager };
 use super::super::drawing::{ AllCanvasAllocator };
 use model::zmenu::{ ZMenuLeafSet };
 use dom::domutil;
@@ -144,7 +145,7 @@ impl GLPrinterBase {
         Box::new(sr)
     }
 
-    fn print_train(&mut self, train: &mut Train, camera: &GLCamera) {
+    fn print_train(&mut self, train: &Train, camera: &GLCamera) {
         let mut car_uni : Vec<(CarriageId,Vec<(&'static str,UniformValue)>)> = Vec::new();
         for carriage_id in train.get_carriage_ids() {
             if let Some(carriage) = self.carriages.get_mut(carriage_id) {
@@ -174,36 +175,31 @@ impl GLPrinter {
         }
     }
 
-    pub fn redraw_where_needed(&mut self, tm: &mut TrainManager) {
-        let mut zmls = ZMenuLeafSet::new();
-        tm.get_current_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(self,&mut zmls));
-        tm.get_transition_train().as_mut().as_mut().map(|mut t| t.redraw_where_needed(self,&mut zmls));
-        tm.add_zmenus(zmls);
+    pub(super) fn print_train(&mut self, train: &Train, camera: &GLCamera) {
+        self.base.borrow_mut().print_train(train,camera);
     }
 }
 
-impl Printer for GLPrinter {    
+impl Printer for GLPrinter {
     fn print(&mut self, screen: &Screen, window: &mut WindowState) {
         self.base.borrow_mut().prepare_all();
         let mut train_manager = window.get_train_manager();
-        self.redraw_where_needed(&mut train_manager);
-        /* get camera states */
-        let prop_down = train_manager.get_prop_trans_down();
-        let current_camera = train_manager.get_current_train().as_mut().as_mut().map(|train|
-            GLCamera::new(prop_down,screen,train.get_position())
-        );
-        let prop_up = train_manager.get_prop_trans_up();
-        let transition_camera = train_manager.get_transition_train().as_mut().as_mut().map(|train|
-            GLCamera::new(prop_up,screen,train.get_position())
-        );
-        /* draw them */
-        if let Some(train) = train_manager.get_current_train().as_mut() {
-            self.base.borrow_mut().print_train(train,&current_camera.unwrap());
-        }
-        if let Some(train) = train_manager.get_transition_train().as_mut() {
-            self.base.borrow_mut().print_train(train,&transition_camera.unwrap());
-        }
-        ; /* needed for borrow checker to be happy with window, oddly */
+        let zmls = { /* Architecture for ZMenus is broken! */
+            let prop_down = train_manager.get_prop_trans_down();
+            let prop_up = train_manager.get_prop_trans_up();
+            let mut trainset = train_manager.get_trainset();
+            let mut zmls = ZMenuLeafSet::new();
+            /* current train */
+            let current = GLTrainPrinter::new(&trainset.current(),prop_down,screen);
+            current.maybe_redraw(self,&mut zmls);
+            current.print(self);
+            /* transition train */
+            let transition = GLTrainPrinter::new(&trainset.transition(),prop_up,screen);
+            transition.maybe_redraw(self,&mut zmls);
+            transition.print(self);
+            zmls
+        };
+        train_manager.add_zmenus(zmls);
     }
 
     fn destroy(&mut self) {
@@ -238,5 +234,5 @@ impl Printer for GLPrinter {
     fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
         let twin = self.clone();
         self.base.borrow_mut().make_driver_traveller(&twin,traveller_id)
-    }      
+    }
 }

@@ -14,7 +14,7 @@ pub use self::carriageid::CarriageId;
 pub use self::train::Train;
 pub use self::traincontext::TrainContext;
 pub use self::trainid::TrainId;
-pub use self::trainmanager::TrainManager;
+pub use self::trainmanager::{ TrainManager, TrainSet };
 pub(self) use self::transition::{ CrossFade, TrainManagerTransition };
 pub use self::traveller::Traveller;
 pub use self::travellercreator::TravellerCreator;

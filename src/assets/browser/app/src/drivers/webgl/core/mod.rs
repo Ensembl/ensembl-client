@@ -6,6 +6,7 @@ mod glprogdata;
 mod glcamera;
 mod glcarriage;
 mod gltraveller;
+mod gltrainprinter;
 
 pub use self::gldrawing::GLDrawing;
 pub use self::glprogs::GLProgs;
