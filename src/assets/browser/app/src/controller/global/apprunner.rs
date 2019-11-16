@@ -163,15 +163,15 @@ impl AppRunner {
                         }
                     }),5,false);
                 }
-                /* draw */
+                /* animate & draw */
                 let app = imp.app.clone();
                 imp.sched_group.add("draw",Box::new(move |_| {
                     let t = browser_time();
-                    let mut anim = app.lock().unwrap().get_window().get_animator().clone();
-                    let actions = anim.tick(t);
-                    app.lock().unwrap().run_actions(&actions,None);
-                    app.lock().unwrap().draw();
-                }),0,false);
+                    let mut imp = app.lock().unwrap();
+                    let actions = imp.get_window().get_animator().tick(t);
+                    imp.run_actions(&actions,None);
+                    imp.draw();
+                }),0,true);
             }
             /* xfer */
             self.add_timer("xfer",move |app,_,sr| {
