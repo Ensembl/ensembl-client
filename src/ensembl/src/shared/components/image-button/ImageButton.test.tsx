@@ -3,7 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import ImageButton from './ImageButton';
+import { ImageButton } from './ImageButton';
 import ImageHolder from './ImageHolder';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';

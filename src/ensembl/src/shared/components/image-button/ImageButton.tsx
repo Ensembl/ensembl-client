@@ -26,7 +26,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const ImageButton = (props: Props) => {
+export const ImageButton = (props: Props) => {
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
   const handleClick = () => {
