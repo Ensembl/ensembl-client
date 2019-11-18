@@ -41,6 +41,16 @@ export const getGenomeKaryotype = (state: RootState) => {
     : null;
 };
 
+export const getKaryotypeItemLength = (name: string, state: RootState) => {
+  const karyotype = getGenomeKaryotype(state);
+  if (!karyotype) {
+    return null;
+  }
+
+  const karyotypeItem = karyotype.find((item) => item.name === name);
+  return karyotypeItem ? karyotypeItem.length : null;
+};
+
 export const getGenomeKaryotypeFetching = (state: RootState) =>
   state.genome.genomeKaryotype.genomeKaryotypeFetching;
 

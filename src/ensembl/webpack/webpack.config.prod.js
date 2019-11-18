@@ -66,7 +66,7 @@ const plugins = [
   // copy static assets
   new CopyWebpackPlugin([
     {
-      from: path.join(__dirname, '../static/browser/browser*.wasm'),
+      from: path.join(__dirname, '../node_modules/ensembl-genome-browser/browser*.wasm'),
       to: path.join(__dirname, '../dist/static/browser/'),
       flatten: true
     },

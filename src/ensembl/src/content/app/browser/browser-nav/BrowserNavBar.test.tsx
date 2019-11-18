@@ -1,46 +1,21 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from 'enzyme';
+
+jest.mock('./BrowserNavBarControls', () => () => (
+  <div>BrowserNavBarControls</div>
+));
+jest.mock('./BrowserNavBarMain', () => () => <div>BrowserNavBarMain</div>);
 
 import { BrowserNavBar } from './BrowserNavBar';
-import { BrowserNavStates, ChrLocation } from '../browserState';
-
-import styles from './BrowserNavBar.scss';
-
-const browserStates = [...Array(6)].map(() => false);
-const chrLocation: ChrLocation = ['13', 1, 114364328];
-const toggleRegionEditorActive: any = jest.fn();
-const toggleRegionFieldActive: any = jest.fn();
 
 describe('<BrowserNavBar />', () => {
-  test('renders with appropriate classes', () => {
-    expect(
-      shallow(
-        <BrowserNavBar
-          browserNavStates={browserStates as BrowserNavStates}
-          chrLocation={chrLocation}
-          genomeKaryotype={[]}
-          isTrackPanelOpened={true}
-          regionEditorActive={true}
-          regionFieldActive={false}
-          toggleRegionEditorActive={toggleRegionEditorActive}
-          toggleRegionFieldActive={toggleRegionFieldActive}
-        />
-      ).hasClass(styles.browserNavBarExpanded)
-    ).toBe(false);
+  describe('rendering', () => {
+    it('correctly interprets the "expanded" prop', () => {
+      const contractedBar = render(<BrowserNavBar expanded={false} />);
+      expect(contractedBar.hasClass('browserNavBarExpanded')).toBe(false);
 
-    expect(
-      shallow(
-        <BrowserNavBar
-          browserNavStates={browserStates as BrowserNavStates}
-          chrLocation={chrLocation}
-          genomeKaryotype={[]}
-          isTrackPanelOpened={false}
-          regionEditorActive={true}
-          regionFieldActive={false}
-          toggleRegionEditorActive={toggleRegionEditorActive}
-          toggleRegionFieldActive={toggleRegionFieldActive}
-        />
-      ).hasClass(styles.browserNavBarExpanded)
-    ).toBe(true);
+      const expandedBar = render(<BrowserNavBar expanded={true} />);
+      expect(expandedBar.hasClass('browserNavBarExpanded')).toBe(true);
+    });
   });
 });

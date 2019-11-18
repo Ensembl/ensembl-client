@@ -28,7 +28,7 @@ import {
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
 
-import { getGenomeInfoById } from 'src/genome/genomeSelectors';
+import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
 import { CurrentItem } from './speciesSelectorState';
 

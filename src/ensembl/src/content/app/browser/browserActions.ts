@@ -12,7 +12,7 @@ import { getChrLocationStr } from './browserHelper';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
 
-import { fetchEnsObject } from 'src/ens-object/ensObjectActions';
+import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 
 import {
   getBrowserActiveGenomeId,

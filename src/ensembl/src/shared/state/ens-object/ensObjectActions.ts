@@ -5,12 +5,12 @@ import apiService from 'src/services/api-service';
 
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 
-import { GenomeInfoData } from 'src/genome/genomeTypes';
-import { getGenomeInfo } from 'src/genome/genomeSelectors';
+import { GenomeInfoData } from 'src/shared/state/genome/genomeTypes';
+import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import {
   getEnsObjectLoadingStatus,
   getExampleEnsObjects
-} from 'src/ens-object/ensObjectSelectors';
+} from 'src/shared/state/ens-object/ensObjectSelectors';
 import { TrackId } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
 import { RootState } from 'src/store';

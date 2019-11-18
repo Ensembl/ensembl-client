@@ -3,7 +3,7 @@ import faker from 'faker';
 import { Status } from 'src/shared/types/status';
 import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { TrackPanelBarItem } from 'src/content/app/browser/track-panel/track-panel-bar/trackPanelBarConfig';
-import { EnsObjectTrack } from 'src/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import { ReactComponent as bookmarkIcon } from 'static/img/track-panel/bookmark.svg';
 

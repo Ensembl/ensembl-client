@@ -15,13 +15,13 @@ import {
   getBrowserActiveGenomeId,
   getChrLocation
 } from '../browserSelectors';
-import { getGenomeKaryotype } from 'src/genome/genomeSelectors';
+import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 import {
   changeBrowserLocation,
   changeFocusObject,
   toggleRegionEditorActive
 } from '../browserActions';
-import { GenomeKaryotypeItem } from 'src/genome/genomeTypes';
+import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 
 import {
   getCommaSeparatedNumber,

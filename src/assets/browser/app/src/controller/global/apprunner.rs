@@ -163,12 +163,14 @@ impl AppRunner {
                         }
                     }),5,false);
                 }
-                /* draw */
-                let app = imp.app.clone();
-                imp.sched_group.add("draw",Box::new(move |_| {
-                    app.lock().unwrap().draw();
-                }),0,true);
             }
+            /* draw */
+            self.add_timer("draw",move |app,t,_| {
+                let actions = app.get_window().get_animator().tick(t);
+                app.run_actions(&actions,None);
+                app.draw();
+                vec![]
+            },0);
             /* xfer */
             self.add_timer("xfer",move |app,_,sr| {
                 if !app.tick_xfer() {
@@ -176,12 +178,6 @@ impl AppRunner {
                 }
                 vec![]
             },2);
-            /* animations */
-            self.add_timer("animations",move |app,t,_| {
-                let actions = app.get_window().get_animator().tick(t);
-                app.run_actions(&actions,None);
-                vec![]
-            },0);
             /* jumping */
             self.add_timer("get-jump",move |app,_,_| {
                 let tm = app.get_window().get_train_manager();

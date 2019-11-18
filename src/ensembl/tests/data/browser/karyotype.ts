@@ -1,7 +1,7 @@
 import {
   GenomeKaryotypeItem,
   GenomeKaryotypeItemType
-} from 'src/genome/genomeTypes';
+} from 'src/shared/state/genome/genomeTypes';
 
 const genomeKaryotype: GenomeKaryotypeItem[] = [
   {

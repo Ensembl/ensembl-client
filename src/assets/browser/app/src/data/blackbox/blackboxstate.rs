@@ -26,7 +26,7 @@ impl BlackBoxStateImpl {
             dataset: HashSet::new(),
             stack: Vec::new(),
             stack_name: None,
-            ms_offset: None
+            ms_offset: None,
         }
     }
     
@@ -64,6 +64,14 @@ impl BlackBoxStateImpl {
         }
     }
     
+    fn count(&mut self, stream: &str, name: &str, amt: u32, set: bool) {
+        self.get_stream(stream).count(name,amt,set);
+    }
+
+    fn reset_count(&mut self, stream: &str, name: &str, now: f64) {
+        self.get_stream(stream).reset_count(name,now);
+    }
+
     fn add_elapsed(&mut self, stream: &str, elapsed: f64) {
         self.get_stream(stream).add_elapsed(elapsed);
     }
@@ -157,5 +165,13 @@ impl BlackBoxState {
 
     pub fn pop(&mut self) {
         self.0.lock().unwrap().pop();
-    }    
+    }
+
+    pub fn count(&mut self, stream: &str, name: &str, amt: u32, set: bool) {
+        self.0.lock().unwrap().count(stream,name,amt,set);
+    }
+
+    pub fn reset_count(&mut self, stream: &str, name: &str, now: f64) {
+        self.0.lock().unwrap().reset_count(stream,name,now);
+    }
 }

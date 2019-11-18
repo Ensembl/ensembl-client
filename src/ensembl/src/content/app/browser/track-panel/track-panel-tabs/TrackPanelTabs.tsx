@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { TrackSet } from '../trackPanelConfig';
-import { EnsObject } from 'src/ens-object/ensObjectTypes';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './TrackPanelTabs.scss';
 

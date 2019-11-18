@@ -101,8 +101,8 @@ describe('Chromosome Navigator', () => {
         which is the second tuple of coordinates in the points prop
       */
       const bracketX = bracket
-        .props()
-        .points.split(' ')[1]
+        .prop('points')
+        .split(' ')[1]
         .split(',')[0];
       expect(parseInt(bracketX, 10)).toBe(position);
     };
@@ -112,10 +112,10 @@ describe('Chromosome Navigator', () => {
       assertions.forEach((assertion: any, index: number) => {
         const { x, width } = assertion;
         if (x !== undefined) {
-          expect(areas.at(index).props().x).toBe(x);
+          expect(areas.at(index).prop('x')).toBe(x);
         }
         if (width !== undefined) {
-          expect(areas.at(index).props().width).toBe(width);
+          expect(areas.at(index).prop('width')).toBe(width);
         }
       });
     };
@@ -227,8 +227,8 @@ describe('Chromosome Navigator', () => {
       positions.forEach((position: number, index: number) => {
         const transform = pointers
           .at(index)
-          .props()
-          .transform.match(/translate\((\d+)\)/)[1];
+          .prop('transform')
+          .match(/translate\((\d+)\)/)[1];
         const actualPosition = parseInt(transform, 10);
         expect(isApproximatelyEqual(position, actualPosition)).toBe(true);
       });
@@ -307,7 +307,7 @@ describe('Chromosome Navigator', () => {
       assertions.forEach((assertion: any, index: number) => {
         const { x, text } = assertion;
         if (x !== undefined) {
-          expect(labels.at(index).props().x).toBe(x);
+          expect(labels.at(index).prop('x')).toBe(x);
         }
         if (text !== undefined) {
           const actualText = labels.at(index).text();

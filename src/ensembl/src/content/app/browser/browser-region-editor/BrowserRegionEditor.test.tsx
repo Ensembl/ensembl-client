@@ -12,16 +12,12 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
-import {
-  getCommaSeparatedNumber,
-  getNumberWithoutCommas
-} from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 import {
   createChrLocationValues,
   createRegionValidationMessages
 } from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
-import { ChrLocation } from '../browserState';
 
 jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div>Overlay</div>

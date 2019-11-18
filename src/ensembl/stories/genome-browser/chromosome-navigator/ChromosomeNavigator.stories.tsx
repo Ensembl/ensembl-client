@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
+import { ChromosomeNavigatorWrapper as ChromosomeNavigator } from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 
 import styles from './ChromosomeNavigator.stories.scss';
 

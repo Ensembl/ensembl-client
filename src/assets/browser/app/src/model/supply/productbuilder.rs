@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use controller::global::WindowState;
-use composit::{ Plot,StateAtom, StateExpr };
+use composit::{ Plot,StateAtom, StateExpr, StateOp };
 use super::product::Product;
 use debug::add_debug_sources;
 
@@ -15,21 +15,22 @@ fn build_supplier(window: &mut WindowState) -> SupplierChooser {
     SupplierChooser::new(Box::new(backend))
 }
 
-fn make_subassembly(product: &mut Product, name: Option<String>, atom_name: String) {
-    let expr: Rc<dyn StateExpr> = Rc::new(StateAtom::new(&atom_name));
+fn make_subassembly(product: &mut Product, name: Option<String>, atom_expr: Rc<dyn StateExpr>) {
     let sa = Subassembly::new(product,&name);
-    product.add_subassembly(&sa,&expr);
+    product.add_subassembly(&sa,&atom_expr);
 }
 
 fn build_product_main(window: &mut WindowState, type_name: &str, supplier: SupplierChooser, lid: usize) -> Product {
     let cfg_track = window.get_backend_config().get_track(type_name);
     let focus_dep = cfg_track.map(|t| t.focus_dependent()).unwrap_or(true);
     let mut product = Product::new(type_name,Rc::new(supplier),lid,focus_dep);
-    make_subassembly(&mut product,None,type_name.to_string());
+    let product_expr = Rc::new(StateAtom::new(type_name));
+    make_subassembly(&mut product,None,product_expr.clone());
     if let Some(parts) = cfg_track.map(|t| t.get_parts()) {
         for part in parts {
             let state_name = format!("{}:{}",type_name,part);
-            make_subassembly(&mut product,Some(part.to_string()),state_name);
+            let state_expr = Rc::new(StateOp::And(Rc::new(StateAtom::new(&state_name)),product_expr.clone()));
+            make_subassembly(&mut product,Some(part.to_string()),state_expr);
         }
     }
     product
