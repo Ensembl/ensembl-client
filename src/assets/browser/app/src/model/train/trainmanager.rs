@@ -298,6 +298,8 @@ impl TrainManagerImpl {
                         end_future = true;
                         new_future = true;
                     }
+                } else {
+                    new_future = true;
                 }
             }
             if end_future { self.trainset.end_future(); }
