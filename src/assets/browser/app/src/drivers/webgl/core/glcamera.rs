@@ -1,5 +1,6 @@
 use model::stage::{ Position, Screen };
 
+#[derive(Clone)]
 pub(super) struct GLCamera {
     opacity: f32,
     screen: Screen,

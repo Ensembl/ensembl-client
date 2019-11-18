@@ -15,7 +15,10 @@ pub struct GLCarriage {
     prev_cc: Option<CarriageCanvases>,
     leaf: Leaf,
     progs: Option<GLProgs>,
-    ctx: Rc<glctx>
+    ctx: Rc<glctx>,
+    data_stale: bool,
+    camera: Option<GLCamera>,
+    executed_camera: Option<GLCamera>
 }
 
 impl GLCarriage {
@@ -25,7 +28,10 @@ impl GLCarriage {
             prev_cc: None,
             leaf: leaf.clone(),
             progs: Some(progs.clean_instance()),
-            ctx: ctx.clone()
+            ctx: ctx.clone(),
+            data_stale: true,
+            camera: None,
+            executed_camera: None
         }
     }
 
@@ -66,9 +72,10 @@ impl GLCarriage {
         let (prev_cc,progs) = e.destroy();
         self.prev_cc = Some(prev_cc);
         self.progs = Some(progs);
+        self.data_stale = true;
     }
     
-    pub(super) fn get_uniforms(&self, camera: &GLCamera) -> Vec<(&'static str,UniformValue)> {
+    fn get_uniforms(&self, camera: &GLCamera) -> Vec<(&'static str,UniformValue)> {
         let bp_per_screen = camera.get_position().get_bumped_screen_in_bp();
         let bp_per_leaf = self.leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
@@ -85,13 +92,23 @@ impl GLCarriage {
         ]
     }
 
-    pub fn execute(&mut self, prog_idx: usize, u: &Vec<(&'static str,UniformValue)>) {
+    pub(super) fn data_is_stale(&self) -> bool { self.data_stale }
+    pub(super) fn camera_is_stale(&self) -> bool { self.camera != self.executed_camera }
+
+    pub(super) fn set_camera(&mut self, camera: &GLCamera) {
+        self.camera = Some(camera.clone());
+    }
+
+    pub(super) fn execute(&mut self, prog_idx: usize) {
+        let uniforms = self.get_uniforms(self.camera.as_ref().unwrap());
         let prog = self.progs.as_mut().unwrap().each().get_mut(prog_idx).unwrap();
-        for (key, value) in u {
+        for (key, value) in uniforms {
             if let Some(obj) = prog.get_object(key) {
-                obj.set_uniform(None,*value);
+                obj.set_uniform(None,value);
             }
         }
         prog.execute(&self.ctx);
+        self.data_stale = false;
+        self.executed_camera = self.camera.clone();
     }    
 }

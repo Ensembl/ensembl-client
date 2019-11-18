@@ -145,22 +145,42 @@ impl GLPrinterBase {
         Box::new(sr)
     }
 
-    fn print_train(&mut self, train: &Train, camera: &GLCamera) {
-        let mut car_uni : Vec<(CarriageId,Vec<(&'static str,UniformValue)>)> = Vec::new();
-        for carriage_id in train.get_carriage_ids() {
-            if let Some(carriage) = self.carriages.get_mut(carriage_id) {
-                let uniforms = carriage.get_uniforms(camera);
-                car_uni.push((carriage_id.clone(),uniforms));
+    fn is_stale(&mut self, train: &Option<Train>) -> bool {
+        if let Some(train) = train {
+            for carriage_id in train.get_carriage_ids() {
+                if let Some(carriage) = self.carriages.get_mut(carriage_id) {
+                    if carriage.data_is_stale() || carriage.camera_is_stale() {
+                        return true;
+                    }
+                }
             }
         }
+        false
+    }
+
+    fn setup_camera(&mut self, train: &Train, camera: &GLCamera) {
+        /* Render all the GLCarriages */
         let types = self.base_progs.each();
         for prog_idx in 0..types.len() {
-            for (carriage_id,uniforms) in &car_uni {
-                let carriage = unwrap!(self.carriages.get_mut(carriage_id));
-                carriage.execute(prog_idx,&uniforms);
+            for carriage_id in train.get_carriage_ids() {
+                if let Some(carriage) = self.carriages.get_mut(carriage_id) {
+                    carriage.set_camera(camera);
+                }
             }
         }
-    }    
+    }
+
+    fn print_train(&mut self, train: &Train) {
+        /* Render all the GLCarriages */
+        let types = self.base_progs.each();
+        for prog_idx in 0..types.len() {
+            for carriage_id in train.get_carriage_ids() {
+                if let Some(carriage) = self.carriages.get_mut(carriage_id) {
+                    carriage.execute(prog_idx);
+                }
+            }
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -175,28 +195,44 @@ impl GLPrinter {
         }
     }
 
-    pub(super) fn print_train(&mut self, train: &Train, camera: &GLCamera) {
-        self.base.borrow_mut().print_train(train,camera);
+    pub(super) fn setup_camera(&mut self, train: &Train, camera: &GLCamera) {
+        self.base.borrow_mut().setup_camera(train,camera);
+    }
+
+    pub(super) fn print_train(&mut self, train: &Train) {
+        self.base.borrow_mut().print_train(train);
     }
 }
 
 impl Printer for GLPrinter {
     fn print(&mut self, screen: &Screen, window: &mut WindowState) {
-        self.base.borrow_mut().prepare_all();
         let mut train_manager = window.get_train_manager();
         let zmls = { /* Architecture for ZMenus is broken! */
             let prop_down = train_manager.get_prop_trans_down();
             let prop_up = train_manager.get_prop_trans_up();
             let mut trainset = train_manager.get_trainset();
             let mut zmls = ZMenuLeafSet::new();
-            /* current train */
+            /* get handles */
             let current = GLTrainPrinter::new(&trainset.current(),prop_down,screen);
-            current.maybe_redraw(self,&mut zmls);
-            current.print(self);
-            /* transition train */
             let transition = GLTrainPrinter::new(&trainset.transition(),prop_up,screen);
+            /* load new data (maybe) */
+            current.maybe_redraw(self,&mut zmls);
             transition.maybe_redraw(self,&mut zmls);
-            transition.print(self);
+            /* setup cameras */
+            current.setup_camera(self);
+            transition.setup_camera(self);
+            /* should we even bother? */
+            let is_stale = {
+                let base = &mut self.base.borrow_mut();
+                base.is_stale(&trainset.current()) || base.is_stale(&trainset.transition())
+            };
+            /* execute */
+            if is_stale {
+                console!("stale");
+                self.base.borrow_mut().prepare_all();
+                current.print(self);
+                transition.print(self);
+            }
             zmls
         };
         train_manager.add_zmenus(zmls);

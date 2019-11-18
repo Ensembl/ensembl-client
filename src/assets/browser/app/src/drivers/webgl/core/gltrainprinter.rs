@@ -23,9 +23,15 @@ impl <'a> GLTrainPrinter<'a> {
         );
     }
 
+    pub(super) fn setup_camera(&self, printer: &mut GLPrinter) {
+        self.train.as_ref().map(|train| {
+            printer.setup_camera(train,&self.camera.as_ref().unwrap());
+        });
+    }
+
     pub(super) fn print(&self, printer: &mut GLPrinter) {
-        self.train.as_ref().map(|train|
-            printer.print_train(train,&self.camera.as_ref().unwrap())
-        );
+        self.train.as_ref().map(|train| {
+            printer.print_train(train);
+        });
     }
 }
