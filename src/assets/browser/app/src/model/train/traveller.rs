@@ -15,29 +15,39 @@ pub struct TravellerImpl {
     done: bool,
     prev_value: bool,
     cur_value: bool,
-    visuals: Box<dyn DriverTraveller>,
+    visuals: Option<Box<dyn DriverTraveller>>,
     zml: ZMenuLeaf,
-    id: Rc<TravellerId>
+    id: Rc<TravellerId>,
+    printer_manager: PrinterManager
 }
 
 impl TravellerImpl {
     fn new(pm: &mut PrinterManager, sa: &Subassembly, leaf: &Leaf, carriage_id: &CarriageId) -> TravellerImpl {
         let id = Rc::new(TravellerId::new(carriage_id,sa));
-        let visuals = pm.make_driver_traveller(&id);
         TravellerImpl {
             done: false,
             prev_value: false,
             cur_value: false,
-            visuals, id,
-            zml: ZMenuLeaf::new(leaf)
+            visuals: None,
+            id,
+            zml: ZMenuLeaf::new(leaf),
+            printer_manager: pm.clone()
         }
     }
-                
+
+    fn make_visuals(&mut self, data: UnpackedSubassembly) {
+        let visuals = self.printer_manager.make_driver_traveller(&self.id,data);
+        visuals.set_state(self.cur_value);
+        self.visuals = Some(visuals);
+    }
+
     fn update_state(&mut self, m: &StateManager) -> bool {
         self.prev_value = self.cur_value;
         let sa = self.id.get_subassembly();
         self.cur_value = sa.get_product().get_subassembly_state(&sa,m);
-        self.visuals.set_state(self.cur_value);
+        if let Some(ref mut visuals) = self.visuals {
+            visuals.set_state(self.cur_value);
+        }
         self.prev_value != self.cur_value
     }
 
@@ -53,7 +63,7 @@ impl TravellerImpl {
         let product = self.id.get_subassembly().get_product().clone();
         data.create_zmenu(&product);
         self.zml = data.get_zmenu_leaf().clone();
-        self.visuals.set_contents(&data);
+        self.make_visuals(data);
         self.done = true;
     }
 
@@ -71,7 +81,9 @@ impl TravellerImpl {
     }
 
     fn destroy(&mut self) {
-        self.visuals.destroy();
+        if let Some(ref mut visuals) = self.visuals {
+            visuals.destroy();
+        }
     }
 }
 

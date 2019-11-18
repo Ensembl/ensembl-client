@@ -6,6 +6,7 @@ use composit::Compositor;
 use controller::global::WindowState;
 use model::stage::Screen;
 use model::train::{ CarriageId, TravellerId };
+use model::item::UnpackedSubassembly;
 use types::Dot;
 use super::{ DriverTraveller, Printer };
 
@@ -75,8 +76,8 @@ impl Printer for PrinterManager {
         }
     }
         
-    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
-        self.0.borrow_mut().printer.make_driver_traveller(traveller_id)
+    fn make_driver_traveller(&mut self, traveller_id: &TravellerId, data: UnpackedSubassembly) -> Box<dyn DriverTraveller> {
+        self.0.borrow_mut().printer.make_driver_traveller(traveller_id,data)
     }
     
     fn redraw_carriage(&mut self, carriage_id: &CarriageId) {

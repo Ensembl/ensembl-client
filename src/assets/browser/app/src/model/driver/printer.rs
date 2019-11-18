@@ -5,6 +5,7 @@ use types::Dot;
 use super::DriverTraveller;
 use controller::global::WindowState;
 use model::train::{ CarriageId, TravellerId };
+use model::item::UnpackedSubassembly;
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and
@@ -31,5 +32,5 @@ pub trait Printer {
     
     fn add_carriage(&mut self, id: &CarriageId);
     fn remove_carriage(&mut self, id: &CarriageId);
-    fn make_driver_traveller(&mut self, ti: &TravellerId) -> Box<dyn DriverTraveller>;
+    fn make_driver_traveller(&mut self, ti: &TravellerId, data: UnpackedSubassembly) -> Box<dyn DriverTraveller>;
 }

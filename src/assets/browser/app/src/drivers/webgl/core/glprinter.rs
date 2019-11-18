@@ -11,6 +11,7 @@ use super::gltrainprinter::GLTrainPrinter;
 use super::super::program::{ UniformValue, ProgramType };
 use controller::global::WindowState;
 use model::driver::{ DriverTraveller, Printer };
+use model::item::UnpackedSubassembly;
 use model::stage::Screen;
 use composit::Compositor;
 use model::train::{ CarriageId, Carriage, Train, TrainSet, TravellerId, TrainManager };
@@ -137,8 +138,8 @@ impl GLPrinterBase {
         }
     }    
 
-    fn make_driver_traveller(&mut self, pref: &GLPrinter, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
-        let sr = GLTraveller::new(pref,traveller_id);
+    fn make_driver_traveller(&mut self, pref: &GLPrinter, traveller_id: &TravellerId, data: UnpackedSubassembly) -> Box<dyn DriverTraveller> {
+        let sr = GLTraveller::new(pref,traveller_id,data);
         if let Some(carriage) = self.carriages.get_mut(&traveller_id.get_carriage_id()) {
             carriage.new_sr(&sr);
         }
@@ -228,7 +229,6 @@ impl Printer for GLPrinter {
             };
             /* execute */
             if is_stale {
-                console!("stale");
                 self.base.borrow_mut().prepare_all();
                 current.print(self);
                 transition.print(self);
@@ -267,8 +267,8 @@ impl Printer for GLPrinter {
         self.base.borrow_mut().remove_carriage(carriage_id);
     }
         
-    fn make_driver_traveller(&mut self, traveller_id: &TravellerId) -> Box<dyn DriverTraveller> {
+    fn make_driver_traveller(&mut self, traveller_id: &TravellerId, data: UnpackedSubassembly) -> Box<dyn DriverTraveller> {
         let twin = self.clone();
-        self.base.borrow_mut().make_driver_traveller(&twin,traveller_id)
+        self.base.borrow_mut().make_driver_traveller(&twin,traveller_id,data)
     }
 }

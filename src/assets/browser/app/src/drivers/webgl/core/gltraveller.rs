@@ -32,13 +32,15 @@ impl Hash for GLTraveller {
 
 impl GLTraveller {    
     /* train/partyresponses */
-    pub(in super) fn new(printer: &GLPrinter,  traveller_id: &TravellerId) -> GLTraveller {
-        GLTraveller {
+    pub(super) fn new(printer: &GLPrinter, traveller_id: &TravellerId, data: UnpackedSubassembly) -> GLTraveller {
+        let out = GLTraveller {
             printer: printer.clone(),
             dr: Rc::new(RefCell::new(None)),
             state: Rc::new(RefCell::new(false)),
             traveller_id: traveller_id.clone()
-        }
+        };
+        *out.dr.borrow_mut() = Some(GLDrawing::new(&data));
+        out
     }
         
     pub fn get_traveller_id(&self) -> &TravellerId { &self.traveller_id }
@@ -61,10 +63,6 @@ impl GLTraveller {
 impl DriverTraveller for GLTraveller {
     fn set_state(&self, state: bool) {
         *self.state.borrow_mut() = state;
-    }
-
-    fn set_contents(&mut self, result: &UnpackedSubassembly) {
-        *self.dr.borrow_mut() = Some(GLDrawing::new(result));
     }
     
     fn destroy(&mut self) {

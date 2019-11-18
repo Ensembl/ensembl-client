@@ -37,6 +37,7 @@ impl GLCarriage {
 
     pub fn new_sr(&mut self, sr: &GLTraveller) {
         self.srr.insert(sr.clone());
+        self.data_stale = true;
     }
     
     pub fn destroy(&mut self, alloc: &mut AllCanvasAllocator) {
