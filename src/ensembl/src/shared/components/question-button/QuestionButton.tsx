@@ -15,7 +15,7 @@ export enum QuestionButtonOption {
 type Props = {
   helpText: React.ReactNode;
   styleOption?: QuestionButtonOption;
-  classNames?: { [key in QuestionButtonOption]?: string };
+  className?: { [key in QuestionButtonOption]?: string };
 };
 
 const QuestionButton = (props: Props) => {
@@ -29,15 +29,17 @@ const QuestionButton = (props: Props) => {
     setIsHovering(false);
   };
 
-  const styles = props.classNames
-    ? { ...defaultStyles, ...props.classNames }
+  const styles = props.className
+    ? { ...defaultStyles, ...props.className }
     : defaultStyles;
 
-  const classParams = props.styleOption
-    ? [defaultStyles.default, styles[props.styleOption]]
-    : defaultStyles.default;
-
-  const className = classNames(classParams);
+  const className = classNames(
+    defaultStyles.default,
+    {
+      [defaultStyles[props.styleOption]]: props.styleOption
+    },
+    props.className
+  );
 
   return (
     <div

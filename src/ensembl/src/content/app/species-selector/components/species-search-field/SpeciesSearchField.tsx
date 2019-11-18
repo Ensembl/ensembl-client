@@ -22,8 +22,6 @@ import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
 
-console.log(QuestionButtonOption);
-
 import {
   SearchMatch,
   SearchMatches
@@ -127,7 +125,12 @@ const helpText = (
 const RightCorner = (props: RightCornerProps) => {
   switch (props.status) {
     case RightCornerStatus.INFO:
-      return <QuestionButton helpText={helpText} styleOption={QuestionButtonOption.INPUT} />;
+      return (
+        <QuestionButton
+          helpText={helpText}
+          styleOption={QuestionButtonOption.INPUT}
+        />
+      );
     case RightCornerStatus.CLEAR:
       return <ClearButton onClick={props.clear} />;
     default:
@@ -161,7 +164,4 @@ const mapDispatchToProps = {
   clearSearch
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SpeciesSearchField);
+export default connect(mapStateToProps, mapDispatchToProps)(SpeciesSearchField);
