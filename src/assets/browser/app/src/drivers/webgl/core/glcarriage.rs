@@ -54,7 +54,7 @@ impl GLCarriage {
         }
     }
 
-    fn redraw_travellers(&mut self, aca: &mut AllCanvasAllocator) {
+    pub fn redraw(&mut self, aca: &mut AllCanvasAllocator) {
         if let Some(prev_cc) = self.prev_cc.take() {
             prev_cc.destroy(aca);
         }
@@ -68,10 +68,6 @@ impl GLCarriage {
         self.progs = Some(progs);
     }
     
-    pub fn redraw(&mut self,aca: &mut AllCanvasAllocator) {
-        self.redraw_travellers(aca);
-    }
-
     pub(super) fn get_uniforms(&self, camera: &GLCamera) -> Vec<(&'static str,UniformValue)> {
         let bp_per_screen = camera.get_position().get_bumped_screen_in_bp();
         let bp_per_leaf = self.leaf.total_bp();
