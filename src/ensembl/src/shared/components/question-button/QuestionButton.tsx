@@ -36,7 +36,7 @@ const QuestionButton = (props: Props) => {
   const className = classNames(
     defaultStyles.default,
     {
-      [defaultStyles[props.styleOption]]: props.styleOption
+      [defaultStyles[props.styleOption as string]]: props.styleOption
     },
     props.className
   );
