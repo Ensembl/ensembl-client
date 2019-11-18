@@ -35,7 +35,7 @@ impl TravellerCreator {
     }
     
     pub fn make_travellers_for_source(&mut self, product: &mut Product, leaf: &Leaf, carriage_id: &CarriageId) -> Vec<Traveller> {
-        let focus = carriage_id.get_train_id().get_context().get_focus();
+        let focus = carriage_id.get_train_id().get_focus_object_id().get_focus();
         let po = PurchaseOrder::new(product,leaf,focus);
         let mut travellers = Vec::new();
         for sa in product.list_subassemblies() {

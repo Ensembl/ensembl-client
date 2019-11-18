@@ -2,7 +2,7 @@ use hashbrown::HashMap;
 use controller::global::WindowState;
 use data::UnpackedProductConsumer;
 use super::{ DeliveredItem, UnpackedSubassembly, UnpackedSubassemblyConsumer, UnpackedProduct};
-use model::train::{ TrainContext, TravellerId };
+use model::train::{ FocusObjectId, TravellerId };
 use tácode::run_tánaiste_makeshapes;
 
 pub struct ItemUnpackerContext {
@@ -22,7 +22,7 @@ impl ItemUnpackerContext {
         self.scheduled.insert(t.clone(),ic);
     }
 
-    pub fn unpack(mut self, delivered_item: &DeliveredItem, context: TrainContext, window: &mut WindowState) {
+    pub fn unpack(mut self, delivered_item: &DeliveredItem, context: FocusObjectId, window: &mut WindowState) {
         for t in self.scheduled.keys() {
             let sa = t.get_subassembly();
             let leaf = t.get_carriage_id().get_leaf();
@@ -50,7 +50,7 @@ impl UnpackedProductConsumer for ItemUnpackerContext {
 
 pub struct ItemUnpacker {
     delivered_item: DeliveredItem,
-    contexts: HashMap<TrainContext,ItemUnpackerContext>
+    contexts: HashMap<FocusObjectId,ItemUnpackerContext>
 }
 
 impl ItemUnpacker {
@@ -62,8 +62,8 @@ impl ItemUnpacker {
     }
 
     pub fn schedule(&mut self, t: &TravellerId, ic: Box<dyn UnpackedSubassemblyConsumer>) {
-        let context = t.get_carriage_id().get_train_id().get_context();
-        let context_up = self.contexts.entry(context.clone()).or_insert_with(|| ItemUnpackerContext::new());
+        let focus_object_id = t.get_carriage_id().get_train_id().get_focus_object_id();
+        let context_up = self.contexts.entry(focus_object_id.clone()).or_insert_with(|| ItemUnpackerContext::new());
         context_up.schedule(t,ic);
     }
 

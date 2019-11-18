@@ -103,6 +103,7 @@ elif [ "x$1" == "xstrip" ] ; then
     cp $SRC/target/deploy/hellostdweb.wasm $MODDIR/$WASMNAME
   fi
   cp $SRC/target/deploy/hellostdweb.js $MODDIR/$JSNAME
+  ls -l $MODDIR
 elif [ "x$1" == "xcheck" ] ; then
   rm -f $MODDIR/browser.js $MODDIR/browser-*.wasm
   cp $SRC/target/deploy/hellostdweb.wasm $MODDIR/$WASMNAME

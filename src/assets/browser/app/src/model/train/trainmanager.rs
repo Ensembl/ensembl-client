@@ -16,14 +16,16 @@ use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Stick, Scale, StateManager };
+use controller::animate::TrainManagerTransition;
 use controller::output::{ Report, ViewportReport };
 use data::{ Locator, XferConsumer };
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::stage::{ Desired, Position, Screen };
+use model::stage::{ Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry, ZMenuLeafSet };
-use super::{ Train, TrainId, TrainContext, TrainManagerTransition, TravellerCreator };
+use super::{ Train, TrainId, FocusObjectId, TravellerCreator };
+use super::desired::Desired;
 use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
 const AT_POSITION_NEAR_ENOUGH : f64 = 1.;
@@ -38,6 +40,8 @@ pub struct TrainSet {
 impl TrainSet {
     pub fn current(&self) -> &Option<Train> { &self.current_train }
     pub fn transition(&self) -> &Option<Train> { &self.transition_train }
+    pub(super) fn current_mut(&mut self) -> &mut Option<Train> { &mut self.current_train }
+    pub(super) fn transition_mut(&mut self) -> &mut Option<Train> { &mut self.transition_train }
 
     fn make_transition_current(&mut self) {
         bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
@@ -78,7 +82,6 @@ pub struct TrainManagerImpl {
     zmr: ZMenuRegistry,
     /* current position/scale */
     desired: Desired,
-    desired_context: TrainContext,
     focus_stick: AsyncValue<Option<Stick>>,
     focus_location: AsyncValue<Option<(f64,f64)>>,
     pending_focus_jump: Awaiting<String,(Stick,f64,f64)>
@@ -96,7 +99,6 @@ impl TrainManagerImpl {
             },
             transition: TrainManagerTransition::new(),
             desired: Desired::new(),
-            desired_context: TrainContext::new(&None),
             focus_stick: AsyncValue::new(Some(None)),
             focus_location: AsyncValue::new(Some(None)),
             pending_focus_jump: Awaiting::new(),
@@ -125,15 +127,10 @@ impl TrainManagerImpl {
     }
         
     /* utility: makes new train at given scale */
-    fn make_train(&mut self, scale: &Scale) -> Option<Train> {
-        if self.desired.is_ready() {
-            let train_id = TrainId::new(&self.desired.get_stick(),scale,&self.desired_context);
-            let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position());
-            f.manage_carriages(&mut self.traveller_creator);
-            Some(f)
-        } else {
-            None
-        }
+    fn make_train(&mut self, train_id: &TrainId) -> Train {
+        let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position());
+        f.manage_carriages(&mut self.traveller_creator);
+        f
     }
 
     /* COMPOSITOR sets new stick. Existing trains useless */
@@ -169,9 +166,18 @@ impl TrainManagerImpl {
     /* if there's a transition and it's reached endstop it is current */
     fn transition_maybe_done(&mut self, t: f64) {
         self.transition.update(t);
-        if self.transition.get_prop().get_prop_up() >= 1. {
-            self.trainset.make_transition_current();
-            self.transition.reset();
+        if let Some(train) = self.trainset.transition() {
+            if train.get_prop() >= 1. {
+                self.trainset.make_transition_current();
+                self.transition.reset();
+            }
+        }
+        let prop = self.transition.get_prop();
+        if let Some(train) = self.trainset.transition_mut() {
+            train.set_prop(prop.get_prop_up());
+        }
+        if let Some(train) = self.trainset.current_mut() {
+            train.set_prop(prop.get_prop_down());
         }
     }
         
@@ -224,22 +230,12 @@ impl TrainManagerImpl {
     fn each_relevant_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
         if !self.desired.is_ready() { return; }
-        let desired_stick = self.desired.get_stick();
-        if let Some(ref mut current_train) = self.trainset.current_train {
-            if desired_stick == current_train.get_train_id().get_stick() {
-                cb(current_train);
+        let desired_stick = self.desired.get_stick().clone();
+        self.each_train(|train| {
+            if desired_stick == *train.get_train_id().get_stick() {
+                cb(train);
             }
-        }
-        if let Some(ref mut transition_train) = self.trainset.transition_train {
-            if desired_stick == transition_train.get_train_id().get_stick() {
-                cb(transition_train);
-            }
-        }
-        if let Some(ref mut future_train) = self.trainset.future_train {
-            if desired_stick == future_train.get_train_id().get_stick() {
-                cb(future_train);
-            }
-        }
+        });
     }
     
     pub fn manage_carriages(&mut self) {
@@ -268,66 +264,45 @@ impl TrainManagerImpl {
             None
         }
     }
-
-    /* current (or soon and inevitable) focus object */
-    fn printing_context(&self) -> &TrainContext {
-        if let Some(ref transition_train) = self.trainset.transition_train {
-            transition_train.get_train_id().get_context()
-        } else if let Some(ref current_train) = self.trainset.current_train {
-            current_train.get_train_id().get_context()
-        } else {
-            &self.desired_context
-        }
-    }
     
-    fn future_matches_desired(&self) -> bool {
-        let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
-        if let Some(future_train_id) = self.trainset.future_train.as_ref().map(|x| x.get_train_id().clone()) {
-            return best_scale == *future_train_id.get_scale() &&
-                self.desired_context == *future_train_id.get_context() &&
-                self.desired.get_stick() == future_train_id.get_stick()
-        } else {
-            return false;
-        }
-    }
-
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self) {
         if !self.desired.is_ready() || self.focus_stick.get().is_none() { return; }
         let mut end_future = false;
         let mut new_future = false;
-        let best_scale = Scale::best_for_screen(self.desired.get_position().get_screen_in_bp());
-        if let Some(printing_train) = self.printing_train().map(|t| t.get_train_id()) {
-            if best_scale != *printing_train.get_scale() || 
-               self.desired.get_stick() != printing_train.get_stick() ||
-               self.printing_context() != &self.desired_context {
-                /* we're not currently showing the optimal scale */
-                if self.trainset.future_train.is_some() {
-                    /* there's a future train ... */
-                    if !self.future_matches_desired() {
-                        /* ... and that's not optimal either */
+        if let Some(desired_future_train_id) = self.desired.get_train_id() {
+            /* we want to go or stay /somewhere/, at least! */
+            if let Some(printing_train) = self.printing_train() {
+                if *printing_train.get_train_id() != desired_future_train_id {
+                    /* we're not currently actually showing the optimal train */
+                    if let Some(ref future_train) = self.trainset.future_train {
+                        /* there's a future train ... */
+                        if *future_train.get_train_id() != desired_future_train_id {
+                            /* ... and that's not optimal either */
+                            end_future = true;
+                            new_future = true;
+                        } /* else that's optimal, so leave it to it */
+                    } else {
+                        /* there's no future, we need one */
+                        new_future = true;
+                    }
+                } else if self.trainset.future_train.is_some() {
+                    /* Future exists, but current is fine. Abandon future */
+                    end_future = true;
+                }
+                /* do anything that needs to be done */
+            } else {
+                /* we're not printing anything yet */
+                if let Some(ref future_train) = self.trainset.future_train {
+                    if *future_train.get_train_id() != desired_future_train_id {
                         end_future = true;
                         new_future = true;
-                       } /* else that's optimal, so leave it to it */
-                } else {
-                    /* there's no future, we need one */
-                    new_future = true;
+                    }
                 }
-            } else if self.trainset.future_train.is_some() {
-                /* Future exists, but current is fine. Abandon future */
-                end_future = true;
             }
-            /* do anything that needs to be done */
-        } else {
-            /* we're not printing anything yet */
-            if !self.future_matches_desired() {
-                end_future = true;
-                new_future = true;
-            }
-        }
-        if end_future { self.trainset.end_future(); }
-        if new_future { 
-            if let Some(train) = self.make_train(&best_scale) {
+            if end_future { self.trainset.end_future(); }
+            if new_future {
+                let train = self.make_train(&desired_future_train_id);
                 self.trainset.new_future(train);
             }
         }
@@ -351,8 +326,6 @@ impl TrainManagerImpl {
         self.each_train(|t| t.update_state(oom));
     }
 
-    pub fn get_desired_context(&self) -> &TrainContext { &self.desired_context }
-
     pub fn get_desired_position(&self) -> Option<Position> {
         match self.desired.is_ready() {
             true => Some(self.desired.get_position().clone()),
@@ -364,8 +337,8 @@ impl TrainManagerImpl {
         self.focus_stick.investigate() || self.focus_location.investigate()
     }
 
-    pub fn set_desired_context(&mut self, context: &TrainContext) {
-        if context.get_focus() != self.get_desired_context().get_focus() {
+    pub fn set_desired_focus_object_id(&mut self, context: &FocusObjectId) {
+        if context.get_focus() != self.desired.get_focus_object_id().get_focus() {
             if context.get_focus().is_some() {
                 self.focus_stick.invalidate();
                 self.focus_location.invalidate();
@@ -375,12 +348,12 @@ impl TrainManagerImpl {
             }
         }
         console!("focus change to {:?}",context);
-        self.desired_context = context.clone();
+        self.desired.set_focus_object_id(context.clone());
         self.maybe_change_trains();
     }
     
     pub fn jump_to_focus_object(&mut self) {
-        if let Some(focus_object) = self.get_desired_context().get_focus() {
+        if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
             self.pending_focus_jump.await(focus_object.to_string());
             self.maybe_satisfy_pending_jump();
         }
@@ -404,14 +377,6 @@ impl TrainManagerImpl {
      * ***************************************************************
      */
     
-    /* used by printer to set opacity */
-    pub fn get_prop_trans_up(&self) -> f32 {
-        self.transition.get_prop().get_prop_up() as f32
-    }
-    pub fn get_prop_trans_down(&self) -> f32 {
-        self.transition.get_prop().get_prop_down() as f32
-    }
-
     pub fn get_trainset(&self) -> &TrainSet {
         &self.trainset
     }
@@ -442,7 +407,7 @@ impl TrainManagerImpl {
 
     fn maybe_satisfy_pending_jump(&mut self) {
         if let (Some(Some(stick)),Some(Some((middle,zoom)))) = (self.focus_stick.get(),self.focus_location.get()) {
-            if let Some(focus_object) = self.get_desired_context().get_focus() {
+            if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
                 self.pending_focus_jump.notify(focus_object.to_string(),(stick.clone(),*middle,*zoom));
             }
         }
@@ -500,7 +465,7 @@ impl TrainManager {
         imp.tick(t);
         /* Do we need to schedule finding the focus location? */
         if imp.investigate_focus_location() {
-            if let Some(focus_object) = imp.get_desired_context().get_focus() {
+            if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
                 let other = self.clone();
                 let inner_focus_object = focus_object.clone();
                 self.1.locate(&focus_object,Box::new(move |_,stick,middle,zoom| {
@@ -531,22 +496,14 @@ impl TrainManager {
         self.0.lock().unwrap().update_state(oom);
     }
 
-    pub fn get_desired_context(&self) -> TrainContext {
-        self.0.lock().unwrap().get_desired_context().clone()
+    pub fn get_desired_focus_object_id(&self) -> FocusObjectId {
+        self.0.lock().unwrap().desired.get_focus_object_id().clone()
     }
 
-    pub fn set_desired_context(&mut self, context: &TrainContext) {
-        self.0.lock().unwrap().set_desired_context(context);
+    pub fn set_desired_focus_object_id(&mut self, focus_object_id: &FocusObjectId) {
+        self.0.lock().unwrap().set_desired_focus_object_id(focus_object_id);
     }
         
-    pub fn get_prop_trans_up(&self) -> f32 {
-        self.0.lock().unwrap().get_prop_trans_up()
-    }
-
-    pub fn get_prop_trans_down(&self) -> f32 {
-        self.0.lock().unwrap().get_prop_trans_down()
-    }
-
     fn get_impl_ref<'ret>(&'ret self) -> MutexGuardRef<'ret,TrainManagerImpl> {
         MutexGuardRef::new(self.0.lock().unwrap())
     }

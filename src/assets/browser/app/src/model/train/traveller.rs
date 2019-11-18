@@ -76,7 +76,7 @@ impl TravellerImpl {
         if di.get_product() != self.id.get_subassembly().get_product() { return false; }
         match di.get_focus_specificity() {
             FocusSpecificity::Agnostic => true,
-            FocusSpecificity::Specific(focus) => self.id.get_carriage_id().get_train_id().get_context().get_focus() == focus
+            FocusSpecificity::Specific(focus) => self.id.get_carriage_id().get_train_id().get_focus_object_id().get_focus() == focus
         }
     }
 

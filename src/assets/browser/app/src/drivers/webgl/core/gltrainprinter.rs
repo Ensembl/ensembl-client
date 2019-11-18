@@ -10,8 +10,8 @@ pub(super) struct GLTrainPrinter<'a> {
 }
 
 impl <'a> GLTrainPrinter<'a> {
-    pub(super) fn new(train: &'a Option<Train>, prop: f32, screen: &Screen) -> GLTrainPrinter<'a> {
-        let camera = train.as_ref().map(|train| GLCamera::new(prop,screen,train.get_position()));
+    pub(super) fn new(train: &'a Option<Train>, screen: &Screen) -> GLTrainPrinter<'a> {
+        let camera = train.as_ref().map(|train| GLCamera::new(train.get_prop(),screen,train.get_position()));
         GLTrainPrinter { train, camera }
     }
 

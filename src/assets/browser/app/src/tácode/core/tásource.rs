@@ -3,11 +3,11 @@ use data::UnpackedProductConsumer;
 use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
 use model::supply::Subassembly;
-use model::train::TrainContext;
+use model::train::FocusObjectId;
 use tácode::TáTask;
 
 pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, 
-                               item: &DeliveredItem, context: &TrainContext) {
+                               item: &DeliveredItem, context: &FocusObjectId) {
     let lid = item.get_id().get_product().get_lid();
     let tc = window.get_tánaiste_interp().clone();
     let all_landscapes = window.get_all_landscapes().clone();

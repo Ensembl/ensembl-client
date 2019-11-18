@@ -12,6 +12,7 @@ use model::zmenu::ZMenuLeafSet;
 const MAX_FLANK : i32 = 3;
 
 pub struct Train {
+    prop: f64,
     pm: PrinterManager,
     carriages: HashMap<Leaf,Carriage>,
     id: TrainId,
@@ -22,6 +23,7 @@ pub struct Train {
 impl Train {
     pub fn new(pm: &PrinterManager, train_id: &TrainId, position: &Position) -> Train {
         Train {
+            prop: 0.,
             pm: pm.clone(),
             id: train_id.clone(),
             carriages: HashMap::<Leaf,Carriage>::new(),
@@ -35,6 +37,9 @@ impl Train {
      * *****************************************************************
      */
     
+    pub fn get_prop(&self) -> f64 { self.prop }
+    pub(super) fn set_prop(&mut self, v: f64) { self.prop = v; }
+
     pub fn get_train_id(&self) -> &TrainId { &self.id }
     pub fn get_position(&self) -> &Position { &self.position }
     pub fn get_position_mut(&mut self) -> &mut Position { &mut self.position }

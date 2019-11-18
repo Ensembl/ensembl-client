@@ -2,13 +2,13 @@ use model::stage::{ Position, Screen };
 
 #[derive(Clone)]
 pub(super) struct GLCamera {
-    opacity: f32,
+    opacity: f64,
     screen: Screen,
     pos: Position
 }
 
 impl GLCamera {
-    pub(super) fn new(opacity: f32, screen: &Screen, pos: &Position) -> GLCamera {
+    pub(super) fn new(opacity: f64, screen: &Screen, pos: &Position) -> GLCamera {
         GLCamera {
             opacity,
             screen: screen.clone(),
@@ -16,7 +16,7 @@ impl GLCamera {
         }
     }
 
-    pub(super) fn get_opacity(&self) -> f32 { self.opacity }
+    pub(super) fn get_opacity(&self) -> f64 { self.opacity }
     pub(super) fn get_position(&self) -> &Position { &self.pos }
     pub(super) fn get_screen(&self) -> &Screen { &self.screen }
 }

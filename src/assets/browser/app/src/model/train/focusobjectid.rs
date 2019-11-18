@@ -1,11 +1,11 @@
 #[derive(Clone,PartialEq,Eq,Hash,Debug)]
-pub struct TrainContext {
+pub struct FocusObjectId {
     focus: Option<String>
 }
 
-impl TrainContext {
-    pub fn new(focus: &Option<String>) -> TrainContext {
-        TrainContext {
+impl FocusObjectId {
+    pub fn new(focus: &Option<String>) -> FocusObjectId {
+        FocusObjectId {
             focus: focus.clone()
         }
     }

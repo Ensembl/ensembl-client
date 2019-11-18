@@ -26,7 +26,7 @@ impl TrainManagerTransitionImpl {
     }
 }
 
-pub(super) struct TrainManagerTransition {
+pub struct TrainManagerTransition {
     imp: Arc<Mutex<CrossFade>>,
     runner: ZhooshRunner,
     control: Option<ZhooshSequenceControl>,
@@ -65,7 +65,7 @@ impl ZhooshOps<CrossFade> for CrossFader {
 }
 
 impl TrainManagerTransition {
-    pub(super) fn new() -> TrainManagerTransition {
+    pub fn new() -> TrainManagerTransition {
         TrainManagerTransition {
             imp: Arc::new(Mutex::new(CrossFade(1.,1.,0.))),
             control: None,
@@ -79,18 +79,18 @@ impl TrainManagerTransition {
         }
     }
 
-    pub(super) fn get_prop(&self) -> CrossFade {
+    pub fn get_prop(&self) -> CrossFade {
         *ok!(self.imp.lock())
     }
 
-    pub(super) fn reset(&mut self) {
+    pub fn reset(&mut self) {
         if let Some(mut control) = self.control.take() {
             control.abandon();
         }
         *ok!(self.imp.lock()) = CrossFade(0.,1.,0.);
     }
 
-    pub(super) fn start(&mut self, t: f64, slow: bool) {
+    pub fn start(&mut self, t: f64, slow: bool) {
         console!("start slow={:?}",slow);
         self.reset();
         let zhoosh = if slow { &self.zhoosh_slow } else { &self.zhoosh_fast };
@@ -99,7 +99,7 @@ impl TrainManagerTransition {
         self.control = Some(seq.run(&mut self.runner));
     }
 
-    pub(super) fn update(&mut self, t: f64) {
+    pub fn update(&mut self, t: f64) {
         self.runner.step(t);
     }
 }

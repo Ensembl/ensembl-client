@@ -85,7 +85,7 @@ impl GLCarriage {
         let current_leaf_left = self.leaf.get_index() as f64;
         let screen_px = camera.get_screen().get_size();
         vec![
-            ("uOpacity",UniformValue::Float(camera.get_opacity())),
+            ("uOpacity",UniformValue::Float(camera.get_opacity() as f32)),
             ("uStageHpos",UniformValue::Float((middle_leaf - current_leaf_left) as f32)),
             ("uStageVpos",UniformValue::Float(middle_bp.1 as f32)),
             ("uStageZoom",UniformValue::Float((2_f64/leaf_per_screen) as f32)),

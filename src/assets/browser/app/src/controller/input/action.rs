@@ -3,7 +3,7 @@ use controller::global::App;
 use composit::StickManager;
 
 use model::stage::{ bp_to_zoomfactor, zoomfactor_to_bp };
-use model::train::TrainContext;
+use model::train::FocusObjectId;
 
 use serde_json::Value as JSONValue;
 
@@ -187,8 +187,8 @@ fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payl
 
 fn exe_set_focus(a: &mut App, id: &str) {
     console!("set focus object to id {}",id);
-    let context = TrainContext::new(&Some(id.to_string()));
-    a.get_window().get_train_manager().set_desired_context(&context);
+    let focus_object = FocusObjectId::new(&Some(id.to_string()));
+    a.get_window().get_train_manager().set_desired_focus_object_id(&focus_object);
     a.get_report().set_status("focus",&id);
 }
 

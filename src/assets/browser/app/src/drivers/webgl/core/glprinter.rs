@@ -209,13 +209,11 @@ impl Printer for GLPrinter {
     fn print(&mut self, screen: &Screen, window: &mut WindowState) {
         let mut train_manager = window.get_train_manager();
         let zmls = { /* Architecture for ZMenus is broken! */
-            let prop_down = train_manager.get_prop_trans_down();
-            let prop_up = train_manager.get_prop_trans_up();
             let mut trainset = train_manager.get_trainset();
             let mut zmls = ZMenuLeafSet::new();
             /* get handles */
-            let current = GLTrainPrinter::new(&trainset.current(),prop_down,screen);
-            let transition = GLTrainPrinter::new(&trainset.transition(),prop_up,screen);
+            let current = GLTrainPrinter::new(&trainset.current(),screen);
+            let transition = GLTrainPrinter::new(&trainset.transition(),screen);
             /* load new data (maybe) */
             current.maybe_redraw(self,&mut zmls);
             transition.maybe_redraw(self,&mut zmls);
