@@ -28,6 +28,8 @@ pub enum Action {
     SetFocus(String),
     JumpFocus(String),
     Reset,
+    TrainTransitionOpacity(f64,bool),
+    TrainTransitionComplete,
 }
 
 impl Action {
@@ -57,6 +59,8 @@ impl Action {
             Action::ShowZMenu(_,_,_,_) => 25,
             Action::SetFocus(_) => 20,
             Action::JumpFocus(_) => 20,
+            Action::TrainTransitionOpacity(_,_) => 22,
+            Action::TrainTransitionComplete => 23,
             Action::Reset => 25,
             Action::Settled => 30,
         }
@@ -203,6 +207,16 @@ fn exe_jump_focus(a: &mut App, id: &str) {
     tm.jump_to_focus_object();
 }
 
+fn exe_train_transition_complete(a: &mut App) {
+    let mut tm = a.get_window().get_train_manager().clone();
+    tm.transition_complete();
+}
+
+fn exe_train_transition_opacity(a: &mut App, prop: f64, transition: bool) {
+    let mut tm = a.get_window().get_train_manager().clone();
+    tm.set_opacity(prop,transition);
+}
+
 pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
     cg.with_counter(|c| c.lock());
     let mut evs = evs.to_vec();
@@ -232,6 +246,8 @@ pub fn actions_run(cg: &mut App, evs: &Vec<Action>, currency: Option<f64>) {
             Action::ShowZMenu(id,track_id,pos,payload) => exe_zmenu_show(cg,&id,&track_id,pos,payload),
             Action::Reset => exe_reset(cg),
             Action::ActivityOutsideZMenu => exe_deactivate(cg),
+            Action::TrainTransitionOpacity(prop,transition) => exe_train_transition_opacity(cg,prop,transition),
+            Action::TrainTransitionComplete => exe_train_transition_complete(cg),
             Action::Noop => ()
         }
     }

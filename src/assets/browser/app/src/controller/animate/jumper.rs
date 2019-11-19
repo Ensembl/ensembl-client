@@ -6,13 +6,15 @@ use url::Url;
 use serde_json::Value as JSONValue;
 
 use composit::{ Stick, StickManager };
-use controller::animate::{ action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang };
+use controller::animate::{ action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang, action_zhoosh_fade };
 use controller::global::App;
 use controller::input::Action;
 use dom::domutil::browser_time;
 use types::{ Dot,LEFT, RIGHT };
 use model::stage::{ Position, bp_to_zoomfactor, zoomfactor_to_bp };
 use model::train::TrainManager;
+
+use super::crossfade::{ CrossFade, CrossFader };
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 use zhoosh::{ Zhoosh, ZhooshSequenceControl, ZhooshStep };
@@ -21,16 +23,27 @@ const ZHOOSH_TIME : f64 = 1000.; /* ms */
 const ZHOOSH_PAUSE : f64 = 100.; /* ms */
 const ZHOOSH_MIN_ZOOM : f64 = 3.; /* minimum zoom which should require full ZHOOSH_TIME */
 const ZHOOSH_MIN_MOVE : f64 = 0.25; /* minimum screenfulls which should require full ZHOOSH_TIME */
+const MS_FADE_FAST : f64 = 250.;
+const MS_FADE_SLOW : f64 = 2000.;
+const CROSSFADE_WHITENESS : f64 = 0.6; /* [0,1]. lower value => more dip to white */
 
 struct Jumper {
     control: Option<ZhooshSequenceControl>,
     zoom_zhoosh: Zhoosh<PendingActions,f64>,
     bang_zhoosh: Zhoosh<PendingActions,Option<(String,Dot<f64,f64>,f64)>>,
-    settled_zhoosh: Zhoosh<PendingActions,bool>
+    settled_zhoosh: Zhoosh<PendingActions,bool>,
+    slow_fade_zhoosh: Zhoosh<PendingActions,CrossFade>,
+    fast_fade_zhoosh: Zhoosh<PendingActions,CrossFade>,
+    fade_done_zhoosh: Zhoosh<PendingActions,()>
 }
 
 lazy_static! {
     static ref JUMPER : Arc<Mutex<Jumper>> = Arc::new(Mutex::new(Jumper::new()));
+}
+
+fn fade_cb(act: &mut PendingActions, cf: CrossFade) {
+    act.add(Action::TrainTransitionOpacity(cf.get_prop_down(),false));
+    act.add(Action::TrainTransitionOpacity(cf.get_prop_up(),true));
 }
 
 impl Jumper {
@@ -50,8 +63,14 @@ impl Jumper {
                 act.add(Action::Settled);
             }
         });
+        let slow_fade_zhoosh = action_zhoosh_fade(MS_FADE_SLOW,CrossFader(CROSSFADE_WHITENESS,1.0),fade_cb);
+        let fast_fade_zhoosh = action_zhoosh_fade(MS_FADE_FAST,CrossFader(1.0,0.0),fade_cb);
+        let fade_done_zhoosh = action_zhoosh_bang(0.,|act,_| {
+            act.add(Action::TrainTransitionComplete);
+        });
         Jumper {
-            zoom_zhoosh, bang_zhoosh, settled_zhoosh,
+            zoom_zhoosh, bang_zhoosh, settled_zhoosh, slow_fade_zhoosh, fast_fade_zhoosh,
+            fade_done_zhoosh,
             control: None
         }
     }
@@ -120,8 +139,26 @@ impl Jumper {
         }
         self.do_offscreen_jump(&mut app,stick,Dot(dest_pos,0.),dest_size);
     }
+
+    fn fade(&mut self, app: &mut App, fast: bool) {
+        let animator = app.get_window().get_animator();
+        // XXX abandoning cleanly
+        if let Some(ref mut control) = self.control {
+            control.abandon();
+        }
+        let mut seq = animator.new_sequence();
+        let fade_z = if fast { &self.fast_fade_zhoosh } else { &self.slow_fade_zhoosh };
+        let fade_zs = animator.new_step(&mut seq,&fade_z,CrossFade::start(),CrossFade::end());
+        let end_zs = animator.new_step(&mut seq,&self.fade_done_zhoosh,(),());
+        seq.add_trigger(&end_zs,&fade_zs,1.,0.);
+        self.control = Some(animator.run(seq));
+    }
 }
 
 pub fn animate_jump_to(mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
     JUMPER.lock().unwrap().jump(app,stick,dest_pos,dest_size);
+}
+
+pub fn animate_fade(mut app: &mut App, fast: bool) {
+    JUMPER.lock().unwrap().fade(app,fast);
 }

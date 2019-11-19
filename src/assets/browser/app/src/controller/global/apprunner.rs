@@ -10,7 +10,8 @@ use controller::global::{ App, GlobalWeak };
 use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use controller::input::register_dom_events;
 use drivers::domel::{ register_user_events };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter, animate_jump_to };
+use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
+use controller::animate::animate_jump_to;
 
 #[cfg(any(not(deploy),console))]
 use data::blackbox::{

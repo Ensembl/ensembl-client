@@ -10,6 +10,8 @@ use zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshSequenceControl, ZhooshStepHandle, Zh
 use controller::input::Action;
 use types::Dot;
 
+use super::crossfade::{ CrossFade, CrossFader };
+
 /* DotOps: All about the Dot type, for the benefit of zhoosh */
 
 struct DotOps<X,Y>(PhantomData<X>,PhantomData<Y>);
@@ -64,6 +66,11 @@ pub fn action_zhoosh_pos<F,X,Y>(max_time: f64, min_speed: f64, delay: f64, cb: F
 pub fn action_zhoosh_zoom<F>(max_time: f64, min_speed: f64, delay: f64, cb: F) -> Zhoosh<PendingActions,f64>
             where F: Fn(&mut PendingActions,f64) + 'static +Send+Sync {
     Zhoosh::new(max_time,min_speed,delay,ZhooshShape::Quadratic(1.),ZHOOSH_LINEAR_F64_OPS,cb)
+}
+
+pub fn action_zhoosh_fade<F>(max_time: f64, crossfader: CrossFader, cb: F) -> Zhoosh<PendingActions,CrossFade>
+            where F: Fn(&mut PendingActions,CrossFade) + 'static+Send+Sync {
+    Zhoosh::new(max_time,0.,0.,ZhooshShape::Linear,crossfader,cb)
 }
 
 /* Main access for animators */

@@ -172,7 +172,7 @@ impl App {
         out
     }
         
-    pub fn run_actions(self: &mut App, evs: &Vec<Action>,currency: Option<f64>) {
+    pub fn run_actions(&mut self, evs: &Vec<Action>,currency: Option<f64>) {
         if self.report.is_some() {
             if currency.is_none() || self.with_counter(|c| c.is_current(currency.unwrap())) {
                 if self.action_backlog.len() > 0 {
@@ -188,7 +188,7 @@ impl App {
         console!("backlogging to {:?}",self.action_backlog);
     }
     
-    pub fn check_size(self: &mut App) {
+    pub fn check_size(&mut self) {
         let sz = self.printer.lock().unwrap().get_available_size();
         let now = domutil::browser_time();
         if self.size == None || self.size.unwrap() != sz {
@@ -204,11 +204,11 @@ impl App {
         }
     }
 
-    pub fn check_gone(self: &mut App) -> bool {
+    pub fn check_gone(&mut self) -> bool {
         !domutil::in_page(&self.canv_el)
     }
 
-    pub fn force_size(self: &mut App, sz: Dot<f64,f64>) {
+    pub fn force_size(&mut self, sz: Dot<f64,f64>) {
         self.stage_resize = Some(sz);
         self.get_screen_mut().set_size(&sz);
         let size = self.get_screen().get_size();

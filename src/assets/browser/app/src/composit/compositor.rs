@@ -7,7 +7,7 @@ use model::supply::{ Product };
 use model::train::{ Train, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
-use controller::global::{ AppRunner, WindowState };
+use controller::global::{ App, AppRunner, WindowState };
 use controller::output::Report;
 use data::{ Psychic, PsychicPacer, XferCache };
 use types::Dot;
@@ -75,8 +75,6 @@ impl Compositor {
         self.current_componentset = self.wanted_componentset.clone();
         /* Warm up xfercache */
         self.prime_cache(t);
-        /* Move into future */
-        self.window.get_train_manager().tick(t);
         /* Manage useful leafs */
         if self.updated {
             if let Some(prev_t) = self.last_updated {
@@ -133,10 +131,12 @@ impl Compositor {
 
 pub fn register_compositor_ticks(ar: &mut AppRunner) {
     ar.add_timer("compositor",|app,t,_| {
+        let mut tm = app.get_window().get_train_manager().clone();
+        tm.tick(app,t);
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
         app.get_window().get_train_manager().set_bottom(max_y as f64);
         app.update_position();
-        vec!{}
+        vec![]
     },2);
 }

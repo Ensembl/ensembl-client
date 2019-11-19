@@ -16,8 +16,10 @@ use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Stick, Scale, StateManager };
-use controller::animate::TrainManagerTransition;
-use controller::output::{ Report, ViewportReport };
+use controller::animate::animate_fade;
+use controller::global::App;
+use controller::input::Action;
+use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ Locator, XferConsumer };
 use model::driver::PrinterManager;
 use model::item::{ DeliveredItem, ItemUnpacker };
@@ -76,8 +78,6 @@ pub struct TrainManagerImpl {
     traveller_creator: TravellerCreator,
     /* the trains themselves */
     trainset: TrainSet,
-    /* progress of transition */
-    transition: TrainManagerTransition,
     /* zmenus */
     zmr: ZMenuRegistry,
     /* current position/scale */
@@ -97,7 +97,6 @@ impl TrainManagerImpl {
                 future_train: None,
                 transition_train: None
             },
-            transition: TrainManagerTransition::new(),
             desired: Desired::new(),
             focus_stick: AsyncValue::new(Some(None)),
             focus_location: AsyncValue::new(Some(None)),
@@ -163,26 +162,29 @@ impl TrainManagerImpl {
      * ********************************************************
      */
     
-    /* if there's a transition and it's reached endstop it is current */
-    fn transition_maybe_done(&mut self, t: f64) {
-        self.transition.update(t);
-        if let Some(train) = self.trainset.transition() {
-            if train.get_prop() >= 1. {
-                self.trainset.make_transition_current();
-                self.transition.reset();
-            }
-        }
-        let prop = self.transition.get_prop();
-        if let Some(train) = self.trainset.transition_mut() {
-            train.set_prop(prop.get_prop_up());
-        }
-        if let Some(train) = self.trainset.current_mut() {
-            train.set_prop(prop.get_prop_down());
+    fn set_opacity(&mut self, prop: f64, transition: bool) {
+        let mut trainset = &mut self.trainset;
+        let mut train = if transition { trainset.transition_mut() } else { trainset.current_mut() };
+        if let Some(train) = train.as_mut() {
+            train.set_prop(prop);
         }
     }
-        
+    
+    fn transition_complete(&mut self) {
+        self.trainset.make_transition_current();
+    }
+
+    fn transition_is_done(&mut self) -> bool {
+        if let Some(train) = self.trainset.transition() {
+            if train.get_prop() >= 1. {
+                return true;
+            }
+        }
+        false
+    }
+
     /* if there is a future train and it is done, move to transition */
-    fn future_ready(&mut self, t: f64) {
+    fn future_ready(&mut self, app: &mut App, t: f64) {
         if !self.desired.is_ready() { return; }
         /* is it ready? */
         let mut ready = false;
@@ -202,16 +204,14 @@ impl TrainManagerImpl {
                     slow = true;
                 }
             }
-            console!("starting transition");
-            self.transition.start(t,slow);
+            animate_fade(app,!slow);
         }
     }
     
     /* called regularly by compositor to let us perform transitions */
-    pub fn tick(&mut self, t: f64) {
+    pub fn tick(&mut self, app: &mut App, t: f64) {
         self.each_train(|t| { t.check_done(); });
-        self.transition_maybe_done(t);
-        self.future_ready(t);
+        self.future_ready(app,t);
     }
 
     fn each_train<F>(&mut self, mut cb: F)
@@ -462,9 +462,9 @@ impl TrainManager {
         self.0.lock().unwrap().get_desired_stick().cloned()
     }
 
-    pub fn tick(&mut self, t: f64) {
+    pub fn tick(&mut self, app: &mut App, t: f64) {
         let mut imp = self.0.lock().unwrap();
-        imp.tick(t);
+        imp.tick(app,t);
         /* Do we need to schedule finding the focus location? */
         if imp.investigate_focus_location() {
             if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
@@ -552,6 +552,15 @@ impl TrainManager {
 
     pub fn jump_to_focus_object(&mut self) {
         ok!(self.0.lock()).jump_to_focus_object();
+    }
+
+    pub fn transition_complete(&mut self) {
+        ok!(self.0.lock()).transition_complete();
+    }
+
+    pub fn set_opacity(&mut self, prop: f64, transition: bool) {
+        ok!(self.0.lock()).set_opacity(prop,transition);
+
     }
 }
 
