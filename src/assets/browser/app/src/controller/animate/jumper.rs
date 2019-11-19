@@ -28,7 +28,9 @@ const MS_FADE_SLOW : f64 = 2000.;
 const CROSSFADE_WHITENESS : f64 = 0.6; /* [0,1]. lower value => more dip to white */
 
 struct Jumper {
+    /* where should we be animating to right now? */
     jump_control: Option<ZhooshSequenceControl>,
+    /* the individual zhooshes */
     zoom_zhoosh: Zhoosh<PendingActions,f64>,
     bang_zhoosh: Zhoosh<PendingActions,Option<(String,Dot<f64,f64>,f64)>>,
     settled_zhoosh: Zhoosh<PendingActions,bool>,

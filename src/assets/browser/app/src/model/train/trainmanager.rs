@@ -83,8 +83,11 @@ pub struct TrainManagerImpl {
     zmr: ZMenuRegistry,
     /* current position/scale */
     desired: Desired,
+    focus_object: Option<FocusObjectId>,
     focus_stick: AsyncValue<Option<Stick>>,
-    focus_location: AsyncValue<Option<(f64,f64)>>
+    focus_location: AsyncValue<Option<(f64,f64)>>,
+    /* where we would go right now if the right stick were displayed */
+    animation_request: Option<(Stick,FocusObjectId,f64,f64)>
 }
 
 impl TrainManagerImpl {
@@ -100,7 +103,9 @@ impl TrainManagerImpl {
             desired: Desired::new(),
             focus_stick: AsyncValue::new(Some(None)),
             focus_location: AsyncValue::new(Some(None)),
-            zmr: ZMenuRegistry::new()
+            focus_object: None,
+            zmr: ZMenuRegistry::new(),
+            animation_request: None
         }
     }
     
@@ -265,7 +270,7 @@ impl TrainManagerImpl {
     
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self) {
-        if !self.desired.is_ready() || self.focus_stick.get().is_none() { return; }
+        if !self.desired.is_ready() || self.focus_stick.get().is_none() { return; } // why if no focus stick?
         let mut end_future = false;
         let mut new_future = false;
         if let Some(desired_future_train_id) = self.desired.get_train_id() {
@@ -350,13 +355,14 @@ impl TrainManagerImpl {
             }
         }
         console!("focus change to {:?}",context);
+        self.focus_object = Some(context.clone());
         self.desired.set_focus_object_id(context.clone());
         self.maybe_change_trains();
     }
     
     pub fn jump_to_focus_object(&mut self, animator: &mut ActionAnimator) {
         if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
-            self.maybe_satisfy_pending_jump(animator);
+            self.try_to_queue_animation(animator);
         }
     }
 
@@ -406,18 +412,29 @@ impl TrainManagerImpl {
         }
     }
 
-    fn maybe_satisfy_pending_jump(&mut self, animator: &mut ActionAnimator) {
-        if let (Some(Some(stick)),Some(Some((middle,zoom)))) = (self.focus_stick.get(),self.focus_location.get()) {
-            if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
-                animate_jump_to(&self.get_desired_stick().cloned(),&self.get_desired_position(),animator,&stick.get_name(),*middle,*zoom);
-            }
+    fn try_to_queue_animation(&mut self, animator: &mut ActionAnimator) {
+        let stick = self.focus_stick.get().cloned();
+        let location = self.focus_location.get().cloned();
+        let focus = self.focus_object.clone();
+        if let (Some(Some(stick)),Some(Some((middle,zoom))),Some(focus)) = (stick,location,focus) {
+            self.animation_request = Some((stick,focus,middle,zoom));
+            self.try_to_animate(animator);
+        }
+    }
+
+    fn try_to_animate(&mut self, animator: &mut ActionAnimator) {
+        if let Some((ref stick,ref focus,ref middle,ref zoom)) = self.animation_request {
+            let src_stick = self.get_desired_stick();
+            let src_pos = self.get_desired_position();
+            animate_jump_to(&src_stick.cloned(),&src_pos,animator,&stick.get_name(),*middle,*zoom);
+            self.animation_request = None;
         }
     }
 
     pub fn set_focus_location(&mut self, animator: &mut ActionAnimator, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
         self.focus_stick.set(Some(stick.clone()));
         self.focus_location.set(Some((middle,zoom)));
-        self.maybe_satisfy_pending_jump(animator);
+        self.try_to_queue_animation(animator);
     }
 }
 
@@ -453,7 +470,6 @@ impl TrainManager {
         imp.tick(app,t);
         /* Do we need to schedule finding the focus location? */
         if imp.investigate_focus_location() {
-            console!("D");
             if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
                 let other = self.clone();
                 let inner_focus_object = focus_object.clone();
