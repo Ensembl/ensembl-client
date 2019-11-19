@@ -197,14 +197,14 @@ fn exe_set_focus(a: &mut App, id: &str) {
 }
 
 fn exe_reset(a: &mut App) {
-    let tm = a.get_window().get_train_manager();
-    tm.jump_to_focus_object();
+    let mut tm = a.get_window().get_train_manager().clone();
+    tm.jump_to_focus_object(a);
 }
 
 fn exe_jump_focus(a: &mut App, id: &str) {
     let mut tm = a.get_window().get_train_manager().clone();
     exe_set_focus(a,id);
-    tm.jump_to_focus_object();
+    tm.jump_to_focus_object(a);
 }
 
 fn exe_train_transition_complete(a: &mut App) {

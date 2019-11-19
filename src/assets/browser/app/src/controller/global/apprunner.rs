@@ -181,15 +181,6 @@ impl AppRunner {
                 }
                 vec![]
             },2);
-            /* jumping */
-            self.add_timer("get-jump",move |app,_,_| {
-                let tm = app.get_window().get_train_manager();
-                if let Some((stick,pos,scale)) = tm.pull_pending_focus_jump() {
-                    vec![OutputAction::Jump(stick,pos,scale)]
-                } else {
-                    vec![]
-                }
-            },0);
             /* resize check */
             self.add_timer("resizer",move |app,_,_| {
                 app.check_size();
@@ -238,11 +229,6 @@ impl AppRunner {
     pub fn find_app(&mut self, el: &HtmlElement) -> bool {
         let imp = self.0.lock().unwrap();
         domutil::ancestor(el,&imp.el) || domutil::ancestor(&imp.el,el)
-    }
-
-    pub fn jump(&mut self, stick: &str, dest_pos: f64, dest_size: f64) {
-        let mut imp = self.0.lock().unwrap();
-        animate_jump_to(&mut imp.app.lock().unwrap(), stick, dest_pos, dest_size);
     }
 }
 

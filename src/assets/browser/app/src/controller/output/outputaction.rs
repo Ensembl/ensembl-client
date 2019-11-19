@@ -8,7 +8,6 @@ use dom::domutil;
 #[derive(Clone)]
 pub enum OutputAction {
     SendCustomEvent(String,JSONValue),
-    Jump(Stick,f64,f64),
     Destroy,
     Loop(Vec<Action>)
 }
@@ -22,9 +21,6 @@ impl OutputAction {
             },
             OutputAction::Destroy => {
                 ar.destroy()
-            },
-            OutputAction::Jump(stick,pos,zoom) => {
-                ar.jump(&stick.get_name(),*pos,*zoom);
             },
             OutputAction::Loop(actions) => {
                 let app = ar.state();

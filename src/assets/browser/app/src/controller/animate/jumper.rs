@@ -6,7 +6,7 @@ use url::Url;
 use serde_json::Value as JSONValue;
 
 use composit::{ Stick, StickManager };
-use controller::animate::{ action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang, action_zhoosh_fade };
+use controller::animate::{ ActionAnimator, action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang, action_zhoosh_fade };
 use controller::global::App;
 use controller::input::Action;
 use dom::domutil::browser_time;
@@ -28,7 +28,7 @@ const MS_FADE_SLOW : f64 = 2000.;
 const CROSSFADE_WHITENESS : f64 = 0.6; /* [0,1]. lower value => more dip to white */
 
 struct Jumper {
-    control: Option<ZhooshSequenceControl>,
+    jump_control: Option<ZhooshSequenceControl>,
     zoom_zhoosh: Zhoosh<PendingActions,f64>,
     bang_zhoosh: Zhoosh<PendingActions,Option<(String,Dot<f64,f64>,f64)>>,
     settled_zhoosh: Zhoosh<PendingActions,bool>,
@@ -71,7 +71,7 @@ impl Jumper {
         Jumper {
             zoom_zhoosh, bang_zhoosh, settled_zhoosh, slow_fade_zhoosh, fast_fade_zhoosh,
             fade_done_zhoosh,
-            control: None
+            jump_control: None
         }
     }
 
@@ -96,8 +96,7 @@ impl Jumper {
         return dest_end < screen_left || dest_start > screen_right;
     }
 
-    fn do_offscreen_jump(&mut self, app: &mut App, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
-        let animator = app.get_window().get_animator();
+    fn do_offscreen_jump(&mut self, animator: &mut ActionAnimator, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         let mut seq = animator.new_sequence();
         let bang_z = animator.new_step(&mut seq,&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
@@ -106,8 +105,7 @@ impl Jumper {
         animator.run(seq);
     }
 
-    fn do_onscreen_jump(&mut self, app: &mut App, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
-        let animator = app.get_window().get_animator();
+    fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
         let current_middle = current_position.get_middle();
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
@@ -123,40 +121,40 @@ impl Jumper {
             seq.add_trigger(&zoom_z,&pos_z,1.,ZHOOSH_PAUSE);
             seq.add_trigger(&all_z,&zoom_z,1.,0.);
         }
-        self.control = Some(animator.run(seq));
+        self.jump_control = Some(animator.run(seq));
     }
 
-    fn jump(&mut self, mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
-        if let Some(ref mut control) = self.control {
-            control.abandon();
+    fn jump(&mut self, src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
+        if let Some(ref mut control) = self.jump_control {
+            //control.abandon();
         }
-        let train_manager = app.get_window().get_train_manager();
-        if let (Some(src_stick),Some(src_position)) = (train_manager.get_desired_stick(),train_manager.get_desired_position()) {
+        if let (Some(src_stick),Some(src_position)) = (src_stick,src_position) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
-                self.do_onscreen_jump(&mut app,&src_position,Dot(dest_pos,0.),dest_size);
+                self.do_onscreen_jump(animator,&src_position,Dot(dest_pos,0.),dest_size);
                 return;
             }
         }
-        self.do_offscreen_jump(&mut app,stick,Dot(dest_pos,0.),dest_size);
+        self.do_offscreen_jump(animator,stick,Dot(dest_pos,0.),dest_size);
     }
 
     fn fade(&mut self, app: &mut App, fast: bool) {
         let animator = app.get_window().get_animator();
         // XXX abandoning cleanly
-        if let Some(ref mut control) = self.control {
-            control.abandon();
+        if let Some(ref mut control) = self.jump_control {
+            //control.abandon();
         }
         let mut seq = animator.new_sequence();
         let fade_z = if fast { &self.fast_fade_zhoosh } else { &self.slow_fade_zhoosh };
         let fade_zs = animator.new_step(&mut seq,&fade_z,CrossFade::start(),CrossFade::end());
         let end_zs = animator.new_step(&mut seq,&self.fade_done_zhoosh,(),());
         seq.add_trigger(&end_zs,&fade_zs,1.,0.);
-        self.control = Some(animator.run(seq));
+        animator.run(seq);
+        //self.control = Some(animator.run(seq));
     }
 }
 
-pub fn animate_jump_to(mut app: &mut App, stick: &str, dest_pos: f64, dest_size: f64) {
-    JUMPER.lock().unwrap().jump(app,stick,dest_pos,dest_size);
+pub fn animate_jump_to(src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
+    JUMPER.lock().unwrap().jump(src_stick,src_position,animator,stick,dest_pos,dest_size);
 }
 
 pub fn animate_fade(mut app: &mut App, fast: bool) {

@@ -16,7 +16,7 @@ use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use std::sync::{ Arc, Mutex };
 
 use composit::{ Stick, Scale, StateManager };
-use controller::animate::animate_fade;
+use controller::animate::{ ActionAnimator, animate_fade, animate_jump_to };
 use controller::global::App;
 use controller::input::Action;
 use controller::output::{ OutputAction, Report, ViewportReport };
@@ -51,6 +51,7 @@ impl TrainSet {
     }
 
     fn make_future_transition(&mut self) {
+        bb_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
         self.transition_train = self.future_train.take();
     }
 
@@ -83,8 +84,7 @@ pub struct TrainManagerImpl {
     /* current position/scale */
     desired: Desired,
     focus_stick: AsyncValue<Option<Stick>>,
-    focus_location: AsyncValue<Option<(f64,f64)>>,
-    pending_focus_jump: Awaiting<String,(Stick,f64,f64)>
+    focus_location: AsyncValue<Option<(f64,f64)>>
 }
 
 impl TrainManagerImpl {
@@ -100,7 +100,6 @@ impl TrainManagerImpl {
             desired: Desired::new(),
             focus_stick: AsyncValue::new(Some(None)),
             focus_location: AsyncValue::new(Some(None)),
-            pending_focus_jump: Awaiting::new(),
             zmr: ZMenuRegistry::new()
         }
     }
@@ -196,7 +195,6 @@ impl TrainManagerImpl {
         }
         /* if future ready, transition empty, start one */
         if ready && self.trainset.transition_train.is_none() {
-            bb_log!("trainmanager","future train is transitioning {:?}",self.trainset.future_train.as_ref().map(|x| x.get_train_id().clone()));
             self.trainset.make_future_transition();
             let mut slow = false;
             if let (Some(transition_train),Some(current_train)) = (self.trainset.transition_train.as_ref(),self.trainset.current_train.as_ref()) {
@@ -336,7 +334,9 @@ impl TrainManagerImpl {
     }
 
     fn investigate_focus_location(&mut self) -> bool { 
-        self.focus_stick.investigate() || self.focus_location.investigate()
+        let a = self.focus_stick.investigate();
+        let b = self.focus_location.investigate();
+        a || b
     }
 
     pub fn set_desired_focus_object_id(&mut self, context: &FocusObjectId) {
@@ -354,10 +354,9 @@ impl TrainManagerImpl {
         self.maybe_change_trains();
     }
     
-    pub fn jump_to_focus_object(&mut self) {
+    pub fn jump_to_focus_object(&mut self, animator: &mut ActionAnimator) {
         if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
-            self.pending_focus_jump.await(focus_object.to_string());
-            self.maybe_satisfy_pending_jump();
+            self.maybe_satisfy_pending_jump(animator);
         }
     }
 
@@ -407,28 +406,18 @@ impl TrainManagerImpl {
         }
     }
 
-    fn maybe_satisfy_pending_jump(&mut self) {
+    fn maybe_satisfy_pending_jump(&mut self, animator: &mut ActionAnimator) {
         if let (Some(Some(stick)),Some(Some((middle,zoom)))) = (self.focus_stick.get(),self.focus_location.get()) {
             if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
-                self.pending_focus_jump.notify(focus_object.to_string(),(stick.clone(),*middle,*zoom));
+                animate_jump_to(&self.get_desired_stick().cloned(),&self.get_desired_position(),animator,&stick.get_name(),*middle,*zoom);
             }
         }
     }
 
-    pub fn set_focus_location(&mut self, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
+    pub fn set_focus_location(&mut self, animator: &mut ActionAnimator, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
         self.focus_stick.set(Some(stick.clone()));
         self.focus_location.set(Some((middle,zoom)));
-        self.maybe_satisfy_pending_jump();
-    }
-
-    fn pull_pending_focus_jump(&mut self) -> Option<(Stick,f64,f64)> {
-        let value : Option<(Stick,f64,f64)> = self.pending_focus_jump.get().cloned().clone();
-        if let Some(v) = value {
-            self.pending_focus_jump = Awaiting::new();
-            Some(v.clone())
-        } else {
-            None
-        }
+        self.maybe_satisfy_pending_jump(animator);
     }
 }
 
@@ -450,29 +439,27 @@ impl TrainManager {
         self.0.lock().unwrap().update_report(report);
     }
 
-    pub fn pull_pending_focus_jump(&mut self) -> Option<(Stick,f64,f64)> {
-        ok!(self.0.lock()).pull_pending_focus_jump()
-    }
-
     pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
         self.0.lock().unwrap().set_desired_stick(st)
     }
 
-    pub fn get_desired_stick(&mut self) -> Option<Stick> {
+    pub fn get_desired_stick(&self) -> Option<Stick> {
         self.0.lock().unwrap().get_desired_stick().cloned()
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) {
+        let mut animator = app.get_window().get_animator().clone();
         let mut imp = self.0.lock().unwrap();
         imp.tick(app,t);
         /* Do we need to schedule finding the focus location? */
         if imp.investigate_focus_location() {
+            console!("D");
             if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
                 let other = self.clone();
                 let inner_focus_object = focus_object.clone();
                 self.1.locate(&focus_object,Box::new(move |_,stick,middle,zoom| {
                     let mut imp = other.0.lock().unwrap();
-                    imp.set_focus_location(&inner_focus_object,stick,middle,zoom);
+                    imp.set_focus_location(&mut animator,&inner_focus_object,stick,middle,zoom);
                 }));
             }
         }
@@ -550,8 +537,8 @@ impl TrainManager {
         ok!(self.0.lock()).update_viewport_report(report);
     }
 
-    pub fn jump_to_focus_object(&mut self) {
-        ok!(self.0.lock()).jump_to_focus_object();
+    pub fn jump_to_focus_object(&mut self, app: &mut App) {
+        ok!(self.0.lock()).jump_to_focus_object(app.get_window().get_animator());
     }
 
     pub fn transition_complete(&mut self) {
