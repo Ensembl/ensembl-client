@@ -33,7 +33,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint"
+      "eslint --max-warnings=0"
     ],
     "*.{scss}": [
       "stylelint"
