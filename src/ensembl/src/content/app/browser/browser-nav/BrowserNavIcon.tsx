@@ -2,6 +2,8 @@ import React, { FunctionComponent, memo } from 'react';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { BrowserNavItem } from '../browserConfig';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { Status } from 'src/shared/types/status';
 
 import iconStyles from './BrowserNavIcon.scss';
 
@@ -22,16 +24,17 @@ export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
     }
   };
 
-  const iconUrl = enabled ? icon.on : icon.off;
+  const iconStatus = enabled ? Status.ACTIVE : Status.INACTIVE;
 
   return (
-    <button
-      className={iconStyles.browserNavIcon}
-      title={browserNavItem.description}
-      onClick={navigateBrowser}
-    >
-      <img src={iconUrl} alt={browserNavItem.description} />
-    </button>
+    <div className={iconStyles.browserNavIcon}>
+      <ImageButton
+        buttonStatus={iconStatus}
+        description={browserNavItem.description}
+        onClick={navigateBrowser}
+        image={icon}
+      />
+    </div>
   );
 };
 
