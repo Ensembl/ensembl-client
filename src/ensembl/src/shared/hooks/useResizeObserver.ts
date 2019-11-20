@@ -1,6 +1,7 @@
 // modified from https://github.com/ZeeCoder/use-resize-observer/blob/master/src/index.js
 
 import { useEffect, useState, useRef, useMemo, RefObject } from 'react';
+import windowService from 'src/services/window-service';
 
 type Params<T> = {
   ref?: RefObject<T> | null;
@@ -27,6 +28,8 @@ export default function<T extends HTMLElement>(params: Params<T> = {}) {
       return;
     }
 
+    const ResizeObserver = windowService.getResizeObserver();
+    console.log('ResizeObserver', ResizeObserver);
     const resizeObserver = new ResizeObserver((entries) => {
       if (!Array.isArray(entries)) {
         return;
