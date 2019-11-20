@@ -118,9 +118,11 @@ impl ActionAnimator {
         seq.add(spec)
     }
 
-    pub fn run(&mut self, seq: ZhooshSequence) -> ZhooshSequenceControl {
+    pub fn run(&mut self, seq: ZhooshSequence, nmi: bool) -> ZhooshSequenceControl {
         let out = seq.run(&mut self.zhoosh_run.borrow_mut());
-        self.controls.push(out.clone());
+        if !nmi {
+            self.controls.push(out.clone());
+        }
         out
     }
 

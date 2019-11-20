@@ -104,7 +104,7 @@ impl Jumper {
         let bang_z = animator.new_step(&mut seq,&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
         seq.add_trigger(&all_z,&bang_z,1.,0.);
-        animator.run(seq);
+        animator.run(seq,false);
     }
 
     fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
@@ -123,7 +123,7 @@ impl Jumper {
             seq.add_trigger(&zoom_z,&pos_z,1.,ZHOOSH_PAUSE);
             seq.add_trigger(&all_z,&zoom_z,1.,0.);
         }
-        self.jump_control = Some(animator.run(seq));
+        self.jump_control = Some(animator.run(seq,false));
     }
 
     fn jump(&mut self, src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
@@ -150,7 +150,7 @@ impl Jumper {
         let fade_zs = animator.new_step(&mut seq,&fade_z,CrossFade::start(),CrossFade::end());
         let end_zs = animator.new_step(&mut seq,&self.fade_done_zhoosh,(),());
         seq.add_trigger(&end_zs,&fade_zs,1.,0.);
-        animator.run(seq);
+        animator.run(seq,true);
         //self.control = Some(animator.run(seq));
     }
 }

@@ -18,7 +18,7 @@ impl Carriage {
         Carriage {
             travellers: Vec::<Traveller>::new(),
             known_done: false,
-            needs_rebuild: Mutex::new(false),
+            needs_rebuild: Mutex::new(true),
             id: CarriageId::new(leaf,train_id)
         }
     }

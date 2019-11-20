@@ -109,7 +109,10 @@ impl GLCarriage {
             }
         }
         prog.execute(&self.ctx);
+    }
+
+    pub(super) fn finished_executions(&mut self) {
         self.data_stale = false;
         self.executed_camera = self.camera.clone();
-    }    
+    }
 }

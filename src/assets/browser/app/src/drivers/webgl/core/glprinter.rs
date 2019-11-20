@@ -181,6 +181,11 @@ impl GLPrinterBase {
                 }
             }
         }
+        for carriage_id in train.get_carriage_ids() {
+            if let Some(carriage) = self.carriages.get_mut(carriage_id) {
+                carriage.finished_executions();
+            }
+        }
     }
 }
 
