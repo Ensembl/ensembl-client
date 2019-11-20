@@ -29,7 +29,6 @@ export default function<T extends HTMLElement>(params: Params<T> = {}) {
     }
 
     const ResizeObserver = windowService.getResizeObserver();
-    console.log('ResizeObserver', ResizeObserver);
     const resizeObserver = new ResizeObserver((entries) => {
       if (!Array.isArray(entries)) {
         return;
