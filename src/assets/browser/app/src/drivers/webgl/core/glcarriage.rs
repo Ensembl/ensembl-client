@@ -77,10 +77,10 @@ impl GLCarriage {
     }
     
     fn get_uniforms(&self, camera: &GLCamera) -> Vec<(&'static str,UniformValue)> {
-        let bp_per_screen = camera.get_position().get_bumped_screen_in_bp();
+        let bp_per_screen = camera.get_position().get_bumped_screen_in_bp(camera.get_screen());
         let bp_per_leaf = self.leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
-        let middle_bp = camera.get_position().get_bumped_middle();
+        let middle_bp = camera.get_position().get_bumped_middle(camera.get_screen());
         let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
         let current_leaf_left = self.leaf.get_index() as f64;
         let screen_px = camera.get_screen().get_size();

@@ -9,7 +9,6 @@ use types::{ Dot, LEFT, RIGHT, DOWN };
 
 #[derive(Debug)]
 pub(super) struct Desired {
-    screen_size: Option<Dot<f64,f64>>,
     stick: Option<Stick>,
     bp_per_screen: Option<f64>,
     middle: Option<Dot<f64,f64>>,
@@ -21,7 +20,6 @@ pub(super) struct Desired {
 impl Desired {
     pub(super) fn new() -> Desired {
         Desired {
-            screen_size: None,
             stick: None,
             bp_per_screen: None,
             middle: None,
@@ -44,7 +42,7 @@ impl Desired {
         position.set_limit(screen,&RIGHT,self.stick.as_ref().unwrap().length() as f64);
         position.set_limit(screen,&DOWN,self.bottom.unwrap());
         position.set_wrapping(screen,&self.stick.as_ref().unwrap().get_wrapping());
-        position.inform_screen_size(&self.screen_size.as_ref().unwrap(),screen);
+        position.inform_screen_size(screen);
         position.set_middle(self.middle.as_ref().unwrap(),screen);
         position.set_screen_in_bp(self.bp_per_screen.unwrap());
         position
@@ -78,9 +76,8 @@ impl Desired {
     }
 
     pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
-        self.screen_size = Some(screen_size.clone());
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.inform_screen_size(screen_size,screen);
+            position.inform_screen_size(screen);
         }
     }
 
@@ -99,7 +96,6 @@ impl Desired {
         self.stick.is_some() &&
         self.bp_per_screen.is_some() &&
         self.middle.is_some() &&
-        self.screen_size.is_some() &&
         self.bottom.is_some()
     }
 

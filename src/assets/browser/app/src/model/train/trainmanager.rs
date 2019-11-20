@@ -148,7 +148,7 @@ impl TrainManagerImpl {
         self.desired.inform_screen_size(screen_size,screen);
         self.maybe_change_trains(screen);
         self.each_train(|t|
-            t.get_position_mut().inform_screen_size(screen_size,screen)
+            t.get_position_mut().inform_screen_size(screen)
         );
     }
 

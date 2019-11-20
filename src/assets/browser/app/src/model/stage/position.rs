@@ -8,7 +8,6 @@ use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 pub struct Position {
     pos: Dot<f64,f64>,
     zoom: Zoom,
-    screen_size: Dot<f64,f64>,
     max_y: i32,
     min_x: f64,
     max_x: f64,
@@ -19,7 +18,6 @@ pub struct Position {
 impl Position {
     pub fn new() -> Position {
         Position {
-            screen_size: Dot(0.,0.),
             pos: Dot(0.,0.),
             zoom: Zoom::new(),
             max_y: 0, min_x: 0., max_x: 0.,
@@ -28,13 +26,11 @@ impl Position {
         }
     }
     
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
-        self.screen_size = *screen_size;
+    pub fn inform_screen_size(&mut self, screen: &Screen) {
         self.check_own_limits(screen);
     }
     
     pub fn set_middle(&mut self, pos: &Dot<f64,f64>, screen: &Screen) {
-        bb_log!("resize","set_middle");
         self.pos = *pos;
         self.check_own_limits(screen);
     }
@@ -43,8 +39,8 @@ impl Position {
         self.zoom.get_screen_in_bp()
     }
 
-    pub fn get_bumped_screen_in_bp(&self) -> f64 {
-        let delta = self.px_to_bp(self.min_x_bumper) + self.px_to_bp(self.max_x_bumper);
+    pub fn get_bumped_screen_in_bp(&self, screen: &Screen) -> f64 {
+        let delta = self.px_to_bp(self.min_x_bumper,screen) + self.px_to_bp(self.max_x_bumper,screen);
         self.zoom.get_screen_in_bp()+delta
     }
     
@@ -63,15 +59,16 @@ impl Position {
     fn middle_to_edge(&self, which: &Direction, screen: &Screen, bump: bool) -> f64 {
         let bp = self.get_screen_in_bp();
         let (bump_min,bump_max) = if bump {
-            (self.px_to_bp(self.min_x_bumper),self.px_to_bp(self.max_x_bumper))
+            (self.px_to_bp(self.min_x_bumper,screen),self.px_to_bp(self.max_x_bumper,screen))
         } else {
             (0.,0.)
         };
+        let screen_y_height = screen.get_size().1;
         match *which {
             LEFT =>  - bp/2. + bump_min,
             RIGHT => bp/2. - bump_max,
-            UP =>    - self.screen_size.1 as f64/2.,
-            DOWN =>  self.screen_size.1 as f64/2.,
+            UP =>    - screen_y_height as f64/2.,
+            DOWN =>  screen_y_height as f64/2.,
             IN|OUT => 0.
         }
     }
@@ -104,9 +101,9 @@ impl Position {
         Dot(self.pos.0,self.pos.1)
     }
 
-    pub fn get_bumped_middle(&self) -> Dot<f64,f64> {
-        let left_bp = self.px_to_bp(self.min_x_bumper);
-        let right_bp = self.px_to_bp(self.max_x_bumper);
+    pub fn get_bumped_middle(&self, screen: &Screen) -> Dot<f64,f64> {
+        let left_bp = self.px_to_bp(self.min_x_bumper,screen);
+        let right_bp = self.px_to_bp(self.max_x_bumper,screen);
         /*
         inner centre is at self.pos.0
         inner left is at self.pos.0 - bp_per_sc/2
@@ -120,16 +117,16 @@ impl Position {
         Dot(self.pos.0+(right_bp-left_bp)/2.,self.pos.1)
     }
 
-    fn px_to_bp(&self, px: f64) -> f64 {
-        px / self.screen_size.0 as f64 * self.zoom.get_screen_in_bp()
+    fn px_to_bp(&self, px: f64, screen: &Screen) -> f64 {
+        px / screen.get_size().0 as f64 * self.zoom.get_screen_in_bp()
     }
 
-    fn set_limit_min_zoom(&mut self) {
+    fn set_limit_min_zoom(&mut self, screen: &Screen) {
         let max_bp =
             self.get_limit_of_edge(&RIGHT) - self.get_limit_of_edge(&LEFT)
             + 1.
-            + self.px_to_bp(self.min_x_bumper)
-            + self.px_to_bp(self.max_x_bumper);
+            + self.px_to_bp(self.min_x_bumper,screen)
+            + self.px_to_bp(self.max_x_bumper,screen);
         self.zoom.set_max_bp(max_bp);
     }
 
@@ -140,7 +137,7 @@ impl Position {
             DOWN => self.max_y = val as i32,
             _ => (),
         }
-        self.set_limit_min_zoom();
+        self.set_limit_min_zoom(screen);
         self.check_own_limits(screen);
     }
     
@@ -150,7 +147,7 @@ impl Position {
             RIGHT => self.max_x_bumper = val,
             _ => ()
         }
-        self.set_limit_min_zoom();
+        self.set_limit_min_zoom(screen);
         self.check_own_limits(screen);
     }
     
