@@ -78,10 +78,44 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     trackStatus
   } = props;
 
+  const updateTrackStates = (
+    trackId: string,
+    newStatus: TrackActivityStatus
+  ) => {
+    if (!activeGenomeId || !activeEnsObjectId) {
+      return;
+    }
+
+    // FIXME: Temporary hack until we have a set of proper track names
+    if (track.track_id.startsWith('track:gene')) {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          objectTracks: {
+            [activeEnsObjectId]: {
+              [categoryName]: {
+                [trackId]: newStatus
+              }
+            }
+          }
+        }
+      });
+    } else {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          commonTracks: {
+            [categoryName]: {
+              [trackId]: newStatus
+            }
+          }
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     const { defaultTrackStatus } = props;
     if (trackStatus !== defaultTrackStatus) {
-      updateGenomeBrowser(trackStatus);
+      updateGenomeBrowser(track.track_id, trackStatus);
     }
   }, []);
 
@@ -130,7 +164,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   };
 
   const toggleExpand = () => {
-    const { track_id: trackId } = props.track;
+    const { track_id: trackId } = track;
     const { isCollapsed } = props;
     props.updateCollapsedTrackIds({ trackId, isCollapsed: !isCollapsed });
   };
@@ -139,42 +173,23 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     const newStatus =
       trackStatus === Status.ACTIVE ? Status.INACTIVE : Status.ACTIVE;
 
-    updateGenomeBrowser(newStatus);
-
-    if (!activeGenomeId || !activeEnsObjectId) {
+    // FIXME: Temporary hack to toggle the focus track either using the eye icon next to the gene or the one next transcript.
+    if (track.track_id.startsWith('track:gene')) {
+      updateTrackStates('track:gene-feat', newStatus);
+      updateTrackStates('track:gene-feat-1', newStatus);
+      updateGenomeBrowser('track:gene-feat', newStatus);
       return;
     }
-    // FIXME: Temporary hack until we have a set of proper track names
-    if (track.track_id.startsWith('track:gene')) {
-      props.updateTrackStatesAndSave({
-        [activeGenomeId]: {
-          objectTracks: {
-            [activeEnsObjectId]: {
-              [categoryName]: {
-                [track.track_id]: newStatus
-              }
-            }
-          }
-        }
-      });
-    } else {
-      props.updateTrackStatesAndSave({
-        [activeGenomeId]: {
-          commonTracks: {
-            [categoryName]: {
-              [track.track_id]: newStatus
-            }
-          }
-        }
-      });
-    }
+
+    updateGenomeBrowser(track.track_id, newStatus);
+    updateTrackStates(track.track_id, newStatus);
   };
 
-  const updateGenomeBrowser = (status: Status) => {
+  const updateGenomeBrowser = (trackId: string, status: Status) => {
     const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
 
     const payload = {
-      [currentTrackStatus]: `${track.track_id}`
+      [currentTrackStatus]: `${trackId}`
     };
 
     browserMessagingService.send('bpane', payload);
@@ -252,7 +267,4 @@ const mapDispatchToProps = {
   updateTrackStatesAndSave
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelListItem);
