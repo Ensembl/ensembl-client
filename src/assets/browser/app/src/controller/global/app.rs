@@ -148,8 +148,8 @@ impl App {
 
     pub fn intend_here(&mut self) {
         let tm = self.window.get_train_manager();
-        if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position()) {
-            self.intended.intend_here(&stick,&desired);
+        if let Some(viewpoint) = tm.get_future_viewpoint() {
+            self.intended.intend_here(&viewpoint);
             if let Some(ref report) = self.report {
                 self.intended.update_intent_report(report);
             }

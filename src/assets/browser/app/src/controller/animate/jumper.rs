@@ -11,7 +11,7 @@ use controller::global::App;
 use controller::input::Action;
 use dom::domutil::browser_time;
 use types::{ Dot,LEFT, RIGHT };
-use model::stage::{ Position, bp_to_zoomfactor, zoomfactor_to_bp };
+use model::stage::{ Position, Viewpoint, bp_to_zoomfactor, zoomfactor_to_bp };
 use model::train::TrainManager;
 
 use super::crossfade::{ CrossFade, CrossFader };
@@ -87,14 +87,14 @@ impl Jumper {
         })
     }
 
-    fn is_offscreen_jump(&self, current_stick: &Stick, current_position: &Position, stick: &str, dest_pos: f64, dest_size: f64) -> bool {
+    fn is_offscreen_jump(&self, viewpoint: &Viewpoint, stick: &str, dest_pos: f64, dest_size: f64) -> bool {
         let dest_start = dest_pos - dest_size/2.;
         let dest_end = dest_pos + dest_size/2.;
-        if  stick != current_stick.get_name() {
+        if stick != viewpoint.get_stick().get_name() {
             return true;
         }
-        let screen_left = current_position.get_edge(&LEFT,true);
-        let screen_right = current_position.get_edge(&RIGHT,true);
+        let screen_left = viewpoint.get_middle().0 - viewpoint.get_zoom()/2.;
+        let screen_right = viewpoint.get_middle().0 + viewpoint.get_zoom()/2.;
         return dest_end < screen_left || dest_start > screen_right;
     }
 
@@ -107,13 +107,13 @@ impl Jumper {
         animator.run(seq,false);
     }
 
-    fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
-        let current_middle = current_position.get_middle();
-        let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
+    fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, viewpoint: &Viewpoint, dest_pos: Dot<f64,f64>, dest_size:f64) {
+        let current_middle = viewpoint.get_middle();
+        let current_zoom = bp_to_zoomfactor(viewpoint.get_zoom());
         let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
         let mut seq = animator.new_sequence();
         let location_zhoosh = self.new_location_zhoosh_for_scale(current_zoom,dest_zoom);
-        let pos_z = animator.new_step(&mut seq,&location_zhoosh,current_middle,dest_pos);
+        let pos_z = animator.new_step(&mut seq,&location_zhoosh,*current_middle,dest_pos);
         let mut zoom_z = animator.new_step(&mut seq,&self.zoom_zhoosh,current_zoom,dest_zoom);
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
         if dest_zoom < current_zoom {
@@ -126,15 +126,13 @@ impl Jumper {
         self.jump_control = Some(animator.run(seq,false));
     }
 
-    fn jump(&mut self, src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
+    fn jump(&mut self, viewpoint: &Viewpoint, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
         if let Some(ref mut control) = self.jump_control {
             //control.abandon();
         }
-        if let (Some(src_stick),Some(src_position)) = (src_stick,src_position) {
-            if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
-                self.do_onscreen_jump(animator,&src_position,Dot(dest_pos,0.),dest_size);
-                return;
-            }
+        if !self.is_offscreen_jump(viewpoint,stick,dest_pos,dest_size) {
+            self.do_onscreen_jump(animator,&viewpoint,Dot(dest_pos,0.),dest_size);
+            return;
         }
         self.do_offscreen_jump(animator,stick,Dot(dest_pos,0.),dest_size);
     }
@@ -155,8 +153,8 @@ impl Jumper {
     }
 }
 
-pub fn animate_jump_to(src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
-    JUMPER.lock().unwrap().jump(src_stick,src_position,animator,stick,dest_pos,dest_size);
+pub fn animate_jump_to(src_viewpoint: &Viewpoint, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
+    JUMPER.lock().unwrap().jump(src_viewpoint,animator,stick,dest_pos,dest_size);
 }
 
 pub fn animate_fade(mut app: &mut App, fast: bool) {

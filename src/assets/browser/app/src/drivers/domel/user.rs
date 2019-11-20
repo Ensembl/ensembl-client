@@ -41,9 +41,11 @@ impl UserEventListener {
     fn wheel(&mut self, amt: f64) {
         let app = &mut self.app.lock().unwrap();
         let mouse_prop = app.get_screen().get_mouse_pos_prop();
-        if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
-            let y = desired.get_middle().1;
-            let pos_bp = desired.get_pos_prop_bp(mouse_prop);
+        if let Some(viewpoint) = app.get_window().get_train_manager().get_future_viewpoint() {
+            let y = viewpoint.get_middle().1;
+            let screen_size = app.get_screen().get_size().0 * viewpoint.get_zoom();
+            let left = viewpoint.get_middle().0 - screen_size / 2.;
+            let pos_bp = left + mouse_prop * screen_size;
             let pos = Dot(pos_bp,y);
             self.zoom.lock().unwrap().move_by(amt,pos,mouse_prop);
         }

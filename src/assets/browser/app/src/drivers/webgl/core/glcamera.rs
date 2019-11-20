@@ -1,30 +1,30 @@
-use model::stage::{ Position, Screen };
+use model::stage::{ Viewpoint, Screen };
 
 #[derive(Clone)]
 pub(super) struct GLCamera {
     opacity: f64,
     screen: Screen,
-    pos: Position
+    viewpoint: Viewpoint
 }
 
 impl GLCamera {
-    pub(super) fn new(opacity: f64, screen: &Screen, pos: &Position) -> GLCamera {
+    pub(super) fn new(opacity: f64, screen: &Screen, viewpoint: &Viewpoint) -> GLCamera {
         GLCamera {
             opacity,
             screen: screen.clone(),
-            pos: pos.clone()
+            viewpoint: viewpoint.clone()
         }
     }
 
     pub(super) fn get_opacity(&self) -> f64 { self.opacity }
-    pub(super) fn get_position(&self) -> &Position { &self.pos }
+    pub(super) fn get_viewpoint(&self) -> &Viewpoint { &self.viewpoint }
     pub(super) fn get_screen(&self) -> &Screen { &self.screen }
 }
 
 impl PartialEq for GLCamera {
     fn eq(&self, other: &Self) -> bool {
-        self.opacity == other.opacity && self.pos.get_middle() == other.pos.get_middle() && 
-        self.pos.get_screen_in_bp() == other.pos.get_screen_in_bp() &&
+        self.opacity == other.opacity &&
+        self.viewpoint == other.viewpoint &&
         self.screen.get_size() == other.screen.get_size()
     }
 }

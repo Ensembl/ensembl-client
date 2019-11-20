@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 
 use drivers::webgl::program::Input;
-use model::stage::{ Screen, Position };
+use model::stage::{ Screen, Position, Viewpoint };
 use types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
     RIGHT, LEFT, DOWN, UP
@@ -52,6 +52,34 @@ pub type EPixel = Dot<Edge<i32>,Edge<i32>>;
 pub struct Distance<T : Clone + Copy + Debug>(pub T,pub Units);
 
 impl<T: Clone + Copy + Mul<f64,Output=T> + Div<f64,Output=T> + Debug> Distance<T> {
+    pub fn convert_viewpoint(&self, target: Units, axis: Axis, screen: &Screen, viewpoint: &Viewpoint) -> Distance<T> {
+        let Distance(quant,source) = self;
+        let dims = screen.get_size();
+        let (size,zoom) = match axis {
+            Axis::Horiz => (dims.0 as f64,viewpoint.get_zoom()),
+            Axis::Vert => (dims.1 as f64,1.0),
+            Axis::Zoom => (1.,1.), // TODO
+        };
+        let quant = match source {
+            Units::Pixels => match target {
+                Units::Pixels => *quant,
+                Units::Bases => *quant * zoom / size,
+                Units::Screens => *quant / size
+            },
+            Units::Bases => match target {
+                Units::Pixels => *quant / zoom * size,
+                Units::Bases => *quant,
+                Units::Screens => *quant / zoom
+            },
+            Units::Screens => match target {
+                Units::Pixels => *quant * size,
+                Units::Bases => *quant * zoom,
+                Units::Screens => *quant
+            },            
+        };
+        Distance(quant,target)
+    }
+
     pub fn convert(&self, target: Units, axis: Axis, screen: &Screen, position: &Position) -> Distance<T> {
         let Distance(quant,source) = self;
         let dims = screen.get_size();
@@ -103,7 +131,16 @@ impl<T: Neg<Output=T> + Clone+Copy+Debug + Mul<f64,Output=T> +
             Move::Right(u) => Move::Right(u.convert(target,Axis::Horiz,screen,position)),
         }
     }
-    
+
+    pub fn convert_viewpoint(&self, target: Units, screen: &Screen, viewpoint: &Viewpoint) -> Move<T,U> {
+        match self {
+            Move::Up(u) => Move::Up(u.convert_viewpoint(target,Axis::Vert,screen,viewpoint)),
+            Move::Down(u) => Move::Down(u.convert_viewpoint(target,Axis::Vert,screen,viewpoint)),
+            Move::Left(u) => Move::Left(u.convert_viewpoint(target,Axis::Horiz,screen,viewpoint)),
+            Move::Right(u) => Move::Right(u.convert_viewpoint(target,Axis::Horiz,screen,viewpoint)),
+        }
+    }
+
     pub fn direction(&self) -> Direction {
         match self {
             Move::Up(_) => UP,

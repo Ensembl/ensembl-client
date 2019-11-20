@@ -7,13 +7,18 @@ use super::Position;
 pub struct Screen {
     dims: Dot<f64,f64>,
     mouse_pos: CPixel,
+    min_x_bumper: f64,
+    max_x_bumper: f64
+
 }
 
 impl Screen {
     pub fn new() -> Screen {
         Screen {
             mouse_pos: Dot(0,0),
-            dims: Dot(0.,0.)
+            dims: Dot(0.,0.),
+            min_x_bumper: 0.,
+            max_x_bumper: 0.
         }
     }
 

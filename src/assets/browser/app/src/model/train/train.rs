@@ -3,7 +3,7 @@ use hashbrown::{ HashMap, HashSet };
 use composit::{ Leaf, StateManager };
 use data::XferConsumer;
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::stage::Position;
+use model::stage::{ Viewpoint, ViewpointFragment };
 use model::supply::Product;
 use model::driver::{ Printer, PrinterManager };
 use super::{ Carriage, CarriageId, TrainId, TravellerCreator };
@@ -16,19 +16,19 @@ pub struct Train {
     pm: PrinterManager,
     carriages: HashMap<Leaf,Carriage>,
     id: TrainId,
-    position: Position,
+    viewpoint: Viewpoint,
     active: bool
 }
 
 impl Train {
-    pub fn new(pm: &PrinterManager, train_id: &TrainId, position: &Position) -> Train {
+    pub fn new(pm: &PrinterManager, train_id: &TrainId, viewpoint: &Viewpoint) -> Train {
         Train {
             prop: 0.,
             pm: pm.clone(),
             id: train_id.clone(),
             carriages: HashMap::<Leaf,Carriage>::new(),
             active: true,
-            position: position.clone()
+            viewpoint: viewpoint.clone()
         }
     }
     
@@ -41,11 +41,13 @@ impl Train {
     pub(super) fn set_prop(&mut self, v: f64) { self.prop = v; }
 
     pub fn get_train_id(&self) -> &TrainId { &self.id }
-    pub fn get_position(&self) -> &Position { &self.position }
-    pub fn get_position_mut(&mut self) -> &mut Position { &mut self.position }
+    pub fn get_viewpoint(&self) -> &Viewpoint { &self.viewpoint }
+    pub fn set_viewpoint_fragment(&mut self, fragment: &ViewpointFragment) {
+        self.viewpoint = self.viewpoint.as_fragment().merge(fragment).get_viewpoint().unwrap();
+    }
 
     fn middle_leaf(&self) -> i64 {
-        (self.position.get_middle().0 / self.id.get_scale().total_bp()).floor() as i64
+        (self.viewpoint.get_middle().0 / self.id.get_scale().total_bp()).floor() as i64
     }
 
     /* are we active (ie should we scan around as the user does?) */
@@ -76,7 +78,7 @@ impl Train {
 
     /* flank to use taking into account train status */
     fn true_flank(&self) -> i32 {
-        let ideal_flank = (self.position.get_screen_in_bp() / self.id.get_scale().total_bp()) as i32;
+        let ideal_flank = (self.viewpoint.get_zoom() / self.id.get_scale().total_bp()) as i32;
         ideal_flank.min(MAX_FLANK).max(1)
     }
 

@@ -2,7 +2,7 @@ use types::{ Move, Units, Axis, Dot, CPixel };
 use controller::global::App;
 use composit::StickManager;
 
-use model::stage::{ bp_to_zoomfactor, zoomfactor_to_bp };
+use model::stage::{ ViewpointFragment, bp_to_zoomfactor, zoomfactor_to_bp };
 use model::focus::FocusObjectId;
 
 use serde_json::Value as JSONValue;
@@ -76,8 +76,10 @@ fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>, anim: bool) 
         cancel_animations(app);
     }
     let train_manager = app.get_window().get_train_manager();
-    let v = if let (Some(prop),Some(desired)) = (prop,train_manager.get_desired_position()) {
-        Dot(desired.pos_prop_bp_to_origin(v.0,prop),v.1)
+    let v = if let (Some(prop),Some(viewpoint)) = (prop,train_manager.get_future_viewpoint()) {
+        let screen_in_bp = app.get_screen().get_size().0 * viewpoint.get_zoom();
+        let left = viewpoint.get_middle().0 - screen_in_bp/2.;
+        Dot(left + prop * screen_in_bp,v.1)
     } else {
         v
     };
@@ -98,14 +100,14 @@ fn exe_pos_range_event(app: &mut App, x_start: f64, x_end: f64, y: f64) {
 
 fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
     cancel_animations(app);
-    if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
+    if let Some(viewpoint) = app.get_window().get_train_manager().get_future_viewpoint() {
         let screen = app.get_screen().clone();
         let v = match v.direction().0 {
-            Axis::Horiz => v.convert(Units::Bases,&screen,&desired),
-            Axis::Vert => v.convert(Units::Pixels,&screen,&desired),
+            Axis::Horiz => v.convert_viewpoint(Units::Bases,&screen,&viewpoint),
+            Axis::Vert => v.convert_viewpoint(Units::Pixels,&screen,&viewpoint),
             Axis::Zoom => v // TODO invalid pre-unification
         };
-        let pos = desired.get_middle()+v;
+        let pos = *viewpoint.get_middle()+v;
         app.update_position();
         app.with_compo(|co| {
             co.set_position(pos);
@@ -117,21 +119,18 @@ fn exe_zoom_event(app: &mut App, za: f64, by: bool, anim: bool) {
     if !anim {
         cancel_animations(app);
     }
-    let train_manager = app.get_window().get_train_manager();
-    let middle = train_manager.get_desired_position().map(|p| p.get_middle());
-    let mut delta = 0.;
-    if let Some(desired) = train_manager.get_desired_position() {
+    if let Some(viewpoint) = app.get_window().get_train_manager().get_future_viewpoint() {
+        let middle = viewpoint.get_middle();
+        let mut delta = 0.;
         if by {
-            delta = bp_to_zoomfactor(desired.get_screen_in_bp());
+            delta = bp_to_zoomfactor(viewpoint.get_zoom());
         }
+        app.update_position();
+        app.with_compo(|co| {
+            co.set_bp_per_screen(zoomfactor_to_bp(za+delta));
+            co.set_position(*middle);
+        });
     }
-    app.update_position();
-    app.with_compo(|co| {
-        co.set_bp_per_screen(zoomfactor_to_bp(za+delta)); 
-        if let Some(middle) = middle {
-            co.set_position(middle);
-        }
-    });
 }
 
 fn exe_resize(cg: &mut App, sz: Dot<f64,f64>) {
@@ -192,7 +191,7 @@ fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payl
 fn exe_set_focus(a: &mut App, id: &str) {
     console!("set focus object to id {}",id);
     let focus_object = FocusObjectId::new(&Some(id.to_string()));
-    a.get_window().get_train_manager().set_desired_focus_object_id(&focus_object);
+    a.get_window().get_train_manager().set_future_viewpoint_fragment(&ViewpointFragment::new_focus_object(&focus_object));
     a.get_report().set_status("focus",&id);
 }
 

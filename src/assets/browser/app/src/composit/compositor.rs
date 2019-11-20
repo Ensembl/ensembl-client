@@ -2,7 +2,7 @@ use hashbrown::HashSet;
 
 use composit::{ Stick, Scale, ComponentSet, StateManager };
 use model::driver::{ Printer };
-use model::stage::{ Screen };
+use model::stage::{ Screen, ViewpointFragment };
 use model::supply::{ Product };
 use model::train::{ Train, TravellerCreator };
 use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
@@ -91,7 +91,7 @@ impl Compositor {
     }
 
     pub fn set_stick(&mut self, st: &Stick) -> bool {
-        if self.window.get_train_manager().set_desired_stick(st) {
+        if self.window.get_train_manager().set_future_viewpoint_fragment(&ViewpointFragment::new_stick(st)) {
             self.prime_delay = None; // Force priming delay as screen is completely invalid
             self.psychic.set_stick(st);
             self.updated = true;
@@ -102,14 +102,14 @@ impl Compositor {
     }
 
     pub fn set_position(&mut self, middle: Dot<f64,f64>) {
-        self.window.get_train_manager().set_middle(middle);
+        self.window.get_train_manager().set_future_viewpoint_fragment(&ViewpointFragment::new_middle(middle));
         self.psychic.set_middle(middle.0 as i64);
         self.updated = true;
     }
     
     pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.window.get_train_manager().set_bp_per_screen(bp_per_screen);
+        self.window.get_train_manager().set_future_viewpoint_fragment(&ViewpointFragment::new_zoom(bp_per_screen));
         self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
