@@ -1,6 +1,6 @@
 use composit::{ Stick, Scale };
 
-use super::FocusObjectId;
+use model::focus::FocusObjectId;
 
 #[derive(Clone,PartialEq,Eq,Hash,Debug)]
 pub struct TrainId {

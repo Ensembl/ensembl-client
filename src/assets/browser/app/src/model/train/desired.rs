@@ -2,8 +2,9 @@ use std::cell::{ Ref, RefCell };
 use std::rc::Rc;
 
 use composit::{ Stick, Scale };
+use model::focus::FocusObjectId;
 use model::stage::Position;
-use model::train::{ FocusObjectId, TrainId };
+use model::train::TrainId;
 use types::{ Dot, LEFT, RIGHT, DOWN };
 
 #[derive(Debug)]

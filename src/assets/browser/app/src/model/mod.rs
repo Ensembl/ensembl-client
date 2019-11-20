@@ -1,4 +1,5 @@
 pub mod driver;
+pub mod focus;
 pub mod item;
 pub mod shape;
 pub mod stage;

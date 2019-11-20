@@ -3,7 +3,7 @@ use controller::global::App;
 use composit::StickManager;
 
 use model::stage::{ bp_to_zoomfactor, zoomfactor_to_bp };
-use model::train::FocusObjectId;
+use model::focus::FocusObjectId;
 
 use serde_json::Value as JSONValue;
 

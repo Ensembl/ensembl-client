@@ -22,11 +22,12 @@ use controller::input::Action;
 use controller::output::{ OutputAction, Report, ViewportReport };
 use data::{ Locator, XferConsumer };
 use model::driver::PrinterManager;
+use model::focus::{ FocusObject, ObjectLocation, FocusObjectId };
 use model::item::{ DeliveredItem, ItemUnpacker };
 use model::stage::{ Position, Screen };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry, ZMenuLeafSet };
-use super::{ Train, TrainId, FocusObjectId, TravellerCreator };
+use super::{ Train, TrainId, TravellerCreator };
 use super::desired::Desired;
 use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
@@ -77,16 +78,10 @@ impl TrainSet {
 pub struct TrainManagerImpl {
     printer: PrinterManager,
     traveller_creator: TravellerCreator,
-    /* the trains themselves */
     trainset: TrainSet,
-    /* zmenus */
     zmr: ZMenuRegistry,
-    /* current position/scale */
     desired: Desired,
-    focus_object: Option<FocusObjectId>,
-    focus_stick: AsyncValue<Option<Stick>>,
-    focus_location: AsyncValue<Option<(f64,f64)>>,
-    /* where we would go right now if the right stick were displayed */
+    focus_object: FocusObject,
     animation_request: Option<(Stick,FocusObjectId,f64,f64)>
 }
 
@@ -101,9 +96,7 @@ impl TrainManagerImpl {
                 transition_train: None
             },
             desired: Desired::new(),
-            focus_stick: AsyncValue::new(Some(None)),
-            focus_location: AsyncValue::new(Some(None)),
-            focus_object: None,
+            focus_object: FocusObject::new(&FocusObjectId::new(&None)),
             zmr: ZMenuRegistry::new(),
             animation_request: None
         }
@@ -116,11 +109,11 @@ impl TrainManagerImpl {
             report.set_status("i-stick",&stick.get_name());
         }
         let mut at_focus = false;
-        if let (Some(Some(focus_stick)),Some(Some(focus_location))) = (self.focus_stick.get(),self.focus_location.get()) {
+        if let ObjectLocation::Location(focus_stick,focus_middle,focus_zoom) = self.focus_object.get_location() {
             if self.desired.is_ready() {
                 let desired_position = self.desired.get_position();
                 let desired_position = (desired_position.get_middle().0,desired_position.get_screen_in_bp());
-                let delta = (desired_position.0-focus_location.0,desired_position.1-focus_location.1);
+                let delta = (desired_position.0-focus_middle,desired_position.1-focus_zoom);
                 if self.desired.get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_ZOOM_NEAR_ENOUGH {
                     at_focus = true;
                 }
@@ -129,14 +122,12 @@ impl TrainManagerImpl {
         report.set_status_bool("is-focus-position",at_focus);
     }
         
-    /* utility: makes new train at given scale */
     fn make_train(&mut self, train_id: &TrainId) -> Train {
         let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position());
         f.manage_carriages(&mut self.traveller_creator);
         f
     }
 
-    /* COMPOSITOR sets new stick. Existing trains useless */
     pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
         if self.desired.is_ready() && st == self.desired.get_stick() {
             return false
@@ -270,7 +261,7 @@ impl TrainManagerImpl {
     
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self) {
-        if !self.desired.is_ready() || self.focus_stick.get().is_none() { return; } // why if no focus stick?
+        if !self.desired.is_ready() { return; }
         let mut end_future = false;
         let mut new_future = false;
         if let Some(desired_future_train_id) = self.desired.get_train_id() {
@@ -338,26 +329,12 @@ impl TrainManagerImpl {
         }
     }
 
-    fn investigate_focus_location(&mut self) -> bool { 
-        let a = self.focus_stick.investigate();
-        let b = self.focus_location.investigate();
-        a || b
-    }
-
     pub fn set_desired_focus_object_id(&mut self, context: &FocusObjectId) {
-        if context.get_focus() != self.desired.get_focus_object_id().get_focus() {
-            if context.get_focus().is_some() {
-                self.focus_stick.invalidate();
-                self.focus_location.invalidate();
-            } else {
-                self.focus_stick = AsyncValue::new(Some(None));
-                self.focus_location = AsyncValue::new(Some(None));
-            }
+        if context != self.focus_object.get_id() {
+            self.focus_object = FocusObject::new(context);
+            self.desired.set_focus_object_id(context.clone());
+            self.maybe_change_trains();
         }
-        console!("focus change to {:?}",context);
-        self.focus_object = Some(context.clone());
-        self.desired.set_focus_object_id(context.clone());
-        self.maybe_change_trains();
     }
     
     pub fn jump_to_focus_object(&mut self, animator: &mut ActionAnimator) {
@@ -413,11 +390,9 @@ impl TrainManagerImpl {
     }
 
     fn try_to_queue_animation(&mut self, animator: &mut ActionAnimator) {
-        let stick = self.focus_stick.get().cloned();
-        let location = self.focus_location.get().cloned();
-        let focus = self.focus_object.clone();
-        if let (Some(Some(stick)),Some(Some((middle,zoom))),Some(focus)) = (stick,location,focus) {
-            self.animation_request = Some((stick,focus,middle,zoom));
+        if let ObjectLocation::Location(stick,middle,zoom) = self.focus_object.get_location() {
+            let focus = self.focus_object.get_id();
+            self.animation_request = Some((stick.clone(),focus.clone(),*middle,*zoom));
             self.try_to_animate(animator);
         }
     }
@@ -432,8 +407,7 @@ impl TrainManagerImpl {
     }
 
     pub fn set_focus_location(&mut self, animator: &mut ActionAnimator, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
-        self.focus_stick.set(Some(stick.clone()));
-        self.focus_location.set(Some((middle,zoom)));
+        self.focus_object.set_location(&ObjectLocation::Location(stick.clone(),middle,zoom));
         self.try_to_queue_animation(animator);
     }
 }
@@ -469,7 +443,7 @@ impl TrainManager {
         let mut imp = self.0.lock().unwrap();
         imp.tick(app,t);
         /* Do we need to schedule finding the focus location? */
-        if imp.investigate_focus_location() {
+        if imp.focus_object.maybe_investigate() {
             if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
                 let other = self.clone();
                 let inner_focus_object = focus_object.clone();

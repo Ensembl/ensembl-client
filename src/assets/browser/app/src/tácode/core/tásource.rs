@@ -3,7 +3,7 @@ use data::UnpackedProductConsumer;
 use model::item::{ DeliveredItem, UnpackedProduct};
 use model::shape::DrawingSpec;
 use model::supply::Subassembly;
-use model::train::FocusObjectId;
+use model::focus::FocusObjectId;
 use tácode::TáTask;
 
 pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, 

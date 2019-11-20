@@ -2,7 +2,8 @@ use hashbrown::HashMap;
 use controller::global::WindowState;
 use data::UnpackedProductConsumer;
 use super::{ DeliveredItem, UnpackedSubassembly, UnpackedSubassemblyConsumer, UnpackedProduct};
-use model::train::{ FocusObjectId, TravellerId };
+use model::focus::FocusObjectId;
+use model::train::TravellerId;
 use tácode::run_tánaiste_makeshapes;
 
 pub struct ItemUnpackerContext {
