@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use composit::{ Stick, Scale };
 use model::focus::FocusObjectId;
-use model::stage::Position;
+use model::stage::{ Position, Screen };
 use model::train::TrainId;
 use types::{ Dot, LEFT, RIGHT, DOWN };
 
@@ -38,23 +38,23 @@ impl Desired {
         self.position = Rc::new(RefCell::new(None));
     }
 
-    fn make_position(&self) -> Position {
+    fn make_position(&self, screen: &Screen) -> Position {
         let mut position = Position::new();
-        position.set_limit(&LEFT,0.);
-        position.set_limit(&RIGHT,self.stick.as_ref().unwrap().length() as f64);
-        position.set_limit(&DOWN,self.bottom.unwrap());
-        position.set_wrapping(&self.stick.as_ref().unwrap().get_wrapping());
-        position.inform_screen_size(&self.screen_size.as_ref().unwrap());
-        position.set_middle(self.middle.as_ref().unwrap());
+        position.set_limit(screen,&LEFT,0.);
+        position.set_limit(screen,&RIGHT,self.stick.as_ref().unwrap().length() as f64);
+        position.set_limit(screen,&DOWN,self.bottom.unwrap());
+        position.set_wrapping(screen,&self.stick.as_ref().unwrap().get_wrapping());
+        position.inform_screen_size(&self.screen_size.as_ref().unwrap(),screen);
+        position.set_middle(self.middle.as_ref().unwrap(),screen);
         position.set_screen_in_bp(self.bp_per_screen.unwrap());
         position
     }
 
-    fn populate_position(&self) {
+    fn populate_position(&self, screen: &Screen) {
         if !self.is_ready() { return; }
         if self.position.borrow().is_some() { return; }
         console!("making position");
-        let position = self.make_position();
+        let position = self.make_position(screen);
         self.position.replace(Some(position));
     }
 
@@ -70,24 +70,24 @@ impl Desired {
         }
     }
 
-    pub(super) fn set_middle(&mut self, middle: Dot<f64,f64>) {
+    pub(super) fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
         self.middle = Some(middle);
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.set_middle(self.middle.as_ref().unwrap());
+            position.set_middle(self.middle.as_ref().unwrap(),screen);
         }
     }
 
-    pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
+    pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
         self.screen_size = Some(screen_size.clone());
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.inform_screen_size(screen_size);
+            position.inform_screen_size(screen_size,screen);
         }
     }
 
-    pub(super) fn set_bottom(&mut self, bottom: f64) {
+    pub(super) fn set_bottom(&mut self, bottom: f64, screen: &Screen) {
         self.bottom = Some(bottom);
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.set_limit(&DOWN,self.bottom.unwrap());
+            position.set_limit(screen,&DOWN,self.bottom.unwrap());
         }
     }
 
@@ -107,16 +107,16 @@ impl Desired {
         self.stick.as_ref().unwrap()
     }
 
-    pub(super) fn get_position(&self) -> Ref<'_,Position> {
-        self.populate_position();
+    pub(super) fn get_position(&self, screen: &Screen) -> Ref<'_,Position> {
+        self.populate_position(screen);
         Ref::map(self.position.borrow(),|p| p.as_ref().unwrap())
     }
 
     pub(super) fn get_focus_object_id(&self) -> &FocusObjectId { &self.focus_object }
 
-    pub(super) fn get_train_id(&self) -> Option<TrainId> {
+    pub(super) fn get_train_id(&self, screen: &Screen) -> Option<TrainId> {
         if !self.is_ready() { return None; }
-        let scale = Scale::best_for_screen(self.get_position().get_screen_in_bp());
+        let scale = Scale::best_for_screen(self.get_position(screen).get_screen_in_bp());
         Some(TrainId::new(self.get_stick(),&scale,&self.get_focus_object_id()))
     }
 }

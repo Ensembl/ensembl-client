@@ -11,7 +11,7 @@ use controller::global::App;
 use controller::input::Action;
 use dom::domutil::browser_time;
 use types::{ Dot,LEFT, RIGHT };
-use model::stage::{ Position, bp_to_zoomfactor, zoomfactor_to_bp };
+use model::stage::{ Position, Screen, bp_to_zoomfactor, zoomfactor_to_bp };
 use model::train::TrainManager;
 
 use super::crossfade::{ CrossFade, CrossFader };
@@ -87,14 +87,14 @@ impl Jumper {
         })
     }
 
-    fn is_offscreen_jump(&self, current_stick: &Stick, current_position: &Position, stick: &str, dest_pos: f64, dest_size: f64) -> bool {
+    fn is_offscreen_jump(&self, current_stick: &Stick, current_position: &Position, stick: &str, dest_pos: f64, dest_size: f64, screen: &Screen) -> bool {
         let dest_start = dest_pos - dest_size/2.;
         let dest_end = dest_pos + dest_size/2.;
         if  stick != current_stick.get_name() {
             return true;
         }
-        let screen_left = current_position.get_edge(&LEFT,true);
-        let screen_right = current_position.get_edge(&RIGHT,true);
+        let screen_left = current_position.get_edge(screen,&LEFT,true);
+        let screen_right = current_position.get_edge(screen,&RIGHT,true);
         return dest_end < screen_left || dest_start > screen_right;
     }
 
@@ -126,12 +126,12 @@ impl Jumper {
         self.jump_control = Some(animator.run(seq,false));
     }
 
-    fn jump(&mut self, src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
+    fn jump(&mut self, src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64, screen: &Screen) {
         if let Some(ref mut control) = self.jump_control {
             //control.abandon();
         }
         if let (Some(src_stick),Some(src_position)) = (src_stick,src_position) {
-            if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size) {
+            if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size,screen) {
                 self.do_onscreen_jump(animator,&src_position,Dot(dest_pos,0.),dest_size);
                 return;
             }
@@ -155,8 +155,8 @@ impl Jumper {
     }
 }
 
-pub fn animate_jump_to(src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64) {
-    JUMPER.lock().unwrap().jump(src_stick,src_position,animator,stick,dest_pos,dest_size);
+pub fn animate_jump_to(src_stick: &Option<Stick>, src_position: &Option<Position>, animator: &mut ActionAnimator, stick: &str, dest_pos: f64, dest_size: f64, screen: &Screen) {
+    JUMPER.lock().unwrap().jump(src_stick,src_position,animator,stick,dest_pos,dest_size,screen);
 }
 
 pub fn animate_fade(mut app: &mut App, fast: bool) {

@@ -75,30 +75,33 @@ fn exe_pos_event(app: &mut App, v: Dot<f64,f64>, prop: Option<f64>, anim: bool) 
     if !anim {
         cancel_animations(app);
     }
+    let screen = app.get_screen().clone();
     let train_manager = app.get_window().get_train_manager();
-    let v = if let (Some(prop),Some(desired)) = (prop,train_manager.get_desired_position()) {
+    let v = if let (Some(prop),Some(desired)) = (prop,train_manager.get_desired_position(&screen)) {
         Dot(desired.pos_prop_bp_to_origin(v.0,prop),v.1)
     } else {
         v
     };
-    app.update_position();
-    app.with_compo(|co| { co.set_position(v); });
+    app.update_position(&screen);
+    app.with_compo(|co| { co.set_position(v,&screen); });
 }
 
 fn exe_pos_range_event(app: &mut App, x_start: f64, x_end: f64, y: f64) {
     cancel_animations(app);
+    let screen = app.get_screen().clone();
     let middle = Dot((x_start+x_end)/2.,y);
-    app.update_position();
+    app.update_position(&screen);
     app.intend_here();
     app.with_compo(|co| {
-        co.set_bp_per_screen(x_end-x_start);
-        co.set_position(middle);
+        co.set_bp_per_screen(x_end-x_start,&screen);
+        co.set_position(middle,&screen);
     });
 }
 
 fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
     cancel_animations(app);
-    if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
+    let screen = app.get_screen().clone();
+    if let Some(desired) = app.get_window().get_train_manager().get_desired_position(&screen) {
         let screen = app.get_screen().clone();
         let v = match v.direction().0 {
             Axis::Horiz => v.convert(Units::Bases,&screen,&desired),
@@ -106,9 +109,9 @@ fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
             Axis::Zoom => v // TODO invalid pre-unification
         };
         let pos = desired.get_middle()+v;
-        app.update_position();
+        app.update_position(&screen);
         app.with_compo(|co| {
-            co.set_position(pos);
+            co.set_position(pos,&screen);
         });
     }
 }
@@ -117,19 +120,20 @@ fn exe_zoom_event(app: &mut App, za: f64, by: bool, anim: bool) {
     if !anim {
         cancel_animations(app);
     }
+    let screen = app.get_screen().clone();
     let train_manager = app.get_window().get_train_manager();
-    let middle = train_manager.get_desired_position().map(|p| p.get_middle());
+    let middle = train_manager.get_desired_position(&screen).map(|p| p.get_middle());
     let mut delta = 0.;
-    if let Some(desired) = train_manager.get_desired_position() {
+    if let Some(desired) = train_manager.get_desired_position(&screen) {
         if by {
             delta = bp_to_zoomfactor(desired.get_screen_in_bp());
         }
     }
-    app.update_position();
+    app.update_position(&screen);
     app.with_compo(|co| {
-        co.set_bp_per_screen(zoomfactor_to_bp(za+delta)); 
+        co.set_bp_per_screen(zoomfactor_to_bp(za+delta),&screen); 
         if let Some(middle) = middle {
-            co.set_position(middle);
+            co.set_position(middle,&screen);
         }
     });
 }
@@ -152,11 +156,12 @@ fn exe_component_add(a: &mut App, name: &str) {
 }
 
 fn exe_set_stick(app: &mut App, name: &str) {
+    let screen = app.get_screen().clone();
     let stick_manager = app.get_window().get_stick_manager();
     if let Some(stick) = stick_manager.get_stick(name) {
-        let changed : bool = app.with_compo(|co| co.set_stick(&stick));
+        let changed : bool = app.with_compo(|co| co.set_stick(&stick,&screen));
         if changed {
-            app.update_position();
+            app.update_position(&screen);
             app.intend_here();
         }
     } else {
@@ -192,7 +197,8 @@ fn exe_zmenu_show(a: &mut App, id: &str, track_id: &str, pos: Dot<i32,i32>, payl
 fn exe_set_focus(a: &mut App, id: &str) {
     console!("set focus object to id {}",id);
     let focus_object = FocusObjectId::new(&Some(id.to_string()));
-    a.get_window().get_train_manager().set_desired_focus_object_id(&focus_object);
+    let screen = a.get_screen().clone();
+    a.get_window().get_train_manager().set_desired_focus_object_id(&focus_object,&screen);
     a.get_report().set_status("focus",&id);
 }
 

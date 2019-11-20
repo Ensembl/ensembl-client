@@ -37,8 +37,8 @@ impl Screen {
         let screen_bp = apos.get_screen_in_bp();
         let screen_px = self.dims;
         let bp_px = screen_bp / screen_px.0;
-        let left_bp = apos.get_edge(&LEFT,false);
-        let top_px = apos.get_edge(&UP,false);
+        let left_bp = apos.get_edge(self,&LEFT,false);
+        let top_px = apos.get_edge(self,&UP,false);
         match area {
             Placement::Stretch(r) => {
                 let pos_bp = left_bp + pos.0 as f64 * bp_px;

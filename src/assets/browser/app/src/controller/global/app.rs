@@ -136,22 +136,22 @@ impl App {
         ok!(self.printer.lock()).print(&self.screen,&mut self.window);
     }
     
-    pub fn update_position(&mut self) {
+    pub fn update_position(&mut self, screen: &Screen) {
         let train_manager = self.window.get_train_manager();
         if let Some(ref report) = self.report {
-            train_manager.update_reports(report);
+            train_manager.update_reports(screen,report);
         }
         if let Some(ref report) = self.viewport {
-            train_manager.update_viewport_report(report);
+            train_manager.update_viewport_report(screen,report);
         }
     }
 
     pub fn intend_here(&mut self) {
         let tm = self.window.get_train_manager();
-        if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position()) {
+        if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position(&self.screen)) {
             self.intended.intend_here(&stick,&desired);
             if let Some(ref report) = self.report {
-                self.intended.update_intent_report(report);
+                self.intended.update_intent_report(report,&self.screen);
             }
         }
     }
@@ -167,7 +167,7 @@ impl App {
         let c = &mut self.compo.lock().unwrap();
         let out = cb(c);
         if let Some(ref report) = self.report {
-            c.update_report(report);
+            c.update_report(&self.screen,report);
         }
         out
     }
@@ -212,8 +212,9 @@ impl App {
         self.stage_resize = Some(sz);
         self.get_screen_mut().set_size(&sz);
         let size = self.get_screen().get_size();
-        self.window.get_train_manager().inform_screen_size(&sz);
-        self.update_position();
+        let screen = self.screen.clone();
+        self.window.get_train_manager().inform_screen_size(&sz,&screen);
+        self.update_position(&screen);
         self.intend_here();
         self.printer.lock().unwrap().set_size(size);
     }
@@ -223,12 +224,13 @@ impl App {
     }
 
     pub fn settle(&mut self) {
+        let screen = self.screen.clone();
         if let Some(size) = self.stage_resize.take() {
             self.get_screen_mut().set_size(&size);
-            self.window.get_train_manager().inform_screen_size(&size);
+            self.window.get_train_manager().inform_screen_size(&size,&screen);
         }
         self.window.get_train_manager().settle();
-        self.update_position();
+        self.update_position(&screen);
         self.intend_here();
         self.printer.lock().unwrap().settle();
     }

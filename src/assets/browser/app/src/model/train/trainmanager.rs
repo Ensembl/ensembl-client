@@ -102,7 +102,7 @@ impl TrainManagerImpl {
         }
     }
     
-    pub fn update_report(&self, report: &Report) {
+    pub fn update_report(&self, screen: &Screen, report: &Report) {
         // XXX: TOO SOON!
         if self.desired.is_ready() {
             let stick = self.desired.get_stick();
@@ -111,7 +111,7 @@ impl TrainManagerImpl {
         let mut at_focus = false;
         if let ObjectLocation::Location(focus_stick,focus_middle,focus_zoom) = self.focus_object.get_location() {
             if self.desired.is_ready() {
-                let desired_position = self.desired.get_position();
+                let desired_position = self.desired.get_position(screen);
                 let desired_position = (desired_position.get_middle().0,desired_position.get_screen_in_bp());
                 let delta = (desired_position.0-focus_middle,desired_position.1-focus_zoom);
                 if self.desired.get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_ZOOM_NEAR_ENOUGH {
@@ -122,18 +122,18 @@ impl TrainManagerImpl {
         report.set_status_bool("is-focus-position",at_focus);
     }
         
-    fn make_train(&mut self, train_id: &TrainId) -> Train {
-        let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position());
+    fn make_train(&mut self, train_id: &TrainId, screen: &Screen) -> Train {
+        let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position(screen));
         f.manage_carriages(&mut self.traveller_creator);
         f
     }
 
-    pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
+    pub fn set_desired_stick(&mut self, st: &Stick, screen: &Screen) -> bool {
         if self.desired.is_ready() && st == self.desired.get_stick() {
             return false
         }
         self.desired.set_stick(st);
-        self.maybe_change_trains();
+        self.maybe_change_trains(screen);
         true
     }
 
@@ -144,11 +144,11 @@ impl TrainManagerImpl {
         }
     }
     
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
-        self.desired.inform_screen_size(screen_size);
-        self.maybe_change_trains();
+    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
+        self.desired.inform_screen_size(screen_size,screen);
+        self.maybe_change_trains(screen);
         self.each_train(|t|
-            t.get_position_mut().inform_screen_size(screen_size)
+            t.get_position_mut().inform_screen_size(screen_size,screen)
         );
     }
 
@@ -260,11 +260,11 @@ impl TrainManagerImpl {
     }
     
     /* scale may have changed significantly to change trains */
-    fn maybe_change_trains(&mut self) {
+    fn maybe_change_trains(&mut self, screen: &Screen) {
         if !self.desired.is_ready() { return; }
         let mut end_future = false;
         let mut new_future = false;
-        if let Some(desired_future_train_id) = self.desired.get_train_id() {
+        if let Some(desired_future_train_id) = self.desired.get_train_id(screen) {
             /* we want to go or stay /somewhere/, at least! */
             if let Some(printing_train) = self.printing_train() {
                 if *printing_train.get_train_id() != desired_future_train_id {
@@ -298,48 +298,48 @@ impl TrainManagerImpl {
             }
             if end_future { self.trainset.end_future(); }
             if new_future {
-                let train = self.make_train(&desired_future_train_id);
+                let train = self.make_train(&desired_future_train_id,screen);
                 self.trainset.new_future(train);
             }
         }
     }
 
     /* compositor notifies of bp/screen update (change trains?) */
-    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
         self.desired.set_bp_per_screen(bp_per_screen);
-        self.maybe_change_trains();
+        self.maybe_change_trains(screen);
         self.each_relevant_train(|t| t.get_position_mut().set_screen_in_bp(bp_per_screen));
     }
             
     /* compositor notifies of position update */
-    pub fn set_middle(&mut self, middle: Dot<f64,f64>) {
-        self.desired.set_middle(middle);
-        self.maybe_change_trains();
-        self.each_relevant_train(|t| t.get_position_mut().set_middle(&middle));
+    pub fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
+        self.desired.set_middle(middle,screen);
+        self.maybe_change_trains(screen);
+        self.each_relevant_train(|t| t.get_position_mut().set_middle(&middle,screen));
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {
         self.each_train(|t| t.update_state(oom));
     }
 
-    pub fn get_desired_position(&self) -> Option<Position> {
+    pub fn get_desired_position(&self, screen: &Screen) -> Option<Position> {
         match self.desired.is_ready() {
-            true => Some(self.desired.get_position().clone()),
+            true => Some(self.desired.get_position(screen).clone()),
             false => None
         }
     }
 
-    pub fn set_desired_focus_object_id(&mut self, context: &FocusObjectId) {
+    pub fn set_desired_focus_object_id(&mut self, context: &FocusObjectId, screen: &Screen) {
         if context != self.focus_object.get_id() {
             self.focus_object = FocusObject::new(context);
             self.desired.set_focus_object_id(context.clone());
-            self.maybe_change_trains();
+            self.maybe_change_trains(screen);
         }
     }
     
-    pub fn jump_to_focus_object(&mut self, animator: &mut ActionAnimator) {
+    pub fn jump_to_focus_object(&mut self, animator: &mut ActionAnimator, screen: &Screen) {
         if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
-            self.try_to_queue_animation(animator);
+            self.try_to_queue_animation(animator,screen);
         }
     }
 
@@ -366,49 +366,48 @@ impl TrainManagerImpl {
     }
 
     pub fn settle(&mut self) {
-        self.each_train(|t| t.get_position_mut().settle());
     }
 
-    pub fn set_bottom(&mut self, max_y: f64) {
-        self.desired.set_bottom(max_y);
-        self.maybe_change_trains();
-        self.each_train(|t| t.get_position_mut().set_limit(&DOWN,max_y));
+    pub fn set_bottom(&mut self, max_y: f64, screen: &Screen) {
+        self.desired.set_bottom(max_y,screen);
+        self.maybe_change_trains(screen);
+        self.each_train(|t| t.get_position_mut().set_limit(screen,&DOWN,max_y));
     }
 
-    pub fn update_reports(&self, report: &Report) {
+    pub fn update_reports(&self, screen: &Screen, report: &Report) {
         if let Some(train) = self.printing_train() {
             let stick = train.get_train_id().get_stick();
             report.set_status("a-stick",&stick.get_name());
-            train.get_position().update_reports(report);
+            train.get_position().update_reports(screen,report);
         }
     }
 
-    pub fn update_viewport_report(&self, report: &ViewportReport) {
+    pub fn update_viewport_report(&self, screen: &Screen, report: &ViewportReport) {
         if let Some(train) = self.printing_train() {
-            train.get_position().update_viewport_report(report);
+            train.get_position().update_viewport_report(screen,report);
         }
     }
 
-    fn try_to_queue_animation(&mut self, animator: &mut ActionAnimator) {
+    fn try_to_queue_animation(&mut self, animator: &mut ActionAnimator, screen: &Screen) {
         if let ObjectLocation::Location(stick,middle,zoom) = self.focus_object.get_location() {
             let focus = self.focus_object.get_id();
             self.animation_request = Some((stick.clone(),focus.clone(),*middle,*zoom));
-            self.try_to_animate(animator);
+            self.try_to_animate(animator,screen);
         }
     }
 
-    fn try_to_animate(&mut self, animator: &mut ActionAnimator) {
+    fn try_to_animate(&mut self, animator: &mut ActionAnimator, screen: &Screen) {
         if let Some((ref stick,ref focus,ref middle,ref zoom)) = self.animation_request {
             let src_stick = self.get_desired_stick();
-            let src_pos = self.get_desired_position();
-            animate_jump_to(&src_stick.cloned(),&src_pos,animator,&stick.get_name(),*middle,*zoom);
+            let src_pos = self.get_desired_position(screen);
+            animate_jump_to(&src_stick.cloned(),&src_pos,animator,&stick.get_name(),*middle,*zoom,screen);
             self.animation_request = None;
         }
     }
 
-    pub fn set_focus_location(&mut self, animator: &mut ActionAnimator, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
+    pub fn set_focus_location(&mut self, animator: &mut ActionAnimator, screen: &Screen, _obj: &str, stick: &Stick, middle: f64, zoom: f64) {
         self.focus_object.set_location(&ObjectLocation::Location(stick.clone(),middle,zoom));
-        self.try_to_queue_animation(animator);
+        self.try_to_queue_animation(animator,screen);
     }
 }
 
@@ -426,12 +425,12 @@ impl TrainManager {
         TrainManager(Arc::new(Mutex::new(TrainManagerImpl::new(printer,traveller_creator))),locator.clone())
     }
     
-    pub fn update_report(&self, report: &Report) {
-        self.0.lock().unwrap().update_report(report);
+    pub fn update_report(&self, screen: &Screen, report: &Report) {
+        self.0.lock().unwrap().update_report(screen,report);
     }
 
-    pub fn set_desired_stick(&mut self, st: &Stick) -> bool {
-        self.0.lock().unwrap().set_desired_stick(st)
+    pub fn set_desired_stick(&mut self, st: &Stick, screen: &Screen) -> bool {
+        self.0.lock().unwrap().set_desired_stick(st,screen)
     }
 
     pub fn get_desired_stick(&self) -> Option<Stick> {
@@ -447,9 +446,10 @@ impl TrainManager {
             if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
                 let other = self.clone();
                 let inner_focus_object = focus_object.clone();
+                let screen = app.get_screen().clone();
                 self.1.locate(&focus_object,Box::new(move |_,stick,middle,zoom| {
                     let mut imp = other.0.lock().unwrap();
-                    imp.set_focus_location(&mut animator,&inner_focus_object,stick,middle,zoom);
+                    imp.set_focus_location(&mut animator,&screen,&inner_focus_object,stick,middle,zoom);
                 }));
             }
         }
@@ -463,12 +463,12 @@ impl TrainManager {
         self.0.lock().unwrap().add_component(product);
     }
 
-    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
-        self.0.lock().unwrap().set_bp_per_screen(bp_per_screen);
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
+        self.0.lock().unwrap().set_bp_per_screen(bp_per_screen,screen);
     }
             
-    pub fn set_middle(&mut self, middle: Dot<f64,f64>) {
-        self.0.lock().unwrap().set_middle(middle);
+    pub fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
+        self.0.lock().unwrap().set_middle(middle,screen);
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {
@@ -479,8 +479,8 @@ impl TrainManager {
         self.0.lock().unwrap().desired.get_focus_object_id().clone()
     }
 
-    pub fn set_desired_focus_object_id(&mut self, focus_object_id: &FocusObjectId) {
-        self.0.lock().unwrap().set_desired_focus_object_id(focus_object_id);
+    pub fn set_desired_focus_object_id(&mut self, focus_object_id: &FocusObjectId, screen: &Screen) {
+        self.0.lock().unwrap().set_desired_focus_object_id(focus_object_id,screen);
     }
         
     fn get_impl_ref<'ret>(&'ret self) -> MutexGuardRef<'ret,TrainManagerImpl> {
@@ -495,20 +495,20 @@ impl TrainManager {
         self.get_impl_ref().map(|imp| imp.get_trainset())
     }
 
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>) {
-        ok!(self.0.lock()).inform_screen_size(screen_size)
+    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
+        ok!(self.0.lock()).inform_screen_size(screen_size,screen)
     }
 
     pub fn settle(&mut self) {
         ok!(self.0.lock()).settle();
     }
 
-    pub fn set_bottom(&mut self, max_y: f64) {
-        ok!(self.0.lock()).set_bottom(max_y);
+    pub fn set_bottom(&mut self, max_y: f64, screen: &Screen) {
+        ok!(self.0.lock()).set_bottom(max_y,screen);
     }
 
-    pub fn get_desired_position(&self) -> Option<Position> {
-        ok!(self.0.lock()).get_desired_position()
+    pub fn get_desired_position(&self, screen: &Screen) -> Option<Position> {
+        ok!(self.0.lock()).get_desired_position(screen)
     }
 
     pub fn intersects(&self, screen: &Screen, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
@@ -519,16 +519,17 @@ impl TrainManager {
         self.get_impl_mut().add_zmenus(zms);
     }
 
-    pub fn update_reports(&self, report: &Report) {
-        ok!(self.0.lock()).update_reports(report);
+    pub fn update_reports(&self, screen: &Screen, report: &Report) {
+        ok!(self.0.lock()).update_reports(screen,report);
     }
 
-    pub fn update_viewport_report(&self, report: &ViewportReport) {
-        ok!(self.0.lock()).update_viewport_report(report);
+    pub fn update_viewport_report(&self, screen: &Screen, report: &ViewportReport) {
+        ok!(self.0.lock()).update_viewport_report(screen,report);
     }
 
     pub fn jump_to_focus_object(&mut self, app: &mut App) {
-        ok!(self.0.lock()).jump_to_focus_object(app.get_window().get_animator());
+        let screen = app.get_screen().clone();
+        ok!(self.0.lock()).jump_to_focus_object(app.get_window().get_animator(),&screen);
     }
 
     pub fn transition_complete(&mut self) {

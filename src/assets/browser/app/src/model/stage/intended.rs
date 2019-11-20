@@ -2,7 +2,7 @@ use types::{ LEFT, RIGHT };
 use composit::Stick;
 use controller::output::Report;
 
-use super::Position;
+use super::{ Position, Screen };
 
 pub struct Intended {
     stick: Option<Stick>,
@@ -25,8 +25,8 @@ impl Intended {
     pub fn get_stick(&self) -> &Option<Stick> { &self.stick }
     pub fn get_position(&self) -> &Position { &self.pos }
 
-    pub fn update_intent_report(&self, report: &Report) {
-        let (ileft,iright) = (self.pos.get_edge(&LEFT,false),self.pos.get_edge(&RIGHT,false));
+    pub fn update_intent_report(&self, report: &Report, screen: &Screen) {
+        let (ileft,iright) = (self.pos.get_edge(screen,&LEFT,false),self.pos.get_edge(screen,&RIGHT,false));
         report.set_status("i-start",&ileft.floor().to_string());
         report.set_status("i-end",&iright.ceil().to_string());
     }

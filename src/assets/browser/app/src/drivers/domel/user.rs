@@ -41,7 +41,8 @@ impl UserEventListener {
     fn wheel(&mut self, amt: f64) {
         let app = &mut self.app.lock().unwrap();
         let mouse_prop = app.get_screen().get_mouse_pos_prop();
-        if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
+        let screen = app.get_screen().clone();
+        if let Some(desired) = app.get_window().get_train_manager().get_desired_position(&screen) {
             let y = desired.get_middle().1;
             let pos_bp = desired.get_pos_prop_bp(mouse_prop);
             let pos = Dot(pos_bp,y);

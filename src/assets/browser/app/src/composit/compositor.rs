@@ -86,12 +86,12 @@ impl Compositor {
         }
     }
 
-    pub fn update_report(&mut self, report: &Report) {
-        self.window.get_train_manager().update_report(report);
+    pub fn update_report(&mut self, screen: &Screen, report: &Report) {
+        self.window.get_train_manager().update_report(screen,report);
     }
 
-    pub fn set_stick(&mut self, st: &Stick) -> bool {
-        if self.window.get_train_manager().set_desired_stick(st) {
+    pub fn set_stick(&mut self, st: &Stick, screen: &Screen) -> bool {
+        if self.window.get_train_manager().set_desired_stick(st,screen) {
             self.prime_delay = None; // Force priming delay as screen is completely invalid
             self.psychic.set_stick(st);
             self.updated = true;
@@ -101,15 +101,15 @@ impl Compositor {
         }
     }
 
-    pub fn set_position(&mut self, middle: Dot<f64,f64>) {
-        self.window.get_train_manager().set_middle(middle);
+    pub fn set_position(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
+        self.window.get_train_manager().set_middle(middle,screen);
         self.psychic.set_middle(middle.0 as i64);
         self.updated = true;
     }
     
-    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
         self.bp_per_screen = bp_per_screen;
-        self.window.get_train_manager().set_bp_per_screen(bp_per_screen);
+        self.window.get_train_manager().set_bp_per_screen(bp_per_screen,screen);
         self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
@@ -135,8 +135,9 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         tm.tick(app,t);
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
-        app.get_window().get_train_manager().set_bottom(max_y as f64);
-        app.update_position();
+        let screen = app.get_screen().clone();
+        app.get_window().get_train_manager().set_bottom(max_y as f64,&screen);
+        app.update_position(&screen);
         vec![]
     },2);
 }
