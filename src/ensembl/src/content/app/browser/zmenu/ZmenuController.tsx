@@ -30,12 +30,9 @@ const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
   useEffect(() => {
-    const subscriptionHandler = (payload: ZmenuIncomingPayload) =>
-      handleBpaneEvent(payload);
-
     const subscription = browserMessagingService.subscribe(
       'bpane-zmenu',
-      subscriptionHandler
+      handleBpaneEvent
     );
 
     return () => subscription.unsubscribe();

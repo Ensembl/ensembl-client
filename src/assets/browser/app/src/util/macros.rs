@@ -61,6 +61,42 @@ macro_rules! console {
 }
 
 #[cfg(any(not(deploy),console))]
+macro_rules! bb_count {
+    ($stream:expr,$name:expr,$amt:expr) => {{
+        ::data::blackbox::blackbox_count($stream,$name,$amt,false);
+    }}
+}
+
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_count {
+        ($stream:expr,$name:expr,$amt:expr) => {{}}
+}
+
+#[cfg(any(not(deploy),console))]
+macro_rules! bb_count_set {
+    ($stream:expr,$name:expr,$amt:expr) => {{
+        ::data::blackbox::blackbox_count($stream,$name,$amt,true);
+    }}
+}
+
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_count_set {
+        ($stream:expr,$name:expr,$amt:expr) => {{}}
+}
+
+#[cfg(any(not(deploy),console))]
+macro_rules! bb_reset_count {
+    ($stream:expr,$name:expr) => {{
+        ::data::blackbox::blackbox_reset_count($stream,$name);
+    }}
+}
+
+#[cfg(all(deploy,not(console)))]
+macro_rules! bb_reset_count {
+        ($stream:expr,$name:expr) => {{}}
+}
+
+#[cfg(any(not(deploy),console))]
 macro_rules! bb_time {
     ($stream:expr,$code:block) => {{
         let tmp_bb_enabled = ::data::blackbox::blackbox_is_enabled($stream);
