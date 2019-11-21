@@ -59,9 +59,5 @@ export default function<T extends HTMLElement>(params: Params<T> = {}) {
     return () => resizeObserver.unobserve(element);
   }, [ref]);
 
-  return useMemo(() => ({ ref, ...size }), [
-    ref,
-    size ? size.width : null,
-    size ? size.height : null
-  ]);
+  return { ref, ...size };
 }
