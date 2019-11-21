@@ -21,8 +21,6 @@ type Props = {
 
 export const Root = (props: Props) => {
   const elementRef = useRef<HTMLDivElement>(null);
-  // TODO: this should be properly done via window.matchMedia() rather than
-  // via ResizeObserver; will refactor in subsequent PR
   const { width } = useResizeObserver<HTMLDivElement>({ ref: elementRef });
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
 
