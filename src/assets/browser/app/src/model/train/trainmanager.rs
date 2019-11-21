@@ -128,11 +128,11 @@ impl TrainManagerImpl {
         f
     }
 
-    pub fn set_desired_stick(&mut self, st: &Stick, screen: &Screen) -> bool {
+    pub fn set_desired_stick(&mut self, st: &Stick, screen: &mut Screen) -> bool {
         if self.desired.is_ready() && st == self.desired.get_stick() {
             return false
         }
-        self.desired.set_stick(st);
+        self.desired.set_stick(st,screen);
         self.maybe_change_trains(screen);
         true
     }
@@ -144,11 +144,11 @@ impl TrainManagerImpl {
         }
     }
     
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
-        self.desired.inform_screen_size(screen_size,screen);
+    pub fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
+        self.desired.maybe_nudge_to_fit_limits(screen);
         self.maybe_change_trains(screen);
         self.each_train(|t|
-            t.get_position_mut().inform_screen_size(screen)
+            t.get_position_mut().maybe_nudge_to_fit_limits(screen)
         );
     }
 
@@ -368,10 +368,12 @@ impl TrainManagerImpl {
     pub fn settle(&mut self) {
     }
 
-    pub fn set_bottom(&mut self, max_y: f64, screen: &Screen) {
-        self.desired.set_bottom(max_y,screen);
+    pub fn set_bottom(&mut self, max_y: i32, screen: &mut Screen) {
+        screen.set_max_y(max_y);
         self.maybe_change_trains(screen);
-        self.each_train(|t| t.get_position_mut().set_limit(screen,&DOWN,max_y));
+        self.each_train(|t| {
+            t.get_position_mut().maybe_nudge_to_fit_limits(screen);
+        })
     }
 
     pub fn update_reports(&self, screen: &Screen, report: &Report) {
@@ -429,7 +431,7 @@ impl TrainManager {
         self.0.lock().unwrap().update_report(screen,report);
     }
 
-    pub fn set_desired_stick(&mut self, st: &Stick, screen: &Screen) -> bool {
+    pub fn set_desired_stick(&mut self, st: &Stick, screen: &mut Screen) -> bool {
         self.0.lock().unwrap().set_desired_stick(st,screen)
     }
 
@@ -495,15 +497,15 @@ impl TrainManager {
         self.get_impl_ref().map(|imp| imp.get_trainset())
     }
 
-    pub fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
-        ok!(self.0.lock()).inform_screen_size(screen_size,screen)
+    pub fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
+        ok!(self.0.lock()).maybe_nudge_to_fit_limits(screen)
     }
 
     pub fn settle(&mut self) {
         ok!(self.0.lock()).settle();
     }
 
-    pub fn set_bottom(&mut self, max_y: f64, screen: &Screen) {
+    pub fn set_bottom(&mut self, max_y: i32, screen: &mut Screen) {
         ok!(self.0.lock()).set_bottom(max_y,screen);
     }
 

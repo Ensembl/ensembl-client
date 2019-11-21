@@ -156,14 +156,15 @@ fn exe_component_add(a: &mut App, name: &str) {
 }
 
 fn exe_set_stick(app: &mut App, name: &str) {
-    let screen = app.get_screen().clone();
+    let mut screen = app.get_screen().clone();
     let stick_manager = app.get_window().get_stick_manager();
     if let Some(stick) = stick_manager.get_stick(name) {
-        let changed : bool = app.with_compo(|co| co.set_stick(&stick,&screen));
+        let changed : bool = app.with_compo(|co| co.set_stick(&stick,&mut screen));
         if changed {
             app.update_position(&screen);
             app.intend_here();
         }
+        *app.get_screen_mut() = screen;
     } else {
         console_force!("NO SUCH STICK {}",name);
     }

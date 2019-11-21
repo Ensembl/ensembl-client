@@ -7,14 +7,32 @@ use super::Position;
 pub struct Screen {
     dims: Dot<f64,f64>,
     mouse_pos: CPixel,
+    min_x_bumper: f64,
+    max_x_bumper: f64,
+    max_y: i32
 }
 
 impl Screen {
     pub fn new() -> Screen {
         Screen {
             mouse_pos: Dot(0,0),
-            dims: Dot(0.,0.)
+            dims: Dot(0.,0.),
+            min_x_bumper: 0.,
+            max_x_bumper: 0.,
+            max_y: 0
         }
+    }
+
+    pub fn set_max_y(&mut self, y: i32) { self.max_y = 1000; }
+    pub fn get_max_y(&self) -> i32 { self.max_y }
+
+    pub fn get_x_bumpers(&self) -> (f64,f64) {
+        (self.min_x_bumper,self.max_x_bumper)
+    }
+
+    pub fn set_x_bumpers(&mut self, min: f64, max: f64) {
+        self.min_x_bumper = min;
+        self.max_x_bumper = max;
     }
 
     pub fn set_mouse_pos(&mut self, c: &CPixel) {

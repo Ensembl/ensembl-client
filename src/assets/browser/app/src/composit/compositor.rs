@@ -90,7 +90,7 @@ impl Compositor {
         self.window.get_train_manager().update_report(screen,report);
     }
 
-    pub fn set_stick(&mut self, st: &Stick, screen: &Screen) -> bool {
+    pub fn set_stick(&mut self, st: &Stick, screen: &mut Screen) -> bool {
         if self.window.get_train_manager().set_desired_stick(st,screen) {
             self.prime_delay = None; // Force priming delay as screen is completely invalid
             self.psychic.set_stick(st);
@@ -135,9 +135,10 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         tm.tick(app,t);
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
-        let screen = app.get_screen().clone();
-        app.get_window().get_train_manager().set_bottom(max_y as f64,&screen);
+        let mut screen = app.get_screen().clone();
+        app.get_window().get_train_manager().set_bottom(max_y,&mut screen);
         app.update_position(&screen);
+        *app.get_screen_mut() = screen;
         vec![]
     },2);
 }

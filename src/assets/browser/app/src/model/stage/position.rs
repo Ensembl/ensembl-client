@@ -8,11 +8,8 @@ use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 pub struct Position {
     pos: Dot<f64,f64>,
     zoom: Zoom,
-    max_y: i32,
     min_x: f64,
     max_x: f64,
-    min_x_bumper: f64,
-    max_x_bumper: f64
 }
 
 impl Position {
@@ -20,19 +17,13 @@ impl Position {
         Position {
             pos: Dot(0.,0.),
             zoom: Zoom::new(),
-            max_y: 0, min_x: 0., max_x: 0.,
-            min_x_bumper: 0.,
-            max_x_bumper: 0.
+            min_x: 0., max_x: 0.,
         }
     }
-    
-    pub fn inform_screen_size(&mut self, screen: &Screen) {
-        self.check_own_limits(screen);
-    }
-    
+        
     pub fn set_middle(&mut self, pos: &Dot<f64,f64>, screen: &Screen) {
         self.pos = *pos;
-        self.check_own_limits(screen);
+        self.maybe_nudge_to_fit_limits(screen);
     }
         
     pub fn get_screen_in_bp(&self) -> f64 {
@@ -40,7 +31,8 @@ impl Position {
     }
 
     pub fn get_bumped_screen_in_bp(&self, screen: &Screen) -> f64 {
-        let delta = self.px_to_bp(self.min_x_bumper,screen) + self.px_to_bp(self.max_x_bumper,screen);
+        let x_bumpers = screen.get_x_bumpers();
+        let delta = self.px_to_bp(x_bumpers.0,screen) + self.px_to_bp(x_bumpers.1,screen);
         self.zoom.get_screen_in_bp()+delta
     }
     
@@ -58,8 +50,9 @@ impl Position {
 
     fn middle_to_edge(&self, which: &Direction, screen: &Screen, bump: bool) -> f64 {
         let bp = self.get_screen_in_bp();
+        let x_bumpers = screen.get_x_bumpers();
         let (bump_min,bump_max) = if bump {
-            (self.px_to_bp(self.min_x_bumper,screen),self.px_to_bp(self.max_x_bumper,screen))
+            (self.px_to_bp(x_bumpers.0,screen),self.px_to_bp(x_bumpers.1,screen))
         } else {
             (0.,0.)
         };
@@ -90,7 +83,7 @@ impl Position {
         match *which {
             LEFT => self.min_x,
             RIGHT => self.max_x,
-            DOWN => self.max_y as f64,
+            DOWN => 0.,
             UP => 0.,
             IN  => self.zoom.get_limit(&AxisSense::Max),
             OUT => self.zoom.get_limit(&AxisSense::Min),
@@ -102,8 +95,9 @@ impl Position {
     }
 
     pub fn get_bumped_middle(&self, screen: &Screen) -> Dot<f64,f64> {
-        let left_bp = self.px_to_bp(self.min_x_bumper,screen);
-        let right_bp = self.px_to_bp(self.max_x_bumper,screen);
+        let x_bumpers = screen.get_x_bumpers();
+        let left_bp = self.px_to_bp(x_bumpers.0,screen);
+        let right_bp = self.px_to_bp(x_bumpers.1,screen);
         /*
         inner centre is at self.pos.0
         inner left is at self.pos.0 - bp_per_sc/2
@@ -122,11 +116,12 @@ impl Position {
     }
 
     fn set_limit_min_zoom(&mut self, screen: &Screen) {
+        let x_bumpers = screen.get_x_bumpers();
         let max_bp =
             self.get_limit_of_edge(&RIGHT) - self.get_limit_of_edge(&LEFT)
             + 1.
-            + self.px_to_bp(self.min_x_bumper,screen)
-            + self.px_to_bp(self.max_x_bumper,screen);
+            + self.px_to_bp(x_bumpers.0,screen)
+            + self.px_to_bp(x_bumpers.1,screen);
         self.zoom.set_max_bp(max_bp);
     }
 
@@ -134,23 +129,11 @@ impl Position {
         match *which {
             LEFT => self.min_x = val,
             RIGHT => self.max_x = val,
-            DOWN => self.max_y = val as i32,
             _ => (),
         }
-        self.set_limit_min_zoom(screen);
-        self.check_own_limits(screen);
+        self.maybe_nudge_to_fit_limits(screen);
     }
-    
-    fn set_bumper(&mut self, screen: &Screen, which: &Direction, val: f64) {
-        match *which {
-            LEFT => self.min_x_bumper = val,
-            RIGHT => self.max_x_bumper = val,
-            _ => ()
-        }
-        self.set_limit_min_zoom(screen);
-        self.check_own_limits(screen);
-    }
-    
+        
     fn check_limits(&mut self, pos: &mut Dot<f64,f64>, screen: &Screen) {
         /* minima always "win" when in conflict => max fn's called first */        
         pos.0 = pos.0.min(self.get_limit_of_middle(screen,&RIGHT));
@@ -159,8 +142,9 @@ impl Position {
         pos.1 = pos.1.max(self.get_limit_of_middle(screen,&UP));
     }
     
-    fn check_own_limits(&mut self, screen: &Screen) {
+    pub fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
         let mut pos = self.pos;
+        self.set_limit_min_zoom(screen);
         self.check_limits(&mut pos,screen);
         self.pos = pos;
     }
@@ -194,10 +178,5 @@ impl Position {
 
     pub fn update_viewport_report(&self, screen: &Screen, report: &ViewportReport) {
         report.set_delta_y(-self.get_edge(screen,&UP,false) as i32);
-    }
-
-    pub fn set_wrapping(&mut self, screen: &Screen, w: &Wrapping) {
-        self.set_bumper(screen,&LEFT,w.get_bumper(&LEFT));
-        self.set_bumper(screen,&RIGHT,w.get_bumper(&RIGHT));
     }
 }

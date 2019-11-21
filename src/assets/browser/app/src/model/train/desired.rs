@@ -13,7 +13,6 @@ pub(super) struct Desired {
     bp_per_screen: Option<f64>,
     middle: Option<Dot<f64,f64>>,
     position: Rc<RefCell<Option<Position>>>,
-    bottom: Option<f64>,
     focus_object: FocusObjectId
 }
 
@@ -24,7 +23,6 @@ impl Desired {
             bp_per_screen: None,
             middle: None,
             position: Rc::new(RefCell::new(None)),
-            bottom: None,
             focus_object: FocusObjectId::new(&None)
         }
     }
@@ -40,9 +38,7 @@ impl Desired {
         let mut position = Position::new();
         position.set_limit(screen,&LEFT,0.);
         position.set_limit(screen,&RIGHT,self.stick.as_ref().unwrap().length() as f64);
-        position.set_limit(screen,&DOWN,self.bottom.unwrap());
-        position.set_wrapping(screen,&self.stick.as_ref().unwrap().get_wrapping());
-        position.inform_screen_size(screen);
+        position.maybe_nudge_to_fit_limits(screen);
         position.set_middle(self.middle.as_ref().unwrap(),screen);
         position.set_screen_in_bp(self.bp_per_screen.unwrap());
         position
@@ -56,9 +52,11 @@ impl Desired {
         self.position.replace(Some(position));
     }
 
-    pub(super) fn set_stick(&mut self, stick: &Stick) {
+    pub(super) fn set_stick(&mut self, stick: &Stick, screen: &mut Screen) {
         self.clear();
         self.stick = Some(stick.clone());
+        let w = self.stick.as_ref().unwrap().get_wrapping();
+        screen.set_x_bumpers(w.get_bumper(&LEFT),w.get_bumper(&RIGHT));
     }
 
     pub(super) fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
@@ -75,16 +73,9 @@ impl Desired {
         }
     }
 
-    pub(super) fn inform_screen_size(&mut self, screen_size: &Dot<f64,f64>, screen: &Screen) {
+    pub(super) fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.inform_screen_size(screen);
-        }
-    }
-
-    pub(super) fn set_bottom(&mut self, bottom: f64, screen: &Screen) {
-        self.bottom = Some(bottom);
-        if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.set_limit(screen,&DOWN,self.bottom.unwrap());
+            position.maybe_nudge_to_fit_limits(screen);
         }
     }
 
@@ -95,8 +86,7 @@ impl Desired {
     pub(super) fn is_ready(&self) -> bool {
         self.stick.is_some() &&
         self.bp_per_screen.is_some() &&
-        self.middle.is_some() &&
-        self.bottom.is_some()
+        self.middle.is_some()
     }
 
     pub(super) fn get_stick(&self) -> &Stick {

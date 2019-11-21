@@ -213,7 +213,7 @@ impl App {
         self.get_screen_mut().set_size(&sz);
         let size = self.get_screen().get_size();
         let screen = self.screen.clone();
-        self.window.get_train_manager().inform_screen_size(&sz,&screen);
+        self.window.get_train_manager().maybe_nudge_to_fit_limits(&screen);
         self.update_position(&screen);
         self.intend_here();
         self.printer.lock().unwrap().set_size(size);
@@ -227,7 +227,7 @@ impl App {
         let screen = self.screen.clone();
         if let Some(size) = self.stage_resize.take() {
             self.get_screen_mut().set_size(&size);
-            self.window.get_train_manager().inform_screen_size(&size,&screen);
+            self.window.get_train_manager().maybe_nudge_to_fit_limits(&screen);
         }
         self.window.get_train_manager().settle();
         self.update_position(&screen);
