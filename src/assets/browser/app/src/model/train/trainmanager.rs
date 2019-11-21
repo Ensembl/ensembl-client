@@ -315,7 +315,10 @@ impl TrainManagerImpl {
     pub fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
         self.desired.set_middle(middle,screen);
         self.maybe_change_trains(screen);
-        self.each_relevant_train(|t| t.get_position_mut().set_middle(&middle,screen));
+        self.each_relevant_train(|t| {
+            t.get_position_mut().set_middle(&middle);
+            t.get_position_mut().maybe_nudge_to_fit_limits(screen)
+        });
     }
     
     pub fn update_state(&mut self, oom: &StateManager) {

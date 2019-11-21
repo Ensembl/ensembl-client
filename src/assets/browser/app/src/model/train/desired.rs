@@ -38,9 +38,9 @@ impl Desired {
         let mut position = Position::new();
         position.set_limit(screen,&LEFT,0.);
         position.set_limit(screen,&RIGHT,self.stick.as_ref().unwrap().length() as f64);
-        position.maybe_nudge_to_fit_limits(screen);
-        position.set_middle(self.middle.as_ref().unwrap(),screen);
+        position.set_middle(self.middle.as_ref().unwrap());
         position.set_screen_in_bp(self.bp_per_screen.unwrap());
+        position.maybe_nudge_to_fit_limits(screen);
         position
     }
 
@@ -69,7 +69,8 @@ impl Desired {
     pub(super) fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
         self.middle = Some(middle);
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.set_middle(self.middle.as_ref().unwrap(),screen);
+            position.set_middle(self.middle.as_ref().unwrap());
+            position.maybe_nudge_to_fit_limits(screen);
         }
     }
 

@@ -21,9 +21,8 @@ impl Position {
         }
     }
         
-    pub fn set_middle(&mut self, pos: &Dot<f64,f64>, screen: &Screen) {
+    pub fn set_middle(&mut self, pos: &Dot<f64,f64>) {
         self.pos = *pos;
-        self.maybe_nudge_to_fit_limits(screen);
     }
         
     pub fn get_screen_in_bp(&self) -> f64 {
