@@ -44,7 +44,7 @@ import styles from './TrackPanelListItem.scss';
 type OwnProps = {
   categoryName: string;
   children?: ReactNode[];
-  trackStatus: TrackActivityStatus;
+  trackStatus: TrackActivityStatus | null;
   defaultTrackStatus: TrackActivityStatus;
   track: EnsObjectTrack;
 };
@@ -75,7 +75,8 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     isDrawerOpened,
     drawerView,
     track,
-    trackStatus
+    trackStatus,
+    defaultTrackStatus
   } = props;
 
   const updateTrackStates = (
@@ -113,8 +114,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   };
 
   useEffect(() => {
-    const { defaultTrackStatus } = props;
-    if (trackStatus !== defaultTrackStatus) {
+    if (!trackStatus) {
+      // Save the default track status for all tracks
+      updateGenomeBrowser(track.track_id, defaultTrackStatus);
+      updateTrackStates(track.track_id, defaultTrackStatus);
+    } else if (trackStatus != defaultTrackStatus) {
       updateGenomeBrowser(track.track_id, trackStatus);
     }
   }, []);
@@ -176,7 +180,13 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     // FIXME: Temporary hack to toggle the focus track either using the eye icon next to the gene or the one next transcript.
     if (track.track_id.startsWith('track:gene')) {
       updateTrackStates('track:gene-feat', newStatus);
-      updateTrackStates('track:gene-feat-1', newStatus);
+      // Make sure we have a track with id 'track:gene-feat-1' before setting a status.
+      if (
+        track.track_id === 'track:gene-feat-1' ||
+        (track.child_tracks && track.child_tracks.length)
+      ) {
+        updateTrackStates('track:gene-feat-1', newStatus);
+      }
       updateGenomeBrowser('track:gene-feat', newStatus);
       return;
     }
@@ -239,7 +249,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </div>
         <div className={styles.eyeHolder}>
           <ImageButton
-            buttonStatus={trackStatus}
+            buttonStatus={trackStatus || defaultTrackStatus}
             description={'enable/disable track'}
             onClick={toggleTrack}
             image={Eye}

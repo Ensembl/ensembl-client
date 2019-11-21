@@ -75,7 +75,7 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
     const { track_id } = track;
 
     const defaultTrackStatus = getDefaultTrackStatus();
-    let trackStatus = defaultTrackStatus;
+    let trackStatus: TrackActivityStatus | null = null;
 
     if (activeEnsObject) {
       // FIXME: Temporary hack until we have a set of proper track names
@@ -83,13 +83,13 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
         trackStatus = get(
           props.trackStates,
           `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
-          trackStatus
+          null
         ) as TrackActivityStatus;
       } else {
         trackStatus = get(
           props.trackStates,
           `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
-          trackStatus
+          null
         ) as TrackActivityStatus;
       }
     }
@@ -157,7 +157,4 @@ const mapDispatchToProps = {
   toggleDrawer
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelList);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelList);
