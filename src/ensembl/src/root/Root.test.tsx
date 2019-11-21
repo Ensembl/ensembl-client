@@ -5,6 +5,9 @@ import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
+import windowService from 'src/services/window-service';
+
+import MockResizeObserver from 'tests/mocks/mockResizeObserver';
 
 jest.mock('../header/Header', () => () => 'Header');
 jest.mock('../content/Content', () => () => 'Content');
@@ -24,6 +27,9 @@ describe('<Root />', () => {
   const getRenderedRoot = (props: any) => <Root {...props} />;
 
   beforeEach(() => {
+    jest
+      .spyOn(windowService, 'getResizeObserver')
+      .mockImplementation((): any => MockResizeObserver);
     wrapper = mount(getRenderedRoot(defaultProps));
   });
 
