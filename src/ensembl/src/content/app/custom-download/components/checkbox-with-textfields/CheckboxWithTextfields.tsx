@@ -9,11 +9,11 @@ import PasteOrUpload from 'src/shared/components/paste-or-upload/PasteOrUpload';
 import { ReadFile } from 'src/shared/components/upload/Upload';
 
 export type CheckboxWithTextfieldsProps = {
-  values: string[];
+  values: (string | ReadFile)[];
   label: string;
   allowMultiple: boolean;
   disabled?: boolean;
-  onChange: (values: string[]) => void;
+  onChange: (values: (string | ReadFile)[]) => void;
 };
 
 const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
@@ -54,7 +54,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   };
 
   const handleOnChange = () => {
-    const values: string[] = [];
+    const values: (string | ReadFile)[] = [];
     filesAndValues.forEach((entry) => {
       if (typeof entry === 'string') {
         values.push(entry);
@@ -63,7 +63,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
         (entry as ReadFile).content &&
         !(entry as ReadFile).error
       ) {
-        values.push((entry as ReadFile).content as string);
+        values.push(entry);
       }
     });
 
@@ -122,45 +122,38 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
       <div className={styles.fieldsWrapper}>
         {filesAndValues.map((entry: ReadFile | string | null, key: number) => {
-          if (
-            typeof entry == 'string' ||
-            entry === null ||
-            (entry && !entry.error)
-          ) {
-            return (
-              <div key={key} className={styles.pasteOrUploadWrapper}>
-                {typeof entry !== 'string' && entry && entry.filename && (
-                  <div className={styles.filename}>{entry.filename}</div>
-                )}
+          return (
+            <div key={key} className={styles.pasteOrUploadWrapper}>
+              {typeof entry !== 'string' && entry && entry.filename && (
+                <div key={key} className={styles.fileWrapper}>
+                  <span className={styles.fileDetails}>
+                    <span
+                      className={styles.filename}
+                    >{`${entry.filename}`}</span>
+                    {entry.error && (
+                      <span
+                        className={styles.errorMessage}
+                      >{` ${entry.error}`}</span>
+                    )}
+                  </span>
+                  <div className={styles.removeErrorIcon}>
+                    <ImageButton
+                      onClick={() => handleOnRemove(key)}
+                      description={'Remove'}
+                      image={RemoveIcon}
+                    />
+                  </div>
+                </div>
+              )}
+              {(typeof entry === 'string' || !entry) && (
                 <PasteOrUpload
-                  value={
-                    typeof entry == 'string' || entry === null
-                      ? entry
-                      : (entry.content as string)
-                  }
+                  value={entry}
                   onChange={(newValue) => handleValueChange(newValue, key)}
                   onRemove={() => handleOnRemove(key)}
                   onUpload={(files: ReadFile[]) => handleOnUpload(files)}
                   placeholder={'Paste data'}
                 />
-              </div>
-            );
-          }
-
-          return (
-            <div key={key} className={styles.errorWrapper}>
-              <span className={styles.errorContent}>
-                <span
-                  className={styles.errorMessage}
-                >{`${entry.filename} - ${entry.error}`}</span>
-              </span>
-              <div className={styles.removeErrorIcon}>
-                <ImageButton
-                  onClick={() => handleOnRemove(key)}
-                  description={'Remove'}
-                  image={RemoveIcon}
-                />
-              </div>
+              )}
             </div>
           );
         })}

@@ -18,26 +18,24 @@
   margin: 20px 7px 0 0;
 }
 
-.errorWrapper {
+.fileWrapper {
   display: grid;
   grid-template-columns: [error-message] auto [remove-icon] 20px 10px;
 }
 
-.errorContent {
+.fileDetails {
   grid-column: error-message;
   width: calc(100% - 55px);
-  background: $white;
   padding: 10px;
 }
 
 .filename {
-  width: calc(100% - 85px);
-  background: #fff;
-  padding: 5px 10px;
+  font-size: 16px;
 }
 
 .errorMessage {
   color: $red;
+  margin-left: 30px;
 }
 
 .removeErrorIcon {
@@ -47,7 +45,7 @@
 }
 
 .pasteOrUploadWrapper + .pasteOrUploadWrapper,
-.pasteOrUploadWrapper + .errorWrapper,
-.errorWrapper + .pasteOrUploadWrapper {
+.pasteOrUploadWrapper + .fileWrapper,
+.fileWrapper + .pasteOrUploadWrapper {
   margin-top: 15px;
 }

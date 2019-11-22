@@ -30,6 +30,7 @@ import {
 import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
 
 import styles from './ContentBuilder.scss';
+import { ReadFile } from 'src/shared/components/upload/Upload';
 
 type Path = (string | number)[];
 let path: Path = [];
@@ -286,7 +287,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
           label={entry.label}
           disabled={entry.disabled}
           allowMultiple={true}
-          onChange={(values: string[]) => onChangeHandler(currentPath, values)}
+          onChange={(values: (string | ReadFile)[]) =>
+            onChangeHandler(currentPath, values as PrimitiveOrArrayValue)
+          }
           values={values || []}
         />
       </div>
