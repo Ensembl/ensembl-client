@@ -48,6 +48,11 @@ impl Position {
     pub fn get_screen_in_bp(&self) -> f64 {
         self.zoom.get_screen_in_bp()
     }
+
+    pub fn get_bumped_screen_in_bp(&self) -> f64 {
+        let delta = self.px_to_bp(self.min_x_bumper) + self.px_to_bp(self.max_x_bumper);
+        self.zoom.get_screen_in_bp()+delta
+    }
     
     pub fn set_screen_in_bp(&mut self, zoom: f64) {
         self.zoom.set_screen_in_bp(zoom);
@@ -116,6 +121,22 @@ impl Position {
     pub fn get_middle(&self) -> Dot<f64,f64> {
         bb_log!("resize","get_middle={:?}",self.pos);
         Dot(self.pos.0,self.pos.1)
+    }
+
+    pub fn get_bumped_middle(&self) -> Dot<f64,f64> {
+        let left_bp = self.px_to_bp(self.min_x_bumper);
+        let right_bp = self.px_to_bp(self.max_x_bumper);
+        /*
+        inner centre is at self.pos.0
+        inner left is at self.pos.0 - bp_per_sc/2
+        inner right is at self.pos.0 + bp_per_sc/2
+        outer left is at self.pos.0 - bp_per_sc/2 - left_bp
+        outer right is at self.pos.0 + bp_per_sc/2 + right_bp
+        outer middle is at mean, ie (self.pos.0 - bp_per_sc/2 - left_bp + self.pos.0 + bp_per_sc/2 + right_bp)/2
+        so outer middle is at self.pos.0 + (right_bp-left_bp)/2
+        correction is to add (right_bp-left_bp)/2
+        */
+        Dot(self.pos.0+(right_bp-left_bp)/2.,self.pos.1)
     }
 
     fn px_to_bp(&self, px: f64) -> f64 {

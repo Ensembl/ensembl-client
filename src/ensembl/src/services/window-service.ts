@@ -9,6 +9,7 @@ export interface WindowServiceInterface {
   getSessionStorage: () => Storage;
   getLocation: () => Location;
   getFileReader: () => FileReader;
+  getResizeObserver: () => typeof ResizeObserver;
 }
 
 class WindowService implements WindowServiceInterface {
@@ -30,6 +31,10 @@ class WindowService implements WindowServiceInterface {
 
   public getFileReader() {
     return new FileReader();
+  }
+
+  public getResizeObserver() {
+    return ResizeObserver;
   }
 
   // return viewport dimensions in the ClientRect format

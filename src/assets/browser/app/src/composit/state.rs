@@ -29,7 +29,6 @@ impl StateExpr for StateAtom {
     }
 }
 
-#[allow(unused)]
 pub enum StateOp {
     And(Rc<dyn StateExpr>,Rc<dyn StateExpr>),
     Or(Rc<dyn StateExpr>,Rc<dyn StateExpr>),

@@ -2,6 +2,7 @@ const dotenv = require('dotenv').config();
 
 const webpack = require('webpack');
 const path = require('path');
+const url = require('url');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 
 // laoders specific to dev
@@ -49,14 +50,16 @@ const devConfig = {
     before(app) {
       // use proper mime-type for wasm files
       app.get('*.wasm', function(req, res, next) {
-        var options = {
-          root: path.join(__dirname, '..'),
+        const options = {
+          root: path.join(__dirname, '../node_modules/ensembl-genome-browser'),
           dotfiles: 'deny',
           headers: {
             'Content-Type': 'application/wasm'
           }
         };
-        res.sendFile(req.url, options, function(err) {
+        const parsedUrl = url.parse(req.url);
+        const fileName = path.basename(parsedUrl.pathname);
+        res.sendFile(fileName, options, function(err) {
           if (err) {
             next(err);
           }
@@ -100,10 +103,10 @@ const devConfig = {
     }
   },
 
-  // disable webpack from watching node modules
+  // disable webpack from watching node modules (except for ensembl-genome-browser)
   // this would reduce memory consumption and also should improve build times
   watchOptions: {
-    ignored: /node_modules/
+    ignored: /node_modules([\\]+|\/)+(?!ensembl-genome-browser)/
   }
 };
 

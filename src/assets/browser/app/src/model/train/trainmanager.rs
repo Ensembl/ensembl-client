@@ -127,7 +127,7 @@ impl TrainManagerImpl {
     /* if there's a transition and it's reached endstop it is current */
     fn transition_maybe_done(&mut self, t: f64) {
         self.transition.update(t);
-        if self.transition.get_prop() >= 1. {
+        if self.transition.get_prop().get_prop_up() >= 1. {
             console!("transition done");
             bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
             self.current_train = self.transition_train.take();
@@ -156,7 +156,7 @@ impl TrainManagerImpl {
                     slow = true;
                 }
             }
-            console!("starting trnasition");
+            console!("starting transition");
             self.transition.start(t,slow);
         }
     }
@@ -386,10 +386,13 @@ impl TrainManagerImpl {
      */
     
     /* used by printer to set opacity */
-    pub fn get_prop_trans(&self) -> f32 {
-        self.transition.get_prop() as f32
+    pub fn get_prop_trans_up(&self) -> f32 {
+        self.transition.get_prop().get_prop_up() as f32
     }
-    
+    pub fn get_prop_trans_down(&self) -> f32 {
+        self.transition.get_prop().get_prop_down() as f32
+    }
+
     /* used by printer for actual printing */
     pub fn with_current_train<F>(&mut self, mut cb: F) where F: FnMut(&mut Train) {
         if let Some(ref mut train) = self.current_train {
@@ -527,10 +530,14 @@ impl TrainManager {
         self.0.lock().unwrap().set_desired_context(context);
     }
         
-    pub fn get_prop_trans(&self) -> f32 {
-        self.0.lock().unwrap().get_prop_trans()
+    pub fn get_prop_trans_up(&self) -> f32 {
+        self.0.lock().unwrap().get_prop_trans_up()
     }
-    
+
+    pub fn get_prop_trans_down(&self) -> f32 {
+        self.0.lock().unwrap().get_prop_trans_down()
+    }
+
     pub fn with_current_train<F>(&mut self, cb: F) where F: FnMut(&mut Train) {
         self.0.lock().unwrap().with_current_train(cb)
     }

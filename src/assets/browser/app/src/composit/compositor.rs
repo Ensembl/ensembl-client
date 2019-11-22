@@ -50,7 +50,8 @@ impl Compositor {
 
     pub fn get_zmr(&self) -> &ZMenuRegistry { &self.zmr }
 
-    pub fn get_prop_trans(&mut self) -> f32 { self.window.get_train_manager().get_prop_trans() }
+    pub fn get_prop_trans_up(&mut self) -> f32 { self.window.get_train_manager().get_prop_trans_up() }
+    pub fn get_prop_trans_down(&mut self) -> f32 { self.window.get_train_manager().get_prop_trans_down() }
 
     fn prime_cache(&mut self, t: f64) {
         if self.prime_delay.is_none() {

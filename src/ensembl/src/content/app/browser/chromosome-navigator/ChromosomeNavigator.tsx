@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { connect } from 'react-redux';
-import useResizeObserver from 'use-resize-observer';
+
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import * as constants from './chromosomeNavigatorConstants';
 
@@ -39,7 +40,8 @@ export type ChromosomeNavigatorProps = WrapperProps & {
 };
 
 export const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
-  const [containerRef, containerWidth] = useResizeObserver();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
 
   return (
     <div

@@ -17,6 +17,7 @@ pub use self::stickmanager::StickManager;
 
 pub use self::state::{
     StateExpr,
+    StateOp,
     StateManager,
     StateFixed,
     StateAtom
