@@ -29,10 +29,6 @@ const QuestionButton = (props: Props) => {
     setIsHovering(false);
   };
 
-  const styles = props.className
-    ? { ...defaultStyles, ...props.className }
-    : defaultStyles;
-
   const className = classNames(
     defaultStyles.default,
     {
