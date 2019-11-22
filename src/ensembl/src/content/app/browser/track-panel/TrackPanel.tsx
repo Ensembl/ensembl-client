@@ -41,7 +41,7 @@ export const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
 
   useEffect(() => {
-    if (props.breakpointWidth !== BreakpointWidth.DESKTOP) {
+    if (props.breakpointWidth <= BreakpointWidth.DESKTOP) {
       props.toggleTrackPanel(false);
     } else {
       props.toggleTrackPanel(true);
@@ -103,7 +103,4 @@ const mapDispatchToProps = {
   toggleTrackPanel
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanel);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanel);
