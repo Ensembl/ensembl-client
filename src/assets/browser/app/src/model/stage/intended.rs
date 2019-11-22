@@ -6,28 +6,27 @@ use super::{ Position, Screen };
 
 pub struct Intended {
     stick: Option<Stick>,
-    pos: Position
+    pos: Option<Position>
 }
 
 impl Intended {
     pub fn new() -> Intended {
         Intended {
             stick: None,
-            pos: Position::new(),
+            pos: None
         }
     }
 
     pub fn intend_here(&mut self, stick: &Stick, pos: &Position) {
         self.stick = Some(stick.clone());
-        self.pos = pos.clone();
+        self.pos = Some(pos.clone());
     }
 
-    pub fn get_stick(&self) -> &Option<Stick> { &self.stick }
-    pub fn get_position(&self) -> &Position { &self.pos }
-
     pub fn update_intent_report(&self, report: &Report, screen: &Screen) {
-        let (ileft,iright) = (self.pos.get_edge(screen,&LEFT,false),self.pos.get_edge(screen,&RIGHT,false));
-        report.set_status("i-start",&ileft.floor().to_string());
-        report.set_status("i-end",&iright.ceil().to_string());
+        if let Some(ref pos) = self.pos {
+            let (ileft,iright) = (pos.get_edge(screen,&LEFT,false),pos.get_edge(screen,&RIGHT,false));
+            report.set_status("i-start",&ileft.floor().to_string());
+            report.set_status("i-end",&iright.ceil().to_string());
+        }
     }
 }

@@ -1,57 +1,73 @@
-use super::zoom::{ Zoom, bp_to_zoomfactor };
 use super::Screen;
-use composit::Wrapping;
+use composit::{ Stick, Wrapping };
 use controller::output::{ Report, ViewportReport };
 use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
-#[derive(Clone,Debug)]
-pub struct Position {
-    pos: Dot<f64,f64>,
-    zoom: Zoom,
-    min_x: f64,
-    max_x: f64,
+pub fn bp_to_zoomfactor(bp: f64) -> f64 {
+    -bp.log10()
 }
 
+pub fn zoomfactor_to_bp(zoomfactor: f64) -> f64 {
+    10.0_f64.powf(-zoomfactor)
+}
+
+fn px_to_bp(px: f64, screen: &Screen, screen_in_bp: f64) -> f64 {
+    px / screen.get_size().0 as f64 * screen_in_bp
+}
+
+fn calc_limit_min_zoom(stick: &Stick, screen_in_bp: f64, screen: &Screen) -> f64 {
+    let min_x = 0.; /* kept here as reminder for circular chromosomes */
+    let max_x = stick.length() as f64;        
+    let x_bumpers = screen.get_x_bumpers();
+
+        max_x - min_x
+        + 1.
+        //+ px_to_bp(x_bumpers.0,screen,screen_in_bp)
+        //+ px_to_bp(x_bumpers.1,screen,screen_in_bp)
+}
+
+#[derive(Clone,Debug)]
+pub struct Position {
+    stick: Stick,
+    pos: Dot<f64,f64>,
+    screen_in_bp: f64,
+    max_bp: f64
+}
+
+const MAX_LIMIT_BP : f64 = 50.;
+
 impl Position {
-    pub fn new() -> Position {
+    pub fn new(stick: &Stick, pos: &Dot<f64,f64>, screen_in_bp: f64, screen: &Screen) -> Position {
         Position {
-            pos: Dot(0.,0.),
-            zoom: Zoom::new(),
-            min_x: 0., max_x: 0.,
+            stick: stick.clone(),
+            pos: pos.clone(),
+            screen_in_bp,
+            max_bp: calc_limit_min_zoom(stick,screen_in_bp,screen)
         }
     }
-        
-    pub fn set_middle(&mut self, pos: &Dot<f64,f64>) {
-        self.pos = *pos;
+    
+    pub fn new_with_screen_bp(&self, bp: f64, screen: &Screen) -> Position {
+        Position::new(&self.stick,&self.pos,bp,screen)
+    }
+
+    pub fn new_with_middle(&self, pos: &Dot<f64,f64>, screen: &Screen) -> Position {
+        Position::new(&self.stick,pos,self.screen_in_bp,screen)
     }
         
-    pub fn get_screen_in_bp(&self) -> f64 {
-        self.zoom.get_screen_in_bp()
-    }
+    pub fn get_screen_in_bp(&self) -> f64 { self.screen_in_bp }
 
     pub fn get_bumped_screen_in_bp(&self, screen: &Screen) -> f64 {
         let x_bumpers = screen.get_x_bumpers();
-        let delta = self.px_to_bp(x_bumpers.0,screen) + self.px_to_bp(x_bumpers.1,screen);
-        self.zoom.get_screen_in_bp()+delta
+        let delta = px_to_bp(x_bumpers.0,screen,self.screen_in_bp) + 
+                    px_to_bp(x_bumpers.1,screen,self.screen_in_bp);
+        self.screen_in_bp+delta
     }
     
-    pub fn set_screen_in_bp(&mut self, zoom: f64) {
-        self.zoom.set_screen_in_bp(zoom);
-    }
-        
-    pub fn best_zoom_screen_bp(&self, bp: f64) -> f64 {
-        self.zoom.best_zoom_screen_bp(bp)
-    }
-
-    pub fn unlimited_best_zoom_screen_bp(bp: f64) -> f64 {
-        Zoom::unlimited_best_zoom_screen_bp(bp)
-    }
-
     fn middle_to_edge(&self, which: &Direction, screen: &Screen, bump: bool) -> f64 {
         let bp = self.get_screen_in_bp();
         let x_bumpers = screen.get_x_bumpers();
         let (bump_min,bump_max) = if bump {
-            (self.px_to_bp(x_bumpers.0,screen),self.px_to_bp(x_bumpers.1,screen))
+            (px_to_bp(x_bumpers.0,screen,self.screen_in_bp),px_to_bp(x_bumpers.1,screen,self.screen_in_bp))
         } else {
             (0.,0.)
         };
@@ -70,7 +86,7 @@ impl Position {
         match *which {
             LEFT|RIGHT => self.pos.0 + delta,
             UP|DOWN    => self.pos.1 + delta,
-            IN|OUT     => bp_to_zoomfactor(self.zoom.get_screen_in_bp())
+            IN|OUT     => bp_to_zoomfactor(self.screen_in_bp)
         }
     }
 
@@ -79,13 +95,15 @@ impl Position {
     }
 
     fn get_limit_of_edge(&self, which: &Direction) -> f64 {
+        let min_x = 0.; /* kept here as reminder for circular chromosomes */
+        let max_x = self.stick.length() as f64;
         match *which {
-            LEFT => self.min_x,
-            RIGHT => self.max_x,
+            LEFT => min_x,
+            RIGHT => max_x,
             DOWN => 0.,
             UP => 0.,
-            IN  => self.zoom.get_limit(&AxisSense::Max),
-            OUT => self.zoom.get_limit(&AxisSense::Min),
+            IN  => MAX_LIMIT_BP,
+            OUT => self.max_bp
         }
     }
 
@@ -95,8 +113,8 @@ impl Position {
 
     pub fn get_bumped_middle(&self, screen: &Screen) -> Dot<f64,f64> {
         let x_bumpers = screen.get_x_bumpers();
-        let left_bp = self.px_to_bp(x_bumpers.0,screen);
-        let right_bp = self.px_to_bp(x_bumpers.1,screen);
+        let left_bp = px_to_bp(x_bumpers.0,screen,self.screen_in_bp);
+        let right_bp = px_to_bp(x_bumpers.1,screen,self.screen_in_bp);
         /*
         inner centre is at self.pos.0
         inner left is at self.pos.0 - bp_per_sc/2
@@ -109,32 +127,9 @@ impl Position {
         */
         Dot(self.pos.0+(right_bp-left_bp)/2.,self.pos.1)
     }
-
-    fn px_to_bp(&self, px: f64, screen: &Screen) -> f64 {
-        px / screen.get_size().0 as f64 * self.zoom.get_screen_in_bp()
-    }
-
-    fn set_limit_min_zoom(&mut self, screen: &Screen) {
-        let x_bumpers = screen.get_x_bumpers();
-        let max_bp =
-            self.get_limit_of_edge(&RIGHT) - self.get_limit_of_edge(&LEFT)
-            + 1.
-            + self.px_to_bp(x_bumpers.0,screen)
-            + self.px_to_bp(x_bumpers.1,screen);
-        self.zoom.set_max_bp(max_bp);
-    }
-
-    pub fn set_limit(&mut self, screen: &Screen, which: &Direction, val: f64) {
-        match *which {
-            LEFT => self.min_x = val,
-            RIGHT => self.max_x = val,
-            _ => (),
-        }
-        self.maybe_nudge_to_fit_limits(screen);
-    }
         
     fn check_limits(&mut self, pos: &mut Dot<f64,f64>, screen: &Screen) {
-        /* minima always "win" when in conflict => max fn's called first */        
+        /* minima always "win" when in conflict => max fn's called first */  
         pos.0 = pos.0.min(self.get_limit_of_middle(screen,&RIGHT));
         pos.0 = pos.0.max(self.get_limit_of_middle(screen,&LEFT));
         pos.1 = pos.1.min(self.get_limit_of_middle(screen,&DOWN));
@@ -143,7 +138,8 @@ impl Position {
     
     pub fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
         let mut pos = self.pos;
-        self.set_limit_min_zoom(screen);
+        self.max_bp = calc_limit_min_zoom(&self.stick,self.screen_in_bp,screen);
+        self.screen_in_bp = self.screen_in_bp.min(self.max_bp).max(MAX_LIMIT_BP);
         self.check_limits(&mut pos,screen);
         self.pos = pos;
     }

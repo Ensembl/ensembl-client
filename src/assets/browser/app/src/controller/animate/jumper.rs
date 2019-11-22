@@ -99,7 +99,7 @@ impl Jumper {
     }
 
     fn do_offscreen_jump(&mut self, animator: &mut ActionAnimator, stick: &str, dest_pos: Dot<f64,f64>, dest_size: f64) {
-        let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
+        let dest_zoom = bp_to_zoomfactor(dest_size);
         let mut seq = animator.new_sequence();
         let bang_z = animator.new_step(&mut seq,&self.bang_zhoosh,None,Some((stick.to_string(),dest_pos,dest_zoom)));
         let mut all_z = animator.new_step(&mut seq,&self.settled_zhoosh,false,true);
@@ -110,7 +110,7 @@ impl Jumper {
     fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
         let current_middle = current_position.get_middle();
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
-        let dest_zoom = Position::unlimited_best_zoom_screen_bp(dest_size);
+        let dest_zoom = bp_to_zoomfactor(dest_size);
         let mut seq = animator.new_sequence();
         let location_zhoosh = self.new_location_zhoosh_for_scale(current_zoom,dest_zoom);
         let pos_z = animator.new_step(&mut seq,&location_zhoosh,current_middle,dest_pos);

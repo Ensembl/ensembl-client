@@ -306,9 +306,15 @@ impl TrainManagerImpl {
 
     /* compositor notifies of bp/screen update (change trains?) */
     pub fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
-        self.desired.set_bp_per_screen(bp_per_screen);
+        self.desired.set_bp_per_screen(bp_per_screen,screen);
         self.maybe_change_trains(screen);
-        self.each_relevant_train(|t| t.get_position_mut().set_screen_in_bp(bp_per_screen));
+        self.each_relevant_train(|t| {
+            console!("set {:?}",bp_per_screen);
+            let mut pos = t.get_position().new_with_screen_bp(bp_per_screen,screen);
+            pos.maybe_nudge_to_fit_limits(screen);
+            console!("modified {:?}",pos.get_screen_in_bp());
+            *t.get_position_mut() = pos;
+        });
     }
             
     /* compositor notifies of position update */
@@ -316,8 +322,10 @@ impl TrainManagerImpl {
         self.desired.set_middle(middle,screen);
         self.maybe_change_trains(screen);
         self.each_relevant_train(|t| {
-            t.get_position_mut().set_middle(&middle);
-            t.get_position_mut().maybe_nudge_to_fit_limits(screen)
+            let mut pos = t.get_position().new_with_middle(&middle,screen);
+            pos.maybe_nudge_to_fit_limits(screen);
+            console!("modified {:?}",pos.get_screen_in_bp());
+            *t.get_position_mut() = pos;
         });
     }
     

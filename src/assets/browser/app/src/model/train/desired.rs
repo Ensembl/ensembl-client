@@ -35,11 +35,7 @@ impl Desired {
     }
 
     fn make_position(&self, screen: &Screen) -> Position {
-        let mut position = Position::new();
-        position.set_limit(screen,&LEFT,0.);
-        position.set_limit(screen,&RIGHT,self.stick.as_ref().unwrap().length() as f64);
-        position.set_middle(self.middle.as_ref().unwrap());
-        position.set_screen_in_bp(self.bp_per_screen.unwrap());
+        let mut position = Position::new(self.stick.as_ref().unwrap(),self.middle.as_ref().unwrap(),self.bp_per_screen.unwrap(),screen);
         position.maybe_nudge_to_fit_limits(screen);
         position
     }
@@ -59,17 +55,18 @@ impl Desired {
         screen.set_x_bumpers(w.get_bumper(&LEFT),w.get_bumper(&RIGHT));
     }
 
-    pub(super) fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
+    pub(super) fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
         self.bp_per_screen = Some(bp_per_screen);
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.set_screen_in_bp(bp_per_screen);
+            *position = position.new_with_screen_bp(bp_per_screen,screen);
+            position.maybe_nudge_to_fit_limits(screen);
         }
     }
 
     pub(super) fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
         self.middle = Some(middle);
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.set_middle(self.middle.as_ref().unwrap());
+            *position = position.new_with_middle(&middle,screen);
             position.maybe_nudge_to_fit_limits(screen);
         }
     }
