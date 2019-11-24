@@ -77,8 +77,8 @@ pub const LEFT : Direction = Direction(Axis::Horiz,AxisSense::Min);
 pub const RIGHT : Direction = Direction(Axis::Horiz,AxisSense::Max);
 pub const UP : Direction = Direction(Axis::Vert,AxisSense::Min);
 pub const DOWN : Direction = Direction(Axis::Vert,AxisSense::Max);
-pub const OUT : Direction = Direction(Axis::Zoom,AxisSense::Min);
-pub const IN : Direction = Direction(Axis::Zoom,AxisSense::Max);
+pub const OUT : Direction = Direction(Axis::Zoom,AxisSense::Max);
+pub const IN : Direction = Direction(Axis::Zoom,AxisSense::Min);
 
 #[derive(Clone,Copy,Debug)]
 pub struct Corner(pub AxisSense, pub AxisSense);
