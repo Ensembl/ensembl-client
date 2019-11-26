@@ -24,7 +24,7 @@ impl Intended {
 
     pub fn update_intent_report(&self, report: &Report, screen: &Screen) {
         if let Some(ref pos) = self.pos {
-            let (ileft,iright) = (pos.get_edge(screen,&LEFT),pos.get_edge(screen,&RIGHT));
+            let (ileft,iright) = (pos.get_left_edge(),pos.get_right_edge());
             report.set_status("i-start",&ileft.floor().to_string());
             report.set_status("i-end",&iright.ceil().to_string());
         }

@@ -57,43 +57,21 @@ impl Position {
                     px_to_bp(x_bumpers.1,screen,self.screen_in_bp);
         self.screen_in_bp+delta
     }
-    
-    fn middle_to_edge(&self, which: &Direction, screen: &Screen) -> f64 {
-        let bp = self.get_screen_in_bp();
-        let screen_y_height = screen.get_size().1;
-        match *which {
-            LEFT =>  - bp/2.,
-            RIGHT => bp/2.,
-            UP =>    - screen_y_height as f64/2.,
-            DOWN =>  screen_y_height as f64/2.,
-            IN|OUT => 0.
-        }
+
+    pub fn get_left_edge(&self) -> f64 {
+        self.pos.0 - self.get_screen_in_bp()/2.
     }
 
-    pub fn get_edge(&self, screen: &Screen, which: &Direction) -> f64 {
-        let delta = self.middle_to_edge(which,screen);
-        match *which {
-            LEFT|RIGHT => self.pos.0 + delta,
-            UP|DOWN    => self.pos.1 + delta,
-            IN|OUT     => self.screen_in_bp
-        }
+    pub fn get_right_edge(&self) -> f64 {
+        self.pos.0 + self.get_screen_in_bp()/2.
     }
 
-    fn get_limit_of_middle(&self, screen: &Screen, which: &Direction) -> f64 {
-        self.get_limit_of_edge(which) -  self.middle_to_edge(which,screen)
+    pub fn get_top_edge(&self, screen: &Screen) -> f64 {
+        self.pos.1 - screen.get_size().1/2.
     }
 
-    fn get_limit_of_edge(&self, which: &Direction) -> f64 {
-        let min_x = 0.; /* kept here as reminder for circular chromosomes */
-        let max_x = self.stick.length() as f64;
-        match *which {
-            LEFT => min_x,
-            RIGHT => max_x,
-            DOWN => 0.,
-            UP => 0.,
-            IN  => MAX_LIMIT_BP,
-            OUT => self.max_bp
-        }
+    pub fn get_bottom_edge(&self, screen: &Screen) -> f64 {
+        self.pos.1 + screen.get_size().1/2.
     }
 
     pub fn get_middle(&self) -> Dot<f64,f64> {
@@ -118,14 +96,18 @@ impl Position {
     }
         
     pub fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
+        let min_x = 0.; /* kept here as reminder for circular chromosomes */
+        let max_x = self.stick.length() as f64;
+        let max_y = screen.get_max_y() as f64;
         let mut pos = self.pos;
         self.max_bp = calc_limit_min_zoom(&self.stick,self.screen_in_bp);
         self.screen_in_bp = self.screen_in_bp.min(self.max_bp).max(MAX_LIMIT_BP);
+        let screen_y_height = screen.get_size().1;
         /* minima always "win" when in conflict => max fn's called first */  
-        pos.0 = pos.0.min(self.get_limit_of_middle(screen,&RIGHT));
-        pos.0 = pos.0.max(self.get_limit_of_middle(screen,&LEFT));
-        pos.1 = pos.1.min(self.get_limit_of_middle(screen,&DOWN));
-        pos.1 = pos.1.max(self.get_limit_of_middle(screen,&UP));
+        pos.0 = pos.0.min(max_x - self.screen_in_bp/2.);
+        pos.0 = pos.0.max(min_x + self.screen_in_bp/2.);
+        pos.1 = pos.1.min(max_y - screen_y_height as f64/2.);
+        pos.1 = pos.1.max(screen_y_height as f64/2.);
         self.pos = pos;
     }
 
@@ -139,24 +121,22 @@ impl Position {
         start + self.get_screen_in_bp()/2.
     }
 
-    fn bumped(&self, screen: &Screen, direction: &Direction) -> bool {
-        let mul : f64 = direction.1.into();
-        self.get_edge(screen,direction).floor() * mul >= self.get_limit_of_edge(direction).floor() * mul
-    }
-
     pub fn update_reports(&self, screen: &Screen, report: &Report) {
-        report.set_status_bool("bumper-left",self.bumped(screen,&LEFT));
-        report.set_status_bool("bumper-right",self.bumped(screen,&RIGHT));
-        report.set_status_bool("bumper-top",self.bumped(screen,&UP));
-        report.set_status_bool("bumper-bottom",self.bumped(screen,&DOWN));
-        report.set_status_bool("bumper-in",self.bumped(screen,&IN));
-        report.set_status_bool("bumper-out",self.bumped(screen,&OUT));
-        let (aleft,aright) = (self.get_edge(screen,&LEFT),self.get_edge(screen,&RIGHT));
+        let min_x = 0.; /* kept here as reminder for circular chromosomes */
+        let max_x = self.stick.length() as f64;
+        let max_y = screen.get_max_y() as f64;
+        report.set_status_bool("bumper-left",self.get_left_edge() <= min_x);
+        report.set_status_bool("bumper-right",self.get_right_edge() >= max_x);
+        report.set_status_bool("bumper-top",self.get_top_edge(screen) <= 0.);
+        report.set_status_bool("bumper-bottom",self.get_bottom_edge(screen) >= max_y);
+        report.set_status_bool("bumper-in",self.screen_in_bp <= MAX_LIMIT_BP);
+        report.set_status_bool("bumper-out",self.screen_in_bp >= self.max_bp);
+        let (aleft,aright) = (self.get_left_edge(),self.get_right_edge());
         report.set_status("a-start",&aleft.floor().to_string());
         report.set_status("a-end",&aright.ceil().to_string());
     }
 
     pub fn update_viewport_report(&self, screen: &Screen, report: &ViewportReport) {
-        report.set_delta_y(-self.get_edge(screen,&UP) as i32);
+        report.set_delta_y(-self.get_top_edge(screen) as i32);
     }
 }

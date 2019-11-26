@@ -136,6 +136,7 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
         let mut screen = app.get_screen().clone();
+        console!("max_y={}",max_y);
         app.get_window().get_train_manager().set_bottom(max_y,&mut screen);
         app.update_position(&screen);
         *app.get_screen_mut() = screen;

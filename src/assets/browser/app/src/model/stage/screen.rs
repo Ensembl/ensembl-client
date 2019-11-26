@@ -23,7 +23,7 @@ impl Screen {
         }
     }
 
-    pub fn set_max_y(&mut self, y: i32) { self.max_y = 1000; }
+    pub fn set_max_y(&mut self, y: i32) { self.max_y = y; }
     pub fn get_max_y(&self) -> i32 { self.max_y }
 
     pub fn get_x_bumpers(&self) -> (f64,f64) {
@@ -55,8 +55,8 @@ impl Screen {
         let screen_bp = apos.get_screen_in_bp();
         let screen_px = self.dims;
         let bp_px = screen_bp / screen_px.0;
-        let left_bp = apos.get_edge(self,&LEFT);
-        let top_px = apos.get_edge(self,&UP);
+        let left_bp = apos.get_left_edge();
+        let top_px = apos.get_top_edge(self);
         match area {
             Placement::Stretch(r) => {
                 let pos_bp = left_bp + pos.0 as f64 * bp_px;

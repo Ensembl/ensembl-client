@@ -93,8 +93,8 @@ impl Jumper {
         if  stick != current_stick.get_name() {
             return true;
         }
-        let screen_left = current_position.get_edge(screen,&LEFT);
-        let screen_right = current_position.get_edge(screen,&RIGHT);
+        let screen_left = current_position.get_left_edge();
+        let screen_right = current_position.get_right_edge();
         return dest_end < screen_left || dest_start > screen_right;
     }
 
