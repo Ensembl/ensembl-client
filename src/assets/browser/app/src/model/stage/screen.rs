@@ -9,7 +9,8 @@ pub struct Screen {
     mouse_pos: CPixel,
     min_x_bumper: f64,
     max_x_bumper: f64,
-    max_y: i32
+    max_y: i32,
+    y_pos: f64
 }
 
 impl Screen {
@@ -19,9 +20,13 @@ impl Screen {
             dims: Dot(0.,0.),
             min_x_bumper: 0.,
             max_x_bumper: 0.,
-            max_y: 0
+            max_y: 0,
+            y_pos: 0.
         }
     }
+
+    //pub fn set_y_pos(&mut self, y: f64) { self.y_pos = y; }
+    //pub fn get_y_pos(&self) -> f64 { self.y_pos }
 
     pub fn set_max_y(&mut self, y: i32) { self.max_y = y; }
     pub fn get_max_y(&self) -> i32 { self.max_y }

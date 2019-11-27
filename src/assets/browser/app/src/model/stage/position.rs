@@ -24,7 +24,8 @@ fn calc_limit_min_zoom(stick: &Stick, screen_in_bp: f64) -> f64 {
 #[derive(Clone,Debug)]
 pub struct Position {
     stick: Stick,
-    pos: Dot<f64,f64>,
+    x_pos: f64,
+    y_pos: f64,
     screen_in_bp: f64,
     max_bp: f64
 }
@@ -32,21 +33,21 @@ pub struct Position {
 const MAX_LIMIT_BP : f64 = 50.;
 
 impl Position {
-    pub fn new(stick: &Stick, pos: &Dot<f64,f64>, screen_in_bp: f64) -> Position {
+    pub fn new(stick: &Stick, x_pos: f64, y_pos: f64, screen_in_bp: f64) -> Position {
         Position {
             stick: stick.clone(),
-            pos: pos.clone(),
+            x_pos, y_pos,
             screen_in_bp,
             max_bp: calc_limit_min_zoom(stick,screen_in_bp)
         }
     }
     
     pub fn new_with_screen_bp(&self, bp: f64) -> Position {
-        Position::new(&self.stick,&self.pos,bp)
+        Position::new(&self.stick,self.x_pos,self.y_pos,bp)
     }
 
-    pub fn new_with_middle(&self, pos: &Dot<f64,f64>) -> Position {
-        Position::new(&self.stick,pos,self.screen_in_bp)
+    pub fn new_with_middle(&self, x_pos: f64, y_pos: f64) -> Position {
+        Position::new(&self.stick,x_pos,y_pos,self.screen_in_bp)
     }
         
     pub fn get_screen_in_bp(&self) -> f64 { self.screen_in_bp }
@@ -59,26 +60,24 @@ impl Position {
     }
 
     pub fn get_left_edge(&self) -> f64 {
-        self.pos.0 - self.get_screen_in_bp()/2.
+        self.x_pos - self.get_screen_in_bp()/2.
     }
 
     pub fn get_right_edge(&self) -> f64 {
-        self.pos.0 + self.get_screen_in_bp()/2.
+        self.x_pos + self.get_screen_in_bp()/2.
     }
 
     pub fn get_top_edge(&self, screen: &Screen) -> f64 {
-        self.pos.1 - screen.get_size().1/2.
+        self.y_pos - screen.get_size().1/2.
     }
 
     pub fn get_bottom_edge(&self, screen: &Screen) -> f64 {
-        self.pos.1 + screen.get_size().1/2.
+        self.y_pos + screen.get_size().1/2.
     }
 
-    pub fn get_middle(&self) -> Dot<f64,f64> {
-        Dot(self.pos.0,self.pos.1)
-    }
+    pub fn get_x_pos(&self) -> f64 { self.x_pos }
 
-    pub fn get_bumped_middle(&self, screen: &Screen) -> Dot<f64,f64> {
+    pub fn get_bumped_middle(&self, screen: &Screen) -> f64 {
         let x_bumpers = screen.get_x_bumpers();
         let left_bp = px_to_bp(x_bumpers.0,screen,self.screen_in_bp);
         let right_bp = px_to_bp(x_bumpers.1,screen,self.screen_in_bp);
@@ -92,27 +91,29 @@ impl Position {
         so outer middle is at self.pos.0 + (right_bp-left_bp)/2
         correction is to add (right_bp-left_bp)/2
         */
-        Dot(self.pos.0+(right_bp-left_bp)/2.,self.pos.1)
+        self.x_pos+(right_bp-left_bp)/2.
     }
-        
+    
+    pub fn get_y_pos(&self) -> f64 { self.y_pos }
+
     pub fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
         let min_x = 0.; /* kept here as reminder for circular chromosomes */
         let max_x = self.stick.length() as f64;
         let max_y = screen.get_max_y() as f64;
-        let mut pos = self.pos;
         self.max_bp = calc_limit_min_zoom(&self.stick,self.screen_in_bp);
         self.screen_in_bp = self.screen_in_bp.min(self.max_bp).max(MAX_LIMIT_BP);
         let screen_y_height = screen.get_size().1;
         /* minima always "win" when in conflict => max fn's called first */  
-        pos.0 = pos.0.min(max_x - self.screen_in_bp/2.);
-        pos.0 = pos.0.max(min_x + self.screen_in_bp/2.);
-        pos.1 = pos.1.min(max_y - screen_y_height as f64/2.);
-        pos.1 = pos.1.max(screen_y_height as f64/2.);
-        self.pos = pos;
+        self.x_pos = self.x_pos
+            .min(max_x - self.screen_in_bp/2.)
+            .max(min_x + self.screen_in_bp/2.);
+        self.y_pos = self.y_pos
+            .min(max_y - screen_y_height as f64/2.)
+            .max(screen_y_height as f64/2.);
     }
 
     pub fn get_pos_prop_bp(&self, prop: f64) -> f64 {
-        let start = self.get_middle().0 - self.get_screen_in_bp() / 2.;
+        let start = self.get_x_pos() - self.get_screen_in_bp() / 2.;
         start + prop * self.get_screen_in_bp()
     }
 

@@ -112,7 +112,7 @@ impl TrainManagerImpl {
         if let ObjectLocation::Location(focus_stick,focus_middle,focus_zoom) = self.focus_object.get_location() {
             if self.desired.is_ready() {
                 let desired_position = self.desired.get_position(screen);
-                let desired_position = (desired_position.get_middle().0,desired_position.get_screen_in_bp());
+                let desired_position = (desired_position.get_x_pos(),desired_position.get_screen_in_bp());
                 let delta = (desired_position.0-focus_middle,desired_position.1-focus_zoom);
                 if self.desired.get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_ZOOM_NEAR_ENOUGH {
                     at_focus = true;
@@ -320,7 +320,7 @@ impl TrainManagerImpl {
         self.desired.set_middle(middle,screen);
         self.maybe_change_trains(screen);
         self.each_relevant_train(|t| {
-            let mut pos = t.get_position().new_with_middle(&middle);
+            let mut pos = t.get_position().new_with_middle(middle.0,middle.1);
             pos.maybe_nudge_to_fit_limits(screen);
             *t.get_position_mut() = pos;
         });

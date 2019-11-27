@@ -45,7 +45,7 @@ impl Train {
     pub fn get_position_mut(&mut self) -> &mut Position { &mut self.position }
 
     fn middle_leaf(&self) -> i64 {
-        (self.position.get_middle().0 / self.id.get_scale().total_bp()).floor() as i64
+        (self.position.get_x_pos() / self.id.get_scale().total_bp()).floor() as i64
     }
 
     /* are we active (ie should we scan around as the user does?) */

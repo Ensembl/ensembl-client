@@ -81,13 +81,14 @@ impl GLCarriage {
         let bp_per_leaf = self.leaf.total_bp();
         let leaf_per_screen = bp_per_screen as f64 / bp_per_leaf;
         let middle_bp = camera.get_position().get_bumped_middle(camera.get_screen());
-        let middle_leaf = middle_bp.0/bp_per_leaf; // including fraction of leaf
+        let y_pos = camera.get_position().get_y_pos();
+        let middle_leaf = middle_bp/bp_per_leaf; // including fraction of leaf
         let current_leaf_left = self.leaf.get_index() as f64;
         let screen_px = camera.get_screen().get_size();
         vec![
             ("uOpacity",UniformValue::Float(camera.get_opacity() as f32)),
             ("uStageHpos",UniformValue::Float((middle_leaf - current_leaf_left) as f32)),
-            ("uStageVpos",UniformValue::Float(middle_bp.1 as f32)),
+            ("uStageVpos",UniformValue::Float(y_pos as f32)),
             ("uStageZoom",UniformValue::Float((2_f64/leaf_per_screen) as f32)),
             ("uSize",UniformValue::Vec2F(screen_px.0 as f32/2.,screen_px.1 as f32/2.))
         ]

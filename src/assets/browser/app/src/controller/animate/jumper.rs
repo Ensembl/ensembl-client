@@ -107,8 +107,8 @@ impl Jumper {
         animator.run(seq,false);
     }
 
-    fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, dest_pos: Dot<f64,f64>, dest_size:f64) {
-        let current_middle = current_position.get_middle();
+    fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, screen: &Screen, dest_pos: Dot<f64,f64>, dest_size:f64) {
+        let current_middle = Dot(current_position.get_x_pos(),current_position.get_y_pos());
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = bp_to_zoomfactor(dest_size);
         let mut seq = animator.new_sequence();
@@ -132,7 +132,7 @@ impl Jumper {
         }
         if let (Some(src_stick),Some(src_position)) = (src_stick,src_position) {
             if !self.is_offscreen_jump(&src_stick,&src_position,stick,dest_pos,dest_size,screen) {
-                self.do_onscreen_jump(animator,&src_position,Dot(dest_pos,0.),dest_size);
+                self.do_onscreen_jump(animator,&src_position,screen,Dot(dest_pos,0.),dest_size);
                 return;
             }
         }

@@ -108,7 +108,7 @@ fn exe_move_event(app: &mut App, v: Move<f64,f64>) {
             Axis::Vert => v.convert(Units::Pixels,&screen,&desired),
             Axis::Zoom => v // TODO invalid pre-unification
         };
-        let pos = desired.get_middle()+v;
+        let pos = Dot(desired.get_x_pos(),desired.get_y_pos())+v;
         app.update_position(&screen);
         app.with_compo(|co| {
             co.set_position(pos,&screen);
@@ -122,7 +122,7 @@ fn exe_zoom_event(app: &mut App, za: f64, by: bool, anim: bool) {
     }
     let screen = app.get_screen().clone();
     let train_manager = app.get_window().get_train_manager();
-    let middle = train_manager.get_desired_position(&screen).map(|p| p.get_middle());
+    let middle = train_manager.get_desired_position(&screen).map(|p| Dot(p.get_x_pos(),p.get_y_pos()));
     let mut delta = 0.;
     if let Some(desired) = train_manager.get_desired_position(&screen) {
         if by {
