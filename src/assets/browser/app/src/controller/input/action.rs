@@ -133,9 +133,11 @@ fn exe_zoom_event(app: &mut App, za: f64, by: bool, anim: bool) {
         }
     }
     app.update_position(&screen);
+    app.with_compo(|co| {
+        co.set_bp_per_screen(zoomfactor_to_bp(za+delta)); 
+    });
     if let Some(middle) = middle {
         app.with_compo(|co| {
-            co.set_bp_per_screen(zoomfactor_to_bp(za+delta)); 
             co.set_position(middle.0);
         });
         app.get_screen_mut().set_y_pos(middle.1);

@@ -31,6 +31,8 @@ impl Carriage {
     
     pub(in super) fn add_traveller(&mut self, traveller: Traveller) {
         self.travellers.push(traveller);
+        self.known_done = false;
+        self.set_needs_refresh();
     }
 
     pub(super) fn remove_all_travellers(&mut self) {
@@ -45,7 +47,7 @@ impl Carriage {
             if !c.is_done() { return false; }
         }
         self.known_done = true;
-        *self.needs_rebuild.lock().unwrap() = true;
+        self.set_needs_refresh();
         return true;
     }
     
@@ -57,7 +59,7 @@ impl Carriage {
             }
         }
         if redo {
-            *self.needs_rebuild.lock().unwrap() = true;
+            self.set_needs_refresh();
         }
     }
     
