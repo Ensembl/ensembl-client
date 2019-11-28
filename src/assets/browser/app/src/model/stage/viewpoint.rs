@@ -23,29 +23,49 @@ impl Viewpoint {
 
     pub fn as_fragment(&self) -> ViewpointFragment {
         ViewpointFragment {
-            position: Some(self.position.clone()),
+            stick: Some(self.position.get_stick().clone()),
+            middle: Some(self.position.get_x_pos().clone()),
+            screen_in_bp: Some(self.position.get_screen_in_bp()),
             focus_object: Some(self.focus_object.clone())
         }
     }
 }
 
+#[derive(PartialEq)]
 pub struct ViewpointFragment {
-    position: Option<Position>,
+    stick: Option<Stick>,
+    middle: Option<f64>,
+    screen_in_bp: Option<f64>,
     focus_object: Option<FocusObjectId>
 }
 
 impl ViewpointFragment {
     pub fn new_empty() -> ViewpointFragment {
         ViewpointFragment {
-            position: None,
+            stick: None,
+            middle: None,
+            screen_in_bp: None,
             focus_object: None
         }
     }
 
-    pub fn new_position(position: &Position) -> ViewpointFragment {
+    pub fn new_stick(stick: &Stick) -> ViewpointFragment {
         let mut out = ViewpointFragment::new_empty();
-        out.position = Some(position.clone());
+        out.stick = Some(stick.clone());
         out
+    }
+
+    pub fn new_middle(middle: f64) -> ViewpointFragment {
+        let mut out = ViewpointFragment::new_empty();
+        out.middle = Some(middle.clone());
+        out
+    }
+
+    pub fn new_zoom(screen_in_bp: f64) -> ViewpointFragment {
+        let mut out = ViewpointFragment::new_empty();
+        out.screen_in_bp = Some(screen_in_bp);
+        out
+
     }
 
     pub fn new_focus_object(focus: &FocusObjectId) -> ViewpointFragment {
@@ -56,7 +76,9 @@ impl ViewpointFragment {
     }
 
     fn merge_one(&mut self, other: &ViewpointFragment) {
-        if other.position.is_some() { self.position = other.position.clone(); }
+        if other.stick.is_some() { self.stick = other.stick.clone(); }
+        if other.middle.is_some() { self.middle = other.middle.clone(); }
+        if other.screen_in_bp.is_some() { self.screen_in_bp = other.screen_in_bp.clone(); }
         if other.focus_object.is_some() { self.focus_object = other.focus_object.clone(); }
     }
 
@@ -72,8 +94,9 @@ impl ViewpointFragment {
             Some(focus) => focus.clone(),
             None => FocusObjectId::new(&None)
         };
-        if let Some(ref position) = self.position {
-            Some(Viewpoint::new(position,&focus_object))
+        if let (Some(stick),Some(middle),Some(screen_in_bp)) = (self.stick.as_ref(),self.middle,self.screen_in_bp) {
+            let position = Position::new(stick,middle,screen_in_bp);
+            Some(Viewpoint::new(&position,&focus_object))
         } else {
             None
         }

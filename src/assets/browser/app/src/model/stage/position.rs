@@ -26,11 +26,13 @@ const MAX_LIMIT_BP : f64 = 50.;
 
 impl Position {
     pub fn new(stick: &Stick, x_pos: f64, screen_in_bp: f64) -> Position {
-        Position {
+        let mut out = Position {
             stick: stick.clone(),
             x_pos,
             screen_in_bp
-        }
+        };
+        out.maybe_nudge_x_to_fit_limits();
+        out
     }
     
     fn max_bp(&self) -> f64 {
@@ -64,6 +66,8 @@ impl Position {
         self.x_pos + self.get_screen_in_bp()/2.
     }
 
+    pub fn get_stick(&self) -> &Stick { &self.stick }
+
     pub fn get_x_pos(&self) -> f64 { self.x_pos }
 
     pub fn get_bumped_middle(&self, screen: &Screen) -> f64 {
@@ -83,7 +87,7 @@ impl Position {
         self.x_pos+(right_bp-left_bp)/2.
     }
 
-    pub fn maybe_nudge_x_to_fit_limits(&mut self) {
+    fn maybe_nudge_x_to_fit_limits(&mut self) {
         let min_x = 0.; /* kept here as reminder for circular chromosomes */
         let max_x = self.stick.length() as f64;
         self.screen_in_bp = self.screen_in_bp.min(self.max_bp()).max(MAX_LIMIT_BP);

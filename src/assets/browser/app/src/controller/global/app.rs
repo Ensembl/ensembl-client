@@ -16,7 +16,7 @@ use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
-use model::stage::Intended;
+use model::stage::{ Intended, Viewpoint };
 use model::supply::build_product;
 use model::train::{ TrainManager, TravellerCreator };
 use tácode::Tácode;
@@ -148,10 +148,10 @@ impl App {
 
     pub fn intend_here(&mut self) {
         let tm = self.window.get_train_manager();
-        if let (Some(stick),Some(desired)) = (tm.get_desired_stick(),tm.get_desired_position()) {
-            self.intended.intend_here(&stick,&desired);
+        if let (Some(position),Some(focus_object)) = (tm.get_desired_position(),tm.get_desired_focus_object_id()) {
+            self.intended.intend_here(&Viewpoint::new(&position,&focus_object));
             if let Some(ref report) = self.report {
-                self.intended.update_intent_report(report,&self.screen);
+                self.intended.update_intent_report(report);
             }
         }
     }
@@ -213,7 +213,6 @@ impl App {
         self.get_screen_mut().set_size(&sz);
         let size = self.get_screen().get_size();
         let screen = self.screen.clone();
-        self.window.get_train_manager().maybe_nudge_to_fit_limits();
         self.update_position(&screen);
         self.intend_here();
         self.printer.lock().unwrap().set_size(size);
@@ -227,7 +226,6 @@ impl App {
         let screen = self.screen.clone();
         if let Some(size) = self.stage_resize.take() {
             self.get_screen_mut().set_size(&size);
-            self.window.get_train_manager().maybe_nudge_to_fit_limits();
         }
         self.window.get_train_manager().settle();
         self.update_position(&screen);

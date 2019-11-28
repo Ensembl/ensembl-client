@@ -24,11 +24,10 @@ use data::{ Locator, XferConsumer };
 use model::driver::PrinterManager;
 use model::focus::{ FocusObject, ObjectLocation, FocusObjectId };
 use model::item::{ DeliveredItem, ItemUnpacker };
-use model::stage::{ Position, Screen };
+use model::stage::{ Position, Screen, Viewpoint, ViewpointFragment };
 use model::supply::Product;
 use model::zmenu::{ ZMenuIntersection, ZMenuRegistry, ZMenuLeafSet };
 use super::{ Train, TrainId, TravellerCreator };
-use super::desired::Desired;
 use types::{ Dot, DOWN, AsyncValue, Awaiting };
 
 const AT_POSITION_NEAR_ENOUGH : f64 = 1.;
@@ -80,7 +79,7 @@ pub struct TrainManagerImpl {
     traveller_creator: TravellerCreator,
     trainset: TrainSet,
     zmr: ZMenuRegistry,
-    desired: Desired,
+    target: ViewpointFragment,
     focus_object: FocusObject,
     animation_request: Option<(Stick,FocusObjectId,f64,f64)>
 }
@@ -95,7 +94,7 @@ impl TrainManagerImpl {
                 future_train: None,
                 transition_train: None
             },
-            desired: Desired::new(),
+            target: ViewpointFragment::new_empty(),
             focus_object: FocusObject::new(&FocusObjectId::new(&None)),
             zmr: ZMenuRegistry::new(),
             animation_request: None
@@ -103,18 +102,13 @@ impl TrainManagerImpl {
     }
     
     pub fn update_report(&self, report: &Report) {
-        // XXX: TOO SOON!
-        if self.desired.is_ready() {
-            let stick = self.desired.get_stick();
-            report.set_status("i-stick",&stick.get_name());
-        }
         let mut at_focus = false;
         if let ObjectLocation::Location(focus_stick,focus_middle,focus_zoom) = self.focus_object.get_location() {
-            if self.desired.is_ready() {
-                let desired_position = self.desired.get_position();
+            if let Some(viewpoint) = self.target.get_viewpoint() {
+                let desired_position = viewpoint.get_position();
                 let desired_position = (desired_position.get_x_pos(),desired_position.get_screen_in_bp());
                 let delta = (desired_position.0-focus_middle,desired_position.1-focus_zoom);
-                if self.desired.get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_ZOOM_NEAR_ENOUGH {
+                if viewpoint.get_position().get_stick() == focus_stick && delta.0.abs() < AT_POSITION_NEAR_ENOUGH && delta.1.abs() < AT_ZOOM_NEAR_ENOUGH {
                     at_focus = true;
                 }
             }
@@ -123,35 +117,26 @@ impl TrainManagerImpl {
     }
         
     fn make_train(&mut self, train_id: &TrainId) -> Train {
-        let mut f = Train::new(&self.printer,&train_id,&self.desired.get_position());
+        // XXX trains should take viewpoints
+        let viewpoint = self.target.get_viewpoint().unwrap();
+        let mut f = Train::new(&self.printer,&train_id,&viewpoint.get_position());
         f.manage_carriages(&mut self.traveller_creator);
         f
     }
 
     pub fn set_desired_stick(&mut self, st: &Stick, screen: &mut Screen) -> bool {
-        if self.desired.is_ready() && st == self.desired.get_stick() {
-            return false
-        }
-        self.desired.set_stick(st,screen);
+        let new_target = self.target.merge(&ViewpointFragment::new_stick(st));
+        if new_target == self.target { return false; }
+        self.target = new_target;
+        self.target = self.target.merge(&ViewpointFragment::new_stick(st));
         self.maybe_change_trains();
         true
     }
 
-    pub fn get_desired_stick(&self) -> Option<&Stick> { 
-        match self.desired.is_ready() {
-            true => Some(self.desired.get_stick()),
-            false => None
-        }
+    pub fn get_desired_stick(&self) -> Option<Stick> {
+        self.target.get_viewpoint().map(|v| v.get_position().get_stick().clone())
     }
     
-    pub fn maybe_nudge_to_fit_limits(&mut self) {
-        self.desired.maybe_nudge_to_fit_limits();
-        self.maybe_change_trains();
-        self.each_train(|t|
-            t.get_position_mut().maybe_nudge_x_to_fit_limits()
-        );
-    }
-
     /* ********************************************************
      * Methods used by COMPOSITOR via ticks to run transitions.
      * ********************************************************
@@ -180,7 +165,7 @@ impl TrainManagerImpl {
 
     /* if there is a future train and it is done, move to transition */
     fn future_ready(&mut self, app: &mut App, t: f64) {
-        if !self.desired.is_ready() { return; }
+        if !self.target.get_viewpoint().is_some() { return; }
         /* is it ready? */
         let mut ready = false;
         if let Some(ref mut future_train) = self.trainset.future_train {
@@ -223,13 +208,14 @@ impl TrainManagerImpl {
 
     fn each_relevant_train<F>(&mut self, mut cb: F)
                                   where F: FnMut(&mut Train) {
-        if !self.desired.is_ready() { return; }
-        let desired_stick = self.desired.get_stick().clone();
-        self.each_train(|train| {
-            if desired_stick == *train.get_train_id().get_stick() {
-                cb(train);
-            }
-        });
+        if let Some(viewpoint) = self.target.get_viewpoint() {
+            let desired_stick = viewpoint.get_position().get_stick();
+            self.each_train(|train| {
+                if desired_stick == train.get_train_id().get_stick() {
+                    cb(train);
+                }
+            });
+        }
     }
     
     pub fn manage_carriages(&mut self) {
@@ -258,13 +244,20 @@ impl TrainManagerImpl {
             None
         }
     }
-    
+
+    fn target_train_id(&self) -> Option<TrainId> {
+        self.target.get_viewpoint().map(|v| {
+            let pos = v.get_position();
+            let scale = Scale::best_for_screen(pos.get_screen_in_bp());
+            TrainId::new(pos.get_stick(),&scale,&v.get_focus_object_id())
+        })
+    }
+
     /* scale may have changed significantly to change trains */
     fn maybe_change_trains(&mut self) {
-        if !self.desired.is_ready() { return; }
-        let mut end_future = false;
-        let mut new_future = false;
-        if let Some(desired_future_train_id) = self.desired.get_train_id() {
+        if let Some(desired_future_train_id) = self.target_train_id() {
+            let mut end_future = false;
+            let mut new_future = false;
             /* we want to go or stay /somewhere/, at least! */
             if let Some(printing_train) = self.printing_train() {
                 if *printing_train.get_train_id() != desired_future_train_id {
@@ -306,22 +299,20 @@ impl TrainManagerImpl {
 
     /* compositor notifies of bp/screen update (change trains?) */
     pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
-        self.desired.set_bp_per_screen(bp_per_screen);
+        self.target = self.target.merge(&ViewpointFragment::new_zoom(bp_per_screen));
         self.maybe_change_trains();
         self.each_relevant_train(|t| {
             let mut pos = t.get_position().new_with_screen_bp(bp_per_screen);
-            pos.maybe_nudge_x_to_fit_limits();
             *t.get_position_mut() = pos;
         });
     }
             
     /* compositor notifies of position update */
     pub fn set_middle(&mut self, middle: f64) {
-        self.desired.set_middle(middle);
+        self.target = self.target.merge(&ViewpointFragment::new_middle(middle));
         self.maybe_change_trains();
         self.each_relevant_train(|t| {
             let mut pos = t.get_position().new_with_middle(middle);
-            pos.maybe_nudge_x_to_fit_limits();
             *t.get_position_mut() = pos;
         });
     }
@@ -331,23 +322,26 @@ impl TrainManagerImpl {
     }
 
     pub fn get_desired_position(&self) -> Option<Position> {
-        match self.desired.is_ready() {
-            true => Some(self.desired.get_position().clone()),
-            false => None
-        }
+        self.target.get_viewpoint().map(|v| v.get_position().clone())
+    }
+
+    pub fn get_desired_focus_object_id(&self) -> Option<FocusObjectId> {
+        self.target.get_viewpoint().map(|v| v.get_focus_object_id().clone())
     }
 
     pub fn set_desired_focus_object_id(&mut self, context: &FocusObjectId) {
         if context != self.focus_object.get_id() {
             self.focus_object = FocusObject::new(context);
-            self.desired.set_focus_object_id(context.clone());
+            self.target = self.target.merge(&ViewpointFragment::new_focus_object(context));
             self.maybe_change_trains();
         }
     }
     
     pub fn jump_to_focus_object(&mut self, animator: &mut ActionAnimator, screen: &Screen) {
-        if let Some(focus_object) = self.desired.get_focus_object_id().get_focus() {
-            self.try_to_queue_animation(animator,screen);
+        if let Some(viewpoint) = self.target.get_viewpoint() {
+            if let Some(focus_object) = viewpoint.get_focus_object_id().get_focus() {
+                self.try_to_queue_animation(animator,screen);
+            }
         }
     }
 
@@ -402,7 +396,7 @@ impl TrainManagerImpl {
         if let Some((ref stick,ref focus,ref middle,ref zoom)) = self.animation_request {
             let src_stick = self.get_desired_stick();
             let src_pos = self.get_desired_position();
-            animate_jump_to(&src_stick.cloned(),&src_pos,animator,&stick.get_name(),*middle,*zoom,screen);
+            animate_jump_to(&src_stick.clone(),&src_pos,animator,&stick.get_name(),*middle,*zoom,screen);
             self.animation_request = None;
         }
     }
@@ -436,7 +430,7 @@ impl TrainManager {
     }
 
     pub fn get_desired_stick(&self) -> Option<Stick> {
-        self.0.lock().unwrap().get_desired_stick().cloned()
+        self.0.lock().unwrap().get_desired_stick().clone()
     }
 
     pub fn tick(&mut self, app: &mut App, t: f64) {
@@ -445,14 +439,16 @@ impl TrainManager {
         imp.tick(app,t);
         /* Do we need to schedule finding the focus location? */
         if imp.focus_object.maybe_investigate() {
-            if let Some(focus_object) = imp.desired.get_focus_object_id().get_focus() {
-                let other = self.clone();
-                let inner_focus_object = focus_object.clone();
-                let screen = app.get_screen().clone();
-                self.1.locate(&focus_object,Box::new(move |_,stick,middle,zoom| {
-                    let mut imp = other.0.lock().unwrap();
-                    imp.set_focus_location(&mut animator,&screen,&inner_focus_object,stick,middle,zoom);
-                }));
+            if let Some(viewpoint) = imp.target.get_viewpoint() {
+                if let Some(focus_object) = viewpoint.get_focus_object_id().get_focus() {
+                    let other = self.clone();
+                    let inner_focus_object = focus_object.clone();
+                    let screen = app.get_screen().clone();
+                    self.1.locate(&focus_object,Box::new(move |_,stick,middle,zoom| {
+                        let mut imp = other.0.lock().unwrap();
+                        imp.set_focus_location(&mut animator,&screen,&inner_focus_object,stick,middle,zoom);
+                    }));
+                }
             }
         }
     }
@@ -477,8 +473,8 @@ impl TrainManager {
         self.0.lock().unwrap().update_state(oom);
     }
 
-    pub fn get_desired_focus_object_id(&self) -> FocusObjectId {
-        self.0.lock().unwrap().desired.get_focus_object_id().clone()
+    pub fn get_desired_focus_object_id(&self) -> Option<FocusObjectId> {
+        self.0.lock().unwrap().get_desired_focus_object_id()
     }
 
     pub fn set_desired_focus_object_id(&mut self, focus_object_id: &FocusObjectId) {
@@ -495,10 +491,6 @@ impl TrainManager {
 
     pub fn get_trainset<'ret>(&'ret self) -> MutexGuardRef<'ret,TrainManagerImpl,TrainSet> {
         self.get_impl_ref().map(|imp| imp.get_trainset())
-    }
-
-    pub fn maybe_nudge_to_fit_limits(&mut self) {
-        ok!(self.0.lock()).maybe_nudge_to_fit_limits()
     }
 
     pub fn settle(&mut self) {
