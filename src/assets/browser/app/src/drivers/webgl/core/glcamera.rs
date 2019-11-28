@@ -24,7 +24,7 @@ impl GLCamera {
 impl PartialEq for GLCamera {
     fn eq(&self, other: &Self) -> bool {
         self.opacity == other.opacity && self.pos.get_x_pos() == other.pos.get_x_pos() && 
-        self.pos.get_y_pos() == other.pos.get_y_pos() &&
+        self.screen.get_y_pos() == other.screen.get_y_pos() &&
         self.pos.get_screen_in_bp() == other.pos.get_screen_in_bp() &&
         self.screen.get_size() == other.screen.get_size()
     }

@@ -86,8 +86,8 @@ impl Compositor {
         }
     }
 
-    pub fn update_report(&mut self, screen: &Screen, report: &Report) {
-        self.window.get_train_manager().update_report(screen,report);
+    pub fn update_report(&mut self, report: &Report) {
+        self.window.get_train_manager().update_report(report);
     }
 
     pub fn set_stick(&mut self, st: &Stick, screen: &mut Screen) -> bool {
@@ -101,15 +101,15 @@ impl Compositor {
         }
     }
 
-    pub fn set_position(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
-        self.window.get_train_manager().set_middle(middle,screen);
-        self.psychic.set_middle(middle.0 as i64);
+    pub fn set_position(&mut self, middle: f64) {
+        self.window.get_train_manager().set_middle(middle);
+        self.psychic.set_middle(middle as i64);
         self.updated = true;
     }
     
-    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
+    pub fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = bp_per_screen;
-        self.window.get_train_manager().set_bp_per_screen(bp_per_screen,screen);
+        self.window.get_train_manager().set_bp_per_screen(bp_per_screen);
         self.psychic.set_scale(&Scale::best_for_screen(bp_per_screen));
         self.psychic.set_width(bp_per_screen as i32);
         self.updated = true;
@@ -136,7 +136,7 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         app.with_compo(|co| co.tick(t) );
         let max_y = app.get_window().get_all_landscapes().get_low_watermark();
         let mut screen = app.get_screen().clone();
-        app.get_window().get_train_manager().set_bottom(max_y,&mut screen);
+        screen.set_max_y(max_y.into());
         app.update_position(&screen);
         *app.get_screen_mut() = screen;
         vec![]

@@ -11,7 +11,7 @@ use types::{ Dot, LEFT, RIGHT, DOWN };
 pub(super) struct Desired {
     stick: Option<Stick>,
     bp_per_screen: Option<f64>,
-    middle: Option<Dot<f64,f64>>,
+    middle: Option<f64>,
     position: Rc<RefCell<Option<Position>>>,
     focus_object: FocusObjectId
 }
@@ -34,17 +34,17 @@ impl Desired {
         self.position = Rc::new(RefCell::new(None));
     }
 
-    fn make_position(&self, screen: &Screen) -> Position {
-        let mut position = Position::new(self.stick.as_ref().unwrap(),self.middle.as_ref().unwrap().0,self.middle.as_ref().unwrap().1,self.bp_per_screen.unwrap());
-        position.maybe_nudge_to_fit_limits(screen);
+    fn make_position(&self) -> Position {
+        let mut position = Position::new(self.stick.as_ref().unwrap(),self.middle.unwrap(),self.bp_per_screen.unwrap());
+        position.maybe_nudge_x_to_fit_limits();
         position
     }
 
-    fn populate_position(&self, screen: &Screen) {
+    fn populate_position(&self) {
         if !self.is_ready() { return; }
         if self.position.borrow().is_some() { return; }
         console!("making position");
-        let position = self.make_position(screen);
+        let position = self.make_position();
         self.position.replace(Some(position));
     }
 
@@ -55,25 +55,25 @@ impl Desired {
         screen.set_x_bumpers(w.get_bumper(&LEFT),w.get_bumper(&RIGHT));
     }
 
-    pub(super) fn set_bp_per_screen(&mut self, bp_per_screen: f64, screen: &Screen) {
+    pub(super) fn set_bp_per_screen(&mut self, bp_per_screen: f64) {
         self.bp_per_screen = Some(bp_per_screen);
         if let Some(position) = self.position.borrow_mut().as_mut() {
             *position = position.new_with_screen_bp(bp_per_screen);
-            position.maybe_nudge_to_fit_limits(screen);
+            position.maybe_nudge_x_to_fit_limits();
         }
     }
 
-    pub(super) fn set_middle(&mut self, middle: Dot<f64,f64>, screen: &Screen) {
+    pub(super) fn set_middle(&mut self, middle: f64) {
         self.middle = Some(middle);
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            *position = position.new_with_middle(middle.0,middle.1);
-            position.maybe_nudge_to_fit_limits(screen);
+            *position = position.new_with_middle(middle);
+            position.maybe_nudge_x_to_fit_limits();
         }
     }
 
-    pub(super) fn maybe_nudge_to_fit_limits(&mut self, screen: &Screen) {
+    pub(super) fn maybe_nudge_to_fit_limits(&mut self) {
         if let Some(position) = self.position.borrow_mut().as_mut() {
-            position.maybe_nudge_to_fit_limits(screen);
+            position.maybe_nudge_x_to_fit_limits();
         }
     }
 
@@ -91,16 +91,16 @@ impl Desired {
         self.stick.as_ref().unwrap()
     }
 
-    pub(super) fn get_position(&self, screen: &Screen) -> Ref<'_,Position> {
-        self.populate_position(screen);
+    pub(super) fn get_position(&self) -> Ref<'_,Position> {
+        self.populate_position();
         Ref::map(self.position.borrow(),|p| p.as_ref().unwrap())
     }
 
     pub(super) fn get_focus_object_id(&self) -> &FocusObjectId { &self.focus_object }
 
-    pub(super) fn get_train_id(&self, screen: &Screen) -> Option<TrainId> {
+    pub(super) fn get_train_id(&self) -> Option<TrainId> {
         if !self.is_ready() { return None; }
-        let scale = Scale::best_for_screen(self.get_position(screen).get_screen_in_bp());
+        let scale = Scale::best_for_screen(self.get_position().get_screen_in_bp());
         Some(TrainId::new(self.get_stick(),&scale,&self.get_focus_object_id()))
     }
 }

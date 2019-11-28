@@ -42,8 +42,8 @@ impl UserEventListener {
         let app = &mut self.app.lock().unwrap();
         let mouse_prop = app.get_screen().get_mouse_pos_prop();
         let screen = app.get_screen().clone();
-        if let Some(desired) = app.get_window().get_train_manager().get_desired_position(&screen) {
-            let y = desired.get_y_pos();
+        if let Some(desired) = app.get_window().get_train_manager().get_desired_position() {
+            let y = screen.get_y_pos();
             let pos_bp = desired.get_pos_prop_bp(mouse_prop);
             let pos = Dot(pos_bp,y);
             self.zoom.lock().unwrap().move_by(amt,pos,mouse_prop);

@@ -108,7 +108,7 @@ impl Jumper {
     }
 
     fn do_onscreen_jump(&mut self, animator: &mut ActionAnimator, current_position: &Position, screen: &Screen, dest_pos: Dot<f64,f64>, dest_size:f64) {
-        let current_middle = Dot(current_position.get_x_pos(),current_position.get_y_pos());
+        let current_middle = Dot(current_position.get_x_pos(),screen.get_y_pos());
         let current_zoom = bp_to_zoomfactor(current_position.get_screen_in_bp());
         let dest_zoom = bp_to_zoomfactor(dest_size);
         let mut seq = animator.new_sequence();
