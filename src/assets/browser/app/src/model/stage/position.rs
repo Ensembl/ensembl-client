@@ -15,18 +15,11 @@ fn px_to_bp(px: f64, screen: &Screen, screen_in_bp: f64) -> f64 {
     px / screen.get_size().0 as f64 * screen_in_bp
 }
 
-fn calc_limit_min_zoom(stick: &Stick, screen_in_bp: f64) -> f64 {
-    let min_x = 0.; /* kept here as reminder for circular chromosomes */
-    let max_x = stick.length() as f64;
-    max_x - min_x + 1.
-}
-
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq)]
 pub struct Position {
     stick: Stick,
     x_pos: f64,
     screen_in_bp: f64,
-    max_bp: f64
 }
 
 const MAX_LIMIT_BP : f64 = 50.;
@@ -36,11 +29,16 @@ impl Position {
         Position {
             stick: stick.clone(),
             x_pos,
-            screen_in_bp,
-            max_bp: calc_limit_min_zoom(stick,screen_in_bp)
+            screen_in_bp
         }
     }
     
+    fn max_bp(&self) -> f64 {
+        let min_x = 0.; /* kept here as reminder for circular chromosomes */
+        let max_x = self.stick.length() as f64;
+        max_x - min_x + 1.
+    }
+
     pub fn new_with_screen_bp(&self, bp: f64) -> Position {
         Position::new(&self.stick,self.x_pos,bp)
     }
@@ -88,8 +86,7 @@ impl Position {
     pub fn maybe_nudge_x_to_fit_limits(&mut self) {
         let min_x = 0.; /* kept here as reminder for circular chromosomes */
         let max_x = self.stick.length() as f64;
-        self.max_bp = calc_limit_min_zoom(&self.stick,self.screen_in_bp);
-        self.screen_in_bp = self.screen_in_bp.min(self.max_bp).max(MAX_LIMIT_BP);
+        self.screen_in_bp = self.screen_in_bp.min(self.max_bp()).max(MAX_LIMIT_BP);
         /* minima always "win" when in conflict => max fn's called first */  
         self.x_pos = self.x_pos
             .min(max_x - self.screen_in_bp/2.)
@@ -115,7 +112,7 @@ impl Position {
         report.set_status_bool("bumper-top",screen.get_top_edge() <= 0.);
         report.set_status_bool("bumper-bottom",screen.get_bottom_edge() >= max_y);
         report.set_status_bool("bumper-in",self.screen_in_bp <= MAX_LIMIT_BP);
-        report.set_status_bool("bumper-out",self.screen_in_bp >= self.max_bp);
+        report.set_status_bool("bumper-out",self.screen_in_bp >= self.max_bp());
         let (aleft,aright) = (self.get_left_edge(),self.get_right_edge());
         report.set_status("a-start",&aleft.floor().to_string());
         report.set_status("a-end",&aright.ceil().to_string());
