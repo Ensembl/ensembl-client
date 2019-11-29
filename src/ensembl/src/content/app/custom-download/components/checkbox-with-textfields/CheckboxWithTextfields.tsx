@@ -5,8 +5,10 @@ import styles from './CheckboxWithTextfields.scss';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
-import PasteOrUpload from 'src/shared/components/paste-or-upload/PasteOrUpload';
-import { ReadFile } from 'src/shared/components/upload/Upload';
+
+import Textarea from 'src/shared/components/textarea/Textarea';
+import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
+import { nextUuid } from 'src/shared/helpers/uuid';
 
 export type CheckboxWithTextfieldsProps = {
   values: (string | ReadFile)[];
@@ -84,6 +86,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     }
 
     updateFilesAndValues(newValues);
+    props.onChange(newValues.filter(Boolean) as (ReadFile | string)[]);
   };
 
   useEffect(() => {
@@ -121,10 +124,33 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
       </div>
 
       <div className={styles.fieldsWrapper}>
-        {filesAndValues.map((entry: ReadFile | string | null, key: number) => {
+        <div key={0} className={styles.pasteOrUploadWrapper}>
+          <div className={styles.textWrapper}>
+            <div className={styles.fields}>
+              <div className={styles.inputWrapper}>
+                <Textarea
+                  onChange={(newValue: string) =>
+                    handleValueChange(newValue, 0)
+                  }
+                  placeholder={'Paste data'}
+                  value={(filesAndValues[0] as string) || ''}
+                  resizable={false}
+                />
+              </div>
+            </div>
+            <div className={styles.removeIconHolder}>
+              <ImageButton
+                onClick={() => handleOnRemove(0)}
+                description={'Remove'}
+                image={RemoveIcon}
+              />
+            </div>
+          </div>
+        </div>
+        {(filesAndValues.slice(1) as ReadFile[]).map((entry, key: number) => {
           return (
             <div key={key} className={styles.pasteOrUploadWrapper}>
-              {typeof entry !== 'string' && entry && entry.filename && (
+              {entry && (entry as ReadFile).filename && (
                 <div key={key} className={styles.fileWrapper}>
                   <span className={styles.fileDetails}>
                     <span
@@ -145,14 +171,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                   </div>
                 </div>
               )}
-              {(typeof entry === 'string' || !entry) && (
-                <PasteOrUpload
-                  value={entry}
-                  onChange={(newValue) => handleValueChange(newValue, key)}
-                  onRemove={() => handleOnRemove(key)}
-                  onUpload={(files: ReadFile[]) => handleOnUpload(files)}
-                  placeholder={'Paste data'}
-                />
+
+              {!entry && (
+                <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
               )}
             </div>
           );

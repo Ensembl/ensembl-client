@@ -44,8 +44,27 @@
   align-self: center;
 }
 
-.pasteOrUploadWrapper + .pasteOrUploadWrapper,
-.pasteOrUploadWrapper + .fileWrapper,
-.fileWrapper + .pasteOrUploadWrapper {
-  margin-top: 15px;
+.textWrapper {
+  display: grid;
+  grid-template-columns: [fields] auto [remove-icon] 75px 10px;
+}
+
+.fields {
+  grid-column: fields;
+}
+
+.removeIconHolder {
+  height: 20px;
+  width: 20px;
+  grid-column: remove-icon;
+  justify-self: end;
+  align-self: center;
+}
+
+.textInput {
+  height: 65px;
+  width: 100%;
+  padding: 5px 0 0 5px;
+  border: none;
+  resize: none;
 }
