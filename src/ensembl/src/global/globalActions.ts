@@ -17,7 +17,10 @@ export const updateBreakpointWidth: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (width: number) => async (dispatch, getState: () => RootState) => {
+>> = (width: keyof typeof BreakpointWidth) => async (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
   const currentBreakpointWidth = getBreakpointWidth(state);
   const newBreakpointWidth = getBreakpoint(width);
