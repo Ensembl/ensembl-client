@@ -10,6 +10,7 @@ export interface WindowServiceInterface {
   getLocation: () => Location;
   getFileReader: () => FileReader;
   getResizeObserver: () => typeof ResizeObserver;
+  getMatchMedia: () => (query: string) => MediaQueryList;
 }
 
 class WindowService implements WindowServiceInterface {
@@ -35,6 +36,10 @@ class WindowService implements WindowServiceInterface {
 
   public getResizeObserver() {
     return ResizeObserver;
+  }
+
+  public getMatchMedia() {
+    return window.matchMedia;
   }
 
   // return viewport dimensions in the ClientRect format

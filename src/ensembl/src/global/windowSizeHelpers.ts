@@ -1,11 +1,13 @@
 import reduce from 'lodash/reduce';
 
+import windowService from 'src/services/window-service';
+
 export const getCurrentMediaSize = (queries: { [key: string]: string }) => {
   return reduce(
     queries,
     (result: string | null, mediaQuery, mediaSize) => {
-      const match = window.matchMedia(mediaQuery);
-      if (match.matches) {
+      const mediaQueryList = getMediaQueryList(mediaQuery);
+      if (mediaQueryList.matches) {
         return mediaSize;
       } else {
         return result;
@@ -27,7 +29,7 @@ export const observeMediaQueries = (
 
   // Second, subscribe to subsequent media query changes
   const observableQueries = Object.entries(queries).map(([key, query]) => {
-    const mediaQueryList = window.matchMedia(query);
+    const mediaQueryList = getMediaQueryList(query);
     const onChange = (event: MediaQueryListEvent) => {
       if (event.matches) {
         callback(key);
@@ -43,4 +45,9 @@ export const observeMediaQueries = (
     });
   };
   return { unsubscribe };
+};
+
+const getMediaQueryList = (query: string) => {
+  const matchMedia = windowService.getMatchMedia();
+  return matchMedia(query);
 };
