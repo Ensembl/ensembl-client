@@ -274,7 +274,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     const currentPath = [...path, entry.id];
 
-    const values: string[] = get(props.selectedData, currentPath, '');
+    const values = get(props.selectedData, currentPath, '');
+    const textValue = values[0];
+    const files = values.slice(1);
 
     const mergedClassNames = classNames(
       styles.contentSeparator,
@@ -286,11 +288,20 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         <CheckboxWithTextfields
           label={entry.label}
           disabled={entry.disabled}
-          allowMultiple={true}
-          onChange={(values: (string | ReadFile)[]) =>
-            onChangeHandler(currentPath, values as PrimitiveOrArrayValue)
+          onTextChange={(value: string) =>
+            onChangeHandler(currentPath, [
+              value,
+              ...values.slice(1)
+            ] as PrimitiveOrArrayValue)
           }
-          values={values || []}
+          onFilesChange={(files: ReadFile[]) =>
+            onChangeHandler(currentPath, [
+              textValue,
+              ...files
+            ] as PrimitiveOrArrayValue)
+          }
+          textValue={textValue || ''}
+          files={files}
         />
       </div>
     );

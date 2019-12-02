@@ -1,19 +1,19 @@
 @import 'src/styles/common';
 
 .defaultUpload {
-  border: 1px dashed $grey;
+  border: 1px dashed $blue;
   color: $blue;
-  color: #33adff;
   display: inline-block;
   position: relative;
   padding: 10px;
   cursor: pointer;
-  transition: border 0.4s;
+  transition: background-color 0.4s;
 }
 
 .defaultUploadActive {
-  border: 1px dashed $blue;
-  transition: border 0.4s;
+  // border: 1px dashed $blue;
+  transition: background-color 0.4s;
+  background-color: rgba(51, 173, 255, 0.2);
 }
 
 .fileInput {
@@ -26,5 +26,5 @@
 }
 
 .defaultUpload:focus-within {
-  border: 1px dashed $black;
+  background: 1px dashed $black;
 }

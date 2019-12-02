@@ -3,7 +3,6 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import styles from './CheckboxWithTextfields.scss';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as AddIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
@@ -11,105 +10,56 @@ import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
 import { nextUuid } from 'src/shared/helpers/uuid';
 
 export type CheckboxWithTextfieldsProps = {
-  values: (string | ReadFile)[];
+  textValue: string;
+  files: ReadFile[];
   label: string;
-  allowMultiple: boolean;
   disabled?: boolean;
-  onChange: (values: (string | ReadFile)[]) => void;
+  onFilesChange: (files: ReadFile[]) => void;
+  onTextChange: (value: string) => void;
 };
 
 const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
   const [isChecked, setIsChecked] = useState(false);
-  const [filesAndValues, setFilesAndValues] = useState<
-    (ReadFile | string | null)[]
-  >([null]);
 
-  const [shouldShowAddButton, setShowAddButton] = useState(false);
+  const [isTextareaShown, showTextarea] = useState(false);
+
+  const [files, setFiles] = useState<ReadFile[]>([]);
 
   useEffect(() => {
-    if (!filesAndValues.filter(Boolean).length && props.values.length) {
-      setFilesAndValues(props.values);
+    setFiles(props.files);
+
+    let checkedStatus = false;
+
+    if (props.textValue && props.textValue.length) {
+      showTextarea(true);
+      checkedStatus = true;
     }
 
-    setIsChecked(props.values.length > 0);
-    setShowAddButton(Boolean(filesAndValues[filesAndValues.length - 1]));
-  }, [props.values]);
+    if (props.files && props.files.length) {
+      setIsChecked(true);
+      checkedStatus = true;
+    }
+
+    setIsChecked(checkedStatus);
+  }, [props.textValue, props.files]);
 
   const checkboxOnChange = (isChecked: boolean) => {
     setIsChecked(isChecked);
-    if (!isChecked && filesAndValues.length > 0) {
-      props.onChange([]);
+    if (!isChecked) {
+      props.onFilesChange([]);
+      props.onTextChange('');
     }
-  };
-
-  const updateFilesAndValues = (newValues: (ReadFile | string | null)[]) => {
-    if (newValues.filter(Boolean).length) {
-      setFilesAndValues(newValues);
-    } else {
-      setFilesAndValues([null]);
-    }
-  };
-
-  const addEntry = () => {
-    setShowAddButton(false);
-    setFilesAndValues([...filesAndValues, null]);
-  };
-
-  const handleOnChange = () => {
-    const values: (string | ReadFile)[] = [];
-    filesAndValues.forEach((entry) => {
-      if (typeof entry === 'string') {
-        values.push(entry);
-      } else if (
-        entry &&
-        (entry as ReadFile).content &&
-        !(entry as ReadFile).error
-      ) {
-        values.push(entry);
-      }
-    });
-
-    setShowAddButton(Boolean(values[values.length - 1]));
-
-    props.onChange(values);
-  };
-
-  const updateValue = (value: string, index: number) => {
-    const newValues = [...filesAndValues];
-
-    const entry = newValues[index];
-
-    if (typeof entry === 'string' || entry === null) {
-      newValues[index] = value;
-    } else if (entry !== null && (entry as ReadFile).filename) {
-      (newValues[index] as ReadFile).content = value;
-    }
-
-    updateFilesAndValues(newValues);
-    props.onChange(newValues.filter(Boolean) as (ReadFile | string)[]);
-  };
-
-  useEffect(() => {
-    handleOnChange();
-  }, [filesAndValues]);
-
-  const handleValueChange = (value: string, index: number) => {
-    const newValues = [...filesAndValues];
-    newValues[index] = value;
-    updateValue(value, index);
   };
 
   const handleOnRemove = (index: number) => {
-    const newValues = [...filesAndValues];
-
-    newValues.splice(index, 1);
-    updateFilesAndValues(newValues);
+    const newFiles = [...files];
+    newFiles.splice(index, 1);
+    props.onFilesChange(newFiles);
   };
 
-  const handleOnUpload = (files: ReadFile[]) => {
-    const newValues = [...filesAndValues.filter(Boolean), ...files];
-
-    updateFilesAndValues(newValues);
+  const handleOnUpload = (uploadedFiles: ReadFile[]) => {
+    const newFiles = [...files, ...uploadedFiles];
+    props.onFilesChange(newFiles);
   };
 
   return (
@@ -124,32 +74,44 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
       </div>
 
       <div className={styles.fieldsWrapper}>
-        <div key={0} className={styles.pasteOrUploadWrapper}>
-          <div className={styles.textWrapper}>
-            <div className={styles.fields}>
-              <div className={styles.inputWrapper}>
+        <div className={styles.textWrapper}>
+          <div className={styles.fields}>
+            <div className={styles.inputWrapper}>
+              {!isTextareaShown && (
+                <span
+                  className={styles.pasteDataText}
+                  onClick={() => showTextarea(true)}
+                >
+                  Paste Data
+                </span>
+              )}
+
+              {isTextareaShown && (
                 <Textarea
-                  onChange={(newValue: string) =>
-                    handleValueChange(newValue, 0)
-                  }
+                  onChange={(newValue: string) => props.onTextChange(newValue)}
                   placeholder={'Paste data'}
-                  value={(filesAndValues[0] as string) || ''}
+                  value={props.textValue || ''}
                   resizable={false}
                 />
-              </div>
+              )}
             </div>
-            <div className={styles.removeIconHolder}>
+          </div>
+          <div className={styles.removeIconHolder}>
+            {isTextareaShown && (
               <ImageButton
-                onClick={() => handleOnRemove(0)}
+                onClick={() => {
+                  props.onTextChange('');
+                  showTextarea(false);
+                }}
                 description={'Remove'}
                 image={RemoveIcon}
               />
-            </div>
+            )}
           </div>
         </div>
-        {(filesAndValues.slice(1) as ReadFile[]).map((entry, key: number) => {
+        {props.files.map((entry, key: number) => {
           return (
-            <div key={key} className={styles.pasteOrUploadWrapper}>
+            <div key={key} className={styles.filesList}>
               {entry && (entry as ReadFile).filename && (
                 <div key={key} className={styles.fileWrapper}>
                   <span className={styles.fileDetails}>
@@ -159,10 +121,10 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                     {entry.error && (
                       <span
                         className={styles.errorMessage}
-                      >{` ${entry.error}`}</span>
+                      >{`${entry.error}`}</span>
                     )}
                   </span>
-                  <div className={styles.removeErrorIcon}>
+                  <div className={styles.removeFileIcon}>
                     <ImageButton
                       onClick={() => handleOnRemove(key)}
                       description={'Remove'}
@@ -171,30 +133,15 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                   </div>
                 </div>
               )}
-
-              {!entry && (
-                <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
-              )}
             </div>
           );
         })}
-
-        {/* Show the Add button */}
-        {shouldShowAddButton && props.allowMultiple && (
-          <div className={styles.addIconHolder}>
-            <ImageButton
-              onClick={addEntry}
-              description={'Add'}
-              image={AddIcon}
-            />
-          </div>
-        )}
+        <div className={styles.uploadWrapper}>
+          <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
+        </div>
       </div>
     </div>
   );
 };
 
-CheckboxWithTextfields.defaultProps = {
-  allowMultiple: false
-};
 export default CheckboxWithTextfields;

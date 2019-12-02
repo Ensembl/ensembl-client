@@ -179,7 +179,7 @@ Upload.defaultProps = {
   callbackWithFiles: false,
   allowMultiple: true,
   fileReaderMethod: FileReaderMethod.TEXT,
-  label: 'Click or Drag file here to upload'
+  label: 'Click or drag file(s) here to upload'
 };
 
 export default Upload;
