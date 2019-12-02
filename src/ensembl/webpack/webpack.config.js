@@ -1,5 +1,3 @@
-const webpack = require('webpack');
-const path = require('path');
 const webpackMerge = require("webpack-merge");
 
 const loadPresets = require('./presets/loadPresets');
@@ -12,8 +10,6 @@ const getConfigForEnvironment = (env = { mode: 'dev' }) =>
 const paths = require('./paths');
 
 module.exports = env => {
-  const { mode } = env || 'dev';
-
   return webpackMerge(
     commonConfig(env),
     getConfigForEnvironment(env),
