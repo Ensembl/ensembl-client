@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { memo } from 'react';
+import isEqual from 'lodash/isEqual';
 
 import useHover from 'src/shared/hooks/useHover';
 
@@ -25,7 +26,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const ImageButton = (props: Props) => {
+export const ImageButton = (props: Props) => {
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
   const handleClick = () => {
@@ -63,4 +64,4 @@ ImageButton.defaultProps = {
   image: ''
 };
 
-export default ImageButton;
+export default memo(ImageButton, isEqual);

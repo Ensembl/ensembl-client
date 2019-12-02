@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 import classNames from 'classnames';
+import isEqual from 'lodash/isEqual';
 
 import { Status } from 'src/shared/types/status';
 
@@ -29,4 +30,4 @@ const ImageHolder = (props: Props) => {
   );
 };
 
-export default ImageHolder;
+export default memo(ImageHolder, isEqual);

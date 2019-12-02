@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
@@ -141,7 +141,7 @@ export const Browser = (props: BrowserProps) => {
     props.setDataFromUrlAndSave(payload);
   };
 
-  const changeSelectedSpecies = (genomeId: string) => {
+  const changeSelectedSpecies = useCallback((genomeId: string) => {
     const { allChrLocations, allActiveEnsObjectIds } = props;
     const chrLocation = allChrLocations[genomeId];
     const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
@@ -153,7 +153,7 @@ export const Browser = (props: BrowserProps) => {
     };
 
     props.replace(urlFor.browser(params));
-  };
+  }, []);
 
   // handle url changes
   useEffect(() => {
