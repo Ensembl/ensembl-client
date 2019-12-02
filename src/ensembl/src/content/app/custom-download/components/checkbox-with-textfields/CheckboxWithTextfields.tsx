@@ -4,6 +4,7 @@ import styles from './CheckboxWithTextfields.scss';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
+import { ReactComponent as CommitIcon } from 'static/img/shared/apply.svg';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
@@ -23,11 +24,15 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
   const [isTextareaShown, showTextarea] = useState(false);
 
+  const [shouldShowCommitButton, showCommitButton] = useState(false);
+
+  const [textValue, setTextValue] = useState<string>(props.textValue);
+
   const [files, setFiles] = useState<ReadFile[]>([]);
 
   useEffect(() => {
     setFiles(props.files);
-
+    showCommitButton(false);
     let checkedStatus = false;
 
     if (props.textValue && props.textValue.length) {
@@ -62,6 +67,10 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onFilesChange(newFiles);
   };
 
+  useEffect(() => {
+    showCommitButton(textValue !== props.textValue);
+  }, [textValue]);
+
   return (
     <div className={styles.wrapperTable}>
       <div className={styles.checkboxWrapper}>
@@ -88,9 +97,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
               {isTextareaShown && (
                 <Textarea
-                  onChange={(newValue: string) => props.onTextChange(newValue)}
+                  onChange={setTextValue}
                   placeholder={'Paste data'}
-                  value={props.textValue || ''}
+                  value={textValue || ''}
                   resizable={false}
                 />
               )}
@@ -107,6 +116,15 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                 image={RemoveIcon}
               />
             )}
+            <div className={styles.commitIconHolder}>
+              {shouldShowCommitButton && (
+                <ImageButton
+                  onClick={() => props.onTextChange(textValue)}
+                  description={'Commit'}
+                  image={CommitIcon}
+                />
+              )}
+            </div>
           </div>
         </div>
         {props.files.map((entry, key: number) => {
