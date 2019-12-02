@@ -87,9 +87,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
     }
 
     if (actualLocation) {
-      console.timeStamp('before action');
       props.setActualChrLocation(parseLocation(actualLocation));
-      console.timeStamp('after action');
     }
 
     if (ensObjectId) {
