@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
-import { BreakpointWidth } from '../global/globalConfig';
+import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
 import { updateBreakpointWidth } from '../global/globalActions';
 import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 
@@ -20,19 +20,11 @@ type Props = {
   ) => void;
 };
 
-const defaultMediaQueries: Record<keyof typeof BreakpointWidth, string> = {
-  PHONE: 'screen and (min-width: 599px)',
-  TABLET: 'screen and (min-width: 600px) and (max-width: 899px)',
-  LAPTOP: 'screen and (min-width: 900px) and (max-width: 1199px)',
-  DESKTOP: 'screen and (min-width: 1200px) and (max-width: 1799px)',
-  BIG_DESKTOP: 'screen and (min-width: 1800px)'
-};
-
 export const Root = (props: Props) => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
 
   useEffect(() => {
-    const subscription = observeMediaQueries(defaultMediaQueries, (match) => {
+    const subscription = observeMediaQueries(globalMediaQueries, (match) => {
       props.updateBreakpointWidth(match as keyof typeof BreakpointWidth);
     });
     return () => subscription.unsubscribe();
