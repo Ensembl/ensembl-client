@@ -7,8 +7,6 @@ const commonConfig = require('./environments/webpack.common.js');
 const getConfigForEnvironment = (env = { mode: 'dev' }) =>
   require(`./environments/webpack.config.${env.mode}`)(env);
 
-const paths = require('./paths');
-
 module.exports = env => {
   return webpackMerge(
     commonConfig(env),
