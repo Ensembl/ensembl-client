@@ -6,7 +6,6 @@ import { act } from 'react-dom/test-utils';
 import CheckboxWithTextfields from './CheckboxWithTextfields';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
-import Textarea from 'src/shared/components/textarea/Textarea';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 const onTextChange = jest.fn();
@@ -79,23 +78,6 @@ describe('<CheckboxWithTextfields />', () => {
     const files = Array(faker.random.number(10)).fill(mockReadFile);
     wrapper = mount(<CheckboxWithTextfields {...defaultProps} files={files} />);
     expect(wrapper.find('.filename').length).toBe(files.length);
-  });
-
-  it('calls the onTextChange function with the new value when the input is changed', async () => {
-    wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
-    );
-
-    const newValue = faker.random.words();
-
-    await act(async () => {
-      wrapper
-        .find(Textarea)
-        .last()
-        .prop('onChange')(newValue);
-    });
-
-    expect(onTextChange).toBeCalledWith(newValue);
   });
 
   it('calls the onFilesChange when a file is removed', async () => {
