@@ -129,33 +129,34 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
             </div>
           </div>
         </div>
-        {props.files.map((entry, key: number) => {
-          return (
-            <div key={key} className={styles.filesList}>
-              {entry && (entry as ReadFile).filename && (
-                <div key={key} className={styles.fileWrapper}>
-                  <span className={styles.fileDetails}>
-                    <span
-                      className={styles.filename}
-                    >{`${entry.filename}`}</span>
-                    {entry.error && (
+        {props.files &&
+          props.files.map((entry, key: number) => {
+            return (
+              <div key={key} className={styles.filesList}>
+                {entry && (entry as ReadFile).filename && (
+                  <div key={key} className={styles.fileWrapper}>
+                    <span className={styles.fileDetails}>
                       <span
-                        className={styles.errorMessage}
-                      >{`${entry.error}`}</span>
-                    )}
-                  </span>
-                  <div className={styles.removeFileIcon}>
-                    <ImageButton
-                      onClick={() => handleOnRemove(key)}
-                      description={'Remove'}
-                      image={RemoveIcon}
-                    />
+                        className={styles.filename}
+                      >{`${entry.filename}`}</span>
+                      {entry.error && (
+                        <span
+                          className={styles.errorMessage}
+                        >{`${entry.error}`}</span>
+                      )}
+                    </span>
+                    <div className={styles.removeFileIcon}>
+                      <ImageButton
+                        onClick={() => handleOnRemove(key)}
+                        description={'Remove'}
+                        image={RemoveIcon}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                )}
+              </div>
+            );
+          })}
         <div className={styles.uploadWrapper}>
           {!shouldShowCommitButton && (
             <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
