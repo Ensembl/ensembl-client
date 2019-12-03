@@ -14,6 +14,7 @@ There are several script commands that have been baked into the NPM configuratio
 - `npm run serve:prod` - This runs the built production site locally using `http`.
 - `npm run serve:prod:secure` - Runs the build production site locally securely using `https`. You will need to run `certify` before running this, in case you already haven't generated an SSL certificate.
 - `npm run build` - Runs the production build. It will initially delete the existing local production build and replace it with the new one.
+- `npm run prod:analyse` — Runs production build, and also uses `webpack-bundle-analyzer` to report the size of the bundle.
 - `npm run deploy` - Runs `deploy.js` file to deploy the production build into the master machine (`ves-hx2-70`). You will need to pass the full address of the machine name along with your username as an argument. 
 - `npm run certify` - Runs `setup-ssl.js` to create a local SSL certificate to run the production build on `HTTPS`. There are two files that are created for this: `localhost.crt` and `localhost.key`.
 - `npm run lint` - Runs both `lint:scripts` and `lint:style`. There is no need to run any of these lint scripts during development. This is because, each time a change is made to the code, the linters run along with the build.
