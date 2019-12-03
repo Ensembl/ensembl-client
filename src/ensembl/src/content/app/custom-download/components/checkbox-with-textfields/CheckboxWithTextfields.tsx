@@ -26,12 +26,13 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
   const [shouldShowCommitButton, showCommitButton] = useState(false);
 
-  const [textValue, setTextValue] = useState<string>(props.textValue);
+  const [textValue, setTextValue] = useState<string>('');
 
   const [files, setFiles] = useState<ReadFile[]>([]);
 
   useEffect(() => {
     setFiles(props.files);
+    setTextValue(props.textValue);
     showCommitButton(false);
     let checkedStatus = false;
 
@@ -155,7 +156,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
           );
         })}
         <div className={styles.uploadWrapper}>
-          <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
+          {!shouldShowCommitButton && (
+            <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
+          )}
         </div>
       </div>
     </div>
