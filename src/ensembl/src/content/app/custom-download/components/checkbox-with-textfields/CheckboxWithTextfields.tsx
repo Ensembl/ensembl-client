@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import styles from './CheckboxWithTextfields.scss';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
@@ -9,6 +8,8 @@ import { ReactComponent as CommitIcon } from 'static/img/shared/apply.svg';
 import Textarea from 'src/shared/components/textarea/Textarea';
 import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
 import { nextUuid } from 'src/shared/helpers/uuid';
+
+import styles from './CheckboxWithTextfields.scss';
 
 export type CheckboxWithTextfieldsProps = {
   textValue: string;

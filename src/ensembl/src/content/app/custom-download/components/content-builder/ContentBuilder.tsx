@@ -28,9 +28,8 @@ import {
 } from 'src/content/app/custom-download/types/Attributes';
 
 import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
-
-import styles from './ContentBuilder.scss';
 import { ReadFile } from 'src/shared/components/upload/Upload';
+import styles from './ContentBuilder.scss';
 
 type Path = (string | number)[];
 let path: Path = [];
