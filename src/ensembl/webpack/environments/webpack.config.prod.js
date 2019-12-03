@@ -25,8 +25,6 @@ const getEnvironmentVariables = () => Object.keys(dotenv.parsed).reduce((result,
 
 // concatenate the common config with the prod config
 module.exports = () => {
-  console.log('prod config was called');
-
   return {
     mode: 'production',
     devtool: 'source-map',
