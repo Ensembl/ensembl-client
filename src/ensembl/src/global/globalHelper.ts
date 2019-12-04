@@ -3,7 +3,9 @@ import { BreakpointWidth } from './globalConfig';
 export const getBreakpoint = (
   key: keyof typeof BreakpointWidth
 ): BreakpointWidth => {
-  if (BreakpointWidth[key] >= BreakpointWidth.DESKTOP) {
+  if (BreakpointWidth[key] >= BreakpointWidth.BIG_DESKTOP) {
+    return BreakpointWidth.BIG_DESKTOP;
+  } else if (BreakpointWidth[key] >= BreakpointWidth.DESKTOP) {
     return BreakpointWidth.DESKTOP;
   } else if (BreakpointWidth[key] >= BreakpointWidth.LAPTOP) {
     return BreakpointWidth.LAPTOP;
