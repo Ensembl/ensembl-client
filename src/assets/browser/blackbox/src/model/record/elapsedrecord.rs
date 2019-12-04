@@ -2,6 +2,7 @@ use crate::{ Format, Record };
 use super::datasetrecord::DatasetRecord;
 use serde_json::Value as SerdeValue;
 
+#[derive(Debug)]
 pub struct ElapsedRecord {
     dataset_record: DatasetRecord,
     start: Option<f64>

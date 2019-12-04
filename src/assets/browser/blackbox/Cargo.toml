@@ -6,4 +6,5 @@ authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 [dependencies]
 hashbrown = "*"
 lazy_static = "*"
+owning_ref = "*"
 serde_json = "*"

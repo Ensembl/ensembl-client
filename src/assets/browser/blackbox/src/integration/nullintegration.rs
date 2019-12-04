@@ -1,5 +1,6 @@
 use crate::Integration;
 
+#[derive(Debug)]
 pub struct NullIntegration {}
 
 impl NullIntegration {

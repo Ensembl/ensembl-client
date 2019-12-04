@@ -7,8 +7,6 @@ use crate::{ Format, Integration, Record, Stream };
 
 fn time_sort(data: &mut Vec<Box<dyn Record>>) {
     data.sort_by(|a,b| {
-        let at = a.time_override();
-        let bt = b.time_override();
         match (a.time_override(),b.time_override()) {
             (None,None) => Ordering::Equal,
             (None,Some(_)) => Ordering::Greater,
@@ -18,6 +16,7 @@ fn time_sort(data: &mut Vec<Box<dyn Record>>) {
     });
 }
 
+#[derive(Debug)]
 pub struct Model {
     include_raw: HashSet<(String,String)>,
     enabled: HashSet<String>,
@@ -74,6 +73,10 @@ impl Model {
 
     pub fn disable_all(&mut self) {
         self.enabled.clear()
+    }
+
+    pub fn is_enabled(&self, stream: &str) -> bool {
+        self.enabled.contains(stream)
     }
 
     pub fn take_records(&mut self) -> Vec<Box<dyn Record>> {

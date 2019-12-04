@@ -2,6 +2,7 @@ use crate::{ Format, Record };
 use super::datasetrecord::DatasetRecord;
 use serde_json::Value as SerdeValue;
 
+#[derive(Debug)]
 pub struct CountRecord {
     dataset_record: DatasetRecord,
     count: f64
@@ -13,6 +14,10 @@ impl CountRecord {
             dataset_record: DatasetRecord::new(stream_name,record_name,units),
             count: 0.
         }
+    }
+
+    pub fn set_count(&mut self, amt: f64) {
+        self.count = amt;
     }
 
     pub fn add_count(&mut self, amt: f64) {

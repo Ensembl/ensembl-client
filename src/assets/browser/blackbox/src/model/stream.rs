@@ -1,10 +1,11 @@
-use hashbrown::{ HashMap, HashSet };
+use hashbrown::HashMap;
 use std::sync::Arc;
 
 use crate::{
     CountRecord, ElapsedRecord, LogRecord, MetronomeRecord, Record
 };
 
+#[derive(Debug)]
 pub struct Stream {
     name: String,
     log_records: Vec<LogRecord>,
@@ -54,12 +55,12 @@ impl Stream {
         })
     }
 
-    pub(crate) fn take_records(&mut self) -> Vec<Box<Record>> {
+    pub(crate) fn take_records(&mut self) -> Vec<Box<dyn Record>> {
         let mut out = Vec::new();
-        out.extend(self.log_records.drain(..).map(|r| Box::new(r) as Box<Record>));
-        out.extend(self.count_records.drain().map(|r| Box::new(r.1) as Box<Record>));
-        out.extend(self.elapsed_records.drain().map(|r| Box::new(r.1) as Box<Record>));
-        out.extend(self.metronome_records.drain().map(|r| Box::new(r.1) as Box<Record>));
+        out.extend(self.log_records.drain(..).map(|r| Box::new(r) as Box<dyn Record>));
+        out.extend(self.count_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));
+        out.extend(self.elapsed_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));
+        out.extend(self.metronome_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));
         out
     }
 }

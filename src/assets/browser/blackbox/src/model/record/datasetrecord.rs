@@ -2,6 +2,7 @@ use crate::{ Format, Record };
 use serde_json::Value as SerdeValue;
 use serde_json::Number as SerdeNumber;
 
+#[derive(Debug)]
 pub struct DatasetRecord {
     stream_name: String,
     record_name: String,
@@ -42,8 +43,8 @@ impl DatasetRecord {
     pub fn to_string(&self) -> Option<String> {
         let (num,tot,avg,high,top) = self.analyse_elapsed();
         if num > 0 {
-            Some(format!("elapsed: num={} total={:.2}{} avg={:.2}{} 95%ile={:.2}{} top={:.2}{}",
-                    num,tot,self.units,avg,self.units,high,self.units,top,self.units))
+            Some(format!("{} elapsed: num={} total={:.2}{} avg={:.2}{} 95%ile={:.2}{} top={:.2}{}",
+                    self.record_name,num,tot,self.units,avg,self.units,high,self.units,top,self.units))
         } else {
             None
         }
@@ -60,7 +61,7 @@ impl Record for DatasetRecord {
         if summary.is_none() { return None; }
         let mut out = format!("[{}][{}] {}",now,instance,summary.unwrap());
         if self.include_raw(format) {
-            out.push_str(&format!("[{}]",self.elapsed.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(",")));
+            out.push_str(&format!(" [{}]",self.elapsed.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(",")));
         }
         Some(out)
     }

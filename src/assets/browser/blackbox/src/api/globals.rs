@@ -1,3 +1,4 @@
+use owning_ref::MutexGuardRef;
 use std::sync::Mutex;
 use serde_json::Value as SerdeValue;
 
@@ -5,11 +6,13 @@ use crate::{ Config, Format, Integration, Model, NullIntegration, Record };
 
 /* TODO
 
-macros
+remove DEBUG
+init welcome
 server
 unit test wrappers
 app integration
 tests
+update README
 
 */
 
@@ -19,6 +22,14 @@ lazy_static! {
 }
 
 /* Setup and configuration */
+
+pub fn blackbox_model<'a>() -> MutexGuardRef<'a,Option<Model>> {
+    MutexGuardRef::new(MODEL.lock().unwrap())
+}
+
+pub fn blackbox_format<'a>() -> MutexGuardRef<'a,Format> {
+    MutexGuardRef::new(FORMAT.lock().unwrap())
+}
 
 pub fn blackbox_integration<T>(integration: T) where T: Integration + 'static {
     MODEL.lock().unwrap().replace(Model::new(integration));
@@ -34,6 +45,10 @@ pub fn blackbox_disable(stream: &str) {
 
 pub fn blackbox_disable_all() {
     MODEL.lock().unwrap().as_mut().unwrap().disable_all();
+}
+
+pub fn blackbox_is_enabled(stream: &str) -> bool {
+    MODEL.lock().unwrap().as_mut().unwrap().is_enabled(stream)
 }
 
 pub fn blackbox_raw_on(stream: &str, name: &str) {
@@ -99,6 +114,14 @@ pub fn blackbox_count(stream: &str, name: &str, amt: f64) {
     let model = model.as_mut().unwrap();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_count(name).add_count(amt);
+    }
+}
+
+pub fn blackbox_set_count(stream: &str, name: &str, amt: f64) {
+    let mut model = MODEL.lock().unwrap();
+    let model = model.as_mut().unwrap();
+    if let Some(stream) = model.get_stream(stream) {
+        stream.get_count(name).set_count(amt);
     }
 }
 

@@ -20,12 +20,14 @@ impl Config {
         let config = json.as_object().ok_or(())?.get("config").ok_or(())?;
         if let Some(enabled) = config.as_object().ok_or(())?.get("enable") {
             for stream in enabled.as_array().ok_or(())?.iter() {
+                let stream = stream.as_str().ok_or(())?;
                 self.enabled.insert(stream.to_string());
             }
         }
         if let Some(raw) = config.as_object().ok_or(())?.get("raw") {
             for (stream,names) in raw.as_object().ok_or(())?.iter() {
                 for name in names.as_array().ok_or(())?.iter() {
+                    let name = name.as_str().ok_or(())?;
                     self.include_raw.insert((stream.to_string(),name.to_string()));
                 }
             }

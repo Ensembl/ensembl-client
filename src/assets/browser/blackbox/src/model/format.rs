@@ -1,5 +1,4 @@
 use hashbrown::HashSet;
-use crate::Integration;
 
 pub struct Format {
     include_raw: HashSet<(String,String)>
@@ -24,7 +23,7 @@ impl Format {
         self.include_raw.clear();
     }
 
-    pub(crate) fn test_include_raw(&self, stream: &str, name: &str) -> bool {
+    pub fn test_include_raw(&self, stream: &str, name: &str) -> bool {
         self.include_raw.contains(&(stream.to_string(),name.to_string()))
     }
 }
