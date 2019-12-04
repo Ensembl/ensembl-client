@@ -128,7 +128,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   return (
     <div className={styles.browserRegionField}>
       <form onSubmit={handleSubmit} onFocus={handleFocus} ref={formRef}>
-        <label className="show-for-large">Region or location</label>
+        <label>Region or location</label>
         <Input
           type="text"
           placeholder="0:1-1,000,000"
@@ -163,7 +163,4 @@ const mapDispatchToProps = {
   toggleRegionFieldActive
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserRegionField);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserRegionField);

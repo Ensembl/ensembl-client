@@ -3,6 +3,10 @@
 .browserRegionEditor {
   position: relative;
 
+  label {
+    margin-left: 10px;
+  }
+
   input {
     width: 120px;
   }
