@@ -3,7 +3,7 @@ use std::sync::Arc;
 use hashbrown::{ HashMap, HashSet };
 use serde_json::Value as SerdeValue;
 
-use crate::{ Record, Stream };
+use crate::{ Format, Integration, Record, Stream };
 
 fn time_sort(data: &mut Vec<Box<dyn Record>>) {
     data.sort_by(|a,b| {
@@ -22,36 +22,58 @@ pub struct Model {
     include_raw: HashSet<(String,String)>,
     enabled: HashSet<String>,
     streams: HashMap<String,Stream>,
-    time_units: String
+    integration: Box<dyn Integration>,
+    stack: Arc<Vec<String>>
 }
 
 impl Model {
-    pub fn new(time_units: &str) -> Model {
+    pub fn new<T>(integration: T) -> Model where T: Integration + 'static {
         Model {
             include_raw: HashSet::new(),
             enabled: HashSet::new(),
             streams: HashMap::new(),
-            time_units: time_units.to_string()
+            integration: Box::new(integration),
+            stack: Arc::new(vec![])
         }
     }
 
-    pub(crate) fn get_time(&self) -> f64 {
-        0. // XXX
+    pub(crate) fn get_time(&self) -> f64 { self.integration.get_time() }
+    pub(crate) fn get_instance_id(&self) -> String { self.integration.get_instance_id() }
+    pub(crate) fn get_stack(&self) -> Arc<Vec<String>> { self.stack.clone() }
+
+    pub fn push(&mut self, level: &str) {
+        let mut new = self.stack.to_vec();
+        new.push(level.to_string());
+        self.stack = Arc::new(new);
     }
 
-    pub(crate) fn get_stack(&self) -> Arc<Vec<String>> {
-        Arc::new(vec![]) // XXX
+    pub fn pop(&mut self) {
+        let mut new = self.stack.to_vec();
+        new.pop();
+        self.stack = Arc::new(new);
     }
 
     pub fn get_stream(&mut self, name: &str) -> Option<&mut Stream> {
         if self.enabled.contains(name) {
-            let units = self.time_units.to_string();
+            let units = self.integration.get_time_units();
             Some(self.streams.entry(name.to_string()).or_insert_with(||
-                Stream::new(&units)
+                Stream::new(name,&units)
             ))
         } else {
             None
         }
+    }
+
+    pub fn enable(&mut self, stream: &str) {
+        self.enabled.insert(stream.to_string());
+    }
+
+    pub fn disable(&mut self, stream: &str) {
+        self.enabled.remove(stream);
+    }
+
+    pub fn disable_all(&mut self) {
+        self.enabled.clear()
     }
 
     pub fn take_records(&mut self) -> Vec<Box<dyn Record>> {
@@ -63,23 +85,17 @@ impl Model {
         out
     }
 
-    pub fn include_raw_data(&mut self, stream: &str, name: &str, b: bool) {
-        if b {
-            self.include_raw.insert((stream.to_string(),name.to_string()));
-        } else {
-            self.include_raw.remove(&(stream.to_string(),name.to_string()));
-        }
+    pub fn take_lines(&mut self, now: f64, format: &Format) -> Vec<String> {
+        let instance = self.get_instance_id();
+        self.take_records().iter().map(|r| {
+            r.get_as_line(now,&instance,format)
+        }).filter(|x| x.is_some()).map(|x| x.unwrap()).collect()
     }
 
-    pub fn take_lines(&mut self, now: f64, include_raw: bool) -> Vec<String> {
+    pub fn take_json(&mut self, now: f64, format: &Format) -> SerdeValue {
+        let instance = self.get_instance_id();
         self.take_records().iter().map(|r| {
-            r.get_as_line(now,include_raw)
-        }).collect()
-    }
-
-    pub fn take_json(&mut self, now: f64, include_raw: bool) -> SerdeValue {
-        self.take_records().iter().map(|r| {
-            r.get_as_json(now,include_raw)
-        }).collect()
+            r.get_as_json(now,&instance,format)
+        }).filter(|x| x.is_some()).map(|x| x.unwrap()).collect()
     }
 }

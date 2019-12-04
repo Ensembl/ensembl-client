@@ -1,16 +1,20 @@
-use crate::{ LogRecord, Record };
+use crate::{ Format, Record };
 use serde_json::Value as SerdeValue;
 use serde_json::Number as SerdeNumber;
 
 pub struct DatasetRecord {
+    stream_name: String,
+    record_name: String,
     elapsed: Vec<f64>,
     include_raw: bool,
     units: String
 }
 
 impl DatasetRecord {
-    pub fn new(units: &str) -> DatasetRecord {
+    pub fn new(stream_name: &str, record_name: &str, units: &str) -> DatasetRecord {
         DatasetRecord {
+            stream_name: stream_name.to_string(),
+            record_name: record_name.to_string(),
             elapsed: Vec::new(),
             include_raw: false,
             units: units.to_string()
@@ -35,38 +39,47 @@ impl DatasetRecord {
         }
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string(&self) -> Option<String> {
         let (num,tot,avg,high,top) = self.analyse_elapsed();
         if num > 0 {
-            format!("elapsed: num={} total={:.2}{} avg={:.2}{} 95%ile={:.2}{} top={:.2}{}",
-                    num,tot,self.units,avg,self.units,high,self.units,top,self.units)
+            Some(format!("elapsed: num={} total={:.2}{} avg={:.2}{} 95%ile={:.2}{} top={:.2}{}",
+                    num,tot,self.units,avg,self.units,high,self.units,top,self.units))
         } else {
-            format!("no events")
+            None
         }
+    }
+
+    fn include_raw(&self, format: &Format) -> bool {
+        format.test_include_raw(&self.stream_name,&self.record_name)
     }
 }
 
 impl Record for DatasetRecord {
-    fn get_as_line(&self, now: f64, include_raw: bool) -> String {
-        let mut out = format!("[{}] {}",now,self.to_string());
-        if include_raw {
+    fn get_as_line(&self, now: f64, instance: &str, format: &Format) -> Option<String> {
+        let summary = self.to_string();
+        if summary.is_none() { return None; }
+        let mut out = format!("[{}][{}] {}",now,instance,summary.unwrap());
+        if self.include_raw(format) {
             out.push_str(&format!("[{}]",self.elapsed.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(",")));
         }
-        out
+        Some(out)
     }
 
-    fn get_as_json(&self, now: f64, include_raw: bool) -> SerdeValue {
+    fn get_as_json(&self, now: f64, instance: &str, format: &Format) -> Option<SerdeValue> {
+        let summary = self.to_string();
+        if summary.is_none() { return None; }
         let mut out = json!({
             "time": now,
-            "summary": self.to_string()
+            "instance": instance,
+            "text": self.to_string()
         });
-        if include_raw {
+        if self.include_raw(format) {
             let dataset_serde = self.elapsed.iter().map(|x| {
                 SerdeValue::Number(SerdeNumber::from_f64(*x).unwrap())
             }).collect();
             let dataset_serde = SerdeValue::Array(dataset_serde);
             out.as_object_mut().unwrap().insert("dataset".to_string(),dataset_serde);
         }
-        out
+        Some(out)
     }
 }

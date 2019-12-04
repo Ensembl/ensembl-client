@@ -6,6 +6,7 @@ use crate::{
 };
 
 pub struct Stream {
+    name: String,
     log_records: Vec<LogRecord>,
     count_records: HashMap<String,CountRecord>,
     elapsed_records: HashMap<String,ElapsedRecord>,
@@ -14,8 +15,9 @@ pub struct Stream {
 }
 
 impl Stream {
-    pub(crate) fn new(time_units: &str) -> Stream {
+    pub(crate) fn new(name: &str,time_units: &str) -> Stream {
         Stream {
+            name: name.to_string(),
             log_records: Vec::new(),
             count_records: HashMap::new(),
             elapsed_records: HashMap::new(),
@@ -30,22 +32,25 @@ impl Stream {
     }
 
     pub fn get_count(&mut self, name: &str) -> &mut CountRecord {
+        let stream_name = self.name.to_string();
         self.count_records.entry(name.to_string()).or_insert_with(|| {
-            CountRecord::new("")
+            CountRecord::new(&stream_name,name,"")
         })
     }
 
     pub fn get_elapsed(&mut self, name: &str) -> &mut ElapsedRecord {
+        let stream_name = self.name.to_string();
         let units = self.time_units.to_string();
         self.elapsed_records.entry(name.to_string()).or_insert_with(|| {
-            ElapsedRecord::new(&units)
+            ElapsedRecord::new(&stream_name,name,&units)
         })
     }
 
     pub fn get_metronome(&mut self, name: &str) -> &mut MetronomeRecord {
+        let stream_name = self.name.to_string();
         let units = self.time_units.to_string();
         self.metronome_records.entry(name.to_string()).or_insert_with(|| {
-            MetronomeRecord::new(&units)
+            MetronomeRecord::new(&stream_name,name,&units)
         })
     }
 

@@ -1,4 +1,4 @@
-use crate::Record;
+use crate::{ Format, Record };
 use super::datasetrecord::DatasetRecord;
 use serde_json::Value as SerdeValue;
 
@@ -8,9 +8,9 @@ pub struct MetronomeRecord {
 }
 
 impl MetronomeRecord {
-    pub fn new(units: &str) -> MetronomeRecord {
+    pub fn new(stream_name: &str, record_name: &str, units: &str) -> MetronomeRecord {
         MetronomeRecord {
-            dataset_record: DatasetRecord::new(units),
+            dataset_record: DatasetRecord::new(stream_name,record_name,units),
             prev: None
         }
     }
@@ -22,13 +22,13 @@ impl MetronomeRecord {
         self.prev = Some(time);
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_string(&self) -> Option<String> {
         self.dataset_record.to_string()
     }
 }
 
 impl Record for MetronomeRecord {
-    fn get_as_line(&self, now: f64, include_raw: bool) -> String { self.dataset_record.get_as_line(now,include_raw) }
-    fn get_as_json(&self, now: f64, include_raw: bool) -> SerdeValue { self.dataset_record.get_as_json(now,include_raw) }
+    fn get_as_line(&self, now: f64, instance: &str, format: &Format) -> Option<String> { self.dataset_record.get_as_line(now,instance,format) }
+    fn get_as_json(&self, now: f64, instance: &str, format: &Format) -> Option<SerdeValue> { self.dataset_record.get_as_json(now,instance,format) }
 }
 

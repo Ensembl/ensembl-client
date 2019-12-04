@@ -1,7 +1,7 @@
 use serde_json::Value as SerdeValue;
 use std::sync::Arc;
 
-use crate::Record;
+use crate::{ Format, Record };
 
 pub struct LogRecord {
     time: f64,
@@ -20,17 +20,18 @@ impl LogRecord {
 }
 
 impl Record for LogRecord {
-    fn get_as_line(&self, _time: f64, _include_raw: bool) -> String {
-        format!("[{}] {} {}",self.time,self.stack.join("/"),self.text)
+    fn get_as_line(&self, _time: f64, instance: &str, format: &Format) -> Option<String> {
+        Some(format!("[{}][{}] {} {}",self.time,instance,self.stack.join("/"),self.text))
     }
 
-    fn get_as_json(&self, _time: f64, _include_raw: bool) -> SerdeValue {
+    fn get_as_json(&self, _time: f64, instance: &str, format: &Format) -> Option<SerdeValue> {
         let stack = self.stack.to_vec();
-        json!({
+        Some(json!({
             "time": self.time,
             "stack": stack,
+            "instance": instance,
             "text": self.text
-        })
+        }))
     }
 
     fn time_override(&self) -> Option<f64> { Some(self.time) }
