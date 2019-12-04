@@ -9,7 +9,7 @@ use super::harness::{ TestIntegration, lines_contains, test_lock };
 pub fn test_blackbox_log() {
     test_lock(|| {
         let ign = TestIntegration::new("test1");
-        blackbox_integration(ign.clone());
+        blackbox_integration(ign.clone(),true);
         blackbox_enable("test");
         blackbox_log!("test","Hello, world!");
         assert_eq!("[0][test1] Hello, world!",blackbox_take_lines().join("\n"));
@@ -20,7 +20,7 @@ pub fn test_blackbox_log() {
 pub fn test_blackbox_count() {
     test_lock(|| {
         let ign = TestIntegration::new("test1");
-        blackbox_integration(ign.clone());
+        blackbox_integration(ign.clone(),true);
         blackbox_enable("test");
         blackbox_count!("test","noraw",42.);
         blackbox_reset_count!("test","noraw");
@@ -55,7 +55,7 @@ pub fn test_blackbox_count() {
 pub fn test_blackbox_elapsed() {
     test_lock(|| {
         let mut ign = TestIntegration::new("test1");
-        blackbox_integration(ign.clone());
+        blackbox_integration(ign.clone(),true);
         blackbox_enable("test");
         blackbox_raw_on("test","raw");
         blackbox_time!("test","raw",{
@@ -76,7 +76,7 @@ pub fn test_blackbox_elapsed() {
 pub fn test_blackbox_metronome() {
     test_lock(|| {
         let mut ign = TestIntegration::new("test1");
-        blackbox_integration(ign.clone());
+        blackbox_integration(ign.clone(),true);
         blackbox_enable("test");
         blackbox_raw_on("test","raw");
         blackbox_metronome!("test","raw");
@@ -95,7 +95,7 @@ pub fn test_blackbox_metronome() {
 pub fn test_blackbox_enable_disable() {
     test_lock(|| {
             let ign = TestIntegration::new("test2");
-            blackbox_integration(ign.clone());
+            blackbox_integration(ign.clone(),true);
             blackbox_log!("test","disabled!");
             blackbox_enable("test");
             blackbox_log!("test2","disabled!");
@@ -118,7 +118,7 @@ pub fn test_blackbox_enable_disable() {
 pub fn test_config() {
     test_lock(|| {
         let ign = TestIntegration::new("test2");
-        blackbox_integration(ign.clone());
+        blackbox_integration(ign.clone(),true);
         blackbox_config(&json!({
             "config": {
                 "enable": [
