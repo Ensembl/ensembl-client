@@ -3,7 +3,6 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
-import { ReactComponent as CommitIcon } from 'static/img/shared/apply.svg';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
@@ -25,16 +24,11 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
   const [isTextareaShown, showTextarea] = useState(false);
 
-  const [shouldShowCommitButton, showCommitButton] = useState(false);
-
-  const [textValue, setTextValue] = useState<string>('');
-
   const [files, setFiles] = useState<ReadFile[]>([]);
 
   useEffect(() => {
     setFiles(props.files);
-    setTextValue(props.textValue);
-    showCommitButton(false);
+
     let checkedStatus = false;
 
     if (props.textValue && props.textValue.length) {
@@ -69,10 +63,6 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onFilesChange(newFiles);
   };
 
-  useEffect(() => {
-    showCommitButton(textValue !== props.textValue);
-  }, [textValue]);
-
   return (
     <div className={styles.wrapperTable}>
       <div className={styles.checkboxWrapper}>
@@ -99,9 +89,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
               {isTextareaShown && (
                 <Textarea
-                  onChange={setTextValue}
+                  onChange={props.onTextChange}
                   placeholder={'Paste data'}
-                  value={textValue || ''}
+                  value={props.textValue || ''}
                   resizable={false}
                 />
               )}
@@ -118,15 +108,6 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                 image={RemoveIcon}
               />
             )}
-            <div className={styles.commitIconHolder}>
-              {shouldShowCommitButton && (
-                <ImageButton
-                  onClick={() => props.onTextChange(textValue)}
-                  description={'Commit'}
-                  image={CommitIcon}
-                />
-              )}
-            </div>
           </div>
         </div>
         {props.files &&
@@ -158,9 +139,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
             );
           })}
         <div className={styles.uploadWrapper}>
-          {!shouldShowCommitButton && (
-            <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
-          )}
+          <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
         </div>
       </div>
     </div>

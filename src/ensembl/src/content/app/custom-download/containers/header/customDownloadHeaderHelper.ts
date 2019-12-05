@@ -82,7 +82,7 @@ export const getEndpointUrl = (
   limitToGenes.forEach((element: string | ReadFile) => {
     if (typeof element === 'string') {
       gene_ids.push(element);
-    } else if (element.content) {
+    } else if (element && element.content) {
       gene_ids.push(element.content as string);
     }
   });
