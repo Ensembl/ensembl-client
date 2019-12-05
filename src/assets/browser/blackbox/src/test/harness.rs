@@ -49,20 +49,3 @@ pub(crate) fn lines_contains(lines: &Vec<String>,segment: &str) -> bool {
     }
     false
 }
-
-lazy_static! {
-    static ref LOCK: Mutex<bool> = Mutex::new(false);
-}
-
-pub(crate) fn test_lock<F>(func: F) where F: FnOnce() {
-    let mut lock = match LOCK.lock() {
-        Ok(guard) => guard,
-        Err(poisoned) => poisoned.into_inner(),
-    };
-    *lock = false;
-    print!("start\n");
-    func();
-    print!("finish\n");
-    *lock = true;
-
-}

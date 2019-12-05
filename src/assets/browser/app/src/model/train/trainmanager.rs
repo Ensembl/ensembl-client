@@ -80,7 +80,6 @@ pub struct TrainManagerImpl {
     trainset: TrainSet,
     zmr: ZMenuRegistry,
     target: ViewpointFragment,
-    focus_object: FocusObject,
     animation_request: Option<(Stick,FocusObjectId,f64,f64)>
 }
 
@@ -95,7 +94,6 @@ impl TrainManagerImpl {
                 transition_train: None
             },
             target: ViewpointFragment::new_empty(),
-            focus_object: FocusObject::new(&FocusObjectId::new(&None)),
             zmr: ZMenuRegistry::new(),
             animation_request: None
         }

@@ -1,12 +1,13 @@
-use owning_ref::MutexGuardRefMut;
-use std::sync::Mutex;
+use hashbrown::HashMap;
+use std::sync::{ Arc, Mutex };
+use std::thread;
+use std::thread::ThreadId;
 use serde_json::Value as SerdeValue;
 
 use crate::{ Config, Format, Integration, Model, NullIntegration, Record };
 
 /* TODO
 
-thread local
 remove DEBUG
 init welcome
 server
@@ -17,70 +18,79 @@ update README
 
 */
 
-thread_local! {
-    static TL_MODEL: Mutex<Model> = Mutex::new(Model::new(NullIntegration::new()));
-    static TL_FORMAT: Mutex<Format> = Mutex::new(Format::new());
-}
-
 lazy_static! {
+    static ref TL_MODEL: Mutex<HashMap<ThreadId,Arc<Mutex<Model>>>> = Mutex::new(HashMap::new());
+    static ref TL_FORMAT: Mutex<HashMap<ThreadId,Arc<Mutex<Format>>>> = Mutex::new(HashMap::new());
+
     static ref USE_TL: Mutex<bool> = Mutex::new(false);
-    static ref MODEL: Mutex<Model> = Mutex::new(Model::new(NullIntegration::new()));
-    static ref FORMAT: Mutex<Format> = Mutex::new(Format::new());
+
+    static ref MODEL: Arc<Mutex<Model>> = Arc::new(Mutex::new(Model::new(NullIntegration::new())));
+    static ref FORMAT: Arc<Mutex<Format>> = Arc::new(Mutex::new(Format::new()));
 }
 
 /* Getting the correct Model! */
 
 /* Setup and configuration */
 
-pub fn blackbox_model<'a>() -> MutexGuardRefMut<'a,Model> {
+pub fn blackbox_model<'a>() -> Arc<Mutex<Model>> {
     if *USE_TL.lock().unwrap() {
-        MutexGuardRefMut::new(TL_MODEL.with(|model| model.lock().unwrap()))
+        TL_MODEL.lock().unwrap().entry(thread::current().id()).or_insert_with(|| {
+            Arc::new(Mutex::new(Model::new(NullIntegration::new())))
+        }).clone()
     } else {
-        MutexGuardRefMut::new(MODEL.lock().unwrap())
+        MODEL.clone()
     }
 }
 
-pub fn blackbox_format<'a>() -> MutexGuardRefMut<'a,Format> {
-    MutexGuardRefMut::new(FORMAT.lock().unwrap())
+pub fn blackbox_format<'a>() -> Arc<Mutex<Format>> {
+    if *USE_TL.lock().unwrap() {
+        TL_FORMAT.lock().unwrap().entry(thread::current().id()).or_insert_with(|| {
+            Arc::new(Mutex::new(Format::new()))
+        }).clone()
+    } else {
+        FORMAT.clone()
+    }
 }
 
 pub fn blackbox_integration<T>(integration: T, use_tl: bool) where T: Integration + 'static {
     *USE_TL.lock().unwrap() = use_tl;
     if use_tl {
-        TL_MODEL.with(|model| *model.lock().unwrap() =  Model::new(integration));
+        TL_MODEL.lock().unwrap().entry(thread::current().id()).or_insert_with(|| {
+            Arc::new(Mutex::new(Model::new(integration)))
+        });
     } else {
         *MODEL.lock().unwrap() = Model::new(integration);
     }
 }
 
 pub fn blackbox_enable(stream: &str) {
-    blackbox_model().enable(stream);
+    blackbox_model().lock().unwrap().enable(stream);
 }
 
 pub fn blackbox_disable(stream: &str) {
-    blackbox_model().disable(stream);
+    blackbox_model().lock().unwrap().disable(stream);
 }
 
 pub fn blackbox_disable_all() {
-    blackbox_model().disable_all();
+    blackbox_model().lock().unwrap().disable_all();
 }
 
 pub fn blackbox_is_enabled(stream: &str) -> bool {
-    blackbox_model().is_enabled(stream)
+    blackbox_model().lock().unwrap().is_enabled(stream)
 }
 
 pub fn blackbox_raw_on(stream: &str, name: &str) {
-    blackbox_format().include_raw_data(stream,name,true)
+    blackbox_format().lock().unwrap().include_raw_data(stream,name,true)
 }
 
 pub fn blackbox_raw_off(stream: &str, name: &str) {
-    blackbox_format().include_raw_data(stream,name,false)
+    blackbox_format().lock().unwrap().include_raw_data(stream,name,false)
 }
 
 pub fn blackbox_config(config: &SerdeValue) -> bool {
     if let Some(config) = Config::new_from_json(config) {
-        config.update_model(&mut blackbox_model());
-        config.update_format(&mut blackbox_format());
+        config.update_model(&mut blackbox_model().lock().unwrap());
+        config.update_format(&mut blackbox_format().lock().unwrap());
         true
     } else { false }
 }
@@ -88,19 +98,23 @@ pub fn blackbox_config(config: &SerdeValue) -> bool {
 /* reporting */
 
 pub fn blackbox_take_records() -> Vec<Box<dyn Record>> {
-    MODEL.lock().unwrap().take_records()
+    blackbox_model().lock().unwrap().take_records()
 }
 
 pub fn blackbox_take_lines() -> Vec<String> {
     let format = blackbox_format();
-    let mut model = blackbox_model();
+    let format = format.lock().unwrap();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     let time = model.get_time();
     model.take_lines(time,&format)
 }
 
 pub fn blackbox_take_json() -> SerdeValue {
     let format = blackbox_format();
-    let mut model = blackbox_model();
+    let format = format.lock().unwrap();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     let time = model.get_time();
     model.take_json(time,&format)
 }
@@ -108,17 +122,18 @@ pub fn blackbox_take_json() -> SerdeValue {
 /* stack */
 
 pub fn blackbox_push(name: &str) {
-    blackbox_model().push(name);
+    blackbox_model().lock().unwrap().push(name);
 }
 
 pub fn blackbox_pop() {
-    blackbox_model().pop();
+    blackbox_model().lock().unwrap().pop();
 }
 
 /* diagnostics */
 
 pub fn blackbox_log(stream: &str, text: &str) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     let time = model.get_time();
     let stack = model.get_stack();
     if let Some(stream) = model.get_stream(stream) {
@@ -127,28 +142,32 @@ pub fn blackbox_log(stream: &str, text: &str) {
 }
 
 pub fn blackbox_count(stream: &str, name: &str, amt: f64) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_count(name).add_count(amt);
     }
 }
 
 pub fn blackbox_set_count(stream: &str, name: &str, amt: f64) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_count(name).set_count(amt);
     }
 }
 
 pub fn blackbox_reset_count(stream: &str, name: &str) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_count(name).reset_count();
     }
 }
 
 pub fn blackbox_start(stream: &str, name: &str) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_elapsed(name).add_start(time);
@@ -156,7 +175,8 @@ pub fn blackbox_start(stream: &str, name: &str) {
 }
 
 pub fn blackbox_end(stream: &str, name: &str) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_elapsed(name).add_end(time);
@@ -164,7 +184,8 @@ pub fn blackbox_end(stream: &str, name: &str) {
 }
 
 pub fn blackbox_metronome(stream: &str, name: &str) {
-    let mut model = blackbox_model();
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
     let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
         stream.get_metronome(name).add_tick(time);
