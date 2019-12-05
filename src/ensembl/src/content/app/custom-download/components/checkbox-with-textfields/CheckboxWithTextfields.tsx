@@ -16,6 +16,7 @@ export type CheckboxWithTextfieldsProps = {
   label: string;
   disabled?: boolean;
   onFilesChange: (files: ReadFile[]) => void;
+  onReset: () => void;
   onTextChange: (value: string) => void;
 };
 
@@ -37,18 +38,16 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     }
 
     if (props.files && props.files.length) {
-      setIsChecked(true);
       checkedStatus = true;
     }
 
     setIsChecked(checkedStatus);
   }, [props.textValue, props.files]);
 
-  const checkboxOnChange = (isChecked: boolean) => {
-    setIsChecked(isChecked);
-    if (!isChecked) {
-      props.onFilesChange([]);
-      props.onTextChange('');
+  const checkboxOnChange = (newCheckedStatus: boolean) => {
+    setIsChecked(newCheckedStatus);
+    if (!newCheckedStatus) {
+      props.onReset();
     }
   };
 

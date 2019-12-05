@@ -293,12 +293,13 @@ const ContentBuilder = (props: ContentBuilderProps) => {
               ...values.slice(1)
             ] as PrimitiveOrArrayValue)
           }
-          onFilesChange={(files: ReadFile[]) =>
+          onFilesChange={(newFiles: ReadFile[]) =>
             onChangeHandler(currentPath, [
               textValue,
-              ...files
+              ...newFiles
             ] as PrimitiveOrArrayValue)
           }
+          onReset={() => onChangeHandler(currentPath, [])}
           textValue={textValue || ''}
           files={files}
         />

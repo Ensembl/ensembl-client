@@ -10,6 +10,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 const onTextChange = jest.fn();
 const onFilesChange = jest.fn();
+const onReset = jest.fn();
 
 let wrapper: any;
 const mockReadFile: ReadFile = {
@@ -29,7 +30,8 @@ const defaultProps = {
   files: [],
   label: '',
   onTextChange,
-  onFilesChange
+  onFilesChange,
+  onReset
 };
 
 describe('<CheckboxWithTextfields />', () => {
@@ -72,6 +74,13 @@ describe('<CheckboxWithTextfields />', () => {
       <CheckboxWithTextfields {...defaultProps} files={[mockReadFile]} />
     );
     expect(wrapper.find(Checkbox).prop('checked')).toBe(true);
+  });
+
+  it('calls the onReset prop when the checkbox is unchecked', () => {
+    wrapper = mount(
+      <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
+    );
+    expect(onReset).toBeCalled();
   });
 
   it('displays N number of file details based on the files prop', () => {
