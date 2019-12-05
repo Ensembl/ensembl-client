@@ -18,24 +18,10 @@ describe('BrowserNavBarControls', () => {
       mount(
         <BrowserNavBarControls
           browserNavStates={browserNavStates}
-          disabled={faker.random.boolean()}
+          shouldBeOpaque={faker.random.boolean()}
         />
       )
     ).not.toThrow();
-  });
-
-  it('disables all buttons if the disabled prop is set to true', () => {
-    const wrapper = mount(
-      <BrowserNavBarControls
-        browserNavStates={browserNavStates}
-        disabled={true}
-      />
-    );
-    const controlButtons = wrapper.find(BrowserNavIcon);
-    expect(controlButtons.length).toEqual(browserNavStates.length);
-    controlButtons.forEach((button) => {
-      expect(button.prop('enabled')).toBe(false);
-    });
   });
 
   it('disables buttons if corresponding actions are not possible', () => {
@@ -44,7 +30,7 @@ describe('BrowserNavBarControls', () => {
     const wrapper = mount(
       <BrowserNavBarControls
         browserNavStates={browserNavStates}
-        disabled={false}
+        shouldBeOpaque={false}
       />
     );
     const controlButtons = wrapper.find(BrowserNavIcon);

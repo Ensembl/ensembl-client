@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import BrowserNavIcon from './BrowserNavIcon';
 
@@ -14,22 +15,25 @@ import { BrowserNavStates } from '../browserState';
 import { RootState } from 'src/store';
 
 import styles from './BrowserNavBarControls.scss';
+import browserNavBarStyles from './BrowserNavBar.scss';
 
 type Props = {
   browserNavStates: BrowserNavStates;
-  disabled: boolean;
+  shouldBeOpaque: boolean;
 };
 
 export const BrowserNavBarControls = (props: Props) => {
   const shouldEnableButton = (index: number) => {
-    const { browserNavStates, disabled } = props;
-    const isAtMaximum = browserNavStates[index];
-
-    return !disabled && !isAtMaximum;
+    const isAtMaximum = props.browserNavStates[index];
+    return !isAtMaximum;
   };
 
+  const navBarControlsClassNames = classNames(styles.browserNavBarControls, {
+    [browserNavBarStyles.semiOpaque]: props.shouldBeOpaque
+  });
+
   return (
-    <div className={styles.browserNavBarControls}>
+    <div className={navBarControlsClassNames}>
       {browserNavConfig.map((item: BrowserNavItem, index: number) => (
         <BrowserNavIcon
           key={item.name}
@@ -42,11 +46,12 @@ export const BrowserNavBarControls = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  const disabled = getRegionEditorActive(state) || getRegionFieldActive(state);
+  const shouldBeOpaque =
+    getRegionEditorActive(state) || getRegionFieldActive(state);
 
   return {
     browserNavStates: getBrowserNavStates(state),
-    disabled
+    shouldBeOpaque
   };
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, useRef } from 'react';
+import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -15,14 +15,14 @@ import {
 import {
   getBrowserActiveGenomeId,
   getRegionFieldActive,
-  getChrLocation
+  getChrLocation,
+  getRegionEditorActive
 } from '../browserSelectors';
 import {
   getChrLocationFromStr,
   validateRegion,
   RegionValidationErrors
 } from '../browserHelper';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import applyIcon from 'static/img/shared/apply.svg';
 
@@ -33,6 +33,7 @@ export type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation | null;
   isActive: boolean;
+  shouldBeOpaque: boolean;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -46,7 +47,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId, chrLocation } = props;
   const [regionFieldInput, setRegionFieldInput] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const formRef = useRef(null);
+  const inputGroupRef = useRef<HTMLElement>(null);
+  const buttonRef = useRef<HTMLElement>(null);
 
   const handleFocus = () => props.toggleRegionFieldActive(true);
 
@@ -94,9 +96,23 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     }
   };
 
-  const closeForm = () => resetForm();
+  const closeForm = (event: Event) => {
+    if (
+      !inputGroupRef.current ||
+      !buttonRef.current ||
+      inputGroupRef.current.contains(event.target as HTMLElement) ||
+      buttonRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
 
-  useOutsideClick(formRef, closeForm);
+    resetForm();
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeForm);
+    return () => document.removeEventListener('click', closeForm);
+  }, []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -114,6 +130,10 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     }
   };
 
+  const regionFieldClassNames = classNames(styles.browserRegionField, {
+    [browserNavBarStyles.semiOpaque]: props.shouldBeOpaque
+  });
+
   const inputClassNames = classNames(styles.inputText, {
     [browserNavBarStyles.errorText]: errorMessage
   });
@@ -121,22 +141,26 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const buttonsClassNames = classNames(
     browserNavBarStyles.browserNavBarButtons,
     {
-      [browserNavBarStyles.browserNavBarButtonsVisible]: props.isActive
+      [browserNavBarStyles.browserNavBarButtonsVisible]:
+        props.isActive && regionFieldInput.length
     }
   );
 
   return (
-    <div className={styles.browserRegionField}>
-      <form onSubmit={handleSubmit} onFocus={handleFocus} ref={formRef}>
-        <label>Region or location</label>
-        <Input
-          type="text"
-          placeholder="0:1-1,000,000"
-          value={regionFieldInput}
-          onChange={changeRegionFieldInput}
-          className={inputClassNames}
-        />
-        <span className={buttonsClassNames}>
+    <div className={regionFieldClassNames}>
+      <form onSubmit={handleSubmit} onFocus={handleFocus}>
+        <span ref={inputGroupRef}>
+          <label htmlFor="region-field-input-btn">Region or location</label>
+          <Input
+            id="region-field-input-btn"
+            type="text"
+            placeholder="0:1-1,000,000"
+            value={regionFieldInput}
+            onChange={changeRegionFieldInput}
+            className={inputClassNames}
+          />
+        </span>
+        <span className={buttonsClassNames} ref={buttonRef}>
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
@@ -153,7 +177,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId: getBrowserActiveGenomeId(state),
     chrLocation: getChrLocation(state),
-    isActive: getRegionFieldActive(state)
+    isActive: getRegionFieldActive(state),
+    shouldBeOpaque: getRegionEditorActive(state)
   };
 };
 

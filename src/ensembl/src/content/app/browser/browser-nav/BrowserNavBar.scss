@@ -28,10 +28,7 @@
 .browserNavBarButtons {
   display: inline-block;
   visibility: hidden;
-
-  button {
-    margin-left: 10px;
-  }
+  margin-left: 10px;
 
   img {
     height: 18px;
@@ -41,4 +38,8 @@
 
 .browserNavBarButtonsVisible {
   visibility: visible;
+}
+
+.semiOpaque {
+  opacity: 0.4;
 }

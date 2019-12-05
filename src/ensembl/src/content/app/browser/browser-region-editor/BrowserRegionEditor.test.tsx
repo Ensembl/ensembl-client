@@ -29,6 +29,7 @@ describe('<BrowserRegionEditor', () => {
     chrLocation: initialChrLocation,
     genomeKaryotype: createGenomeKaryotype(),
     isActive: true,
+    shouldBeOpaque: false,
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     toggleRegionEditorActive: jest.fn()

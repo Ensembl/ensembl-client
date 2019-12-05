@@ -11,7 +11,8 @@ import { RootState } from 'src/store';
 import {
   getRegionEditorActive,
   getBrowserActiveGenomeId,
-  getChrLocation
+  getChrLocation,
+  getRegionFieldActive
 } from '../browserSelectors';
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 import {
@@ -26,7 +27,6 @@ import {
   getNumberWithoutCommas
 } from 'src/shared/helpers/numberFormatter';
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import applyIcon from 'static/img/shared/apply.svg';
 
@@ -38,6 +38,7 @@ export type BrowserRegionEditorProps = {
   chrLocation: ChrLocation | null;
   genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
+  shouldBeOpaque: boolean;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -143,12 +144,21 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     }
   };
 
-  const closeForm = () => {
+  const closeForm = (event: Event) => {
+    if (
+      !stickRef.current ||
+      !locationStartRef.current ||
+      !locationEndRef.current ||
+      stickRef.current.contains(event.target as HTMLElement) ||
+      locationStartRef.current.contains(event.target as HTMLElement) ||
+      locationEndRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
     updateAllInputs();
     resetForm();
   };
-
-  useOutsideClick(formRef, closeForm);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -161,12 +171,22 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     });
   };
 
+  const stickRef = useRef<HTMLDivElement>(null);
+  const locationStartRef = useRef<HTMLDivElement>(null);
+  const locationEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    document.addEventListener('click', closeForm);
+    return () => document.removeEventListener('click', closeForm);
+  }, []);
+
   useEffect(() => {
     updateAllInputs();
   }, [props.chrLocation]);
 
-  const locationStartRef = useRef<HTMLDivElement>(null);
-  const locationEndRef = useRef<HTMLDivElement>(null);
+  const regionEditorClassNames = classNames(styles.browserRegionEditor, {
+    [browserNavBarStyles.semiOpaque]: props.shouldBeOpaque
+  });
 
   const locationStartClassNames = classNames({
     [browserNavBarStyles.errorText]: locationStartErrorMessage
@@ -184,10 +204,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   );
 
   return (
-    <div className={styles.browserRegionEditor}>
+    <div className={regionEditorClassNames}>
       <form onSubmit={handleSubmit} onFocus={handleFocus} ref={formRef}>
-        <div className={styles.inputGroup}>
-          <label className="show-for-large">Chr</label>
+        <div className={styles.inputGroup} ref={stickRef}>
+          <label>Chr</label>
           <Select
             onSelect={updateStickInput}
             options={getKaryotypeOptions()}
@@ -198,8 +218,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           role="startInputGroup"
           ref={locationStartRef}
         >
-          <label className="show-for-large">Start</label>
+          <label htmlFor="region-editor-start">Start</label>
           <Input
+            id="region-editor-start"
             type="text"
             onChange={setLocationStartInput}
             value={locationStartInput}
@@ -220,8 +241,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           role="endInputGroup"
           ref={locationEndRef}
         >
-          <label className="show-for-large">End</label>
+          <label htmlFor="region-editor-end">End</label>
           <Input
+            id="region-editor-end"
             type="text"
             onChange={setLocationEndInput}
             value={locationEndInput}
@@ -252,7 +274,8 @@ const mapStateToProps = (state: RootState) => {
     activeGenomeId: getBrowserActiveGenomeId(state),
     chrLocation: getChrLocation(state),
     genomeKaryotype: getGenomeKaryotype(state),
-    isActive: getRegionEditorActive(state)
+    isActive: getRegionEditorActive(state),
+    shouldBeOpaque: getRegionFieldActive(state)
   };
 };
 
