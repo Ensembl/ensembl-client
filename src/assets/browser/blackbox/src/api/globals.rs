@@ -8,8 +8,8 @@ use crate::{ Config, Format, Integration, Model, NullIntegration, Record };
 
 /* TODO
 
+thread local tidying
 remove DEBUG
-init welcome
 server
 unit test wrappers
 app integration
@@ -18,28 +18,54 @@ update README
 
 */
 
+struct ThreadLocalTidier();
+
+impl Drop for ThreadLocalTidier {
+    fn drop(&mut self) {
+        blackbox_clear();
+    }
+}
+
+thread_local! {
+    static TL_TIDY: ThreadLocalTidier = ThreadLocalTidier();
+}
+
 lazy_static! {
+    static ref USE_TL: Mutex<bool> = Mutex::new(false);
+
     static ref TL_MODEL: Mutex<HashMap<ThreadId,Arc<Mutex<Model>>>> = Mutex::new(HashMap::new());
     static ref TL_FORMAT: Mutex<HashMap<ThreadId,Arc<Mutex<Format>>>> = Mutex::new(HashMap::new());
-
-    static ref USE_TL: Mutex<bool> = Mutex::new(false);
 
     static ref MODEL: Arc<Mutex<Model>> = Arc::new(Mutex::new(Model::new(NullIntegration::new())));
     static ref FORMAT: Arc<Mutex<Format>> = Arc::new(Mutex::new(Format::new()));
 }
 
-/* Getting the correct Model! */
-
 /* Setup and configuration */
 
-pub fn blackbox_model<'a>() -> Arc<Mutex<Model>> {
+pub fn blackbox_clear() {
     if *USE_TL.lock().unwrap() {
-        TL_MODEL.lock().unwrap().entry(thread::current().id()).or_insert_with(|| {
+        TL_MODEL.lock().unwrap().remove(&thread::current().id());
+        TL_FORMAT.lock().unwrap().remove(&thread::current().id());
+    } else {
+        *MODEL.lock().unwrap() = Model::new(NullIntegration::new());
+        *FORMAT.lock().unwrap() = Format::new();
+    }
+}
+
+/* Made public in crate for testing */
+pub(crate) fn blackbox_model_id<'a>(id: ThreadId) -> Arc<Mutex<Model>> {
+    if *USE_TL.lock().unwrap() {
+        TL_MODEL.lock().unwrap().entry(id).or_insert_with(|| {
             Arc::new(Mutex::new(Model::new(NullIntegration::new())))
         }).clone()
     } else {
         MODEL.clone()
     }
+}
+
+
+pub fn blackbox_model<'a>() -> Arc<Mutex<Model>> {
+    blackbox_model_id(thread::current().id())
 }
 
 pub fn blackbox_format<'a>() -> Arc<Mutex<Format>> {
@@ -52,12 +78,16 @@ pub fn blackbox_format<'a>() -> Arc<Mutex<Format>> {
     }
 }
 
-pub fn blackbox_integration<T>(integration: T, use_tl: bool) where T: Integration + 'static {
+pub fn blackbox_use_threadlocals(use_tl: bool) {
     *USE_TL.lock().unwrap() = use_tl;
-    if use_tl {
+}
+
+pub fn blackbox_integration<T>(integration: T) where T: Integration + 'static {
+    if *USE_TL.lock().unwrap() {
         TL_MODEL.lock().unwrap().entry(thread::current().id()).or_insert_with(|| {
             Arc::new(Mutex::new(Model::new(integration)))
         });
+        TL_TIDY.with(|_| {}); /* force into this thread */
     } else {
         *MODEL.lock().unwrap() = Model::new(integration);
     }

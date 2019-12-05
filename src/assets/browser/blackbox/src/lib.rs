@@ -60,5 +60,5 @@ pub use crate::api::globals::{
     blackbox_take_lines, blackbox_take_json, blackbox_push, blackbox_pop,
     blackbox_log, blackbox_count, blackbox_reset_count, blackbox_start, blackbox_end,
     blackbox_metronome, blackbox_is_enabled, blackbox_set_count, blackbox_model,
-    blackbox_format
+    blackbox_format, blackbox_clear, blackbox_use_threadlocals
 };
