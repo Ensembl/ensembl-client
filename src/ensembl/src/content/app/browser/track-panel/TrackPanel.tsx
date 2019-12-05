@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { connect } from 'react-redux';
 import { useSpring, animated } from 'react-spring';
+import isEqual from 'lodash/isEqual';
 
 import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
@@ -106,4 +107,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TrackPanel);
+)(memo(TrackPanel, isEqual));

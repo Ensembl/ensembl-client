@@ -1,6 +1,7 @@
-import React, { ReactElement, useState, useEffect, useRef } from 'react';
-import useResizeObserver from 'use-resize-observer';
+import React, { ReactElement, useState, useEffect, useRef, memo } from 'react';
+import isEqual from 'lodash/isEqual';
 
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 import { getSpeciesItemWidths } from './speciesTabsWrapperHelpers';
 
 import styles from './SingleLineSpeciesWrapper.scss';
@@ -64,8 +65,9 @@ const getItemsContainerWidth = (
 const SingleLineWrapper = (props: Props) => {
   const { speciesTabs } = props;
   const linkRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
-  const [containerRef, containerWidth] = useResizeObserver();
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
   const linkWidth = getLinkWidth(linkRef);
   const itemsContainerWidth = getItemsContainerWidth(containerWidth, linkWidth);
   const speciesTabsProps = React.Children.map(speciesTabs, (tab) => tab.props);
@@ -142,4 +144,4 @@ const SingleLineWrapper = (props: Props) => {
   );
 };
 
-export default SingleLineWrapper;
+export default memo(SingleLineWrapper, isEqual);

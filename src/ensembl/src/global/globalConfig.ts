@@ -14,3 +14,14 @@ export enum AppName {
   SPECIES_SELECTOR = 'Species selector',
   CUSTOM_DOWNLOADS = 'Custom downloads'
 }
+
+export const globalMediaQueries: Record<
+  keyof typeof BreakpointWidth,
+  string
+> = {
+  PHONE: 'screen and (min-width: 599px)',
+  TABLET: 'screen and (min-width: 600px) and (max-width: 899px)',
+  LAPTOP: 'screen and (min-width: 900px) and (max-width: 1199px)',
+  DESKTOP: 'screen and (min-width: 1200px) and (max-width: 1799px)',
+  BIG_DESKTOP: 'screen and (min-width: 1800px)'
+};

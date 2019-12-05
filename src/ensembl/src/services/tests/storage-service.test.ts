@@ -1,6 +1,7 @@
 import { StorageService, StorageType } from 'src/services/storage-service';
-import { WindowServiceInterface } from 'src/services/window-service';
 import faker from 'faker';
+
+import mockWindowService from 'tests/mocks/mockWindowService';
 
 const mockLocalStorage: any = {
   getItem: jest.fn(),
@@ -16,15 +17,16 @@ const mockSessionStorage: any = {
   clear: jest.fn()
 };
 
-const mockWindowService: WindowServiceInterface = {
-  getLocalStorage: () => mockLocalStorage,
-  getSessionStorage: () => mockSessionStorage,
-  getWindow: jest.fn(),
-  getFileReader: jest.fn(),
-  getLocation: jest.fn()
-};
-
 describe('storageService', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(mockWindowService, 'getLocalStorage')
+      .mockImplementation(() => mockLocalStorage);
+    jest
+      .spyOn(mockWindowService, 'getSessionStorage')
+      .mockImplementation(() => mockSessionStorage);
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });

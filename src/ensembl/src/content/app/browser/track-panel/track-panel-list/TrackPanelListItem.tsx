@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactNode, useEffect } from 'react';
+import React, { MouseEvent, ReactNode, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -153,7 +153,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     updateDrawerView(viewName);
   };
 
-  const drawerViewButtonHandler = () => {
+  const drawerViewButtonHandler = useCallback(() => {
     const viewName = track.track_id;
 
     if (drawerView !== viewName) {
@@ -165,7 +165,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     }
 
     updateDrawerView(viewName);
-  };
+  }, [track.track_id, drawerView]);
 
   const toggleExpand = () => {
     const { track_id: trackId } = track;
@@ -173,7 +173,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     props.updateCollapsedTrackIds({ trackId, isCollapsed: !isCollapsed });
   };
 
-  const toggleTrack = () => {
+  const toggleTrack = useCallback(() => {
     const newStatus =
       trackStatus === Status.ACTIVE ? Status.INACTIVE : Status.ACTIVE;
 
@@ -193,7 +193,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
     updateGenomeBrowser(track.track_id, newStatus);
     updateTrackStates(track.track_id, newStatus);
-  };
+  }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
   const updateGenomeBrowser = (trackId: string, status: Status) => {
     const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';

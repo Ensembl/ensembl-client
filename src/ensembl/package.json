@@ -15,10 +15,11 @@
   "scripts": {
     "copy-dotenv": "test ! -f .env && (cp .env.example .env; echo '.env file created') || true",
     "start": "npm install --no-save && npm run serve:dev",
-    "serve:dev": "npm run copy-dotenv && webpack-dev-server --config ./webpack/webpack.config.dev.js",
+    "serve:dev": "npm run copy-dotenv && webpack-dev-server --config ./webpack/webpack.config.js --env.mode dev",
     "serve:prod": "node ./server.js",
     "serve:prod:secure": "node ./server.js -p https",
-    "build": "rimraf ./dist && webpack --config ./webpack/webpack.config.prod.js",
+    "build": "rimraf ./dist && NODE_ENV=production webpack --config ./webpack/webpack.config.js --env.mode prod",
+    "prod:analyse": "npm run build -- --env.presets analyse",
     "deploy": "node deploy",
     "certify": "node setup-ssl",
     "lint": "npm run lint:scripts && npm run lint:styles",
@@ -73,7 +74,6 @@
     "redux-thunk": "2.3.0",
     "rxjs": "6.5.3",
     "typesafe-actions": "5.1.0",
-    "use-resize-observer": "3.1.0",
     "what-input": "5.2.6"
   },
   "devDependencies": {
@@ -160,6 +160,7 @@
     "webpack-bundle-analyzer": "3.6.0",
     "webpack-cli": "3.3.10",
     "webpack-dev-server": "3.9.0",
+    "webpack-merge": "4.2.2",
     "workbox-webpack-plugin": "4.3.1"
   },
   "browserslist": [

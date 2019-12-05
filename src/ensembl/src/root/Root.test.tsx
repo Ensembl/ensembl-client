@@ -5,6 +5,9 @@ import { Root } from './Root';
 import Header from '../header/Header';
 import Content from '../content/Content';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
+import windowService from 'src/services/window-service';
+
+import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
 jest.mock('../header/Header', () => () => 'Header');
 jest.mock('../content/Content', () => () => 'Content');
@@ -24,6 +27,9 @@ describe('<Root />', () => {
   const getRenderedRoot = (props: any) => <Root {...props} />;
 
   beforeEach(() => {
+    jest
+      .spyOn(windowService, 'getMatchMedia')
+      .mockImplementation(mockMatchMedia as any);
     wrapper = mount(getRenderedRoot(defaultProps));
   });
 

@@ -18,7 +18,9 @@ import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
 import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
 import ClearButton from 'src/shared/components/clear-button/ClearButton';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import QuestionButton, {
+  QuestionButtonOption
+} from 'src/shared/components/question-button/QuestionButton';
 
 import {
   SearchMatch,
@@ -123,7 +125,12 @@ const helpText = (
 const RightCorner = (props: RightCornerProps) => {
   switch (props.status) {
     case RightCornerStatus.INFO:
-      return <QuestionButton helpText={helpText} />;
+      return (
+        <QuestionButton
+          helpText={helpText}
+          styleOption={QuestionButtonOption.INPUT}
+        />
+      );
     case RightCornerStatus.CLEAR:
       return <ClearButton onClick={props.clear} />;
     default:
@@ -157,7 +164,4 @@ const mapDispatchToProps = {
   clearSearch
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SpeciesSearchField);
+export default connect(mapStateToProps, mapDispatchToProps)(SpeciesSearchField);

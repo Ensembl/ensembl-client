@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ReactComponent as QuestionIcon } from './icon_question.svg';
 
-import styles from './QuestionButton.scss';
+import defaultStyles from './QuestionButton.scss';
+
+// Extra styling options based on where the button is located
+export enum QuestionButtonOption {
+  INPUT = 'in-input-field',
+  INLINE = 'inline'
+}
 
 type Props = {
   helpText: React.ReactNode;
+  styleOption?: QuestionButtonOption;
+  className?: { [key in QuestionButtonOption]?: string };
 };
 
 const QuestionButton = (props: Props) => {
@@ -20,9 +29,17 @@ const QuestionButton = (props: Props) => {
     setIsHovering(false);
   };
 
+  const className = classNames(
+    defaultStyles.default,
+    {
+      [defaultStyles[props.styleOption as string]]: props.styleOption
+    },
+    props.className
+  );
+
   return (
     <div
-      className={styles.questionButton}
+      className={className}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
