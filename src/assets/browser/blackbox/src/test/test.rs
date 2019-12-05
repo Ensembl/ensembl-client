@@ -4,15 +4,16 @@ use std::thread::ThreadId;
 
 use crate::{
     blackbox_enable, blackbox_integration, blackbox_log, blackbox_take_lines, blackbox_disable, blackbox_is_enabled,
-    blackbox_config, blackbox_raw_on, blackbox_format, blackbox_clear, blackbox_use_threadlocals
+    blackbox_config, blackbox_raw_on, blackbox_format, blackbox_clear, blackbox_use_threadlocals, TrivialIntegration,
+    blackbox_take_json, SimpleIntegration
 };
 
-use super::harness::{ TestIntegration, lines_contains, read_lock, write_lock };
+use super::harness::{ lines_contains, read_lock, write_lock };
 
 #[test]
 pub fn test_blackbox_log() {
     read_lock(|| {
-        let ign = TestIntegration::new("test1");
+        let ign = SimpleIntegration::new("test1");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_enable("test");
@@ -24,7 +25,7 @@ pub fn test_blackbox_log() {
 #[test]
 pub fn test_blackbox_count() {
     read_lock(|| {
-        let ign = TestIntegration::new("test1");
+        let ign = SimpleIntegration::new("test1");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_enable("test");
@@ -60,7 +61,7 @@ pub fn test_blackbox_count() {
 #[test]
 pub fn test_blackbox_elapsed() {
     read_lock(|| {
-        let mut ign = TestIntegration::new("test1");
+        let mut ign = SimpleIntegration::new("test1");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_enable("test");
@@ -75,14 +76,14 @@ pub fn test_blackbox_elapsed() {
         blackbox_time!("test","raw",{
         });
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"raw elapsed: num=3 total=3.00ms avg=1.00ms 95%ile=1.00ms top=2.00ms [1,2,0]"));
+        assert!(lines_contains(&lines,"raw elapsed: num=3 total=3.00units avg=1.00units 95%ile=1.00units top=2.00units [1,2,0]"));
     });
 }
 
 #[test]
 pub fn test_blackbox_metronome() {
     read_lock(|| {
-        let mut ign = TestIntegration::new("test1");
+        let mut ign = SimpleIntegration::new("test1");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_enable("test");
@@ -95,14 +96,14 @@ pub fn test_blackbox_metronome() {
         blackbox_metronome!("test","raw");
         blackbox_metronome!("test","raw");
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"raw elapsed: num=3 total=3.00ms avg=1.00ms 95%ile=1.00ms top=2.00ms [1,2,0]"));
+        assert!(lines_contains(&lines,"raw elapsed: num=3 total=3.00units avg=1.00units 95%ile=1.00units top=2.00units [1,2,0]"));
     });
 }
 
 #[test]
 pub fn test_blackbox_enable_disable() {
     read_lock(|| {
-        let ign = TestIntegration::new("test2");
+        let ign = SimpleIntegration::new("test2");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_log!("test","disabled!");
@@ -125,7 +126,7 @@ pub fn test_blackbox_enable_disable() {
 #[test]
 pub fn test_config() {
     read_lock(|| {
-        let ign = TestIntegration::new("test2");
+        let ign = SimpleIntegration::new("test2");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_config(&json!({
@@ -154,22 +155,24 @@ pub fn test_config() {
 #[test]
 pub fn test_clear() {
     read_lock(|| {
-        let ign = TestIntegration::new("test2");
+        let ign = SimpleIntegration::new("test2");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
         blackbox_enable("test");
         blackbox_enable("test2");
         blackbox_raw_on("test","raw");
         blackbox_clear();
+        blackbox_integration(TrivialIntegration::new());
         blackbox_enable("test");
         blackbox_log!("test","enabled!");
         blackbox_log!("test2","NO!");
         blackbox_count!("test","raw",1.);
         blackbox_reset_count!("test","raw");
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"anon.")); /* Integration cleared */
         assert!(!lines_contains(&lines,"NO")); /* Model cleared */
         assert!(!lines_contains(&lines,"[1]")); /* Format cleared */
+        blackbox_clear();
+        assert_eq!(blackbox_take_lines().len(),0);
     });
 }
 
@@ -177,7 +180,7 @@ pub fn test_clear() {
 pub fn test_static() {
     write_lock(|| {
         blackbox_use_threadlocals(false);
-        let ign = TestIntegration::new("thread1");
+        let ign = SimpleIntegration::new("thread1");
         blackbox_integration(ign.clone());
         let t1 = thread::spawn(|| {
             blackbox_enable("test");
@@ -200,13 +203,13 @@ pub fn test_thread_local() {
     read_lock(|| {
         blackbox_use_threadlocals(true);
         let t1 = thread::spawn(|| {
-            let ign = TestIntegration::new("thread1");
+            let ign = SimpleIntegration::new("thread1");
             blackbox_integration(ign.clone());
             blackbox_enable("test");
             blackbox_log!("test","thread1");
         });
         let t2 = thread::spawn(|| {
-            let ign = TestIntegration::new("thread2");
+            let ign = SimpleIntegration::new("thread2");
             blackbox_integration(ign.clone());
             blackbox_enable("test");
             blackbox_log!("test","thread2");
@@ -229,7 +232,7 @@ pub fn test_thread_local_clear() {
         let id : Arc<Mutex<Option<ThreadId>>> = Arc::new(Mutex::new(None));
         let id2 = id.clone();
         let t1 = thread::spawn(move || {
-            let ign = TestIntegration::new("thread1");
+            let ign = SimpleIntegration::new("thread1");
             blackbox_integration(ign.clone());
             blackbox_enable("test");
             blackbox_log!("test","thread1");
@@ -242,5 +245,61 @@ pub fn test_thread_local_clear() {
         assert!(!lines_contains(&lines,"thread2"));
         let m = crate::api::globals::blackbox_model_id(id.lock().unwrap().unwrap());
         assert!(m.lock().unwrap().get_stream("test").is_none());
+    });
+}
+
+#[test]
+pub fn test_json() {
+    read_lock(|| {
+        let mut ign = SimpleIntegration::new("test1");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_enable("test");
+        blackbox_raw_on("test","raw");
+        blackbox_metronome!("test","raw");
+        ign.tick();
+        ign.tick();
+        blackbox_metronome!("test","raw");
+        blackbox_stack!("a",{
+            blackbox_stack!("b",{
+                blackbox_log!("test","Hello, world!");
+            })
+        });
+        let output = blackbox_take_json();
+        let cmp = json!([
+            {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":2.0},
+            {"dataset":[2.0],"instance":"test1","text":"raw elapsed: num=1 total=2.00units avg=2.00units 95%ile=2.00units top=2.00units","time":2.0}
+        ]);
+        assert_eq!(output,cmp);
+    });
+
+}
+
+#[test]
+pub fn test_blackbox_reordering() {
+    read_lock(|| {
+        let mut ign = SimpleIntegration::new("test1");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_enable("test");
+        blackbox_count!("test","count",1.);
+        blackbox_reset_count!("test","count");
+        ign.tick();
+        blackbox_log!("test","at 1");
+        blackbox_count!("test","count",1.);
+        blackbox_reset_count!("test","count");
+        ign.tick();
+        blackbox_log!("test","at 2");
+        blackbox_count!("test","count",1.);
+        blackbox_reset_count!("test","count");
+        ign.tick();
+        ign.tick();
+        blackbox_count!("test","count",1.);
+        blackbox_reset_count!("test","count");
+        let lines = blackbox_take_lines();
+        assert!(lines[0] == "[1][test1] at 1");
+        assert!(lines[1] == "[2][test1] at 2");
+        assert!(lines[2].starts_with("[4]"));
+        assert!(lines[2].contains("elapsed"));
     });
 }

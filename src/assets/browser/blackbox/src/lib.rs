@@ -12,12 +12,13 @@ mod api {
    pub(crate) mod macros;
 }
 
-mod integration {
-    pub(crate) mod integration;
-    pub(crate) mod nullintegration;
-}
-
 mod model {
+    pub(crate) mod integration {
+        pub(crate) mod integration;
+        pub(crate) mod simpleintegration;
+        pub(crate) mod trivialintegration;
+    }
+
     pub(crate) mod record {
         pub(crate) mod record;
         pub(crate) mod logrecord;
@@ -26,10 +27,11 @@ mod model {
         pub(crate) mod metronomerecord;
         pub(crate) mod countrecord;
     }
+    pub(crate) mod config;
     pub(crate) mod format;
     pub(crate) mod model;
+    pub(crate) mod serialize;
     pub(crate) mod stream;
-    pub(crate) mod config;
 }
 
 #[cfg(test)]
@@ -46,12 +48,13 @@ pub use crate::model::record::{
     countrecord::CountRecord
 };
 
-
-pub use crate::integration::integration::Integration;
-pub use crate::integration::nullintegration::NullIntegration;
 pub use crate::model::config::Config;
 pub use crate::model::format::Format;
+pub use crate::model::integration::integration::Integration;
+pub use crate::model::integration::simpleintegration::SimpleIntegration;
+pub use crate::model::integration::trivialintegration::TrivialIntegration;
 pub use crate::model::model::Model;
+pub use crate::model::serialize::{ records_to_lines, records_to_json };
 pub use crate::model::stream::Stream;
 
 pub use crate::api::globals::{

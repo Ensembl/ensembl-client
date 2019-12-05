@@ -5,7 +5,6 @@ use crate::{
     CountRecord, ElapsedRecord, LogRecord, MetronomeRecord, Record
 };
 
-#[derive(Debug)]
 pub struct Stream {
     name: String,
     log_records: Vec<LogRecord>,

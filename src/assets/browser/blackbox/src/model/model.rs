@@ -3,7 +3,7 @@ use std::sync::Arc;
 use hashbrown::{ HashMap, HashSet };
 use serde_json::Value as SerdeValue;
 
-use crate::{ Format, Integration, Record, Stream };
+use crate::{ Format, Integration, Record, Stream, TrivialIntegration, records_to_lines, records_to_json };
 
 fn time_sort(data: &mut Vec<Box<dyn Record>>) {
     data.sort_by(|a,b| {
@@ -16,22 +16,23 @@ fn time_sort(data: &mut Vec<Box<dyn Record>>) {
     });
 }
 
-#[derive(Debug)]
 pub struct Model {
-    include_raw: HashSet<(String,String)>,
     enabled: HashSet<String>,
     streams: HashMap<String,Stream>,
     integration: Box<dyn Integration>,
+    mute: bool,
     stack: Arc<Vec<String>>
 }
 
 impl Model {
-    pub fn new<T>(integration: T) -> Model where T: Integration + 'static {
+    pub fn new<T>(integration: Option<T>) -> Model where T: Integration + 'static {
+        let mute = integration.is_none();
         Model {
-            include_raw: HashSet::new(),
             enabled: HashSet::new(),
             streams: HashMap::new(),
-            integration: Box::new(integration),
+            integration: integration.map(|x| Box::new(x) as Box<dyn Integration>)
+                            .unwrap_or_else(|| Box::new(TrivialIntegration::new()) as Box<dyn Integration>),
+            mute,
             stack: Arc::new(vec![])
         }
     }
@@ -53,6 +54,7 @@ impl Model {
     }
 
     pub fn get_stream(&mut self, name: &str) -> Option<&mut Stream> {
+        if self.mute { return None; }
         if self.enabled.contains(name) {
             let units = self.integration.get_time_units();
             Some(self.streams.entry(name.to_string()).or_insert_with(||
@@ -89,16 +91,10 @@ impl Model {
     }
 
     pub fn take_lines(&mut self, now: f64, format: &Format) -> Vec<String> {
-        let instance = self.get_instance_id();
-        self.take_records().iter().map(|r| {
-            r.get_as_line(now,&instance,format)
-        }).filter(|x| x.is_some()).map(|x| x.unwrap()).collect()
+        records_to_lines(&mut self.take_records().iter(),now,&self.get_instance_id(),format)
     }
 
     pub fn take_json(&mut self, now: f64, format: &Format) -> SerdeValue {
-        let instance = self.get_instance_id();
-        self.take_records().iter().map(|r| {
-            r.get_as_json(now,&instance,format)
-        }).filter(|x| x.is_some()).map(|x| x.unwrap()).collect()
+        records_to_json(&mut self.take_records().iter(),now,&self.get_instance_id(),format)
     }
 }

@@ -4,16 +4,12 @@ use std::thread;
 use std::thread::ThreadId;
 use serde_json::Value as SerdeValue;
 
-use crate::{ Config, Format, Integration, Model, NullIntegration, Record };
+use crate::{ Config, Format, Integration, Model, TrivialIntegration, Record };
 
 /* TODO
 
-thread local tidying
-remove DEBUG
 server
-unit test wrappers
 app integration
-tests
 update README
 
 */
@@ -36,7 +32,7 @@ lazy_static! {
     static ref TL_MODEL: Mutex<HashMap<ThreadId,Arc<Mutex<Model>>>> = Mutex::new(HashMap::new());
     static ref TL_FORMAT: Mutex<HashMap<ThreadId,Arc<Mutex<Format>>>> = Mutex::new(HashMap::new());
 
-    static ref MODEL: Arc<Mutex<Model>> = Arc::new(Mutex::new(Model::new(NullIntegration::new())));
+    static ref MODEL: Arc<Mutex<Model>> = Arc::new(Mutex::new(Model::new(None as Option<TrivialIntegration>)));
     static ref FORMAT: Arc<Mutex<Format>> = Arc::new(Mutex::new(Format::new()));
 }
 
@@ -47,7 +43,7 @@ pub fn blackbox_clear() {
         TL_MODEL.lock().unwrap().remove(&thread::current().id());
         TL_FORMAT.lock().unwrap().remove(&thread::current().id());
     } else {
-        *MODEL.lock().unwrap() = Model::new(NullIntegration::new());
+        *MODEL.lock().unwrap() = Model::new(None as Option<TrivialIntegration>);
         *FORMAT.lock().unwrap() = Format::new();
     }
 }
@@ -56,7 +52,7 @@ pub fn blackbox_clear() {
 pub(crate) fn blackbox_model_id<'a>(id: ThreadId) -> Arc<Mutex<Model>> {
     if *USE_TL.lock().unwrap() {
         TL_MODEL.lock().unwrap().entry(id).or_insert_with(|| {
-            Arc::new(Mutex::new(Model::new(NullIntegration::new())))
+            Arc::new(Mutex::new(Model::new(None as Option<TrivialIntegration>)))
         }).clone()
     } else {
         MODEL.clone()
@@ -85,11 +81,11 @@ pub fn blackbox_use_threadlocals(use_tl: bool) {
 pub fn blackbox_integration<T>(integration: T) where T: Integration + 'static {
     if *USE_TL.lock().unwrap() {
         TL_MODEL.lock().unwrap().entry(thread::current().id()).or_insert_with(|| {
-            Arc::new(Mutex::new(Model::new(integration)))
+            Arc::new(Mutex::new(Model::new(Some(integration))))
         });
         TL_TIDY.with(|_| {}); /* force into this thread */
     } else {
-        *MODEL.lock().unwrap() = Model::new(integration);
+        *MODEL.lock().unwrap() = Model::new(Some(integration));
     }
 }
 

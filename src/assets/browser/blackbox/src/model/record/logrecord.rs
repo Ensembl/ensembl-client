@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use crate::{ Format, Record };
 
-#[derive(Debug)]
 pub struct LogRecord {
     time: f64,
     stack: Arc<Vec<String>>,

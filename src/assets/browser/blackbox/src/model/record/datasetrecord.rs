@@ -2,12 +2,10 @@ use crate::{ Format, Record };
 use serde_json::Value as SerdeValue;
 use serde_json::Number as SerdeNumber;
 
-#[derive(Debug)]
 pub struct DatasetRecord {
     stream_name: String,
     record_name: String,
     elapsed: Vec<f64>,
-    include_raw: bool,
     units: String
 }
 
@@ -17,7 +15,6 @@ impl DatasetRecord {
             stream_name: stream_name.to_string(),
             record_name: record_name.to_string(),
             elapsed: Vec::new(),
-            include_raw: false,
             units: units.to_string()
         }
     }

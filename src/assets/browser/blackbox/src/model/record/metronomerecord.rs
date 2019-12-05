@@ -2,7 +2,6 @@ use crate::{ Format, Record };
 use super::datasetrecord::DatasetRecord;
 use serde_json::Value as SerdeValue;
 
-#[derive(Debug)]
 pub struct MetronomeRecord {
     dataset_record: DatasetRecord,
     prev: Option<f64>
