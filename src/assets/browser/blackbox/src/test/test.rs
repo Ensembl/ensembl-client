@@ -231,15 +231,13 @@ pub fn test_thread_local_clear() {
         blackbox_use_threadlocals(true);
         let id : Arc<Mutex<Option<ThreadId>>> = Arc::new(Mutex::new(None));
         let id2 = id.clone();
-        let t1 = thread::spawn(move || {
+        thread::spawn(move || {
             let ign = SimpleIntegration::new("thread1");
             blackbox_integration(ign.clone());
             blackbox_enable("test");
             blackbox_log!("test","thread1");
             id2.lock().unwrap().replace(thread::current().id());
-        });
-        t1.join().ok();
-        thread::current().id();
+        }).join().ok();
         let lines = blackbox_take_lines();
         assert!(!lines_contains(&lines,"thread1"));
         assert!(!lines_contains(&lines,"thread2"));

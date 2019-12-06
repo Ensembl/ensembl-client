@@ -10,7 +10,6 @@ use crate::{ Config, Format, Integration, Model, TrivialIntegration, Record };
 
 server
 app integration
-update README
 
 */
 
