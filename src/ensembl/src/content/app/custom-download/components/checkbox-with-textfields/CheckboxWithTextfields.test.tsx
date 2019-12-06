@@ -80,6 +80,10 @@ describe('<CheckboxWithTextfields />', () => {
     wrapper = mount(
       <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
     );
+    wrapper
+      .find(Checkbox)
+      .find('label')
+      .simulate('click');
     expect(onReset).toBeCalled();
   });
 
