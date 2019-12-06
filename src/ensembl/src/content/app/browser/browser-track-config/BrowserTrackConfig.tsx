@@ -18,6 +18,8 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import styles from './BrowserTrackConfig.scss';
 
+import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+
 import tracksSliderOnIcon from 'static/img/browser/icon_tracks_slider_on.svg';
 import tracksSliderOffIcon from 'static/img/browser/icon_tracks_slider_off.svg';
 import trackHeightBtn from 'static/img/browser/icon_tracks_height_grey.svg';
@@ -58,9 +60,6 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   const ref = useRef(null);
   useOutsideClick(ref, props.onClose);
 
-  const nameIcon = shouldShowTrackName
-    ? tracksSliderOnIcon
-    : tracksSliderOffIcon;
   const labelIcon =
     shouldShowTrackLabels !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
@@ -137,12 +136,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
       <dl>
         <dd>
           <label htmlFor="trackConfig-trackName">Track name</label>
-          <button
-            className={`${styles.trackConfigSlider} trackConfig-trackName`}
-            onClick={toggleName}
-          >
-            <img src={nameIcon} />
-          </button>
+          <SlideToggle isOn={shouldShowTrackName} onChange={toggleName} />
         </dd>
         <dd>
           <label htmlFor="trackConfig-featureLabels">Feature labels</label>
@@ -194,7 +188,4 @@ const mapDispatchToProps = {
   updateTrackConfigNames
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserTrackConfig);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserTrackConfig);
