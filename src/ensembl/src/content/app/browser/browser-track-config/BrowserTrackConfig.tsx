@@ -20,8 +20,6 @@ import styles from './BrowserTrackConfig.scss';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
-import tracksSliderOnIcon from 'static/img/browser/icon_tracks_slider_on.svg';
-import tracksSliderOffIcon from 'static/img/browser/icon_tracks_slider_off.svg';
 import trackHeightBtn from 'static/img/browser/icon_tracks_height_grey.svg';
 import trackLockBtn from 'static/img/browser/icon_tracks_lock_open_grey.svg';
 import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg';
@@ -59,9 +57,6 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
 
   const ref = useRef(null);
   useOutsideClick(ref, props.onClose);
-
-  const labelIcon =
-    shouldShowTrackLabels !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
@@ -135,17 +130,20 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
       </dl>
       <dl>
         <dd>
-          <label htmlFor="trackConfig-trackName">Track name</label>
-          <SlideToggle isOn={shouldShowTrackName} onChange={toggleName} />
+          <label>Track name</label>
+          <SlideToggle
+            isOn={shouldShowTrackName}
+            onChange={toggleName}
+            className={styles.slideToggle}
+          />
         </dd>
         <dd>
-          <label htmlFor="trackConfig-featureLabels">Feature labels</label>
-          <button
-            className={`${styles.trackConfigSlider} trackConfig-featureLabels`}
-            onClick={toggleLabel}
-          >
-            <img src={labelIcon} />
-          </button>
+          <label>Feature labels</label>
+          <SlideToggle
+            isOn={shouldShowTrackLabels}
+            onChange={toggleLabel}
+            className={styles.slideToggle}
+          />
         </dd>
         <dd className={styles.heightSwitcher}>
           <button className={styles.trackHeightBtn}>
