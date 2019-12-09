@@ -41,7 +41,9 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
       checkedStatus = true;
     }
 
-    setIsChecked(checkedStatus);
+    if (checkedStatus) {
+      setIsChecked(checkedStatus);
+    }
   }, [props.textValue, props.files]);
 
   const checkboxOnChange = (newCheckedStatus: boolean) => {
@@ -57,7 +59,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     props.onFilesChange(newFiles);
   };
 
-  const handleOnUpload = (uploadedFiles: ReadFile[]) => {
+  const handleUpload = (uploadedFiles: ReadFile[]) => {
     const newFiles = [...files, ...uploadedFiles];
     props.onFilesChange(newFiles);
   };
@@ -138,7 +140,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
             );
           })}
         <div className={styles.uploadWrapper}>
-          <Upload onChange={handleOnUpload} id={'upload_' + nextUuid()} />
+          <Upload onChange={handleUpload} id={'upload_' + nextUuid()} />
         </div>
       </div>
     </div>
