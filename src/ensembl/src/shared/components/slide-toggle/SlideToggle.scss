@@ -1,5 +1,41 @@
+$transitionTime: 0.15s;
+
 .slideToggle {
   cursor: pointer;
   width: 40px;
   user-select: none;
+
+  .slideToggleTrack {
+    transition: fill $transitionTime ease-in-out,
+      stroke $transitionTime ease-in-out;
+  }
+
+  .slideToggleThumb {
+    transition: transform $transitionTime ease-in-out,
+      fill $transitionTime ease-in-out;
+  }
+}
+
+.slideToggleOn {
+  .slideToggleTrack {
+    fill: #0099ff;
+    stroke: #0099ff;
+  }
+
+  .slideToggleThumb {
+    transform: translateX(9px);
+    fill: #ffffff;
+  }
+}
+
+.slideToggleOff {
+  .slideToggleTrack {
+    fill: #ffffff;
+    stroke: #b7c0c8;
+  }
+
+  .slideToggleThumb {
+    fill: #0099ff;
+    transform: translateX(0);
+  }
 }
