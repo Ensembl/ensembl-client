@@ -3,7 +3,6 @@ import get from 'lodash/get';
 import classNames from 'classnames';
 
 import windowService from 'src/services/window-service';
-import { generateId } from 'src/shared/helpers/generateId';
 
 import styles from './Upload.scss';
 
@@ -53,7 +52,6 @@ type OnChangeProps =
   | PropsForRespondingWithContent;
 
 export type UploadProps = {
-  id: string;
   name?: string;
   label: string;
   classNames?: {
@@ -165,7 +163,6 @@ const Upload = (props: UploadProps) => {
     >
       <input
         type="file"
-        id={props.id}
         name={props.name}
         className={styles.fileInput}
         onChange={(e) => handleSelectedFiles(e)}
@@ -177,7 +174,6 @@ const Upload = (props: UploadProps) => {
 };
 
 Upload.defaultProps = {
-  id: 'upload_' + generateId(),
   callbackWithFiles: false,
   allowMultiple: true,
   fileReaderMethod: FileReaderMethod.TEXT,
