@@ -3,6 +3,7 @@ import get from 'lodash/get';
 import classNames from 'classnames';
 
 import windowService from 'src/services/window-service';
+import { generateId } from 'src/shared/helpers/generateId';
 
 import styles from './Upload.scss';
 
@@ -176,6 +177,7 @@ const Upload = (props: UploadProps) => {
 };
 
 Upload.defaultProps = {
+  id: 'upload_' + generateId(),
   callbackWithFiles: false,
   allowMultiple: true,
   fileReaderMethod: FileReaderMethod.TEXT,

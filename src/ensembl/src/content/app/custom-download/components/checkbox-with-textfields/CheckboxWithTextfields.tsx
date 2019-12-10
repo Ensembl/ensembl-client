@@ -6,7 +6,6 @@ import { ReactComponent as RemoveIcon } from 'static/img/shared/clear.svg';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
-import { generateId } from 'src/shared/helpers/generateId';
 
 import styles from './CheckboxWithTextfields.scss';
 
@@ -140,7 +139,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
             );
           })}
         <div className={styles.uploadWrapper}>
-          <Upload onChange={handleUpload} id={'upload_' + generateId()} />
+          <Upload onChange={handleUpload} />
         </div>
       </div>
     </div>
