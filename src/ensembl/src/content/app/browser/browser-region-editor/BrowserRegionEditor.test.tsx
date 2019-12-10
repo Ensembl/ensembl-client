@@ -55,9 +55,9 @@ describe('<BrowserRegionEditor', () => {
       expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
     });
 
-    test('has an overlay on top when region field is active', () => {	
-      wrapper.setProps({ isDisabled: true });	
-      expect(wrapper.find(Overlay).length).toBe(1);	
+    test('has an overlay on top when disabled', () => {
+      wrapper.setProps({ isDisabled: true });
+      expect(wrapper.find(Overlay).length).toBe(1);
     });
   });
 

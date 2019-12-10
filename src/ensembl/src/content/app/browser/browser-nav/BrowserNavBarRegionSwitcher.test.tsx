@@ -40,7 +40,7 @@ describe('BrowserNavBarRegionSwitcher', () => {
     });
 
     it('renders both region field and region editor on big desktop screens', () => {
-      wrapper.setProps({ breakpointWidth: BreakpointWidth.BIG_DESKTOP });
+      wrapper.setProps({ display: DisplayType.FULL });
 
       expect(wrapper.find(BrowserRegionEditor).length).toBe(1);
       expect(wrapper.find(BrowserRegionField).length).toBe(1);
