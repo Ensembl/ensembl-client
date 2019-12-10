@@ -9,6 +9,11 @@ export enum BreakpointWidth {
   BIG_DESKTOP = 1800
 }
 
+export enum DisplayType {
+  FULL = 'full',
+  COMPACT = 'compact'
+}
+
 export enum AppName {
   GENOME_BROWSER = 'Genome browser',
   SPECIES_SELECTOR = 'Species selector',

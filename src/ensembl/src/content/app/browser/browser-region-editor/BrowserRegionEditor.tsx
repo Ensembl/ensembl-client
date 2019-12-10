@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
@@ -38,7 +39,7 @@ export type BrowserRegionEditorProps = {
   chrLocation: ChrLocation | null;
   genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
-  shouldBeOpaque: boolean;
+  isDisabled: boolean;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -52,7 +53,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const genomeKaryotype = props.genomeKaryotype as GenomeKaryotypeItem[];
   const [stick, locationStart, locationEnd] = props.chrLocation as ChrLocation;
 
-  const formRef = useRef(null);
   const [stickInput, setStickInput] = useState(stick);
   const [locationStartInput, setLocationStartInput] = useState(
     getCommaSeparatedNumber(locationStart)
@@ -108,7 +108,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     setLocationEndErrorMessage(locationEndError);
   };
 
-  const handleFocus = () => props.toggleRegionEditorActive(true);
+  const handleFocus = () => {
+    if (!props.isDisabled) {
+      props.toggleRegionEditorActive(true);
+    }
+  };
 
   const changeLocation = (newChrLocation: ChrLocation) =>
     props.changeBrowserLocation({
@@ -119,7 +123,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   const resetForm = () => {
     updateErrorMessages(null, null);
-
     props.toggleRegionEditorActive(false);
   };
 
@@ -146,12 +149,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   const closeForm = (event: Event) => {
     if (
-      !stickRef.current ||
-      !locationStartRef.current ||
-      !locationEndRef.current ||
-      stickRef.current.contains(event.target as HTMLElement) ||
-      locationStartRef.current.contains(event.target as HTMLElement) ||
-      locationEndRef.current.contains(event.target as HTMLElement)
+      stickRef?.current?.contains(event.target as HTMLElement) ||
+      locationStartRef?.current?.contains(event.target as HTMLElement) ||
+      locationEndRef?.current?.contains(event.target as HTMLElement) ||
+      buttonRef?.current?.contains(event.target as HTMLElement)
     ) {
       return;
     }
@@ -174,6 +175,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const stickRef = useRef<HTMLDivElement>(null);
   const locationStartRef = useRef<HTMLDivElement>(null);
   const locationEndRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     document.addEventListener('click', closeForm);
@@ -183,10 +185,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   useEffect(() => {
     updateAllInputs();
   }, [props.chrLocation]);
-
-  const regionEditorClassNames = classNames(styles.browserRegionEditor, {
-    [browserNavBarStyles.semiOpaque]: props.shouldBeOpaque
-  });
 
   const locationStartClassNames = classNames({
     [browserNavBarStyles.errorText]: locationStartErrorMessage
@@ -204,8 +202,8 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   );
 
   return (
-    <div className={regionEditorClassNames}>
-      <form onSubmit={handleSubmit} onFocus={handleFocus} ref={formRef}>
+    <div className={styles.browserRegionEditor}>
+      <form onSubmit={handleSubmit} onFocus={handleFocus}>
         <div className={styles.inputGroup} ref={stickRef}>
           <label>Chr</label>
           <Select
@@ -259,12 +257,13 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             </Tooltip>
           ) : null}
         </div>
-        <span className={buttonsClassNames}>
+        <span className={buttonsClassNames} ref={buttonRef}>
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
         </span>
       </form>
+      {props.isDisabled && <Overlay className={styles.overlay} />}
     </div>
   );
 };
@@ -275,7 +274,7 @@ const mapStateToProps = (state: RootState) => {
     chrLocation: getChrLocation(state),
     genomeKaryotype: getGenomeKaryotype(state),
     isActive: getRegionEditorActive(state),
-    shouldBeOpaque: getRegionFieldActive(state)
+    isDisabled: getRegionFieldActive(state)
   };
 };
 

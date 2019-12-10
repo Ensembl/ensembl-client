@@ -141,7 +141,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
         {props.isDisabled ? (
-          <Overlay className={styles.browserImageOverlay} />
+          <Overlay />
         ) : null}
       </div>
     </>

@@ -9,6 +9,7 @@ import {
 import Input from 'src/shared/components/input/Input';
 import Select from 'src/shared/components/select/Select';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
@@ -29,7 +30,7 @@ describe('<BrowserRegionEditor', () => {
     chrLocation: initialChrLocation,
     genomeKaryotype: createGenomeKaryotype(),
     isActive: true,
-    shouldBeOpaque: false,
+    isDisabled: false,
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     toggleRegionEditorActive: jest.fn()
@@ -52,6 +53,11 @@ describe('<BrowserRegionEditor', () => {
 
     test('contains submit and close buttons', () => {
       expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
+    });
+
+    test('has an overlay on top when region field is active', () => {	
+      wrapper.setProps({ isDisabled: true });	
+      expect(wrapper.find(Overlay).length).toBe(1);	
     });
   });
 

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { RootState } from 'src/store';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BreakpointWidth } from 'src/global/globalConfig';
+import { BreakpointWidth, DisplayType } from 'src/global/globalConfig';
 
 import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
@@ -33,6 +33,11 @@ export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
     props.breakpointWidth >= BreakpointWidth.LAPTOP &&
     view === Content.CHROMOSOME;
 
+  const getDisplayType = () =>
+    props.breakpointWidth >= BreakpointWidth.BIG_DESKTOP
+      ? DisplayType.FULL
+      : DisplayType.COMPACT;
+
   return (
     <div className={styles.browserNavBarMain}>
       <div className={styles.content}>
@@ -41,7 +46,7 @@ export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
             <ChromosomeNavigator />
           </div>
         ) : (
-          <BrowserNavBarRegionSwitcher />
+          <BrowserNavBarRegionSwitcher display={getDisplayType()} />
         )}
       </div>
       {props.breakpointWidth >= BreakpointWidth.LAPTOP && (

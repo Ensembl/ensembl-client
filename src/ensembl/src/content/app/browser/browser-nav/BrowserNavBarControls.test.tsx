@@ -18,7 +18,7 @@ describe('BrowserNavBarControls', () => {
       mount(
         <BrowserNavBarControls
           browserNavStates={browserNavStates}
-          shouldBeOpaque={faker.random.boolean()}
+          isDisabled={faker.random.boolean()}
         />
       )
     ).not.toThrow();
@@ -30,7 +30,7 @@ describe('BrowserNavBarControls', () => {
     const wrapper = mount(
       <BrowserNavBarControls
         browserNavStates={browserNavStates}
-        shouldBeOpaque={false}
+        isDisabled={false}
       />
     );
     const controlButtons = wrapper.find(BrowserNavIcon);

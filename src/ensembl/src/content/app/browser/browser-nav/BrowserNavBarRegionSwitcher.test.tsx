@@ -5,7 +5,7 @@ import { BrowserNavBarRegionSwitcher } from './BrowserNavBarRegionSwitcher';
 import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
 import BrowserRegionField from '../browser-region-field/BrowserRegionField';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
+import { BreakpointWidth, DisplayType } from 'src/global/globalConfig';
 
 jest.mock(
   'src/content/app/browser/browser-region-editor/BrowserRegionEditor',
@@ -17,6 +17,7 @@ jest.mock(
 );
 
 const props = {
+  display: DisplayType.FULL,
   breakpointWidth: BreakpointWidth.TABLET,
   toggleRegionEditorActive: jest.fn(),
   toggleRegionFieldActive: jest.fn()

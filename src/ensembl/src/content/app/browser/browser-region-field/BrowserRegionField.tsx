@@ -54,7 +54,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
-  const getRegionInputWithRegion = (input: string) => {
+  const getRegionInputWithStick = (input: string) => {
     const [stick] = chrLocation as ChrLocation;
 
     return input.includes(':') ? input : `${stick}:${input}`;
@@ -83,7 +83,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
     if (stickInput === stick) {
       const newChrLocation = getChrLocationFromStr(
-        getRegionInputWithRegion(regionFieldInput)
+        getRegionInputWithStick(regionFieldInput)
       );
 
       props.changeBrowserLocation({
@@ -98,10 +98,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
   const closeForm = (event: Event) => {
     if (
-      !inputGroupRef.current ||
-      !buttonRef.current ||
-      inputGroupRef.current.contains(event.target as HTMLElement) ||
-      buttonRef.current.contains(event.target as HTMLElement)
+      inputGroupRef?.current?.contains(event.target as HTMLElement) ||
+      buttonRef?.current?.contains(event.target as HTMLElement)
     ) {
       return;
     }
@@ -122,7 +120,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
       setErrorMessage(null);
 
       validateRegion({
-        regionInput: getRegionInputWithRegion(regionFieldInput),
+        regionInput: getRegionInputWithStick(regionFieldInput),
         genomeId: props.activeGenomeId,
         onSuccess: onValidationSuccess,
         onError: onValidationError
