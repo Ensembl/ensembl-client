@@ -3,7 +3,7 @@ import { DivAttributes } from '../helpers/types';
 
 import { Provider as ItemProvider, UUID } from './ItemContext';
 import classNames from 'classnames';
-import { nextUuid } from 'src/shared/helpers/uuid';
+import { generateId } from 'src/shared/helpers/generateId';
 
 import defaultStyles from '../css/Accordion.scss';
 
@@ -13,7 +13,7 @@ type Props = DivAttributes & {
 };
 
 const AccordionItem = (props: Props) => {
-  const instanceUuid: UUID = nextUuid();
+  const instanceUuid: UUID = generateId();
 
   const {
     uuid = instanceUuid,
