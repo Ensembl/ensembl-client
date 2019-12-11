@@ -1,9 +1,11 @@
 import React from 'react';
 import { DivAttributes } from '../helpers/types';
-import { nextUuid } from '../helpers/uuid';
+
 import { Provider as ItemProvider, UUID } from './ItemContext';
-import defaultStyles from '../css/Accordion.scss';
 import classNames from 'classnames';
+import { generateId } from 'src/shared/helpers/generateId';
+
+import defaultStyles from '../css/Accordion.scss';
 
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;
@@ -11,7 +13,7 @@ type Props = DivAttributes & {
 };
 
 const AccordionItem = (props: Props) => {
-  const instanceUuid: UUID = nextUuid();
+  const instanceUuid: UUID = generateId();
 
   const {
     uuid = instanceUuid,

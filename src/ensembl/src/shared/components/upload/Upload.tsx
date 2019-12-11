@@ -52,7 +52,6 @@ type OnChangeProps =
   | PropsForRespondingWithContent;
 
 export type UploadProps = {
-  id: string;
   name?: string;
   label: string;
   classNames?: {
@@ -164,7 +163,6 @@ const Upload = (props: UploadProps) => {
     >
       <input
         type="file"
-        id={props.id}
         name={props.name}
         className={styles.fileInput}
         onChange={(e) => handleSelectedFiles(e)}
@@ -179,7 +177,7 @@ Upload.defaultProps = {
   callbackWithFiles: false,
   allowMultiple: true,
   fileReaderMethod: FileReaderMethod.TEXT,
-  label: 'Click or Drag file here to upload'
+  label: 'Click or drag file(s) here to upload'
 };
 
 export default Upload;

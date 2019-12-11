@@ -5,7 +5,6 @@ import AccordionItemHeading from './components/AccordionItemHeading';
 import AccordionItemPanel from './components/AccordionItemPanel';
 import AccordionItemState from './components/AccordionItemState';
 import AccordionItemPermanentBlock from './components/AccordionItemPermanentBlock';
-import { resetNextUuid } from './helpers/uuid';
 
 export {
   Accordion,
@@ -14,6 +13,5 @@ export {
   AccordionItemHeading,
   AccordionItemPanel,
   AccordionItemState,
-  AccordionItemPermanentBlock,
-  resetNextUuid
+  AccordionItemPermanentBlock
 };
