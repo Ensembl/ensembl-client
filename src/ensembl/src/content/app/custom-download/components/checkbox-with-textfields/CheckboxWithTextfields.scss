@@ -1,23 +1,70 @@
+@import 'src/styles/common';
+
 .wrapperTable {
+  display: grid;
+  grid-template-columns: [checkbox] 200px [fields] minmax(300px, auto);
   padding-bottom: 20px;
   width: 100%;
-  td {
-    vertical-align: top;
-  }
 }
 .checkboxWrapper {
-  width: 200px;
+  grid-column: checkbox;
 }
 
-.fieldsWrapper {
-  min-width: 300px;
-  max-width: calc(100% - 200px);
+.fileWrapper {
+  display: grid;
+  grid-template-columns: [error-message] auto [remove-icon] 20px 10px;
 }
 
-.addIconHolder {
-  height: 25px;
-  width: 25px;
-  margin-top: 25px;
-  float: right;
-  clear: right;
+.fileDetails {
+  grid-column: error-message;
+  width: calc(100% - 55px);
+  padding: 10px 10px 15px 10px;
+}
+
+.filename {
+  font-size: 16px;
+}
+
+.errorMessage {
+  color: $red;
+  margin-left: 30px;
+}
+
+.removeFileIcon {
+  grid-column: remove-icon;
+  justify-self: end;
+  align-self: center;
+}
+
+.textWrapper {
+  display: grid;
+  grid-template-columns: [fields] auto [remove-icon] 75px 10px;
+}
+
+.textWrapper + .uploadWrapper {
+  margin-top: 15px;
+}
+
+.fields {
+  grid-column: fields;
+}
+
+.removeIconHolder {
+  height: 20px;
+  width: 20px;
+  grid-column: remove-icon;
+  justify-self: end;
+}
+
+.textInput {
+  height: 65px;
+  width: 100%;
+  padding: 5px 0 0 5px;
+  border: none;
+  resize: none;
+}
+
+.pasteDataText {
+  color: $blue;
+  cursor: pointer;
 }

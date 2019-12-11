@@ -49,7 +49,7 @@ export class CustomDownloadStorageService {
   public updateActiveConfigurationsForGenome(activeConfigurations: {
     [key: string]: CustomDownloadStateForGenome;
   }): void {
-    this.storageService.update(
+    this.storageService.save(
       StorageKeys.ACTIVE_CONFIGURATIONS,
       activeConfigurations as JSONValue,
       options
