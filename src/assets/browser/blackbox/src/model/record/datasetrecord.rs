@@ -66,17 +66,24 @@ impl Record for DatasetRecord {
     fn get_as_json(&self, now: f64, instance: &str, format: &Format) -> Option<SerdeValue> {
         let summary = self.to_string();
         if summary.is_none() { return None; }
+        let (num,total,avg,high,top) = self.analyse_elapsed();
         let mut out = json!({
             "time": now,
             "instance": instance,
-            "text": self.to_string()
+            "text": self.to_string(),
+            "dataset": self.record_name,
+            "count": num,
+            "total": total,
+            "mean": avg,
+            "high": high,
+            "top": top
         });
         if self.include_raw(format) {
             let dataset_serde = self.elapsed.iter().map(|x| {
                 SerdeValue::Number(SerdeNumber::from_f64(*x).unwrap())
             }).collect();
             let dataset_serde = SerdeValue::Array(dataset_serde);
-            out.as_object_mut().unwrap().insert("dataset".to_string(),dataset_serde);
+            out.as_object_mut().unwrap().insert("data".to_string(),dataset_serde);
         }
         Some(out)
     }

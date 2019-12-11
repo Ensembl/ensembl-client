@@ -1,3 +1,5 @@
+use crate::blackbox_clear;
+
 use std::sync::RwLock;
 
 pub(crate) fn lines_contains(lines: &Vec<String>,segment: &str) -> bool {
@@ -17,12 +19,14 @@ pub(crate) fn read_lock<F>(func: F) where F: FnOnce() {
         Err(poisoned) => poisoned.into_inner(),
     };
     func();
+    blackbox_clear();
 }
 
 pub(crate) fn write_lock<F>(func: F) where F: FnOnce() {
-    let _lock = match LOCK.write() {
+    let mut _lock = match LOCK.write() {
         Ok(guard) => guard,
         Err(poisoned) => poisoned.into_inner(),
     };
     func();
+    blackbox_clear();
 }

@@ -266,11 +266,14 @@ pub fn test_json() {
         let output = blackbox_take_json();
         let cmp = json!([
             {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":2.0},
-            {"dataset":[2.0],"instance":"test1","text":"raw elapsed: num=1 total=2.00units avg=2.00units 95%ile=2.00units top=2.00units","time":2.0}
+            {
+                "data":[2.0],"dataset":"raw","instance":"test1",
+                "count": 1, "total": 2., "mean": 2., "high": 2., "top": 2.,
+                "text":"raw elapsed: num=1 total=2.00units avg=2.00units 95%ile=2.00units top=2.00units","time":2.0
+            }
         ]);
         assert_eq!(output,cmp);
     });
-
 }
 
 #[test]

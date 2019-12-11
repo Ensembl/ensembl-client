@@ -1,4 +1,5 @@
 use hashbrown::HashMap;
+use std::cell::RefCell;
 use std::sync::{ Arc, Mutex };
 use std::thread;
 use std::thread::ThreadId;
@@ -13,16 +14,24 @@ app integration
 
 */
 
-struct ThreadLocalTidier();
+struct ThreadLocalTidier(bool);
+
+impl ThreadLocalTidier {
+    pub(crate) fn autotidy(&mut self, on: bool) {
+        self.0 = on;
+    }
+}
 
 impl Drop for ThreadLocalTidier {
     fn drop(&mut self) {
-        blackbox_clear();
+        if self.0 {
+            blackbox_clear_real(true);
+        }
     }
 }
 
 thread_local! {
-    static TL_TIDY: ThreadLocalTidier = ThreadLocalTidier();
+    static TL_TIDY: RefCell<ThreadLocalTidier> = RefCell::new(ThreadLocalTidier(true));
 }
 
 lazy_static! {
@@ -37,14 +46,21 @@ lazy_static! {
 
 /* Setup and configuration */
 
-pub fn blackbox_clear() {
+fn blackbox_clear_real(in_drop: bool) {
     if *USE_TL.lock().unwrap() {
         TL_MODEL.lock().unwrap().remove(&thread::current().id());
         TL_FORMAT.lock().unwrap().remove(&thread::current().id());
+        if !in_drop {
+            TL_TIDY.with(|v| v.borrow_mut().autotidy(false));
+        }
     } else {
         *MODEL.lock().unwrap() = Model::new(None as Option<TrivialIntegration>);
         *FORMAT.lock().unwrap() = Format::new();
     }
+}
+
+pub fn blackbox_clear() {
+    blackbox_clear_real(false);
 }
 
 /* Made public in crate for testing */
