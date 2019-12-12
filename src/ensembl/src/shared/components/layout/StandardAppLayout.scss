@@ -1,0 +1,35 @@
+$sideBarContentWidth: 320px;
+$sideBarToolStripWidth: 36px;
+$topBarHeight: 32px;
+
+.standardAppLayout {
+  height: 100%;
+  overflow: hidden;
+  background: red;
+}
+
+.topBar {
+  height: $topBarHeight;
+}
+
+.mainWrapper {
+  display: flex;
+  height: calc(100% - #{$topBarHeight});
+}
+
+.main {
+  flex-grow: 1;
+  flex-shrink: 0;
+  background: blue;
+  height: 100%;
+  // flex-basis: fill;
+}
+
+.sideBar {
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: auto;
+  width: calc(#{$sideBarContentWidth} + #{$sideBarToolStripWidth});
+  background: green;
+  height: 100%;
+}
