@@ -21,7 +21,7 @@ impl ElapsedRecord {
 
     pub fn add_end(&mut self, time: f64) {
         if let Some(start) = self.start.take() {
-            self.dataset_record.add_datapoint(time-start);
+            self.dataset_record.add_datapoint(time,time-start);
         }
     }
 

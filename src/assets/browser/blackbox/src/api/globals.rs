@@ -201,8 +201,9 @@ pub fn blackbox_set_count(stream: &str, name: &str, amt: f64) {
 pub fn blackbox_reset_count(stream: &str, name: &str) {
     let model = blackbox_model();
     let mut model = model.lock().unwrap();
+    let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
-        stream.get_count(name).reset_count();
+        stream.get_count(name).reset_count(time);
     }
 }
 

@@ -52,9 +52,9 @@ pub fn test_blackbox_count() {
         blackbox_reset_count!("test","noraw");
         blackbox_raw_on("test","raw");
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"noraw elapsed: num=1 total=4.00 avg=4.00 95%ile=4.00 top=4.00"));
-        assert!(lines_contains(&lines," raw elapsed: num=4 total=12.00 avg=3.00 95%ile=4.00 top=6.00 [2,4,6,0]"));
-        assert!(!lines_contains(&lines,"noraw elapsed: num=1 total=4.00 avg=4.00 95%ile=4.00 top=4.00 ["));
+        assert!(lines_contains(&lines,"noraw: num=1 total=4.00 avg=4.00 95%ile=4.00 top=4.00"));
+        assert!(lines_contains(&lines," raw: num=4 total=12.00 avg=3.00 95%ile=4.00 top=6.00 [2,4,6,0]"));
+        assert!(!lines_contains(&lines,"noraw: num=1 total=4.00 avg=4.00 95%ile=4.00 top=4.00 ["));
     });
 }
 
@@ -76,7 +76,7 @@ pub fn test_blackbox_elapsed() {
         blackbox_time!("test","raw",{
         });
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"raw elapsed: num=3 total=3.00units avg=1.00units 95%ile=1.00units top=2.00units [1,2,0]"));
+        assert!(lines_contains(&lines,"raw: num=3 total=3.00units avg=1.00units 95%ile=1.00units top=2.00units [1,2,0]"));
     });
 }
 
@@ -96,7 +96,7 @@ pub fn test_blackbox_metronome() {
         blackbox_metronome!("test","raw");
         blackbox_metronome!("test","raw");
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"raw elapsed: num=3 total=3.00units avg=1.00units 95%ile=1.00units top=2.00units [1,2,0]"));
+        assert!(lines_contains(&lines,"raw: num=3 total=3.00units avg=1.00units 95%ile=1.00units top=2.00units [1,2,0]"));
     });
 }
 
@@ -258,6 +258,8 @@ pub fn test_json() {
         ign.tick();
         ign.tick();
         blackbox_metronome!("test","raw");
+        ign.tick();
+        blackbox_metronome!("test","raw");
         blackbox_stack!("a",{
             blackbox_stack!("b",{
                 blackbox_log!("test","Hello, world!");
@@ -265,11 +267,12 @@ pub fn test_json() {
         });
         let output = blackbox_take_json();
         let cmp = json!([
-            {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":2.0},
+            {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":3.0},
             {
-                "data":[2.0],"dataset":"raw","instance":"test1",
-                "count": 1, "total": 2., "mean": 2., "high": 2., "top": 2.,
-                "text":"raw elapsed: num=1 total=2.00units avg=2.00units 95%ile=2.00units top=2.00units","time":2.0
+                "data":[2.,1.],"dataset":"raw","instance":"test1",
+                "ago":[1.,0.],
+                "count": 2, "total": 3., "mean": 1.5, "high": 1., "top": 2.,
+                "text":"raw: num=2 total=3.00units avg=1.50units 95%ile=1.00units top=2.00units","time":3.0
             }
         ]);
         assert_eq!(output,cmp);
@@ -301,6 +304,6 @@ pub fn test_blackbox_reordering() {
         assert!(lines[0] == "[1][test1] at 1");
         assert!(lines[1] == "[2][test1] at 2");
         assert!(lines[2].starts_with("[4]"));
-        assert!(lines[2].contains("elapsed"));
+        assert!(lines[2].contains("count:"));
     });
 }

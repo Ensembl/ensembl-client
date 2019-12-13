@@ -17,7 +17,7 @@ impl MetronomeRecord {
 
     pub fn add_tick(&mut self, time: f64) {
         if let Some(start) = self.prev {
-            self.dataset_record.add_datapoint(time-start);
+            self.dataset_record.add_datapoint(time,time-start);
         }
         self.prev = Some(time);
     }

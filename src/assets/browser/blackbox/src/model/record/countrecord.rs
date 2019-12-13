@@ -23,8 +23,8 @@ impl CountRecord {
         self.count += amt;
     }
 
-    pub fn reset_count(&mut self) {
-        self.dataset_record.add_datapoint(self.count);
+    pub fn reset_count(&mut self, now: f64) {
+        self.dataset_record.add_datapoint(now,self.count);
         self.count = 0.;
     }
 
