@@ -1,7 +1,8 @@
-import React, { useState, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
+import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import styles from './StandardAppLayout.scss';
 
@@ -15,42 +16,62 @@ type SidebarModeToggleProps = {
   showAction: SidebarModeToggleAction;
 };
 
-type StandardAppLayoutProps = {
+type StandardAppLayoutWithoutDrawerProps = {
   mainContent: ReactNode;
   sidebarContent: ReactNode;
   topbarContent: ReactNode;
+  isSidebarOpen: boolean;
+  onSidebarToggle: () => void;
 };
 
-const StandardAppLayout = (props: StandardAppLayoutProps) => {
-  const [isOpen, setIsOpen] = useState(true);
+type StandardAppLayoutWithDrawerProps = StandardAppLayoutWithoutDrawerProps & {
+  isDrawerOpen: boolean;
+  drawerContent: ReactNode;
+  onDrawerClose: () => void;
+};
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+type StandardAppLayoutProps =
+  | StandardAppLayoutWithoutDrawerProps
+  | StandardAppLayoutWithDrawerProps;
+
+const StandardAppLayout = (props: StandardAppLayoutProps) => {
+  const mainContainerClassnames = classNames(
+    styles.mainWrapper,
+    { [styles.mainWrapperDefault]: props.isSidebarOpen },
+    { [styles.mainWrapperFullWidth]: !props.isSidebarOpen }
+  );
 
   const sidebarWrapperClassnames = classNames(
     styles.sideBarWrapper,
-    { [styles.sideBarWrapperOpen]: isOpen },
-    { [styles.sideBarWrapperClosed]: !isOpen }
+    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
+    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
+    { [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen || false }
   );
 
   return (
     <div className={styles.standardAppLayout}>
       <div className={styles.topBar}>{props.topbarContent}</div>
-      <div className={styles.mainWrapper}>
+      <div className={mainContainerClassnames}>
         <div className={styles.main}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           <div className={styles.sideBarToolstrip}>
             <SidebarModeToggle
-              onClick={toggleSidebar}
+              onClick={props.onSidebarToggle}
               showAction={
-                isOpen
+                props.isSidebarOpen
                   ? SidebarModeToggleAction.CLOSE
                   : SidebarModeToggleAction.OPEN
               }
             />
           </div>
           <div className={styles.sideBar}>{props.sidebarContent}</div>
+          <div className={styles.drawer}>
+            <CloseIcon
+              className={styles.drawerClose}
+              onClick={props.onDrawerClose}
+            />
+            {props.drawerContent || null}
+          </div>
         </div>
       </div>
     </div>
