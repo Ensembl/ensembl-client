@@ -27,7 +27,7 @@ impl Stream {
     }
 
     pub fn add_log(&mut self, time: f64, stack: Arc<Vec<String>>, text: &str) {
-        let record = LogRecord::new(time,stack,text.to_string());
+        let record = LogRecord::new(&self.name,time,stack,text.to_string());
         self.log_records.push(record);
     }
 

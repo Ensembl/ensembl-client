@@ -6,12 +6,13 @@ use crate::{ Format, Record };
 pub struct LogRecord {
     time: f64,
     stack: Arc<Vec<String>>,
-    text: String
+    text: String,
+    stream_name: String
 }
 
 impl LogRecord {
-    pub fn new(time: f64, stack: Arc<Vec<String>>, text: String) -> LogRecord {
-        LogRecord { time, stack, text }
+    pub fn new(stream_name: &str, time: f64, stack: Arc<Vec<String>>, text: String) -> LogRecord {
+        LogRecord { time, stack, text, stream_name: stream_name.to_string() }
     }
 
     pub fn get_time(&self) -> f64 { self.time }
@@ -33,6 +34,7 @@ impl Record for LogRecord {
         let stack = self.stack.to_vec();
         Some(json!({
             "time": self.time,
+            "stream": self.stream_name,
             "stack": stack,
             "instance": instance,
             "text": self.text

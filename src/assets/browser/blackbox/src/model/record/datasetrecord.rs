@@ -82,6 +82,7 @@ impl Record for DatasetRecord {
         let (num,total,avg,high,top) = self.analyse_raw_data();
         let mut out = json!({
             "time": now,
+            "stream": self.stream_name,
             "instance": instance,
             "text": self.to_string(),
             "dataset": self.record_name,

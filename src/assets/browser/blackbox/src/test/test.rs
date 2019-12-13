@@ -267,9 +267,9 @@ pub fn test_json() {
         });
         let output = blackbox_take_json();
         let cmp = json!([
-            {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":3.0},
+            {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":3.0,"stream":"test"},
             {
-                "data":[2.,1.],"dataset":"raw","instance":"test1",
+                "data":[2.,1.],"dataset":"raw","instance":"test1","stream":"test",
                 "ago":[1.,0.],
                 "count": 2, "total": 3., "mean": 1.5, "high": 1., "top": 2.,
                 "text":"raw: num=2 total=3.00units avg=1.50units 95%ile=1.00units top=2.00units","time":3.0
