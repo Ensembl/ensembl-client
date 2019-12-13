@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 $sideBarContentWidth: 320px;
 $sideBarToolStripWidth: 36px;
 $topBarHeight: 32px;
@@ -5,11 +7,14 @@ $topBarHeight: 32px;
 .standardAppLayout {
   height: 100%;
   overflow: hidden;
-  background: red;
 }
 
 .topBar {
   height: $topBarHeight;
+  background: $light-grey;
+  box-shadow: 0 2px 3px $grey;
+  position: relative;
+  z-index: 200;
 }
 
 .mainWrapper {
@@ -20,16 +25,56 @@ $topBarHeight: 32px;
 .main {
   flex-grow: 1;
   flex-shrink: 0;
-  background: blue;
+  opacity: 0.2;
   height: 100%;
-  // flex-basis: fill;
 }
 
-.sideBar {
+.sideBarWrapper {
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: auto;
-  width: calc(#{$sideBarContentWidth} + #{$sideBarToolStripWidth});
-  background: green;
+  display: flex;
   height: 100%;
+  overflow: hidden;
+  transition: width 0.2s ease-in-out;
+
+  &Open {
+    width: calc(#{$sideBarContentWidth} + #{$sideBarToolStripWidth});
+  }
+
+  &Closed {
+    width: $sideBarToolStripWidth;
+  }
+}
+
+.sideBar {
+  flex: 0 0 auto;
+  height: 100%;
+  width: $sideBarContentWidth;
+  border-left: 1px solid $grey;
+}
+
+.sideBarToolstrip {
+  padding: 10px 0 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  width: $sideBarToolStripWidth;
+  height: 100%;
+  background: $light-grey;
+  border-left: 1px solid $grey;
+}
+
+.sidebarModeToggle {
+  width: 22px;
+  height: 22px;
+}
+
+.sidebarModeToggleChevron {
+  cursor: pointer;
+
+  &Open {
+    transform: rotate(180deg);
+  }
 }
