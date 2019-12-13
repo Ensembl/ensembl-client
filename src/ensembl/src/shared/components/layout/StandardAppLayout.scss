@@ -10,6 +10,8 @@ $topBarHeight: 32px;
 }
 
 .topBar {
+  display: flex;
+  align-items: center;
   height: $topBarHeight;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
@@ -25,7 +27,6 @@ $topBarHeight: 32px;
 .main {
   flex-grow: 1;
   flex-shrink: 0;
-  opacity: 0.2;
   height: 100%;
 }
 

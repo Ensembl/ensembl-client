@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
@@ -15,7 +15,13 @@ type SidebarModeToggleProps = {
   showAction: SidebarModeToggleAction;
 };
 
-const StandardAppLayout = () => {
+type StandardAppLayoutProps = {
+  mainContent: ReactNode;
+  sidebarContent: ReactNode;
+  topbarContent: ReactNode;
+};
+
+const StandardAppLayout = (props: StandardAppLayoutProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const toggleSidebar = () => {
@@ -30,9 +36,9 @@ const StandardAppLayout = () => {
 
   return (
     <div className={styles.standardAppLayout}>
-      <div className={styles.topBar}>I am top bar</div>
+      <div className={styles.topBar}>{props.topbarContent}</div>
       <div className={styles.mainWrapper}>
-        <div className={styles.main}>This is main</div>
+        <div className={styles.main}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           <div className={styles.sideBarToolstrip}>
             <SidebarModeToggle
@@ -44,7 +50,7 @@ const StandardAppLayout = () => {
               }
             />
           </div>
-          <div className={styles.sideBar}>I am sidebar</div>
+          <div className={styles.sideBar}>{props.sidebarContent}</div>
         </div>
       </div>
     </div>
