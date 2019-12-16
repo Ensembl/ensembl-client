@@ -55,9 +55,12 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
       <div className={mainContainerClassnames}>
         <div className={styles.main}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
+          {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
           <div className={styles.sideBarToolstrip}>
             <SidebarModeToggle
-              onClick={props.onSidebarToggle}
+              onClick={
+                props.isDrawerOpen ? props.onDrawerClose : props.onSidebarToggle
+              }
               showAction={
                 props.isSidebarOpen
                   ? SidebarModeToggleAction.CLOSE
@@ -93,6 +96,12 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
       <Chevron className={chevronClasses} onClick={props.onClick} />
     </div>
   );
+};
+
+// left-most transparent part of the drawer allowing the user to see what element is behind the drawer;
+// when clicked, will close the drawer
+const DrawerWindow = (props: { onClick: () => void }) => {
+  return <div className={styles.drawerWindow} onClick={props.onClick} />;
 };
 
 export default StandardAppLayout;
