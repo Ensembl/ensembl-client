@@ -16,14 +16,16 @@ const MainContent = () => (
   </div>
 );
 
-const SidebarContentSimple = () => <div>This is sidebar content</div>;
+const SidebarContentSimple = () => (
+  <div className={styles.sidebarContent}>This is sidebar content</div>
+);
 
 const SidebarContentWithDrawerOpener = (props: {
   isDrawerOpen: boolean;
   openDrawer: () => void;
 }) => {
   return (
-    <div>
+    <div className={styles.sidebarContent}>
       This is sidebar with drawer opener
       <div>
         {props.isDrawerOpen ? (
@@ -37,6 +39,10 @@ const SidebarContentWithDrawerOpener = (props: {
     </div>
   );
 };
+
+const SidebarToolstripContent = () => (
+  <div className={styles.sidebarToolstripContent}>Here be icons</div>
+);
 
 const DrawerContent = () => (
   <div className={styles.drawerContent}>This is drawer content</div>
@@ -56,6 +62,7 @@ const Wrapper = (props: {
         mainContent={<MainContent />}
         topbarContent={<TopBarContent />}
         sidebarContent={props.sidebarContent}
+        sidebarToolstripContent={<SidebarToolstripContent />}
         drawerContent={props.drawerContent || null}
         isSidebarOpen={props.isSidebarOpen}
         isDrawerOpen={props.isDrawerOpen || false}

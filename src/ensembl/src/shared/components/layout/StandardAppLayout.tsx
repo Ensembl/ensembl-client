@@ -19,6 +19,7 @@ type SidebarModeToggleProps = {
 type StandardAppLayoutWithoutDrawerProps = {
   mainContent: ReactNode;
   sidebarContent: ReactNode;
+  sidebarToolstripContent?: ReactNode;
   topbarContent: ReactNode;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
@@ -63,6 +64,9 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
                   : SidebarModeToggleAction.OPEN
               }
             />
+            <div className={styles.sideBarToolstripContent}>
+              {props.sidebarToolstripContent}
+            </div>
           </div>
           <div className={styles.sideBar}>{props.sidebarContent}</div>
           <div className={styles.drawer}>
