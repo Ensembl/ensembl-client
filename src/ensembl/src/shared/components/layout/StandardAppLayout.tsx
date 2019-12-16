@@ -36,10 +36,10 @@ type StandardAppLayoutProps =
   | StandardAppLayoutWithDrawerProps;
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
-  const mainContainerClassnames = classNames(
-    styles.mainWrapper,
-    { [styles.mainWrapperDefault]: props.isSidebarOpen },
-    { [styles.mainWrapperFullWidth]: !props.isSidebarOpen }
+  const mainClassnames = classNames(
+    styles.main,
+    { [styles.mainDefault]: props.isSidebarOpen },
+    { [styles.mainFullWidth]: !props.isSidebarOpen }
   );
 
   const sidebarWrapperClassnames = classNames(
@@ -52,8 +52,8 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
   return (
     <div className={styles.standardAppLayout}>
       <div className={styles.topBar}>{props.topbarContent}</div>
-      <div className={mainContainerClassnames}>
-        <div className={styles.main}>{props.mainContent}</div>
+      <div className={styles.mainWrapper}>
+        <div className={mainClassnames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
           <div className={styles.sideBarToolstrip}>
