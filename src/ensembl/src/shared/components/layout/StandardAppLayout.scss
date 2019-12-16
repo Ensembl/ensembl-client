@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
 $sideBarContentWidth: 320px;
-$sideBarToolStripWidth: 36px;
-$topBarHeight: 32px;
+$sideBarToolStripWidth: 46px;
+$topBarHeight: 40px;
 
 .standardAppLayout {
   height: 100%;
@@ -70,6 +70,8 @@ $topBarHeight: 32px;
   }
 
   &DrawerOpen {
+    // DO THIS
+    // transform: translateX(45px);
     transform: translateX(0);
   }
 
@@ -121,7 +123,8 @@ $topBarHeight: 32px;
   height: 100%;
   flex-grow: 1;
   position: relative;
-  padding: 40px 26px 15px 0;
+  padding: 15px 26px 15px 30px;
+  border-left: solid $medium-light-grey 1px;
 }
 
 .drawerClose {
