@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
@@ -16,24 +17,17 @@ type SidebarModeToggleProps = {
   showAction: SidebarModeToggleAction;
 };
 
-type StandardAppLayoutWithoutDrawerProps = {
+type StandardAppLayoutProps = {
   mainContent: ReactNode;
   sidebarContent: ReactNode;
   sidebarToolstripContent?: ReactNode;
   topbarContent: ReactNode;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
-};
-
-type StandardAppLayoutWithDrawerProps = StandardAppLayoutWithoutDrawerProps & {
   isDrawerOpen: boolean;
-  drawerContent: ReactNode;
+  drawerContent?: ReactNode;
   onDrawerClose: () => void;
 };
-
-type StandardAppLayoutProps =
-  | StandardAppLayoutWithoutDrawerProps
-  | StandardAppLayoutWithDrawerProps;
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
   const mainClassnames = classNames(
@@ -46,7 +40,10 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     styles.sideBarWrapper,
     { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
     { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
-    { [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen || false }
+    {
+      [styles.sideBarWrapperDrawerOpen]:
+        'isDrawerOpen' in props ? props.isDrawerOpen : false
+    }
   );
 
   return (
@@ -83,6 +80,11 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
       </div>
     </div>
   );
+};
+
+StandardAppLayout.defaultProps = {
+  isDrawerOpen: false,
+  onDrawerClose: noop
 };
 
 const SidebarModeToggle = (props: SidebarModeToggleProps) => {
