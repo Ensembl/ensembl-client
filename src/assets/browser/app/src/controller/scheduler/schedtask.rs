@@ -12,7 +12,7 @@ impl SchedTask {
     }
     
     pub(in super) fn run(&mut self, available: f64) {
-        bb_time_if!(&self.stream,{
+        blackbox_time!("scheculer",&self.stream,{
             let mut sr = SchedRun::new(available);
             (self.cb)(&mut sr);
             sr.was_productive()

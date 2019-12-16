@@ -25,21 +25,21 @@ impl ZMenuRegistryImpl {
         let seen_leafs : HashSet<Leaf> = leafs.iter().map(|x| x.get_leaf()).cloned().collect();
         for zml in leafs {
             if zml.was_redrawn() {
-                bb_log!("zmenu","zmr: redrawn");
+                blackbox_log!("zmenu","zmr: redrawn");
                 self.zml.insert(zml.get_leaf().clone(),zml);
             }
         }
         let expected_leafs : HashSet<Leaf> = self.zml.keys().cloned().collect();
         let gone = expected_leafs.difference(&seen_leafs);
         for leaf in gone {
-            bb_log!("zmenu","zmr: removed");
+            blackbox_log!("zmenu","zmr: removed");
             self.zml.remove(&leaf);
         }
     }
     
     pub fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> HashSet<ZMenuIntersection> {
         let mut all = HashSet::new();
-        bb_log!("zmenu","zmr: pos={:?}",pos);
+        blackbox_log!("zmenu","zmr: pos={:?}",pos);
         for zml in self.zml.values() {
             for zmi in zml.intersects(screen,position,pos) {
                 all.insert(zmi);

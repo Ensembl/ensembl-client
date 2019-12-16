@@ -89,7 +89,7 @@ impl Screen {
                 let pos_bp = left_bp + pos.0 as f64 * bp_px;
                 let nw = r.offset();
                 let se = r.far_offset();
-                bb_log!("zmenu","Q {:?}<={:?}[{:?}+{:?}*{:?}]<={:?} {:?}<={:?}<={:?}",
+                blackbox_log!("zmenu","Q {:?}<={:?}[{:?}+{:?}*{:?}]<={:?} {:?}<={:?}<={:?}",
                             nw.0,pos_bp,left_bp,pos.0,bp_px,se.0,
                             nw.1,pos.1+top_px as i32,se.1);
                 nw.0 as f64 <= pos_bp && se.0 as f64 >= pos_bp &&
@@ -115,7 +115,7 @@ impl Screen {
                          e.min_dist(screen_px.1 as i32) as f64)
                     }
                 };
-                bb_log!("zmenu","P {:?}<={:?}<={:?} {:?}<={:?}<={:?}",
+                blackbox_log!("zmenu","P {:?}<={:?}<={:?} {:?}<={:?}<={:?}",
                             x0,pos.0,x1, y0,pos.1,y1);
                 x0 <= pos.0 as f64 && x1 >= pos.0 as f64 &&
                 y0 <= pos.1 as f64 && y1 >= pos.1 as f64

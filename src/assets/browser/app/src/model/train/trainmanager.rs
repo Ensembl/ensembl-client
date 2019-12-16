@@ -46,18 +46,18 @@ impl TrainSet {
     pub(super) fn transition_mut(&mut self) -> &mut Option<Train> { &mut self.transition_train }
 
     fn make_transition_current(&mut self) {
-        bb_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
+        blackbox_log!("trainmanager","transition done {:?}",self.transition_train.as_ref().map(|x| x.get_train_id().clone()));
         self.current_train = self.transition_train.take();
     }
 
     fn make_future_transition(&mut self) {
-        bb_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
+        blackbox_log!("trainmanager","future train is transitioning {:?}",self.future_train.as_ref().map(|x| x.get_train_id().clone()));
         self.transition_train = self.future_train.take();
     }
 
     fn end_future(&mut self) {
         if let Some(ref mut t) = self.future_train {
-            bb_log!("trainmanager","Abandoning future train {:?}",t.get_train_id());
+            blackbox_log!("trainmanager","Abandoning future train {:?}",t.get_train_id());
             t.set_active(false);
         }
         self.future_train = None;
@@ -68,7 +68,7 @@ impl TrainSet {
             t.set_active(false);
         }
         self.future_train = Some(train);
-        bb_log!("trainmanager","Creating future train {:?}",self.future_train.as_ref().map(|x| x.get_train_id()));
+        blackbox_log!("trainmanager","Creating future train {:?}",self.future_train.as_ref().map(|x| x.get_train_id()));
         self.future_train.as_mut().unwrap().set_active(true);
     }
 
@@ -80,7 +80,8 @@ pub struct TrainManagerImpl {
     trainset: TrainSet,
     zmr: ZMenuRegistry,
     target: ViewpointFragment,
-    animation_request: Option<(Stick,FocusObjectId,f64,f64)>
+    animation_request: Option<(Stick,FocusObjectId,f64,f64)>,
+    focus_object: FocusObject
 }
 
 impl TrainManagerImpl {
@@ -94,6 +95,7 @@ impl TrainManagerImpl {
                 transition_train: None
             },
             target: ViewpointFragment::new_empty(),
+            focus_object: FocusObject::new(&FocusObjectId::new(&None)),
             zmr: ZMenuRegistry::new(),
             animation_request: None
         }

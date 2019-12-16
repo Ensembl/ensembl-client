@@ -3,6 +3,8 @@
 #![feature(drain_filter)]
 
 #[macro_use]
+extern crate blackbox;
+#[macro_use]
 extern crate stdweb;
 #[macro_use]
 extern crate serde_derive;

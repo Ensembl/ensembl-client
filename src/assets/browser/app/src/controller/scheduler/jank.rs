@@ -63,7 +63,7 @@ impl JankBuster {
                 self.grace_at = time + self.grace_next.1 as f64;
                 self.last_down = false;
                 self.gear += 1;
-                bb_log!("scheduler-jank",">gear {:?} {:?}",self.gear,self.grace_next.1);
+                blackbox_log!("scheduler-jank",">gear {:?} {:?}",self.gear,self.grace_next.1);
             }
         }
         if self.grace_at <= time && self.gear > 1 {
@@ -75,7 +75,7 @@ impl JankBuster {
             self.grace_at = time + JANK_WINDOW;
             self.last_down = true;
             self.gear -= 1;
-            bb_log!("scheduler-jank","<gear {:?} {:?}",self.gear,self.grace_next.1);
+            blackbox_log!("scheduler-jank","<gear {:?} {:?}",self.gear,self.grace_next.1);
         }
     }
     

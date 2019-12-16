@@ -19,7 +19,7 @@ impl GLProgs {
         let mut map = HashMap::new();
         let mut order = Vec::new();
         for pt in &ordering {
-            bb_log!("webgl-programs","=== {:?} ===",&pt);
+            blackbox_log!("webgl-programs","=== {:?} ===",&pt);
             map.insert(*pt,order.len());
             order.push(pt.to_program(&gpuspec,&ctx));
         }

@@ -90,7 +90,7 @@ impl ZMenuLeaf {
     }
     
     pub fn add_box(&mut self, id: &str, track_id: &str, zbox: &Placement) {
-        bb_log!("zmenu","add_box({:?},{:?})",id,self.fix_leaf_offset(zbox));
+        blackbox_log!("zmenu","add_box({:?},{:?})",id,self.fix_leaf_offset(zbox));
         self.items.push(ZMenuItem { id: id.to_string(), track_id: track_id.to_string(), placement: self.fix_leaf_offset(zbox) });
     }
     
@@ -143,9 +143,9 @@ impl ZMenuLeaf {
     pub(in super) fn intersects(&self, screen: &Screen, position: &Position, pos: Dot<i32,i32>) -> Vec<ZMenuIntersection> {
         let mut out = Vec::new();
         for item in &self.items {
-            bb_log!("zmenu","zml: item pos={:?} placement={:?}",position,&item.placement);
+            blackbox_log!("zmenu","zml: item pos={:?} placement={:?}",position,&item.placement);
             if screen.intersects(pos,&item.placement,position) {
-                bb_log!("zmenu","intersects {:?}",item.id);
+                blackbox_log!("zmenu","intersects {:?}",item.id);
                 if let Some(payload) = self.activate(&item.id,&item.track_id) {
                     out.push(ZMenuIntersection {
                         id: item.id.clone(),

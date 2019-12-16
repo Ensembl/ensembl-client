@@ -36,7 +36,7 @@ impl SchedQueueList {
     }
     
     pub(in super) fn run(&mut self, end_at: f64) -> bool {
-        bb_time!(&self.bb_stream,{
+        blackbox_time!("scheduler",&self.bb_stream,{
             for q in &mut self.queues {
                 if !q.run(end_at) {
                     return false;

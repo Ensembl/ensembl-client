@@ -13,13 +13,7 @@ use drivers::domel::{ register_user_events };
 use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
 use controller::animate::animate_jump_to;
 
-#[cfg(any(not(deploy),console))]
-use data::blackbox::{
-    blackbox_report, blackbox_push, blackbox_pop, blackbox_tick
-};
-
 use data::{ HttpManager, BackendConfig };
-use data::blackbox::BlackBoxDriver;
 use dom::Bling;
 use dom::event::EventControl;
 use dom::domutil::browser_time;
@@ -34,7 +28,6 @@ pub struct AppRunnerImpl {
     controls: Vec<Box<EventControl<()>>>,
     sched_group: SchedulerGroup,
     tc: Tácode,
-    debug_reporter: BlackBoxDriver,
     browser_el: HtmlElement,
     key: String
 }
@@ -56,7 +49,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, debug_reporter: BlackBoxDriver, key: &str) -> AppRunner {
+    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let counter = {
@@ -77,7 +70,6 @@ impl AppRunner {
             controls: Vec::<Box<EventControl<()>>>::new(),
             sched_group,
             tc: tc.clone(),
-            debug_reporter,
             browser_el: browser_el.clone(),
             key: key.to_string()
         })));
@@ -157,12 +149,15 @@ impl AppRunner {
                 /* blackbox */
                 #[cfg(any(not(deploy),console))]
                 {
-                    let mut dr = imp.debug_reporter.clone();
+                    //let mut dr = imp.debug_reporter.clone();
                     imp.sched_group.add("blackbox",Box::new(move |sr| {
+                        /* Run blackbox driver here! */
+                        /*
                         if !blackbox_tick(&mut dr) {
                             sr.unproductive();
                         }
-                    }),5,false);
+                        */
+                    }),10,false);
                 }
                 /* animate & draw */
                 let app = imp.app.clone();
@@ -195,7 +190,7 @@ impl AppRunner {
                 }
             },0);
         }
-        bb_log!("main","debug reporter initialised");
+        blackbox_log!("main","debug reporter initialised");
     }
         
     pub fn add_control(&mut self, control: Box<EventControl<()>>) {

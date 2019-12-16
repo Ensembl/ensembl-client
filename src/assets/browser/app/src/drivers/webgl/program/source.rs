@@ -239,8 +239,8 @@ impl ProgramSource {
         let fragment = make_source(gpuspec,&self.uniforms,&Phase::Fragment);
         make_shader(ctx,&prog,glctx::VERTEX_SHADER,&vertex);
         make_shader(ctx,&prog,glctx::FRAGMENT_SHADER,&fragment);
-        bb_log!("webgl-programs","--- vertex ---\n{}",&vertex);
-        bb_log!("webgl-programs","--- fragment ---\n{}",&fragment);
+        blackbox_log!("webgl-programs","--- vertex ---\n{}",&vertex);
+        blackbox_log!("webgl-programs","--- fragment ---\n{}",&fragment);
         ctx.link_program(&prog);        
         prog
     }

@@ -48,7 +48,7 @@ impl SchedulerMain {
         let on_beat = self.count == 0;
         self.count += 1;
         if self.count >= self.timesig { self.count = 0; }
-        bb_metronome!("scheduler-beat");
+        blackbox_metronome!("scheduler","beat");
         if on_beat {
             let mut burst = !self.on_beat.run(end_at);
             if !burst {

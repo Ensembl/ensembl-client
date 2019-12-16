@@ -166,14 +166,12 @@ fn draw_short_shapes(spec: Box<dyn TypeToShape>, leaf: &Leaf, lc: &mut UnpackedP
             }
         }
     }
-    bb_if_log!("performance",{
-        bb_log!("performance","{:?} {} shapes",leaf.get_short_spec(),x_start.len());
-        if drops * 10 > x_start.len() {
-            bb_log!("performance","Excessive drops! {:?} {}/{}",
-                leaf.get_short_spec(),
-                drops,x_start.len());
-        }
-    });
+    blackbox_log!("performance","{:?} {} shapes",leaf.get_short_spec(),x_start.len());
+    if drops * 10 > x_start.len() {
+        blackbox_log!("performance","Excessive drops! {:?} {}/{}",
+            leaf.get_short_spec(),
+            drops,x_start.len());
+    }
 }
 
 fn draw_shapes(meta: &Vec<f64>,leaf: &Leaf, lc: &mut UnpackedProduct, 
