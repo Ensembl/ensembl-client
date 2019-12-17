@@ -148,7 +148,7 @@ impl AppRunner {
                     }),2,false);
                 }
                 /* blackbox */
-                #[cfg(any(not(deploy),console))]
+                #[cfg(blackbox)]
                 {
                     let app = imp.app.clone();
                     let http_manager = app.lock().unwrap().get_http_manager().clone();
