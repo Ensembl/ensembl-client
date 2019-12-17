@@ -11,13 +11,15 @@ $drawerWindowWidth: 45px;
 }
 
 .topBar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr $sideBarContentWidth;
+  grid-column-gap: $sideBarToolStripWidth;
   align-items: center;
   height: $topBarHeight;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
   position: relative;
-  padding: 0 18px;
+  padding-left: 18px;
   z-index: 200;
 }
 
@@ -101,6 +103,38 @@ $drawerWindowWidth: 45px;
 
   &Open {
     transform: rotate(180deg);
+  }
+}
+
+.sidebarTabs {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 15px;
+}
+
+.sidebarTab {
+  display: inline-block;
+  color: $blue;
+  cursor: pointer;
+
+  &Active {
+    position: relative;
+    color: $black;
+    cursor: default;
+
+    &:after {
+      content: '';
+      position: absolute;
+      border: 6px solid $grey;
+      border-color: transparent transparent $light-grey $light-grey;
+      box-shadow: -2px 2px 2px 0 $grey;
+      height: 0;
+      right: calc(60% - 6px);
+      transform-origin: 0 0;
+      transform: rotate(-45deg);
+      top: 30px;
+      width: 0;
+    }
   }
 }
 

@@ -56,12 +56,22 @@ const Wrapper = (props: {
   onSidebarToggle: () => void;
   onDrawerClose?: () => void;
 }) => {
+  const [activeLinkIndex, setActiveLinkIndex] = useState(0);
+  const sidebarNavigation = {
+    links: [...Array(2)].map((_, index) => ({
+      label: `Link ${index + 1}`,
+      isActive: index === activeLinkIndex
+    })),
+    onChange: (index: number) => setActiveLinkIndex(index)
+  };
+
   return (
     <div className={styles.wrapper}>
       <StandardAppLayout
         mainContent={<MainContent />}
         topbarContent={<TopBarContent />}
         sidebarContent={props.sidebarContent}
+        sidebarNavigation={sidebarNavigation}
         sidebarToolstripContent={<SidebarToolstripContent />}
         drawerContent={props.drawerContent || null}
         isSidebarOpen={props.isSidebarOpen}
