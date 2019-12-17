@@ -1,13 +1,15 @@
 use hashbrown::HashSet;
 
 pub struct Format {
+    configured: bool,
     include_raw: HashSet<(String,String)>
 }
 
 impl Format {
     pub fn new() -> Format {
         Format {
-            include_raw: HashSet::new(),
+            configured: false,
+            include_raw: HashSet::new()
         }
     }
 
@@ -20,10 +22,11 @@ impl Format {
     }
 
     pub fn reset_raw_data(&mut self) {
+        self.configured = true;
         self.include_raw.clear();
     }
 
     pub fn test_include_raw(&self, stream: &str, name: &str) -> bool {
-        self.include_raw.contains(&(stream.to_string(),name.to_string()))
+        !self.configured || self.include_raw.contains(&(stream.to_string(),name.to_string()))
     }
 }

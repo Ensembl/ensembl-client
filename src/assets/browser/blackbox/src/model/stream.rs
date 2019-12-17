@@ -35,8 +35,9 @@ impl Stream {
 
     pub fn get_count(&mut self, name: &str) -> &mut CountRecord {
         let stream_name = self.name.to_string();
+        let units = self.time_units.to_string();
         self.count_records.entry(name.to_string()).or_insert_with(|| {
-            CountRecord::new(&stream_name,name,"")
+            CountRecord::new(&stream_name,name,&units)
         })
     }
 

@@ -5,7 +5,7 @@ use std::thread::ThreadId;
 use crate::{
     blackbox_enable, blackbox_integration, blackbox_log, blackbox_take_lines, blackbox_disable, blackbox_is_enabled,
     blackbox_config, blackbox_raw_on, blackbox_format, blackbox_clear, blackbox_use_threadlocals, TrivialIntegration,
-    blackbox_take_json, SimpleIntegration
+    blackbox_take_json, SimpleIntegration, blackbox_disable_all
 };
 
 use super::harness::{ lines_contains, read_lock, write_lock };
@@ -28,6 +28,7 @@ pub fn test_blackbox_count() {
         let ign = SimpleIntegration::new("test1");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
+        blackbox_format().lock().unwrap().reset_raw_data();
         blackbox_enable("test");
         blackbox_count!("test","noraw",42.);
         blackbox_reset_count!("test","noraw");
@@ -52,9 +53,9 @@ pub fn test_blackbox_count() {
         blackbox_reset_count!("test","noraw");
         blackbox_raw_on("test","raw");
         let lines = blackbox_take_lines();
-        assert!(lines_contains(&lines,"noraw: num=1 total=4.00 avg=4.00 95%ile=4.00 top=4.00"));
-        assert!(lines_contains(&lines," raw: num=4 total=12.00 avg=3.00 95%ile=4.00 top=6.00 [2,4,6,0]"));
-        assert!(!lines_contains(&lines,"noraw: num=1 total=4.00 avg=4.00 95%ile=4.00 top=4.00 ["));
+        assert!(lines_contains(&lines,"noraw: num=1 total=4.00units avg=4.00units 95%ile=4.00units top=4.00units"));
+        assert!(lines_contains(&lines," raw: num=4 total=12.00units avg=3.00units 95%ile=4.00units top=6.00units [2,4,6,0]"));
+        assert!(!lines_contains(&lines,"noraw: num=1 total=4.00units avg=4.00units 95%ile=4.00units top=4.00units ["));
     });
 }
 
@@ -106,6 +107,7 @@ pub fn test_blackbox_enable_disable() {
         let ign = SimpleIntegration::new("test2");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
+        blackbox_disable_all();
         blackbox_log!("test","disabled!");
         blackbox_enable("test");
         blackbox_log!("test2","disabled!");
@@ -158,14 +160,17 @@ pub fn test_clear() {
         let ign = SimpleIntegration::new("test2");
         blackbox_use_threadlocals(true);
         blackbox_integration(ign.clone());
+        blackbox_disable_all();
+        blackbox_format().lock().unwrap().reset_raw_data();
         blackbox_enable("test");
         blackbox_enable("test2");
         blackbox_raw_on("test","raw");
+        blackbox_log!("test2","NO!");
         blackbox_clear();
+        blackbox_format().lock().unwrap().reset_raw_data();
         blackbox_integration(TrivialIntegration::new());
         blackbox_enable("test");
         blackbox_log!("test","enabled!");
-        blackbox_log!("test2","NO!");
         blackbox_count!("test","raw",1.);
         blackbox_reset_count!("test","raw");
         let lines = blackbox_take_lines();
@@ -243,6 +248,58 @@ pub fn test_thread_local_clear() {
         assert!(!lines_contains(&lines,"thread2"));
         let m = crate::api::globals::blackbox_model_id(id.lock().unwrap().unwrap());
         assert!(m.lock().unwrap().get_stream("test").is_none());
+    });
+}
+
+#[test]
+pub fn test_liberal_start_model() {
+    read_lock(|| {
+        let ign = SimpleIntegration::new("test");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_reset_count!("test","pre");
+        blackbox_config(&json!({
+            "config": {
+                "enable": [],
+                "raw": { "test": [] }
+            }
+        }));
+        blackbox_reset_count!("test","post");
+        let output = blackbox_take_json();
+        let cmp = json!({
+            "records": [
+                {
+                    "dataset":"pre","instance":"test","stream":"test",
+                    "count": 1, "total": 0., "mean": 0., "high": 0., "top": 0.,
+                    "text":"pre: num=1 total=0.00units avg=0.00units 95%ile=0.00units top=0.00units","time":0.
+                }
+            ],
+            "streams": { "test": ["pre"] }
+        });
+        assert_eq!(output,cmp);
+    });
+}
+
+#[test]
+pub fn test_liberal_start_format() {
+    read_lock(|| {
+        let ign = SimpleIntegration::new("test");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_reset_count!("test","pre");
+        let output = blackbox_take_json();
+        let cmp = json!({
+            "records": [
+                {
+                    "ago": [0.], "data": [0.],
+                    "dataset":"pre","instance":"test","stream":"test",
+                    "count": 1, "total": 0., "mean": 0., "high": 0., "top": 0.,
+                    "text":"pre: num=1 total=0.00units avg=0.00units 95%ile=0.00units top=0.00units","time":0.
+                }
+            ],
+            "streams": { "test": ["pre"] }
+        });
+        assert_eq!(output,cmp);
     });
 }
 

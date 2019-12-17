@@ -17,6 +17,7 @@ pub fn time_sort(data: &mut Vec<Box<dyn Record>>) {
 }
 
 pub struct Model {
+    configured: bool,
     enabled: HashSet<String>,
     streams: HashMap<String,Stream>,
     integration: Box<dyn Integration>,
@@ -28,6 +29,7 @@ impl Model {
     pub fn new<T>(integration: Option<T>) -> Model where T: Integration + 'static {
         let mute = integration.is_none();
         Model {
+            configured: false,
             enabled: HashSet::new(),
             streams: HashMap::new(),
             integration: integration.map(|x| Box::new(x) as Box<dyn Integration>)
@@ -62,11 +64,12 @@ impl Model {
     }
 
     pub fn get_stream(&mut self, name: &str) -> Option<&mut Stream> {
+        let enabled = self.is_enabled(name);
         let units = self.integration.get_time_units();
         let stream = self.streams.entry(name.to_string()).or_insert_with(||
             Stream::new(name,&units)
         );
-        if !self.mute && self.enabled.contains(name) { Some(stream) } else { None }
+        if !self.mute && enabled { Some(stream) } else { None }
     }
 
     pub fn enable(&mut self, stream: &str) {
@@ -78,10 +81,12 @@ impl Model {
     }
 
     pub fn disable_all(&mut self) {
+        self.configured = true;
         self.enabled.clear()
     }
 
     pub fn is_enabled(&self, stream: &str) -> bool {
+        if !self.configured { return true; }
         self.enabled.contains(stream)
     }
 
