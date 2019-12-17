@@ -16,14 +16,14 @@ struct BlackboxIntegration{}
 
 impl Integration for BlackboxIntegration {
     fn get_time(&self) -> f64 {
-        browser_time()/1000.
+        browser_time()
     }
 
     fn get_instance_id(&self) -> String {
         get_instance_id()
     }
 
-    fn get_time_units(&self) -> String { "s".to_string() }
+    fn get_time_units(&self) -> String { "ms".to_string() }
 }
 
 struct BlackBoxResponseConsumer{}
