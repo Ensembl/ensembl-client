@@ -3,6 +3,7 @@
 use composit::{ AllLandscapes, CombinedStickManager };
 use controller::animate::ActionAnimator;
 use data::{ BackendConfig, HttpXferClerk, Locator };
+use debug::BlackboxSender;
 use model::supply::ProductList;
 use model::train::TrainManager;
 use tácode::Tácode;
@@ -17,7 +18,8 @@ pub struct WindowState {
     train_manager: TrainManager,
     all_landscapes: AllLandscapes,
     locator: Locator,
-    animator: ActionAnimator
+    animator: ActionAnimator,
+    blackbox: BlackboxSender
 }
 
 impl WindowState {
@@ -33,7 +35,8 @@ impl WindowState {
             train_manager: train_manager.clone(),
             all_landscapes: landscapes.clone(),
             locator: locator.clone(),
-            animator: ActionAnimator::new()
+            animator: ActionAnimator::new(),
+            blackbox: BlackboxSender::new()
         };
         http_clerk.set_window_state(&mut out);
         out
@@ -48,4 +51,5 @@ impl WindowState {
     pub fn get_train_manager(&mut self) -> &mut TrainManager { &mut self.train_manager }
     pub fn get_locator(&mut self) -> &mut Locator { &mut self.locator }
     pub fn get_animator(&mut self) -> &mut ActionAnimator { &mut self.animator }
+    pub fn get_blackbox_sender(&mut self) -> &mut BlackboxSender { &mut self.blackbox }
 }

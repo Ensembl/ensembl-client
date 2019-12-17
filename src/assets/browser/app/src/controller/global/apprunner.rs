@@ -14,6 +14,7 @@ use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Co
 use controller::animate::animate_jump_to;
 
 use data::{ HttpManager, BackendConfig };
+use debug::BlackboxSender;
 use dom::Bling;
 use dom::event::EventControl;
 use dom::domutil::browser_time;
@@ -149,14 +150,12 @@ impl AppRunner {
                 /* blackbox */
                 #[cfg(any(not(deploy),console))]
                 {
-                    //let mut dr = imp.debug_reporter.clone();
+                    let app = imp.app.clone();
+                    let http_manager = app.lock().unwrap().get_http_manager().clone();
+                    let config = app.lock().unwrap().get_window().get_backend_config().clone();
+                    let mut sender = app.lock().unwrap().get_window().get_blackbox_sender().clone();
                     imp.sched_group.add("blackbox",Box::new(move |sr| {
-                        /* Run blackbox driver here! */
-                        /*
-                        if !blackbox_tick(&mut dr) {
-                            sr.unproductive();
-                        }
-                        */
+                        sender.send(&http_manager,&config,browser_time());
                     }),10,false);
                 }
                 /* animate & draw */

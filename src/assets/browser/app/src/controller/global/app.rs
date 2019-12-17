@@ -43,7 +43,8 @@ pub struct App {
     action_backlog: Vec<Action>,
     window: WindowState,
     intended: Intended,
-    screen: Screen
+    screen: Screen,
+    http_manager: HttpManager
 }
 
 impl App {
@@ -79,11 +80,16 @@ impl App {
             window: window.clone(),
             intended: Intended::new(),
             screen: Screen::new(),
-            counter: counter.clone()
+            counter: counter.clone(),
+            http_manager: http_manager.clone()
         };
         out.populate_products();
         out.run_actions(&startup_actions(),None);        
         out
+    }
+
+    pub fn get_http_manager(&self) -> &HttpManager {
+        &self.http_manager
     }
 
     fn populate_products(&mut self) {    
