@@ -6,7 +6,7 @@ use url::Url;
 
 use dom::domutil::browser_time;
 use util::get_instance_id;
-use blackbox::{ blackbox_config, blackbox_integration, blackbox_take_json, Integration };
+use blackbox::{ blackbox_config, blackbox_disable_all, blackbox_integration, blackbox_take_json, Integration };
 
 use data::{ BackendConfig, HttpManager, HttpResponseConsumer };
 
@@ -57,6 +57,7 @@ struct BlackboxSenderImpl {
 
 impl BlackboxSenderImpl {
     fn new() -> BlackboxSenderImpl {
+        blackbox_disable_all();
         BlackboxSenderImpl {
             last_sent: None
         }
