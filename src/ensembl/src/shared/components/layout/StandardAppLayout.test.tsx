@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount, render } from 'enzyme';
+import faker from 'faker';
 
 import StandardAppLayout from './StandardAppLayout';
 
@@ -21,12 +22,25 @@ const DrawerContent = () => (
   <div className="drawerContent">This is drawer content</div>
 );
 
+const sidebarNavigationLinks = [...Array(3)].map(() => ({
+  label: faker.random.word(),
+  isActive: false
+}));
+const activeSidebarNavLinkIndex = Math.floor(
+  Math.random() * sidebarNavigationLinks.length
+);
+sidebarNavigationLinks[activeSidebarNavLinkIndex].isActive = true;
+
 const minimalProps = {
   mainContent: <MainContent />,
   sidebarContent: <SidebarContent />,
   sidebarToolstripContent: <SidebarToolstripContent />,
   topbarContent: <TopbarContent />,
   isSidebarOpen: true,
+  sidebarNavigation: {
+    links: sidebarNavigationLinks,
+    onChange: jest.fn()
+  },
   onSidebarToggle: jest.fn()
 };
 
@@ -100,6 +114,56 @@ describe('StandardAppLayout', () => {
         expect(sidebarWrapper.hasClass('sideBarWrapperOpen')).toBe(true);
         expect(sidebarWrapper.hasClass('sideBarWrapperClosed')).toBe(false);
         expect(sidebarWrapper.hasClass('sideBarWrapperDrawerOpen')).toBe(true);
+      });
+    });
+
+    describe('navigation tabs', () => {
+      it('renders navigation tabs', () => {
+        const wrapper = render(<StandardAppLayout {...minimalProps} />);
+        expect(wrapper.find('.sidebarTab').length).toBe(
+          minimalProps.sidebarNavigation.links.length
+        );
+      });
+
+      it('adds active class name to a tab if sidebar is open', () => {
+        const wrapper = render(<StandardAppLayout {...minimalProps} />);
+        wrapper
+          .find(`.sidebarTab`)
+          .toArray()
+          .forEach((element, index) => {
+            const shouldBeActive = index === activeSidebarNavLinkIndex;
+            expect(element.attribs.class.includes('sidebarTabActive')).toBe(
+              shouldBeActive
+            );
+          });
+      });
+
+      it('does not add active class name to tabs when sidebar is closed', () => {
+        const wrapper = render(
+          <StandardAppLayout {...{ ...minimalProps, isSidebarOpen: false }} />
+        );
+        wrapper
+          .find(`.sidebarTab`)
+          .toArray()
+          .forEach((element) => {
+            expect(element.attribs.class.includes('sidebarTabActive')).toBe(
+              false
+            );
+          });
+      });
+
+      it('does not add active class name to tabs when drawer is opened', () => {
+        const wrapper = render(
+          <StandardAppLayout {...{ ...minimalProps, isDrawerOpen: true }} />
+        );
+        wrapper
+          .find(`.sidebarTab`)
+          .toArray()
+          .forEach((element) => {
+            expect(element.attribs.class.includes('sidebarTabActive')).toBe(
+              false
+            );
+          });
       });
     });
   });
