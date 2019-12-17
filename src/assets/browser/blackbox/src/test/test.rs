@@ -266,16 +266,44 @@ pub fn test_json() {
             })
         });
         let output = blackbox_take_json();
-        let cmp = json!([
-            {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":3.0,"stream":"test"},
-            {
-                "data":[2.,1.],"dataset":"raw","instance":"test1","stream":"test",
-                "ago":[1.,0.],
-                "count": 2, "total": 3., "mean": 1.5, "high": 1., "top": 2.,
-                "text":"raw: num=2 total=3.00units avg=1.50units 95%ile=1.00units top=2.00units","time":3.0
-            }
-        ]);
+        let cmp = json!({
+            "records": [
+                {"instance":"test1","stack":["a","b"],"text":"Hello, world!","time":3.0,"stream":"test"},
+                {
+                    "data":[2.,1.],"dataset":"raw","instance":"test1","stream":"test",
+                    "ago":[1.,0.],
+                    "count": 2, "total": 3., "mean": 1.5, "high": 1., "top": 2.,
+                    "text":"raw: num=2 total=3.00units avg=1.50units 95%ile=1.00units top=2.00units","time":3.0
+                }
+            ],
+            "streams": { "test": ["raw"] }
+        });
         assert_eq!(output,cmp);
+    });
+}
+
+#[test]
+pub fn test_streams_json() {
+    read_lock(|| {
+        let ign = SimpleIntegration::new("test1");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_enable("test");
+        blackbox_enable("test2");
+        blackbox_raw_on("test","raw");
+        blackbox_raw_on("test","raw2");
+        blackbox_raw_on("test2","raw3");
+        blackbox_raw_on("test2","raw4");
+        blackbox_reset_count!("test","raw");
+        blackbox_reset_count!("test","raw2");
+        blackbox_reset_count!("test2","raw3");
+        blackbox_reset_count!("test2","raw4");
+        let cmp = json!({
+            "test": ["raw","raw2"],
+            "test2": ["raw3","raw4"]
+        });
+        let output = blackbox_take_json();
+        assert_eq!(output["streams"],cmp);
     });
 }
 

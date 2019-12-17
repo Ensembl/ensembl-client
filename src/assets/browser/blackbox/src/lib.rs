@@ -53,7 +53,7 @@ pub use crate::model::format::Format;
 pub use crate::model::integration::integration::Integration;
 pub use crate::model::integration::simpleintegration::SimpleIntegration;
 pub use crate::model::integration::trivialintegration::TrivialIntegration;
-pub use crate::model::model::Model;
+pub use crate::model::model::{ Model, time_sort };
 pub use crate::model::serialize::{ records_to_lines, records_to_json };
 pub use crate::model::stream::Stream;
 

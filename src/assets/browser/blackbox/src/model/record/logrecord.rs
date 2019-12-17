@@ -42,4 +42,6 @@ impl Record for LogRecord {
     }
 
     fn time_override(&self) -> Option<f64> { Some(self.time) }
+
+    fn get_stream_name(&self) -> &str { &self.stream_name }
 }

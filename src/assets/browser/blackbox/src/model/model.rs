@@ -5,7 +5,7 @@ use serde_json::Value as SerdeValue;
 
 use crate::{ Format, Integration, Record, Stream, TrivialIntegration, records_to_lines, records_to_json };
 
-fn time_sort(data: &mut Vec<Box<dyn Record>>) {
+pub fn time_sort(data: &mut Vec<Box<dyn Record>>) {
     data.sort_by(|a,b| {
         match (a.time_override(),b.time_override()) {
             (None,None) => Ordering::Equal,
@@ -53,16 +53,20 @@ impl Model {
         self.stack = Arc::new(new);
     }
 
+    pub fn get_all_streams(&self) -> impl Iterator<Item=&Stream> {
+        self.streams.values()
+    }
+
+    pub fn get_all_streams_mut(&mut self) -> impl Iterator<Item=&mut Stream> {
+        self.streams.values_mut()
+    }
+
     pub fn get_stream(&mut self, name: &str) -> Option<&mut Stream> {
-        if self.mute { return None; }
-        if self.enabled.contains(name) {
-            let units = self.integration.get_time_units();
-            Some(self.streams.entry(name.to_string()).or_insert_with(||
-                Stream::new(name,&units)
-            ))
-        } else {
-            None
-        }
+        let units = self.integration.get_time_units();
+        let stream = self.streams.entry(name.to_string()).or_insert_with(||
+            Stream::new(name,&units)
+        );
+        if !self.mute && self.enabled.contains(name) { Some(stream) } else { None }
     }
 
     pub fn enable(&mut self, stream: &str) {
@@ -95,6 +99,7 @@ impl Model {
     }
 
     pub fn take_json(&mut self, now: f64, format: &Format) -> SerdeValue {
-        records_to_json(&mut self.take_records().iter(),now,&self.get_instance_id(),format)
+        let iid = self.get_instance_id().clone();
+        records_to_json(self.get_all_streams_mut(),now,&iid,format)
     }
 }

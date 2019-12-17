@@ -30,5 +30,7 @@ impl MetronomeRecord {
 impl Record for MetronomeRecord {
     fn get_as_line(&self, now: f64, instance: &str, format: &Format) -> Option<String> { self.dataset_record.get_as_line(now,instance,format) }
     fn get_as_json(&self, now: f64, instance: &str, format: &Format) -> Option<SerdeValue> { self.dataset_record.get_as_json(now,instance,format) }
+    fn get_stream_name(&self) -> &str { self.dataset_record.get_stream_name() }
+    fn get_dataset_name(&self) -> Option<&str> { self.dataset_record.get_dataset_name() }
 }
 

@@ -100,4 +100,7 @@ impl Record for DatasetRecord {
         }
         Some(out)
     }
+
+    fn get_stream_name(&self) -> &str { &self.stream_name }
+    fn get_dataset_name(&self) -> Option<&str> { Some(&self.record_name) }
 }
