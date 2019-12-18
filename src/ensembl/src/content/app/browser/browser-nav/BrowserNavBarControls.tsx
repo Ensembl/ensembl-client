@@ -21,25 +21,18 @@ type Props = {
   isDisabled: boolean;
 };
 
-export const BrowserNavBarControls = (props: Props) => {
-  const shouldEnableButton = (index: number) => {
-    const isAtMaximum = props.browserNavStates[index];
-    return !isAtMaximum;
-  };
-
-  return (
-    <div className={styles.browserNavBarControls}>
-      {browserNavConfig.map((item: BrowserNavItem, index: number) => (
-        <BrowserNavIcon
-          key={item.name}
-          browserNavItem={item}
-          enabled={shouldEnableButton(index)}
-        />
-      ))}
-      {props.isDisabled && <Overlay className={styles.overlay} />}
-    </div>
-  );
-};
+export const BrowserNavBarControls = (props: Props) => (
+  <div className={styles.browserNavBarControls}>
+    {browserNavConfig.map((item: BrowserNavItem, index: number) => (
+      <BrowserNavIcon
+        key={item.name}
+        browserNavItem={item}
+        enabled={!props.browserNavStates[index]}
+      />
+    ))}
+    {props.isDisabled && <Overlay className={styles.overlay} />}
+  </div>
+);
 
 const mapStateToProps = (state: RootState) => {
   const isDisabled =

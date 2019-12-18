@@ -16,7 +16,7 @@ jest.mock('./BrowserNavBarRegionSwitcher', () => () => (
 ));
 
 const props: BrowserNavBarMainProps = {
-  breakpointWidth: BreakpointWidth.TABLET
+  viewportWidth: BreakpointWidth.TABLET
 };
 
 describe('BrowserNavBarMain', () => {
@@ -35,14 +35,14 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('renders chromosome visualization by default for laptops or bigger screens', () => {
-    wrapper.setProps({ breakpointWidth: BreakpointWidth.LAPTOP });
+    wrapper.setProps({ viewportWidth: BreakpointWidth.LAPTOP });
 
     expect(wrapper.find(ChromosomeNavigator).length).toBe(1);
     expect(wrapper.find(BrowserNavBarRegionSwitcher).length).toBe(0);
   });
 
   it('renders RegionSwitcher when user clicks on Change', () => {
-    wrapper.setProps({ breakpointWidth: BreakpointWidth.LAPTOP });
+    wrapper.setProps({ viewportWidth: BreakpointWidth.LAPTOP });
 
     const changeButton = wrapper.find('.contentSwitcher');
     changeButton.simulate('click');
@@ -51,7 +51,7 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('renders chromosome visualization when user closes RegionSwitcher', () => {
-    wrapper.setProps({ breakpointWidth: BreakpointWidth.LAPTOP });
+    wrapper.setProps({ viewportWidth: BreakpointWidth.LAPTOP });
 
     const changeButton = wrapper.find('.contentSwitcher');
     changeButton.simulate('click');

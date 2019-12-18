@@ -5,7 +5,7 @@ import { BrowserNavBarRegionSwitcher } from './BrowserNavBarRegionSwitcher';
 import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
 import BrowserRegionField from '../browser-region-field/BrowserRegionField';
 
-import { BreakpointWidth, DisplayType } from 'src/global/globalConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 jest.mock(
   'src/content/app/browser/browser-region-editor/BrowserRegionEditor',
@@ -17,8 +17,7 @@ jest.mock(
 );
 
 const props = {
-  display: DisplayType.FULL,
-  breakpointWidth: BreakpointWidth.TABLET,
+  viewportWidth: BreakpointWidth.TABLET,
   toggleRegionEditorActive: jest.fn(),
   toggleRegionFieldActive: jest.fn()
 };
@@ -35,15 +34,16 @@ describe('BrowserNavBarRegionSwitcher', () => {
   });
 
   describe('rendering', () => {
-    it('renders only region field on smaller screens', () => {
-      expect(wrapper.find(BrowserRegionField).length).toBe(1);
+    it('renders region field and not region editor on smaller screens', () => {
+      expect(wrapper.find(BrowserRegionField)).toHaveLength(1);
+      expect(wrapper.find(BrowserRegionEditor)).toHaveLength(0);
     });
 
     it('renders both region field and region editor on big desktop screens', () => {
-      wrapper.setProps({ display: DisplayType.FULL });
+      wrapper.setProps({ viewportWidth: BreakpointWidth.BIG_DESKTOP });
 
-      expect(wrapper.find(BrowserRegionEditor).length).toBe(1);
-      expect(wrapper.find(BrowserRegionField).length).toBe(1);
+      expect(wrapper.find(BrowserRegionEditor)).toHaveLength(1);
+      expect(wrapper.find(BrowserRegionField)).toHaveLength(1);
     });
   });
 

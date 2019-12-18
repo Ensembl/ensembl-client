@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import { RootState } from 'src/store';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BreakpointWidth, DisplayType } from 'src/global/globalConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
@@ -19,7 +19,7 @@ enum Content {
 }
 
 export type BrowserNavBarMainProps = {
-  breakpointWidth: BreakpointWidth;
+  viewportWidth: BreakpointWidth;
 };
 
 export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
@@ -29,27 +29,22 @@ export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
     changeView(newView);
   };
 
-  const shouldShowChromsomeNavigator =
-    props.breakpointWidth >= BreakpointWidth.LAPTOP &&
+  const shouldShowChromosomeNavigator =
+    props.viewportWidth >= BreakpointWidth.LAPTOP &&
     view === Content.CHROMOSOME;
-
-  const getDisplayType = () =>
-    props.breakpointWidth >= BreakpointWidth.BIG_DESKTOP
-      ? DisplayType.FULL
-      : DisplayType.COMPACT;
 
   return (
     <div className={styles.browserNavBarMain}>
       <div className={styles.content}>
-        {shouldShowChromsomeNavigator ? (
+        {shouldShowChromosomeNavigator ? (
           <div className={styles.contentChromosomeNavigator}>
             <ChromosomeNavigator />
           </div>
         ) : (
-          <BrowserNavBarRegionSwitcher display={getDisplayType()} />
+          <BrowserNavBarRegionSwitcher />
         )}
       </div>
-      {props.breakpointWidth >= BreakpointWidth.LAPTOP && (
+      {props.viewportWidth >= BreakpointWidth.LAPTOP && (
         <ContentSwitcher currentView={view} onSwitch={handleViewChange} />
       )}
     </div>
@@ -87,7 +82,7 @@ const ContentSwitcher = (props: ContentSwitcherProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  breakpointWidth: getBreakpointWidth(state)
+  viewportWidth: getBreakpointWidth(state)
 });
 
 export default connect(mapStateToProps)(BrowserNavBarMain);
