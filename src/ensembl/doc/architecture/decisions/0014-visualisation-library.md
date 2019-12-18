@@ -44,3 +44,5 @@ We have already used D3 in developing some of our standalone widgets, and can ap
 ## Consequences
 
 D3 will help us to create custom visualisations for both existing designs and future ones. We would not need to hand-craft every feature from scratch, but could integrate D3 in various ways to meet the requirements of individual components.
+
+We are aware that integrating D3 with React does not give an obvious route for exporting the visualisations for use in other resources, within EBI or externally. We do not consider this a significant enough limitation to affect our decision to use it.
