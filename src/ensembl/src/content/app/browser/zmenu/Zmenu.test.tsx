@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import Zmenu, { ZmenuProps, Tip } from './Zmenu';
+import Zmenu, { ZmenuProps } from './Zmenu';
 import ZmenuContent from './ZmenuContent';
 
 import { createZmenuContent } from 'tests/fixtures/browser';
