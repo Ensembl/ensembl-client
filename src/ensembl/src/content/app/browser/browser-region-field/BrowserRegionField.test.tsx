@@ -25,7 +25,7 @@ describe('<BrowserRegionField', () => {
     activeGenomeId: faker.lorem.words(),
     chrLocation: createChrLocationValues().tupleValue,
     isActive: false,
-    shouldBeOpaque: false,
+    isGhosted: false,
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     toggleRegionFieldActive: jest.fn()

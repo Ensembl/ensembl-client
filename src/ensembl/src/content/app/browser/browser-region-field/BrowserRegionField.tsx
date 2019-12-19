@@ -33,7 +33,7 @@ export type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation | null;
   isActive: boolean;
-  shouldBeOpaque: boolean;
+  isGhosted: boolean;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -129,7 +129,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   };
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
-    [browserNavBarStyles.semiOpaque]: props.shouldBeOpaque
+    [browserNavBarStyles.semiOpaque]: props.isGhosted
   });
 
   const inputClassNames = classNames(styles.inputText, {
@@ -176,7 +176,7 @@ const mapStateToProps = (state: RootState) => {
     activeGenomeId: getBrowserActiveGenomeId(state),
     chrLocation: getChrLocation(state),
     isActive: getRegionFieldActive(state),
-    shouldBeOpaque: getRegionEditorActive(state)
+    isGhosted: getRegionEditorActive(state)
   };
 };
 
