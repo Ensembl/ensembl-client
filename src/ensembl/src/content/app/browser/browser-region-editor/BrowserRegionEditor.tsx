@@ -11,9 +11,9 @@ import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
 import {
   getRegionEditorActive,
-  getRegionFieldActive,
   getBrowserActiveGenomeId,
-  getChrLocation
+  getChrLocation,
+  getRegionFieldActive
 } from '../browserSelectors';
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 import {
@@ -30,10 +30,8 @@ import {
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
-import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserRegionEditor.scss';
-import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 export type BrowserRegionEditorProps = {
@@ -125,7 +123,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   const resetForm = () => {
     updateErrorMessages(null, null);
-
     props.toggleRegionEditorActive(false);
   };
 
@@ -150,7 +147,16 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     }
   };
 
-  const closeForm = () => {
+  const closeForm = (event: Event) => {
+    if (
+      stickRef?.current?.contains(event.target as HTMLElement) ||
+      locationStartRef?.current?.contains(event.target as HTMLElement) ||
+      locationEndRef?.current?.contains(event.target as HTMLElement) ||
+      buttonRef?.current?.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
     updateAllInputs();
     resetForm();
   };
@@ -166,16 +172,19 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     });
   };
 
+  const stickRef = useRef<HTMLDivElement>(null);
+  const locationStartRef = useRef<HTMLDivElement>(null);
+  const locationEndRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    document.addEventListener('click', closeForm);
+    return () => document.removeEventListener('click', closeForm);
+  }, []);
+
   useEffect(() => {
     updateAllInputs();
   }, [props.chrLocation]);
-
-  const locationStartRef = useRef<HTMLDivElement>(null);
-  const locationEndRef = useRef<HTMLDivElement>(null);
-
-  const regionEditorClassNames = classNames(styles.browserRegionEditor, {
-    [browserStyles.semiOpaque]: props.isDisabled
-  });
 
   const locationStartClassNames = classNames({
     [browserNavBarStyles.errorText]: locationStartErrorMessage
@@ -193,11 +202,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   );
 
   return (
-    <div className={regionEditorClassNames}>
-      {props.isDisabled ? <Overlay /> : null}
+    <div className={styles.browserRegionEditor}>
       <form onSubmit={handleSubmit} onFocus={handleFocus}>
-        <div className={styles.inputGroup}>
-          <label className="show-for-large">Chr</label>
+        <div className={styles.inputGroup} ref={stickRef}>
+          <label>Chr</label>
           <Select
             onSelect={updateStickInput}
             options={getKaryotypeOptions()}
@@ -208,8 +216,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           role="startInputGroup"
           ref={locationStartRef}
         >
-          <label className="show-for-large">Start</label>
+          <label htmlFor="region-editor-start">Start</label>
           <Input
+            id="region-editor-start"
             type="text"
             onChange={setLocationStartInput}
             value={locationStartInput}
@@ -230,8 +239,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           role="endInputGroup"
           ref={locationEndRef}
         >
-          <label className="show-for-large">End</label>
+          <label htmlFor="region-editor-end">End</label>
           <Input
+            id="region-editor-end"
             type="text"
             onChange={setLocationEndInput}
             value={locationEndInput}
@@ -247,15 +257,13 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
             </Tooltip>
           ) : null}
         </div>
-        <span className={buttonsClassNames}>
+        <span className={buttonsClassNames} ref={buttonRef}>
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
           </button>
-          <button onClick={closeForm} role="closeButton">
-            <img src={clearIcon} alt="Clear changes" />
-          </button>
         </span>
       </form>
+      {props.isDisabled && <Overlay className={styles.overlay} />}
     </div>
   );
 };

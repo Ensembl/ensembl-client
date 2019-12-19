@@ -3,6 +3,10 @@
 .browserRegionEditor {
   position: relative;
 
+  label {
+    margin-left: 10px;
+  }
+
   input {
     width: 120px;
   }
@@ -11,4 +15,8 @@
     display: inline-block;
     position: relative;
   }
+}
+
+.overlay {
+  background-color: rgba(241, 242, 244, 0.7);
 }

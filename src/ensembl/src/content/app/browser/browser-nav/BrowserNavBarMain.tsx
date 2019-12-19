@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
+
+import { RootState } from 'src/store';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
+
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import styles from './BrowserNavBarMain.scss';
@@ -12,17 +18,25 @@ enum Content {
   REGION_SWITCHER
 }
 
-const BrowserNavBarMain = () => {
+export type BrowserNavBarMainProps = {
+  viewportWidth: BreakpointWidth;
+};
+
+export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
   const [view, changeView] = useState<Content>(Content.CHROMOSOME);
 
   const handleViewChange = (newView: Content) => {
     changeView(newView);
   };
 
+  const shouldShowChromosomeNavigator =
+    props.viewportWidth >= BreakpointWidth.LAPTOP &&
+    view === Content.CHROMOSOME;
+
   return (
     <div className={styles.browserNavBarMain}>
       <div className={styles.content}>
-        {view === Content.CHROMOSOME ? (
+        {shouldShowChromosomeNavigator ? (
           <div className={styles.contentChromosomeNavigator}>
             <ChromosomeNavigator />
           </div>
@@ -30,7 +44,9 @@ const BrowserNavBarMain = () => {
           <BrowserNavBarRegionSwitcher />
         )}
       </div>
-      <ContentSwitcher currentView={view} onSwitch={handleViewChange} />
+      {props.viewportWidth >= BreakpointWidth.LAPTOP && (
+        <ContentSwitcher currentView={view} onSwitch={handleViewChange} />
+      )}
     </div>
   );
 };
@@ -65,4 +81,8 @@ const ContentSwitcher = (props: ContentSwitcherProps) => {
   );
 };
 
-export default BrowserNavBarMain;
+const mapStateToProps = (state: RootState) => ({
+  viewportWidth: getBreakpointWidth(state)
+});
+
+export default connect(mapStateToProps)(BrowserNavBarMain);

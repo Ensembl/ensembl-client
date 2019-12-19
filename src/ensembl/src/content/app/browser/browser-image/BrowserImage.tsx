@@ -38,9 +38,8 @@ import styles from './BrowserImage.scss';
 export type BrowserImageProps = {
   browserCogTrackList: CogList;
   browserNavOpened: boolean;
-  regionEditorActive: boolean;
-  regionFieldActive: boolean;
   browserActivated: boolean;
+  isDisabled: boolean;
   activateBrowser: () => void;
   updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
@@ -141,8 +140,8 @@ export const BrowserImage = (props: BrowserImageProps) => {
         />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
-        {props.regionEditorActive || props.regionFieldActive ? (
-          <Overlay className={styles.browserImageOverlay} />
+        {props.isDisabled ? (
+          <Overlay />
         ) : null}
       </div>
     </>
@@ -153,8 +152,7 @@ const mapStateToProps = (state: RootState) => ({
   browserCogTrackList: getBrowserCogTrackList(state),
   browserNavOpened: getBrowserNavOpened(state),
   browserActivated: getBrowserActivated(state),
-  regionEditorActive: getRegionEditorActive(state),
-  regionFieldActive: getRegionFieldActive(state)
+  isDisabled: getRegionEditorActive(state) || getRegionFieldActive(state)
 });
 
 const mapDispatchToProps = {

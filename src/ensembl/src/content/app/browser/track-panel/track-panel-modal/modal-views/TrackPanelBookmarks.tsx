@@ -47,7 +47,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         });
 
         return (
-          <div key={exampleObject.object_id} className={styles.linkHolder}>
+          <div key={`exampleLinks__${exampleObject.object_id}`} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
               {exampleObject.label}
             </Link>
@@ -91,7 +91,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           });
 
           return (
-            <div key={index} className={styles.linkHolder}>
+            <div key={`viewedLinks__${previouslyViewedObject.object_id}`} className={styles.linkHolder}>
               <Link
                 to={path}
                 onClick={() =>

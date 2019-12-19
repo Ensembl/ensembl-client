@@ -1,10 +1,9 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
 import { RootState } from 'src/store';
@@ -15,9 +14,9 @@ import {
 } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
-  getRegionEditorActive,
   getRegionFieldActive,
-  getChrLocation
+  getChrLocation,
+  getRegionEditorActive
 } from '../browserSelectors';
 import {
   getChrLocationFromStr,
@@ -26,17 +25,15 @@ import {
 } from '../browserHelper';
 
 import applyIcon from 'static/img/shared/apply.svg';
-import clearIcon from 'static/img/shared/clear.svg';
 
 import styles from './BrowserRegionField.scss';
-import browserStyles from '../Browser.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
 export type BrowserRegionFieldProps = {
   activeGenomeId: string | null;
   chrLocation: ChrLocation | null;
   isActive: boolean;
-  isDisabled: boolean;
+  isGhosted: boolean;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -50,16 +47,14 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const { activeGenomeId, chrLocation } = props;
   const [regionFieldInput, setRegionFieldInput] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const inputGroupRef = useRef<HTMLElement>(null);
+  const buttonRef = useRef<HTMLElement>(null);
 
-  const activateForm = () => {
-    if (!props.isDisabled) {
-      props.toggleRegionFieldActive(true);
-    }
-  };
+  const handleFocus = () => props.toggleRegionFieldActive(true);
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
-  const getRegionInputWithRegion = (input: string) => {
+  const getRegionInputWithStick = (input: string) => {
     const [stick] = chrLocation as ChrLocation;
 
     return input.includes(':') ? input : `${stick}:${input}`;
@@ -88,7 +83,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
     if (stickInput === stick) {
       const newChrLocation = getChrLocationFromStr(
-        getRegionInputWithRegion(regionFieldInput)
+        getRegionInputWithStick(regionFieldInput)
       );
 
       props.changeBrowserLocation({
@@ -101,16 +96,31 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     }
   };
 
-  const closeForm = () => resetForm();
+  const closeForm = (event: Event) => {
+    if (
+      inputGroupRef?.current?.contains(event.target as HTMLElement) ||
+      buttonRef?.current?.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
+    resetForm();
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', closeForm);
+    return () => document.removeEventListener('click', closeForm);
+  }, []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    event.stopPropagation();
 
     if (activeGenomeId && regionFieldInput && chrLocation) {
       setErrorMessage(null);
 
       validateRegion({
-        regionInput: getRegionInputWithRegion(regionFieldInput),
+        regionInput: getRegionInputWithStick(regionFieldInput),
         genomeId: props.activeGenomeId,
         onSuccess: onValidationSuccess,
         onError: onValidationError
@@ -119,7 +129,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   };
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
-    [browserStyles.semiOpaque]: props.isDisabled
+    [browserNavBarStyles.semiOpaque]: props.isGhosted
   });
 
   const inputClassNames = classNames(styles.inputText, {
@@ -129,29 +139,28 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const buttonsClassNames = classNames(
     browserNavBarStyles.browserNavBarButtons,
     {
-      [browserNavBarStyles.browserNavBarButtonsVisible]: props.isActive
+      [browserNavBarStyles.browserNavBarButtonsVisible]:
+        props.isActive && regionFieldInput.length
     }
   );
 
   return (
     <div className={regionFieldClassNames}>
-      {props.isDisabled ? <Overlay /> : null}
-      <form onSubmit={handleSubmit}>
-        <label className="show-for-large">Region or location</label>
-        <Input
-          type="text"
-          placeholder="0:1-1,000,000"
-          value={regionFieldInput}
-          onChange={changeRegionFieldInput}
-          onFocus={activateForm}
-          className={inputClassNames}
-        />
-        <span className={buttonsClassNames}>
+      <form onSubmit={handleSubmit} onFocus={handleFocus}>
+        <span ref={inputGroupRef}>
+          <label htmlFor="region-field-input-btn">Region or location</label>
+          <Input
+            id="region-field-input-btn"
+            type="text"
+            placeholder="0:1-1,000,000"
+            value={regionFieldInput}
+            onChange={changeRegionFieldInput}
+            className={inputClassNames}
+          />
+        </span>
+        <span className={buttonsClassNames} ref={buttonRef}>
           <button type="submit">
             <img src={applyIcon} alt="Apply changes" />
-          </button>
-          <button onClick={closeForm} role="closeButton">
-            <img src={clearIcon} alt="Clear changes" />
           </button>
         </span>
       </form>
@@ -167,7 +176,7 @@ const mapStateToProps = (state: RootState) => {
     activeGenomeId: getBrowserActiveGenomeId(state),
     chrLocation: getChrLocation(state),
     isActive: getRegionFieldActive(state),
-    isDisabled: getRegionEditorActive(state)
+    isGhosted: getRegionEditorActive(state)
   };
 };
 
@@ -177,7 +186,4 @@ const mapDispatchToProps = {
   toggleRegionFieldActive
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserRegionField);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserRegionField);
