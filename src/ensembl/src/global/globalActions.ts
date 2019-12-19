@@ -4,7 +4,6 @@ import { ThunkAction } from 'redux-thunk';
 
 import { BreakpointWidth } from './globalConfig';
 import { getBreakpointWidth } from './globalSelectors';
-import { getBreakpoint } from './globalHelper';
 
 import { RootState } from 'src/store';
 
@@ -17,15 +16,14 @@ export const updateBreakpointWidth: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (width: keyof typeof BreakpointWidth) => async (
+>> = (viewportWidth: BreakpointWidth) => async (
   dispatch,
   getState: () => RootState
 ) => {
   const state = getState();
   const currentBreakpointWidth = getBreakpointWidth(state);
-  const newBreakpointWidth = getBreakpoint(width);
 
-  if (newBreakpointWidth !== currentBreakpointWidth) {
-    dispatch(setBreakpointWidth(newBreakpointWidth));
+  if (viewportWidth !== currentBreakpointWidth) {
+    dispatch(setBreakpointWidth(viewportWidth));
   }
 };
