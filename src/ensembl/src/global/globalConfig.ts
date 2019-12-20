@@ -5,7 +5,7 @@ export enum BreakpointWidth {
   PHONE = 0,
   TABLET = 600,
   LAPTOP = 900,
-  DESKTOP = 1400,
+  DESKTOP = 1200,
   BIG_DESKTOP = 1800
 }
 
