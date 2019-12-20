@@ -33,7 +33,7 @@ describe('<TrackPanel />', () => {
   const defaultProps: TrackPanelProps = {
     activeGenomeId: null,
     browserActivated: false,
-    breakpointWidth: BreakpointWidth.DESKTOP,
+    breakpointWidth: BreakpointWidth.LAPTOP,
     isDrawerOpened: false,
     activeEnsObject: null,
     isTrackPanelModalOpened: false,
@@ -52,15 +52,15 @@ describe('<TrackPanel />', () => {
       expect(wrapper.html()).not.toBe(null);
     });
 
-    test('shows track panel only if screen is or bigger than big desktop', () => {
+    test('shows track panel only if the screen width is desktop or larger', () => {
       const wrapper = mountTrackPanel({
-        breakpointWidth: BreakpointWidth.BIG_DESKTOP
+        breakpointWidth: BreakpointWidth.DESKTOP
       });
       expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledWith(true);
 
       jest.resetAllMocks();
 
-      wrapper.setProps({ breakpointWidth: BreakpointWidth.DESKTOP });
+      wrapper.setProps({ breakpointWidth: BreakpointWidth.LAPTOP });
       wrapper.update();
       expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledWith(false);
     });

@@ -42,7 +42,7 @@ export const TrackPanel = (props: TrackPanelProps) => {
   const { isDrawerOpened } = props;
 
   useEffect(() => {
-    if (props.breakpointWidth >= BreakpointWidth.BIG_DESKTOP) {
+    if (props.breakpointWidth >= BreakpointWidth.DESKTOP) {
       props.toggleTrackPanel(true);
     } else {
       props.toggleTrackPanel(false);
