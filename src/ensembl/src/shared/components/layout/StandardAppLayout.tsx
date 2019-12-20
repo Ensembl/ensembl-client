@@ -50,8 +50,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
     { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
     {
-      [styles.sideBarWrapperDrawerOpen]:
-        'isDrawerOpen' in props ? props.isDrawerOpen : false
+      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
     }
   );
 
