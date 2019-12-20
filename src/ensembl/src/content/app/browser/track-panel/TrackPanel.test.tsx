@@ -41,19 +41,32 @@ describe('<TrackPanel />', () => {
     toggleTrackPanel: jest.fn()
   };
 
-  const mountBrowserImageComponent = (props?: Partial<TrackPanelProps>) =>
+  const mountTrackPanel = (props?: Partial<TrackPanelProps>) =>
     mount(<TrackPanel {...defaultProps} {...props} />);
 
   describe('rendering', () => {
     test('renders track panel when active genome is present', () => {
-      const wrapper = mountBrowserImageComponent({
+      const wrapper = mountTrackPanel({
         activeGenomeId: faker.lorem.words()
       });
       expect(wrapper.html()).not.toBe(null);
     });
 
+    test('shows track panel only if screen is or bigger than big desktop', () => {
+      const wrapper = mountTrackPanel({
+        breakpointWidth: BreakpointWidth.BIG_DESKTOP
+      });
+      expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledWith(true);
+
+      jest.resetAllMocks();
+
+      wrapper.setProps({ breakpointWidth: BreakpointWidth.DESKTOP });
+      wrapper.update();
+      expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledWith(false);
+    });
+
     test('renders track panel bar and track panel list when browser is activated and active feature is selected', () => {
-      const wrapper = mountBrowserImageComponent({
+      const wrapper = mountTrackPanel({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
         activeEnsObject: createEnsObject()
@@ -63,7 +76,7 @@ describe('<TrackPanel />', () => {
     });
 
     test('renders track panel modal view when a track panel modal is selected', () => {
-      const wrapper = mountBrowserImageComponent({
+      const wrapper = mountTrackPanel({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
         activeEnsObject: createEnsObject(),
@@ -73,7 +86,7 @@ describe('<TrackPanel />', () => {
     });
 
     test('renders drawer when it is set to open', () => {
-      const wrapper = mountBrowserImageComponent({
+      const wrapper = mountTrackPanel({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
         activeEnsObject: createEnsObject(),
