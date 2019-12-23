@@ -5,26 +5,38 @@ import classNames from 'classnames';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
 import defaultStyles from '../css/Accordion.scss';
+import noop from 'lodash/noop';
 
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;
   toggleExpanded(): void;
+  disabled?: boolean;
 };
 
 export const AccordionItemButton = (props: Props) => {
-  const { className, extendDefaultStyles, toggleExpanded, ...rest } = props;
+  const {
+    className,
+    extendDefaultStyles,
+    toggleExpanded,
+    disabled,
+    ...rest
+  } = props;
 
   let styles = className;
 
   if (extendDefaultStyles) {
-    styles = classNames(defaultStyles.accordionButtonDefault, className);
+    styles = classNames(
+      defaultStyles.accordionButtonDefault,
+      { [defaultStyles.accordionButtonDefaultDisabled]: props.disabled },
+      className
+    );
   }
 
   return (
     <div
       {...rest}
       className={styles}
-      onClick={toggleExpanded}
+      onClick={disabled ? noop : toggleExpanded}
       data-accordion-component="AccordionItemButton"
     />
   );
@@ -34,7 +46,7 @@ AccordionItemButton.defaultProps = {
   extendDefaultStyles: true
 };
 
-type WrapperProps = Pick<
+type WrapperProps = { disabled?: boolean } & Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
 >;

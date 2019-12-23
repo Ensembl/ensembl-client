@@ -17,6 +17,9 @@
   text-align: left;
   border: none;
   position: relative;
+  &Disabled {
+    background-color: $grey;
+  }
 }
 
 .accordionButtonDefault:after,
@@ -30,6 +33,11 @@
   margin-right: 12px;
   transition: transform 0.2s linear, top 0.2s linear;
   background-color: $blue;
+}
+
+.accordionButtonDefaultDisabled:after,
+.accordionButtonDefaultDisabled:before {
+  background-color: $light-grey;
 }
 
 .accordionButtonDefault:before {
