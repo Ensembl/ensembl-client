@@ -58,7 +58,7 @@ $drawerWindowWidth: 45px;
   }
 
   &DrawerOpen {
-    transform: translateX(0);
+    transform: translateX(#{$drawerWindowWidth});
   }
 
   &Closed {
@@ -148,6 +148,10 @@ $drawerWindowWidth: 45px;
 }
 
 .drawerWindow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-100%);
   width: $drawerWindowWidth;
   height: 100%;
 }
