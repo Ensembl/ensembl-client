@@ -1,11 +1,12 @@
 import React from 'react';
+import noop from 'lodash/noop';
+import classNames from 'classnames';
+
 import { InjectedButtonAttributes } from '../helpers/AccordionStore';
 import { DivAttributes } from '../helpers/types';
-import classNames from 'classnames';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
 import defaultStyles from '../css/Accordion.scss';
-import noop from 'lodash/noop';
 
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;

@@ -18,7 +18,8 @@
   border: none;
   position: relative;
   &Disabled {
-    background-color: $grey;
+    background-color: $light-grey;
+    color: $grey;
   }
 }
 
@@ -37,7 +38,7 @@
 
 .accordionButtonDefaultDisabled:after,
 .accordionButtonDefaultDisabled:before {
-  background-color: $light-grey;
+  display: none;
 }
 
 .accordionButtonDefault:before {

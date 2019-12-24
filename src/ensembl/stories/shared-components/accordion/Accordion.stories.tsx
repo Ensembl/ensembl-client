@@ -160,4 +160,54 @@ storiesOf('Components|Shared Components/Accordion', module)
         </Accordion>
       </div>
     );
+  })
+  .add('entity viewer', () => {
+    return (
+      <div className={styles.accordionContainer}>
+        <Accordion className={styles.entityViewerAccordion}>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Function
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Function
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading
+              className={styles.entityViewerAccordionHeader}
+            >
+              <AccordionItemButton
+                className={styles.entityViewerAccordionButton}
+              >
+                Sequence
+              </AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel
+              className={styles.entityViewerAccordionItemContent}
+            >
+              <div>Sequence content</div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Secondary structure
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>History</AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
   });

@@ -74,4 +74,22 @@ describe('AccordionItemButton', () => {
       expect(wrapper.find(AccordionItemButton).text()).toBe('Hello World');
     });
   });
+
+  describe('disabled prop', () => {
+    it('applies the accordionButtonDefaultDisabled className', () => {
+      const wrapper = mount(
+        <Accordion>
+          <AccordionItem>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Hello World
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+        </Accordion>
+      );
+
+      expect(wrapper.find('.accordionButtonDefaultDisabled')).toHaveLength(1);
+    });
+  });
 });
