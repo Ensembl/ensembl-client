@@ -142,7 +142,7 @@ $drawerWindowWidth: 45px;
   height: 100%;
   flex-grow: 1;
   position: relative;
-  padding: 15px 26px 15px 30px;
+  padding: 15px calc(#{$drawerWindowWidth} + 26px) 15px 30px;
   border-left: solid $medium-light-grey 1px;
   background-color: white;
 }
@@ -158,7 +158,7 @@ $drawerWindowWidth: 45px;
 
 .drawerClose {
   position: absolute;
-  right: 10px;
+  right: calc(#{$drawerWindowWidth} + 10px);
   top: 10px;
   width: 18px;
   height: 18px;
