@@ -18,8 +18,6 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
-import styles from './TrackPanel.scss';
-
 export type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
@@ -46,7 +44,7 @@ export const TrackPanel = (props: TrackPanelProps) => {
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
   return shouldRenderContent ? (
-    <div className={styles.trackPanel}>
+    <div>
       <TrackPanelList />
       {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
     </div>

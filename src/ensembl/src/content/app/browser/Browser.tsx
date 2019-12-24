@@ -237,7 +237,7 @@ export const Browser = (props: BrowserProps) => {
   }
 
   return (
-    <>
+    <div className={styles.browserInnerWrapper}>
       <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
       {props.browserQueryParams.focus ? (
         <StandardAppLayout
@@ -253,7 +253,7 @@ export const Browser = (props: BrowserProps) => {
       ) : (
         'No focus!'
       )}
-    </>
+    </div>
   );
 };
 

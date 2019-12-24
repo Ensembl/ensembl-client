@@ -1,5 +1,7 @@
 @import 'src/styles/common';
 
+// FIXME: Notice that the header is now 79 px, not 73 px as is assumed in the shorter style
+
 .content {
   &.shorter {
     height: calc(100% - 73px);
