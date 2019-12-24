@@ -242,7 +242,7 @@ export const Browser = (props: BrowserProps) => {
       {props.browserQueryParams.focus ? (
         <StandardAppLayout
           mainContent={<BrowserImage />}
-          sidebarContent={<div onClick={toggleDrawer}>Sidebar</div>}
+          sidebarContent={<TrackPanel />}
           sidebarNavigation={{ links: [], onChange: () => {} }}
           onSidebarToggle={onSidebarToggle}
           topbarContent={<div>Topbar</div>}

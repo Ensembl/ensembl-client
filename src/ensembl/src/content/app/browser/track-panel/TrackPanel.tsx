@@ -1,19 +1,12 @@
-import React, { useEffect, memo } from 'react';
+import React, { memo } from 'react';
 import { connect } from 'react-redux';
-import { useSpring, animated } from 'react-spring';
 import isEqual from 'lodash/isEqual';
 
-import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import Drawer from '../drawer/Drawer';
 import { RootState } from 'src/store';
 
-import {
-  getIsTrackPanelOpened,
-  getIsTrackPanelModalOpened
-} from './trackPanelSelectors';
-import { getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
   getBrowserActivated,
   getBrowserActiveGenomeId,
@@ -31,58 +24,32 @@ export type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   breakpointWidth: BreakpointWidth;
-  isDrawerOpened: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
-  isTrackPanelOpened: boolean;
   toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
 export const TrackPanel = (props: TrackPanelProps) => {
-  const { isDrawerOpened } = props;
+  // FIXME – move this to standard layout component
+  // useEffect(() => {
+  //   if (props.breakpointWidth >= BreakpointWidth.DESKTOP) {
+  //     props.toggleTrackPanel(true);
+  //   } else {
+  //     props.toggleTrackPanel(false);
+  //   }
+  // }, [props.breakpointWidth, props.toggleTrackPanel]);
 
-  useEffect(() => {
-    if (props.breakpointWidth >= BreakpointWidth.DESKTOP) {
-      props.toggleTrackPanel(true);
-    } else {
-      props.toggleTrackPanel(false);
-    }
-  }, [props.breakpointWidth, props.toggleTrackPanel]);
+  // FIXME — get TrackPanelBar back
+  // <TrackPanelBar />
 
-  const [trackAnimation, setTrackAnimation] = useSpring(() => ({
-    config: { tension: 280, friction: 45 },
-    height: '100%',
-    position: 'absolute' as 'absolute',
-    display: 'block',
-    left: 'calc(-356px + 100vw)'
-  }));
+  const shouldRenderContent =
+    props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
-  const getBrowserWidth = (): string => {
-    if (isDrawerOpened) {
-      return 'calc(41px + 0vw)';
-    }
-    return props.isTrackPanelOpened
-      ? 'calc(-356px + 100vw)'
-      : 'calc(-36px + 100vw)';
-  };
-
-  useEffect(() => {
-    setTrackAnimation({
-      left: getBrowserWidth()
-    });
-  }, [isDrawerOpened, props.isTrackPanelOpened]);
-
-  return props.activeGenomeId ? (
-    <animated.div style={trackAnimation}>
-      {props.browserActivated && props.activeEnsObject ? (
-        <div className={styles.trackPanel}>
-          <TrackPanelBar />
-          <TrackPanelList />
-          {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
-          {isDrawerOpened ? <Drawer /> : null}
-        </div>
-      ) : null}
-    </animated.div>
+  return shouldRenderContent ? (
+    <div className={styles.trackPanel}>
+      <TrackPanelList />
+      {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
+    </div>
   ) : null;
 };
 
@@ -93,10 +60,8 @@ const mapStateToProps = (state: RootState) => {
     activeGenomeId,
     browserActivated: getBrowserActivated(state),
     breakpointWidth: getBreakpointWidth(state),
-    isDrawerOpened: getIsDrawerOpened(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
-    isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-    isTrackPanelOpened: getIsTrackPanelOpened(state)
+    isTrackPanelModalOpened: getIsTrackPanelModalOpened(state)
   };
 };
 
