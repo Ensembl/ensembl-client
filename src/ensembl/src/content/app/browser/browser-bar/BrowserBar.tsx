@@ -1,22 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import { TrackSet } from '../track-panel/trackPanelConfig';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
-
-import { RootState } from 'src/store';
-import { ChrLocation } from '../browserState';
 
 import {
   getBrowserNavOpened,
   getChrLocation,
-  getActualChrLocation,
   getDefaultChrLocation,
   getBrowserActivated,
   getBrowserActiveGenomeId,
@@ -40,28 +34,32 @@ import { closeDrawer } from '../drawer/drawerActions';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
+import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
+
+import { RootState } from 'src/store';
+import { ChrLocation } from '../browserState';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './BrowserBar.scss';
 
 export type BrowserBarProps = {
-  activeGenomeId: string | null;
-  breakpointWidth: BreakpointWidth;
-  browserActivated: boolean;
-  browserNavOpened: boolean;
+  // activeGenomeId: string | null;
+  // breakpointWidth: BreakpointWidth;
+  // browserActivated: boolean;
+  // browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
-  actualChrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
-  isDrawerOpened: boolean;
-  isTrackPanelModalOpened: boolean;
-  isTrackPanelOpened: boolean;
+  // isDrawerOpened: boolean;
+  // isTrackPanelModalOpened: boolean;
+  // isTrackPanelOpened: boolean;
   ensObject: EnsObject | null;
-  selectedTrackPanelTab: TrackSet;
+  // selectedTrackPanelTab: TrackSet;
   isFocusObjectInDefaultPosition: boolean;
-  closeDrawer: () => void;
-  selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
+  // closeDrawer: () => void;
+  // selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   toggleBrowserNav: () => void;
-  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
-  changeFocusObject: (objectId: string) => void;
+  // toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
+  // changeFocusObject: (objectId: string) => void;
 };
 
 type BrowserInfoProps = {
@@ -69,8 +67,6 @@ type BrowserInfoProps = {
 };
 
 export const BrowserBar = (props: BrowserBarProps) => {
-  const { isDrawerOpened } = props;
-
   const shouldShowBrowserInfo = () => {
     const { defaultChrLocation } = props;
     const isLocationOfWholeChromosome = !defaultChrLocation;
@@ -78,77 +74,31 @@ export const BrowserBar = (props: BrowserBarProps) => {
     return !isLocationOfWholeChromosome;
   };
 
-  const [showBrowserInfo, toggleShowBrowserInfo] = useState(
-    shouldShowBrowserInfo()
-  );
-
-  const setBrowserInfoVisibility = () => {
-    const shouldToggleVisibility = showBrowserInfo !== shouldShowBrowserInfo();
-    if (shouldToggleVisibility) {
-      toggleShowBrowserInfo(!showBrowserInfo);
-    }
-  };
-
-  useEffect(() => {
-    setBrowserInfoVisibility();
-  }, [props.defaultChrLocation]);
-
-  const toggleNavigator = () => {
-    if (isDrawerOpened) {
-      return;
-    }
-
-    props.toggleBrowserNav();
-  };
-
-  const [chrCode, chrStart, chrEnd] = props.actualChrLocation || [];
-  const shouldShowTrackPanelTabs =
-    props.activeGenomeId &&
-    (props.isTrackPanelOpened ||
-      props.breakpointWidth >= BreakpointWidth.DESKTOP);
-
   const browserInfoClassName = classNames(styles.browserInfo, {
-    [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
-    [styles.browserInfoGreyed]: isDrawerOpened
+    // [styles.browserInfoGreyed]: isDrawerOpened
   });
 
-  const browserRegionClassName = classNames(styles.browserInfoRegion, {
-    [styles.browserInfoHidden]: isDrawerOpened
-  });
+  // const browserRegionClassName = classNames(styles.browserInfoRegion, {
+  //   [styles.browserInfoHidden]: isDrawerOpened
+  // });
 
-  if (!(props.chrLocation && props.actualChrLocation && props.ensObject)) {
-    return <div className={styles.browserBar} />;
+  if (!(props.chrLocation && props.ensObject)) {
+    return null;
   }
 
   return (
     <div className={styles.browserBar}>
+      <BrowserReset
+        focusObject={props.ensObject}
+        changeFocusObject={props.changeFocusObject}
+        isActive={
+          !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
+        }
+      />
       <div className={browserInfoClassName}>
-        <dl className={styles.browserInfoLeft}>
-          <BrowserReset
-            focusObject={props.ensObject}
-            changeFocusObject={props.changeFocusObject}
-            isActive={
-              !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
-            }
-          />
-          {showBrowserInfo && <BrowserInfo ensObject={props.ensObject} />}
-        </dl>
+        <BrowserInfo ensObject={props.ensObject} />
         <dl className={styles.browserInfoRight}>
-          {props.actualChrLocation && (
-            <dd className={browserRegionClassName}>
-              <div className={`${styles.chrLabel} show-for-large`}>
-                Chromosome
-              </div>
-              <div className={styles.chrLocationView} onClick={toggleNavigator}>
-                <div className={styles.chrCode}>{chrCode}</div>
-                <div className={styles.chrRegion}>
-                  <span>{getCommaSeparatedNumber(chrStart as number)}</span>
-                  <span className={styles.chrSeparator}>-</span>
-                  <span>{getCommaSeparatedNumber(chrEnd as number)}</span>
-                </div>
-              </div>
-            </dd>
-          )}
+          <BrowserLocationIndicator />
         </dl>
       </div>
       {shouldShowTrackPanelTabs && (
@@ -212,7 +162,6 @@ const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   browserNavOpened: getBrowserNavOpened(state),
   chrLocation: getChrLocation(state),
-  actualChrLocation: getActualChrLocation(state),
   defaultChrLocation: getDefaultChrLocation(state),
   ensObject: getBrowserActiveEnsObject(state),
   isDrawerOpened: getIsDrawerOpened(state),

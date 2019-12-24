@@ -99,37 +99,3 @@
     cursor: pointer;
   }
 }
-
-.chrLocationView {
-  display: inline-block;
-}
-
-.chrCode {
-  background: $dark-blue;
-  color: $white;
-  cursor: pointer;
-  display: inline-block;
-  font-weight: $bold;
-  margin: 0 5px;
-  padding: 1px 4px;
-  text-align: center;
-}
-
-.chrRegion {
-  color: $dark-blue;
-  display: inline-block;
-}
-
-.browserInfoHidden {
-  .chrCode {
-    background: $dark-grey;
-  }
-
-  .chrRegion {
-    color: $dark-grey;
-  }
-}
-
-.chrSeparator {
-  margin: 0 2px;
-}
