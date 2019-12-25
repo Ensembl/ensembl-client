@@ -4,8 +4,10 @@ import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
-import { getActualChrLocation } from '../browserSelectors';
 import { toggleBrowserNav } from '../browserActions';
+
+import { getActualChrLocation } from '../browserSelectors';
+import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import { RootState } from 'src/store';
 import { ChrLocation } from '../browserState';
@@ -27,11 +29,12 @@ export const BrowserLocationIndicator = (props: Props) => {
   const className = classNames(styles.browserLocationIndicator, {
     [styles.browserLocationIndicatorDisabled]: props.disabled
   });
+  const onClickProps = props.disabled ? {} : { onClick: props.onClick };
 
   return (
     <div className={className}>
       <div className={styles.chrLabel}>Chromosome</div>
-      <div className={styles.chrLocationView} onClick={props.onClick}>
+      <div className={styles.chrLocationView} {...onClickProps}>
         <div className={styles.chrCode}>{chrCode}</div>
         <div className={styles.chrRegion}>
           <span>{getCommaSeparatedNumber(chrStart as number)}</span>
@@ -44,7 +47,8 @@ export const BrowserLocationIndicator = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  location: getActualChrLocation(state)
+  location: getActualChrLocation(state),
+  disabled: getIsDrawerOpened(state)
 });
 
 const mapDispatchToProps = {

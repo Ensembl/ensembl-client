@@ -2,12 +2,7 @@
 
 .browserBar {
   display: flex;
-  background: $light-grey;
-  box-shadow: 0 2px 3px $grey;
-  height: 32px;
-  padding: 6px 0 3px 0;
   position: relative;
-  z-index: 200;
 
   dd {
     display: inline-block;
@@ -61,10 +56,10 @@
       flex: 1 1 auto;
     }
 
-    &.browserInfoRight {
-      flex: 0 1 auto;
-      text-align: right;
-    }
+    // &.browserInfoRight {
+    //   flex: 0 1 auto;
+    //   text-align: right;
+    // }
 
     .ensObjectLabel {
       margin-left: 14px;
@@ -86,16 +81,5 @@
       height: 22px;
       width: 22px;
     }
-  }
-}
-
-.browserInfoRegion {
-  .chrLabel {
-    display: inline-block;
-    margin-right: 5px;
-  }
-
-  span {
-    cursor: pointer;
   }
 }

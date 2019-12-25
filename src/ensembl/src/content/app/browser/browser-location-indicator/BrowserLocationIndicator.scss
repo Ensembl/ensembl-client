@@ -1,12 +1,24 @@
 @import 'src/styles/common';
 
 .browserLocationIndicator {
+  display: flex;
+
+  .chrCode,
+  .chrRegion {
+    cursor: pointer;
+  }
+
   &Disabled {
     .chrCode {
       background: $dark-grey;
     }
     .chrRegion {
       color: $dark-grey;
+    }
+
+    .chrCode,
+    .chrRegion {
+      cursor: default;
     }
   }
 }
@@ -18,7 +30,6 @@
 .chrCode {
   background: $dark-blue;
   color: $white;
-  cursor: pointer;
   display: inline-block;
   font-weight: $bold;
   margin: 0 5px;
@@ -34,3 +45,14 @@
   color: $dark-blue;
   display: inline-block;
 }
+
+// .browserInfoRegion {
+//   .chrLabel {
+//     display: inline-block;
+//     margin-right: 5px;
+//   }
+//
+//   span {
+//     cursor: pointer;
+//   }
+// }

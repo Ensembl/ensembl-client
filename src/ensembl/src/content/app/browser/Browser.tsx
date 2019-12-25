@@ -227,8 +227,6 @@ export const Browser = (props: BrowserProps) => {
     props.toggleDrawer(!props.isDrawerOpened);
   };
 
-  const browserBar = <BrowserBar />;
-
   const shouldShowNavBar =
     props.browserActivated && props.browserNavOpened && !isDrawerOpened;
 
@@ -245,7 +243,7 @@ export const Browser = (props: BrowserProps) => {
           sidebarContent={<TrackPanel />}
           sidebarNavigation={{ links: [], onChange: () => {} }}
           onSidebarToggle={onSidebarToggle}
-          topbarContent={<div>Topbar</div>}
+          topbarContent={<BrowserBar />}
           isSidebarOpen={props.isTrackPanelOpened}
           isDrawerOpen={props.isDrawerOpened}
           onDrawerClose={toggleDrawer}

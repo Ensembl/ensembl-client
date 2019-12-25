@@ -86,36 +86,42 @@ export const BrowserBar = (props: BrowserBarProps) => {
     return null;
   }
 
+  // <BrowserReset
+  //   focusObject={props.ensObject}
+  //   changeFocusObject={props.changeFocusObject}
+  //   isActive={
+  //     !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
+  //   }
+  // />
+
   return (
     <div className={styles.browserBar}>
-      <BrowserReset
-        focusObject={props.ensObject}
-        changeFocusObject={props.changeFocusObject}
-        isActive={
-          !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
-        }
-      />
       <div className={browserInfoClassName}>
         <BrowserInfo ensObject={props.ensObject} />
         <dl className={styles.browserInfoRight}>
           <BrowserLocationIndicator />
         </dl>
       </div>
-      {shouldShowTrackPanelTabs && (
-        <TrackPanelTabs
-          closeDrawer={props.closeDrawer}
-          ensObject={props.ensObject}
-          isDrawerOpened={props.isDrawerOpened}
-          selectTrackPanelTab={props.selectTrackPanelTab}
-          selectedTrackPanelTab={props.selectedTrackPanelTab}
-          toggleTrackPanel={props.toggleTrackPanel}
-          isTrackPanelModalOpened={props.isTrackPanelModalOpened}
-          isTrackPanelOpened={props.isTrackPanelOpened}
-        />
-      )}
     </div>
   );
 };
+
+/*
+
+{shouldShowTrackPanelTabs && (
+  <TrackPanelTabs
+    closeDrawer={props.closeDrawer}
+    ensObject={props.ensObject}
+    isDrawerOpened={props.isDrawerOpened}
+    selectTrackPanelTab={props.selectTrackPanelTab}
+    selectedTrackPanelTab={props.selectedTrackPanelTab}
+    toggleTrackPanel={props.toggleTrackPanel}
+    isTrackPanelModalOpened={props.isTrackPanelModalOpened}
+    isTrackPanelOpened={props.isTrackPanelOpened}
+  />
+)}
+
+*/
 
 export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
   return (

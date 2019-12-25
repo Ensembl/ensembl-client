@@ -60,5 +60,12 @@ describe('BrowserLocationIndicator', () => {
       wrapper.find('.chrLocationView').simulate('click');
       expect(props.onClick).toHaveBeenCalled();
     });
+
+    it('does not call the onClick prop if disabled', () => {
+      const wrapper = mount(<BrowserLocationIndicator {...props} />);
+      wrapper.setProps({ disabled: true });
+      wrapper.find('.chrLocationView').simulate('click');
+      expect(props.onClick).not.toHaveBeenCalled();
+    });
   });
 });
