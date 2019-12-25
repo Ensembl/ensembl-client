@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
@@ -14,6 +15,7 @@ import styles from './BrowserLocationIndicator.scss';
 type Props = {
   onClick: () => void;
   location: ChrLocation | null;
+  disabled: boolean;
 };
 
 export const BrowserLocationIndicator = (props: Props) => {
@@ -22,8 +24,12 @@ export const BrowserLocationIndicator = (props: Props) => {
     return null;
   }
 
+  const className = classNames(styles.browserLocationIndicator, {
+    [styles.browserLocationIndicatorDisabled]: props.disabled
+  });
+
   return (
-    <div>
+    <div className={className}>
       <div className={styles.chrLabel}>Chromosome</div>
       <div className={styles.chrLocationView} onClick={props.onClick}>
         <div className={styles.chrCode}>{chrCode}</div>

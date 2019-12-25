@@ -1,5 +1,16 @@
 @import 'src/styles/common';
 
+.browserLocationIndicator {
+  &Disabled {
+    .chrCode {
+      background: $dark-grey;
+    }
+    .chrRegion {
+      color: $dark-grey;
+    }
+  }
+}
+
 .chrLocationView {
   display: inline-block;
 }
@@ -22,14 +33,4 @@
 .chrRegion {
   color: $dark-blue;
   display: inline-block;
-}
-
-.browserInfoHidden {
-  .chrCode {
-    background: $dark-grey;
-  }
-
-  .chrRegion {
-    color: $dark-grey;
-  }
 }
