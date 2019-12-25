@@ -14,8 +14,7 @@ import {
   getDefaultChrLocation,
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObject,
-  isFocusObjectPositionDefault
+  getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 import {
@@ -33,7 +32,7 @@ import {
 import { closeDrawer } from '../drawer/drawerActions';
 
 import BrowserReset from '../browser-reset/BrowserReset';
-import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
+// import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
 import { RootState } from 'src/store';
@@ -86,16 +85,9 @@ export const BrowserBar = (props: BrowserBarProps) => {
     return null;
   }
 
-  // <BrowserReset
-  //   focusObject={props.ensObject}
-  //   changeFocusObject={props.changeFocusObject}
-  //   isActive={
-  //     !props.isFocusObjectInDefaultPosition && !props.isDrawerOpened
-  //   }
-  // />
-
   return (
     <div className={styles.browserBar}>
+      <BrowserReset />
       <div className={browserInfoClassName}>
         <BrowserInfo ensObject={props.ensObject} />
         <dl className={styles.browserInfoRight}>
@@ -173,8 +165,7 @@ const mapStateToProps = (state: RootState) => ({
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
-  selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-  isFocusObjectInDefaultPosition: isFocusObjectPositionDefault(state)
+  selectedTrackPanelTab: getSelectedTrackPanelTab(state)
 });
 
 const mapDispatchToProps = {
