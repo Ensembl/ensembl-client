@@ -48,6 +48,7 @@ import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
+import TrackPanelBar from './track-panel/track-panel-bar/TrackPanelBar';
 import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
@@ -242,6 +243,7 @@ export const Browser = (props: BrowserProps) => {
           mainContent={<BrowserImage />}
           sidebarContent={<TrackPanel />}
           sidebarNavigation={{ links: [], onChange: () => {} }}
+          sidebarToolstripContent={<TrackPanelBar />}
           onSidebarToggle={onSidebarToggle}
           topbarContent={<BrowserBar />}
           isSidebarOpen={props.isTrackPanelOpened}

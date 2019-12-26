@@ -44,10 +44,11 @@ export const TrackPanel = (props: TrackPanelProps) => {
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
   return shouldRenderContent ? (
-    <div>
+    props.isTrackPanelModalOpened ? (
+      <TrackPanelModal />
+    ) : (
       <TrackPanelList />
-      {props.isTrackPanelModalOpened ? <TrackPanelModal /> : null}
-    </div>
+    )
   ) : null;
 };
 
