@@ -20,7 +20,8 @@ $drawerWindowWidth: 45px;
   box-shadow: 0 2px 3px $grey;
   position: relative;
   padding-left: 18px;
-  z-index: 200;
+  width: 100%;
+  z-index: 5;
 }
 
 .mainWrapper {

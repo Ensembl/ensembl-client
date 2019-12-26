@@ -3,29 +3,17 @@
 .trackPanelTabs {
   display: flex;
   font-size: 13px;
-  justify-content: space-between;
-  margin-left: 44px;
-  padding-right: 5px;
-  width: 312px;
+  justify-content: space-around;
 }
 
 .trackPanelTab {
-  button {
-    color: $dark-blue;
-  }
-}
-
-.trackPanelTabActive {
-  button {
-    color: inherit;
-  }
+  color: $dark-blue;
+  cursor: pointer;
 }
 
 .trackPanelTabDisabled {
-  button {
-    color: $dark-grey;
-    cursor: default;
-  }
+  color: $dark-grey;
+  cursor: default;
 }
 .trackPanelTabArrow {
   position: relative;

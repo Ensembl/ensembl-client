@@ -54,11 +54,13 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     }
   );
 
+  // <SidebarTabs {...props} />
+
   return (
     <div className={styles.standardAppLayout}>
       <div className={styles.topBar}>
         {props.topbarContent}
-        <SidebarTabs {...props} />
+        {props.sidebarNavigation}
       </div>
       <div className={styles.mainWrapper}>
         <div className={mainClassnames}>{props.mainContent}</div>
