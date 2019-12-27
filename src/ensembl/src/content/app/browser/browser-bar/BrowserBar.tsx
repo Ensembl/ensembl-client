@@ -5,9 +5,6 @@ import classNames from 'classnames';
 import { TrackSet } from '../track-panel/trackPanelConfig';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
-import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
-
 import {
   getBrowserNavOpened,
   getChrLocation,
@@ -33,6 +30,10 @@ import { closeDrawer } from '../drawer/drawerActions';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 // import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
+import {
+  GeneSummaryStrip,
+  RegionSummaryStrip
+} from 'src/shared/components/feature-summary-strip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
 import { RootState } from 'src/store';
@@ -82,17 +83,17 @@ export const BrowserBar = (props: BrowserBarProps) => {
   // });
 
   if (!(props.chrLocation && props.ensObject)) {
-    return null;
+    return <div />;
   }
 
   return (
     <div className={styles.browserBar}>
-      <BrowserReset />
-      <div className={browserInfoClassName}>
-        <BrowserInfo ensObject={props.ensObject} />
-        <dl className={styles.browserInfoRight}>
-          <BrowserLocationIndicator />
-        </dl>
+      <div className={styles.browserResetWrapper}>
+        <BrowserReset />
+      </div>
+      <BrowserInfo ensObject={props.ensObject} />
+      <div className={styles.browserLocationIndicatorWrapper}>
+        <BrowserLocationIndicator />
       </div>
     </div>
   );
@@ -116,42 +117,14 @@ export const BrowserBar = (props: BrowserBarProps) => {
 */
 
 export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
-  return (
-    <>
-      {ensObject.object_type === 'gene' && (
-        <>
-          <dd className={styles.ensObjectLabel}>
-            <label>{ensObject.object_type}</label>
-            <span className={styles.value}>{ensObject.label}</span>
-          </dd>
-          <dd>
-            <label>Stable ID</label>
-            <span className={styles.value}>
-              {getDisplayStableId(ensObject)}
-            </span>
-          </dd>
-          <dd className={`show-for-large`}>
-            {ensObject.bio_type && ensObject.bio_type.toLowerCase()}
-          </dd>
-          <dd className={`show-for-large`}>{ensObject.strand} strand</dd>
-          <dd className={`show-for-large`}>
-            {getFormattedLocation(ensObject.location)}
-          </dd>
-        </>
-      )}
-
-      {ensObject.object_type === 'region' && (
-        <>
-          <dd className={styles.ensObjectLabel}>
-            <label>Region: </label>
-            <span className={styles.value}>
-              {getFormattedLocation(ensObject.location)}
-            </span>
-          </dd>
-        </>
-      )}
-    </>
-  );
+  switch (ensObject.object_type) {
+    case 'gene':
+      return <GeneSummaryStrip gene={ensObject} />;
+    case 'region':
+      return <RegionSummaryStrip region={ensObject} />;
+    default:
+      return null;
+  }
 };
 
 const mapStateToProps = (state: RootState) => ({

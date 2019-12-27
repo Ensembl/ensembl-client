@@ -1,0 +1,22 @@
+@import 'src/styles/common';
+
+.featureSummaryStrip {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+
+  & > div:not(:last-child) {
+    margin-right: 28px;
+  }
+}
+
+.featureSummaryStripLabel {
+  color: $dark-grey;
+  font-weight: $light;
+  margin-right: 0.4em;
+}
+
+.featureDisplayName {
+  font-size: 13px;
+  font-weight: $bold;
+}

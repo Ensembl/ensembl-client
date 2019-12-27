@@ -3,17 +3,14 @@
 .browserBar {
   display: flex;
   position: relative;
+}
 
-  dd {
-    display: inline-block;
-    margin: 0 18px;
-  }
+.browserResetWrapper {
+  margin-right: 14px;
+}
 
-  button {
-    &.selected {
-      background: $white;
-    }
-  }
+.browserLocationIndicatorWrapper {
+  margin-left: auto;
 }
 
 .browserInfo {

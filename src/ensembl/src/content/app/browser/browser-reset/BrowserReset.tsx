@@ -40,17 +40,15 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   };
 
   return (
-    <dd className={styles.resetButton}>
-      <div className={styles.imageWrapper}>
-        <ImageButton
-          buttonStatus={getResetIconStatus()}
-          description={'Reset browser image'}
-          image={resetIcon}
-          onClick={handleClick}
-          classNames={{ disabled: styles.imageButtonDisabled }}
-        />
-      </div>
-    </dd>
+    <div className={styles.resetButton}>
+      <ImageButton
+        buttonStatus={getResetIconStatus()}
+        description={'Reset browser image'}
+        image={resetIcon}
+        onClick={handleClick}
+        classNames={{ disabled: styles.imageButtonDisabled }}
+      />
+    </div>
   );
 };
 
