@@ -57,7 +57,7 @@ const mapStateToProps = (state: RootState) => {
   const isDrawerOpened = getIsDrawerOpened(state);
   return {
     focusObject: getBrowserActiveEnsObject(state),
-    isActive: isFocusObjectInDefaultPosition && isDrawerOpened
+    isActive: !isFocusObjectInDefaultPosition && !isDrawerOpened
   };
 };
 

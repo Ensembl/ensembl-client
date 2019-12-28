@@ -16,7 +16,9 @@ jest.mock('./track-panel/TrackPanel', () => () => <div>TrackPanel</div>);
 jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
   <div>BrowserAppBar</div>
 ));
-jest.mock('ensembl-genome-browser', () => { return; });
+jest.mock('ensembl-genome-browser', () => {
+  return;
+});
 
 describe('<Browser />', () => {
   afterEach(() => {
@@ -44,10 +46,10 @@ describe('<Browser />', () => {
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     changeDrawerView: jest.fn(),
-    closeDrawer: jest.fn(),
     restoreBrowserTrackStates: jest.fn(),
     fetchGenomeData: jest.fn(),
     replace: jest.fn(),
+    toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
     setDataFromUrlAndSave: jest.fn()
   };

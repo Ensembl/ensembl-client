@@ -17,19 +17,11 @@ type SidebarModeToggleProps = {
   showAction: SidebarModeToggleAction;
 };
 
-type SidebarNavigationProps = {
-  links: Array<{
-    label: string;
-    isActive: boolean;
-  }>;
-  onChange: (index: number) => void;
-};
-
 type StandardAppLayoutProps = {
   mainContent: ReactNode;
   sidebarContent: ReactNode;
   sidebarToolstripContent?: ReactNode;
-  sidebarNavigation: SidebarNavigationProps;
+  sidebarNavigation: ReactNode;
   topbarContent: ReactNode;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
@@ -112,37 +104,6 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
     </div>
   );
 };
-
-const SidebarTabs = (props: StandardAppLayoutProps) => {
-  const links = props.sidebarNavigation.links.map((link, index) => {
-    const isLinkActive = shouldLinkBeActive(
-      link,
-      props.isSidebarOpen,
-      props.isDrawerOpen
-    );
-    return (
-      <span
-        key={index}
-        className={classNames(styles.sidebarTab, {
-          [styles.sidebarTabActive]: isLinkActive
-        })}
-        {...(!isLinkActive
-          ? { onClick: () => props.sidebarNavigation.onChange(index) }
-          : null)}
-      >
-        {link.label}
-      </span>
-    );
-  });
-
-  return <div className={styles.sidebarTabs}>{links}</div>;
-};
-
-const shouldLinkBeActive = (
-  link: { isActive: boolean },
-  isSidebarOpen: boolean,
-  isDrawerOpen: boolean
-) => link.isActive && isSidebarOpen && !isDrawerOpen;
 
 // left-most transparent part of the drawer allowing the user to see what element is behind the drawer;
 // when clicked, will close the drawer

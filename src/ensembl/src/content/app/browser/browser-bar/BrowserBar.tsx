@@ -48,12 +48,12 @@ export type BrowserBarProps = {
   // browserNavOpened: boolean;
   chrLocation: ChrLocation | null;
   defaultChrLocation: ChrLocation | null;
-  // isDrawerOpened: boolean;
+  isDrawerOpened: boolean;
   // isTrackPanelModalOpened: boolean;
   // isTrackPanelOpened: boolean;
   ensObject: EnsObject | null;
   // selectedTrackPanelTab: TrackSet;
-  isFocusObjectInDefaultPosition: boolean;
+  // isFocusObjectInDefaultPosition: boolean;
   // closeDrawer: () => void;
   // selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
   toggleBrowserNav: () => void;
@@ -63,6 +63,7 @@ export type BrowserBarProps = {
 
 type BrowserInfoProps = {
   ensObject: EnsObject;
+  isDrawerOpened: boolean;
 };
 
 export const BrowserBar = (props: BrowserBarProps) => {
@@ -90,7 +91,10 @@ export const BrowserBar = (props: BrowserBarProps) => {
       <div className={styles.browserResetWrapper}>
         <BrowserReset />
       </div>
-      <BrowserInfo ensObject={props.ensObject} />
+      <BrowserInfo
+        ensObject={props.ensObject}
+        isDrawerOpened={props.isDrawerOpened}
+      />
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator />
       </div>
@@ -115,12 +119,16 @@ export const BrowserBar = (props: BrowserBarProps) => {
 
 */
 
-export const BrowserInfo = ({ ensObject }: BrowserInfoProps) => {
+export const BrowserInfo = (props: BrowserInfoProps) => {
+  const { ensObject, isDrawerOpened } = props;
+  const childProps = {
+    isGhosted: isDrawerOpened
+  };
   switch (ensObject.object_type) {
     case 'gene':
-      return <GeneSummaryStrip gene={ensObject} />;
+      return <GeneSummaryStrip gene={ensObject} {...childProps} />;
     case 'region':
-      return <RegionSummaryStrip region={ensObject} />;
+      return <RegionSummaryStrip region={ensObject} {...childProps} />;
     default:
       return null;
   }

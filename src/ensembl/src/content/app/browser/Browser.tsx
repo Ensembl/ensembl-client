@@ -21,11 +21,7 @@ import {
 } from './browserActions';
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
-import {
-  changeDrawerView,
-  closeDrawer,
-  toggleDrawer
-} from './drawer/drawerActions';
+import { changeDrawerView, toggleDrawer } from './drawer/drawerActions';
 
 import {
   getBrowserNavOpened,
@@ -83,7 +79,6 @@ export type BrowserProps = {
   }) => void;
   changeFocusObject: (objectId: string) => void;
   changeDrawerView: (drawerView: string) => void;
-  closeDrawer: () => void;
   restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
@@ -95,7 +90,7 @@ export type BrowserProps = {
 export const Browser = (props: BrowserProps) => {
   const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
 
-  const { isDrawerOpened, closeDrawer } = props;
+  const { isDrawerOpened } = props;
   const params: { [key: string]: string } = useParams();
   const location = useLocation();
 
@@ -213,14 +208,6 @@ export const Browser = (props: BrowserProps) => {
     }
   }, [props.browserActivated]);
 
-  const closeTrack = () => {
-    if (!isDrawerOpened) {
-      return;
-    }
-
-    closeDrawer();
-  };
-
   const onSidebarToggle = () => {
     props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME
   };
@@ -313,7 +300,6 @@ const mapDispatchToProps = {
   changeBrowserLocation,
   changeFocusObject,
   changeDrawerView,
-  closeDrawer,
   fetchGenomeData,
   replace,
   toggleDrawer,
