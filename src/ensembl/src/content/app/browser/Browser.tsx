@@ -236,12 +236,19 @@ export const Browser = (props: BrowserProps) => {
     return null;
   }
 
+  const mainContent = (
+    <>
+      {shouldShowNavBar && <BrowserNavBar />}
+      <BrowserImage />
+    </>
+  );
+
   return (
     <div className={styles.browserInnerWrapper}>
       <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
       {props.browserQueryParams.focus ? (
         <StandardAppLayout
-          mainContent={<BrowserImage />}
+          mainContent={mainContent}
           sidebarContent={<TrackPanel />}
           sidebarNavigation={<TrackPanelTabs />}
           sidebarToolstripContent={<TrackPanelBar />}
@@ -252,40 +259,11 @@ export const Browser = (props: BrowserProps) => {
           onDrawerClose={toggleDrawer}
         />
       ) : (
-        'No focus!'
+        <ExampleObjectLinks {...props} />
       )}
     </div>
   );
 };
-
-/*
-
-      {!props.browserQueryParams.focus && (
-        <section className={styles.browser}>
-          {browserBar}
-          <ExampleObjectLinks {...props} />
-        </section>
-      )}
-      {!!props.browserQueryParams.focus && (
-        <section className={styles.browser}>
-          {browserBar}
-          <div
-            className={`${styles.browserInnerWrapper} ${getHeightClass(
-              props.launchbarExpanded
-            )}`}
-          >
-            <animated.div style={trackAnimation}>
-              <div className={styles.browserImageWrapper} onClick={closeTrack}>
-                {shouldShowNavBar && <BrowserNavBar />}
-                <BrowserImage />
-              </div>
-            </animated.div>
-            <TrackPanel />
-          </div>
-        </section>
-      )}
-
-*/
 
 export const ExampleObjectLinks = (props: BrowserProps) => {
   const { activeGenomeId } = props;

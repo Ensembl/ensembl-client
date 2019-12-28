@@ -29,7 +29,6 @@ import {
 import { closeDrawer } from '../drawer/drawerActions';
 
 import BrowserReset from '../browser-reset/BrowserReset';
-// import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
 import {
   GeneSummaryStrip,
   RegionSummaryStrip
