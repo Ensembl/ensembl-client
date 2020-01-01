@@ -1,53 +1,35 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import faker from 'faker';
 import { BrowserBar, BrowserInfo, BrowserBarProps } from './BrowserBar';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
+import BrowserLocationIndicator from 'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator';
+import {
+  GeneSummaryStrip,
+  RegionSummaryStrip
+} from 'src/shared/components/feature-summary-strip';
 import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
 
 import { ChrLocation } from '../browserState';
-import { TrackSet } from '../track-panel/trackPanelConfig';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
 jest.mock('src/content/app/browser/browser-reset/BrowserReset', () => () => (
   <div>BrowserReset</div>
 ));
-jest.mock('../track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
-  <div>BrowserReset</div>
-));
+jest.mock(
+  'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator',
+  () => () => <div>Browser Location Indicator</div>
+);
 
 describe('<BrowserBar />', () => {
-  const selectTrackPanelTab: any = jest.fn();
-  const toggleBrowserNav: any = jest.fn();
-  const toggleDrawer: any = jest.fn();
-
   const defaultProps = {
-    activeGenomeId: faker.lorem.word(),
-    breakpointWidth: BreakpointWidth.DESKTOP,
-    browserActivated: true,
-    browserNavOpened: false,
     chrLocation: ['13', 32275301, 32433493] as ChrLocation,
-    actualChrLocation: ['13', 32275301, 32433493] as ChrLocation,
     defaultChrLocation: ['13', 32271473, 32437359] as ChrLocation,
-    drawerOpened: false,
     ensObject: createEnsObject(),
-    selectedTrackPanelTab: TrackSet.GENOMIC,
-    trackPanelModalOpened: false,
-    trackPanelOpened: false,
-    selectTrackPanelTab,
-    toggleBrowserNav,
-    toggleDrawer,
-    isDrawerOpened: false,
-    isTrackPanelModalOpened: false,
-    isTrackPanelOpened: false,
-    isFocusObjectInDefaultPosition: true,
-    closeDrawer: jest.fn(),
-    toggleTrackPanel: jest.fn(),
-    changeFocusObject: jest.fn()
+    isDrawerOpened: false
   };
 
   const renderBrowserBar = (props?: Partial<BrowserBarProps>) => (
@@ -61,16 +43,26 @@ describe('<BrowserBar />', () => {
       renderedBrowserBar = mount(renderBrowserBar());
     });
 
-    test('contains a left bar', () => {
-      expect(renderedBrowserBar.find('.browserInfoLeft')).toHaveLength(1);
-    });
-
-    test('contains a right bar', () => {
-      expect(renderedBrowserBar.find('.browserInfoRight')).toHaveLength(1);
-    });
-
     test('contains BrowserReset button', () => {
       expect(renderedBrowserBar.find(BrowserReset)).toHaveLength(1);
+    });
+
+    test('contains BrowserLocationIndicator', () => {
+      expect(renderedBrowserBar.find(BrowserLocationIndicator)).toHaveLength(1);
+    });
+
+    test('renders GeneSummaryStrip if focus object is gene', () => {
+      const renderedBrowserBar = mount(
+        renderBrowserBar({ ensObject: createEnsObject('gene') })
+      );
+      expect(renderedBrowserBar.find(GeneSummaryStrip)).toHaveLength(1);
+    });
+
+    test('renders RegionSummaryStrip if focus object is region', () => {
+      const renderedBrowserBar = mount(
+        renderBrowserBar({ ensObject: createEnsObject('region') })
+      );
+      expect(renderedBrowserBar.find(RegionSummaryStrip)).toHaveLength(1);
     });
   });
 
@@ -80,30 +72,12 @@ describe('<BrowserBar />', () => {
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(1);
     });
 
+    // FIXME: when does this happen, and why do we hide BrowserInfo panel?
     test('hides BrowserInfo panel if default location is not provided', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ defaultChrLocation: null })
       );
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(0);
-    });
-
-    test('shows TrackPanelTabs if TrackPanel is open', () => {
-      const renderedBrowserBar = mount(
-        renderBrowserBar({ isTrackPanelOpened: true })
-      );
-      expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
-    });
-
-    test('shows TrackPanelTabs on a wide display even if TrackPanel is closed', () => {
-      const renderedBrowserBar = mount(renderBrowserBar());
-      expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
-    });
-
-    test('hides TrackPanelTabs on a small display if TrackPanel is closed', () => {
-      const renderedBrowserBar = mount(
-        renderBrowserBar({ breakpointWidth: BreakpointWidth.LAPTOP })
-      );
-      expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(0);
     });
   });
 });

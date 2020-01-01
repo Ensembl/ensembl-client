@@ -221,3 +221,26 @@ describe('StandardAppLayout', () => {
     });
   });
 });
+
+/*
+
+test('shows TrackPanelTabs if TrackPanel is open', () => {
+  const renderedBrowserBar = mount(
+    renderBrowserBar({ isTrackPanelOpened: true })
+  );
+  expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
+});
+
+test('shows TrackPanelTabs on a wide display even if TrackPanel is closed', () => {
+  const renderedBrowserBar = mount(renderBrowserBar());
+  expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(1);
+});
+
+test('hides TrackPanelTabs on a small display if TrackPanel is closed', () => {
+  const renderedBrowserBar = mount(
+    renderBrowserBar({ breakpointWidth: BreakpointWidth.LAPTOP })
+  );
+  expect(renderedBrowserBar.find(TrackPanelTabs).length).toBe(0);
+});
+
+*/
