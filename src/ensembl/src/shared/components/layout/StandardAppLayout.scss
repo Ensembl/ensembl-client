@@ -11,10 +11,6 @@ $drawerWindowWidth: 45px;
 }
 
 .topBar {
-  display: grid;
-  grid-template-columns: 1fr $sideBarContentWidth;
-  grid-column-gap: $sideBarToolStripWidth;
-  align-items: center;
   height: $topBarHeight;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
@@ -22,6 +18,22 @@ $drawerWindowWidth: 45px;
   padding-left: 18px;
   width: 100%;
   z-index: 5;
+
+  &_withSidebarNavigation {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr $sideBarContentWidth;
+    grid-column-gap: $sideBarToolStripWidth;
+  }
+
+  &_withoutSidebarNavigation {
+    display: flex;
+    align-items: center;
+
+    & > div {
+      padding-right: 1em;
+    }
+  }
 }
 
 .mainWrapper {

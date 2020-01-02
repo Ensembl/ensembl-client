@@ -2,6 +2,8 @@ import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
+
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
@@ -28,6 +30,7 @@ type StandardAppLayoutProps = {
   isDrawerOpen: boolean;
   drawerContent?: ReactNode;
   onDrawerClose: () => void;
+  viewportWidth: BreakpointWidth;
 };
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
@@ -35,6 +38,15 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     styles.main,
     { [styles.mainDefault]: props.isSidebarOpen },
     { [styles.mainFullWidth]: !props.isSidebarOpen }
+  );
+
+  const shouldShowSidebarNavigation =
+    props.viewportWidth > BreakpointWidth.LAPTOP || props.isSidebarOpen;
+
+  const topBarClassnames = classNames(
+    styles.topBar,
+    { [styles.topBar_withSidebarNavigation]: shouldShowSidebarNavigation },
+    { [styles.topBar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
   );
 
   const sidebarWrapperClassnames = classNames(
@@ -50,9 +62,9 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
   return (
     <div className={styles.standardAppLayout}>
-      <div className={styles.topBar}>
+      <div className={topBarClassnames}>
         {props.topbarContent}
-        {props.sidebarNavigation}
+        {shouldShowSidebarNavigation && props.sidebarNavigation}
       </div>
       <div className={styles.mainWrapper}>
         <div className={mainClassnames}>{props.mainContent}</div>

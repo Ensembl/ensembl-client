@@ -11,6 +11,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import browserStorageService from './browser-storage-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import {
   changeBrowserLocation,
@@ -39,6 +40,7 @@ import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
@@ -72,6 +74,7 @@ export type BrowserProps = {
   launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
+  viewportWidth: BreakpointWidth;
   changeBrowserLocation: (locationData: {
     genomeId: string;
     ensObjectId: string | null;
@@ -244,6 +247,7 @@ export const Browser = (props: BrowserProps) => {
           isSidebarOpen={props.isTrackPanelOpened}
           isDrawerOpen={props.isDrawerOpened}
           onDrawerClose={toggleDrawer}
+          viewportWidth={props.viewportWidth}
         />
       ) : (
         <ExampleObjectLinks {...props} />
@@ -293,7 +297,8 @@ const mapStateToProps = (state: RootState) => ({
   isTrackPanelOpened: getIsTrackPanelOpened(state),
   launchbarExpanded: getLaunchbarExpanded(state), // FIXME: remove?
   exampleEnsObjects: getExampleEnsObjects(state),
-  committedSpecies: getEnabledCommittedSpecies(state)
+  committedSpecies: getEnabledCommittedSpecies(state),
+  viewportWidth: getBreakpointWidth(state)
 });
 
 const mapDispatchToProps = {

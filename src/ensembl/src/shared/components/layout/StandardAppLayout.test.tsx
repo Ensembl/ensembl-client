@@ -2,6 +2,8 @@ import React from 'react';
 import { mount, render } from 'enzyme';
 import faker from 'faker';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
+
 import StandardAppLayout from './StandardAppLayout';
 
 const MainContent = () => (
@@ -22,6 +24,10 @@ const DrawerContent = () => (
   <div className="drawerContent">This is drawer content</div>
 );
 
+const SidebarNavigation = () => (
+  <div className="sidebarNavigation">This is sidebar navigation</div>
+);
+
 const sidebarNavigationLinks = [...Array(3)].map(() => ({
   label: faker.random.word(),
   isActive: false
@@ -37,11 +43,9 @@ const minimalProps = {
   sidebarToolstripContent: <SidebarToolstripContent />,
   topbarContent: <TopbarContent />,
   isSidebarOpen: true,
-  sidebarNavigation: {
-    links: sidebarNavigationLinks,
-    onChange: jest.fn()
-  },
-  onSidebarToggle: jest.fn()
+  sidebarNavigation: <SidebarNavigation />,
+  onSidebarToggle: jest.fn(),
+  viewportWidth: BreakpointWidth.DESKTOP
 };
 
 describe('StandardAppLayout', () => {
@@ -63,6 +67,11 @@ describe('StandardAppLayout', () => {
     it('renders the sidebar content in the sidebar', () => {
       const wrapper = render(<StandardAppLayout {...minimalProps} />);
       expect(wrapper.find('.sideBar').find('.sidebarContent').length).toBe(1);
+    });
+
+    it('renders sidebar navigation in appropriate slot', () => {
+      const wrapper = render(<StandardAppLayout {...minimalProps} />);
+      expect(wrapper.find('.topBar').find('.sidebarNavigation').length).toBe(1);
     });
 
     it('renders sidebar toolstrip content in the sidebar toolstrip', () => {
@@ -116,56 +125,6 @@ describe('StandardAppLayout', () => {
         expect(sidebarWrapper.hasClass('sideBarWrapperDrawerOpen')).toBe(true);
       });
     });
-
-    describe('navigation tabs', () => {
-      it('renders navigation tabs', () => {
-        const wrapper = render(<StandardAppLayout {...minimalProps} />);
-        expect(wrapper.find('.sidebarTab').length).toBe(
-          minimalProps.sidebarNavigation.links.length
-        );
-      });
-
-      it('adds active class name to a tab if sidebar is open', () => {
-        const wrapper = render(<StandardAppLayout {...minimalProps} />);
-        wrapper
-          .find(`.sidebarTab`)
-          .toArray()
-          .forEach((element, index) => {
-            const shouldBeActive = index === activeSidebarNavLinkIndex;
-            expect(element.attribs.class.includes('sidebarTabActive')).toBe(
-              shouldBeActive
-            );
-          });
-      });
-
-      it('does not add active class name to tabs when sidebar is closed', () => {
-        const wrapper = render(
-          <StandardAppLayout {...{ ...minimalProps, isSidebarOpen: false }} />
-        );
-        wrapper
-          .find(`.sidebarTab`)
-          .toArray()
-          .forEach((element) => {
-            expect(element.attribs.class.includes('sidebarTabActive')).toBe(
-              false
-            );
-          });
-      });
-
-      it('does not add active class name to tabs when drawer is opened', () => {
-        const wrapper = render(
-          <StandardAppLayout {...{ ...minimalProps, isDrawerOpen: true }} />
-        );
-        wrapper
-          .find(`.sidebarTab`)
-          .toArray()
-          .forEach((element) => {
-            expect(element.attribs.class.includes('sidebarTabActive')).toBe(
-              false
-            );
-          });
-      });
-    });
   });
 
   describe('behaviour', () => {
@@ -175,6 +134,25 @@ describe('StandardAppLayout', () => {
       drawerContent: <DrawerContent />,
       onDrawerClose: jest.fn()
     };
+
+    describe('sidebar navigation tabs when sidebar is closed', () => {
+      const props = { ...commonProps, isSidebarOpen: false };
+
+      test('sidebar navigation tabs are rendered for desktop viewport and larger', () => {
+        const wrapper = mount(<StandardAppLayout {...props} />);
+        expect(wrapper.find('.sidebarNavigation').length).toBe(1);
+      });
+
+      test('sidebar navigation tabs are not rendered for laptop viewport and smaller', () => {
+        const wrapper = mount(
+          <StandardAppLayout
+            {...props}
+            viewportWidth={BreakpointWidth.LAPTOP}
+          />
+        );
+        expect(wrapper.find('.sidebarNavigation').length).toBe(0);
+      });
+    });
 
     describe('with closed drawer', () => {
       const props = commonProps;

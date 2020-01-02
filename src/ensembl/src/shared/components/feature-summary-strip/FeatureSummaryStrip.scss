@@ -4,6 +4,9 @@
   font-size: 12px;
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1;
 
   & > div:not(:last-child) {
     margin-right: 28px;

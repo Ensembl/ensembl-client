@@ -2,6 +2,9 @@
 
 .browserLocationIndicator {
   display: flex;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1;
   font-size: 12px;
 
   .chrCode,
