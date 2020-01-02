@@ -8,3 +8,6 @@ hashbrown = "*"
 lazy_static = "*"
 owning_ref = "*"
 serde_json = "*"
+
+[features]
+blackbox = []

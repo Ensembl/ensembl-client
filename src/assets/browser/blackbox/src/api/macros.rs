@@ -9,7 +9,7 @@
 /* logs */
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_log {
     ($stream:expr,$($arg:tt)*) => {{
         if $crate::blackbox_is_enabled($stream) {
@@ -20,15 +20,16 @@ macro_rules! blackbox_log {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_log {
-    ($stream:expr,$($arg:tt)*) => {}
+    ($stream:expr,$($arg:tt)*) => {
+    }
 }
 
 /* stack */
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_stack {
     ($level:expr,$code:block) => {{
         $crate::blackbox_push($level);
@@ -39,7 +40,7 @@ macro_rules! blackbox_stack {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_stack {
     ($level:expr,$code:block) => {{
         $code
@@ -49,7 +50,7 @@ macro_rules! blackbox_stack {
 /* counts */
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_count {
     ($stream:expr,$name:expr,$amt:expr) => {{
         $crate::blackbox_count($stream,$name,$amt);
@@ -57,13 +58,13 @@ macro_rules! blackbox_count {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_count {
         ($stream:expr,$name:expr,$amt:expr) => {{}}
 }
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_set_count {
     ($stream:expr,$name:expr,$amt:expr) => {{
         $crate::blackbox_set_count($stream,$name,$amt);
@@ -71,13 +72,13 @@ macro_rules! blackbox_set_count {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_set_count {
         ($stream:expr,$name:expr,$amt:expr) => {{}}
 }
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_reset_count {
     ($stream:expr,$name:expr) => {{
         $crate::blackbox_reset_count($stream,$name);
@@ -85,7 +86,7 @@ macro_rules! blackbox_reset_count {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_reset_count {
         ($stream:expr,$name:expr) => {{}}
 }
@@ -93,7 +94,7 @@ macro_rules! blackbox_reset_count {
 /* elapsed */
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_time {
     ($stream:expr,$name:expr,$code:block) => {{
         $crate::blackbox_start($stream,$name);
@@ -104,7 +105,7 @@ macro_rules! blackbox_time {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_time {
     ($stream:expr,$name:expr,$code:block) => {{
         $code
@@ -112,7 +113,7 @@ macro_rules! blackbox_time {
 }
 
 #[macro_export]
-#[cfg(any(blackbox,test))]
+#[cfg(any(blackbox,test,feature = "blackbox"))]
 macro_rules! blackbox_metronome {
     ($stream:expr,$name:expr) => {{
         $crate::blackbox_metronome($stream,$name);
@@ -120,7 +121,7 @@ macro_rules! blackbox_metronome {
 }
 
 #[macro_export]
-#[cfg(not(any(blackbox,test)))]
+#[cfg(not(any(blackbox,test,feature = "blackbox")))]
 macro_rules! blackbox_metronome {
         ($stream:expr,$name:expr) => {{}}
 }
