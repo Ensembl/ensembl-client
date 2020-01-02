@@ -22,7 +22,7 @@ import {
 } from './browserActions';
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { changeDrawerView, toggleDrawer } from './drawer/drawerActions';
+import { toggleDrawer } from './drawer/drawerActions';
 
 import {
   getBrowserNavOpened,
@@ -34,7 +34,6 @@ import {
   getBrowserActiveEnsObjectIds,
   getAllChrLocations
 } from './browserSelectors';
-import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
@@ -71,7 +70,6 @@ export type BrowserProps = {
   chrLocation: ChrLocation | null;
   isDrawerOpened: boolean;
   isTrackPanelOpened: boolean;
-  launchbarExpanded: boolean;
   exampleEnsObjects: EnsObject[];
   committedSpecies: CommittedItem[];
   viewportWidth: BreakpointWidth;
@@ -81,7 +79,6 @@ export type BrowserProps = {
     chrLocation: ChrLocation;
   }) => void;
   changeFocusObject: (objectId: string) => void;
-  changeDrawerView: (drawerView: string) => void;
   restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
@@ -295,7 +292,6 @@ const mapStateToProps = (state: RootState) => ({
   chrLocation: getChrLocation(state),
   isDrawerOpened: getIsDrawerOpened(state),
   isTrackPanelOpened: getIsTrackPanelOpened(state),
-  launchbarExpanded: getLaunchbarExpanded(state), // FIXME: remove?
   exampleEnsObjects: getExampleEnsObjects(state),
   committedSpecies: getEnabledCommittedSpecies(state),
   viewportWidth: getBreakpointWidth(state)
@@ -304,7 +300,6 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {
   changeBrowserLocation,
   changeFocusObject,
-  changeDrawerView,
   fetchGenomeData,
   replace,
   toggleDrawer,
