@@ -12,19 +12,14 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { toggleTrackPanel } from './trackPanelActions';
-import { BreakpointWidth } from 'src/global/globalConfig';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
-  breakpointWidth: BreakpointWidth;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
-  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
 };
 
 export const TrackPanel = (props: TrackPanelProps) => {
@@ -36,9 +31,6 @@ export const TrackPanel = (props: TrackPanelProps) => {
   //     props.toggleTrackPanel(false);
   //   }
   // }, [props.breakpointWidth, props.toggleTrackPanel]);
-
-  // FIXME — get TrackPanelBar back
-  // <TrackPanelBar />
 
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
@@ -58,17 +50,9 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     browserActivated: getBrowserActivated(state),
-    breakpointWidth: getBreakpointWidth(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     isTrackPanelModalOpened: getIsTrackPanelModalOpened(state)
   };
 };
 
-const mapDispatchToProps = {
-  toggleTrackPanel
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(TrackPanel, isEqual));
+export default connect(mapStateToProps)(memo(TrackPanel, isEqual));
