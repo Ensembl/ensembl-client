@@ -52,34 +52,11 @@ pub trait CommanderIntegration {
 }
 
 pub struct CommanderShared {
-    #[cfg(test)]
-    diagnostics: Vec<String>
 }
 
 impl CommanderShared {
     pub fn new() -> CommanderShared {
         CommanderShared {
-
-            #[cfg(test)]
-            diagnostics: Vec::new()
-        }
-    }
-
-    pub fn diagnostic(&mut self, event: &str) {
-        #[cfg(test)]
-        {
-            self.diagnostics.push(event.to_owned());
-        }
-    }
-
-    pub fn pull_diagnostics(&mut self) -> Vec<String> {
-        #[cfg(test)]
-        {
-            self.diagnostics.drain(..).collect()
-        }
-        #[cfg(not(test))]
-        {
-            vec![]
         }
     }
 }
@@ -112,9 +89,5 @@ impl Commander {
 
     pub fn tick(&mut self, slice: f64) {
 
-    }
-
-    pub fn diagnostic(&mut self, event: &str) {
-        self.shared.lock().unwrap().diagnostic(event);
     }
 }

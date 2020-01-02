@@ -4,3 +4,13 @@ version = "0.0.0"
 authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 
 [dependencies]
+hashbrown="*"
+
+[target.'cfg(test)'.dependencies.blackbox]
+version="0.0.0"
+path="../blackbox"
+features=["blackbox"]
+
+[target.'cfg(not(test))'.dependencies.blackbox]
+version="0.0.0"
+path="../blackbox"
