@@ -2,15 +2,12 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { BrowserBar, BrowserInfo, BrowserBarProps } from './BrowserBar';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
-
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserLocationIndicator from 'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator';
 import {
   GeneSummaryStrip,
   RegionSummaryStrip
 } from 'src/shared/components/feature-summary-strip';
-import TrackPanelTabs from '../track-panel/track-panel-tabs/TrackPanelTabs';
 
 import { ChrLocation } from '../browserState';
 
@@ -70,14 +67,6 @@ describe('<BrowserBar />', () => {
     test('shows BrowserInfo panel by default', () => {
       const renderedBrowserBar = mount(renderBrowserBar());
       expect(renderedBrowserBar.find(BrowserInfo).length).toBe(1);
-    });
-
-    // FIXME: when does this happen, and why do we hide BrowserInfo panel?
-    test('hides BrowserInfo panel if default location is not provided', () => {
-      const renderedBrowserBar = mount(
-        renderBrowserBar({ defaultChrLocation: null })
-      );
-      expect(renderedBrowserBar.find(BrowserInfo).length).toBe(0);
     });
   });
 });
