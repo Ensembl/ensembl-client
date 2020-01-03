@@ -45,12 +45,18 @@ impl<T,E> Step<T,(),E> for Logger<T> where T: Send+Debug {
     }
 }
 
-pub struct Waiter(pub u64,pub bool);
+pub struct Waiter(pub u64,pub bool,pub Option<StepState<i32,()>>);
+
+impl Waiter {
+    pub fn new(time: u64, result: StepState<i32,()>) -> Waiter {
+        Waiter(time,false,Some(result))
+    }
+}
 
 impl Step<(),i32,()> for Waiter {
     fn execute(&mut self, _: &(), control: &mut StepControl) -> StepState<i32,()> {
         if self.1 {
-            StepState::Done(Ok(23))
+            self.2.take().unwrap()
         } else {
             let t = self.0;
             let mut control = control.clone();

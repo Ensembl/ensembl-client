@@ -1,5 +1,6 @@
 use std::collections::BinaryHeap;
 use std::cmp::Ordering;
+use std::fmt;
 use std::sync::{ Arc, Mutex };
 use owning_ref::MutexGuardRef;
 
@@ -15,21 +16,37 @@ de pub
 split
 Non O(n) blocked queue
 Rc RunConfig
+killcatch to steps
 
 */
+
+pub enum KillReason {
+    Timeout,
+    Cancelled,
+    NotNeeded
+}
+
+impl fmt::Display for KillReason {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,"{}", match self {
+            KillReason::Timeout => "timeout",
+            KillReason::Cancelled => "cancelled",
+            KillReason::NotNeeded => "not-needed"
+        })
+    }
+}
 
 pub enum StepState<Y,E> {
     NotDone,
     Done(Result<Y,E>),
+    Killed(KillReason),
     Wait(f64),
     Sleep
 }
 
 pub enum StepResult<Y,E> {
     Done(Result<Y,E>),
-    Timeout,
-    Cancelled,
-    NotNeeded
+    Killed(KillReason)
 }
 
 pub struct RunSlot {}
@@ -201,8 +218,12 @@ impl RunQueue {
         let mut out = None;
         match r {
             StepState::NotDone => (),
-            StepState::Done(_)=> {
+            StepState::Done(_) => {
                 blackbox_log!("scheduler-tasks","Remove task from run queue (done) '{}'",task.get_name());
+                self.tasks.remove(self.next_task);
+            },
+            StepState::Killed(k) => {
+                blackbox_log!("scheduler-tasks","Remove task from run queue (uncaught kill -- {}) '{}'",k.to_string(),task.get_name());
                 self.tasks.remove(self.next_task);
             },
             StepState::Wait(delay) => {

@@ -1,6 +1,6 @@
 use crate::commander::{ Step, StepControl,StepState };
 
-struct StepSequence<X,Y,Z,E> where Y: Send {
+pub struct StepSequence<X,Y,Z,E> where Y: Send {
     one: Box<dyn Step<X,Y,E>>,
     middle: Option<Y>,
     two: Box<dyn Step<Y,Z,E>>,
@@ -15,6 +15,7 @@ impl<X,Y,Z,E> Step<X,Z,E> for StepSequence<X,Y,Z,E> where Y: Send {
                 match self.one.execute(&input,signal) {
                     StepState::NotDone => StepState::NotDone,
                     StepState::Sleep => StepState::Sleep,
+                    StepState::Killed(k) => StepState::Killed(k),
                     StepState::Wait(w) => StepState::Wait(w),
                     StepState::Done(Ok(y)) => { self.middle = Some(y); StepState::NotDone },
                     StepState::Done(Err(e)) => StepState::Done(Err(e))
@@ -43,6 +44,7 @@ impl<X,Y,E,F> Step<X,Y,F> for StepRecover<X,Y,E,F> where Y: Send, E: Send {
                 match self.step.execute(input,signal) {
                     StepState::NotDone => StepState::NotDone,
                     StepState::Sleep => StepState::Sleep,
+                    StepState::Killed(k) => StepState::Killed(k),
                     StepState::Wait(w) => StepState::Wait(w),
                     StepState::Done(Ok(y)) => StepState::Done(Ok(y)),
                     StepState::Done(Err(e)) => { self.error = Some(e); StepState::NotDone }

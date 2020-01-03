@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use std::thread;
 use std::time::Duration;
 use hashbrown::HashSet;
-use crate::{ Commander, CommanderIntegration, RunConfig, future_to_step, StepState, step_sequence, step_recover };
+use crate::{ Commander, CommanderIntegration, RunConfig, future_to_step, StepState, step_sequence, step_recover, KillReason, kill_catch_maperr, StepSequence };
 use crate::test::testintegration::TestIntegration;
 use crate::test::teststeps::{ Adder, Logger, CatchErrors, Waiter };
 
@@ -65,7 +65,8 @@ fn done<Y,E>(state: StepState<Y,E>) -> Result<Y,E> {
         StepState::Done(r) => Some(r),
         StepState::NotDone => None,
         StepState::Wait(_) => None,
-        StepState::Sleep => None
+        StepState::Sleep => None,
+        StepState::Killed(_) => None
     }.unwrap()
 }
 
@@ -159,7 +160,7 @@ pub fn block_test_part(itgn: &mut TestIntegration, bb_part: &str, stream: &Vec<&
     blackbox_enable(bb_part);
     let mut cmdr = Commander::new(itgn.clone());
     itgn.enable_ticks(&mut cmdr);
-    let step = step_sequence(Waiter(200,false),Logger(PhantomData));
+    let step = step_sequence(Waiter::new(200,StepState::Done(Ok(23))),Logger(PhantomData));
     cmdr.add(step,(),RunConfig{ priority: 0 },&format!("waiter"));
     for _ in 0..10 { itgn.tick(); }
     thread::sleep(Duration::from_millis(500));
@@ -182,4 +183,24 @@ pub fn test_block() {
                 "[11][test] Run task 'waiter'",
                 "[11][test] Remove task from run queue (done) 'waiter'"]);
     block_test_part(&mut itgn,"test-logger",&vec!["[26][test] output: 23"]);
+}
+
+#[test]
+pub fn test_kill() {
+    blackbox_use_threadlocals(true);
+    let mut itgn = TestIntegration::new();
+    blackbox_integration(itgn.clone());
+    let mut cmdr = Commander::new(itgn.clone());
+    itgn.enable_ticks(&mut cmdr);
+    let step = step_recover(
+        kill_catch_maperr(
+            step_sequence(Waiter::new(200,StepState::Killed(KillReason::Timeout)),Logger(PhantomData)),
+            |reason| Err(reason.to_string()),
+            |_| "error".to_string()),
+        CatchErrors()
+    );
+    cmdr.add(step,(),RunConfig{ priority: 0 },&format!("kill"));
+    for _ in 0..10 { itgn.tick(); thread::sleep(Duration::from_millis(45)); }
+    let lines = blackbox_take_lines();
+    assert_eq!(1,lines.iter().filter(|x| x.contains("error: timeout")).count());
 }

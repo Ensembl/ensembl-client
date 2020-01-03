@@ -3,6 +3,7 @@ mod commander;
 mod steps {
     pub(crate) mod futurestep;
     pub(crate) mod joinstep;
+    pub(crate) mod killsteps;
 }
 
 #[macro_use]
@@ -20,6 +21,7 @@ mod test {
     mod teststeps;
 }
 
-pub use crate::commander::{ Commander, CommanderIntegration, RunConfig, Step, StepControl, StepState };
+pub use crate::commander::{ Commander, CommanderIntegration, RunConfig, Step, StepControl, StepState, KillReason };
 pub use crate::steps::futurestep::future_to_step;
-pub use crate::steps::joinstep::{ step_recover, step_sequence };
+pub use crate::steps::joinstep::{ step_recover, step_sequence, StepSequence /* XXX */ };
+pub use crate::steps::killsteps::{ kill_catch, kill_catch_maperr };
