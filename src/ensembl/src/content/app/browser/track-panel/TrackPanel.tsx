@@ -23,15 +23,6 @@ export type TrackPanelProps = {
 };
 
 export const TrackPanel = (props: TrackPanelProps) => {
-  // FIXME – move this to standard layout component
-  // useEffect(() => {
-  //   if (props.breakpointWidth >= BreakpointWidth.DESKTOP) {
-  //     props.toggleTrackPanel(true);
-  //   } else {
-  //     props.toggleTrackPanel(false);
-  //   }
-  // }, [props.breakpointWidth, props.toggleTrackPanel]);
-
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
@@ -34,6 +34,14 @@ type StandardAppLayoutProps = {
 };
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
+  // TODO: is there any way to run this smarter?
+  // Ideally, it should run only once per app life cycle to check whether user is on small screen and close the sidebar if they are
+  useEffect(() => {
+    if (props.viewportWidth < BreakpointWidth.DESKTOP && props.isSidebarOpen) {
+      props.onSidebarToggle();
+    }
+  }, []);
+
   const mainClassnames = classNames(
     styles.main,
     { [styles.mainDefault]: props.isSidebarOpen },
