@@ -18,7 +18,13 @@
 
 .exampleLinks {
   margin-top: 50px;
-  margin-left: 40px;
+  padding-left: 40px;
+
+  &__emptyTopBar {
+    height: 40px; // same as top bar height in StandardAppLayout
+    background: $light-grey;
+    box-shadow: 0 2px 3px $grey;
+  }
 }
 
 .exampleLink {

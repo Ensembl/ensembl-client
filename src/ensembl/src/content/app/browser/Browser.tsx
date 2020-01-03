@@ -278,7 +278,12 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
     );
   });
 
-  return <div className={styles.exampleLinks}>{links}</div>;
+  return (
+    <div>
+      <div className={styles.exampleLinks__emptyTopBar} />
+      <div className={styles.exampleLinks}>{links}</div>
+    </div>
+  );
 };
 
 const mapStateToProps = (state: RootState) => ({
