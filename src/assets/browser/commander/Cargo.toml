@@ -1,11 +1,18 @@
 [package]
 name = "commander"
+edition = '2018'
 version = "0.0.0"
 authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 
 [dependencies]
 hashbrown="*"
+futures="*"
+owning_ref="*"
 
+[dev-dependencies]
+regex="*"
+
+# XXX doesn't work with features. Need two blackbox crates.
 [target.'cfg(test)'.dependencies.blackbox]
 version="0.0.0"
 path="../blackbox"

@@ -52,9 +52,7 @@ impl TestIntegrationImpl {
         self.do_tick();
         self.time += 1.;
     }
-}
 
-impl CommanderIntegration for TestIntegrationImpl {
     fn enable_ticks(&mut self, cmdr: &mut Commander) {
         assert!(self.ticking_index(cmdr).is_none());
         blackbox_log!("test-integration","ticks enabled for {:p}",cmdr);
@@ -97,6 +95,10 @@ impl CommanderIntegration for TestIntegration {
 
     fn disable_ticks(&mut self, cmdr: &mut Commander, timeout: Option<f64>) {
         self.0.lock().unwrap().disable_ticks(cmdr,timeout);
+    }
+
+    fn current_time(&mut self) -> f64 {
+        *self.1.lock().unwrap()
     }
 }
 

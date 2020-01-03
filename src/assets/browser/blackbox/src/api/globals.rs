@@ -7,13 +7,6 @@ use serde_json::Value as SerdeValue;
 
 use crate::{ Config, Format, Integration, Model, TrivialIntegration, Record };
 
-/* TODO
-
-server
-app integration
-
-*/
-
 struct ThreadLocalTidier(bool);
 
 impl ThreadLocalTidier {
@@ -172,12 +165,13 @@ pub fn blackbox_pop() {
 
 /* diagnostics */
 
-pub fn blackbox_log(stream: &str, text: &str) {
+pub fn blackbox_log(stream_name: &str, text: &str) {
     let model = blackbox_model();
     let mut model = model.lock().unwrap();
     let time = model.get_time();
     let stack = model.get_stack();
-    if let Some(stream) = model.get_stream(stream) {
+    if let Some(stream) = model.get_stream(stream_name) {
+        print!("got {:?}\n",stream_name);
         stream.add_log(time,stack,text);
     }
 }
