@@ -1,4 +1,3 @@
-use std::collections::BinaryHeap;
 use std::cmp::Ordering;
 use std::fmt;
 use std::sync::{ Arc, Mutex };
@@ -9,17 +8,19 @@ use owning_ref::MutexGuardRef;
 TODO:
 step name
 handle
-timeout
+soft step timeout
 prio rerun
 slice timeout
 de pub
 split
 Non O(n) blocked queue
 Rc RunConfig
-killcatch to steps
+efficient wake/payload
+rename sleep -=> block/wait everywhere
 
 */
 
+#[derive(Clone)]
 pub enum KillReason {
     Timeout,
     Cancelled,
@@ -39,9 +40,9 @@ impl fmt::Display for KillReason {
 pub enum StepState<Y,E> {
     NotDone,
     Done(Result<Y,E>),
-    Killed(KillReason),
     Wait(f64),
-    Sleep
+    Sleep,
+    Killed
 }
 
 pub enum StepResult<Y,E> {
@@ -53,30 +54,35 @@ pub struct RunSlot {}
 
 #[derive(Clone)]
 pub struct RunConfig {
-    pub priority: i8 // XXX pub
+    priority: i8,
+    timeout: Option<f64>
 }
 
 impl RunConfig {
     pub fn new(slot: Option<RunSlot>, priority: i8, timeout: Option<f64>) -> RunConfig {
         RunConfig {
-            priority
+            priority,
+            timeout
         }
     }
 
     pub fn get_priority(&self) -> i8 { self.priority }
+    pub fn get_timeout(&self) -> Option<f64> { self.timeout }
 }
 
 #[derive(Clone)]
 pub struct StepControl {
     config: RunConfig,
-    waker: Waker
+    waker: Waker,
+    killed: Option<KillReason>
 }
 
 impl StepControl {
     pub fn new(config: &RunConfig, waker: &Waker) -> StepControl {
         StepControl {
             config: config.clone(),
-            waker: waker.clone()
+            waker: waker.clone(),
+            killed: None
         }
     }
 
@@ -84,6 +90,8 @@ impl StepControl {
     pub fn get_remaining(&self) -> f64 { 0. }
     pub fn dropped(&self) -> bool { false }
     pub fn wake(&mut self) { self.waker.awaken() }
+    pub fn kill(&mut self, reason: KillReason) { self.killed = Some(reason); }
+    pub fn autopsy(&self) -> &Option<KillReason> { &self.killed }
 }
 
 pub trait Step<X,Y,Error=()> : Send {
@@ -97,6 +105,7 @@ pub struct Waker(Arc<Mutex<bool>>);
 impl Waker {
     fn new() -> Waker { Waker(Arc::new(Mutex::new(false))) }
     fn awaken(&mut self) { *self.0.lock().unwrap() = true; }
+    fn sleep(&mut self) { *self.0.lock().unwrap() = false; }
     fn awoken(&self) -> MutexGuardRef<bool> { MutexGuardRef::new(self.0.lock().unwrap()) }
 }
 
@@ -104,74 +113,166 @@ struct TaskImpl<X> {
     step: Box<dyn Step<X,(),()>>,
     input: X,
     waker: Waker,
+    doom_timer: Option<Waker>,
+    killed: Option<KillReason>,
     run_config: RunConfig,
     name: String
 }
 
 impl<X> TaskImpl<X> {
-    pub fn new<S>(step: S, input: X, run_config: RunConfig, name: &str) -> TaskImpl<X> where S: Step<X,(),()> + 'static + Send, X: Send {
+    pub fn new<S>(step: S, input: X, run_config: RunConfig, doom_timer: Option<Waker>, name: &str) -> TaskImpl<X> where S: Step<X,(),()> + 'static + Send, X: Send {
         TaskImpl {
             step: Box::new(step),
             input, run_config,
             waker: Waker::new(),
+            killed: None,
+            doom_timer,
             name: name.to_string()
         }
+    }
+
+    fn check_timeout(&mut self) -> bool {
+        if let Some(doom) = &self.doom_timer {
+            if *doom.awoken() { 
+                self.killed = Some(KillReason::Timeout);
+                return true;
+            }
+        }
+        false
     }
 }
 
 trait Task : Send {
+    fn ready(&mut self);
     fn get_priority(&self) -> i8;
     fn run(&mut self) -> StepState<(),()>;
     fn get_name(&self) -> &str;
     fn get_waker(&mut self) -> &mut Waker;
+    fn get_doomed(&self) -> &Option<Waker>;
+    fn autopsy(&self) -> &Option<KillReason>;
 }
 
 impl<X> Task for TaskImpl<X> where X: Send {
     fn get_priority(&self) -> i8 { self.run_config.get_priority() }
     fn get_name(&self) -> &str { &self.name }
     fn get_waker(&mut self) -> &mut Waker { &mut self.waker }
+    fn get_doomed(&self) -> &Option<Waker> { &self.doom_timer }
+    fn autopsy(&self) -> &Option<KillReason> { &self.killed }
+
+    fn ready(&mut self) {
+        self.waker.sleep();
+    }
 
     fn run(&mut self) -> StepState<(),()> {
-        let waker = self.get_waker().clone();
-        let mut control = StepControl::new(&self.run_config,&waker);
-        self.step.execute(&self.input,&mut control)
+        if self.check_timeout() { return StepState::Killed; }
+        if let Some(doom) = &self.doom_timer {
+            if *doom.awoken() { 
+                self.killed = Some(KillReason::Timeout);
+                return StepState::Killed;
+            }
+        }
+        let mut control = StepControl::new(&self.run_config,&self.waker);
+        let mut out = self.step.execute(&self.input,&mut control);
+        if let Some(reason) = control.autopsy() {
+            self.killed = Some(reason.clone());
+            out = StepState::Killed;
+        }
+        if self.check_timeout() { return StepState::Killed; }
+        out
     }
 }
 
-struct WaitingTask {
-    task: Option<Box<dyn Task>>,
-    until: f64
+struct TimedPayload<T> {
+    payload: Option<T>,
+    timer: f64,
+    timeout: Option<Waker>
 }
 
-impl WaitingTask {
-    fn make(task: Box<dyn Task>, until: f64) -> WaitingTask {
-        WaitingTask { task: Some(task), until }
+impl<T> TimedPayload<T> {
+    fn make(payload: T, timer: f64, timeout: Option<Waker>) -> TimedPayload<T> {
+        TimedPayload { payload: Some(payload), timer, timeout }
     }
 
-    fn unmake(mut self) -> Box<dyn Task> {
-        self.task.take().unwrap()
+    fn unmake(mut self) -> T {
+        self.payload.take().unwrap()
     }
 
-    fn get_until(&self) -> f64 { self.until }
+    fn get_timer(&self) -> f64 { self.timer }
+    fn get_doomed(&self) -> &Option<Waker> { &self.timeout }
 }
 
-impl PartialEq for WaitingTask {
-    fn eq(&self, other: &WaitingTask) -> bool {
-        self.until == other.until
-    }
-}
-
-impl Eq for WaitingTask {}
-
-impl Ord for WaitingTask {
-    fn cmp(&self, other: &WaitingTask) -> Ordering {
-        self.until.partial_cmp(&other.until).unwrap()
+impl<T> PartialEq for TimedPayload<T> {
+    fn eq(&self, other: &TimedPayload<T>) -> bool {
+        self.timer == other.timer
     }
 }
 
-impl PartialOrd for WaitingTask {
-    fn partial_cmp(&self, other: &WaitingTask) -> Option<Ordering> {
+impl<T> Eq for TimedPayload<T> {}
+
+impl<T> Ord for TimedPayload<T> {
+    fn cmp(&self, other: &TimedPayload<T>) -> Ordering {
+        self.timer.partial_cmp(&other.timer).unwrap()
+    }
+}
+
+impl<T> PartialOrd for TimedPayload<T> {
+    fn partial_cmp(&self, other: &TimedPayload<T>) -> Option<Ordering> {
         Some(self.cmp(&other))
+    }
+}
+
+// XXX Arc
+// XXX efficiently
+pub struct PayloadDelayer<T> {
+    payloads: Vec<TimedPayload<T>>
+}
+
+impl<T> PayloadDelayer<T> {
+    pub fn new() -> PayloadDelayer<T> {
+        PayloadDelayer {
+            payloads: Vec::new()
+        }
+    }
+
+    pub fn add(&mut self, payload: T, delay: f64, timer: Option<Waker>) {
+        self.payloads.push(TimedPayload::make(payload,delay,timer));
+    }
+
+    pub fn take(&mut self, now: f64) -> Option<T> {
+        let mut index = None;
+        for (i,payload) in self.payloads.iter().enumerate() {
+            if payload.get_timer() <= now || payload.get_doomed().as_ref().map(|x| *x.awoken()).unwrap_or(false) {
+                index = Some(i);
+                break;
+            }
+        }
+        index.map(|index| self.payloads.remove(index).unmake())
+    }
+}
+
+pub struct Timers {
+    timers: PayloadDelayer<Waker>
+}
+
+impl Timers {
+    pub fn new() -> Timers {
+        Timers {
+            timers: PayloadDelayer::new()
+        }
+    }
+
+    pub fn new_timer(&mut self, t: f64) -> Waker {
+        blackbox_log!("scheduler-timers","Timer created for {}",t);
+        let w = Waker::new();
+        self.timers.add(w.clone(),t,None);
+        w
+    }
+
+    pub fn check(&mut self, now: f64) {
+        while let Some(mut timer) = self.timers.take(now) {
+            blackbox_log!("scheduler-timers","Timer expired");
+            timer.awaken();
+        }
     }
 }
 
@@ -222,8 +323,9 @@ impl RunQueue {
                 blackbox_log!("scheduler-tasks","Remove task from run queue (done) '{}'",task.get_name());
                 self.tasks.remove(self.next_task);
             },
-            StepState::Killed(k) => {
-                blackbox_log!("scheduler-tasks","Remove task from run queue (uncaught kill -- {}) '{}'",k.to_string(),task.get_name());
+            StepState::Killed => {
+                let reason = task.autopsy().as_ref().unwrap_or(&KillReason::NotNeeded);
+                blackbox_log!("scheduler-tasks","Remove task from run queue (kill -- {}) '{}'",reason,task.get_name());
                 self.tasks.remove(self.next_task);
             },
             StepState::Wait(delay) => {
@@ -249,8 +351,9 @@ impl RunQueue {
 pub struct CommanderShared {
     integration: Box<dyn CommanderIntegration>,
     run_queues: Vec<RunQueue>,
-    wait_queue: BinaryHeap<WaitingTask>,
-    blocked: Vec<Box<dyn Task>>
+    wait_queue: PayloadDelayer<Box<dyn Task>>,
+    blocked: Vec<Box<dyn Task>>,
+    timers: Timers
 }
 
 impl CommanderShared {
@@ -258,8 +361,9 @@ impl CommanderShared {
         CommanderShared {
             integration,
             run_queues: Vec::new(),
-            wait_queue: BinaryHeap::new(),
-            blocked: Vec::new()
+            wait_queue: PayloadDelayer::new(),
+            blocked: Vec::new(),
+            timers: Timers::new()
         }
     }
 
@@ -273,7 +377,12 @@ impl CommanderShared {
         }
     }
 
-    fn add(&mut self, task: Box<dyn Task>) {
+    fn new_timer(&mut self, t: f64) -> Waker {
+        self.timers.new_timer(t)
+    }
+
+    fn add(&mut self, mut task: Box<dyn Task>) {
+        task.ready();
         self.get_queue_mut(task.get_priority()).add(task);
     }
 
@@ -281,7 +390,8 @@ impl CommanderShared {
         let mut new_blocked = Vec::new();
         let mut unblocked = Vec::new();
         for mut task in self.blocked.drain(..) {
-            if *task.get_waker().awoken() {
+            let doomed = task.get_doomed().as_ref().map(|x| *x.awoken()).unwrap_or(false);
+            if *task.get_waker().awoken() || doomed {
                 blackbox_log!("scheduler-tasks","Unblocking task '{}'",task.get_name());
                 unblocked.push(task);
             } else {
@@ -294,17 +404,10 @@ impl CommanderShared {
         }
     }
 
-    fn unqueue_waited(&mut self) {
-        let now = self.integration.current_time();
-        while let Some(task) = self.wait_queue.pop() {
-            if task.get_until() > now {
-                self.wait_queue.push(task);
-                break;
-            } else {
-                let task = task.unmake();
-                blackbox_log!("scheduler-tasks","Remove task from wait queue '{}'",task.get_name());
-                self.add(task);
-            }
+    fn unqueue_waited(&mut self, now: f64) {
+        while let Some(task) = self.wait_queue.take(now) {
+            blackbox_log!("scheduler-tasks","Remove task from wait queue '{}'",task.get_name());
+            self.add(task);
         }
     }
 
@@ -313,7 +416,9 @@ impl CommanderShared {
             while let (true,command) = queue.run() {
                 match command {
                     Some(CommanderTask::Wait(task,delay)) => {
-                        self.wait_queue.push(WaitingTask::make(task,delay));
+                        let doomed = task.get_doomed().clone();
+                        let now = self.integration.current_time();
+                        self.wait_queue.add(task,now+delay,doomed);
                     },
                     Some(CommanderTask::Sleep(task)) => {
                         self.blocked.push(task);
@@ -327,10 +432,16 @@ impl CommanderShared {
         }
     }
 
+    fn now(&mut self) -> f64 {
+        self.integration.current_time()
+    }
+
     // XXX repeat prio if any still runnable before lower prio
     fn run(&mut self) {
+        let now = self.now();
+        self.timers.check(now);
         self.unblock();
-        self.unqueue_waited();
+        self.unqueue_waited(now);
         self.run_runqueues();
     }
 }
@@ -358,7 +469,10 @@ impl Commander {
     }
 
     pub fn add<T,X>(&mut self, step: T, input: X, run_config: RunConfig, name: &str) where T: Step<X,()> + 'static + Send, X: 'static + Send {
-        self.shared.lock().unwrap().add(Box::new(TaskImpl::new(step,input,run_config,name)));
+        let mut shared = self.shared.lock().unwrap();
+        let now = shared.now();
+        let doomed = run_config.get_timeout().map(|timeout| shared.new_timer(now+timeout));
+        shared.add(Box::new(TaskImpl::new(step,input,run_config,doomed,name)));
     }
 
     pub fn tick(&mut self, slice: f64) {

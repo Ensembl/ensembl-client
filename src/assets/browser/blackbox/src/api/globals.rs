@@ -171,7 +171,6 @@ pub fn blackbox_log(stream_name: &str, text: &str) {
     let time = model.get_time();
     let stack = model.get_stack();
     if let Some(stream) = model.get_stream(stream_name) {
-        print!("got {:?}\n",stream_name);
         stream.add_log(time,stack,text);
     }
 }

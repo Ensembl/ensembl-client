@@ -3,11 +3,11 @@ use std::marker::PhantomData;
 use std::thread;
 use std::time::Duration;
 use hashbrown::HashSet;
-use crate::{ Commander, CommanderIntegration, RunConfig, future_to_step, StepState, step_sequence, step_recover, KillReason, kill_catch_maperr, StepSequence };
+use crate::{ Commander, CommanderIntegration, RunConfig, future_to_step, StepState, step_sequence, step_recover };
 use crate::test::testintegration::TestIntegration;
-use crate::test::teststeps::{ Adder, Logger, CatchErrors, Waiter };
+use crate::test::teststeps::{ Adder, Logger, CatchErrors, Waiter, Infinite, Sleeper, Blocker };
 
-use blackbox::{ blackbox_use_threadlocals, blackbox_integration, blackbox_take_lines, blackbox_enable, blackbox_disable_all, Integration };
+use blackbox::{ blackbox_use_threadlocals, blackbox_integration, blackbox_take_lines, blackbox_enable, blackbox_disable_all };
 
 #[test]
 pub fn test_harness_blackbox() {
@@ -60,16 +60,6 @@ pub fn test_harness_unwait() {
     assert_eq!(5,lines.iter().filter(|x| x.contains(" tick ")).count());
 }
 
-fn done<Y,E>(state: StepState<Y,E>) -> Result<Y,E> {
-    match state {
-        StepState::Done(r) => Some(r),
-        StepState::NotDone => None,
-        StepState::Wait(_) => None,
-        StepState::Sleep => None,
-        StepState::Killed(_) => None
-    }.unwrap()
-}
-
 fn extract_numbers() -> Result<i32,String> {
     let re_out = Regex::new(r"output: (\d+)").unwrap();
     let re_err = Regex::new(r"error: (.+)").unwrap();
@@ -92,7 +82,7 @@ fn adder_check(itgn: &mut TestIntegration, val: i32) -> Result<i32,String> {
             CatchErrors()
         );
     itgn.enable_ticks(&mut cmdr);
-    cmdr.add(step,val,RunConfig{ priority: 0 },&format!("add({})",val));
+    cmdr.add(step,val,RunConfig::new(None,0,None),&format!("add({})",val));
     itgn.tick();
     itgn.tick();
     itgn.tick();
@@ -125,7 +115,7 @@ pub fn test_future_simple() {
     let mut cmdr = Commander::new(itgn.clone());
     let step = step_sequence(future_to_step(magic()),Logger(PhantomData::<i32>));
     itgn.enable_ticks(&mut cmdr);
-    cmdr.add(step,(),RunConfig{ priority: 0 },"future");
+    cmdr.add(step,(),RunConfig::new(None,0,None),"future");
     itgn.tick();
     itgn.tick();
     let out = extract_numbers();
@@ -147,7 +137,7 @@ pub fn test_sequence() {
             step_sequence(Adder::new(1),Logger(PhantomData)),
             CatchErrors()
         );
-    cmdr.add(step,2,RunConfig{ priority: 0 },&format!("sequence"));
+    cmdr.add(step,2,RunConfig::new(None,0,None),&format!("sequence"));
     itgn.tick();
     itgn.tick();
     itgn.tick();
@@ -161,7 +151,7 @@ pub fn block_test_part(itgn: &mut TestIntegration, bb_part: &str, stream: &Vec<&
     let mut cmdr = Commander::new(itgn.clone());
     itgn.enable_ticks(&mut cmdr);
     let step = step_sequence(Waiter::new(200,StepState::Done(Ok(23))),Logger(PhantomData));
-    cmdr.add(step,(),RunConfig{ priority: 0 },&format!("waiter"));
+    cmdr.add(step,(),RunConfig::new(None,0,None),&format!("waiter"));
     for _ in 0..10 { itgn.tick(); }
     thread::sleep(Duration::from_millis(500));
     for _ in 0..5 { itgn.tick(); }
@@ -186,21 +176,77 @@ pub fn test_block() {
 }
 
 #[test]
-pub fn test_kill() {
+pub fn test_kill_basic() {
     blackbox_use_threadlocals(true);
     let mut itgn = TestIntegration::new();
     blackbox_integration(itgn.clone());
     let mut cmdr = Commander::new(itgn.clone());
     itgn.enable_ticks(&mut cmdr);
-    let step = step_recover(
-        kill_catch_maperr(
-            step_sequence(Waiter::new(200,StepState::Killed(KillReason::Timeout)),Logger(PhantomData)),
-            |reason| Err(reason.to_string()),
-            |_| "error".to_string()),
-        CatchErrors()
-    );
-    cmdr.add(step,(),RunConfig{ priority: 0 },&format!("kill"));
+    let step = step_sequence(Infinite(),Logger(PhantomData));
+    cmdr.add(step,(),RunConfig::new(None,0,Some(5.)),&format!("kill"));
     for _ in 0..10 { itgn.tick(); thread::sleep(Duration::from_millis(45)); }
     let lines = blackbox_take_lines();
-    assert_eq!(1,lines.iter().filter(|x| x.contains("error: timeout")).count());
+    print!("lines\n{}",lines.join("\n"));
+    assert_eq!(1,lines.iter().filter(|x| x.contains("kill -- timeout")).count());
+}
+
+#[test]
+pub fn test_kill_wait() {
+    blackbox_use_threadlocals(true);
+    let mut itgn = TestIntegration::new();
+    blackbox_integration(itgn.clone());
+    let mut cmdr = Commander::new(itgn.clone());
+    itgn.enable_ticks(&mut cmdr);
+    let step = step_sequence(Sleeper(1000.,0),Logger(PhantomData));
+    cmdr.add(step,(),RunConfig::new(None,0,Some(5.)),&format!("kill"));
+    for _ in 0..10 { itgn.tick(); thread::sleep(Duration::from_millis(45)); }
+    let lines = blackbox_take_lines();
+    assert_eq!(1,lines.iter().filter(|x| x.contains("kill -- timeout")).count());
+}
+
+#[test]
+pub fn test_kill_block() {
+    blackbox_use_threadlocals(true);
+    let mut itgn = TestIntegration::new();
+    blackbox_integration(itgn.clone());
+    let mut cmdr = Commander::new(itgn.clone());
+    itgn.enable_ticks(&mut cmdr);
+    let step = step_sequence(Waiter::new(1000,StepState::Done(Ok(23))),Logger(PhantomData));
+    cmdr.add(step,(),RunConfig::new(None,0,Some(5.)),&format!("kill"));
+    for _ in 0..10 { itgn.tick(); thread::sleep(Duration::from_millis(45)); }
+    let lines = blackbox_take_lines();
+    print!("lines\n{}",lines.join("\n"));
+    assert_eq!(1,lines.iter().filter(|x| x.contains("kill -- timeout")).count());
+}
+
+#[test]
+pub fn test_multi_sleep() {
+    blackbox_use_threadlocals(true);
+    let mut itgn = TestIntegration::new();
+    blackbox_integration(itgn.clone());
+    let mut cmdr = Commander::new(itgn.clone());
+    itgn.enable_ticks(&mut cmdr);
+    let step = step_sequence(Sleeper(3.,0),Logger(PhantomData));
+    cmdr.add(step,(),RunConfig::new(None,0,None),&format!("kill"));
+    for _ in 0..30 { itgn.tick(); thread::sleep(Duration::from_millis(45)); }
+    let lines = blackbox_take_lines();
+    assert_eq!(1,lines.iter().filter(|x| x.contains("[10][test] output: 42")).count());
+    print!("lines\n{}",lines.join("\n"));
+
+}
+
+#[test]
+pub fn test_multi_block() {
+    blackbox_use_threadlocals(true);
+    let mut itgn = TestIntegration::new();
+    blackbox_integration(itgn.clone());
+    let mut cmdr = Commander::new(itgn.clone());
+    itgn.enable_ticks(&mut cmdr);
+    let step = step_sequence(Blocker(100,0),Logger(PhantomData));
+    cmdr.add(step,(),RunConfig::new(None,0,None),&format!("kill"));
+    for _ in 0..30 { itgn.tick(); thread::sleep(Duration::from_millis(45)); }
+    let lines = blackbox_take_lines();
+    assert_eq!(1,lines.iter().filter(|x| x.contains("[10][test] output: 42")).count());
+    print!("lines\n{}",lines.join("\n"));
+
 }

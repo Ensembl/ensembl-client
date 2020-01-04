@@ -45,7 +45,7 @@ impl<T,E> Step<T,(),E> for Logger<T> where T: Send+Debug {
     }
 }
 
-pub struct Waiter(pub u64,pub bool,pub Option<StepState<i32,()>>);
+pub struct Waiter(u64,bool,Option<StepState<i32,()>>);
 
 impl Waiter {
     pub fn new(time: u64, result: StepState<i32,()>) -> Waiter {
@@ -67,5 +67,45 @@ impl Step<(),i32,()> for Waiter {
             self.1 = true;
             StepState::Sleep
         }
+    }
+}
+
+pub struct Sleeper(pub f64,pub i32);
+
+impl Step<(),i32,()> for Sleeper {
+    fn execute(&mut self, _: &(), _: &mut StepControl) -> StepState<i32,()> {
+        if self.1 < 3 {
+            self.1 += 1;
+            StepState::Wait(self.0)
+        } else {
+            StepState::Done(Ok(42))
+        }
+    }
+}
+
+pub struct Blocker(pub u64,pub i32);
+
+impl Step<(),i32,()> for Blocker {
+    fn execute(&mut self, _: &(), control: &mut StepControl) -> StepState<i32,()> {
+        if self.1 < 3 {
+            let t = self.0;
+            self.1 += 1;
+            let mut control = control.clone();
+            thread::spawn(move || {
+                thread::sleep(Duration::from_millis(t));
+                control.wake();
+            });
+            StepState::Sleep
+        } else {
+            StepState::Done(Ok(42))
+        }
+    }
+}
+
+pub struct Infinite();
+
+impl Step<(),i32,()> for Infinite {
+    fn execute(&mut self, _: &(), _: &mut StepControl) -> StepState<i32,()> {
+        StepState::NotDone
     }
 }
