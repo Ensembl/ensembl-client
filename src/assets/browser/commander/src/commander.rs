@@ -17,6 +17,7 @@ Non O(n) blocked queue
 Rc RunConfig
 efficient wake/payload
 rename sleep -=> block/wait everywhere
+tick enable/disable
 
 */
 
@@ -165,12 +166,6 @@ impl<X> Task for TaskImpl<X> where X: Send {
 
     fn run(&mut self) -> StepState<(),()> {
         if self.check_timeout() { return StepState::Killed; }
-        if let Some(doom) = &self.doom_timer {
-            if *doom.awoken() { 
-                self.killed = Some(KillReason::Timeout);
-                return StepState::Killed;
-            }
-        }
         let mut control = StepControl::new(&self.run_config,&self.waker);
         let mut out = self.step.execute(&self.input,&mut control);
         if let Some(reason) = control.autopsy() {
