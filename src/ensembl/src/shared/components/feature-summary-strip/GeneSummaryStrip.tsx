@@ -22,7 +22,7 @@ const GeneSummaryStrip = ({ gene, isGhosted }: Props) => {
     <div className={stripClasses}>
       <div>
         <span className={styles.featureSummaryStripLabel}>Gene</span>
-        <span className={styles.featureDisplayName}>{gene.label}</span>
+        <span className={styles.featureNameEmphasized}>{gene.label}</span>
         <span>{getDisplayStableId(gene)}</span>
       </div>
       {gene.bio_type && <div>{gene.bio_type.toLowerCase()}</div>}
