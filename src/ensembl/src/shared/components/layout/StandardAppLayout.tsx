@@ -66,8 +66,6 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     }
   );
 
-  // <SidebarTabs {...props} />
-
   return (
     <div className={styles.standardAppLayout}>
       <div className={topBarClassnames}>

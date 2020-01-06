@@ -1,19 +1,9 @@
 @import 'src/styles/common';
 
-.browser {
-  width: 100%;
-  height: calc(100% - 32px);
-  position: relative;
-}
-
 .browserInnerWrapper {
   display: grid;
   height: 100%;
   grid-template-rows: 80px 1fr;
-}
-
-.browserImageWrapper {
-  height: 100%;
 }
 
 .exampleLinks {
@@ -42,8 +32,4 @@
 
 .objectLabel {
   color: $blue;
-}
-
-.semiOpaque {
-  opacity: 0.3;
 }

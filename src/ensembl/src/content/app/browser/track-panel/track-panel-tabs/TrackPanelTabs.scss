@@ -15,7 +15,8 @@
   color: $dark-grey;
   cursor: default;
 }
-.trackPanelTabArrow {
+
+.trackPanelTabActive {
   position: relative;
 
   &::after {

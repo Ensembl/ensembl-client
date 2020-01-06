@@ -61,7 +61,6 @@ export const TrackPanelTabs = (props: TrackPanelTabsProps) => {
 
     return classNames(styles.trackPanelTab, {
       [styles.trackPanelTabActive]: isTrackPanelTabActive,
-      [styles.trackPanelTabArrow]: isTrackPanelTabActive,
       [styles.trackPanelTabDisabled]: !props.ensObject?.genome_id
     });
   };
