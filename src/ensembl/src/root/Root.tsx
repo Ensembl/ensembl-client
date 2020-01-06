@@ -15,9 +15,7 @@ import { GeneralErrorScreen } from 'src/shared/components/error-screen';
 import styles from './Root.scss';
 
 type Props = {
-  updateBreakpointWidth: (
-    breakpointWidth: keyof typeof BreakpointWidth
-  ) => void;
+  updateBreakpointWidth: (breakpointWidth: BreakpointWidth) => void;
 };
 
 export const Root = (props: Props) => {
@@ -25,7 +23,9 @@ export const Root = (props: Props) => {
 
   useEffect(() => {
     const subscription = observeMediaQueries(globalMediaQueries, (match) => {
-      props.updateBreakpointWidth(match as keyof typeof BreakpointWidth);
+      props.updateBreakpointWidth(
+        BreakpointWidth[match as keyof typeof BreakpointWidth]
+      );
     });
     return () => subscription.unsubscribe();
   }, []);

@@ -10,9 +10,6 @@ import Drawer from '../drawer/Drawer';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackSet } from './trackPanelConfig';
-import { createGenomeCategories } from 'tests/fixtures/genomes';
-import { createTrackStates } from 'tests/fixtures/track-panel';
 
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
   <div>Track Panel</div>
