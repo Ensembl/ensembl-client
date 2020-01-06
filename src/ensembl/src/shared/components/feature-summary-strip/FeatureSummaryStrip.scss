@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .featureSummaryStrip {
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -9,7 +9,7 @@
   line-height: 1;
 
   & > div:not(:last-child) {
-    margin-right: 28px;
+    margin-right: 30px;
   }
 }
 
@@ -18,12 +18,15 @@
 }
 
 .featureSummaryStripLabel {
-  color: $dark-grey;
+  font-size: 12px;
   font-weight: $light;
-  margin-right: 0.4em;
+  margin-right: 0.5em;
 }
 
 .featureDisplayName {
-  font-size: 13px;
   font-weight: $bold;
+
+  & + span {
+    margin-left: 12px;
+  }
 }
