@@ -1,3 +1,5 @@
+/* stylelint-disable no-descending-specificity */
+
 @import 'src/styles/common';
 
 .browserLocationIndicator {
@@ -7,28 +9,28 @@
   line-height: 1;
   font-size: 12px;
 
-  .chrCode,
-  .chrRegion {
-    cursor: pointer;
-  }
-
   &Disabled {
+    .chrCode,
+    .chrRegion {
+      cursor: default;
+    }
+
     .chrCode {
       background: $dark-grey;
     }
     .chrRegion {
       color: $dark-grey;
     }
-
-    .chrCode,
-    .chrRegion {
-      cursor: default;
-    }
   }
 }
 
 .chrLocationView {
   display: inline-block;
+}
+
+.chrCode,
+.chrRegion {
+  cursor: pointer;
 }
 
 .chrCode {
