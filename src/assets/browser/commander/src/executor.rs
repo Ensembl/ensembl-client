@@ -47,13 +47,13 @@ impl Executor {
         }
     }
 
-    pub fn add<S,X>(&mut self, step: S, input: X, timeout: Option<f64>, run_config: &RunConfig, name: &str) -> TaskControl where S: Step2<X,(),()> + 'static + Send, X: Send + 'static {
+    pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskControl where S: Step2<X,(),()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
         let control = TaskControl::new(run_config,&mut self.actions,&handle);
         let task = Task2Impl::new(step,input,run_config,control.clone(),name);
         self.tasks.set(&handle,task);
-        if let Some(timeout) = timeout {
+        if let Some(timeout) = run_config.get_timeout() {
             self.doomer.add(&control,now+timeout);
         }
         self.runnable.add(&self.tasks,&handle);
