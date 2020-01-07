@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
+
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
 
@@ -9,25 +10,60 @@ import styles from './FeatureSummaryStrip.scss';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
+const MEDIUM_WIDTH = 800;
+const SMALL_WIDTH = 500;
+
+enum Display {
+  FULL = 'full',
+  COMPACT = 'compact',
+  MINIMAL = 'minimal'
+}
+
 type Props = {
   gene: EnsObject;
   isGhosted?: boolean;
-  viewportWidth: BreakpointWidth;
 };
 
-const GeneSummaryStrip = ({ gene, isGhosted, viewportWidth }: Props) => {
+type WidthAwareProps = Props & {
+  display: Display;
+};
+
+const GeneSummaryWrapper = (props: Props) => {
+  const [display, setDisplay] = useState(Display.MINIMAL);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  useEffect(() => {
+    if (containerWidth < SMALL_WIDTH) {
+      display !== Display.MINIMAL && setDisplay(Display.MINIMAL);
+    } else if (containerWidth < MEDIUM_WIDTH) {
+      display !== Display.COMPACT && setDisplay(Display.COMPACT);
+    } else {
+      display !== Display.FULL && setDisplay(Display.FULL);
+    }
+  }, [containerWidth]);
+
+  return (
+    <div className={styles.featureSummaryStripWrapper} ref={containerRef}>
+      <GeneSummaryStrip {...props} display={display} />
+    </div>
+  );
+};
+
+const GeneSummaryStrip = ({ gene, isGhosted, display }: WidthAwareProps) => {
   const stripClasses = classNames(styles.featureSummaryStrip, {
     [styles.featureSummaryStripGhosted]: isGhosted
   });
 
-  const content =
-    viewportWidth > BreakpointWidth.LAPTOP ? (
-      <FullContent gene={gene} />
-    ) : viewportWidth > BreakpointWidth.TABLET ? (
-      <CompactContent gene={gene} />
-    ) : (
-      <MinimalContent gene={gene} />
-    );
+  let content;
+
+  if (display === Display.MINIMAL) {
+    content = <MinimalContent gene={gene} />;
+  } else if (display === Display.COMPACT) {
+    content = <CompactContent gene={gene} />;
+  } else {
+    content = <FullContent gene={gene} />;
+  }
 
   return <div className={stripClasses}>{content}</div>;
 };
@@ -68,4 +104,4 @@ const FullContent = ({ gene }: { gene: EnsObject }) => (
   </>
 );
 
-export default GeneSummaryStrip;
+export default GeneSummaryWrapper;

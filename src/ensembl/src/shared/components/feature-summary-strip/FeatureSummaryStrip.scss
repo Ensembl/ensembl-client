@@ -1,5 +1,9 @@
 @import 'src/styles/common';
 
+.featureSummaryStripWrapper {
+  flex-grow: 1;
+}
+
 .featureSummaryStrip {
   font-size: 14px;
   display: flex;
@@ -7,6 +11,7 @@
   white-space: nowrap;
   flex-wrap: nowrap;
   line-height: 1;
+  overflow: hidden;
 
   & > div:not(:last-child) {
     margin-right: 30px;
