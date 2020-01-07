@@ -18,6 +18,8 @@ Rc RunConfig
 efficient wake/payload
 rename sleep -=> block/wait everywhere
 tick enable/disable
+Do we need Send?
+priorities
 
 */
 

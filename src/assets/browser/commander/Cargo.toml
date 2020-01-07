@@ -8,6 +8,7 @@ authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 hashbrown="*"
 futures="*"
 owning_ref="*"
+binary-heap-plus="*"
 
 [dev-dependencies]
 regex="*"
