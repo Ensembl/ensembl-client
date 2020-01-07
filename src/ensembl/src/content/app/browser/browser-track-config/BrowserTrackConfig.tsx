@@ -20,14 +20,14 @@ import styles from './BrowserTrackConfig.scss';
 
 import tracksSliderOnIcon from 'static/img/browser/icon_tracks_slider_on.svg';
 import tracksSliderOffIcon from 'static/img/browser/icon_tracks_slider_off.svg';
-import trackHeightBtn from 'static/img/browser/icon_tracks_height_grey.svg';
-import trackLockBtn from 'static/img/browser/icon_tracks_lock_open_grey.svg';
-import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg';
-import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+
+import { browserTrackConfig } from '../browserConfig';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { Status } from 'src/shared/types/status';
 
 export type BrowserTrackConfigProps = {
   applyToAll: boolean;
@@ -154,26 +154,42 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
           </button>
         </dd>
         <dd className={styles.heightSwitcher}>
-          <button className={styles.trackHeightBtn}>
-            <img src={trackHeightBtn} />
-          </button>
+          <div className={styles.trackHeightBtn}>
+            <ImageButton
+              buttonStatus={Status.INACTIVE}
+              image={browserTrackConfig.trackHeightBtn.icon}
+              description={browserTrackConfig.trackHeightBtn.description}
+            />
+          </div>
         </dd>
       </dl>
       <dl>
         <dd className={styles.trackLock}>
-          <button className={styles.trackLockBtn}>
-            <img src={trackLockBtn} />
-          </button>
+          <div className={styles.trackLockBtn}>
+            <ImageButton
+              buttonStatus={Status.INACTIVE}
+              image={browserTrackConfig.trackLockBtn.icon}
+              description={browserTrackConfig.trackLockBtn.description}
+            />
+          </div>
         </dd>
         <dd>
-          <button className={styles.trackHighlightBtn}>
-            <img src={trackHighlightBtn} />
-          </button>
+          <div className={styles.trackHighlightBtn}>
+            <ImageButton
+              buttonStatus={Status.INACTIVE}
+              image={browserTrackConfig.trackHighlightBtn.icon}
+              description={browserTrackConfig.trackHighlightBtn.description}
+            />
+          </div>
         </dd>
         <dd>
-          <button className={styles.trackMoveBtn}>
-            <img src={trackMoveBtn} />
-          </button>
+          <div className={styles.trackMoveBtn}>
+            <ImageButton
+              buttonStatus={Status.INACTIVE}
+              image={browserTrackConfig.trackMoveBtn.icon}
+              description={browserTrackConfig.trackMoveBtn.description}
+            />
+          </div>
         </dd>
       </dl>
     </section>
@@ -194,7 +210,4 @@ const mapDispatchToProps = {
   updateTrackConfigNames
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserTrackConfig);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserTrackConfig);
