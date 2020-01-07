@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
+import usePrevious from 'src/shared/hooks/usePrevious';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
@@ -57,14 +58,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     { [styles.topBar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
   );
 
-  const sidebarWrapperClassnames = classNames(
-    styles.sideBarWrapper,
-    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
-    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
-    {
-      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
-    }
-  );
+  const sidebarWrapperClassnames = useSidebarWrapperClassNames(props);
 
   return (
     <div className={styles.standardAppLayout}>
@@ -127,6 +121,24 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
 // when clicked, will close the drawer
 const DrawerWindow = (props: { onClick: () => void }) => {
   return <div className={styles.drawerWindow} onClick={props.onClick} />;
+};
+
+const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
+  const previousSidebarOpen = usePrevious(props.isSidebarOpen);
+  // do not use transition for opening and closing of the sidebar
+  const isInstantaneous =
+    !props.isSidebarOpen || // <-- sidebar about to close
+    (props.isSidebarOpen && !previousSidebarOpen); // <-- sidebar about to open
+
+  return classNames(
+    styles.sideBarWrapper,
+    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
+    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
+    {
+      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
+    },
+    { [styles.instantaneous]: isInstantaneous }
+  );
 };
 
 export default StandardAppLayout;
