@@ -20,6 +20,10 @@ jest.mock(
   'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator',
   () => () => <div>Browser Location Indicator</div>
 );
+jest.mock('src/shared/components/feature-summary-strip', () => ({
+  GeneSummaryStrip: () => <div>Gene Summary Strip</div>,
+  RegionSummaryStrip: () => <div>Region Summary Strip</div>
+}));
 
 describe('<BrowserBar />', () => {
   const defaultProps = {
