@@ -3,7 +3,9 @@ use std::marker::PhantomData;
 use std::thread;
 use std::time::Duration;
 use hashbrown::HashSet;
-use crate::{ Commander, CommanderIntegration, RunConfig, future_to_step, StepState, step_sequence, step_recover };
+use crate::{ Commander, future_to_step, StepState, step_sequence, step_recover };
+use crate::commander::CommanderIntegration;
+use crate::step::RunConfig;
 use crate::test::testintegration::TestIntegration;
 use crate::test::teststeps::{ Adder, Logger, CatchErrors, Waiter, Infinite, Sleeper, Blocker };
 

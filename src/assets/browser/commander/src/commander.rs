@@ -3,6 +3,8 @@ use std::fmt;
 use std::sync::{ Arc, Mutex };
 use owning_ref::MutexGuardRef;
 
+use crate::step::{ KillReason, RunConfig, RunSlot, StepResult };
+
 /*
 
 TODO:
@@ -20,14 +22,15 @@ rename sleep -=> block/wait everywhere
 tick enable/disable
 Do we need Send?
 priorities
+killed in-step memory
+non-null return values
 
 */
 
-#[derive(Clone)]
-pub enum KillReason {
-    Timeout,
-    Cancelled,
-    NotNeeded
+pub trait CommanderIntegration : Send {
+    fn current_time(&mut self) -> f64;
+    fn enable_ticks(&mut self, cmdr: &mut Commander);
+    fn disable_ticks(&mut self, cmdr: &mut Commander, timeout: Option<f64>);
 }
 
 impl fmt::Display for KillReason {
@@ -46,31 +49,6 @@ pub enum StepState<Y,E> {
     Wait(f64),
     Sleep,
     Killed
-}
-
-pub enum StepResult<Y,E> {
-    Done(Result<Y,E>),
-    Killed(KillReason)
-}
-
-pub struct RunSlot {}
-
-#[derive(Clone)]
-pub struct RunConfig {
-    priority: i8,
-    timeout: Option<f64>
-}
-
-impl RunConfig {
-    pub fn new(slot: Option<RunSlot>, priority: i8, timeout: Option<f64>) -> RunConfig {
-        RunConfig {
-            priority,
-            timeout
-        }
-    }
-
-    pub fn get_priority(&self) -> i8 { self.priority }
-    pub fn get_timeout(&self) -> Option<f64> { self.timeout }
 }
 
 #[derive(Clone)]
@@ -271,12 +249,6 @@ impl Timers {
             timer.awaken();
         }
     }
-}
-
-pub trait CommanderIntegration : Send {
-    fn current_time(&mut self) -> f64;
-    fn enable_ticks(&mut self, cmdr: &mut Commander);
-    fn disable_ticks(&mut self, cmdr: &mut Commander, timeout: Option<f64>);
 }
 
 pub struct RunQueue {

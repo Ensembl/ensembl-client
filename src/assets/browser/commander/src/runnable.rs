@@ -2,27 +2,27 @@ use std::collections::BTreeMap;
 use crate::taskcontainer::{ TaskContainer, TaskHandle };
 use crate::runqueue::RunQueue2;
 
-pub struct Runnable {
+pub(crate) struct Runnable {
     queues: BTreeMap<i8,RunQueue2>
 }
 
 impl Runnable {
-    pub fn new() -> Runnable {
+    pub(crate) fn new() -> Runnable {
         Runnable {
             queues: BTreeMap::new()
         }
     }
 
-    pub fn add(&mut self, tasks: &TaskContainer, handle: &TaskHandle) {
-        let priority = tasks.get(*handle).get_priority();
+    pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: TaskHandle) {
+        let priority = tasks.get(handle).get_priority();
         let queue = self.queues.entry(priority).or_insert_with(||
             RunQueue2::new(priority)
         );
         queue.add(handle);
     }
 
-    pub fn remove(&mut self, tasks: &TaskContainer, handle: &TaskHandle) {
-        let priority = tasks.get(*handle).get_priority();
+    pub(crate) fn remove(&mut self, tasks: &TaskContainer, handle: TaskHandle) {
+        let priority = tasks.get(handle).get_priority();
         let mut doomed = false;
         if let Some(queue) = self.queues.get_mut(&priority) {
             queue.remove(handle);
@@ -35,12 +35,88 @@ impl Runnable {
         }
     }
 
-    pub fn run(&mut self, tasks: &mut TaskContainer) -> bool {
-        if let Some(mut queue) = self.queues.iter_mut().next() {
-            queue.1.run(tasks);
+    pub(crate) fn run(&mut self, tasks: &mut TaskContainer, now: f64) -> bool {
+        /* running a task can empty a run queue because the runqueue discovers
+         * that task is dead. So after running we need to detect this and remove
+         * the queue, if so.
+         */
+        let mut doomed = None;
+        let out = if let Some((_,queue)) = self.queues.iter_mut().next() {
+            queue.run(tasks,now);
+            if queue.empty() {
+                doomed = Some(queue.get_priority());
+            }
             true
         } else {
             false
+        };
+        if let Some(priority) = doomed {
+            self.queues.remove(&priority);
         }
+        out
+    }
+}
+
+#[allow(unused)]
+mod test {
+    use super::*;
+    use crate::task2::Task2;
+
+    struct FakeTask(i8,i8);
+    impl Task2 for FakeTask {
+        fn run(&mut self, now: f64) { self.1 += 1; }
+        fn get_priority(&self) -> i8 { self.0 }
+        fn get_name(&self) -> String { self.1.to_string() }
+    }
+
+    #[test]
+    pub fn test_runnable() {
+        let mut tasks = TaskContainer::new();
+        let mut r = Runnable::new();
+        /* 1: h1, h2; 2: h3, 3: h4 */
+        let h1 = tasks.allocate();
+        let t1 = FakeTask(1,0);
+        tasks.set(h1,t1);
+        let h2 = tasks.allocate();
+        let t2 = FakeTask(1,0);
+        tasks.set(h2,t2);
+        let h3 = tasks.allocate();
+        let t3 = FakeTask(2,0);
+        tasks.set(h3,t3);
+        let h4 = tasks.allocate();
+        let t4 = FakeTask(3,0);
+        tasks.set(h4,t4);
+        /* add all four and check just h1, h2 run */
+        r.add(&mut tasks,h1);
+        r.add(&mut tasks,h2);
+        r.add(&mut tasks,h3);
+        r.add(&mut tasks,h4);
+        r.run(&mut tasks,0.);
+        r.run(&mut tasks,0.);
+        r.run(&mut tasks,0.);
+        assert_eq!("2",&tasks.get(h1).get_name());
+        assert_eq!("1",&tasks.get(h2).get_name());
+        assert_eq!("0",&tasks.get(h3).get_name());
+        assert_eq!("0",&tasks.get(h4).get_name());
+        /* remove h1 and check h2 just runs */
+        r.remove(&mut tasks,h1);
+        r.run(&mut tasks,0.);
+        r.run(&mut tasks,0.);
+        assert_eq!("2",&tasks.get(h1).get_name());
+        assert_eq!("3",&tasks.get(h2).get_name());
+        assert_eq!("0",&tasks.get(h3).get_name());
+        assert_eq!("0",&tasks.get(h4).get_name());
+        /* remove h2 and check just h3 runs */
+        r.remove(&mut tasks,h2);
+        r.run(&mut tasks,0.);
+        assert!(r.run(&mut tasks,0.));
+        assert_eq!("2",&tasks.get(h1).get_name());
+        assert_eq!("3",&tasks.get(h2).get_name());
+        assert_eq!("2",&tasks.get(h3).get_name());
+        assert_eq!("0",&tasks.get(h4).get_name());
+        /* remove h3 and h4 and check run returns false */
+        r.remove(&mut tasks,h3);
+        r.remove(&mut tasks,h4);
+        assert!(!r.run(&mut tasks,0.));
     }
 }

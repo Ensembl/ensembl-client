@@ -1,7 +1,10 @@
-use std::cmp::Ordering;
+use hashbrown::HashSet;
+
 use crate::taskcontainer::{ TaskContainer, TaskHandle };
 
+// XXX convert to BTreeSet to detect double-accounting.
 pub struct RunQueue2 {
+    present: HashSet<TaskHandle>,
     tasks: Vec<TaskHandle>,
     priority: i8,
     next_task: usize
@@ -10,34 +13,101 @@ pub struct RunQueue2 {
 impl RunQueue2 {
     pub fn new(priority: i8) -> RunQueue2 {
         RunQueue2 {
+            present: HashSet::new(),
             tasks: Vec::new(),
             priority,
             next_task: 0
         }
     }
 
+    pub fn get_priority(&self) -> i8 { self.priority }
+
     pub fn empty(&self) -> bool {
         self.tasks.len() == 0
     }
 
-    pub fn add(&mut self, handle: &TaskHandle) {
-        self.tasks.push(*handle);
+    pub(crate) fn add(&mut self, handle: TaskHandle) {
+        if !self.present.contains(&handle) {
+            self.present.insert(handle);
+            self.tasks.push(handle);
+        }
     }
 
-    pub fn remove(&mut self, handle: &TaskHandle) {
-        if let Some(index) = self.tasks.iter().position(|h| h == handle) {
+    pub(crate) fn remove(&mut self, handle: TaskHandle) {
+        if let Some(index) = self.tasks.iter().position(|h| *h == handle) {
             if index < self.next_task {
                 self.next_task -= 1;
             }
+            self.present.remove(&handle);
             self.tasks.remove(index);
         }
     }
 
-    pub fn run(&mut self, tasks: &mut TaskContainer) {
+    pub(crate) fn run(&mut self, tasks: &mut TaskContainer, now: f64) {
         if self.next_task >= self.tasks.len() {
             self.next_task = 0;
         }
-        tasks.get_mut(self.tasks[self.next_task]).run();
+        tasks.get_mut(self.tasks[self.next_task]).run(now);
         self.next_task += 1;
+    }
+}
+
+#[allow(unused)]
+mod test {
+    use super::*;
+    use crate::task2::Task2;
+    use crate::taskcontainer::TaskContainer;
+
+    struct FakeTask(i8);
+    impl Task2 for FakeTask {
+        fn run(&mut self, now: f64) { self.0 += 1; }
+        fn get_priority(&self) -> i8 { self.0 }
+        fn get_name(&self) -> String { "".to_string() }
+    }
+
+    #[test]
+    pub fn test_runqueue() {
+        let mut tasks = TaskContainer::new();
+        let mut q = RunQueue2::new(4);
+        /* test */
+        assert_eq!(4,q.get_priority());
+        assert!(q.empty());
+        let h1 = tasks.allocate();
+        let t1 = FakeTask(0);
+        tasks.set(h1,t1);
+        /* single task: check runs */
+        q.add(h1);
+        assert!(!q.empty());
+        assert_eq!(0,tasks.get(h1).get_priority());
+        q.run(&mut tasks,0.);
+        assert_eq!(1,tasks.get(h1).get_priority());
+        q.run(&mut tasks,0.);
+        assert_eq!(2,tasks.get(h1).get_priority());
+        /* add second and third task and check run fairly */
+        let h2 = tasks.allocate();
+        let t2 = FakeTask(0);
+        tasks.set(h2,t2);
+        let h3 = tasks.allocate();
+        let t3 = FakeTask(0);
+        tasks.set(h3,t3);
+        q.add(h2);
+        q.add(h3);
+        q.run(&mut tasks,0.);
+        q.run(&mut tasks,0.);
+        assert_eq!(1,tasks.get(h2).get_priority());
+        assert_eq!(1,tasks.get(h3).get_priority());
+        q.run(&mut tasks,0.);
+        assert_eq!(3,tasks.get(h1).get_priority());
+        /* remove first and check for queue rewind */
+        q.remove(h1);
+        q.run(&mut tasks,0.);
+        assert_eq!(2,tasks.get(h2).get_priority());
+        /* remove three and check for end-skip and no rewind */
+        q.remove(h3);
+        q.run(&mut tasks,0.);
+        assert_eq!(3,tasks.get(h2).get_priority());
+        /* remove two to check for emptying */
+        q.remove(h2);
+        assert!(q.empty());
     }
 }
