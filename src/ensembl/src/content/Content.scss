@@ -1,10 +1,19 @@
 @import 'src/styles/common';
 
-// FIXME: Notice that the header is now 79 px, not 73 px as is assumed in the shorter style
+/*
+ TODO:
+  Add a global layout component based on CSS grid:
+
+  | HEADER  |
+  | CONTENT |
+
+  so that the area allotted to content is calculated automatically by the browser,
+  and not specifically defined as currently is done below
+*/
 
 .content {
   &.shorter {
-    height: calc(100% - 73px);
+    height: calc(100% - 79px);
   }
 
   &.taller {
