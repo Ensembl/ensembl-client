@@ -48,6 +48,7 @@ import TrackPanel from './track-panel/TrackPanel';
 import TrackPanelBar from './track-panel/track-panel-bar/TrackPanelBar';
 import TrackPanelTabs from './track-panel/track-panel-tabs/TrackPanelTabs';
 import BrowserAppBar from './browser-app-bar/BrowserAppBar';
+import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 
 import { RootState } from 'src/store';
@@ -243,6 +244,7 @@ export const Browser = (props: BrowserProps) => {
           topbarContent={<BrowserBar />}
           isSidebarOpen={props.isTrackPanelOpened}
           isDrawerOpen={props.isDrawerOpened}
+          drawerContent={<Drawer />}
           onDrawerClose={toggleDrawer}
           viewportWidth={props.viewportWidth}
         />
