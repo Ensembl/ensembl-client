@@ -45,25 +45,25 @@ describe('<BrowserBar />', () => {
     });
 
     test('contains BrowserReset button', () => {
-      expect(renderedBrowserBar.find(BrowserReset)).toHaveLength(1);
+      expect(renderedBrowserBar.find(BrowserReset).length).toBe(1);
     });
 
     test('contains BrowserLocationIndicator', () => {
-      expect(renderedBrowserBar.find(BrowserLocationIndicator)).toHaveLength(1);
+      expect(renderedBrowserBar.find(BrowserLocationIndicator).length).toBe(1);
     });
 
     test('renders GeneSummaryStrip if focus object is gene', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ ensObject: createEnsObject('gene') })
       );
-      expect(renderedBrowserBar.find(GeneSummaryStrip)).toHaveLength(1);
+      expect(renderedBrowserBar.find(GeneSummaryStrip).length).toBe(1);
     });
 
     test('renders RegionSummaryStrip if focus object is region', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ ensObject: createEnsObject('region') })
       );
-      expect(renderedBrowserBar.find(RegionSummaryStrip)).toHaveLength(1);
+      expect(renderedBrowserBar.find(RegionSummaryStrip).length).toBe(1);
     });
   });
 

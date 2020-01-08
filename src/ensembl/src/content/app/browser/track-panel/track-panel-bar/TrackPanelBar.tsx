@@ -27,7 +27,7 @@ export type TrackPanelBarProps = {
 
 export const TrackPanelBar = (props: TrackPanelBarProps) => {
   return (
-    <div>
+    <>
       {trackPanelBarConfig.map((item: TrackPanelBarItem) => (
         <TrackPanelBarIcon
           key={item.name}
@@ -40,7 +40,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
           toggleTrackPanel={props.toggleTrackPanel}
         />
       ))}
-    </div>
+    </>
   );
 };
 

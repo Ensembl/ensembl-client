@@ -43,7 +43,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
     }
   }, []);
 
-  const mainClassnames = classNames(
+  const mainClassNames = classNames(
     styles.main,
     { [styles.mainDefault]: props.isSidebarOpen },
     { [styles.mainFullWidth]: !props.isSidebarOpen }
@@ -67,7 +67,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
         {shouldShowSidebarNavigation && props.sidebarNavigation}
       </div>
       <div className={styles.mainWrapper}>
-        <div className={mainClassnames}>{props.mainContent}</div>
+        <div className={mainClassNames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
           <div className={styles.sideBarToolstrip}>
