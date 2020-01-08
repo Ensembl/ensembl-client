@@ -62,6 +62,7 @@ mod test {
     use super::*;
     use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
     use crate::taskcontainer::TaskContainer;
+    use crate::timer::TimerSet;
 
     struct FakeStep(i32);
     impl Step2<(),()> for FakeStep {
@@ -83,7 +84,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h);
+        let timers = TimerSet::new();
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
         let s1 = FakeStep(0);
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
@@ -105,7 +107,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h);
+        let timers = TimerSet::new();
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
         let s1 = FakeStep(-1);
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");

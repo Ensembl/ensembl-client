@@ -1,5 +1,4 @@
 use std::sync::{ Arc, Mutex };
-use owning_ref::MutexGuardRefMut;
 
 use crate::edgetrigger::EdgeTrigger;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
@@ -14,12 +13,12 @@ pub struct TaskControl {
     kill_reason: Arc<Mutex<Option<KillReason>>>,
     task_handle: TaskHandle,
     action_handle: ExecutorActionHandle,
-    timers: Arc<Mutex<TimerSet>>,
+    timers: TimerSet,
     rerun_soon: Arc<Mutex<EdgeTrigger<'static>>>
 }
 
 impl TaskControl {
-    pub(crate) fn new(config: &RunConfig, action_handle: &ExecutorActionHandle, task_handle: &TaskHandle) -> TaskControl {
+    pub(crate) fn new(config: &RunConfig, timers: &TimerSet, action_handle: &ExecutorActionHandle, task_handle: &TaskHandle) -> TaskControl {
         let action_handle = action_handle.clone();
         let mut action_handle2 = action_handle.clone();
         let task_handle = *task_handle;
@@ -28,7 +27,7 @@ impl TaskControl {
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),
             task_handle, action_handle,
-            timers: Arc::new(Mutex::new(TimerSet::new())),
+            timers: timers.clone(),
             rerun_soon: Arc::new(Mutex::new(EdgeTrigger::new(move || {
                 action_handle2.add(ExecutorAction::Unblock(task_handle));
             })))
@@ -36,12 +35,12 @@ impl TaskControl {
     }
 
     /* timers */
-    pub fn timers(&mut self) -> MutexGuardRefMut<TimerSet> { 
-        MutexGuardRefMut::new(self.timers.lock().unwrap())
+    pub fn add_timer<T>(&mut self, timeout: f64, callback: T) where T: FnMut() + 'static {
+        self.action_handle.add(ExecutorAction::Timer(timeout,Box::new(callback)));
     }
 
     pub(crate) fn check_timers(&mut self, now: f64) {
-        self.timers().check(now);
+        self.timers.check(now);
     }
 
     /* kills */
@@ -98,25 +97,44 @@ impl TaskControl {
 #[allow(unused)]
 mod test {
     use super::*;
+    use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
+    use crate::integration::CommanderIntegration2;
+    use crate::control::TaskControl;
+    use crate::step::{ Step2, StepState2 };
+
+    pub struct FakeIntegration(Arc<Mutex<f64>>);
+    impl CommanderIntegration2 for FakeIntegration {
+        fn current_time(&mut self) -> f64 { *self.0.lock().unwrap() }
+    }
+
+    struct FakeStep();
+    impl Step2<(),()> for FakeStep {
+        fn execute(&mut self, input: &(), control: &mut TaskControl) -> StepState2<(),()> {
+            StepState2::Block
+        }
+    }
+
 
     #[test]
     pub fn test_control_timers() {
         /* setup */
+        let time = Arc::new(Mutex::new(0.));
+        let integration = FakeIntegration(time.clone());
+        let mut x = Executor::new(integration);
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h);
-        /* quickly test vaious accessors */
-        assert_eq!(2,tc.get_config().get_priority());
+        let mut tc = x.add(FakeStep(),(),&cfg,"test");
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
-        tc.timers().add(1.,move || { *shared2.lock().unwrap() = true; });
-        tc.check_timers(0.5);
+        tc.add_timer(1.,move || { *shared2.lock().unwrap() = true; });
+        x.run_actions();
+        x.check_timers(0.5);
         assert!(!*shared.lock().unwrap());
-        tc.check_timers(1.5);
+        x.check_timers(1.5);
         assert!(*shared.lock().unwrap());
     }
 
@@ -127,7 +145,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h);
+        let timers = TimerSet::new();
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
         /* test */
         assert!(!tc.is_finished());
         tc.finish(Some(&KillReason::Cancelled));
@@ -145,11 +164,14 @@ mod test {
     #[test]
     pub fn test_blocking() {
         /* setup */
-        let cfg = RunConfig::new(None,0,None);
+        let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h);
+        let timers = TimerSet::new();
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
+        /* quickly test vaious accessors */
+        assert_eq!(2,tc.get_config().get_priority());
         /* test */
         /* 2 unblocks cause single action */
         tc.rerun_soon();

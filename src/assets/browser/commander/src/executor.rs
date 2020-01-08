@@ -1,18 +1,18 @@
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::CommanderIntegration2;
 use crate::taskcontainer::{ TaskContainer, TaskHandle };
+use crate::timer::TimerSet;
 use crate::runnable::Runnable;
 use crate::control::TaskControl;
-use crate::step::{ RunConfig, Step2 };
+use crate::step::{ KillReason, RunConfig, Step2 };
 use crate::task2::Task2Impl;
-use crate::taskdoomer::TaskDoomer;
 
 pub struct Executor {
     integration: Box<dyn CommanderIntegration2>,
     tasks: TaskContainer,
     runnable: Runnable,
     actions: ExecutorActionHandle,
-    doomer: TaskDoomer
+    timers: TimerSet
 }
 
 impl Executor {
@@ -22,18 +22,19 @@ impl Executor {
             tasks: TaskContainer::new(),
             runnable: Runnable::new(),
             actions: ExecutorActionHandle::new(),
-            doomer: TaskDoomer::new()
+            timers: TimerSet::new()
         }
     }
 
     pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskControl where S: Step2<X,(),()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
-        let control = TaskControl::new(run_config,&mut self.actions,&handle);
+        let control = TaskControl::new(run_config,&self.timers,&mut self.actions,&handle);
         let task = Task2Impl::new(step,input,run_config,control.clone(),name);
         self.tasks.set(handle,task);
         if let Some(timeout) = run_config.get_timeout() {
-            self.doomer.add(&control,now+timeout);
+            let mut control = control.clone();
+            self.timers.add(now+timeout,move || control.finish(Some(&KillReason::Timeout)));
         }
         self.runnable.add(&self.tasks,handle);
         control
@@ -44,7 +45,7 @@ impl Executor {
         self.tasks.remove(handle);
     }
 
-    fn run_actions(&mut self) {
+    pub(crate) fn run_actions(&mut self) {
         for action in self.actions.drain() {
             match action {
                 ExecutorAction::Block(handle) => {
@@ -58,14 +59,21 @@ impl Executor {
                 },
                 ExecutorAction::Kill(handle,_) => {
                     self.remove(handle);
+                },
+                ExecutorAction::Timer(timeout,callback) => {
+                    self.timers.add(timeout,callback);
                 }
             }
         }
     }
 
+    pub(crate) fn check_timers(&mut self,now: f64) {
+        self.timers.check(now);
+    }
+
     // XXX when ticks turned off need to check timers
     pub fn run(&mut self, now: f64) -> bool {
-        self.doomer.check(now);
+        self.check_timers(now);
         self.run_actions();
         // XXX loop!
         let out = self.runnable.run(&mut self.tasks,now);

@@ -9,7 +9,6 @@ mod runqueue;
 mod step;
 mod task2;
 mod taskcontainer;
-mod taskdoomer;
 mod timer;
 
 mod steps {

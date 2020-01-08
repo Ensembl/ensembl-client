@@ -2,12 +2,12 @@ use crate::step::KillReason;
 use crate::taskcontainer::TaskHandle;
 use std::sync::{ Arc, Mutex };
 
-#[derive(PartialEq)]
 pub(crate) enum ExecutorAction {
     Block(TaskHandle),
     Unblock(TaskHandle),
     Done(TaskHandle),
-    Kill(TaskHandle,KillReason)
+    Kill(TaskHandle,KillReason),
+    Timer(f64,Box<dyn FnMut() + 'static>)
 }
 
 #[derive(Clone)]
@@ -40,9 +40,17 @@ mod test {
         let h = c.allocate();
         eah.add(ExecutorAction::Block(h));
         eah.add(ExecutorAction::Done(h));
-        assert!(vec![ExecutorAction::Block(h),ExecutorAction::Done(h)] == eah.drain());
+        let actions = eah.drain();
+        if let (ExecutorAction::Block(_),ExecutorAction::Done(_)) = (&actions[0],&actions[1]) {
+        } else {
+            assert!(false);
+        }
         assert!(eah.drain().len() == 0);
         eah.add(ExecutorAction::Unblock(h));
-        assert!(vec![ExecutorAction::Unblock(h)] == eah.drain());
+        let actions = eah.drain();
+        if let ExecutorAction::Unblock(_) = &actions[0] {
+        } else {
+            assert!(false);
+        }
     }
 }
