@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.questionButton {
+.default {
   position: relative;
   display: flex;
   justify-content: center;
@@ -19,4 +19,16 @@
   *[class*='tooltip'] {
     max-width: 300px;
   }
+}
+
+.in-input-field {
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+}
+
+.inline {
+  width: 17px;
+  height: 17px;
+  margin-left:17px;
 }

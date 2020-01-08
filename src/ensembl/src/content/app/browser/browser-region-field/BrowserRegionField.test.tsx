@@ -8,19 +8,13 @@ import {
 } from './BrowserRegionField';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { ChrLocation } from '../browserState';
 import {
   createChrLocationValues,
   createRegionValidationMessages
 } from 'tests/fixtures/browser';
 
 import * as browserHelper from '../browserHelper';
-
-jest.mock('src/shared/components/overlay/Overlay', () => () => (
-  <div>Overlay</div>
-));
 
 describe('<BrowserRegionField', () => {
   afterEach(() => {
@@ -31,7 +25,7 @@ describe('<BrowserRegionField', () => {
     activeGenomeId: faker.lorem.words(),
     chrLocation: createChrLocationValues().tupleValue,
     isActive: false,
-    isDisabled: false,
+    isGhosted: false,
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     toggleRegionFieldActive: jest.fn()
@@ -48,14 +42,8 @@ describe('<BrowserRegionField', () => {
       expect(wrapper.find(Input).length).toBe(1);
     });
 
-    test('contains submit and close buttons', () => {
+    test('contains submit button', () => {
       expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
-      expect(wrapper.find('button[role="closeButton"]')).toHaveLength(1);
-    });
-
-    test('has an overlay on top when region editor is active', () => {
-      wrapper.setProps({ isDisabled: true });
-      expect(wrapper.find(Overlay).length).toBe(1);
     });
   });
 
@@ -101,19 +89,7 @@ describe('<BrowserRegionField', () => {
       jest.restoreAllMocks();
     });
 
-    test('resets region field when close button is clicked', () => {
-      const regionInput = createChrLocationValues().stringValue;
-
-      wrapper
-        .find(Input)
-        .simulate('change', { target: { value: regionInput } });
-      wrapper.find('button[role="closeButton"]').simulate('click');
-
-      expect(wrapper.find(Input).props().value).toBe('');
-      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledWith(
-        false
-      );
-    });
+    // TODO: Test if the form is reset when clicked outside the form. Need to be able to mock useOutsideClick for this.
 
     test('displays error message when validation fails', () => {
       const regionInput = faker.lorem.words();

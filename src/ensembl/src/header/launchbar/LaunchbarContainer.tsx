@@ -1,5 +1,6 @@
 import React, { FunctionComponent, memo } from 'react';
 import { connect } from 'react-redux';
+import isEqual from 'lodash/isEqual';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
@@ -20,7 +21,7 @@ type LaunchbarContainerProps = StateProps & OwnProps;
 
 export const LaunchbarContainer: FunctionComponent<
   LaunchbarContainerProps
-> = memo((props) => <Launchbar {...props} />);
+> = memo((props) => <Launchbar {...props} />, isEqual);
 
 const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state),

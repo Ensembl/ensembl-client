@@ -4,16 +4,34 @@ import faker from 'faker';
 import { act } from 'react-dom/test-utils';
 
 import CheckboxWithTextfields from './CheckboxWithTextfields';
-import PasteOrUpload from '../paste-or-upload/PasteOrUpload';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-const onChange = jest.fn();
+const onTextChange = jest.fn();
+const onFilesChange = jest.fn();
+const onReset = jest.fn();
+
 let wrapper: any;
+const mockReadFile: ReadFile = {
+  filename: faker.random.words(),
+  content: faker.random.words(),
+  error: null
+};
+
+const mockReadFileWithError: ReadFile = {
+  filename: faker.random.words(),
+  content: faker.random.words(),
+  error: faker.random.words()
+};
+
 const defaultProps = {
-  values: [],
+  textValue: '',
+  files: [],
   label: '',
-  onChange,
-  allowMultiple: true
+  onTextChange,
+  onFilesChange,
+  onReset
 };
 
 describe('<CheckboxWithTextfields />', () => {
@@ -28,14 +46,14 @@ describe('<CheckboxWithTextfields />', () => {
     expect(wrapper).not.toThrow();
   });
 
-  it('does not display any PasteOrUpload component by default', () => {
+  it('displays the Paste Data text by default', () => {
     wrapper = mount(<CheckboxWithTextfields {...defaultProps} />);
-    expect(wrapper.find(PasteOrUpload)).toHaveLength(0);
+    expect(wrapper.find('.pasteDataText').text()).toBe('Paste Data');
   });
 
-  it('does not display the add button by default', () => {
+  it('displays one Upload component by default', () => {
     wrapper = mount(<CheckboxWithTextfields {...defaultProps} />);
-    expect(wrapper.find('.addIconHolder')).toHaveLength(0);
+    expect(wrapper.find(Upload)).toHaveLength(1);
   });
 
   it('passes the label to the checkbox component', () => {
@@ -44,70 +62,64 @@ describe('<CheckboxWithTextfields />', () => {
     expect(wrapper.find(Checkbox).prop('label')).toBe(label);
   });
 
-  it('automatically checks the checkbox when a value is passed', () => {
+  it('automatically checks the checkbox when a textValue is passed', () => {
     wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} values={['foo']} />
+      <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
     );
     expect(wrapper.find(Checkbox).prop('checked')).toBe(true);
   });
 
-  it('displays N number of PasteOrUpload components based on the values', () => {
-    const values = Array(faker.random.number(10)).fill(faker.random.words());
+  it('automatically checks the checkbox when the files list is not empty', () => {
     wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} values={values} />
+      <CheckboxWithTextfields {...defaultProps} files={[mockReadFile]} />
     );
-    expect(wrapper.find(PasteOrUpload)).toHaveLength(values.length);
+    expect(wrapper.find(Checkbox).prop('checked')).toBe(true);
   });
 
-  it('does not show the Add button when allowMultiple is set to false', () => {
+  it('calls the onReset prop when the checkbox is unchecked', () => {
     wrapper = mount(
-      <CheckboxWithTextfields
-        {...defaultProps}
-        allowMultiple={false}
-        values={['foo']}
-      />
+      <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
     );
-    expect(wrapper.find('.addIconHolder')).toHaveLength(0);
+    wrapper
+      .find(Checkbox)
+      .find('label')
+      .simulate('click');
+    expect(onReset).toBeCalled();
   });
 
-  it('calls the onChange function with the new set of values when the input is changed', async () => {
-    wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} values={['foo']} />
-    );
+  it('displays N number of file details based on the files prop', () => {
+    const files = Array(faker.random.number(10)).fill(mockReadFile);
+    wrapper = mount(<CheckboxWithTextfields {...defaultProps} files={files} />);
+    expect(wrapper.find('.filename').length).toBe(files.length);
+  });
 
-    const newValue = faker.random.words();
+  it('calls the onFilesChange when a file is removed', async () => {
+    const files = Array(faker.random.number(10) || 1).fill(mockReadFile);
+    const randomNumber = faker.random.number(files.length - 1);
+    wrapper = mount(<CheckboxWithTextfields {...defaultProps} files={files} />);
 
     await act(async () => {
       wrapper
-        .find(PasteOrUpload)
-        .last()
-        .prop('onChange')(newValue);
-    });
-
-    expect(onChange).toBeCalledWith([newValue]);
-  });
-
-  it('updates the values when an input is removed', async () => {
-    wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} values={['foo', 'bar']} />
-    );
-
-    await act(async () => {
-      wrapper
-        .find(PasteOrUpload)
-        .last()
-        .prop('onRemove')();
+        .find('.removeFileIcon')
+        .at(randomNumber)
+        .find(ImageButton)
+        .prop('onClick')();
     });
     wrapper.update();
 
-    expect(onChange).toBeCalledWith(['foo']);
+    expect(onFilesChange).toBeCalled();
   });
 
-  it('displays the add button when the last Input field has some content', () => {
+  it('displays an error message if the file has the error field set', async () => {
     wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} values={['foo']} />
+      <CheckboxWithTextfields
+        {...defaultProps}
+        files={[mockReadFileWithError]}
+      />
     );
 
-    expect(wrapper.find('.addIconHolder')).toHaveLength(1);
+    expect(wrapper.find('.errorMessage').text()).toBe(
+      mockReadFileWithError.error
+    );
   });
 });

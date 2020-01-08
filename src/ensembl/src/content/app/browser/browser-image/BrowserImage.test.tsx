@@ -31,8 +31,7 @@ describe('<BrowserImage />', () => {
   const defaultProps: BrowserImageProps = {
     browserCogTrackList: {},
     browserNavOpened: false,
-    regionEditorActive: false,
-    regionFieldActive: false,
+    isDisabled: false,
     browserActivated: false,
     activateBrowser: jest.fn(),
     updateBrowserNavStates: jest.fn(),
@@ -64,14 +63,8 @@ describe('<BrowserImage />', () => {
       expect(wrapper.find(ZmenuController).length).toBe(1);
     });
 
-    test('has an overlay on top when either region field or region editor is active', () => {
-      const wrapper = mountBrowserImageComponent({ regionFieldActive: true });
-      expect(wrapper.find(Overlay).length).toBe(1);
-
-      wrapper.setProps({
-        regionFieldActive: false,
-        regionEditorActive: true
-      });
+    test('has an overlay on top when disabled', () => {
+      const wrapper = mountBrowserImageComponent({ isDisabled: true });
       expect(wrapper.find(Overlay).length).toBe(1);
     });
   });

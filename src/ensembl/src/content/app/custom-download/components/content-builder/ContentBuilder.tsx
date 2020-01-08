@@ -28,7 +28,7 @@ import {
 } from 'src/content/app/custom-download/types/Attributes';
 
 import JSONValue, { PrimitiveOrArrayValue } from 'src/shared/types/JSON';
-
+import { ReadFile } from 'src/shared/components/upload/Upload';
 import styles from './ContentBuilder.scss';
 
 type Path = (string | number)[];
@@ -273,7 +273,9 @@ const ContentBuilder = (props: ContentBuilderProps) => {
 
     const currentPath = [...path, entry.id];
 
-    const values: string[] = get(props.selectedData, currentPath, '');
+    const values = get(props.selectedData, currentPath, '');
+    const textValue = values[0];
+    const files = values.slice(1);
 
     const mergedClassNames = classNames(
       styles.contentSeparator,
@@ -285,9 +287,21 @@ const ContentBuilder = (props: ContentBuilderProps) => {
         <CheckboxWithTextfields
           label={entry.label}
           disabled={entry.disabled}
-          allowMultiple={true}
-          onChange={(values: string[]) => onChangeHandler(currentPath, values)}
-          values={values || []}
+          onTextChange={(value: string) =>
+            onChangeHandler(currentPath, [
+              value,
+              ...values.slice(1)
+            ] as PrimitiveOrArrayValue)
+          }
+          onFilesChange={(newFiles: ReadFile[]) =>
+            onChangeHandler(currentPath, [
+              textValue,
+              ...newFiles
+            ] as PrimitiveOrArrayValue)
+          }
+          onReset={() => onChangeHandler(currentPath, [])}
+          textValue={textValue || ''}
+          files={files}
         />
       </div>
     );

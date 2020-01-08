@@ -1,6 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import useResizeObserver from 'use-resize-observer';
+
+import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
+import { updateBreakpointWidth } from '../global/globalActions';
+import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 
 import Header from '../header/Header';
 import Content from '../content/Content';
@@ -9,34 +12,23 @@ import privacyBannerService from '../shared/components/privacy-banner/privacy-ba
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { GeneralErrorScreen } from 'src/shared/components/error-screen';
 
-import { updateBreakpointWidth } from '../global/globalActions';
-import { getBreakpointWidth } from '../global/globalSelectors';
-import { RootState } from '../store';
-import { BreakpointWidth } from '../global/globalConfig';
-import { getBreakpoint } from '../global/globalHelper';
-
 import styles from './Root.scss';
 
-type StateProps = {
-  breakpointWidth: BreakpointWidth;
-};
-
-type DispatchProps = {
+type Props = {
   updateBreakpointWidth: (breakpointWidth: BreakpointWidth) => void;
 };
 
-type OwnProps = {};
-
-type RootProps = StateProps & DispatchProps & OwnProps;
-
-export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
-  const [ref, width] = useResizeObserver();
-  const currentBreakpoint: BreakpointWidth = getBreakpoint(width);
+export const Root = (props: Props) => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
 
   useEffect(() => {
-    props.updateBreakpointWidth(currentBreakpoint);
-  }, [props.updateBreakpointWidth, currentBreakpoint]);
+    const subscription = observeMediaQueries(globalMediaQueries, (match) => {
+      props.updateBreakpointWidth(
+        BreakpointWidth[match as keyof typeof BreakpointWidth]
+      );
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     setShowPrivacyBanner(privacyBannerService.shouldShowBanner());
@@ -48,7 +40,7 @@ export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   };
 
   return (
-    <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.root}>
+    <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
         <Header />
         <Content />
@@ -58,13 +50,6 @@ export const Root: FunctionComponent<RootProps> = (props: RootProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  breakpointWidth: getBreakpointWidth(state)
-});
+const mapDispatchToProps = { updateBreakpointWidth };
 
-const mapDispatchToProps: DispatchProps = { updateBreakpointWidth };
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Root);
+export default connect(null, mapDispatchToProps)(Root);

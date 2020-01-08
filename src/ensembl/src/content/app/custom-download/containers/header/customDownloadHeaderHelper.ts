@@ -3,13 +3,13 @@ import config from 'config';
 import mapKeys from 'lodash/mapKeys';
 import set from 'lodash/set';
 import get from 'lodash/get';
-import trim from 'lodash/trim';
 
 import JSONValue from 'src/shared/types/JSON';
 import {
   flattenObject,
   getProcessedAttributes
 } from 'src/content/app/custom-download/containers/content/customDownloadContentHelper';
+import { ReadFile } from 'src/shared/components/upload/Upload';
 
 export const fetchCustomDownloadResults = (
   downloadType: string,
@@ -75,16 +75,26 @@ export const getEndpointUrl = (
   };
 
   // FIXME: Temporarily apply the filters locally
-  const gene_ids = get(processedFilters, 'genes.limit_to_genes', [])
-    .join(',')
-    .split(',')
-    .map(trim)
-    .filter(Boolean);
+  const gene_ids: string[] = [];
+
+  const limitToGenes = get(processedFilters, 'genes.limit_to_genes', []);
+
+  limitToGenes.forEach((element: string | ReadFile) => {
+    if (typeof element === 'string') {
+      gene_ids.push(element);
+    } else if (element && element.content) {
+      gene_ids.push(element.content as string);
+    }
+  });
+
   const gene_biotypes = get(processedFilters, 'genes.biotype');
   const gene_source = get(processedFilters, 'genes.gene_source');
 
-  if (gene_ids.length) {
-    endpointFilters.id = gene_ids;
+  if (gene_ids.filter(Boolean).length) {
+    endpointFilters.id = gene_ids
+      .filter(Boolean)
+      .join(',')
+      .split(',');
   }
 
   if (gene_biotypes) {

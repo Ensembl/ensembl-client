@@ -105,7 +105,7 @@ export const BrowserBar = (props: BrowserBarProps) => {
   const shouldShowTrackPanelTabs =
     props.activeGenomeId &&
     (props.isTrackPanelOpened ||
-      props.breakpointWidth === BreakpointWidth.DESKTOP);
+      props.breakpointWidth >= BreakpointWidth.DESKTOP);
 
   const browserInfoClassName = classNames(styles.browserInfo, {
     [styles.browserInfoExpanded]: !props.isTrackPanelOpened,
@@ -230,7 +230,4 @@ const mapDispatchToProps = {
   changeFocusObject
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserBar);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserBar);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
@@ -88,9 +88,7 @@ export type BrowserProps = {
 };
 
 export const Browser = (props: BrowserProps) => {
-  const [trackStatesFromStorage, setTrackStatesFromStorage] = useState<
-    BrowserTrackStates
-  >({});
+  const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
 
   const { isDrawerOpened, closeDrawer } = props;
   const params: { [key: string]: string } = useParams();
@@ -141,19 +139,22 @@ export const Browser = (props: BrowserProps) => {
     props.setDataFromUrlAndSave(payload);
   };
 
-  const changeSelectedSpecies = (genomeId: string) => {
-    const { allChrLocations, allActiveEnsObjectIds } = props;
-    const chrLocation = allChrLocations[genomeId];
-    const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
+  const changeSelectedSpecies = useCallback(
+    (genomeId: string) => {
+      const { allChrLocations, allActiveEnsObjectIds } = props;
+      const chrLocation = allChrLocations[genomeId];
+      const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
 
-    const params = {
-      genomeId,
-      focus: activeEnsObjectId,
-      location: chrLocation ? getChrLocationStr(chrLocation) : null
-    };
+      const params = {
+        genomeId,
+        focus: activeEnsObjectId,
+        location: chrLocation ? getChrLocationStr(chrLocation) : null
+      };
 
-    props.replace(urlFor.browser(params));
-  };
+      props.replace(urlFor.browser(params));
+    },
+    [props.allChrLocations, props.allActiveEnsObjectIds]
+  );
 
   // handle url changes
   useEffect(() => {
@@ -336,7 +337,4 @@ const mapDispatchToProps = {
   restoreBrowserTrackStates
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Browser);
+export default connect(mapStateToProps, mapDispatchToProps)(Browser);
