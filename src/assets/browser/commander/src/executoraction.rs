@@ -7,6 +7,7 @@ pub(crate) enum ExecutorAction {
     Unblock(TaskHandle),
     Done(TaskHandle),
     Kill(TaskHandle,KillReason),
+    Tick(TaskHandle),
     Timer(f64,Box<dyn FnMut() + 'static>)
 }
 

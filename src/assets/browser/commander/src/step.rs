@@ -2,7 +2,8 @@ use std::sync::Arc;
 use crate::control::TaskControl;
 
 pub enum StepState2<Y,E> {
-    NotDone,
+    Again,
+    Tick,
     Done(Result<Y,E>),
     Block
 }

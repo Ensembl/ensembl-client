@@ -11,19 +11,13 @@ TODO:
 step name
 handle
 soft step timeout
-prio rerun
-slice timeout
-de pub
-split
-Non O(n) blocked queue
 Rc RunConfig
-efficient wake/payload
-rename sleep -=> block/wait everywhere
 tick enable/disable
 Do we need Send?
-priorities
 killed in-step memory
 non-null return values
+detect result in control
+weaken timers
 
 */
 

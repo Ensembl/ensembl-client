@@ -1,13 +1,17 @@
+// YYY unit-test one-shotting
+
 use std::sync::{ Arc, Mutex };
 
 use crate::edgetrigger::EdgeTrigger;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
+use crate::integration::IntegrationWrapper;
 use crate::step::{ KillReason, RunConfig };
 use crate::timer::TimerSet;
 use crate::taskcontainer::TaskHandle;
 
 #[derive(Clone)]
 pub struct TaskControl {
+    integration: IntegrationWrapper,
     config: RunConfig,
     finished: Arc<Mutex<bool>>,
     kill_reason: Arc<Mutex<Option<KillReason>>>,
@@ -18,7 +22,9 @@ pub struct TaskControl {
 }
 
 impl TaskControl {
-    pub(crate) fn new(config: &RunConfig, timers: &TimerSet, action_handle: &ExecutorActionHandle, task_handle: &TaskHandle) -> TaskControl {
+    pub(crate) fn new(config: &RunConfig, timers: &TimerSet, 
+                      action_handle: &ExecutorActionHandle, task_handle: &TaskHandle, 
+                      integration: &IntegrationWrapper) -> TaskControl {
         let action_handle = action_handle.clone();
         let mut action_handle2 = action_handle.clone();
         let task_handle = *task_handle;
@@ -27,6 +33,7 @@ impl TaskControl {
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),
             task_handle, action_handle,
+            integration: integration.clone(),
             timers: timers.clone(),
             rerun_soon: Arc::new(Mutex::new(EdgeTrigger::new(move || {
                 action_handle2.add(ExecutorAction::Unblock(task_handle));
@@ -75,8 +82,10 @@ impl TaskControl {
     //pub fn dropped(&self) -> bool { false }
 
     /* blocking */
+
     pub fn rerun_soon(&mut self) {
         self.rerun_soon.lock().unwrap().set();
+        self.integration.add_one_shot();
     }
 
     pub(crate) fn about_to_run(&mut self) {
@@ -92,6 +101,11 @@ impl TaskControl {
             self.action_handle.add(ExecutorAction::Unblock(self.task_handle));
         }
     }
+
+    pub(crate) fn wait_for_next_tick(&mut self) {
+        self.action_handle.add(ExecutorAction::Tick(self.task_handle));
+    }
+
 }
 
 #[allow(unused)]
@@ -99,13 +113,14 @@ mod test {
     use super::*;
     use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
-    use crate::integration::CommanderIntegration2;
+    use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::control::TaskControl;
     use crate::step::{ Step2, StepState2 };
 
     pub struct FakeIntegration(Arc<Mutex<f64>>);
     impl CommanderIntegration2 for FakeIntegration {
         fn current_time(&mut self) -> f64 { *self.0.lock().unwrap() }
+        fn sleep(&mut self, amount: SleepQuantity) {}
     }
 
     struct FakeStep();
@@ -146,7 +161,8 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
+        let integration = IntegrationWrapper::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         /* test */
         assert!(!tc.is_finished());
         tc.finish(Some(&KillReason::Cancelled));
@@ -169,7 +185,8 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
+        let integration = IntegrationWrapper::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         /* quickly test vaious accessors */
         assert_eq!(2,tc.get_config().get_priority());
         /* test */
@@ -209,6 +226,15 @@ mod test {
         if let (ExecutorAction::Unblock(_),
                 ExecutorAction::Block(_),
                 ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
+        } else {
+            assert!(false);
+        }
+        /* wait for next tick */
+        tc.about_to_run();
+        tc.wait_for_next_tick();
+        let actions = eah.drain();
+        assert_eq!(1,actions.len());
+        if let ExecutorAction::Tick(_) = actions[0] {
         } else {
             assert!(false);
         }

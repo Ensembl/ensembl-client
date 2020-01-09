@@ -16,7 +16,7 @@ impl Runnable {
     pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: TaskHandle) {
         let priority = tasks.get(handle).get_priority();
         let queue = self.queues.entry(priority).or_insert_with(||
-            RunQueue2::new(priority)
+            RunQueue2::new()
         );
         queue.add(handle);
     }
@@ -35,25 +35,19 @@ impl Runnable {
         }
     }
 
+    fn first_queue(&mut self) -> Option<&mut RunQueue2> {
+        self.queues.iter_mut().next().map(|x| x.1)
+    }
+
+    pub(crate) fn empty(&self) -> bool { self.queues.len() == 0 }
+
     pub(crate) fn run(&mut self, tasks: &mut TaskContainer, now: f64) -> bool {
-        /* running a task can empty a run queue because the runqueue discovers
-         * that task is dead. So after running we need to detect this and remove
-         * the queue, if so.
-         */
-        let mut doomed = None;
-        let out = if let Some((_,queue)) = self.queues.iter_mut().next() {
+        if let Some(queue) = self.first_queue() {
             queue.run(tasks,now);
-            if queue.empty() {
-                doomed = Some(queue.get_priority());
-            }
             true
         } else {
             false
-        };
-        if let Some(priority) = doomed {
-            self.queues.remove(&priority);
         }
-        out
     }
 }
 

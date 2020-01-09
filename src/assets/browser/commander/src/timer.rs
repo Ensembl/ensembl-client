@@ -55,6 +55,10 @@ impl TimerSetImpl {
             }
         }
     }
+
+    fn min(&self) -> Option<f64> {
+        self.timeouts.peek().map(|x| x.0)
+    }
 }
 
 #[derive(Clone)]
@@ -67,6 +71,10 @@ impl TimerSet {
 
     pub(crate) fn add<T>(&mut self, timeout: f64,callback: T) where T: FnMut() + 'static {
         self.0.lock().unwrap().add(timeout,callback);
+    }
+
+    pub(crate) fn min(&self) -> Option<f64> {
+        self.0.lock().unwrap().min()
     }
 
     pub(crate) fn check(&mut self, now: f64) {
@@ -89,9 +97,13 @@ mod test {
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         let shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
+        assert_eq!(None,timers.min());
         timers.add(1.,move || { *shared2.lock().unwrap() = true });
+        assert_eq!(Some(1.),timers.min());
         timers.add(0.1, || {});
+        assert_eq!(Some(0.1),timers.min());
         timers.add(1.1, || {});
+        assert_eq!(Some(0.1),timers.min());
         assert!(!*shared.lock().unwrap());
         assert!(timers.0.lock().unwrap().timeouts.len()!=0);
         timers.check(0.5);
@@ -100,7 +112,9 @@ mod test {
         timers.check(1.);
         assert!(*shared.lock().unwrap());
         assert!(timers.0.lock().unwrap().timeouts.len()!=0);
+        assert_eq!(Some(1.1),timers.min());
         timers.check(1.5);
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
+        assert_eq!(None,timers.min());
     }
 }

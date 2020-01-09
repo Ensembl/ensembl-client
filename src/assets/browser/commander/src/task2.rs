@@ -1,7 +1,7 @@
 use crate::control::TaskControl;
 use crate::step::{ RunConfig, Step2, StepState2 };
 
-pub struct Task2Impl<X> {
+pub(crate) struct Task2Impl<X> {
     step: Box<dyn Step2<X,(),()>>,
     input: X,
     run_config: RunConfig,
@@ -9,14 +9,14 @@ pub struct Task2Impl<X> {
     control: TaskControl
 }
 
-pub trait Task2 {
+pub(crate) trait Task2 {
     fn run(&mut self, now: f64);
     fn get_priority(&self) -> i8;
     fn get_name(&self) -> String;
 }
 
 impl<X> Task2Impl<X> {
-    pub fn new<S>(step: S, input: X, run_config: &RunConfig, control: TaskControl, name: &str) -> Task2Impl<X> where S: Step2<X,(),()> + 'static + Send, X: Send {
+    pub(crate) fn new<S>(step: S, input: X, run_config: &RunConfig, control: TaskControl, name: &str) -> Task2Impl<X> where S: Step2<X,(),()> + 'static + Send, X: Send {
         Task2Impl {
             step: Box::new(step),
             input, control,
@@ -52,7 +52,10 @@ impl<X> Task2 for Task2Impl<X> where X: Send {
             StepState2::Block => {
                 self.control.not_runnable();
             },
-            StepState2::NotDone => {}
+            StepState2::Tick => {
+                self.control.wait_for_next_tick();
+            },
+            StepState2::Again => {}
         }
     }
 }
@@ -60,9 +63,17 @@ impl<X> Task2 for Task2Impl<X> where X: Send {
 #[allow(unused)]
 mod test {
     use super::*;
+    use std::sync::{ Arc, Mutex };
     use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
+    use crate::integration::{ SleepQuantity, CommanderIntegration2, IntegrationWrapper };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
+
+    pub struct FakeIntegration();
+    impl CommanderIntegration2 for FakeIntegration {
+        fn current_time(&mut self) -> f64 { 0. }
+        fn sleep(&mut self, amount: SleepQuantity) {}
+    }
 
     struct FakeStep(i32);
     impl Step2<(),()> for FakeStep {
@@ -73,7 +84,11 @@ mod test {
                 return StepState2::Block;
             }
             self.0 += 1;
-            if self.0 < 2 { StepState2::NotDone } else { StepState2::Done(Ok(())) }
+            match self.0 {
+                1 => StepState2::Tick,
+                2 => StepState2::Again,
+                _ => StepState2::Done(Ok(()))
+            }
         }
     }
 
@@ -85,7 +100,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&IntegrationWrapper::new(FakeIntegration()));
         let s1 = FakeStep(0);
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
@@ -96,6 +111,16 @@ mod test {
         assert!(!tc.is_finished());
         t.run(0.);
         assert!(!tc.is_finished());
+        t.run(0.);
+        assert!(!tc.is_finished());
+        /* check for tick action in one of those two runs */
+        let actions = eah.drain();
+        assert_eq!(1,actions.len());
+        if let ExecutorAction::Tick(_) = actions[0] {
+        } else {
+            assert!(false);
+        }
+        /* finish */
         t.run(0.);
         assert!(tc.is_finished());
     }
@@ -108,7 +133,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h);
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&IntegrationWrapper::new(FakeIntegration()));
         let s1 = FakeStep(-1);
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
