@@ -2,13 +2,15 @@
 
 .appBar {
   display: grid;
-  grid-template-columns: minmax(80%, 1fr) minmax(150px, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, auto);
   grid-template-areas:
     'top top'
     'main right';
+  align-items: center;
   font-size: 12px;
   padding: 8px 20px;
   min-height: 80px;
+  width: 100%;
 }
 
 .appBarTop {
@@ -29,8 +31,8 @@
 .helpLink {
   flex: 0 1 auto;
   position: relative;
-  top: 5px;
   margin-left: 2em;
+  text-align: right;
 
   a {
     color: $black;
