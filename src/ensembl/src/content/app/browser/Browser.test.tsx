@@ -25,6 +25,7 @@ jest.mock('./track-panel/track-panel-bar/TrackPanelBar', () => () => (
 jest.mock('./track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
   <div>TrackPanelTabs</div>
 ));
+jest.mock('./drawer/Drawer', () => () => <div>Drawer</div>);
 jest.mock('ensembl-genome-browser', () => {
   return;
 });
