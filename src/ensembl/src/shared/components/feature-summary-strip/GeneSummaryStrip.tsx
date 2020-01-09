@@ -68,36 +68,34 @@ const GeneSummaryStrip = ({ gene, isGhosted, display }: WidthAwareProps) => {
   return <div className={stripClasses}>{content}</div>;
 };
 
-const MinimalContent = (props: { gene: EnsObject }) => (
-  <div>
-    <span className={styles.featureSummaryStripLabel}>Gene</span>
-    {props.gene.label ? (
-      <span className={styles.featureNameEmphasized}>{props.gene.label}</span>
-    ) : (
-      <span>{getDisplayStableId(props.gene)}</span>
-    )}
-  </div>
-);
-
-const CompactContent = (props: { gene: EnsObject }) => (
-  <div>
-    <span className={styles.featureSummaryStripLabel}>Gene</span>
-    {props.gene.label && (
-      <span className={styles.featureNameEmphasized}>{props.gene.label}</span>
-    )}
-    <span>{getDisplayStableId(props.gene)}</span>
-  </div>
-);
-
-const FullContent = ({ gene }: { gene: EnsObject }) => (
+const MinimalContent = ({ gene }: { gene: EnsObject }) => (
   <>
+    <span className={styles.featureSummaryStripLabel}>Gene</span>
+    {gene.label ? (
+      <span className={styles.featureNameEmphasized}>{gene.label}</span>
+    ) : (
+      <span>{getDisplayStableId(gene)}</span>
+    )}
+  </>
+);
+
+const CompactContent = ({ gene }: { gene: EnsObject }) => {
+  const stableId = getDisplayStableId(gene);
+
+  return (
     <div>
       <span className={styles.featureSummaryStripLabel}>Gene</span>
       {gene.label && (
         <span className={styles.featureNameEmphasized}>{gene.label}</span>
       )}
-      <span>{getDisplayStableId(gene)}</span>
+      {gene.label !== stableId && <span>{stableId}</span>}
     </div>
+  );
+};
+
+const FullContent = ({ gene }: { gene: EnsObject }) => (
+  <>
+    <CompactContent gene={gene} />
     {gene.bio_type && <div>{gene.bio_type.toLowerCase()}</div>}
     <div>{gene.strand} strand</div>
     <div>{getFormattedLocation(gene.location)}</div>
