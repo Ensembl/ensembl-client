@@ -13,6 +13,7 @@ html {
 *:before,
 *:after {
   box-sizing: inherit;
+  -webkit-tap-highlight-color: transparent; // disable blue highlight colour that can otherwise be seen upon tapping an element with cursor: pointer in mobile browser
 }
 
 *:focus {
