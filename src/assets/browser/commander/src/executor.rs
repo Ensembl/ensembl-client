@@ -29,50 +29,51 @@ impl Executor {
         }
     }
 
+    // XXX only add from main thread (via action)
     pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskControl where S: Step2<X,(),()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
         let control = TaskControl::new(run_config,&self.timers,&mut self.actions,&handle,&self.integration);
         let task = Task2Impl::new(step,input,run_config,control.clone(),name);
-        self.tasks.set(handle,task);
+        self.tasks.set(&handle,task);
         if let Some(timeout) = run_config.get_timeout() {
             let mut control = control.clone();
-            self.timers.add(now+timeout,move || control.finish(Some(&KillReason::Timeout)));
+            self.timers.add(Some(&handle),now+timeout,move || control.finish(Some(&KillReason::Timeout)));
         }
-        self.runnable.add(&self.tasks,handle);
+        self.runnable.add(&self.tasks,&handle);
         control
     }
 
-    fn remove(&mut self, handle: TaskHandle) {
+    fn remove(&mut self, handle: &TaskHandle) {
         self.runnable.remove(&self.tasks,handle);
         self.tasks.remove(handle);
     }
 
-    fn add_timer(&mut self, timeout: f64, callback: Box<dyn FnMut()>) {
+    fn add_timer(&mut self, handle: &TaskHandle, timeout: f64, callback: Box<dyn FnMut()>) {
         let now = self.integration.current_time();
-        self.timers.add(now+timeout,callback);
+        self.timers.add(Some(handle),now+timeout,callback);
     }
 
     pub(crate) fn run_actions(&mut self) {
         for action in self.actions.drain() {
             match action {
                 ExecutorAction::Block(handle) => {
-                    self.runnable.remove(&self.tasks,handle);
+                    self.runnable.remove(&self.tasks,&handle);
                 },
                 ExecutorAction::Unblock(handle) => {
-                    self.runnable.add(&self.tasks,handle);
+                    self.runnable.add(&self.tasks,&handle);
                 },
                 ExecutorAction::Done(handle) => {
-                    self.remove(handle);
+                    self.remove(&handle);
                 },
                 ExecutorAction::Kill(handle,_) => {
-                    self.remove(handle);
+                    self.remove(&handle);
                 },
-                ExecutorAction::Timer(timeout,callback) => {
-                    self.add_timer(timeout,callback);
+                ExecutorAction::Timer(handle,timeout,callback) => {
+                    self.add_timer(&handle,timeout,callback);
                 },
                 ExecutorAction::Tick(handle) => {
-                    self.runnable.remove(&self.tasks,handle);
+                    self.runnable.remove(&self.tasks,&handle);
                     self.next_tick.insert(handle);
                 }
             }
@@ -81,7 +82,7 @@ impl Executor {
 
     fn resurrect_tick_carryover(&mut self) {
         for handle in self.next_tick.drain() {
-            self.runnable.add(&self.tasks,handle);
+            self.runnable.add(&self.tasks,&handle);
         }
     }
 

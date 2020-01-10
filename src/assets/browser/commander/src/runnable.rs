@@ -13,25 +13,27 @@ impl Runnable {
         }
     }
 
-    pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: TaskHandle) {
-        let priority = tasks.get(handle).get_priority();
-        let queue = self.queues.entry(priority).or_insert_with(||
-            RunQueue2::new()
-        );
-        queue.add(handle);
+    pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: &TaskHandle) {
+        if let Some(task) = tasks.get(handle) {
+            let queue = self.queues.entry(task.get_priority()).or_insert_with(||
+                RunQueue2::new()
+            );
+            queue.add(handle);
+        }
     }
 
-    pub(crate) fn remove(&mut self, tasks: &TaskContainer, handle: TaskHandle) {
-        let priority = tasks.get(handle).get_priority();
-        let mut doomed = false;
-        if let Some(queue) = self.queues.get_mut(&priority) {
-            queue.remove(handle);
-            if queue.empty() {
-                doomed = true;
+    pub(crate) fn remove(&mut self, tasks: &TaskContainer, handle: &TaskHandle) {
+        if let Some(task) = tasks.get(handle) {
+            let mut doomed = false;
+            if let Some(queue) = self.queues.get_mut(&task.get_priority()) {
+                queue.remove(handle);
+                if queue.empty() {
+                    doomed = true;
+                }
             }
-        }
-        if doomed {
-            self.queues.remove(&priority);
+            if doomed {
+                self.queues.remove(&task.get_priority());
+            }
         }
     }
 
@@ -70,47 +72,47 @@ mod test {
         /* 1: h1, h2; 2: h3, 3: h4 */
         let h1 = tasks.allocate();
         let t1 = FakeTask(1,0);
-        tasks.set(h1,t1);
+        tasks.set(&h1,t1);
         let h2 = tasks.allocate();
         let t2 = FakeTask(1,0);
-        tasks.set(h2,t2);
+        tasks.set(&h2,t2);
         let h3 = tasks.allocate();
         let t3 = FakeTask(2,0);
-        tasks.set(h3,t3);
+        tasks.set(&h3,t3);
         let h4 = tasks.allocate();
         let t4 = FakeTask(3,0);
-        tasks.set(h4,t4);
+        tasks.set(&h4,t4);
         /* add all four and check just h1, h2 run */
-        r.add(&mut tasks,h1);
-        r.add(&mut tasks,h2);
-        r.add(&mut tasks,h3);
-        r.add(&mut tasks,h4);
+        r.add(&mut tasks,&h1);
+        r.add(&mut tasks,&h2);
+        r.add(&mut tasks,&h3);
+        r.add(&mut tasks,&h4);
         r.run(&mut tasks,0.);
         r.run(&mut tasks,0.);
         r.run(&mut tasks,0.);
-        assert_eq!("2",&tasks.get(h1).get_name());
-        assert_eq!("1",&tasks.get(h2).get_name());
-        assert_eq!("0",&tasks.get(h3).get_name());
-        assert_eq!("0",&tasks.get(h4).get_name());
+        assert_eq!("2",&tasks.get(&h1).unwrap().get_name());
+        assert_eq!("1",&tasks.get(&h2).unwrap().get_name());
+        assert_eq!("0",&tasks.get(&h3).unwrap().get_name());
+        assert_eq!("0",&tasks.get(&h4).unwrap().get_name());
         /* remove h1 and check h2 just runs */
-        r.remove(&mut tasks,h1);
+        r.remove(&mut tasks,&h1);
         r.run(&mut tasks,0.);
         r.run(&mut tasks,0.);
-        assert_eq!("2",&tasks.get(h1).get_name());
-        assert_eq!("3",&tasks.get(h2).get_name());
-        assert_eq!("0",&tasks.get(h3).get_name());
-        assert_eq!("0",&tasks.get(h4).get_name());
+        assert_eq!("2",&tasks.get(&h1).unwrap().get_name());
+        assert_eq!("3",&tasks.get(&h2).unwrap().get_name());
+        assert_eq!("0",&tasks.get(&h3).unwrap().get_name());
+        assert_eq!("0",&tasks.get(&h4).unwrap().get_name());
         /* remove h2 and check just h3 runs */
-        r.remove(&mut tasks,h2);
+        r.remove(&mut tasks,&h2);
         r.run(&mut tasks,0.);
         assert!(r.run(&mut tasks,0.));
-        assert_eq!("2",&tasks.get(h1).get_name());
-        assert_eq!("3",&tasks.get(h2).get_name());
-        assert_eq!("2",&tasks.get(h3).get_name());
-        assert_eq!("0",&tasks.get(h4).get_name());
+        assert_eq!("2",&tasks.get(&h1).unwrap().get_name());
+        assert_eq!("3",&tasks.get(&h2).unwrap().get_name());
+        assert_eq!("2",&tasks.get(&h3).unwrap().get_name());
+        assert_eq!("0",&tasks.get(&h4).unwrap().get_name());
         /* remove h3 and h4 and check run returns false */
-        r.remove(&mut tasks,h3);
-        r.remove(&mut tasks,h4);
+        r.remove(&mut tasks,&h3);
+        r.remove(&mut tasks,&h4);
         assert!(!r.run(&mut tasks,0.));
     }
 }

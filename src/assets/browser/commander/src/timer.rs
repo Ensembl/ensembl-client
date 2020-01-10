@@ -7,6 +7,7 @@ use binary_heap_plus::{ BinaryHeap, MinComparator };
 use std::cmp::{ Ordering };
 use std::sync::{ Arc, Mutex };
 
+use crate::taskcontainer::TaskHandle;
 use crate::edgetrigger::EdgeTrigger;
 
 struct Timeout(f64,EdgeTrigger<'static>);
@@ -69,7 +70,7 @@ impl TimerSet {
         TimerSet(Arc::new(Mutex::new(TimerSetImpl::new())))
     }
 
-    pub(crate) fn add<T>(&mut self, timeout: f64,callback: T) where T: FnMut() + 'static {
+    pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static {
         self.0.lock().unwrap().add(timeout,callback);
     }
 
@@ -98,11 +99,11 @@ mod test {
         let shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
         assert_eq!(None,timers.min());
-        timers.add(1.,move || { *shared2.lock().unwrap() = true });
+        timers.add(None,1.,move || { *shared2.lock().unwrap() = true });
         assert_eq!(Some(1.),timers.min());
-        timers.add(0.1, || {});
+        timers.add(None,0.1, || {});
         assert_eq!(Some(0.1),timers.min());
-        timers.add(1.1, || {});
+        timers.add(None,1.1, || {});
         assert_eq!(Some(0.1),timers.min());
         assert!(!*shared.lock().unwrap());
         assert!(timers.0.lock().unwrap().timeouts.len()!=0);

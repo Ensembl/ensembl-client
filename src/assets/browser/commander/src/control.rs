@@ -25,7 +25,8 @@ impl TaskControl {
                       integration: &ReenteringIntegration) -> TaskControl {
         let action_handle = action_handle.clone();
         let mut action_handle2 = action_handle.clone();
-        let task_handle = *task_handle;
+        let task_handle = task_handle.clone();
+        let task_handle2 = task_handle.clone();
         TaskControl {
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
@@ -34,14 +35,14 @@ impl TaskControl {
             integration: integration.clone(),
             timers: timers.clone(),
             unblock: Arc::new(Mutex::new(EdgeTrigger::new(move || {
-                action_handle2.add(ExecutorAction::Unblock(task_handle));
+                action_handle2.add(ExecutorAction::Unblock(task_handle2.clone()));
             })))
         }
     }
 
     /* timers */
     pub fn add_timer<T>(&mut self, timeout: f64, callback: T) where T: FnMut() + 'static {
-        self.action_handle.add(ExecutorAction::Timer(timeout,Box::new(callback)));
+        self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
     }
 
     pub(crate) fn check_timers(&mut self, now: f64) {
@@ -54,9 +55,9 @@ impl TaskControl {
         if !*finished {
             if let Some(reason) = reason {
                 *self.kill_reason.lock().unwrap() = Some(reason.clone());
-                self.action_handle.add(ExecutorAction::Kill(self.task_handle,reason.clone()));
+                self.action_handle.add(ExecutorAction::Kill(self.task_handle.clone(),reason.clone()));
             } else {
-                self.action_handle.add(ExecutorAction::Done(self.task_handle));
+                self.action_handle.add(ExecutorAction::Done(self.task_handle.clone()));
             }
             *finished = true;
             self.integration.cause_reentry();
@@ -92,17 +93,17 @@ impl TaskControl {
     }
 
     pub(crate) fn not_runnable(&mut self) {
-        self.action_handle.add(ExecutorAction::Block(self.task_handle));
+        self.action_handle.add(ExecutorAction::Block(self.task_handle.clone()));
         if self.unblock.lock().unwrap().is_set() {
             /* handle race between this unblock call and rerun_soon
              * (we need to gurantee that the latter always wins)
              */
-            self.action_handle.add(ExecutorAction::Unblock(self.task_handle));
+            self.action_handle.add(ExecutorAction::Unblock(self.task_handle.clone()));
         }
     }
 
     pub(crate) fn wait_for_next_tick(&mut self) {
-        self.action_handle.add(ExecutorAction::Tick(self.task_handle));
+        self.action_handle.add(ExecutorAction::Tick(self.task_handle.clone()));
     }
 
 }

@@ -22,15 +22,15 @@ impl RunQueue2 {
         self.tasks.len() == 0
     }
 
-    pub(crate) fn add(&mut self, handle: TaskHandle) {
+    pub(crate) fn add(&mut self, handle: &TaskHandle) {
         if !self.present.contains(&handle) {
-            self.present.insert(handle);
-            self.tasks.push(handle);
+            self.present.insert(handle.clone());
+            self.tasks.push(handle.clone());
         }
     }
 
-    pub(crate) fn remove(&mut self, handle: TaskHandle) {
-        if let Some(index) = self.tasks.iter().position(|h| *h == handle) {
+    pub(crate) fn remove(&mut self, handle: &TaskHandle) {
+        if let Some(index) = self.tasks.iter().position(|h| h == handle) {
             if index < self.next_task {
                 self.next_task -= 1;
             }
@@ -43,7 +43,9 @@ impl RunQueue2 {
         if self.next_task >= self.tasks.len() {
             self.next_task = 0;
         }
-        tasks.get_mut(self.tasks[self.next_task]).run(now);
+        if let Some(task) = tasks.get_mut(&self.tasks[self.next_task]) {
+            task.run(now);
+        }
         self.next_task += 1;
     }
 }
@@ -69,40 +71,40 @@ mod test {
         assert!(q.empty());
         let h1 = tasks.allocate();
         let t1 = FakeTask(0);
-        tasks.set(h1,t1);
+        tasks.set(&h1,t1);
         /* single task: check runs */
-        q.add(h1);
+        q.add(&h1);
         assert!(!q.empty());
-        assert_eq!(0,tasks.get(h1).get_priority());
+        assert_eq!(0,tasks.get(&h1).unwrap().get_priority());
         q.run(&mut tasks,0.);
-        assert_eq!(1,tasks.get(h1).get_priority());
+        assert_eq!(1,tasks.get(&h1).unwrap().get_priority());
         q.run(&mut tasks,0.);
-        assert_eq!(2,tasks.get(h1).get_priority());
+        assert_eq!(2,tasks.get(&h1).unwrap().get_priority());
         /* add second and third task and check run fairly */
         let h2 = tasks.allocate();
         let t2 = FakeTask(0);
-        tasks.set(h2,t2);
+        tasks.set(&h2,t2);
         let h3 = tasks.allocate();
         let t3 = FakeTask(0);
-        tasks.set(h3,t3);
-        q.add(h2);
-        q.add(h3);
+        tasks.set(&h3,t3);
+        q.add(&h2);
+        q.add(&h3);
         q.run(&mut tasks,0.);
         q.run(&mut tasks,0.);
-        assert_eq!(1,tasks.get(h2).get_priority());
-        assert_eq!(1,tasks.get(h3).get_priority());
+        assert_eq!(1,tasks.get(&h2).unwrap().get_priority());
+        assert_eq!(1,tasks.get(&h3).unwrap().get_priority());
         q.run(&mut tasks,0.);
-        assert_eq!(3,tasks.get(h1).get_priority());
+        assert_eq!(3,tasks.get(&h1).unwrap().get_priority());
         /* remove first and check for queue rewind */
-        q.remove(h1);
+        q.remove(&h1);
         q.run(&mut tasks,0.);
-        assert_eq!(2,tasks.get(h2).get_priority());
+        assert_eq!(2,tasks.get(&h2).unwrap().get_priority());
         /* remove three and check for end-skip and no rewind */
-        q.remove(h3);
+        q.remove(&h3);
         q.run(&mut tasks,0.);
-        assert_eq!(3,tasks.get(h2).get_priority());
+        assert_eq!(3,tasks.get(&h2).unwrap().get_priority());
         /* remove two to check for emptying */
-        q.remove(h2);
+        q.remove(&h2);
         assert!(q.empty());
     }
 }

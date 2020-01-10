@@ -8,7 +8,7 @@ pub(crate) enum ExecutorAction {
     Done(TaskHandle),
     Kill(TaskHandle,KillReason),
     Tick(TaskHandle),
-    Timer(f64,Box<dyn FnMut() + 'static>)
+    Timer(TaskHandle,f64,Box<dyn FnMut() + 'static>)
 }
 
 #[derive(Clone)]
@@ -39,8 +39,8 @@ mod test {
         let mut c = TaskContainer::new();
         let mut eah = ExecutorActionHandle::new();
         let h = c.allocate();
-        eah.add(ExecutorAction::Block(h));
-        eah.add(ExecutorAction::Done(h));
+        eah.add(ExecutorAction::Block(h.clone()));
+        eah.add(ExecutorAction::Done(h.clone()));
         let actions = eah.drain();
         if let (ExecutorAction::Block(_),ExecutorAction::Done(_)) = (&actions[0],&actions[1]) {
         } else {

@@ -9,10 +9,8 @@ use crate::step::{ KillReason, RunConfig, RunSlot, StepResult };
 
 TODO:
 step name
-handle
 soft step timeout
 Rc RunConfig
-tick enable/disable
 Do we need Send?
 killed in-step memory
 non-null return values
