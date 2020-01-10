@@ -1,6 +1,8 @@
 import React, { useState, ReactNode } from 'react';
 import { storiesOf } from '@storybook/react';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
+
 import { StandardAppLayout } from 'src/shared/components/layout';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
@@ -78,6 +80,7 @@ const Wrapper = (props: {
         isDrawerOpen={props.isDrawerOpen || false}
         onSidebarToggle={props.onSidebarToggle}
         onDrawerClose={props.onDrawerClose}
+        viewportWidth={BreakpointWidth.BIG_DESKTOP}
       />
     </div>
   );

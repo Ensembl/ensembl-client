@@ -86,11 +86,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, []);
 
   const updateDrawerView = (currentTrack: string) => {
-    const { drawerView, toggleDrawer, changeDrawerView } = props;
+    const { isDrawerOpened, toggleDrawer, changeDrawerView } = props;
 
     changeDrawerView(currentTrack);
 
-    if (!drawerView) {
+    if (!isDrawerOpened) {
       toggleDrawer(true);
     }
   };
@@ -127,7 +127,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     }
 
     updateDrawerView(viewName);
-  }, [track.track_id, drawerView]);
+  }, [track.track_id, drawerView, props.isDrawerOpened]);
 
   const toggleExpand = () => {
     const { track_id: trackId } = props.track;
@@ -252,7 +252,4 @@ const mapDispatchToProps = {
   updateTrackStatesAndSave
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelListItem);

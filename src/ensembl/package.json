@@ -24,7 +24,7 @@
     "certify": "node setup-ssl",
     "lint": "npm run lint:scripts && npm run lint:styles",
     "lint:scripts": "eslint 'src/**/*.{ts,tsx}'",
-    "lint:styles": "stylelint 'src/styles/**/*.scss'",
+    "lint:styles": "stylelint 'src/**/*.scss'",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",

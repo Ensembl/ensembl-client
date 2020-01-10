@@ -1,15 +1,7 @@
 @import 'src/styles/common';
 .resetButton {
-  position: relative;
-  width: 10px;
-  height: 10px;
-}
-
-.imageWrapper {
   height: 22px;
   width: 22px;
-  position: absolute;
-  top: -4px;
 }
 
 .imageButtonDisabled {

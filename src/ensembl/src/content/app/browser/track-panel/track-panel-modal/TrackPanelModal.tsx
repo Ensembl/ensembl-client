@@ -8,7 +8,6 @@ import PersonalData from './modal-views/PersonalData';
 import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 
-import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import { getTrackPanelModalView } from '../trackPanelSelectors';
 import { closeTrackPanelModal } from '../trackPanelActions';
 import { RootState } from 'src/store';
@@ -19,21 +18,12 @@ import styles from './TrackPanelModal.scss';
 import { closeDrawer } from '../../drawer/drawerActions';
 
 export type TrackPanelModalProps = {
-  launchbarExpanded: boolean;
   trackPanelModalView: string;
   closeTrackPanelModal: () => void;
   closeDrawer: () => void;
 };
 
 export const TrackPanelModal = (props: TrackPanelModalProps) => {
-  const getTrackPanelModalClasses = () => {
-    const heightClass: string = props.launchbarExpanded
-      ? styles.shorter
-      : styles.taller;
-
-    return `${styles.trackPanelModal} ${heightClass}`;
-  };
-
   const getModalView = () => {
     switch (props.trackPanelModalView) {
       case 'search':
@@ -58,7 +48,7 @@ export const TrackPanelModal = (props: TrackPanelModalProps) => {
     props.closeTrackPanelModal();
   };
   return (
-    <section className={getTrackPanelModalClasses()}>
+    <section className={styles.trackPanelModal}>
       <button onClick={onClickHandler} className={styles.closeButton}>
         <img src={closeIcon} alt="Close track panel modal" />
       </button>
@@ -68,7 +58,6 @@ export const TrackPanelModal = (props: TrackPanelModalProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  launchbarExpanded: getLaunchbarExpanded(state),
   trackPanelModalView: getTrackPanelModalView(state)
 });
 
@@ -77,7 +66,4 @@ const mapDispatchToProps = {
   closeDrawer
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelModal);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelModal);

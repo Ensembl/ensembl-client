@@ -2,134 +2,15 @@
 
 .browserBar {
   display: flex;
-  background: $light-grey;
-  box-shadow: 0 2px 3px $grey;
-  height: 32px;
-  padding: 6px 0 3px 0;
+  width: 100%;
+  align-items: center;
   position: relative;
-  z-index: 200;
-
-  dd {
-    display: inline-block;
-    margin: 0 18px;
-  }
-
-  button {
-    &.selected {
-      background: $white;
-    }
-  }
 }
 
-.browserInfo {
-  display: flex;
-  flex-wrap: nowrap;
-  font-size: 12px;
-  margin: 0;
-  width: calc(100vw - 356px);
-
-  label {
-    color: $dark-grey;
-    font-weight: $light;
-  }
-
-  .value {
-    margin: 0 3px;
-  }
-
-  &.browserInfoExpanded {
-    width: calc(100vw - 36px);
-
-    @include for-big-desktop-up {
-      width: calc(100vw - 356px);
-    }
-  }
-
-  &.browserInfoGreyed {
-    color: $dark-grey;
-  }
-
-  dd {
-    margin-right: 10px;
-    white-space: nowrap;
-  }
-
-  dl {
-    overflow: hidden;
-
-    &.browserInfoLeft {
-      flex: 1 1 auto;
-    }
-
-    &.browserInfoRight {
-      flex: 0 1 auto;
-      text-align: right;
-    }
-
-    .ensObjectLabel {
-      margin-left: 14px;
-      text-transform: capitalize;
-
-      .value {
-        font-size: 13px;
-        font-weight: $bold;
-      }
-    }
-  }
-
-  .navigator {
-    margin: 0 10px 0 0;
-    position: relative;
-    top: -2px;
-
-    img {
-      height: 22px;
-      width: 22px;
-    }
-  }
+.browserResetWrapper {
+  margin-right: 14px;
 }
 
-.browserInfoRegion {
-  .chrLabel {
-    display: inline-block;
-    margin-right: 5px;
-  }
-
-  span {
-    cursor: pointer;
-  }
-}
-
-.chrLocationView {
-  display: inline-block;
-}
-
-.chrCode {
-  background: $dark-blue;
-  color: $white;
-  cursor: pointer;
-  display: inline-block;
-  font-weight: $bold;
-  margin: 0 5px;
-  padding: 1px 4px;
-  text-align: center;
-}
-
-.chrRegion {
-  color: $dark-blue;
-  display: inline-block;
-}
-
-.browserInfoHidden {
-  .chrCode {
-    background: $dark-grey;
-  }
-
-  .chrRegion {
-    color: $dark-grey;
-  }
-}
-
-.chrSeparator {
-  margin: 0 2px;
+.browserLocationIndicatorWrapper {
+  margin-left: auto;
 }
