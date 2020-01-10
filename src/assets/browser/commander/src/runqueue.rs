@@ -39,12 +39,12 @@ impl RunQueue2 {
         }
     }
 
-    pub(crate) fn run(&mut self, tasks: &mut TaskContainer, now: f64) {
+    pub(crate) fn run(&mut self, tasks: &mut TaskContainer) {
         if self.next_task >= self.tasks.len() {
             self.next_task = 0;
         }
         if let Some(task) = tasks.get_mut(&self.tasks[self.next_task]) {
-            task.run(now);
+            task.run();
         }
         self.next_task += 1;
     }
@@ -58,7 +58,7 @@ mod test {
 
     struct FakeTask(i8);
     impl Task2 for FakeTask {
-        fn run(&mut self, now: f64) { self.0 += 1; }
+        fn run(&mut self) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn get_name(&self) -> String { "".to_string() }
     }
@@ -76,9 +76,9 @@ mod test {
         q.add(&h1);
         assert!(!q.empty());
         assert_eq!(0,tasks.get(&h1).unwrap().get_priority());
-        q.run(&mut tasks,0.);
+        q.run(&mut tasks);
         assert_eq!(1,tasks.get(&h1).unwrap().get_priority());
-        q.run(&mut tasks,0.);
+        q.run(&mut tasks);
         assert_eq!(2,tasks.get(&h1).unwrap().get_priority());
         /* add second and third task and check run fairly */
         let h2 = tasks.allocate();
@@ -89,19 +89,19 @@ mod test {
         tasks.set(&h3,t3);
         q.add(&h2);
         q.add(&h3);
-        q.run(&mut tasks,0.);
-        q.run(&mut tasks,0.);
+        q.run(&mut tasks);
+        q.run(&mut tasks);
         assert_eq!(1,tasks.get(&h2).unwrap().get_priority());
         assert_eq!(1,tasks.get(&h3).unwrap().get_priority());
-        q.run(&mut tasks,0.);
+        q.run(&mut tasks);
         assert_eq!(3,tasks.get(&h1).unwrap().get_priority());
         /* remove first and check for queue rewind */
         q.remove(&h1);
-        q.run(&mut tasks,0.);
+        q.run(&mut tasks);
         assert_eq!(2,tasks.get(&h2).unwrap().get_priority());
         /* remove three and check for end-skip and no rewind */
         q.remove(&h3);
-        q.run(&mut tasks,0.);
+        q.run(&mut tasks);
         assert_eq!(3,tasks.get(&h2).unwrap().get_priority());
         /* remove two to check for emptying */
         q.remove(&h2);

@@ -7,10 +7,10 @@ use binary_heap_plus::{ BinaryHeap, MinComparator };
 use std::cmp::{ Ordering };
 use std::sync::{ Arc, Mutex };
 
-use crate::taskcontainer::TaskHandle;
+use crate::taskcontainer::{ TaskContainer, TaskHandle };
 use crate::edgetrigger::EdgeTrigger;
 
-struct Timeout(f64,EdgeTrigger<'static>);
+struct Timeout(f64,EdgeTrigger<'static>,Option<TaskHandle>);
 
 impl PartialEq for Timeout {
     fn eq(&self, other: &Timeout) -> bool { self.0 == other.0 }
@@ -41,9 +41,21 @@ impl TimerSetImpl {
         }
     }
 
-    fn add<T>(&mut self, timeout: f64,callback: T) where T: FnMut() + 'static {
+    fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static {
         let trigger = EdgeTrigger::new(callback);
-        self.timeouts.push(Timeout(timeout,trigger));
+        self.timeouts.push(Timeout(timeout,trigger,taskhandle.cloned()));
+    }
+
+    fn tidy_handles(&mut self, tasks: &TaskContainer) {
+        while let Some(timeout) = self.timeouts.pop() {
+            if let Some(ref handle) = timeout.2 {
+                if tasks.get(handle).is_none() {
+                    continue;
+                }
+            }
+            self.timeouts.push(timeout);
+            break;
+        }
     }
 
     fn check(&mut self, now: f64) {
@@ -57,7 +69,7 @@ impl TimerSetImpl {
         }
     }
 
-    fn min(&self) -> Option<f64> {
+    fn min(&mut self) -> Option<f64> {
         self.timeouts.peek().map(|x| x.0)
     }
 }
@@ -71,7 +83,7 @@ impl TimerSet {
     }
 
     pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static {
-        self.0.lock().unwrap().add(timeout,callback);
+        self.0.lock().unwrap().add(taskhandle,timeout,callback);
     }
 
     pub(crate) fn min(&self) -> Option<f64> {
@@ -81,6 +93,10 @@ impl TimerSet {
     pub(crate) fn check(&mut self, now: f64) {
         self.0.lock().unwrap().check(now);
     }
+
+    pub(crate) fn tidy_handles(&mut self, tasks: &TaskContainer) {
+        self.0.lock().unwrap().tidy_handles(tasks);
+    }
 }
 
 
@@ -88,10 +104,19 @@ impl TimerSet {
 mod test {
     use std::sync::{ Arc, Mutex };
     use crate::edgetrigger::EdgeTrigger;
+    use crate::task2::Task2;
     use super::*;
+
+    struct FakeTask(i8);
+    impl Task2 for FakeTask {
+        fn run(&mut self) { self.0 += 1; }
+        fn get_priority(&self) -> i8 { self.0 }
+        fn get_name(&self) -> String { "".to_string() }
+    }
 
     #[test]
     pub fn test_timer() {
+        let tc = TaskContainer::new();
         let mut timers = TimerSet::new();
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         timers.check(0.);
@@ -117,5 +142,35 @@ mod test {
         timers.check(1.5);
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         assert_eq!(None,timers.min());
+    }
+
+    #[test]
+    pub fn test_handle_tidy() {
+        let mut tasks = TaskContainer::new();
+        let mut timers = TimerSet::new();
+        let h1 = tasks.allocate();
+        let t1 = FakeTask(0);
+        tasks.set(&h1,t1);
+        let h2 = tasks.allocate();
+        let t2 = FakeTask(1);
+        tasks.set(&h2,t2);
+        let h3 = tasks.allocate();
+        let t3 = FakeTask(2);
+        tasks.set(&h3,t3);
+        assert!(timers.0.lock().unwrap().timeouts.len()==0);
+        timers.add(Some(&h1),1.,|| {});
+        timers.add(Some(&h2),2.,|| {});
+        timers.add(Some(&h3),3.,|| {});
+        assert!(timers.0.lock().unwrap().timeouts.len()==3);
+        tasks.remove(&h2);
+        assert!(timers.0.lock().unwrap().timeouts.len()==3);
+        timers.tidy_handles(&tasks);
+        assert!(timers.0.lock().unwrap().timeouts.len()==3);
+        tasks.remove(&h1);
+        assert!(timers.0.lock().unwrap().timeouts.len()==3);
+        timers.tidy_handles(&tasks);
+        assert!(timers.0.lock().unwrap().timeouts.len()==1);
+        timers.check(4.);
+        assert!(timers.0.lock().unwrap().timeouts.len()==0);
     }
 }

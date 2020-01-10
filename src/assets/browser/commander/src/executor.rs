@@ -87,6 +87,7 @@ impl Executor {
     }
 
     pub(crate) fn check_timers(&mut self,now: f64) {
+        self.timers.tidy_handles(&self.tasks);
         self.timers.check(now);
     }
 
@@ -94,12 +95,12 @@ impl Executor {
         let now = self.integration.current_time();
         self.check_timers(now);
         self.run_actions();
-        let out = self.runnable.run(&mut self.tasks,now);
+        let out = self.runnable.run(&mut self.tasks);
         self.run_actions();
         out
     }
 
-    fn calculate_sleep(&self, now: f64) -> SleepQuantity {
+    fn calculate_sleep(&mut self, now: f64) -> SleepQuantity {
         if self.runnable.empty() && self.next_tick.len() == 0 {
             if let Some(timer) = self.timers.min() {
                 SleepQuantity::Time(timer-now)
@@ -122,7 +123,9 @@ impl Executor {
             now = self.integration.current_time();
             if now >= expiry { break; }
         }
-        self.integration.sleep(self.calculate_sleep(now));
+        self.timers.tidy_handles(&self.tasks);
+        let sleep = self.calculate_sleep(now);
+        self.integration.sleep(sleep);
     }
 }
 
@@ -281,12 +284,13 @@ mod test {
         let cfg = RunConfig::new(None,3,Some(10.));
         let mut tc = x.add(FakeStep2(vec![
             StepState2::Block,
+            StepState2::Block,
             StepState2::Done(Ok(()))
         ],now.clone()),(),&cfg,"test");
         tc.add_timer(5.,|| {}); /* 10->5 */
         tc.add_timer(15.,|| {}); /* still 5 */
-        x.tick(10.);
-        tc.unblock();
+        x.tick(10.); /* (Block) time_at_end = 1 => sleep 4 */
+        tc.unblock(); /* creates none (unblocking) */
         tc.add_timer(1.,|| {}); /* should be ignored (one-shot) */
         x.tick(10.);
         tc.add_timer(2.,|| {}); /* Time(2) */
@@ -294,8 +298,34 @@ mod test {
         assert_eq!(vec![
             SleepQuantity::Time(4.),
             SleepQuantity::None,
+            SleepQuantity::Time(3.),
             SleepQuantity::Time(2.),
         ],integration.0.lock().unwrap().1);
+    }
+
+    #[test]
+    pub fn test_timer_death() {
+        let now = Arc::new(Mutex::new((0.,Vec::new())));
+        let integration = FakeIntegration(now.clone());
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,Some(10.));
+        let mut tc = x.add(FakeStep2(vec![
+            StepState2::Block,
+            StepState2::Done(Ok(()))
+        ],now.clone()),(),&cfg,"test");
+        x.tick(10.); /* (Block) time_at_end = 1 => sleep 9 */
+        tc.unblock();
+        assert_eq!(vec![
+            SleepQuantity::Time(9.),
+            SleepQuantity::None
+        ],integration.0.lock().unwrap().1);
+        x.tick(10.); /* (Done) => Expiry => Forever */
+        assert_eq!(vec![
+            SleepQuantity::Time(9.),
+            SleepQuantity::None,
+            SleepQuantity::Forever
+        ],integration.0.lock().unwrap().1);
+
     }
 
     #[test]

@@ -77,7 +77,7 @@ mod test {
 
     struct FakeTask(i8);
     impl Task2 for FakeTask {
-        fn run(&mut self, now: f64) { self.0 += 1; }
+        fn run(&mut self) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn get_name(&self) -> String { "".to_string() }
     }
@@ -112,7 +112,7 @@ mod test {
         assert!(tasks.free_slots.len()==1);
         assert_eq!(1,*tasks.free_slots.peek().unwrap());
         assert_eq!(4,tasks.get(&h4).unwrap().get_priority());
-        tasks.get_mut(&h4).unwrap().run(0.);
+        tasks.get_mut(&h4).unwrap().run();
         assert_eq!(5,tasks.get(&h4).unwrap().get_priority());
     }
 

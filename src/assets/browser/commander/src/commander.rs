@@ -13,9 +13,8 @@ soft step timeout
 Rc RunConfig
 Do we need Send?
 killed in-step memory
-non-null return values
+non-null task return values
 detect result in control
-weaken timers
 debug with contitional derive
 
 */

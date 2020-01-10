@@ -10,7 +10,7 @@ pub(crate) struct Task2Impl<X> {
 }
 
 pub(crate) trait Task2 {
-    fn run(&mut self, now: f64);
+    fn run(&mut self);
     fn get_priority(&self) -> i8;
     fn get_name(&self) -> String;
 }
@@ -30,8 +30,7 @@ impl<X> Task2 for Task2Impl<X> where X: Send {
     fn get_priority(&self) -> i8 { self.run_config.get_priority() }
     fn get_name(&self) -> String { self.name.clone() }
 
-    fn run(&mut self, now: f64) {
-        self.control.check_timers(now);
+    fn run(&mut self) {
         /* We use this racey method because we only really care about the single-threaded
          * case (this method is non-rentrant). If a task completes with Done in a previous
          * call (and this is the only call which handles this case), don't call execute
@@ -47,7 +46,7 @@ impl<X> Task2 for Task2Impl<X> where X: Send {
         self.control.about_to_run();
         match self.step.execute(&self.input,&mut self.control) {
             StepState2::Done(_) => {
-                self.control.finish(None);
+                self.control.finish_internal(None);
             },
             StepState2::Block => {
                 self.control.not_runnable();
@@ -109,9 +108,9 @@ mod test {
         assert_eq!(3,t.get_priority());
         /* simple running to completion */
         assert!(!tc.is_finished());
-        t.run(0.);
+        t.run();
         assert!(!tc.is_finished());
-        t.run(0.);
+        t.run();
         assert!(!tc.is_finished());
         /* check for tick action in one of those two runs */
         let actions = eah.drain();
@@ -121,7 +120,7 @@ mod test {
             assert!(false);
         }
         /* finish */
-        t.run(0.);
+        t.run();
         assert!(tc.is_finished());
     }
 
@@ -139,7 +138,7 @@ mod test {
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
         /* test */
         assert!(!tc.is_finished());
-        t.run(0.);
+        t.run();
         let actions = eah.drain();
         assert_eq!(3,actions.len());
         if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {

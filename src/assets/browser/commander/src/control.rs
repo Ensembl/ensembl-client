@@ -45,12 +45,8 @@ impl TaskControl {
         self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
     }
 
-    pub(crate) fn check_timers(&mut self, now: f64) {
-        self.timers.check(now);
-    }
-
     /* kills */
-    pub fn finish(&mut self, reason: Option<&KillReason>) {
+    pub(crate) fn finish_internal(&mut self, reason: Option<&KillReason>) -> bool {
         let mut finished = self.finished.lock().unwrap();
         if !*finished {
             if let Some(reason) = reason {
@@ -60,6 +56,14 @@ impl TaskControl {
                 self.action_handle.add(ExecutorAction::Done(self.task_handle.clone()));
             }
             *finished = true;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn finish(&mut self, reason: Option<&KillReason>) {
+        if self.finish_internal(reason) {
             self.integration.cause_reentry();
         }
     }
@@ -268,5 +272,26 @@ mod test {
             SleepQuantity::None,
             SleepQuantity::Time(3.)
         ],*sleeps.lock().unwrap());
+    }
+
+    #[test]
+    pub fn test_internal_finish() {
+        /* setup */
+        let cfg = RunConfig::new(None,2,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let mut eah = ExecutorActionHandle::new();
+        let timers = TimerSet::new();
+        let mut sleeps = Arc::new(Mutex::new(Vec::new()));
+        let mut integration = ReenteringIntegration::new(FakeIntegration2(sleeps.clone()));
+        /* simulate */
+        /* kills are known to be from inside a task should not force reentry */
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
+        tc.finish_internal(None);
+        assert_eq!(sleeps.lock().unwrap().len(),0);
+        /* but kills which maybe from outside must */
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
+        tc.finish(None);
+        assert_eq!(vec![SleepQuantity::None],*sleeps.lock().unwrap());
     }
 }
