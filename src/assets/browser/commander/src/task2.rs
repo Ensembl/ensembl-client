@@ -65,7 +65,7 @@ mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
     use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
-    use crate::integration::{ SleepQuantity, CommanderIntegration2, IntegrationWrapper };
+    use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
 
@@ -80,7 +80,7 @@ mod test {
         fn execute(&mut self, input: &(), control: &mut TaskControl) -> StepState2<(),()> {
             if self.0 < 0 {
                 self.0 += 1;
-                control.rerun_soon();
+                control.unblock();
                 return StepState2::Block;
             }
             self.0 += 1;
@@ -100,7 +100,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&IntegrationWrapper::new(FakeIntegration()));
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(FakeIntegration()));
         let s1 = FakeStep(0);
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
@@ -133,7 +133,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&IntegrationWrapper::new(FakeIntegration()));
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(FakeIntegration()));
         let s1 = FakeStep(-1);
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");

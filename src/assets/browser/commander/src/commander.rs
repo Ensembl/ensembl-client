@@ -18,6 +18,7 @@ killed in-step memory
 non-null return values
 detect result in control
 weaken timers
+debug with contitional derive
 
 */
 

@@ -1,30 +1,28 @@
-// YYY unit-test one-shotting
-
 use std::sync::{ Arc, Mutex };
 
 use crate::edgetrigger::EdgeTrigger;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
-use crate::integration::IntegrationWrapper;
+use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig };
 use crate::timer::TimerSet;
 use crate::taskcontainer::TaskHandle;
 
 #[derive(Clone)]
 pub struct TaskControl {
-    integration: IntegrationWrapper,
+    integration: ReenteringIntegration,
     config: RunConfig,
     finished: Arc<Mutex<bool>>,
     kill_reason: Arc<Mutex<Option<KillReason>>>,
     task_handle: TaskHandle,
     action_handle: ExecutorActionHandle,
     timers: TimerSet,
-    rerun_soon: Arc<Mutex<EdgeTrigger<'static>>>
+    unblock: Arc<Mutex<EdgeTrigger<'static>>>
 }
 
 impl TaskControl {
     pub(crate) fn new(config: &RunConfig, timers: &TimerSet, 
                       action_handle: &ExecutorActionHandle, task_handle: &TaskHandle, 
-                      integration: &IntegrationWrapper) -> TaskControl {
+                      integration: &ReenteringIntegration) -> TaskControl {
         let action_handle = action_handle.clone();
         let mut action_handle2 = action_handle.clone();
         let task_handle = *task_handle;
@@ -35,7 +33,7 @@ impl TaskControl {
             task_handle, action_handle,
             integration: integration.clone(),
             timers: timers.clone(),
-            rerun_soon: Arc::new(Mutex::new(EdgeTrigger::new(move || {
+            unblock: Arc::new(Mutex::new(EdgeTrigger::new(move || {
                 action_handle2.add(ExecutorAction::Unblock(task_handle));
             })))
         }
@@ -61,6 +59,7 @@ impl TaskControl {
                 self.action_handle.add(ExecutorAction::Done(self.task_handle));
             }
             *finished = true;
+            self.integration.cause_reentry();
         }
     }
 
@@ -83,18 +82,18 @@ impl TaskControl {
 
     /* blocking */
 
-    pub fn rerun_soon(&mut self) {
-        self.rerun_soon.lock().unwrap().set();
-        self.integration.add_one_shot();
+    pub fn unblock(&mut self) {
+        self.unblock.lock().unwrap().set();
+        self.integration.cause_reentry();
     }
 
     pub(crate) fn about_to_run(&mut self) {
-        self.rerun_soon.lock().unwrap().reset();
+        self.unblock.lock().unwrap().reset();
     }
 
     pub(crate) fn not_runnable(&mut self) {
         self.action_handle.add(ExecutorAction::Block(self.task_handle));
-        if self.rerun_soon.lock().unwrap().is_set() {
+        if self.unblock.lock().unwrap().is_set() {
             /* handle race between this unblock call and rerun_soon
              * (we need to gurantee that the latter always wins)
              */
@@ -161,7 +160,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let integration = IntegrationWrapper::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         /* test */
         assert!(!tc.is_finished());
@@ -185,14 +184,14 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let integration = IntegrationWrapper::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         /* quickly test vaious accessors */
         assert_eq!(2,tc.get_config().get_priority());
         /* test */
         /* 2 unblocks cause single action */
-        tc.rerun_soon();
-        tc.rerun_soon();
+        tc.unblock();
+        tc.unblock();
         let actions = eah.drain();
         assert_eq!(1,actions.len());
         if let ExecutorAction::Unblock(_) = actions[0] {
@@ -201,7 +200,7 @@ mod test {
         }
         /* reset and then unblock and we should get another */
         tc.about_to_run();
-        tc.rerun_soon();
+        tc.unblock();
         let actions = eah.drain();
         assert_eq!(1,actions.len());
         if let ExecutorAction::Unblock(_) = actions[0] {
@@ -219,7 +218,7 @@ mod test {
         }
         /* not runnable should not cause block if unblock called in-between */
         tc.about_to_run();
-        tc.rerun_soon();
+        tc.unblock();
         tc.not_runnable();
         let actions = eah.drain();
         assert_eq!(3,actions.len());
@@ -238,5 +237,35 @@ mod test {
         } else {
             assert!(false);
         }
+    }
+
+    pub struct FakeIntegration2(Arc<Mutex<Vec<SleepQuantity>>>);
+    impl CommanderIntegration2 for FakeIntegration2 {
+        fn current_time(&mut self) -> f64 { 4. }
+        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().push(quantity); }
+    }
+
+    #[test]
+    pub fn test_oneshot() {
+        /* setup */
+        let cfg = RunConfig::new(None,2,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let mut eah = ExecutorActionHandle::new();
+        let timers = TimerSet::new();
+        let mut sleeps = Arc::new(Mutex::new(Vec::new()));
+        let mut integration = ReenteringIntegration::new(FakeIntegration2(sleeps.clone()));
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
+        /* simulate */
+        integration.sleep(SleepQuantity::Time(1.));
+        tc.unblock(); /* sets one-shot, sends SleepQuantity::None */
+        integration.sleep(SleepQuantity::Time(2.)); /* not sent */
+        integration.reentering(); /* sent by executor at start of tick */
+        integration.sleep(SleepQuantity::Time(3.));
+        assert_eq!(vec![
+            SleepQuantity::Time(1.),
+            SleepQuantity::None,
+            SleepQuantity::Time(3.)
+        ],*sleeps.lock().unwrap());
     }
 }
