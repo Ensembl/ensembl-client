@@ -34,14 +34,6 @@ type BrowserInfoProps = {
 };
 
 export const BrowserBar = (props: BrowserBarProps) => {
-  // FIXME: is this still necessary for anything?
-  // const shouldShowBrowserInfo = () => {
-  //   const { defaultChrLocation } = props;
-  //   const isLocationOfWholeChromosome = !defaultChrLocation;
-  //
-  //   return !isLocationOfWholeChromosome;
-  // };
-
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
   if (!(props.chrLocation && props.ensObject)) {
