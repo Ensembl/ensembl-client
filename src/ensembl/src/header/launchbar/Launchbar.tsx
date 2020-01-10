@@ -6,7 +6,7 @@ import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it'
 import { ReactComponent as SearchIcon } from 'static/img/launchbar/search.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as VEPIcon } from 'static/img/launchbar/vep.svg';
+import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
@@ -54,10 +54,13 @@ const LaunchbarContent = (props: LaunchbarProps) => (
         </div>
         <div className={styles.category}>
           <LaunchbarButton
-            app="tools"
-            description="Tools"
-            icon={VEPIcon}
-            enabled={false}
+            app="entity-viewer"
+            description="Entity Viewer"
+            icon={EntityViewerIcon}
+            enabled={
+              isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) &&
+              props.committedSpecies.length > 0
+            }
           />
         </div>
         <div className={styles.category}>

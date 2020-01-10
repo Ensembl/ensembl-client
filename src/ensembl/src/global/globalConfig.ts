@@ -12,7 +12,8 @@ export enum BreakpointWidth {
 export enum AppName {
   GENOME_BROWSER = 'Genome browser',
   SPECIES_SELECTOR = 'Species selector',
-  CUSTOM_DOWNLOADS = 'Custom downloads'
+  CUSTOM_DOWNLOADS = 'Custom downloads',
+  ENTITY_VIEWER = 'Entity viewer'
 }
 
 export const globalMediaQueries: Record<
