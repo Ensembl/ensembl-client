@@ -6,7 +6,8 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
-import { setDefaultActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { setDataFromUrl } from 'src/content/app/entity-viewer/state/entityViewerActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
@@ -17,10 +18,11 @@ import { RootState } from 'src/store';
 
 type Props = {
   viewportWidth: BreakpointWidth;
-  setDefaultActiveGenomeId: () => void;
+  setDataFromUrl: (params: EntityViewerParams) => void;
+  fetchGenomeData: (genomeId: string) => void;
 };
 
-type EntityViewerParams = {
+export type EntityViewerParams = {
   genomeId?: string;
   entityId?: string;
 };
@@ -29,10 +31,8 @@ const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
 
   useEffect(() => {
-    if (!params.genomeId) {
-      props.setDefaultActiveGenomeId();
-    }
-  }, []);
+    props.setDataFromUrl(params);
+  }, [params.genomeId, params.entityId]);
 
   return (
     <div className={styles.entityViewer}>
@@ -56,7 +56,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  setDefaultActiveGenomeId
+  setDataFromUrl,
+  fetchGenomeData
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

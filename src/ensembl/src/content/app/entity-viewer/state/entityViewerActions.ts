@@ -7,12 +7,31 @@ import { ThunkAction } from 'redux-thunk';
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerSelectors';
 
+import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+
+import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
 
 export const setActiveGenomeId = createAction(
   'entity-viewer/set-active-genome-id'
 )<string>();
+
+export const setDataFromUrl: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  if (params.genomeId !== getEntityViewerActiveGenomeId(state)) {
+    dispatch(setDefaultActiveGenomeId());
+    dispatch(fetchGenomeData(params.genomeId));
+    // TODO: when backend is ready, entity info may also need fetching
+  }
+  // TODO: when backend is ready, fetch entity info
+};
 
 export const setDefaultActiveGenomeId: ActionCreator<ThunkAction<
   void,
