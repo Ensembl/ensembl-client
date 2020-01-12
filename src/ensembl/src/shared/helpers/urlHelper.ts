@@ -9,6 +9,11 @@ type BrowserUrlParams = {
   location?: string | null;
 };
 
+type EntityViewerUrlParams = {
+  genomeId?: string | null;
+  entityId?: string;
+};
+
 export const browser = (params?: BrowserUrlParams) => {
   if (params) {
     const path = `/app/browser/${params.genomeId}`;
@@ -25,4 +30,15 @@ export const browser = (params?: BrowserUrlParams) => {
   } else {
     return `/app/browser/`;
   }
+};
+
+export const entityViewer = (params?: EntityViewerUrlParams) => {
+  if (!params?.genomeId && params?.entityId) {
+    // this should never happen; this combination doesn't make sense
+    throw 'Malformed Entity Viewer url';
+  }
+  const genomeId = params?.genomeId || '';
+  const entityId = params?.entityId || '';
+
+  return `/app/entity-viewer/${genomeId}/${entityId}`;
 };

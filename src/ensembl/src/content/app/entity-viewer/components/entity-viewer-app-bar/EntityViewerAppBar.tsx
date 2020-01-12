@@ -6,7 +6,7 @@ import isEqual from 'lodash/isEqual';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import AppBar, {
@@ -58,7 +58,7 @@ const EntityViewerAppBar = (props: EntityViewerAppBarProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   species: getEnabledCommittedSpecies(state),
-  activeGenomeId: getBrowserActiveGenomeId(state), // FIXME change to appropriate genome id
+  activeGenomeId: getEntityViewerActiveGenomeId(state),
   onSpeciesSelect: () => console.log('selected!') // FIXME
 });
 

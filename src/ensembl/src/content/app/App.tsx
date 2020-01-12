@@ -18,8 +18,6 @@ const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
 
-// const EntityViewer = ()  => <div>Match?</div>;
-
 type StateProps = {
   currentApp: string;
 };
@@ -61,15 +59,16 @@ const AppInner = (props: AppProps) => {
     };
   }, [props.match.path]);
 
-  console.log('urt', url);
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Switch>
         <Route path={`${url}/global-search`} component={GlobalSearch} />
         <Route path={`${url}/species-selector`} component={SpeciesSelector} />
         <Route path={`${url}/custom-download`} component={CustomDownload} />
-        <Route path={`${url}/entity-viewer`} component={EntityViewer} />
+        <Route
+          path={`${url}/entity-viewer/:genomeId?/:entityId?`}
+          component={EntityViewer}
+        />
         <ErrorBoundary fallbackComponent={NewTechError}>
           <Route path={`${url}/browser/:genomeId?`} component={Browser} />
         </ErrorBoundary>
