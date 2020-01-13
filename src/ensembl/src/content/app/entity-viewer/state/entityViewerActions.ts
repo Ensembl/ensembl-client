@@ -1,7 +1,7 @@
 import { createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { batch } from 'react-redux';
-import { replace } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
@@ -46,5 +46,18 @@ export const setDefaultActiveGenomeId: ActionCreator<ThunkAction<
   batch(() => {
     dispatch(setActiveGenomeId(activeGenomeId));
     dispatch(replace(newUrl));
+  });
+};
+
+export const changeActiveGenomeId: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => (dispatch) => {
+  const newUrl = urlHelper.entityViewer({ genomeId });
+  batch(() => {
+    dispatch(setActiveGenomeId(genomeId));
+    dispatch(push(newUrl));
   });
 };

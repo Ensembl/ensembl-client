@@ -9,6 +9,8 @@ import { AppName } from 'src/global/globalConfig';
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import { changeActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerActions';
+
 import AppBar, {
   HelpAndDocumentation
 } from 'src/shared/components/app-bar/AppBar';
@@ -58,8 +60,14 @@ const EntityViewerAppBar = (props: EntityViewerAppBarProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   species: getEnabledCommittedSpecies(state),
-  activeGenomeId: getEntityViewerActiveGenomeId(state),
-  onSpeciesSelect: () => console.log('selected!') // FIXME
+  activeGenomeId: getEntityViewerActiveGenomeId(state)
 });
 
-export default connect(mapStateToProps)(memo(EntityViewerAppBar, isEqual));
+const mapDispatchToProps = {
+  onSpeciesSelect: changeActiveGenomeId
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(memo(EntityViewerAppBar, isEqual));
