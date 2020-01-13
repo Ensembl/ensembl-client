@@ -1,4 +1,4 @@
-import React, { FunctionComponent, memo } from 'react';
+import React, { memo } from 'react';
 import { connect } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
@@ -19,9 +19,10 @@ type OwnProps = {};
 
 type LaunchbarContainerProps = StateProps & OwnProps;
 
-export const LaunchbarContainer: FunctionComponent<
-  LaunchbarContainerProps
-> = memo((props) => <Launchbar {...props} />, isEqual);
+export const LaunchbarContainer = memo(
+  (props: LaunchbarContainerProps) => <Launchbar {...props} />,
+  isEqual
+);
 
 const mapStateToProps = (state: RootState): StateProps => ({
   launchbarExpanded: getLaunchbarExpanded(state),

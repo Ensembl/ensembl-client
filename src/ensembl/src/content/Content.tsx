@@ -8,8 +8,6 @@ import { getLaunchbarExpanded } from '../header/headerSelectors';
 import Home from './home/Home';
 import App from './app/App';
 
-import styles from './Content.scss';
-
 type StateProps = {
   launchbarExpanded: boolean;
 };
@@ -19,10 +17,6 @@ type OwnProps = {
 };
 
 type ContentProps = StateProps & OwnProps;
-
-const getHeightClass = (launchbarExpanded: boolean): string => {
-  return launchbarExpanded ? styles.shorter : styles.taller;
-};
 
 const ContentRoutes = () => (
   <>
@@ -34,13 +28,7 @@ const ContentRoutes = () => (
 export const Content: FunctionComponent<ContentProps> = (
   props: ContentProps
 ) => {
-  return (
-    <main
-      className={`${styles.content} ${getHeightClass(props.launchbarExpanded)}`}
-    >
-      {props.children}
-    </main>
-  );
+  return <main>{props.children}</main>;
 };
 
 // helper for making the Content component testable (no need to render the whole component tree nested in Content)

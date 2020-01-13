@@ -11,8 +11,6 @@ import homeIcon from 'static/img/header/home.svg';
 
 import styles from './Header.scss';
 
-type HeaderProps = {};
-
 export const HomeLink = () => (
   <div className={styles.homeLink}>
     <Link to="/">
