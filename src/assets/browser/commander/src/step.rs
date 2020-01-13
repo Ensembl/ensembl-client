@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use crate::control::TaskControl;
 
+#[derive(Clone)] // XXX test only
 pub enum StepState2<Y,E> {
     Again,
     Tick,
@@ -9,7 +10,7 @@ pub enum StepState2<Y,E> {
 }
 
 #[derive(Clone,PartialEq)]
-pub enum KillReason {
+pub enum KillReason { // XXX test
     Timeout,
     Cancelled,
     NotNeeded
@@ -20,9 +21,14 @@ pub enum StepResult<Y,E> {
     Killed(KillReason)
 }
 
+pub trait StepRun<Y,E> {
+    fn more(&mut self, signal: &mut TaskControl) -> StepState2<Y,E>;
+}
+
 pub trait Step2<X,Y,Error=()> : Send {
-    fn execute(&mut self, input: &X, signal: &mut TaskControl) -> StepState2<Y,Error>;
-    fn drop(&mut self, _: &X, _: StepResult<Y,Error>) {}
+    fn start(&mut self, input: X) -> Box<StepRun<Y,Error>>;
+    //fn execute(&mut self, input: &X, signal: &mut TaskControl) -> StepState2<Y,Error>;
+    //fn drop(&mut self, _: &X, _: StepResult<Y,Error>) {} // XXX
 }
 
 #[derive(Clone)]

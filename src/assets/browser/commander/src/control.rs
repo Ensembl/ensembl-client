@@ -119,7 +119,7 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::control::TaskControl;
-    use crate::step::{ Step2, StepState2 };
+    use crate::step::{ Step2, StepState2, StepRun };
 
     pub struct FakeIntegration(Arc<Mutex<f64>>);
     impl CommanderIntegration2 for FakeIntegration {
@@ -127,13 +127,20 @@ mod test {
         fn sleep(&mut self, amount: SleepQuantity) {}
     }
 
-    struct FakeStep();
-    impl Step2<(),()> for FakeStep {
-        fn execute(&mut self, input: &(), control: &mut TaskControl) -> StepState2<(),()> {
+    #[derive(Clone)]
+    struct FakeStepRun();
+    impl StepRun<(),()> for FakeStepRun {
+        fn more(&mut self, control: &mut TaskControl) -> StepState2<(),()> {
             StepState2::Block
         }
     }
 
+    struct FakeStep(FakeStepRun);
+    impl Step2<(),()> for FakeStep {
+        fn start(&mut self, input: ()) -> Box<dyn StepRun<(),()>> {
+            Box::new(self.0.clone())
+        }
+    }
 
     #[test]
     pub fn test_control_timers() {
@@ -145,7 +152,7 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let mut tc = x.add(FakeStep(),(),&cfg,"test");
+        let mut tc = x.add(FakeStep(FakeStepRun()),(),&cfg,"test");
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();

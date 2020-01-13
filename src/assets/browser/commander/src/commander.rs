@@ -5,20 +5,6 @@ use owning_ref::MutexGuardRef;
 
 use crate::step::{ KillReason, RunConfig, RunSlot, StepResult };
 
-/*
-
-TODO:
-step name
-soft step timeout
-Rc RunConfig
-Do we need Send?
-killed in-step memory
-non-null task return values
-detect result in control
-debug with contitional derive
-
-*/
-
 pub trait CommanderIntegration : Send {
     fn current_time(&mut self) -> f64;
     fn enable_ticks(&mut self, cmdr: &mut Commander);

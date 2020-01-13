@@ -1,9 +1,8 @@
 use crate::control::TaskControl;
-use crate::step::{ RunConfig, Step2, StepState2 };
+use crate::step::{ RunConfig, Step2, StepState2, StepRun };
 
-pub(crate) struct Task2Impl<X> {
-    step: Box<dyn Step2<X,(),()>>,
-    input: X,
+pub(crate) struct Task2Impl {
+    run: Box<dyn StepRun<(),()>>,
     run_config: RunConfig,
     name: String,
     control: TaskControl
@@ -15,18 +14,18 @@ pub(crate) trait Task2 {
     fn get_name(&self) -> String;
 }
 
-impl<X> Task2Impl<X> {
-    pub(crate) fn new<S>(step: S, input: X, run_config: &RunConfig, control: TaskControl, name: &str) -> Task2Impl<X> where S: Step2<X,(),()> + 'static + Send, X: Send {
+impl Task2Impl {
+    pub(crate) fn new<S,X>(mut step: S, input: X, run_config: &RunConfig, control: TaskControl, name: &str) -> Task2Impl where S: Step2<X,(),()> + 'static + Send, X: Send {
         Task2Impl {
-            step: Box::new(step),
-            input, control,
+            run: step.start(input),
+            control,
             run_config: run_config.clone(),
             name: name.to_string()
         }
     }
 }
 
-impl<X> Task2 for Task2Impl<X> where X: Send {
+impl Task2 for Task2Impl {
     fn get_priority(&self) -> i8 { self.run_config.get_priority() }
     fn get_name(&self) -> String { self.name.clone() }
 
@@ -44,7 +43,7 @@ impl<X> Task2 for Task2Impl<X> where X: Send {
             return;
         }
         self.control.about_to_run();
-        match self.step.execute(&self.input,&mut self.control) {
+        match self.run.more(&mut self.control) {
             StepState2::Done(_) => {
                 self.control.finish_internal(None);
             },
@@ -74,9 +73,10 @@ mod test {
         fn sleep(&mut self, amount: SleepQuantity) {}
     }
 
-    struct FakeStep(i32);
-    impl Step2<(),()> for FakeStep {
-        fn execute(&mut self, input: &(), control: &mut TaskControl) -> StepState2<(),()> {
+    #[derive(Clone)]
+    struct FakeStepRun(i32);
+    impl StepRun<(),()> for FakeStepRun {
+        fn more(&mut self, control: &mut TaskControl) -> StepState2<(),()> {
             if self.0 < 0 {
                 self.0 += 1;
                 control.unblock();
@@ -91,6 +91,13 @@ mod test {
         }
     }
 
+    struct FakeStep(FakeStepRun);
+    impl Step2<(),()> for FakeStep {
+        fn start(&mut self, input: ()) -> Box<dyn StepRun<(),()>> {
+            Box::new(self.0.clone())
+        }
+    }
+
     #[test]
     pub fn test_task_smoke() {
         /* setup */
@@ -100,7 +107,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(FakeIntegration()));
-        let s1 = FakeStep(0);
+        let s1 = FakeStep(FakeStepRun(0));
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
         /* simple accessors */
@@ -133,7 +140,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(FakeIntegration()));
-        let s1 = FakeStep(-1);
+        let s1 = FakeStep(FakeStepRun(-1));
         let tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,(),&cfg,tc2,"test");
         /* test */

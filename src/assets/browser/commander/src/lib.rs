@@ -14,6 +14,7 @@ mod timer;
 mod steps {
     pub(crate) mod futurestep;
     pub(crate) mod joinstep;
+    pub(crate) mod sequence;
 }
 
 #[macro_use]
