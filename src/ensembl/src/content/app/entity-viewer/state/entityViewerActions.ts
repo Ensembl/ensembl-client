@@ -25,8 +25,13 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
   Action<string>
 >> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
   const state = getState();
-  if (params.genomeId !== getEntityViewerActiveGenomeId(state)) {
-    dispatch(setDefaultActiveGenomeId());
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  if (params.genomeId !== activeGenomeId) {
+    if (!params.genomeId) {
+      dispatch(setDefaultActiveGenomeId());
+    } else {
+      dispatch(setActiveGenomeId(params.genomeId));
+    }
     dispatch(fetchGenomeData(params.genomeId));
     // TODO: when backend is ready, entity info may also need fetching
   }
