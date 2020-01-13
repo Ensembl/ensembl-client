@@ -12,16 +12,16 @@ const OtherGenes: FunctionComponent<OtherGenesProps> = (
   const { forwardStrand } = props;
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Track name</label>
+    <div className={styles.drawerView}>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Track name</div>
         <div className={styles.details}>
           <p>Other genes</p>
         </div>
-      </dd>
+      </div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>
           <p>
             Shows all non-coding genes on the{' '}
@@ -34,8 +34,8 @@ const OtherGenes: FunctionComponent<OtherGenesProps> = (
             </a>
           </p>
         </div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 

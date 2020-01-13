@@ -6,6 +6,7 @@
 
 .drawerView {
   overflow-y: auto;
+  margin-top: 10px;
 
   h2 {
     display: flex;
@@ -14,30 +15,36 @@
     text-align: center;
   }
 
-  dd {
-    width: 600px;
+  p {
+    margin: 0px;
   }
 
-  label {
+  .clearFix {
+    float: left;
+    width: 600px;
+    margin-bottom: 20px;
+    clear: both;
+  }
+
+  .label {
     float: left;
     font-weight: $light;
     text-align: right;
-    width: 150px;
-  }
-
-  p {
-    margin: 0 0 20px 0;
+    width: 90px;
   }
 
   .details {
     float: right;
     text-align: left;
-    width: 400px;
+    width: 490px;
   }
 
   .mainDetail {
     font-size: 16px;
     font-weight: $bold;
+    display: block;
+    float: left;
+    margin-top: -3px;
   }
 
   .secondaryDetail {

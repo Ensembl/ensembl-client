@@ -12,16 +12,16 @@ const ProteinCodingGenes: FunctionComponent<ProteinCodingGenesProps> = (
   const { forwardStrand } = props;
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Track name</label>
+    <div className={styles.drawerView}>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Track name</div>
         <div className={styles.details}>
           <p>Protein coding genes</p>
         </div>
-      </dd>
+      </div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>
           <p>
             Shows all protein coding genes on the{' '}
@@ -34,8 +34,8 @@ const ProteinCodingGenes: FunctionComponent<ProteinCodingGenesProps> = (
             </a>
           </p>
         </div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 

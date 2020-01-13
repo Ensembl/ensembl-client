@@ -45,9 +45,9 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   }
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Transcript</label>
+    <div className={styles.drawerView}>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Transcript</div>
         <div className={styles.details}>
           <p>
             <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
@@ -56,10 +56,10 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
             </span>
           </p>
         </div>
-      </dd>
+      </div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Gene</label>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Gene</div>
         <div className={styles.details}>
           <p>
             <span>{ensObject.label}</span>
@@ -68,15 +68,15 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
             </span>
           </p>
         </div>
-      </dd>
+      </div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>
           {transcriptTrack.description || '--'}
         </div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 

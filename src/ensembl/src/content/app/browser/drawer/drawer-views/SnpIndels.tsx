@@ -4,16 +4,16 @@ import styles from '../Drawer.scss';
 
 const SnpIndels: FunctionComponent = () => {
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Track name</label>
+    <div className={styles.drawerView}>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Track name</div>
         <div className={styles.details}>
           <p>1000 Genomes all SNPs &amp; indels</p>
         </div>
-      </dd>
+      </div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+      <div className={styles.clearFix}>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>
           <p>
             The 1000 Genomes Project has found the most genetic variants (SNPs,
@@ -21,8 +21,8 @@ const SnpIndels: FunctionComponent = () => {
             populations studied.
           </p>
         </div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 
