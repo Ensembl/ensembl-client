@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 
@@ -36,6 +36,8 @@ export type EntityViewerParams = {
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // TODO: push this bit ot state to redux soon
+
   useEffect(() => {
     props.setDataFromUrl(params);
   }, [params.genomeId, params.entityId]);
@@ -49,8 +51,8 @@ const EntityViewer = (props: Props) => {
           sidebarContent={<div>Sidebar content is coming...</div>}
           sidebarNavigation={<div>Sidebar navigation goes here</div>}
           topbarContent={<div>Entity info summary goes here</div>}
-          isSidebarOpen={true}
-          onSidebarToggle={() => console.log('not now')}
+          isSidebarOpen={isSidebarOpen}
+          onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)}
           isDrawerOpen={false}
           viewportWidth={props.viewportWidth}
         />
