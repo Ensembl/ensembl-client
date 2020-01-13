@@ -1,5 +1,5 @@
 mod commander;
-mod control;
+mod taskcontrol;
 mod edgetrigger;
 mod executor;
 mod executoraction;
@@ -7,6 +7,7 @@ mod integration;
 mod runnable;
 mod runqueue;
 mod step;
+mod stepcontrol;
 mod task2;
 mod taskcontainer;
 mod timer;
@@ -15,6 +16,9 @@ mod steps {
     pub(crate) mod futurestep;
     pub(crate) mod joinstep;
     pub(crate) mod sequence;
+    pub(crate) mod parallel;
+    pub(crate) mod timeout;
+    pub(crate) mod branch;
 }
 
 #[macro_use]

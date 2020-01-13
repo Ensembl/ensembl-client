@@ -109,7 +109,7 @@ mod test {
 
     struct FakeTask(i8);
     impl Task2 for FakeTask {
-        fn run(&mut self) { self.0 += 1; }
+        fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn get_name(&self) -> String { "".to_string() }
     }

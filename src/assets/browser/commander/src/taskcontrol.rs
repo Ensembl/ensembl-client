@@ -1,9 +1,10 @@
 use std::sync::{ Arc, Mutex };
 
+use crate::step::Step2;
 use crate::edgetrigger::EdgeTrigger;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::ReenteringIntegration;
-use crate::step::{ KillReason, RunConfig };
+use crate::step::{ KillReason, RunConfig, StepRunner };
 use crate::timer::TimerSet;
 use crate::taskcontainer::TaskHandle;
 
@@ -11,6 +12,7 @@ use crate::taskcontainer::TaskHandle;
 pub struct TaskControl {
     integration: ReenteringIntegration,
     config: RunConfig,
+    tick_index: Arc<Mutex<u64>>,
     finished: Arc<Mutex<bool>>,
     kill_reason: Arc<Mutex<Option<KillReason>>>,
     task_handle: TaskHandle,
@@ -33,6 +35,7 @@ impl TaskControl {
             kill_reason: Arc::new(Mutex::new(None)),
             task_handle, action_handle,
             integration: integration.clone(),
+            tick_index: Arc::new(Mutex::new(0)),
             timers: timers.clone(),
             unblock: Arc::new(Mutex::new(EdgeTrigger::new(move || {
                 action_handle2.add(ExecutorAction::Unblock(task_handle2.clone()));
@@ -85,15 +88,26 @@ impl TaskControl {
     //pub fn get_remaining(&self) -> f64 { 0. }
     //pub fn dropped(&self) -> bool { false }
 
-    /* blocking */
+    // XXX demut
+    /* running steps */
+    pub fn new_step<X,Y,E>(&mut self, step: &mut Box<dyn Step2<X,Y,E>>, input: &X) -> StepRunner<Y,E> where {
+        let run = step.start(input,self);
+        StepRunner::new(run,self)
+    }
 
-    pub fn unblock(&mut self) {
+    /* blocking */
+    pub(crate) fn unblock(&mut self) {
         self.unblock.lock().unwrap().set();
         self.integration.cause_reentry();
     }
 
-    pub(crate) fn about_to_run(&mut self) {
+    pub(crate) fn about_to_run(&mut self, tick_index: u64) {
+        *self.tick_index.lock().unwrap() = tick_index;
         self.unblock.lock().unwrap().reset();
+    }
+
+    pub fn get_tick_index(&self) -> u64 {
+        *self.tick_index.lock().unwrap()
     }
 
     pub(crate) fn not_runnable(&mut self) {
@@ -109,7 +123,6 @@ impl TaskControl {
     pub(crate) fn wait_for_next_tick(&mut self) {
         self.action_handle.add(ExecutorAction::Tick(self.task_handle.clone()));
     }
-
 }
 
 #[allow(unused)]
@@ -118,7 +131,7 @@ mod test {
     use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::control::TaskControl;
+    use crate::stepcontrol::StepControl;
     use crate::step::{ Step2, StepState2, StepRun };
 
     pub struct FakeIntegration(Arc<Mutex<f64>>);
@@ -130,14 +143,14 @@ mod test {
     #[derive(Clone)]
     struct FakeStepRun();
     impl StepRun<(),()> for FakeStepRun {
-        fn more(&mut self, control: &mut TaskControl) -> StepState2<(),()> {
+        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
             StepState2::Block
         }
     }
 
     struct FakeStep(FakeStepRun);
     impl Step2<(),()> for FakeStep {
-        fn start(&mut self, input: ()) -> Box<dyn StepRun<(),()>> {
+        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
             Box::new(self.0.clone())
         }
     }
@@ -152,7 +165,7 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let mut tc = x.add(FakeStep(FakeStepRun()),(),&cfg,"test");
+        let mut tc = x.add(FakeStep(FakeStepRun()),&(),&cfg,"test");
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
@@ -211,7 +224,7 @@ mod test {
             assert!(false);
         }
         /* reset and then unblock and we should get another */
-        tc.about_to_run();
+        tc.about_to_run(0);
         tc.unblock();
         let actions = eah.drain();
         assert_eq!(1,actions.len());
@@ -220,7 +233,7 @@ mod test {
             assert!(false);
         }
         /* not_runnable should cause a block */
-        tc.about_to_run();
+        tc.about_to_run(0);
         tc.not_runnable();
         let actions = eah.drain();
         assert_eq!(1,actions.len());
@@ -229,7 +242,7 @@ mod test {
             assert!(false);
         }
         /* not runnable should not cause block if unblock called in-between */
-        tc.about_to_run();
+        tc.about_to_run(0);
         tc.unblock();
         tc.not_runnable();
         let actions = eah.drain();
@@ -241,7 +254,7 @@ mod test {
             assert!(false);
         }
         /* wait for next tick */
-        tc.about_to_run();
+        tc.about_to_run(0);
         tc.wait_for_next_tick();
         let actions = eah.drain();
         assert_eq!(1,actions.len());
