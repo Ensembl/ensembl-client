@@ -1,5 +1,4 @@
 import React from 'react';
-import SlideDown from 'react-slidedown';
 
 import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it's a png
 
@@ -97,11 +96,7 @@ const LaunchbarContent = (props: LaunchbarProps) => (
 );
 
 const Launchbar = (props: LaunchbarProps) => {
-  return (
-    <SlideDown transitionOnAppear={false}>
-      {props.launchbarExpanded ? <LaunchbarContent {...props} /> : null}
-    </SlideDown>
-  );
+  return props.launchbarExpanded ? <LaunchbarContent {...props} /> : null;
 };
 
 export default Launchbar;
