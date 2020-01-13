@@ -288,21 +288,26 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  activeEnsObjectId: getBrowserActiveEnsObjectId(state),
-  allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
-  allChrLocations: getAllChrLocations(state),
-  browserActivated: getBrowserActivated(state),
-  browserNavOpened: getBrowserNavOpened(state),
-  browserQueryParams: getBrowserQueryParams(state),
-  chrLocation: getChrLocation(state),
-  isDrawerOpened: getIsDrawerOpened(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state),
-  exampleEnsObjects: getExampleEnsObjects(state),
-  committedSpecies: getEnabledCommittedSpecies(state),
-  viewportWidth: getBreakpointWidth(state)
-});
+const mapStateToProps = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return {
+    activeGenomeId,
+    activeEnsObjectId: getBrowserActiveEnsObjectId(state),
+    allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
+    allChrLocations: getAllChrLocations(state),
+    browserActivated: getBrowserActivated(state),
+    browserNavOpened: getBrowserNavOpened(state),
+    browserQueryParams: getBrowserQueryParams(state),
+    chrLocation: getChrLocation(state),
+    isDrawerOpened: getIsDrawerOpened(state),
+    isTrackPanelOpened: getIsTrackPanelOpened(state),
+    exampleEnsObjects: activeGenomeId
+      ? getExampleEnsObjects(state, activeGenomeId)
+      : [],
+    committedSpecies: getEnabledCommittedSpecies(state),
+    viewportWidth: getBreakpointWidth(state)
+  };
+};
 
 const mapDispatchToProps = {
   changeBrowserLocation,

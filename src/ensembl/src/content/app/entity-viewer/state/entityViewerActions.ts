@@ -8,6 +8,7 @@ import * as urlHelper from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerSelectors';
+import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 
@@ -26,16 +27,19 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
 >> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  if (params.genomeId !== activeGenomeId) {
-    if (!params.genomeId) {
-      dispatch(setDefaultActiveGenomeId());
-    } else {
-      dispatch(setActiveGenomeId(params.genomeId));
-    }
+  if (!params.genomeId) {
+    dispatch(setDefaultActiveGenomeId());
+  } else if (params.genomeId !== activeGenomeId) {
+    dispatch(setActiveGenomeId(params.genomeId));
     dispatch(fetchGenomeData(params.genomeId));
     // TODO: when backend is ready, entity info may also need fetching
+  } else {
+    // TODO: when backend is ready, fetch entity info
+    const genomeInfo = getGenomeInfoById(state, activeGenomeId);
+    if (!genomeInfo) {
+      dispatch(fetchGenomeData(activeGenomeId));
+    }
   }
-  // TODO: when backend is ready, fetch entity info
 };
 
 export const setDefaultActiveGenomeId: ActionCreator<ThunkAction<
