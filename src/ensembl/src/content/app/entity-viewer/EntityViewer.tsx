@@ -70,12 +70,18 @@ const ExampleLinks = (props: Props) => {
 
     return (
       <Link key={gene.object_id} to={path}>
-        {gene.label}
+        <span className={styles.exampleLinks__label}>Gene</span>
+        <span>{gene.label}</span>
       </Link>
     );
   });
 
-  return <div>{links}</div>;
+  return (
+    <div>
+      <div className={styles.exampleLinks__emptyTopBar} />
+      <div className={styles.exampleLinks}>{links}</div>
+    </div>
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
