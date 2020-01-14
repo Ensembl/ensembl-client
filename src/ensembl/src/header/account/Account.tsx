@@ -1,5 +1,4 @@
-import React, { FunctionComponent, ReactNode } from 'react';
-import SlideDown from 'react-slidedown';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import { RootState } from 'src/store';
@@ -15,18 +14,12 @@ type OwnProps = {};
 
 type AccountProps = StateProps & OwnProps;
 
-export const Account: FunctionComponent<AccountProps> = (
-  props: AccountProps
-) => {
-  const AccountChildren: ReactNode = (
+export const Account = (props: AccountProps) => {
+  return props.accountExpanded ? (
     <div className={styles.account}>
       <h2>Account area placeholder</h2>
     </div>
-  );
-
-  return (
-    <SlideDown>{props.accountExpanded ? AccountChildren : null}</SlideDown>
-  );
+  ) : null;
 };
 
 const mapStateToProps = (state: RootState): StateProps => ({
