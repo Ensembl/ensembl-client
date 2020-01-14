@@ -1,45 +1,116 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { ReactComponent as VisibilityIcon } from 'static/img/track-panel/eye.svg';
-import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
-import { ReactComponent as BookmarkIcon } from 'static/img/track-panel/bookmark.svg';
 import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
-import { ReactComponent as SearchIcon } from 'static/img/track-panel/search.svg';
-import { ReactComponent as PersonalDataIcon } from 'static/img/track-panel/own-data.svg';
-import { ReactComponent as ShareIcon } from 'static/img/track-panel/share.svg';
-import { ReactComponent as TracksManagerIcon } from 'static/img/track-panel/tracks-manager.svg';
 
-import ImageButtonParent from './ImageButtonParent.stories';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { Status } from 'src/shared/types/status';
 
-const trackPanelButtons: any = {
-  BookmarkIcon: [BookmarkIcon, 'static/img/track-panel/bookmark.svg'],
-  DownloadIcon: [DownloadIcon, 'static/img/track-panel/download.svg'],
-  EllipsisIcon: [EllipsisIcon, 'static/img/track-panel/ellipsis.svg'],
-  PersonalDataIcon: [PersonalDataIcon, 'static/img/track-panel/own-data.svg'],
-  SearchIcon: [SearchIcon, 'static/img/track-panel/search.svg'],
-  ShareIcon: [ShareIcon, 'static/img/track-panel/share.svg'],
-  TracksManagerIcon: [
-    TracksManagerIcon,
-    'static/img/track-panel/tracks-manager.svg'
-  ],
-  VisibilityIcon: [VisibilityIcon, 'static/img/track-panel/eye.svg']
-};
+import classNames from 'classnames';
+import styles from './ImageButton.stories.scss';
 
 const trackPanelButtonStories = storiesOf(
-  'Components|Shared Components/ImageButton/TrackPanel',
+  'Components|Shared Components',
   module
 );
 
-Object.keys(trackPanelButtons).forEach((buttonName: string) => {
-  trackPanelButtonStories.add(buttonName, () => {
-    return (
-      <ImageButtonParent
-        imageName={buttonName}
-        image={trackPanelButtons[buttonName][0]}
-        imagePath={trackPanelButtons[buttonName][1]}
-        classNames={trackPanelButtons[buttonName][2]}
-      />
-    );
-  });
+const icon = {
+  image: DownloadIcon,
+  imageName: 'ImageButton',
+  imagePath: 'static/img/track-panel/download.svg',
+  imageClass: ''
+};
+
+trackPanelButtonStories.add(icon.imageName, () => {
+  const [buttonStatus, setVisible] = useState(Status.DEFAULT);
+  const computedStyles = { ...styles };
+
+  const toggleImage = () => {
+    switch (buttonStatus) {
+      case Status.DEFAULT:
+        return setVisible(Status.UNSELECTED);
+      case Status.UNSELECTED:
+        return setVisible(Status.SELECTED);
+      default:
+        return setVisible(Status.DEFAULT);
+    }
+  };
+  return (
+    <>
+      <div className={classNames(styles.containerStyles)}>
+        <div className={classNames(styles.imageCard)}>
+          <div className={classNames(styles.imageHolder)}>
+            <ImageButton
+              buttonStatus={buttonStatus}
+              description={'enable/disable'}
+              image={icon.image}
+              classNames={computedStyles}
+              onClick={toggleImage}
+            />
+          </div>
+          <div className={classNames(styles.imageDescription)}>
+            {buttonStatus}
+          </div>
+        </div>
+
+        <div className={classNames(styles.codeContent)}>
+          <h3>Usage:</h3>
+          {`import ImageButton, {ImageButtonStatus} from 'src/shared/image-button/ImageButton';`}
+          <br />
+          {`import { ReactComponent as ${icon.imageName} } from '${icon.imagePath}';`}
+          <br />
+          {`
+              <ImageButton buttonStatus={ImageButtonStatus.${buttonStatus.toUpperCase()}} 
+                description={'enable/disable'} 
+                image={${icon.imageName}}
+              />
+            `}
+        </div>
+      </div>
+      <div className={classNames(styles.containerStyles)}>
+        <div>Available styles:</div>
+        <div className={classNames(styles.imageCard)}>
+          <div className={classNames(styles.imageHolder)}>
+            <ImageButton
+              buttonStatus={Status.UNSELECTED}
+              description={'enable/disable'}
+              image={icon.image}
+              classNames={computedStyles}
+            />
+          </div>
+          <div className={classNames(styles.imageDescription)}>
+            {Status.UNSELECTED}
+          </div>
+        </div>
+
+        <div className={classNames(styles.imageCard)}>
+          <div className={classNames(styles.imageHolder)}>
+            <ImageButton
+              buttonStatus={Status.SELECTED}
+              description={'enable/disable'}
+              image={icon.image}
+              classNames={computedStyles}
+            />
+          </div>
+          <div className={classNames(styles.imageDescription)}>
+            {Status.SELECTED}
+          </div>
+        </div>
+
+        <div className={classNames(styles.imageCard)}>
+          <div className={classNames(styles.imageHolder)}>
+            <ImageButton
+              buttonStatus={Status.DISABLED}
+              description={'enable/disable'}
+              image={icon.image}
+              classNames={computedStyles}
+            />
+          </div>
+          <div className={classNames(styles.imageDescription)}>
+            {Status.DISABLED}
+          </div>
+        </div>
+      </div>
+    </>
+  );
 });
