@@ -25,78 +25,78 @@ export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
 };
 
-const LaunchbarContent = (props: LaunchbarProps) => (
-  <div className={styles.launchbar}>
-    <div className={styles.categoriesWrapper}>
-      <div className={styles.categories}>
-        <div className={styles.category}>
-          <LaunchbarButton
-            app="global-search"
-            description="Site search"
-            icon={SearchIcon}
-            enabled={false}
-          />
-          <LaunchbarButton
-            app="species-selector"
-            description="Species selector"
-            icon={SpeciesSelectorIcon}
-            enabled={true}
-          />
-        </div>
-        <div className={styles.category}>
-          <LaunchbarButton
-            app="browser"
-            description="Genome browser"
-            icon={BrowserIcon}
-            enabled={props.committedSpecies.length > 0}
-          />
-        </div>
-        <div className={styles.category}>
-          <LaunchbarButton
-            app="entity-viewer"
-            description="Entity Viewer"
-            icon={EntityViewerIcon}
-            enabled={
-              isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) &&
-              props.committedSpecies.length > 0
-            }
-          />
-        </div>
-        <div className={styles.category}>
-          <LaunchbarButton
-            app="custom-download"
-            description="Downloads"
-            icon={CustomDownloadIcon}
-            enabled={
-              isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) &&
-              props.committedSpecies.length > 0
-            }
-          />
-        </div>
-        <div className={styles.category}>
-          <LaunchbarButton
-            app="help-docs"
-            description="Help & documentation"
-            icon={HelpIcon}
-            enabled={false}
-          />
+const Launchbar = (props: LaunchbarProps) => {
+  return (
+    <div className={styles.launchbar}>
+      <div className={styles.categoriesWrapper}>
+        <div className={styles.categories}>
+          <div className={styles.category}>
+            <LaunchbarButton
+              app="global-search"
+              description="Site search"
+              icon={SearchIcon}
+              enabled={false}
+            />
+            <LaunchbarButton
+              app="species-selector"
+              description="Species selector"
+              icon={SpeciesSelectorIcon}
+              enabled={true}
+            />
+          </div>
+          <div className={styles.category}>
+            <LaunchbarButton
+              app="browser"
+              description="Genome browser"
+              icon={BrowserIcon}
+              enabled={props.committedSpecies.length > 0}
+            />
+          </div>
+          <div className={styles.category}>
+            <LaunchbarButton
+              app="entity-viewer"
+              description="Entity Viewer"
+              icon={EntityViewerIcon}
+              enabled={
+                isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) &&
+                props.committedSpecies.length > 0
+              }
+            />
+          </div>
+          <div className={styles.category}>
+            <LaunchbarButton
+              app="custom-download"
+              description="Downloads"
+              icon={CustomDownloadIcon}
+              enabled={
+                isEnvironment([
+                  Environment.DEVELOPMENT,
+                  Environment.INTERNAL
+                ]) && props.committedSpecies.length > 0
+              }
+            />
+          </div>
+          <div className={styles.category}>
+            <LaunchbarButton
+              app="help-docs"
+              description="Help & documentation"
+              icon={HelpIcon}
+              enabled={false}
+            />
+          </div>
         </div>
       </div>
+      <div className={styles.about}>
+        <span className={styles.aboutText}>Genome research database</span>
+        <LaunchbarButton
+          app="about"
+          description="About Ensembl"
+          icon={ensemblIcon}
+          enabled={false}
+        />
+      </div>
     </div>
-    <div className={styles.about}>
-      <span className={styles.aboutText}>Genome research database</span>
-      <LaunchbarButton
-        app="about"
-        description="About Ensembl"
-        icon={ensemblIcon}
-        enabled={false}
-      />
-    </div>
-  </div>
-);
-
-const Launchbar = (props: LaunchbarProps) => {
-  return props.launchbarExpanded ? <LaunchbarContent {...props} /> : null;
+  );
 };
 
 export default Launchbar;
