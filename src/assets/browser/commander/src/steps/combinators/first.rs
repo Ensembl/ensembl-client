@@ -12,33 +12,19 @@ struct StepFirstRun<Y,E> where Y: Send {
 }
 
 impl<Y,E> StepRun<Y,E> for StepFirstRun<Y,E> where Y: Send {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<Y,E> {
-        let mut out = StepState2::Ongoing(OngoingState::Dead);
+    fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
+        let mut out = OngoingState::Dead;
         for runner in self.steps.lock().unwrap().iter_mut() {
             match runner.more() {
-                StepState2::Ongoing(OngoingState::Tick) => {
-                    match out {
-                        StepState2::Ongoing(OngoingState::Again) => {},
-                        _ => { out = StepState2::Ongoing(OngoingState::Tick); }
-                    }
+                StepState2::Ongoing(ref r) => {
+                    out.merge(control,r);
                 },
-                StepState2::Ongoing(OngoingState::Again) => {
-                    out = StepState2::Ongoing(OngoingState::Again);
-                },
-                StepState2::Ongoing(OngoingState::Block) => {
-                    match out {
-                        StepState2::Ongoing(OngoingState::Again) => {},
-                        StepState2::Ongoing(OngoingState::Tick) => {}
-                        _ => { out = StepState2::Ongoing(OngoingState::Block); }
-                    }
-                },
-                StepState2::Ongoing(OngoingState::Dead) => {},
                 StepState2::Done(v) => {
                     return StepState2::Done(v);
-                },
+                }
             }
         }
-        out
+        StepState2::Ongoing(out)
     }
 }
 

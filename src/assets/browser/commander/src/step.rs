@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use crate::blocker::Blocker;
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
 
@@ -6,7 +7,7 @@ use crate::taskcontrol::TaskControl;
 pub enum OngoingState {
     Again,
     Tick,
-    Block,
+    Block(Blocker),
     Dead
 }
 
@@ -21,8 +22,23 @@ impl OngoingState {
         match self {
             OngoingState::Again => 0,
             OngoingState::Tick => 1,
-            OngoingState::Block => 2,
+            OngoingState::Block(_) => 2,
             OngoingState::Dead => 3
+        }
+    }
+
+    pub(crate) fn merge(&mut self, stepcontrol: &mut StepControl, other: &OngoingState) {
+        if let OngoingState::Block(in_b) = other {
+            if let OngoingState::Dead = self {
+                *self = OngoingState::Block(stepcontrol.block());
+            }
+            if let OngoingState::Block(our_b) = self {
+                our_b.add(in_b);
+            }
+        } else {
+            if other.priority() < self.priority() {
+                *self = other.clone();
+            }
         }
     }
 }
@@ -58,15 +74,20 @@ impl<Y,E> StepRunner<Y,E> {
         if self.control.is_dead() {
             return StepState2::Ongoing(OngoingState::Dead);
         }
+        if let Some(b) = self.control.get_blocker() {
+            return StepState2::Ongoing(OngoingState::Block(b.clone()));
+        }
         let tick = self.control.task_control().get_tick_index();
         if !self.control.check_tick(tick) {
-            /* no, is waiting for next tick! */
             return StepState2::Ongoing(OngoingState::Tick);
         }
         let out = self.run.more(&mut self.control);
         match out {
             StepState2::Ongoing(OngoingState::Tick) => {
                 self.control.block_on_tick(tick);
+            },
+            StepState2::Ongoing(OngoingState::Block(ref b)) => {
+                self.control.block_on(b);
             },
             StepState2::Done(_) => {
                 self.control.die();

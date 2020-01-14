@@ -32,14 +32,14 @@ impl Task2 for Task2Impl {
     fn get_name(&self) -> String { self.name.clone() }
 
     fn run(&mut self, tick_index: u64) {
-        /* We use this racey method because we only really care about the single-threaded
-         * case (this method is non-rentrant). If a task completes with Done in a previous
-         * call (and this is the only call which handles this case), don't call execute
-         * again. Other terminations (via kill) are never guaranteed synchronous and so one
-         * more call of the step may occur if the signal is delivered between is_finished
-         * and the call to execute. But this is just an extension of the inevitable
-         * asynchrony of a signal being delivered at the start of an execute call as we are
-         * non pre-emptive.
+        /* We use this racey is_finished method because we only really care about the 
+         * single-threaded case (this method is non-rentrant). If a task completes with Done 
+         * in a previous call (and this is the only call which handles this case), don't call 
+         * execute again. Other terminations (via kill) are never guaranteed synchronous and
+         * so one more call of the step may occur if the signal is delivered between
+         * is_finished and the call to execute. But this is just an extension of the
+         * inevitable asynchrony of a signal being delivered at the start of an execute call
+         * as we are non pre-emptive.
          */
         if self.task_control.is_finished() { 
             return;
@@ -49,8 +49,8 @@ impl Task2 for Task2Impl {
             StepState2::Done(_) | StepState2::Ongoing(OngoingState::Dead) => {
                 self.task_control.finish_internal(None);
             },
-            StepState2::Ongoing(OngoingState::Block) => {
-                self.task_control.not_runnable();
+            StepState2::Ongoing(OngoingState::Block(b)) => {
+                self.task_control.not_runnable(b);
             },
             StepState2::Ongoing(OngoingState::Tick) => {
                 self.task_control.wait_for_next_tick();
@@ -82,7 +82,7 @@ mod test {
             if self.0 < 0 {
                 self.0 += 1;
                 control.unblock();
-                return StepState2::Ongoing(OngoingState::Block);
+                return StepState2::Ongoing(OngoingState::Block(control.block()));
             }
             self.0 += 1;
             if self.0 == 1 {
@@ -152,7 +152,7 @@ mod test {
         t.run(0);
         let actions = eah.drain();
         assert_eq!(3,actions.len());
-        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
+        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h,_),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
         } else {
             assert!(false);
         }

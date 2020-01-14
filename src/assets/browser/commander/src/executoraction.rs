@@ -1,9 +1,10 @@
+use crate::blocker::Blocker;
 use crate::step::KillReason;
 use crate::taskcontainer::TaskHandle;
 use std::sync::{ Arc, Mutex };
 
 pub(crate) enum ExecutorAction {
-    Block(TaskHandle),
+    Block(TaskHandle,Blocker),
     Unblock(TaskHandle),
     Done(TaskHandle),
     Kill(TaskHandle,KillReason),
@@ -39,10 +40,10 @@ mod test {
         let mut c = TaskContainer::new();
         let mut eah = ExecutorActionHandle::new();
         let h = c.allocate();
-        eah.add(ExecutorAction::Block(h.clone()));
+        eah.add(ExecutorAction::Tick(h.clone()));
         eah.add(ExecutorAction::Done(h.clone()));
         let actions = eah.drain();
-        if let (ExecutorAction::Block(_),ExecutorAction::Done(_)) = (&actions[0],&actions[1]) {
+        if let (ExecutorAction::Tick(_),ExecutorAction::Done(_)) = (&actions[0],&actions[1]) {
         } else {
             assert!(false);
         }

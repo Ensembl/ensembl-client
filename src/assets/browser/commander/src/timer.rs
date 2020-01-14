@@ -10,10 +10,10 @@ use std::sync::{ Arc, Mutex };
 use crate::taskcontainer::{ TaskContainer, TaskHandle };
 use crate::edgetrigger::EdgeTrigger;
 
-struct Timeout(f64,EdgeTrigger<'static>,Option<TaskHandle>);
+struct Timeout(f64,u64,EdgeTrigger<'static>,Option<TaskHandle>);
 
 impl PartialEq for Timeout {
-    fn eq(&self, other: &Timeout) -> bool { self.0 == other.0 }
+    fn eq(&self, other: &Timeout) -> bool { self.0 == other.0 && self.1 == other.1 }
 }
 
 impl Eq for Timeout {}
@@ -31,24 +31,27 @@ impl PartialOrd for Timeout {
 }
 
 struct TimerSetImpl {
-    timeouts: BinaryHeap<Timeout,MinComparator>
+    timeouts: BinaryHeap<Timeout,MinComparator>,
+    next: u64
 }
 
 impl TimerSetImpl {
     fn new() -> TimerSetImpl {
         TimerSetImpl {
-            timeouts: BinaryHeap::new_min()
+            timeouts: BinaryHeap::new_min(),
+            next: 0
         }
     }
 
     fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static {
+        self.next += 1;
         let trigger = EdgeTrigger::new(callback);
-        self.timeouts.push(Timeout(timeout,trigger,taskhandle.cloned()));
+        self.timeouts.push(Timeout(timeout,self.next,trigger,taskhandle.cloned()));
     }
 
     fn tidy_handles(&mut self, tasks: &TaskContainer) {
         while let Some(timeout) = self.timeouts.pop() {
-            if let Some(ref handle) = timeout.2 {
+            if let Some(ref handle) = timeout.3 {
                 if tasks.get(handle).is_none() {
                     continue;
                 }
@@ -61,7 +64,7 @@ impl TimerSetImpl {
     fn check(&mut self, now: f64) {
         while let Some(mut timeout) = self.timeouts.pop() {
             if timeout.0 <= now {
-                timeout.1.set();
+                timeout.2.set();
             } else {
                 self.timeouts.push(timeout);
                 break;

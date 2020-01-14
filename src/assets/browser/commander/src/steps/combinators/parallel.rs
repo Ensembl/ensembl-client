@@ -12,23 +12,21 @@ struct StepParallelRun<Y,E> where Y: Send {
 }
 
 impl<Y,E> StepRun<Vec<Y>,E> for StepParallelRun<Y,E> where Y: Send {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<Vec<Y>,E> {
+    fn more(&mut self, control: &mut StepControl) -> StepState2<Vec<Y>,E> {
         /* Advance */
         let mut done = true;
         let mut out = OngoingState::Dead;
         for runner in self.steps.lock().unwrap().iter_mut() {
-            let r = runner.0.more();
-            if let StepState2::Ongoing(ref r) = r {
-                if r.priority() < out.priority() { out = r.clone(); }
-            }
-            match r {
+            match runner.0.more() {
                 StepState2::Done(Err(e)) => {
                     return StepState2::Done(Err(e));
                 },
                 StepState2::Done(Ok(v)) => {
                     runner.1 = Some(v);
                 },
-                StepState2::Ongoing(_) => {}
+                StepState2::Ongoing(ref r) => {
+                    out.merge(control,r);
+                }
             }
             if runner.1.is_none() {
                 done = false;
@@ -51,7 +49,7 @@ impl<X,Y: Send,E> StepParallel<X,Y,E> {
     }
 }
 
-impl<X,Y: Send,E> Step2<X,Vec<Y>,E> for StepParallel<X,Y,E> where Y: 'static, E: 'static {
+impl<X,Y,E> Step2<X,Vec<Y>,E> for StepParallel<X,Y,E> where Y: 'static + Send, E: 'static {
     fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Vec<Y>,E>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             (Box::new(task_control.new_step(step,input)),None)
@@ -62,6 +60,7 @@ impl<X,Y: Send,E> Step2<X,Vec<Y>,E> for StepParallel<X,Y,E> where Y: 'static, E:
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -73,6 +72,7 @@ mod test {
     use crate::steps::combinators::sequence::StepSequence2;
     use crate::steps::timeout::TimeoutStep2;
     use crate::steps::noop::BlindStep;
+    use crate::testintegration::{ TestIntegration, TestStep, TestState };
 
     #[derive(Clone)]
     pub struct FakeIntegration(Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
@@ -120,38 +120,41 @@ mod test {
     pub fn test_parallel_smoke() {
         /* NOTE: also verifies that Again/Tick/Block trumping */
         /* setup */
-        let now = Arc::new(Mutex::new((0.,Vec::new())));
-        let integration = FakeIntegration(now.clone());
+        let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = FakeStep2(FakeStepRun2(vec![
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Ongoing(OngoingState::Tick),
-        ],now.clone()));
-        let mut b = FakeStep2(FakeStepRun2(vec![
-            StepState2::Ongoing(OngoingState::Again),
-            StepState2::Ongoing(OngoingState::Again),
-            StepState2::Ongoing(OngoingState::Again),
-            StepState2::Ongoing(OngoingState::Again),
-            StepState2::Ongoing(OngoingState::Tick),
-        ],now.clone()));
-        let c : TimeoutStep2<()> = TimeoutStep2::new(50.,|| ());
+        let mut a = integration.new_step(vec![
+            TestState::Tick,
+            TestState::Tick,
+            TestState::Tick,
+            TestState::Tick,
+            TestState::Done(Ok(5))
+        ]);
+        let mut b = integration.new_step(vec![
+            TestState::Again,
+            TestState::Again,
+            TestState::Again,
+            TestState::Again,
+            TestState::Tick,
+            TestState::Done(Ok(2))
+        ]);
+        let c : TimeoutStep2<(),()> = TimeoutStep2::new(50.,|| ());
         let v: Result<u64,()> = Ok(0);
         let c : StepBranch<(),(),u64,(),()> = StepBranch::new(c,BlindStep::new(v),BlindStep::new(v));
         let out = Arc::new(Mutex::new(vec![]));
         let out2 = out.clone();
         let z = FakeStepExtract(out);
         let p = StepSequence2::new(StepParallel::new(vec![Box::new(a),Box::new(b),Box::new(c)]),z);
-        x.add(p,&(),&cfg,"test");
+        let mut tc = x.add(p,&(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
             x.tick(10.);
             assert!(out2.lock().unwrap().len() == 0);
+            assert!(!tc.is_finished());
         }
-        now.lock().unwrap().0 = 100.;
+        integration.set_time(100.);
         x.tick(10.);
+        assert!(tc.is_finished());
         assert!(out2.lock().unwrap().len() != 0);
         assert_eq!(vec![5,2,0],*out2.lock().unwrap());
     }

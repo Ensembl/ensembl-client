@@ -1,3 +1,4 @@
+mod blocker;
 mod taskcontrol;
 mod edgetrigger;
 mod executor;
@@ -11,8 +12,11 @@ mod task2;
 mod taskcontainer;
 mod timer;
 
+#[cfg(test)]
+mod testintegration;
+
 mod steps {
-    mod combinators {
+    pub(crate) mod combinators {
         pub(crate) mod sequence;
         pub(crate) mod parallel;
         pub(crate) mod branch;

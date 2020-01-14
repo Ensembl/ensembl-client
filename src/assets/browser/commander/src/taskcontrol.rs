@@ -1,6 +1,7 @@
 use std::sync::{ Arc, Mutex };
 
 use crate::step::Step2;
+use crate::blocker::Blocker;
 use crate::edgetrigger::EdgeTrigger;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::ReenteringIntegration;
@@ -110,8 +111,8 @@ impl TaskControl {
         *self.tick_index.lock().unwrap()
     }
 
-    pub(crate) fn not_runnable(&mut self) {
-        self.action_handle.add(ExecutorAction::Block(self.task_handle.clone()));
+    pub(crate) fn not_runnable(&mut self, b: Blocker) {
+        self.action_handle.add(ExecutorAction::Block(self.task_handle.clone(),b));
         if self.unblock.lock().unwrap().is_set() {
             /* handle race between this unblock call and rerun_soon
              * (we need to gurantee that the latter always wins)
@@ -144,7 +145,7 @@ mod test {
     struct FakeStepRun();
     impl StepRun<(),()> for FakeStepRun {
         fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            StepState2::Ongoing(OngoingState::Block)
+            StepState2::Ongoing(OngoingState::Block(control.block()))
         }
     }
 
@@ -234,21 +235,21 @@ mod test {
         }
         /* not_runnable should cause a block */
         tc.about_to_run(0);
-        tc.not_runnable();
+        tc.not_runnable(Blocker::new());
         let actions = eah.drain();
         assert_eq!(1,actions.len());
-        if let ExecutorAction::Block(_) = actions[0] {
+        if let ExecutorAction::Block(_,_) = actions[0] {
         } else {
             assert!(false);
         }
         /* not runnable should not cause block if unblock called in-between */
         tc.about_to_run(0);
         tc.unblock();
-        tc.not_runnable();
+        tc.not_runnable(Blocker::new());
         let actions = eah.drain();
         assert_eq!(3,actions.len());
         if let (ExecutorAction::Unblock(_),
-                ExecutorAction::Block(_),
+                ExecutorAction::Block(_,_),
                 ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
         } else {
             assert!(false);

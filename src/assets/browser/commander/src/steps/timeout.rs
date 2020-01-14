@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepRun, StepState2, OngoingState };
 use crate::stepcontrol::StepControl;
@@ -5,50 +6,58 @@ use crate::taskcontrol::TaskControl;
 use crate::steps::combinators::first::StepFirst;
 
 struct Timeout2Run<E> {
+    timeout: f64,
     expired: Arc<Mutex<bool>>,
     errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
 }
 
 impl<Y,E> StepRun<Y,E> for Timeout2Run<E> {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<Y,E> {
+    fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
         if *self.expired.lock().unwrap() {
             let err = (self.errorgen.lock().unwrap())();
             StepState2::Done(Err(err))
         } else {
-            StepState2::Ongoing(OngoingState::Tick)
+            let b = control.block();
+            let mut b2 = b.clone();
+            let mut tc = control.task_control().clone();
+            control.task_control().add_timer(self.timeout,move || {
+                b2.unblock_real();
+                tc.unblock();
+            });
+            *self.expired.lock().unwrap() = true;
+            StepState2::Ongoing(OngoingState::Block(b))
         }
     }
 }
 
-pub struct TimeoutStep2<E> {
+#[derive(Clone)]
+pub struct TimeoutStep2<X,E> {
+    input: PhantomData<X>,
     timeout: f64,
     errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
 }
 
-impl<E> TimeoutStep2<E> {
-    pub fn new<G>(timeout: f64, errorgen: G) -> TimeoutStep2<E> where E: 'static, G: Fn() -> E + 'static + Send {
+impl<X,E> TimeoutStep2<X,E> where X: Send {
+    pub fn new<G>(timeout: f64, errorgen: G) -> TimeoutStep2<X,E> where E: 'static, G: Fn() -> E + 'static + Send {
         TimeoutStep2 {
+            input: PhantomData,
             timeout,
             errorgen: Arc::new(Mutex::new(Box::new(errorgen)))
         }
     }
 
     /* convenience method */
-    pub fn new_wrapped<X,Y,G>(timeout: f64, inner: Box<dyn Step2<X,Y,E>>, errorgen: G) -> StepFirst<X,Y,E> where X: 'static, Y: Send + 'static, E: 'static, G: Fn() -> E + 'static + Send {
+    pub fn new_wrapped<Y,G>(timeout: f64, inner: Box<dyn Step2<X,Y,E>>, errorgen: G) -> StepFirst<X,Y,E> where X: 'static, Y: Send + 'static, E: 'static, G: Fn() -> E + 'static + Send {
         let timeout = TimeoutStep2::new(timeout,errorgen);        
         StepFirst::new(vec![Box::new(timeout),inner])
     }
 }
 
-impl<X,Y,E> Step2<X,Y,E> for TimeoutStep2<E> where E: 'static {
+impl<X,Y,E> Step2<X,Y,E> for TimeoutStep2<X,E> where X: Send, E: 'static {
     fn start(&mut self, _input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
-        let expired = Arc::new(Mutex::new(false));
-        let expired2 = expired.clone();
-        task_control.add_timer(self.timeout, move || {
-            *expired2.lock().unwrap() = true;
-        });
         Box::new(Timeout2Run {
-            expired,
+            timeout: self.timeout,
+            expired: Arc::new(Mutex::new(false)),
             errorgen: self.errorgen.clone()
         })
     }

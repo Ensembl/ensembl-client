@@ -35,10 +35,16 @@ impl SleepCatcherIntegration {
         self.integration.lock().unwrap().current_time()
     }
 
+    // XXX test non-sc sleep
     pub(crate) fn sleep(&mut self, amount: SleepQuantity) {
         let mut prev_sleep = self.prev_sleep.lock().unwrap();
-        if prev_sleep.is_some() && *prev_sleep.as_ref().unwrap() == amount {
-            return;
+        match amount {
+            SleepQuantity::Forever | SleepQuantity::None => {
+                if prev_sleep.is_some() && *prev_sleep.as_ref().unwrap() == amount {
+                    return;
+                }
+            },
+            _ => {}
         }
         self.integration.lock().unwrap().sleep(amount.clone());
         *prev_sleep = Some(amount);
@@ -118,14 +124,16 @@ mod test {
         sc.sleep(SleepQuantity::None); /* pushed (different) */
         sc.sleep(SleepQuantity::Time(1.)); /* pushed (different) */
         sc.sleep(SleepQuantity::Time(2.)); /* pushed (different) */
-        sc.sleep(SleepQuantity::Time(2.)); /* not pushed (copy) */
+        sc.sleep(SleepQuantity::Time(2.)); /* pushed (copy but of time) */
         sc.sleep(SleepQuantity::Time(1.)); /* pushed (different) */
         sc.sleep(SleepQuantity::Forever); /* pushed (different) */
-        assert!(*sleeps.lock().unwrap() == vec![
+        sc.sleep(SleepQuantity::Forever); /* not pushed (copy) */
+        assert_eq!(*sleeps.lock().unwrap(),vec![
             SleepQuantity::None,
             SleepQuantity::Forever,
             SleepQuantity::None,
             SleepQuantity::Time(1.),
+            SleepQuantity::Time(2.),
             SleepQuantity::Time(2.),
             SleepQuantity::Time(1.),
             SleepQuantity::Forever

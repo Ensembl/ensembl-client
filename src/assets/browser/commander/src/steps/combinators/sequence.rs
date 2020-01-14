@@ -23,7 +23,7 @@ impl<Y,Z,E> StepRun<Z,E> for StepSequenceRun<Y,Z,E> {
                 },
                 StepState2::Done(Err(v)) => StepState2::Done(Err(v)),
                 StepState2::Ongoing(OngoingState::Again) => StepState2::Ongoing(OngoingState::Again),
-                StepState2::Ongoing(OngoingState::Block) => StepState2::Ongoing(OngoingState::Block),
+                StepState2::Ongoing(OngoingState::Block(b)) => StepState2::Ongoing(OngoingState::Block(b)),
                 StepState2::Ongoing(OngoingState::Tick) => StepState2::Ongoing(OngoingState::Tick),
                 StepState2::Ongoing(OngoingState::Dead) => StepState2::Ongoing(OngoingState::Dead)
             }

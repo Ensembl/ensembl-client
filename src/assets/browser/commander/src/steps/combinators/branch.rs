@@ -59,7 +59,7 @@ impl<X,Y,Z,E,F> StepRun<Z,F> for BranchRun<X,Y,Z,E,F> {
                     return StepState2::Ongoing(OngoingState::Again);
                 },
                 StepState2::Ongoing(OngoingState::Again) => StepState2::Ongoing(OngoingState::Again),
-                StepState2::Ongoing(OngoingState::Block) => StepState2::Ongoing(OngoingState::Block),
+                StepState2::Ongoing(OngoingState::Block(b)) => StepState2::Ongoing(OngoingState::Block(b)),
                 StepState2::Ongoing(OngoingState::Tick) => StepState2::Ongoing(OngoingState::Tick),
                 StepState2::Ongoing(OngoingState::Dead) => StepState2::Ongoing(OngoingState::Dead)
             }
