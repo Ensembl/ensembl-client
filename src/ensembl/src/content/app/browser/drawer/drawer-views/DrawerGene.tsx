@@ -22,14 +22,10 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
         <div className={styles.details}>
           <span className={styles.mainDetail}>{ensObject.label}</span>
         </div>
-      </div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Stable ID</div>
         <div className={styles.details}>{getDisplayStableId(ensObject)}</div>
-      </div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Description</div>
         <div className={styles.details}>{ensObject.description || '--'}</div>
       </div>

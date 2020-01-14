@@ -15,20 +15,17 @@ const OtherGenes: FunctionComponent<OtherGenesProps> = (
     <div className={styles.drawerView}>
       <div className={styles.clearFix}>
         <div className={styles.label}>Track name</div>
-        <div className={styles.details}>
-          <p>Other genes</p>
-        </div>
-      </div>
+        <div className={styles.details}>Other genes</div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Description</div>
         <div className={styles.details}>
           <p>
-            Shows all non-coding genes on the{' '}
-            {forwardStrand ? 'forward' : 'reverse'} strand of this chromosome.
-            Part of the GENCODE comprehensive gene set.
-          </p>
-          <p>
+            <span className={styles.nextLine}>
+              Shows all non-coding genes on the{' '}
+              {forwardStrand ? 'forward' : 'reverse'} strand of this chromosome.
+              Part of the GENCODE comprehensive gene set.
+            </span>
+
             <a href="https://www.gencodegenes.org">
               https://www.gencodegenes.org/
             </a>

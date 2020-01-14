@@ -7,15 +7,11 @@ const DrawerGC: FunctionComponent = () => {
     <div className={styles.drawerView}>
       <div className={styles.clearFix}>
         <div className={styles.label}>Track name</div>
-        <div className={styles.details}>
-          <p>%GC</p>
-        </div>
-      </div>
+        <div className={styles.details}>%GC</div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Description</div>
         <div className={styles.details}>
-          <p>Shows the percentage of Gs and Cs in a region.</p>
+          Shows the percentage of Gs and Cs in a region.
         </div>
       </div>
     </div>

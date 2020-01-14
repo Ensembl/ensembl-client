@@ -2,6 +2,7 @@
 
 .drawer {
   height: 100%;
+  overflow: auto;
 }
 
 .drawerView {
@@ -19,22 +20,26 @@
     margin: 0px;
   }
 
+  .nextLine {
+    display: block;
+    margin-bottom: 10px;
+  }
+
   .clearFix {
-    float: left;
-    width: 600px;
-    margin-bottom: 20px;
-    clear: both;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
   }
 
   .label {
-    float: left;
     font-weight: $light;
     text-align: right;
     width: 90px;
   }
 
   .details {
-    float: right;
+    display: flex;
     text-align: left;
     width: 490px;
   }
@@ -42,8 +47,6 @@
   .mainDetail {
     font-size: 16px;
     font-weight: $bold;
-    display: block;
-    float: left;
     margin-top: -3px;
   }
 

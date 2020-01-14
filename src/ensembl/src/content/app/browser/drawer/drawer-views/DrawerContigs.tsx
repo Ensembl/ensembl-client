@@ -7,18 +7,12 @@ const DrawerContigs: FunctionComponent = () => {
     <div className={styles.drawerView}>
       <div className={styles.clearFix}>
         <div className={styles.label}>Track name</div>
-        <div className={styles.details}>
-          <p>Contigs</p>
-        </div>
-      </div>
+        <div className={styles.details}>Contigs</div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Description</div>
         <div className={styles.details}>
-          <p>
-            Shows a contiguous stretch of DNA sequence without gaps that has
-            been assembled solely based on direct sequencing information.
-          </p>
+          Shows a contiguous stretch of DNA sequence without gaps that has been
+          assembled solely based on direct sequencing information.
         </div>
       </div>
     </div>

@@ -49,28 +49,20 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
       <div className={styles.clearFix}>
         <div className={styles.label}>Transcript</div>
         <div className={styles.details}>
-          <p>
-            <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
-            <span className={styles.secondaryDetail}>
-              {transcriptTrack.additional_info}
-            </span>
-          </p>
+          <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
+          <span className={styles.secondaryDetail}>
+            {transcriptTrack.additional_info}
+          </span>
         </div>
-      </div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Gene</div>
         <div className={styles.details}>
-          <p>
-            <span>{ensObject.label}</span>
-            <span className={styles.secondaryDetail}>
-              {getDisplayStableId(ensObject)}
-            </span>
-          </p>
+          <span>{ensObject.label}</span>
+          <span className={styles.secondaryDetail}>
+            {getDisplayStableId(ensObject)}
+          </span>
         </div>
-      </div>
 
-      <div className={styles.clearFix}>
         <div className={styles.label}>Description</div>
         <div className={styles.details}>
           {transcriptTrack.description || '--'}
