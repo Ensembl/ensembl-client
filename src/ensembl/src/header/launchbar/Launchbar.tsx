@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import classNames from 'classnames';
 
 import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it's a png
 
@@ -26,71 +27,124 @@ export const getCategoryClass = (separator: boolean): string => {
 };
 
 const Launchbar = (props: LaunchbarProps) => {
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [overflowHidden, setOverflowHidden] = useState(
+    !props.launchbarExpanded
+  );
+  const launchbarContainerRef = useRef<HTMLDivElement>(null);
+  const launchbarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const { height } = launchbarRef.current?.getBoundingClientRect() || {};
+    if (height && height !== containerHeight) {
+      setContainerHeight(height);
+    }
+    setOverflowHidden(true);
+  }, [props.launchbarExpanded]);
+
+  // TODO: the logic governing whether the container has overflow: hidden or not
+  // is used to properly display the tooltip, which will be cropped if overflow is hidden.
+  // Remove this logic once the tooltip is refactored to be appended to the body rather than to a given child element
+  // (this should solve the cropping problem)
+  useEffect(() => {
+    const onTransitionEnd = () => {
+      if (props.launchbarExpanded) {
+        setOverflowHidden(false);
+      }
+    };
+    launchbarContainerRef.current?.addEventListener(
+      'transitionend',
+      onTransitionEnd
+    );
+    return () =>
+      launchbarContainerRef.current?.removeEventListener(
+        'transitionend',
+        onTransitionEnd
+      );
+  }, [props.launchbarExpanded]);
+
+  const containerClasses = classNames(styles.launchbarContainer, {
+    [styles.launchbarContainerClosed]: !props.launchbarExpanded
+  });
+
+  const containerStyle = containerHeight
+    ? {
+        height: props.launchbarExpanded ? `${containerHeight}px` : 0,
+        overflow: overflowHidden ? 'hidden' : 'visible'
+      }
+    : {};
+
   return (
-    <div className={styles.launchbar}>
-      <div className={styles.categoriesWrapper}>
-        <div className={styles.categories}>
-          <div className={styles.category}>
-            <LaunchbarButton
-              app="global-search"
-              description="Site search"
-              icon={SearchIcon}
-              enabled={false}
-            />
-            <LaunchbarButton
-              app="species-selector"
-              description="Species selector"
-              icon={SpeciesSelectorIcon}
-              enabled={true}
-            />
-          </div>
-          <div className={styles.category}>
-            <LaunchbarButton
-              app="browser"
-              description="Genome browser"
-              icon={BrowserIcon}
-              enabled={props.committedSpecies.length > 0}
-            />
-          </div>
-          <div className={styles.category}>
-            <LaunchbarButton
-              app="tools"
-              description="Tools"
-              icon={VEPIcon}
-              enabled={false}
-            />
-          </div>
-          <div className={styles.category}>
-            <LaunchbarButton
-              app="custom-download"
-              description="Downloads"
-              icon={CustomDownloadIcon}
-              enabled={
-                isEnvironment([
-                  Environment.DEVELOPMENT,
-                  Environment.INTERNAL
-                ]) && props.committedSpecies.length > 0
-              }
-            />
-          </div>
-          <div className={styles.category}>
-            <LaunchbarButton
-              app="help-docs"
-              description="Help & documentation"
-              icon={HelpIcon}
-              enabled={false}
-            />
+    <div
+      ref={launchbarContainerRef}
+      className={containerClasses}
+      style={containerStyle}
+    >
+      <div ref={launchbarRef} className={styles.launchbar}>
+        <div className={styles.categoriesWrapper}>
+          <div className={styles.categories}>
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="global-search"
+                description="Site search"
+                icon={SearchIcon}
+                enabled={false}
+              />
+              <LaunchbarButton
+                app="species-selector"
+                description="Species selector"
+                icon={SpeciesSelectorIcon}
+                enabled={true}
+              />
+            </div>
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="browser"
+                description="Genome browser"
+                icon={BrowserIcon}
+                enabled={props.committedSpecies.length > 0}
+              />
+            </div>
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="tools"
+                description="Tools"
+                icon={VEPIcon}
+                enabled={false}
+              />
+            </div>
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="custom-download"
+                description="Downloads"
+                icon={CustomDownloadIcon}
+                enabled={
+                  isEnvironment([
+                    Environment.DEVELOPMENT,
+                    Environment.INTERNAL
+                  ]) && props.committedSpecies.length > 0
+                }
+              />
+            </div>
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="help-docs"
+                description="Help & documentation"
+                icon={HelpIcon}
+                enabled={false}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className={styles.about}>
-        <span className={styles.aboutText}>Genome research database</span>
-        <LaunchbarButton
-          app="about"
-          description="About Ensembl"
-          icon={ensemblIcon}
-          enabled={false}
-        />
+        <div className={styles.about}>
+          <span className={styles.aboutText}>Genome research database</span>
+          <LaunchbarButton
+            app="about"
+            description="About Ensembl"
+            icon={ensemblIcon}
+            enabled={false}
+          />
+        </div>
       </div>
     </div>
   );
