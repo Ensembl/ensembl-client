@@ -8,9 +8,9 @@
 // To developer: for easier checking of which statuses are available,
 // please add new variants to the enum in the alphabetical order
 export enum Status {
-  ACTIVE = 'active',
-  DISABLED = 'disabled',
   DEFAULT = 'default',
-  HIGHLIGHTED = 'highlighted',
-  INACTIVE = 'inactive'
+  SELECTED = 'selected',
+  UNSELECTED = 'unselected',
+  PARTIALLY_SELECTED = 'partiallySelected',
+  DISABLED = 'disabled'
 }

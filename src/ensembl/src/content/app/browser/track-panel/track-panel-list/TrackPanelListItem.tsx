@@ -137,7 +137,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   const toggleTrack = useCallback(() => {
     const newStatus =
-      trackStatus === Status.ACTIVE ? Status.INACTIVE : Status.ACTIVE;
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
     updateGenomeBrowser(newStatus);
 
@@ -171,7 +171,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
   const updateGenomeBrowser = (status: Status) => {
-    const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
+    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
 
     const payload = {
       [currentTrackStatus]: `${track.track_id}`
@@ -216,7 +216,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={Status.ACTIVE}
+            buttonStatus={Status.UNSELECTED}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}
@@ -228,6 +228,10 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
             description={'enable/disable track'}
             onClick={toggleTrack}
             image={Eye}
+            classNames={{
+              selected: styles.selected,
+              unselected: styles.unselected
+            }}
           />
         </div>
       </dd>

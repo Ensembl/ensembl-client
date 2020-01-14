@@ -10,8 +10,8 @@ import { ReactComponent as bookmarkIcon } from 'static/img/track-panel/bookmark.
 export const createTrackStates = (): BrowserTrackStates => ({
   triticum_aestivum_GCA_900519105_1: {
     [faker.lorem.words()]: {
-      [faker.lorem.words()]: Status.ACTIVE,
-      [faker.lorem.words()]: Status.INACTIVE
+      [faker.lorem.words()]: Status.SELECTED,
+      [faker.lorem.words()]: Status.UNSELECTED
     }
   }
 });

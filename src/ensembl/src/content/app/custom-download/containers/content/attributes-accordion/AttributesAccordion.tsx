@@ -122,7 +122,7 @@ const AttributesAccordion = (props: Props) => {
         </span>
         <span className={styles.resetIcon} onClick={onReset}>
           <ImageButton
-            buttonStatus={Status.ACTIVE}
+            buttonStatus={Status.UNSELECTED}
             description={'Reset attributes'}
             image={ResetIcon}
           />

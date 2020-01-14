@@ -32,7 +32,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
     <div className={styles.imageButtonWrapper}>
       <BadgedButton badgeContent={':)'}>
         <ImageButton
-          buttonStatus={Status.HIGHLIGHTED}
+          buttonStatus={Status.SELECTED}
           description={'enable/disable'}
           image={DownloadIcon}
           onClick={onClick}
@@ -44,7 +44,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
     <div className={styles.imageButtonWrapper}>
       <BadgedButton badgeContent={':)'} className={styles.badge}>
         <ImageButton
-          buttonStatus={Status.HIGHLIGHTED}
+          buttonStatus={Status.SELECTED}
           description={'enable/disable'}
           image={DownloadIcon}
           onClick={onClick}

@@ -21,6 +21,25 @@
   }
 }
 
+.selected {
+  svg {
+    fill: $white;
+    background: $dark-blue;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.unselected {
+  svg {
+    fill: $dark-blue;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
 .disabled {
   cursor: not-allowed;
   svg {
@@ -45,33 +64,5 @@
     border-radius: 50%;
     height: 100%;
     width: 100%;
-  }
-}
-
-.active {
-  svg {
-    fill: $dark-blue;
-  }
-  &svg:hover {
-    opacity: 0.8;
-  }
-}
-
-.highlighted {
-  svg {
-    fill: $white;
-    background: $dark-blue;
-  }
-  &svg:hover {
-    opacity: 0.8;
-  }
-}
-
-.inactive {
-  svg {
-    fill: $grey;
-  }
-  &svg:hover {
-    opacity: 0.8;
   }
 }

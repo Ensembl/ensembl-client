@@ -19,11 +19,9 @@ const ImageButtonParent = (props: Props) => {
   const toggleImage = () => {
     switch (buttonStatus) {
       case Status.DEFAULT:
-        return setVisible(Status.ACTIVE);
-      case Status.ACTIVE:
-        return setVisible(Status.INACTIVE);
-      case Status.INACTIVE:
-        return setVisible(Status.HIGHLIGHTED);
+        return setVisible(Status.UNSELECTED);
+      case Status.UNSELECTED:
+        return setVisible(Status.SELECTED);
       default:
         return setVisible(Status.DEFAULT);
     }
@@ -67,42 +65,28 @@ const ImageButtonParent = (props: Props) => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={Status.ACTIVE}
+              buttonStatus={Status.UNSELECTED}
               description={'enable/disable'}
               image={props.image}
               classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
-            {Status.ACTIVE}
+            {Status.UNSELECTED}
           </div>
         </div>
 
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={Status.INACTIVE}
+              buttonStatus={Status.SELECTED}
               description={'enable/disable'}
               image={props.image}
               classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
-            {Status.INACTIVE}
-          </div>
-        </div>
-
-        <div className={classNames(styles.imageCard)}>
-          <div className={classNames(styles.imageHolder)}>
-            <ImageButton
-              buttonStatus={Status.HIGHLIGHTED}
-              description={'enable/disable'}
-              image={props.image}
-              classNames={computedStyles}
-            />
-          </div>
-          <div className={classNames(styles.imageDescription)}>
-            {Status.HIGHLIGHTED}
+            {Status.SELECTED}
           </div>
         </div>
 

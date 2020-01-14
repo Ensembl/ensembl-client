@@ -32,7 +32,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   }
 
   const getResetIconStatus = () => {
-    return props.isActive ? Status.ACTIVE : Status.DISABLED;
+    return props.isActive ? Status.UNSELECTED : Status.DISABLED;
   };
 
   const handleClick = () => {

@@ -12,11 +12,11 @@ import imageButtonStyles from './ImageButton.scss';
 import { Status } from 'src/shared/types/status';
 
 type ImageButtonStatus =
-  | Status.ACTIVE
-  | Status.INACTIVE
-  | Status.DISABLED
   | Status.DEFAULT
-  | Status.HIGHLIGHTED;
+  | Status.SELECTED
+  | Status.UNSELECTED
+  | Status.PARTIALLY_SELECTED
+  | Status.DISABLED;
 
 type Props = {
   buttonStatus: ImageButtonStatus;

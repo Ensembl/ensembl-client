@@ -158,7 +158,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
                 <ImageButton
-                  buttonStatus={Status.ACTIVE}
+                  buttonStatus={Status.UNSELECTED}
                   description={'View all'}
                   image={EllipsisIcon}
                   onClick={onEllipsisClick}

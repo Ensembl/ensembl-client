@@ -19,8 +19,8 @@ describe('<TrackPanelListItem />', () => {
 
   const defaultProps: TrackPanelListItemProps = {
     categoryName: faker.lorem.words(),
-    trackStatus: Status.ACTIVE,
-    defaultTrackStatus: Status.ACTIVE,
+    trackStatus: Status.SELECTED,
+    defaultTrackStatus: Status.SELECTED,
     track: createMainTrackInfo(),
     activeGenomeId: faker.lorem.words(),
     activeEnsObjectId: faker.lorem.words(),
@@ -47,7 +47,7 @@ describe('<TrackPanelListItem />', () => {
       jest.spyOn(browserMessagingService, 'send');
 
       mount(
-        <TrackPanelListItem {...defaultProps} trackStatus={Status.INACTIVE} />
+        <TrackPanelListItem {...defaultProps} trackStatus={Status.UNSELECTED} />
       );
       expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
 
