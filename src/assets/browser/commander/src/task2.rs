@@ -1,6 +1,5 @@
-use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
-use crate::step::{ RunConfig, Step2, StepState2, StepRun, StepRunner, OngoingState };
+use crate::step::{ RunConfig, Step2, StepState2, StepRunner, OngoingState };
 
 pub(crate) struct Task2Impl {
     runner: StepRunner<(),()>,
@@ -49,8 +48,8 @@ impl Task2 for Task2Impl {
             StepState2::Done(_) | StepState2::Ongoing(OngoingState::Dead) => {
                 self.task_control.finish_internal(None);
             },
-            StepState2::Ongoing(OngoingState::Block(b)) => {
-                self.task_control.not_runnable(b);
+            StepState2::Ongoing(OngoingState::Block(_)) => {
+                self.task_control.not_runnable();
             },
             StepState2::Ongoing(OngoingState::Tick) => {
                 self.task_control.wait_for_next_tick();
@@ -60,6 +59,7 @@ impl Task2 for Task2Impl {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -68,6 +68,8 @@ mod test {
     use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
+    use crate::stepcontrol::StepControl;
+    use crate::step::StepRun;
 
     pub struct FakeIntegration();
     impl CommanderIntegration2 for FakeIntegration {
@@ -81,7 +83,7 @@ mod test {
         fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
             if self.0 < 0 {
                 self.0 += 1;
-                control.unblock();
+                control.task_control().unblock();
                 return StepState2::Ongoing(OngoingState::Block(control.block()));
             }
             self.0 += 1;
@@ -152,7 +154,7 @@ mod test {
         t.run(0);
         let actions = eah.drain();
         assert_eq!(3,actions.len());
-        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h,_),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
+        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
         } else {
             assert!(false);
         }

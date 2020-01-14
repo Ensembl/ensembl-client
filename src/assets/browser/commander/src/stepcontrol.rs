@@ -1,5 +1,4 @@
 use crate::taskcontrol::TaskControl;
-use crate::step::OngoingState;
 use crate::blocker::Blocker;
 
 pub struct StepControl {
@@ -40,11 +39,7 @@ impl StepControl {
     }
 
     pub fn block(&mut self) -> Blocker {
-        Blocker::new()
-    }
-
-    pub fn unblock(&mut self) {
-        self.task_control.unblock();
+        Blocker::new(self.task_control.get_unblocker())
     }
 
     pub(crate) fn die(&mut self) {
@@ -111,15 +106,15 @@ mod test {
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         let mut sc = StepControl::new(&tc);
         assert!(sc.get_blocker().is_none());
-        let mut b1 = Blocker::new();
-        let mut b2 = Blocker::new();
+        let mut b1 = Blocker::new(tc.get_unblocker());
+        let mut b2 = Blocker::new(tc.get_unblocker());
         b1.add(&b2);
         sc.block_on(&b1);
         assert!(b1.is_blocked());
         assert!(b2.is_blocked());
         assert!(sc.get_blocker().is_some());
         let b3 = sc.get_blocker().as_ref().unwrap().clone();
-        b2.unblock_real();
+        b2.unblock_step();
         assert!(sc.get_blocker().is_none());
         assert!(!b1.is_blocked());
         assert!(!b2.is_blocked());

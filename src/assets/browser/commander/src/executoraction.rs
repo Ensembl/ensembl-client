@@ -4,12 +4,12 @@ use crate::taskcontainer::TaskHandle;
 use std::sync::{ Arc, Mutex };
 
 pub(crate) enum ExecutorAction {
-    Block(TaskHandle,Blocker),
+    Block(TaskHandle),
     Unblock(TaskHandle),
     Done(TaskHandle),
     Kill(TaskHandle,KillReason),
     Tick(TaskHandle),
-    Timer(TaskHandle,f64,Box<dyn FnMut() + 'static>)
+    Timer(TaskHandle,f64,Box<dyn FnMut() + 'static + Send>)
 }
 
 #[derive(Clone)]

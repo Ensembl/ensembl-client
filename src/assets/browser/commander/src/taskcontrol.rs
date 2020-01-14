@@ -10,6 +10,31 @@ use crate::timer::TimerSet;
 use crate::taskcontainer::TaskHandle;
 
 #[derive(Clone)]
+pub(crate) struct TaskUnblocker {
+    integration: ReenteringIntegration,
+    unblock: Arc<Mutex<EdgeTrigger<'static>>>
+}
+
+impl TaskUnblocker {
+    pub fn new(integration: &ReenteringIntegration, action_handle: &ExecutorActionHandle, task_handle: &TaskHandle) -> TaskUnblocker {
+        let mut action_handle2 = action_handle.clone();
+        let task_handle2 = task_handle.clone();
+        TaskUnblocker {
+            integration: integration.clone(),
+            unblock: Arc::new(Mutex::new(EdgeTrigger::new(move || {
+                action_handle2.add(ExecutorAction::Unblock(task_handle2.clone()));
+            })))
+        }
+    }
+
+    pub(crate) fn unblock(&mut self) {
+        /* If these two are the other way around, the world falls apart */
+        self.unblock.lock().unwrap().set();
+        self.integration.cause_reentry();
+    }
+}
+
+#[derive(Clone)]
 pub struct TaskControl {
     integration: ReenteringIntegration,
     config: RunConfig,
@@ -19,7 +44,7 @@ pub struct TaskControl {
     task_handle: TaskHandle,
     action_handle: ExecutorActionHandle,
     timers: TimerSet,
-    unblock: Arc<Mutex<EdgeTrigger<'static>>>
+    unblocker: TaskUnblocker
 }
 
 impl TaskControl {
@@ -27,9 +52,8 @@ impl TaskControl {
                       action_handle: &ExecutorActionHandle, task_handle: &TaskHandle, 
                       integration: &ReenteringIntegration) -> TaskControl {
         let action_handle = action_handle.clone();
-        let mut action_handle2 = action_handle.clone();
         let task_handle = task_handle.clone();
-        let task_handle2 = task_handle.clone();
+        let unblocker = TaskUnblocker::new(integration,&action_handle,&task_handle);
         TaskControl {
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
@@ -38,14 +62,12 @@ impl TaskControl {
             integration: integration.clone(),
             tick_index: Arc::new(Mutex::new(0)),
             timers: timers.clone(),
-            unblock: Arc::new(Mutex::new(EdgeTrigger::new(move || {
-                action_handle2.add(ExecutorAction::Unblock(task_handle2.clone()));
-            })))
+            unblocker
         }
     }
 
     /* timers */
-    pub fn add_timer<T>(&mut self, timeout: f64, callback: T) where T: FnMut() + 'static {
+    pub fn add_timer<T>(&mut self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
         self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
     }
 
@@ -97,23 +119,24 @@ impl TaskControl {
     }
 
     /* blocking */
+    #[cfg(test)]
     pub(crate) fn unblock(&mut self) {
-        self.unblock.lock().unwrap().set();
+        self.unblocker.unblock.lock().unwrap().set();
         self.integration.cause_reentry();
     }
 
     pub(crate) fn about_to_run(&mut self, tick_index: u64) {
         *self.tick_index.lock().unwrap() = tick_index;
-        self.unblock.lock().unwrap().reset();
+        self.unblocker.unblock.lock().unwrap().reset();
     }
 
     pub fn get_tick_index(&self) -> u64 {
         *self.tick_index.lock().unwrap()
     }
 
-    pub(crate) fn not_runnable(&mut self, b: Blocker) {
-        self.action_handle.add(ExecutorAction::Block(self.task_handle.clone(),b));
-        if self.unblock.lock().unwrap().is_set() {
+    pub(crate) fn not_runnable(&mut self) {
+        self.action_handle.add(ExecutorAction::Block(self.task_handle.clone()));
+        if self.unblocker.unblock.lock().unwrap().is_set() {
             /* handle race between this unblock call and rerun_soon
              * (we need to gurantee that the latter always wins)
              */
@@ -123,6 +146,10 @@ impl TaskControl {
 
     pub(crate) fn wait_for_next_tick(&mut self) {
         self.action_handle.add(ExecutorAction::Tick(self.task_handle.clone()));
+    }
+
+    pub(crate) fn get_unblocker(&mut self) -> &mut TaskUnblocker {
+        &mut self.unblocker
     }
 }
 
@@ -235,21 +262,22 @@ mod test {
         }
         /* not_runnable should cause a block */
         tc.about_to_run(0);
-        tc.not_runnable(Blocker::new());
+        let ub = tc.get_unblocker().clone();
+        tc.not_runnable();
         let actions = eah.drain();
         assert_eq!(1,actions.len());
-        if let ExecutorAction::Block(_,_) = actions[0] {
+        if let ExecutorAction::Block(_) = actions[0] {
         } else {
             assert!(false);
         }
         /* not runnable should not cause block if unblock called in-between */
         tc.about_to_run(0);
         tc.unblock();
-        tc.not_runnable(Blocker::new());
+        tc.not_runnable();
         let actions = eah.drain();
         assert_eq!(3,actions.len());
         if let (ExecutorAction::Unblock(_),
-                ExecutorAction::Block(_,_),
+                ExecutorAction::Block(_),
                 ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
         } else {
             assert!(false);

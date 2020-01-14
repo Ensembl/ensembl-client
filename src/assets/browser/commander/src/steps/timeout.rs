@@ -21,8 +21,7 @@ impl<Y,E> StepRun<Y,E> for Timeout2Run<E> {
             let mut b2 = b.clone();
             let mut tc = control.task_control().clone();
             control.task_control().add_timer(self.timeout,move || {
-                b2.unblock_real();
-                tc.unblock();
+                b2.unblock();
             });
             *self.expired.lock().unwrap() = true;
             StepState2::Ongoing(OngoingState::Block(b))

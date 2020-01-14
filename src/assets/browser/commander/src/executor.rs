@@ -13,7 +13,6 @@ pub struct Executor {
     integration: ReenteringIntegration,
     tasks: TaskContainer,
     runnable: Runnable,
-    blocks: HashMap<TaskHandle,Blocker>,
     next_tick: HashSet<TaskHandle>,
     actions: ExecutorActionHandle,
     timers: TimerSet,
@@ -29,7 +28,6 @@ impl Executor {
             next_tick: HashSet::new(),
             actions: ExecutorActionHandle::new(),
             timers: TimerSet::new(),
-            blocks: HashMap::new(),
             tick_index: 0
         }
     }
@@ -54,7 +52,7 @@ impl Executor {
         self.tasks.remove(handle);
     }
 
-    fn add_timer(&mut self, handle: &TaskHandle, timeout: f64, callback: Box<dyn FnMut()>) {
+    fn add_timer(&mut self, handle: &TaskHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
         let now = self.integration.current_time();
         self.timers.add(Some(handle),now+timeout,callback);
     }
@@ -62,14 +60,10 @@ impl Executor {
     pub(crate) fn run_actions(&mut self) {
         for action in self.actions.drain() {
             match action {
-                ExecutorAction::Block(handle,blocker) => {
+                ExecutorAction::Block(handle) => {
                     self.runnable.remove(&self.tasks,&handle);
-                    self.blocks.insert(handle,blocker);
                 },
                 ExecutorAction::Unblock(handle) => {
-                    if let Some(mut blocker) = self.blocks.remove(&handle) {
-                        //blocker.unblock_real();
-                    }
                     self.runnable.add(&self.tasks,&handle);
                 },
                 ExecutorAction::Done(handle) => {

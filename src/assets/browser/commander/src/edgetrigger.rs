@@ -6,11 +6,11 @@ use std::sync::{ Arc, Mutex };
 
 pub(crate) struct EdgeTrigger<'a> {
     trigger: Arc<Mutex<bool>>,
-    callback: Box<dyn FnMut() + 'a>
+    callback: Box<dyn FnMut() + 'a + Send>
 }
 
 impl<'a> EdgeTrigger<'a> {
-    pub(crate) fn new<T>(callback: T) -> EdgeTrigger<'a> where T: FnMut() + 'a {
+    pub(crate) fn new<T>(callback: T) -> EdgeTrigger<'a> where T: FnMut() + 'a + Send {
         EdgeTrigger {
             trigger: Arc::new(Mutex::new(false)),
             callback: Box::new(callback)

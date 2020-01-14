@@ -108,8 +108,7 @@ impl<Y,E> TestStep<Y,E> {
     pub(crate) fn forever_unblock(&mut self, tc: &mut TaskControl) {
         let mut state = self.state.lock().unwrap();
         if let Some(ref mut blocker) = state.current_forever_block {
-            blocker.unblock_real();
-            tc.unblock();
+            blocker.unblock();
         }
         state.current_forever_block = None;
     }
@@ -153,8 +152,7 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
             let mut b2 = b.clone();
             let mut tc = control.task_control().clone();
             control.task_control().add_timer(until, move || {
-                b2.unblock_real();
-                tc.unblock();
+                b2.unblock();
             });
             state.block_for = None;
             return StepState2::Ongoing(OngoingState::Block(b));

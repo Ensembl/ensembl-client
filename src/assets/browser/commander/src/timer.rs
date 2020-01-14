@@ -43,7 +43,7 @@ impl TimerSetImpl {
         }
     }
 
-    fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static {
+    fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
         self.next += 1;
         let trigger = EdgeTrigger::new(callback);
         self.timeouts.push(Timeout(timeout,self.next,trigger,taskhandle.cloned()));
@@ -85,7 +85,7 @@ impl TimerSet {
         TimerSet(Arc::new(Mutex::new(TimerSetImpl::new())))
     }
 
-    pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static {
+    pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
         self.0.lock().unwrap().add(taskhandle,timeout,callback);
     }
 
