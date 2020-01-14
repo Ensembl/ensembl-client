@@ -132,7 +132,7 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::stepcontrol::StepControl;
-    use crate::step::{ Step2, StepState2, StepRun };
+    use crate::step::{ Step2, StepState2, OngoingState, StepRun };
 
     pub struct FakeIntegration(Arc<Mutex<f64>>);
     impl CommanderIntegration2 for FakeIntegration {
@@ -144,7 +144,7 @@ mod test {
     struct FakeStepRun();
     impl StepRun<(),()> for FakeStepRun {
         fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            StepState2::Block
+            StepState2::Ongoing(OngoingState::Block)
         }
     }
 

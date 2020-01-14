@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use crate::step::{ Step2, StepRun, StepRunner, StepState2 };
+use crate::step::{ Step2, StepRun, StepRunner, StepState2, OngoingState };
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
 
@@ -19,12 +19,13 @@ impl<Y,Z,E> StepRun<Z,E> for StepSequenceRun<Y,Z,E> {
                 StepState2::Done(Ok(v)) => {
                     let mut step = self.two_step.lock().unwrap();
                     self.two = Some(self.task_control.new_step(&mut step,&v));
-                    return StepState2::Again;
+                    return StepState2::Ongoing(OngoingState::Again);
                 },
                 StepState2::Done(Err(v)) => StepState2::Done(Err(v)),
-                StepState2::Again => StepState2::Again,
-                StepState2::Block => StepState2::Block,
-                StepState2::Tick => StepState2::Tick
+                StepState2::Ongoing(OngoingState::Again) => StepState2::Ongoing(OngoingState::Again),
+                StepState2::Ongoing(OngoingState::Block) => StepState2::Ongoing(OngoingState::Block),
+                StepState2::Ongoing(OngoingState::Tick) => StepState2::Ongoing(OngoingState::Tick),
+                StepState2::Ongoing(OngoingState::Dead) => StepState2::Ongoing(OngoingState::Dead)
             }
         }
     }
@@ -100,12 +101,12 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut a = FakeStep2(FakeStepRun2(vec![
-            StepState2::Tick,
-            StepState2::Tick,
+            StepState2::Ongoing(OngoingState::Tick),
+            StepState2::Ongoing(OngoingState::Tick),
             StepState2::Done(Ok(()))
         ],now.clone()));
         let mut b = FakeStep2(FakeStepRun2(vec![
-            StepState2::Tick,
+            StepState2::Ongoing(OngoingState::Tick),
             StepState2::Done(Ok(()))
         ],now.clone()));
         let mut tc = x.add(StepSequence2::new(a,b),&(),&cfg,"test");

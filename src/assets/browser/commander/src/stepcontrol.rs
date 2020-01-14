@@ -2,14 +2,16 @@ use crate::taskcontrol::TaskControl;
 
 pub struct StepControl {
     task_control: TaskControl,
-    blocked_on_tick: Option<u64>
+    blocked_on_tick: Option<u64>,
+    is_dead: bool
 }
 
 impl StepControl {
     pub(crate) fn new(task_control: &TaskControl) -> StepControl {
         StepControl {
             task_control: task_control.clone(),
-            blocked_on_tick: None
+            blocked_on_tick: None,
+            is_dead: false
         }
     }
 
@@ -31,6 +33,14 @@ impl StepControl {
 
     pub fn unblock(&mut self) {
         self.task_control.unblock();
+    }
+
+    pub(crate) fn die(&mut self) {
+        self.is_dead = true;
+    }
+
+    pub(crate) fn is_dead(&self) -> bool {
+        self.is_dead
     }
 }
 

@@ -1,54 +1,56 @@
 use std::sync::{ Arc, Mutex };
-use crate::step::{ Step2, StepRunner, StepRun, StepState2 };
+use crate::step::{ Step2, StepRun, StepState2, OngoingState };
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
+use crate::steps::combinators::first::StepFirst;
 
-struct TimeoutRun<Y,E> {
+struct Timeout2Run<E> {
     expired: Arc<Mutex<bool>>,
-    inner: StepRunner<Y,E>,
     errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
 }
 
-pub struct TimeoutStep<X,Y,E> {
-    timeout: f64,
-    inner: Arc<Mutex<Box<dyn Step2<X,Y,E>>>>,
-    errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
-}
-
-impl<X,Y,E> TimeoutStep<X,Y,E> {
-    pub fn new<A,G>(timeout: f64, inner: A, errorgen: G) -> impl Step2<X,Y,E> where A: Step2<X,Y,E> + 'static, Y: 'static, E: 'static, G: Fn() -> E + 'static + Send {
-        TimeoutStep {
-            timeout,
-            inner: Arc::new(Mutex::new(Box::new(inner))),
-            errorgen: Arc::new(Mutex::new(Box::new(errorgen)))
-        }
-    }
-}
-
-impl<X,Y,E> Step2<X,Y,E> for TimeoutStep<X,Y,E> where Y: 'static, E: 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
-        let expired = Arc::new(Mutex::new(false));
-        let expired2 = expired.clone();
-        let task_control2 = task_control.clone();
-        task_control.add_timer(self.timeout, move || {
-            *expired2.lock().unwrap() = true;
-        });
-        Box::new(TimeoutRun {
-            inner: task_control.new_step(&mut self.inner.lock().unwrap(),input),
-            expired,
-            errorgen: self.errorgen.clone()
-        })
-    }
-}
-
-impl<Y,E> StepRun<Y,E> for TimeoutRun<Y,E> {
+impl<Y,E> StepRun<Y,E> for Timeout2Run<E> {
     fn more(&mut self, _control: &mut StepControl) -> StepState2<Y,E> {
         if *self.expired.lock().unwrap() {
             let err = (self.errorgen.lock().unwrap())();
             StepState2::Done(Err(err))
         } else {
-            self.inner.more()
+            StepState2::Ongoing(OngoingState::Tick)
         }
+    }
+}
+
+pub struct TimeoutStep2<E> {
+    timeout: f64,
+    errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
+}
+
+impl<E> TimeoutStep2<E> {
+    pub fn new<G>(timeout: f64, errorgen: G) -> TimeoutStep2<E> where E: 'static, G: Fn() -> E + 'static + Send {
+        TimeoutStep2 {
+            timeout,
+            errorgen: Arc::new(Mutex::new(Box::new(errorgen)))
+        }
+    }
+
+    /* convenience method */
+    pub fn new_wrapped<X,Y,G>(timeout: f64, inner: Box<dyn Step2<X,Y,E>>, errorgen: G) -> StepFirst<X,Y,E> where X: 'static, Y: Send + 'static, E: 'static, G: Fn() -> E + 'static + Send {
+        let timeout = TimeoutStep2::new(timeout,errorgen);        
+        StepFirst::new(vec![Box::new(timeout),inner])
+    }
+}
+
+impl<X,Y,E> Step2<X,Y,E> for TimeoutStep2<E> where E: 'static {
+    fn start(&mut self, _input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+        let expired = Arc::new(Mutex::new(false));
+        let expired2 = expired.clone();
+        task_control.add_timer(self.timeout, move || {
+            *expired2.lock().unwrap() = true;
+        });
+        Box::new(Timeout2Run {
+            expired,
+            errorgen: self.errorgen.clone()
+        })
     }
 }
 
@@ -58,8 +60,8 @@ mod test {
     use crate::executor::Executor;
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::steps::sequence::StepSequence2;
-    use crate::steps::branch::StepBranch;
+    use crate::steps::combinators::sequence::StepSequence2;
+    use crate::steps::combinators::branch::StepBranch;
 
     #[derive(Clone)]
     pub struct FakeIntegration(Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
@@ -148,7 +150,6 @@ mod test {
         }
     }
 
-    
     pub fn timeout_smoke(timeout: bool) {
         /* setup */
         let mut now = Arc::new(Mutex::new((0.,Vec::new())));
@@ -156,17 +157,17 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut cmds = vec![
-            StepState2::Tick,
-            StepState2::Tick,
+            StepState2::Ongoing(OngoingState::Tick),
+            StepState2::Ongoing(OngoingState::Tick),
             StepState2::Done(Ok(()))
         ];
         if timeout {
-            cmds.insert(0,StepState2::Tick);
+            cmds.insert(0,StepState2::Ongoing(OngoingState::Tick));
         }
 
         let mut b = FakeStep2(FakeStepRun2(cmds,now.clone()));
         now.lock().unwrap().0 = 0.;
-        let b = TimeoutStep::new(3.,b,|| ());
+        let b = TimeoutStep2::new_wrapped(3.,Box::new(b),|| ());
         assert!(find_branch(&mut x, b,&()) || timeout);
     }
 

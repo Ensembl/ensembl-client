@@ -1,4 +1,3 @@
-mod commander;
 mod taskcontrol;
 mod edgetrigger;
 mod executor;
@@ -13,12 +12,14 @@ mod taskcontainer;
 mod timer;
 
 mod steps {
-    pub(crate) mod futurestep;
-    pub(crate) mod joinstep;
-    pub(crate) mod sequence;
-    pub(crate) mod parallel;
+    mod combinators {
+        pub(crate) mod sequence;
+        pub(crate) mod parallel;
+        pub(crate) mod branch;
+        pub(crate) mod first;
+    }
     pub(crate) mod timeout;
-    pub(crate) mod branch;
+    pub(crate) mod noop;
 }
 
 #[macro_use]
@@ -28,16 +29,5 @@ extern crate owning_ref;
 
 #[cfg(test)]
 extern crate regex;
-
-//#[cfg(test)]
-mod test {
-    mod test;
-    mod testintegration;
-    mod teststeps;
-}
-
-pub use crate::commander::{ Commander, Step, StepControl, StepState };
-pub use crate::steps::futurestep::future_to_step;
-pub use crate::steps::joinstep::{ step_recover, step_sequence, StepSequence /* XXX */ };
 
 pub use crate::executor::Executor;

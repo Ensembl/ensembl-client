@@ -1,6 +1,6 @@
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
-use crate::step::{ RunConfig, Step2, StepState2, StepRun, StepRunner };
+use crate::step::{ RunConfig, Step2, StepState2, StepRun, StepRunner, OngoingState };
 
 pub(crate) struct Task2Impl {
     runner: StepRunner<(),()>,
@@ -46,16 +46,16 @@ impl Task2 for Task2Impl {
         }
         self.task_control.about_to_run(tick_index);
         match self.runner.more() {
-            StepState2::Done(_) => {
+            StepState2::Done(_) | StepState2::Ongoing(OngoingState::Dead) => {
                 self.task_control.finish_internal(None);
             },
-            StepState2::Block => {
+            StepState2::Ongoing(OngoingState::Block) => {
                 self.task_control.not_runnable();
             },
-            StepState2::Tick => {
+            StepState2::Ongoing(OngoingState::Tick) => {
                 self.task_control.wait_for_next_tick();
             },
-            StepState2::Again => {}
+            StepState2::Ongoing(OngoingState::Again) => {}
         }
     }
 }
@@ -82,14 +82,14 @@ mod test {
             if self.0 < 0 {
                 self.0 += 1;
                 control.unblock();
-                return StepState2::Block;
+                return StepState2::Ongoing(OngoingState::Block);
             }
             self.0 += 1;
             if self.0 == 1 {
                 control.task_control().add_timer(0.,||{});
             }
             match self.0 {
-                1|2 => StepState2::Again,
+                1|2 => StepState2::Ongoing(OngoingState::Again),
                 _ => StepState2::Done(Ok(()))
             }
         }

@@ -136,7 +136,7 @@ impl Executor {
 mod test {
     use std::sync::{ Arc, Mutex };
     use super::*;
-    use crate::step::{ KillReason, StepState2, StepRun };
+    use crate::step::{ KillReason, StepState2, StepRun, OngoingState };
     use crate::stepcontrol::StepControl;
     use crate::integration::SleepQuantity;
 
@@ -160,10 +160,10 @@ mod test {
         fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
             if self.0 < 0 {
                 self.0 += 1;
-                return StepState2::Block;
+                return StepState2::Ongoing(OngoingState::Block);
             }
             self.0 += 1;
-            if self.0 < 2 { StepState2::Again } else { StepState2::Done(Ok(())) }
+            if self.0 < 2 { StepState2::Ongoing(OngoingState::Again) } else { StepState2::Done(Ok(())) }
         }
     }
 
@@ -239,7 +239,7 @@ mod test {
         let integration = FakeIntegration(now.clone());
         let mut x = Executor::new(integration);
         let cfg = RunConfig::new(None,3,Some(20.));
-        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Again,StepState2::Again,StepState2::Again],now.clone())),&(),&cfg,"test");
+        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Ongoing(OngoingState::Again),StepState2::Ongoing(OngoingState::Again),StepState2::Ongoing(OngoingState::Again)],now.clone())),&(),&cfg,"test");
         x.tick(10.);
         assert!(tc.is_finished());
         assert!(tc.kill_reason() == None);    
@@ -251,7 +251,7 @@ mod test {
         let integration = FakeIntegration(now.clone());
         let mut x = Executor::new(integration);
         let cfg = RunConfig::new(None,3,Some(20.));
-        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Again,StepState2::Again,StepState2::Again],now.clone())),&(),&cfg,"test");
+        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Ongoing(OngoingState::Again),StepState2::Ongoing(OngoingState::Again),StepState2::Ongoing(OngoingState::Again)],now.clone())),&(),&cfg,"test");
         x.tick(2.);
         assert!(!tc.is_finished());
         x.tick(2.);
@@ -265,7 +265,7 @@ mod test {
         let integration = FakeIntegration(now.clone());
         let mut x = Executor::new(integration);
         let cfg = RunConfig::new(None,3,Some(20.));
-        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Tick,StepState2::Tick,StepState2::Tick],now.clone())),&(),&cfg,"test");
+        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Ongoing(OngoingState::Tick),StepState2::Ongoing(OngoingState::Tick),StepState2::Ongoing(OngoingState::Tick)],now.clone())),&(),&cfg,"test");
         x.tick(10.);
         assert!(!tc.is_finished());
         x.tick(10.);
@@ -283,8 +283,8 @@ mod test {
         let integration = FakeIntegration(now.clone());
         let mut x = Executor::new(integration);
         let cfg = RunConfig::new(None,3,None);
-        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Tick,StepState2::Block,StepState2::Done(Ok(()))],now.clone())),&(),&cfg,"test");
-        let mut tc2 = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Block,StepState2::Done(Ok(()))],now.clone())),&(),&cfg,"test2");
+        let mut tc = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Ongoing(OngoingState::Tick),StepState2::Ongoing(OngoingState::Block),StepState2::Done(Ok(()))],now.clone())),&(),&cfg,"test");
+        let mut tc2 = x.add(FakeStep2(FakeStepRun2(vec![StepState2::Ongoing(OngoingState::Block),StepState2::Done(Ok(()))],now.clone())),&(),&cfg,"test2");
         x.tick(2.);
         assert!(!tc.is_finished());
         assert!(SleepQuantity::None == now.lock().unwrap().1.remove(0));
@@ -302,8 +302,8 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(10.));
         let mut tc = x.add(FakeStep2(FakeStepRun2(vec![
-            StepState2::Block,
-            StepState2::Block,
+            StepState2::Ongoing(OngoingState::Block),
+            StepState2::Ongoing(OngoingState::Block),
             StepState2::Done(Ok(()))
         ],now.clone())),&(),&cfg,"test");
         tc.add_timer(5.,|| {}); /* 10->5 */
@@ -329,7 +329,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(10.));
         let mut tc = x.add(FakeStep2(FakeStepRun2(vec![
-            StepState2::Block,
+            StepState2::Ongoing(OngoingState::Block),
             StepState2::Done(Ok(()))
         ],now.clone())),&(),&cfg,"test");
         x.tick(10.); /* (Block) time_at_end = 1 => sleep 9 */
@@ -355,7 +355,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut tc = x.add(FakeStep2(FakeStepRun2(vec![
-            StepState2::Block,
+            StepState2::Ongoing(OngoingState::Block),
             StepState2::Done(Ok(()))
         ],now.clone())),&(),&cfg,"test");
         /* simulate */
@@ -373,10 +373,10 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut tc = x.add(FakeStep2(FakeStepRun2(vec![
-            StepState2::Block,
-            StepState2::Again,
-            StepState2::Tick,
-            StepState2::Block,
+            StepState2::Ongoing(OngoingState::Block),
+            StepState2::Ongoing(OngoingState::Again),
+            StepState2::Ongoing(OngoingState::Tick),
+            StepState2::Ongoing(OngoingState::Block),
             StepState2::Done(Ok(()))
         ],now.clone())),&(),&cfg,"test");
         /* simulate */
@@ -404,8 +404,8 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(5.)); /* time=0; SleepQuantity::Time(5.) */
         let mut tc = x.add(FakeStep2(FakeStepRun2(vec![
-            StepState2::Block,
-            StepState2::Block,
+            StepState2::Ongoing(OngoingState::Block),
+            StepState2::Ongoing(OngoingState::Block),
             StepState2::Done(Ok(()))
         ],now.clone())),&(),&cfg,"test");
         /* simulate */

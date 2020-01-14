@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
-use crate::step::{ Step2, StepRun, StepState2, StepRunner };
+use crate::step::{ Step2, StepRun, StepState2, StepRunner, OngoingState };
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
 
@@ -14,7 +14,7 @@ pub struct StepBranchImpl<X,Y,Z,E,F> {
 pub struct StepBranch<X,Y,Z,E,F>(Arc<Mutex<StepBranchImpl<X,Y,Z,E,F>>>);
 
 impl<X,Y,Z,E,F> StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'static, F: 'static, X: 'static, Y: 'static {
-    pub fn new<A,B,C>(main: A, success: B, failure: C) -> impl Step2<X,Z,F> 
+    pub fn new<A,B,C>(main: A, success: B, failure: C) -> StepBranch<X,Y,Z,E,F> 
             where A: Step2<X,Y,E> + 'static, B: Step2<Y,Z,F> + 'static, C: Step2<E,Z,F> + 'static {
         StepBranch(Arc::new(Mutex::new(StepBranchImpl {
             main: Box::new(main),
@@ -52,15 +52,16 @@ impl<X,Y,Z,E,F> StepRun<Z,F> for BranchRun<X,Y,Z,E,F> {
             match self.main.more() {
                 StepState2::Done(Ok(v)) => {
                     self.success = Some(control.task_control().new_step(&mut self.step.0.lock().unwrap().success,&v));
-                    return StepState2::Again;
+                    return StepState2::Ongoing(OngoingState::Again);
                 },
                 StepState2::Done(Err(e)) => {
                     self.failure = Some(control.task_control().new_step(&mut self.step.0.lock().unwrap().failure,&e));
-                    return StepState2::Again;
+                    return StepState2::Ongoing(OngoingState::Again);
                 },
-                StepState2::Again => StepState2::Again,
-                StepState2::Block => StepState2::Block,
-                StepState2::Tick => StepState2::Tick
+                StepState2::Ongoing(OngoingState::Again) => StepState2::Ongoing(OngoingState::Again),
+                StepState2::Ongoing(OngoingState::Block) => StepState2::Ongoing(OngoingState::Block),
+                StepState2::Ongoing(OngoingState::Tick) => StepState2::Ongoing(OngoingState::Tick),
+                StepState2::Ongoing(OngoingState::Dead) => StepState2::Ongoing(OngoingState::Dead)
             }
         }
     }

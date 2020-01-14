@@ -3,11 +3,28 @@ use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
 
 #[derive(Clone)] // XXX test only
-pub enum StepState2<Y,E> {
+pub enum OngoingState {
     Again,
     Tick,
+    Block,
+    Dead
+}
+
+#[derive(Clone)] // XXX test only
+pub enum StepState2<Y,E> {
+    Ongoing(OngoingState),
     Done(Result<Y,E>),
-    Block
+}
+
+impl OngoingState {
+    pub(crate) fn priority(&self) -> u8 {
+        match self {
+            OngoingState::Again => 0,
+            OngoingState::Tick => 1,
+            OngoingState::Block => 2,
+            OngoingState::Dead => 3
+        }
+    }
 }
 
 #[derive(Clone,PartialEq)]
@@ -38,15 +55,21 @@ impl<Y,E> StepRunner<Y,E> {
     }
 
     pub fn more(&mut self) -> StepState2<Y,E> {
+        if self.control.is_dead() {
+            return StepState2::Ongoing(OngoingState::Dead);
+        }
         let tick = self.control.task_control().get_tick_index();
         if !self.control.check_tick(tick) {
             /* no, is waiting for next tick! */
-            return StepState2::Tick;
+            return StepState2::Ongoing(OngoingState::Tick);
         }
         let out = self.run.more(&mut self.control);
         match out {
-            StepState2::Tick => {
+            StepState2::Ongoing(OngoingState::Tick) => {
                 self.control.block_on_tick(tick);
+            },
+            StepState2::Done(_) => {
+                self.control.die();
             },
             _ => {}
         }
