@@ -26,7 +26,7 @@ export const getCategoryClass = (separator: boolean): string => {
 };
 
 const Launchbar = (props: LaunchbarProps) => {
-  return (
+  return props.launchbarExpanded ? (
     <div className={styles.launchbar}>
       <div className={styles.categoriesWrapper}>
         <div className={styles.categories}>
@@ -96,7 +96,7 @@ const Launchbar = (props: LaunchbarProps) => {
         />
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default Launchbar;
