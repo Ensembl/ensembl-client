@@ -20,7 +20,7 @@ impl<Y,Z,E> StepRun for StepSequenceRun<Y,Z,E> {
             match self.one.more() {
                 StepState2::Done(Ok(v)) => {
                     let mut step = self.two_step.lock().unwrap();
-                    self.two = Some(self.task_control.new_step(&mut step,&v));
+                    self.two = Some(self.task_control.new_step(&mut step,v));
                     return StepState2::Ongoing(OngoingState::Again);
                 },
                 StepState2::Done(Err(v)) => StepState2::Done(Err(v)),
@@ -51,7 +51,7 @@ impl<X,Y: Send,Z,E> StepSequence2<X,Y,Z,E> {
 impl<X,Y: Send,Z,E> Step2<X> for StepSequence2<X,Y,Z,E> where Y: 'static, Z: 'static, E: 'static {
     type Output = Result<Z,E>;
 
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Z,E>>> {
+    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Z,E>>> {
         Box::new(StepSequenceRun {
             task_control: task_control.clone(),
             one: task_control.new_step(&mut self.one.lock().unwrap(),input),

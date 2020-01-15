@@ -34,7 +34,7 @@ impl Executor {
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
     // XXX only add from main thread (via action)
-    pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,Output=()> + 'static + Send, X: Send + 'static {
+    pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,Output=()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
         let mut control = TaskControl::new(run_config,&mut self.actions,&handle,&self.integration);
@@ -296,7 +296,7 @@ mod test {
         let z = StepParallel::new(vec![Box::new(t1),Box::new(t2)]);
         /* drop success */
         let z = StepBranch::new(z,BlindStep::new(()),BlindStep::new(()));
-        let mut tc = x.add(z,&(),&cfg,"test");
+        let mut tc = x.add(z,(),&cfg,"test");
         x.tick(10.);
         integration.set_time(5.);
         x.tick(10.);
@@ -473,7 +473,7 @@ mod test {
         let p = StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]);
         let p = StepSequenceSimple::new(p,BlindStep::new(()));
         b.no_auto();
-        let mut tc = x.add(p,&(),&cfg,"test");
+        let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */
         x.tick(10.);
         x.tick(10.);

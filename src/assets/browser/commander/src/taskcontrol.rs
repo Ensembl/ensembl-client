@@ -86,7 +86,7 @@ impl TaskControl {
 
     // XXX demut
     /* running steps */
-    pub fn new_step<X,R>(&mut self, step: &mut Box<dyn Step2<X,Output=R>>, input: &X) -> StepRunner<R> where {
+    pub fn new_step<X,R>(&mut self, step: &mut Box<dyn Step2<X,Output=R>>, input: X) -> StepRunner<R> where {
         let run = step.start(input,self);
         StepRunner::new(run,self)
     }

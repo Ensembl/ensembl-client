@@ -34,11 +34,11 @@ impl<R> StepRun for FutureRun<R> where R: Clone {
 }
 
 pub struct FutureStep<X,R> {
-    generator: Box<FnMut(&X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send>
+    generator: Box<FnMut(X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send>
 }
 
 impl<X,R> FutureStep<X,R> {
-    pub fn new<T>(generator: T) -> FutureStep<X,R> where R: 'static + Send + Clone, T: FnMut(&X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send + 'static {
+    pub fn new<T>(generator: T) -> FutureStep<X,R> where R: 'static + Send + Clone, T: FnMut(X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send + 'static {
         FutureStep {
             generator: Box::new(generator)
         }
@@ -48,7 +48,7 @@ impl<X,R> FutureStep<X,R> {
 impl<X,R> Step2<X> for FutureStep<X,R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, input: &X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, input: X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         let future = (self.generator)(input);
         Box::new(FutureRun(future))
     }
@@ -71,14 +71,14 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let f = FutureStep::new(|x: &u32| { let x=*x; Box::pin(async move { 
+        let f = FutureStep::new(|x: u32| { Box::pin(async move { 
             async_sleep(Duration::from_millis(100)).await;
             (2+x) as u32 }) 
         });
         let out = Arc::new(Mutex::new(0));
         let z = TestExtractorStep(out.clone());
         let f = StepSequenceSimple::new(f,z);
-        let tc = x.add(f,&2,&cfg,"test");
+        let tc = x.add(f,2,&cfg,"test");
         x.tick(10.);
         assert!(!tc.is_finished());
         sleep(Duration::from_millis(200));

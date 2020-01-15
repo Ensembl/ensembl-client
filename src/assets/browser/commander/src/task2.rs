@@ -16,7 +16,7 @@ pub(crate) trait Task2 {
 }
 
 impl Task2Impl {
-    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=()>>, input: &X, run_config: &RunConfig, task_control: &mut TaskControl, name: &str) -> Task2Impl where X: Send {
+    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=()>>, input: X, run_config: &RunConfig, task_control: &mut TaskControl, name: &str) -> Task2Impl where X: Send {
         let runner : StepRunner<()> = task_control.new_step(step,input);
         Task2Impl {
             runner,

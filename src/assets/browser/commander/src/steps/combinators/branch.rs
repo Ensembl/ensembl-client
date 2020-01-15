@@ -34,7 +34,7 @@ struct BranchRun<X,Y,Z,E> {
 impl<X,Y,Z,E> Step2<X> for StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
     type Output = Z;
 
-    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
+    fn start(&mut self, input: X, control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
         Box::new(BranchRun {
             step: StepBranch(self.0.clone()),
             main: control.new_step(&mut self.0.lock().unwrap().main,input),
@@ -55,11 +55,11 @@ impl<X,Y,Z,E> StepRun for BranchRun<X,Y,Z,E> {
         } else {
             match self.main.more() {
                 StepState2::Done(Ok(v)) => {
-                    self.success = Some(control.new_step(&mut self.step.0.lock().unwrap().success,&v));
+                    self.success = Some(control.new_step(&mut self.step.0.lock().unwrap().success,v));
                     return StepState2::Ongoing(OngoingState::Again);
                 },
                 StepState2::Done(Err(e)) => {
-                    self.failure = Some(control.new_step(&mut self.step.0.lock().unwrap().failure,&e));
+                    self.failure = Some(control.new_step(&mut self.step.0.lock().unwrap().failure,e));
                     return StepState2::Ongoing(OngoingState::Again);
                 },
                 StepState2::Ongoing(OngoingState::Again) => StepState2::Ongoing(OngoingState::Again),

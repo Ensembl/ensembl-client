@@ -51,12 +51,13 @@ impl<X,Y: Send,E> StepParallel<X,Y,E> {
     }
 }
 
-impl<X,Y,E> Step2<X> for StepParallel<X,Y,E> where Y: 'static + Send, E: 'static {
+// XXX use references
+impl<X,Y,E> Step2<X> for StepParallel<X,Y,E> where X: Clone, Y: 'static + Send, E: 'static {
     type Output = Result<Vec<Y>,E>;
 
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Vec<Y>,E>>> {
+    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Vec<Y>,E>>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
-            (Box::new(task_control.new_step(step,input)),None)
+            (Box::new(task_control.new_step(step,input.clone())),None)
         }).collect();
         Box::new(StepParallelRun {
             steps: Arc::new(Mutex::new(steps))
@@ -109,7 +110,7 @@ mod test {
         let p = StepParallel::new(vec![Box::new(a),Box::new(b),Box::new(c)]);
         let p = StepBranch::new(p,NoopStep::new(),BlindStep::new(vec![]));
         let p = StepSequenceSimple::new(p,z);
-        let mut tc = x.add(p,&(),&cfg,"test");
+        let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
             x.tick(10.);
@@ -149,7 +150,7 @@ mod test {
         let p : StepParallel<(),_,_> = StepParallel::new(vec![Box::new(a),Box::new(b)]);
         let p = StepBranch::new(p,BlindStep::new(23),NoopStep::new());
         let p = StepSequenceSimple::new(p,z);
-        let tc = x.add(p,&(),&cfg,"test");
+        let tc = x.add(p,(),&cfg,"test");
         x.tick(10.);
         assert!(!tc.is_finished());
         x.tick(10.);

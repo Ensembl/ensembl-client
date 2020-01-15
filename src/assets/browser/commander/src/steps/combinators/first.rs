@@ -38,12 +38,13 @@ impl<X,R> StepFirst<X,R> where R: Send {
     }
 }
 
-impl<X,R> Step2<X> for StepFirst<X,R> where R: Send + 'static {
+// XXX use references
+impl<X,R> Step2<X> for StepFirst<X,R> where R: Send + 'static, X: Clone {
     type Output = R;
 
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
-            Box::new(task_control.new_step(step,input))
+            Box::new(task_control.new_step(step,input.clone()))
         }).collect();
         Box::new(StepFirstRun {
             steps: Arc::new(Mutex::new(steps))

@@ -56,7 +56,7 @@ impl<X,R> TimeoutStep2<X,R> where X: Send, R: Send + 'static {
 impl<X,R> Step2<X> for TimeoutStep2<X,R> where X: Send, R: 'static {
     type Output = R;
 
-    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, _input: X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(Timeout2Run {
             timeout: self.timeout,
             expired: Arc::new(Mutex::new(false)),
@@ -83,7 +83,7 @@ mod test {
         (TestExtractorStep(var.clone()),var)
     }
 
-    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: &X) -> bool where T: Step2<X,Output=Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
+    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: X) -> bool where T: Step2<X,Output=Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
         let v1 = BlindStep::new(1);

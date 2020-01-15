@@ -24,7 +24,7 @@ impl<R> NoopStep<R> {
 impl<R> Step2<R> for NoopStep<R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, input: &R, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, input: R, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(NoopRun(input.clone()))
     }
 }
@@ -50,7 +50,7 @@ impl<R> BlindStep<R> {
 impl<X,R> Step2<X> for BlindStep<R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, _input: &X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, _input: X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(BlindRun(self.0.clone())) // XXX noclone
     }
 }
