@@ -56,14 +56,16 @@ impl CommanderIntegration2 for TestIntegration {
 
 #[derive(Clone)]
 pub struct TestExtract<T>(pub Arc<Mutex<T>>);
-impl<T> StepRun<()> for TestExtract<T> {
+impl<T> StepRun for TestExtract<T> {
+    type Output = ();
+
     fn more(&mut self, _control: &mut TaskControl) -> StepState2<()> {
         StepState2::Done(())
     }
 }
 
 impl<T> Step2<T,()> for TestExtract<T> where T: Send+Clone+'static {
-    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<()>> {
+    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<Output=()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
     }
@@ -130,12 +132,14 @@ impl<R> TestStep<R> {
 }
 
 impl<X,R> Step2<X,R> for TestStep<R> where R: Clone+Send+'static {
-    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<R>> {
+    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(self.clone())
     }
 }
 
-impl<R> StepRun<R> for TestStep<R> where R: Clone+'static {
+impl<R> StepRun for TestStep<R> where R: Clone+'static {
+    type Output = R;
+
     fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
         let mut state = self.state.lock().unwrap();
         /* forever blocks */
@@ -176,14 +180,16 @@ impl<R> StepRun<R> for TestStep<R> where R: Clone+'static {
 
 #[derive(Clone)]
 pub struct TestExtractorStep<T>(pub Arc<Mutex<T>>);
-impl<T> StepRun<()> for TestExtractorStep<T> {
+impl<T> StepRun for TestExtractorStep<T> {
+    type Output = ();
+
     fn more(&mut self, _control: &mut TaskControl) -> StepState2<()> {
         StepState2::Done(())
     }
 }
 
 impl<T> Step2<T,()> for TestExtractorStep<T> where T: Send+Clone+'static {
-    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<()>> {
+    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<Output=()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
     }

@@ -2,12 +2,14 @@ use crate::block::Block;
 use crate::taskcontrol::TaskControl;
 use crate::step::{ StepState2, OngoingState };
 
-pub trait StepRun<R> {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<R>;
+pub trait StepRun {
+    type Output;
+
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<Self::Output>;
 }
 
 pub struct StepRunner<R> {
-    run: Box<dyn StepRun<R>>,
+    run: Box<dyn StepRun<Output=R>>,
     control: TaskControl,
     blocked_on: Option<Block>,
     blocked_on_tick: Option<u64>,
@@ -16,7 +18,7 @@ pub struct StepRunner<R> {
 }
 
 impl<R> StepRunner<R> {
-    pub(crate) fn new(run: Box<dyn StepRun<R>>, task_control: &TaskControl) -> StepRunner<R> {
+    pub(crate) fn new(run: Box<dyn StepRun<Output=R>>, task_control: &TaskControl) -> StepRunner<R> {
         StepRunner {
             run,
             control: task_control.clone(),

@@ -32,7 +32,7 @@ struct BranchRun<X,Y,Z,E> {
 }
 
 impl<X,Y,Z,E> Step2<X,Z> for StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
-    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Z>> {
+    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
         Box::new(BranchRun {
             step: StepBranch(self.0.clone()),
             main: control.new_step(&mut self.0.lock().unwrap().main,input),
@@ -42,7 +42,9 @@ impl<X,Y,Z,E> Step2<X,Z> for StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X
     }
 }
 
-impl<X,Y,Z,E> StepRun<Z> for BranchRun<X,Y,Z,E> {
+impl<X,Y,Z,E> StepRun for BranchRun<X,Y,Z,E> {
+    type Output = Z;
+
     fn more(&mut self, control: &mut TaskControl) -> StepState2<Z> {
         if let Some(ref mut run) = self.success {
             run.more()

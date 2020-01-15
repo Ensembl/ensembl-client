@@ -5,7 +5,9 @@ use crate::taskcontrol::TaskControl;
 
 struct NoopRun<Y>(Y);
 
-impl<R> StepRun<R> for NoopRun<R> where R: Clone {
+impl<R> StepRun for NoopRun<R> where R: Clone {
+    type Output = R;
+
     fn more(&mut self, _control: &mut TaskControl) -> StepState2<R> {
         StepState2::Done(self.0.clone())
     }
@@ -20,14 +22,16 @@ impl<R> NoopStep<R> {
 }
 
 impl<R> Step2<R,R> for NoopStep<R> where R: 'static + Send + Clone {
-    fn start(&mut self, input: &R, _task_control: &mut TaskControl) -> Box<dyn StepRun<R>> {
+    fn start(&mut self, input: &R, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(NoopRun(input.clone()))
     }
 }
 
 struct BlindRun<R>(R);
 
-impl<R> StepRun<R> for BlindRun<R> where R: Clone {
+impl<R> StepRun for BlindRun<R> where R: Clone {
+    type Output = R;
+
     fn more(&mut self, _control: &mut TaskControl) -> StepState2<R> {
         StepState2::Done(self.0.clone())
     }
@@ -42,7 +46,7 @@ impl<R> BlindStep<R> {
 }
 
 impl<X,R> Step2<X,R> for BlindStep<R> where R: 'static + Send + Clone {
-    fn start(&mut self, _input: &X, _task_control: &mut TaskControl) -> Box<dyn StepRun<R>> {
+    fn start(&mut self, _input: &X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(BlindRun(self.0.clone())) // XXX noclone
     }
 }

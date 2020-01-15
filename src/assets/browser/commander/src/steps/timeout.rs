@@ -11,7 +11,9 @@ struct Timeout2Run<R> {
     errorgen: Arc<Mutex<Box<dyn Fn() -> R + Send>>>
 }
 
-impl<R> StepRun<R> for Timeout2Run<R> {
+impl<R> StepRun for Timeout2Run<R> {
+    type Output = R;
+
     fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
         if *self.expired.lock().unwrap() {
             let err = (self.errorgen.lock().unwrap())();
@@ -52,7 +54,7 @@ impl<X,R> TimeoutStep2<X,R> where X: Send, R: Send + 'static {
 }
 
 impl<X,R> Step2<X,R> for TimeoutStep2<X,R> where X: Send, R: 'static {
-    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<R>> {
+    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(Timeout2Run {
             timeout: self.timeout,
             expired: Arc::new(Mutex::new(false)),

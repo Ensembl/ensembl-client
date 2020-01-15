@@ -11,7 +11,9 @@ struct StepParallelRun<Y,E> where Y: Send {
     steps: Arc<Mutex<Vec<(Box<StepRunner<Result<Y,E>>>,Option<Y>)>>>
 }
 
-impl<Y,E> StepRun<Result<Vec<Y>,E>> for StepParallelRun<Y,E> where Y: Send {
+impl<Y,E> StepRun for StepParallelRun<Y,E> where Y: Send {
+    type Output = Result<Vec<Y>,E>;
+
     fn more(&mut self, control: &mut TaskControl) -> StepState2<Result<Vec<Y>,E>> {
         /* Advance */
         let mut done = true;
@@ -50,7 +52,7 @@ impl<X,Y: Send,E> StepParallel<X,Y,E> {
 }
 
 impl<X,Y,E> Step2<X,Result<Vec<Y>,E>> for StepParallel<X,Y,E> where Y: 'static + Send, E: 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Result<Vec<Y>,E>>> {
+    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Vec<Y>,E>>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             (Box::new(task_control.new_step(step,input)),None)
         }).collect();

@@ -11,7 +11,9 @@ struct StepFirstRun<R> where R: Send {
     steps: Arc<Mutex<Vec<Box<StepRunner<R>>>>>
 }
 
-impl<R> StepRun<R> for StepFirstRun<R> where R: Send {
+impl<R> StepRun for StepFirstRun<R> where R: Send {
+    type Output = R;
+
     fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
         let mut out = OngoingState::Dead;
         for runner in self.steps.lock().unwrap().iter_mut() {
@@ -37,7 +39,7 @@ impl<X,R> StepFirst<X,R> where R: Send {
 }
 
 impl<X,R> Step2<X,R> for StepFirst<X,R> where R: Send + 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<R>> {
+    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             Box::new(task_control.new_step(step,input))
         }).collect();

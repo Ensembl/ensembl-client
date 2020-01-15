@@ -10,7 +10,9 @@ struct StepSequenceSimpleRun<Y,Z> {
     two: Option<StepRunner<Z>>
 }
 
-impl<Y,Z> StepRun<Z> for StepSequenceSimpleRun<Y,Z> {
+impl<Y,Z> StepRun for StepSequenceSimpleRun<Y,Z> {
+    type Output = Z;
+
     fn more(&mut self, _control: &mut TaskControl) -> StepState2<Z> {
         if let Some(two) = &mut self.two {
             two.more()
@@ -46,7 +48,7 @@ impl<X,Y: Send,Z> StepSequenceSimple<X,Y,Z> {
 }
 
 impl<X,Y: Send,Z> Step2<X,Z> for StepSequenceSimple<X,Y,Z> where Y: 'static, Z: 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Z>> {
+    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
         Box::new(StepSequenceSimpleRun {
             task_control: task_control.clone(),
             one: task_control.new_step(&mut self.one.lock().unwrap(),input),
