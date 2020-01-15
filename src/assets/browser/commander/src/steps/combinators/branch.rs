@@ -67,6 +67,7 @@ impl<X,Y,Z,E,F> StepRun<Z,F> for BranchRun<X,Y,Z,E,F> {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -74,59 +75,21 @@ mod test {
     use crate::executor::Executor;
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-
-    #[derive(Clone)]
-    pub struct FakeIntegration(Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { self.0.lock().unwrap().0 }
-        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().1.push(quantity); }
-    }
-
-    struct FakeStep3<Y,E>(FakeStepRun3<Y,E>) where Y: Clone, E: Clone;
-    impl<Y,E> Step2<(),Y,E> for FakeStep3<Y,E> where Y: Send+Clone+'static, E: Send+Clone+'static {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
-            Box::new(self.0.clone())
-        }
-    }
-
-    // XXX replace fakestep
-    #[derive(Clone)]
-    struct FakeStepRun3<Y: Clone, E: Clone>(Result<Y,E>);
-
-    impl<Y,E> StepRun<Y,E> for FakeStepRun3<Y,E> where Y: Clone, E: Clone {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
-            StepState2::Done(self.0.clone())
-        }
-    }
-
-    #[derive(Clone)]
-    struct FakeStepExtract<T>(Arc<Mutex<T>>);
-    impl<T> StepRun<(),()> for FakeStepExtract<T> {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            StepState2::Done(Ok(()))
-        }
-    }
-
-    impl<T> Step2<T,(),()> for FakeStepExtract<T> where T: Send+Clone+'static {
-        fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            *self.0.lock().unwrap() = input.clone();
-            Box::new(self.clone())
-        }
-    }
+    use crate::testintegration::{ TestIntegration, TestExtractorStep };
+    use crate::steps::noop::BlindStep;
 
     fn flip<X>(init: X) -> (impl Step2<X,(),()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
-        (FakeStepExtract(var.clone()),var)
+        (TestExtractorStep(var.clone()),var)
     }
 
     fn smoke_test(v: Result<u32,u32>) -> (u32,u32) {
         /* setup */
-        let mut now = Arc::new(Mutex::new((0.,Vec::new())));
-        let integration = FakeIntegration(now.clone());
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         /* setup job to succeed */
-        let mut a = FakeStep3(FakeStepRun3(v));
+        let mut a = BlindStep::new(v);
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
         let b = StepBranch::new(a,y,e);

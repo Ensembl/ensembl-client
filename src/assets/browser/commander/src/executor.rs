@@ -31,6 +31,8 @@ impl Executor {
         }
     }
 
+    pub fn get_tick_index(&self) -> u64 { self.tick_index }
+
     // XXX only add from main thread (via action)
     pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,(),()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
@@ -151,32 +153,15 @@ mod test {
     use crate::steps::noop::BlindStep;
     use crate::steps::combinators::branch::StepBranch;
 
-    struct FakeStep(FakeStepRun);
-    impl Step2<(),()> for FakeStep {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            Box::new(self.0.clone())
-        }
-    }
-
-    #[derive(Clone)]
-    struct FakeStepRun(i32);
-    impl StepRun<(),()> for FakeStepRun {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            if self.0 < 0 {
-                self.0 += 1;
-                return StepState2::Ongoing(OngoingState::Block(control.block()));
-            }
-            self.0 += 1;
-            if self.0 < 2 { StepState2::Ongoing(OngoingState::Again) } else { StepState2::Done(Ok(())) }
-        }
-    }
-
     #[test]
     pub fn test_executor_smoke() {
-        let integration = TestIntegration::new();
-        let mut x = Executor::new(integration);
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let tc = x.add(FakeStep(FakeStepRun(0)),&(),&cfg,"test");
+        let tc = x.add(integration.new_step(vec![
+            TestState::Again,
+            TestState::Done(Ok(())),
+        ]),&(),&cfg,"test");
         assert!(!tc.is_finished());
         x.run();
         assert!(!tc.is_finished());
@@ -210,7 +195,8 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(1.));
-        let mut tc = x.add(FakeStep(FakeStepRun(0)),&(),&cfg,"test");
+        let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(Ok(()))]);
+        let mut tc = x.add(step,&(),&cfg,"test");
         integration.set_time(10.);
         x.run();
         assert!(tc.is_finished());

@@ -70,40 +70,7 @@ mod test {
     use crate::timer::TimerSet;
     use crate::stepcontrol::StepControl;
     use crate::step::StepRun;
-
-    pub struct FakeIntegration();
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { 0. }
-        fn sleep(&mut self, amount: SleepQuantity) {}
-    }
-
-    #[derive(Clone)]
-    struct FakeStepRun(i32);
-    impl StepRun<(),()> for FakeStepRun {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            if self.0 < 0 {
-                self.0 += 1;
-                let mut b = control.block();
-                b.unblock();
-                return StepState2::Ongoing(OngoingState::Block(b));
-            }
-            self.0 += 1;
-            if self.0 == 1 {
-                control.task_control().add_timer(0.,||{});
-            }
-            match self.0 {
-                1|2 => StepState2::Ongoing(OngoingState::Again),
-                _ => StepState2::Done(Ok(()))
-            }
-        }
-    }
-
-    struct FakeStep(FakeStepRun);
-    impl Step2<(),()> for FakeStep {
-        fn start(&mut self, input: &(), task_control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            Box::new(self.0.clone())
-        }
-    }
+    use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
     pub fn test_task_smoke() {
@@ -113,8 +80,13 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(FakeIntegration()));
-        let s1 = FakeStep(FakeStepRun(0));
+        let mut integration = TestIntegration::new();
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(integration.clone()));
+        let mut s1 = integration.new_step(vec![
+            TestState::Again,
+            TestState::Done(Ok(()))
+        ]);
+        s1.block_for(1.);
         let mut tc2 = tc.clone();
         let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<(),()>>),&(),&cfg,&mut tc2,"test");
         /* simple accessors */
@@ -128,14 +100,11 @@ mod test {
         assert!(!tc.is_finished());
         /* check for tick action in one of those two runs */
         let actions = eah.drain();
-        assert_eq!(1,actions.len());
+        assert_eq!(3,actions.len());
         if let ExecutorAction::Timer(_,_,_) = actions[0] {
         } else {
             assert!(false);
         }
-        /* finish */
-        t.run(0);
-        assert!(tc.is_finished());
     }
 
     #[test]
@@ -145,9 +114,13 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let timers = TimerSet::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(FakeIntegration()));
-        let s1 = FakeStep(FakeStepRun(-1));
+        let mut timers = TimerSet::new();
+        let mut integration = TestIntegration::new();
+        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(integration.clone()));
+        let mut s1 = integration.new_step(vec![
+            TestState::Done(Ok(()))
+        ]);
+        s1.block_for(0.);
         let mut tc2 = tc.clone();
         let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<(),()>>),&(),&cfg,&mut tc2,"test");
         /* test */

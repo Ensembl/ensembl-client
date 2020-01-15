@@ -103,21 +103,16 @@ impl ReenteringIntegration {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
-
-    pub struct FakeIntegration(Arc<Mutex<Vec<SleepQuantity>>>);
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { 4. }
-        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().push(quantity); }
-    }
+    use crate::testintegration::TestIntegration;
 
     #[test]
     pub fn test_sleep_catcher() {
-        let mut sleeps = Arc::new(Mutex::new(Vec::new()));
-        let mut sc = SleepCatcherIntegration::new(FakeIntegration(sleeps.clone()));
-        assert_eq!(4.,sc.current_time());
+        let mut integration = TestIntegration::new();
+        let mut sc = SleepCatcherIntegration::new(integration.clone());
         sc.sleep(SleepQuantity::None); /* pushed (new) */
         sc.sleep(SleepQuantity::None); /* not pushed (copy) */
         sc.sleep(SleepQuantity::Forever); /* pushed (different) */
@@ -128,7 +123,7 @@ mod test {
         sc.sleep(SleepQuantity::Time(1.)); /* pushed (different) */
         sc.sleep(SleepQuantity::Forever); /* pushed (different) */
         sc.sleep(SleepQuantity::Forever); /* not pushed (copy) */
-        assert_eq!(*sleeps.lock().unwrap(),vec![
+        assert_eq!(*integration.get_sleeps(),vec![
             SleepQuantity::None,
             SleepQuantity::Forever,
             SleepQuantity::None,
@@ -141,8 +136,8 @@ mod test {
     }
 
     pub fn test_one_shot() {
-        let mut sleeps = Arc::new(Mutex::new(Vec::new()));
-        let mut sc = ReenteringIntegration::new(FakeIntegration(sleeps.clone()));
+        let mut integration = TestIntegration::new();
+        let mut sc = ReenteringIntegration::new(integration.clone());
         assert_eq!(4.,sc.current_time());
         sc.sleep(SleepQuantity::None); /* push SleepQuantity::None */
         sc.sleep(SleepQuantity::Time(1.)); /* push SleepQuantity::Time(1.) */
@@ -156,7 +151,7 @@ mod test {
         sc.cause_reentry(); /* duplicate caught */
         sc.reentering();
         sc.sleep(SleepQuantity::Forever); /* push SleepQuantity::Forever */
-        assert!(*sleeps.lock().unwrap() == vec![
+        assert_eq!(*integration.get_sleeps(),vec![
             SleepQuantity::None,
             SleepQuantity::Time(1.),
             SleepQuantity::None,

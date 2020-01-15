@@ -57,58 +57,30 @@ impl<X,Y: Send,Z,E> Step2<X,Z,E> for StepSequence2<X,Y,Z,E> where Y: 'static, Z:
     }
 }
 
-
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
     use crate::executor::Executor;
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-
-    #[derive(Clone)]
-    pub struct FakeIntegration(Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { self.0.lock().unwrap().0 }
-        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().1.push(quantity); }
-    }
-
-    struct FakeStep2(FakeStepRun2);
-    impl Step2<(),()> for FakeStep2 {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            Box::new(self.0.clone())
-        }
-    }
-
-    // XXX replace fakestep
-    #[derive(Clone)]
-    struct FakeStepRun2(Vec<StepState2<(),()>>,Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
-    impl StepRun<(),()> for FakeStepRun2 {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            self.1.lock().unwrap().0 += 1.;
-            if self.0.len() > 0 {
-                self.0.remove(0)
-            } else {
-                StepState2::Done(Ok(()))
-            }
-        }
-    }
+    use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
     pub fn test_sequence_smoke() {
         /* setup */
-        let now = Arc::new(Mutex::new((0.,Vec::new())));
-        let integration = FakeIntegration(now.clone());
+        let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = FakeStep2(FakeStepRun2(vec![
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Done(Ok(()))
-        ],now.clone()));
-        let mut b = FakeStep2(FakeStepRun2(vec![
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Done(Ok(()))
-        ],now.clone()));
+        let mut a = integration.new_step(vec![
+            TestState::Tick,
+            TestState::Tick,
+            TestState::Done(Ok(()))
+        ]);
+        let mut b = integration.new_step(vec![
+            TestState::Tick,
+            TestState::Done(Ok(()))
+        ]);
         let mut tc = x.add(StepSequence2::new(a,b),&(),&cfg,"test");
         x.tick(10.);
         assert!(!tc.is_finished());

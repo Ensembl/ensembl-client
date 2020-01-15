@@ -62,6 +62,7 @@ impl<X,Y,E> Step2<X,Y,E> for TimeoutStep2<X,E> where X: Send, E: 'static {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -70,77 +71,20 @@ mod test {
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::steps::combinators::sequence::StepSequence2;
     use crate::steps::combinators::branch::StepBranch;
-
-    #[derive(Clone)]
-    pub struct FakeIntegration(Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { self.0.lock().unwrap().0 }
-        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().1.push(quantity); }
-    }
-
-    struct FakeStep2(FakeStepRun2);
-    impl Step2<(),()> for FakeStep2 {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            Box::new(self.0.clone())
-        }
-    }
-
-    // XXX replace fakestep
-    #[derive(Clone)]
-    struct FakeStepRun2(Vec<StepState2<(),()>>,Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
-    impl StepRun<(),()> for FakeStepRun2 {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            self.1.lock().unwrap().0 += 1.;
-            if self.0.len() > 0 {
-                self.0.remove(0)
-            } else {
-                StepState2::Done(Ok(()))
-            }
-        }
-    }
-
-    #[derive(Clone)]
-    struct FakeStepExtract<T>(Arc<Mutex<T>>);
-    impl<T> StepRun<(),()> for FakeStepExtract<T> {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            StepState2::Done(Ok(()))
-        }
-    }
-
-    impl<T> Step2<T,(),()> for FakeStepExtract<T> where T: Send+Clone+'static {
-        fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            *self.0.lock().unwrap() = input.clone();
-            Box::new(self.clone())
-        }
-    }
+    use crate::steps::noop::BlindStep;
+    use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
     fn flip<X>(init: X) -> (impl Step2<X,(),()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
-        (FakeStepExtract(var.clone()),var)
-    }
-
-    struct FakeStep3<Y,E>(FakeStepRun3<Y,E>) where Y: Clone, E: Clone;
-    impl<X,Y,E> Step2<X,Y,E> for FakeStep3<Y,E> where Y: Send+Clone+'static, E: Send+Clone+'static {
-        fn start(&mut self, input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
-            Box::new(self.0.clone())
-        }
-    }
-
-    #[derive(Clone)]
-    struct FakeStepRun3<Y: Clone, E: Clone>(Result<Y,E>);
-
-    impl<Y,E> StepRun<Y,E> for FakeStepRun3<Y,E> where Y: Clone, E: Clone {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
-            StepState2::Done(self.0.clone())
-        }
+        (TestExtractorStep(var.clone()),var)
     }
 
     fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: &X) -> bool where T: Step2<X,Y,E> + 'static, X: 'static + Send, Y: 'static, E: 'static {
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
-        let v1 = FakeStep3(FakeStepRun3(Ok(1)));
+        let v1 = BlindStep::new(Ok(1));
         let y = StepSequence2::new(v1,y);
-        let v2 = FakeStep3(FakeStepRun3(Ok(1)));
+        let v2 = BlindStep::new(Ok(1));
         let e = StepSequence2::new(v2,e);
         let b = StepBranch::new(a,y,e);
         let cfg = RunConfig::new(None,3,None);
@@ -160,21 +104,19 @@ mod test {
 
     pub fn timeout_smoke(timeout: bool) {
         /* setup */
-        let mut now = Arc::new(Mutex::new((0.,Vec::new())));
-        let integration = FakeIntegration(now.clone());
+        let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut cmds = vec![
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Ongoing(OngoingState::Tick),
-            StepState2::Done(Ok(()))
+            TestState::Tick,
+            TestState::Tick,
+            TestState::Done(Ok(()))
         ];
         if timeout {
-            cmds.insert(0,StepState2::Ongoing(OngoingState::Tick));
+            cmds.insert(0,TestState::Tick);
         }
 
-        let mut b = FakeStep2(FakeStepRun2(cmds,now.clone()));
-        now.lock().unwrap().0 = 0.;
+        let mut b = integration.new_step(cmds);
         let b = TimeoutStep2::new_wrapped(3.,Box::new(b),|| ());
         assert!(find_branch(&mut x, b,&()) || timeout);
     }

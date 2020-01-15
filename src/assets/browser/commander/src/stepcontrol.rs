@@ -60,6 +60,7 @@ impl StepControl {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -69,12 +70,7 @@ mod test {
     use crate::executoraction::ExecutorActionHandle;
     use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
     use crate::timer::TimerSet;
-
-    pub struct FakeIntegration(Arc<Mutex<f64>>);
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { *self.0.lock().unwrap() }
-        fn sleep(&mut self, amount: SleepQuantity) {}
-    }
+    use crate::testintegration::TestIntegration;
 
     #[test]
     pub fn test_block_on_tick() {
@@ -84,7 +80,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         let mut sc = StepControl::new(&tc);
         assert!(sc.check_tick(0));
@@ -102,7 +98,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         let mut sc = StepControl::new(&tc);
         assert!(sc.get_blocker().is_none());

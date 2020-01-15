@@ -1,7 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
 use crate::step::Step2;
-use crate::block::Block;
 use crate::blocker::Blocker;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::ReenteringIntegration;
@@ -110,6 +109,7 @@ impl TaskControl {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -118,39 +118,20 @@ mod test {
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::stepcontrol::StepControl;
     use crate::step::{ Step2, StepState2, OngoingState, StepRun };
-
-    pub struct FakeIntegration(Arc<Mutex<f64>>);
-    impl CommanderIntegration2 for FakeIntegration {
-        fn current_time(&mut self) -> f64 { *self.0.lock().unwrap() }
-        fn sleep(&mut self, amount: SleepQuantity) {}
-    }
-
-    #[derive(Clone)]
-    struct FakeStepRun();
-    impl StepRun<(),()> for FakeStepRun {
-        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
-            StepState2::Ongoing(OngoingState::Block(control.block()))
-        }
-    }
-
-    struct FakeStep(FakeStepRun);
-    impl Step2<(),()> for FakeStep {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
-            Box::new(self.0.clone())
-        }
-    }
+    use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
     pub fn test_control_timers() {
         /* setup */
         let time = Arc::new(Mutex::new(0.));
-        let integration = FakeIntegration(time.clone());
-        let mut x = Executor::new(integration);
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let mut tc = x.add(FakeStep(FakeStepRun()),&(),&cfg,"test");
+        let mut step = integration.new_step(vec![TestState::Done(Ok(()))]);
+        let mut tc = x.add(step.clone(),&(),&cfg,"test");
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
@@ -170,7 +151,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
         /* test */
         assert!(!tc.is_finished());
@@ -194,18 +175,12 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
+        let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
 
 
         // XXX todo
 
-    }
-
-    pub struct FakeIntegration2(Arc<Mutex<Vec<SleepQuantity>>>);
-    impl CommanderIntegration2 for FakeIntegration2 {
-        fn current_time(&mut self) -> f64 { 4. }
-        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().push(quantity); }
     }
 
     #[test]
@@ -216,8 +191,8 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut sleeps = Arc::new(Mutex::new(Vec::new()));
-        let mut integration = ReenteringIntegration::new(FakeIntegration2(sleeps.clone()));
+        let mut ti = TestIntegration::new();
+        let mut integration = ReenteringIntegration::new(ti.clone());
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
@@ -229,7 +204,7 @@ mod test {
             SleepQuantity::Time(1.),
             SleepQuantity::None,
             SleepQuantity::Time(3.)
-        ],*sleeps.lock().unwrap());
+        ],*ti.get_sleeps());
     }
 
     #[test]
@@ -240,16 +215,16 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let timers = TimerSet::new();
-        let mut sleeps = Arc::new(Mutex::new(Vec::new()));
-        let mut integration = ReenteringIntegration::new(FakeIntegration2(sleeps.clone()));
+        let mut ti = TestIntegration::new();
+        let mut integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
         tc.finish_internal(None);
-        assert_eq!(sleeps.lock().unwrap().len(),0);
+        assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
         tc.finish(None);
-        assert_eq!(vec![SleepQuantity::None],*sleeps.lock().unwrap());
+        assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
     }
 }

@@ -10,7 +10,7 @@ pub(crate) enum TestState<Y,E> {
     Again,
     Tick,
     Block,
-    Done(Result<Y,E>)
+    Done(Result<Y,E>),
 }
 
 impl<Y,E> TestState<Y,E> where Y: Clone, E: Clone {
@@ -104,10 +104,9 @@ impl<Y,E> TestStep<Y,E> {
         self.state.lock().unwrap().pending_forever_block = true;
     }
 
-    pub(crate) fn forever_unblock(&mut self, tc: &mut TaskControl) {
+    pub(crate) fn forever_unblock(&mut self, _tc: &mut TaskControl) {
         let mut state = self.state.lock().unwrap();
         if let Some(ref mut blocker) = state.current_forever_block {
-            print!("BLOCKER UNBLOCK\n");
             blocker.unblock();
         }
         state.current_forever_block = None;
@@ -150,9 +149,13 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
         if let Some(until) = state.block_for {
             let b = control.block();
             let mut b2 = b.clone();
-            control.task_control().add_timer(until, move || {
+            if until > 0. {
+                control.task_control().add_timer(until, move || {
+                    b2.unblock();
+                });
+            } else {
                 b2.unblock();
-            });
+            }
             state.block_for = None;
             return StepState2::Ongoing(OngoingState::Block(b));
         }
@@ -171,3 +174,17 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
     }
 }
 
+#[derive(Clone)]
+pub struct TestExtractorStep<T>(pub Arc<Mutex<T>>);
+impl<T> StepRun<(),()> for TestExtractorStep<T> {
+    fn more(&mut self, _control: &mut StepControl) -> StepState2<(),()> {
+        StepState2::Done(Ok(()))
+    }
+}
+
+impl<T> Step2<T,(),()> for TestExtractorStep<T> where T: Send+Clone+'static {
+    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+        *self.0.lock().unwrap() = input.clone();
+        Box::new(self.clone())
+    }
+}
