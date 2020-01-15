@@ -6,15 +6,15 @@ use crate::taskcontrol::TaskControl;
 use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
 #[derive(Clone)] // XXX test only
-pub(crate) enum TestState<Y,E> {
+pub(crate) enum TestState<R> {
     Again,
     Tick,
     Block,
-    Done(Result<Y,E>),
+    Done(R),
 }
 
-impl<Y,E> TestState<Y,E> where Y: Clone, E: Clone {
-    fn step_state(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
+impl<R> TestState<R> where R: Clone {
+    fn step_state(&mut self, control: &mut TaskControl) -> StepState2<R> {
         match self {
             TestState::Again => StepState2::Ongoing(OngoingState::Again),
             TestState::Tick => StepState2::Ongoing(OngoingState::Tick),
@@ -39,7 +39,7 @@ impl TestIntegration {
         }
     }
 
-    pub(crate) fn new_step<Y,E>(&mut self, results: Vec<TestState<Y,E>>) -> TestStep<Y,E> {
+    pub(crate) fn new_step<R>(&mut self, results: Vec<TestState<R>>) -> TestStep<R> {
         TestStep::new(results,&self.timer)
     }
 
@@ -56,14 +56,14 @@ impl CommanderIntegration2 for TestIntegration {
 
 #[derive(Clone)]
 pub struct TestExtract<T>(pub Arc<Mutex<T>>);
-impl<T> StepRun<(),()> for TestExtract<T> {
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<(),()> {
-        StepState2::Done(Ok(()))
+impl<T> StepRun<()> for TestExtract<T> {
+    fn more(&mut self, _control: &mut TaskControl) -> StepState2<()> {
+        StepState2::Done(())
     }
 }
 
-impl<T> Step2<T,(),()> for TestExtract<T> where T: Send+Clone+'static {
-    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+impl<T> Step2<T,()> for TestExtract<T> where T: Send+Clone+'static {
+    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
     }
@@ -79,14 +79,14 @@ struct TestStepState {
 }
 
 #[derive(Clone)]
-pub(crate) struct TestStep<Y,E> {
+pub(crate) struct TestStep<R> {
     timer: Arc<Mutex<f64>>,
-    results: Vec<TestState<Y,E>>,
+    results: Vec<TestState<R>>,
     state: Arc<Mutex<TestStepState>>,
 }
 
-impl<Y,E> TestStep<Y,E> {
-    fn new(results: Vec<TestState<Y,E>>, timer: &Arc<Mutex<f64>>) -> TestStep<Y,E> {
+impl<R> TestStep<R> {
+    fn new(results: Vec<TestState<R>>, timer: &Arc<Mutex<f64>>) -> TestStep<R> {
         TestStep {
             results,
             timer: timer.clone(),
@@ -129,14 +129,14 @@ impl<Y,E> TestStep<Y,E> {
     }
 }
 
-impl<X,Y,E> Step2<X,Y,E> for TestStep<Y,E> where Y: Clone+Send+'static, E: Clone+Send+'static {
-    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+impl<X,R> Step2<X,R> for TestStep<R> where R: Clone+Send+'static {
+    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<R>> {
         Box::new(self.clone())
     }
 }
 
-impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'static {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
+impl<R> StepRun<R> for TestStep<R> where R: Clone+'static {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
         let mut state = self.state.lock().unwrap();
         /* forever blocks */
         if state.pending_forever_block {
@@ -176,14 +176,14 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
 
 #[derive(Clone)]
 pub struct TestExtractorStep<T>(pub Arc<Mutex<T>>);
-impl<T> StepRun<(),()> for TestExtractorStep<T> {
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<(),()> {
-        StepState2::Done(Ok(()))
+impl<T> StepRun<()> for TestExtractorStep<T> {
+    fn more(&mut self, _control: &mut TaskControl) -> StepState2<()> {
+        StepState2::Done(())
     }
 }
 
-impl<T> Step2<T,(),()> for TestExtractorStep<T> where T: Send+Clone+'static {
-    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+impl<T> Step2<T,()> for TestExtractorStep<T> where T: Send+Clone+'static {
+    fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
     }

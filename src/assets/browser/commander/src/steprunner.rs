@@ -2,12 +2,12 @@ use crate::block::Block;
 use crate::taskcontrol::TaskControl;
 use crate::step::{ StepState2, OngoingState };
 
-pub trait StepRun<Y,E> {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Y,E>;
+pub trait StepRun<R> {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<R>;
 }
 
-pub struct StepRunner<Y,E> {
-    run: Box<dyn StepRun<Y,E>>,
+pub struct StepRunner<R> {
+    run: Box<dyn StepRun<R>>,
     control: TaskControl,
     blocked_on: Option<Block>,
     blocked_on_tick: Option<u64>,
@@ -15,8 +15,8 @@ pub struct StepRunner<Y,E> {
  
 }
 
-impl<Y,E> StepRunner<Y,E> {
-    pub(crate) fn new(run: Box<dyn StepRun<Y,E>>, task_control: &TaskControl) -> StepRunner<Y,E> {
+impl<R> StepRunner<R> {
+    pub(crate) fn new(run: Box<dyn StepRun<R>>, task_control: &TaskControl) -> StepRunner<R> {
         StepRunner {
             run,
             control: task_control.clone(),
@@ -43,7 +43,7 @@ impl<Y,E> StepRunner<Y,E> {
         &self.blocked_on
     }
 
-    pub fn more(&mut self) -> StepState2<Y,E> {
+    pub fn more(&mut self) -> StepState2<R> {
         if self.is_dead {
             return StepState2::Ongoing(OngoingState::Dead);
         }
@@ -94,7 +94,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskControl::new(&cfg,&eah,&h,&integration);
-        let mut step  = BlindStep::<(),()>::new(Ok(()));
+        let mut step  = BlindStep::<()>::new(());
         let run = step.start(&(),&mut tc);
         let mut sc = StepRunner::new(run,&tc);
         assert!(sc.check_tick(0));
@@ -113,7 +113,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskControl::new(&cfg,&eah,&h,&integration);
-        let mut step  = BlindStep::<(),()>::new(Ok(()));
+        let mut step  = BlindStep::<()>::new(());
         let run = step.start(&(),&mut tc);
         let mut sc = StepRunner::new(run,&tc);
         assert!(sc.get_blocker().is_none());

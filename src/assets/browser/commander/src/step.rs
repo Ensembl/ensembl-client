@@ -12,9 +12,9 @@ pub enum OngoingState {
 }
 
 #[derive(Clone)] // XXX test only
-pub enum StepState2<Y,E> {
+pub enum StepState2<R> {
     Ongoing(OngoingState),
-    Done(Result<Y,E>),
+    Done(R),
 }
 
 impl OngoingState {
@@ -55,8 +55,8 @@ pub enum StepResult<Y,E> {
     Killed(KillReason)
 }
 
-pub trait Step2<X,Y,Error=()> : Send {
-    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Y,Error>>;
+pub trait Step2<X,R> : Send {
+    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<R>>;
     //fn drop(&mut self, _: &X, _: StepResult<Y,Error>) {} // XXX
 }
 

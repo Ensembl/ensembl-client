@@ -3,16 +3,16 @@ use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
 
-pub struct StepFirst<X,Y,E> where Y: Send {
-    steps: Arc<Mutex<Vec<Box<dyn Step2<X,Y,E>>>>>
+pub struct StepFirst<X,R> where R: Send {
+    steps: Arc<Mutex<Vec<Box<dyn Step2<X,R>>>>>
 }
 
-struct StepFirstRun<Y,E> where Y: Send {
-    steps: Arc<Mutex<Vec<Box<StepRunner<Y,E>>>>>
+struct StepFirstRun<R> where R: Send {
+    steps: Arc<Mutex<Vec<Box<StepRunner<R>>>>>
 }
 
-impl<Y,E> StepRun<Y,E> for StepFirstRun<Y,E> where Y: Send {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
+impl<R> StepRun<R> for StepFirstRun<R> where R: Send {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
         let mut out = OngoingState::Dead;
         for runner in self.steps.lock().unwrap().iter_mut() {
             match runner.more() {
@@ -28,16 +28,16 @@ impl<Y,E> StepRun<Y,E> for StepFirstRun<Y,E> where Y: Send {
     }
 }
 
-impl<X,Y: Send,E> StepFirst<X,Y,E> {
-    pub fn new(steps: Vec<Box<dyn Step2<X,Y,E> + 'static>>) -> StepFirst<X,Y,E> where Y: Send + 'static, E: 'static {
+impl<X,R> StepFirst<X,R> where R: Send {
+    pub fn new(steps: Vec<Box<dyn Step2<X,R> + 'static>>) -> StepFirst<X,R> where R: Send + 'static {
         StepFirst {
             steps: Arc::new(Mutex::new(steps))
         }
     }
 }
 
-impl<X,Y: Send,E> Step2<X,Y,E> for StepFirst<X,Y,E> where Y: 'static, E: 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+impl<X,R> Step2<X,R> for StepFirst<X,R> where R: Send + 'static {
+    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<R>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             Box::new(task_control.new_step(step,input))
         }).collect();
@@ -55,7 +55,7 @@ mod test {
     use crate::executor::Executor;
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::steps::combinators::sequence::StepSequence2;
+    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
     #[test]
@@ -69,7 +69,7 @@ mod test {
             TestState::Tick,
             TestState::Tick,
             TestState::Tick,
-            TestState::Done(Ok((1)))
+            TestState::Done(1)
         ]);
         let mut b = integration.new_step(vec![
             TestState::Again,
@@ -78,12 +78,12 @@ mod test {
             TestState::Again,
             TestState::Again,
             TestState::Tick,
-            TestState::Done(Ok((2)))
+            TestState::Done(2)
         ]);
         let out = Arc::new(Mutex::new(0));
         let out2 = out.clone();
         let z = TestExtractorStep(out);
-        let p = StepSequence2::new(StepFirst::new(vec![Box::new(a),Box::new(b)]),z);
+        let p = StepSequenceSimple::new(StepFirst::new(vec![Box::new(a),Box::new(b)]),z);
         x.add(p,&(),&cfg,"test");
         /* simulate */
         for i in 0..1 {

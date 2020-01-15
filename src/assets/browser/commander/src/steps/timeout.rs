@@ -5,17 +5,17 @@ use crate::steprunner::StepRun;
 use crate::taskcontrol::TaskControl;
 use crate::steps::combinators::first::StepFirst;
 
-struct Timeout2Run<E> {
+struct Timeout2Run<R> {
     timeout: f64,
     expired: Arc<Mutex<bool>>,
-    errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
+    errorgen: Arc<Mutex<Box<dyn Fn() -> R + Send>>>
 }
 
-impl<Y,E> StepRun<Y,E> for Timeout2Run<E> {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
+impl<R> StepRun<R> for Timeout2Run<R> {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
         if *self.expired.lock().unwrap() {
             let err = (self.errorgen.lock().unwrap())();
-            StepState2::Done(Err(err))
+            StepState2::Done(err)
         } else {
             let b = control.block();
             let mut b2 = b.clone();
@@ -29,14 +29,14 @@ impl<Y,E> StepRun<Y,E> for Timeout2Run<E> {
 }
 
 #[derive(Clone)]
-pub struct TimeoutStep2<X,E> {
+pub struct TimeoutStep2<X,R> {
     input: PhantomData<X>,
     timeout: f64,
-    errorgen: Arc<Mutex<Box<dyn Fn() -> E + Send>>>
+    errorgen: Arc<Mutex<Box<dyn Fn() -> R + Send>>>
 }
 
-impl<X,E> TimeoutStep2<X,E> where X: Send {
-    pub fn new<G>(timeout: f64, errorgen: G) -> TimeoutStep2<X,E> where E: 'static, G: Fn() -> E + 'static + Send {
+impl<X,R> TimeoutStep2<X,R> where X: Send, R: Send + 'static {
+    pub fn new<G>(timeout: f64, errorgen: G) -> TimeoutStep2<X,R> where R: 'static, G: Fn() -> R + 'static + Send {
         TimeoutStep2 {
             input: PhantomData,
             timeout,
@@ -45,14 +45,14 @@ impl<X,E> TimeoutStep2<X,E> where X: Send {
     }
 
     /* convenience method */
-    pub fn new_wrapped<Y,G>(timeout: f64, inner: Box<dyn Step2<X,Y,E>>, errorgen: G) -> StepFirst<X,Y,E> where X: 'static, Y: Send + 'static, E: 'static, G: Fn() -> E + 'static + Send {
+    pub fn new_wrapped<G>(timeout: f64, inner: Box<dyn Step2<X,R>>, errorgen: G) -> StepFirst<X,R> where X: 'static, G: Fn() -> R + 'static + Send {
         let timeout = TimeoutStep2::new(timeout,errorgen);        
         StepFirst::new(vec![Box::new(timeout),inner])
     }
 }
 
-impl<X,Y,E> Step2<X,Y,E> for TimeoutStep2<X,E> where X: Send, E: 'static {
-    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+impl<X,R> Step2<X,R> for TimeoutStep2<X,R> where X: Send, R: 'static {
+    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<R>> {
         Box::new(Timeout2Run {
             timeout: self.timeout,
             expired: Arc::new(Mutex::new(false)),
@@ -69,22 +69,23 @@ mod test {
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::steps::combinators::sequence::StepSequence2;
+    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::combinators::branch::StepBranch;
     use crate::steps::noop::BlindStep;
     use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
-    fn flip<X>(init: X) -> (impl Step2<X,(),()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
+    fn flip<X>(init: X) -> (impl Step2<X,()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
         (TestExtractorStep(var.clone()),var)
     }
 
-    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: &X) -> bool where T: Step2<X,Y,E> + 'static, X: 'static + Send, Y: 'static, E: 'static {
+    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: &X) -> bool where T: Step2<X,Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
-        let v1 = BlindStep::new(Ok(1));
-        let y = StepSequence2::new(v1,y);
-        let v2 = BlindStep::new(Ok(1));
-        let e = StepSequence2::new(v2,e);
+        let v1 = BlindStep::new(1);
+        let y = StepSequenceSimple::new(v1,y);
+        let v2 = BlindStep::new(1);
+        let e = StepSequenceSimple::new(v2,e);
         let b = StepBranch::new(a,y,e);
         let cfg = RunConfig::new(None,3,None);
         let mut tcb = x.add(b,input,&cfg,"test");        
@@ -106,7 +107,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut cmds = vec![
+        let mut cmds : Vec<TestState<Result<(),()>>> = vec![
             TestState::Tick,
             TestState::Tick,
             TestState::Done(Ok(()))
@@ -116,7 +117,7 @@ mod test {
         }
 
         let mut b = integration.new_step(cmds);
-        let b = TimeoutStep2::new_wrapped(3.,Box::new(b),|| ());
+        let b = TimeoutStep2::new_wrapped(3.,Box::new(b),|| Ok(()));
         assert!(find_branch(&mut x, b,&()) || timeout);
     }
 

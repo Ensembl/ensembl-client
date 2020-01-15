@@ -4,18 +4,18 @@ use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
 
-pub struct StepBranchImpl<X,Y,Z,E,F> {
-    main: Box<dyn Step2<X,Y,E>>,
-    success: Box<dyn Step2<Y,Z,F>>,
-    failure:Box<dyn Step2<E,Z,F>>
+pub struct StepBranchImpl<X,Y,Z,E> {
+    main: Box<dyn Step2<X,Result<Y,E>>>,
+    success: Box<dyn Step2<Y,Z>>,
+    failure: Box<dyn Step2<E,Z>>
 }
 
 #[derive(Clone)]
-pub struct StepBranch<X,Y,Z,E,F>(Arc<Mutex<StepBranchImpl<X,Y,Z,E,F>>>);
+pub struct StepBranch<X,Y,Z,E>(Arc<Mutex<StepBranchImpl<X,Y,Z,E>>>);
 
-impl<X,Y,Z,E,F> StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'static, F: 'static, X: 'static, Y: 'static {
-    pub fn new<A,B,C>(main: A, success: B, failure: C) -> StepBranch<X,Y,Z,E,F> 
-            where A: Step2<X,Y,E> + 'static, B: Step2<Y,Z,F> + 'static, C: Step2<E,Z,F> + 'static {
+impl<X,Y,Z,E> StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
+    pub fn new<A,B,C>(main: A, success: B, failure: C) -> StepBranch<X,Y,Z,E> 
+            where A: Step2<X,Result<Y,E>> + 'static, B: Step2<Y,Z> + 'static, C: Step2<E,Z> + 'static {
         StepBranch(Arc::new(Mutex::new(StepBranchImpl {
             main: Box::new(main),
             success: Box::new(success),
@@ -24,15 +24,15 @@ impl<X,Y,Z,E,F> StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'static, F: 'static, 
     }
 }
 
-struct BranchRun<X,Y,Z,E,F> {
-    step: StepBranch<X,Y,Z,E,F>,
-    main: StepRunner<Y,E>,
-    success: Option<StepRunner<Z,F>>,
-    failure: Option<StepRunner<Z,F>>
+struct BranchRun<X,Y,Z,E> {
+    step: StepBranch<X,Y,Z,E>,
+    main: StepRunner<Result<Y,E>>,
+    success: Option<StepRunner<Z>>,
+    failure: Option<StepRunner<Z>>
 }
 
-impl<X,Y,Z,E,F> Step2<X,Z,F> for StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'static, F: 'static, X: 'static, Y: 'static {
-    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Z,F>> {
+impl<X,Y,Z,E> Step2<X,Z> for StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
+    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Z>> {
         Box::new(BranchRun {
             step: StepBranch(self.0.clone()),
             main: control.new_step(&mut self.0.lock().unwrap().main,input),
@@ -42,8 +42,8 @@ impl<X,Y,Z,E,F> Step2<X,Z,F> for StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'sta
     }
 }
 
-impl<X,Y,Z,E,F> StepRun<Z,F> for BranchRun<X,Y,Z,E,F> {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Z,F> {
+impl<X,Y,Z,E> StepRun<Z> for BranchRun<X,Y,Z,E> {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<Z> {
         if let Some(ref mut run) = self.success {
             run.more()
         } else if let Some(ref mut run) = self.failure {
@@ -78,7 +78,7 @@ mod test {
     use crate::testintegration::{ TestIntegration, TestExtractorStep };
     use crate::steps::noop::BlindStep;
 
-    fn flip<X>(init: X) -> (impl Step2<X,(),()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
+    fn flip<X>(init: X) -> (impl Step2<X,()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
         (TestExtractorStep(var.clone()),var)
     }

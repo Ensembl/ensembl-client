@@ -34,7 +34,7 @@ impl Executor {
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
     // XXX only add from main thread (via action)
-    pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,(),()> + 'static + Send, X: Send + 'static {
+    pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
         let mut control = TaskControl::new(run_config,&mut self.actions,&handle,&self.integration);
@@ -147,6 +147,7 @@ mod test {
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestStep, TestState, TestIntegration, TestExtract };
     use crate::steps::combinators::sequence::StepSequence2;
+    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::combinators::parallel::StepParallel;
     use crate::steps::timeout::TimeoutStep2;
     use crate::steps::noop::BlindStep;
@@ -160,7 +161,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let tc = x.add(integration.new_step(vec![
             TestState::Again,
-            TestState::Done(Ok(())),
+            TestState::Done(()),
         ]),&(),&cfg,"test");
         assert!(!tc.is_finished());
         x.run();
@@ -175,7 +176,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(Ok(()))]);
+        let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(())]);
         let mut tc = x.add(step.clone(),&(),&cfg,"test");
         assert!(!tc.is_finished());
         step.forever_block();
@@ -195,7 +196,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(1.));
-        let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(Ok(()))]);
+        let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(())]);
         let mut tc = x.add(step,&(),&cfg,"test");
         integration.set_time(10.);
         x.run();
@@ -264,11 +265,11 @@ mod test {
         let mut tc = x.add(integration.new_step(vec![
             TestState::Tick,
             TestState::Block,
-            TestState::Done(Ok(()))
+            TestState::Done(())
         ]),&(),&cfg,"test");
         let mut tc2 = x.add(integration.new_step(vec![
             TestState::Block,
-            TestState::Done(Ok(()))
+            TestState::Done(())
         ]),&(),&cfg,"test2");
         x.tick(2.);
         assert!(!tc.is_finished());
@@ -287,14 +288,14 @@ mod test {
         let t1 : TimeoutStep2<(),()> = TimeoutStep2::new(5.,|| {});
         let t2 : TimeoutStep2<(),()> = TimeoutStep2::new(21.,|| {});
 
-        let t1 : StepBranch<(),Vec<()>,(),(),()> = StepBranch::new(t1,BlindStep::new(Ok(())),BlindStep::new(Ok(())));
-        let t2 : StepBranch<(),Vec<()>,(),(),()> = StepBranch::new(t2,BlindStep::new(Ok(())),BlindStep::new(Ok(())));
+        let t1 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t1,BlindStep::new(Ok(())));
+        let t2 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t2,BlindStep::new(Ok(())));
 
         /* collect timers */
 
-        let z : StepParallel<(),(),()> = StepParallel::new(vec![Box::new(t1),Box::new(t2)]);
+        let z = StepParallel::new(vec![Box::new(t1),Box::new(t2)]);
         /* drop success */
-        let z : StepBranch<(),Vec<()>,(),(),()> = StepBranch::new(z,BlindStep::new(Ok(())),BlindStep::new(Ok(())));
+        let z = StepBranch::new(z,BlindStep::new(()),BlindStep::new(()));
         let mut tc = x.add(z,&(),&cfg,"test");
         x.tick(10.);
         integration.set_time(5.);
@@ -323,7 +324,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(10.));
         let mut ts = integration.new_step(vec![
-            TestState::Done(Ok(()))
+            TestState::Done(())
         ]);
         ts.block_for(100.);
         let mut tc = x.add(ts.clone(),&(),&cfg,"test");
@@ -351,7 +352,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut step = integration.new_step(vec![
-            TestState::Done(Ok(()))
+            TestState::Done(())
         ]);
         let mut tc = x.add(step.clone(),&(),&cfg,"test");
         step.forever_block();
@@ -373,7 +374,7 @@ mod test {
             TestState::Tick,
             TestState::Tick,
             TestState::Tick,
-            TestState::Done(Ok(()))
+            TestState::Done(())
         ]);
         let mut tc = x.add(step.clone(),&(),&cfg,"test");
         /* simulate */
@@ -405,7 +406,7 @@ mod test {
         let mut ts = integration.new_step(vec![
             TestState::Block,
             TestState::Block,
-            TestState::Done(Ok(()))
+            TestState::Done(())
         ]);
         let mut tc = x.add(ts.clone(),&(),&cfg,"test");
         /* simulate */
@@ -424,14 +425,14 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = integration.new_step(vec![
+        let mut a : TestStep<Result<(),()>> = integration.new_step(vec![
             TestState::Tick,
             TestState::Tick,
             TestState::Tick,
             TestState::Tick,
             TestState::Done(Ok(()))
         ]);
-        let mut b = integration.new_step(vec![
+        let mut b : TestStep<Result<(),()>> = integration.new_step(vec![
             TestState::Again,
             TestState::Again,
             TestState::Again,
@@ -441,9 +442,7 @@ mod test {
         ]);
         a.no_auto();
         b.no_auto();
-        let out = Arc::new(Mutex::new(vec![]));
-        let z = TestExtract(out);
-        let p = StepSequence2::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),z);
+        let p = StepSequenceSimple::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),BlindStep::new(()));
         x.add(p,&(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
@@ -459,8 +458,8 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let a = TimeoutStep2::new(8.,|| ());
-        let mut b = integration.new_step(vec![
+        let a : TimeoutStep2<(),()> = TimeoutStep2::new(8.,|| ());
+        let mut b : TestStep<Result<(),()>> = integration.new_step(vec![
             TestState::Again,
             TestState::Again,
             TestState::Tick,
@@ -470,9 +469,9 @@ mod test {
             TestState::Again,
             TestState::Done(Ok(()))
         ]);
-        let out : Arc<Mutex<Vec<()>>> = Arc::new(Mutex::new(vec![]));
-        let z = TestExtract(out);
-        let p = StepSequence2::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),z);
+        let a = StepSequenceSimple::new(a,BlindStep::new(Ok(())));
+        let p = StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]);
+        let p = StepSequenceSimple::new(p,BlindStep::new(()));
         b.no_auto();
         let mut tc = x.add(p,&(),&cfg,"test");
         /* simulate */

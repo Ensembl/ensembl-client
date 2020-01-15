@@ -86,7 +86,7 @@ impl TaskControl {
 
     // XXX demut
     /* running steps */
-    pub fn new_step<X,Y,E>(&mut self, step: &mut Box<dyn Step2<X,Y,E>>, input: &X) -> StepRunner<Y,E> where {
+    pub fn new_step<X,R>(&mut self, step: &mut Box<dyn Step2<X,R>>, input: &X) -> StepRunner<R> where {
         let run = step.start(input,self);
         StepRunner::new(run,self)
     }
@@ -133,7 +133,7 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let mut step = integration.new_step(vec![TestState::Done(Ok(()))]);
+        let mut step = integration.new_step(vec![TestState::Done(())]);
         let mut tc = x.add(step.clone(),&(),&cfg,"test");
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
