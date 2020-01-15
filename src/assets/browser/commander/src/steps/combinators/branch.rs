@@ -5,9 +5,9 @@ use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
 
 pub struct StepBranchImpl<X,Y,Z,E> {
-    main: Box<dyn Step2<X,Result<Y,E>>>,
-    success: Box<dyn Step2<Y,Z>>,
-    failure: Box<dyn Step2<E,Z>>
+    main: Box<dyn Step2<X,Output=Result<Y,E>>>,
+    success: Box<dyn Step2<Y,Output=Z>>,
+    failure: Box<dyn Step2<E,Output=Z>>
 }
 
 #[derive(Clone)]
@@ -15,7 +15,7 @@ pub struct StepBranch<X,Y,Z,E>(Arc<Mutex<StepBranchImpl<X,Y,Z,E>>>);
 
 impl<X,Y,Z,E> StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
     pub fn new<A,B,C>(main: A, success: B, failure: C) -> StepBranch<X,Y,Z,E> 
-            where A: Step2<X,Result<Y,E>> + 'static, B: Step2<Y,Z> + 'static, C: Step2<E,Z> + 'static {
+            where A: Step2<X,Output=Result<Y,E>> + 'static, B: Step2<Y,Output=Z> + 'static, C: Step2<E,Output=Z> + 'static {
         StepBranch(Arc::new(Mutex::new(StepBranchImpl {
             main: Box::new(main),
             success: Box::new(success),
@@ -31,7 +31,9 @@ struct BranchRun<X,Y,Z,E> {
     failure: Option<StepRunner<Z>>
 }
 
-impl<X,Y,Z,E> Step2<X,Z> for StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
+impl<X,Y,Z,E> Step2<X> for StepBranch<X,Y,Z,E> where Z: 'static, E: 'static, X: 'static, Y: 'static {
+    type Output = Z;
+
     fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
         Box::new(BranchRun {
             step: StepBranch(self.0.clone()),
@@ -80,7 +82,7 @@ mod test {
     use crate::testintegration::{ TestIntegration, TestExtractorStep };
     use crate::steps::noop::BlindStep;
 
-    fn flip<X>(init: X) -> (impl Step2<X,()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
+    fn flip<X>(init: X) -> (impl Step2<X,Output=()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
         (TestExtractorStep(var.clone()),var)
     }

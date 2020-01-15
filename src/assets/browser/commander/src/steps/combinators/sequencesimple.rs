@@ -6,7 +6,7 @@ use crate::taskcontrol::TaskControl;
 struct StepSequenceSimpleRun<Y,Z> {
     task_control: TaskControl,
     one: StepRunner<Y>,
-    two_step: Arc<Mutex<Box<dyn Step2<Y,Z>>>>,
+    two_step: Arc<Mutex<Box<dyn Step2<Y,Output=Z>>>>,
     two: Option<StepRunner<Z>>
 }
 
@@ -34,12 +34,12 @@ impl<Y,Z> StepRun for StepSequenceSimpleRun<Y,Z> {
 
 #[derive(Clone)]
 pub struct StepSequenceSimple<X,Y,Z> where Y: Send {
-    one: Arc<Mutex<Box<dyn Step2<X,Y>>>>,
-    two: Arc<Mutex<Box<dyn Step2<Y,Z>>>>
+    one: Arc<Mutex<Box<dyn Step2<X,Output=Y>>>>,
+    two: Arc<Mutex<Box<dyn Step2<Y,Output=Z>>>>
 }
 
 impl<X,Y: Send,Z> StepSequenceSimple<X,Y,Z> {
-    pub fn new<A,B>(one: A, two: B) -> StepSequenceSimple<X,Y,Z> where A: Step2<X,Y> + 'static, B: Step2<Y,Z> + 'static, Y: Send + 'static, Z: 'static {
+    pub fn new<A,B>(one: A, two: B) -> StepSequenceSimple<X,Y,Z> where A: Step2<X,Output=Y> + 'static, B: Step2<Y,Output=Z> + 'static, Y: Send + 'static, Z: 'static {
         StepSequenceSimple {
             one: Arc::new(Mutex::new(Box::new(one))),
             two: Arc::new(Mutex::new(Box::new(two)))
@@ -47,7 +47,9 @@ impl<X,Y: Send,Z> StepSequenceSimple<X,Y,Z> {
     }
 }
 
-impl<X,Y: Send,Z> Step2<X,Z> for StepSequenceSimple<X,Y,Z> where Y: 'static, Z: 'static {
+impl<X,Y: Send,Z> Step2<X> for StepSequenceSimple<X,Y,Z> where Y: 'static, Z: 'static {
+    type Output = Z;
+    
     fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
         Box::new(StepSequenceSimpleRun {
             task_control: task_control.clone(),

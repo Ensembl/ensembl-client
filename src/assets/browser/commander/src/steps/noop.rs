@@ -16,12 +16,14 @@ impl<R> StepRun for NoopRun<R> where R: Clone {
 pub struct NoopStep<R>(PhantomData<R>);
 
 impl<R> NoopStep<R> {
-    pub fn new() -> impl Step2<R,R> where R: 'static + Send + Clone {
+    pub fn new() -> NoopStep<R> where R: 'static + Send + Clone {
         NoopStep(PhantomData)
     }
 }
 
-impl<R> Step2<R,R> for NoopStep<R> where R: 'static + Send + Clone {
+impl<R> Step2<R> for NoopStep<R> where R: 'static + Send + Clone {
+    type Output = R;
+
     fn start(&mut self, input: &R, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(NoopRun(input.clone()))
     }
@@ -40,12 +42,14 @@ impl<R> StepRun for BlindRun<R> where R: Clone {
 pub struct BlindStep<R>(R);
 
 impl<R> BlindStep<R> {
-    pub fn new<X>(out: R) -> impl Step2<X,R> where R: 'static + Send + Clone {
+    pub fn new(out: R) -> BlindStep<R> where R: 'static + Send + Clone {
         BlindStep(out)
     }
 }
 
-impl<X,R> Step2<X,R> for BlindStep<R> where R: 'static + Send + Clone {
+impl<X,R> Step2<X> for BlindStep<R> where R: 'static + Send + Clone {
+    type Output = R;
+
     fn start(&mut self, _input: &X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(BlindRun(self.0.clone())) // XXX noclone
     }
@@ -71,11 +75,9 @@ mod test {
             StepState2::Done(12)
         ];
         let mut b = BlindStep::new(19);
-        let noop = NoopStep::new();
-        
         let val = Arc::new(Mutex::new(0));
         let out = TestExtractorStep(val.clone());
-        let seq = StepSequenceSimple::new(StepSequenceSimple::new(b,noop),out);
+        let seq = StepSequenceSimple::new(StepSequenceSimple::new(b,NoopStep::new()),out);
         let mut tcb = x.add(seq,&(),&cfg,"test");        
         x.tick(10.);
         assert_eq!(19,*val.lock().unwrap());

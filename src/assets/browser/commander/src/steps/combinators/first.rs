@@ -4,7 +4,7 @@ use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
 
 pub struct StepFirst<X,R> where R: Send {
-    steps: Arc<Mutex<Vec<Box<dyn Step2<X,R>>>>>
+    steps: Arc<Mutex<Vec<Box<dyn Step2<X,Output=R>>>>>
 }
 
 struct StepFirstRun<R> where R: Send {
@@ -31,14 +31,16 @@ impl<R> StepRun for StepFirstRun<R> where R: Send {
 }
 
 impl<X,R> StepFirst<X,R> where R: Send {
-    pub fn new(steps: Vec<Box<dyn Step2<X,R> + 'static>>) -> StepFirst<X,R> where R: Send + 'static {
+    pub fn new(steps: Vec<Box<dyn Step2<X,Output=R> + 'static>>) -> StepFirst<X,R> where R: Send + 'static {
         StepFirst {
             steps: Arc::new(Mutex::new(steps))
         }
     }
 }
 
-impl<X,R> Step2<X,R> for StepFirst<X,R> where R: Send + 'static {
+impl<X,R> Step2<X> for StepFirst<X,R> where R: Send + 'static {
+    type Output = R;
+
     fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             Box::new(task_control.new_step(step,input))

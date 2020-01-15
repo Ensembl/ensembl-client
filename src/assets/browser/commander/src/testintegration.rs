@@ -64,7 +64,9 @@ impl<T> StepRun for TestExtract<T> {
     }
 }
 
-impl<T> Step2<T,()> for TestExtract<T> where T: Send+Clone+'static {
+impl<T> Step2<T> for TestExtract<T> where T: Send+Clone+'static {
+    type Output = ();
+
     fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<Output=()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
@@ -131,7 +133,9 @@ impl<R> TestStep<R> {
     }
 }
 
-impl<X,R> Step2<X,R> for TestStep<R> where R: Clone+Send+'static {
+impl<X,R> Step2<X> for TestStep<R> where R: Clone+Send+'static {
+    type Output = R;
+
     fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(self.clone())
     }
@@ -188,7 +192,9 @@ impl<T> StepRun for TestExtractorStep<T> {
     }
 }
 
-impl<T> Step2<T,()> for TestExtractorStep<T> where T: Send+Clone+'static {
+impl<T> Step2<T> for TestExtractorStep<T> where T: Send+Clone+'static {
+    type Output = ();
+
     fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<Output=()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())

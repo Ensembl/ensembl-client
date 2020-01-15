@@ -16,7 +16,7 @@ pub(crate) trait Task2 {
 }
 
 impl Task2Impl {
-    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,()>>, input: &X, run_config: &RunConfig, task_control: &mut TaskControl, name: &str) -> Task2Impl where X: Send {
+    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=()>>, input: &X, run_config: &RunConfig, task_control: &mut TaskControl, name: &str) -> Task2Impl where X: Send {
         let runner : StepRunner<()> = task_control.new_step(step,input);
         Task2Impl {
             runner,
@@ -87,7 +87,7 @@ mod test {
         ]);
         s1.block_for(1.);
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<(),()>>),&(),&cfg,&mut tc2,"test");
+        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<_,Output=()>>),&(),&cfg,&mut tc2,"test");
         /* simple accessors */
         assert_eq!("test",t.get_name());
         assert_eq!(3,t.get_priority());
@@ -120,7 +120,7 @@ mod test {
         ]);
         s1.block_for(0.);
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<(),()>>),&(),&cfg,&mut tc2,"test");
+        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<_,Output=()>>),&(),&cfg,&mut tc2,"test");
         /* test */
         assert!(!tc.is_finished());
         t.run(0);

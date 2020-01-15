@@ -47,13 +47,15 @@ impl<X,R> TimeoutStep2<X,R> where X: Send, R: Send + 'static {
     }
 
     /* convenience method */
-    pub fn new_wrapped<G>(timeout: f64, inner: Box<dyn Step2<X,R>>, errorgen: G) -> StepFirst<X,R> where X: 'static, G: Fn() -> R + 'static + Send {
+    pub fn new_wrapped<G>(timeout: f64, inner: Box<dyn Step2<X,Output=R>>, errorgen: G) -> StepFirst<X,R> where X: 'static, G: Fn() -> R + 'static + Send {
         let timeout = TimeoutStep2::new(timeout,errorgen);        
         StepFirst::new(vec![Box::new(timeout),inner])
     }
 }
 
-impl<X,R> Step2<X,R> for TimeoutStep2<X,R> where X: Send, R: 'static {
+impl<X,R> Step2<X> for TimeoutStep2<X,R> where X: Send, R: 'static {
+    type Output = R;
+
     fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
         Box::new(Timeout2Run {
             timeout: self.timeout,
@@ -76,12 +78,12 @@ mod test {
     use crate::steps::noop::BlindStep;
     use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
-    fn flip<X>(init: X) -> (impl Step2<X,()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
+    fn flip<X>(init: X) -> (impl Step2<X,Output=()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
         (TestExtractorStep(var.clone()),var)
     }
 
-    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: &X) -> bool where T: Step2<X,Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
+    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: &X) -> bool where T: Step2<X,Output=Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
         let v1 = BlindStep::new(1);

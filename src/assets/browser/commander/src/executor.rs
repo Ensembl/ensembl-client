@@ -34,11 +34,11 @@ impl Executor {
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
     // XXX only add from main thread (via action)
-    pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,()> + 'static + Send, X: Send + 'static {
+    pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,Output=()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
         let mut control = TaskControl::new(run_config,&mut self.actions,&handle,&self.integration);
-        let task = Task2Impl::new(&mut (Box::new(step) as Box<dyn Step2<_,()>>),input,run_config,&mut control,name);
+        let task = Task2Impl::new(&mut (Box::new(step) as Box<dyn Step2<X,Output=()>>),input,run_config,&mut control,name);
         self.tasks.set(&handle,task);
         if let Some(timeout) = run_config.get_timeout() {
             let mut control = control.clone();

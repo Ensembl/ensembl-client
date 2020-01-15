@@ -55,8 +55,10 @@ pub enum StepResult<Y,E> {
     Killed(KillReason)
 }
 
-pub trait Step2<X,R> : Send {
-    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Output=R>>;
+pub trait Step2<Input> : Send {
+    type Output;
+
+    fn start(&mut self, input: &Input, control: &mut TaskControl) -> Box<dyn StepRun<Output=Self::Output>>;
     //fn drop(&mut self, _: &X, _: StepResult<Y,Error>) {} // XXX
 }
 

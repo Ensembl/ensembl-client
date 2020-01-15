@@ -4,7 +4,7 @@ use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
 
 pub struct StepParallel<X,Y,E>  {
-    steps: Arc<Mutex<Vec<Box<dyn Step2<X,Result<Y,E>>>>>>
+    steps: Arc<Mutex<Vec<Box<dyn Step2<X,Output=Result<Y,E>>>>>>
 }
 
 struct StepParallelRun<Y,E> where Y: Send {
@@ -44,14 +44,16 @@ impl<Y,E> StepRun for StepParallelRun<Y,E> where Y: Send {
 }
 
 impl<X,Y: Send,E> StepParallel<X,Y,E> {
-    pub fn new(steps: Vec<Box<dyn Step2<X,Result<Y,E>> + 'static>>) -> StepParallel<X,Y,E> where Y: Send + 'static, E: 'static {
+    pub fn new(steps: Vec<Box<dyn Step2<X,Output=Result<Y,E>> + 'static>>) -> StepParallel<X,Y,E> where Y: Send + 'static, E: 'static {
         StepParallel {
             steps: Arc::new(Mutex::new(steps))
         }
     }
 }
 
-impl<X,Y,E> Step2<X,Result<Vec<Y>,E>> for StepParallel<X,Y,E> where Y: 'static + Send, E: 'static {
+impl<X,Y,E> Step2<X> for StepParallel<X,Y,E> where Y: 'static + Send, E: 'static {
+    type Output = Result<Vec<Y>,E>;
+
     fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Vec<Y>,E>>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             (Box::new(task_control.new_step(step,input)),None)
@@ -99,12 +101,13 @@ mod test {
             TestState::Done(Ok(2))
         ]);
         let c : TimeoutStep2<(),()> = TimeoutStep2::new(50.,|| ());
-        let c = StepSequenceSimple::new(c,BlindStep::new(Ok(0)));
+        let bs : BlindStep<Result<u32,u32>> = BlindStep::new(Ok(0));
+        let c : StepSequenceSimple<(),(),Result<u32,u32>> = StepSequenceSimple::new(c,bs);
         let out : Arc<Mutex<Vec<u32>>> = Arc::new(Mutex::new(vec![]));
         let out2 = out.clone();
         let z = TestExtractorStep(out);
         let p = StepParallel::new(vec![Box::new(a),Box::new(b),Box::new(c)]);
-        let p = StepBranch::new(p,NoopStep::new(),NoopStep::new());
+        let p = StepBranch::new(p,NoopStep::new(),BlindStep::new(vec![]));
         let p = StepSequenceSimple::new(p,z);
         let mut tc = x.add(p,&(),&cfg,"test");
         /* simulate */
