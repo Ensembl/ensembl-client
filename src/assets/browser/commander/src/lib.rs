@@ -16,6 +16,9 @@ mod timer;
 #[cfg(test)]
 mod testintegration;
 
+#[cfg(test)]
+extern crate async_std;
+
 mod steps {
     pub(crate) mod combinators {
         pub(crate) mod sequence;
@@ -26,6 +29,7 @@ mod steps {
     }
     pub(crate) mod timeout;
     pub(crate) mod noop;
+    pub(crate) mod future;
 }
 
 #[macro_use]

@@ -12,6 +12,7 @@ binary-heap-plus="*"
 
 #[dev-dependencies]
 regex="*"
+async-std = "1.4.0"
 
 # XXX doesn't work with features. Need two blackbox crates.
 [target.'cfg(test)'.dependencies.blackbox]
