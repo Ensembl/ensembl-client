@@ -1,11 +1,12 @@
 use std::sync::{ Arc, Mutex };
 
 use crate::step::Step2;
+use crate::block::Block;
 use crate::blocker::Blocker;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::ReenteringIntegration;
-use crate::step::{ KillReason, RunConfig, StepRunner };
-use crate::timer::TimerSet;
+use crate::step::{ KillReason, RunConfig };
+use crate::steprunner::StepRunner;
 use crate::taskcontainer::TaskHandle;
 
 #[derive(Clone)]
@@ -17,12 +18,11 @@ pub struct TaskControl {
     kill_reason: Arc<Mutex<Option<KillReason>>>,
     task_handle: TaskHandle,
     action_handle: ExecutorActionHandle,
-    timers: TimerSet,
     blocker: Blocker
 }
 
 impl TaskControl {
-    pub(crate) fn new(config: &RunConfig, timers: &TimerSet, 
+    pub(crate) fn new(config: &RunConfig,
                       action_handle: &ExecutorActionHandle, task_handle: &TaskHandle, 
                       integration: &ReenteringIntegration) -> TaskControl {
         let action_handle = action_handle.clone();
@@ -35,7 +35,6 @@ impl TaskControl {
             task_handle, action_handle,
             integration: integration.clone(),
             tick_index: Arc::new(Mutex::new(0)),
-            timers: timers.clone(),
             blocker
         }
     }
@@ -107,6 +106,10 @@ impl TaskControl {
     pub(crate) fn get_blocker(&mut self) -> &mut Blocker {
         &mut self.blocker
     }
+
+    pub fn block(&mut self) -> Block {
+        Block::new(self.get_blocker())
+    }
 }
 
 #[cfg(test)]
@@ -116,8 +119,8 @@ mod test {
     use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::stepcontrol::StepControl;
-    use crate::step::{ Step2, StepState2, OngoingState, StepRun };
+    use crate::step::{ Step2, StepState2, OngoingState };
+    use crate::steprunner::StepRun;
     use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
@@ -150,9 +153,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let timers = TimerSet::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&integration);
         /* test */
         assert!(!tc.is_finished());
         tc.finish(Some(&KillReason::Cancelled));
@@ -174,9 +176,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let timers = TimerSet::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&integration);
 
 
         // XXX todo
@@ -190,10 +191,9 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let timers = TimerSet::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&integration.clone());
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
         integration.cause_reentry(); /* sets one-shot, sends SleepQuantity::None */
@@ -214,16 +214,15 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let timers = TimerSet::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&integration.clone());
         tc.finish_internal(None);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&integration.clone());
         tc.finish(None);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
     }

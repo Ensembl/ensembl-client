@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
-use crate::step::{ Step2, StepRun, StepRunner, StepState2, OngoingState };
-use crate::stepcontrol::StepControl;
+use crate::step::{ Step2, StepState2, OngoingState };
+use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
 
 pub struct StepFirst<X,Y,E> where Y: Send {
@@ -12,7 +12,7 @@ struct StepFirstRun<Y,E> where Y: Send {
 }
 
 impl<Y,E> StepRun<Y,E> for StepFirstRun<Y,E> where Y: Send {
-    fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
         let mut out = OngoingState::Dead;
         for runner in self.steps.lock().unwrap().iter_mut() {
             match runner.more() {

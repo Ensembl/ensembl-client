@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 
-use crate::step::{ Step2, StepState2, OngoingState };
-use crate::steprunner::{ StepRun, StepRunner };
+use crate::step::{ Step2, StepRun, StepState2, StepRunner };
+use crate::steprunner::StepControl;
 use crate::taskcontrol::TaskControl;
 
 pub struct StepBranchImpl<X,Y,Z,E,F> {
@@ -14,7 +14,7 @@ pub struct StepBranchImpl<X,Y,Z,E,F> {
 pub struct StepBranch<X,Y,Z,E,F>(Arc<Mutex<StepBranchImpl<X,Y,Z,E,F>>>);
 
 impl<X,Y,Z,E,F> StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'static, F: 'static, X: 'static, Y: 'static {
-    pub fn new<A,B,C>(main: A, success: B, failure: C) -> StepBranch<X,Y,Z,E,F> 
+    pub fn new<A,B,C>(main: A, success: B, failure: C) -> impl Step2<X,Z,F> 
             where A: Step2<X,Y,E> + 'static, B: Step2<Y,Z,F> + 'static, C: Step2<E,Z,F> + 'static {
         StepBranch(Arc::new(Mutex::new(StepBranchImpl {
             main: Box::new(main),
@@ -43,7 +43,7 @@ impl<X,Y,Z,E,F> Step2<X,Z,F> for StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'sta
 }
 
 impl<X,Y,Z,E,F> StepRun<Z,F> for BranchRun<X,Y,Z,E,F> {
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Z,F> {
+    fn more(&mut self, control: &mut StepControl) -> StepState2<Z,F> {
         if let Some(ref mut run) = self.success {
             run.more()
         } else if let Some(ref mut run) = self.failure {
@@ -51,23 +51,21 @@ impl<X,Y,Z,E,F> StepRun<Z,F> for BranchRun<X,Y,Z,E,F> {
         } else {
             match self.main.more() {
                 StepState2::Done(Ok(v)) => {
-                    self.success = Some(control.new_step(&mut self.step.0.lock().unwrap().success,&v));
-                    return StepState2::Ongoing(OngoingState::Again);
+                    self.success = Some(control.task_control().new_step(&mut self.step.0.lock().unwrap().success,&v));
+                    return StepState2::Again;
                 },
                 StepState2::Done(Err(e)) => {
-                    self.failure = Some(control.new_step(&mut self.step.0.lock().unwrap().failure,&e));
-                    return StepState2::Ongoing(OngoingState::Again);
+                    self.failure = Some(control.task_control().new_step(&mut self.step.0.lock().unwrap().failure,&e));
+                    return StepState2::Again;
                 },
-                StepState2::Ongoing(OngoingState::Again) => StepState2::Ongoing(OngoingState::Again),
-                StepState2::Ongoing(OngoingState::Block(b)) => StepState2::Ongoing(OngoingState::Block(b)),
-                StepState2::Ongoing(OngoingState::Tick) => StepState2::Ongoing(OngoingState::Tick),
-                StepState2::Ongoing(OngoingState::Dead) => StepState2::Ongoing(OngoingState::Dead)
+                StepState2::Again => StepState2::Again,
+                StepState2::Block => StepState2::Block,
+                StepState2::Tick => StepState2::Tick
             }
         }
     }
 }
 
-#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
@@ -75,21 +73,59 @@ mod test {
     use crate::executor::Executor;
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::testintegration::{ TestIntegration, TestExtractorStep };
-    use crate::steps::noop::BlindStep;
+
+    #[derive(Clone)]
+    pub struct FakeIntegration(Arc<Mutex<(f64,Vec<SleepQuantity>)>>);
+    impl CommanderIntegration2 for FakeIntegration {
+        fn current_time(&mut self) -> f64 { self.0.lock().unwrap().0 }
+        fn sleep(&mut self, quantity: SleepQuantity) { self.0.lock().unwrap().1.push(quantity); }
+    }
+
+    struct FakeStep3<Y,E>(FakeStepRun3<Y,E>) where Y: Clone, E: Clone;
+    impl<Y,E> Step2<(),Y,E> for FakeStep3<Y,E> where Y: Send+Clone+'static, E: Send+Clone+'static {
+        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+            Box::new(self.0.clone())
+        }
+    }
+
+    // XXX replace fakestep
+    #[derive(Clone)]
+    struct FakeStepRun3<Y: Clone, E: Clone>(Result<Y,E>);
+
+    impl<Y,E> StepRun<Y,E> for FakeStepRun3<Y,E> where Y: Clone, E: Clone {
+        fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
+            StepState2::Done(self.0.clone())
+        }
+    }
+
+    #[derive(Clone)]
+    struct FakeStepExtract<T>(Arc<Mutex<T>>);
+    impl<T> StepRun<(),()> for FakeStepExtract<T> {
+        fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
+            StepState2::Done(Ok(()))
+        }
+    }
+
+    impl<T> Step2<T,(),()> for FakeStepExtract<T> where T: Send+Clone+'static {
+        fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+            *self.0.lock().unwrap() = input.clone();
+            Box::new(self.clone())
+        }
+    }
 
     fn flip<X>(init: X) -> (impl Step2<X,(),()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
-        (TestExtractorStep(var.clone()),var)
+        (FakeStepExtract(var.clone()),var)
     }
 
     fn smoke_test(v: Result<u32,u32>) -> (u32,u32) {
         /* setup */
-        let integration = TestIntegration::new();
+        let mut now = Arc::new(Mutex::new((0.,Vec::new())));
+        let integration = FakeIntegration(now.clone());
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         /* setup job to succeed */
-        let mut a = BlindStep::new(v);
+        let mut a = FakeStep3(FakeStepRun3(v));
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
         let b = StepBranch::new(a,y,e);

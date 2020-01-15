@@ -1,14 +1,12 @@
 use std::marker::PhantomData;
-use std::sync::{ Arc, Mutex };
-use crate::step::{ Step2, StepRunner, StepRun, StepState2 };
-use crate::stepcontrol::StepControl;
+use crate::step::{ Step2, StepState2 };
+use crate::steprunner::{ StepRun, StepRunner };
 use crate::taskcontrol::TaskControl;
-use crate::steps::combinators::first::StepFirst;
 
 struct NoopRun<Y>(Y);
 
 impl<Y,E> StepRun<Y,E> for NoopRun<Y> where Y: Clone {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<Y,E> {
+    fn more(&mut self, _control: &mut TaskControl) -> StepState2<Y,E> {
         StepState2::Done(Ok(self.0.clone()))
     }
 }
@@ -30,7 +28,7 @@ impl<Y,E> Step2<Y,Y,E> for NoopStep<Y> where Y: 'static + Send + Clone {
 struct BlindRun<Y,E>(Result<Y,E>);
 
 impl<Y,E> StepRun<Y,E> for BlindRun<Y,E> where Y: Clone, E: Clone {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<Y,E> {
+    fn more(&mut self, _control: &mut TaskControl) -> StepState2<Y,E> {
         StepState2::Done(self.0.clone())
     }
 }
@@ -53,6 +51,7 @@ impl<X,Y,E> Step2<X,Y,E> for BlindStep<Y,E> where Y: 'static + Send + Clone, E: 
 #[allow(unused)]
 mod test {
     use super::*;
+    use std::sync::{ Arc, Mutex };
     use crate::executor::Executor;
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };

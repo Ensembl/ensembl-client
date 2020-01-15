@@ -8,7 +8,7 @@ mod integration;
 mod runnable;
 mod runqueue;
 mod step;
-mod stepcontrol;
+mod steprunner;
 mod task2;
 mod taskcontainer;
 mod timer;

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use crate::block::Block;
-use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
+use crate::steprunner::StepRun;
 
 #[derive(Clone)] // XXX test only
 pub enum OngoingState {
@@ -27,7 +27,7 @@ impl OngoingState {
         }
     }
 
-    pub(crate) fn merge(&mut self, stepcontrol: &mut StepControl, other: &OngoingState) {
+    pub(crate) fn merge(&mut self, stepcontrol: &mut TaskControl, other: &OngoingState) {
         if let OngoingState::Block(in_b) = other {
             if let OngoingState::Dead = self {
                 *self = OngoingState::Block(stepcontrol.block());
@@ -53,49 +53,6 @@ pub enum KillReason { // XXX test it
 pub enum StepResult<Y,E> {
     Done(Result<Y,E>),
     Killed(KillReason)
-}
-
-pub trait StepRun<Y,E> {
-    fn more(&mut self, signal: &mut StepControl) -> StepState2<Y,E>;
-}
-
-pub struct StepRunner<Y,E> {
-    run: Box<dyn StepRun<Y,E>>,
-    control: StepControl
-}
-
-impl<Y,E> StepRunner<Y,E> {
-    pub(crate) fn new(run: Box<dyn StepRun<Y,E>>, task_control: &TaskControl) -> StepRunner<Y,E> {
-        let step_control = StepControl::new(&task_control);
-        StepRunner { run, control: step_control }
-    }
-
-    pub fn more(&mut self) -> StepState2<Y,E> {
-        if self.control.is_dead() {
-            return StepState2::Ongoing(OngoingState::Dead);
-        }
-        if let Some(b) = self.control.get_blocker() {
-            return StepState2::Ongoing(OngoingState::Block(b.clone()));
-        }
-        let tick = self.control.task_control().get_tick_index();
-        if !self.control.check_tick(tick) {
-            return StepState2::Ongoing(OngoingState::Tick);
-        }
-        let out = self.run.more(&mut self.control);
-        match out {
-            StepState2::Ongoing(OngoingState::Tick) => {
-                self.control.block_on_tick(tick);
-            },
-            StepState2::Ongoing(OngoingState::Block(ref b)) => {
-                self.control.block_on(b);
-            },
-            StepState2::Done(_) => {
-                self.control.die();
-            },
-            _ => {}
-        }
-        out
-    }
 }
 
 pub trait Step2<X,Y,Error=()> : Send {

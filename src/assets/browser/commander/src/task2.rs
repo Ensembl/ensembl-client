@@ -1,5 +1,6 @@
 use crate::taskcontrol::TaskControl;
-use crate::step::{ RunConfig, Step2, StepState2, StepRunner, OngoingState };
+use crate::step::{ RunConfig, Step2, StepState2, OngoingState };
+use crate::steprunner::StepRunner;
 
 pub(crate) struct Task2Impl {
     runner: StepRunner<(),()>,
@@ -68,8 +69,7 @@ mod test {
     use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
-    use crate::stepcontrol::StepControl;
-    use crate::step::StepRun;
+    use crate::steprunner::StepRun;
     use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
@@ -79,9 +79,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let timers = TimerSet::new();
         let mut integration = TestIntegration::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(integration.clone()));
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
         let mut s1 = integration.new_step(vec![
             TestState::Again,
             TestState::Done(Ok(()))
@@ -114,9 +113,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let mut timers = TimerSet::new();
         let mut integration = TestIntegration::new();
-        let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&ReenteringIntegration::new(integration.clone()));
+        let mut tc = TaskControl::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
         let mut s1 = integration.new_step(vec![
             TestState::Done(Ok(()))
         ]);

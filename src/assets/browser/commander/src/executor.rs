@@ -37,7 +37,7 @@ impl Executor {
     pub fn add<S,X>(&mut self, step: S, input: &X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,(),()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
-        let mut control = TaskControl::new(run_config,&self.timers,&mut self.actions,&handle,&self.integration);
+        let mut control = TaskControl::new(run_config,&mut self.actions,&handle,&self.integration);
         let task = Task2Impl::new(&mut (Box::new(step) as Box<dyn Step2<_,()>>),input,run_config,&mut control,name);
         self.tasks.set(&handle,task);
         if let Some(timeout) = run_config.get_timeout() {
@@ -143,8 +143,7 @@ mod test {
     use super::*;
 
     use std::sync::{ Arc, Mutex };
-    use crate::step::{ KillReason, StepState2, StepRun, OngoingState };
-    use crate::stepcontrol::StepControl;
+    use crate::step::{ KillReason, StepState2, OngoingState };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestStep, TestState, TestIntegration, TestExtract };
     use crate::steps::combinators::sequence::StepSequence2;
@@ -152,6 +151,7 @@ mod test {
     use crate::steps::timeout::TimeoutStep2;
     use crate::steps::noop::BlindStep;
     use crate::steps::combinators::branch::StepBranch;
+    use crate::steprunner::StepRun;
 
     #[test]
     pub fn test_executor_smoke() {

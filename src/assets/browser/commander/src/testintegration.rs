@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex, MutexGuard };
 use crate::block::Block;
-use crate::step::{ Step2, StepRun, StepState2, OngoingState };
-use crate::stepcontrol::StepControl;
+use crate::step::{ Step2, StepState2, OngoingState };
+use crate::steprunner::StepRun;
 use crate::taskcontrol::TaskControl;
 use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
@@ -14,7 +14,7 @@ pub(crate) enum TestState<Y,E> {
 }
 
 impl<Y,E> TestState<Y,E> where Y: Clone, E: Clone {
-    fn step_state(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
+    fn step_state(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
         match self {
             TestState::Again => StepState2::Ongoing(OngoingState::Again),
             TestState::Tick => StepState2::Ongoing(OngoingState::Tick),
@@ -57,7 +57,7 @@ impl CommanderIntegration2 for TestIntegration {
 #[derive(Clone)]
 pub struct TestExtract<T>(pub Arc<Mutex<T>>);
 impl<T> StepRun<(),()> for TestExtract<T> {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<(),()> {
+    fn more(&mut self, _control: &mut TaskControl) -> StepState2<(),()> {
         StepState2::Done(Ok(()))
     }
 }
@@ -136,7 +136,7 @@ impl<X,Y,E> Step2<X,Y,E> for TestStep<Y,E> where Y: Clone+Send+'static, E: Clone
 }
 
 impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'static {
-    fn more(&mut self, control: &mut StepControl) -> StepState2<Y,E> {
+    fn more(&mut self, control: &mut TaskControl) -> StepState2<Y,E> {
         let mut state = self.state.lock().unwrap();
         /* forever blocks */
         if state.pending_forever_block {
@@ -150,7 +150,7 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
             let b = control.block();
             let mut b2 = b.clone();
             if until > 0. {
-                control.task_control().add_timer(until, move || {
+                control.add_timer(until, move || {
                     b2.unblock();
                 });
             } else {
@@ -177,7 +177,7 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
 #[derive(Clone)]
 pub struct TestExtractorStep<T>(pub Arc<Mutex<T>>);
 impl<T> StepRun<(),()> for TestExtractorStep<T> {
-    fn more(&mut self, _control: &mut StepControl) -> StepState2<(),()> {
+    fn more(&mut self, _control: &mut TaskControl) -> StepState2<(),()> {
         StepState2::Done(Ok(()))
     }
 }
