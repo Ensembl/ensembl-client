@@ -19,8 +19,8 @@ impl<Y,E> StepRun<Y,E> for Timeout2Run<E> {
         } else {
             let b = control.block();
             let mut b2 = b.clone();
-            let mut tc = control.task_control().clone();
             control.task_control().add_timer(self.timeout,move || {
+                print!("TIMED OUT\n");
                 b2.unblock();
             });
             *self.expired.lock().unwrap() = true;
@@ -53,7 +53,7 @@ impl<X,E> TimeoutStep2<X,E> where X: Send {
 }
 
 impl<X,Y,E> Step2<X,Y,E> for TimeoutStep2<X,E> where X: Send, E: 'static {
-    fn start(&mut self, _input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+    fn start(&mut self, _input: &X, _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
         Box::new(Timeout2Run {
             timeout: self.timeout,
             expired: Arc::new(Mutex::new(false)),

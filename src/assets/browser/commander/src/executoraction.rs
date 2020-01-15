@@ -1,11 +1,11 @@
-use crate::blocker::Blocker;
+use crate::block::Block;
 use crate::step::KillReason;
 use crate::taskcontainer::TaskHandle;
 use std::sync::{ Arc, Mutex };
 
 pub(crate) enum ExecutorAction {
-    Block(TaskHandle),
-    Unblock(TaskHandle),
+    Block(TaskHandle,Block),
+    Unblock(Block),
     Done(TaskHandle),
     Kill(TaskHandle,KillReason),
     Tick(TaskHandle),
@@ -48,9 +48,9 @@ mod test {
             assert!(false);
         }
         assert!(eah.drain().len() == 0);
-        eah.add(ExecutorAction::Unblock(h));
+        eah.add(ExecutorAction::Kill(h,KillReason::Cancelled));
         let actions = eah.drain();
-        if let ExecutorAction::Unblock(_) = &actions[0] {
+        if let ExecutorAction::Kill(_,_) = &actions[0] {
         } else {
             assert!(false);
         }

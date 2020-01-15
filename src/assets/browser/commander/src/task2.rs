@@ -48,8 +48,8 @@ impl Task2 for Task2Impl {
             StepState2::Done(_) | StepState2::Ongoing(OngoingState::Dead) => {
                 self.task_control.finish_internal(None);
             },
-            StepState2::Ongoing(OngoingState::Block(_)) => {
-                self.task_control.not_runnable();
+            StepState2::Ongoing(OngoingState::Block(b)) => {
+                self.task_control.get_blocker().block_task(&b);
             },
             StepState2::Ongoing(OngoingState::Tick) => {
                 self.task_control.wait_for_next_tick();
@@ -83,8 +83,9 @@ mod test {
         fn more(&mut self, control: &mut StepControl) -> StepState2<(),()> {
             if self.0 < 0 {
                 self.0 += 1;
-                control.task_control().unblock();
-                return StepState2::Ongoing(OngoingState::Block(control.block()));
+                let mut b = control.block();
+                b.unblock();
+                return StepState2::Ongoing(OngoingState::Block(b));
             }
             self.0 += 1;
             if self.0 == 1 {
@@ -154,7 +155,7 @@ mod test {
         t.run(0);
         let actions = eah.drain();
         assert_eq!(3,actions.len());
-        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
+        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h,_),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
         } else {
             assert!(false);
         }

@@ -1,5 +1,4 @@
-use hashbrown::{ HashMap, HashSet };
-use crate::blocker::Blocker;
+use hashbrown::HashSet;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
 use crate::taskcontainer::{ TaskContainer, TaskHandle };
@@ -58,13 +57,16 @@ impl Executor {
     }
 
     pub(crate) fn run_actions(&mut self) {
-        for action in self.actions.drain() {
+        for mut action in self.actions.drain() {
             match action {
-                ExecutorAction::Block(handle) => {
+                ExecutorAction::Block(ref handle,ref mut blocker) => {
+                    blocker.set_blocking_task(Some(handle.clone()));
                     self.runnable.remove(&self.tasks,&handle);
                 },
-                ExecutorAction::Unblock(handle) => {
-                    self.runnable.add(&self.tasks,&handle);
+                ExecutorAction::Unblock(ref mut blocker) => {
+                    if let Some(ref handle) = blocker.unblock_steps() {
+                        self.runnable.add(&self.tasks,handle);
+                    }
                 },
                 ExecutorAction::Done(handle) => {
                     self.remove(&handle);
@@ -288,8 +290,6 @@ mod test {
         x.tick(2.);
         assert!(!tc.is_finished());
         assert!(SleepQuantity::Forever == integration.get_sleeps().remove(0));
-        tc.unblock();
-        tc2.unblock();
     }
 
     #[test]
@@ -364,14 +364,15 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut tc = x.add(integration.new_step(vec![
-            TestState::Block,
+        let mut step = integration.new_step(vec![
             TestState::Done(Ok(()))
-        ]),&(),&cfg,"test");
+        ]);
+        let mut tc = x.add(step.clone(),&(),&cfg,"test");
+        step.forever_block();
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
-        tc.unblock();
+        step.forever_unblock(&mut tc);
         assert_eq!(vec![SleepQuantity::Forever,SleepQuantity::None],*integration.get_sleeps());
     }
 
@@ -395,6 +396,7 @@ mod test {
         x.tick(1.); /* (StepState::Block) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Forever);
         /* runnable => None */
+        print!("STARTING UNBOLCK\n");
         step.forever_unblock(&mut tc);
         x.tick(1.); /* (StepState::Again) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
@@ -471,14 +473,36 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let a = TimeoutStep2::new(2.,|| ());
-        let b = TimeoutStep2::new(5.,|| ());
+        let a = TimeoutStep2::new(8.,|| ());
+        let mut b = integration.new_step(vec![
+            TestState::Again,
+            TestState::Again,
+            TestState::Tick,
+            TestState::Again,
+            TestState::Again,
+            TestState::Tick,
+            TestState::Again,
+            TestState::Done(Ok(()))
+        ]);
         let out : Arc<Mutex<Vec<()>>> = Arc::new(Mutex::new(vec![]));
         let z = TestExtract(out);
         let p = StepSequence2::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),z);
-        x.add(p,&(),&cfg,"test");
+        b.no_auto();
+        let mut tc = x.add(p,&(),&cfg,"test");
         /* simulate */
         x.tick(10.);
-        
+        x.tick(10.);
+        integration.set_time(3.);
+        x.tick(10.);
+        x.tick(10.);
+        integration.set_time(7.);
+        x.tick(10.);
+        integration.set_time(8.);
+        x.tick(10.);
+        integration.set_time(9.);
+        x.tick(10.);
+        assert!(tc.is_finished());
+        x.tick(10.);
+        assert_eq!(3.,b.finish_time());
     }
 }

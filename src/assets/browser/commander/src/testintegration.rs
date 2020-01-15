@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex, MutexGuard };
-use crate::blocker::Blocker;
+use crate::block::Block;
 use crate::step::{ Step2, StepRun, StepState2, OngoingState };
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
@@ -10,7 +10,6 @@ pub(crate) enum TestState<Y,E> {
     Again,
     Tick,
     Block,
-    Dead,
     Done(Result<Y,E>)
 }
 
@@ -20,7 +19,7 @@ impl<Y,E> TestState<Y,E> where Y: Clone, E: Clone {
             TestState::Again => StepState2::Ongoing(OngoingState::Again),
             TestState::Tick => StepState2::Ongoing(OngoingState::Tick),
             TestState::Block => StepState2::Ongoing(OngoingState::Block(control.block())),
-            TestState::Dead => StepState2::Ongoing(OngoingState::Dead),
+            //TestState::Dead => StepState2::Ongoing(OngoingState::Dead),
             TestState::Done(v) => StepState2::Done(v.clone())
         }
     }
@@ -76,7 +75,7 @@ struct TestStepState {
     auto_advance: bool,
     block_for: Option<f64>,
     pending_forever_block: bool,
-    current_forever_block: Option<Blocker>
+    current_forever_block: Option<Block>
 }
 
 #[derive(Clone)]
@@ -108,6 +107,7 @@ impl<Y,E> TestStep<Y,E> {
     pub(crate) fn forever_unblock(&mut self, tc: &mut TaskControl) {
         let mut state = self.state.lock().unwrap();
         if let Some(ref mut blocker) = state.current_forever_block {
+            print!("BLOCKER UNBLOCK\n");
             blocker.unblock();
         }
         state.current_forever_block = None;
@@ -150,7 +150,6 @@ impl<Y,E> StepRun<Y,E> for TestStep<Y,E> where Y: Clone+'static, E: Clone+'stati
         if let Some(until) = state.block_for {
             let b = control.block();
             let mut b2 = b.clone();
-            let mut tc = control.task_control().clone();
             control.task_control().add_timer(until, move || {
                 b2.unblock();
             });

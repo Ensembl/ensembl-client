@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use crate::blocker::Blocker;
+use crate::block::Block;
 use crate::stepcontrol::StepControl;
 use crate::taskcontrol::TaskControl;
 
@@ -7,7 +7,7 @@ use crate::taskcontrol::TaskControl;
 pub enum OngoingState {
     Again,
     Tick,
-    Block(Blocker),
+    Block(Block),
     Dead
 }
 

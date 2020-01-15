@@ -1,3 +1,4 @@
+mod block;
 mod blocker;
 mod taskcontrol;
 mod edgetrigger;

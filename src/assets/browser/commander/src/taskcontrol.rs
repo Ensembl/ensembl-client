@@ -1,38 +1,13 @@
 use std::sync::{ Arc, Mutex };
 
 use crate::step::Step2;
+use crate::block::Block;
 use crate::blocker::Blocker;
-use crate::edgetrigger::EdgeTrigger;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig, StepRunner };
 use crate::timer::TimerSet;
 use crate::taskcontainer::TaskHandle;
-
-#[derive(Clone)]
-pub(crate) struct TaskUnblocker {
-    integration: ReenteringIntegration,
-    unblock: Arc<Mutex<EdgeTrigger<'static>>>
-}
-
-impl TaskUnblocker {
-    pub fn new(integration: &ReenteringIntegration, action_handle: &ExecutorActionHandle, task_handle: &TaskHandle) -> TaskUnblocker {
-        let mut action_handle2 = action_handle.clone();
-        let task_handle2 = task_handle.clone();
-        TaskUnblocker {
-            integration: integration.clone(),
-            unblock: Arc::new(Mutex::new(EdgeTrigger::new(move || {
-                action_handle2.add(ExecutorAction::Unblock(task_handle2.clone()));
-            })))
-        }
-    }
-
-    pub(crate) fn unblock(&mut self) {
-        /* If these two are the other way around, the world falls apart */
-        self.unblock.lock().unwrap().set();
-        self.integration.cause_reentry();
-    }
-}
 
 #[derive(Clone)]
 pub struct TaskControl {
@@ -44,7 +19,7 @@ pub struct TaskControl {
     task_handle: TaskHandle,
     action_handle: ExecutorActionHandle,
     timers: TimerSet,
-    unblocker: TaskUnblocker
+    blocker: Blocker
 }
 
 impl TaskControl {
@@ -53,7 +28,7 @@ impl TaskControl {
                       integration: &ReenteringIntegration) -> TaskControl {
         let action_handle = action_handle.clone();
         let task_handle = task_handle.clone();
-        let unblocker = TaskUnblocker::new(integration,&action_handle,&task_handle);
+        let blocker = Blocker::new(integration,&action_handle,&task_handle);
         TaskControl {
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
@@ -62,7 +37,7 @@ impl TaskControl {
             integration: integration.clone(),
             tick_index: Arc::new(Mutex::new(0)),
             timers: timers.clone(),
-            unblocker
+            blocker
         }
     }
 
@@ -118,38 +93,20 @@ impl TaskControl {
         StepRunner::new(run,self)
     }
 
-    /* blocking */
-    #[cfg(test)]
-    pub(crate) fn unblock(&mut self) {
-        self.unblocker.unblock.lock().unwrap().set();
-        self.integration.cause_reentry();
-    }
-
     pub(crate) fn about_to_run(&mut self, tick_index: u64) {
         *self.tick_index.lock().unwrap() = tick_index;
-        self.unblocker.unblock.lock().unwrap().reset();
     }
 
     pub fn get_tick_index(&self) -> u64 {
         *self.tick_index.lock().unwrap()
     }
 
-    pub(crate) fn not_runnable(&mut self) {
-        self.action_handle.add(ExecutorAction::Block(self.task_handle.clone()));
-        if self.unblocker.unblock.lock().unwrap().is_set() {
-            /* handle race between this unblock call and rerun_soon
-             * (we need to gurantee that the latter always wins)
-             */
-            self.action_handle.add(ExecutorAction::Unblock(self.task_handle.clone()));
-        }
-    }
-
     pub(crate) fn wait_for_next_tick(&mut self) {
         self.action_handle.add(ExecutorAction::Tick(self.task_handle.clone()));
     }
 
-    pub(crate) fn get_unblocker(&mut self) -> &mut TaskUnblocker {
-        &mut self.unblocker
+    pub(crate) fn get_blocker(&mut self) -> &mut Blocker {
+        &mut self.blocker
     }
 }
 
@@ -239,58 +196,10 @@ mod test {
         let timers = TimerSet::new();
         let integration = ReenteringIntegration::new(FakeIntegration(Arc::new(Mutex::new(0.))));
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration);
-        /* quickly test vaious accessors */
-        assert_eq!(2,tc.get_config().get_priority());
-        /* test */
-        /* 2 unblocks cause single action */
-        tc.unblock();
-        tc.unblock();
-        let actions = eah.drain();
-        assert_eq!(1,actions.len());
-        if let ExecutorAction::Unblock(_) = actions[0] {
-        } else {
-            assert!(false);
-        }
-        /* reset and then unblock and we should get another */
-        tc.about_to_run(0);
-        tc.unblock();
-        let actions = eah.drain();
-        assert_eq!(1,actions.len());
-        if let ExecutorAction::Unblock(_) = actions[0] {
-        } else {
-            assert!(false);
-        }
-        /* not_runnable should cause a block */
-        tc.about_to_run(0);
-        let ub = tc.get_unblocker().clone();
-        tc.not_runnable();
-        let actions = eah.drain();
-        assert_eq!(1,actions.len());
-        if let ExecutorAction::Block(_) = actions[0] {
-        } else {
-            assert!(false);
-        }
-        /* not runnable should not cause block if unblock called in-between */
-        tc.about_to_run(0);
-        tc.unblock();
-        tc.not_runnable();
-        let actions = eah.drain();
-        assert_eq!(3,actions.len());
-        if let (ExecutorAction::Unblock(_),
-                ExecutorAction::Block(_),
-                ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
-        } else {
-            assert!(false);
-        }
-        /* wait for next tick */
-        tc.about_to_run(0);
-        tc.wait_for_next_tick();
-        let actions = eah.drain();
-        assert_eq!(1,actions.len());
-        if let ExecutorAction::Tick(_) = actions[0] {
-        } else {
-            assert!(false);
-        }
+
+
+        // XXX todo
+
     }
 
     pub struct FakeIntegration2(Arc<Mutex<Vec<SleepQuantity>>>);
@@ -312,7 +221,7 @@ mod test {
         let mut tc = TaskControl::new(&cfg,&timers,&eah,&h,&integration.clone());
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
-        tc.unblock(); /* sets one-shot, sends SleepQuantity::None */
+        integration.cause_reentry(); /* sets one-shot, sends SleepQuantity::None */
         integration.sleep(SleepQuantity::Time(2.)); /* not sent */
         integration.reentering(); /* sent by executor at start of tick */
         integration.sleep(SleepQuantity::Time(3.));
