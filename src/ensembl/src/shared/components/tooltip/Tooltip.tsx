@@ -1,4 +1,5 @@
 import React, { ReactNode, useRef, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
@@ -17,11 +18,16 @@ import styles from './Tooltip.scss';
 
 type Props = {
   position: Position;
+  anchor: HTMLElement;
   container?: HTMLElement | null;
   autoAdjust: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
   delay: number;
   children: ReactNode;
   onClose: () => void;
+};
+
+type PropsWithNullableAnchor = Omit<Props, 'anchor'> & {
+  anchor: HTMLElement | null;
 };
 
 type TipProps = {
@@ -34,10 +40,13 @@ type InlineStylesState = {
   tipStyles: InlineStyles;
 };
 
-const Tooltip = (props: Props) => {
+const Tooltip = (props: PropsWithNullableAnchor) => {
+  return props.anchor ? <TooltipWithAnchor {...(props as Props)} /> : null;
+};
+
+const TooltipWithAnchor = (props: Props) => {
   const [isWaiting, setIsWaiting] = useState(true);
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
-  const parentRef = useRef<HTMLElement | null>(null);
   const positionRef = useRef<Position | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
     bodyStyles: {},
@@ -51,8 +60,6 @@ const Tooltip = (props: Props) => {
   };
 
   const handleClickOutside = (e: Event) => {
-    if (!parentRef.current) return;
-
     let target;
     if (e.type === 'touchend' && (e as TouchEvent).touches) {
       target = (e as TouchEvent).touches[0];
@@ -60,7 +67,7 @@ const Tooltip = (props: Props) => {
       target = e.target;
     }
 
-    if (target instanceof HTMLElement && !parentRef.current.contains(target)) {
+    if (target instanceof HTMLElement && !props.anchor.contains(target)) {
       props.onClose();
     }
   };
@@ -88,17 +95,15 @@ const Tooltip = (props: Props) => {
     }
 
     const tooltipElement = tooltipElementRef.current;
-    const parentElement = tooltipElement && tooltipElement.parentElement;
 
-    if (!(tooltipElement && parentElement)) {
+    if (!tooltipElement) {
       return;
     }
 
-    parentRef.current = parentElement;
-    setInlineStyles(getInlineStyles({ ...props, parentElement }));
+    setInlineStyles(getInlineStyles(props));
 
     if (props.autoAdjust) {
-      adjustPosition(tooltipElement, parentElement);
+      adjustPosition(tooltipElement, props.anchor);
     }
   }, [isWaiting]);
 
@@ -125,8 +130,7 @@ const Tooltip = (props: Props) => {
     setInlineStyles(
       getInlineStyles({
         ...props,
-        position: optimalPosition,
-        parentElement
+        position: optimalPosition
       })
     );
     setIsPositioning(false);
@@ -135,43 +139,50 @@ const Tooltip = (props: Props) => {
   const className = classNames(
     styles.tooltip,
     positionRef.current || props.position,
-    { [styles.tooltipInvisible]: !parentRef.current || isPositioning }
+    { [styles.tooltipInvisible]: isPositioning }
   );
 
-  return isWaiting ? null : (
-    <div
-      className={className}
-      ref={tooltipElementRef}
-      style={inlineStyles.bodyStyles}
-      onClick={handleClickInside}
-    >
-      <TooltipTip style={inlineStyles.tipStyles} />
-      {props.children}
-    </div>
-  );
+  return isWaiting
+    ? null
+    : ReactDOM.createPortal(
+        <div
+          className={className}
+          ref={tooltipElementRef}
+          style={inlineStyles.bodyStyles}
+          onClick={handleClickInside}
+        >
+          <TooltipTip style={inlineStyles.tipStyles} />
+          {props.children}
+        </div>,
+        document.body
+      );
 };
 
-const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
+type GetInlineStylesParams = Omit<Props, 'anchor'> & {
+  anchor: HTMLElement;
+};
+
+const getInlineStyles = (params: GetInlineStylesParams) => {
   // calculate styles of the tooltip
-  // considering that its tip points at the center of the parent
+  // considering that its tip points at the center of the anchor element
 
-  // NOTE: applying several consecutive translate functions in a transform
-  // instead of just using the CSS calc function
-  // is done to support IE11 (which doesn't allow calc inside of a transform)
-
-  const {
-    width: parentWidth,
-    height: parentHeight
-  } = params.parentElement.getBoundingClientRect();
+  const anchorBoundingRect = params.anchor.getBoundingClientRect();
+  const anchorWidth = anchorBoundingRect.width;
+  const halfAnchorWidth = anchorWidth / 2;
+  const anchorHeight = anchorBoundingRect.height;
+  const halfAnchorHeight = anchorHeight / 2;
+  const anchorLeft = Math.round(anchorBoundingRect.left);
+  const anchorTop = Math.round(anchorBoundingRect.top);
+  const halfTipWidth = TIP_WIDTH / 2;
 
   switch (params.position) {
     case Position.TOP_LEFT:
       return {
         bodyStyles: {
-          left: '50%',
+          left: `${anchorLeft + anchorWidth / 2}px`,
           transform: `translateX(calc(${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH /
             2}px - 100%))`,
-          bottom: `${parentHeight + TIP_HEIGHT}px`
+          bottom: `${window.innerHeight - anchorTop + TIP_HEIGHT}px`
         },
         tipStyles: {
           right: `${TIP_HORIZONTAL_OFFSET}px`,
@@ -182,8 +193,11 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.TOP_RIGHT:
       return {
         bodyStyles: {
-          left: `calc(50% - ${TIP_HORIZONTAL_OFFSET + TIP_WIDTH / 2}px)`,
-          bottom: `${parentHeight + TIP_HEIGHT}px`
+          left: `${anchorLeft +
+            halfAnchorWidth -
+            TIP_HORIZONTAL_OFFSET -
+            halfTipWidth}px`,
+          bottom: `${window.innerHeight - anchorTop + TIP_HEIGHT}px`
         },
         tipStyles: {
           bottom: `${-TIP_HEIGHT + 1}px`,
@@ -194,8 +208,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.BOTTOM_LEFT:
       return {
         bodyStyles: {
-          top: `${parentHeight + TIP_HEIGHT}px`,
-          left: '50%',
+          top: `${anchorTop + anchorHeight + TIP_HEIGHT}px`,
+          left: `${anchorLeft + anchorWidth / 2}px`,
           transform: `translateX(calc(-100% + ${TIP_HORIZONTAL_OFFSET}px + ${TIP_WIDTH /
             2}px)`
         },
@@ -208,8 +222,11 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.BOTTOM_RIGHT:
       return {
         bodyStyles: {
-          left: `${parentWidth / 2 - TIP_HORIZONTAL_OFFSET - TIP_WIDTH / 2}px`,
-          top: `${parentHeight + TIP_HEIGHT}px`
+          left: `${anchorLeft +
+            halfAnchorWidth -
+            TIP_HORIZONTAL_OFFSET -
+            halfTipWidth}px`,
+          top: `${anchorTop + anchorHeight + TIP_HEIGHT}px`
         },
         tipStyles: {
           top: `${-TIP_HEIGHT + 1}px`,
@@ -219,8 +236,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.LEFT_TOP:
       return {
         bodyStyles: {
-          left: `-${TIP_HEIGHT}px`,
-          top: `50%`,
+          left: `${anchorLeft - TIP_HEIGHT}px`,
+          top: `${anchorTop + halfAnchorHeight}px`,
           transform: `translateX(-100%) translateY(calc(-100% + ${TIP_HORIZONTAL_OFFSET}px))`
         },
         tipStyles: {
@@ -233,9 +250,9 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.LEFT_BOTTOM:
       return {
         bodyStyles: {
-          left: 0,
-          top: '50%',
-          transform: `translateX(calc(-100% - ${TIP_HEIGHT}px)) translateY(-${TIP_HORIZONTAL_OFFSET}px)`
+          left: `${anchorLeft - TIP_HEIGHT}px`,
+          top: `${anchorTop + halfAnchorHeight}px`,
+          transform: `translateX(-100%) translateY(-${TIP_HORIZONTAL_OFFSET}px)`
         },
         tipStyles: {
           left: 'calc(100% - 1px)',
@@ -248,8 +265,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.RIGHT_TOP:
       return {
         bodyStyles: {
-          left: `calc(100% + ${TIP_HEIGHT}px)`,
-          top: `calc(50% + ${TIP_HORIZONTAL_OFFSET}px)`,
+          left: `${anchorLeft + anchorWidth + TIP_HEIGHT}px`,
+          top: `${anchorTop + halfAnchorHeight + TIP_HORIZONTAL_OFFSET}px`,
           transform: `translateY(-100%)`
         },
         tipStyles: {
@@ -262,8 +279,8 @@ const getInlineStyles = (params: Props & { parentElement: HTMLElement }) => {
     case Position.RIGHT_BOTTOM:
       return {
         bodyStyles: {
-          left: `calc(100% + ${TIP_HEIGHT}px)`,
-          top: '50%',
+          left: `${anchorLeft + anchorWidth + TIP_HEIGHT}px`,
+          top: `${anchorTop + halfAnchorHeight}px`,
           transform: `translateY(-${TIP_HORIZONTAL_OFFSET}px)`
         },
         tipStyles: {
