@@ -38,6 +38,9 @@ extern crate blackbox;
 extern crate hashbrown;
 extern crate owning_ref;
 
+#[macro_use]
+extern crate futures;
+
 #[cfg(test)]
 extern crate regex;
 

@@ -10,51 +10,49 @@ use std::sync::{ Arc, Mutex };
 use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::edgetrigger::EdgeTrigger;
 
-struct Timeout(f64,u64,EdgeTrigger<'static>,Option<TaskContainerHandle>);
+struct Timeout<T>(f64,u64,EdgeTrigger<'static>,T);
 
-impl PartialEq for Timeout {
-    fn eq(&self, other: &Timeout) -> bool { self.0 == other.0 && self.1 == other.1 }
+impl<T> PartialEq for Timeout<T> {
+    fn eq(&self, other: &Timeout<T>) -> bool { self.0 == other.0 && self.1 == other.1 }
 }
 
-impl Eq for Timeout {}
+impl<T> Eq for Timeout<T> {}
 
-impl Ord for Timeout {
-    fn cmp(&self, other: &Timeout) -> Ordering {
+impl<T> Ord for Timeout<T> {
+    fn cmp(&self, other: &Timeout<T>) -> Ordering {
         self.0.partial_cmp(&other.0).unwrap()
     }
 }
 
-impl PartialOrd for Timeout {
-    fn partial_cmp(&self, other: &Timeout) -> Option<Ordering> {
+impl<T> PartialOrd for Timeout<T> {
+    fn partial_cmp(&self, other: &Timeout<T>) -> Option<Ordering> {
         Some(self.cmp(&other))
     }
 }
 
-struct TimerSetImpl {
-    timeouts: BinaryHeap<Timeout,MinComparator>,
+struct TimerSetImpl<T> {
+    timeouts: BinaryHeap<Timeout<T>,MinComparator>,
     next: u64
 }
 
-impl TimerSetImpl {
-    fn new() -> TimerSetImpl {
+impl<H> TimerSetImpl<H> {
+    fn new() -> TimerSetImpl<H> {
         TimerSetImpl {
             timeouts: BinaryHeap::new_min(),
             next: 0
         }
     }
 
-    fn add<T>(&mut self, taskhandle: Option<&TaskContainerHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
+    fn add<T>(&mut self, taskhandle: H, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
         self.next += 1;
         let trigger = EdgeTrigger::new(callback);
-        self.timeouts.push(Timeout(timeout,self.next,trigger,taskhandle.cloned()));
+        self.timeouts.push(Timeout(timeout,self.next,trigger,taskhandle));
     }
 
-    fn tidy_handles(&mut self, tasks: &TaskContainer) {
+    fn tidy_handles<T>(&mut self, tidy_fn: T) where T: Fn(&H) -> bool {
         while let Some(timeout) = self.timeouts.pop() {
-            if let Some(ref handle) = timeout.3 {
-                if tasks.get(handle).is_none() {
-                    continue;
-                }
+            if !tidy_fn(&timeout.3) {
+                continue;
             }
             self.timeouts.push(timeout);
             break;
@@ -78,14 +76,14 @@ impl TimerSetImpl {
 }
 
 #[derive(Clone)]
-pub(crate) struct TimerSet(Arc<Mutex<TimerSetImpl>>);
+pub(crate) struct TimerSet<H>(Arc<Mutex<TimerSetImpl<H>>>);
 
-impl TimerSet {
-    pub(crate) fn new() -> TimerSet {
+impl<H> TimerSet<H> {
+    pub(crate) fn new() -> TimerSet<H> {
         TimerSet(Arc::new(Mutex::new(TimerSetImpl::new())))
     }
 
-    pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskContainerHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
+    pub(crate) fn add<T>(&mut self, taskhandle: H, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
         self.0.lock().unwrap().add(taskhandle,timeout,callback);
     }
 
@@ -97,8 +95,8 @@ impl TimerSet {
         self.0.lock().unwrap().check(now);
     }
 
-    pub(crate) fn tidy_handles(&mut self, tasks: &TaskContainer) {
-        self.0.lock().unwrap().tidy_handles(tasks);
+    pub(crate) fn tidy_handles<T>(&mut self, tidy_fn: T) where T: Fn(&H) -> bool {
+        self.0.lock().unwrap().tidy_handles(tidy_fn);
     }
 }
 
@@ -120,7 +118,7 @@ mod test {
     #[test]
     pub fn test_timer() {
         let tc = TaskContainer::new();
-        let mut timers = TimerSet::new();
+        let mut timers = TimerSet::<Option<TaskContainerHandle>>::new();
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         timers.check(0.);
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
@@ -161,17 +159,17 @@ mod test {
         let t3 = FakeTask(2);
         tasks.set(&h3,t3);
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
-        timers.add(Some(&h1),1.,|| {});
-        timers.add(Some(&h2),2.,|| {});
-        timers.add(Some(&h3),3.,|| {});
+        timers.add(Some(h1.clone()),1.,|| {});
+        timers.add(Some(h2.clone()),2.,|| {});
+        timers.add(Some(h3),3.,|| {});
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
         tasks.remove(&h2);
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
-        timers.tidy_handles(&tasks);
+        timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
         tasks.remove(&h1);
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
-        timers.tidy_handles(&tasks);
+        timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
         assert!(timers.0.lock().unwrap().timeouts.len()==1);
         timers.check(4.);
         assert!(timers.0.lock().unwrap().timeouts.len()==0);

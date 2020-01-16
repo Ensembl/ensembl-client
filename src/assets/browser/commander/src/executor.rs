@@ -8,6 +8,7 @@ use crate::taskcontext::TaskContext;
 use crate::step::{ KillReason, RunConfig, Step2 };
 use crate::task2::Task2Impl;
 use crate::taskhandle::TaskHandle;
+use crate::block::Block;
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -15,8 +16,9 @@ pub struct Executor {
     runnable: Runnable,
     next_tick: HashSet<TaskContainerHandle>,
     actions: ExecutorActionHandle,
-    timers: TimerSet,
-    tick_index: u64
+    timers: TimerSet<Option<TaskContainerHandle>>,
+    ticks: TimerSet<Block>,
+    tick_index: u64,
 }
 
 impl Executor {
@@ -28,6 +30,7 @@ impl Executor {
             next_tick: HashSet::new(),
             actions: ExecutorActionHandle::new(),
             timers: TimerSet::new(),
+            ticks: TimerSet::new(),
             tick_index: 0
         }
     }
@@ -44,7 +47,7 @@ impl Executor {
         self.tasks.set(&container_handle,task);
         if let Some(timeout) = run_config.get_timeout() {
             let mut control = control.clone();
-            self.timers.add(Some(&container_handle),now+timeout,move || control.finish(Some(&KillReason::Timeout)));
+            self.timers.add(Some(container_handle.clone()),now+timeout,move || control.finish(Some(&KillReason::Timeout)));
         }
         self.runnable.add(&self.tasks,&container_handle);
         handle
@@ -57,7 +60,7 @@ impl Executor {
 
     fn add_timer(&mut self, handle: &TaskContainerHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
         let now = self.integration.current_time();
-        self.timers.add(Some(handle),now+timeout,callback);
+        self.timers.add(Some(handle.clone()),now+timeout,callback);
     }
 
     pub(crate) fn run_actions(&mut self) {
@@ -84,6 +87,13 @@ impl Executor {
                 ExecutorAction::Tick(handle) => {
                     self.runnable.remove(&self.tasks,&handle);
                     self.next_tick.insert(handle);
+                },
+                ExecutorAction::UnblockOnTick(block,tick) => {
+                    /*
+                    self.ticks.add(block,tick,|| {
+                        block.unblock();
+                    });
+                    */
                 }
             }
         }
@@ -96,7 +106,8 @@ impl Executor {
     }
 
     pub(crate) fn check_timers(&mut self,now: f64) {
-        self.timers.tidy_handles(&self.tasks);
+        let (timers,tasks) = (&mut self.timers,&mut self.tasks);
+        timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
         self.timers.check(now);
     }
 
@@ -133,7 +144,8 @@ impl Executor {
             now = self.integration.current_time();
             if now >= expiry { break; }
         }
-        self.timers.tidy_handles(&self.tasks);
+        let (timers,tasks) = (&mut self.timers,&mut self.tasks);
+        timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
         let sleep = self.calculate_sleep(now);
         self.integration.sleep(sleep);
     }
