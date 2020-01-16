@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
@@ -20,6 +20,7 @@ type Props = {
 
 const QuestionButton = (props: Props) => {
   const [isHovering, setIsHovering] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   const handleMouseEnter = () => {
     setIsHovering(true);
@@ -39,12 +40,17 @@ const QuestionButton = (props: Props) => {
 
   return (
     <div
+      ref={elementRef}
       className={className}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <QuestionIcon />
-      {isHovering && <Tooltip autoAdjust={true}>{props.helpText}</Tooltip>}
+      {isHovering && (
+        <Tooltip anchor={elementRef.current} autoAdjust={true}>
+          {props.helpText}
+        </Tooltip>
+      )}
     </div>
   );
 };

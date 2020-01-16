@@ -52,7 +52,9 @@ export const ImageButton = (props: Props) => {
     >
       <ImageHolder {...rest} classNames={styles} />
       {shouldShowTooltip && (
-        <Tooltip autoAdjust={true}>{props.description}</Tooltip>
+        <Tooltip anchor={hoverRef.current} autoAdjust={true}>
+          {props.description}
+        </Tooltip>
       )}
     </div>
   );

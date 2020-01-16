@@ -165,7 +165,9 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
         </span>
       </form>
       {errorMessage ? (
-        <Tooltip autoAdjust={true}>{errorMessage}</Tooltip>
+        <Tooltip anchor={inputGroupRef.current} autoAdjust={true}>
+          {errorMessage}
+        </Tooltip>
       ) : null}
     </div>
   );

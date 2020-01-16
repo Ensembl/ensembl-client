@@ -226,6 +226,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           ></Input>
           {locationStartErrorMessage ? (
             <Tooltip
+              anchor={locationStartRef.current}
               autoAdjust={true}
               container={locationStartRef.current}
               position={Position.BOTTOM_RIGHT}
@@ -249,6 +250,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           ></Input>
           {!locationStartErrorMessage && locationEndErrorMessage ? (
             <Tooltip
+              anchor={locationEndRef.current}
               autoAdjust={true}
               container={locationEndRef.current}
               position={Position.BOTTOM_LEFT}

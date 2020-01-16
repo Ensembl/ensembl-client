@@ -95,7 +95,9 @@ export const PopularSpeciesButton = (props: Props) => {
         <InlineSVG src={species.image} />
       </div>
       {isHovered && speciesDisplayName && (
-        <Tooltip autoAdjust={true}>{speciesDisplayName}</Tooltip>
+        <Tooltip anchor={hoverRef.current} autoAdjust={true}>
+          {speciesDisplayName}
+        </Tooltip>
       )}
     </div>
   );
