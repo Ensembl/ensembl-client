@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import windowService from 'src/services/window-service';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import { findOptimalPosition } from './tooltip-helper';
 import { Position } from './tooltip-types';
@@ -53,23 +54,11 @@ const TooltipWithAnchor = (props: Props) => {
     tipStyles: {}
   });
   const tooltipElementRef: React.RefObject<HTMLDivElement> = useRef(null);
+  useOutsideClick(tooltipElementRef, props.onClose);
   let timeoutId: NodeJS.Timeout;
 
   const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
-  };
-
-  const handleClickOutside = (e: Event) => {
-    let target;
-    if (e.type === 'touchend' && (e as TouchEvent).touches) {
-      target = (e as TouchEvent).touches[0];
-    } else {
-      target = e.target;
-    }
-
-    if (target instanceof HTMLElement && !props.anchor.contains(target)) {
-      props.onClose();
-    }
   };
 
   useEffect(() => {
@@ -78,15 +67,6 @@ const TooltipWithAnchor = (props: Props) => {
     }, props.delay);
 
     return () => clearTimeout(timeoutId);
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    document.addEventListener('touchend', handleClickOutside, true);
-    return function cleanup() {
-      document.removeEventListener('click', handleClickOutside, true);
-      document.removeEventListener('touchend', handleClickOutside, true);
-    };
   }, []);
 
   useEffect(() => {
