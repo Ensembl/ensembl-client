@@ -11,6 +11,7 @@ mod step;
 mod steprunner;
 mod task2;
 mod taskcontainer;
+mod taskhandle;
 mod timer;
 
 #[cfg(test)]

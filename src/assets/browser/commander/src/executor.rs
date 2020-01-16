@@ -7,6 +7,7 @@ use crate::runnable::Runnable;
 use crate::taskcontext::TaskContext;
 use crate::step::{ KillReason, RunConfig, Step2 };
 use crate::task2::Task2Impl;
+use crate::taskhandle::TaskHandle;
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -34,18 +35,19 @@ impl Executor {
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
     // XXX only add from main thread (via action)
-    pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskContext where S:Step2<X,Output=()> + 'static + Send, X: Send + 'static {
+    pub fn add<S,X,R>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskHandle<R> where S:Step2<X,Output=R> + 'static + Send, X: Send + 'static, R: 'static {
         let now = self.integration.current_time();
-        let handle = self.tasks.allocate();
-        let mut control = TaskContext::new(run_config,&mut self.actions,&handle,&self.integration);
-        let task = Task2Impl::new(&mut (Box::new(step) as Box<dyn Step2<X,Output=()>>),input,run_config,&mut control,name);
-        self.tasks.set(&handle,task);
+        let container_handle = self.tasks.allocate();
+        let mut control = TaskContext::new(run_config,&mut self.actions,&container_handle,&self.integration);
+        let task = Task2Impl::new(&mut (Box::new(step) as Box<dyn Step2<X,Output=R>>),input,run_config,&mut control,name);
+        let handle = task.get_handle().clone();
+        self.tasks.set(&container_handle,task);
         if let Some(timeout) = run_config.get_timeout() {
             let mut control = control.clone();
-            self.timers.add(Some(&handle),now+timeout,move || control.finish(Some(&KillReason::Timeout)));
+            self.timers.add(Some(&container_handle),now+timeout,move || control.finish(Some(&KillReason::Timeout)));
         }
-        self.runnable.add(&self.tasks,&handle);
-        control
+        self.runnable.add(&self.tasks,&container_handle);
+        handle
     }
 
     fn remove(&mut self, handle: &TaskContainerHandle) {
@@ -143,7 +145,7 @@ mod test {
     use super::*;
 
     use std::sync::{ Arc, Mutex };
-    use crate::step::{ KillReason, StepState2, OngoingState };
+    use crate::step::{ KillReason, StepState2, OngoingState, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestStep, TestState, TestIntegration, TestExtract };
     use crate::steps::combinators::sequence::StepSequence2;
@@ -159,15 +161,15 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let tc = x.add(integration.new_step(vec![
+        let mut tc = x.add(integration.new_step(vec![
             TestState::Again,
             TestState::Done(()),
         ]),&(),&cfg,"test");
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.run();
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.run();
-        assert!(tc.is_finished());
+        assert!(tc.get_context().is_finished());
         assert!(!x.run());
     }
 
@@ -178,12 +180,13 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(())]);
         let mut tc = x.add(step.clone(),&(),&cfg,"test");
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         step.forever_block();
         assert!(x.run());
         assert!(!x.run());
-        assert!(!tc.is_finished());
-        step.forever_unblock(&mut tc);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        step.forever_unblock(&mut tc.get_context());
         x.tick(10.);
         assert_eq!(1,x.tasks.len());
         x.tick(10.);
@@ -200,8 +203,7 @@ mod test {
         let mut tc = x.add(step,&(),&cfg,"test");
         integration.set_time(10.);
         x.run();
-        assert!(tc.is_finished());
-        assert!(tc.kill_reason() == Some(KillReason::Timeout));
+        assert!(tc.peek_result() == TaskResult::Killed(KillReason::Timeout));
     }
 
     #[test]
@@ -212,11 +214,11 @@ mod test {
         let mut tc = x.add(integration.new_step(vec![
             TestState::Again,
             TestState::Again,
-            TestState::Again
+            TestState::Again,
+            TestState::Done(())
         ]),&(),&cfg,"test");
         x.tick(10.);
-        assert!(tc.is_finished());
-        assert!(tc.kill_reason() == None);    
+        assert!(tc.peek_result() == TaskResult::Done);
     }
 
     #[test]
@@ -227,13 +229,13 @@ mod test {
         let mut tc = x.add(integration.new_step(vec![
             TestState::Again,
             TestState::Again,
-            TestState::Again
+            TestState::Again,
+            TestState::Done(())
         ]),&(),&cfg,"test");
         x.tick(2.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(2.);
-        assert!(tc.is_finished());
-        assert!(tc.kill_reason() == None);    
+        assert!(tc.peek_result() == TaskResult::Done);
     }
 
     #[test]
@@ -244,17 +246,17 @@ mod test {
         let mut tc = x.add(integration.new_step(vec![
             TestState::Tick,
             TestState::Tick,
-            TestState::Tick
+            TestState::Tick,
+            TestState::Done(())
         ]),&(),&cfg,"test");
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.is_finished());
-        assert!(tc.kill_reason() == None);
+        assert!(tc.peek_result() == TaskResult::Done);    
     }
 
     #[test]
@@ -272,10 +274,10 @@ mod test {
             TestState::Done(())
         ]),&(),&cfg,"test2");
         x.tick(2.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(SleepQuantity::None == integration.get_sleeps().remove(0));
         x.tick(2.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(SleepQuantity::Forever == integration.get_sleeps().remove(0));
     }
 
@@ -359,7 +361,7 @@ mod test {
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
-        step.forever_unblock(&mut tc);
+        step.forever_unblock(&mut tc.get_context());
         assert_eq!(vec![SleepQuantity::Forever,SleepQuantity::None],*integration.get_sleeps());
     }
 
@@ -384,14 +386,14 @@ mod test {
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Forever);
         /* runnable => None */
         print!("STARTING UNBOLCK\n");
-        step.forever_unblock(&mut tc);
+        step.forever_unblock(&mut tc.get_context());
         x.tick(1.); /* (StepState::Again) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
         /* next tick => None */
         x.tick(1.); /* (StepState::Tick) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
         /* timer => None */
-        tc.add_timer(3.,|| {});
+        tc.get_context().add_timer(3.,|| {});
         step.forever_block();
         x.tick(1.); /* (StepState::Block) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Time(5.));
@@ -412,7 +414,7 @@ mod test {
         /* simulate */
         x.tick(10.); /* (Block) time=1 on exit => task-timout=5 => delta = 4. ==>> SleepQuantity::Time(4.) */
         assert_eq!(1.,ts.get_time());
-        tc.add_timer(2.,|| {});
+        tc.get_context().add_timer(2.,|| {});
         x.tick(10.); /* (Block) time=1 on entry and exit => +2  ==>> SleepQuantity::Time(2.) */
         assert_eq!(1.,ts.get_time());
         /* verify */
@@ -486,7 +488,7 @@ mod test {
         x.tick(10.);
         integration.set_time(9.);
         x.tick(10.);
-        assert!(tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Done);
         x.tick(10.);
         assert_eq!(3.,b.finish_time());
     }

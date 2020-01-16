@@ -43,15 +43,17 @@ impl OngoingState {
     }
 }
 
-#[derive(Clone,PartialEq)]
+#[derive(Clone,PartialEq,Eq)]
 pub enum KillReason { // XXX test it
     Timeout,
     Cancelled,
     NotNeeded
 }
 
-pub enum StepResult<Y,E> {
-    Done(Result<Y,E>),
+#[derive(Clone,PartialEq,Eq)]
+pub enum TaskResult {
+    Ongoing,
+    Done,
     Killed(KillReason)
 }
 

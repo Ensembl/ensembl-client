@@ -71,7 +71,7 @@ mod test {
     use super::*;
 
     use crate::executor::Executor;
-    use crate::step::RunConfig;
+    use crate::step::{ RunConfig, TaskResult };
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::steps::combinators::branch::StepBranch;
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
@@ -115,11 +115,11 @@ mod test {
         for i in 0..7 {
             x.tick(10.);
             assert!(out2.lock().unwrap().len() == 0);
-            assert!(!tc.is_finished());
+            assert!(tc.peek_result() == TaskResult::Ongoing);
         }
         integration.set_time(100.);
         x.tick(10.);
-        assert!(tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Done);
         assert!(out2.lock().unwrap().len() != 0);
         assert_eq!(vec![5,2,0],*out2.lock().unwrap());
     }
@@ -152,9 +152,9 @@ mod test {
         let p = StepSequenceSimple::new(p,z);
         let tc = x.add(p,(),&cfg,"test");
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Done);
         assert_eq!(6,*out2.lock().unwrap());
     }
 }

@@ -65,7 +65,7 @@ impl<X,Y: Send,Z> Step2<X> for StepSequenceSimple<X,Y,Z> where Y: 'static, Z: 's
 mod test {
     use super::*;
     use crate::executor::Executor;
-    use crate::step::RunConfig;
+    use crate::step::{ RunConfig, TaskResult };
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::testintegration::{ TestIntegration, TestState };
 
@@ -86,12 +86,12 @@ mod test {
         ]);
         let mut tc = x.add(StepSequenceSimple::new(a,b),&(),&cfg,"test");
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Done);
     }
 }

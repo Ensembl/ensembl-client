@@ -1,11 +1,13 @@
 use crate::taskcontext::TaskContext;
 use crate::step::{ RunConfig, Step2, StepState2, OngoingState };
 use crate::steprunner::StepRunner;
+use crate::taskhandle::TaskHandle;
 
-pub(crate) struct Task2Impl {
-    runner: StepRunner<()>,
+pub(crate) struct Task2Impl<R> {
+    runner: StepRunner<R>,
+    handle: TaskHandle<R>,
     run_config: RunConfig,
-    task_control: TaskContext,
+    task_context: TaskContext,
     name: String
 }
 
@@ -15,19 +17,24 @@ pub(crate) trait Task2 {
     fn get_name(&self) -> String;
 }
 
-impl Task2Impl {
-    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=()>>, input: X, run_config: &RunConfig, task_control: &mut TaskContext, name: &str) -> Task2Impl where X: Send {
-        let runner : StepRunner<()> = task_control.new_step(step,input);
+impl<R> Task2Impl<R> {
+    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=R>>, input: X, run_config: &RunConfig, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> where X: Send {
+        let runner = task_context.new_step(step,input);
         Task2Impl {
             runner,
-            task_control: task_control.clone(),
+            handle: TaskHandle::new(task_context),
+            task_context: task_context.clone(),
             run_config: run_config.clone(),
             name: name.to_string()
         }
     }
+
+    pub(crate) fn get_handle(&self) -> &TaskHandle<R> {
+        &self.handle
+    }
 }
 
-impl Task2 for Task2Impl {
+impl<R> Task2 for Task2Impl<R> {
     fn get_priority(&self) -> i8 { self.run_config.get_priority() }
     fn get_name(&self) -> String { self.name.clone() }
 
@@ -41,19 +48,23 @@ impl Task2 for Task2Impl {
          * inevitable asynchrony of a signal being delivered at the start of an execute call
          * as we are non pre-emptive.
          */
-        if self.task_control.is_finished() { 
+        if self.task_context.is_finished() { 
             return;
         }
-        self.task_control.about_to_run(tick_index);
+        self.task_context.about_to_run(tick_index);
         match self.runner.more() {
-            StepState2::Done(_) | StepState2::Ongoing(OngoingState::Dead) => {
-                self.task_control.finish_internal(None);
+            StepState2::Done(r) => {
+                self.handle.done(r);
+                self.task_context.finish_internal(None);
+            },
+            StepState2::Ongoing(OngoingState::Dead) => {
+                self.task_context.finish_internal(None);
             },
             StepState2::Ongoing(OngoingState::Block(b)) => {
-                self.task_control.get_blocker().block_task(&b);
+                self.task_context.get_blocker().block_task(&b);
             },
             StepState2::Ongoing(OngoingState::Tick) => {
-                self.task_control.wait_for_next_tick();
+                self.task_context.wait_for_next_tick();
             },
             StepState2::Ongoing(OngoingState::Again) => {}
         }

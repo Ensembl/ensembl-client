@@ -62,7 +62,7 @@ mod test {
     use std::thread::sleep;
     use std::time::Duration;
     use crate::executor::Executor;
-    use crate::step::RunConfig;
+    use crate::step::{ RunConfig, TaskResult };
     use crate::testintegration::{ TestIntegration, TestExtractorStep };
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
 
@@ -80,10 +80,10 @@ mod test {
         let f = StepSequenceSimple::new(f,z);
         let tc = x.add(f,2,&cfg,"test");
         x.tick(10.);
-        assert!(!tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Ongoing);
         sleep(Duration::from_millis(200));
         x.tick(10.);
-        assert!(tc.is_finished());
+        assert!(tc.peek_result() == TaskResult::Done);
         assert_eq!(4,*out.lock().unwrap());
     }
 }
