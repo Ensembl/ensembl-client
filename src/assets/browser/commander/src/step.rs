@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use crate::block::Block;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 use crate::steprunner::StepRun;
 
 #[derive(Clone)] // XXX test only
@@ -27,7 +27,7 @@ impl OngoingState {
         }
     }
 
-    pub(crate) fn merge(&mut self, stepcontrol: &mut TaskControl, other: &OngoingState) {
+    pub(crate) fn merge(&mut self, stepcontrol: &mut TaskContext, other: &OngoingState) {
         if let OngoingState::Block(in_b) = other {
             if let OngoingState::Dead = self {
                 *self = OngoingState::Block(stepcontrol.block());
@@ -58,7 +58,7 @@ pub enum StepResult<Y,E> {
 pub trait Step2<Input> : Send {
     type Output;
 
-    fn start(&mut self, input: Input, control: &mut TaskControl) -> Box<dyn StepRun<Output=Self::Output>>;
+    fn start(&mut self, input: Input, control: &mut TaskContext) -> Box<dyn StepRun<Output=Self::Output>>;
     //fn drop(&mut self, _: &X, _: StepResult<Y,Error>) {} // XXX
 }
 

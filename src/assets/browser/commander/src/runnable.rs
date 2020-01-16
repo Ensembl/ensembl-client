@@ -1,5 +1,5 @@
 use std::collections::BTreeMap;
-use crate::taskcontainer::{ TaskContainer, TaskHandle };
+use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::runqueue::RunQueue2;
 
 pub(crate) struct Runnable {
@@ -13,7 +13,7 @@ impl Runnable {
         }
     }
 
-    pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: &TaskHandle) {
+    pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: &TaskContainerHandle) {
         if let Some(task) = tasks.get(handle) {
             let queue = self.queues.entry(task.get_priority()).or_insert_with(||
                 RunQueue2::new()
@@ -22,7 +22,7 @@ impl Runnable {
         }
     }
 
-    pub(crate) fn remove(&mut self, tasks: &TaskContainer, handle: &TaskHandle) {
+    pub(crate) fn remove(&mut self, tasks: &TaskContainer, handle: &TaskContainerHandle) {
         if let Some(task) = tasks.get(handle) {
             let mut doomed = false;
             if let Some(queue) = self.queues.get_mut(&task.get_priority()) {

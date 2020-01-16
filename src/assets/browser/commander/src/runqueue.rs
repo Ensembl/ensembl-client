@@ -1,11 +1,11 @@
 use hashbrown::HashSet;
 
-use crate::taskcontainer::{ TaskContainer, TaskHandle };
+use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 
 // XXX convert to BTreeSet to detect double-accounting.
 pub(crate) struct RunQueue2 {
-    present: HashSet<TaskHandle>,
-    tasks: Vec<TaskHandle>,
+    present: HashSet<TaskContainerHandle>,
+    tasks: Vec<TaskContainerHandle>,
     next_task: usize
 }
 
@@ -22,14 +22,14 @@ impl RunQueue2 {
         self.tasks.len() == 0
     }
 
-    pub(crate) fn add(&mut self, handle: &TaskHandle) {
+    pub(crate) fn add(&mut self, handle: &TaskContainerHandle) {
         if !self.present.contains(&handle) {
             self.present.insert(handle.clone());
             self.tasks.push(handle.clone());
         }
     }
 
-    pub(crate) fn remove(&mut self, handle: &TaskHandle) {
+    pub(crate) fn remove(&mut self, handle: &TaskContainerHandle) {
         if let Some(index) = self.tasks.iter().position(|h| h == handle) {
             if index < self.next_task {
                 self.next_task -= 1;

@@ -1,10 +1,8 @@
 TODO:
 step name
-soft step timeout
 Rc RunConfig
-Do we need Send?
-killed in-step memory
 non-null task return values
 detect result in control
 debug with contitional derive
 De static
+associated types.

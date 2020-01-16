@@ -1,10 +1,10 @@
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::{ StepRun, StepRunner };
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 struct StepSequenceSimpleRun<Y,Z> {
-    task_control: TaskControl,
+    task_control: TaskContext,
     one: StepRunner<Y>,
     two_step: Arc<Mutex<Box<dyn Step2<Y,Output=Z>>>>,
     two: Option<StepRunner<Z>>
@@ -13,7 +13,7 @@ struct StepSequenceSimpleRun<Y,Z> {
 impl<Y,Z> StepRun for StepSequenceSimpleRun<Y,Z> {
     type Output = Z;
 
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<Z> {
+    fn more(&mut self, _control: &mut TaskContext) -> StepState2<Z> {
         if let Some(two) = &mut self.two {
             two.more()
         } else {
@@ -50,7 +50,7 @@ impl<X,Y: Send,Z> StepSequenceSimple<X,Y,Z> {
 impl<X,Y: Send,Z> Step2<X> for StepSequenceSimple<X,Y,Z> where Y: 'static, Z: 'static {
     type Output = Z;
 
-    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Z>> {
+    fn start(&mut self, input: X, task_control: &mut TaskContext) -> Box<dyn StepRun<Output=Z>> {
         Box::new(StepSequenceSimpleRun {
             task_control: task_control.clone(),
             one: task_control.new_step(&mut self.one.lock().unwrap(),input),

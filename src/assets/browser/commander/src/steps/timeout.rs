@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::StepRun;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 use crate::steps::combinators::first::StepFirst;
 
 struct Timeout2Run<R> {
@@ -14,7 +14,7 @@ struct Timeout2Run<R> {
 impl<R> StepRun for Timeout2Run<R> {
     type Output = R;
 
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
+    fn more(&mut self, control: &mut TaskContext) -> StepState2<R> {
         if *self.expired.lock().unwrap() {
             let err = (self.errorgen.lock().unwrap())();
             StepState2::Done(err)
@@ -56,7 +56,7 @@ impl<X,R> TimeoutStep2<X,R> where X: Send, R: Send + 'static {
 impl<X,R> Step2<X> for TimeoutStep2<X,R> where X: Send, R: 'static {
     type Output = R;
 
-    fn start(&mut self, _input: X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, _input: X, _control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
         Box::new(Timeout2Run {
             timeout: self.timeout,
             expired: Arc::new(Mutex::new(false)),

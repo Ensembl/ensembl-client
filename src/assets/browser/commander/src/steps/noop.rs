@@ -1,14 +1,14 @@
 use std::marker::PhantomData;
 use crate::step::{ Step2, StepState2 };
 use crate::steprunner::StepRun;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 struct NoopRun<Y>(Y);
 
 impl<R> StepRun for NoopRun<R> where R: Clone {
     type Output = R;
 
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<R> {
+    fn more(&mut self, _control: &mut TaskContext) -> StepState2<R> {
         StepState2::Done(self.0.clone())
     }
 }
@@ -24,7 +24,7 @@ impl<R> NoopStep<R> {
 impl<R> Step2<R> for NoopStep<R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, input: R, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, input: R, _task_control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
         Box::new(NoopRun(input.clone()))
     }
 }
@@ -34,7 +34,7 @@ struct BlindRun<R>(R);
 impl<R> StepRun for BlindRun<R> where R: Clone {
     type Output = R;
 
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<R> {
+    fn more(&mut self, _control: &mut TaskContext) -> StepState2<R> {
         StepState2::Done(self.0.clone())
     }
 }
@@ -50,7 +50,7 @@ impl<R> BlindStep<R> {
 impl<X,R> Step2<X> for BlindStep<R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, _input: X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, _input: X, _task_control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
         Box::new(BlindRun(self.0.clone())) // XXX noclone
     }
 }

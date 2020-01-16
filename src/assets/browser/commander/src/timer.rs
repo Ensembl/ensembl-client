@@ -7,10 +7,10 @@ use binary_heap_plus::{ BinaryHeap, MinComparator };
 use std::cmp::{ Ordering };
 use std::sync::{ Arc, Mutex };
 
-use crate::taskcontainer::{ TaskContainer, TaskHandle };
+use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::edgetrigger::EdgeTrigger;
 
-struct Timeout(f64,u64,EdgeTrigger<'static>,Option<TaskHandle>);
+struct Timeout(f64,u64,EdgeTrigger<'static>,Option<TaskContainerHandle>);
 
 impl PartialEq for Timeout {
     fn eq(&self, other: &Timeout) -> bool { self.0 == other.0 && self.1 == other.1 }
@@ -43,7 +43,7 @@ impl TimerSetImpl {
         }
     }
 
-    fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
+    fn add<T>(&mut self, taskhandle: Option<&TaskContainerHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
         self.next += 1;
         let trigger = EdgeTrigger::new(callback);
         self.timeouts.push(Timeout(timeout,self.next,trigger,taskhandle.cloned()));
@@ -85,7 +85,7 @@ impl TimerSet {
         TimerSet(Arc::new(Mutex::new(TimerSetImpl::new())))
     }
 
-    pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
+    pub(crate) fn add<T>(&mut self, taskhandle: Option<&TaskContainerHandle>, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
         self.0.lock().unwrap().add(taskhandle,timeout,callback);
     }
 

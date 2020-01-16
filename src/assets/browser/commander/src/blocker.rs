@@ -1,17 +1,17 @@
 use crate::block::Block;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::ReenteringIntegration;
-use crate::taskcontainer::TaskHandle;
+use crate::taskcontainer::TaskContainerHandle;
 
 #[derive(Clone)]
 pub(crate) struct Blocker {
     integration: ReenteringIntegration,
     action_handle: ExecutorActionHandle,
-    task_handle: TaskHandle,
+    task_handle: TaskContainerHandle,
 }
 
 impl Blocker {
-    pub fn new(integration: &ReenteringIntegration, action_handle: &ExecutorActionHandle, task_handle: &TaskHandle) -> Blocker {
+    pub fn new(integration: &ReenteringIntegration, action_handle: &ExecutorActionHandle, task_handle: &TaskContainerHandle) -> Blocker {
         Blocker {
             integration: integration.clone(),
             action_handle: action_handle.clone(),

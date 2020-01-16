@@ -2,7 +2,7 @@ use std::sync::{ Arc, Mutex, MutexGuard };
 use crate::block::Block;
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::StepRun;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
 #[derive(Clone)] // XXX test only
@@ -14,7 +14,7 @@ pub(crate) enum TestState<R> {
 }
 
 impl<R> TestState<R> where R: Clone {
-    fn step_state(&mut self, control: &mut TaskControl) -> StepState2<R> {
+    fn step_state(&mut self, control: &mut TaskContext) -> StepState2<R> {
         match self {
             TestState::Again => StepState2::Ongoing(OngoingState::Again),
             TestState::Tick => StepState2::Ongoing(OngoingState::Tick),
@@ -59,7 +59,7 @@ pub struct TestExtract<T>(pub Arc<Mutex<T>>);
 impl<T> StepRun for TestExtract<T> {
     type Output = ();
 
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<()> {
+    fn more(&mut self, _control: &mut TaskContext) -> StepState2<()> {
         StepState2::Done(())
     }
 }
@@ -67,7 +67,7 @@ impl<T> StepRun for TestExtract<T> {
 impl<T> Step2<T> for TestExtract<T> where T: Send+Clone+'static {
     type Output = ();
 
-    fn start(&mut self, input: T, _control: &mut TaskControl) -> Box<dyn StepRun<Output=()>> {
+    fn start(&mut self, input: T, _control: &mut TaskContext) -> Box<dyn StepRun<Output=()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
     }
@@ -108,7 +108,7 @@ impl<R> TestStep<R> {
         self.state.lock().unwrap().pending_forever_block = true;
     }
 
-    pub(crate) fn forever_unblock(&mut self, _tc: &mut TaskControl) {
+    pub(crate) fn forever_unblock(&mut self, _tc: &mut TaskContext) {
         let mut state = self.state.lock().unwrap();
         if let Some(ref mut blocker) = state.current_forever_block {
             blocker.unblock();
@@ -136,7 +136,7 @@ impl<R> TestStep<R> {
 impl<X,R> Step2<X> for TestStep<R> where R: Clone+Send+'static {
     type Output = R;
 
-    fn start(&mut self, _input: X, _control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, _input: X, _control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
         Box::new(self.clone())
     }
 }
@@ -144,7 +144,7 @@ impl<X,R> Step2<X> for TestStep<R> where R: Clone+Send+'static {
 impl<R> StepRun for TestStep<R> where R: Clone+'static {
     type Output = R;
 
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
+    fn more(&mut self, control: &mut TaskContext) -> StepState2<R> {
         let mut state = self.state.lock().unwrap();
         /* forever blocks */
         if state.pending_forever_block {
@@ -187,7 +187,7 @@ pub struct TestExtractorStep<T>(pub Arc<Mutex<T>>);
 impl<T> StepRun for TestExtractorStep<T> {
     type Output = ();
 
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<()> {
+    fn more(&mut self, _control: &mut TaskContext) -> StepState2<()> {
         StepState2::Done(())
     }
 }
@@ -195,7 +195,7 @@ impl<T> StepRun for TestExtractorStep<T> {
 impl<T> Step2<T> for TestExtractorStep<T> where T: Send+Clone+'static {
     type Output = ();
 
-    fn start(&mut self, input: T, _control: &mut TaskControl) -> Box<dyn StepRun<Output=()>> {
+    fn start(&mut self, input: T, _control: &mut TaskContext) -> Box<dyn StepRun<Output=()>> {
         *self.0.lock().unwrap() = input.clone();
         Box::new(self.clone())
     }

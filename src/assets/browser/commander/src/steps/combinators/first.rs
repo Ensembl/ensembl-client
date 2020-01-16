@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::{ StepRun, StepRunner };
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 pub struct StepFirst<X,R> where R: Send {
     steps: Arc<Mutex<Vec<Box<dyn Step2<X,Output=R>>>>>
@@ -14,7 +14,7 @@ struct StepFirstRun<R> where R: Send {
 impl<R> StepRun for StepFirstRun<R> where R: Send {
     type Output = R;
 
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
+    fn more(&mut self, control: &mut TaskContext) -> StepState2<R> {
         let mut out = OngoingState::Dead;
         for runner in self.steps.lock().unwrap().iter_mut() {
             match runner.more() {
@@ -42,7 +42,7 @@ impl<X,R> StepFirst<X,R> where R: Send {
 impl<X,R> Step2<X> for StepFirst<X,R> where R: Send + 'static, X: Clone {
     type Output = R;
 
-    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, input: X, task_control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             Box::new(task_control.new_step(step,input.clone()))
         }).collect();

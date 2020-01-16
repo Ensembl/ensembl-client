@@ -5,7 +5,7 @@ use std::task::Poll;
 use crate::block::Block;
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::StepRun;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 use futures::task::{ ArcWake, Context, waker_ref };
 
 struct StepWaker(Mutex<Block>);
@@ -21,7 +21,7 @@ struct FutureRun<R>(Pin<Box<Future<Output=R> + Send+Sync>>);
 impl<R> StepRun for FutureRun<R> where R: Clone {
     type Output = R;
 
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<R> {
+    fn more(&mut self, control: &mut TaskContext) -> StepState2<R> {
         let block = control.block();
         let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
         match self.0.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
@@ -48,7 +48,7 @@ impl<X,R> FutureStep<X,R> {
 impl<X,R> Step2<X> for FutureStep<X,R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, input: X, _task_control: &mut TaskControl) -> Box<dyn StepRun<Output=R>> {
+    fn start(&mut self, input: X, _task_control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
         let future = (self.generator)(input);
         Box::new(FutureRun(future))
     }

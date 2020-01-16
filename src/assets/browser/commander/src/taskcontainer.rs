@@ -8,7 +8,7 @@ use hashbrown::HashSet;
 use crate::task2::Task2;
 
 #[derive(Clone,PartialEq,Eq,PartialOrd,Ord,Hash,Debug)] // XXX debug
-pub(crate) struct TaskHandle(usize,u64);
+pub(crate) struct TaskContainerHandle(usize,u64);
 
 pub(crate) struct TaskContainer {
     free_slots: BinaryHeap<usize,MinComparator>,
@@ -27,23 +27,23 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn allocate(&mut self) -> TaskHandle {
+    pub(crate) fn allocate(&mut self) -> TaskContainerHandle {
         let slot = self.free_slots.pop().unwrap_or_else(|| {
             self.tasks.push(None);
             self.tasks.len()-1
         });
         self.tasks[slot] = None;
-        let out = TaskHandle(slot,self.next_slot);
+        let out = TaskContainerHandle(slot,self.next_slot);
         self.current.insert(self.next_slot);
         self.next_slot += 1;
         out
     }
 
-    pub(crate) fn set<T>(&mut self, handle: &TaskHandle, task: T) where T: Task2 + 'static {
+    pub(crate) fn set<T>(&mut self, handle: &TaskContainerHandle, task: T) where T: Task2 + 'static {
         self.tasks[handle.0] = Some(Box::new(task));
     }
 
-    pub(crate) fn remove(&mut self, handle: &TaskHandle) {
+    pub(crate) fn remove(&mut self, handle: &TaskContainerHandle) {
         if self.current.contains(&handle.1) {
             self.current.remove(&handle.1);
             self.tasks[handle.0] = None;
@@ -51,7 +51,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get(&self, handle: &TaskHandle) -> Option<&Box<dyn Task2>> { 
+    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn Task2>> { 
         if self.current.contains(&handle.1) {
             self.tasks[handle.0].as_ref()
         } else {
@@ -59,7 +59,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get_mut(&mut self, handle: &TaskHandle) -> Option<&mut Box<dyn Task2>> {
+    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn Task2>> {
         if self.current.contains(&handle.1) {
            self.tasks[handle.0].as_mut()
         } else {

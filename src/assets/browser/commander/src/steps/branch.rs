@@ -2,7 +2,7 @@ use std::sync::{ Arc, Mutex };
 
 use crate::step::{ Step2, StepRun, StepState2, StepRunner };
 use crate::steprunner::StepControl;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 pub struct StepBranchImpl<X,Y,Z,E,F> {
     main: Box<dyn Step2<X,Y,E>>,
@@ -32,7 +32,7 @@ struct BranchRun<X,Y,Z,E,F> {
 }
 
 impl<X,Y,Z,E,F> Step2<X,Z,F> for StepBranch<X,Y,Z,E,F> where Z: 'static, E: 'static, F: 'static, X: 'static, Y: 'static {
-    fn start(&mut self, input: &X, control: &mut TaskControl) -> Box<dyn StepRun<Z,F>> {
+    fn start(&mut self, input: &X, control: &mut TaskContext) -> Box<dyn StepRun<Z,F>> {
         Box::new(BranchRun {
             step: StepBranch(self.0.clone()),
             main: control.new_step(&mut self.0.lock().unwrap().main,input),
@@ -83,7 +83,7 @@ mod test {
 
     struct FakeStep3<Y,E>(FakeStepRun3<Y,E>) where Y: Clone, E: Clone;
     impl<Y,E> Step2<(),Y,E> for FakeStep3<Y,E> where Y: Send+Clone+'static, E: Send+Clone+'static {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<Y,E>> {
+        fn start(&mut self, input: &(), _control: &mut TaskContext) -> Box<dyn StepRun<Y,E>> {
             Box::new(self.0.clone())
         }
     }
@@ -107,7 +107,7 @@ mod test {
     }
 
     impl<T> Step2<T,(),()> for FakeStepExtract<T> where T: Send+Clone+'static {
-        fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+        fn start(&mut self, input: &T, _control: &mut TaskContext) -> Box<dyn StepRun<(),()>> {
             *self.0.lock().unwrap() = input.clone();
             Box::new(self.clone())
         }

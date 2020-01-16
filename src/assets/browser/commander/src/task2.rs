@@ -1,11 +1,11 @@
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 use crate::step::{ RunConfig, Step2, StepState2, OngoingState };
 use crate::steprunner::StepRunner;
 
 pub(crate) struct Task2Impl {
     runner: StepRunner<()>,
     run_config: RunConfig,
-    task_control: TaskControl,
+    task_control: TaskContext,
     name: String
 }
 
@@ -16,7 +16,7 @@ pub(crate) trait Task2 {
 }
 
 impl Task2Impl {
-    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=()>>, input: X, run_config: &RunConfig, task_control: &mut TaskControl, name: &str) -> Task2Impl where X: Send {
+    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=()>>, input: X, run_config: &RunConfig, task_control: &mut TaskContext, name: &str) -> Task2Impl where X: Send {
         let runner : StepRunner<()> = task_control.new_step(step,input);
         Task2Impl {
             runner,
@@ -80,7 +80,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let mut integration = TestIntegration::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
+        let mut tc = TaskContext::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
         let mut s1 = integration.new_step(vec![
             TestState::Again,
             TestState::Done(())
@@ -114,7 +114,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let mut integration = TestIntegration::new();
-        let mut tc = TaskControl::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
+        let mut tc = TaskContext::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
         let mut s1 = integration.new_step(vec![
             TestState::Done(())
         ]);

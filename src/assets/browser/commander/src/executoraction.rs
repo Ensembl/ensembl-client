@@ -1,15 +1,15 @@
 use crate::block::Block;
 use crate::step::KillReason;
-use crate::taskcontainer::TaskHandle;
+use crate::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
 
 pub(crate) enum ExecutorAction {
-    Block(TaskHandle,Block),
+    Block(TaskContainerHandle,Block),
     Unblock(Block),
-    Done(TaskHandle),
-    Kill(TaskHandle,KillReason),
-    Tick(TaskHandle),
-    Timer(TaskHandle,f64,Box<dyn FnMut() + 'static + Send>)
+    Done(TaskContainerHandle),
+    Kill(TaskContainerHandle,KillReason),
+    Tick(TaskContainerHandle),
+    Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
 }
 
 #[derive(Clone)]

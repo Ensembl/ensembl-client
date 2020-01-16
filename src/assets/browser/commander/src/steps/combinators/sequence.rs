@@ -1,10 +1,10 @@
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::{ StepRun, StepRunner };
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 struct StepSequenceRun<Y,Z,E> {
-    task_control: TaskControl,
+    task_control: TaskContext,
     one: StepRunner<Result<Y,E>>,
     two_step: Arc<Mutex<Box<dyn Step2<Y,Output=Result<Z,E>>>>>,
     two: Option<StepRunner<Result<Z,E>>>
@@ -13,7 +13,7 @@ struct StepSequenceRun<Y,Z,E> {
 impl<Y,Z,E> StepRun for StepSequenceRun<Y,Z,E> {
     type Output = Result<Z,E>;
 
-    fn more(&mut self, _control: &mut TaskControl) -> StepState2<Result<Z,E>> {
+    fn more(&mut self, _control: &mut TaskContext) -> StepState2<Result<Z,E>> {
         if let Some(two) = &mut self.two {
             two.more()
         } else {
@@ -51,7 +51,7 @@ impl<X,Y: Send,Z,E> StepSequence2<X,Y,Z,E> {
 impl<X,Y: Send,Z,E> Step2<X> for StepSequence2<X,Y,Z,E> where Y: 'static, Z: 'static, E: 'static {
     type Output = Result<Z,E>;
 
-    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Z,E>>> {
+    fn start(&mut self, input: X, task_control: &mut TaskContext) -> Box<dyn StepRun<Output=Result<Z,E>>> {
         Box::new(StepSequenceRun {
             task_control: task_control.clone(),
             one: task_control.new_step(&mut self.one.lock().unwrap(),input),

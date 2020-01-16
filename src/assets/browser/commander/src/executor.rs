@@ -1,10 +1,10 @@
 use hashbrown::HashSet;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
-use crate::taskcontainer::{ TaskContainer, TaskHandle };
+use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::timer::TimerSet;
 use crate::runnable::Runnable;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 use crate::step::{ KillReason, RunConfig, Step2 };
 use crate::task2::Task2Impl;
 
@@ -12,7 +12,7 @@ pub struct Executor {
     integration: ReenteringIntegration,
     tasks: TaskContainer,
     runnable: Runnable,
-    next_tick: HashSet<TaskHandle>,
+    next_tick: HashSet<TaskContainerHandle>,
     actions: ExecutorActionHandle,
     timers: TimerSet,
     tick_index: u64
@@ -34,10 +34,10 @@ impl Executor {
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
     // XXX only add from main thread (via action)
-    pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskControl where S:Step2<X,Output=()> + 'static + Send, X: Send + 'static {
+    pub fn add<S,X>(&mut self, step: S, input: X, run_config: &RunConfig, name: &str) -> TaskContext where S:Step2<X,Output=()> + 'static + Send, X: Send + 'static {
         let now = self.integration.current_time();
         let handle = self.tasks.allocate();
-        let mut control = TaskControl::new(run_config,&mut self.actions,&handle,&self.integration);
+        let mut control = TaskContext::new(run_config,&mut self.actions,&handle,&self.integration);
         let task = Task2Impl::new(&mut (Box::new(step) as Box<dyn Step2<X,Output=()>>),input,run_config,&mut control,name);
         self.tasks.set(&handle,task);
         if let Some(timeout) = run_config.get_timeout() {
@@ -48,12 +48,12 @@ impl Executor {
         control
     }
 
-    fn remove(&mut self, handle: &TaskHandle) {
+    fn remove(&mut self, handle: &TaskContainerHandle) {
         self.runnable.remove(&self.tasks,handle);
         self.tasks.remove(handle);
     }
 
-    fn add_timer(&mut self, handle: &TaskHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
+    fn add_timer(&mut self, handle: &TaskContainerHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
         let now = self.integration.current_time();
         self.timers.add(Some(handle),now+timeout,callback);
     }
@@ -62,7 +62,7 @@ impl Executor {
         for mut action in self.actions.drain() {
             match action {
                 ExecutorAction::Block(ref handle,ref mut blocker) => {
-                    blocker.set_blocking_task(Some(handle.clone()));
+                    blocker.set_blocking_task(handle.clone());
                     self.runnable.remove(&self.tasks,&handle);
                 },
                 ExecutorAction::Unblock(ref mut blocker) => {

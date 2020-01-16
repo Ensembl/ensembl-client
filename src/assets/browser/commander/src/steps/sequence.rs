@@ -1,10 +1,10 @@
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepRun, StepRunner, StepState2 };
 use crate::steprunner::StepControl;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 struct StepSequenceRun<Y,Z,E> {
-    task_control: TaskControl,
+    task_control: TaskContext,
     one: StepRunner<Y,E>,
     two_step: Arc<Mutex<Box<dyn Step2<Y,Z,E>>>>,
     two: Option<StepRunner<Z,E>>
@@ -46,7 +46,7 @@ impl<X,Y: Send,Z,E> StepSequence2<X,Y,Z,E> {
 }
 
 impl<X,Y: Send,Z,E> Step2<X,Z,E> for StepSequence2<X,Y,Z,E> where Y: 'static, Z: 'static, E: 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Z,E>> {
+    fn start(&mut self, input: &X, task_control: &mut TaskContext) -> Box<dyn StepRun<Z,E>> {
         Box::new(StepSequenceRun {
             task_control: task_control.clone(),
             one: task_control.new_step(&mut self.one.lock().unwrap(),input),
@@ -73,7 +73,7 @@ mod test {
 
     struct FakeStep2(FakeStepRun2);
     impl Step2<(),()> for FakeStep2 {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+        fn start(&mut self, input: &(), _control: &mut TaskContext) -> Box<dyn StepRun<(),()>> {
             Box::new(self.0.clone())
         }
     }

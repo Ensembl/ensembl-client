@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::{ StepRun, StepRunner };
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 pub struct StepParallel<X,Y,E>  {
     steps: Arc<Mutex<Vec<Box<dyn Step2<X,Output=Result<Y,E>>>>>>
@@ -14,7 +14,7 @@ struct StepParallelRun<Y,E> where Y: Send {
 impl<Y,E> StepRun for StepParallelRun<Y,E> where Y: Send {
     type Output = Result<Vec<Y>,E>;
 
-    fn more(&mut self, control: &mut TaskControl) -> StepState2<Result<Vec<Y>,E>> {
+    fn more(&mut self, control: &mut TaskContext) -> StepState2<Result<Vec<Y>,E>> {
         /* Advance */
         let mut done = true;
         let mut out = OngoingState::Dead;
@@ -55,7 +55,7 @@ impl<X,Y: Send,E> StepParallel<X,Y,E> {
 impl<X,Y,E> Step2<X> for StepParallel<X,Y,E> where X: Clone, Y: 'static + Send, E: 'static {
     type Output = Result<Vec<Y>,E>;
 
-    fn start(&mut self, input: X, task_control: &mut TaskControl) -> Box<dyn StepRun<Output=Result<Vec<Y>,E>>> {
+    fn start(&mut self, input: X, task_control: &mut TaskContext) -> Box<dyn StepRun<Output=Result<Vec<Y>,E>>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             (Box::new(task_control.new_step(step,input.clone())),None)
         }).collect();

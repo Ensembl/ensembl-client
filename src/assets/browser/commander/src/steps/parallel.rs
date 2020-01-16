@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
 use crate::step::{ Step2, StepRun, StepRunner, StepState2 };
 use crate::steprunner::StepControl;
-use crate::taskcontrol::TaskControl;
+use crate::taskcontext::TaskContext;
 
 pub struct StepParallel<X,Y,E> where Y: Send {
     steps: Arc<Mutex<Vec<Box<dyn Step2<X,Y,E>>>>>
@@ -61,7 +61,7 @@ impl<X,Y: Send,E> StepParallel<X,Y,E> {
 }
 
 impl<X,Y: Send,E> Step2<X,Vec<Y>,E> for StepParallel<X,Y,E> where Y: 'static, E: 'static {
-    fn start(&mut self, input: &X, task_control: &mut TaskControl) -> Box<dyn StepRun<Vec<Y>,E>> {
+    fn start(&mut self, input: &X, task_control: &mut TaskContext) -> Box<dyn StepRun<Vec<Y>,E>> {
         let steps = self.steps.lock().unwrap().iter_mut().map(|step| {
             (Box::new(task_control.new_step(step,input)),None)
         }).collect();
@@ -89,7 +89,7 @@ mod test {
 
     struct FakeStep2(FakeStepRun2);
     impl Step2<(),u64> for FakeStep2 {
-        fn start(&mut self, input: &(), _control: &mut TaskControl) -> Box<dyn StepRun<u64,()>> {
+        fn start(&mut self, input: &(), _control: &mut TaskContext) -> Box<dyn StepRun<u64,()>> {
             Box::new(self.0.clone())
         }
     }
@@ -116,7 +116,7 @@ mod test {
     }
 
     impl<T> Step2<T,(),()> for FakeStepExtract<T> where T: Send+Clone+'static {
-        fn start(&mut self, input: &T, _control: &mut TaskControl) -> Box<dyn StepRun<(),()>> {
+        fn start(&mut self, input: &T, _control: &mut TaskContext) -> Box<dyn StepRun<(),()>> {
             *self.0.lock().unwrap() = input.clone();
             Box::new(self.clone())
         }

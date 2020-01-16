@@ -1,11 +1,11 @@
 use std::sync::{ Arc, Mutex };
 
-use crate::taskcontainer::TaskHandle;
+use crate::taskcontainer::TaskContainerHandle;
 use crate::blocker::Blocker;
 
 #[derive(Clone)]
 pub struct Block {
-    blocking_task: Arc<Mutex<Option<TaskHandle>>>,
+    blocking_task: Arc<Mutex<Option<TaskContainerHandle>>>,
     blocked: Arc<Mutex<bool>>,
     unblock_sent: Arc<Mutex<bool>>,
     downstream: Arc<Mutex<Vec<Block>>>,
@@ -25,8 +25,8 @@ impl Block {
         }
     }
 
-    pub(crate) fn set_blocking_task(&mut self, bt: Option<TaskHandle>) {
-        *self.blocking_task.lock().unwrap() = bt;
+    pub(crate) fn set_blocking_task(&mut self, bt: TaskContainerHandle) {
+        *self.blocking_task.lock().unwrap() = Some(bt);
     }
 
     pub fn add(&mut self, upstream: &Block) {
@@ -40,9 +40,10 @@ impl Block {
     }
 
     /* This one is then called by the executor from an EA handler */
-    pub(crate) fn unblock_steps(&mut self) -> Option<TaskHandle> {
+    pub(crate) fn unblock_steps(&mut self) -> Option<TaskContainerHandle> {
         let mut handle = self.blocking_task.lock().unwrap().clone();
         *self.blocked.lock().unwrap() = false;
+        *self.blocking_task.lock().unwrap() = None;
         for other in self.downstream.lock().unwrap().iter_mut() {
             let h2 = other.unblock_steps();
             if handle.is_none() {
