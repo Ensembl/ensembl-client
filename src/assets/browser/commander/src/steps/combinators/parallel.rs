@@ -122,7 +122,6 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let a : FutureStep<(),Result<u32,u32>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
             fc.tick(1).await;
-            print!("A\n");
             Ok(42)
         }));
         let b : FutureStep<(),Result<u32,u32>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
@@ -131,7 +130,6 @@ mod test {
             fc.tick(0).await;
             fc.tick(0).await;
             fc.tick(1).await;
-            print!("B\n");
             Err(6)
         }));
         let p : StepParallel<(),_,_> = StepParallel::new(vec![Box::new(a),Box::new(b)]);

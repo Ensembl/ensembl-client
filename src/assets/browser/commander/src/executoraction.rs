@@ -9,7 +9,7 @@ pub(crate) enum ExecutorAction {
     Done(TaskContainerHandle),
     Kill(TaskContainerHandle,KillReason),
     Tick(TaskContainerHandle),
-    UnblockOnTick(Block,u64),
+    UnblockOnTick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
     Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
 }
 

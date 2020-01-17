@@ -44,9 +44,9 @@ impl TaskContext {
         self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
     }
 
-    pub fn block_for_ticks(&self, block: Block, ticks: u64) {
+    pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         let tick = *self.tick_index.lock().unwrap();
-        self.action_handle.add(ExecutorAction::UnblockOnTick(block,tick+ticks));
+        self.action_handle.add(ExecutorAction::UnblockOnTick(self.task_handle.clone(),tick+ticks,Box::new(callback)));
     }
 
     /* kills */

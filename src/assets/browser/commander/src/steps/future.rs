@@ -6,7 +6,48 @@ use crate::block::Block;
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::StepRun;
 use crate::taskcontext::TaskContext;
-use futures::task::{ ArcWake, Context, waker_ref };
+use futures::task::{ ArcWake, Context, Waker, waker_ref };
+
+struct FutureOneShotState {
+    flag: bool,
+    waker: Option<Waker>
+}
+
+#[derive(Clone)]
+pub struct FutureOneShot(Arc<Mutex<FutureOneShotState>>);
+
+impl FutureOneShot {
+    pub(crate) fn new() -> FutureOneShot {
+        FutureOneShot(Arc::new(Mutex::new(FutureOneShotState {
+            flag: false,
+            waker: None
+        })))
+    }
+
+    pub(crate) fn flag(&self) {
+        let mut state = self.0.lock().unwrap();
+        if !state.flag {
+            state.flag = true;
+            if let Some(waker) = state.waker.take() {
+                waker.wake();
+            }
+        }
+    }
+}
+
+impl Future for FutureOneShot {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, ctx: &mut Context) -> Poll<()> {
+        let mut state = self.0.lock().unwrap();
+        if state.flag {
+            Poll::Ready(())
+        } else {
+            state.waker = Some(ctx.waker().clone());
+            Poll::Pending
+        }
+    }
+}
 
 struct FutureContextOnce {
     block: Option<Block>
@@ -56,20 +97,21 @@ pub struct FutureContext(TaskContext,Arc<Mutex<FutureContextOnce>>);
 
 impl FutureContext {
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
-        let block = self.0.block();
-        self.0.block_for_ticks(block.clone(),ticks);
-        self.1.lock().unwrap().block = Some(block.clone());
-        BlockFuture(block)
+        let future = FutureOneShot::new();
+        let future2 = future.clone();
+        self.0.add_ticks_timer(ticks,move || {
+            future2.flag();
+        });
+        future
     }
 
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
-        let block = self.0.block();
-        let block2 = block.clone();
+        let future = FutureOneShot::new();
+        let future2 = future.clone();
         self.0.add_timer(timeout,move || {
-            block2.unblock();
+            future2.flag();
         });
-        self.1.lock().unwrap().block = Some(block.clone());
-        BlockFuture(block)
+        future
     }
 
     pub fn get_tick_index(&self) -> u64 {
