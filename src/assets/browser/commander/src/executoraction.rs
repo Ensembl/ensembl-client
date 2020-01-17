@@ -8,7 +8,6 @@ pub(crate) enum ExecutorAction {
     Unblock(Block),
     Done(TaskContainerHandle),
     Kill(TaskContainerHandle,KillReason),
-    Tick(TaskContainerHandle),
     UnblockOnTick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
     Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
 }
@@ -41,10 +40,10 @@ mod test {
         let mut c = TaskContainer::new();
         let mut eah = ExecutorActionHandle::new();
         let h = c.allocate();
-        eah.add(ExecutorAction::Tick(h.clone()));
+        eah.add(ExecutorAction::Timer(h.clone(),0.,Box::new(|| {})));
         eah.add(ExecutorAction::Done(h.clone()));
         let actions = eah.drain();
-        if let (ExecutorAction::Tick(_),ExecutorAction::Done(_)) = (&actions[0],&actions[1]) {
+        if let (ExecutorAction::Timer(_,_,_),ExecutorAction::Done(_)) = (&actions[0],&actions[1]) {
         } else {
             assert!(false);
         }

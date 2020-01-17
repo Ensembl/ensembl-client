@@ -7,8 +7,7 @@ use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
 #[derive(Clone)] // XXX test only
 pub(crate) enum TestState<R> {
-    Again,
-    Tick,
+    //Again,
     Block,
     Done(R),
 }
@@ -16,10 +15,7 @@ pub(crate) enum TestState<R> {
 impl<R> TestState<R> where R: Clone {
     fn step_state(&mut self, control: &mut TaskContext) -> StepState2<R> {
         match self {
-            TestState::Again => StepState2::Ongoing(OngoingState::Again),
-            TestState::Tick => StepState2::Ongoing(OngoingState::Tick),
             TestState::Block => StepState2::Ongoing(OngoingState::Block(control.block())),
-            //TestState::Dead => StepState2::Ongoing(OngoingState::Dead),
             TestState::Done(v) => StepState2::Done(v.clone())
         }
     }
@@ -148,7 +144,7 @@ impl<R> StepRun for TestStep<R> where R: Clone+'static {
         /* timed blocks */
         if let Some(until) = state.block_for {
             let b = control.block();
-            let mut b2 = b.clone();
+            let b2 = b.clone();
             if until > 0. {
                 control.add_timer(until, move || {
                     b2.unblock();

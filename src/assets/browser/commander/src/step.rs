@@ -5,8 +5,6 @@ use crate::steprunner::StepRun;
 
 #[derive(Clone)] // XXX test only
 pub enum OngoingState {
-    Again,
-    Tick,
     Block(Block),
     Dead
 }
@@ -15,32 +13,6 @@ pub enum OngoingState {
 pub enum StepState2<R> {
     Ongoing(OngoingState),
     Done(R),
-}
-
-impl OngoingState {
-    pub(crate) fn priority(&self) -> u8 {
-        match self {
-            OngoingState::Again => 0,
-            OngoingState::Tick => 1,
-            OngoingState::Block(_) => 2,
-            OngoingState::Dead => 3
-        }
-    }
-
-    pub(crate) fn merge(&mut self, stepcontrol: &mut TaskContext, other: &OngoingState) {
-        if let OngoingState::Block(in_b) = other {
-            if let OngoingState::Dead = self {
-                *self = OngoingState::Block(stepcontrol.block());
-            }
-            if let OngoingState::Block(our_b) = self {
-                our_b.add(in_b);
-            }
-        } else {
-            if other.priority() < self.priority() {
-                *self = other.clone();
-            }
-        }
-    }
 }
 
 #[derive(Clone,PartialEq,Eq)]

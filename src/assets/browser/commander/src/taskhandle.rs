@@ -80,7 +80,7 @@ mod test {
     use crate::testintegration::{ TestIntegration, TestState };
     use crate::step::RunConfig;
     use crate::executor::Executor;
-    use crate::steps::future::FutureStep;
+    use crate::future::FutureStep;
 
     #[test]
     pub fn test_handle_smoke() {

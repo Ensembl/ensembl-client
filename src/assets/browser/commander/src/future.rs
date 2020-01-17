@@ -182,7 +182,6 @@ mod test {
     use std::time::Duration;
     use crate::executor::Executor;
     use crate::step::{ RunConfig, TaskResult };
-    use crate::steps::combinators::first::StepFirst;
     use crate::testintegration::{ TestIntegration, TestExtractorStep };
     use futures::future;
 
@@ -214,6 +213,44 @@ mod test {
     async fn timer_future(ctx: FutureContext, timeout: f64) -> u32 {
         ctx.timer(timeout).await;
         0
+    }
+
+    #[test]
+    pub fn test_first_smoke() {
+        /* setup */
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let p = FutureStep::new(move |_,fc,()| {
+            Box::pin(async move {
+                let fc2 = fc.clone();
+                let a = Box::pin(async move {
+                    fc2.tick(2).await;
+                    1_u32
+                });
+                let b = Box::pin(async move {
+                    fc.tick(0).await;
+                    fc.tick(0).await;
+                    fc.tick(0).await;
+                    fc.tick(0).await;
+                    fc.tick(0).await;
+                    fc.tick(1).await;
+                    2_u32
+                });
+                let x = future::select(a,b).await;
+                match x {
+                    future::Either::Left((x,_)) => x,
+                    future::Either::Right((x,_)) => x
+                }
+            })
+        });
+        let tc = x.add(p,(),&cfg,"test");
+        /* simulate */
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        x.tick(10.);
+        assert_eq!(2,tc.take_result().unwrap());
+        assert_eq!(2,x.get_tick_index());
     }
 
     #[test]
@@ -326,15 +363,21 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let b : FutureStep<(),Result<(),()>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
-            fc.tick(if timeout {3} else {2}).await;
-            Ok(())
+        let b = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            let b = Box::pin(async {
+                fc.tick(if timeout {4} else {2}).await;
+                Ok(())
+            });
+            let timeout_step = Box::pin(async {
+                fc.timer(3.).await;
+                Err(())
+            });
+            match future::select(b,timeout_step).await {
+                future::Either::Left((x,_)) => x,
+                future::Either::Right((x,_)) => x,
+            }
         }));
-        let timeout_step : FutureStep<(),Result<(),()>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
-            fc.timer(3.).await;
-            Err(())
-        }));
-        let b = StepFirst::new(vec![Box::new(timeout_step),Box::new(b)]);
+
         let mut tc = x.add(b,(),&cfg,"test");
         for i in 0..10 {
             integration.set_time(i.into());
@@ -420,5 +463,72 @@ mod test {
         x.tick(10.);
         assert!(tc_good.peek_result() != TaskResult::Ongoing);
         assert!(tc_good.take_result().unwrap().is_ok());
+    }
+
+    #[test]
+    pub fn test_parallel_smoke() {
+        /* NOTE: also verifies that Again/Tick/Block trumping */
+        /* setup */
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+
+        let p = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            let a = async {
+                fc.tick(1).await;
+                Ok::<u32,()>(5)
+            };
+            let b = async {
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(1).await;
+                Ok::<u32,()>(2)
+            };
+            let c = async {
+                fc.timer(50.).await;
+                Ok::<u32,()>(0)
+            };
+            future::try_join3(a,b,c).await
+        }));
+        let mut tc = x.add(p,(),&cfg,"test");
+        /* simulate */
+        for i in 0..7 {
+            x.tick(10.);
+            assert!(tc.peek_result() == TaskResult::Ongoing);
+        }
+        integration.set_time(100.);
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Done);
+        assert_eq!(Ok((5,2,0)),tc.take_result().unwrap());
+    }
+
+    #[test]
+    pub fn test_parallel_error() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let p = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            let a = async {
+                fc.tick(1).await;
+                Ok(5)
+            };
+            let b = async {
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(1).await;
+                Err::<u32,u32>(6)
+            };
+            future::try_join(a,b).await
+        }));
+        let tc = x.add(p,(),&cfg,"test");
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Done);
+        assert_eq!(Err(6),tc.take_result().unwrap());
     }
 }

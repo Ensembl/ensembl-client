@@ -63,10 +63,6 @@ impl<R> Task2 for Task2Impl<R> {
             StepState2::Ongoing(OngoingState::Block(b)) => {
                 self.task_context.get_blocker().block_task(&b);
             },
-            StepState2::Ongoing(OngoingState::Tick) => {
-                self.task_context.wait_for_next_tick();
-            },
-            StepState2::Ongoing(OngoingState::Again) => {}
         }
     }
 }
@@ -81,6 +77,7 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
     use crate::steprunner::StepRun;
+    use crate::future::FutureStep;
     use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
@@ -92,13 +89,13 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let mut integration = TestIntegration::new();
         let mut tc = TaskContext::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
-        let mut s1 = integration.new_step(vec![
-            TestState::Again,
-            TestState::Done(())
-        ]);
-        s1.block_for(1.);
+        let s1 = FutureStep::new(|_,ctx,()| Box::pin(async move {
+            ctx.timer(1.).await;
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+        }));
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<_,Output=()>>),&(),&cfg,&mut tc2,"test");
+        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<_,Output=()>>),(),&cfg,&mut tc2,"test");
         /* simple accessors */
         assert_eq!("test",t.get_name());
         assert_eq!(3,t.get_priority());

@@ -20,14 +20,7 @@ mod testintegration;
 #[cfg(test)]
 extern crate async_std;
 
-mod steps {
-    pub(crate) mod combinators {
-        pub(crate) mod parallel;
-        pub(crate) mod branch;
-        pub(crate) mod first;
-    }
-    pub(crate) mod future;
-}
+mod future;
 
 #[macro_use]
 extern crate blackbox;

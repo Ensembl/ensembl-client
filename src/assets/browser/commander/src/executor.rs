@@ -87,10 +87,6 @@ impl Executor {
                 ExecutorAction::Timer(handle,timeout,callback) => {
                     self.add_timer(&handle,timeout,callback);
                 },
-                ExecutorAction::Tick(handle) => {
-                    self.runnable.remove(&self.tasks,&handle);
-                    self.next_tick.insert(handle);
-                },
                 ExecutorAction::UnblockOnTick(handle,tick,callback) => {
                     self.ticks.add(Some(handle.clone()),tick,callback);
                 }
@@ -164,8 +160,8 @@ mod test {
     use crate::step::{ KillReason, StepState2, OngoingState, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestStep, TestState, TestIntegration, TestExtract };
-    use crate::steps::combinators::parallel::StepParallel;
-    use crate::steps::future::{ FutureStep, FutureOneShot };
+    use crate::future::{ FutureStep, FutureOneShot };
+    use futures::future;
     use crate::steprunner::StepRun;
 
     #[test]
@@ -173,10 +169,12 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut tc = x.add(integration.new_step(vec![
-            TestState::Again,
-            TestState::Done(()),
-        ]),&(),&cfg,"test");
+        let step = FutureStep::new(move |_,fc,()| {
+            Box::pin(async move {
+                fc.tick(0).await;
+            })
+        });
+        let mut tc = x.add(step,(),&cfg,"test");
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.run();
         assert!(tc.peek_result() == TaskResult::Ongoing);
@@ -217,8 +215,11 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(1.));
-        let mut step = integration.new_step(vec![TestState::Tick,TestState::Tick,TestState::Done(())]);
-        let mut tc = x.add(step,&(),&cfg,"test");
+        let step = FutureStep::new(|_,fc,()| Box::pin(async move {
+            fc.tick(2).await;
+            ()
+        }));
+        let mut tc = x.add(step,(),&cfg,"test");
         integration.set_time(10.);
         x.run();
         assert!(tc.peek_result() == TaskResult::Killed(KillReason::Timeout));
@@ -229,12 +230,12 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let mut tc = x.add(integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Done(())
-        ]),&(),&cfg,"test");
+        let step = FutureStep::new(|_,fc,()| Box::pin(async move {
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+        }));
+        let mut tc = x.add(step,(),&cfg,"test");
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
     }
@@ -242,14 +243,21 @@ mod test {
     #[test]
     pub fn test_again_timeout() {
         let mut integration = TestIntegration::new();
+        let integration2 = integration.clone();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let mut tc = x.add(integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Done(())
-        ]),&(),&cfg,"test");
+        let step = FutureStep::new(move |_,fc,()| {
+            let mut integration2 = integration2.clone();
+            Box::pin(async move {
+                fc.tick(0).await;
+                integration2.set_time(1.);
+                fc.tick(0).await;
+                integration2.set_time(2.);
+                fc.tick(0).await;
+                integration2.set_time(3.);
+            })
+        });
+        let mut tc = x.add(step,(),&cfg,"test");
         x.tick(2.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(2.);
@@ -307,17 +315,17 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(12.));
-
-        let t1 : FutureStep<(),Result<(),()>> = FutureStep::new(|_,fc,()| Box::pin(async move {
-            fc.timer(5.).await;
-            Ok(())
+        let z = FutureStep::new(|_,fc,_| Box::pin(async move {
+            let a = async {
+                fc.timer(5.).await;
+                Ok::<(),()>(())
+            };
+            let b = async {
+                fc.timer(21.).await;
+                Ok::<(),()>(())
+            };
+            future::join(a,b).await
         }));
-        let t2 = FutureStep::new(|_,fc,()| Box::pin(async move {
-            fc.timer(21.).await;
-            Ok(())
-        }));
-        /* collect timers */
-        let z = StepParallel::new(vec![Box::new(t1),Box::new(t2)]);
         /* drop success */
         let mut tc = x.add(z,(),&cfg,"test");
         x.tick(10.);
@@ -409,17 +417,17 @@ mod test {
         let mut tc = x.add(step,(),&cfg,"test");
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
-        x.tick(1.); /* (StepState::Block) */
+        x.tick(1.);
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Forever);
         /* runnable => None */
         fosa.flag();
-        x.tick(1.); /* (StepState::Again) */
+        x.tick(1.);
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
         /* next tick => None */
-        x.tick(1.); /* (StepState::Tick) */
+        x.tick(1.);
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
-        /* timer => None */
-        x.tick(1.); /* (StepState::Block) */
+        /* timer => None, Time(3) */
+        x.tick(1.);
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Time(3.));
     }
 
@@ -452,26 +460,29 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let a : FutureStep<_,Result<u64,()>> = FutureStep::new(|_,ctx,()| Box::pin(async move { 
-            ctx.tick(4).await;
-            Ok(ctx.get_tick_index())
+        let p = FutureStep::new(|_,ctx,()| Box::pin(async move { 
+            let a = async {
+                ctx.tick(4).await;
+                Ok::<u64,()>(ctx.get_tick_index())
+            };
+            let mut b = async { 
+                ctx.tick(0).await;
+                ctx.tick(0).await;
+                ctx.tick(0).await;
+                ctx.tick(0).await;
+                ctx.tick(1).await;
+                Ok::<u64,()>(ctx.get_tick_index())
+            };
+            future::join(a,b).await
         }));
-        let mut b = FutureStep::new(|_,ctx,()| Box::pin(async move { 
-            ctx.tick(0).await;
-            ctx.tick(0).await;
-            ctx.tick(0).await;
-            ctx.tick(0).await;
-            ctx.tick(1).await;
-            Ok(ctx.get_tick_index())
-        }));
-        let p = StepParallel::new(vec![Box::new(a),Box::new(b)]);
+
         let tc = x.add(p,(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
             x.tick(10.);
             integration.set_time(integration.get_time()+1.);
         }
-        assert_eq!(Ok(vec![5,2]),tc.take_result().unwrap());
+        assert_eq!((Ok(5),Ok(2)),tc.take_result().unwrap());
     }
 
     #[test]
@@ -494,7 +505,24 @@ mod test {
             ctx.tick(0).await;
             Ok(ctx.get_tick_index())
         }));
-        let p = StepParallel::new(vec![Box::new(a),Box::new(b)]);
+
+        let p = FutureStep::new(|_,ctx,()| Box::pin(async move { 
+            let a = async {
+                ctx.timer(8.).await;
+                Ok::<u64,()>(ctx.get_tick_index())
+            };
+            let b = async {
+                ctx.tick(0).await;
+                ctx.tick(0).await;
+                ctx.tick(1).await;
+                ctx.tick(0).await;
+                ctx.tick(0).await;
+                ctx.tick(1).await;
+                ctx.tick(0).await;
+                Ok::<u64,()>(ctx.get_tick_index())
+            };
+            future::join(a,b).await
+        }));
         let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */
         x.tick(10.);
@@ -510,6 +538,6 @@ mod test {
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
         x.tick(10.);
-        assert_eq!(Ok(vec![6,3]),tc.take_result().unwrap());
+        assert_eq!((Ok(6),Ok(3)),tc.take_result().unwrap());
     }
 }

@@ -104,10 +104,6 @@ impl TaskContext {
         *self.tick_index.lock().unwrap()
     }
 
-    pub(crate) fn wait_for_next_tick(&mut self) {
-        self.action_handle.add(ExecutorAction::Tick(self.task_handle.clone()));
-    }
-
     pub(crate) fn get_blocker(&self) -> &Blocker {
         &self.blocker
     }

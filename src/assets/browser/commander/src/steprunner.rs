@@ -12,7 +12,6 @@ pub struct StepRunner<R> {
     run: Box<dyn StepRun<Output=R>>,
     control: TaskContext,
     blocked_on: Option<Block>,
-    blocked_on_tick: Option<u64>,
     is_dead: bool
  
 }
@@ -22,18 +21,9 @@ impl<R> StepRunner<R> {
         StepRunner {
             run,
             control: task_control.clone(),
-            blocked_on_tick: None,
             blocked_on: None,
             is_dead: false
         }
-    }
-
-    fn check_tick(&mut self, tick: u64) -> bool {
-        let blocked = self.blocked_on_tick.map(|b| b==tick).unwrap_or(false);
-        if !blocked {
-            self.blocked_on_tick = None;
-        }
-        !blocked
     }
 
     fn get_blocker(&mut self) -> &Option<Block> { 
@@ -52,15 +42,8 @@ impl<R> StepRunner<R> {
         if let Some(b) = self.get_blocker() {
             return StepState2::Ongoing(OngoingState::Block(b.clone()));
         }
-        let tick = self.control.get_tick_index();
-        if !self.check_tick(tick) {
-            return StepState2::Ongoing(OngoingState::Tick);
-        }
         let out = self.run.more(&mut self.control);
         match out {
-            StepState2::Ongoing(OngoingState::Tick) => {
-                self.blocked_on_tick = Some(tick);
-            },
             StepState2::Ongoing(OngoingState::Block(ref b)) => {
                 self.blocked_on = Some(b.clone());
             },
@@ -85,26 +68,7 @@ mod test {
     use crate::timer::TimerSet;
     use crate::testintegration::TestIntegration;
     use crate::taskcontext::TaskContext;
-    use crate::steps::future::FutureStep;
-
-    #[test]
-    pub fn test_block_on_tick() {
-        /* setup */
-        let cfg = RunConfig::new(None,2,None);
-        let mut tasks = TaskContainer::new();
-        let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
-        let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration);
-        let mut step = FutureStep::new(|_,tc,()| Box::pin(async { () }));
-        let run = step.start((),&mut tc);
-        let mut sc = StepRunner::new(run,&tc);
-        assert!(sc.check_tick(0));
-        sc.blocked_on_tick = Some(0);
-        assert!(!sc.check_tick(0));
-        assert!(sc.check_tick(1));
-        assert!(sc.check_tick(0));
-    }
+    use crate::future::FutureStep;
 
     #[test]
     pub fn test_block() {
