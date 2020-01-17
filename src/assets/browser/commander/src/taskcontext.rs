@@ -40,7 +40,7 @@ impl TaskContext {
     }
 
     /* timers */
-    pub fn add_timer<T>(&mut self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
+    pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
         self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
     }
 

@@ -22,13 +22,10 @@ extern crate async_std;
 
 mod steps {
     pub(crate) mod combinators {
-        pub(crate) mod sequence;
-        pub(crate) mod sequencesimple;
         pub(crate) mod parallel;
         pub(crate) mod branch;
         pub(crate) mod first;
     }
-    pub(crate) mod timeout;
     pub(crate) mod future;
 }
 

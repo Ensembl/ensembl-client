@@ -58,9 +58,8 @@ mod test {
     use super::*;
 
     use crate::executor::Executor;
-    use crate::step::RunConfig;
+    use crate::step::{ RunConfig, TaskResult };
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::future::FutureStep;
     use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
@@ -83,18 +82,15 @@ mod test {
             fc.tick(1).await;
             2
         }));
-        let out = Arc::new(Mutex::new(0));
-        let out2 = out.clone();
-        let z = TestExtractorStep(out);
-        let p = StepSequenceSimple::new(StepFirst::new(vec![Box::new(a),Box::new(b)]),z);
-        x.add(p,(),&cfg,"test");
+        let p = StepFirst::new(vec![Box::new(a),Box::new(b)]);
+        let tc = x.add(p,(),&cfg,"test");
         /* simulate */
         for i in 0..1 {
             x.tick(10.);
-            assert!(*out2.lock().unwrap() == 0);
+            assert!(tc.peek_result() == TaskResult::Ongoing);
         }
         x.tick(10.);
-        assert_eq!(2,*out2.lock().unwrap());
+        assert_eq!(2,tc.take_result().unwrap());
         assert_eq!(2,x.get_tick_index());
     }
 }

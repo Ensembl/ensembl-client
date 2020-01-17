@@ -92,7 +92,7 @@ impl Executor {
                     self.next_tick.insert(handle);
                 },
                 ExecutorAction::UnblockOnTick(block,tick) => {
-                    let mut block = block.clone();
+                    let block = block.clone();
                     if tick > self.tick_index {
                         self.ticks.add(block.clone(),tick,move || {
                             block.unblock();
@@ -114,7 +114,7 @@ impl Executor {
     }
 
     fn resurrect_immediate(&mut self) {
-        for mut block in self.immediate.drain(..) {
+        for block in self.immediate.drain(..) {
             print!("immediate pop\n");
             block.unblock();
         }
@@ -179,12 +179,8 @@ mod test {
     use crate::step::{ KillReason, StepState2, OngoingState, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestStep, TestState, TestIntegration, TestExtract };
-    use crate::steps::combinators::sequence::StepSequence2;
-    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::combinators::parallel::StepParallel;
-    use crate::steps::timeout::TimeoutStep2;
     use crate::steps::future::FutureStep;
-    use crate::steps::combinators::branch::StepBranch;
     use crate::steprunner::StepRun;
 
     #[test]
@@ -318,17 +314,17 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(12.));
 
-        let t1 : TimeoutStep2<(),()> = TimeoutStep2::new(5.,|| {});
-        let t2 : TimeoutStep2<(),()> = TimeoutStep2::new(21.,|| {});
-
-        let t1 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t1,FutureStep::new(|_,_,()| Box::pin(async { Ok(()) })));
-        let t2 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t2,FutureStep::new(|_,_,()| Box::pin(async { Ok(()) })));
-
+        let t1 : FutureStep<(),Result<(),()>> = FutureStep::new(|_,fc,()| Box::pin(async move {
+            fc.timer(5.).await;
+            Ok(())
+        }));
+        let t2 = FutureStep::new(|_,fc,()| Box::pin(async move {
+            fc.timer(21.).await;
+            Ok(())
+        }));
         /* collect timers */
-
         let z = StepParallel::new(vec![Box::new(t1),Box::new(t2)]);
         /* drop success */
-        let z = StepBranch::new(z,FutureStep::new(|_,_,_| Box::pin(async {})),FutureStep::new(|_,_,_| Box::pin(async {})));
         let mut tc = x.add(z,(),&cfg,"test");
         x.tick(10.);
         integration.set_time(5.);
@@ -457,32 +453,27 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a : TestStep<Result<(),()>> = integration.new_step(vec![
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Done(Ok(()))
-        ]);
-        let mut b : TestStep<Result<(),()>> = integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Tick,
-            TestState::Done(Ok(()))
-        ]);
-        a.no_auto();
-        b.no_auto();
-        let p = StepSequenceSimple::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),FutureStep::new(|_,_,_| Box::pin(async { () })));
-        x.add(p,&(),&cfg,"test");
+
+        let a : FutureStep<_,Result<u64,()>> = FutureStep::new(|_,ctx,()| Box::pin(async move { 
+            ctx.tick(4).await;
+            Ok(ctx.get_tick_index())
+        }));
+        let mut b = FutureStep::new(|_,ctx,()| Box::pin(async move { 
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+            ctx.tick(1).await;
+            Ok(ctx.get_tick_index())
+        }));
+        let p = StepParallel::new(vec![Box::new(a),Box::new(b)]);
+        let tc = x.add(p,(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
             x.tick(10.);
             integration.set_time(integration.get_time()+1.);
         }
-        assert_eq!(4.,a.finish_time());
-        assert_eq!(1.,b.finish_time());
+        assert_eq!(Ok(vec![5,2]),tc.take_result().unwrap());
     }
 
     #[test]
@@ -490,21 +481,22 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let a : TimeoutStep2<(),()> = TimeoutStep2::new(8.,|| ());
-        let mut b : TestStep<Result<(),()>> = integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Tick,
-            TestState::Again,
-            TestState::Again,
-            TestState::Tick,
-            TestState::Again,
-            TestState::Done(Ok(()))
-        ]);
-        let a = StepSequenceSimple::new(a,FutureStep::new(|_,_,_| Box::pin(async { Ok(()) })));
-        let p = StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]);
-        let p = StepSequenceSimple::new(p,FutureStep::new(|_,_,_| Box::pin(async { () })));
-        b.no_auto();
+
+        let a : FutureStep<_,Result<u64,()>> = FutureStep::new(|_,ctx,()| Box::pin(async move { 
+            ctx.timer(8.).await;
+            Ok(ctx.get_tick_index())
+        }));
+        let mut b : FutureStep<_,Result<u64,()>> = FutureStep::new(|_,ctx,()| Box::pin(async move { 
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+            ctx.tick(1).await;
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+            ctx.tick(1).await;
+            ctx.tick(0).await;
+            Ok(ctx.get_tick_index())
+        }));
+        let p = StepParallel::new(vec![Box::new(a),Box::new(b)]);
         let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */
         x.tick(10.);
@@ -520,6 +512,6 @@ mod test {
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
         x.tick(10.);
-        assert_eq!(3.,b.finish_time());
+        assert_eq!(Ok(vec![6,3]),tc.take_result().unwrap());
     }
 }

@@ -51,7 +51,7 @@ impl TestIntegration {
 
 impl CommanderIntegration2 for TestIntegration {
     fn current_time(&mut self) -> f64 {*self.timer.lock().unwrap() }
-    fn sleep(&mut self, quantity: SleepQuantity) { self.sleeps.lock().unwrap().push(quantity); }
+    fn sleep(&self, quantity: SleepQuantity) { self.sleeps.lock().unwrap().push(quantity); }
 }
 
 #[derive(Clone)]
@@ -120,16 +120,8 @@ impl<R> TestStep<R> {
         self.state.lock().unwrap().block_for = Some(when);
     }
 
-    pub(crate) fn no_auto(&mut self) {
-        self.state.lock().unwrap().auto_advance = false;
-    }
-
     pub(crate) fn get_time(&self) -> f64 {
         *self.timer.lock().unwrap()
-    }
-
-    pub(crate) fn finish_time(&self) -> f64 {
-        self.state.lock().unwrap().finish_time
     }
 }
 

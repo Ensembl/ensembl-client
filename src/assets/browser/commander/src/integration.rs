@@ -10,7 +10,7 @@ pub enum SleepQuantity {
 
 pub trait CommanderIntegration2 : Send {
     fn current_time(&mut self) -> f64;
-    fn sleep(&mut self, amount: SleepQuantity);
+    fn sleep(&self, amount: SleepQuantity);
 }
 
 /* To make an integration's life easier we catch all duplicate sleep calls as changing
@@ -36,7 +36,7 @@ impl SleepCatcherIntegration {
     }
 
     // XXX test non-sc sleep
-    pub(crate) fn sleep(&mut self, amount: SleepQuantity) {
+    pub(crate) fn sleep(&self, amount: SleepQuantity) {
         let mut prev_sleep = self.prev_sleep.lock().unwrap();
         match amount {
             SleepQuantity::Forever | SleepQuantity::None => {
@@ -83,14 +83,14 @@ impl ReenteringIntegration {
         self.integration.current_time()
     }
 
-    pub(crate) fn sleep(&mut self, amount: SleepQuantity) {
+    pub(crate) fn sleep(&self, amount: SleepQuantity) {
         let one_shot = self.one_shot.lock().unwrap();
         if !*one_shot {
             self.integration.sleep(amount);
         }
     }
 
-    pub(crate) fn cause_reentry(&mut self) {
+    pub(crate) fn cause_reentry(&self) {
         let mut one_shot = self.one_shot.lock().unwrap();
         if !*one_shot {
             self.integration.sleep(SleepQuantity::None);

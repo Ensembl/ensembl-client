@@ -34,9 +34,9 @@ impl Block {
     }
 
     /* This is the one called asynchronously. It creates an unblock EA */
-    pub fn unblock(&mut self) {
+    pub fn unblock(&self) {
         *self.unblock_sent.lock().unwrap() = true;
-        self.blocker.unblock_task(&self.clone());
+        self.blocker.unblock_task(self);
     }
 
     /* This one is then called by the executor from an EA handler */

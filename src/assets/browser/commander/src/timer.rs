@@ -1,37 +1,29 @@
 use std::collections::BTreeMap;
-use std::cmp::{ Ordering };
 use std::fmt::Debug;
 use std::sync::{ Arc, Mutex };
-use hashbrown::HashSet;
-use ordered_float::OrderedFloat;
 use crate::edgetrigger::EdgeTrigger;
 
 struct Timeout<S> {
-    index: u64,
     trigger: EdgeTrigger<'static>,
     state: S
 }
 
 struct TimersState<T,S> where T: Ord {
-    timeouts: BTreeMap<T,Vec<Timeout<S>>>,
-    next: u64
+    timeouts: BTreeMap<T,Vec<Timeout<S>>>
 }
 
 impl<T,S> TimersState<T,S> where T: Ord+Clone+Debug { // XXX not debug
     pub fn new() -> TimersState<T,S> {
         TimersState {
             timeouts: BTreeMap::new(),
-            next: 0
         }
     }
 
     fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
-        self.next += 1;
         let trigger = EdgeTrigger::new(callback);
-        let set = self.timeouts.entry(timeout).or_insert_with(|| {
+        self.timeouts.entry(timeout).or_insert_with(|| {
             Vec::new()
         }).push(Timeout {
-            index: self.next,
             trigger,
             state
         });
@@ -106,6 +98,7 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone + Debug { // XXX Debug
 #[allow(unused)]
 mod test {
     use std::sync::{ Arc, Mutex };
+    use ordered_float::OrderedFloat;
     use crate::edgetrigger::EdgeTrigger;
     use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
     use crate::task2::Task2;

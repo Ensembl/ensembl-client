@@ -26,7 +26,7 @@ impl Blocker {
         }
     }
 
-    pub(crate) fn unblock_task(&mut self, blocker: &Block) {
+    pub(crate) fn unblock_task(&self, blocker: &Block) {
         self.action_handle.add(ExecutorAction::Unblock(blocker.clone()));
         self.integration.cause_reentry();
     }

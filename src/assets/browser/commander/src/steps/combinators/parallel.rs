@@ -74,8 +74,6 @@ mod test {
     use crate::step::{ RunConfig, TaskResult };
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::steps::combinators::branch::StepBranch;
-    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
-    use crate::steps::timeout::TimeoutStep2;
     use crate::steps::future::FutureStep;
     use crate::testintegration::{ TestIntegration, TestStep, TestState, TestExtractorStep };
 
@@ -98,28 +96,23 @@ mod test {
             fc.tick(1).await;
             Ok(2)
         }));
-        let c : TimeoutStep2<(),()> = TimeoutStep2::new(50.,|| ());
-        let bs = FutureStep::new(|_,_,_| Box::pin(async { Ok(0) }));
-        let c : StepSequenceSimple<(),(),Result<u32,u32>> = StepSequenceSimple::new(c,bs);
-        let out : Arc<Mutex<Vec<u32>>> = Arc::new(Mutex::new(vec![]));
-        let out2 = out.clone();
-        let z = TestExtractorStep(out);
+        let c = FutureStep::new(|_,fc,()| Box::pin(async move {
+            fc.timer(50.).await;
+            Ok(0)
+        }));
         let p = StepParallel::new(vec![Box::new(a),Box::new(b),Box::new(c)]);
         let p = StepBranch::new(p,FutureStep::new(|_,_,x| Box::pin(async { x })),
                                   FutureStep::new(|_,_,_| Box::pin(async { vec![] })));
-        let p = StepSequenceSimple::new(p,z);
         let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
             x.tick(10.);
-            assert!(out2.lock().unwrap().len() == 0);
             assert!(tc.peek_result() == TaskResult::Ongoing);
         }
         integration.set_time(100.);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
-        assert!(out2.lock().unwrap().len() != 0);
-        assert_eq!(vec![5,2,0],*out2.lock().unwrap());
+        assert_eq!(vec![5,2,0],tc.take_result().unwrap());
     }
 
     #[test]
@@ -141,17 +134,13 @@ mod test {
             print!("B\n");
             Err(6)
         }));
-        let out : Arc<Mutex<u32>> = Arc::new(Mutex::new(12));
-        let out2 = out.clone();
-        let z = TestExtractorStep(out);
         let p : StepParallel<(),_,_> = StepParallel::new(vec![Box::new(a),Box::new(b)]);
         let p = StepBranch::new(p,FutureStep::new(|_,_,_| Box::pin(async { 23 })),FutureStep::new(move |_,_,x| Box::pin(async move { x })));
-        let p = StepSequenceSimple::new(p,z);
         let tc = x.add(p,(),&cfg,"test");
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
-        assert_eq!(6,*out2.lock().unwrap());
+        assert_eq!(6,tc.take_result().unwrap());
     }
 }

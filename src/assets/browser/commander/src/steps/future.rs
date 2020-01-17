@@ -6,20 +6,15 @@ use crate::block::Block;
 use crate::step::{ Step2, StepState2, OngoingState };
 use crate::steprunner::StepRun;
 use crate::taskcontext::TaskContext;
-use futures::future;
 use futures::task::{ ArcWake, Context, waker_ref };
 
 struct FutureContextOnce {
-    again: bool,
-    timeout: Option<f64>,
     block: Option<Block>
 }
 
 impl FutureContextOnce {
     fn new() -> FutureContextOnce {
         FutureContextOnce {
-            again: false,
-            timeout: None,
             block: None
         }
     }
@@ -68,9 +63,17 @@ impl FutureContext {
     }
 
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
-        StepFuture(Arc::new(Mutex::new((self.clone(),Box::new(move |ctx| {
-            ctx.1.lock().unwrap().timeout = Some(timeout);
-        }),None))))
+        let block = self.0.block();
+        let block2 = block.clone();
+        self.0.add_timer(timeout,move || {
+            block2.unblock();
+        });
+        self.1.lock().unwrap().block = Some(block.clone());
+        BlockFuture(block)
+    }
+
+    pub fn get_tick_index(&self) -> u64 {
+        self.0.get_tick_index()
     }
 }
 
@@ -94,16 +97,6 @@ impl<R> StepRun for FutureRun<R> where R: Clone {
             Poll::Pending => {
                 let mut context = (self.1).1.lock().unwrap();
                 if let Some(block) = context.block.take() {
-                    StepState2::Ongoing(OngoingState::Block(block))
-                } else if context.again {
-                    waker.wake();
-                    StepState2::Ongoing(OngoingState::Again)
-                } else if let Some(timeout) = context.timeout {
-                    // XXX can probably be implemented as a future
-                    let mut block2 = block.clone();
-                    control.add_timer(timeout,move || {
-                        block2.unblock();
-                    });
                     StepState2::Ongoing(OngoingState::Block(block))
                 } else {
                     StepState2::Ongoing(OngoingState::Block(block))
@@ -147,8 +140,9 @@ mod test {
     use std::time::Duration;
     use crate::executor::Executor;
     use crate::step::{ RunConfig, TaskResult };
+    use crate::steps::combinators::first::StepFirst;
     use crate::testintegration::{ TestIntegration, TestExtractorStep };
-    use crate::steps::combinators::sequencesimple::StepSequenceSimple;
+    use futures::future;
 
     async fn tick_future(ctx: FutureContext,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
         ctx.tick(1).await;
@@ -194,14 +188,12 @@ mod test {
             })
         });
         let out = Arc::new(Mutex::new(0));
-        let z = TestExtractorStep(out.clone());
-        let f = StepSequenceSimple::new(f,z);
         let tc = x.add(f,2,&cfg,"test");
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
-        assert_eq!(4,*out.lock().unwrap());
+        assert_eq!(4,tc.take_result().unwrap());
     }
 
     #[test]
@@ -219,8 +211,6 @@ mod test {
             Box::pin(tick_future(ctx,x,Some(finished3.clone()),true))
         });
         let out = Arc::new(Mutex::new(0));
-        let z = TestExtractorStep(out.clone());
-        let f = StepSequenceSimple::new(f,z);
         let tc = x.add(f,2,&cfg,"test");
         let tc2 = x.add(f2,2,&cfg,"test");
         x.tick(10.);
@@ -228,7 +218,7 @@ mod test {
         assert!(tc2.peek_result() != TaskResult::Done);
         x.tick(10.);
         assert!(tc2.peek_result() == TaskResult::Done);
-        assert_eq!(4,*out.lock().unwrap());
+        assert_eq!(4,tc.take_result().unwrap());
     }
 
     /*
@@ -252,13 +242,11 @@ mod test {
             )
         });
         let out = Arc::new(Mutex::new((0,0)));
-        let z = TestExtractorStep(out.clone());
-        let f = StepSequenceSimple::new(f,z);
         let tc = x.add(f,2,&cfg,"test");
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
         x.tick(10.);
-        assert_eq!((4,4),*out.lock().unwrap());
+        assert_eq!((4,4),tc.take_result().unwrap());
     }
     */
 
@@ -282,14 +270,113 @@ mod test {
             )
         });
         let out = Arc::new(Mutex::new((0,0)));
-        let z = TestExtractorStep(out.clone());
-        let f = StepSequenceSimple::new(f,z);
         let tc = x.add(f,2,&cfg,"test");
         x.tick(10.);
         assert!(tc.peek_result() != TaskResult::Done);
         integration.set_time(2.);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
-        assert_eq!((0,4),*out.lock().unwrap());
+        assert_eq!((0,4),tc.take_result().unwrap());
+    }
+
+    pub fn timeout_smoke(timeout: bool) {
+        /* setup */
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let b : FutureStep<(),Result<(),()>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(if timeout {3} else {2}).await;
+            Ok(())
+        }));
+        let timeout_step : FutureStep<(),Result<(),()>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.timer(3.).await;
+            Err(())
+        }));
+        let b = StepFirst::new(vec![Box::new(timeout_step),Box::new(b)]);
+        let mut tc = x.add(b,(),&cfg,"test");
+        for i in 0..10 {
+            integration.set_time(i.into());
+            x.tick(10.);
+        }
+        assert!(tc.take_result().unwrap().is_ok() != timeout);
+    }
+
+    #[test]
+    pub fn test_timer_notimeout() {
+        timeout_smoke(false);
+    }
+
+    #[test]
+    pub fn test_timer_timeout() {
+        timeout_smoke(true);
+    }
+
+    #[test]
+    pub fn test_sequencesimple_smoke() {
+        /* setup */
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let a : FutureStep<(),()> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(2).await;
+        }));
+        let b : FutureStep<(),()> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(1).await;
+        }));
+
+        let c = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(2).await;
+            fc.tick(1).await;
+        }));
+
+        let mut tc = x.add(c,(),&cfg,"test");
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Done);
+    }
+
+    async fn future_result<X,Y>(ctx: &FutureContext, r: Result<X,Y>) -> Result<X,Y> {
+        ctx.tick(1).await;
+        r
+    }
+
+    async fn sequence_short(ctx: FutureContext) -> Result<u32,()> {
+        let x = future_result(&ctx,Err(())).await?;
+        future_result(&ctx,Ok(2)).await
+    }
+
+    async fn sequence_good(ctx: FutureContext) -> Result<u32,()> {
+        let x = future_result(&ctx,Ok(1)).await?;
+        future_result(&ctx,Ok(x+2)).await
+    }
+
+    #[test]
+    pub fn test_sequence() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let short = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            sequence_short(fc).await
+        }));
+        let good = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            sequence_good(fc).await
+        }));
+        let mut tc_short = x.add(short,(),&cfg,"test");
+        let mut tc_good = x.add(good,(),&cfg,"test");
+        x.tick(10.);
+        assert!(tc_short.peek_result() == TaskResult::Ongoing);
+        assert!(tc_good.peek_result() == TaskResult::Ongoing);
+        x.tick(10.);
+        assert!(tc_short.peek_result() != TaskResult::Ongoing);
+        assert!(tc_good.peek_result() == TaskResult::Ongoing);
+        assert!(tc_short.take_result().unwrap().is_err());
+        x.tick(10.);
+        assert!(tc_good.peek_result() != TaskResult::Ongoing);
+        assert!(tc_good.take_result().unwrap().is_ok());
     }
 }
