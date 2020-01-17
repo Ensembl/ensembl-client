@@ -1,7 +1,8 @@
 use crate::taskcontext::TaskContext;
 use crate::step::{ StepState2, OngoingState };
-use crate::steprunner::{ StepRunner, StepRun };
+use crate::steprunner::StepRunner;
 use crate::taskhandle::TaskHandle;
+use crate::future::FutureRun;
 
 pub(crate) struct Task2Impl<R> {
     runner: StepRunner<R>,
@@ -17,8 +18,8 @@ pub(crate) trait Task2 {
 }
 
 impl<R> Task2Impl<R> {
-    pub(crate) fn new(step: Box<dyn StepRun<Output=R>>, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> {
-        let runner = task_context.new_step2(step);
+    pub(crate) fn new(step: FutureRun<R>, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> {
+        let runner = StepRunner::new(step,task_context);
         Task2Impl {
             runner,
             handle: TaskHandle::new(task_context),
@@ -74,9 +75,9 @@ mod test {
     use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
-    use crate::steprunner::StepRun;
     use crate::step::RunConfig;
-    use crate::future::{ FutureOneShot, FutureRun };
+    use crate::future::FutureRun;
+    use crate::oneshot::OneShot;
     use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
@@ -96,7 +97,7 @@ mod test {
             ctx.tick(0).await;
         }));
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(Box::new(s1),&mut tc2,"test");
+        let mut t = Task2Impl::new(s1,&mut tc2,"test");
         /* simple accessors */
         assert_eq!("test",t.get_name());
         assert_eq!(3,t.get_priority());

@@ -5,6 +5,7 @@ mod edgetrigger;
 mod executor;
 mod executoraction;
 mod integration;
+mod oneshot;
 mod runnable;
 mod runqueue;
 mod step;

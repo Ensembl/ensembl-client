@@ -1,15 +1,10 @@
 use crate::block::Block;
 use crate::taskcontext::TaskContext;
 use crate::step::{ StepState2, OngoingState };
-
-pub trait StepRun {
-    type Output;
-
-    fn more(&mut self, control: &mut TaskContext) -> StepState2<Self::Output>;
-}
+use crate::future::FutureRun;
 
 pub struct StepRunner<R> {
-    run: Box<dyn StepRun<Output=R>>,
+    run: FutureRun<R>,
     control: TaskContext,
     blocked_on: Option<Block>,
     is_dead: bool
@@ -17,7 +12,7 @@ pub struct StepRunner<R> {
 }
 
 impl<R> StepRunner<R> {
-    pub(crate) fn new(run: Box<dyn StepRun<Output=R>>, task_control: &TaskContext) -> StepRunner<R> {
+    pub(crate) fn new(run: FutureRun<R>, task_control: &TaskContext) -> StepRunner<R> {
         StepRunner {
             run,
             control: task_control.clone(),
@@ -81,7 +76,7 @@ mod test {
         let mut tc = TaskContext::new(&cfg,&eah,&integration);
         tc.register(&h);
         let run = FutureRun::new(Box::pin(async{ }));
-        let mut sc = StepRunner::new(Box::new(run),&tc);
+        let mut sc = StepRunner::new(run,&tc);
         assert!(sc.get_blocker().is_none());
         let mut b1 = tc.block();
         let mut b2 = tc.block();

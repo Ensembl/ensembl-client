@@ -4,50 +4,8 @@ use std::pin::Pin;
 use std::task::Poll;
 use crate::block::Block;
 use crate::step::{ StepState2, OngoingState };
-use crate::steprunner::StepRun;
 use crate::taskcontext::TaskContext;
-use futures::task::{ ArcWake, Context, Waker, waker_ref };
-
-struct FutureOneShotState {
-    flag: bool,
-    waker: Option<Waker>
-}
-
-#[derive(Clone)]
-pub struct FutureOneShot(Arc<Mutex<FutureOneShotState>>);
-
-impl FutureOneShot {
-    pub(crate) fn new() -> FutureOneShot {
-        FutureOneShot(Arc::new(Mutex::new(FutureOneShotState {
-            flag: false,
-            waker: None
-        })))
-    }
-
-    pub(crate) fn flag(&self) {
-        let mut state = self.0.lock().unwrap();
-        if !state.flag {
-            state.flag = true;
-            if let Some(waker) = state.waker.take() {
-                waker.wake();
-            }
-        }
-    }
-}
-
-impl Future for FutureOneShot {
-    type Output = ();
-
-    fn poll(self: Pin<&mut Self>, ctx: &mut Context) -> Poll<()> {
-        let mut state = self.0.lock().unwrap();
-        if state.flag {
-            Poll::Ready(())
-        } else {
-            state.waker = Some(ctx.waker().clone());
-            Poll::Pending
-        }
-    }
-}
+use futures::task::{ ArcWake, Context, waker_ref };
 
 struct StepWaker(Mutex<Block>);
 
@@ -57,18 +15,14 @@ impl ArcWake for StepWaker {
     }
 }
 
-pub struct FutureRun<R>(Pin<Box<Future<Output=R> + Send+Sync>>);
+pub struct FutureRun<R>(Pin<Box<dyn Future<Output=R> + Send+Sync>>);
 
-impl<R> StepRun for FutureRun<R> {
-    type Output = R;
-
-    fn more(&mut self, control: &mut TaskContext) -> StepState2<R> {
+impl<R> FutureRun<R> {
+    pub(crate) fn more(&mut self, control: &mut TaskContext) -> StepState2<R> {
         let block = control.block();
         let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
         let out = match self.0.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
-            Poll::Pending => {
-                StepState2::Ongoing(OngoingState::Block(block))
-            },
+            Poll::Pending => StepState2::Ongoing(OngoingState::Block(block)),
             Poll::Ready(v) => StepState2::Done(v)
         };
         out

@@ -1,7 +1,5 @@
 use std::sync::Arc;
 use crate::block::Block;
-use crate::taskcontext::TaskContext;
-use crate::steprunner::StepRun;
 
 #[derive(Clone)] // XXX test only
 pub enum OngoingState {

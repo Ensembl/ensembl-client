@@ -2,6 +2,7 @@ use std::sync::{ Arc, Mutex, MutexGuard };
 use crate::taskcontext::TaskContext;
 use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
+#[cfg(test)]
 #[derive(Clone)] // XXX test only
 pub(crate) enum TestState<R> {
     //Again,

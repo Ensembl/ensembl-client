@@ -1,4 +1,3 @@
-use std::pin::Pin;
 use std::future::Future;
 use hashbrown::HashSet;
 use ordered_float::OrderedFloat;
@@ -9,7 +8,6 @@ use crate::timer::TimerSet;
 use crate::runnable::Runnable;
 use crate::taskcontext::TaskContext;
 use crate::step::{ KillReason, RunConfig };
-use crate::steprunner::StepRun;
 use crate::task2::Task2Impl;
 use crate::taskhandle::TaskHandle;
 use crate::future::FutureRun;
@@ -49,7 +47,7 @@ impl Executor {
     }
 
     pub fn add<R,T>(&mut self, run: T, mut context: TaskContext, name: &str) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+Send+Sync+'static {
-        let run = Box::new(FutureRun::new(Box::pin(run)));
+        let run = FutureRun::new(Box::pin(run));
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
@@ -87,9 +85,6 @@ impl Executor {
                     }
                 },
                 ExecutorAction::Done(handle) => {
-                    self.remove(&handle);
-                },
-                ExecutorAction::Kill(handle,_) => {
                     self.remove(&handle);
                 },
                 ExecutorAction::Timer(handle,timeout,callback) => {
@@ -168,9 +163,9 @@ mod test {
     use crate::step::{ KillReason, StepState2, OngoingState, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestState, TestIntegration, tick_helper };
-    use crate::future::{ FutureOneShot, FutureRun };
+    use crate::future::FutureRun;
+    use crate::oneshot::OneShot;
     use futures::future;
-    use crate::steprunner::StepRun;
 
     #[test]
     pub fn test_executor_smoke() {
@@ -196,7 +191,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fos = FutureOneShot::new();
+        let fos = OneShot::new();
         let fos2 = fos.clone();
         let ctx = x.make_context(&cfg);
         let ctx2 = ctx.clone();
@@ -294,11 +289,11 @@ mod test {
         let ctxa2 = ctxa.clone();
         let step = async move {
             ctxa2.tick(1).await;
-            FutureOneShot::new().await;
+            OneShot::new().await;
         };
         let ctxb = x.make_context(&cfg);
         let step2 = async move {
-            FutureOneShot::new().await;
+            OneShot::new().await;
         };
         let mut tc = x.add(step,ctxa,"test");
         let mut tc2 = x.add(step2,ctxb,"test2");
@@ -382,7 +377,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fos = FutureOneShot::new();
+        let fos = OneShot::new();
         let fos2 = fos.clone();
         let ctx = x.make_context(&cfg);
         let mut tx = x.add(async {
@@ -401,7 +396,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fosa = FutureOneShot::new();
+        let fosa = OneShot::new();
         let fosa2 = fosa.clone();
         let ctx = x.make_context(&cfg);
         let ctx2 = ctx.clone();
@@ -409,7 +404,7 @@ mod test {
             fosa2.await;
             tick_helper(ctx2.clone(),&[0,1,1]).await;
             ctx2.timer(3.);
-            FutureOneShot::new().await;
+            OneShot::new().await;
         };
         let mut tc = x.add(step,ctx,"test");
         /* simulate */
@@ -438,13 +433,13 @@ mod test {
 
         let ctx = x.make_context(&cfg);
         let ctx2 = ctx.clone();
-        let mut os1 = FutureOneShot::new();
+        let mut os1 = OneShot::new();
         let os1b = os1.clone();
         let step = async move {
             integration2.set_time(1.);
             os1b.await;
             ctx2.timer(2.);
-            FutureOneShot::new().await;
+            OneShot::new().await;
         };
         let tx = x.add(step,ctx,"test");
         /* simulate */

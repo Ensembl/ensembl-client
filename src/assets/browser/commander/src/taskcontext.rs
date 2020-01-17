@@ -6,9 +6,8 @@ use crate::blocker::Blocker;
 use crate::executoraction::{ AnonExecutorAction, ExecutorActionHandle, ExecutorActionTaskHandle };
 use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig };
-use crate::steprunner::{ StepRunner, StepRun };
 use crate::taskcontainer::TaskContainerHandle;
-use crate::future::FutureOneShot;
+use crate::oneshot::OneShot;
 
 #[derive(Clone)]
 pub struct TaskContext {
@@ -58,11 +57,9 @@ impl TaskContext {
         let mut finished = self.finished.lock().unwrap();
         if !*finished {
             if let Some(reason) = reason {
-                *self.kill_reason.lock().unwrap() = Some(reason.clone());
-                self.action_handle.add(AnonExecutorAction::Kill(reason.clone()));
-            } else {
-                self.action_handle.add(AnonExecutorAction::Done());
+                *self.kill_reason.lock().unwrap() = Some(reason.clone());                
             }
+            self.action_handle.add(AnonExecutorAction::Done());
             *finished = true;
             true
         } else {
@@ -96,10 +93,6 @@ impl TaskContext {
     // XXX demut
     /* running steps */
 
-    pub fn new_step2<R>(&mut self, run: Box<dyn StepRun<Output=R>>) -> StepRunner<R> {
-        StepRunner::new(run,self)
-    }
-
     pub(crate) fn about_to_run(&mut self, tick_index: u64) {
         *self.tick_index.lock().unwrap() = tick_index;
     }
@@ -117,7 +110,7 @@ impl TaskContext {
     }
 
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
-        let future = FutureOneShot::new();
+        let future = OneShot::new();
         let future2 = future.clone();
         self.add_ticks_timer(ticks,move || {
             future2.flag();
@@ -126,7 +119,7 @@ impl TaskContext {
     }
 
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
-        let future = FutureOneShot::new();
+        let future = OneShot::new();
         let future2 = future.clone();
         self.add_timer(timeout,move || {
             future2.flag();
@@ -143,7 +136,6 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::step::{ StepState2, OngoingState };
-    use crate::steprunner::StepRun;
     use crate::testintegration::{ TestIntegration, TestState };
     use crate::executoraction::ExecutorAction;
 
@@ -188,10 +180,11 @@ mod test {
         assert!(tc.is_finished());
         let actions = eah.drain();
         assert_eq!(1,actions.len());
-        if let ExecutorAction::Kill(_,KillReason::Cancelled) = actions[0] {
+        if let ExecutorAction::Done(_) = actions[0] {
         } else {
             assert!(false);
         }
+        assert!(Some(KillReason::Cancelled) == tc.kill_reason());
     }
 
     #[test]

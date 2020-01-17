@@ -7,7 +7,6 @@ pub(crate) enum ExecutorAction {
     Block(TaskContainerHandle,Block),
     Unblock(Block),
     Done(TaskContainerHandle),
-    Kill(TaskContainerHandle,KillReason),
     UnblockOnTick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
     Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
 }
@@ -17,7 +16,6 @@ pub(crate) enum AnonExecutorAction {
     Block(Block),
     Unblock(Block),
     Done(),
-    Kill(KillReason),
     UnblockOnTick(u64,Box<dyn FnMut() + 'static + Send>),
     Timer(f64,Box<dyn FnMut() + 'static + Send>)
 }
@@ -29,7 +27,6 @@ impl AnonExecutorAction {
             AnonExecutorAction::Block(b) => ExecutorAction::Block(handle,b),
             AnonExecutorAction::Unblock(b) => ExecutorAction::Unblock(b),
             AnonExecutorAction::Done() => ExecutorAction::Done(handle),
-            AnonExecutorAction::Kill(r) => ExecutorAction::Kill(handle,r),
             AnonExecutorAction::UnblockOnTick(t,f) => ExecutorAction::UnblockOnTick(handle,t,f),
             AnonExecutorAction::Timer(t,f) => ExecutorAction::Timer(handle,t,f)
         }
@@ -116,9 +113,9 @@ mod test {
             assert!(false);
         }
         assert!(eah.drain().len() == 0);
-        eah.add(ExecutorAction::Kill(h,KillReason::Cancelled));
+        eah.add(ExecutorAction::UnblockOnTick(h,0,Box::new(|| {})));
         let actions = eah.drain();
-        if let ExecutorAction::Kill(_,_) = &actions[0] {
+        if let ExecutorAction::UnblockOnTick(_,0,_) = &actions[0] {
         } else {
             assert!(false);
         }
