@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import { RootState } from 'src/store';
 
 import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
@@ -13,9 +12,8 @@ import {
   PreviouslyViewedGenomeBrowserObjects
 } from 'src/content/home/homePageSelectors';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
-import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
-import { SimpleSelectedSpecies } from 'src/shared/components/selected-species';
+import HomepageSpeciesBar from 'src/content/home/components/homepage-species-bar/HomepageSpeciesBar';
+import HomepageSiteInfo from 'src/content/home/components/homepage-site-info/HomepageSiteInfo';
 
 import { GenomeInfoData } from 'src/shared/state/genome/genomeTypes';
 import { CommittedItem } from '../app/species-selector/types/species-search';
@@ -41,7 +39,7 @@ const Home = (props: Props) => {
 
   return (
     <div className={styles.home}>
-      <SpeciesBar species={props.species} />
+      <HomepageSpeciesBar />
       <section className={styles.search}>
         <h2>Find</h2>
         <p>
@@ -54,35 +52,9 @@ const Home = (props: Props) => {
           props.previouslyViewedGenomeBrowserObjects
         }
       />
-      <UsingTheSite />
+      <HomepageSiteInfo />
     </div>
   );
-};
-
-const SpeciesBar = (props: { species: CommittedItem[] }) => {
-  let barContent;
-  if (!props.species.length) {
-    barContent = (
-      <div className={styles.emptySpeciesBar}>
-        <span className={styles.speciesSelectorBannerText}>
-          7 species now available
-        </span>
-        <Link
-          className={styles.speciesSelectorBannerLink}
-          to={urlFor.speciesSelector()}
-        >
-          Select a species to begin
-        </Link>
-      </div>
-    );
-  } else {
-    const speciesItems = props.species.map((species, index) => (
-      <SimpleSelectedSpecies key={index} species={species} />
-    ));
-    barContent = <SpeciesTabsWrapper speciesTabs={speciesItems} />;
-  }
-
-  return <AppBar mainContent={barContent} />;
 };
 
 const PreviouslyViewed = (props: PreviouslyViewedProps) => {
@@ -113,24 +85,6 @@ const PreviouslyViewed = (props: PreviouslyViewedProps) => {
   );
 };
 
-const UsingTheSite = () => (
-  <section className={styles.siteMessage}>
-    <h4>Using the site</h4>
-    <p>
-      A very limited data set has been made available for this first release.
-    </p>
-    <p>Blue icons and text are clickable and will usually 'do' something.</p>
-    <p>
-      Grey icons indicate apps &amp; functionality that is planned, but not
-      available yet.
-    </p>
-    <p className={styles.convoMessage}>
-      It's very early days, but why not join the conversation:
-    </p>
-    <p>helpdesk@ensembl.org</p>
-  </section>
-);
-
 const mapStateToProps = (state: RootState) => ({
   species: getEnabledCommittedSpecies(state),
   genomeInfo: getGenomeInfo(state),
@@ -143,7 +97,4 @@ const mapDispatchToProps = {
   fetchDataForLastVisitedObjects
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

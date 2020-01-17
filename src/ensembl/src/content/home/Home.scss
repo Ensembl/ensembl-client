@@ -9,22 +9,6 @@
   position: relative;
 }
 
-.speciesBar {
-  display: flex;
-  align-items: center;
-  padding: 8px 20px;
-  min-height: 80px;
-}
-
-.emptySpeciesBar {
-  display: flex;
-  flex-direction: column;
-
-  .speciesSelectorBannerLink {
-    font-weight: 700;
-  }
-}
-
 .search {
   background: $light-grey;
   box-shadow: 0 3px 5px $medium-light-grey;
@@ -70,26 +54,4 @@
   color: $medium-dark-grey;
   font-size: 11px;
   margin-left: 0.2em;
-}
-
-.siteMessage {
-  margin-left: 120px;
-  padding-top: 2%;
-
-  h4 {
-    color: $grey;
-    font-size: 13px;
-    font-weight: $normal;
-    margin-bottom: 0.8em;
-  }
-
-  p {
-    font-size: 13px;
-    margin: 0;
-    line-height: 1.5;
-  }
-
-  .convoMessage {
-    margin-top: 1em;
-  }
 }
