@@ -61,6 +61,7 @@ mod test {
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
+    use crate::steps::future::FutureStep;
     use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
     #[test]
@@ -69,27 +70,24 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = integration.new_step(vec![
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Done(1)
-        ]);
-        let mut b = integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Tick,
-            TestState::Done(2)
-        ]);
+        let a : FutureStep<(),u32> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(2).await;
+            1
+        }));
+        let b : FutureStep<(),u32> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(1).await;
+            2
+        }));
         let out = Arc::new(Mutex::new(0));
         let out2 = out.clone();
         let z = TestExtractorStep(out);
         let p = StepSequenceSimple::new(StepFirst::new(vec![Box::new(a),Box::new(b)]),z);
-        x.add(p,&(),&cfg,"test");
+        x.add(p,(),&cfg,"test");
         /* simulate */
         for i in 0..1 {
             x.tick(10.);

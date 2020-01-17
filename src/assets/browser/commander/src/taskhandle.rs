@@ -80,18 +80,21 @@ mod test {
     use crate::testintegration::{ TestIntegration, TestState };
     use crate::step::RunConfig;
     use crate::executor::Executor;
+    use crate::steps::future::FutureStep;
 
     #[test]
     pub fn test_handle_smoke() {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut tc = x.add(integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Done(42)
-        ]),&(),&cfg,"test");
+
+        let a : FutureStep<(),u32> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            42
+        }));
+        let mut tc = x.add(a,(),&cfg,"test");
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(tc.take_result().is_none());
         assert!(tc.get_result().is_none());

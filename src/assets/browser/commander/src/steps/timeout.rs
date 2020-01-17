@@ -75,7 +75,7 @@ mod test {
     use crate::steps::combinators::sequence::StepSequence2;
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::combinators::branch::StepBranch;
-    use crate::steps::noop::BlindStep;
+    use crate::steps::future::FutureStep;
     use crate::testintegration::{ TestIntegration, TestState, TestExtractorStep };
 
     fn flip<X>(init: X) -> (impl Step2<X,Output=()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
@@ -83,17 +83,18 @@ mod test {
         (TestExtractorStep(var.clone()),var)
     }
 
-    fn find_branch<T,X,Y,E>(x: &mut Executor, a: T, input: X) -> bool where T: Step2<X,Output=Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
+    fn find_branch<T,X,Y,E>(integration: &mut TestIntegration, x: &mut Executor, a: T, input: X) -> bool where T: Step2<X,Output=Result<Y,E>> + 'static, X: 'static + Send, Y: 'static, E: 'static {
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
-        let v1 = BlindStep::new(1);
+        let v1 = FutureStep::new(|_,_,_| Box::pin(async { 1 }));
         let y = StepSequenceSimple::new(v1,y);
-        let v2 = BlindStep::new(1);
+        let v2 = FutureStep::new(|_,_,_| Box::pin(async { 1 }));
         let e = StepSequenceSimple::new(v2,e);
         let b = StepBranch::new(a,y,e);
         let cfg = RunConfig::new(None,3,None);
         let mut tcb = x.add(b,input,&cfg,"test");        
-        for _ in 0..10 {
+        for i in 0..10 {
+            integration.set_time(i.into());
             x.tick(10.);
         }
         if *y_flag.lock().unwrap() > 0 {
@@ -111,18 +112,12 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut cmds : Vec<TestState<Result<(),()>>> = vec![
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Done(Ok(()))
-        ];
-        if timeout {
-            cmds.insert(0,TestState::Tick);
-        }
-
-        let mut b = integration.new_step(cmds);
-        let b = TimeoutStep2::new_wrapped(3.,Box::new(b),|| Ok(()));
-        assert!(find_branch(&mut x, b,&()) || timeout);
+        let b : FutureStep<(),Result<(),()>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(if timeout {3} else {2}).await;
+            Ok(())
+        }));
+        let b = TimeoutStep2::new_wrapped(3.,Box::new(b),|| Err(()));
+        assert!(find_branch(&mut integration,&mut x, b,()) != timeout);
     }
 
     #[test]

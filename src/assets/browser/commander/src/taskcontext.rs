@@ -44,6 +44,11 @@ impl TaskContext {
         self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
     }
 
+    pub fn block_for_ticks(&self, block: Block, ticks: u64) {
+        let tick = *self.tick_index.lock().unwrap();
+        self.action_handle.add(ExecutorAction::UnblockOnTick(block,tick+ticks));
+    }
+
     /* kills */
     pub(crate) fn finish_internal(&mut self, reason: Option<&KillReason>) -> bool {
         let mut finished = self.finished.lock().unwrap();
@@ -103,11 +108,11 @@ impl TaskContext {
         self.action_handle.add(ExecutorAction::Tick(self.task_handle.clone()));
     }
 
-    pub(crate) fn get_blocker(&mut self) -> &mut Blocker {
-        &mut self.blocker
+    pub(crate) fn get_blocker(&self) -> &Blocker {
+        &self.blocker
     }
 
-    pub fn block(&mut self) -> Block {
+    pub fn block(&self) -> Block {
         Block::new(self.get_blocker())
     }
 }

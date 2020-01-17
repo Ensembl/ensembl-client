@@ -29,7 +29,6 @@ mod steps {
         pub(crate) mod first;
     }
     pub(crate) mod timeout;
-    pub(crate) mod noop;
     pub(crate) mod future;
 }
 

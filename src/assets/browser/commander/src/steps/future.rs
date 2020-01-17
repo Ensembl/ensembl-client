@@ -10,17 +10,17 @@ use futures::future;
 use futures::task::{ ArcWake, Context, waker_ref };
 
 struct FutureContextOnce {
-    tick: bool,
     again: bool,
-    timeout: Option<f64>
+    timeout: Option<f64>,
+    block: Option<Block>
 }
 
 impl FutureContextOnce {
     fn new() -> FutureContextOnce {
         FutureContextOnce {
-            tick: false,
             again: false,
-            timeout: None
+            timeout: None,
+            block: None
         }
     }
 }
@@ -43,24 +43,33 @@ impl<X> Future for StepFuture<X> {
     }
 }
 
+pub struct BlockFuture(Block);
+
+impl Future for BlockFuture {
+    type Output = ();
+
+    fn poll(self: Pin<&mut Self>, _ctx: &mut Context) -> Poll<()> {
+        match self.0.step_blocked() {
+            true => Poll::Pending,
+            false => Poll::Ready(())
+        }
+    }
+}
+
 #[derive(Clone)]
-pub struct FutureContext(Arc<Mutex<FutureContextOnce>>);
+pub struct FutureContext(TaskContext,Arc<Mutex<FutureContextOnce>>);
 
 impl FutureContext {
-    pub fn tick(&self) -> impl Future<Output=()> {
-        StepFuture(Arc::new(Mutex::new((self.clone(),Box::new(|ctx| {
-            ctx.0.lock().unwrap().tick = true;
-        }),None))))
-    }
-    pub fn again(&self) -> impl Future<Output=()> {
-        StepFuture(Arc::new(Mutex::new((self.clone(),Box::new(|ctx| {
-            ctx.0.lock().unwrap().again = true;
-        }),None))))
+    pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
+        let block = self.0.block();
+        self.0.block_for_ticks(block.clone(),ticks);
+        self.1.lock().unwrap().block = Some(block.clone());
+        BlockFuture(block)
     }
 
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
         StepFuture(Arc::new(Mutex::new((self.clone(),Box::new(move |ctx| {
-            ctx.0.lock().unwrap().timeout = Some(timeout);
+            ctx.1.lock().unwrap().timeout = Some(timeout);
         }),None))))
     }
 }
@@ -83,13 +92,12 @@ impl<R> StepRun for FutureRun<R> where R: Clone {
         let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
         let out = match self.0.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
             Poll::Pending => {
-                let context = (self.1).0.lock().unwrap();
-                if context.again {
+                let mut context = (self.1).1.lock().unwrap();
+                if let Some(block) = context.block.take() {
+                    StepState2::Ongoing(OngoingState::Block(block))
+                } else if context.again {
                     waker.wake();
                     StepState2::Ongoing(OngoingState::Again)
-                } else if context.tick {
-                    waker.wake();
-                    StepState2::Ongoing(OngoingState::Tick)
                 } else if let Some(timeout) = context.timeout {
                     // XXX can probably be implemented as a future
                     let mut block2 = block.clone();
@@ -103,17 +111,17 @@ impl<R> StepRun for FutureRun<R> where R: Clone {
             },
             Poll::Ready(v) => StepState2::Done(v)
         };
-        *(self.1).0.lock().unwrap() = FutureContextOnce::new();
+        *(self.1).1.lock().unwrap() = FutureContextOnce::new();
         out
     }
 }
 
 pub struct FutureStep<X,R> {
-    generator: Box<Fn(FutureContext,X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send>
+    generator: Box<Fn(&mut TaskContext,FutureContext,X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send>
 }
 
 impl<X,R> FutureStep<X,R> {
-    pub fn new<T>(generator: T) -> FutureStep<X,R> where R: 'static + Send + Clone, T: Fn(FutureContext,X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send + 'static {
+    pub fn new<T>(generator: T) -> FutureStep<X,R> where R: 'static + Send + Clone, T: Fn(&mut TaskContext,FutureContext,X) -> Pin<Box<Future<Output=R> + Send+Sync>> + Send + 'static {
         FutureStep {
             generator: Box::new(generator)
         }
@@ -123,9 +131,9 @@ impl<X,R> FutureStep<X,R> {
 impl<X,R> Step2<X> for FutureStep<X,R> where R: 'static + Send + Clone {
     type Output = R;
 
-    fn start(&mut self, input: X, _task_control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
-        let context = FutureContext(Arc::new(Mutex::new(FutureContextOnce::new())));
-        let future = (self.generator)(context.clone(),input);
+    fn start(&mut self, input: X, task_control: &mut TaskContext) -> Box<dyn StepRun<Output=R>> {
+        let context = FutureContext(task_control.clone(),Arc::new(Mutex::new(FutureContextOnce::new())));
+        let future = (self.generator)(task_control,context.clone(),input);
         Box::new(FutureRun(future,context))
     }
 }
@@ -143,7 +151,7 @@ mod test {
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
 
     async fn tick_future(ctx: FutureContext,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
-        ctx.tick().await;
+        ctx.tick(1).await;
         if let Some(finished) = finished {
             if set {
                 *finished.lock().unwrap() = true;
@@ -155,8 +163,8 @@ mod test {
     }
 
     async fn again_future(ctx: FutureContext,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
-        ctx.again().await;
-        ctx.again().await;
+        ctx.tick(0).await;
+        ctx.tick(0).await;
         if let Some(finished) = finished {
             if set {
                 *finished.lock().unwrap() = true;
@@ -178,8 +186,12 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let finished = Arc::new(Mutex::new(false));
-        let f = FutureStep::new(move |ctx,x: u32| { 
-            Box::pin(tick_future(ctx,x,None,false))
+        let f = FutureStep::new(move |tc,ctx,x: u32| { 
+            let mut tc = tc.clone();
+            Box::pin(async move {
+                ctx.tick(1).await;
+                x+2
+            })
         });
         let out = Arc::new(Mutex::new(0));
         let z = TestExtractorStep(out.clone());
@@ -200,10 +212,10 @@ mod test {
         let finished = Arc::new(Mutex::new(false));
         let finished2 = finished.clone();
         let finished3 = finished.clone();
-        let f = FutureStep::new(move |ctx,x: u32| {
+        let f = FutureStep::new(move |_,ctx,x: u32| {
             Box::pin(again_future(ctx,x,Some(finished2.clone()),false))
         });
-        let f2 = FutureStep::new(move |ctx,x: u32| { 
+        let f2 = FutureStep::new(move |_,ctx,x: u32| { 
             Box::pin(tick_future(ctx,x,Some(finished3.clone()),true))
         });
         let out = Arc::new(Mutex::new(0));
@@ -258,7 +270,7 @@ mod test {
         let finished = Arc::new(Mutex::new(false));
         let finished2 = finished.clone();
         let finished3 = finished.clone();
-        let f = FutureStep::new(move |ctx,x: u32| {
+        let f = FutureStep::new(move |_,ctx,x: u32| {
             let finished2 = finished2.clone();
             Box::pin(
                 async move {

@@ -9,6 +9,7 @@ hashbrown="*"
 futures="*"
 owning_ref="*"
 binary-heap-plus="*"
+ordered-float = "*"
 
 #[dev-dependencies]
 regex="*"

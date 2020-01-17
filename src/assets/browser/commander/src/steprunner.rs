@@ -85,7 +85,7 @@ mod test {
     use crate::timer::TimerSet;
     use crate::testintegration::TestIntegration;
     use crate::taskcontext::TaskContext;
-    use crate::steps::noop::BlindStep;
+    use crate::steps::future::FutureStep;
 
     #[test]
     pub fn test_block_on_tick() {
@@ -96,8 +96,8 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskContext::new(&cfg,&eah,&h,&integration);
-        let mut step  = BlindStep::<()>::new(());
-        let run = step.start(&(),&mut tc);
+        let mut step = FutureStep::new(|_,tc,()| Box::pin(async { () }));
+        let run = step.start((),&mut tc);
         let mut sc = StepRunner::new(run,&tc);
         assert!(sc.check_tick(0));
         sc.blocked_on_tick = Some(0);
@@ -115,8 +115,8 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskContext::new(&cfg,&eah,&h,&integration);
-        let mut step  = BlindStep::<()>::new(());
-        let run = step.start(&(),&mut tc);
+        let mut step = FutureStep::new(|_,tc,()| Box::pin(async { () }));
+        let run = step.start((),&mut tc);
         let mut sc = StepRunner::new(run,&tc);
         assert!(sc.get_blocker().is_none());
         let mut b1 = Block::new(tc.get_blocker());

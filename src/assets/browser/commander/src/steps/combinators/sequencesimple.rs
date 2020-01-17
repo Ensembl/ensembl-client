@@ -68,6 +68,7 @@ mod test {
     use crate::step::{ RunConfig, TaskResult };
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::testintegration::{ TestIntegration, TestState };
+    use crate::steps::future::FutureStep;
 
     #[test]
     pub fn test_sequencesimple_smoke() {
@@ -75,16 +76,13 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = integration.new_step(vec![
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Done(())
-        ]);
-        let mut b = integration.new_step(vec![
-            TestState::Tick,
-            TestState::Done(())
-        ]);
-        let mut tc = x.add(StepSequenceSimple::new(a,b),&(),&cfg,"test");
+        let a : FutureStep<(),()> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(2).await;
+        }));
+        let b : FutureStep<(),()> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(1).await;
+        }));
+        let mut tc = x.add(StepSequenceSimple::new(a,b),(),&cfg,"test");
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);

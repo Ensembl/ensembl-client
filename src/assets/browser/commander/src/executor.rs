@@ -1,4 +1,5 @@
 use hashbrown::HashSet;
+use ordered_float::OrderedFloat;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
 use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
@@ -16,8 +17,9 @@ pub struct Executor {
     runnable: Runnable,
     next_tick: HashSet<TaskContainerHandle>,
     actions: ExecutorActionHandle,
-    timers: TimerSet<Option<TaskContainerHandle>>,
-    ticks: TimerSet<Block>,
+    timers: TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>>,
+    ticks: TimerSet<u64,Block>,
+    immediate: Vec<Block>,
     tick_index: u64,
 }
 
@@ -31,6 +33,7 @@ impl Executor {
             actions: ExecutorActionHandle::new(),
             timers: TimerSet::new(),
             ticks: TimerSet::new(),
+            immediate: Vec::new(),
             tick_index: 0
         }
     }
@@ -47,7 +50,7 @@ impl Executor {
         self.tasks.set(&container_handle,task);
         if let Some(timeout) = run_config.get_timeout() {
             let mut control = control.clone();
-            self.timers.add(Some(container_handle.clone()),now+timeout,move || control.finish(Some(&KillReason::Timeout)));
+            self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(Some(&KillReason::Timeout)));
         }
         self.runnable.add(&self.tasks,&container_handle);
         handle
@@ -60,7 +63,7 @@ impl Executor {
 
     fn add_timer(&mut self, handle: &TaskContainerHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
         let now = self.integration.current_time();
-        self.timers.add(Some(handle.clone()),now+timeout,callback);
+        self.timers.add(Some(handle.clone()),OrderedFloat(now+timeout),callback);
     }
 
     pub(crate) fn run_actions(&mut self) {
@@ -89,11 +92,15 @@ impl Executor {
                     self.next_tick.insert(handle);
                 },
                 ExecutorAction::UnblockOnTick(block,tick) => {
-                    /*
-                    self.ticks.add(block,tick,|| {
-                        block.unblock();
-                    });
-                    */
+                    let mut block = block.clone();
+                    if tick > self.tick_index {
+                        self.ticks.add(block.clone(),tick,move || {
+                            block.unblock();
+                        });
+                    } else {
+                        print!("immediate push\n");
+                        self.immediate.push(block);
+                    }
                 }
             }
         }
@@ -103,19 +110,30 @@ impl Executor {
         for handle in self.next_tick.drain() {
             self.runnable.add(&self.tasks,&handle);
         }
+        self.ticks.check(self.tick_index);
+    }
+
+    fn resurrect_immediate(&mut self) {
+        for mut block in self.immediate.drain(..) {
+            print!("immediate pop\n");
+            block.unblock();
+        }
     }
 
     pub(crate) fn check_timers(&mut self,now: f64) {
         let (timers,tasks) = (&mut self.timers,&mut self.tasks);
         timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
-        self.timers.check(now);
+        self.timers.check(OrderedFloat(now));
     }
 
     fn run(&mut self) -> bool {
+        print!("run\n");
         let now = self.integration.current_time();
         self.check_timers(now);
         self.run_actions();
         let out = self.runnable.run(&mut self.tasks,self.tick_index);
+        self.run_actions();
+        self.resurrect_immediate();
         self.run_actions();
         out
     }
@@ -123,7 +141,7 @@ impl Executor {
     fn calculate_sleep(&mut self, now: f64) -> SleepQuantity {
         if self.runnable.empty() && self.next_tick.len() == 0 {
             if let Some(timer) = self.timers.min() {
-                SleepQuantity::Time(timer-now)
+                SleepQuantity::Time(timer.0-now)
             } else {
                 SleepQuantity::Forever
             }
@@ -133,11 +151,12 @@ impl Executor {
     }
 
     pub fn tick(&mut self, slice: f64) {
+        print!("tick\n");
         self.integration.reentering();
+        self.tick_index += 1;
         self.resurrect_tick_carryover();
         let mut now = self.integration.current_time();
         let expiry = now+slice;
-        self.tick_index += 1;
         /* main tick loop */
         loop {
             if !self.run() { break; }
@@ -164,7 +183,7 @@ mod test {
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::combinators::parallel::StepParallel;
     use crate::steps::timeout::TimeoutStep2;
-    use crate::steps::noop::BlindStep;
+    use crate::steps::future::FutureStep;
     use crate::steps::combinators::branch::StepBranch;
     use crate::steprunner::StepRun;
 
@@ -302,14 +321,14 @@ mod test {
         let t1 : TimeoutStep2<(),()> = TimeoutStep2::new(5.,|| {});
         let t2 : TimeoutStep2<(),()> = TimeoutStep2::new(21.,|| {});
 
-        let t1 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t1,BlindStep::new(Ok(())));
-        let t2 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t2,BlindStep::new(Ok(())));
+        let t1 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t1,FutureStep::new(|_,_,()| Box::pin(async { Ok(()) })));
+        let t2 : StepSequenceSimple<(),(),Result<(),()>> = StepSequenceSimple::new(t2,FutureStep::new(|_,_,()| Box::pin(async { Ok(()) })));
 
         /* collect timers */
 
         let z = StepParallel::new(vec![Box::new(t1),Box::new(t2)]);
         /* drop success */
-        let z = StepBranch::new(z,BlindStep::new(()),BlindStep::new(()));
+        let z = StepBranch::new(z,FutureStep::new(|_,_,_| Box::pin(async {})),FutureStep::new(|_,_,_| Box::pin(async {})));
         let mut tc = x.add(z,(),&cfg,"test");
         x.tick(10.);
         integration.set_time(5.);
@@ -397,7 +416,6 @@ mod test {
         x.tick(1.); /* (StepState::Block) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Forever);
         /* runnable => None */
-        print!("STARTING UNBOLCK\n");
         step.forever_unblock(&mut tc.get_context());
         x.tick(1.); /* (StepState::Again) */
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
@@ -456,7 +474,7 @@ mod test {
         ]);
         a.no_auto();
         b.no_auto();
-        let p = StepSequenceSimple::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),BlindStep::new(()));
+        let p = StepSequenceSimple::new(StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]),FutureStep::new(|_,_,_| Box::pin(async { () })));
         x.add(p,&(),&cfg,"test");
         /* simulate */
         for i in 0..7 {
@@ -483,9 +501,9 @@ mod test {
             TestState::Again,
             TestState::Done(Ok(()))
         ]);
-        let a = StepSequenceSimple::new(a,BlindStep::new(Ok(())));
+        let a = StepSequenceSimple::new(a,FutureStep::new(|_,_,_| Box::pin(async { Ok(()) })));
         let p = StepParallel::new(vec![Box::new(a.clone()),Box::new(b.clone())]);
-        let p = StepSequenceSimple::new(p,BlindStep::new(()));
+        let p = StepSequenceSimple::new(p,FutureStep::new(|_,_,_| Box::pin(async { () })));
         b.no_auto();
         let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */

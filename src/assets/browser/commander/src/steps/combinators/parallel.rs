@@ -76,7 +76,7 @@ mod test {
     use crate::steps::combinators::branch::StepBranch;
     use crate::steps::combinators::sequencesimple::StepSequenceSimple;
     use crate::steps::timeout::TimeoutStep2;
-    use crate::steps::noop::{ BlindStep, NoopStep };
+    use crate::steps::future::FutureStep;
     use crate::testintegration::{ TestIntegration, TestStep, TestState, TestExtractorStep };
 
     #[test]
@@ -86,29 +86,27 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = integration.new_step(vec![
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Done(Ok(5))
-        ]);
-        let mut b = integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Tick,
-            TestState::Done(Ok(2))
-        ]);
+        let a : FutureStep<(),Result<u32,u32>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(1).await;
+            Ok(5)
+        }));
+        let b : FutureStep<(),Result<u32,u32>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(1).await;
+            Ok(2)
+        }));
         let c : TimeoutStep2<(),()> = TimeoutStep2::new(50.,|| ());
-        let bs : BlindStep<Result<u32,u32>> = BlindStep::new(Ok(0));
+        let bs = FutureStep::new(|_,_,_| Box::pin(async { Ok(0) }));
         let c : StepSequenceSimple<(),(),Result<u32,u32>> = StepSequenceSimple::new(c,bs);
         let out : Arc<Mutex<Vec<u32>>> = Arc::new(Mutex::new(vec![]));
         let out2 = out.clone();
         let z = TestExtractorStep(out);
         let p = StepParallel::new(vec![Box::new(a),Box::new(b),Box::new(c)]);
-        let p = StepBranch::new(p,NoopStep::new(),BlindStep::new(vec![]));
+        let p = StepBranch::new(p,FutureStep::new(|_,_,x| Box::pin(async { x })),
+                                  FutureStep::new(|_,_,_| Box::pin(async { vec![] })));
         let p = StepSequenceSimple::new(p,z);
         let mut tc = x.add(p,(),&cfg,"test");
         /* simulate */
@@ -129,26 +127,25 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let mut a = integration.new_step(vec![
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Tick,
-            TestState::Done(Ok(42))
-        ]);
-        let mut b = integration.new_step(vec![
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Again,
-            TestState::Tick,
-            TestState::Done(Err(6))
-        ]);
+        let a : FutureStep<(),Result<u32,u32>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(1).await;
+            print!("A\n");
+            Ok(42)
+        }));
+        let b : FutureStep<(),Result<u32,u32>> = FutureStep::new(move |_,fc,()| Box::pin(async move {
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(0).await;
+            fc.tick(1).await;
+            print!("B\n");
+            Err(6)
+        }));
         let out : Arc<Mutex<u32>> = Arc::new(Mutex::new(12));
         let out2 = out.clone();
         let z = TestExtractorStep(out);
         let p : StepParallel<(),_,_> = StepParallel::new(vec![Box::new(a),Box::new(b)]);
-        let p = StepBranch::new(p,BlindStep::new(23),NoopStep::new());
+        let p = StepBranch::new(p,FutureStep::new(|_,_,_| Box::pin(async { 23 })),FutureStep::new(move |_,_,x| Box::pin(async move { x })));
         let p = StepSequenceSimple::new(p,z);
         let tc = x.add(p,(),&cfg,"test");
         x.tick(10.);

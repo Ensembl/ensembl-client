@@ -19,7 +19,7 @@ impl Blocker {
         }
     }
 
-    pub(crate) fn block_task(&mut self, blocker: &Block) {
+    pub(crate) fn block_task(&self, blocker: &Block) {
         self.action_handle.add(ExecutorAction::Block(self.task_handle.clone(),blocker.clone()));
         if blocker.unblock_was_sent() {
             self.action_handle.add(ExecutorAction::Unblock(blocker.clone()));

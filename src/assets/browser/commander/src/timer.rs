@@ -1,110 +1,113 @@
-/* A TimerSet triggers any triggers which it is given when the timeout of 
- * that trigger is exceeded. "timeout" in this case is just an f64 passed
- * to a polled check method.
- */
-
-use binary_heap_plus::{ BinaryHeap, MinComparator };
+use std::collections::BTreeMap;
 use std::cmp::{ Ordering };
+use std::fmt::Debug;
 use std::sync::{ Arc, Mutex };
-
-use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
+use hashbrown::HashSet;
+use ordered_float::OrderedFloat;
 use crate::edgetrigger::EdgeTrigger;
 
-struct Timeout<T>(f64,u64,EdgeTrigger<'static>,T);
-
-impl<T> PartialEq for Timeout<T> {
-    fn eq(&self, other: &Timeout<T>) -> bool { self.0 == other.0 && self.1 == other.1 }
+struct Timeout<S> {
+    index: u64,
+    trigger: EdgeTrigger<'static>,
+    state: S
 }
 
-impl<T> Eq for Timeout<T> {}
-
-impl<T> Ord for Timeout<T> {
-    fn cmp(&self, other: &Timeout<T>) -> Ordering {
-        self.0.partial_cmp(&other.0).unwrap()
-    }
-}
-
-impl<T> PartialOrd for Timeout<T> {
-    fn partial_cmp(&self, other: &Timeout<T>) -> Option<Ordering> {
-        Some(self.cmp(&other))
-    }
-}
-
-struct TimerSetImpl<T> {
-    timeouts: BinaryHeap<Timeout<T>,MinComparator>,
+struct TimersState<T,S> where T: Ord {
+    timeouts: BTreeMap<T,Vec<Timeout<S>>>,
     next: u64
 }
 
-impl<H> TimerSetImpl<H> {
-    fn new() -> TimerSetImpl<H> {
-        TimerSetImpl {
-            timeouts: BinaryHeap::new_min(),
+impl<T,S> TimersState<T,S> where T: Ord+Clone+Debug { // XXX not debug
+    pub fn new() -> TimersState<T,S> {
+        TimersState {
+            timeouts: BTreeMap::new(),
             next: 0
         }
     }
 
-    fn add<T>(&mut self, taskhandle: H, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
+    fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
         self.next += 1;
         let trigger = EdgeTrigger::new(callback);
-        self.timeouts.push(Timeout(timeout,self.next,trigger,taskhandle));
+        let set = self.timeouts.entry(timeout).or_insert_with(|| {
+            Vec::new()
+        }).push(Timeout {
+            index: self.next,
+            trigger,
+            state
+        });
     }
 
-    fn tidy_handles<T>(&mut self, tidy_fn: T) where T: Fn(&H) -> bool {
-        while let Some(timeout) = self.timeouts.pop() {
-            if !tidy_fn(&timeout.3) {
-                continue;
+    fn tidy_handles<F>(&mut self, tidy_fn: F) where F: Fn(&S) -> bool {
+        /* remove entries until non-empty list */
+        for (_,list) in self.timeouts.iter_mut() {
+            let mut new = Vec::new();
+            for timeout in list.drain(..) {
+                if tidy_fn(&timeout.state) {
+                    new.push(timeout);
+                }
             }
-            self.timeouts.push(timeout);
-            break;
-        }
-    }
-
-    fn check(&mut self, now: f64) {
-        while let Some(mut timeout) = self.timeouts.pop() {
-            if timeout.0 <= now {
-                timeout.2.set();
-            } else {
-                self.timeouts.push(timeout);
+            *list = new;
+            if list.len() > 0 {
                 break;
             }
         }
+        /* remove leading empty lists */
+        while let Some(min) = self.min() {
+            if let Some(timeouts) = self.timeouts.get(&min) {
+                if timeouts.len() != 0 {
+                    break;
+                }
+            }
+            self.timeouts.remove(&min);
+        }
     }
 
-    fn min(&mut self) -> Option<f64> {
-        self.timeouts.peek().map(|x| x.0)
+    fn check(&mut self, now: T) {
+        while let Some(min) = self.min() {
+            if min > now { break; }
+            if let Some(mut timeouts) = self.timeouts.remove(&min) {
+                for timeout in timeouts.iter_mut() {
+                    timeout.trigger.set();
+                }
+            }
+        }
+    }
+
+    fn min(&mut self) -> Option<T> {
+        self.timeouts.iter().next().map(|x| x.0.clone())
     }
 }
 
 #[derive(Clone)]
-pub(crate) struct TimerSet<H>(Arc<Mutex<TimerSetImpl<H>>>);
+pub(crate) struct TimerSet<T,S>(Arc<Mutex<TimersState<T,S>>>) where T: Ord;
 
-impl<H> TimerSet<H> {
-    pub(crate) fn new() -> TimerSet<H> {
-        TimerSet(Arc::new(Mutex::new(TimerSetImpl::new())))
+impl<T,S> TimerSet<T,S> where T: Ord + Clone + Debug { // XXX Debug
+    pub(crate) fn new() -> TimerSet<T,S> {
+        TimerSet(Arc::new(Mutex::new(TimersState::new())))
     }
 
-    pub(crate) fn add<T>(&mut self, taskhandle: H, timeout: f64,callback: T) where T: FnMut() + 'static + Send {
-        self.0.lock().unwrap().add(taskhandle,timeout,callback);
+    pub(crate) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord + Debug {
+        self.0.lock().unwrap().add(state,timeout,callback);
     }
 
-    pub(crate) fn min(&self) -> Option<f64> {
+    pub(crate) fn min(&mut self) -> Option<T> {
         self.0.lock().unwrap().min()
     }
 
-    pub(crate) fn check(&mut self, now: f64) {
+    pub(crate) fn check(&mut self, now: T) {
         self.0.lock().unwrap().check(now);
     }
 
-    pub(crate) fn tidy_handles<T>(&mut self, tidy_fn: T) where T: Fn(&H) -> bool {
+    pub(crate) fn tidy_handles<F>(&mut self, tidy_fn: F) where F: Fn(&S) -> bool {
         self.0.lock().unwrap().tidy_handles(tidy_fn);
     }
 }
-
 
 #[allow(unused)]
 mod test {
     use std::sync::{ Arc, Mutex };
     use crate::edgetrigger::EdgeTrigger;
+    use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
     use crate::task2::Task2;
     use super::*;
 
@@ -118,29 +121,29 @@ mod test {
     #[test]
     pub fn test_timer() {
         let tc = TaskContainer::new();
-        let mut timers = TimerSet::<Option<TaskContainerHandle>>::new();
+        let mut timers : TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>> = TimerSet::new();
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
-        timers.check(0.);
+        timers.check(OrderedFloat(0.));
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         let shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
         assert_eq!(None,timers.min());
-        timers.add(None,1.,move || { *shared2.lock().unwrap() = true });
-        assert_eq!(Some(1.),timers.min());
-        timers.add(None,0.1, || {});
-        assert_eq!(Some(0.1),timers.min());
-        timers.add(None,1.1, || {});
-        assert_eq!(Some(0.1),timers.min());
+        timers.add(None,OrderedFloat(1.),move || { *shared2.lock().unwrap() = true });
+        assert_eq!(Some(OrderedFloat(1.)),timers.min());
+        timers.add(None,OrderedFloat(0.1), || {});
+        assert_eq!(Some(OrderedFloat(0.1)),timers.min());
+        timers.add(None,OrderedFloat(1.1), || {});
+        assert_eq!(Some(OrderedFloat(0.1)),timers.min());
         assert!(!*shared.lock().unwrap());
         assert!(timers.0.lock().unwrap().timeouts.len()!=0);
-        timers.check(0.5);
+        timers.check(OrderedFloat(0.5));
         assert!(!*shared.lock().unwrap());
         assert!(timers.0.lock().unwrap().timeouts.len()!=0);
-        timers.check(1.);
+        timers.check(OrderedFloat(1.));
         assert!(*shared.lock().unwrap());
         assert!(timers.0.lock().unwrap().timeouts.len()!=0);
-        assert_eq!(Some(1.1),timers.min());
-        timers.check(1.5);
+        assert_eq!(Some(OrderedFloat(1.1)),timers.min());
+        timers.check(OrderedFloat(1.5));
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         assert_eq!(None,timers.min());
     }
@@ -159,9 +162,9 @@ mod test {
         let t3 = FakeTask(2);
         tasks.set(&h3,t3);
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
-        timers.add(Some(h1.clone()),1.,|| {});
-        timers.add(Some(h2.clone()),2.,|| {});
-        timers.add(Some(h3),3.,|| {});
+        timers.add(Some(h1.clone()),OrderedFloat(1.),|| {});
+        timers.add(Some(h2.clone()),OrderedFloat(2.),|| {});
+        timers.add(Some(h3),OrderedFloat(3.),|| {});
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
         tasks.remove(&h2);
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
@@ -170,8 +173,8 @@ mod test {
         tasks.remove(&h1);
         assert!(timers.0.lock().unwrap().timeouts.len()==3);
         timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
-        assert!(timers.0.lock().unwrap().timeouts.len()==1);
-        timers.check(4.);
+        assert_eq!(1,timers.0.lock().unwrap().timeouts.len());
+        timers.check(OrderedFloat(4.));
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
     }
 }

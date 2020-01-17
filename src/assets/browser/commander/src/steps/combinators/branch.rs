@@ -80,7 +80,7 @@ mod test {
     use crate::step::RunConfig;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::testintegration::{ TestIntegration, TestExtractorStep };
-    use crate::steps::noop::BlindStep;
+    use crate::steps::future::FutureStep;
 
     fn flip<X>(init: X) -> (impl Step2<X,Output=()>,Arc<Mutex<X>>) where X: Send+Clone+'static {
         let var = Arc::new(Mutex::new(init));
@@ -93,11 +93,11 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         /* setup job to succeed */
-        let mut a = BlindStep::new(v);
+        let a = FutureStep::new(move |_,tc,()| Box::pin(async move { v }));
         let (y,y_flag) = flip(0);
         let (e,e_flag) = flip(0);
         let b = StepBranch::new(a,y,e);
-        let mut tca = x.add(b,&(),&cfg,"test");
+        let mut tca = x.add(b,(),&cfg,"test");
         x.tick(10.);
         let x = (*y_flag.lock().unwrap(),*e_flag.lock().unwrap());
         x

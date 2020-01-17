@@ -21,7 +21,7 @@ impl ExecutorActionHandle {
         ExecutorActionHandle(Arc::new(Mutex::new(Some(Vec::new()))))
     }
 
-    pub(crate) fn add(&mut self, action: ExecutorAction) {
+    pub(crate) fn add(&self, action: ExecutorAction) {
         self.0.lock().unwrap().as_mut().unwrap().push(action);
     }
 
