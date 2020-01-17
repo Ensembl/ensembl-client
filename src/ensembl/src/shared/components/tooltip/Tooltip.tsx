@@ -138,11 +138,7 @@ const TooltipWithAnchor = (props: Props) => {
       );
 };
 
-type GetInlineStylesParams = Omit<Props, 'anchor'> & {
-  anchor: HTMLElement;
-};
-
-const getInlineStyles = (params: GetInlineStylesParams) => {
+const getInlineStyles = (params: Props) => {
   // calculate styles of the tooltip
   // considering that its tip points at the center of the anchor element
 
