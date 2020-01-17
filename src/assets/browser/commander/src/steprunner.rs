@@ -78,13 +78,14 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration);
-        let mut step = FutureStep::new(|_,tc,()| Box::pin(async { () }));
+        let mut tc = TaskContext::new(&cfg,&eah,&integration);
+        tc.register(&h);
+        let mut step = FutureStep::new(|_,()| Box::pin(async { () }));
         let run = step.start((),&mut tc);
         let mut sc = StepRunner::new(run,&tc);
         assert!(sc.get_blocker().is_none());
-        let mut b1 = Block::new(tc.get_blocker());
-        let mut b2 = Block::new(tc.get_blocker());
+        let mut b1 = tc.block();
+        let mut b2 = tc.block();
         b1.add(&b2);
         sc.blocked_on = Some(b1.clone());
         assert!(sc.get_blocker().is_some());

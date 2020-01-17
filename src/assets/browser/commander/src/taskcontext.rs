@@ -1,13 +1,15 @@
+use std::future::Future;
 use std::sync::{ Arc, Mutex };
 
 use crate::step::Step2;
 use crate::block::Block;
 use crate::blocker::Blocker;
-use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
+use crate::executoraction::{ AnonExecutorAction, ExecutorActionHandle, ExecutorActionTaskHandle };
 use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig };
-use crate::steprunner::StepRunner;
+use crate::steprunner::{ StepRunner, StepRun };
 use crate::taskcontainer::TaskContainerHandle;
+use crate::future::FutureOneShot;
 
 #[derive(Clone)]
 pub struct TaskContext {
@@ -16,37 +18,40 @@ pub struct TaskContext {
     tick_index: Arc<Mutex<u64>>,
     finished: Arc<Mutex<bool>>,
     kill_reason: Arc<Mutex<Option<KillReason>>>,
-    task_handle: TaskContainerHandle,
-    action_handle: ExecutorActionHandle,
+    action_handle: ExecutorActionTaskHandle,
     blocker: Blocker
 }
 
 impl TaskContext {
     pub(crate) fn new(config: &RunConfig,
-                      action_handle: &ExecutorActionHandle, task_handle: &TaskContainerHandle, 
+                      action_handle: &ExecutorActionHandle,
                       integration: &ReenteringIntegration) -> TaskContext {
-        let action_handle = action_handle.clone();
-        let task_handle = task_handle.clone();
-        let blocker = Blocker::new(integration,&action_handle,&task_handle);
-        TaskContext {
+        let action_handle = action_handle.new_task();
+        let blocker = Blocker::new(integration,&action_handle);
+        let out = TaskContext {
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),
-            task_handle, action_handle,
+            action_handle,
             integration: integration.clone(),
             tick_index: Arc::new(Mutex::new(0)),
             blocker
-        }
+        };
+        out
+    }
+
+    pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
+        self.action_handle.register(task_handle);
     }
 
     /* timers */
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
-        self.action_handle.add(ExecutorAction::Timer(self.task_handle.clone(),timeout,Box::new(callback)));
+        self.action_handle.add(AnonExecutorAction::Timer(timeout,Box::new(callback)));
     }
 
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         let tick = *self.tick_index.lock().unwrap();
-        self.action_handle.add(ExecutorAction::UnblockOnTick(self.task_handle.clone(),tick+ticks,Box::new(callback)));
+        self.action_handle.add(AnonExecutorAction::UnblockOnTick(tick+ticks,Box::new(callback)));
     }
 
     /* kills */
@@ -55,9 +60,9 @@ impl TaskContext {
         if !*finished {
             if let Some(reason) = reason {
                 *self.kill_reason.lock().unwrap() = Some(reason.clone());
-                self.action_handle.add(ExecutorAction::Kill(self.task_handle.clone(),reason.clone()));
+                self.action_handle.add(AnonExecutorAction::Kill(reason.clone()));
             } else {
-                self.action_handle.add(ExecutorAction::Done(self.task_handle.clone()));
+                self.action_handle.add(AnonExecutorAction::Done());
             }
             *finished = true;
             true
@@ -78,9 +83,9 @@ impl TaskContext {
      * be relied on to detect finish cases which would definitely have
      * occured before this call.
      */
-    pub fn is_finished(&self) -> bool { *self.finished.lock().unwrap() }
+    pub(crate) fn is_finished(&self) -> bool { *self.finished.lock().unwrap() }
 
-    pub fn kill_reason(&self) -> Option<KillReason> {
+    pub(crate) fn kill_reason(&self) -> Option<KillReason> {
         self.kill_reason.lock().unwrap().as_ref().map(|x| x.clone())
     }
 
@@ -91,8 +96,12 @@ impl TaskContext {
 
     // XXX demut
     /* running steps */
-    pub fn new_step<X,R>(&mut self, step: &mut Box<dyn Step2<X,Output=R>>, input: X) -> StepRunner<R> where {
+    pub fn new_step<X,R>(&mut self, step: &mut Box<dyn Step2<X,Output=R>>, input: X) -> StepRunner<R> {
         let run = step.start(input,self);
+        StepRunner::new(run,self)
+    }
+
+    pub fn new_step2<R>(&mut self, run: Box<dyn StepRun<Output=R>>) -> StepRunner<R> {
         StepRunner::new(run,self)
     }
 
@@ -104,12 +113,30 @@ impl TaskContext {
         *self.tick_index.lock().unwrap()
     }
 
-    pub(crate) fn get_blocker(&self) -> &Blocker {
-        &self.blocker
+    pub(crate) fn block_task(&self, block: &Block) {
+        self.blocker.block_task(block)
     }
 
     pub fn block(&self) -> Block {
-        Block::new(self.get_blocker())
+        Block::new(&self.blocker)
+    }
+
+    pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
+        let future = FutureOneShot::new();
+        let future2 = future.clone();
+        self.add_ticks_timer(ticks,move || {
+            future2.flag();
+        });
+        future
+    }
+
+    pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
+        let future = FutureOneShot::new();
+        let future2 = future.clone();
+        self.add_timer(timeout,move || {
+            future2.flag();
+        });
+        future
     }
 }
 
@@ -123,6 +150,7 @@ mod test {
     use crate::step::{ Step2, StepState2, OngoingState };
     use crate::steprunner::StepRun;
     use crate::testintegration::{ TestIntegration, TestState };
+    use crate::executoraction::ExecutorAction;
 
     #[test]
     pub fn test_control_timers() {
@@ -135,7 +163,7 @@ mod test {
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
         let mut step = integration.new_step(vec![TestState::Done(())]);
-        let mut tc = x.add(step.clone(),&(),&cfg,"test");
+        let mut tc = x.add(step.clone(),&(),x.make_context(&cfg),"test");
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
@@ -155,7 +183,8 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration);
+        let mut tc = TaskContext::new(&cfg,&eah,&integration);
+        tc.register(&h);
         /* test */
         assert!(!tc.is_finished());
         tc.finish(Some(&KillReason::Cancelled));
@@ -178,8 +207,8 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration);
-
+        let mut tc = TaskContext::new(&cfg,&eah,&integration);
+        tc.register(&h);
 
         // XXX todo
 
@@ -194,7 +223,8 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration.clone());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone());
+        tc.register(&h);
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
         integration.cause_reentry(); /* sets one-shot, sends SleepQuantity::None */
@@ -219,11 +249,13 @@ mod test {
         let mut integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration.clone());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone());
+        tc.register(&h);
         tc.finish_internal(None);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&integration.clone());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone());
+        tc.register(&h);
         tc.finish(None);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
     }

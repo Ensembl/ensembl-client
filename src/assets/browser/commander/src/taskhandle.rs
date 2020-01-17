@@ -88,13 +88,16 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let a : FutureStep<(),u32> = FutureStep::new(move |_,fc,()| Box::pin(async move {
-            fc.tick(0).await;
-            fc.tick(0).await;
-            fc.tick(0).await;
-            42
-        }));
-        let mut tc = x.add(a,(),&cfg,"test");
+        let a : FutureStep<(),u32> = FutureStep::new(move |fc,()| {
+            let fc = fc.clone();
+            Box::pin(async move {
+                fc.tick(0).await;
+                fc.tick(0).await;
+                fc.tick(0).await;
+                42
+            })
+        });
+        let mut tc = x.add(a,(),x.make_context(&cfg),"test");
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(tc.take_result().is_none());
         assert!(tc.get_result().is_none());

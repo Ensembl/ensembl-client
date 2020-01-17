@@ -51,25 +51,6 @@ impl CommanderIntegration2 for TestIntegration {
 }
 
 #[derive(Clone)]
-pub struct TestExtract<T>(pub Arc<Mutex<T>>);
-impl<T> StepRun for TestExtract<T> {
-    type Output = ();
-
-    fn more(&mut self, _control: &mut TaskContext) -> StepState2<()> {
-        StepState2::Done(())
-    }
-}
-
-impl<T> Step2<T> for TestExtract<T> where T: Send+Clone+'static {
-    type Output = ();
-
-    fn start(&mut self, input: T, _control: &mut TaskContext) -> Box<dyn StepRun<Output=()>> {
-        *self.0.lock().unwrap() = input.clone();
-        Box::new(self.clone())
-    }
-}
-
-#[derive(Clone)]
 struct TestStepState {
     finish_time: f64,
     auto_advance: bool,
@@ -167,24 +148,5 @@ impl<R> StepRun for TestStep<R> where R: Clone+'static {
             state.finish_time = *self.timer.lock().unwrap();
         }
         out
-    }
-}
-
-#[derive(Clone)]
-pub struct TestExtractorStep<T>(pub Arc<Mutex<T>>);
-impl<T> StepRun for TestExtractorStep<T> {
-    type Output = ();
-
-    fn more(&mut self, _control: &mut TaskContext) -> StepState2<()> {
-        StepState2::Done(())
-    }
-}
-
-impl<T> Step2<T> for TestExtractorStep<T> where T: Send+Clone+'static {
-    type Output = ();
-
-    fn start(&mut self, input: T, _control: &mut TaskContext) -> Box<dyn StepRun<Output=()>> {
-        *self.0.lock().unwrap() = input.clone();
-        Box::new(self.clone())
     }
 }

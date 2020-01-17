@@ -1,12 +1,11 @@
 use crate::taskcontext::TaskContext;
-use crate::step::{ RunConfig, Step2, StepState2, OngoingState };
-use crate::steprunner::StepRunner;
+use crate::step::{ RunConfig, StepState2, OngoingState };
+use crate::steprunner::{ StepRunner, StepRun };
 use crate::taskhandle::TaskHandle;
 
 pub(crate) struct Task2Impl<R> {
     runner: StepRunner<R>,
     handle: TaskHandle<R>,
-    run_config: RunConfig,
     task_context: TaskContext,
     name: String
 }
@@ -18,13 +17,12 @@ pub(crate) trait Task2 {
 }
 
 impl<R> Task2Impl<R> {
-    pub(crate) fn new<X>(step: &mut Box<dyn Step2<X,Output=R>>, input: X, run_config: &RunConfig, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> where X: Send {
-        let runner = task_context.new_step(step,input);
+    pub(crate) fn new(step: Box<dyn StepRun<Output=R>>, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> {
+        let runner = task_context.new_step2(step);
         Task2Impl {
             runner,
             handle: TaskHandle::new(task_context),
             task_context: task_context.clone(),
-            run_config: run_config.clone(),
             name: name.to_string()
         }
     }
@@ -35,7 +33,7 @@ impl<R> Task2Impl<R> {
 }
 
 impl<R> Task2 for Task2Impl<R> {
-    fn get_priority(&self) -> i8 { self.run_config.get_priority() }
+    fn get_priority(&self) -> i8 { self.task_context.get_config().get_priority() }
     fn get_name(&self) -> String { self.name.clone() }
 
     fn run(&mut self, tick_index: u64) {
@@ -61,7 +59,7 @@ impl<R> Task2 for Task2Impl<R> {
                 self.task_context.finish_internal(None);
             },
             StepState2::Ongoing(OngoingState::Block(b)) => {
-                self.task_context.get_blocker().block_task(&b);
+                self.task_context.block_task(&b);
             },
         }
     }
@@ -72,12 +70,13 @@ impl<R> Task2 for Task2Impl<R> {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
+    use crate::step::Step2;
     use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
     use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
     use crate::steprunner::StepRun;
-    use crate::future::FutureStep;
+    use crate::future::{ FutureStep, FutureOneShot };
     use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
@@ -88,14 +87,18 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let mut integration = TestIntegration::new();
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
-        let s1 = FutureStep::new(|_,ctx,()| Box::pin(async move {
-            ctx.timer(1.).await;
-            ctx.tick(0).await;
-            ctx.tick(0).await;
-        }));
+        let mut tc = TaskContext::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()));
+        tc.register(&h);
+        let s1 = FutureStep::new(|ctx,()| {
+            let ctx = ctx.clone();
+            Box::pin(async move {
+                ctx.timer(1.).await;
+                ctx.tick(0).await;
+                ctx.tick(0).await;
+            })
+        }).start((),&mut tc);
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<_,Output=()>>),(),&cfg,&mut tc2,"test");
+        let mut t = Task2Impl::new(s1,&mut tc2,"test");
         /* simple accessors */
         assert_eq!("test",t.get_name());
         assert_eq!(3,t.get_priority());
@@ -109,32 +112,6 @@ mod test {
         let actions = eah.drain();
         assert_eq!(3,actions.len());
         if let ExecutorAction::Timer(_,_,_) = actions[0] {
-        } else {
-            assert!(false);
-        }
-    }
-
-    #[test]
-    pub fn test_task_block() {
-        /* setup */
-        let cfg = RunConfig::new(None,3,None);
-        let mut tasks = TaskContainer::new();
-        let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
-        let mut integration = TestIntegration::new();
-        let mut tc = TaskContext::new(&cfg,&eah,&h,&ReenteringIntegration::new(integration.clone()));
-        let mut s1 = integration.new_step(vec![
-            TestState::Done(())
-        ]);
-        s1.block_for(0.);
-        let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(&mut (Box::new(s1) as Box<dyn Step2<_,Output=()>>),&(),&cfg,&mut tc2,"test");
-        /* test */
-        assert!(!tc.is_finished());
-        t.run(0);
-        let actions = eah.drain();
-        assert_eq!(3,actions.len());
-        if let (ExecutorAction::Unblock(_),ExecutorAction::Block(h,_),ExecutorAction::Unblock(_)) = (&actions[0],&actions[1],&actions[2]) {
         } else {
             assert!(false);
         }

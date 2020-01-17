@@ -82,7 +82,9 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
-        let unblocker = Blocker::new(&integration,&eah,&h);
+        let eah = eah.new_task();
+        eah.register(&h);
+        let unblocker = Blocker::new(&integration,&eah);
         let mut b1 = Block::new(&unblocker);
         let mut b2 = Block::new(&unblocker);
         b1.add(&b2);
