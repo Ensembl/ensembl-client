@@ -1,5 +1,5 @@
 use crate::taskcontext::TaskContext;
-use crate::step::{ RunConfig, StepState2, OngoingState };
+use crate::step::{ StepState2, OngoingState };
 use crate::steprunner::{ StepRunner, StepRun };
 use crate::taskhandle::TaskHandle;
 
@@ -70,13 +70,13 @@ impl<R> Task2 for Task2Impl<R> {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
-    use crate::step::Step2;
     use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
     use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
     use crate::steprunner::StepRun;
-    use crate::future::{ FutureStep, FutureOneShot };
+    use crate::step::RunConfig;
+    use crate::future::{ FutureOneShot, FutureRun };
     use crate::testintegration::{ TestIntegration, TestState };
 
     #[test]
@@ -89,16 +89,14 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut tc = TaskContext::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()));
         tc.register(&h);
-        let s1 = FutureStep::new(|ctx,()| {
-            let ctx = ctx.clone();
-            Box::pin(async move {
-                ctx.timer(1.).await;
-                ctx.tick(0).await;
-                ctx.tick(0).await;
-            })
-        }).start((),&mut tc);
+        let ctx = tc.clone();
+        let s1 = FutureRun::new(Box::pin(async move {
+            ctx.timer(1.).await;
+            ctx.tick(0).await;
+            ctx.tick(0).await;
+        }));
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(s1,&mut tc2,"test");
+        let mut t = Task2Impl::new(Box::new(s1),&mut tc2,"test");
         /* simple accessors */
         assert_eq!("test",t.get_name());
         assert_eq!(3,t.get_priority());

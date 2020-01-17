@@ -61,14 +61,14 @@ impl<R> StepRunner<R> {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
-    use crate::step::{ RunConfig, Step2 };
+    use crate::step::RunConfig;
     use crate::taskcontainer::TaskContainer;
     use crate::executoraction::ExecutorActionHandle;
     use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
     use crate::timer::TimerSet;
     use crate::testintegration::TestIntegration;
     use crate::taskcontext::TaskContext;
-    use crate::future::FutureStep;
+    use crate::future::FutureRun;
 
     #[test]
     pub fn test_block() {
@@ -80,9 +80,8 @@ mod test {
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskContext::new(&cfg,&eah,&integration);
         tc.register(&h);
-        let mut step = FutureStep::new(|_,()| Box::pin(async { () }));
-        let run = step.start((),&mut tc);
-        let mut sc = StepRunner::new(run,&tc);
+        let run = FutureRun::new(Box::pin(async{ }));
+        let mut sc = StepRunner::new(Box::new(run),&tc);
         assert!(sc.get_blocker().is_none());
         let mut b1 = tc.block();
         let mut b2 = tc.block();

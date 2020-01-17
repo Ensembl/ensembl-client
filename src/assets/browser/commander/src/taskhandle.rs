@@ -77,10 +77,9 @@ impl<R> TaskHandle<R> {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::testintegration::{ TestIntegration, TestState };
+    use crate::testintegration::{ TestIntegration, TestState, tick_helper };
     use crate::step::RunConfig;
     use crate::executor::Executor;
-    use crate::future::FutureStep;
 
     #[test]
     pub fn test_handle_smoke() {
@@ -88,16 +87,13 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let a : FutureStep<(),u32> = FutureStep::new(move |fc,()| {
-            let fc = fc.clone();
-            Box::pin(async move {
-                fc.tick(0).await;
-                fc.tick(0).await;
-                fc.tick(0).await;
-                42
-            })
-        });
-        let mut tc = x.add(a,(),x.make_context(&cfg),"test");
+        let ctx = x.make_context(&cfg);
+        let ctx2 = ctx.clone();
+        let a = async move {
+            tick_helper(ctx2,&[0,0,0]).await;
+            42
+        };
+        let mut tc = x.add(a,ctx,"test");
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(tc.take_result().is_none());
         assert!(tc.get_result().is_none());

@@ -1,7 +1,6 @@
 use std::future::Future;
 use std::sync::{ Arc, Mutex };
 
-use crate::step::Step2;
 use crate::block::Block;
 use crate::blocker::Blocker;
 use crate::executoraction::{ AnonExecutorAction, ExecutorActionHandle, ExecutorActionTaskHandle };
@@ -96,10 +95,6 @@ impl TaskContext {
 
     // XXX demut
     /* running steps */
-    pub fn new_step<X,R>(&mut self, step: &mut Box<dyn Step2<X,Output=R>>, input: X) -> StepRunner<R> {
-        let run = step.start(input,self);
-        StepRunner::new(run,self)
-    }
 
     pub fn new_step2<R>(&mut self, run: Box<dyn StepRun<Output=R>>) -> StepRunner<R> {
         StepRunner::new(run,self)
@@ -147,7 +142,7 @@ mod test {
     use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::step::{ Step2, StepState2, OngoingState };
+    use crate::step::{ StepState2, OngoingState };
     use crate::steprunner::StepRun;
     use crate::testintegration::{ TestIntegration, TestState };
     use crate::executoraction::ExecutorAction;
@@ -162,8 +157,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let mut step = integration.new_step(vec![TestState::Done(())]);
-        let mut tc = x.add(step.clone(),&(),x.make_context(&cfg),"test");
+        let ctx = x.make_context(&cfg);
+        let mut tc = x.add(async {},ctx,"test");        
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
