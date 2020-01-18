@@ -162,7 +162,7 @@ mod test {
     use std::sync::{ Arc, Mutex };
     use crate::step::{ KillReason, StepState2, OngoingState, TaskResult };
     use crate::integration::SleepQuantity;
-    use crate::testintegration::{ TestState, TestIntegration, tick_helper };
+    use crate::testintegration::{ TestIntegration, tick_helper };
     use crate::future::FutureRun;
     use crate::oneshot::OneShot;
     use futures::future;

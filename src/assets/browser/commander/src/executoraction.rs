@@ -1,5 +1,4 @@
 use crate::block::Block;
-use crate::step::KillReason;
 use crate::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
 

@@ -1,7 +1,6 @@
 use crate::block::Block;
 use crate::executoraction::{ AnonExecutorAction, ExecutorActionTaskHandle };
 use crate::integration::ReenteringIntegration;
-use crate::taskcontainer::TaskContainerHandle;
 
 #[derive(Clone)]
 pub(crate) struct Blocker {

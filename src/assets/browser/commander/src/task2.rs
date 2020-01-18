@@ -78,7 +78,7 @@ mod test {
     use crate::step::RunConfig;
     use crate::future::FutureRun;
     use crate::oneshot::OneShot;
-    use crate::testintegration::{ TestIntegration, TestState };
+    use crate::testintegration::TestIntegration;
 
     #[test]
     pub fn test_task_smoke() {

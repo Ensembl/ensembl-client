@@ -77,7 +77,7 @@ impl<R> TaskHandle<R> {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::testintegration::{ TestIntegration, TestState, tick_helper };
+    use crate::testintegration::{ TestIntegration, tick_helper };
     use crate::step::RunConfig;
     use crate::executor::Executor;
 
