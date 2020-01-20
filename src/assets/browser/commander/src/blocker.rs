@@ -17,7 +17,7 @@ impl Blocker {
     }
 
     pub(crate) fn block_task(&self, blocker: &Block) {
-        self.action_handle.add(AnonExecutorAction::Block(blocker.clone()));
+        self.action_handle.add(AnonExecutorAction::BlockTask(blocker.clone()));
         if blocker.unblock_was_sent() {
             self.action_handle.add(AnonExecutorAction::Unblock(blocker.clone()));
         }

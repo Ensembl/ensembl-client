@@ -3,8 +3,8 @@ use crate::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
 
 pub(crate) enum ExecutorAction {
-    Block(TaskContainerHandle,Block),
-    Unblock(Block),
+    BlockTask(TaskContainerHandle,Block),
+    Unblock(TaskContainerHandle,Block),
     Done(TaskContainerHandle),
     UnblockOnTick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
     Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
@@ -12,7 +12,7 @@ pub(crate) enum ExecutorAction {
 
 /* For before we end up on the executor */
 pub(crate) enum AnonExecutorAction {
-    Block(Block),
+    BlockTask(Block),
     Unblock(Block),
     Done(),
     UnblockOnTick(u64,Box<dyn FnMut() + 'static + Send>),
@@ -23,8 +23,8 @@ impl AnonExecutorAction {
     fn map(self, handle: &TaskContainerHandle) -> ExecutorAction {
         let handle = handle.clone();
         match self {
-            AnonExecutorAction::Block(b) => ExecutorAction::Block(handle,b),
-            AnonExecutorAction::Unblock(b) => ExecutorAction::Unblock(b),
+            AnonExecutorAction::BlockTask(b) => ExecutorAction::BlockTask(handle,b),
+            AnonExecutorAction::Unblock(b) => ExecutorAction::Unblock(handle,b),
             AnonExecutorAction::Done() => ExecutorAction::Done(handle),
             AnonExecutorAction::UnblockOnTick(t,f) => ExecutorAction::UnblockOnTick(handle,t,f),
             AnonExecutorAction::Timer(t,f) => ExecutorAction::Timer(handle,t,f)

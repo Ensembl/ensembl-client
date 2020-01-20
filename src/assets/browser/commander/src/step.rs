@@ -1,11 +1,4 @@
 use std::sync::Arc;
-use crate::block::Block;
-
-#[derive(Clone)] // XXX test only
-pub enum StepState2<R> {
-    Block(Block),
-    Done(R),
-}
 
 #[derive(Clone,PartialEq,Eq)]
 pub enum KillReason { // XXX test it

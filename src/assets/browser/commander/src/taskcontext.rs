@@ -9,21 +9,12 @@ use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig };
 use crate::taskcontainer::TaskContainerHandle;
 use crate::oneshot::OneShot;
-use crate::step::StepState2;
 use std::task::Poll;
-use futures::task::{ ArcWake, Context, waker_ref };
-
-struct StepWaker(Mutex<Block>);
-
-impl ArcWake for StepWaker {
-    fn wake_by_ref(arc_self: &Arc<Self>) {
-        arc_self.0.lock().unwrap().unblock();
-    }
-}
+use futures::task::{ Context, waker_ref };
 
 #[derive(Clone)]
 pub struct TaskContext {
-    //future: Option<Pin<Box<dyn Future<Output=R> + Send+Sync>>>,
+    blocks: Vec<Block>,
     integration: ReenteringIntegration,
     config: RunConfig,
     tick_index: Arc<Mutex<u64>>,
@@ -31,16 +22,17 @@ pub struct TaskContext {
     kill_reason: Arc<Mutex<Option<KillReason>>>,
     action_handle: ExecutorActionTaskHandle,
     blocker: Blocker,
-    blocked_on: Option<Block>
+    name: String
 }
 
 impl TaskContext {
     pub(crate) fn new(config: &RunConfig,
                       action_handle: &ExecutorActionHandle,
-                      integration: &ReenteringIntegration) -> TaskContext {
+                      integration: &ReenteringIntegration, name: &str) -> TaskContext {
         let action_handle = action_handle.new_task();
         let blocker = Blocker::new(integration,&action_handle);
         let out = TaskContext {
+            blocks: Vec::new(),
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),
@@ -48,9 +40,25 @@ impl TaskContext {
             integration: integration.clone(),
             tick_index: Arc::new(Mutex::new(0)),
             blocker,
-            blocked_on: None
+            name: name.to_string()
         };
         out
+    }
+
+    pub(crate) fn push_block(&mut self) -> Block {
+        let out = Block::new(&self.blocker);
+        let last = self.blocks.len()-1;
+        self.blocks[last].add(&out);
+        self.blocks.push(out.clone());
+        out
+    }
+
+    pub(crate) fn pop_block(&mut self) {
+        self.blocks.pop();
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
     }
 
     pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
@@ -68,7 +76,7 @@ impl TaskContext {
     }
 
     /* kills */
-    pub(crate) fn finish_internal(&mut self, reason: Option<&KillReason>) -> bool {
+    fn finish_internal(&mut self, reason: Option<&KillReason>) -> bool {
         let mut finished = self.finished.lock().unwrap();
         if !*finished {
             if let Some(reason) = reason {
@@ -108,16 +116,8 @@ impl TaskContext {
     // XXX demut
     /* running steps */
 
-    pub(crate) fn about_to_run(&mut self, tick_index: u64) {
-        *self.tick_index.lock().unwrap() = tick_index;
-    }
-
     pub fn get_tick_index(&self) -> u64 {
         *self.tick_index.lock().unwrap()
-    }
-
-    pub(crate) fn block_task(&self, block: &Block) {
-        self.blocker.block_task(block)
     }
 
     pub fn block(&self) -> Block {
@@ -142,36 +142,30 @@ impl TaskContext {
         future
     }
 
-    pub(crate) fn get_blocker(&mut self) -> &Option<Block> { 
-        if let Some(ref blocker) = self.blocked_on {
-            if !blocker.step_blocked() {
-                self.blocked_on = None;
-            }
+    pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>+Send+Sync>>, tick_index: u64) -> Option<R> {
+        /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
+        if self.is_finished() { 
+            return None;
         }
-        &self.blocked_on
-    }
+        self.blocks = vec![Block::new(&self.blocker)];
+        /* prepare tick index, blocker */
+        *self.tick_index.lock().unwrap() = tick_index;
+        /* run */
+        let waker = self.blocks[0].future_waker();
+        match future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
+            Poll::Pending => {
+                /* blocked so note that (for next call) and tell blocker to notify executor */
+                self.blocker.block_task(&self.blocks[0]);
+                self.blocks.clear();
+                return None;
 
-    pub(crate) fn set_blocker(&mut self, block: Block) {
-        self.blocked_on = Some(block);
-    }
-
-    pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>+Send+Sync>>) -> StepState2<R> {
-        if let Some(b) = self.get_blocker() {
-            return StepState2::Block(b.clone());
-        }
-        let block = self.block();
-        let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
-        let out = match future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
-            Poll::Pending => StepState2::Block(block),
-            Poll::Ready(v) => StepState2::Done(v)
-        };
-        match out {
-            StepState2::Block(ref b) => {
-                self.set_blocker(b.clone());
             },
-            _ => {}
-        }
-        out
+            Poll::Ready(v) => {
+                self.finish_internal(None);
+                self.blocks.clear();
+                return Some(v);
+            }
+        };
     }
 }
 
@@ -182,7 +176,6 @@ mod test {
     use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::step::StepState2;
     use crate::testintegration::TestIntegration;
     use crate::executoraction::ExecutorAction;
 
@@ -196,8 +189,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ExecutorActionHandle::new();
-        let ctx = x.make_context(&cfg);
-        let mut tc = x.add(async {},ctx,"test");        
+        let ctx = x.make_context(&cfg,"test");
+        let mut tc = x.add(async {},ctx);        
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
@@ -217,7 +210,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration);
+        let mut tc = TaskContext::new(&cfg,&eah,&integration,"test");
         tc.register(&h);
         /* test */
         assert!(!tc.is_finished());
@@ -242,7 +235,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration);
+        let mut tc = TaskContext::new(&cfg,&eah,&integration,"name");
         tc.register(&h);
 
         // XXX todo
@@ -258,7 +251,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
@@ -284,35 +277,14 @@ mod test {
         let mut integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
         tc.finish_internal(None);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
         tc.finish(None);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
-    }
-
-    #[test]
-    pub fn test_block() {
-        /* setup */
-        let cfg = RunConfig::new(None,2,None);
-        let mut tasks = TaskContainer::new();
-        let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
-        let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration);
-        tc.register(&h);
-        assert!(tc.get_blocker().is_none());
-        let mut b1 = tc.block();
-        let mut b2 = tc.block();
-        b1.add(&b2);
-        tc.set_blocker(b1.clone());
-        assert!(tc.get_blocker().is_some());
-        let b3 = tc.get_blocker().as_ref().unwrap().clone();
-        b2.unblock_steps();
-        assert!(tc.get_blocker().is_none());
     }
 }

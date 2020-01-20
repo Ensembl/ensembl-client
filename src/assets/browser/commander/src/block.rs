@@ -1,32 +1,52 @@
 use std::sync::{ Arc, Mutex };
+use futures::task::{ ArcWake, Context, waker_ref };
 
-use crate::taskcontainer::TaskContainerHandle;
 use crate::blocker::Blocker;
+
+
+lazy_static! {
+    static ref IDENTITY : Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
+}
 
 #[derive(Clone)]
 pub struct Block {
-    blocking_task: Arc<Mutex<Option<TaskContainerHandle>>>,
     blocked: Arc<Mutex<bool>>,
-    unblock_sent: Arc<Mutex<bool>>,
+    request_sent: Arc<Mutex<bool>>,
     downstream: Arc<Mutex<Vec<Block>>>,
-    blocker: Blocker
+    blocker: Blocker,
+    identity: u64
 }
 
-/* task_control is always Some except in unit test */
+impl PartialEq for Block {
+    fn eq(&self, other: &Self) -> bool {
+        self.identity == other.identity
+    }
+}
+
+pub(crate) struct StepWaker(Mutex<Block>);
+
+impl ArcWake for StepWaker {
+    fn wake_by_ref(arc_self: &Arc<Self>) {
+        arc_self.0.lock().unwrap().unblock();
+    }
+}
 
 impl Block {
     pub(crate) fn new(blocker: &Blocker) -> Block {
+        let mut identity_source = IDENTITY.lock().unwrap();
+        let identity = *identity_source;
+        *identity_source += 1;
         Block {
-            blocking_task:  Arc::new(Mutex::new(None)),
             blocked: Arc::new(Mutex::new(true)),
-            unblock_sent: Arc::new(Mutex::new(false)),
+            request_sent: Arc::new(Mutex::new(false)),
             downstream: Arc::new(Mutex::new(vec![])),
-            blocker: blocker.clone()
+            blocker: blocker.clone(),
+            identity
         }
     }
 
-    pub(crate) fn set_blocking_task(&mut self, bt: TaskContainerHandle) {
-        *self.blocking_task.lock().unwrap() = Some(bt);
+    pub(crate) fn future_waker(&self) -> Arc<StepWaker> {
+        Arc::new(StepWaker(Mutex::new(self.clone())))
     }
 
     pub fn add(&mut self, upstream: &Block) {
@@ -35,22 +55,16 @@ impl Block {
 
     /* This is the one called asynchronously. It creates an unblock EA */
     pub fn unblock(&self) {
-        *self.unblock_sent.lock().unwrap() = true;
+        *self.request_sent.lock().unwrap() = true;
         self.blocker.unblock_task(self);
     }
 
     /* This one is then called by the executor from an EA handler */
-    pub(crate) fn unblock_steps(&mut self) -> Option<TaskContainerHandle> {
-        let mut handle = self.blocking_task.lock().unwrap().clone();
+    pub(crate) fn unblock_real(&mut self) {
         *self.blocked.lock().unwrap() = false;
-        *self.blocking_task.lock().unwrap() = None;
         for other in self.downstream.lock().unwrap().iter_mut() {
-            let h2 = other.unblock_steps();
-            if handle.is_none() {
-                handle = h2;
-            }
+            other.unblock_real();
         }
-        handle
     }
 
     /* Controls execution of step (set from unblock_steps) */
@@ -58,9 +72,9 @@ impl Block {
         *self.blocked.lock().unwrap()
     }
 
-    /* Controls sending correct number of Unblock EAs */
+    /* Checked to ensure race avoidance*/
     pub(crate) fn unblock_was_sent(&self) -> bool {
-        *self.unblock_sent.lock().unwrap()
+        *self.request_sent.lock().unwrap()
     }
 }
 
@@ -90,7 +104,7 @@ mod test {
         b1.add(&b2);
         assert!(b1.step_blocked());
         assert!(b2.step_blocked());
-        b2.unblock_steps();
+        b2.unblock_real();
         assert!(!b1.step_blocked());
         assert!(!b2.step_blocked());
     }

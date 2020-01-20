@@ -1,6 +1,7 @@
 use std::future::Future;
-use hashbrown::HashSet;
+use hashbrown::HashMap;
 use ordered_float::OrderedFloat;
+use crate::block::Block;
 use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
 use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
 use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
@@ -15,10 +16,10 @@ pub struct Executor {
     integration: ReenteringIntegration,
     tasks: TaskContainer,
     runnable: Runnable,
-    next_tick: HashSet<TaskContainerHandle>,
     actions: ExecutorActionHandle,
     timers: TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>>,
     ticks: TimerSet<u64,Option<TaskContainerHandle>>,
+    blocked_by: HashMap<TaskContainerHandle,Block>,
     tick_index: u64,
 }
 
@@ -28,25 +29,25 @@ impl Executor {
             integration: ReenteringIntegration::new(integration),
             tasks: TaskContainer::new(),
             runnable: Runnable::new(),
-            next_tick: HashSet::new(),
             actions: ExecutorActionHandle::new(),
             timers: TimerSet::new(),
             ticks: TimerSet::new(),
+            blocked_by: HashMap::new(),
             tick_index: 0
         }
     }
 
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
-    pub fn make_context(&self, run_config: &RunConfig) -> TaskContext {
-        TaskContext::new(run_config,&self.actions,&self.integration)
+    pub fn make_context(&self, run_config: &RunConfig, name: &str) -> TaskContext {
+        TaskContext::new(run_config,&self.actions,&self.integration,name)
     }
 
-    pub fn add<R,T>(&mut self, run: T, mut context: TaskContext, name: &str) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+Send+Sync+'static {
+    pub fn add<R,T>(&mut self, run: T, mut context: TaskContext) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+Send+Sync+'static {
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
-        let task = Task2Impl::new(Box::pin(run),&mut context,name);
+        let task = Task2Impl::new(Box::pin(run),&mut context);
         let handle = task.get_handle().clone();
         self.tasks.set(&container_handle,task);
         if let Some(timeout) = context.get_config().get_timeout() {
@@ -59,6 +60,7 @@ impl Executor {
 
     fn remove(&mut self, handle: &TaskContainerHandle) {
         self.runnable.remove(&self.tasks,handle);
+        self.blocked_by.remove(&handle);
         self.tasks.remove(handle);
     }
 
@@ -70,13 +72,17 @@ impl Executor {
     pub(crate) fn run_actions(&mut self) {
         for mut action in self.actions.drain() {
             match action {
-                ExecutorAction::Block(ref handle,ref mut blocker) => {
-                    blocker.set_blocking_task(handle.clone());
+                ExecutorAction::BlockTask(ref handle,ref block) => {
                     self.runnable.remove(&self.tasks,&handle);
+                    self.blocked_by.insert(handle.clone(),block.clone());
                 },
-                ExecutorAction::Unblock(ref mut blocker) => {
-                    if let Some(ref handle) = blocker.unblock_steps() {
-                        self.runnable.add(&self.tasks,handle);
+                ExecutorAction::Unblock(ref handle,ref mut block) => {
+                    block.unblock_real();
+                    if let Some(blocked_by) = self.blocked_by.get(handle) {
+                        if blocked_by == block {
+                            self.blocked_by.remove(handle);
+                            self.runnable.add(&self.tasks,handle);
+                        }
                     }
                 },
                 ExecutorAction::Done(handle) => {
@@ -110,7 +116,7 @@ impl Executor {
     }
 
     fn calculate_sleep(&mut self, now: f64) -> SleepQuantity {
-        if self.runnable.empty() && self.next_tick.len() == 0 {
+        if self.runnable.empty() {
             if let Some(timer) = self.timers.min() {
                 SleepQuantity::Time(timer.0-now)
             } else {
@@ -147,7 +153,7 @@ mod test {
     use super::*;
 
     use std::sync::{ Arc, Mutex };
-    use crate::step::{ KillReason, StepState2, TaskResult };
+    use crate::step::{ KillReason, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestIntegration, tick_helper };
     use crate::oneshot::OneShot;
@@ -158,12 +164,12 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.tick(0).await;
         };
-        let mut tc = x.add(step,ctx,"test");
+        let mut tc = x.add(step,ctx);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.run();
         assert!(tc.peek_result() == TaskResult::Ongoing);
@@ -179,13 +185,13 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let fos = OneShot::new();
         let fos2 = fos.clone();
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.tick(2).await;
             fos2.await;
         };
-        let mut tc = x.add(step,ctx,"test");
+        let mut tc = x.add(step,ctx);
         x.tick(10.);
         x.tick(10.);
         x.tick(10.);
@@ -202,12 +208,12 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(1.));
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.tick(2).await;
         };
-        let mut tc = x.add(step,ctx,"test");
+        let mut tc = x.add(step,ctx);
         integration.set_time(10.);
         x.run();
         assert!(tc.peek_result() == TaskResult::Killed(KillReason::Timeout));
@@ -218,8 +224,8 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let ctx = x.make_context(&cfg);
-        let mut tc = x.add(tick_helper(ctx.clone(),&[0,0,0]),ctx,"test");
+        let ctx = x.make_context(&cfg,"name");
+        let mut tc = x.add(tick_helper(ctx.clone(),&[0,0,0]),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
     }
@@ -239,9 +245,9 @@ mod test {
         let integration2 = integration.clone();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"name");
         let step = again_timeout(ctx.clone(),integration.clone());
-        let mut tc = x.add(step,ctx,"test");
+        let mut tc = x.add(step,ctx);
         x.tick(2.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(2.);
@@ -253,8 +259,8 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let ctx = x.make_context(&cfg);
-        let mut tc = x.add(tick_helper(ctx.clone(),&[3]),ctx,"test");
+        let ctx = x.make_context(&cfg,"test");
+        let mut tc = x.add(tick_helper(ctx.clone(),&[3]),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
@@ -271,18 +277,18 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let ctxa = x.make_context(&cfg);
+        let ctxa = x.make_context(&cfg,"test");
         let ctxa2 = ctxa.clone();
         let step = async move {
             ctxa2.tick(1).await;
             OneShot::new().await;
         };
-        let ctxb = x.make_context(&cfg);
+        let ctxb = x.make_context(&cfg,"test2");
         let step2 = async move {
             OneShot::new().await;
         };
-        let mut tc = x.add(step,ctxa,"test");
-        let mut tc2 = x.add(step2,ctxb,"test2");
+        let mut tc = x.add(step,ctxa);
+        let mut tc2 = x.add(step2,ctxb);
         x.tick(2.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(SleepQuantity::None == integration.get_sleeps().remove(0));
@@ -300,14 +306,14 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(12.));
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let z = async move {
             future::join(sleep_hepler(ctx2.clone(),5.),
                          sleep_hepler(ctx2.clone(),21.)).await
         };
         /* drop success */
-        let mut tc = x.add(z,ctx.clone(),"test");
+        let mut tc = x.add(z,ctx.clone());
         x.tick(10.);
         integration.set_time(5.);
         x.tick(10.);
@@ -334,13 +340,13 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(10.));
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.timer(10.).await;
             ()
         };
-        let mut tc = x.add(step,ctx,"test");
+        let mut tc = x.add(step,ctx);
         x.tick(10.); /* (Block) time_at_end = 1 => sleep 9 */
         integration.set_time(11.);
         x.tick(10.);
@@ -365,10 +371,10 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let fos = OneShot::new();
         let fos2 = fos.clone();
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let mut tx = x.add(async {
             fos2.await;
-        },ctx,"test");
+        },ctx);
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
@@ -384,7 +390,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let fosa = OneShot::new();
         let fosa2 = fosa.clone();
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             fosa2.await;
@@ -392,7 +398,7 @@ mod test {
             ctx2.timer(3.);
             OneShot::new().await;
         };
-        let mut tc = x.add(step,ctx,"test");
+        let mut tc = x.add(step,ctx);
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
@@ -417,7 +423,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(5.)); /* time=0; SleepQuantity::Time(5.) */
 
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let mut os1 = OneShot::new();
         let os1b = os1.clone();
@@ -427,7 +433,7 @@ mod test {
             ctx2.timer(2.);
             OneShot::new().await;
         };
-        let tx = x.add(step,ctx,"test");
+        let tx = x.add(step,ctx);
         /* simulate */
         x.tick(10.); /* (Block) time=1 on exit => task-timout=5 => delta = 4. ==>> SleepQuantity::Time(4.) */
         assert_eq!(1.,integration.get_time());
@@ -444,7 +450,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let p = async move { 
             let a = async {
@@ -457,7 +463,7 @@ mod test {
             };
             future::join(a,b).await
         };
-        let tc = x.add(p,ctx,"test");
+        let tc = x.add(p,ctx);
         /* simulate */
         for i in 0..7 {
             x.tick(10.);
@@ -471,7 +477,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let p = async move {
             let a = async {
@@ -484,7 +490,7 @@ mod test {
             };
             future::join(a,b).await
         };
-        let mut tc = x.add(p,ctx,"test");
+        let mut tc = x.add(p,ctx);
         /* simulate */
         x.tick(10.);
         x.tick(10.);

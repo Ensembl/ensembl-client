@@ -9,11 +9,11 @@ mod oneshot;
 mod runnable;
 mod runqueue;
 mod step;
-//mod steprunner;
 mod task2;
 mod taskcontainer;
 mod taskhandle;
 mod timer;
+mod turnstile;
 
 #[cfg(test)]
 mod testintegration;
@@ -25,6 +25,9 @@ extern crate async_std;
 extern crate blackbox;
 extern crate hashbrown;
 extern crate owning_ref;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[macro_use]
 extern crate futures;

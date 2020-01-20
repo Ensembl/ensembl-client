@@ -87,13 +87,13 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let ctx = x.make_context(&cfg);
+        let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let a = async move {
             tick_helper(ctx2,&[0,0,0]).await;
             42
         };
-        let mut tc = x.add(a,ctx,"test");
+        let mut tc = x.add(a,ctx);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(tc.take_result().is_none());
         assert!(tc.get_result().is_none());

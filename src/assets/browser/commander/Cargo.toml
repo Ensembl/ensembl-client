@@ -10,6 +10,7 @@ futures="*"
 owning_ref="*"
 binary-heap-plus="*"
 ordered-float = "*"
+lazy_static="*"
 
 #[dev-dependencies]
 regex="*"
