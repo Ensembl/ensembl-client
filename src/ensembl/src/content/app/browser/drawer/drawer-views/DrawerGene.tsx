@@ -17,7 +17,7 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
 
   return (
     <div className={styles.drawerView}>
-      <div className={styles.clearFix}>
+      <div className={styles.container}>
         <div className={styles.label}>Gene</div>
         <div className={styles.details}>
           <span className={styles.mainDetail}>{ensObject.label}</span>

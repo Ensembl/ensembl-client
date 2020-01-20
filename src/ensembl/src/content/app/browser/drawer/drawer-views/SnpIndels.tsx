@@ -5,7 +5,7 @@ import styles from '../Drawer.scss';
 const SnpIndels: FunctionComponent = () => {
   return (
     <div className={styles.drawerView}>
-      <div className={styles.clearFix}>
+      <div className={styles.container}>
         <div className={styles.label}>Track name</div>
         <div className={styles.details}>1000 Genomes all SNPs &amp; indels</div>
 

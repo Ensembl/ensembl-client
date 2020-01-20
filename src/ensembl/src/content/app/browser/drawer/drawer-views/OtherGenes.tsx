@@ -13,7 +13,7 @@ const OtherGenes: FunctionComponent<OtherGenesProps> = (
 
   return (
     <div className={styles.drawerView}>
-      <div className={styles.clearFix}>
+      <div className={styles.container}>
         <div className={styles.label}>Track name</div>
         <div className={styles.details}>Other genes</div>
 

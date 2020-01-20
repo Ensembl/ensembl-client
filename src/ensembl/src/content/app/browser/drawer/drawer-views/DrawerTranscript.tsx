@@ -46,7 +46,7 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
 
   return (
     <div className={styles.drawerView}>
-      <div className={styles.clearFix}>
+      <div className={styles.container}>
         <div className={styles.label}>Transcript</div>
         <div className={styles.details}>
           <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
