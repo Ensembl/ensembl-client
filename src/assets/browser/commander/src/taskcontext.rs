@@ -9,6 +9,17 @@ use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig };
 use crate::taskcontainer::TaskContainerHandle;
 use crate::oneshot::OneShot;
+use crate::step::StepState2;
+use std::task::Poll;
+use futures::task::{ ArcWake, Context, waker_ref };
+
+struct StepWaker(Mutex<Block>);
+
+impl ArcWake for StepWaker {
+    fn wake_by_ref(arc_self: &Arc<Self>) {
+        arc_self.0.lock().unwrap().unblock();
+    }
+}
 
 #[derive(Clone)]
 pub struct TaskContext {
@@ -19,7 +30,8 @@ pub struct TaskContext {
     finished: Arc<Mutex<bool>>,
     kill_reason: Arc<Mutex<Option<KillReason>>>,
     action_handle: ExecutorActionTaskHandle,
-    blocker: Blocker
+    blocker: Blocker,
+    blocked_on: Option<Block>
 }
 
 impl TaskContext {
@@ -29,14 +41,14 @@ impl TaskContext {
         let action_handle = action_handle.new_task();
         let blocker = Blocker::new(integration,&action_handle);
         let out = TaskContext {
-            //future: None,
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),
             action_handle,
             integration: integration.clone(),
             tick_index: Arc::new(Mutex::new(0)),
-            blocker
+            blocker,
+            blocked_on: None
         };
         out
     }
@@ -128,6 +140,38 @@ impl TaskContext {
             future2.flag();
         });
         future
+    }
+
+    pub(crate) fn get_blocker(&mut self) -> &Option<Block> { 
+        if let Some(ref blocker) = self.blocked_on {
+            if !blocker.step_blocked() {
+                self.blocked_on = None;
+            }
+        }
+        &self.blocked_on
+    }
+
+    pub(crate) fn set_blocker(&mut self, block: Block) {
+        self.blocked_on = Some(block);
+    }
+
+    pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>+Send+Sync>>) -> StepState2<R> {
+        if let Some(b) = self.get_blocker() {
+            return StepState2::Block(b.clone());
+        }
+        let block = self.block();
+        let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
+        let out = match future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
+            Poll::Pending => StepState2::Block(block),
+            Poll::Ready(v) => StepState2::Done(v)
+        };
+        match out {
+            StepState2::Block(ref b) => {
+                self.set_blocker(b.clone());
+            },
+            _ => {}
+        }
+        out
     }
 }
 
@@ -249,5 +293,26 @@ mod test {
         tc.register(&h);
         tc.finish(None);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
+    }
+
+    #[test]
+    pub fn test_block() {
+        /* setup */
+        let cfg = RunConfig::new(None,2,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let mut eah = ExecutorActionHandle::new();
+        let integration = ReenteringIntegration::new(TestIntegration::new());
+        let mut tc = TaskContext::new(&cfg,&eah,&integration);
+        tc.register(&h);
+        assert!(tc.get_blocker().is_none());
+        let mut b1 = tc.block();
+        let mut b2 = tc.block();
+        b1.add(&b2);
+        tc.set_blocker(b1.clone());
+        assert!(tc.get_blocker().is_some());
+        let b3 = tc.get_blocker().as_ref().unwrap().clone();
+        b2.unblock_steps();
+        assert!(tc.get_blocker().is_none());
     }
 }
