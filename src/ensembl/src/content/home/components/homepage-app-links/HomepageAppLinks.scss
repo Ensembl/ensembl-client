@@ -4,29 +4,43 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1;
   padding: 15px 80px;
 }
 
 .homepageAppLinksRow {
   flex: 0 0 auto;
-  display: inline-flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 300px 60px auto;
   align-items: center;
-  height: 35px;
-  padding: 20px;
+  justify-items: start;
+  padding: 0 20px;
   min-width: 500px;
 
   &Expanded {
     background-color: $light-blue;
   }
+
+  .speciesNameColumn {
+    grid-column: 1/2;
+    line-height: 1.2;
+    padding: 13px 0;
+  }
 }
 
 .homepageAppLink {
-  margin-left: 1em;
+  margin-left: 1.1em;
+
+  &:first-of-type {
+    margin-left: 0.6em;
+  }
+}
+
+.speciesHomeButton {
+  width: 22px;
 }
 
 .homepageAppLinkButtons {
+  grid-column: 3/4;
   display: flex;
   align-items: center;
 }
@@ -43,6 +57,11 @@
 .speciesName {
   color: $blue;
   cursor: pointer;
+
+  .homepageAppLinksRowExpanded & {
+    color: $black;
+    cursor: default;
+  }
 }
 
 .assemblyName {

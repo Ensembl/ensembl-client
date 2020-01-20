@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import { fetchDataForLastVisitedObjects } from 'src/content/app/browser/browserActions';
 
@@ -18,6 +19,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
 import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
+import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
 
 import styles from './HomepageAppLinks.scss';
 
@@ -70,9 +72,20 @@ const HomepageAppLinks = (props: Props) => {
 
 const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
   const { species, isExpanded, toggleExpand } = props;
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  const onOutsideClick = () => {
+    toggleExpand();
+  };
+
+  useOutsideClick(elementRef, onOutsideClick);
+
+  const rowClasses = classNames(styles.homepageAppLinksRow, {
+    [styles.homepageAppLinksRowExpanded]: isExpanded
+  });
 
   const speciesName = (
-    <div>
+    <div className={styles.speciesNameColumn}>
       <span className={styles.speciesName} onClick={toggleExpand}>
         {species.common_name || species.scientific_name}
       </span>
@@ -80,13 +93,19 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
     </div>
   );
 
-  const rowClasses = classNames(styles.homepageAppLinksRow, {
-    [styles.homepageAppLinksRowExpanded]: isExpanded
-  });
-
   return isExpanded ? (
-    <div className={rowClasses}>
+    <div ref={elementRef} className={rowClasses}>
       {speciesName}
+      <div>
+        <ImageButton
+          classNames={{
+            [Status.DEFAULT]: styles.speciesHomeButton
+          }}
+          buttonStatus={Status.DEFAULT}
+          description="Species home page"
+          image={HomeIcon}
+        />
+      </div>
       <div className={styles.homepageAppLinkButtons}>
         <span className={styles.viewIn}>View in</span>
         <Link className={styles.homepageAppLink} to={urlFor.browser()}>
@@ -105,7 +124,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
               [Status.DEFAULT]: styles.homepageAppLinkButton
             }}
             buttonStatus={Status.DEFAULT}
-            description="Genome browser"
+            description="Entity viewer"
             image={EntityViewerIcon}
           />
         </Link>
