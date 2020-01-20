@@ -1,4 +1,5 @@
 use std::future::Future;
+use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 
 use crate::block::Block;
@@ -11,6 +12,7 @@ use crate::oneshot::OneShot;
 
 #[derive(Clone)]
 pub struct TaskContext {
+    //future: Option<Pin<Box<dyn Future<Output=R> + Send+Sync>>>,
     integration: ReenteringIntegration,
     config: RunConfig,
     tick_index: Arc<Mutex<u64>>,
@@ -27,6 +29,7 @@ impl TaskContext {
         let action_handle = action_handle.new_task();
         let blocker = Blocker::new(integration,&action_handle);
         let out = TaskContext {
+            //future: None,
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),

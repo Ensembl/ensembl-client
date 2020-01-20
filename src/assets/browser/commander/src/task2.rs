@@ -6,7 +6,8 @@ use crate::steprunner::StepRunner;
 use crate::taskhandle::TaskHandle;
 
 pub(crate) struct Task2Impl<R> {
-    runner: StepRunner<R>,
+    future: Pin<Box<dyn Future<Output=R> + Send+Sync>>,
+    runner: StepRunner,
     handle: TaskHandle<R>,
     task_context: TaskContext,
     name: String
@@ -20,8 +21,9 @@ pub(crate) trait Task2 {
 
 impl<R> Task2Impl<R> {
     pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>+Send+Sync>>, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> {
-        let runner = StepRunner::new(future,task_context);
+        let runner = StepRunner::new(task_context);
         Task2Impl {
+            future,
             runner,
             handle: TaskHandle::new(task_context),
             task_context: task_context.clone(),
@@ -52,7 +54,7 @@ impl<R> Task2 for Task2Impl<R> {
             return;
         }
         self.task_context.about_to_run(tick_index);
-        match self.runner.more() {
+        match self.runner.more(&mut self.future) {
             StepState2::Done(r) => {
                 self.handle.done(r);
                 self.task_context.finish_internal(None);

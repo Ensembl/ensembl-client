@@ -15,16 +15,14 @@ impl ArcWake for StepWaker {
     }
 }
 
-pub struct StepRunner<R> {
-    future: Pin<Box<dyn Future<Output=R> + Send+Sync>>,
+pub struct StepRunner {
     control: TaskContext,
     blocked_on: Option<Block>
 }
 
-impl<R> StepRunner<R> {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>+Send+Sync>>, task_control: &TaskContext) -> StepRunner<R> {
+impl StepRunner {
+    pub(crate) fn new(task_control: &TaskContext) -> StepRunner {
         StepRunner {
-            future,
             control: task_control.clone(),
             blocked_on: None
         }
@@ -39,13 +37,13 @@ impl<R> StepRunner<R> {
         &self.blocked_on
     }
 
-    pub fn more(&mut self) -> StepState2<R> {
+    pub fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>+Send+Sync>>) -> StepState2<R> {
         if let Some(b) = self.get_blocker() {
             return StepState2::Block(b.clone());
         }
         let block = self.control.block();
         let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
-        let out = match self.future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
+        let out = match future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
             Poll::Pending => StepState2::Block(block),
             Poll::Ready(v) => StepState2::Done(v)
         };
@@ -82,8 +80,7 @@ mod test {
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskContext::new(&cfg,&eah,&integration);
         tc.register(&h);
-        let run = Box::pin(async{ });
-        let mut sc = StepRunner::new(run,&tc);
+        let mut sc = StepRunner::new(&tc);
         assert!(sc.get_blocker().is_none());
         let mut b1 = tc.block();
         let mut b2 = tc.block();
