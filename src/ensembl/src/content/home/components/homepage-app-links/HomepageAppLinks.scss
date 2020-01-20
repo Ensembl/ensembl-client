@@ -8,14 +8,18 @@
   padding: 15px 80px;
 }
 
-.homepageAppLinksGroup {
+.homepageAppLinksRow {
   flex: 0 0 auto;
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  background-color: $light-blue;
-  padding: 5px 20px;
+  height: 35px;
+  padding: 20px;
   min-width: 500px;
+
+  &Expanded {
+    background-color: $light-blue;
+  }
 }
 
 .homepageAppLink {
@@ -34,6 +38,11 @@
     fill: $white;
     background-color: $blue;
   }
+}
+
+.speciesName {
+  color: $blue;
+  cursor: pointer;
 }
 
 .assemblyName {

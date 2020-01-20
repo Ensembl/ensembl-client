@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -30,10 +31,31 @@ type Props = {
   fetchDataForLastVisitedObjects: () => void;
 };
 
+type HomepageAppLinksRowProps = {
+  species: CommittedItem;
+  isExpanded: boolean;
+  toggleExpand: () => void;
+};
+
 const HomepageAppLinks = (props: Props) => {
+  const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
+
+  const onToggleRow = (index: number) => {
+    if (index === expandedRowIndex) {
+      setExpandedRowIndex(null);
+    } else {
+      setExpandedRowIndex(index);
+    }
+  };
+
   if (isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
-    const links = props.species.map((species) => (
-      <HomepageAppLinksGroup key={species.genome_id} species={species} />
+    const links = props.species.map((species, index) => (
+      <HomepageAppLinksRow
+        key={species.genome_id}
+        species={species}
+        isExpanded={expandedRowIndex === index}
+        toggleExpand={() => onToggleRow(index)}
+      />
     ));
     return (
       <section className={styles.homepageAppLinks}>
@@ -46,37 +68,53 @@ const HomepageAppLinks = (props: Props) => {
   }
 };
 
-const HomepageAppLinksGroup = ({ species }: { species: CommittedItem }) => (
-  <div className={styles.homepageAppLinksGroup}>
+const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
+  const { species, isExpanded, toggleExpand } = props;
+
+  const speciesName = (
     <div>
-      <span>{species.common_name || species.scientific_name}</span>
+      <span className={styles.speciesName} onClick={toggleExpand}>
+        {species.common_name || species.scientific_name}
+      </span>
       <span className={styles.assemblyName}>{species.assembly_name}</span>
     </div>
-    <div className={styles.homepageAppLinkButtons}>
-      <span className={styles.viewIn}>View in</span>
-      <Link className={styles.homepageAppLink} to={urlFor.browser()}>
-        <ImageButton
-          classNames={{
-            [Status.DEFAULT]: styles.homepageAppLinkButton
-          }}
-          buttonStatus={Status.DEFAULT}
-          description="Genome browser"
-          image={BrowserIcon}
-        />
-      </Link>
-      <Link className={styles.homepageAppLink} to={urlFor.entityViewer()}>
-        <ImageButton
-          classNames={{
-            [Status.DEFAULT]: styles.homepageAppLinkButton
-          }}
-          buttonStatus={Status.DEFAULT}
-          description="Genome browser"
-          image={EntityViewerIcon}
-        />
-      </Link>
+  );
+
+  const rowClasses = classNames(styles.homepageAppLinksRow, {
+    [styles.homepageAppLinksRowExpanded]: isExpanded
+  });
+
+  return isExpanded ? (
+    <div className={rowClasses}>
+      {speciesName}
+      <div className={styles.homepageAppLinkButtons}>
+        <span className={styles.viewIn}>View in</span>
+        <Link className={styles.homepageAppLink} to={urlFor.browser()}>
+          <ImageButton
+            classNames={{
+              [Status.DEFAULT]: styles.homepageAppLinkButton
+            }}
+            buttonStatus={Status.DEFAULT}
+            description="Genome browser"
+            image={BrowserIcon}
+          />
+        </Link>
+        <Link className={styles.homepageAppLink} to={urlFor.entityViewer()}>
+          <ImageButton
+            classNames={{
+              [Status.DEFAULT]: styles.homepageAppLinkButton
+            }}
+            buttonStatus={Status.DEFAULT}
+            description="Genome browser"
+            image={EntityViewerIcon}
+          />
+        </Link>
+      </div>
     </div>
-  </div>
-);
+  ) : (
+    <div className={rowClasses}>{speciesName}</div>
+  );
+};
 
 // Legacy component that stays there until we have a presentable EntityViewer
 const PreviouslyViewedLinks = (props: Props) => {
