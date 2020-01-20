@@ -1,8 +1,9 @@
+use std::pin::Pin;
+use std::future::Future;
 use crate::taskcontext::TaskContext;
-use crate::step::{ StepState2, OngoingState };
+use crate::step::StepState2;
 use crate::steprunner::StepRunner;
 use crate::taskhandle::TaskHandle;
-use crate::future::FutureRun;
 
 pub(crate) struct Task2Impl<R> {
     runner: StepRunner<R>,
@@ -18,8 +19,8 @@ pub(crate) trait Task2 {
 }
 
 impl<R> Task2Impl<R> {
-    pub(crate) fn new(step: FutureRun<R>, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> {
-        let runner = StepRunner::new(step,task_context);
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>+Send+Sync>>, task_context: &mut TaskContext, name: &str) -> Task2Impl<R> {
+        let runner = StepRunner::new(future,task_context);
         Task2Impl {
             runner,
             handle: TaskHandle::new(task_context),
@@ -56,10 +57,7 @@ impl<R> Task2 for Task2Impl<R> {
                 self.handle.done(r);
                 self.task_context.finish_internal(None);
             },
-            StepState2::Ongoing(OngoingState::Dead) => {
-                self.task_context.finish_internal(None);
-            },
-            StepState2::Ongoing(OngoingState::Block(b)) => {
+            StepState2::Block(b) => {
                 self.task_context.block_task(&b);
             },
         }
@@ -76,7 +74,6 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
     use crate::step::RunConfig;
-    use crate::future::FutureRun;
     use crate::oneshot::OneShot;
     use crate::testintegration::TestIntegration;
 
@@ -91,11 +88,11 @@ mod test {
         let mut tc = TaskContext::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()));
         tc.register(&h);
         let ctx = tc.clone();
-        let s1 = FutureRun::new(Box::pin(async move {
+        let s1 = Box::pin(async move {
             ctx.timer(1.).await;
             ctx.tick(0).await;
             ctx.tick(0).await;
-        }));
+        });
         let mut tc2 = tc.clone();
         let mut t = Task2Impl::new(s1,&mut tc2,"test");
         /* simple accessors */

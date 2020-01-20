@@ -135,7 +135,7 @@ mod test {
     use crate::executor::Executor;
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::step::{ StepState2, OngoingState };
+    use crate::step::StepState2;
     use crate::testintegration::TestIntegration;
     use crate::executoraction::ExecutorAction;
 

@@ -10,8 +10,6 @@ use crate::taskcontext::TaskContext;
 use crate::step::{ KillReason, RunConfig };
 use crate::task2::Task2Impl;
 use crate::taskhandle::TaskHandle;
-use crate::future::FutureRun;
-use crate::block::Block;
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -21,7 +19,6 @@ pub struct Executor {
     actions: ExecutorActionHandle,
     timers: TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>>,
     ticks: TimerSet<u64,Option<TaskContainerHandle>>,
-    immediate: Vec<Block>,
     tick_index: u64,
 }
 
@@ -35,7 +32,6 @@ impl Executor {
             actions: ExecutorActionHandle::new(),
             timers: TimerSet::new(),
             ticks: TimerSet::new(),
-            immediate: Vec::new(),
             tick_index: 0
         }
     }
@@ -47,11 +43,10 @@ impl Executor {
     }
 
     pub fn add<R,T>(&mut self, run: T, mut context: TaskContext, name: &str) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+Send+Sync+'static {
-        let run = FutureRun::new(Box::pin(run));
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
-        let task = Task2Impl::new(run,&mut context,name);
+        let task = Task2Impl::new(Box::pin(run),&mut context,name);
         let handle = task.get_handle().clone();
         self.tasks.set(&container_handle,task);
         if let Some(timeout) = context.get_config().get_timeout() {
@@ -97,12 +92,6 @@ impl Executor {
         }
     }
 
-    fn resurrect_immediate(&mut self) {
-        for block in self.immediate.drain(..) {
-            block.unblock();
-        }
-    }
-
     pub(crate) fn check_timers(&mut self,now: f64) {
         let (timers,ticks,tasks) = (&mut self.timers,&mut self.ticks,&mut self.tasks);
         timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
@@ -116,8 +105,6 @@ impl Executor {
         self.check_timers(now);
         self.run_actions();
         let out = self.runnable.run(&mut self.tasks,self.tick_index);
-        self.run_actions();
-        self.resurrect_immediate();
         self.run_actions();
         out
     }
@@ -160,10 +147,9 @@ mod test {
     use super::*;
 
     use std::sync::{ Arc, Mutex };
-    use crate::step::{ KillReason, StepState2, OngoingState, TaskResult };
+    use crate::step::{ KillReason, StepState2, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestIntegration, tick_helper };
-    use crate::future::FutureRun;
     use crate::oneshot::OneShot;
     use futures::future;
 

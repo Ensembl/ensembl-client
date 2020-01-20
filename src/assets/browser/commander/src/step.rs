@@ -2,14 +2,8 @@ use std::sync::Arc;
 use crate::block::Block;
 
 #[derive(Clone)] // XXX test only
-pub enum OngoingState {
-    Block(Block),
-    Dead
-}
-
-#[derive(Clone)] // XXX test only
 pub enum StepState2<R> {
-    Ongoing(OngoingState),
+    Block(Block),
     Done(R),
 }
 

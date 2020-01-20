@@ -1,23 +1,32 @@
+use std::sync::{ Arc, Mutex };
+use std::future::Future;
+use std::pin::Pin;
 use crate::block::Block;
 use crate::taskcontext::TaskContext;
-use crate::step::{ StepState2, OngoingState };
-use crate::future::FutureRun;
+use crate::step::StepState2;
+use std::task::Poll;
+use futures::task::{ ArcWake, Context, waker_ref };
+
+struct StepWaker(Mutex<Block>);
+
+impl ArcWake for StepWaker {
+    fn wake_by_ref(arc_self: &Arc<Self>) {
+        arc_self.0.lock().unwrap().unblock();
+    }
+}
 
 pub struct StepRunner<R> {
-    run: FutureRun<R>,
+    future: Pin<Box<dyn Future<Output=R> + Send+Sync>>,
     control: TaskContext,
-    blocked_on: Option<Block>,
-    is_dead: bool
- 
+    blocked_on: Option<Block>
 }
 
 impl<R> StepRunner<R> {
-    pub(crate) fn new(run: FutureRun<R>, task_control: &TaskContext) -> StepRunner<R> {
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>+Send+Sync>>, task_control: &TaskContext) -> StepRunner<R> {
         StepRunner {
-            run,
+            future,
             control: task_control.clone(),
-            blocked_on: None,
-            is_dead: false
+            blocked_on: None
         }
     }
 
@@ -31,19 +40,18 @@ impl<R> StepRunner<R> {
     }
 
     pub fn more(&mut self) -> StepState2<R> {
-        if self.is_dead {
-            return StepState2::Ongoing(OngoingState::Dead);
-        }
         if let Some(b) = self.get_blocker() {
-            return StepState2::Ongoing(OngoingState::Block(b.clone()));
+            return StepState2::Block(b.clone());
         }
-        let out = self.run.more(&mut self.control);
+        let block = self.control.block();
+        let waker = Arc::new(StepWaker(Mutex::new(block.clone())));
+        let out = match self.future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
+            Poll::Pending => StepState2::Block(block),
+            Poll::Ready(v) => StepState2::Done(v)
+        };
         match out {
-            StepState2::Ongoing(OngoingState::Block(ref b)) => {
+            StepState2::Block(ref b) => {
                 self.blocked_on = Some(b.clone());
-            },
-            StepState2::Done(_) => {
-                self.is_dead = true;
             },
             _ => {}
         }
@@ -63,7 +71,6 @@ mod test {
     use crate::timer::TimerSet;
     use crate::testintegration::TestIntegration;
     use crate::taskcontext::TaskContext;
-    use crate::future::FutureRun;
 
     #[test]
     pub fn test_block() {
@@ -75,7 +82,7 @@ mod test {
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = TaskContext::new(&cfg,&eah,&integration);
         tc.register(&h);
-        let run = FutureRun::new(Box::pin(async{ }));
+        let run = Box::pin(async{ });
         let mut sc = StepRunner::new(run,&tc);
         assert!(sc.get_blocker().is_none());
         let mut b1 = tc.block();

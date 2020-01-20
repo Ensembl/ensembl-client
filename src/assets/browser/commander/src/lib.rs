@@ -21,8 +21,6 @@ mod testintegration;
 #[cfg(test)]
 extern crate async_std;
 
-mod future;
-
 #[macro_use]
 extern crate blackbox;
 extern crate hashbrown;
