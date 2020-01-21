@@ -5,7 +5,7 @@ import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPan
 import { TrackPanelBarItem } from 'src/content/app/browser/track-panel/track-panel-bar/trackPanelBarConfig';
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 
-import { ReactComponent as bookmarkIcon } from 'static/img/track-panel/bookmark.svg';
+import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
 
 export const createTrackStates = (): BrowserTrackStates => ({
   triticum_aestivum_GCA_900519105_1: {
