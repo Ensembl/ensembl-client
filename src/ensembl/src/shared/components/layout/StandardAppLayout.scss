@@ -1,0 +1,156 @@
+@import 'src/styles/common';
+
+$sideBarContentWidth: 320px;
+$sideBarToolStripWidth: 46px;
+$topBarHeight: 38px;
+$drawerWindowWidth: 45px;
+
+.standardAppLayout {
+  height: 100%;
+  overflow: hidden;
+}
+
+.topBar {
+  height: $topBarHeight;
+  background: $light-grey;
+  box-shadow: 0 2px 3px $grey;
+  position: relative;
+  padding-left: 18px;
+  width: 100%;
+  z-index: 5;
+
+  &_withSidebarNavigation {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr $sideBarContentWidth;
+    grid-column-gap: $sideBarToolStripWidth;
+  }
+
+  &_withoutSidebarNavigation {
+    display: flex;
+    align-items: center;
+
+    & > div {
+      padding-right: 1em;
+    }
+  }
+}
+
+.mainWrapper {
+  height: calc(100% - #{$topBarHeight});
+  position: relative;
+}
+
+.main {
+  height: 100%;
+
+  &Default {
+    margin-right: calc(#{$sideBarContentWidth} + #{$sideBarToolStripWidth});
+  }
+
+  &FullWidth {
+    margin-right: $sideBarToolStripWidth;
+  }
+}
+
+.sideBarWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 1;
+  transition: transform 0.3s ease-in-out;
+
+  &Open {
+    transform: translateX(
+      calc(100% - #{$sideBarContentWidth} - #{$sideBarToolStripWidth})
+    );
+  }
+
+  &DrawerOpen {
+    transform: translateX(#{$drawerWindowWidth});
+  }
+
+  &Closed {
+    transform: translateX(calc(100% - #{$sideBarToolStripWidth}));
+  }
+}
+
+.instantaneous {
+  transition: none;
+}
+
+.sideBar {
+  flex: 0 0 auto;
+  height: 100%;
+  width: $sideBarContentWidth;
+  border-left: 1px solid $grey;
+  padding: 15px;
+  background-color: white;
+}
+
+.sideBarToolstrip {
+  padding: 20px 0 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  width: $sideBarToolStripWidth;
+  height: 100%;
+  background: $light-grey;
+  border-left: 1px solid $grey;
+}
+
+.sidebarToolstripContent {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.sidebarModeToggle {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 55px;
+}
+
+.sidebarModeToggleChevron {
+  cursor: pointer;
+
+  &Open {
+    transform: rotate(180deg);
+  }
+}
+
+.sidebarTabs {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 15px;
+}
+
+.drawer {
+  height: 100%;
+  flex-grow: 1;
+  position: relative;
+  padding: 15px calc(#{$drawerWindowWidth} + 26px) 15px 30px;
+  border-left: solid $medium-light-grey 1px;
+  background-color: white;
+}
+
+.drawerWindow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-100%);
+  width: $drawerWindowWidth;
+  height: 100%;
+}
+
+.drawerClose {
+  position: absolute;
+  right: calc(#{$drawerWindowWidth} + 10px);
+  top: 10px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}

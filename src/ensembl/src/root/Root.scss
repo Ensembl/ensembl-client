@@ -1,4 +1,6 @@
 .root {
+  display: grid;
+  grid-template-rows: auto 1fr;
   position: relative;
   height: 100%;
 }

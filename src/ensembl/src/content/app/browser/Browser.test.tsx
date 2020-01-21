@@ -3,9 +3,12 @@ import { MemoryRouter } from 'react-router';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
+
 import { Browser, BrowserProps, ExampleObjectLinks } from './Browser';
 import BrowserImage from './browser-image/BrowserImage';
 import TrackPanel from './track-panel/TrackPanel';
+import BrowserNavBar from './browser-nav/BrowserNavBar';
 
 import { createChrLocationValues } from 'tests/fixtures/browser';
 
@@ -16,7 +19,16 @@ jest.mock('./track-panel/TrackPanel', () => () => <div>TrackPanel</div>);
 jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
   <div>BrowserAppBar</div>
 ));
-jest.mock('ensembl-genome-browser', () => { return; });
+jest.mock('./track-panel/track-panel-bar/TrackPanelBar', () => () => (
+  <div>TrackPanelBar</div>
+));
+jest.mock('./track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
+  <div>TrackPanelTabs</div>
+));
+jest.mock('./drawer/Drawer', () => () => <div>Drawer</div>);
+jest.mock('ensembl-genome-browser', () => {
+  return;
+});
 
 describe('<Browser />', () => {
   afterEach(() => {
@@ -38,18 +50,17 @@ describe('<Browser />', () => {
     chrLocation: createChrLocationValues().tupleValue,
     isDrawerOpened: false,
     isTrackPanelOpened: false,
-    launchbarExpanded: false,
     exampleEnsObjects: [],
     committedSpecies: [],
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
-    changeDrawerView: jest.fn(),
-    closeDrawer: jest.fn(),
     restoreBrowserTrackStates: jest.fn(),
     fetchGenomeData: jest.fn(),
     replace: jest.fn(),
+    toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
-    setDataFromUrlAndSave: jest.fn()
+    setDataFromUrlAndSave: jest.fn(),
+    viewportWidth: BreakpointWidth.DESKTOP
   };
 
   const wrappingComponent = (props: any) => (
@@ -90,6 +101,33 @@ describe('<Browser />', () => {
       expect(wrapper.find(BrowserImage)).toHaveLength(1);
       expect(wrapper.find(TrackPanel)).toHaveLength(1);
     });
+
+    describe('BrowserNavBar', () => {
+      const props = {
+        ...defaultProps,
+        browserActivated: true,
+        browserQueryParams: { focus: 'foo' }
+      };
+
+      it('is rendered when props.browserNavOpened is true', () => {
+        const wrapper = mountBrowserComponent(props);
+        expect(wrapper.find(BrowserNavBar).length).toBe(0);
+
+        wrapper.setProps({ browserNavOpened: true });
+        expect(wrapper.find(BrowserNavBar).length).toBe(1);
+      });
+
+      it('is not rendered if drawer is opened', () => {
+        const wrapper = mountBrowserComponent({
+          ...props,
+          browserNavOpened: true
+        });
+        expect(wrapper.find(BrowserNavBar).length).toBe(1);
+
+        wrapper.setProps({ isDrawerOpened: true });
+        expect(wrapper.find(BrowserNavBar).length).toBe(0);
+      });
+    });
   });
 
   describe('behaviour', () => {
@@ -102,16 +140,6 @@ describe('<Browser />', () => {
 
       wrapper.setProps({ activeGenomeId: faker.lorem.words() });
       expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(2);
-    });
-
-    test('closes drawer when clicked on genome browser area', () => {
-      const wrapper = mountBrowserComponent({
-        browserQueryParams: { focus: faker.lorem.words() },
-        isDrawerOpened: true,
-        isTrackPanelOpened: true
-      });
-      wrapper.find('.browserImageWrapper').simulate('click');
-      expect(wrapper.props().closeDrawer).toHaveBeenCalled();
     });
   });
 });

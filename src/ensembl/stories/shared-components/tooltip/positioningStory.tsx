@@ -21,15 +21,21 @@ type PositionsProps = {
 
 const Item = (props: ItemProps) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
 
   const className = classNames(styles.positioningStoryItem, props.className);
 
   return (
-    <div className={className} onClick={() => setShowTooltip(!showTooltip)}>
+    <div
+      ref={anchorRef}
+      className={className}
+      onClick={() => setShowTooltip(!showTooltip)}
+    >
       Click me
       {showTooltip && (
         <Tooltip
           delay={0}
+          anchor={anchorRef.current}
           onClose={() => setShowTooltip(false)}
           position={props.position}
           container={props.container.current}

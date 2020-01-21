@@ -1,3 +1,4 @@
+import './layout/Layout.stories';
 import './button/Button.stories';
 import './clear-button/ClearButton.stories';
 import './question-button/QuestionButton.stories';
@@ -15,3 +16,4 @@ import './badged-button/BadgedButton.stories';
 import './species-tabs-wrapper/SpeciesTabsWrapper.stories';
 import './upload/Upload.stories';
 import './textarea/Textarea.stories';
+import './slide-toggle/SlideToggle.stories';

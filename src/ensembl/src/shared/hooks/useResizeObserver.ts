@@ -1,6 +1,6 @@
 // modified from https://github.com/ZeeCoder/use-resize-observer/blob/master/src/index.js
 
-import { useEffect, useState, useRef, useMemo, RefObject } from 'react';
+import { useEffect, useState, useRef, RefObject } from 'react';
 import windowService from 'src/services/window-service';
 
 type Params<T> = {

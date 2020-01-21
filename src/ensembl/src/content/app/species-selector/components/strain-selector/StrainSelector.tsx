@@ -46,7 +46,7 @@ const StrainSelector = (props: StrainSelectorProps) => {
     >
       {numberOfSelectedStrains} / {totalNumberOfStrains}
       {isTooltipVisible && (
-        <Tooltip onClose={hideTooltip}>
+        <Tooltip anchor={elementRef.current} onClose={hideTooltip}>
           <StrainsList {...props} />
         </Tooltip>
       )}

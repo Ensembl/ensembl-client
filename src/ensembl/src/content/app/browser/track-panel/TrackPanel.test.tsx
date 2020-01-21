@@ -3,16 +3,10 @@ import { mount } from 'enzyme';
 import faker from 'faker';
 
 import { TrackPanel, TrackPanelProps } from './TrackPanel';
-import TrackPanelBar from './track-panel-bar/TrackPanelBar';
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import Drawer from '../drawer/Drawer';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
-import { BreakpointWidth } from 'src/global/globalConfig';
-import { TrackSet } from './trackPanelConfig';
-import { createGenomeCategories } from 'tests/fixtures/genomes';
-import { createTrackStates } from 'tests/fixtures/track-panel';
 
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
   <div>Track Panel</div>
@@ -33,49 +27,31 @@ describe('<TrackPanel />', () => {
   const defaultProps: TrackPanelProps = {
     activeGenomeId: null,
     browserActivated: false,
-    breakpointWidth: BreakpointWidth.LAPTOP,
-    isDrawerOpened: false,
     activeEnsObject: null,
-    isTrackPanelModalOpened: false,
-    isTrackPanelOpened: true,
-    toggleTrackPanel: jest.fn()
+    isTrackPanelModalOpened: false
   };
 
   const mountTrackPanel = (props?: Partial<TrackPanelProps>) =>
     mount(<TrackPanel {...defaultProps} {...props} />);
 
   describe('rendering', () => {
-    test('renders track panel when active genome is present', () => {
+    test('does not render anything when not all rendering requirements are satisfied', () => {
+      // defaultProps are insufficient for rendering anything useful
+      // TODO: in the future, it might be a good idea to at least render a spinner here
+      const wrapper = mountTrackPanel();
+      expect(wrapper.html()).toBe(null);
+    });
+
+    test('renders TrackPanelList when necessary requirements are satisfied', () => {
       const wrapper = mountTrackPanel({
+        browserActivated: true,
+        activeEnsObject: createEnsObject(),
         activeGenomeId: faker.lorem.words()
       });
-      expect(wrapper.html()).not.toBe(null);
+      expect(wrapper.find(TrackPanelList).length).toBe(1);
     });
 
-    test('shows track panel only if the screen width is desktop or larger', () => {
-      const wrapper = mountTrackPanel({
-        breakpointWidth: BreakpointWidth.DESKTOP
-      });
-      expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledWith(true);
-
-      jest.resetAllMocks();
-
-      wrapper.setProps({ breakpointWidth: BreakpointWidth.LAPTOP });
-      wrapper.update();
-      expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledWith(false);
-    });
-
-    test('renders track panel bar and track panel list when browser is activated and active feature is selected', () => {
-      const wrapper = mountTrackPanel({
-        activeGenomeId: faker.lorem.words(),
-        browserActivated: true,
-        activeEnsObject: createEnsObject()
-      });
-      expect(wrapper.find(TrackPanelBar)).toHaveLength(1);
-      expect(wrapper.find(TrackPanelList)).toHaveLength(1);
-    });
-
-    test('renders track panel modal view when a track panel modal is selected', () => {
+    test('renders track panel modal when necessary requirements are satisfied', () => {
       const wrapper = mountTrackPanel({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
@@ -83,16 +59,6 @@ describe('<TrackPanel />', () => {
         isTrackPanelModalOpened: true
       });
       expect(wrapper.find(TrackPanelModal)).toHaveLength(1);
-    });
-
-    test('renders drawer when it is set to open', () => {
-      const wrapper = mountTrackPanel({
-        activeGenomeId: faker.lorem.words(),
-        browserActivated: true,
-        activeEnsObject: createEnsObject(),
-        isDrawerOpened: true
-      });
-      expect(wrapper.find(Drawer)).toHaveLength(1);
     });
   });
 });

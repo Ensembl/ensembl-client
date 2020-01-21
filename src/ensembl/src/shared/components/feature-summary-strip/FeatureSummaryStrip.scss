@@ -1,0 +1,37 @@
+@import 'src/styles/common';
+
+.featureSummaryStripWrapper {
+  flex-grow: 1;
+}
+
+.featureSummaryStrip {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1;
+  overflow: hidden;
+
+  & > div:not(:last-child) {
+    margin-right: 30px;
+  }
+}
+
+.featureSummaryStripGhosted {
+  color: $dark-grey;
+}
+
+.featureSummaryStripLabel {
+  font-size: 12px;
+  font-weight: $light;
+  margin-right: 0.5em;
+}
+
+.featureNameEmphasized {
+  font-weight: $bold;
+
+  & + span {
+    margin-left: 12px;
+  }
+}

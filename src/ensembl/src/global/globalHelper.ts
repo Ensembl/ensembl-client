@@ -1,21 +1,3 @@
-import { BreakpointWidth } from './globalConfig';
-
-export const getBreakpoint = (
-  key: keyof typeof BreakpointWidth
-): BreakpointWidth => {
-  if (BreakpointWidth[key] >= BreakpointWidth.BIG_DESKTOP) {
-    return BreakpointWidth.BIG_DESKTOP;
-  } else if (BreakpointWidth[key] >= BreakpointWidth.DESKTOP) {
-    return BreakpointWidth.DESKTOP;
-  } else if (BreakpointWidth[key] >= BreakpointWidth.LAPTOP) {
-    return BreakpointWidth.LAPTOP;
-  } else if (BreakpointWidth[key] >= BreakpointWidth.TABLET) {
-    return BreakpointWidth.TABLET;
-  } else {
-    return BreakpointWidth.PHONE;
-  }
-};
-
 export const getQueryParamsMap = (queryStr: string) => {
   const params = queryStr.replace('?', '').split('&'); // split all query param pairs
 
