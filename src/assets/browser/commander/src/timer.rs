@@ -101,11 +101,11 @@ mod test {
     use ordered_float::OrderedFloat;
     use crate::edgetrigger::EdgeTrigger;
     use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
-    use crate::task2::Task2;
+    use crate::task::Task;
     use super::*;
 
     struct FakeTask(i8);
-    impl Task2 for FakeTask {
+    impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
     }

@@ -1,19 +1,5 @@
 use std::sync::Arc;
 
-#[derive(Clone,PartialEq,Eq)]
-pub enum KillReason { // XXX test it
-    Timeout,
-    Cancelled,
-    NotNeeded
-}
-
-#[derive(Clone,PartialEq,Eq)]
-pub enum TaskResult {
-    Ongoing,
-    Done,
-    Killed(KillReason)
-}
-
 #[derive(Clone)]
 pub struct RunConfig {
     slot: Arc<Option<RunSlot>>,

@@ -2,16 +2,6 @@ use std::sync::{ Arc, Mutex, MutexGuard };
 use crate::taskcontext::TaskContext;
 use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
-/*
-#[cfg(test)]
-#[derive(Clone)] // XXX test only
-pub(crate) enum TestState<R> {
-    //Again,
-    Block,
-    Done(R),
-}
-*/
-
 #[derive(Clone)]
 pub struct TestIntegration {
     timer: Arc<Mutex<f64>>,
@@ -47,7 +37,7 @@ mod test {
     use super::*;
     use crate::executor::Executor;
     use crate::step::RunConfig;
-    use crate::step::TaskResult;
+    use crate::taskhandle::TaskResult;
     use futures::future;
 
     async fn tick_future(ctx: TaskContext,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {

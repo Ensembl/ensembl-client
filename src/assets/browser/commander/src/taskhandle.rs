@@ -1,7 +1,20 @@
 use std::sync::{ Arc, Mutex };
 use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use crate::taskcontext::TaskContext;
-use crate::step::TaskResult;
+
+#[derive(Clone,PartialEq,Eq)]
+pub enum KillReason { // XXX test it
+    Timeout,
+    Cancelled,
+    NotNeeded
+}
+
+#[derive(Clone,PartialEq,Eq)]
+pub enum TaskResult {
+    Ongoing,
+    Done,
+    Killed(KillReason)
+}
 
 pub struct TaskHandleState<R> {
     context: TaskContext,

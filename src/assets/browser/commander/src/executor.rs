@@ -8,9 +8,9 @@ use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::timer::TimerSet;
 use crate::runnable::Runnable;
 use crate::taskcontext::TaskContext;
-use crate::step::{ KillReason, RunConfig };
-use crate::task2::Task2Impl;
-use crate::taskhandle::TaskHandle;
+use crate::step::RunConfig;
+use crate::task::TaskImpl;
+use crate::taskhandle::{ TaskHandle, KillReason };
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -47,7 +47,7 @@ impl Executor {
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
-        let task = Task2Impl::new(Box::pin(run),&mut context);
+        let task = TaskImpl::new(Box::pin(run),&mut context);
         let handle = task.get_handle().clone();
         self.tasks.set(&container_handle,task);
         if let Some(timeout) = context.get_config().get_timeout() {
@@ -153,7 +153,7 @@ mod test {
     use super::*;
 
     use std::sync::{ Arc, Mutex };
-    use crate::step::{ KillReason, TaskResult };
+    use crate::taskhandle::{ KillReason, TaskResult };
     use crate::integration::SleepQuantity;
     use crate::testintegration::{ TestIntegration, tick_helper };
     use crate::oneshot::OneShot;

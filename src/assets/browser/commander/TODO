@@ -2,5 +2,8 @@ TODO:
 step name
 Rc RunConfig
 debug/clone with contitional derive
-De static
-tick/again to futures via context
+De static send sync
+drop
+slots
+internal submit
+channels

@@ -9,7 +9,7 @@ mod oneshot;
 mod runnable;
 mod runqueue;
 mod step;
-mod task2;
+mod task;
 mod taskcontainer;
 mod taskhandle;
 mod timer;

@@ -2,7 +2,6 @@ use hashbrown::HashSet;
 
 use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 
-// XXX convert to BTreeSet to detect double-accounting.
 pub(crate) struct RunQueue2 {
     present: HashSet<TaskContainerHandle>,
     tasks: Vec<TaskContainerHandle>,
@@ -53,11 +52,11 @@ impl RunQueue2 {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::task2::Task2;
+    use crate::task::Task;
     use crate::taskcontainer::TaskContainer;
 
     struct FakeTask(i8);
-    impl Task2 for FakeTask {
+    impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
     }

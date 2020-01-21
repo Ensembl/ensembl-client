@@ -5,14 +5,14 @@
 use binary_heap_plus::{ BinaryHeap, MinComparator };
 use hashbrown::HashSet;
 
-use crate::task2::Task2;
+use crate::task::Task;
 
 #[derive(Clone,PartialEq,Eq,PartialOrd,Ord,Hash,Debug)] // XXX debug
 pub(crate) struct TaskContainerHandle(usize,u64);
 
 pub(crate) struct TaskContainer {
     free_slots: BinaryHeap<usize,MinComparator>,
-    tasks: Vec<Option<Box<dyn Task2>>>,
+    tasks: Vec<Option<Box<dyn Task>>>,
     current: HashSet<u64>,
     next_slot: u64
 }
@@ -39,7 +39,7 @@ impl TaskContainer {
         out
     }
 
-    pub(crate) fn set<T>(&mut self, handle: &TaskContainerHandle, task: T) where T: Task2 + 'static {
+    pub(crate) fn set<T>(&mut self, handle: &TaskContainerHandle, task: T) where T: Task + 'static {
         self.tasks[handle.0] = Some(Box::new(task));
     }
 
@@ -51,7 +51,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn Task2>> { 
+    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn Task>> { 
         if self.current.contains(&handle.1) {
             self.tasks[handle.0].as_ref()
         } else {
@@ -59,7 +59,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn Task2>> {
+    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn Task>> {
         if self.current.contains(&handle.1) {
            self.tasks[handle.0].as_mut()
         } else {
@@ -76,7 +76,7 @@ mod test {
     use super::*;
 
     struct FakeTask(i8);
-    impl Task2 for FakeTask {
+    impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
     }

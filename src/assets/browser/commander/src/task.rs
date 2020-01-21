@@ -8,20 +8,20 @@ use crate::taskhandle::TaskHandle;
  * future and taskhandle: the heavy-lifting is all done in the TaskContext.
  */
 
-pub(crate) struct Task2Impl<R> {
+pub(crate) struct TaskImpl<R> {
     future: Pin<Box<dyn Future<Output=R>>>,
     handle: TaskHandle<R>,
     task_context: TaskContext
 }
 
-pub(crate) trait Task2 {
+pub(crate) trait Task {
     fn run(&mut self, tick_index: u64);
     fn get_priority(&self) -> i8;
 }
 
-impl<R> Task2Impl<R> {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut TaskContext) -> Task2Impl<R> {
-        Task2Impl {
+impl<R> TaskImpl<R> {
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut TaskContext) -> TaskImpl<R> {
+        TaskImpl {
             future,
             handle: TaskHandle::new(task_context),
             task_context: task_context.clone()
@@ -33,7 +33,7 @@ impl<R> Task2Impl<R> {
     }
 }
 
-impl<R> Task2 for Task2Impl<R> {
+impl<R> Task for TaskImpl<R> {
     fn get_priority(&self) -> i8 { self.task_context.get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {
@@ -75,7 +75,7 @@ mod test {
             ctx.tick(0).await;
         });
         let mut tc2 = tc.clone();
-        let mut t = Task2Impl::new(s1,&mut tc2);
+        let mut t = TaskImpl::new(s1,&mut tc2);
         /* simple accessors */
         assert_eq!(3,t.get_priority());
         /* simple running to completion */
