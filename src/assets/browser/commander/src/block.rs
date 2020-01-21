@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use futures::task::{ ArcWake, Context, waker_ref };
+use futures::task::ArcWake;
 
 use crate::blocker::Blocker;
 

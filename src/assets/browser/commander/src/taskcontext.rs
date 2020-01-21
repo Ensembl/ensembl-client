@@ -8,6 +8,7 @@ use crate::executoraction::{ AnonExecutorAction, ExecutorActionHandle, ExecutorA
 use crate::integration::ReenteringIntegration;
 use crate::step::{ KillReason, RunConfig };
 use crate::taskcontainer::TaskContainerHandle;
+use crate::turnstile::TurnstileFuture;
 use crate::oneshot::OneShot;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
@@ -45,12 +46,10 @@ impl TaskContext {
         out
     }
 
-    pub(crate) fn push_block(&mut self) -> Block {
-        let out = Block::new(&self.blocker);
+    pub(crate) fn push_block(&mut self, new: &Block) {
         let last = self.blocks.len()-1;
-        self.blocks[last].add(&out);
-        self.blocks.push(out.clone());
-        out
+        self.blocks[last].add(&new);
+        self.blocks.push(new.clone());
     }
 
     pub(crate) fn pop_block(&mut self) {
@@ -140,6 +139,10 @@ impl TaskContext {
             future2.flag();
         });
         future
+    }
+
+    pub fn turnstile<R,T>(&self, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send, R: Send {
+        TurnstileFuture::new(&self,inner)
     }
 
     pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>+Send+Sync>>, tick_index: u64) -> Option<R> {
