@@ -9,10 +9,10 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { SimpleSelectedSpecies } from 'src/shared/components/selected-species';
 
-import styles from './HomepageSpeciesBar.scss';
-
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
+import styles from './HomepageSpeciesBar.scss';
 
 type Props = {
   species: CommittedItem[];

@@ -21,11 +21,11 @@ import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg'
 import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
 
-import styles from './HomepageAppLinks.scss';
-
 import { RootState } from 'src/store';
 import { Status } from 'src/shared/types/status';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
+import styles from './HomepageAppLinks.scss';
 
 type Props = {
   species: CommittedItem[];
