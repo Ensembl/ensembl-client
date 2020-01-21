@@ -36,7 +36,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('allow multiple', () => {
+  .add('allow opening of multiple items', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion allowMultipleExpanded={true}>
@@ -60,7 +60,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('pre-expanded Item', () => {
+  .add('pre-expanded item', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion allowMultipleExpanded={true} preExpanded={[1]}>
@@ -113,7 +113,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('bottom right', () => {
+  .add('positioned to bottom right', () => {
     return (
       <div className={styles.accordionBottomRight}>
         <Accordion allowMultipleExpanded={true}>
@@ -161,7 +161,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('entity viewer', () => {
+  .add('with disabled items', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion className={styles.entityViewerAccordion}>
