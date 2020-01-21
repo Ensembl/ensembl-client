@@ -8,7 +8,6 @@
     width: 100%;
     height: 100%;
     transition: opacity 0.4s;
-    -webkit-transition: opacity 0.4s;
   }
 
   button {
@@ -18,7 +17,6 @@
 }
 
 .default {
-  cursor: pointer;
   svg {
     fill: $dark-blue;
   }
@@ -44,9 +42,11 @@
 }
 
 .disabled {
-  cursor: not-allowed !important;
   svg {
     fill: $grey;
     opacity: 1;
+  }
+  button {
+    cursor: default;
   }
 }
