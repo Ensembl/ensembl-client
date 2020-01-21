@@ -76,7 +76,7 @@ describe('AccordionItemButton', () => {
   });
 
   describe('disabled prop', () => {
-    it('applies the accordionButtonDefaultDisabled className', () => {
+    it('applies the accordionButtonDisabled className', () => {
       const wrapper = mount(
         <Accordion>
           <AccordionItem>
@@ -89,7 +89,7 @@ describe('AccordionItemButton', () => {
         </Accordion>
       );
 
-      expect(wrapper.find('.accordionButtonDefaultDisabled')).toHaveLength(1);
+      expect(wrapper.find('.accordionButtonDisabled')).toHaveLength(1);
     });
   });
 });

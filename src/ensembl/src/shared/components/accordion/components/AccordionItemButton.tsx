@@ -28,7 +28,7 @@ export const AccordionItemButton = (props: Props) => {
   if (extendDefaultStyles) {
     styles = classNames(
       defaultStyles.accordionButtonDefault,
-      { [defaultStyles.accordionButtonDefaultDisabled]: props.disabled },
+      { [defaultStyles.accordionButtonDisabled]: props.disabled },
       className
     );
   }
