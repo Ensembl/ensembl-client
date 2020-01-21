@@ -76,7 +76,7 @@ mod test {
             self.0.lock().unwrap().called
         }
 
-        fn reset_called(&mut self) {
+        fn reset(&mut self) {
             self.0.lock().unwrap().called = false;
         }
 
@@ -100,19 +100,18 @@ mod test {
     }
 
     #[test]
-    pub fn test_turnstile() {
+    pub fn test_turnstile_smoke() {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
-        let left = TurnstileTestBranch::new();
-        let right = TurnstileTestBranch::new();
+        let mut left = TurnstileTestBranch::new();
+        let mut right = TurnstileTestBranch::new();
         let left2 = left.clone();
         let right2 = right.clone();
         let step = async move {
-            future::join(left2,right2).await;
-            //future::join(ctx2.turnstile(left2),ctx2.turnstile(right2)).await;
+            future::join(ctx2.turnstile(left2),ctx2.turnstile(right2)).await;
         };
         x.add(step,ctx);
         assert!(!left.was_called());
@@ -120,8 +119,30 @@ mod test {
         x.tick(10.);
         assert!(left.was_called());
         assert!(right.was_called());
+        left.reset();
+        right.reset();
+        x.tick(10.);
+        assert!(!left.was_called());
+        assert!(!right.was_called());
+        left.flag();
+        x.tick(10.);
+        assert!(left.was_called());
+        assert!(!right.was_called());
+        left.reset();
+        right.flag();
+        x.tick(10.);
+        assert!(!left.was_called());
+        assert!(right.was_called());
+        right.reset();
+        left.flag();
+        right.flag();
         x.tick(10.);
         assert!(left.was_called());
         assert!(right.was_called());
+        left.reset();
+        right.reset();
+        x.tick(10.);
+        assert!(!left.was_called());
+        assert!(!right.was_called());
     }
 }

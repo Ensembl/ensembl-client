@@ -13,9 +13,10 @@ use crate::oneshot::OneShot;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
 
+// XXX Arc to state obj
 #[derive(Clone)]
 pub struct TaskContext {
-    blocks: Vec<Block>,
+    blocks: Arc<Mutex<Vec<Block>>>,
     integration: ReenteringIntegration,
     config: RunConfig,
     tick_index: Arc<Mutex<u64>>,
@@ -33,7 +34,7 @@ impl TaskContext {
         let action_handle = action_handle.new_task();
         let blocker = Blocker::new(integration,&action_handle);
         let out = TaskContext {
-            blocks: Vec::new(),
+            blocks: Arc::new(Mutex::new(Vec::new())),
             config: config.clone(),
             finished: Arc::new(Mutex::new(false)),
             kill_reason: Arc::new(Mutex::new(None)),
@@ -47,13 +48,14 @@ impl TaskContext {
     }
 
     pub(crate) fn push_block(&mut self, new: &Block) {
-        let last = self.blocks.len()-1;
-        self.blocks[last].add(&new);
-        self.blocks.push(new.clone());
+        let mut blocks = self.blocks.lock().unwrap();
+        let last = blocks.len()-1;
+        blocks[last].add(&new);
+        blocks.push(new.clone());
     }
 
     pub(crate) fn pop_block(&mut self) {
-        self.blocks.pop();
+        self.blocks.lock().unwrap().pop();
     }
 
     pub fn get_name(&self) -> &str {
@@ -145,27 +147,25 @@ impl TaskContext {
         TurnstileFuture::new(&self,inner)
     }
 
-    pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>+Send+Sync>>, tick_index: u64) -> Option<R> {
+    pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64) -> Option<R> {
         /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
         if self.is_finished() { 
             return None;
         }
-        self.blocks = vec![Block::new(&self.blocker)];
+        *self.blocks.lock().unwrap() = vec![Block::new(&self.blocker)];
         /* prepare tick index, blocker */
         *self.tick_index.lock().unwrap() = tick_index;
         /* run */
-        let waker = self.blocks[0].future_waker();
+        let waker = self.blocks.lock().unwrap()[0].future_waker();
         match future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
             Poll::Pending => {
                 /* blocked so note that (for next call) and tell blocker to notify executor */
-                self.blocker.block_task(&self.blocks[0]);
-                self.blocks.clear();
+                self.blocker.block_task(&self.blocks.lock().unwrap()[0]);
                 return None;
 
             },
             Poll::Ready(v) => {
                 self.finish_internal(None);
-                self.blocks.clear();
                 return Some(v);
             }
         };

@@ -43,7 +43,7 @@ impl Executor {
         TaskContext::new(run_config,&self.actions,&self.integration,name)
     }
 
-    pub fn add<R,T>(&mut self, run: T, mut context: TaskContext) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+Send+Sync+'static {
+    pub fn add<R,T>(&mut self, run: T, mut context: TaskContext) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);

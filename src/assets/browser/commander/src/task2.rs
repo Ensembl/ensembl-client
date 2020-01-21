@@ -9,7 +9,7 @@ use crate::taskhandle::TaskHandle;
  */
 
 pub(crate) struct Task2Impl<R> {
-    future: Pin<Box<dyn Future<Output=R> + Send+Sync>>,
+    future: Pin<Box<dyn Future<Output=R>>>,
     handle: TaskHandle<R>,
     task_context: TaskContext
 }
@@ -20,7 +20,7 @@ pub(crate) trait Task2 {
 }
 
 impl<R> Task2Impl<R> {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>+Send+Sync>>, task_context: &mut TaskContext) -> Task2Impl<R> {
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut TaskContext) -> Task2Impl<R> {
         Task2Impl {
             future,
             handle: TaskHandle::new(task_context),
