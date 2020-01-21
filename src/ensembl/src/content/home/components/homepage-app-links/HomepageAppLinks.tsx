@@ -84,9 +84,11 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
     [styles.homepageAppLinksRowExpanded]: isExpanded
   });
 
+  const onNameClick = isExpanded ? null : { onClick: toggleExpand };
+
   const speciesName = (
     <div className={styles.speciesNameColumn}>
-      <span className={styles.speciesName} onClick={toggleExpand}>
+      <span className={styles.speciesName} {...onNameClick}>
         {species.common_name || species.scientific_name}
       </span>
       <span className={styles.assemblyName}>{species.assembly_name}</span>
