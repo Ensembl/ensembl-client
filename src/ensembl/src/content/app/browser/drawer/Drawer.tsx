@@ -49,7 +49,7 @@ export const Drawer = (props: DrawerProps) => {
         return <DrawerContigs />;
       case 'track:gc':
         return <DrawerGC />;
-      case 'snps-and-indels':
+      case 'track:variant':
         return <SnpIndels />;
       case 'bookmarks':
         return <DrawerBookmarks />;
