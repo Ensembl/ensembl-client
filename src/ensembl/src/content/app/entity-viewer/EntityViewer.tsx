@@ -13,6 +13,7 @@ import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
+import EntityViewerSidebarTabs from 'src/content/app/entity-viewer/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
 
 import styles from './EntityViewer.scss';
@@ -49,7 +50,7 @@ const EntityViewer = (props: Props) => {
         <StandardAppLayout
           mainContent={<div>Main content is coming...</div>}
           sidebarContent={<div>Sidebar content is coming...</div>}
-          sidebarNavigation={<div>Sidebar navigation goes here</div>}
+          sidebarNavigation={<EntityViewerSidebarTabs />}
           topbarContent={<div>Entity info summary goes here</div>}
           isSidebarOpen={isSidebarOpen}
           onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)}
