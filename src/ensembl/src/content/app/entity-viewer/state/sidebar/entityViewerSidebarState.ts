@@ -3,10 +3,22 @@ export enum SidebarTabName {
   PUBLICATIONS = 'publications'
 }
 
-export type EntityViewerSidebarState = Readonly<{
+export type EntityViewerSidebarState = {
+  [genomeId: string]: EntityViewerSidebarStateForGenome;
+};
+
+export type EntityViewerSidebarStateForGenome = Readonly<{
+  isOpen: boolean;
   activeTabName: SidebarTabName;
 }>;
 
-export const initialState: EntityViewerSidebarState = {
-  activeTabName: SidebarTabName.OVERVIEW
-};
+export const buildInitialStateForGenome = (
+  genomeId: string
+): EntityViewerSidebarState => ({
+  [genomeId]: {
+    isOpen: true,
+    activeTabName: SidebarTabName.OVERVIEW
+  }
+});
+
+export const initialState: EntityViewerSidebarState = {};
