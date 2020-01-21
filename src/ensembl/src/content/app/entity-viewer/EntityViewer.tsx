@@ -7,10 +7,10 @@ import * as urlHelper from 'src/shared/helpers/urlHelper';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { getExampleGenes } from 'src/shared/state/ens-object/ensObjectSelectors';
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerSelectors';
+import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { setDataFromUrl } from 'src/content/app/entity-viewer/state/entityViewerActions';
+import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';

@@ -1,4 +1,4 @@
 import { RootState } from 'src/store';
 
 export const getEntityViewerActiveGenomeId = (state: RootState) =>
-  state.entityViewer.activeGenomeId;
+  state.entityViewer.general.activeGenomeId;
