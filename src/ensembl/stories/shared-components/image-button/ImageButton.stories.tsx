@@ -3,7 +3,9 @@ import { storiesOf } from '@storybook/react';
 
 import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
 
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/components/image-button/ImageButton';
 import { Status } from 'src/shared/types/status';
 
 import classNames from 'classnames';
@@ -22,17 +24,16 @@ const icon = {
 };
 
 trackPanelButtonStories.add(icon.imageName, () => {
-  const [buttonStatus, setVisible] = useState(Status.DEFAULT);
-  const computedStyles = { ...styles };
+  const [buttonStatus, setButtonStatus] = useState(Status.DEFAULT);
 
   const toggleImage = () => {
     switch (buttonStatus) {
       case Status.DEFAULT:
-        return setVisible(Status.UNSELECTED);
+        return setButtonStatus(Status.UNSELECTED);
       case Status.UNSELECTED:
-        return setVisible(Status.SELECTED);
+        return setButtonStatus(Status.SELECTED);
       default:
-        return setVisible(Status.DEFAULT);
+        return setButtonStatus(Status.DEFAULT);
     }
   };
   return (
@@ -41,10 +42,9 @@ trackPanelButtonStories.add(icon.imageName, () => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={buttonStatus}
+              buttonStatus={buttonStatus as ImageButtonStatus}
               description={'enable/disable'}
               image={icon.image}
-              classNames={computedStyles}
               onClick={toggleImage}
             />
           </div>
@@ -75,7 +75,6 @@ trackPanelButtonStories.add(icon.imageName, () => {
               buttonStatus={Status.UNSELECTED}
               description={'enable/disable'}
               image={icon.image}
-              classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
@@ -89,7 +88,6 @@ trackPanelButtonStories.add(icon.imageName, () => {
               buttonStatus={Status.SELECTED}
               description={'enable/disable'}
               image={icon.image}
-              classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>
@@ -103,7 +101,6 @@ trackPanelButtonStories.add(icon.imageName, () => {
               buttonStatus={Status.DISABLED}
               description={'enable/disable'}
               image={icon.image}
-              classNames={computedStyles}
             />
           </div>
           <div className={classNames(styles.imageDescription)}>

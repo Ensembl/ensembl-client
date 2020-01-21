@@ -73,15 +73,15 @@ describe('<ImageButton />', () => {
 
   describe('prop classNames', () => {
     it('always has the default className applied', () => {
-      const wrapper = mount(<ImageButton buttonStatus={Status.DEFAULT} />);
+      const wrapper = mount(<ImageButton buttonStatus={Status.SELECTED} />);
 
-      expect(wrapper.find(ImageHolder).find('div.default')).toHaveLength(1);
+      expect(wrapper.find(ImageHolder).find('.default')).toHaveLength(1);
     });
 
     it('applies the respective className depending on the button status', () => {
       const wrapper = mount(<ImageButton buttonStatus={Status.SELECTED} />);
 
-      expect(wrapper.find(ImageHolder).find('div.selected')).toHaveLength(1);
+      expect(wrapper.find(ImageHolder).find('.selected')).toHaveLength(1);
     });
   });
 

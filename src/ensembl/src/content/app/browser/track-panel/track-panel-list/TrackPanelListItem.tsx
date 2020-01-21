@@ -8,6 +8,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
 import {
   TrackItemColour,
@@ -35,7 +36,6 @@ import {
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
-import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
 import styles from './TrackPanelListItem.scss';
@@ -216,22 +216,17 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={Status.UNSELECTED}
+            buttonStatus={Status.DEFAULT}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}
           />
         </div>
         <div className={styles.eyeHolder}>
-          <ImageButton
+          <VisibilityIcon
             buttonStatus={trackStatus}
             description={'enable/disable track'}
             onClick={toggleTrack}
-            image={Eye}
-            classNames={{
-              selected: styles.selected,
-              unselected: styles.unselected
-            }}
           />
         </div>
       </dd>

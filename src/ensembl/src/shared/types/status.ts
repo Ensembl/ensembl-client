@@ -11,6 +11,6 @@ export enum Status {
   DEFAULT = 'default',
   SELECTED = 'selected',
   UNSELECTED = 'unselected',
-  PARTIALLY_SELECTED = 'partiallySelected',
-  DISABLED = 'disabled'
+  DISABLED = 'disabled',
+  PARTIALLY_SELECTED = 'partially selected'
 }

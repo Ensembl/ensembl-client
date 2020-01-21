@@ -1,0 +1,61 @@
+@import 'src/styles/common';
+
+.default {
+  svg {
+    fill: $dark-blue;
+  }
+}
+.selected {
+  svg {
+    fill: $dark-blue;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.unselected {
+  svg {
+    fill: $grey;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.disabled {
+  cursor: not-allowed;
+  svg {
+    fill: $grey !important;
+    opacity: 1;
+  }
+  &:before {
+    position: absolute;
+    content: '';
+    top: 50%;
+    border-color: #2c343a;
+    margin-top: -1px;
+    border-top: 2px solid red;
+    transform: rotate(-45deg);
+    width: 100%;
+  }
+  &:after {
+    position: absolute;
+    content: '';
+    left: 0px;
+    border-color: #2c343a;
+    border: 2px solid red;
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.partiallySelected {
+  svg {
+    fill: $dark-blue;
+    [class*='rightHalf'] {
+      fill: $grey;
+    }
+  }
+}

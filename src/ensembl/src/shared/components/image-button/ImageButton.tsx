@@ -11,11 +11,10 @@ import imageButtonStyles from './ImageButton.scss';
 
 import { Status } from 'src/shared/types/status';
 
-type ImageButtonStatus =
+export type ImageButtonStatus =
   | Status.DEFAULT
   | Status.SELECTED
   | Status.UNSELECTED
-  | Status.PARTIALLY_SELECTED
   | Status.DISABLED;
 
 type Props = {
