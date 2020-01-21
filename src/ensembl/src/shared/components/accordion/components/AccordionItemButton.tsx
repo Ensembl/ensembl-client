@@ -52,11 +52,9 @@ type WrapperProps = { disabled?: boolean } & Pick<
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
 >;
 
-const AccordionItemButtonWrapper: React.SFC<WrapperProps> = (
-  props: WrapperProps
-): JSX.Element => (
+const AccordionItemButtonWrapper = (props: WrapperProps) => (
   <ItemConsumer>
-    {(itemContext: ItemContext): JSX.Element => {
+    {(itemContext: ItemContext) => {
       const { toggleExpanded, buttonAttributes } = itemContext;
 
       return (
