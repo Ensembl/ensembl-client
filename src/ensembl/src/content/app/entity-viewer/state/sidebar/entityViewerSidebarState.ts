@@ -3,9 +3,9 @@ export enum SidebarTabName {
   PUBLICATIONS = 'publications'
 }
 
-export type EntityViewerSidebarState = {
+export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarStateForGenome;
-};
+}>;
 
 export type EntityViewerSidebarStateForGenome = Readonly<{
   isOpen: boolean;

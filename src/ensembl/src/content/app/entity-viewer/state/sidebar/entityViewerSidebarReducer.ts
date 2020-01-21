@@ -9,9 +9,15 @@ import {
   EntityViewerSidebarState
 } from './entityViewerSidebarState';
 
+// type EntityViewerSidebarReducer = (
+//   state: EntityViewerSidebarState,
+//   action: ActionType<typeof actions | typeof generalActions>
+// ) => EntityViewerSidebarState;
+// const entityViewerSidebarReducer: EntityViewerSidebarReducer = (
+
 export default function entityViewerSidebarReducer(
   state: EntityViewerSidebarState = initialState,
-  action: ActionType<typeof actions | typeof generalActions.setActiveGenomeId>
+  action: ActionType<typeof actions | typeof generalActions>
 ) {
   switch (action.type) {
     case getType(generalActions.setActiveGenomeId):
@@ -21,10 +27,12 @@ export default function entityViewerSidebarReducer(
             ...state,
             ...buildInitialStateForGenome(action.payload)
           };
-    case getType(actions.setSidebarTabName): {
+    case getType(actions.updateSidebar): {
+      const oldStateFragment = state[action.payload.genomeId];
+      const newStateFragment = { ...oldStateFragment, ...action.payload.data };
       return {
         ...state,
-        activeTabName: action.payload
+        [action.payload.genomeId]: newStateFragment
       };
     }
     default:

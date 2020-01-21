@@ -12,11 +12,15 @@ import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/enti
 import { RootState } from 'src/store';
 
 type Props = {
-  activeTabName: SidebarTabName;
+  activeTabName: SidebarTabName | null;
   setSidebarTabName: (name: SidebarTabName) => void;
 };
 
 const EntityViewerSidebarTabs = (props: Props) => {
+  if (!props.activeTabName) {
+    return null;
+  }
+
   const handleTabChange = (name: SidebarTabName) => {
     props.setSidebarTabName(name);
   };
