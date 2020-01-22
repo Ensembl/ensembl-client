@@ -9,12 +9,6 @@ import {
   EntityViewerSidebarState
 } from './entityViewerSidebarState';
 
-// type EntityViewerSidebarReducer = (
-//   state: EntityViewerSidebarState,
-//   action: ActionType<typeof actions | typeof generalActions>
-// ) => EntityViewerSidebarState;
-// const entityViewerSidebarReducer: EntityViewerSidebarReducer = (
-
 export default function entityViewerSidebarReducer(
   state: EntityViewerSidebarState = initialState,
   action: ActionType<typeof actions | typeof generalActions>

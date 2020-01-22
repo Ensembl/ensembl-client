@@ -3,8 +3,6 @@
 .tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  // display: flex;
-  // justify-content: space-around;
 }
 
 .tab {
