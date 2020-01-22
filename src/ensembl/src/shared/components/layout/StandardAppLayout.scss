@@ -19,14 +19,14 @@ $drawerWindowWidth: 45px;
   width: 100%;
   z-index: 5;
 
-  &_withsidebarNavigation {
+  &_withSidebarNavigation {
     display: grid;
     align-items: center;
     grid-template-columns: 1fr $sidebarContentWidth;
     grid-column-gap: $sidebarToolstripWidth;
   }
 
-  &_withoutsidebarNavigation {
+  &_withoutSidebarNavigation {
     display: flex;
     align-items: center;
 
