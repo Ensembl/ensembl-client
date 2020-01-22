@@ -8,7 +8,7 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import styles from './Layout.stories.scss';
 
-const TopBarContent = () => (
+const TopbarContent = () => (
   <div className={styles.topbarContent}>This is top bar content</div>
 );
 
@@ -71,7 +71,7 @@ const Wrapper = (props: {
     <div className={styles.wrapper}>
       <StandardAppLayout
         mainContent={<MainContent />}
-        topbarContent={<TopBarContent />}
+        topbarContent={<TopbarContent />}
         sidebarContent={props.sidebarContent}
         sidebarNavigation={sidebarNavigation}
         sidebarToolstripContent={<SidebarToolstripContent />}

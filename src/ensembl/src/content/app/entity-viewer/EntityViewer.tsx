@@ -83,7 +83,7 @@ const ExampleLinks = (props: Props) => {
 
   return (
     <div>
-      <div className={styles.exampleLinks__emptyTopBar} />
+      <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>{links}</div>
     </div>
   );
