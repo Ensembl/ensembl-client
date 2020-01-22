@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { Status } from 'src/shared/types/status';
-import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
 import {
   getIsTrackPanelModalOpened,
   getIsTrackPanelOpened,
@@ -16,6 +15,13 @@ import {
   closeTrackPanelModal,
   openTrackPanelModal
 } from '../trackPanelActions';
+
+import { ReactComponent as searchIcon } from 'static/img/sidebar/search.svg';
+import { ReactComponent as tracksManagerIcon } from 'static/img/sidebar/tracks-manager.svg';
+import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
+import { ReactComponent as personalDataIcon } from 'static/img/sidebar/own-data.svg';
+import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
+import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
 
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
@@ -29,20 +35,20 @@ export type TrackPanelBarProps = {
 };
 
 export const TrackPanelBar = (props: TrackPanelBarProps) => {
-  const toggleModalView = (iconConfig: TrackPanelBarItem) => {
+  const toggleModalView = (selectedItem: string) => {
     if (!props.isTrackPanelOpened) {
       props.toggleTrackPanel(true);
     }
 
-    if (iconConfig.name === props.trackPanelModalView) {
+    if (selectedItem === props.trackPanelModalView) {
       props.closeTrackPanelModal();
     } else {
-      props.openTrackPanelModal(iconConfig.name);
+      props.openTrackPanelModal(selectedItem);
     }
   };
 
-  const getViewIconStatus = (iconConfig: TrackPanelBarItem) => {
-    return iconConfig.name === props.trackPanelModalView &&
+  const getViewIconStatus = (selectedItem: string) => {
+    return selectedItem === props.trackPanelModalView &&
       props.isTrackPanelOpened
       ? Status.HIGHLIGHTED
       : Status.ACTIVE;
@@ -50,16 +56,54 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
 
   return (
     <>
-      {trackPanelBarConfig.map((item: TrackPanelBarItem) => (
-        <div className={styles.sidebarIcon} key={item.name}>
-          <ImageButton
-            buttonStatus={getViewIconStatus(item)}
-            description={item.description}
-            onClick={() => toggleModalView(item)}
-            image={item.icon}
-          />
-        </div>
-      ))}
+      <div className={styles.sidebarIcon} key="search">
+        <ImageButton
+          buttonStatus={getViewIconStatus('search')}
+          description="Track search"
+          onClick={() => toggleModalView('search')}
+          image={searchIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="tracks-manager">
+        <ImageButton
+          buttonStatus={getViewIconStatus('tracks-manager')}
+          description="Tracks manager"
+          onClick={() => toggleModalView('tracks-manager')}
+          image={tracksManagerIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="bookmarks">
+        <ImageButton
+          buttonStatus={getViewIconStatus('bookmarks')}
+          description="Bookmarks"
+          onClick={() => toggleModalView('bookmarks')}
+          image={bookmarkIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="personal-data">
+        <ImageButton
+          buttonStatus={getViewIconStatus('personal-data')}
+          description="Personal data"
+          onClick={() => toggleModalView('personal-data')}
+          image={personalDataIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="share">
+        <ImageButton
+          buttonStatus={getViewIconStatus('share')}
+          description="Share"
+          onClick={() => toggleModalView('share')}
+          image={shareIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="downloads">
+        <ImageButton
+          buttonStatus={getViewIconStatus('downloads')}
+          description="Downloads"
+          onClick={() => toggleModalView('downloads')}
+          image={downloadIcon}
+        />
+      </div>
     </>
   );
 };

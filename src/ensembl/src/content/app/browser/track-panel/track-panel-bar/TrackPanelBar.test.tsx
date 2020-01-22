@@ -4,8 +4,6 @@ import { mount } from 'enzyme';
 import { TrackPanelBar, TrackPanelBarProps } from './TrackPanelBar';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { trackPanelBarConfig } from './trackPanelBarConfig';
-
 describe('<TrackPanelBar />', () => {
   afterEach(() => {
     jest.resetAllMocks();
@@ -23,7 +21,7 @@ describe('<TrackPanelBar />', () => {
   describe('rendering', () => {
     test('displays all track panel bar icons', () => {
       const wrapper = mount(<TrackPanelBar {...defaultProps} />);
-      expect(wrapper.find(ImageButton).length).toBe(trackPanelBarConfig.length);
+      expect(wrapper.find(ImageButton).length).toBe(6);
     });
   });
 });
