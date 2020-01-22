@@ -1,16 +1,23 @@
+/* A block agent is delegated the task of requesting blocking and unblocking
+ * from the executor. This could be handled directly in Agent EXCEPT it is
+ * also needed in individual Blocks to implement unblock. Agents are too scary
+ * and complex to directly reference insidea Block so just this functionality
+ * is spun out of Agent to allow Block to call it directly.
+ */
+
 use crate::block::Block;
 use crate::executoraction::{ AnonExecutorAction, ExecutorActionTaskHandle };
 use crate::integration::ReenteringIntegration;
 
 #[derive(Clone)]
-pub(crate) struct Blocker {
+pub(crate) struct BlockAgent {
     integration: ReenteringIntegration,
     action_handle: ExecutorActionTaskHandle
 }
 
-impl Blocker {
-    pub fn new(integration: &ReenteringIntegration, action_handle: &ExecutorActionTaskHandle) -> Blocker {
-        Blocker {
+impl BlockAgent {
+    pub fn new(integration: &ReenteringIntegration, action_handle: &ExecutorActionTaskHandle) -> BlockAgent {
+        BlockAgent {
             integration: integration.clone(),
             action_handle: action_handle.clone()
         }

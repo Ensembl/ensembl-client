@@ -1,7 +1,6 @@
 mod block;
-mod blocker;
-mod taskcontext;
-mod edgetrigger;
+mod blockagent;
+mod agent;
 mod executor;
 mod executoraction;
 mod integration;

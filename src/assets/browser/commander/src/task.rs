@@ -1,17 +1,17 @@
 use std::pin::Pin;
 use std::future::Future;
-use crate::taskcontext::TaskContext;
+use crate::agent::Agent;
 use crate::taskhandle::TaskHandle;
 
 /* The trait serves to scrub the task of its polymorphism from the PoV of the executor.
  * The whole struct exists only to encapsulate that polymorphism here by holding the
- * future and taskhandle: the heavy-lifting is all done in the TaskContext.
+ * future and taskhandle: the heavy-lifting is all done in the Agent.
  */
 
 pub(crate) struct TaskImpl<R> {
     future: Pin<Box<dyn Future<Output=R>>>,
     handle: TaskHandle<R>,
-    task_context: TaskContext
+    task_context: Agent
 }
 
 pub(crate) trait Task {
@@ -20,7 +20,7 @@ pub(crate) trait Task {
 }
 
 impl<R> TaskImpl<R> {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut TaskContext) -> TaskImpl<R> {
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut Agent) -> TaskImpl<R> {
         TaskImpl {
             future,
             handle: TaskHandle::new(task_context),
@@ -65,7 +65,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let mut integration = TestIntegration::new();
-        let mut tc = TaskContext::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
+        let mut tc = Agent::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
         tc.register(&h);
         let ctx = tc.clone();
         let s1 = Box::pin(async move {

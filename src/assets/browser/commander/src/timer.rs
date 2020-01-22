@@ -1,10 +1,9 @@
 use std::collections::BTreeMap;
 use std::fmt::Debug;
 use std::sync::{ Arc, Mutex };
-use crate::edgetrigger::EdgeTrigger;
 
 struct Timeout<S> {
-    trigger: EdgeTrigger<'static>,
+    callback: Box<dyn FnMut() + 'static + Send>,
     state: S
 }
 
@@ -20,11 +19,10 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone+Debug { // XXX not debug
     }
 
     fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
-        let trigger = EdgeTrigger::new(callback);
         self.timeouts.entry(timeout).or_insert_with(|| {
             Vec::new()
         }).push(Timeout {
-            trigger,
+            callback: Box::new(callback),
             state
         });
     }
@@ -59,7 +57,7 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone+Debug { // XXX not debug
             if min > now { break; }
             if let Some(mut timeouts) = self.timeouts.remove(&min) {
                 for timeout in timeouts.iter_mut() {
-                    timeout.trigger.set();
+                    (timeout.callback)();
                 }
             }
         }
@@ -99,7 +97,6 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone + Debug { // XXX Debug
 mod test {
     use std::sync::{ Arc, Mutex };
     use ordered_float::OrderedFloat;
-    use crate::edgetrigger::EdgeTrigger;
     use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
     use crate::task::Task;
     use super::*;

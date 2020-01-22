@@ -3,17 +3,17 @@ use std::future::Future;
 use std::task::{ Context, Poll };
 
 use crate::block::Block;
-use crate::taskcontext::TaskContext;
+use crate::agent::Agent;
 use futures::task::waker_ref;
 
 pub struct TurnstileFuture<R> {
-    context: TaskContext,
+    context: Agent,
     inner: Pin<Box<dyn Future<Output=R>>>,
     block: Option<Block>
 }
 
 impl<R> TurnstileFuture<R> where R: Send {
-    pub(crate) fn new<T>(context: &TaskContext, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send {
+    pub(crate) fn new<T>(context: &Agent, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send {
         TurnstileFuture {
             inner: Box::pin(inner),
             context: context.clone(),

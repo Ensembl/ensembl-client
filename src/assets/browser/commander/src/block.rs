@@ -1,19 +1,27 @@
+/* Blocks are unblocked in two stages. An unblock can bre REQUESTED from anywhere, asynchronously.
+ * The unblock only actually occurs, though, when the executor spots that request. That ensures
+ * that no changes of state to block can race tast execution.
+ */
+
 use std::sync::{ Arc, Mutex };
 use futures::task::ArcWake;
 
-use crate::blocker::Blocker;
-
+use crate::blockagent::BlockAgent;
 
 lazy_static! {
     static ref IDENTITY : Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
 }
 
+struct BlockState {
+    blocked: bool,
+    request_sent: bool,
+    downstream: Vec<Block>
+}
+
 #[derive(Clone)]
 pub struct Block {
-    blocked: Arc<Mutex<bool>>,
-    request_sent: Arc<Mutex<bool>>,
-    downstream: Arc<Mutex<Vec<Block>>>,
-    blocker: Blocker,
+    state: Arc<Mutex<BlockState>>,
+    blocker: BlockAgent,
     identity: u64
 }
 
@@ -32,14 +40,16 @@ impl ArcWake for StepWaker {
 }
 
 impl Block {
-    pub(crate) fn new(blocker: &Blocker) -> Block {
+    pub(crate) fn new(blocker: &BlockAgent) -> Block {
         let mut identity_source = IDENTITY.lock().unwrap();
         let identity = *identity_source;
         *identity_source += 1;
         Block {
-            blocked: Arc::new(Mutex::new(true)),
-            request_sent: Arc::new(Mutex::new(false)),
-            downstream: Arc::new(Mutex::new(vec![])),
+            state: Arc::new(Mutex::new(BlockState {
+                blocked: true,
+                request_sent: false,
+                downstream: Vec::new()
+            })),
             blocker: blocker.clone(),
             identity
         }
@@ -49,32 +59,33 @@ impl Block {
         Arc::new(StepWaker(Mutex::new(self.clone())))
     }
 
-    pub fn add(&mut self, upstream: &Block) {
-        upstream.downstream.lock().unwrap().push(self.clone());
+    pub fn add(&self, upstream: &Block) {
+        upstream.state.lock().unwrap().downstream.push(self.clone());
     }
 
     /* This is the one called asynchronously. It creates an unblock EA */
     pub fn unblock(&self) {
-        *self.request_sent.lock().unwrap() = true;
+        self.state.lock().unwrap().request_sent = true;
         self.blocker.unblock_task(self);
     }
 
     /* This one is then called by the executor from an EA handler */
-    pub(crate) fn unblock_real(&mut self) {
-        *self.blocked.lock().unwrap() = false;
-        for other in self.downstream.lock().unwrap().iter_mut() {
+    pub(crate) fn unblock_real(&self) {
+        let mut state = self.state.lock().unwrap();
+        state.blocked = false;
+        for other in state.downstream.iter_mut() {
             other.unblock_real();
         }
     }
 
-    /* Controls execution of step (set from unblock_steps) */
+    /* Are we actually blocked (set from unblock_real) */
     pub(crate) fn step_blocked(&self) -> bool {
-        *self.blocked.lock().unwrap()
+        self.state.lock().unwrap().blocked
     }
 
     /* Checked to ensure race avoidance*/
     pub(crate) fn unblock_was_sent(&self) -> bool {
-        *self.request_sent.lock().unwrap()
+        self.state.lock().unwrap().request_sent
     }
 }
 
@@ -98,7 +109,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let eah = eah.new_task();
         eah.register(&h);
-        let unblocker = Blocker::new(&integration,&eah);
+        let unblocker = BlockAgent::new(&integration,&eah);
         let mut b1 = Block::new(&unblocker);
         let mut b2 = Block::new(&unblocker);
         b1.add(&b2);

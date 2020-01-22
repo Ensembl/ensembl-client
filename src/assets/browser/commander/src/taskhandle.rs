@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
-use crate::taskcontext::TaskContext;
+use crate::agent::Agent;
 
 #[derive(Clone,PartialEq,Eq)]
 pub enum KillReason { // XXX test it
@@ -17,7 +17,7 @@ pub enum TaskResult {
 }
 
 pub struct TaskHandleState<R> {
-    context: TaskContext,
+    context: Agent,
     result: Option<R>,
     done: bool
 }
@@ -32,7 +32,7 @@ impl<R> Clone for TaskHandle<R> {
 }
 
 impl<R> TaskHandle<R> {
-    pub(crate) fn new(context: &TaskContext) -> TaskHandle<R> {
+    pub(crate) fn new(context: &Agent) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState{
             context: context.clone(),
             result: None,
@@ -42,7 +42,7 @@ impl<R> TaskHandle<R> {
 
     /* some tests need direct access to context to simulate events */
     #[cfg(test)]
-    pub(crate) fn get_context(&mut self) -> MutexGuardRefMut<TaskHandleState<R>,TaskContext> {
+    pub(crate) fn get_context(&mut self) -> MutexGuardRefMut<TaskHandleState<R>,Agent> {
         MutexGuardRefMut::new(self.0.lock().unwrap()).map_mut(|x| &mut x.context)
     }
 

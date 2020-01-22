@@ -7,7 +7,7 @@ use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQua
 use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::timer::TimerSet;
 use crate::runnable::Runnable;
-use crate::taskcontext::TaskContext;
+use crate::agent::Agent;
 use crate::step::RunConfig;
 use crate::task::TaskImpl;
 use crate::taskhandle::{ TaskHandle, KillReason };
@@ -39,11 +39,11 @@ impl Executor {
 
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
-    pub fn make_context(&self, run_config: &RunConfig, name: &str) -> TaskContext {
-        TaskContext::new(run_config,&self.actions,&self.integration,name)
+    pub fn make_context(&self, run_config: &RunConfig, name: &str) -> Agent {
+        Agent::new(run_config,&self.actions,&self.integration,name)
     }
 
-    pub fn add<R,T>(&mut self, run: T, mut context: TaskContext) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
+    pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
@@ -89,6 +89,7 @@ impl Executor {
                     self.remove(&handle);
                 },
                 ExecutorAction::Timer(handle,timeout,callback) => {
+                    print!("EXE/TIMER\n");
                     self.add_timer(&handle,timeout,callback);
                 },
                 ExecutorAction::UnblockOnTick(handle,tick,callback) => {
@@ -128,6 +129,7 @@ impl Executor {
     }
 
     pub fn tick(&mut self, slice: f64) {
+        print!(">TICK\n");
         self.integration.reentering();
         let mut now = self.integration.current_time();
         let expiry = now+slice;
@@ -135,6 +137,7 @@ impl Executor {
         self.ticks.check(self.tick_index);        
         /* main tick loop */
         loop {
+            print!("LOOP!\n");
             if !self.run() { break; }
             now = self.integration.current_time();
             if now >= expiry { break; }
@@ -144,6 +147,7 @@ impl Executor {
         self.run_actions();
         let sleep = self.calculate_sleep(now);
         self.integration.sleep(sleep);
+        print!("<TICK\n");
     }
 }
 
@@ -230,7 +234,7 @@ mod test {
         assert!(tc.peek_result() == TaskResult::Done);
     }
 
-    async fn again_timeout(ctx: TaskContext, mut integration: TestIntegration) {
+    async fn again_timeout(ctx: Agent, mut integration: TestIntegration) {
         ctx.tick(0).await;
         integration.set_time(1.);
         ctx.tick(0).await;
@@ -297,7 +301,7 @@ mod test {
         assert!(SleepQuantity::Forever == integration.get_sleeps().remove(0));
     }
 
-    async fn sleep_hepler(ctx: TaskContext, timeout: f64) {
+    async fn sleep_hepler(ctx: Agent, timeout: f64) {
         ctx.timer(timeout).await;
     }
 
@@ -343,6 +347,7 @@ mod test {
         let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
+            print!("STEP\n");
             ctx2.timer(10.).await;
             ()
         };

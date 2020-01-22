@@ -1,9 +1,11 @@
+/* An agent provides methods on behalf of an Executor within a future. */
+
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 
 use crate::block::Block;
-use crate::blocker::Blocker;
+use crate::blockagent::BlockAgent;
 use crate::executoraction::{ AnonExecutorAction, ExecutorActionHandle, ExecutorActionTaskHandle };
 use crate::integration::ReenteringIntegration;
 use crate::step::RunConfig;
@@ -14,53 +16,59 @@ use crate::oneshot::OneShot;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
 
-// XXX Arc to state obj
-#[derive(Clone)]
-pub struct TaskContext {
-    blocks: Arc<Mutex<Vec<Block>>>,
-    integration: ReenteringIntegration,
-    config: RunConfig,
-    tick_index: Arc<Mutex<u64>>,
-    finished: Arc<Mutex<bool>>,
-    kill_reason: Arc<Mutex<Option<KillReason>>>,
-    action_handle: ExecutorActionTaskHandle,
-    blocker: Blocker,
+struct AgentState {
+    blocks: Vec<Block>,
+    tick_index: u64,
+    finished: bool,
+    kill_reason: Option<KillReason>,
     name: String
 }
 
-impl TaskContext {
+// XXX Arc to state obj
+#[derive(Clone)]
+pub struct Agent {
+    state: Arc<Mutex<AgentState>>,
+    integration: ReenteringIntegration,
+    config: RunConfig,
+    action_handle: ExecutorActionTaskHandle,
+    blocker: BlockAgent
+}
+
+impl Agent {
     pub(crate) fn new(config: &RunConfig,
                       action_handle: &ExecutorActionHandle,
-                      integration: &ReenteringIntegration, name: &str) -> TaskContext {
+                      integration: &ReenteringIntegration, name: &str) -> Agent {
         let action_handle = action_handle.new_task();
-        let blocker = Blocker::new(integration,&action_handle);
-        let out = TaskContext {
-            blocks: Arc::new(Mutex::new(Vec::new())),
+        let blocker = BlockAgent::new(integration,&action_handle);
+        let out = Agent {
+            state: Arc::new(Mutex::new(AgentState {
+                blocks: Vec::new(),
+                tick_index: 0,
+                finished: false,
+                kill_reason: None,
+                name: name.to_string()
+            })),
             config: config.clone(),
-            finished: Arc::new(Mutex::new(false)),
-            kill_reason: Arc::new(Mutex::new(None)),
             action_handle,
             integration: integration.clone(),
-            tick_index: Arc::new(Mutex::new(0)),
             blocker,
-            name: name.to_string()
         };
         out
     }
 
-    pub(crate) fn push_block(&mut self, new: &Block) {
-        let mut blocks = self.blocks.lock().unwrap();
-        let last = blocks.len()-1;
-        blocks[last].add(&new);
-        blocks.push(new.clone());
+    pub(crate) fn push_block(&self, new: &Block) {
+        let mut state = self.state.lock().unwrap();
+        let last = state.blocks.len()-1;
+        state.blocks[last].add(&new);
+        state.blocks.push(new.clone());
     }
 
-    pub(crate) fn pop_block(&mut self) {
-        self.blocks.lock().unwrap().pop();
+    pub(crate) fn pop_block(&self) {
+        self.state.lock().unwrap().blocks.pop();
     }
 
-    pub fn get_name(&self) -> &str {
-        &self.name
+    pub fn get_name(&self) -> String {
+        self.state.lock().unwrap().name.to_string()
     }
 
     pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
@@ -69,31 +77,31 @@ impl TaskContext {
 
     /* timers */
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
+        print!("80\n");
         self.action_handle.add(AnonExecutorAction::Timer(timeout,Box::new(callback)));
     }
 
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
-        let tick = *self.tick_index.lock().unwrap();
-        self.action_handle.add(AnonExecutorAction::UnblockOnTick(tick+ticks,Box::new(callback)));
+        let state = self.state.lock().unwrap();
+        self.action_handle.add(AnonExecutorAction::UnblockOnTick(state.tick_index+ticks,Box::new(callback)));
     }
 
     /* kills */
-    fn finish_internal(&mut self, reason: Option<&KillReason>) -> bool {
-        let mut finished = self.finished.lock().unwrap();
-        if !*finished {
+    fn finish_internal(&self, state: &mut AgentState, reason: Option<&KillReason>) -> bool {
+        if !state.finished {
             if let Some(reason) = reason {
-                *self.kill_reason.lock().unwrap() = Some(reason.clone());                
+                state.kill_reason = Some(reason.clone());                
             }
             self.action_handle.add(AnonExecutorAction::Done());
-            *finished = true;
+            state.finished = true;
             true
         } else {
             false
         }
     }
 
-    pub fn finish(&mut self, reason: Option<&KillReason>) {
-        if self.finish_internal(reason) {
+    pub fn finish(&self, reason: Option<&KillReason>) {
+        if self.finish_internal(&mut self.state.lock().unwrap(),reason) {
             self.integration.cause_reentry();
         }
     }
@@ -104,10 +112,10 @@ impl TaskContext {
      * be relied on to detect finish cases which would definitely have
      * occured before this call.
      */
-    pub(crate) fn is_finished(&self) -> bool { *self.finished.lock().unwrap() }
+    pub(crate) fn is_finished(&self) -> bool { self.state.lock().unwrap().finished }
 
     pub(crate) fn kill_reason(&self) -> Option<KillReason> {
-        self.kill_reason.lock().unwrap().as_ref().map(|x| x.clone())
+        self.state.lock().unwrap().kill_reason.as_ref().map(|x| x.clone())
     }
 
     /* misc */
@@ -119,7 +127,7 @@ impl TaskContext {
     /* running steps */
 
     pub fn get_tick_index(&self) -> u64 {
-        *self.tick_index.lock().unwrap()
+        self.state.lock().unwrap().tick_index
     }
 
     pub fn block(&self) -> Block {
@@ -130,6 +138,7 @@ impl TaskContext {
         let future = OneShot::new();
         let future2 = future.clone();
         self.add_ticks_timer(ticks,move || {
+            print!("FLAG\n");
             future2.flag();
         });
         future
@@ -138,7 +147,9 @@ impl TaskContext {
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
         let future = OneShot::new();
         let future2 = future.clone();
+        print!("TIMER\n");
         self.add_timer(timeout,move || {
+            print!("FLAG\n");
             future2.flag();
         });
         future
@@ -148,25 +159,34 @@ impl TaskContext {
         TurnstileFuture::new(&self,inner)
     }
 
-    pub(crate) fn more<R>(&mut self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64) -> Option<R> {
+    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64) -> Option<R> {
+        print!(">C\n");
+        let mut state = self.state.lock().unwrap();
+        print!(">D\n");
         /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
-        if self.is_finished() { 
+        if state.finished { 
             return None;
         }
-        *self.blocks.lock().unwrap() = vec![Block::new(&self.blocker)];
+        state.blocks = vec![Block::new(&self.blocker)];
         /* prepare tick index, blocker */
-        *self.tick_index.lock().unwrap() = tick_index;
+        state.tick_index = tick_index;
         /* run */
-        let waker = self.blocks.lock().unwrap()[0].future_waker();
-        match future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker))) {
+        let waker = state.blocks[0].future_waker();
+        drop(state);
+        print!(">B\n");
+        let out = future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
+        print!("<B\n");
+        let mut state = self.state.lock().unwrap();
+        print!(">E\n");
+        match out {
             Poll::Pending => {
                 /* blocked so note that (for next call) and tell blocker to notify executor */
-                self.blocker.block_task(&self.blocks.lock().unwrap()[0]);
+                self.blocker.block_task(&state.blocks[0]);
                 return None;
 
             },
             Poll::Ready(v) => {
-                self.finish_internal(None);
+                self.finish_internal(&mut state,None);
                 return Some(v);
             }
         };
@@ -214,7 +234,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration,"test");
+        let mut tc = Agent::new(&cfg,&eah,&integration,"test");
         tc.register(&h);
         /* test */
         assert!(!tc.is_finished());
@@ -239,7 +259,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ExecutorActionHandle::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration,"name");
+        let mut tc = Agent::new(&cfg,&eah,&integration,"name");
         tc.register(&h);
 
         // XXX todo
@@ -255,7 +275,7 @@ mod test {
         let mut eah = ExecutorActionHandle::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
-        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone(),"name");
+        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
@@ -281,12 +301,12 @@ mod test {
         let mut integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone(),"name");
+        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
-        tc.finish_internal(None);
+        tc.finish_internal(&mut tc.state.lock().unwrap(),None);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let mut tc = TaskContext::new(&cfg,&eah,&integration.clone(),"name");
+        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
         tc.finish(None);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());

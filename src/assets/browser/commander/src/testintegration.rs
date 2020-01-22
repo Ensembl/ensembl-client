@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex, MutexGuard };
-use crate::taskcontext::TaskContext;
+use crate::agent::Agent;
 use crate::integration::{ CommanderIntegration2, SleepQuantity };
 
 #[derive(Clone)]
@@ -27,7 +27,7 @@ impl CommanderIntegration2 for TestIntegration {
     fn sleep(&self, quantity: SleepQuantity) { self.sleeps.lock().unwrap().push(quantity); }
 }
 
-pub async fn tick_helper(ctx: TaskContext, ticks: &[u64]) {
+pub async fn tick_helper(ctx: Agent, ticks: &[u64]) {
     for tick in ticks {
         ctx.tick(*tick).await;
     }
@@ -40,7 +40,7 @@ mod test {
     use crate::taskhandle::TaskResult;
     use futures::future;
 
-    async fn tick_future(ctx: TaskContext,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
+    async fn tick_future(ctx: Agent,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
         ctx.tick(1).await;
         if let Some(finished) = finished {
             if set {
@@ -52,7 +52,7 @@ mod test {
         (2+x) as u32
     }
 
-    async fn again_future(ctx: TaskContext,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
+    async fn again_future(ctx: Agent,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
         ctx.tick(0).await;
         ctx.tick(0).await;
         if let Some(finished) = finished {
@@ -65,7 +65,7 @@ mod test {
         (2+x) as u32
     }
 
-    async fn timer_future(ctx: TaskContext, timeout: f64) -> u32 {
+    async fn timer_future(ctx: Agent, timeout: f64) -> u32 {
         ctx.timer(timeout).await;
         0
     }
@@ -103,7 +103,7 @@ mod test {
         assert_eq!(2,x.get_tick_index());
     }
 
-    async fn future_tick(ctx: TaskContext, x: u32) -> u32 {
+    async fn future_tick(ctx: Agent, x: u32) -> u32 {
         ctx.tick(1).await;
         x+2
     }
@@ -147,7 +147,7 @@ mod test {
         assert_eq!(4,tc.take_result().unwrap());
     }
 
-    async fn future_timer(ctx: TaskContext, x: u32, finished: Arc<Mutex<bool>>) -> (u32,u32) {
+    async fn future_timer(ctx: Agent, x: u32, finished: Arc<Mutex<bool>>) -> (u32,u32) {
         future::join(
             timer_future(ctx.clone(),1.),
             tick_future(ctx,x,Some(finished.clone()),true)
@@ -171,7 +171,7 @@ mod test {
         assert_eq!((0,4),tc.take_result().unwrap());
     }
 
-    async fn timeout_smoke_helper(ctx: TaskContext, timeout: bool) -> Result<(),()> {
+    async fn timeout_smoke_helper(ctx: Agent, timeout: bool) -> Result<(),()> {
         let b = Box::pin(async {
             ctx.tick(if timeout {4} else {2}).await;
             Ok(())
@@ -233,17 +233,17 @@ mod test {
         assert!(tc.peek_result() == TaskResult::Done);
     }
 
-    async fn future_result<X,Y>(ctx: &TaskContext, r: Result<X,Y>) -> Result<X,Y> {
+    async fn future_result<X,Y>(ctx: &Agent, r: Result<X,Y>) -> Result<X,Y> {
         ctx.tick(1).await;
         r
     }
 
-    async fn sequence_short(ctx: TaskContext) -> Result<u32,()> {
+    async fn sequence_short(ctx: Agent) -> Result<u32,()> {
         let x = future_result(&ctx,Err(())).await?;
         future_result(&ctx,Ok(2)).await
     }
 
-    async fn sequence_good(ctx: TaskContext) -> Result<u32,()> {
+    async fn sequence_good(ctx: Agent) -> Result<u32,()> {
         let x = future_result(&ctx,Ok(1)).await?;
         future_result(&ctx,Ok(x+2)).await
     }
