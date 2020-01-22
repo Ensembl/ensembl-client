@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
 import {
   getIsTrackPanelModalOpened,
@@ -14,7 +17,7 @@ import {
   openTrackPanelModal
 } from '../trackPanelActions';
 
-import TrackPanelBarIcon from './TrackPanelBarIcon';
+import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
 export type TrackPanelBarProps = {
   isTrackPanelModalOpened: boolean;
@@ -26,19 +29,36 @@ export type TrackPanelBarProps = {
 };
 
 export const TrackPanelBar = (props: TrackPanelBarProps) => {
+  const toggleModalView = (iconConfig: TrackPanelBarItem) => {
+    if (!props.isTrackPanelOpened) {
+      props.toggleTrackPanel(true);
+    }
+
+    if (iconConfig.name === props.trackPanelModalView) {
+      props.closeTrackPanelModal();
+    } else {
+      props.openTrackPanelModal(iconConfig.name);
+    }
+  };
+
+  const getViewIconStatus = (iconConfig: TrackPanelBarItem) => {
+    return iconConfig.name === props.trackPanelModalView &&
+      props.isTrackPanelOpened
+      ? Status.HIGHLIGHTED
+      : Status.ACTIVE;
+  };
+
   return (
     <>
       {trackPanelBarConfig.map((item: TrackPanelBarItem) => (
-        <TrackPanelBarIcon
-          key={item.name}
-          iconConfig={item}
-          closeTrackPanelModal={props.closeTrackPanelModal}
-          openTrackPanelModal={props.openTrackPanelModal}
-          isTrackPanelModalOpened={props.isTrackPanelModalOpened}
-          isTrackPanelOpened={props.isTrackPanelOpened}
-          trackPanelModalView={props.trackPanelModalView}
-          toggleTrackPanel={props.toggleTrackPanel}
-        />
+        <div className={styles.sidebarIcon} key={item.name}>
+          <ImageButton
+            buttonStatus={getViewIconStatus(item)}
+            description={item.description}
+            onClick={() => toggleModalView(item)}
+            image={item.icon}
+          />
+        </div>
       ))}
     </>
   );
