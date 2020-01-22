@@ -1,43 +1,102 @@
 use std::pin::Pin;
 use std::future::Future;
+use std::sync::{ Arc, Mutex };
+use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use crate::agent::Agent;
-use crate::taskhandle::TaskHandle;
-
-/* The trait serves to scrub the task of its polymorphism from the PoV of the executor.
- * The whole struct exists only to encapsulate that polymorphism here by holding the
- * future and taskhandle: the heavy-lifting is all done in the Agent.
- */
-
-pub(crate) struct TaskImpl<R> {
-    future: Pin<Box<dyn Future<Output=R>>>,
-    handle: TaskHandle<R>
-}
 
 pub(crate) trait Task {
     fn run(&mut self, tick_index: u64);
     fn get_priority(&self) -> i8;
 }
 
-impl<R> TaskImpl<R> {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut Agent) -> TaskImpl<R> {
-        TaskImpl {
-            future,
-            handle: TaskHandle::new(task_context)
-        }
-    }
+#[derive(Clone,PartialEq,Eq)]
+pub enum KillReason { // XXX test it
+    Timeout,
+    Cancelled,
+    NotNeeded
+}
 
-    pub(crate) fn get_handle(&self) -> &TaskHandle<R> {
-        &self.handle
+#[derive(Clone,PartialEq,Eq)]
+pub enum TaskResult {
+    Ongoing,
+    Done,
+    Killed(KillReason)
+}
+
+pub struct TaskHandleState<R> {
+    future: Pin<Box<dyn Future<Output=R>>>,
+    agent: Agent,
+    result: Option<R>,
+    done: bool
+}
+
+pub struct TaskHandle<R>(Arc<Mutex<TaskHandleState<R>>>);
+
+// Rust bug means dan't derive Clone on polymorphic types
+impl<R> Clone for TaskHandle<R> {
+    fn clone(&self) -> Self {
+        TaskHandle(self.0.clone())
     }
 }
 
-impl<R> Task for TaskImpl<R> {
-    fn get_priority(&self) -> i8 { self.handle.get_agent().get_config().get_priority() }
+impl<R> TaskHandle<R> {
+    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R>>>) -> TaskHandle<R> {
+        TaskHandle(Arc::new(Mutex::new(TaskHandleState {
+            future,
+            agent: agent.clone(),
+            result: None,
+            done: false
+        })))
+    }
+
+    pub(crate) fn get_agent(&self) -> MutexGuardRef<TaskHandleState<R>,Agent> {
+        MutexGuardRef::new(self.0.lock().unwrap()).map(|x| &x.agent)
+    }
+
+    pub fn peek_result(&self) -> TaskResult {
+        let state = self.0.lock().unwrap();
+        if let Some(kill) = state.agent.kill_reason() {
+            TaskResult::Killed(kill)
+        } else if state.done {
+            TaskResult::Done
+        } else {
+            TaskResult::Ongoing
+        }
+    }
+
+    pub fn take_result(&self) -> Option<R> {
+        self.0.lock().unwrap().result.take()
+    }
+
+    pub fn get_result(&self) -> Option<MutexGuardRef<TaskHandleState<R>,R>> {
+        let state = self.0.lock().unwrap();
+        if state.result.is_some() {
+            Some(MutexGuardRef::new(state).map(|x| x.result.as_ref().unwrap()))
+        } else {
+            None
+        }
+    }
+
+    pub fn get_result_mut(&self) -> Option<MutexGuardRefMut<TaskHandleState<R>,R>> {
+        let state = self.0.lock().unwrap();
+        if state.result.is_some() {
+            Some(MutexGuardRefMut::new(state).map_mut(|x| x.result.as_mut().unwrap()))
+        } else {
+            None
+        }
+    }
+}
+
+impl<R> Task for TaskHandle<R> {
+    fn get_priority(&self) -> i8 { self.get_agent().get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {
-        let ret = self.handle.get_agent().more(&mut self.future, tick_index);
+        let mut state = self.0.lock().unwrap();
+        let agent = state.agent.clone();
+        let ret = agent.more(&mut state.future, tick_index);
         if let Some(r) = ret {
-            self.handle.done(r);
+            state.result = Some(r);
+            state.done = true;
         }
     }
 }
@@ -46,14 +105,39 @@ impl<R> Task for TaskImpl<R> {
 #[allow(unused)]
 mod test {
     use super::*;
-    use std::sync::{ Arc, Mutex };
-    use crate::action::{ Action, ActionLink };
-    use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
-    use crate::taskcontainer::TaskContainer;
-    use crate::timer::TimerSet;
+    use crate::testintegration::{ TestIntegration, tick_helper };
     use crate::step::RunConfig;
-    use crate::oneshot::OneShot;
-    use crate::testintegration::TestIntegration;
+    use crate::executor::Executor;
+    use crate::integration::ReenteringIntegration;
+    use crate::taskcontainer::TaskContainer;
+    use crate::action::{ Action, ActionLink };
+
+    #[test]
+    pub fn test_handle_smoke() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+
+        let ctx = x.make_context(&cfg,"test");
+        let ctx2 = ctx.clone();
+        let a = async move {
+            tick_helper(ctx2,&[0,0,0]).await;
+            42
+        };
+        let mut tc = x.add(a,ctx);
+        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.take_result().is_none());
+        assert!(tc.get_result().is_none());
+        assert!(tc.get_result_mut().is_none());
+        x.tick(10.);
+        assert!(tc.peek_result() == TaskResult::Done);
+        assert_eq!(Some(42),tc.get_result().map(|x| *x));
+        assert_eq!(Some(42),tc.get_result_mut().map(|x| *x));
+        assert_eq!(Some(42),tc.take_result());
+        assert!(tc.get_result().is_none());
+        assert!(tc.get_result_mut().is_none());
+        assert!(tc.peek_result() == TaskResult::Done);
+    }
 
     #[test]
     pub fn test_task_smoke() {
@@ -73,7 +157,7 @@ mod test {
             ctx.tick(0).await;
         });
         let mut tc2 = tc.clone();
-        let mut t = TaskImpl::new(s1,&mut tc2);
+        let mut t = TaskHandle::new(&tc,s1);
         /* simple accessors */
         assert_eq!(3,t.get_priority());
         /* simple running to completion */

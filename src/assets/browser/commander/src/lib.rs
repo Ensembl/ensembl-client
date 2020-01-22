@@ -8,9 +8,8 @@ mod oneshot;
 mod runnable;
 mod runqueue;
 mod step;
-mod task;
 mod taskcontainer;
-mod taskhandle;
+mod task;
 mod timer;
 mod turnstile;
 

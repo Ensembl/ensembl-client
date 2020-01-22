@@ -11,7 +11,7 @@ use crate::integration::ReenteringIntegration;
 use crate::step::RunConfig;
 use crate::taskcontainer::TaskContainerHandle;
 use crate::turnstile::TurnstileFuture;
-use crate::taskhandle::KillReason;
+use crate::task::KillReason;
 use crate::oneshot::OneShot;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
@@ -21,17 +21,17 @@ struct AgentState {
     tick_index: u64,
     finished: bool,
     kill_reason: Option<KillReason>,
-    name: String
-}
-
-// XXX Arc to state obj
-#[derive(Clone)]
-pub struct Agent {
-    state: Arc<Mutex<AgentState>>,
-    integration: ReenteringIntegration,
+    name: String,
     config: RunConfig,
+    integration: ReenteringIntegration,
     action_handle: TaskActionLink,
     blocker: BlockAgent
+}
+
+// XXX all Arc to state obj
+#[derive(Clone)]
+pub struct Agent {
+    state: Arc<Mutex<AgentState>>
 }
 
 impl Agent {
@@ -46,12 +46,12 @@ impl Agent {
                 tick_index: 0,
                 finished: false,
                 kill_reason: None,
-                name: name.to_string()
-            })),
-            config: config.clone(),
-            action_handle,
-            integration: integration.clone(),
-            blocker,
+                name: name.to_string(),
+                config: config.clone(),
+                integration: integration.clone(),
+                action_handle,
+                blocker
+            }))
         };
         out
     }
@@ -72,17 +72,17 @@ impl Agent {
     }
 
     pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
-        self.action_handle.register(task_handle);
+        self.state.lock().unwrap().action_handle.register(task_handle);
     }
 
     /* timers */
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
-        self.action_handle.add(AnonAction::Timer(timeout,Box::new(callback)));
+        self.state.lock().unwrap().action_handle.add(AnonAction::Timer(timeout,Box::new(callback)));
     }
 
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         let state = self.state.lock().unwrap();
-        self.action_handle.add(AnonAction::Tick(state.tick_index+ticks,Box::new(callback)));
+        state.action_handle.add(AnonAction::Tick(state.tick_index+ticks,Box::new(callback)));
     }
 
     /* kills */
@@ -91,7 +91,7 @@ impl Agent {
             if let Some(reason) = reason {
                 state.kill_reason = Some(reason.clone());                
             }
-            self.action_handle.add(AnonAction::Done());
+            state.action_handle.add(AnonAction::Done());
             state.finished = true;
             true
         } else {
@@ -100,8 +100,9 @@ impl Agent {
     }
 
     pub fn finish(&self, reason: Option<&KillReason>) {
-        if self.finish_internal(&mut self.state.lock().unwrap(),reason) {
-            self.integration.cause_reentry();
+        let mut state = self.state.lock().unwrap();
+        if self.finish_internal(&mut state,reason) {
+            state.integration.cause_reentry();
         }
     }
 
@@ -118,7 +119,7 @@ impl Agent {
     }
 
     /* misc */
-    pub fn get_config(&self) -> &RunConfig { &self.config }
+    pub fn get_config(&self) -> RunConfig { self.state.lock().unwrap().config.clone() }
     //pub fn get_remaining(&self) -> f64 { 0. }
     //pub fn dropped(&self) -> bool { false }
 
@@ -130,7 +131,7 @@ impl Agent {
     }
 
     pub fn block(&self) -> Block {
-        Block::new(&self.blocker)
+        Block::new(&self.state.lock().unwrap().blocker)
     }
 
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
@@ -161,7 +162,7 @@ impl Agent {
         if state.finished { 
             return None;
         }
-        state.blocks = vec![Block::new(&self.blocker)];
+        state.blocks = vec![Block::new(&state.blocker)];
         /* prepare tick index, blocker */
         state.tick_index = tick_index;
         /* run */
@@ -172,7 +173,7 @@ impl Agent {
         match out {
             Poll::Pending => {
                 /* blocked so note that (for next call) and tell blocker to notify executor */
-                self.blocker.block_task(&state.blocks[0]);
+                state.blocker.block_task(&state.blocks[0]);
                 return None;
 
             },

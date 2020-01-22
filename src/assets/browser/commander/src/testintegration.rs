@@ -37,7 +37,7 @@ mod test {
     use super::*;
     use crate::executor::Executor;
     use crate::step::RunConfig;
-    use crate::taskhandle::TaskResult;
+    use crate::task::TaskResult;
     use futures::future;
 
     async fn tick_future(ctx: Agent,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
