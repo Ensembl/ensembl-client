@@ -6,7 +6,7 @@ use std::sync::{ Arc, Mutex };
 
 use crate::block::Block;
 use crate::blockagent::BlockAgent;
-use crate::executoraction::{ AnonExecutorAction, ExecutorActionHandle, ExecutorActionTaskHandle };
+use crate::action::{ AnonAction, ActionLink, TaskActionLink };
 use crate::integration::ReenteringIntegration;
 use crate::step::RunConfig;
 use crate::taskcontainer::TaskContainerHandle;
@@ -30,13 +30,13 @@ pub struct Agent {
     state: Arc<Mutex<AgentState>>,
     integration: ReenteringIntegration,
     config: RunConfig,
-    action_handle: ExecutorActionTaskHandle,
+    action_handle: TaskActionLink,
     blocker: BlockAgent
 }
 
 impl Agent {
     pub(crate) fn new(config: &RunConfig,
-                      action_handle: &ExecutorActionHandle,
+                      action_handle: &ActionLink,
                       integration: &ReenteringIntegration, name: &str) -> Agent {
         let action_handle = action_handle.new_task();
         let blocker = BlockAgent::new(integration,&action_handle);
@@ -77,13 +77,12 @@ impl Agent {
 
     /* timers */
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
-        print!("80\n");
-        self.action_handle.add(AnonExecutorAction::Timer(timeout,Box::new(callback)));
+        self.action_handle.add(AnonAction::Timer(timeout,Box::new(callback)));
     }
 
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         let state = self.state.lock().unwrap();
-        self.action_handle.add(AnonExecutorAction::UnblockOnTick(state.tick_index+ticks,Box::new(callback)));
+        self.action_handle.add(AnonAction::Tick(state.tick_index+ticks,Box::new(callback)));
     }
 
     /* kills */
@@ -92,7 +91,7 @@ impl Agent {
             if let Some(reason) = reason {
                 state.kill_reason = Some(reason.clone());                
             }
-            self.action_handle.add(AnonExecutorAction::Done());
+            self.action_handle.add(AnonAction::Done());
             state.finished = true;
             true
         } else {
@@ -138,7 +137,6 @@ impl Agent {
         let future = OneShot::new();
         let future2 = future.clone();
         self.add_ticks_timer(ticks,move || {
-            print!("FLAG\n");
             future2.flag();
         });
         future
@@ -147,9 +145,7 @@ impl Agent {
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
         let future = OneShot::new();
         let future2 = future.clone();
-        print!("TIMER\n");
         self.add_timer(timeout,move || {
-            print!("FLAG\n");
             future2.flag();
         });
         future
@@ -160,9 +156,7 @@ impl Agent {
     }
 
     pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64) -> Option<R> {
-        print!(">C\n");
         let mut state = self.state.lock().unwrap();
-        print!(">D\n");
         /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
         if state.finished { 
             return None;
@@ -173,11 +167,8 @@ impl Agent {
         /* run */
         let waker = state.blocks[0].future_waker();
         drop(state);
-        print!(">B\n");
         let out = future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
-        print!("<B\n");
         let mut state = self.state.lock().unwrap();
-        print!(">E\n");
         match out {
             Poll::Pending => {
                 /* blocked so note that (for next call) and tell blocker to notify executor */
@@ -201,7 +192,7 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::testintegration::TestIntegration;
-    use crate::executoraction::ExecutorAction;
+    use crate::action::Action;
 
     #[test]
     pub fn test_control_timers() {
@@ -212,7 +203,7 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let eah = ExecutorActionHandle::new();
+        let eah = ActionLink::new();
         let ctx = x.make_context(&cfg,"test");
         let mut tc = x.add(async {},ctx);        
         /* test */
@@ -232,7 +223,7 @@ mod test {
         let cfg = RunConfig::new(None,0,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
+        let mut eah = ActionLink::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = Agent::new(&cfg,&eah,&integration,"test");
         tc.register(&h);
@@ -244,7 +235,7 @@ mod test {
         assert!(tc.is_finished());
         let actions = eah.drain();
         assert_eq!(1,actions.len());
-        if let ExecutorAction::Done(_) = actions[0] {
+        if let Action::Done(_) = actions[0] {
         } else {
             assert!(false);
         }
@@ -257,7 +248,7 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
+        let mut eah = ActionLink::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = Agent::new(&cfg,&eah,&integration,"name");
         tc.register(&h);
@@ -272,7 +263,7 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
+        let mut eah = ActionLink::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
@@ -296,7 +287,7 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
+        let mut eah = ActionLink::new();
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
         /* simulate */

@@ -49,7 +49,7 @@ impl<R> Task for TaskImpl<R> {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
-    use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
+    use crate::action::{ Action, ActionLink };
     use crate::integration::{ SleepQuantity, CommanderIntegration2, ReenteringIntegration };
     use crate::taskcontainer::TaskContainer;
     use crate::timer::TimerSet;
@@ -63,7 +63,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
+        let mut eah = ActionLink::new();
         let mut integration = TestIntegration::new();
         let mut tc = Agent::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
         tc.register(&h);
@@ -87,11 +87,11 @@ mod test {
         /* check for tick action in one of those two runs */
         let actions = eah.drain();
         assert_eq!(3,actions.len());
-        if let ExecutorAction::Timer(_,_,_) = actions[0] {
+        if let Action::Timer(_,_,_) = actions[0] {
         } else {
             assert!(false);
         }
-        if let ExecutorAction::BlockTask(_,_) = actions[1] {
+        if let Action::Block(_,_) = actions[1] {
         } else {
             assert!(false);
         }

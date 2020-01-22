@@ -96,7 +96,7 @@ mod test {
     use crate::timer::TimerSet;
     use crate::taskcontainer::TaskContainer;
     use crate::step::RunConfig;
-    use crate::executoraction::ExecutorActionHandle;
+    use crate::action::ActionLink;
     use crate::testintegration::TestIntegration;
     use crate::integration::ReenteringIntegration;
 
@@ -106,7 +106,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ExecutorActionHandle::new();
+        let mut eah = ActionLink::new();
         let eah = eah.new_task();
         eah.register(&h);
         let unblocker = BlockAgent::new(&integration,&eah);

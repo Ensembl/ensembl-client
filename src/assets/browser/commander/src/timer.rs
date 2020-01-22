@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::fmt::Debug;
 use std::sync::{ Arc, Mutex };
 
 struct Timeout<S> {
@@ -11,7 +10,7 @@ struct TimersState<T,S> where T: Ord {
     timeouts: BTreeMap<T,Vec<Timeout<S>>>
 }
 
-impl<T,S> TimersState<T,S> where T: Ord+Clone+Debug { // XXX not debug
+impl<T,S> TimersState<T,S> where T: Ord+Clone {
     pub fn new() -> TimersState<T,S> {
         TimersState {
             timeouts: BTreeMap::new(),
@@ -71,12 +70,12 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone+Debug { // XXX not debug
 #[derive(Clone)]
 pub(crate) struct TimerSet<T,S>(Arc<Mutex<TimersState<T,S>>>) where T: Ord;
 
-impl<T,S> TimerSet<T,S> where T: Ord + Clone + Debug { // XXX Debug
+impl<T,S> TimerSet<T,S> where T: Ord + Clone {
     pub(crate) fn new() -> TimerSet<T,S> {
         TimerSet(Arc::new(Mutex::new(TimersState::new())))
     }
 
-    pub(crate) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord + Debug {
+    pub(crate) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
         self.0.lock().unwrap().add(state,timeout,callback);
     }
 

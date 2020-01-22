@@ -2,7 +2,7 @@ use std::future::Future;
 use hashbrown::HashMap;
 use ordered_float::OrderedFloat;
 use crate::block::Block;
-use crate::executoraction::{ ExecutorAction, ExecutorActionHandle };
+use crate::action::{ Action, ActionLink };
 use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
 use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::timer::TimerSet;
@@ -16,7 +16,7 @@ pub struct Executor {
     integration: ReenteringIntegration,
     tasks: TaskContainer,
     runnable: Runnable,
-    actions: ExecutorActionHandle,
+    actions: ActionLink,
     timers: TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>>,
     ticks: TimerSet<u64,Option<TaskContainerHandle>>,
     blocked_by: HashMap<TaskContainerHandle,Block>,
@@ -29,7 +29,7 @@ impl Executor {
             integration: ReenteringIntegration::new(integration),
             tasks: TaskContainer::new(),
             runnable: Runnable::new(),
-            actions: ExecutorActionHandle::new(),
+            actions: ActionLink::new(),
             timers: TimerSet::new(),
             ticks: TimerSet::new(),
             blocked_by: HashMap::new(),
@@ -72,11 +72,11 @@ impl Executor {
     pub(crate) fn run_actions(&mut self) {
         for mut action in self.actions.drain() {
             match action {
-                ExecutorAction::BlockTask(ref handle,ref block) => {
+                Action::Block(ref handle,ref block) => {
                     self.runnable.remove(&self.tasks,&handle);
                     self.blocked_by.insert(handle.clone(),block.clone());
                 },
-                ExecutorAction::Unblock(ref handle,ref mut block) => {
+                Action::Unblock(ref handle,ref mut block) => {
                     block.unblock_real();
                     if let Some(blocked_by) = self.blocked_by.get(handle) {
                         if blocked_by == block {
@@ -85,14 +85,13 @@ impl Executor {
                         }
                     }
                 },
-                ExecutorAction::Done(handle) => {
+                Action::Done(handle) => {
                     self.remove(&handle);
                 },
-                ExecutorAction::Timer(handle,timeout,callback) => {
-                    print!("EXE/TIMER\n");
+                Action::Timer(handle,timeout,callback) => {
                     self.add_timer(&handle,timeout,callback);
                 },
-                ExecutorAction::UnblockOnTick(handle,tick,callback) => {
+                Action::Tick(handle,tick,callback) => {
                     self.ticks.add(Some(handle.clone()),tick,callback);
                 }
             }
@@ -129,7 +128,6 @@ impl Executor {
     }
 
     pub fn tick(&mut self, slice: f64) {
-        print!(">TICK\n");
         self.integration.reentering();
         let mut now = self.integration.current_time();
         let expiry = now+slice;
@@ -137,7 +135,6 @@ impl Executor {
         self.ticks.check(self.tick_index);        
         /* main tick loop */
         loop {
-            print!("LOOP!\n");
             if !self.run() { break; }
             now = self.integration.current_time();
             if now >= expiry { break; }
@@ -147,7 +144,6 @@ impl Executor {
         self.run_actions();
         let sleep = self.calculate_sleep(now);
         self.integration.sleep(sleep);
-        print!("<TICK\n");
     }
 }
 
@@ -347,7 +343,6 @@ mod test {
         let ctx = x.make_context(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
-            print!("STEP\n");
             ctx2.timer(10.).await;
             ()
         };

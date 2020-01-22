@@ -2,7 +2,7 @@ mod block;
 mod blockagent;
 mod agent;
 mod executor;
-mod executoraction;
+mod action;
 mod integration;
 mod oneshot;
 mod runnable;

@@ -7,7 +7,7 @@ use hashbrown::HashSet;
 
 use crate::task::Task;
 
-#[derive(Clone,PartialEq,Eq,PartialOrd,Ord,Hash,Debug)] // XXX debug
+#[derive(Clone,PartialEq,Eq,PartialOrd,Ord,Hash)]
 pub(crate) struct TaskContainerHandle(usize,u64);
 
 pub(crate) struct TaskContainer {
