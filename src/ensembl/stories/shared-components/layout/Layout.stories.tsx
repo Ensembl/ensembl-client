@@ -46,6 +46,24 @@ const SidebarToolstripContent = () => (
   <div className={styles.sidebarToolstripContent}>Here be icons</div>
 );
 
+const SidebarNavigation = () => {
+  const [activeLinkIndex, setActiveLinkIndex] = useState(0);
+
+  return (
+    <div className={styles.sidebarNavigation}>
+      {['Link 1', 'Link 2'].map((linkStr, index) => (
+        <span
+          key={linkStr}
+          className={activeLinkIndex === index ? styles.activeLink : ''}
+          onClick={() => setActiveLinkIndex(index)}
+        >
+          {linkStr}
+        </span>
+      ))}
+    </div>
+  );
+};
+
 const DrawerContent = () => (
   <div className={styles.drawerContent}>This is drawer content</div>
 );
@@ -58,22 +76,13 @@ const Wrapper = (props: {
   onSidebarToggle: () => void;
   onDrawerClose?: () => void;
 }) => {
-  const [activeLinkIndex, setActiveLinkIndex] = useState(0);
-  const sidebarNavigation = {
-    links: [...Array(2)].map((_, index) => ({
-      label: `Link ${index + 1}`,
-      isActive: index === activeLinkIndex
-    })),
-    onChange: (index: number) => setActiveLinkIndex(index)
-  };
-
   return (
     <div className={styles.wrapper}>
       <StandardAppLayout
         mainContent={<MainContent />}
         topbarContent={<TopbarContent />}
         sidebarContent={props.sidebarContent}
-        sidebarNavigation={sidebarNavigation}
+        sidebarNavigation={<SidebarNavigation />}
         sidebarToolstripContent={<SidebarToolstripContent />}
         drawerContent={props.drawerContent || null}
         isSidebarOpen={props.isSidebarOpen}
