@@ -10,8 +10,7 @@ use crate::taskhandle::TaskHandle;
 
 pub(crate) struct TaskImpl<R> {
     future: Pin<Box<dyn Future<Output=R>>>,
-    handle: TaskHandle<R>,
-    task_context: Agent
+    handle: TaskHandle<R>
 }
 
 pub(crate) trait Task {
@@ -23,8 +22,7 @@ impl<R> TaskImpl<R> {
     pub(crate) fn new(future: Pin<Box<dyn Future<Output=R>>>, task_context: &mut Agent) -> TaskImpl<R> {
         TaskImpl {
             future,
-            handle: TaskHandle::new(task_context),
-            task_context: task_context.clone()
+            handle: TaskHandle::new(task_context)
         }
     }
 
@@ -34,10 +32,10 @@ impl<R> TaskImpl<R> {
 }
 
 impl<R> Task for TaskImpl<R> {
-    fn get_priority(&self) -> i8 { self.task_context.get_config().get_priority() }
+    fn get_priority(&self) -> i8 { self.handle.get_agent().get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {
-        let ret = self.task_context.more(&mut self.future, tick_index);
+        let ret = self.handle.get_agent().more(&mut self.future, tick_index);
         if let Some(r) = ret {
             self.handle.done(r);
         }

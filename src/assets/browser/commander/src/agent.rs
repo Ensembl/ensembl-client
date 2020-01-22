@@ -209,7 +209,7 @@ mod test {
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
-        tc.get_context().add_timer(1.,move || { *shared2.lock().unwrap() = true; });
+        tc.get_agent().add_timer(1.,move || { *shared2.lock().unwrap() = true; });
         x.run_actions();
         x.check_timers(0.5);
         assert!(!*shared.lock().unwrap());

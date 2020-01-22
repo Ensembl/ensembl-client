@@ -174,7 +174,7 @@ mod test {
         x.run();
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.run();
-        assert!(tc.get_context().is_finished());
+        assert!(tc.get_agent().is_finished());
         assert!(!x.run());
     }
 

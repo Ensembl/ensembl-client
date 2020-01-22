@@ -17,7 +17,7 @@ pub enum TaskResult {
 }
 
 pub struct TaskHandleState<R> {
-    context: Agent,
+    agent: Agent,
     result: Option<R>,
     done: bool
 }
@@ -32,18 +32,16 @@ impl<R> Clone for TaskHandle<R> {
 }
 
 impl<R> TaskHandle<R> {
-    pub(crate) fn new(context: &Agent) -> TaskHandle<R> {
+    pub(crate) fn new(agent: &Agent) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState{
-            context: context.clone(),
+            agent: agent.clone(),
             result: None,
             done: false
         })))
     }
 
-    /* some tests need direct access to context to simulate events */
-    #[cfg(test)]
-    pub(crate) fn get_context(&mut self) -> MutexGuardRefMut<TaskHandleState<R>,Agent> {
-        MutexGuardRefMut::new(self.0.lock().unwrap()).map_mut(|x| &mut x.context)
+    pub(crate) fn get_agent(&self) -> MutexGuardRef<TaskHandleState<R>,Agent> {
+        MutexGuardRef::new(self.0.lock().unwrap()).map(|x| &x.agent)
     }
 
     pub(crate) fn done(&mut self, result: R) {
@@ -54,7 +52,7 @@ impl<R> TaskHandle<R> {
 
     pub fn peek_result(&self) -> TaskResult {
         let state = self.0.lock().unwrap();
-        if let Some(kill) = state.context.kill_reason() {
+        if let Some(kill) = state.agent.kill_reason() {
             TaskResult::Killed(kill)
         } else if state.done {
             TaskResult::Done
