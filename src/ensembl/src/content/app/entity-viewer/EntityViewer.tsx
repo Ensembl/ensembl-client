@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 
@@ -8,9 +8,11 @@ import * as urlHelper from 'src/shared/helpers/urlHelper';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { getExampleGenes } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
+import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerSidebarTabs from 'src/content/app/entity-viewer/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
@@ -23,10 +25,12 @@ import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 type Props = {
   activeGenomeId: string | null;
+  isSidebarOpen: boolean;
   exampleGenes: EnsObject[];
   viewportWidth: BreakpointWidth;
   setDataFromUrl: (params: EntityViewerParams) => void;
   fetchGenomeData: (genomeId: string) => void;
+  toggleSidebar: (isOpen?: boolean) => void;
 };
 
 export type EntityViewerParams = {
@@ -36,8 +40,6 @@ export type EntityViewerParams = {
 
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // TODO: push this bit ot state to redux soon
 
   useEffect(() => {
     props.setDataFromUrl(params);
@@ -52,8 +54,8 @@ const EntityViewer = (props: Props) => {
           sidebarContent={<div>Sidebar content is coming...</div>}
           sidebarNavigation={<EntityViewerSidebarTabs />}
           topbarContent={<div>Entity info summary goes here</div>}
-          isSidebarOpen={isSidebarOpen}
-          onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          isSidebarOpen={props.isSidebarOpen}
+          onSidebarToggle={props.toggleSidebar}
           isDrawerOpen={false}
           viewportWidth={props.viewportWidth}
         />
@@ -96,13 +98,15 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     exampleGenes,
+    isSidebarOpen: isEntityViewerSidebarOpen(state),
     viewportWidth: getBreakpointWidth(state)
   };
 };
 
 const mapDispatchToProps = {
   setDataFromUrl,
-  fetchGenomeData
+  fetchGenomeData,
+  toggleSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

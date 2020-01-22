@@ -2,9 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { setSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import {
+  toggleSidebar,
+  setSidebarTabName
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
-import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import {
+  isEntityViewerSidebarOpen,
+  getEntityViewerSidebarTabName
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import styles from './EntityViewerSidebarTabs.scss';
 
@@ -13,7 +19,9 @@ import { RootState } from 'src/store';
 
 type Props = {
   activeTabName: SidebarTabName | null;
+  isSidebarOpen: boolean;
   setSidebarTabName: (name: SidebarTabName) => void;
+  toggleSidebar: (isOpen?: boolean) => void;
 };
 
 const EntityViewerSidebarTabs = (props: Props) => {
@@ -22,14 +30,18 @@ const EntityViewerSidebarTabs = (props: Props) => {
   }
 
   const handleTabChange = (name: SidebarTabName) => {
+    if (!props.isSidebarOpen) {
+      props.toggleSidebar(true);
+    }
     props.setSidebarTabName(name);
   };
 
   const getTabProps = (name: SidebarTabName) => {
-    const isActiveTab = name === props.activeTabName;
+    const isActiveTab = props.isSidebarOpen && name === props.activeTabName;
     const classes = classNames(styles.tab, {
       [styles.tabUnselected]: !isActiveTab
     });
+
     const onClick = isActiveTab
       ? null
       : { onClick: () => handleTabChange(name) };
@@ -49,11 +61,13 @@ const EntityViewerSidebarTabs = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  activeTabName: getEntityViewerSidebarTabName(state)
+  activeTabName: getEntityViewerSidebarTabName(state),
+  isSidebarOpen: isEntityViewerSidebarOpen(state)
 });
 
 const mapDispatchToProps = {
-  setSidebarTabName
+  setSidebarTabName,
+  toggleSidebar
 };
 
 export default connect(

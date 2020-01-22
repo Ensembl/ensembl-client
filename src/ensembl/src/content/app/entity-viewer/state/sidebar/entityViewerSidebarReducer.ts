@@ -29,7 +29,10 @@ export default function entityViewerSidebarReducer(
           };
     case getType(actions.updateSidebar): {
       const oldStateFragment = state[action.payload.genomeId];
-      const newStateFragment = { ...oldStateFragment, ...action.payload.data };
+      const newStateFragment = {
+        ...oldStateFragment,
+        ...action.payload.fragment
+      };
       return {
         ...state,
         [action.payload.genomeId]: newStateFragment

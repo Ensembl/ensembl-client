@@ -8,3 +8,10 @@ export const getEntityViewerSidebarTabName = (state: RootState) => {
     ? state.entityViewer.sidebar[activeGenomeId].activeTabName
     : null;
 };
+
+export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  return activeGenomeId
+    ? state.entityViewer.sidebar[activeGenomeId].isOpen
+    : false;
+};
