@@ -70,7 +70,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
         <div className={mainClassNames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
-          <div className={styles.sideBarToolstrip}>
+          <div className={styles.sidebarToolstrip}>
             <SidebarModeToggle
               onClick={
                 props.isDrawerOpen ? props.onDrawerClose : props.onSidebarToggle
@@ -81,11 +81,11 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
                   : SidebarModeToggleAction.OPEN
               }
             />
-            <div className={styles.sideBarToolstripContent}>
+            <div className={styles.sidebarToolstripContent}>
               {props.sidebarToolstripContent}
             </div>
           </div>
-          <div className={styles.sideBar}>{props.sidebarContent}</div>
+          <div className={styles.sidebar}>{props.sidebarContent}</div>
           <div className={styles.drawer}>
             <CloseIcon
               className={styles.drawerClose}

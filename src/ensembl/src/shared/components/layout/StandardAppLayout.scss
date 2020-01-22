@@ -82,7 +82,7 @@ $drawerWindowWidth: 45px;
   transition: none;
 }
 
-.sideBar {
+.sidebar {
   flex: 0 0 auto;
   height: 100%;
   width: $sideBarContentWidth;
@@ -91,7 +91,7 @@ $drawerWindowWidth: 45px;
   background-color: white;
 }
 
-.sideBarToolstrip {
+.sidebarToolstrip {
   padding: 20px 0 30px;
   display: flex;
   flex-direction: column;
@@ -104,7 +104,6 @@ $drawerWindowWidth: 45px;
 }
 
 .sidebarToolstripContent {
-  width: 100%;
   overflow-x: hidden;
 }
 
@@ -126,6 +125,12 @@ $drawerWindowWidth: 45px;
   display: flex;
   justify-content: space-around;
   padding: 0 15px;
+}
+
+.sidebarIcon {
+  width: 22px;
+  height: 22px;
+  margin: 6px 6px 23px;
 }
 
 .drawer {

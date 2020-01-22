@@ -102,27 +102,27 @@ describe('StandardAppLayout', () => {
           isSidebarOpen: false
         };
         wrapper = render(<StandardAppLayout {...closedSidebarProps} />);
-        sidebarWrapper = wrapper.find('.sideBarWrapper');
-        expect(sidebarWrapper.hasClass('sideBarWrapperOpen')).toBe(false);
-        expect(sidebarWrapper.hasClass('sideBarWrapperClosed')).toBe(true);
-        expect(sidebarWrapper.hasClass('sideBarWrapperDrawerOpen')).toBe(false);
+        sidebarWrapper = wrapper.find('.sidebarWrapper');
+        expect(sidebarWrapper.hasClass('sidebarWrapperOpen')).toBe(false);
+        expect(sidebarWrapper.hasClass('sidebarWrapperClosed')).toBe(true);
+        expect(sidebarWrapper.hasClass('sidebarWrapperDrawerOpen')).toBe(false);
 
         const openSidebarProps = props;
         wrapper = render(<StandardAppLayout {...openSidebarProps} />);
-        sidebarWrapper = wrapper.find('.sideBarWrapper');
-        expect(sidebarWrapper.hasClass('sideBarWrapperOpen')).toBe(true);
-        expect(sidebarWrapper.hasClass('sideBarWrapperClosed')).toBe(false);
-        expect(sidebarWrapper.hasClass('sideBarWrapperDrawerOpen')).toBe(false);
+        sidebarWrapper = wrapper.find('.sidebarWrapper');
+        expect(sidebarWrapper.hasClass('sidebarWrapperOpen')).toBe(true);
+        expect(sidebarWrapper.hasClass('sidebarWrapperClosed')).toBe(false);
+        expect(sidebarWrapper.hasClass('sidebarWrapperDrawerOpen')).toBe(false);
 
         const openDrawerProps = {
           ...props,
           isDrawerOpen: true
         };
         wrapper = render(<StandardAppLayout {...openDrawerProps} />);
-        sidebarWrapper = wrapper.find('.sideBarWrapper');
-        expect(sidebarWrapper.hasClass('sideBarWrapperOpen')).toBe(true);
-        expect(sidebarWrapper.hasClass('sideBarWrapperClosed')).toBe(false);
-        expect(sidebarWrapper.hasClass('sideBarWrapperDrawerOpen')).toBe(true);
+        sidebarWrapper = wrapper.find('.sidebarWrapper');
+        expect(sidebarWrapper.hasClass('sidebarWrapperOpen')).toBe(true);
+        expect(sidebarWrapper.hasClass('sidebarWrapperClosed')).toBe(false);
+        expect(sidebarWrapper.hasClass('sidebarWrapperDrawerOpen')).toBe(true);
       });
     });
   });
