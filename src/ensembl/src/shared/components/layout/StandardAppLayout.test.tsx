@@ -61,23 +61,23 @@ describe('StandardAppLayout', () => {
 
     it('renders the top bar content in the top bar', () => {
       const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.topBar').find('.topbarContent').length).toBe(1);
+      expect(wrapper.find('.topbar').find('.topbarContent').length).toBe(1);
     });
 
     it('renders the sidebar content in the sidebar', () => {
       const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.sideBar').find('.sidebarContent').length).toBe(1);
+      expect(wrapper.find('.sidebar').find('.sidebarContent').length).toBe(1);
     });
 
     it('renders sidebar navigation in appropriate slot', () => {
       const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.topBar').find('.sidebarNavigation').length).toBe(1);
+      expect(wrapper.find('.topbar').find('.sidebarNavigation').length).toBe(1);
     });
 
     it('renders sidebar toolstrip content in the sidebar toolstrip', () => {
       const wrapper = render(<StandardAppLayout {...minimalProps} />);
       expect(
-        wrapper.find('.sideBarToolstripContent').find('.toolstripContent')
+        wrapper.find('.sidebarToolstripContent').find('.toolstripContent')
           .length
       ).toBe(1);
     });

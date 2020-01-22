@@ -9,7 +9,7 @@ import { SecondaryButton } from 'src/shared/components/button/Button';
 import styles from './Layout.stories.scss';
 
 const TopBarContent = () => (
-  <div className={styles.topBarContent}>This is top bar content</div>
+  <div className={styles.topbarContent}>This is top bar content</div>
 );
 
 const MainContent = () => (

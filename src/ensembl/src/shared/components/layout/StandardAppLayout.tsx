@@ -52,17 +52,17 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
   const shouldShowSidebarNavigation =
     props.viewportWidth > BreakpointWidth.LAPTOP || props.isSidebarOpen;
 
-  const topBarClassnames = classNames(
-    styles.topBar,
-    { [styles.topBar_withSidebarNavigation]: shouldShowSidebarNavigation },
-    { [styles.topBar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
+  const topbarClassnames = classNames(
+    styles.topbar,
+    { [styles.topbar_withSidebarNavigation]: shouldShowSidebarNavigation },
+    { [styles.topbar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
   );
 
   const sidebarWrapperClassnames = useSidebarWrapperClassNames(props);
 
   return (
     <div className={styles.standardAppLayout}>
-      <div className={topBarClassnames}>
+      <div className={topbarClassnames}>
         {props.topbarContent}
         {shouldShowSidebarNavigation && props.sidebarNavigation}
       </div>
@@ -131,11 +131,11 @@ const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
     (props.isSidebarOpen && !previousSidebarOpen); // <-- sidebar about to open
 
   return classNames(
-    styles.sideBarWrapper,
-    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
-    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
+    styles.sidebarWrapper,
+    { [styles.sidebarWrapperOpen]: props.isSidebarOpen },
+    { [styles.sidebarWrapperClosed]: !props.isSidebarOpen },
     {
-      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
+      [styles.sidebarWrapperDrawerOpen]: props.isDrawerOpen ?? false
     },
     { [styles.instantaneous]: isInstantaneous }
   );
