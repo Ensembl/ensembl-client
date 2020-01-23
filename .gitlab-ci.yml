@@ -78,7 +78,7 @@ Test_N_Build:internal:
     - src/ensembl/dist/
 
   only:
-  - master
+  - dev
 
 Test_N_Build:feature:
   image: node:12.13.0
@@ -163,7 +163,7 @@ Nginx:internal:
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
-  - master
+  - dev
 
   dependencies:
   - Test_N_Build:internal
@@ -282,7 +282,7 @@ Deploy:internal:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
   only:
-  - master
+  - dev
 
   dependencies:
   - Nginx:internal
