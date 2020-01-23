@@ -32,7 +32,7 @@
   color: $blue;
 }
 
-.entityViewerAccordionItem + .entityViewerAccordionItem {
+.entityViewerAccordionItem:not(:first-child) {
   border-color: transparent;
 }
 
