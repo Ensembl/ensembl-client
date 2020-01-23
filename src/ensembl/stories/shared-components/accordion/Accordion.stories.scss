@@ -19,3 +19,26 @@
   height: 350px;
   overflow-y: auto;
 }
+
+.entityViewerAccordion {
+  border-color: transparent;
+}
+
+.entityViewerAccordionHeader {
+  background-color: $light-grey;
+}
+
+.entityViewerAccordionButton {
+  color: $blue;
+}
+
+.entityViewerAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.entityViewerAccordionItemContent {
+  background-color: transparent;
+  border: 1px solid $light-grey;
+  border-top: none;
+  padding: 20px;
+}
