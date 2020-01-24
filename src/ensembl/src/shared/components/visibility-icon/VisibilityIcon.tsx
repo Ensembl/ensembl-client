@@ -1,5 +1,8 @@
 import React from 'react';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as EyePartial } from 'static/img/track-panel/eye-half.svg';
@@ -9,32 +12,34 @@ import { Status } from 'src/shared/types/status';
 import styles from './VisibilityIcon.scss';
 
 type VisibilityIconStatus =
-  | Status.DEFAULT
   | Status.SELECTED
   | Status.UNSELECTED
   | Status.DISABLED
   | Status.PARTIALLY_SELECTED;
 
 type VisibilityIconProps = {
-  buttonStatus: VisibilityIconStatus;
+  status: VisibilityIconStatus;
   description?: string;
   onClick: () => void;
 };
 
 export const VisibilityIcon = (props: VisibilityIconProps) => {
-  let status = props.buttonStatus;
+  const status = props.status;
+  let imageButtonStatus: ImageButtonStatus;
   let eyeIcon = Eye;
   let className = styles.default;
 
   if (status === Status.PARTIALLY_SELECTED) {
-    status = Status.DEFAULT;
+    imageButtonStatus = Status.DEFAULT;
     eyeIcon = EyePartial;
     className = styles.partiallySelected;
+  } else {
+    imageButtonStatus = status;
   }
 
   return (
     <ImageButton
-      buttonStatus={status}
+      status={imageButtonStatus}
       image={eyeIcon}
       description={props.description}
       classNames={{

@@ -28,11 +28,11 @@ describe('<ImageButton />', () => {
     expect(() => renderImageButton()).not.toThrow();
   });
 
-  describe('prop buttonStatus', () => {
-    it('has a buttonStatus set by default', () => {
+  describe('prop status', () => {
+    it('has a status set by default', () => {
       const wrapper = renderImageButton();
 
-      expect(wrapper.prop('buttonStatus')).toEqual(Status.DEFAULT);
+      expect(wrapper.prop('status')).toEqual(Status.DEFAULT);
     });
   });
 
@@ -81,7 +81,7 @@ describe('<ImageButton />', () => {
     });
 
     it('applies the respective className depending on the button status', () => {
-      const wrapper = renderImageButton({ buttonStatus: Status.SELECTED });
+      const wrapper = renderImageButton({ status: Status.SELECTED });
 
       expect(wrapper.find('.selected')).toHaveLength(1);
     });
@@ -104,7 +104,7 @@ describe('<ImageButton />', () => {
     it('does not call the onClick prop when clicked if the status is disabled', () => {
       const wrapper = renderImageButton({
         onClick,
-        buttonStatus: Status.DISABLED
+        status: Status.DISABLED
       });
 
       wrapper.simulate('click');

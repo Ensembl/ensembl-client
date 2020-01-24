@@ -216,7 +216,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={Status.DEFAULT}
+            status={Status.DEFAULT}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}
@@ -224,7 +224,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </div>
         <div className={styles.eyeHolder}>
           <VisibilityIcon
-            buttonStatus={trackStatus}
+            status={trackStatus}
             description={'enable/disable track'}
             onClick={toggleTrack}
           />

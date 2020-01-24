@@ -18,7 +18,7 @@ export type ImageButtonStatus =
   | Status.DISABLED;
 
 type Props = {
-  buttonStatus: ImageButtonStatus;
+  status: ImageButtonStatus;
   description: string;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   classNames?: { [key in ImageButtonStatus]?: string };
@@ -33,7 +33,7 @@ export const ImageButton = (props: Props) => {
   };
 
   const buttonProps =
-    props.buttonStatus === Status.DISABLED ? {} : { onClick: handleClick };
+    props.status === Status.DISABLED ? {} : { onClick: handleClick };
 
   const styles = props.classNames
     ? { ...defaultStyles, ...props.classNames }
@@ -41,7 +41,7 @@ export const ImageButton = (props: Props) => {
 
   const imageButtonClasses = classNames(
     imageButtonStyles.imageButton,
-    styles[props.buttonStatus]
+    styles[props.status]
   );
 
   const shouldShowTooltip = Boolean(props.description) && isHovered;
@@ -65,7 +65,7 @@ export const ImageButton = (props: Props) => {
 };
 
 ImageButton.defaultProps = {
-  buttonStatus: Status.DEFAULT,
+  status: Status.DEFAULT,
   description: ''
 };
 

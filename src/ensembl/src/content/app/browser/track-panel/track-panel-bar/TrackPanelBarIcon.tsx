@@ -55,7 +55,7 @@ const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
   return (
     <div className={styles.barIcon}>
       <ImageButton
-        buttonStatus={getViewIconStatus()}
+        status={getViewIconStatus()}
         description={props.iconConfig.description}
         onClick={toggleModalView}
         image={props.iconConfig.icon}

@@ -24,16 +24,16 @@ const icon = {
 };
 
 trackPanelButtonStories.add(icon.imageName, () => {
-  const [buttonStatus, setButtonStatus] = useState(Status.DEFAULT);
+  const [status, setStatus] = useState(Status.DEFAULT);
 
   const toggleImage = () => {
-    switch (buttonStatus) {
+    switch (status) {
       case Status.DEFAULT:
-        return setButtonStatus(Status.UNSELECTED);
+        return setStatus(Status.UNSELECTED);
       case Status.UNSELECTED:
-        return setButtonStatus(Status.SELECTED);
+        return setStatus(Status.SELECTED);
       default:
-        return setButtonStatus(Status.DEFAULT);
+        return setStatus(Status.DEFAULT);
     }
   };
   return (
@@ -42,15 +42,13 @@ trackPanelButtonStories.add(icon.imageName, () => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={buttonStatus as ImageButtonStatus}
+              status={status as ImageButtonStatus}
               description={'enable/disable'}
               image={icon.image}
               onClick={toggleImage}
             />
           </div>
-          <div className={classNames(styles.imageDescription)}>
-            {buttonStatus}
-          </div>
+          <div className={classNames(styles.imageDescription)}>{status}</div>
         </div>
 
         <div className={classNames(styles.codeContent)}>
@@ -60,7 +58,7 @@ trackPanelButtonStories.add(icon.imageName, () => {
           {`import { ReactComponent as ${icon.imageName} } from '${icon.imagePath}';`}
           <br />
           {`
-              <ImageButton buttonStatus={ImageButtonStatus.${buttonStatus.toUpperCase()}} 
+              <ImageButton status={ImageButtonStatus.${status.toUpperCase()}} 
                 description={'enable/disable'} 
                 image={${icon.imageName}}
               />
@@ -72,7 +70,7 @@ trackPanelButtonStories.add(icon.imageName, () => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={Status.UNSELECTED}
+              status={Status.UNSELECTED}
               description={'enable/disable'}
               image={icon.image}
             />
@@ -85,7 +83,7 @@ trackPanelButtonStories.add(icon.imageName, () => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={Status.SELECTED}
+              status={Status.SELECTED}
               description={'enable/disable'}
               image={icon.image}
             />
@@ -98,7 +96,7 @@ trackPanelButtonStories.add(icon.imageName, () => {
         <div className={classNames(styles.imageCard)}>
           <div className={classNames(styles.imageHolder)}>
             <ImageButton
-              buttonStatus={Status.DISABLED}
+              status={Status.DISABLED}
               description={'enable/disable'}
               image={icon.image}
             />

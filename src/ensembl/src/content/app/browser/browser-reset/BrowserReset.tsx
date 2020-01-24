@@ -42,7 +42,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   return (
     <div className={styles.resetButton}>
       <ImageButton
-        buttonStatus={getResetIconStatus()}
+        status={getResetIconStatus()}
         description={'Reset browser image'}
         image={resetIcon}
         onClick={handleClick}

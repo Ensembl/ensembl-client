@@ -118,7 +118,7 @@ const FiltersAccordion = (props: FiltersAccordionProps) => {
 
         <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
           <ImageButton
-            buttonStatus={Status.UNSELECTED}
+            status={Status.UNSELECTED}
             description={'Reset filters'}
             image={ResetIcon}
           />
