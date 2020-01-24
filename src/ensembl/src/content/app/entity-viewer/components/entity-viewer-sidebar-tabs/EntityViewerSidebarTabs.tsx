@@ -12,10 +12,10 @@ import {
   getEntityViewerSidebarTabName
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import styles from './EntityViewerSidebarTabs.scss';
-
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 import { RootState } from 'src/store';
+
+import styles from './EntityViewerSidebarTabs.scss';
 
 type Props = {
   activeTabName: SidebarTabName | null;
