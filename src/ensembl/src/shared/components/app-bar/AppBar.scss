@@ -3,6 +3,7 @@
 .appBar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, auto);
+  align-content: start;
   grid-template-areas:
     'top top'
     'main right';
