@@ -63,6 +63,12 @@ impl Agent {
         state.blocks.push(new.clone());
     }
 
+    pub(crate) fn add_block(&self, new: &Block) {
+        let state = self.state.lock().unwrap();
+        let last = state.blocks.len()-1;
+        state.blocks[last].add(&new);
+    }
+
     pub(crate) fn pop_block(&self) {
         self.state.lock().unwrap().blocks.pop();
     }

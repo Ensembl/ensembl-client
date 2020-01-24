@@ -28,6 +28,8 @@ impl<R> Future for TurnstileFuture<R> {
     fn poll(mut self: Pin<&mut Self>, _context: &mut Context) -> Poll<R> {
         if let Some(ref block) = self.block {
             if block.step_blocked() {
+                let block = self.block.as_ref().unwrap().clone();
+                self.context.add_block(&block);
                 return Poll::Pending;
             }
         } else {
