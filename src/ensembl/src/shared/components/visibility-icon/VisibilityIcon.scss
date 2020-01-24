@@ -1,10 +1,5 @@
 @import 'src/styles/common';
 
-.default {
-  svg {
-    fill: $dark-blue;
-  }
-}
 .selected {
   svg {
     fill: $dark-blue;
@@ -26,7 +21,7 @@
 .disabled {
   cursor: not-allowed;
   svg {
-    fill: $grey !important;
+    fill: $grey;
     opacity: 1;
   }
   &:before {

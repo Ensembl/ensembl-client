@@ -17,7 +17,7 @@ type VisibilityIconStatus =
 
 type VisibilityIconProps = {
   buttonStatus: VisibilityIconStatus;
-  description: string;
+  description?: string;
   onClick: () => void;
 };
 
@@ -46,10 +46,6 @@ export const VisibilityIcon = (props: VisibilityIconProps) => {
       onClick={props.onClick}
     />
   );
-};
-
-VisibilityIcon.defaultProps = {
-  description: ''
 };
 
 export default VisibilityIcon;
