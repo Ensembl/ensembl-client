@@ -11,7 +11,7 @@ import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg'
 
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
-export const EVSidebarToolstrip = () => {
+export const EntityViewerSidebarToolstrip = () => {
   return (
     <>
       <div className={styles.sidebarIcon} key="search">
@@ -50,4 +50,4 @@ export const EVSidebarToolstrip = () => {
   );
 };
 
-export default EVSidebarToolstrip;
+export default EntityViewerSidebarToolstrip;

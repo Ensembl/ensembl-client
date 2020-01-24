@@ -14,8 +14,8 @@ import { setDataFromUrl } from 'src/content/app/entity-viewer/state/entityViewer
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
-import EVSidebar from './components/ev-sidebar/EVSideBar';
-import EVSidebarToolstrip from './components/ev-sidebar-toolstrip/EVSidebarToolstrip';
+import EntityViewerSidebar from './components/entity-viewer-sidebar/EntityViewerSideBar';
+import EntityViewerSidebarToolstrip from './components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
 
 import styles from './EntityViewer.scss';
 
@@ -50,9 +50,9 @@ const EntityViewer = (props: Props) => {
       {params.entityId ? (
         <StandardAppLayout
           mainContent={<div>Main content is coming...</div>}
-          sidebarContent={<EVSidebar />}
+          sidebarContent={<EntityViewerSidebar />}
           sidebarNavigation={<div>Sidebar navigation goes here</div>}
-          sidebarToolstripContent={<EVSidebarToolstrip />}
+          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
           topbarContent={<div>Entity info summary goes here</div>}
           isSidebarOpen={isSidebarOpen}
           onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)}
