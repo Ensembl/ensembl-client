@@ -12,21 +12,38 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
     (lastTick.toExponential().match(/e\+(\d+)/) as string[])[1]
   );
   const base = 10 ** exponent;
-  let labelledTicks = ticks.filter((number) => number % base === 0);
+
+  let labelledTicks = getLabelledTicks(ticks, base, scale);
+
   if (labelledTicks.length > 5) {
     // e.g. for 900,000, d3 may offer 9 ticks [100000, 200000, 300000, etc]
     // that's too much for us; we will want a single 500000 tick
     const incrementedBase = base * 10;
     const halfIncrementedBase = incrementedBase / 2;
-    labelledTicks = ticks.filter(
-      (number) => number % halfIncrementedBase === 0
-    );
+    labelledTicks = getLabelledTicks(ticks, halfIncrementedBase, scale);
   }
 
   return {
     ticks,
     labelledTicks
   };
+};
+
+const getLabelledTicks = (
+  ticks: number[],
+  base: number,
+  scale: ScaleLinear<number, number>
+) => {
+  const maxDomainValue = scale.domain()[1];
+  return ticks
+    .filter((number) => number % base === 0)
+    .filter((number, index, array) => {
+      const lastIndex = array.length - 1;
+      return (
+        index !== lastIndex ||
+        (index === lastIndex && maxDomainValue - number > maxDomainValue * 0.1)
+      );
+    });
 };
 
 // export const getStepLengthInNucleotides = (start: number, end: number) => {
