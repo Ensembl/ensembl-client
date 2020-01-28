@@ -14,7 +14,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   const base = 10 ** exponent; // e.g. 100, 1000, 10000, etc.
   ticks = ticks.filter((number) => number % base === 0); // throw away all the possible 'inelegant' intermediate ticks, such as 50, etc.
 
-  let labelledTicks = getLabelledTicks(ticks, base, scale);
+  let labelledTicks = getLabelledTicks(ticks, base, length);
 
   if (labelledTicks.length > 5) {
     // that's too many labels; let's increase out base
@@ -23,7 +23,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
     const newLabelledTicks = getLabelledTicks(
       ticks,
       halfIncrementedBase,
-      scale
+      length
     );
     if (newLabelledTicks.length > 0 && newLabelledTicks.length < 5) {
       labelledTicks = newLabelledTicks;
@@ -31,7 +31,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   } else if (!labelledTicks.length) {
     // let's decrease out base
     const halfCurrentBase = base / 2;
-    labelledTicks = getLabelledTicks(ticks, halfCurrentBase, scale);
+    labelledTicks = getLabelledTicks(ticks, halfCurrentBase, length);
   }
 
   return {
@@ -43,16 +43,15 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
 const getLabelledTicks = (
   ticks: number[],
   base: number,
-  scale: ScaleLinear<number, number>
+  totalLength: number
 ) => {
-  const maxDomainValue = scale.domain()[1];
   return ticks
     .filter((number) => number % base === 0)
     .filter((number, index, array) => {
       const lastIndex = array.length - 1;
       return (
         index !== lastIndex ||
-        (index === lastIndex && maxDomainValue - number > maxDomainValue * 0.1)
+        (index === lastIndex && totalLength - number > totalLength * 0.1)
       );
     });
 };
