@@ -18,10 +18,11 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerSidebarTabs from 'src/content/app/entity-viewer/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
 
-import styles from './EntityViewer.scss';
-
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+
+import styles from './EntityViewer.scss';
 
 type Props = {
   activeGenomeId: string | null;
@@ -30,7 +31,7 @@ type Props = {
   viewportWidth: BreakpointWidth;
   setDataFromUrl: (params: EntityViewerParams) => void;
   fetchGenomeData: (genomeId: string) => void;
-  toggleSidebar: (isOpen?: boolean) => void;
+  toggleSidebar: (status?: SidebarStatus) => void;
 };
 
 export type EntityViewerParams = {

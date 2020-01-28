@@ -12,5 +12,7 @@ export enum Status {
   DISABLED = 'disabled',
   DEFAULT = 'default',
   HIGHLIGHTED = 'highlighted',
-  INACTIVE = 'inactive'
+  INACTIVE = 'inactive',
+  OPEN = 'open',
+  CLOSED = 'closed'
 }

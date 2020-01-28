@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/components/image-button/ImageButton';
 
 import { Status } from 'src/shared/types/status';
 
@@ -14,7 +16,9 @@ type Props = {
 import styles from './ImageButton.stories.scss';
 
 const ImageButtonParent = (props: Props) => {
-  const [buttonStatus, setVisible] = useState(Status.DEFAULT);
+  const [buttonStatus, setVisible] = useState<ImageButtonStatus>(
+    Status.DEFAULT
+  );
 
   const toggleImage = () => {
     switch (buttonStatus) {

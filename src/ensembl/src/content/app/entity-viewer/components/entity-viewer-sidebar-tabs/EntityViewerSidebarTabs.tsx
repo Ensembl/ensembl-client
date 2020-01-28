@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 
 import {
-  toggleSidebar,
+  openSidebar,
   setSidebarTabName
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
@@ -21,7 +21,7 @@ type Props = {
   activeTabName: SidebarTabName | null;
   isSidebarOpen: boolean;
   setSidebarTabName: (name: SidebarTabName) => void;
-  toggleSidebar: (isOpen?: boolean) => void;
+  openSidebar: () => void;
 };
 
 const EntityViewerSidebarTabs = (props: Props) => {
@@ -31,7 +31,7 @@ const EntityViewerSidebarTabs = (props: Props) => {
 
   const handleTabChange = (name: SidebarTabName) => {
     if (!props.isSidebarOpen) {
-      props.toggleSidebar(true);
+      props.openSidebar();
     }
     props.setSidebarTabName(name);
   };
@@ -67,7 +67,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = {
   setSidebarTabName,
-  toggleSidebar
+  openSidebar
 };
 
 export default connect(

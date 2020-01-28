@@ -1,14 +1,18 @@
+import { Status } from 'src/shared/types/status';
+
 export enum SidebarTabName {
   OVERVIEW = 'overview',
   PUBLICATIONS = 'publications'
 }
+
+export type SidebarStatus = Status.OPEN | Status.CLOSED;
 
 export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarStateForGenome;
 }>;
 
 export type EntityViewerSidebarStateForGenome = Readonly<{
-  isOpen: boolean;
+  status: SidebarStatus;
   activeTabName: SidebarTabName;
 }>;
 
@@ -16,7 +20,7 @@ export const buildInitialStateForGenome = (
   genomeId: string
 ): EntityViewerSidebarState => ({
   [genomeId]: {
-    isOpen: true,
+    status: Status.OPEN,
     activeTabName: SidebarTabName.OVERVIEW
   }
 });

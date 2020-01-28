@@ -7,8 +7,10 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 
 import {
   EntityViewerSidebarStateForGenome,
-  SidebarTabName
+  SidebarTabName,
+  SidebarStatus
 } from './entityViewerSidebarState';
+import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
 
 export const updateSidebar = createAction(
@@ -38,15 +40,19 @@ export const toggleSidebar: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (isOpen?: boolean) => (dispatch, getState: () => RootState) => {
+>> = (status?: SidebarStatus) => (dispatch, getState: () => RootState) => {
   const state = getState();
   const genomeId = getEntityViewerActiveGenomeId(state);
   if (!genomeId) {
     return;
   }
-  if (isOpen === undefined) {
+  if (status === undefined) {
     const isCurrentlyOpen = isEntityViewerSidebarOpen(state);
-    isOpen = !isCurrentlyOpen;
+    status = isCurrentlyOpen ? Status.CLOSED : Status.OPEN;
   }
-  dispatch(updateSidebar({ genomeId, fragment: { isOpen } }));
+  dispatch(updateSidebar({ genomeId, fragment: { status } }));
 };
+
+export const openSidebar = () => toggleSidebar(Status.OPEN);
+
+export const closeSidebar = () => toggleSidebar(Status.CLOSED);
