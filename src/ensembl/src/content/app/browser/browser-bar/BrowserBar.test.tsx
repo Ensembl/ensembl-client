@@ -1,13 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { BrowserBar, BrowserInfo, BrowserBarProps } from './BrowserBar';
+import { BrowserBar, BrowserBarProps } from './BrowserBar';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserLocationIndicator from 'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator';
-import {
-  GeneSummaryStrip,
-  RegionSummaryStrip
-} from 'src/shared/components/feature-summary-strip';
+import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 
 import { ChrLocation } from '../browserState';
 
@@ -56,21 +53,21 @@ describe('<BrowserBar />', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ ensObject: createEnsObject('gene') })
       );
-      expect(renderedBrowserBar.find(GeneSummaryStrip).length).toBe(1);
+      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
     });
 
     test('renders RegionSummaryStrip if focus object is region', () => {
       const renderedBrowserBar = mount(
         renderBrowserBar({ ensObject: createEnsObject('region') })
       );
-      expect(renderedBrowserBar.find(RegionSummaryStrip).length).toBe(1);
+      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
     });
   });
 
   describe('behaviour', () => {
-    test('shows BrowserInfo panel by default', () => {
+    test('shows FeatureSummaryStrip panel by default', () => {
       const renderedBrowserBar = mount(renderBrowserBar());
-      expect(renderedBrowserBar.find(BrowserInfo).length).toBe(1);
+      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
     });
   });
 });
