@@ -4,23 +4,34 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   // use d3 scale to get 'approximately' 10 ticks (exact number not guaranteed)
   // which are "human-readable" (i.e. are multiples of powers of 10)
   // and are guaranteed to fall within the scale's domain
-  const ticks = scale.ticks();
+  let ticks = scale.ticks();
+  const length = scale.domain()[1]; // getting back the initial length value on which the scale was based
 
   // choose only "important" ticks for labelling
-  const lastTick = ticks[ticks.length - 1];
   const exponent = Number(
-    (lastTick.toExponential().match(/e\+(\d+)/) as string[])[1]
+    (length.toExponential().match(/e\+(\d+)/) as string[])[1]
   );
-  const base = 10 ** exponent;
+  const base = 10 ** exponent; // e.g. 100, 1000, 10000, etc.
+  ticks = ticks.filter((number) => number % base === 0); // throw away all the possible 'inelegant' intermediate ticks, such as 50, etc.
 
   let labelledTicks = getLabelledTicks(ticks, base, scale);
 
   if (labelledTicks.length > 5) {
-    // e.g. for 900,000, d3 may offer 9 ticks [100000, 200000, 300000, etc]
-    // that's too much for us; we will want a single 500000 tick
+    // that's too many labels; let's increase out base
     const incrementedBase = base * 10;
     const halfIncrementedBase = incrementedBase / 2;
-    labelledTicks = getLabelledTicks(ticks, halfIncrementedBase, scale);
+    const newLabelledTicks = getLabelledTicks(
+      ticks,
+      halfIncrementedBase,
+      scale
+    );
+    if (newLabelledTicks.length > 0 && newLabelledTicks.length < 5) {
+      labelledTicks = newLabelledTicks;
+    }
+  } else if (!labelledTicks.length) {
+    // let's decrease out base
+    const halfCurrentBase = base / 2;
+    labelledTicks = getLabelledTicks(ticks, halfCurrentBase, scale);
   }
 
   return {
