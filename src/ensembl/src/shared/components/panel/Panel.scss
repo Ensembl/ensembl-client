@@ -1,0 +1,45 @@
+@import 'src/styles/common';
+
+.panelDefault {
+  position: relative;
+  min-height: 100px;
+  border-radius: 5px;
+  width: 600px;
+  max-width: 100%;
+  background: $white;
+  box-shadow: 1px 1px 4px $shadow-color;
+}
+
+.headerDefault {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color: $light-grey;
+  box-shadow: 0px 1px 3px $medium-light-grey;
+  height: 34px;
+  padding: 4px 0 4px 10px;
+  width: 100%;
+  line-height: 24px;
+}
+
+.bodyDefault {
+  position: relative;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  overflow: auto;
+  height: calc(100% - 54px);
+  margin-top: 10px;
+}
+
+.closeButton {
+  position: absolute;
+  right: 10px;
+  top: 40px;
+  cursor: pointer;
+  img {
+    height: 15px;
+    width: 15px;
+  }
+}

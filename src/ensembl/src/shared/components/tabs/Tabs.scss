@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.tabsContainer {
+  display: flex;
+  font-size: 14px;
+  overflow-x: auto;
+  height: 40px;
+}
+
+.tab {
+  padding: 3px 18px;
+  color: $dark-blue;
+  cursor: pointer;
+  margin-right: 3px;
+  white-space: nowrap;
+}
+
+.disabled {
+  color: $dark-grey;
+  cursor: default;
+}
+
+.selected {
+  color: $black;
+  position: relative;
+  cursor: default;
+}
