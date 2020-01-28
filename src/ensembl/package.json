@@ -51,9 +51,11 @@
   },
   "dependencies": {
     "@sentry/browser": "5.11.1",
+    "@types/d3": "5.7.2",
     "classnames": "2.2.6",
     "connected-react-router": "6.6.1",
     "core-js": "3.6.4",
+    "d3": "5.15.0",
     "dotenv": "8.2.0",
     "ensembl-genome-browser": "https://raw.githubusercontent.com/Ensembl/ensembl-genome-browser-assets/master/assets-80f51620ed443c640cdfd6b5aebd505b.tar.gz",
     "koa-proxy": "1.0.0-alpha.3",
