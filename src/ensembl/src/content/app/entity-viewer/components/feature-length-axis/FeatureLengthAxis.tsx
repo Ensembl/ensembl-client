@@ -1,12 +1,14 @@
 import React from 'react';
 import { scaleLinear } from 'd3';
 
+import { getTicks } from './featureLengthAxisHelper';
+
 import styles from './FeatureLengthAxis.scss';
 
-import {
-  getStepLengthInNucleotides,
-  chooseTickForLabel
-} from './featureLengthAxisHelper';
+// import {
+//   getStepLengthInNucleotides,
+//   chooseTickForLabel
+// } from './featureLengthAxisHelper';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
 type Props = {
@@ -15,8 +17,8 @@ type Props = {
   standalone: boolean; // wrap the component in an svg element if true
 };
 
-const getScale = (length: number, width: number) => (x: number) =>
-  Math.round((x * width) / length);
+// const getScale = (length: number, width: number) => (x: number) =>
+//   Math.round((x * width) / length);
 
 const FeatureLengthAxis = (props: Props) => {
   const domain = [1, props.length];
@@ -24,17 +26,46 @@ const FeatureLengthAxis = (props: Props) => {
   const scale = scaleLinear()
     .domain(domain)
     .range(range);
-  const ticks = scale.ticks(10);
-  const firstTick = ticks[ticks.length - 1];
-  const exponent = Number(
-    (firstTick.toExponential().match(/e\+(\d+)/) as string[])[1]
-  );
-  const base = 10 ** exponent;
-  console.log(scale.ticks(10));
-  console.log('base', base);
-  console.log(ticks.filter((number) => number % ((base * 10) / 2) === 0));
+  const { ticks, labelledTicks } = getTicks(scale);
 
-  return null;
+  const renderedAxis = (
+    <g>
+      <rect
+        className={styles.axis}
+        x={0}
+        y={0}
+        width={props.width}
+        height={1}
+      />
+      <text className={styles.label} x={0} y={20} textAnchor="end">
+        bp 1
+      </text>
+      {ticks.map((tick) => (
+        <g key={tick} transform={`translate(${scale(tick)})`}>
+          <rect className={styles.tick} key={tick} width={1} height={6} />
+          {labelledTicks.includes(tick) && (
+            <text className={styles.label} x={0} y={20} textAnchor="middle">
+              {getCommaSeparatedNumber(tick)}
+            </text>
+          )}
+        </g>
+      ))}
+      <text
+        className={styles.label}
+        x={0}
+        y={20}
+        textAnchor="start"
+        transform={`translate(${scale(props.length)})`}
+      >
+        {getCommaSeparatedNumber(props.length)}
+      </text>
+    </g>
+  );
+  return (
+    <svg className={styles.containerSvg} width={props.width}>
+      {renderedAxis}
+    </svg>
+  );
 };
 
 FeatureLengthAxis.defaultProps = {
