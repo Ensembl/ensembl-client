@@ -1,20 +1,9 @@
-import { ActionType, getType } from 'typesafe-actions';
+import { combineReducers } from 'redux';
 
-import { initialState, EntityViewerState } from './entityViewerState';
-import * as entityViewerActions from './entityViewerActions';
+import entityViewerGeneralReducer from './general/entityViewerGeneralReducer';
+import entityViewerSidebarReducer from './sidebar/entityViewerSidebarReducer';
 
-export default function entityViewerReducer(
-  state: EntityViewerState = initialState,
-  action: ActionType<typeof entityViewerActions>
-) {
-  switch (action.type) {
-    case getType(entityViewerActions.setActiveGenomeId): {
-      return {
-        ...state,
-        activeGenomeId: action.payload
-      };
-    }
-    default:
-      return state;
-  }
-}
+export default combineReducers({
+  general: entityViewerGeneralReducer,
+  sidebar: entityViewerSidebarReducer
+});

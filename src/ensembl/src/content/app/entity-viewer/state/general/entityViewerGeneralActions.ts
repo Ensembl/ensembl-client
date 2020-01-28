@@ -7,7 +7,7 @@ import { ThunkAction } from 'redux-thunk';
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/entityViewerSelectors';
+import { getEntityViewerActiveGenomeId } from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';

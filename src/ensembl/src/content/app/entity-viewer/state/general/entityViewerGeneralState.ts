@@ -1,7 +1,7 @@
-export type EntityViewerState = Readonly<{
+export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
 }>;
 
-export const initialState: EntityViewerState = {
+export const initialState: EntityViewerGeneralState = {
   activeGenomeId: null // FIXME add entity viewer storage service
 };

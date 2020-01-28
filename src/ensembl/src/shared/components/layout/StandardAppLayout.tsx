@@ -73,7 +73,9 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
           <div className={styles.sideBarToolstrip}>
             <SidebarModeToggle
               onClick={
-                props.isDrawerOpen ? props.onDrawerClose : props.onSidebarToggle
+                props.isDrawerOpen
+                  ? () => props.onDrawerClose()
+                  : () => props.onSidebarToggle()
               }
               showAction={
                 props.isSidebarOpen

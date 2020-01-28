@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from 'react-router';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/components/image-button/ImageButton';
 
 import { Status } from 'src/shared/types/status';
 
@@ -60,7 +62,7 @@ const getImageButtonStatus = ({
 }: {
   isDisabled: boolean;
   isActive: boolean;
-}): Status => {
+}): ImageButtonStatus => {
   if (isDisabled) {
     return Status.DISABLED;
   } else if (isActive) {
