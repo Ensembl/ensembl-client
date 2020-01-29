@@ -51,7 +51,6 @@
   },
   "dependencies": {
     "@sentry/browser": "5.11.1",
-    "@types/d3": "5.7.2",
     "classnames": "2.2.6",
     "connected-react-router": "6.6.1",
     "core-js": "3.6.4",
@@ -93,6 +92,7 @@
     "@storybook/react": "5.3.6",
     "@svgr/webpack": "5.0.1",
     "@types/classnames": "2.2.9",
+    "@types/d3": "5.7.2",
     "@types/enzyme": "3.10.4",
     "@types/enzyme-adapter-react-16": "1.0.5",
     "@types/faker": "4.1.9",
