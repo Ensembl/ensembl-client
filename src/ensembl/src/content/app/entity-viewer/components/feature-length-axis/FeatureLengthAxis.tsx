@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { scaleLinear } from 'd3';
 
 import { getTicks } from './featureLengthAxisHelper';
@@ -7,9 +7,15 @@ import styles from './FeatureLengthAxis.scss';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
 
+type Ticks = {
+  ticks: number[];
+  labelledTicks: number[];
+};
+
 type Props = {
   length: number; // number of biological building blocks (e.g. nucleotides) in the feature
   width: number; // number of pixels allotted to the axis on the screen
+  onTicksCalculated?: (ticks: Ticks) => void;
   standalone: boolean; // wrap the component in an svg element if true
 };
 
@@ -20,6 +26,11 @@ const FeatureLengthAxis = (props: Props) => {
     .domain(domain)
     .range(range);
   const { ticks, labelledTicks } = getTicks(scale);
+
+  useEffect(() => {
+    props.onTicksCalculated &&
+      props.onTicksCalculated({ ticks, labelledTicks });
+  }, [props.length]);
 
   const renderedAxis = (
     <g>
@@ -54,6 +65,7 @@ const FeatureLengthAxis = (props: Props) => {
       </text>
     </g>
   );
+
   return props.standalone ? (
     <svg className={styles.containerSvg} width={props.width}>
       {renderedAxis}

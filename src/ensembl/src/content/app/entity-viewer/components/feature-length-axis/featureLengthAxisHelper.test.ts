@@ -67,20 +67,22 @@ const examples: Example[] = [
   }
 ];
 
-describe('getTicks', () => {
-  const width = 600;
+describe('featureLengthAxisHelper', () => {
+  describe('getTicks', () => {
+    const width = 600;
 
-  const generateScale = (length: number) =>
-    scaleLinear()
-      .domain([1, length])
-      .range([0, width]);
+    const generateScale = (length: number) =>
+      scaleLinear()
+        .domain([1, length])
+        .range([0, width]);
 
-  it('produces expected labelled ticks', () => {
-    for (const example of examples) {
-      const scale = generateScale(example.length);
-      const { ticks, labelledTicks } = getTicks(scale);
-      expect(ticks).toEqual(example.ticks);
-      expect(labelledTicks).toEqual(example.labelledTicks);
-    }
+    it('produces expected labelled ticks', () => {
+      for (const example of examples) {
+        const scale = generateScale(example.length);
+        const { ticks, labelledTicks } = getTicks(scale);
+        expect(ticks).toEqual(example.ticks);
+        expect(labelledTicks).toEqual(example.labelledTicks);
+      }
+    });
   });
 });
