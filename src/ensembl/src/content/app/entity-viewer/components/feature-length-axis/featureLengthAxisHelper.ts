@@ -5,9 +5,9 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   // which are "human-readable" (i.e. are multiples of powers of 10)
   // and are guaranteed to fall within the scale's domain
   let ticks = scale.ticks();
-  const length = scale.domain()[1]; // getting back the initial length value on which the scale was based
+  const length = scale.domain()[1]; // get back the initial length value on which the scale is based
 
-  // choose only "important" ticks for labelling
+  // choose only the "important" ticks for labelling
   const exponent = Number(
     (length.toExponential().match(/e\+(\d+)/) as string[])[1]
   );
@@ -31,7 +31,8 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   } else if (!labelledTicks.length) {
     // let's decrease out base
     const halfCurrentBase = base / 2;
-    labelledTicks = getLabelledTicks(ticks, halfCurrentBase, length);
+    ticks = [...ticks, halfCurrentBase].sort();
+    labelledTicks = [halfCurrentBase];
   }
 
   return {
