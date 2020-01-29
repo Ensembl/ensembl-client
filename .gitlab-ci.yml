@@ -8,7 +8,6 @@ stages:
 variables:
   CONTAINER_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}
   CONTAINER_INTERNAL_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}-internal
-  KUBECONFIG: /etc/deploy/config
   KUBECONTEXT: ens-dev-ctx
   DEPLOYENV: dev
   ENVIRONMENT: production
@@ -197,6 +196,7 @@ Staging:
   stage: deploy
   image: alpine
   before_script:
+  - export KUBECONFIG=/etc/deploy/config
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
   script:
@@ -225,6 +225,7 @@ Live:
   stage: deploy
   image: alpine
   before_script:
+  - export KUBECONFIG=/etc/deploy/config
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
   script:
@@ -253,6 +254,7 @@ Deploy:internal:
   stage: deploy
   image: alpine
   before_script:
+  - export KUBECONFIG=/etc/deploy/config
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
 
@@ -282,6 +284,7 @@ Deploy:feature:
   stage: deploy
   image: alpine
   before_script:
+  - export KUBECONFIG=/etc/deploy/config
   - mkdir -p /etc/deploy
   - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
 
