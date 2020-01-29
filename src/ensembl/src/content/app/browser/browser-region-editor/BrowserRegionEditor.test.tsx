@@ -19,7 +19,7 @@ import {
 } from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
 
-describe('<BrowserRegionEditor', () => {
+describe('<BrowserRegionEditor />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });

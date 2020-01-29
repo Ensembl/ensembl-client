@@ -18,34 +18,6 @@
   }
 }
 
-.disabled {
-  cursor: not-allowed;
-  svg {
-    fill: $grey;
-    opacity: 1;
-  }
-  &:before {
-    position: absolute;
-    content: '';
-    top: 50%;
-    border-color: #2c343a;
-    margin-top: -1px;
-    border-top: 2px solid red;
-    transform: rotate(-45deg);
-    width: 100%;
-  }
-  &:after {
-    position: absolute;
-    content: '';
-    left: 0px;
-    border-color: #2c343a;
-    border: 2px solid red;
-    border-radius: 50%;
-    height: 100%;
-    width: 100%;
-  }
-}
-
 .partiallySelected {
   svg {
     fill: $dark-blue;

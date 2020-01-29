@@ -14,7 +14,6 @@ import styles from './VisibilityIcon.scss';
 type VisibilityIconStatus =
   | Status.SELECTED
   | Status.UNSELECTED
-  | Status.DISABLED
   | Status.PARTIALLY_SELECTED;
 
 type VisibilityIconProps = {
@@ -45,8 +44,7 @@ export const VisibilityIcon = (props: VisibilityIconProps) => {
       classNames={{
         [Status.DEFAULT]: className,
         [Status.SELECTED]: styles.selected,
-        [Status.UNSELECTED]: styles.unselected,
-        [Status.DISABLED]: styles.disabled
+        [Status.UNSELECTED]: styles.unselected
       }}
       onClick={props.onClick}
     />

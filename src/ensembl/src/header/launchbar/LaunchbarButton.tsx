@@ -33,7 +33,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
         [Status.SELECTED]: styles.launchbarButtonSelectedImage,
         [Status.DISABLED]: styles.launchbarButtonDisabledImage
       }}
-      status={imageButtonStatus as ImageButtonStatus}
+      status={imageButtonStatus}
       description={props.description}
       image={props.icon}
     />
