@@ -55,6 +55,30 @@ Test_N_Build:
   - dev
   - master
 
+Test_N_Build:WP-HX:
+  image: node:12.13.0
+  stage: test_build_static
+
+  before_script:
+  - cd src/ensembl
+  - npm ci
+
+  script:
+  - npm run test
+  - export NODE_ENV=production
+  - export GOOGLE_ANALYTICS_KEY=${GA_KEY}
+  - export ENVIRONMENT=production
+  - export API_HOST=""
+  - npm run build
+
+  artifacts:
+    name: static_assets
+    paths:
+    - src/ensembl/dist/
+
+  only:
+  - /^migration\/.*$/
+
 Test_N_Build:internal:
   image: node:12.13.0
   stage: test_build_static
@@ -131,6 +155,32 @@ Nginx:
 
   dependencies:
   - Test_N_Build
+
+Nginx:WP:
+  image: docker
+
+  services:
+    - docker:dind
+
+  stage: build_docker_images
+
+  before_script:
+  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
+
+  script:
+  - apk update && apk add git
+  - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
+  - sed -i "s/-<DEPLOYMENT_ENV>//g" ensembl-client-nginx/config/conf.d/local.conf
+  - cat ensembl-client-nginx/config/conf.d/local.conf
+  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
+  - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
+  - docker push ${CONTAINER_IMAGE}
+  - docker rmi ${CONTAINER_IMAGE}
+  - docker logout "$GITLAB_REGISTRY_URL"
+
+  only:
+  - /^migration\/.*$/
 
 Nginx:internal:
   image: docker
@@ -220,6 +270,20 @@ Staging:
 
   dependencies:
   - Nginx
+
+Staging:WP-HX:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  environment:
+    name : wp-hx-staging
+  script:
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - git -C ensembl-client-caas-deploy/ checkout migration/wp-hx
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+
+  only:
+  - /^migration\/.*$/
 
 Live:
   stage: deploy
