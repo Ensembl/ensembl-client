@@ -41,8 +41,7 @@ storiesOf('Components|EntityViewer/FeatureLengthAxis', module).add(
 
     return (
       <div className={styles.container}>
-        <FeatureLengthAxis length={length} width={800} />
-
+        <FeatureLengthAxis length={length} width={800} standalone={true} />
         <div>
           <LengthInputForm value={length} onChange={handleLenghtChange} />
         </div>
