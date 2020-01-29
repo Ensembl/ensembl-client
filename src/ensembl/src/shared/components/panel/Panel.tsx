@@ -5,7 +5,7 @@ import closeIcon from 'static/img/shared/close.svg';
 
 import styles from './Panel.scss';
 
-type Props = {
+export type PanelProps = {
   header: string | JSX.Element;
   children: JSX.Element;
   classNames?: {
@@ -17,18 +17,18 @@ type Props = {
   onClose?: () => void;
 };
 
-const Panel = (props: Props) => {
+const Panel = (props: PanelProps) => {
   const { header, onClose, classNames } = props;
 
   const panelClassNames = classNames
-    ? classNamesMerger(classNames.panel, styles.panelDefault)
-    : styles.panelDefault;
+    ? classNamesMerger(classNames.panel, styles.panel)
+    : styles.panel;
   const headerClassNames = classNames
-    ? classNamesMerger(classNames.header, styles.headerDefault)
-    : styles.headerDefault;
+    ? classNamesMerger(classNames.header, styles.header)
+    : styles.header;
   const bodyClassNames = classNames
-    ? classNamesMerger(classNames.body, styles.bodyDefault)
-    : styles.bodyDefault;
+    ? classNamesMerger(classNames.body, styles.body)
+    : styles.body;
 
   const closeButtonClassNames = classNames
     ? classNamesMerger(classNames.closeButton, styles.closeButton)
