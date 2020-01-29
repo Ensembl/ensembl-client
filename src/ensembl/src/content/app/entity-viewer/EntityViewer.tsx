@@ -23,6 +23,7 @@ import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './EntityViewer.scss';
+import EntityViewerContent from './components/entity-viewer-content/EntityViewerContent';
 
 type Props = {
   activeGenomeId: string | null;
@@ -51,7 +52,7 @@ const EntityViewer = (props: Props) => {
       <EntityViewerAppBar />
       {params.entityId ? (
         <StandardAppLayout
-          mainContent={<div>Main content is coming...</div>}
+          mainContent={<EntityViewerContent />}
           sidebarContent={<div>Sidebar content is coming...</div>}
           sidebarNavigation={<EntityViewerSidebarTabs />}
           topbarContent={<div>Entity info summary goes here</div>}
