@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 
-import defaultStyles from './Tabs.scss';
+import styles from './Tabs.scss';
 
 export type Tab = {
   title: string;
@@ -24,19 +24,16 @@ export const Tabs = (props: TabsProps) => {
   const [selectedTab, setSelectedTab] = useState(props.selectedTab);
 
   const getTabClassNames = (tab: Tab) => {
-    const defaultClassNames = classNames(
-      props.classNames?.default,
-      defaultStyles.tab
-    );
+    const defaultClassNames = classNames(props.classNames?.default, styles.tab);
 
     const disabledClassNames = classNames(
       props.classNames?.disabled,
-      defaultStyles.disabled
+      styles.disabled
     );
 
     const selectedClassNames = classNames(
       props.classNames?.selected,
-      defaultStyles.selected
+      styles.selected
     );
 
     return classNames(defaultClassNames, {
@@ -46,7 +43,7 @@ export const Tabs = (props: TabsProps) => {
   };
 
   const tabsContainerClassName = classNames(
-    defaultStyles.tabsContainer,
+    styles.tabsContainer,
     props.classNames?.tabsContainer
   );
 

@@ -31,7 +31,7 @@ storiesOf('Components|Shared Components/Tabs', module)
       <div className={styles.fullPageWrapper}>{renderTabs(defaultProps)}</div>
     );
   })
-  .add('panel-header', () => {
+  .add('panel-header-style', () => {
     const tabClassNames = {
       default: styles.defaultTabPanel,
       selected: styles.selectedTabPanel,
@@ -45,7 +45,7 @@ storiesOf('Components|Shared Components/Tabs', module)
       </div>
     );
   })
-  .add('entity-viewer', () => {
+  .add('entity-viewer-style', () => {
     const tabClassNames = {
       default: styles.defaultTabDark,
       selected: styles.selectedTabDark,

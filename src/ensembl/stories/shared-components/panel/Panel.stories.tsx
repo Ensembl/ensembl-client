@@ -42,15 +42,6 @@ storiesOf('Components|Shared Components/Panel', module)
       </Panel>
     </div>
   ))
-  .add('default-with-tabs', () => {
-    return (
-      <div className={styles.fullPageWrapper}>
-        <Panel header={tabs} onClose={onClose}>
-          <div>Panel Content</div>
-        </Panel>
-      </div>
-    );
-  })
   .add('full-page', () => (
     <div className={styles.fullPageWrapper}>
       <Panel
@@ -64,7 +55,7 @@ storiesOf('Components|Shared Components/Panel', module)
       </Panel>
     </div>
   ))
-  .add('full-page-with-tabs', () => {
+  .add('with-tabs', () => {
     return (
       <div className={styles.fullPageWrapper}>
         <Panel
