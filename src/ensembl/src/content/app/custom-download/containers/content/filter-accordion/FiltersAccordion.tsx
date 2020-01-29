@@ -118,7 +118,7 @@ const FiltersAccordion = (props: FiltersAccordionProps) => {
 
         <span className={styles.resetIcon} onClick={props.resetSelectedFilters}>
           <ImageButton
-            buttonStatus={Status.ACTIVE}
+            status={Status.UNSELECTED}
             description={'Reset filters'}
             image={ResetIcon}
           />
@@ -231,7 +231,4 @@ const mapStateToProps = (state: RootState) => ({
   preview: getPreviewResult(state)
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(FiltersAccordion);
+export default connect(mapStateToProps, mapDispatchToProps)(FiltersAccordion);

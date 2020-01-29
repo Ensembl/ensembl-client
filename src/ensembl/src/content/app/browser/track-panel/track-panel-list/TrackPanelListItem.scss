@@ -95,3 +95,15 @@
   width: 16px;
   margin-left: 15px;
 }
+
+.selected {
+  svg {
+    fill: $dark-blue;
+  }
+}
+
+.unselected {
+  svg {
+    fill: $grey;
+  }
+}

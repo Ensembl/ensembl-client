@@ -37,6 +37,6 @@ describe('<HeaderButtons />', () => {
       .filterWhere(
         (wrapper) => wrapper.prop('description') === 'Ensembl account'
       );
-    expect(launchbarButton.prop('buttonStatus')).toBe(Status.DISABLED);
+    expect(launchbarButton.prop('status')).toBe(Status.DISABLED);
   });
 });

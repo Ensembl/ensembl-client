@@ -5,7 +5,7 @@ import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 export const createEnsObject = (objectType?: string): EnsObject => ({
   bio_type: faker.lorem.words(),
   label: faker.lorem.word(),
-  object_id: faker.lorem.word(),
+  object_id: faker.random.uuid(),
   genome_id: faker.lorem.word(),
   location: createLocation(),
   object_type: objectType || 'gene',

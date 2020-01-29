@@ -82,6 +82,9 @@
     fill: $white;
     background-color: $grey;
   }
+  button {
+    cursor: default;
+  }
 }
 
 .about {

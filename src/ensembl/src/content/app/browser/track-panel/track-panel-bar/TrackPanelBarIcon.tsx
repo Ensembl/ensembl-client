@@ -48,14 +48,14 @@ const TrackPanelBarIcon = (props: TrackPanelBarIconProps) => {
     const { iconConfig, trackPanelModalView } = props;
 
     return iconConfig.name === trackPanelModalView && props.isTrackPanelOpened
-      ? Status.HIGHLIGHTED
-      : Status.ACTIVE;
+      ? Status.SELECTED
+      : Status.UNSELECTED;
   };
 
   return (
     <div className={styles.barIcon}>
       <ImageButton
-        buttonStatus={getViewIconStatus()}
+        status={getViewIconStatus()}
         description={props.iconConfig.description}
         onClick={toggleModalView}
         image={props.iconConfig.icon}

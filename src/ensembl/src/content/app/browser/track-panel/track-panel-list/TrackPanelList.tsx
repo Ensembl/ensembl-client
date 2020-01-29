@@ -53,7 +53,7 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
 
   // TODO: get default track status properly if it can ever be inactive
   const getDefaultTrackStatus = (): TrackActivityStatus => {
-    return Status.ACTIVE;
+    return Status.SELECTED;
   };
 
   const getTrackListItem = (
