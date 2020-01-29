@@ -8,10 +8,10 @@ type Example = {
   labelledTicks: number[];
 };
 
-// some concrete examples for the tests (because it's hard to come up with a random number generator for this)
+// concrete test cases (because it's hard to come up with a random number generator for this)
 const examples: Example[] = [
   {
-    length: 100,
+    length: 100, // edge case: length is equal to the power of ten that we use to filter the ticks
     ticks: [50],
     labelledTicks: [50]
   },
