@@ -29,6 +29,7 @@ Test:
   - dev
   - master
   - /^feature\/.*$/
+  - /^migration\/.*$/
 
 Test_N_Build:
   image: node:12.13.0
