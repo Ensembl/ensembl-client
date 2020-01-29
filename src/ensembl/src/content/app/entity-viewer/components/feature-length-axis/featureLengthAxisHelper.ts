@@ -21,7 +21,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   let labelledTicks = getLabelledTicks(ticks, powerOfTen, length);
 
   if (labelledTicks.length > 5) {
-    // that's too many labels; let's increase out base
+    // that's too many labels; let's use half of the next power of ten for labelling
     const nextPowerOfTen = powerOfTen * 10;
     const halvedPowerOfTen = nextPowerOfTen / 2;
     const newLabelledTicks = getLabelledTicks(ticks, halvedPowerOfTen, length);
@@ -29,7 +29,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
       labelledTicks = newLabelledTicks;
     }
   } else if (!labelledTicks.length) {
-    // let's decrease out base
+    // let's have at least one label, roughly in the middle of the ruler
     const halvedPowerOfTen = powerOfTen / 2;
     ticks = [...ticks, halvedPowerOfTen].sort();
     labelledTicks = [halvedPowerOfTen];
