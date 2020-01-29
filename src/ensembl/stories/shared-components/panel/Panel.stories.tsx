@@ -57,7 +57,7 @@ storiesOf('Components|Shared Components/Panel', module)
         header={'Full Page Panel'}
         onClose={onClose}
         classNames={{
-          panelClassName: styles.fullPagePanel
+          panel: styles.fullPagePanel
         }}
       >
         <div>Panel Content</div>
@@ -71,7 +71,7 @@ storiesOf('Components|Shared Components/Panel', module)
           header={tabs}
           onClose={onClose}
           classNames={{
-            panelClassName: styles.fullPagePanel
+            panel: styles.fullPagePanel
           }}
         >
           <div>Panel Content</div>
@@ -86,7 +86,7 @@ storiesOf('Components|Shared Components/Panel', module)
           header={tabs}
           onClose={onClose}
           classNames={{
-            panelClassName: styles.fullPagePanel
+            panel: styles.fullPagePanel
           }}
         >
           <div>{faker.lorem.paragraphs(100)}</div>

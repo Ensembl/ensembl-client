@@ -9,9 +9,10 @@ type Props = {
   header: string | JSX.Element;
   children: JSX.Element;
   classNames?: {
-    panelClassName?: string;
-    headerClassName?: string;
-    bodyClassName?: string;
+    panel?: string;
+    header?: string;
+    body?: string;
+    closeButton?: string;
   };
   onClose?: () => void;
 };
@@ -20,19 +21,23 @@ const Panel = (props: Props) => {
   const { header, onClose, classNames } = props;
 
   const panelClassNames = classNames
-    ? classNamesMerger(classNames.panelClassName, styles.panelDefault)
+    ? classNamesMerger(classNames.panel, styles.panelDefault)
     : styles.panelDefault;
   const headerClassNames = classNames
-    ? classNamesMerger(classNames.headerClassName, styles.headerDefault)
+    ? classNamesMerger(classNames.header, styles.headerDefault)
     : styles.headerDefault;
   const bodyClassNames = classNames
-    ? classNamesMerger(classNames.bodyClassName, styles.bodyDefault)
+    ? classNamesMerger(classNames.body, styles.bodyDefault)
     : styles.bodyDefault;
+
+  const closeButtonClassNames = classNames
+    ? classNamesMerger(classNames.closeButton, styles.closeButton)
+    : styles.closeButton;
 
   return (
     <div className={panelClassNames}>
       {onClose && (
-        <span className={styles.closeButton} onClick={onClose}>
+        <span className={closeButtonClassNames} onClick={onClose}>
           <img src={closeIcon}></img>
         </span>
       )}
