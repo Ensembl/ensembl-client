@@ -17,7 +17,7 @@ export type ImageButtonStatus =
   | Status.UNSELECTED
   | Status.DISABLED;
 
-type Props = {
+export type Props = {
   status: ImageButtonStatus;
   description: string;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
