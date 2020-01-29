@@ -4,24 +4,19 @@ import { GeneSummaryStrip, RegionSummaryStrip } from '../feature-summary-strip';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
-type FeatureSummaryStripProps = {
-  ensObject: EnsObject | null;
-  isDrawerOpened: boolean;
+export type FeatureSummaryStripProps = {
+  ensObject: EnsObject;
+  isGhosted: boolean;
 };
 
 export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
-  const { ensObject, isDrawerOpened } = props;
-  const childProps = {
-    isGhosted: isDrawerOpened
-  };
-  if (!ensObject) {
-    return null;
-  }
+  const { ensObject, isGhosted } = props;
+
   switch (ensObject.object_type) {
     case 'gene':
-      return <GeneSummaryStrip gene={ensObject} {...childProps} />;
+      return <GeneSummaryStrip gene={ensObject} isGhosted={isGhosted} />;
     case 'region':
-      return <RegionSummaryStrip region={ensObject} {...childProps} />;
+      return <RegionSummaryStrip region={ensObject} isGhosted={isGhosted} />;
     default:
       return null;
   }
