@@ -1,0 +1,14 @@
+@import 'src/styles/common';
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.tab {
+  cursor: default;
+  &Unselected {
+    cursor: pointer;
+    color: $blue;
+  }
+}

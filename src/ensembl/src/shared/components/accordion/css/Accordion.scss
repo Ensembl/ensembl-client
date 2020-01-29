@@ -5,7 +5,7 @@
   border-radius: 2px;
 }
 
-.accordionItemDefault + .accordionItemDefault {
+.accordionItemDefault:not(:first-child) {
   border-top: 2px solid $medium-light-grey;
 }
 
@@ -30,6 +30,16 @@
   margin-right: 12px;
   transition: transform 0.2s linear, top 0.2s linear;
   background-color: $blue;
+}
+
+.accordionButtonDisabled {
+  background-color: $light-grey;
+  color: $grey;
+  cursor: default;
+  &:after,
+  &:before {
+    display: none;
+  }
 }
 
 .accordionButtonDefault:before {

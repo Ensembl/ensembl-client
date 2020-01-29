@@ -62,7 +62,7 @@ const getImageButtonStatus = ({
 }: {
   isDisabled: boolean;
   isActive: boolean;
-}): Status => {
+}): ImageButtonStatus => {
   if (isDisabled) {
     return Status.DISABLED;
   } else if (isActive) {
