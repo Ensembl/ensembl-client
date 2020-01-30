@@ -78,9 +78,12 @@ export const setDataFromUrl = createAction('browser/set-data-from-url')<
   ParsedUrlPayload
 >();
 
-export const setDataFromUrlAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (payload: ParsedUrlPayload) => (dispatch) => {
+export const setDataFromUrlAndSave: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (payload: ParsedUrlPayload) => (dispatch) => {
   dispatch(setDataFromUrl(payload));
 
   const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
@@ -96,9 +99,12 @@ export const setDataFromUrlAndSave: ActionCreator<
   }
 };
 
-export const fetchDataForLastVisitedObjects: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => async (dispatch, getState: () => RootState) => {
+export const fetchDataForLastVisitedObjects: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = () => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeEnsObjectIdsMap = getBrowserActiveEnsObjectIds(state);
   const activeEnsObjectIds = Object.values(activeEnsObjectIdsMap);
@@ -109,9 +115,12 @@ export const updateBrowserActiveEnsObjectIds = createAction(
   'browser/update-active-ens-object-ids'
 )<{ [objectId: string]: string }>();
 
-export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (activeEnsObjectId: string) => {
+export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (activeEnsObjectId: string) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -139,17 +148,23 @@ export const updateTrackStates = createAction('browser/update-tracks-state')<
   BrowserTrackStates
 >();
 
-export const updateTrackStatesAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
+export const updateTrackStatesAndSave: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
   dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const restoreBrowserTrackStates: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
+export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = () => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
@@ -172,7 +187,7 @@ export const restoreBrowserTrackStates: ActionCreator<
 
   Object.values(mergedTrackStates).forEach((trackStates) => {
     Object.keys(trackStates).forEach((trackId) => {
-      trackStates[trackId] === Status.ACTIVE
+      trackStates[trackId] === Status.SELECTED
         ? tracksToTurnOn.push(trackId)
         : tracksToTurnOff.push(trackId);
     });
@@ -200,9 +215,12 @@ export const updateActualChrLocation = createAction(
   'browser/update-actual-chromosome-location'
 )<ChrLocations>();
 
-export const setActualChrLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (chrLocation: ChrLocation) => {
+export const setActualChrLocation: ActionCreator<ThunkAction<
+  any,
+  any,
+  null,
+  Action<string>
+>> = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -217,9 +235,12 @@ export const setActualChrLocation: ActionCreator<
   };
 };
 
-export const setChrLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (chrLocation: ChrLocation) => {
+export const setChrLocation: ActionCreator<ThunkAction<
+  any,
+  any,
+  null,
+  Action<string>
+>> = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -250,9 +271,12 @@ export const updateMessageCounter = createAction(
   'browser/update-message-counter'
 )<number>();
 
-export const changeBrowserLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (locationData: {
+export const changeBrowserLocation: ActionCreator<ThunkAction<
+  any,
+  any,
+  null,
+  Action<string>
+>> = (locationData: {
   genomeId: string;
   ensObjectId: string | null;
   chrLocation: ChrLocation;
@@ -280,9 +304,12 @@ export const changeBrowserLocation: ActionCreator<
   };
 };
 
-export const changeFocusObject: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (objectId) => {
+export const changeFocusObject: ActionCreator<ThunkAction<
+  any,
+  any,
+  null,
+  Action<string>
+>> = (objectId) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const messageCount = getBrowserMessageCount(state);

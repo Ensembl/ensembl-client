@@ -2,25 +2,39 @@
 
 $sideBarContentWidth: 320px;
 $sideBarToolStripWidth: 46px;
-$topBarHeight: 40px;
+$topBarHeight: 38px;
 $drawerWindowWidth: 45px;
 
 .standardAppLayout {
   height: 100%;
+  min-height: 550px; // based on the current interface of genome browser
   overflow: hidden;
 }
 
 .topBar {
-  display: grid;
-  grid-template-columns: 1fr $sideBarContentWidth;
-  grid-column-gap: $sideBarToolStripWidth;
-  align-items: center;
   height: $topBarHeight;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
   position: relative;
   padding-left: 18px;
-  z-index: 200;
+  width: 100%;
+  z-index: 5;
+
+  &_withSidebarNavigation {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr $sideBarContentWidth;
+    grid-column-gap: $sideBarToolStripWidth;
+  }
+
+  &_withoutSidebarNavigation {
+    display: flex;
+    align-items: center;
+
+    & > div {
+      padding-right: 1em;
+    }
+  }
 }
 
 .mainWrapper {
@@ -30,7 +44,6 @@ $drawerWindowWidth: 45px;
 
 .main {
   height: 100%;
-  transition: margin 0.3s ease-in-out;
 
   &Default {
     margin-right: calc(#{$sideBarContentWidth} + #{$sideBarToolStripWidth});
@@ -58,12 +71,16 @@ $drawerWindowWidth: 45px;
   }
 
   &DrawerOpen {
-    transform: translateX(0);
+    transform: translateX(#{$drawerWindowWidth});
   }
 
   &Closed {
     transform: translateX(calc(100% - #{$sideBarToolStripWidth}));
   }
+}
+
+.instantaneous {
+  transition: none;
 }
 
 .sideBar {
@@ -76,7 +93,7 @@ $drawerWindowWidth: 45px;
 }
 
 .sideBarToolstrip {
-  padding: 10px 0 30px;
+  padding: 20px 0 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -95,7 +112,7 @@ $drawerWindowWidth: 45px;
 .sidebarModeToggle {
   width: 22px;
   height: 22px;
-  margin-bottom: 30px;
+  margin-bottom: 55px;
 }
 
 .sidebarModeToggleChevron {
@@ -112,49 +129,27 @@ $drawerWindowWidth: 45px;
   padding: 0 15px;
 }
 
-.sidebarTab {
-  display: inline-block;
-  color: $blue;
-  cursor: pointer;
-
-  &Active {
-    position: relative;
-    color: $black;
-    cursor: default;
-
-    &:after {
-      content: '';
-      position: absolute;
-      border: 6px solid $grey;
-      border-color: transparent transparent $light-grey $light-grey;
-      box-shadow: -2px 2px 2px 0 $grey;
-      height: 0;
-      right: calc(60% - 6px);
-      transform-origin: 0 0;
-      transform: rotate(-45deg);
-      top: 30px;
-      width: 0;
-    }
-  }
-}
-
 .drawer {
   height: 100%;
   flex-grow: 1;
   position: relative;
-  padding: 15px 26px 15px 30px;
+  padding: 15px calc(#{$drawerWindowWidth} + 26px) 15px 30px;
   border-left: solid $medium-light-grey 1px;
   background-color: white;
 }
 
 .drawerWindow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-100%);
   width: $drawerWindowWidth;
   height: 100%;
 }
 
 .drawerClose {
   position: absolute;
-  right: 10px;
+  right: calc(#{$drawerWindowWidth} + 10px);
   top: 10px;
   width: 18px;
   height: 18px;

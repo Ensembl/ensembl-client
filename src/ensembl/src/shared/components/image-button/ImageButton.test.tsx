@@ -3,8 +3,7 @@ import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import faker from 'faker';
 
-import { ImageButton } from './ImageButton';
-import ImageHolder from './ImageHolder';
+import { ImageButton, Props as ImageButtonProps } from './ImageButton';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
@@ -17,30 +16,35 @@ jest.mock(
   )
 );
 
+const defaultProps = {
+  image: ''
+};
+
 describe('<ImageButton />', () => {
+  const renderImageButton = (props: Partial<ImageButtonProps> = {}) =>
+    mount(<ImageButton {...defaultProps} {...props} />);
+
   it('renders without error', () => {
-    expect(() => {
-      mount(<ImageButton />);
-    }).not.toThrow();
+    expect(() => renderImageButton()).not.toThrow();
   });
 
-  describe('prop buttonStatus', () => {
-    it('has a buttonStatus set by default', () => {
-      const wrapper = mount(<ImageButton />);
+  describe('prop status', () => {
+    it('has a status set by default', () => {
+      const wrapper = renderImageButton();
 
-      expect(wrapper.prop('buttonStatus')).toEqual(Status.DEFAULT);
+      expect(wrapper.prop('status')).toEqual(Status.DEFAULT);
     });
   });
 
   describe('prop description', () => {
     it('has a description set by default', () => {
-      const wrapper = mount(<ImageButton />);
+      const wrapper = renderImageButton();
 
       expect(wrapper.prop('description')).toEqual('');
     });
 
     it('respects the description prop', () => {
-      const wrapper = mount(<ImageButton description={'foo'} />);
+      const wrapper = renderImageButton({ description: 'foo' });
 
       expect(wrapper.prop('description')).toEqual('foo');
     });
@@ -48,40 +52,38 @@ describe('<ImageButton />', () => {
 
   describe('prop image', () => {
     it('has an image set by default', () => {
-      const wrapper = mount(<ImageButton />);
+      const wrapper = renderImageButton();
 
       expect(wrapper.prop('image')).toEqual('');
     });
 
     it('renders an img tag if a path to an image file is passed', () => {
-      const wrapper = mount(<ImageButton image={'foo.png'} />);
+      const wrapper = renderImageButton({ image: 'foo.png' });
 
-      expect(typeof wrapper.find(ImageHolder).prop('image')).toBe('string');
-      expect(wrapper.find(ImageHolder).find('img[src="foo.png"]')).toHaveLength(
-        1
-      );
+      expect(wrapper.find('button').find('img[src="foo.png"]')).toHaveLength(1);
     });
 
     it('renders the svg file passed in', () => {
       const mockSVG = () => {
         return <svg />;
       };
-      const wrapper = mount(<ImageButton image={mockSVG} />);
-      expect(wrapper.find(ImageHolder).find(mockSVG)).toHaveLength(1);
+
+      const wrapper = renderImageButton({ image: mockSVG });
+      expect(wrapper.find('button').find(mockSVG)).toHaveLength(1);
     });
   });
 
   describe('prop classNames', () => {
-    it('always has the default className applied', () => {
-      const wrapper = mount(<ImageButton buttonStatus={Status.ACTIVE} />);
+    it('applies the default className when no status is provided', () => {
+      const wrapper = renderImageButton();
 
-      expect(wrapper.find(ImageHolder).find('div.default')).toHaveLength(1);
+      expect(wrapper.find('.default')).toHaveLength(1);
     });
 
     it('applies the respective className depending on the button status', () => {
-      const wrapper = mount(<ImageButton buttonStatus={Status.ACTIVE} />);
+      const wrapper = renderImageButton({ status: Status.SELECTED });
 
-      expect(wrapper.find(ImageHolder).find('div.active')).toHaveLength(1);
+      expect(wrapper.find('.selected')).toHaveLength(1);
     });
   });
 
@@ -90,8 +92,9 @@ describe('<ImageButton />', () => {
     afterEach(() => {
       jest.resetAllMocks();
     });
+
     it('calls the onClick prop when clicked', () => {
-      const wrapper = mount(<ImageButton onClick={onClick} />);
+      const wrapper = renderImageButton({ onClick });
 
       wrapper.simulate('click');
 
@@ -99,9 +102,10 @@ describe('<ImageButton />', () => {
     });
 
     it('does not call the onClick prop when clicked if the status is disabled', () => {
-      const wrapper = mount(
-        <ImageButton onClick={onClick} buttonStatus={Status.DISABLED} />
-      );
+      const wrapper = renderImageButton({
+        onClick,
+        status: Status.DISABLED
+      });
 
       wrapper.simulate('click');
 
@@ -122,7 +126,7 @@ describe('<ImageButton />', () => {
     const clickEvent = new Event('click');
 
     it('shows tooltip when moused over', () => {
-      const wrapper = mount(<ImageButton {...props} />);
+      const wrapper = renderImageButton(props);
       expect(wrapper.find(Tooltip).length).toBe(0);
 
       act(() => {
@@ -136,7 +140,7 @@ describe('<ImageButton />', () => {
     });
 
     it('does not show tooltip if clicked', () => {
-      const wrapper = mount(<ImageButton {...props} />);
+      const wrapper = renderImageButton(props);
 
       act(() => {
         const rootNode = wrapper.getDOMNode();
@@ -149,7 +153,7 @@ describe('<ImageButton />', () => {
     });
 
     it('does not show tooltip if description is not provided', () => {
-      const wrapper = mount(<ImageButton {...props} description="" />);
+      const wrapper = renderImageButton({ ...props, description: '' });
 
       act(() => {
         wrapper.getDOMNode().dispatchEvent(mouseEnterEvent);

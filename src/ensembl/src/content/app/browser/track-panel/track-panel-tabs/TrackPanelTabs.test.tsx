@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import TrackPanelTabs, { TrackPanelTabsProps } from './TrackPanelTabs';
+import { TrackPanelTabs, TrackPanelTabsProps } from './TrackPanelTabs';
 
 import { TrackSet } from '../trackPanelConfig';
 import { createEnsObject } from 'tests/fixtures/ens-object';
@@ -51,7 +51,7 @@ describe('<TrackPanelTabs />', () => {
         );
 
         wrapper
-          .find('button')
+          .find('.trackPanelTab')
           .first()
           .simulate('click');
       });

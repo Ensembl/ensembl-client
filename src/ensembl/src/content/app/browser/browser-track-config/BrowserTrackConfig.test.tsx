@@ -6,6 +6,7 @@ import {
   BrowserTrackConfigProps
 } from './BrowserTrackConfig';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
 import {
   createTrackConfigLabel,
@@ -45,14 +46,34 @@ describe('<BrowserTrackConfig />', () => {
       expect(wrapper.props().updateApplyToAll).toHaveBeenCalledTimes(1);
     });
 
-    test('toggles track name when the toggle name slider is clicked', () => {
-      wrapper.find('.trackConfig-trackName').simulate('click');
-      expect(wrapper.props().updateTrackConfigNames).toHaveBeenCalledTimes(1);
+    test('passes updateTrackConfigNames to track name toggler', () => {
+      const toggle = wrapper
+        .find('label')
+        .filterWhere((wrapper: any) => wrapper.text() === 'Track name')
+        .parents()
+        .first() // <- enzyme's .parent method doesnt seem to be reliably working for mount
+        .find(SlideToggle);
+      toggle.prop('onChange')(true);
+      expect(defaultProps.updateTrackConfigNames).toHaveBeenCalledTimes(1);
+      expect(defaultProps.updateTrackConfigNames).toHaveBeenCalledWith(
+        defaultProps.selectedCog,
+        false
+      );
     });
 
     test('toggles track label when the toggle name slider is clicked', () => {
-      wrapper.find('.trackConfig-featureLabels').simulate('click');
-      expect(wrapper.props().updateTrackConfigLabel).toHaveBeenCalledTimes(1);
+      const toggle = wrapper
+        .find('label')
+        .filterWhere((wrapper: any) => wrapper.text() === 'Feature labels')
+        .parents()
+        .first() // <- enzyme's .parent method doesnt seem to be reliably working for mount
+        .find(SlideToggle);
+      toggle.prop('onChange')(true);
+      expect(defaultProps.updateTrackConfigLabel).toHaveBeenCalledTimes(1);
+      expect(defaultProps.updateTrackConfigLabel).toHaveBeenCalledWith(
+        defaultProps.selectedCog,
+        false
+      );
     });
   });
 });

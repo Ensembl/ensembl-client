@@ -2,6 +2,13 @@
 
 .imageButton {
   position: relative;
+  font-size: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.4s;
+  }
 
   button {
     width: 100%;
@@ -10,53 +17,12 @@
 }
 
 .default {
-  position: relative;
-  svg {
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-    transition: opacity 0.4s;
-    -webkit-transition: opacity 0.4s;
-  }
-}
-
-.disabled {
-  cursor: not-allowed;
-  svg {
-    fill: $grey;
-    opacity: 1;
-  }
-  &:before {
-    position: absolute;
-    content: '';
-    top: 50%;
-    border-color: #2c343a;
-    border-top: 2px solid red;
-    transform: rotate(-45deg);
-    width: 100%;
-  }
-  &:after {
-    position: absolute;
-    content: '';
-    left: 0px;
-    border-color: #2c343a;
-    border: 2px solid red;
-    border-radius: 50%;
-    height: 100%;
-    width: 100%;
-  }
-}
-
-.active {
   svg {
     fill: $dark-blue;
   }
-  &svg:hover {
-    opacity: 0.8;
-  }
 }
 
-.highlighted {
+.selected {
   svg {
     fill: $white;
     background: $dark-blue;
@@ -66,11 +32,21 @@
   }
 }
 
-.inactive {
+.unselected {
   svg {
-    fill: $grey;
+    fill: $dark-blue;
   }
   &svg:hover {
     opacity: 0.8;
+  }
+}
+
+.disabled {
+  svg {
+    fill: $grey;
+    opacity: 1;
+  }
+  button {
+    cursor: default;
   }
 }

@@ -18,8 +18,8 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import styles from './BrowserTrackConfig.scss';
 
-import tracksSliderOnIcon from 'static/img/browser/icon_tracks_slider_on.svg';
-import tracksSliderOffIcon from 'static/img/browser/icon_tracks_slider_off.svg';
+import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
@@ -57,12 +57,6 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
 
   const ref = useRef(null);
   useOutsideClick(ref, props.onClose);
-
-  const nameIcon = shouldShowTrackName
-    ? tracksSliderOnIcon
-    : tracksSliderOffIcon;
-  const labelIcon =
-    shouldShowTrackLabels !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
@@ -136,22 +130,20 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
       </dl>
       <dl>
         <dd>
-          <label htmlFor="trackConfig-trackName">Track name</label>
-          <button
-            className={`${styles.trackConfigSlider} trackConfig-trackName`}
-            onClick={toggleName}
-          >
-            <img src={nameIcon} />
-          </button>
+          <label>Track name</label>
+          <SlideToggle
+            isOn={shouldShowTrackName}
+            onChange={toggleName}
+            className={styles.slideToggle}
+          />
         </dd>
         <dd>
-          <label htmlFor="trackConfig-featureLabels">Feature labels</label>
-          <button
-            className={`${styles.trackConfigSlider} trackConfig-featureLabels`}
-            onClick={toggleLabel}
-          >
-            <img src={labelIcon} />
-          </button>
+          <label>Feature labels</label>
+          <SlideToggle
+            isOn={shouldShowTrackLabels}
+            onChange={toggleLabel}
+            className={styles.slideToggle}
+          />
         </dd>
         <dd className={styles.heightSwitcher}>
           <div className={styles.trackHeightBtn}>

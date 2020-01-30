@@ -14,8 +14,6 @@ import DrawerContigs from './drawer-views/DrawerContigs';
 import DrawerGC from './drawer-views/DrawerGC';
 import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 
-import closeIcon from 'static/img/shared/close.svg';
-
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';
 
@@ -24,7 +22,6 @@ import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 export type DrawerProps = {
   drawerView: string;
   ensObject: EnsObject | null;
-  closeDrawer: () => void;
 };
 
 export const Drawer = (props: DrawerProps) => {
@@ -52,7 +49,7 @@ export const Drawer = (props: DrawerProps) => {
         return <DrawerContigs />;
       case 'track:gc':
         return <DrawerGC />;
-      case 'snps-and-indels':
+      case 'track:variant':
         return <SnpIndels />;
       case 'bookmarks':
         return <DrawerBookmarks />;
@@ -60,12 +57,7 @@ export const Drawer = (props: DrawerProps) => {
   };
 
   return (
-    <section className={styles.drawer}>
-      <button className={styles.closeButton} onClick={props.closeDrawer}>
-        <img src={closeIcon} alt="close drawer" />
-      </button>
-      {getDrawerViewComponent()}
-    </section>
+    <section className={styles.drawer}>{getDrawerViewComponent()}</section>
   );
 };
 
@@ -78,7 +70,4 @@ const mapDispatchToProps = {
   closeDrawer
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Drawer);
+export default connect(mapStateToProps, mapDispatchToProps)(Drawer);

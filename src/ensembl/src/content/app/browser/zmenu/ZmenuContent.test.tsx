@@ -2,6 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 import faker from 'faker';
+import configureMockStore from 'redux-mock-store';
 
 import {
   ZmenuContent,
@@ -16,16 +17,16 @@ import {
   ZmenuContentItem as ZmenuContentItemType
 } from './zmenu-types';
 import { createZmenuContent } from 'tests/fixtures/browser';
-import configureStore from 'src/store';
 
 describe('<ZmenuContent />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  const store = configureStore();
+  const mockStoreCreator = configureMockStore();
+  const mockStore = mockStoreCreator(() => ({}));
   const wrappingComponent = (props: any) => (
-    <Provider store={store}>{props.children}</Provider>
+    <Provider store={mockStore}>{props.children}</Provider>
   );
   const defaultProps: ZmenuContentProps = {
     content: createZmenuContent()

@@ -1,6 +1,9 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
+
+import { BreakpointWidth } from 'src/global/globalConfig';
+import usePrevious from 'src/shared/hooks/usePrevious';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
@@ -17,57 +20,62 @@ type SidebarModeToggleProps = {
   showAction: SidebarModeToggleAction;
 };
 
-type SidebarNavigationProps = {
-  links: Array<{
-    label: string;
-    isActive: boolean;
-  }>;
-  onChange: (index: number) => void;
-};
-
 type StandardAppLayoutProps = {
   mainContent: ReactNode;
   sidebarContent: ReactNode;
   sidebarToolstripContent?: ReactNode;
-  sidebarNavigation: SidebarNavigationProps;
+  sidebarNavigation: ReactNode;
   topbarContent: ReactNode;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
   isDrawerOpen: boolean;
   drawerContent?: ReactNode;
   onDrawerClose: () => void;
+  viewportWidth: BreakpointWidth;
 };
 
 const StandardAppLayout = (props: StandardAppLayoutProps) => {
-  const mainClassnames = classNames(
+  // TODO: is there any way to run this smarter?
+  // Ideally, it should run only once per app life cycle to check whether user is on small screen and close the sidebar if they are
+  useEffect(() => {
+    if (props.viewportWidth < BreakpointWidth.DESKTOP && props.isSidebarOpen) {
+      props.onSidebarToggle();
+    }
+  }, []);
+
+  const mainClassNames = classNames(
     styles.main,
     { [styles.mainDefault]: props.isSidebarOpen },
     { [styles.mainFullWidth]: !props.isSidebarOpen }
   );
 
-  const sidebarWrapperClassnames = classNames(
-    styles.sideBarWrapper,
-    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
-    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
-    {
-      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
-    }
+  const shouldShowSidebarNavigation =
+    props.viewportWidth > BreakpointWidth.LAPTOP || props.isSidebarOpen;
+
+  const topBarClassnames = classNames(
+    styles.topBar,
+    { [styles.topBar_withSidebarNavigation]: shouldShowSidebarNavigation },
+    { [styles.topBar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
   );
+
+  const sidebarWrapperClassnames = useSidebarWrapperClassNames(props);
 
   return (
     <div className={styles.standardAppLayout}>
-      <div className={styles.topBar}>
+      <div className={topBarClassnames}>
         {props.topbarContent}
-        <SidebarTabs {...props} />
+        {shouldShowSidebarNavigation && props.sidebarNavigation}
       </div>
       <div className={styles.mainWrapper}>
-        <div className={mainClassnames}>{props.mainContent}</div>
+        <div className={mainClassNames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
           <div className={styles.sideBarToolstrip}>
             <SidebarModeToggle
               onClick={
-                props.isDrawerOpen ? props.onDrawerClose : props.onSidebarToggle
+                props.isDrawerOpen
+                  ? () => props.onDrawerClose()
+                  : () => props.onSidebarToggle()
               }
               showAction={
                 props.isSidebarOpen
@@ -111,41 +119,28 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
   );
 };
 
-const SidebarTabs = (props: StandardAppLayoutProps) => {
-  const links = props.sidebarNavigation.links.map((link, index) => {
-    const isLinkActive = shouldLinkBeActive(
-      link,
-      props.isSidebarOpen,
-      props.isDrawerOpen
-    );
-    return (
-      <span
-        key={index}
-        className={classNames(styles.sidebarTab, {
-          [styles.sidebarTabActive]: isLinkActive
-        })}
-        {...(!isLinkActive
-          ? { onClick: () => props.sidebarNavigation.onChange(index) }
-          : null)}
-      >
-        {link.label}
-      </span>
-    );
-  });
-
-  return <div className={styles.sidebarTabs}>{links}</div>;
-};
-
-const shouldLinkBeActive = (
-  link: { isActive: boolean },
-  isSidebarOpen: boolean,
-  isDrawerOpen: boolean
-) => link.isActive && isSidebarOpen && !isDrawerOpen;
-
 // left-most transparent part of the drawer allowing the user to see what element is behind the drawer;
 // when clicked, will close the drawer
 const DrawerWindow = (props: { onClick: () => void }) => {
   return <div className={styles.drawerWindow} onClick={props.onClick} />;
+};
+
+const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
+  const previousSidebarOpen = usePrevious(props.isSidebarOpen);
+  // do not use transition for opening and closing of the sidebar
+  const isInstantaneous =
+    !props.isSidebarOpen || // <-- sidebar about to close
+    (props.isSidebarOpen && !previousSidebarOpen); // <-- sidebar about to open
+
+  return classNames(
+    styles.sideBarWrapper,
+    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
+    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
+    {
+      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
+    },
+    { [styles.instantaneous]: isInstantaneous }
+  );
 };
 
 export default StandardAppLayout;

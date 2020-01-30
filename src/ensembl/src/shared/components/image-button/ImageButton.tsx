@@ -1,25 +1,24 @@
 import React, { memo } from 'react';
 import isEqual from 'lodash/isEqual';
+import classNames from 'classnames';
 
 import useHover from 'src/shared/hooks/useHover';
 
 import defaultStyles from './ImageButton.scss';
-import ImageHolder from './ImageHolder';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import imageButtonStyles from './ImageButton.scss';
 
 import { Status } from 'src/shared/types/status';
 
-type ImageButtonStatus =
-  | Status.ACTIVE
-  | Status.INACTIVE
-  | Status.DISABLED
+export type ImageButtonStatus =
   | Status.DEFAULT
-  | Status.HIGHLIGHTED;
+  | Status.SELECTED
+  | Status.UNSELECTED
+  | Status.DISABLED;
 
-type Props = {
-  buttonStatus: ImageButtonStatus;
+export type Props = {
+  status: ImageButtonStatus;
   description: string;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   classNames?: { [key in ImageButtonStatus]?: string };
@@ -34,34 +33,40 @@ export const ImageButton = (props: Props) => {
   };
 
   const buttonProps =
-    props.buttonStatus === Status.DISABLED ? {} : { onClick: handleClick };
+    props.status === Status.DISABLED ? {} : { onClick: handleClick };
 
-  const { classNames, ...rest } = props;
-
-  const styles = classNames
+  const styles = props.classNames
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
+
+  const imageButtonClasses = classNames(
+    imageButtonStyles.imageButton,
+    styles[props.status]
+  );
 
   const shouldShowTooltip = Boolean(props.description) && isHovered;
 
   return (
-    <div
-      ref={hoverRef}
-      className={imageButtonStyles.imageButton}
-      {...buttonProps}
-    >
-      <ImageHolder {...rest} classNames={styles} />
+    <div ref={hoverRef} className={imageButtonClasses} {...buttonProps}>
+      <button>
+        {typeof props.image === 'string' ? (
+          <img src={props.image} alt={props.description} />
+        ) : (
+          <props.image />
+        )}
+      </button>
       {shouldShowTooltip && (
-        <Tooltip autoAdjust={true}>{props.description}</Tooltip>
+        <Tooltip anchor={hoverRef.current} autoAdjust={true}>
+          {props.description}
+        </Tooltip>
       )}
     </div>
   );
 };
 
 ImageButton.defaultProps = {
-  buttonStatus: Status.DEFAULT,
-  description: '',
-  image: ''
+  status: Status.DEFAULT,
+  description: ''
 };
 
 export default memo(ImageButton, isEqual);

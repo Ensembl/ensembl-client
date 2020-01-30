@@ -51,17 +51,9 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
       category.types.includes(selectedTrackPanelTab)
   );
 
-  const getTrackPanelListClasses = () => {
-    const heightClass: string = props.launchbarExpanded
-      ? styles.shorter
-      : styles.taller;
-
-    return `${styles.trackPanelList} ${heightClass}`;
-  };
-
   // TODO: get default track status properly if it can ever be inactive
   const getDefaultTrackStatus = (): TrackActivityStatus => {
-    return Status.ACTIVE;
+    return Status.SELECTED;
   };
 
   const getTrackListItem = (
@@ -111,7 +103,7 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
   };
 
   return (
-    <div className={getTrackPanelListClasses()}>
+    <div className={styles.trackPanelList}>
       {activeEnsObject && activeEnsObject.object_type === 'region' ? null : (
         <section className="mainTrackItem">
           <dl>
@@ -157,7 +149,4 @@ const mapDispatchToProps = {
   toggleDrawer
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelList);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelList);

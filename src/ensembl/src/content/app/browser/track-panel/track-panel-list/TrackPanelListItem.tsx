@@ -8,6 +8,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
 import {
   TrackItemColour,
@@ -35,7 +36,6 @@ import {
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
-import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
 import styles from './TrackPanelListItem.scss';
@@ -86,11 +86,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, []);
 
   const updateDrawerView = (currentTrack: string) => {
-    const { drawerView, toggleDrawer, changeDrawerView } = props;
+    const { isDrawerOpened, toggleDrawer, changeDrawerView } = props;
 
     changeDrawerView(currentTrack);
 
-    if (!drawerView) {
+    if (!isDrawerOpened) {
       toggleDrawer(true);
     }
   };
@@ -127,7 +127,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     }
 
     updateDrawerView(viewName);
-  }, [track.track_id, drawerView]);
+  }, [track.track_id, drawerView, props.isDrawerOpened]);
 
   const toggleExpand = () => {
     const { track_id: trackId } = props.track;
@@ -137,7 +137,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   const toggleTrack = useCallback(() => {
     const newStatus =
-      trackStatus === Status.ACTIVE ? Status.INACTIVE : Status.ACTIVE;
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
     updateGenomeBrowser(newStatus);
 
@@ -171,7 +171,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
   const updateGenomeBrowser = (status: Status) => {
-    const currentTrackStatus = status === Status.ACTIVE ? 'on' : 'off';
+    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
 
     const payload = {
       [currentTrackStatus]: `${track.track_id}`
@@ -216,18 +216,17 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={Status.ACTIVE}
+            status={Status.DEFAULT}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}
           />
         </div>
         <div className={styles.eyeHolder}>
-          <ImageButton
-            buttonStatus={trackStatus}
+          <VisibilityIcon
+            status={trackStatus}
             description={'enable/disable track'}
             onClick={toggleTrack}
-            image={Eye}
           />
         </div>
       </dd>
@@ -252,7 +251,4 @@ const mapDispatchToProps = {
   updateTrackStatesAndSave
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelListItem);

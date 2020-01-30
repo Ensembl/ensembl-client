@@ -51,7 +51,7 @@ const defaultProps = {
   matches: []
 };
 
-describe('<SpeciesSearchField', () => {
+describe('<SpeciesSearchField />', () => {
   let searchText: string;
 
   beforeEach(() => {

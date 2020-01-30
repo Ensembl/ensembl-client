@@ -228,7 +228,7 @@ describe('Chromosome Navigator', () => {
         const transform = pointers
           .at(index)
           .prop('transform')
-          .match(/translate\((\d+)\)/)[1];
+          .match(/translate\((-?\d+)\)/)[1];
         const actualPosition = parseInt(transform, 10);
         expect(isApproximatelyEqual(position, actualPosition)).toBe(true);
       });

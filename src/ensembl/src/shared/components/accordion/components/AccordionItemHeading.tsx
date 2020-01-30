@@ -48,11 +48,9 @@ type WrapperProps = Pick<
   Exclude<keyof DivAttributes, keyof InjectedHeadingAttributes>
 >;
 
-const AccordionItemHeadingWrapper: React.SFC<DivAttributes> = (
-  props: WrapperProps
-): JSX.Element => (
+const AccordionItemHeadingWrapper = (props: WrapperProps) => (
   <ItemConsumer>
-    {(itemContext: ItemContext): JSX.Element => {
+    {(itemContext: ItemContext) => {
       const { headingAttributes } = itemContext;
 
       return <AccordionItemHeading {...props} {...headingAttributes} />;

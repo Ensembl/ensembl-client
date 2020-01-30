@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import BrowserReset, { BrowserResetProps } from './BrowserReset';
+import { BrowserReset, BrowserResetProps } from './BrowserReset';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';

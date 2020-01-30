@@ -21,9 +21,12 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_failure'
 )<string, { id: string; data: EnsObject }, Error>();
 
-export const fetchEnsObject: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (ensObjectId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchEnsObject: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (ensObjectId: string) => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const ensObjectLoadingStatus = getEnsObjectLoadingStatus(state, ensObjectId);
   if (!shouldFetch(ensObjectLoadingStatus)) {
@@ -58,13 +61,16 @@ export const fetchEnsObject: ActionCreator<
   }
 };
 
-export const fetchExampleEnsObjects: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchExampleEnsObjects: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const genomeInfoData: GenomeInfoData = getGenomeInfo(state);
   const genomeInfo = genomeInfoData[genomeId];
-  const exampleObjects = getExampleEnsObjects(state);
+  const exampleObjects = getExampleEnsObjects(state, genomeId);
 
   if (genomeId && genomeInfo && !exampleObjects.length) {
     genomeInfo.example_objects.forEach((exampleObjectId) => {

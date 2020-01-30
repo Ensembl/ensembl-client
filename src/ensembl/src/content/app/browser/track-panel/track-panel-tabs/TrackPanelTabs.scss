@@ -2,33 +2,24 @@
 
 .trackPanelTabs {
   display: flex;
-  font-size: 13px;
-  justify-content: space-between;
-  margin-left: 44px;
-  padding-right: 5px;
-  width: 312px;
+  font-size: 14px;
+  justify-content: space-around;
 }
 
 .trackPanelTab {
-  button {
-    color: $dark-blue;
-  }
-}
-
-.trackPanelTabActive {
-  button {
-    color: inherit;
-  }
+  color: $dark-blue;
+  cursor: pointer;
 }
 
 .trackPanelTabDisabled {
-  button {
-    color: $dark-grey;
-    cursor: default;
-  }
+  color: $dark-grey;
+  cursor: default;
 }
-.trackPanelTabArrow {
+
+.trackPanelTabActive {
+  color: $black;
   position: relative;
+  cursor: default;
 
   &::after {
     border: 6px solid $grey;
@@ -41,7 +32,7 @@
     right: calc(60% - 6px);
     transform-origin: 0 0;
     transform: rotate(-45deg);
-    top: 24px;
+    top: 28px;
     width: 0;
   }
 }

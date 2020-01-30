@@ -4,18 +4,10 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  padding: 15px;
-  width: 320px;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: $white;
-
-  &.shorter {
-    height: calc(100vh - 177px);
-  }
-
-  &.taller {
-    height: calc(100vh - 129px);
-  }
 
   h4 {
     border-bottom: 1px solid $grey;

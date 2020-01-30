@@ -47,7 +47,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         });
 
         return (
-          <div key={`exampleLinks__${exampleObject.object_id}`} className={styles.linkHolder}>
+          <div key={exampleObject.object_id} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
               {exampleObject.label}
             </Link>
@@ -91,7 +91,10 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           });
 
           return (
-            <div key={`viewedLinks__${previouslyViewedObject.object_id}`} className={styles.linkHolder}>
+            <div
+              key={previouslyViewedObject.object_id}
+              className={styles.linkHolder}
+            >
               <Link
                 to={path}
                 onClick={() =>
@@ -152,7 +155,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
                 <ImageButton
-                  buttonStatus={Status.ACTIVE}
+                  status={Status.DEFAULT}
                   description={'View all'}
                   image={EllipsisIcon}
                   onClick={onEllipsisClick}
@@ -171,11 +174,16 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  exampleEnsObjects: getExampleEnsObjects(state),
-  previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
-});
+const mapStateToProps = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return {
+    activeGenomeId,
+    exampleEnsObjects: activeGenomeId
+      ? getExampleEnsObjects(state, activeGenomeId)
+      : [],
+    previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
+  };
+};
 
 const mapDispatchToProps = {
   fetchExampleEnsObjects,

@@ -1,33 +1,20 @@
 @import 'src/styles/common';
 
-.browser {
-  width: 100%;
-  height: calc(100% - 32px);
-  position: relative;
-}
-
 .browserInnerWrapper {
-  display: flex;
-  position: absolute;
-  overflow: hidden;
-  width: 100vw;
-  transition: height 0.3s linear;
-  &.shorter {
-    height: calc(100vh - 194px);
-  }
-
-  &.taller {
-    height: calc(100vh - 146px);
-  }
-}
-
-.browserImageWrapper {
+  display: grid;
   height: 100%;
+  grid-template-rows: 80px 1fr;
 }
 
 .exampleLinks {
   margin-top: 50px;
-  margin-left: 40px;
+  padding-left: 40px;
+
+  &__emptyTopBar {
+    height: 40px; // same as top bar height in StandardAppLayout
+    background: $light-grey;
+    box-shadow: 0 2px 3px $grey;
+  }
 }
 
 .exampleLink {
@@ -45,8 +32,4 @@
 
 .objectLabel {
   color: $blue;
-}
-
-.semiOpaque {
-  opacity: 0.3;
 }

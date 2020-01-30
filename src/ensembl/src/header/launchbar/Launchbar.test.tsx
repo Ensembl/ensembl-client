@@ -5,9 +5,6 @@ import Launchbar from './Launchbar';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-jest.mock('react-slidedown', () => (props: any) => (
-  <div className="react-slidedown">{props.children}</div>
-));
 jest.mock('./LaunchbarButton', () => () => <div>Launchbar Button</div>);
 
 const defaultProps = {

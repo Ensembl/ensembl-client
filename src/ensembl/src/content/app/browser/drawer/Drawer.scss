@@ -1,14 +1,14 @@
 @import 'src/styles/common';
 
 .drawer {
-  border-left: 1px solid $light-grey;
-  height: calc(100vh - 176px);
-  width: calc(100vw - 397px);
+  height: 100%;
+  overflow: auto;
+  font-size: 13px;
 }
 
 .drawerView {
-  margin-top: 40px;
   overflow-y: auto;
+  margin-top: 10px;
 
   h2 {
     display: flex;
@@ -17,46 +17,38 @@
     text-align: center;
   }
 
-  dd {
-    width: 600px;
+  p {
+    margin: 0px;
   }
 
-  label {
-    float: left;
+  .nextLine {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+  }
+
+  .label {
     font-weight: $light;
     text-align: right;
-    width: 150px;
-  }
-
-  p {
-    margin: 0 0 20px 0;
   }
 
   .details {
-    float: right;
+    display: flex;
     text-align: left;
-    width: 400px;
   }
 
   .mainDetail {
-    font-size: 16px;
     font-weight: $bold;
   }
 
   .secondaryDetail {
     font-weight: $light;
     margin-left: 10px;
-  }
-}
-
-.closeButton {
-  float: right;
-  position: relative;
-  right: 10px;
-  top: 10px;
-
-  img {
-    height: 18px;
-    width: 18px;
   }
 }

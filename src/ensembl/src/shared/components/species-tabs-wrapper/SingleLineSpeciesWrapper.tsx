@@ -63,6 +63,7 @@ const getItemsContainerWidth = (
 };
 
 const SingleLineWrapper = (props: Props) => {
+  const [containerWidthMeasured, setContainerWidthMeasured] = useState(false);
   const { speciesTabs } = props;
   const linkRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,6 +92,9 @@ const SingleLineWrapper = (props: Props) => {
         containerWidth: itemsContainerWidth
       })
     );
+    if (containerWidth && !containerWidthMeasured) {
+      setContainerWidthMeasured(true);
+    }
   }, [hoveredItemIndex, activeItemIndex, containerWidth]);
 
   const handleMouseEnter = (index: number, fn?: () => void) => {
@@ -103,7 +107,7 @@ const SingleLineWrapper = (props: Props) => {
     fn && fn();
   };
 
-  const children = containerRef.current
+  const children = containerWidthMeasured
     ? React.Children.map(
         props.speciesTabs,
         (node: ReactElement<any>, index) => {
