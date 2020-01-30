@@ -8,9 +8,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   const length = scale.domain()[1]; // get back the initial length value on which the scale is based
 
   // choose only the "important" ticks for labelling
-  const exponent = Number(
-    (length.toExponential().match(/e\+(\d+)/) as string[])[1]
-  );
+  const exponent = Math.floor(Math.log10(length));
   const powerOfTen = 10 ** exponent; // e.g. 100, 1000, 10000, etc.
   ticks = ticks.filter((number) => {
     // do not add a tick in the end of the ruler (it is handled specially)
