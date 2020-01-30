@@ -36,7 +36,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('allow multiple', () => {
+  .add('allow opening of multiple items', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion allowMultipleExpanded={true}>
@@ -60,7 +60,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('pre-expanded Item', () => {
+  .add('pre-expanded item', () => {
     return (
       <div className={styles.accordionContainer}>
         <Accordion allowMultipleExpanded={true} preExpanded={[1]}>
@@ -113,7 +113,7 @@ storiesOf('Components|Shared Components/Accordion', module)
       </div>
     );
   })
-  .add('bottom right', () => {
+  .add('positioned to bottom right', () => {
     return (
       <div className={styles.accordionBottomRight}>
         <Accordion allowMultipleExpanded={true}>
@@ -156,6 +156,56 @@ storiesOf('Components|Shared Components/Accordion', module)
             <AccordionItemPanel>
               <div>Item Five content</div>
             </AccordionItemPanel>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  })
+  .add('with disabled items', () => {
+    return (
+      <div className={styles.accordionContainer}>
+        <Accordion className={styles.entityViewerAccordion}>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Function
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Function
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading
+              className={styles.entityViewerAccordionHeader}
+            >
+              <AccordionItemButton
+                className={styles.entityViewerAccordionButton}
+              >
+                Sequence
+              </AccordionItemButton>
+            </AccordionItemHeading>
+            <AccordionItemPanel
+              className={styles.entityViewerAccordionItemContent}
+            >
+              <div>Sequence content</div>
+            </AccordionItemPanel>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>
+                Secondary structure
+              </AccordionItemButton>
+            </AccordionItemHeading>
+          </AccordionItem>
+          <AccordionItem className={styles.entityViewerAccordionItem}>
+            <AccordionItemHeading>
+              <AccordionItemButton disabled={true}>History</AccordionItemButton>
+            </AccordionItemHeading>
           </AccordionItem>
         </Accordion>
       </div>

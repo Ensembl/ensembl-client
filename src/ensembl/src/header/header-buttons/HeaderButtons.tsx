@@ -36,7 +36,7 @@ export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
       <ImageButton
         image={UserIcon}
         description="Ensembl account"
-        buttonStatus={Status.DISABLED}
+        status={Status.DISABLED}
         classNames={{
           [Status.DISABLED]: styles.headerButtonDisabled
         }}
@@ -52,7 +52,4 @@ const mapDispatchToProps: DispatchProps = {
   toggleLaunchbar
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HeaderButtons);
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderButtons);

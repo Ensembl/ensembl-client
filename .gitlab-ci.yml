@@ -78,7 +78,7 @@ Test_N_Build:internal:
     - src/ensembl/dist/
 
   only:
-  - master
+  - dev
 
 Test_N_Build:feature:
   image: node:12.13.0
@@ -119,9 +119,6 @@ Nginx:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - cd ensembl-client-nginx
-  - git checkout june-release
-  - cd ..
   - sed -i "s/<DEPLOYMENT_ENV>/${DEPLOYENV}/g" ensembl-client-nginx/config/conf.d/local.conf
   - docker build -t ${CONTAINER_IMAGE}-${DEPLOYENV} -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
@@ -151,9 +148,6 @@ Nginx:internal:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - cd ensembl-client-nginx
-  - git checkout june-release
-  - cd ..
   - sed -i "s/<DEPLOYMENT_ENV>/internal/g" ensembl-client-nginx/config/conf.d/local.conf
   - cat ensembl-client-nginx/config/conf.d/local.conf
   - docker build -t ${CONTAINER_INTERNAL_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
@@ -163,7 +157,7 @@ Nginx:internal:
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
-  - master
+  - dev
 
   dependencies:
   - Test_N_Build:internal
@@ -185,9 +179,6 @@ Nginx:feature:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - cd ensembl-client-nginx
-  - git checkout june-release
-  - cd ..
   - sed -i "s/<DEPLOYMENT_ENV>/internal/g" ensembl-client-nginx/config/conf.d/local.conf
   - cat ensembl-client-nginx/config/conf.d/local.conf
   - docker build -t ${CONTAINER_IMAGE}-$feature_tag -f ensembl-client-nginx/Dockerfile --no-cache .
@@ -282,7 +273,7 @@ Deploy:internal:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
   only:
-  - master
+  - dev
 
   dependencies:
   - Nginx:internal

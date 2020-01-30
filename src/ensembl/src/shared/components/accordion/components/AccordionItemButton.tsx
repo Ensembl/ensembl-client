@@ -1,7 +1,9 @@
 import React from 'react';
+import noop from 'lodash/noop';
+import classNames from 'classnames';
+
 import { InjectedButtonAttributes } from '../helpers/AccordionStore';
 import { DivAttributes } from '../helpers/types';
-import classNames from 'classnames';
 import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
 import defaultStyles from '../css/Accordion.scss';
@@ -9,22 +11,33 @@ import defaultStyles from '../css/Accordion.scss';
 type Props = DivAttributes & {
   extendDefaultStyles: boolean;
   toggleExpanded(): void;
+  disabled?: boolean;
 };
 
 export const AccordionItemButton = (props: Props) => {
-  const { className, extendDefaultStyles, toggleExpanded, ...rest } = props;
+  const {
+    className,
+    extendDefaultStyles,
+    toggleExpanded,
+    disabled,
+    ...rest
+  } = props;
 
   let styles = className;
 
   if (extendDefaultStyles) {
-    styles = classNames(defaultStyles.accordionButtonDefault, className);
+    styles = classNames(
+      defaultStyles.accordionButtonDefault,
+      { [defaultStyles.accordionButtonDisabled]: props.disabled },
+      className
+    );
   }
 
   return (
     <div
       {...rest}
       className={styles}
-      onClick={toggleExpanded}
+      onClick={disabled ? noop : toggleExpanded}
       data-accordion-component="AccordionItemButton"
     />
   );
@@ -34,16 +47,14 @@ AccordionItemButton.defaultProps = {
   extendDefaultStyles: true
 };
 
-type WrapperProps = Pick<
+type WrapperProps = { disabled?: boolean } & Pick<
   DivAttributes,
   Exclude<keyof DivAttributes, keyof InjectedButtonAttributes>
 >;
 
-const AccordionItemButtonWrapper: React.SFC<WrapperProps> = (
-  props: WrapperProps
-): JSX.Element => (
+const AccordionItemButtonWrapper = (props: WrapperProps) => (
   <ItemConsumer>
-    {(itemContext: ItemContext): JSX.Element => {
+    {(itemContext: ItemContext) => {
       const { toggleExpanded, buttonAttributes } = itemContext;
 
       return (

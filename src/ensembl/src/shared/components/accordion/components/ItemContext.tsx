@@ -68,11 +68,9 @@ const Provider = (props: ProviderProps) => {
   return <AccordionContextConsumer>{renderChildren}</AccordionContextConsumer>;
 };
 
-const ProviderWrapper: React.SFC<ProviderWrapperProps> = (
-  props: ProviderWrapperProps
-): JSX.Element => (
+const ProviderWrapper = (props: ProviderWrapperProps) => (
   <AccordionContextConsumer>
-    {(accordionContext: AccordionContext): JSX.Element => (
+    {(accordionContext: AccordionContext) => (
       <Provider {...props} accordionContext={accordionContext} />
     )}
   </AccordionContextConsumer>

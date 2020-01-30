@@ -16,28 +16,20 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
   const { ensObject } = props;
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Gene</label>
+    <div className={styles.drawerView}>
+      <div className={styles.container}>
+        <div className={styles.label}>Gene</div>
         <div className={styles.details}>
-          <p>
-            <span className={styles.mainDetail}>{ensObject.label}</span>
-          </p>
+          <span className={styles.mainDetail}>{ensObject.label}</span>
         </div>
-      </dd>
 
-      <dd className="clearfix">
-        <label htmlFor="">Stable ID</label>
-        <div className={styles.details}>
-          <p>{getDisplayStableId(ensObject)}</p>
-        </div>
-      </dd>
+        <div className={styles.label}>Stable ID</div>
+        <div className={styles.details}>{getDisplayStableId(ensObject)}</div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>{ensObject.description || '--'}</div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 

@@ -16,7 +16,7 @@ export const EntityViewerSidebarToolstrip = () => {
     <>
       <div className={styles.sidebarIcon} key="search">
         <ImageButton
-          buttonStatus={Status.INACTIVE}
+          status={Status.DISABLED}
           description="Search"
           onClick={noop}
           image={searchIcon}
@@ -24,7 +24,7 @@ export const EntityViewerSidebarToolstrip = () => {
       </div>
       <div className={styles.sidebarIcon} key="bookmarks">
         <ImageButton
-          buttonStatus={Status.INACTIVE}
+          status={Status.DISABLED}
           description="Bookmarks"
           onClick={noop}
           image={bookmarkIcon}
@@ -32,7 +32,7 @@ export const EntityViewerSidebarToolstrip = () => {
       </div>
       <div className={styles.sidebarIcon} key="share">
         <ImageButton
-          buttonStatus={Status.INACTIVE}
+          status={Status.DISABLED}
           description="Share"
           onClick={noop}
           image={shareIcon}
@@ -40,7 +40,7 @@ export const EntityViewerSidebarToolstrip = () => {
       </div>
       <div className={styles.sidebarIcon} key="downloads">
         <ImageButton
-          buttonStatus={Status.INACTIVE}
+          status={Status.DISABLED}
           description="Downloads"
           onClick={noop}
           image={downloadIcon}

@@ -50,15 +50,15 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
   const getViewIconStatus = (selectedItem: string) => {
     return selectedItem === props.trackPanelModalView &&
       props.isTrackPanelOpened
-      ? Status.HIGHLIGHTED
-      : Status.ACTIVE;
+      ? Status.SELECTED
+      : Status.UNSELECTED;
   };
 
   return (
     <>
       <div className={styles.sidebarIcon} key="search">
         <ImageButton
-          buttonStatus={getViewIconStatus('search')}
+          status={getViewIconStatus('search')}
           description="Track search"
           onClick={() => toggleModalView('search')}
           image={searchIcon}
@@ -66,7 +66,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
       </div>
       <div className={styles.sidebarIcon} key="tracks-manager">
         <ImageButton
-          buttonStatus={getViewIconStatus('tracks-manager')}
+          status={getViewIconStatus('tracks-manager')}
           description="Tracks manager"
           onClick={() => toggleModalView('tracks-manager')}
           image={tracksManagerIcon}
@@ -74,7 +74,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
       </div>
       <div className={styles.sidebarIcon} key="bookmarks">
         <ImageButton
-          buttonStatus={getViewIconStatus('bookmarks')}
+          status={getViewIconStatus('bookmarks')}
           description="Bookmarks"
           onClick={() => toggleModalView('bookmarks')}
           image={bookmarkIcon}
@@ -82,7 +82,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
       </div>
       <div className={styles.sidebarIcon} key="personal-data">
         <ImageButton
-          buttonStatus={getViewIconStatus('personal-data')}
+          status={getViewIconStatus('personal-data')}
           description="Personal data"
           onClick={() => toggleModalView('personal-data')}
           image={personalDataIcon}
@@ -90,7 +90,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
       </div>
       <div className={styles.sidebarIcon} key="share">
         <ImageButton
-          buttonStatus={getViewIconStatus('share')}
+          status={getViewIconStatus('share')}
           description="Share"
           onClick={() => toggleModalView('share')}
           image={shareIcon}
@@ -98,7 +98,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
       </div>
       <div className={styles.sidebarIcon} key="downloads">
         <ImageButton
-          buttonStatus={getViewIconStatus('downloads')}
+          status={getViewIconStatus('downloads')}
           description="Downloads"
           onClick={() => toggleModalView('downloads')}
           image={downloadIcon}

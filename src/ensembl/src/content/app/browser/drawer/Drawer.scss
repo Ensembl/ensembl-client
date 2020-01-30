@@ -2,10 +2,13 @@
 
 .drawer {
   height: 100%;
+  overflow: auto;
+  font-size: 13px;
 }
 
 .drawerView {
   overflow-y: auto;
+  margin-top: 10px;
 
   h2 {
     display: flex;
@@ -14,29 +17,33 @@
     text-align: center;
   }
 
-  dd {
-    width: 600px;
+  p {
+    margin: 0px;
   }
 
-  label {
-    float: left;
+  .nextLine {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+  }
+
+  .label {
     font-weight: $light;
     text-align: right;
-    width: 150px;
-  }
-
-  p {
-    margin: 0 0 20px 0;
   }
 
   .details {
-    float: right;
+    display: flex;
     text-align: left;
-    width: 400px;
   }
 
   .mainDetail {
-    font-size: 16px;
     font-weight: $bold;
   }
 
