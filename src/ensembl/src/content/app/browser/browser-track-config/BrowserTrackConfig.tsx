@@ -148,7 +148,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
         <dd className={styles.heightSwitcher}>
           <div className={styles.trackHeightBtn}>
             <ImageButton
-              buttonStatus={Status.INACTIVE}
+              status={Status.DISABLED}
               image={browserTrackConfig.trackHeightBtn.icon}
               description={browserTrackConfig.trackHeightBtn.description}
             />
@@ -159,7 +159,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
         <dd className={styles.trackLock}>
           <div className={styles.trackLockBtn}>
             <ImageButton
-              buttonStatus={Status.INACTIVE}
+              status={Status.DISABLED}
               image={browserTrackConfig.trackLockBtn.icon}
               description={browserTrackConfig.trackLockBtn.description}
             />
@@ -168,7 +168,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
         <dd>
           <div className={styles.trackHighlightBtn}>
             <ImageButton
-              buttonStatus={Status.INACTIVE}
+              status={Status.DISABLED}
               image={browserTrackConfig.trackHighlightBtn.icon}
               description={browserTrackConfig.trackHighlightBtn.description}
             />
@@ -177,7 +177,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
         <dd>
           <div className={styles.trackMoveBtn}>
             <ImageButton
-              buttonStatus={Status.INACTIVE}
+              status={Status.DISABLED}
               image={browserTrackConfig.trackMoveBtn.icon}
               description={browserTrackConfig.trackMoveBtn.description}
             />

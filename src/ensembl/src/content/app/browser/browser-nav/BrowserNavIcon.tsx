@@ -24,12 +24,12 @@ export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
     }
   };
 
-  const iconStatus = enabled ? Status.ACTIVE : Status.INACTIVE;
+  const iconStatus = enabled ? Status.DEFAULT : Status.DISABLED;
 
   return (
     <div className={iconStyles.browserNavIcon}>
       <ImageButton
-        buttonStatus={iconStatus}
+        status={iconStatus}
         description={browserNavItem.description}
         onClick={navigateBrowser}
         image={icon}

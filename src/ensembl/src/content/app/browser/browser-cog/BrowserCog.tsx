@@ -44,7 +44,7 @@ const BrowserCog = (props: BrowserCogProps) => {
 
   const getCogIconStatus = () => {
     const { cogActivated } = props;
-    return cogActivated ? Status.HIGHLIGHTED : Status.ACTIVE;
+    return cogActivated ? Status.SELECTED : Status.UNSELECTED;
   };
 
   const [showTrackConfig, setTrackConfigAnimation] = useState(cogActivated);
@@ -67,7 +67,7 @@ const BrowserCog = (props: BrowserCogProps) => {
     <>
       <div style={imgInline}>
         <ImageButton
-          buttonStatus={getCogIconStatus()}
+          status={getCogIconStatus()}
           description={cogIconConfig.description}
           onClick={toggleCog}
           image={cogIconConfig.icon}
