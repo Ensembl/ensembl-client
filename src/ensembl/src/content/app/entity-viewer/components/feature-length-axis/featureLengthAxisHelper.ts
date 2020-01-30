@@ -6,10 +6,16 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   // and are guaranteed to fall within the scale's domain
   let ticks = scale.ticks();
   const length = scale.domain()[1]; // get back the initial length value on which the scale is based
+  const step = ticks[1] - ticks[0];
 
   // choose only the "important" ticks for labelling
   const exponent = Math.floor(Math.log10(length));
   const powerOfTen = 10 ** exponent; // e.g. 100, 1000, 10000, etc.
+
+  if (length >= powerOfTen && length < powerOfTen + step) {
+    return handleLengthAsPowerOfTen(ticks, powerOfTen);
+  }
+
   ticks = ticks.filter((number) => {
     // do not add a tick in the end of the ruler (it is handled specially)
     // and throw away all the possible 'inelegant' intermediate ticks, such as 50, etc.
@@ -39,13 +45,20 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   };
 };
 
+const handleLengthAsPowerOfTen = (ticks: number[], powerOfTen: number) => {
+  return {
+    ticks: ticks.filter((number) => number !== powerOfTen),
+    labelledTicks: [powerOfTen / 2]
+  };
+};
+
 const getLabelledTicks = (
   ticks: number[],
-  base: number,
+  powerOfTen: number,
   totalLength: number
 ) => {
   return ticks
-    .filter((number) => number % base === 0)
+    .filter((number) => number % powerOfTen === 0)
     .filter((number, index, array) => {
       const lastIndex = array.length - 1;
       return (
