@@ -17,13 +17,13 @@ import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entit
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerSidebarTabs from 'src/content/app/entity-viewer/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
+import GeneView from './components/views/gene-view/GeneView';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './EntityViewer.scss';
-import EntityViewerContent from './components/entity-viewer-content/EntityViewerContent';
 
 type Props = {
   activeGenomeId: string | null;
@@ -52,7 +52,7 @@ const EntityViewer = (props: Props) => {
       <EntityViewerAppBar />
       {params.entityId ? (
         <StandardAppLayout
-          mainContent={<EntityViewerContent />}
+          mainContent={<GeneView />}
           sidebarContent={<div>Sidebar content is coming...</div>}
           sidebarNavigation={<EntityViewerSidebarTabs />}
           topbarContent={<div>Entity info summary goes here</div>}
