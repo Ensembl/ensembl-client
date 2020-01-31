@@ -9,7 +9,9 @@ import * as urlHelper from 'src/shared/helpers/urlHelper';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectIds
+  getEntityViewerActiveEnsObjectIds,
+  getEntityViewerActiveEnsObject,
+  getEntityViewerActiveEnsObjectId
 } from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
@@ -31,6 +33,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
 >> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   if (!params.genomeId) {
     dispatch(setDefaultActiveGenomeId());
   } else if (params.genomeId !== activeGenomeId) {
@@ -43,6 +46,10 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     if (!genomeInfo) {
       dispatch(fetchGenomeData(activeGenomeId));
     }
+  }
+
+  if (params.entityId && params.entityId !== activeEntityId) {
+    dispatch(updateEnsObject(params.entityId));
   }
 };
 
@@ -97,7 +104,11 @@ export const updateEnsObject: ActionCreator<ThunkAction<
       [activeGenomeId]: activeEnsObjectId
     };
 
+    const currentEnsObject = getEntityViewerActiveEnsObject(state);
+
     dispatch(updateEntityViewerActiveEnsObjectIds(updatedActiveEnsObjectIds));
-    dispatch(fetchEnsObject(activeEnsObjectId));
+    if (!currentEnsObject) {
+      dispatch(fetchEnsObject(activeEnsObjectId));
+    }
   };
 };

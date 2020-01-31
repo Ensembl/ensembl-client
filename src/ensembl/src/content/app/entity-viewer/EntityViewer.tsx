@@ -51,9 +51,6 @@ const EntityViewer = (props: Props) => {
 
   useEffect(() => {
     props.setDataFromUrl(params);
-    if (params.entityId) {
-      props.updateEnsObject(params.entityId);
-    }
   }, [params.genomeId, params.entityId]);
 
   return (

@@ -6,7 +6,7 @@ import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/Fea
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-import { getEntityViewerActiveEnsObject } from '../../state/general/entityViewerGeneralSelectors';
+import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import styles from './EntityViewerTopbar.scss';
 
