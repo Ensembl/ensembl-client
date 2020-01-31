@@ -274,7 +274,7 @@ Staging:
 
 Staging:WP-HX:
   stage: deploy
-  image: alpine
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
   environment:
     name : wp-hx-staging
   script:
