@@ -37,12 +37,12 @@ export const BrowserBar = (props: BrowserBarProps) => {
       <div className={styles.browserResetWrapper}>
         <BrowserReset />
       </div>
-      {props.ensObject ? (
+      {props.ensObject && (
         <FeatureSummaryStrip
           ensObject={props.ensObject}
           isGhosted={props.isDrawerOpened}
         />
-      ) : null}
+      )}
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator />
       </div>
