@@ -7,13 +7,17 @@ import { ThunkAction } from 'redux-thunk';
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { getEntityViewerActiveGenomeId } from './entityViewerGeneralSelectors';
+import {
+  getEntityViewerActiveGenomeId,
+  getEntityViewerActiveEnsObjectIds
+} from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
+import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 
 export const setActiveGenomeId = createAction(
   'entity-viewer/set-active-genome-id'
@@ -69,4 +73,31 @@ export const changeActiveGenomeId: ActionCreator<ThunkAction<
     dispatch(setActiveGenomeId(genomeId));
     dispatch(push(newUrl));
   });
+};
+
+export const updateEntityViewerActiveEnsObjectIds = createAction(
+  'entity-viewer/update-active-ens-object-ids'
+)<{ [objectId: string]: string }>();
+
+export const updateEnsObject: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (activeEnsObjectId: string) => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
+    const currentActiveEnsObjectIds = getEntityViewerActiveEnsObjectIds(state);
+    const updatedActiveEnsObjectIds = {
+      ...currentActiveEnsObjectIds,
+      [activeGenomeId]: activeEnsObjectId
+    };
+
+    dispatch(updateEntityViewerActiveEnsObjectIds(updatedActiveEnsObjectIds));
+    dispatch(fetchEnsObject(activeEnsObjectId));
+  };
 };
