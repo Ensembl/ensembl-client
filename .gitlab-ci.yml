@@ -274,13 +274,13 @@ Staging:
 
 Staging:WP-HX:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  image: alpine
   environment:
     name : wp-hx-staging
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
   - git -C ensembl-client-caas-deploy/ checkout migration/wp-hx
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
   only:
