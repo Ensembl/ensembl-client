@@ -1,12 +1,14 @@
-import React, { useCallback, CSSProperties, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useTransition, animated } from 'react-spring';
+
 import analyticsTracking from 'src/services/analytics-service';
+import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import { Status } from 'src/shared/types/status';
 import { ReactComponent as cogIcon } from 'static/img/shared/cog.svg';
-import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
-import { useTransition, animated } from 'react-spring';
+
+import { Status } from 'src/shared/types/status';
 
 export type BrowserCogProps = {
   cogActivated: boolean;
@@ -31,15 +33,14 @@ const BrowserCog = (props: BrowserCogProps) => {
     }
   }, [cogActivated]);
 
-  const imgInline: CSSProperties = {
+  const imgInline = {
     height: '18px',
     width: '18px'
   };
 
   const cogIconConfig = {
-    description: 'Track search',
-    icon: cogIcon,
-    name: 'search'
+    description: 'Configure Track',
+    icon: cogIcon
   };
 
   const getCogIconStatus = () => {

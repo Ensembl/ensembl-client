@@ -4,10 +4,10 @@ import { ReactComponent as navigateUpIcon } from 'static/img/browser/navigate-up
 import { ReactComponent as navigateDownIcon } from 'static/img/browser/navigate-down.svg';
 import { ReactComponent as navigateLeftIcon } from 'static/img/browser/navigate-left.svg';
 import { ReactComponent as navigateRightIcon } from 'static/img/browser/navigate-right.svg';
-import { ReactComponent as trackHeightBtn } from 'static/img/browser/icon_tracks_height.svg';
-import { ReactComponent as trackLockBtn } from 'static/img/browser/icon_tracks_lock_open.svg';
-import { ReactComponent as trackHighlightBtn } from 'static/img/browser/icon_tracks_highlight.svg';
-import { ReactComponent as trackMoveBtn } from 'static/img/browser/icon_tracks_move.svg';
+import { ReactComponent as trackHeightIcon } from 'static/img/browser/icon_tracks_height.svg';
+import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_lock_open.svg';
+import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
+import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
 export type BrowserNavItem = {
   description: string;
@@ -70,20 +70,20 @@ export const browserNavConfig: BrowserNavItem[] = [
 ];
 
 export const browserTrackConfig = {
-  trackHeightBtn: {
+  trackHeightIcon: {
     description: 'Change track height',
-    icon: trackHeightBtn
+    icon: trackHeightIcon
   },
-  trackLockBtn: {
+  trackLockIcon: {
     description: 'Lock track',
-    icon: trackLockBtn
+    icon: trackLockIcon
   },
-  trackHighlightBtn: {
+  trackHighlightIcon: {
     description: 'Highlight track',
-    icon: trackHighlightBtn
+    icon: trackHighlightIcon
   },
-  trackMoveBtn: {
+  trackMoveIcon: {
     description: 'Move track',
-    icon: trackMoveBtn
+    icon: trackMoveIcon
   }
 };

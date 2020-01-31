@@ -14,20 +14,22 @@ import {
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
+
 import analyticsTracking from 'src/services/analytics-service';
 
-import styles from './BrowserTrackConfig.scss';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+
+import { browserTrackConfig } from '../browserConfig';
 
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
-
-import { browserTrackConfig } from '../browserConfig';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { Status } from 'src/shared/types/status';
+
+import styles from './BrowserTrackConfig.scss';
 
 export type BrowserTrackConfigProps = {
   applyToAll: boolean;
@@ -146,40 +148,40 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
           />
         </dd>
         <dd className={styles.heightSwitcher}>
-          <div className={styles.trackHeightBtn}>
+          <div className={styles.trackHeightIcon}>
             <ImageButton
               status={Status.DISABLED}
-              image={browserTrackConfig.trackHeightBtn.icon}
-              description={browserTrackConfig.trackHeightBtn.description}
+              image={browserTrackConfig.trackHeightIcon.icon}
+              description={browserTrackConfig.trackHeightIcon.description}
             />
           </div>
         </dd>
       </dl>
       <dl>
         <dd className={styles.trackLock}>
-          <div className={styles.trackLockBtn}>
+          <div className={styles.trackLockIcon}>
             <ImageButton
               status={Status.DISABLED}
-              image={browserTrackConfig.trackLockBtn.icon}
-              description={browserTrackConfig.trackLockBtn.description}
+              image={browserTrackConfig.trackLockIcon.icon}
+              description={browserTrackConfig.trackLockIcon.description}
             />
           </div>
         </dd>
         <dd>
-          <div className={styles.trackHighlightBtn}>
+          <div className={styles.trackHighlightIcon}>
             <ImageButton
               status={Status.DISABLED}
-              image={browserTrackConfig.trackHighlightBtn.icon}
-              description={browserTrackConfig.trackHighlightBtn.description}
+              image={browserTrackConfig.trackHighlightIcon.icon}
+              description={browserTrackConfig.trackHighlightIcon.description}
             />
           </div>
         </dd>
         <dd>
-          <div className={styles.trackMoveBtn}>
+          <div className={styles.trackMoveIcon}>
             <ImageButton
               status={Status.DISABLED}
-              image={browserTrackConfig.trackMoveBtn.icon}
-              description={browserTrackConfig.trackMoveBtn.description}
+              image={browserTrackConfig.trackMoveIcon.icon}
+              description={browserTrackConfig.trackMoveIcon.description}
             />
           </div>
         </dd>

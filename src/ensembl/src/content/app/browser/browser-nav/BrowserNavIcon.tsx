@@ -1,8 +1,10 @@
 import React, { FunctionComponent, memo } from 'react';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { BrowserNavItem } from '../browserConfig';
+
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
 
 import iconStyles from './BrowserNavIcon.scss';

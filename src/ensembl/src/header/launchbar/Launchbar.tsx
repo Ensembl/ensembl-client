@@ -81,7 +81,7 @@ const Launchbar = (props: LaunchbarProps) => {
           <div className={styles.category}>
             <LaunchbarButton
               app="help-docs"
-              description="Help & documentation"
+              description="Help &amp; documentation"
               icon={HelpIcon}
               enabled={false}
             />
