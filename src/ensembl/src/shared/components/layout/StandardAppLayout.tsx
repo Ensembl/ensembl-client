@@ -52,17 +52,17 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
   const shouldShowSidebarNavigation =
     props.viewportWidth > BreakpointWidth.LAPTOP || props.isSidebarOpen;
 
-  const topBarClassnames = classNames(
-    styles.topBar,
-    { [styles.topBar_withSidebarNavigation]: shouldShowSidebarNavigation },
-    { [styles.topBar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
+  const topbarClassnames = classNames(
+    styles.topbar,
+    { [styles.topbar_withSidebarNavigation]: shouldShowSidebarNavigation },
+    { [styles.topbar_withoutSidebarNavigation]: !shouldShowSidebarNavigation }
   );
 
   const sidebarWrapperClassnames = useSidebarWrapperClassNames(props);
 
   return (
     <div className={styles.standardAppLayout}>
-      <div className={topBarClassnames}>
+      <div className={topbarClassnames}>
         {props.topbarContent}
         {shouldShowSidebarNavigation && props.sidebarNavigation}
       </div>
@@ -70,7 +70,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
         <div className={mainClassNames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
           {props.isDrawerOpen && <DrawerWindow onClick={props.onDrawerClose} />}
-          <div className={styles.sideBarToolstrip}>
+          <div className={styles.sidebarToolstrip}>
             <SidebarModeToggle
               onClick={
                 props.isDrawerOpen
@@ -83,11 +83,11 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
                   : SidebarModeToggleAction.OPEN
               }
             />
-            <div className={styles.sideBarToolstripContent}>
+            <div className={styles.sidebarToolstripContent}>
               {props.sidebarToolstripContent}
             </div>
           </div>
-          <div className={styles.sideBar}>{props.sidebarContent}</div>
+          <div className={styles.sidebar}>{props.sidebarContent}</div>
           <div className={styles.drawer}>
             <CloseIcon
               className={styles.drawerClose}
@@ -133,11 +133,11 @@ const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
     (props.isSidebarOpen && !previousSidebarOpen); // <-- sidebar about to open
 
   return classNames(
-    styles.sideBarWrapper,
-    { [styles.sideBarWrapperOpen]: props.isSidebarOpen },
-    { [styles.sideBarWrapperClosed]: !props.isSidebarOpen },
+    styles.sidebarWrapper,
+    { [styles.sidebarWrapperOpen]: props.isSidebarOpen },
+    { [styles.sidebarWrapperClosed]: !props.isSidebarOpen },
     {
-      [styles.sideBarWrapperDrawerOpen]: props.isDrawerOpen ?? false
+      [styles.sidebarWrapperDrawerOpen]: props.isDrawerOpen ?? false
     },
     { [styles.instantaneous]: isInstantaneous }
   );

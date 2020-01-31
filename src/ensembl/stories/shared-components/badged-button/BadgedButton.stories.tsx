@@ -5,7 +5,7 @@ import { action } from '@storybook/addon-actions';
 import Roundbutton from 'src/shared/components/round-button/RoundButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 import { SecondaryButton } from 'src/shared/components/button/Button';
-import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
+import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
 import styles from './BadgedButton.stories.scss';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 

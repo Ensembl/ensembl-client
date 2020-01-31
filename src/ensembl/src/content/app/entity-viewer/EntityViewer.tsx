@@ -15,8 +15,10 @@ import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/enti
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
-import EntityViewerSidebarTabs from 'src/content/app/entity-viewer/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
+import EntityViewerSidebar from './components/entity-viewer-sidebar/EntityViewerSideBar';
+import EntityViewerSidebarTabs from './components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
+import EntityViewerSidebarToolstrip from './components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
@@ -52,8 +54,9 @@ const EntityViewer = (props: Props) => {
       {params.entityId ? (
         <StandardAppLayout
           mainContent={<div>Main content is coming...</div>}
-          sidebarContent={<div>Sidebar content is coming...</div>}
+          sidebarContent={<EntityViewerSidebar />}
           sidebarNavigation={<EntityViewerSidebarTabs />}
+          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
           topbarContent={<div>Entity info summary goes here</div>}
           isSidebarOpen={props.isSidebarOpen}
           onSidebarToggle={props.toggleSidebar}
@@ -84,7 +87,7 @@ const ExampleLinks = (props: Props) => {
 
   return (
     <div>
-      <div className={styles.exampleLinks__emptyTopBar} />
+      <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>{links}</div>
     </div>
   );

@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
-$sideBarContentWidth: 320px;
-$sideBarToolStripWidth: 46px;
-$topBarHeight: 38px;
+$sidebarContentWidth: 320px;
+$sidebarToolstripWidth: 46px;
+$topbarHeight: 38px;
 $drawerWindowWidth: 45px;
 
 .standardAppLayout {
@@ -11,8 +11,8 @@ $drawerWindowWidth: 45px;
   overflow: hidden;
 }
 
-.topBar {
-  height: $topBarHeight;
+.topbar {
+  height: $topbarHeight;
   background: $light-grey;
   box-shadow: 0 2px 3px $grey;
   position: relative;
@@ -23,8 +23,8 @@ $drawerWindowWidth: 45px;
   &_withSidebarNavigation {
     display: grid;
     align-items: center;
-    grid-template-columns: 1fr $sideBarContentWidth;
-    grid-column-gap: $sideBarToolStripWidth;
+    grid-template-columns: 1fr $sidebarContentWidth;
+    grid-column-gap: $sidebarToolstripWidth;
   }
 
   &_withoutSidebarNavigation {
@@ -38,7 +38,7 @@ $drawerWindowWidth: 45px;
 }
 
 .mainWrapper {
-  height: calc(100% - #{$topBarHeight});
+  height: calc(100% - #{$topbarHeight});
   position: relative;
 }
 
@@ -46,15 +46,15 @@ $drawerWindowWidth: 45px;
   height: 100%;
 
   &Default {
-    margin-right: calc(#{$sideBarContentWidth} + #{$sideBarToolStripWidth});
+    margin-right: calc(#{$sidebarContentWidth} + #{$sidebarToolstripWidth});
   }
 
   &FullWidth {
-    margin-right: $sideBarToolStripWidth;
+    margin-right: $sidebarToolstripWidth;
   }
 }
 
-.sideBarWrapper {
+.sidebarWrapper {
   position: absolute;
   top: 0;
   left: 0;
@@ -66,7 +66,7 @@ $drawerWindowWidth: 45px;
 
   &Open {
     transform: translateX(
-      calc(100% - #{$sideBarContentWidth} - #{$sideBarToolStripWidth})
+      calc(100% - #{$sidebarContentWidth} - #{$sidebarToolstripWidth})
     );
   }
 
@@ -75,7 +75,7 @@ $drawerWindowWidth: 45px;
   }
 
   &Closed {
-    transform: translateX(calc(100% - #{$sideBarToolStripWidth}));
+    transform: translateX(calc(100% - #{$sidebarToolstripWidth}));
   }
 }
 
@@ -83,29 +83,28 @@ $drawerWindowWidth: 45px;
   transition: none;
 }
 
-.sideBar {
+.sidebar {
   flex: 0 0 auto;
   height: 100%;
-  width: $sideBarContentWidth;
+  width: $sidebarContentWidth;
   border-left: 1px solid $grey;
   padding: 15px;
   background-color: white;
 }
 
-.sideBarToolstrip {
+.sidebarToolstrip {
   padding: 20px 0 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 0 0 auto;
-  width: $sideBarToolStripWidth;
+  width: $sidebarToolstripWidth;
   height: 100%;
   background: $light-grey;
   border-left: 1px solid $grey;
 }
 
 .sidebarToolstripContent {
-  width: 100%;
   overflow-x: hidden;
 }
 
@@ -127,6 +126,12 @@ $drawerWindowWidth: 45px;
   display: flex;
   justify-content: space-around;
   padding: 0 15px;
+}
+
+.sidebarIcon {
+  width: 22px;
+  height: 22px;
+  margin: 6px 6px 23px;
 }
 
 .drawer {

@@ -11,7 +11,7 @@ import generalErrorImage3 from './images/general-error-3.jpg';
 
 const GeneralErrorScreen = () => (
   <section className={styles.generalErrorScreen}>
-    <header className={`${headerStyles.topBar} ${styles.generalErrorHeader}`}>
+    <header className={`${headerStyles.topbar} ${styles.generalErrorHeader}`}>
       <HomeLink />
       <ReleaseVersion />
       <Copyright />

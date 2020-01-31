@@ -282,7 +282,7 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
 
   return (
     <div>
-      <div className={styles.exampleLinks__emptyTopBar} />
+      <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>{links}</div>
     </div>
   );

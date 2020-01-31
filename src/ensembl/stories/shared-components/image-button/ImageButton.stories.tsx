@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-
-import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
+import classNames from 'classnames';
 
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
+
+import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
+
 import { Status } from 'src/shared/types/status';
 
-import classNames from 'classnames';
 import styles from './ImageButton.stories.scss';
 
 const trackPanelButtonStories = storiesOf(
