@@ -176,6 +176,7 @@ Nginx:feature:
   script:
   - feature_branch=${CI_COMMIT_REF_NAME}
   - feature_tag=${feature_branch#"feature/"}
+  - feature_tag=`echo "${feature_tag}" | tr '[A-Z]' '[a-z]'`
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
