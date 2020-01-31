@@ -1,13 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { BrowserBar, BrowserInfo, BrowserBarProps } from './BrowserBar';
+import { BrowserBar, BrowserBarProps } from './BrowserBar';
 
 import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
 import BrowserLocationIndicator from 'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator';
-import {
-  GeneSummaryStrip,
-  RegionSummaryStrip
-} from 'src/shared/components/feature-summary-strip';
+import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 
 import { ChrLocation } from '../browserState';
 
@@ -20,10 +17,10 @@ jest.mock(
   'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator',
   () => () => <div>Browser Location Indicator</div>
 );
-jest.mock('src/shared/components/feature-summary-strip', () => ({
-  GeneSummaryStrip: () => <div>Gene Summary Strip</div>,
-  RegionSummaryStrip: () => <div>Region Summary Strip</div>
-}));
+jest.mock(
+  'src/shared/components/feature-summary-strip/FeatureSummaryStrip',
+  () => () => <div>Feature Summary Strip</div>
+);
 
 describe('<BrowserBar />', () => {
   const defaultProps = {
@@ -52,25 +49,20 @@ describe('<BrowserBar />', () => {
       expect(renderedBrowserBar.find(BrowserLocationIndicator).length).toBe(1);
     });
 
-    test('renders GeneSummaryStrip if focus object is gene', () => {
-      const renderedBrowserBar = mount(
-        renderBrowserBar({ ensObject: createEnsObject('gene') })
-      );
-      expect(renderedBrowserBar.find(GeneSummaryStrip).length).toBe(1);
-    });
-
-    test('renders RegionSummaryStrip if focus object is region', () => {
-      const renderedBrowserBar = mount(
-        renderBrowserBar({ ensObject: createEnsObject('region') })
-      );
-      expect(renderedBrowserBar.find(RegionSummaryStrip).length).toBe(1);
+    test('contains FeatureSummaryStrip', () => {
+      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
     });
   });
 
   describe('behaviour', () => {
-    test('shows BrowserInfo panel by default', () => {
-      const renderedBrowserBar = mount(renderBrowserBar());
-      expect(renderedBrowserBar.find(BrowserInfo).length).toBe(1);
+    let renderedBrowserBar: any;
+
+    test('shows FeatureSummaryStrip when ensObject is not null', () => {
+      renderedBrowserBar = mount(renderBrowserBar());
+      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
+
+      renderedBrowserBar = mount(renderBrowserBar({ ensObject: null }));
+      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(0);
     });
   });
 });
