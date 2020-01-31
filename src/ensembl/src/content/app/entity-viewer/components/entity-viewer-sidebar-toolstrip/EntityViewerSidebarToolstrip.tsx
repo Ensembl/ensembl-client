@@ -2,12 +2,13 @@ import React from 'react';
 import noop from 'lodash/noop';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { Status } from 'src/shared/types/status';
 
 import { ReactComponent as searchIcon } from 'static/img/sidebar/search.svg';
 import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
 import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
 import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
+
+import { Status } from 'src/shared/types/status';
 
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 

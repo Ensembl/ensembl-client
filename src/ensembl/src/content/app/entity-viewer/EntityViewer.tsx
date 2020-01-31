@@ -17,6 +17,7 @@ import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entit
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
 import EntityViewerSidebar from './components/entity-viewer-sidebar/EntityViewerSideBar';
+import EntityViewerSidebarTabs from './components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
 import EntityViewerSidebarToolstrip from './components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
 
 import { RootState } from 'src/store';
@@ -54,7 +55,7 @@ const EntityViewer = (props: Props) => {
         <StandardAppLayout
           mainContent={<div>Main content is coming...</div>}
           sidebarContent={<EntityViewerSidebar />}
-          sidebarNavigation={<div>Sidebar navigation goes here</div>}
+          sidebarNavigation={<EntityViewerSidebarTabs />}
           sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
           topbarContent={<div>Entity info summary goes here</div>}
           isSidebarOpen={props.isSidebarOpen}
