@@ -28,8 +28,9 @@ const FeatureLengthAxis = (props: Props) => {
   const { ticks, labelledTicks } = getTicks(scale);
 
   useEffect(() => {
-    props.onTicksCalculated &&
+    if (props.onTicksCalculated) {
       props.onTicksCalculated({ ticks, labelledTicks });
+    }
   }, [props.length]);
 
   const renderedAxis = (

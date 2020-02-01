@@ -12,7 +12,17 @@ type Example = {
 const examples: Example[] = [
   {
     length: 100, // edge case: length is equal to the power of ten that we use to filter the ticks
-    ticks: [50],
+    ticks: [10, 20, 30, 40, 50, 60, 70, 80, 90],
+    labelledTicks: [50]
+  },
+  {
+    length: 101, // behaves the same as the previous case
+    ticks: [10, 20, 30, 40, 50, 60, 70, 80, 90],
+    labelledTicks: [50]
+  },
+  {
+    length: 103, // as previous case, but includes the last tick
+    ticks: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], // notice the last tick is the same as the power of ten
     labelledTicks: [50]
   },
   {

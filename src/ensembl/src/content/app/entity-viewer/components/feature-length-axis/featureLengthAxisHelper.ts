@@ -13,7 +13,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   const powerOfTen = 10 ** exponent; // e.g. 100, 1000, 10000, etc.
 
   if (length >= powerOfTen && length < powerOfTen + step) {
-    return handleLengthAsPowerOfTen(ticks, powerOfTen);
+    return handleLengthAsPowerOfTen(ticks, powerOfTen, step, length);
   }
 
   ticks = ticks.filter((number) => {
@@ -24,15 +24,7 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
 
   let labelledTicks = getLabelledTicks(ticks, powerOfTen, length);
 
-  if (labelledTicks.length > 5) {
-    // that's too many labels; let's use half of the next power of ten for labelling
-    const nextPowerOfTen = powerOfTen * 10;
-    const halvedPowerOfTen = nextPowerOfTen / 2;
-    const newLabelledTicks = getLabelledTicks(ticks, halvedPowerOfTen, length);
-    if (newLabelledTicks.length > 0 && newLabelledTicks.length < 5) {
-      labelledTicks = newLabelledTicks;
-    }
-  } else if (!labelledTicks.length) {
+  if (!labelledTicks.length) {
     // let's have at least one label, roughly in the middle of the ruler
     const halvedPowerOfTen = powerOfTen / 2;
     ticks = [...ticks, halvedPowerOfTen].sort();
@@ -45,9 +37,20 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
   };
 };
 
-const handleLengthAsPowerOfTen = (ticks: number[], powerOfTen: number) => {
+const handleLengthAsPowerOfTen = (
+  ticks: number[],
+  powerOfTen: number,
+  step: number,
+  totalLength: number
+) => {
+  ticks = ticks.filter((number) => {
+    if (number === powerOfTen) {
+      return totalLength - number > step * 0.2; // show last tick if it's more that 20% of step length removed from end of ruler
+    }
+    return true;
+  });
   return {
-    ticks: ticks.filter((number) => number !== powerOfTen),
+    ticks,
     labelledTicks: [powerOfTen / 2]
   };
 };
@@ -57,13 +60,35 @@ const getLabelledTicks = (
   powerOfTen: number,
   totalLength: number
 ) => {
-  return ticks
-    .filter((number) => number % powerOfTen === 0)
-    .filter((number, index, array) => {
-      const lastIndex = array.length - 1;
-      return (
-        index !== lastIndex ||
-        (index === lastIndex && totalLength - number > totalLength * 0.1)
-      );
-    });
+  let filterForLabels = buildFilterForLabels(powerOfTen, totalLength);
+  let labelledTicks = ticks.filter(filterForLabels);
+
+  if (labelledTicks.length > 5) {
+    // that's too many labels; let's use the half of the next power of ten for labelling
+    const nextPowerOfTen = powerOfTen * 10;
+    const halvedNextPowerOfTen = nextPowerOfTen / 2;
+    filterForLabels = buildFilterForLabels(halvedNextPowerOfTen, totalLength);
+    const newLabelledTicks = ticks.filter(filterForLabels);
+    if (newLabelledTicks.length < 5) {
+      labelledTicks = newLabelledTicks;
+    }
+  }
+
+  return labelledTicks;
+};
+
+const buildFilterForLabels = (powerOfTen: number, totalLength: number) => (
+  number: number,
+  index: number,
+  ticks: number[]
+) => {
+  const lastIndex = ticks.length - 1;
+
+  if (number % powerOfTen !== 0) {
+    return false;
+  } else if (index !== lastIndex) {
+    return true;
+  } else {
+    return totalLength - number > totalLength * 0.1;
+  }
 };
