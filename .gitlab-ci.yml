@@ -172,7 +172,7 @@ Nginx:WP:
   - apk update && apk add git
   - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - sed -i "s/-<DEPLOYMENT_ENV>//g" ensembl-client-nginx/config/conf.d/local.conf
+  - git -C ensembl-client-nginx checkout migration/wp-hx/ingress
   - cat ensembl-client-nginx/config/conf.d/local.conf
   - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
   - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
@@ -181,7 +181,7 @@ Nginx:WP:
   - docker logout "$GITLAB_REGISTRY_URL"
 
   only:
-  - /^migration\/.*$/
+  - migration/wp-hx
 
 Nginx:internal:
   image: docker
@@ -284,7 +284,7 @@ Staging:WP-HX:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
   only:
-  - /^migration\/.*$/
+  - migration/wp-hx
 
 Live:
   stage: deploy
