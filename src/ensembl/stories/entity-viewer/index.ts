@@ -1,1 +1,1 @@
-import './feature-length-axis/FeatureLengthAxis.story';
+import './feature-length-axis/FeatureLengthAxis.stories';

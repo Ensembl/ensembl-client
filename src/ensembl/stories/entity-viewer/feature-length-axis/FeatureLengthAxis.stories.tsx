@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 
 import FeatureLengthAxis from 'src/content/app/entity-viewer/components/feature-length-axis/FeatureLengthAxis';
 
-import styles from './FeatureLengthAxis.story.scss';
+import styles from './FeatureLengthAxis.stories.scss';
 
 type ContainerProps = {
   value: number;
