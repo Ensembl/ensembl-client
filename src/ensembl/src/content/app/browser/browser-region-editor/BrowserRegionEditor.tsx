@@ -29,6 +29,8 @@ import {
 } from 'src/shared/helpers/numberFormatter';
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionEditor.scss';
@@ -142,8 +144,20 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
     if (stickInput === stick) {
       changeLocation(newChrLocation);
+
+      analyticsTracking.trackEvent({
+        category: 'browser_navigation',
+        label: 'region_editor_location',
+        action: 'change'
+      });
     } else {
       props.changeFocusObject(regionId);
+
+      analyticsTracking.trackEvent({
+        category: 'browser_navigation',
+        label: 'region_editor_focus',
+        action: 'change'
+      });
     }
   };
 

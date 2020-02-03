@@ -24,6 +24,8 @@ import {
   RegionValidationErrors
 } from '../browserHelper';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionField.scss';
@@ -91,8 +93,20 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
         ensObjectId: null,
         chrLocation: newChrLocation
       });
+
+      analyticsTracking.trackEvent({
+        category: 'browser_navigation',
+        label: 'region_field_location',
+        action: 'change'
+      });
     } else {
       props.changeFocusObject(regionId);
+
+      analyticsTracking.trackEvent({
+        category: 'browser_navigation',
+        label: 'region_field_focus',
+        action: 'change'
+      });
     }
   };
 
