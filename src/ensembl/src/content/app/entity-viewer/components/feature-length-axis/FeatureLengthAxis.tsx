@@ -42,12 +42,15 @@ const FeatureLengthAxis = (props: Props) => {
         width={props.width}
         height={1}
       />
-      <text className={styles.label} x={0} y={20} textAnchor="end">
-        bp 1
-      </text>
+      <g>
+        <rect className={styles.tick} width={1} height={6} />
+        <text className={styles.label} x={0} y={20} textAnchor="end">
+          bp 1
+        </text>
+      </g>
       {ticks.map((tick) => (
         <g key={tick} transform={`translate(${scale(tick)})`}>
-          <rect className={styles.tick} key={tick} width={1} height={6} />
+          <rect className={styles.tick} width={1} height={6} />
           {labelledTicks.includes(tick) && (
             <text className={styles.label} x={0} y={20} textAnchor="middle">
               {getCommaSeparatedNumber(tick)}
