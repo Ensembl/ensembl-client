@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 
 import styles from './Tabs.scss';
 
@@ -17,28 +18,26 @@ export type TabsProps = {
     tabsContainer?: string;
   };
   selectedTab: string;
-  selectTab: (selectedTab: string) => void;
+  onTabChange: (selectedTab: string) => void;
 };
 
 export const Tabs = (props: TabsProps) => {
-  const [selectedTab, setSelectedTab] = useState(props.selectedTab);
-
   const getTabClassNames = (tab: Tab) => {
     const defaultClassNames = classNames(props.classNames?.default, styles.tab);
 
     const disabledClassNames = classNames(
-      props.classNames?.disabled,
-      styles.disabled
+      styles.disabled,
+      props.classNames?.disabled
     );
 
     const selectedClassNames = classNames(
-      props.classNames?.selected,
-      styles.selected
+      styles.selected,
+      props.classNames?.selected
     );
 
     return classNames(defaultClassNames, {
       [disabledClassNames]: tab.isDisabled,
-      [selectedClassNames]: tab.title === selectedTab
+      [selectedClassNames]: tab.title === props.selectedTab
     });
   };
 
@@ -48,8 +47,7 @@ export const Tabs = (props: TabsProps) => {
   );
 
   const onTabSelect = (tabTitle: string) => {
-    setSelectedTab(tabTitle);
-    props.selectTab(tabTitle);
+    props.onTabChange(tabTitle);
   };
 
   return (
@@ -58,7 +56,7 @@ export const Tabs = (props: TabsProps) => {
         <span
           className={getTabClassNames(tab)}
           key={tab.title}
-          onClick={tab.isDisabled ? () => null : () => onTabSelect(tab.title)}
+          onClick={tab.isDisabled ? noop : () => onTabSelect(tab.title)}
         >
           {tab.title}
         </span>

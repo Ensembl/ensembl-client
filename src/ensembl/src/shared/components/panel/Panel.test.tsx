@@ -23,22 +23,20 @@ const defaultProps: PanelProps = {
   classNames: panelClassNames
 };
 
-const renderPanel = (props: PanelProps) => {
-  return <Panel {...props}></Panel>;
+const renderPanel = (props: PanelProps = defaultProps) => {
+  return <Panel {...props} />;
 };
 
 describe('<Tabs />', () => {
   let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(renderPanel({ ...defaultProps }));
-  });
 
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it('displays the HTML header', () => {
+    wrapper = mount(renderPanel());
+
     expect(
       wrapper
         .find('.header')
@@ -55,6 +53,7 @@ describe('<Tabs />', () => {
   });
 
   it('displays the body content', () => {
+    wrapper = mount(renderPanel());
     expect(wrapper.find('.body').contains(defaultProps.children)).toBeTruthy();
   });
 
@@ -64,6 +63,7 @@ describe('<Tabs />', () => {
   });
 
   it('does not display the close button if onClose is not set', () => {
+    wrapper = mount(renderPanel());
     expect(wrapper.find('.closeButton')).toHaveLength(0);
   });
 
@@ -74,22 +74,27 @@ describe('<Tabs />', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('applies the passed in panel className', () => {
-    expect(wrapper.find('.panel').prop('className')).toContain(
-      panelClassNames.panel
-    );
-  });
+  it('applies the passed in class', () => {
+    wrapper = mount(renderPanel());
 
-  it('applies the passed in header className', () => {
-    expect(wrapper.find('.header').prop('className')).toContain(
-      panelClassNames.header
-    );
-  });
-
-  it('applies the passed in body className', () => {
-    expect(wrapper.find('.body').prop('className')).toContain(
-      panelClassNames.body
-    );
+    expect(
+      wrapper
+        .find('.panel')
+        .first()
+        .hasClass(panelClassNames.panel)
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find('.body')
+        .first()
+        .hasClass(panelClassNames.body)
+    ).toBeTruthy();
+    expect(
+      wrapper
+        .find('.header')
+        .first()
+        .hasClass(panelClassNames.header)
+    ).toBeTruthy();
   });
 
   it('applies the passed in closeButton className', () => {

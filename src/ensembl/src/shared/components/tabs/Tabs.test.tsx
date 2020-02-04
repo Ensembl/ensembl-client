@@ -5,7 +5,7 @@ import times from 'lodash/times';
 
 import Tabs, { Tab, TabsProps } from './Tabs';
 
-const onTabSelect = jest.fn();
+const onTabChange = jest.fn();
 
 const createTabGroup = (): Tab[] => {
   const options = times(10, () => ({
@@ -38,7 +38,7 @@ const tabClassNames = {
 const defaultProps = {
   tabs: tabsData,
   selectedTab: tabsData.find((tab) => !tab.isDisabled)?.title || '',
-  selectTab: onTabSelect,
+  onTabChange,
   classNames: tabClassNames
 };
 
@@ -65,8 +65,8 @@ describe('<Tabs />', () => {
       wrapper
         .find('.tab')
         .at(disabledTabIndex)
-        .prop('className')
-    ).toContain('disabled');
+        .hasClass('disabled')
+    ).toBeTruthy();
   });
 
   it('adds respective class to the selected tab', () => {
@@ -77,11 +77,11 @@ describe('<Tabs />', () => {
       wrapper
         .find('.tab')
         .at(selectedTabIndex)
-        .prop('className')
-    ).toContain('selected');
+        .hasClass('selected')
+    ).toBeTruthy();
   });
 
-  it('calls the onTabSelect function when a tab is selected', () => {
+  it('calls the onTabChange function when a tab is selected', () => {
     const unselectedTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && !tab.isDisabled
     );
@@ -90,10 +90,10 @@ describe('<Tabs />', () => {
       .at(unselectedTabIndex)
       .simulate('click');
 
-    expect(onTabSelect).toBeCalledWith(tabsData[unselectedTabIndex].title);
+    expect(onTabChange).toBeCalledWith(tabsData[unselectedTabIndex].title);
   });
 
-  it(' does not call the onTabSelect if the tab is disabled', () => {
+  it(' does not call the onTabChange if the tab is disabled', () => {
     const unselectedDisabledTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && tab.isDisabled
     );
@@ -102,19 +102,19 @@ describe('<Tabs />', () => {
       .at(unselectedDisabledTabIndex)
       .simulate('click');
 
-    expect(onTabSelect).not.toBeCalled();
+    expect(onTabChange).not.toBeCalled();
   });
 
-  it(' applies the passed in default className', () => {
+  it(' applies the passed in default class', () => {
     expect(
       wrapper
         .find('.tab')
         .first()
-        .prop('className')
-    ).toContain(tabClassNames.default);
+        .hasClass(tabClassNames.default)
+    ).toBeTruthy();
   });
 
-  it(' applies the passed in selected className', () => {
+  it(' applies the passed in selected class', () => {
     const selectedTabIndex = tabsData.findIndex(
       (tab) => tab.title === defaultProps.selectedTab
     );
@@ -122,23 +122,23 @@ describe('<Tabs />', () => {
       wrapper
         .find('.tab')
         .at(selectedTabIndex)
-        .prop('className')
-    ).toContain(tabClassNames.selected);
+        .hasClass(tabClassNames.selected)
+    ).toBeTruthy();
   });
 
-  it(' applies the passed in disabled className', () => {
+  it(' applies the passed in disabled class', () => {
     const disabledTabIndex = tabsData.findIndex((tab) => tab.isDisabled);
     expect(
       wrapper
         .find('.tab')
         .at(disabledTabIndex)
-        .prop('className')
-    ).toContain(tabClassNames.disabled);
+        .hasClass(tabClassNames.disabled)
+    ).toBeTruthy();
   });
 
-  it(' applies the passed in tabsContainer className', () => {
-    expect(wrapper.find('.tabsContainer').prop('className')).toContain(
-      tabClassNames.tabsContainer
-    );
+  it(' applies the passed in tabsContainer class', () => {
+    expect(
+      wrapper.find('.tabsContainer').hasClass(tabClassNames.tabsContainer)
+    ).toBeTruthy();
   });
 });

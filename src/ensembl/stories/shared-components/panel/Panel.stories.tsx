@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import faker from 'faker';
@@ -25,14 +25,24 @@ const tabClassNames = {
   selected: styles.selectedTab,
   default: styles.defaultTab
 };
-const tabs = (
-  <Tabs
-    tabs={tabsData}
-    classNames={tabClassNames}
-    selectedTab={'Proteins'}
-    selectTab={(tab: string) => action('selected-tab')(tab)}
-  ></Tabs>
-);
+
+const TabWrapper = () => {
+  const [selectedTab, setselectedTab] = useState('Proteins');
+
+  const onTabChange = (tab: string) => {
+    setselectedTab(tab);
+    action('selected-tab')(tab);
+  };
+
+  return (
+    <Tabs
+      tabs={tabsData}
+      selectedTab={selectedTab}
+      classNames={tabClassNames}
+      onTabChange={onTabChange}
+    />
+  );
+};
 
 storiesOf('Components|Shared Components/Panel', module)
   .add('default', () => (
@@ -59,7 +69,7 @@ storiesOf('Components|Shared Components/Panel', module)
     return (
       <div className={styles.fullPageWrapper}>
         <Panel
-          header={tabs}
+          header={<TabWrapper />}
           onClose={onClose}
           classNames={{
             panel: styles.fullPagePanel
@@ -74,7 +84,7 @@ storiesOf('Components|Shared Components/Panel', module)
     return (
       <div className={styles.fullPageWrapper}>
         <Panel
-          header={tabs}
+          header={<TabWrapper />}
           onClose={onClose}
           classNames={{
             panel: styles.fullPagePanel

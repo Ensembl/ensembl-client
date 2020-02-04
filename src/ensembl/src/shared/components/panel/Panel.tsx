@@ -21,17 +21,17 @@ const Panel = (props: PanelProps) => {
   const { header, onClose, classNames } = props;
 
   const panelClassNames = classNames
-    ? classNamesMerger(classNames.panel, styles.panel)
+    ? classNamesMerger(styles.panel, classNames.panel)
     : styles.panel;
   const headerClassNames = classNames
-    ? classNamesMerger(classNames.header, styles.header)
+    ? classNamesMerger(styles.header, classNames.header)
     : styles.header;
   const bodyClassNames = classNames
-    ? classNamesMerger(classNames.body, styles.body)
+    ? classNamesMerger(styles.body, classNames.body)
     : styles.body;
 
   const closeButtonClassNames = classNames
-    ? classNamesMerger(classNames.closeButton, styles.closeButton)
+    ? classNamesMerger(styles.closeButton, classNames.closeButton)
     : styles.closeButton;
 
   return (
