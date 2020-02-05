@@ -14,6 +14,24 @@ stages:
   - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
+.build-static:
+  stage: test_build_static
+  image: node:12.13.0
+
+  before_script:
+  - cd src/ensembl
+  - npm ci
+
+  script:
+  - npm run test
+  - export NODE_ENV=production
+  - npm run build
+
+  artifacts:
+    name: static_assets
+    paths:
+    - src/ensembl/dist/
+
 variables:
   CONTAINER_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}
   CONTAINER_INTERNAL_IMAGE: $GITLAB_REGISTRY_URL/$GITLAB_REGISTRY_NAMESPACE/ensembl-client:${CI_COMMIT_SHORT_SHA}-internal
