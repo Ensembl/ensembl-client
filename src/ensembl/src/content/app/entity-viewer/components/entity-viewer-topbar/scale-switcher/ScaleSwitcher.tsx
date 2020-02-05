@@ -5,7 +5,13 @@ import styles from './ScaleSwitcher.scss';
 const ScaleSwitcher = () => {
   return (
     <div className={styles.container}>
-      This is placeholder for scaleswitcher
+      <div className={styles.emptyNode}></div>
+      <div className={styles.emptyNode}></div>
+      <div className={styles.emptyNode}></div>
+      <div className={styles.selectedNode}>Gene</div>
+      <div className={styles.emptyNode}></div>
+      <div className={styles.emptyNode}></div>
+      <div className={styles.emptyNode}></div>
     </div>
   );
 };
