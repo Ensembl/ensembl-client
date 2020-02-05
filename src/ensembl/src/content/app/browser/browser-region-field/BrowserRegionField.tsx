@@ -93,21 +93,15 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
         ensObjectId: null,
         chrLocation: newChrLocation
       });
-
-      analyticsTracking.trackEvent({
-        category: 'browser_navigation',
-        label: 'region_field_location',
-        action: 'change'
-      });
     } else {
       props.changeFocusObject(regionId);
-
-      analyticsTracking.trackEvent({
-        category: 'browser_navigation',
-        label: 'region_field_focus',
-        action: 'change'
-      });
     }
+
+    analyticsTracking.trackEvent({
+      category: 'browser_navigation',
+      label: 'region_field',
+      action: 'change_region'
+    });
   };
 
   const closeForm = (event: Event) => {
