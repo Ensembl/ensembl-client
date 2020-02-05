@@ -1,10 +1,14 @@
-import React, { useCallback, CSSProperties, useState, useEffect } from 'react';
-import analyticsTracking from 'src/services/analytics-service';
-
-import cogOnIcon from 'static/img/shared/cog-on.svg';
-import cogOffIcon from 'static/img/shared/cog.svg';
-import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useTransition, animated } from 'react-spring';
+
+import analyticsTracking from 'src/services/analytics-service';
+import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { ReactComponent as cogIcon } from 'static/img/shared/cog.svg';
+
+import { Status } from 'src/shared/types/status';
 
 export type BrowserCogProps = {
   cogActivated: boolean;
@@ -29,13 +33,20 @@ const BrowserCog = (props: BrowserCogProps) => {
     }
   }, [cogActivated]);
 
-  const inline: CSSProperties = { position: 'relative' };
-  const imgInline: CSSProperties = {
+  const imgInline = {
     height: '18px',
     width: '18px'
   };
 
-  const cogIcon = props.cogActivated ? cogOnIcon : cogOffIcon;
+  const cogIconConfig = {
+    description: 'Configure Track',
+    icon: cogIcon
+  };
+
+  const getCogIconStatus = () => {
+    const { cogActivated } = props;
+    return cogActivated ? Status.SELECTED : Status.UNSELECTED;
+  };
 
   const [showTrackConfig, setTrackConfigAnimation] = useState(cogActivated);
   useEffect(() => {
@@ -55,10 +66,13 @@ const BrowserCog = (props: BrowserCogProps) => {
 
   return (
     <>
-      <div style={inline}>
-        <button onClick={toggleCog}>
-          <img src={cogIcon} style={imgInline} alt="Configure track" />
-        </button>
+      <div style={imgInline}>
+        <ImageButton
+          status={getCogIconStatus()}
+          description={cogIconConfig.description}
+          onClick={toggleCog}
+          image={cogIconConfig.icon}
+        />
       </div>
       {transitions.map(({ item, key, props: style }) => {
         return (

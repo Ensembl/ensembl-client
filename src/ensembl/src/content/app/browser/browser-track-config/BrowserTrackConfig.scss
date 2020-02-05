@@ -18,7 +18,7 @@
 
   dl {
     display: inline-block;
-    margin: 6px 0px;
+    margin: 8px 0px;
     padding: 0px 12px;
   }
 
@@ -47,16 +47,10 @@
     font-size: 12px;
   }
 
-  button {
-    background-color: transparent;
-    background-repeat: no-repeat;
-    border: none;
-    height: 18px;
-    width: 18px;
-  }
-
-  button:focus {
-    outline: none;
+  .wrapper {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
   }
 
   /* individual track config item (button container) styling */
@@ -82,14 +76,20 @@
     vertical-align: middle;
   }
 
-  .trackHeightBtn {
-    height: 33px;
-    position: relative;
+  .trackHeightIcon {
+    height: 12px;
     width: 50px;
   }
 
-  .trackMoveBtn {
-    height: 26px;
-    width: 26px;
+  .trackHighlightIcon,
+  .trackConfigIcon,
+  .trackLockIcon {
+    height: 18px;
+    width: 18px;
+  }
+
+  .trackMoveIcon {
+    height: 28px;
+    width: 14px;
   }
 }

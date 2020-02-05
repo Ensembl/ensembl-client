@@ -43,7 +43,6 @@
   display: inline-block;
   height: 30px;
   width: 30px;
-  border: 1px solid $blue;
   margin: 0 12px;
 
   img {
@@ -52,19 +51,10 @@
   }
 }
 
-.launchbarButtonSelected {
-  border: 1px solid $black;
-}
-
-.launchbarButtonDisabled {
-  border: 1px solid $grey;
-}
-
 .launchbarButtonImage {
   svg {
     width: 30px;
     height: 30px;
-    transform: scale(1.1);
     fill: $white;
     background-color: $blue;
   }
