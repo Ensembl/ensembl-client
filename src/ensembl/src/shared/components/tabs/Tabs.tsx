@@ -23,7 +23,7 @@ export type TabsProps = {
 
 export const Tabs = (props: TabsProps) => {
   const getTabClassNames = (tab: Tab) => {
-    const defaultClassNames = classNames(props.classNames?.default, styles.tab);
+    const defaultClassNames = classNames(styles.tab, props.classNames?.default);
 
     const disabledClassNames = classNames(
       styles.disabled,
