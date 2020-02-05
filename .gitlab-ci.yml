@@ -83,29 +83,18 @@ Test_N_Build:
   - dev
   - master
 
-Test_N_Build:WP:
-  image: node:12.13.0
-  stage: test_build_static
+Test_N_Build:WP-staging:
+  extends: .build-static
 
   variables:
-    # NODE_ENV: production
     GOOGLE_ANALYTICS_KEY: ${GA_KEY}
     ENVIRONMENT: production
     API_HOST: ""
-
-  before_script:
-  - cd src/ensembl
-  - npm ci
 
   script:
   - npm run test
   - export NODE_ENV=production
   - npm run build
-
-  artifacts:
-    name: static_assets
-    paths:
-    - src/ensembl/dist/
 
   only:
   - /^migration\/.*$/
