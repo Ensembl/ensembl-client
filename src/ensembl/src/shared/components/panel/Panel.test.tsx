@@ -23,7 +23,7 @@ const defaultProps: PanelProps = {
   classNames: panelClassNames
 };
 
-const renderPanel = (props?: any) => {
+const renderPanel = (props?: Partial<PanelProps>) => {
   return <Panel {...defaultProps} {...props} />;
 };
 
