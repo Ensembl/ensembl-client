@@ -70,7 +70,7 @@ Test_N_Build:WP:
   stage: test_build_static
 
   variables:
-    NODE_ENV: production
+    # NODE_ENV: production
     GOOGLE_ANALYTICS_KEY: ${GA_KEY}
     ENVIRONMENT: production
     API_HOST: ""
@@ -81,6 +81,7 @@ Test_N_Build:WP:
 
   script:
   - npm run test
+  - export NODE_ENV=production
   - npm run build
 
   artifacts:
