@@ -65,9 +65,15 @@ Test_N_Build:
   - dev
   - master
 
-Test_N_Build:WP-HX:
+Test_N_Build:WP:
   image: node:12.13.0
   stage: test_build_static
+
+  variables:
+    NODE_ENV: production
+    GOOGLE_ANALYTICS_KEY: ${GA_KEY}
+    ENVIRONMENT: production
+    API_HOST: ""
 
   before_script:
   - cd src/ensembl
@@ -75,10 +81,6 @@ Test_N_Build:WP-HX:
 
   script:
   - npm run test
-  - export NODE_ENV=production
-  - export GOOGLE_ANALYTICS_KEY=${GA_KEY}
-  - export ENVIRONMENT=production
-  - export API_HOST=""
   - npm run build
 
   artifacts:
@@ -173,9 +175,6 @@ Nginx:WP:
     - docker:dind
 
   stage: build_docker_images
-
-  before_script:
-  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
 
   script:
   - apk update && apk add git
