@@ -23,8 +23,8 @@ const defaultProps: PanelProps = {
   classNames: panelClassNames
 };
 
-const renderPanel = (props: PanelProps = defaultProps) => {
-  return <Panel {...props} />;
+const renderPanel = (props?: any) => {
+  return <Panel {...defaultProps} {...props} />;
 };
 
 describe('<Tabs />', () => {
@@ -48,7 +48,7 @@ describe('<Tabs />', () => {
   it('displays the string header', () => {
     const stringHeader = faker.lorem.words();
 
-    wrapper = mount(renderPanel({ ...defaultProps, header: stringHeader }));
+    wrapper = mount(renderPanel({ header: stringHeader }));
     expect(wrapper.find('.header').text()).toBe(stringHeader);
   });
 
@@ -58,7 +58,7 @@ describe('<Tabs />', () => {
   });
 
   it('displays the close button only if onClose is set', () => {
-    wrapper = mount(renderPanel({ ...defaultProps, onClose }));
+    wrapper = mount(renderPanel({ onClose }));
     expect(wrapper.find('.closeButton')).toHaveLength(1);
   });
 
@@ -68,7 +68,7 @@ describe('<Tabs />', () => {
   });
 
   it('calls the onClose function when the close button is clicked', () => {
-    wrapper = mount(renderPanel({ ...defaultProps, onClose }));
+    wrapper = mount(renderPanel({ onClose }));
     wrapper.find('.closeButton').simulate('click');
 
     expect(onClose).toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe('<Tabs />', () => {
   });
 
   it('applies the passed in closeButton className', () => {
-    wrapper = mount(renderPanel({ ...defaultProps, onClose }));
+    wrapper = mount(renderPanel({ onClose }));
     expect(wrapper.find('.closeButton').prop('className')).toContain(
       panelClassNames.closeButton
     );
