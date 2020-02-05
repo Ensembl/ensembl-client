@@ -74,7 +74,7 @@ describe('<Tabs />', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('applies the passed in class', () => {
+  it('applies the passed in classes', () => {
     wrapper = mount(renderPanel());
 
     expect(

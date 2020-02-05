@@ -37,7 +37,7 @@ const tabClassNames = {
 
 const defaultProps = {
   tabs: tabsData,
-  selectedTab: tabsData.find((tab) => !tab.isDisabled)?.title || '',
+  selectedTab: (tabsData.find((tab) => !tab.isDisabled) as Tab).title,
   onTabChange,
   classNames: tabClassNames
 };

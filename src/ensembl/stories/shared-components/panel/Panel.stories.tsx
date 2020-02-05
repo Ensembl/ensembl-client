@@ -80,6 +80,15 @@ storiesOf('Components|Shared Components/Panel', module)
       </div>
     );
   })
+  .add('long-header', () => {
+    return (
+      <div className={styles.fullPageWrapper}>
+        <Panel header={<TabWrapper />} onClose={onClose}>
+          <div>{faker.lorem.paragraphs(100)}</div>
+        </Panel>
+      </div>
+    );
+  })
   .add('long-content', () => {
     return (
       <div className={styles.fullPageWrapper}>

@@ -3,8 +3,10 @@
 .tabsContainer {
   display: flex;
   font-size: 14px;
-  overflow-x: auto;
-  height: 40px;
+  overflow-y: hidden;
+  height: 50px;
+  scrollbar-width: none;
+  padding-bottom: 50px;
 }
 
 .tab {
