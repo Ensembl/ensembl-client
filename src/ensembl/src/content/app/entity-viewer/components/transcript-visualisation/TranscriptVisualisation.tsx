@@ -15,6 +15,15 @@ export type CDS = {
   end: number;
 };
 
+type TranscriptBiologicalData = {
+  start: number;
+  end: number;
+  exons: Exon[];
+  cds?: CDS;
+  // strand: Strand;
+  // we also will need the actual length of the transcript, because for circular chromosomes if transcript spans origin length is not equal to simply end - start
+};
+
 // TODO: custom classnames for stick and blocks?
 export type Props = {
   start: number;
