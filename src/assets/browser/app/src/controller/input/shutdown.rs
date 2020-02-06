@@ -1,23 +1,14 @@
-use std::sync::{ Arc, Mutex };
-
-use stdweb::unstable::TryInto;
-use url::Url;
-
 use controller::global::Global;
-use controller::input::Action;
-use debug::DEMO_SOURCES;
 
 use dom::domutil;
 use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
-use dom::AppEventData;
-use types::Dot;
 
 pub struct ShutdownEventListener {
-    g: Arc<Mutex<Global>>
+    g: Global
 }
 
 impl ShutdownEventListener {
-    pub fn new(g: &Arc<Mutex<Global>>) -> ShutdownEventListener {
+    pub fn new(g: &Global) -> ShutdownEventListener {
         ShutdownEventListener {
             g: g.clone()
         }
@@ -26,17 +17,16 @@ impl ShutdownEventListener {
 
 impl EventListener<()> for ShutdownEventListener {
     fn receive(&mut self, _el: &Target,  e: &EventData, _idx: &()) {
-        let mut g = unwrap!(self.g.lock());
         match e {
-            EventData::GenericEvent(EventType::UnloadEvent,cx) => {
-                g.destroy();
+            EventData::GenericEvent(EventType::UnloadEvent,_) => {
+                self.g.destroy();
             },
             _ => ()
         }
     }
 }
 
-pub fn register_shutdown_events(g: &Arc<Mutex<Global>>) {
+pub fn register_shutdown_events(g: &Global) {
     let uel = ShutdownEventListener::new(g);
     let mut ec_start = EventControl::new(Box::new(uel),());
     ec_start.add_event(EventType::UnloadEvent);

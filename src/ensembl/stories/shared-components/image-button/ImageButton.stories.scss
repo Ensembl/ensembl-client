@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-@import 'src/shared/image-button/ImageButton.scss';
+@import 'src/shared/components/image-button/ImageButton.scss';
 
 .imageCard {
   float: left;
@@ -37,7 +37,7 @@
 
   .codeContent {
     float: left;
-    background: $ens-light-grey;
+    background: $light-grey;
     padding: 10px;
     margin-top: 10px;
     height: 200px;

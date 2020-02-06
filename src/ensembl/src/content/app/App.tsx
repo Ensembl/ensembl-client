@@ -1,17 +1,12 @@
-import React, {
-  useEffect,
-  FunctionComponent,
-  Fragment,
-  lazy,
-  Suspense
-} from 'react';
-import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import React, { useEffect, FunctionComponent, lazy, Suspense } from 'react';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 import { getCurrentApp } from 'src/header/headerSelectors';
 
-import AppBar from './AppBar';
+import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
+import { NewTechError } from 'src/shared/components/error-screen';
 
 import { RootState } from 'src/store';
 
@@ -19,7 +14,9 @@ const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
 const SpeciesSelector = lazy(() =>
   import('./species-selector/SpeciesSelector')
 );
+const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
+const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
 
 type StateProps = {
   currentApp: string;
@@ -38,12 +35,7 @@ type AppShellProps = {
 };
 
 export const AppShell = (props: AppShellProps) => {
-  return (
-    <Fragment>
-      <AppBar />
-      {props.children}
-    </Fragment>
-  );
+  return <>{props.children}</>;
 };
 
 const AppInner = (props: AppProps) => {
@@ -72,18 +64,14 @@ const AppInner = (props: AppProps) => {
       <Switch>
         <Route path={`${url}/global-search`} component={GlobalSearch} />
         <Route path={`${url}/species-selector`} component={SpeciesSelector} />
+        <Route path={`${url}/custom-download`} component={CustomDownload} />
         <Route
-          path={`${url}/browser/:species/:stableId/`}
-          component={Browser}
+          path={`${url}/entity-viewer/:genomeId?/:entityId?`}
+          component={EntityViewer}
         />
-        <Redirect
-          exact={true}
-          from={`${url}/browser`}
-          to={{
-            pathname: `${url}/browser/GRCh38_demo/ENSG00000139618`,
-            search: '?region=13:32271473-32437359'
-          }}
-        />
+        <ErrorBoundary fallbackComponent={NewTechError}>
+          <Route path={`${url}/browser/:genomeId?`} component={Browser} />
+        </ErrorBoundary>
       </Switch>
     </Suspense>
   );
@@ -105,7 +93,4 @@ const mapDispatchToProps: DispatchProps = {
   changeCurrentApp
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,4 +1,3 @@
-use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
 use base64;
@@ -7,13 +6,12 @@ use tánaiste::{
     Value
 };
 
-use composit::SourceResponseData;
 use data::BackendConfig;
 use model::shape::{ DrawingSpec, DrawingHash, bitmap_texture };
 use tácode::{ TáContext, TáTask };
-use types::{ Colour, cpixel };
+use types::cpixel;
 
-fn load_asset(cfg: &Rc<BackendConfig>, asset: &str, index: usize) -> Value {
+fn load_asset(cfg: &BackendConfig, asset: &str, index: usize) -> Value {
     if let Some(asset) = cfg.get_asset(asset) {
         return asset.get_stream(index).clone();
     } else {
@@ -39,11 +37,11 @@ impl Command for Asset {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,cfg) = task {
+            if let TáTask::MakeShapes(backend_config,_,_,_,_,_,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_string(|name| {
                     regs.get(self.3).as_floats(|index| {
-                        regs.set(self.1,load_asset(cfg,name,index[0] as usize));
+                        regs.set(self.1,load_asset(backend_config,&name[0],index[0] as usize));
                     });
                 });
             }
@@ -57,12 +55,12 @@ impl Command for Image {
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_) = task {
+            if let TáTask::MakeShapes(_,_,_,ref mut tx,_,_,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.2).as_floats(|dims| {
                     regs.get(self.3).as_string(|data| {
                         regs.get(self.4).as_string(|cache| {
-                            regs.set(self.1,Value::new_from_float(image(tx,dims,data,cache)));
+                            regs.set(self.1,Value::new_from_float(image(tx,dims,&data[0],&cache[0])));
                         });
                     });
                 });
@@ -77,7 +75,7 @@ pub struct ImageI(pub TáContext);
 
 impl Instruction for AssetI {
     fn signature(&self) -> Signature { Signature::new("asset","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Asset(self.0.clone(),args[0].reg(),args[1].reg(),
                       args[2].reg()))
     }
@@ -85,7 +83,7 @@ impl Instruction for AssetI {
 
 impl Instruction for ImageI {
     fn signature(&self) -> Signature { Signature::new("image","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Image(self.0.clone(),args[0].reg(),args[1].reg(),
                       args[2].reg(),args[3].reg()))
     }

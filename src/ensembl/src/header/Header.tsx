@@ -1,5 +1,7 @@
-import React, { memo, FunctionComponent } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+
+import config from 'config';
 
 import HeaderButtons from './header-buttons/HeaderButtons';
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
@@ -9,23 +11,35 @@ import homeIcon from 'static/img/header/home.svg';
 
 import styles from './Header.scss';
 
-type HeaderProps = {};
+export const HomeLink = () => (
+  <div className={styles.homeLink}>
+    <Link to="/">
+      <img src={homeIcon} alt="" /> Ensembl
+    </Link>
+  </div>
+);
 
-export const Header: FunctionComponent<HeaderProps> = () => (
+export const ReleaseVersion = () => (
+  <div className={styles.strapline}>
+    Pre-release — version {config.app_version}
+  </div>
+);
+
+export const Copyright = () => (
+  <div className={styles.copyright}>
+    <a href="https://www.ebi.ac.uk" target="_blank" rel="noopener noreferrer">
+      © EMBL-EBI
+    </a>
+  </div>
+);
+
+export const Header = () => (
   <header>
-    <div className={styles.topBar}>
+    <div className={styles.topbar}>
       <div>
-        <div className={styles.homeLink}>
-          <Link to="/">
-            <img src={homeIcon} alt="" /> Ensembl
-          </Link>
-        </div>
-        <div className={styles.strapline}>Pre-release - March 2019</div>
-        <div className={styles.copyright}>
-          <a href="https://www.ebi.ac.uk" target="_blank">
-            &copy; EMBL-EBI
-          </a>
-        </div>
+        <HomeLink />
+        <ReleaseVersion />
+        <Copyright />
       </div>
       <HeaderButtons />
     </div>
@@ -34,4 +48,4 @@ export const Header: FunctionComponent<HeaderProps> = () => (
   </header>
 );
 
-export default memo(Header);
+export default Header;

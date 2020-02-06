@@ -1,183 +1,323 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useRef,
-  useEffect,
-  Fragment
-} from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
+import { Link } from 'react-router-dom';
+import find from 'lodash/find';
+import isEqual from 'lodash/isEqual';
+import upperFirst from 'lodash/upperFirst';
+
+import analyticsTracking from 'src/services/analytics-service';
+import browserStorageService from './browser-storage-service';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
+
+import {
+  changeBrowserLocation,
+  changeFocusObject,
+  setDataFromUrlAndSave,
+  ParsedUrlPayload,
+  restoreBrowserTrackStates
+} from './browserActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { toggleDrawer } from './drawer/drawerActions';
+
+import {
+  getBrowserNavOpened,
+  getChrLocation,
+  getBrowserActivated,
+  getBrowserActiveGenomeId,
+  getBrowserQueryParams,
+  getBrowserActiveEnsObjectId,
+  getBrowserActiveEnsObjectIds,
+  getAllChrLocations
+} from './browserSelectors';
+import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
+import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
+import { getIsDrawerOpened } from './drawer/drawerSelectors';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
+import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
 import TrackPanel from './track-panel/TrackPanel';
+import TrackPanelBar from './track-panel/track-panel-bar/TrackPanelBar';
+import TrackPanelTabs from './track-panel/track-panel-tabs/TrackPanelTabs';
+import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 import Drawer from './drawer/Drawer';
+import { StandardAppLayout } from 'src/shared/components/layout';
 
 import { RootState } from 'src/store';
-import {
-  BrowserOpenState,
-  BrowserNavStates,
-  ChrLocation
-} from './browserState';
-import {
-  changeBrowserLocation,
-  updateChrLocation,
-  updateBrowserNavStates
-} from './browserActions';
-import {
-  getBrowserOpenState,
-  getBrowserNavOpened,
-  getChrLocation,
-  getGenomeSelectorActive,
-  getBrowserActivated
-} from './browserSelectors';
-import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
-import { getDrawerOpened } from './drawer/drawerSelectors';
-import {
-  fetchExampleEnsObjectsData,
-  fetchEnsObjectData
-} from 'src/ens-object/ensObjectActions';
-import { toggleDrawer } from './drawer/drawerActions';
+import { ChrLocation, ChrLocations } from './browserState';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+
+import 'ensembl-genome-browser';
 
 import styles from './Browser.scss';
 
-import 'static/browser/browser.js';
-
-type StateProps = {
+export type BrowserProps = {
+  activeGenomeId: string | null;
+  activeEnsObjectId: string | null;
+  allActiveEnsObjectIds: { [genomeId: string]: string };
+  allChrLocations: ChrLocations;
   browserActivated: boolean;
   browserNavOpened: boolean;
-  browserOpenState: BrowserOpenState;
-  chrLocation: ChrLocation;
-  drawerOpened: boolean;
-  genomeSelectorActive: boolean;
-};
-
-type DispatchProps = {
-  changeBrowserLocation: (
-    chrLocation: ChrLocation,
-    browserEl: HTMLDivElement
-  ) => void;
-  fetchExampleEnsObjectsData: () => void;
-  fetchEnsObjectData: (stableId: string) => void;
+  browserQueryParams: { [key: string]: string };
+  chrLocation: ChrLocation | null;
+  isDrawerOpened: boolean;
+  isTrackPanelOpened: boolean;
+  exampleEnsObjects: EnsObject[];
+  committedSpecies: CommittedItem[];
+  viewportWidth: BreakpointWidth;
+  changeBrowserLocation: (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => void;
+  changeFocusObject: (objectId: string) => void;
+  restoreBrowserTrackStates: () => void;
+  fetchGenomeData: (genomeId: string) => void;
   replace: Replace;
-  toggleDrawer: (drawerOpened: boolean) => void;
-  updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
-  updateChrLocation: (chrLocation: ChrLocation) => void;
+  toggleTrackPanel: (isOpen: boolean) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
+  setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
 };
 
-type OwnProps = {};
+export const Browser = (props: BrowserProps) => {
+  const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
 
-type MatchParams = {
-  location: string;
-  stableId: string;
-  species: string;
-};
+  const { isDrawerOpened } = props;
+  const params: { [key: string]: string } = useParams();
+  const location = useLocation();
 
-type BrowserProps = RouteComponentProps<MatchParams> &
-  StateProps &
-  DispatchProps &
-  OwnProps;
+  const setDataFromUrl = () => {
+    const { genomeId } = params;
+    const { focus = null, location = null } = props.browserQueryParams;
+    const chrLocation = location ? getChrLocationFromStr(location) : null;
 
-export const Browser: FunctionComponent<BrowserProps> = (
-  props: BrowserProps
-) => {
-  const browserRef: React.RefObject<HTMLDivElement> = useRef(null);
-
-  const dispatchBrowserLocation = (chrLocation: ChrLocation) => {
-    if (browserRef.current) {
-      props.changeBrowserLocation(chrLocation, browserRef.current);
-    }
-  };
-
-  useEffect(() => {
-    const { stableId } = props.match.params;
-    const location = props.location.search;
-    const chrLocation = getChrLocationFromStr(location);
-
-    dispatchBrowserLocation(chrLocation);
-
-    props.fetchEnsObjectData(stableId);
-  }, [props.match.params.stableId]);
-
-  useEffect(() => {
-    const [, chrStart, chrEnd] = props.chrLocation;
-
-    if (props.browserActivated && chrStart > 0 && chrEnd > 0) {
-      dispatchBrowserLocation(props.chrLocation);
-    }
-  }, [props.browserActivated]);
-
-  useEffect(() => {
-    const { params } = props.match;
-    const newChrLocationStr = getChrLocationStr(props.chrLocation);
-    const newUrl = `/app/browser/${params.species}/${
-      params.stableId
-    }?region=${newChrLocationStr}`;
-
-    props.replace(newUrl);
-  }, [props.chrLocation, props.location.search]);
-
-  const closeTrack = useCallback(() => {
-    if (props.drawerOpened === false) {
+    if (
+      !genomeId ||
+      (genomeId === props.activeGenomeId &&
+        focus === props.activeEnsObjectId &&
+        isEqual(chrLocation, props.chrLocation))
+    ) {
       return;
     }
 
-    props.toggleDrawer(false);
-  }, [props.drawerOpened]);
+    const payload = {
+      activeGenomeId: genomeId,
+      activeEnsObjectId: focus || null,
+      chrLocation
+    };
+
+    if (focus && !chrLocation) {
+      /*
+       changeFocusObject needs to be called before setDataFromUrlAndSave
+       in order to prevent creating an previouslyViewedObject entry
+       for the focus object that is viewed first.
+       */
+      props.changeFocusObject(focus);
+    } else if (focus && chrLocation) {
+      props.changeFocusObject(focus);
+      props.changeBrowserLocation({
+        genomeId,
+        ensObjectId: focus,
+        chrLocation
+      });
+    } else if (chrLocation) {
+      props.changeBrowserLocation({
+        genomeId,
+        ensObjectId: focus,
+        chrLocation
+      });
+    }
+
+    props.setDataFromUrlAndSave(payload);
+  };
+
+  const changeSelectedSpecies = useCallback(
+    (genomeId: string) => {
+      const { allChrLocations, allActiveEnsObjectIds } = props;
+      const chrLocation = allChrLocations[genomeId];
+      const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
+
+      const params = {
+        genomeId,
+        focus: activeEnsObjectId,
+        location: chrLocation ? getChrLocationStr(chrLocation) : null
+      };
+
+      props.replace(urlFor.browser(params));
+    },
+    [props.allChrLocations, props.allActiveEnsObjectIds]
+  );
+
+  // handle url changes
+  useEffect(() => {
+    // handle navigation to /app/browser
+    if (!params.genomeId) {
+      // select either the species that the user viewed during the previous visit,
+      // of the first selected species
+      const { activeGenomeId, committedSpecies } = props;
+      if (
+        activeGenomeId &&
+        find(
+          committedSpecies,
+          ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
+        )
+      ) {
+        changeSelectedSpecies(activeGenomeId);
+      } else {
+        if (committedSpecies[0]) {
+          changeSelectedSpecies(committedSpecies[0].genome_id);
+        }
+      }
+    } else {
+      // handle navigation to /app/browser/:genomeId?focus=:focus&location=:location
+      setDataFromUrl();
+    }
+  }, [params.genomeId, location.search]);
+
+  useEffect(() => {
+    const { activeGenomeId, fetchGenomeData } = props;
+    if (!activeGenomeId) {
+      return;
+    }
+    fetchGenomeData(activeGenomeId);
+    analyticsTracking.setSpeciesDimension(activeGenomeId);
+  }, [props.activeGenomeId]);
+
+  useEffect(() => {
+    setTrackStatesFromStorage(browserStorageService.getTrackStates());
+    props.restoreBrowserTrackStates();
+  }, [props.activeGenomeId, props.activeEnsObjectId]);
+
+  useEffect(() => {
+    const {
+      browserQueryParams: { location }
+    } = props;
+    const { genomeId } = params;
+    const chrLocation = location ? getChrLocationFromStr(location) : null;
+
+    if (props.browserActivated && genomeId && chrLocation) {
+      props.changeBrowserLocation({ genomeId, chrLocation, ensObjectId: null });
+    }
+  }, [props.browserActivated]);
+
+  const onSidebarToggle = () => {
+    props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME
+  };
+
+  const toggleDrawer = () => {
+    props.toggleDrawer(!props.isDrawerOpened);
+  };
+
+  const shouldShowNavBar =
+    props.browserActivated && props.browserNavOpened && !isDrawerOpened;
+
+  if (!props.activeGenomeId) {
+    return null;
+  }
+
+  const mainContent = (
+    <>
+      {shouldShowNavBar && <BrowserNavBar />}
+      <BrowserImage />
+    </>
+  );
 
   return (
-    <section className={styles.browser}>
-      <Fragment>
-        <BrowserBar dispatchBrowserLocation={dispatchBrowserLocation} />
-        {props.genomeSelectorActive ? (
-          <div className={styles.browserOverlay} />
-        ) : null}
-        <div className={styles.browserInnerWrapper}>
-          <div
-            className={`${styles.browserImageWrapper} ${
-              styles[props.browserOpenState]
-            }`}
-            onClick={closeTrack}
-          >
-            {props.browserNavOpened &&
-            !props.drawerOpened &&
-            browserRef.current ? (
-              <BrowserNavBar browserElement={browserRef.current} />
-            ) : null}
-            <BrowserImage browserRef={browserRef} />
-          </div>
-          <TrackPanel browserRef={browserRef} />
-          {props.drawerOpened && <Drawer />}
-        </div>
-      </Fragment>
-    </section>
+    <div className={styles.browserInnerWrapper}>
+      <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
+      {props.browserQueryParams.focus ? (
+        <StandardAppLayout
+          mainContent={mainContent}
+          sidebarContent={<TrackPanel />}
+          sidebarNavigation={<TrackPanelTabs />}
+          sidebarToolstripContent={<TrackPanelBar />}
+          onSidebarToggle={onSidebarToggle}
+          topbarContent={<BrowserBar />}
+          isSidebarOpen={props.isTrackPanelOpened}
+          isDrawerOpen={props.isDrawerOpened}
+          drawerContent={<Drawer />}
+          onDrawerClose={toggleDrawer}
+          viewportWidth={props.viewportWidth}
+        />
+      ) : (
+        <ExampleObjectLinks {...props} />
+      )}
+    </div>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  browserActivated: getBrowserActivated(state),
-  browserNavOpened: getBrowserNavOpened(state),
-  browserOpenState: getBrowserOpenState(state),
-  chrLocation: getChrLocation(state),
-  drawerOpened: getDrawerOpened(state),
-  genomeSelectorActive: getGenomeSelectorActive(state)
-});
+export const ExampleObjectLinks = (props: BrowserProps) => {
+  const { activeGenomeId } = props;
 
-const mapDispatchToProps: DispatchProps = {
-  changeBrowserLocation,
-  fetchEnsObjectData,
-  fetchExampleEnsObjectsData,
-  replace,
-  toggleDrawer,
-  updateBrowserNavStates,
-  updateChrLocation
+  if (!activeGenomeId) {
+    return null;
+  }
+
+  const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
+    const path = urlFor.browser({
+      genomeId: activeGenomeId,
+      focus: exampleObject.object_id
+    });
+
+    return (
+      <div key={exampleObject.object_id} className={styles.exampleLink}>
+        <Link to={path}>
+          <span className={styles.objectType}>
+            {upperFirst(exampleObject.object_type)}
+          </span>
+          <span className={styles.objectLabel}>{exampleObject.label}</span>
+        </Link>
+      </div>
+    );
+  });
+
+  return (
+    <div>
+      <div className={styles.exampleLinks__emptyTopbar} />
+      <div className={styles.exampleLinks}>{links}</div>
+    </div>
+  );
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Browser)
-);
+const mapStateToProps = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return {
+    activeGenomeId,
+    activeEnsObjectId: getBrowserActiveEnsObjectId(state),
+    allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
+    allChrLocations: getAllChrLocations(state),
+    browserActivated: getBrowserActivated(state),
+    browserNavOpened: getBrowserNavOpened(state),
+    browserQueryParams: getBrowserQueryParams(state),
+    chrLocation: getChrLocation(state),
+    isDrawerOpened: getIsDrawerOpened(state),
+    isTrackPanelOpened: getIsTrackPanelOpened(state),
+    exampleEnsObjects: activeGenomeId
+      ? getExampleEnsObjects(state, activeGenomeId)
+      : [],
+    committedSpecies: getEnabledCommittedSpecies(state),
+    viewportWidth: getBreakpointWidth(state)
+  };
+};
+
+const mapDispatchToProps = {
+  changeBrowserLocation,
+  changeFocusObject,
+  fetchGenomeData,
+  replace,
+  toggleDrawer,
+  setDataFromUrlAndSave,
+  restoreBrowserTrackStates,
+  toggleTrackPanel
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Browser);

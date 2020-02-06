@@ -3,30 +3,44 @@ use std::hash::Hash;
 use std::hash::Hasher;
 use std::collections::hash_map::DefaultHasher;
 
-use drivers::webgl::{
-    GLShape, StretchTextureSpec, Artist
-};
-use types::{ Colour, RLeaf };
-use program::{ ProgramAttribs, DataGroupIndex, ProgramType };
+use drivers::webgl::{ StretchTextureSpec, Artist };
+use types::{ Colour,Placement };
 use super::{
     PinPolySpec, StretchWiggle, RectSpec, BoxSpec, BitmapArtist,
-    CollageArtist, TextArtist, TextureSpec
+    CollageArtist, TextArtist, TextureSpec, ZMenuRectSpec
 };
 
-#[derive(Clone)]
+pub trait GenericShape {
+    fn zmenu_box(&self) -> Option<(String,Placement)> { None }
+}
+
+#[derive(Clone,Debug)]
 pub enum ShapeSpec {
     PinPoly(PinPolySpec),
     PinRect(RectSpec),
+    ZMenu(ZMenuRectSpec),
     PinBox(BoxSpec),
     PinTexture(TextureSpec),
     StretchTexture(StretchTextureSpec),
     Wiggle(StretchWiggle),
 }
 
-#[derive(Clone,Copy,Debug)]
+/* TODO: Why is StretchTextureSpec still in the webgl driver? */
+impl GenericShape for ShapeSpec {
+    fn zmenu_box(&self) -> Option<(String,Placement)> {
+        if let ShapeSpec::ZMenu(s) = self {
+            s.zmenu_box()
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Clone,Debug)]
 pub enum ColourSpec {
     Colour(Colour),
     Spot(Colour),
+    ZMenu(String)
 }
 
 
@@ -36,14 +50,7 @@ pub enum MathsShape {
     Circle
 }
 
-pub enum ShapeUnder {
-    None,
-    Page,
-    Tape,
-    All
-}
-
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub enum DrawingSpec {
     Text(TextArtist),
     Bitmap(BitmapArtist),
@@ -51,7 +58,7 @@ pub enum DrawingSpec {
 }
 
 impl DrawingSpec {
-    pub fn to_artist(&self) -> Rc<Artist> {
+    pub fn to_artist(&self) -> Rc<dyn Artist> {
         match self {
             DrawingSpec::Text(t) => Rc::new(t.clone()),
             DrawingSpec::Bitmap(b) => Rc::new(b.clone()),
@@ -60,7 +67,54 @@ impl DrawingSpec {
     }
 }
 
+pub enum FacadeType {
+    Drawing,
+    Colour,
+    ZMenu
+}
+
 #[derive(Clone)]
+pub enum Facade {
+    Drawing(DrawingSpec),
+    Colour(Colour),
+    ZMenu(String)
+}
+
+pub struct ShapeShortInstanceData {
+    pub pos_x: f32,
+    pub pos_y: i32,
+    pub aux_x: f32,
+    pub aux_y: i32,
+    pub facade: Facade
+}
+
+pub struct ShapeLongInstanceData {
+    pub pos_x: Vec<f64>,
+    pub pos_y: Vec<f64>,
+    pub aux_x: Vec<f64>,
+    pub aux_y: Vec<f64>,
+    pub facade: Facade
+}
+
+pub enum ShapeInstanceDataType {
+    Long,
+    Short
+}
+
+pub enum ShapeInstanceData {
+    Short(ShapeShortInstanceData),
+    Long(ShapeLongInstanceData)
+}
+
+pub trait TypeToShape {
+    fn new_short_shape(&self, _sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
+    fn new_long_shape(&self, _sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
+    fn get_facade_type(&self) -> FacadeType;
+    fn needs_scale(&self) -> (bool,bool);
+    fn sid_type(&self) -> ShapeInstanceDataType;
+}
+
+#[derive(Clone,Debug)]
 pub struct DrawingHash(u64);
 
 impl DrawingHash {

@@ -1,17 +1,16 @@
 use std::fmt::Debug;
-use std::rc::Rc;
 
-use program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
 use types::{
     EPixel, Edge, APixel, AxisSense, Dot, CPixel, 
-    CLeaf, area_centred, Anchors, cfraction, Anchor, cpixel, cleaf
+    Anchors, Anchor, cpixel, cleaf
 };
 
-use model::shape::{ DrawingSpec, ShapeSpec };
-use drivers::webgl::{ 
-    ShapeInstanceData, ShapeShortInstanceData, Facade, 
-    TypeToShape, FacadeType, ShapeInstanceDataType
+use model::shape::{
+    DrawingSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
+    ShapeShortInstanceData, TypeToShape, GenericShape
 };
+
+impl GenericShape for TextureSpec {}
 
 #[derive(Clone,Copy,Debug)]
 pub enum TexturePosition<T: Clone+Copy+Debug> {
@@ -24,7 +23,7 @@ pub enum TexturePosition<T: Clone+Copy+Debug> {
     PageUnderAll(EPixel),
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub struct TextureSpec {
     pub origin: TexturePosition<f32>,
     pub offset: CPixel,

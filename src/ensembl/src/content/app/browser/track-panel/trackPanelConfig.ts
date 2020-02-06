@@ -1,3 +1,5 @@
+import { Status } from 'src/shared/types/status';
+
 export enum TrackItemColour {
   BLUE = 'blue',
   DARK_GREY = 'darkGrey',
@@ -5,28 +7,17 @@ export enum TrackItemColour {
   WHITE = 'white'
 }
 
-export type TrackPanelItem = {
-  additionalInfo?: string;
-  childTrackList?: TrackPanelItem[];
-  color?: string;
-  drawerView?: string;
-  id: number;
-  label: string;
-  name: string;
-  selectedInfo?: string;
-};
+export type TrackItemColourKey = keyof typeof TrackItemColour;
 
-export enum TrackType {
+export type TrackActivityStatus = Status.SELECTED | Status.UNSELECTED;
+
+export enum TrackSet {
   GENOMIC = 'Genomic',
   VARIATION = 'Variation',
   EXPRESSION = 'Expression'
 }
 
-export type TrackPanelCategory = {
-  name: string;
-  trackList: TrackPanelItem[];
-  types: TrackType[];
-};
+export type TrackSetKey = keyof typeof TrackSet;
 
 export type TrackPanelIcon = {
   description: string;
@@ -39,3 +30,22 @@ export type TrackPanelIcon = {
 export type TrackPanelIcons = {
   [key: string]: TrackPanelIcon;
 };
+
+export type TrackStates = {
+  [categoryName: string]: {
+    [trackName: string]: TrackActivityStatus;
+  };
+};
+
+export type GenomeTrackStates = {
+  commonTracks?: TrackStates;
+  objectTracks?: { [objctId: string]: TrackStates };
+};
+
+export type BrowserTrackStates = {
+  [genomeId: string]: GenomeTrackStates;
+};
+
+export enum TrackId {
+  GENE = 'track:gene-feat'
+}

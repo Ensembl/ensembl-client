@@ -1,0 +1,34 @@
+@import 'src/styles/common';
+
+.clearButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid $blue;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &:active,
+  &:focus {
+    outline: none;
+  }
+
+  svg {
+    width: 66%;
+    height: 66%;
+    fill: $blue;
+  }
+}
+
+.clearButtonInverted {
+  background-color: $blue;
+  border: none;
+
+  svg {
+    width: 56%;
+    height: 56%;
+    fill: $white;
+  }
+}

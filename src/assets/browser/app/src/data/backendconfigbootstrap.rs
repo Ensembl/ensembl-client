@@ -1,25 +1,26 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
+use stdweb::web::{XmlHttpRequest, XhrResponseType };
 use url::Url;
+use util::API_VERSION;
 
 use super::{ BackendConfig, HttpManager, HttpResponseConsumer };
 
 pub struct BackendConfigBootstrapImpl {
     config: Option<BackendConfig>,
-    callbacks: Vec<Box<Fn(&BackendConfig)>>
+    callbacks: Vec<Box<dyn Fn(&BackendConfig)>>
 }
 
 impl BackendConfigBootstrapImpl {
     fn new() -> BackendConfigBootstrapImpl {
         BackendConfigBootstrapImpl {
             config: None,
-            callbacks: Vec::<Box<Fn(&BackendConfig)>>::new()
+            callbacks: Vec::<Box<dyn Fn(&BackendConfig)>>::new()
         }
     }
     
-    fn add_callback(&mut self, cb: Box<Fn(&BackendConfig)>) {
+    fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig)>) {
         match self.config {
             Some(ref mut cfg) => cb(&cfg),
             None => self.callbacks.push(cb)
@@ -46,12 +47,14 @@ impl BackendConfigBootstrap {
         let out = BackendConfigBootstrap(Rc::new(RefCell::new(imp)),base.clone());
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::Text);
+        let mut base = base.clone();
+        ok!(base.path_segments_mut()).push(&API_VERSION.to_string());
         xhr.open("GET",&base.as_str());
         http_manager.add_request(xhr,None,Box::new(out.clone()));
         out
     }
     
-    pub fn add_callback(&mut self, cb: Box<Fn(&BackendConfig)>) {
+    pub fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig)>) {
         self.0.borrow_mut().add_callback(cb);
     }
     

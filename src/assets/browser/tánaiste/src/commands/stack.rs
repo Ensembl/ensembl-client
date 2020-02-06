@@ -22,7 +22,7 @@ pub struct PushI();
 
 impl Instruction for PushI {
     fn signature(&self) -> Signature { Signature::new("push","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Push(args[0].reg()))
     }
 }
@@ -43,7 +43,7 @@ pub struct PopI();
 
 impl Instruction for PopI {
     fn signature(&self) -> Signature { Signature::new("pop","r") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Pop(args[0].reg()))
     }
 }
@@ -56,7 +56,7 @@ mod test {
     fn pushpop_cmd() {
         let tc = TestContext::new();
         let mut r = command_run(&tc,"pushpop-cmd");
-        assert_eq!("\"hello\"",r.get_reg(2));
+        assert_eq!("[\"hello\"]",r.get_reg(2));
         assert_eq!("[200.0]",r.get_reg(1));
     }    
 }

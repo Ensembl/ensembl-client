@@ -1,36 +1,21 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
+import { render } from 'enzyme';
+
+jest.mock('./BrowserNavBarControls', () => () => (
+  <div>BrowserNavBarControls</div>
+));
+jest.mock('./BrowserNavBarMain', () => () => <div>BrowserNavBarMain</div>);
 
 import { BrowserNavBar } from './BrowserNavBar';
 
-import { BrowserNavStates } from '../browserState';
-
-import styles from './BrowserNavBar.scss';
-
-const browserStates = [...Array(6)].map(() => false);
-
 describe('<BrowserNavBar />', () => {
-  test('renders with appropriate classes', () => {
-    const domNode = mount(<div />).getDOMNode() as HTMLDivElement;
+  describe('rendering', () => {
+    it('correctly interprets the "expanded" prop', () => {
+      const contractedBar = render(<BrowserNavBar expanded={false} />);
+      expect(contractedBar.hasClass('browserNavBarExpanded')).toBe(false);
 
-    expect(
-      shallow(
-        <BrowserNavBar
-          browserElement={domNode}
-          browserNavStates={browserStates as BrowserNavStates}
-          trackPanelOpened={true}
-        />
-      ).hasClass(styles.browserNavBarExpanded)
-    ).toBe(false);
-
-    expect(
-      shallow(
-        <BrowserNavBar
-          browserElement={domNode}
-          browserNavStates={browserStates as BrowserNavStates}
-          trackPanelOpened={false}
-        />
-      ).hasClass(styles.browserNavBarExpanded)
-    ).toBe(true);
+      const expandedBar = render(<BrowserNavBar expanded={true} />);
+      expect(expandedBar.hasClass('browserNavBarExpanded')).toBe(true);
+    });
   });
 });

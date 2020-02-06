@@ -39,9 +39,9 @@ impl Environment for DebugEnvironmentExtern {
         self.pid = Some(pid);
     }
     
-    fn finished(&mut self, _pid: usize, state: ProcessState, codes: Vec<f64>, string: String) {
+    fn finished(&mut self, _pid: usize, state: ProcessState, codes: Vec<f64>, string: Vec<String>) {
         self.exit_state = Some(state);
-        self.last_exit_str.push(string);
+        self.last_exit_str.push(string[0].clone());
         self.last_exit_float.push(codes);
     }
 }
@@ -57,7 +57,7 @@ impl Environment for DebugEnvironmentBox {
         self.0.borrow_mut().started(pid);
     }
     
-    fn finished(&mut self, pid: usize, state: ProcessState, codes: Vec<f64>, string: String) {
+    fn finished(&mut self, pid: usize, state: ProcessState, codes: Vec<f64>, string: Vec<String>) {
         self.0.borrow_mut().finished(pid, state, codes, string);
     }
 }
@@ -69,7 +69,7 @@ impl DebugEnvironment {
         DebugEnvironment(Rc::new(RefCell::new(DebugEnvironmentExtern::new())))
     }
 
-    pub fn make(&self) -> Box<Environment> {
+    pub fn make(&self) -> Box<dyn Environment> {
         Box::new(DebugEnvironmentBox(self.0.clone()))
     }
 

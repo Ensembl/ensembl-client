@@ -1,18 +1,20 @@
 @import 'src/styles/common';
 
 .home {
+  padding-bottom: 80px;
+
   h2 {
-    color: $ens-grey;
-    font-size: 16px;
+    color: $grey;
+    font-size: 14px;
     font-weight: $normal;
   }
-
-  padding-top: 2%;
+  position: relative;
 }
 
 .search {
-  background: $ens-light-grey;
-  box-shadow: 0 3px 10px $ens-grey;
+  background: $light-grey;
+  box-shadow: 0 3px 5px $medium-light-grey;
+  min-height: 235px;
   padding: 15px 60px;
 
   h2 {
@@ -21,48 +23,22 @@
 
   input[type='text'] {
     border: none;
-    box-shadow: inset 3px 3px 10px $ens-grey;
-    color: $ens-dark-grey;
-    font-size: 16px;
+    width: 100%;
+    max-width: 485px;
+    height: 36px;
+    box-shadow: inset 2px 2px 4px -2px $dark-grey;
     padding: 12px 20px;
-    min-width: 300px;
-    width: 30%;
+
+    &::placeholder {
+      color: $grey;
+    }
   }
 
   button {
-    border: 1px solid $ens-grey;
+    border: 1px solid $grey;
     border-radius: 5px;
     margin-left: 15px;
     padding: 8px 24px;
     text-transform: uppercase;
-  }
-
-  .filter {
-    padding-top: 2%;
-  }
-}
-
-.previouslyViewed {
-  line-height: 2.5;
-  padding: 15px 80px;
-}
-
-.siteMessage {
-  margin-left: 120px;
-  padding-top: 2%;
-
-  h4 {
-    color: $ens-grey;
-    font-size: 13px;
-    font-weight: $normal;
-    margin-bottom: 30px;
-  }
-
-  p {
-    font-size: 13px;
-  }
-
-  .convoMessage {
-    margin-top: 30px;
   }
 }

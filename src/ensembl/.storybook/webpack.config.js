@@ -19,6 +19,7 @@ module.exports = ({ config }) => {
     include: [
       path.resolve(__dirname, '../src'),
       path.resolve(__dirname, '../stories'),
+      path.resolve(__dirname, '../tests'),
     ]
   });
   config.module.rules.push({
@@ -33,8 +34,9 @@ module.exports = ({ config }) => {
         loader: 'css-loader',
         options: {
           sourceMap: true,
-          modules: true,
-          localIdentName: '[local]__[name]__[hash:base64:5]'
+          modules: {
+            localIdentName: '[local]__[name]__[hash:base64:5]'
+          }
         }
       },
       {
@@ -54,6 +56,7 @@ module.exports = ({ config }) => {
 
   config.resolve.extensions.push('.ts', '.tsx');
   config.resolve.alias = {
+    config: path.join(__dirname, '../config.ts'),
     src: path.join(__dirname, '../src'),
     tests: path.join(__dirname, '../tests'),
     static: path.join(__dirname, '../static')

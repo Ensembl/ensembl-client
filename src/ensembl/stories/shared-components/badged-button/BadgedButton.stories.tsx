@@ -2,14 +2,14 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import Roundbutton from 'src/shared/round-button/RoundButton';
-import BadgedButton from 'src/shared/badged-button/BadgedButton';
-import { SecondaryButton } from 'src/shared/button/Button';
-import { ReactComponent as DownloadIcon } from 'static/img/track-panel/download.svg';
+import Roundbutton from 'src/shared/components/round-button/RoundButton';
+import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
+import { SecondaryButton } from 'src/shared/components/button/Button';
+import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
 import styles from './BadgedButton.stories.scss';
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 
 const onClick = action('button-click');
 
@@ -32,7 +32,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
     <div className={styles.imageButtonWrapper}>
       <BadgedButton badgeContent={':)'}>
         <ImageButton
-          buttonStatus={ImageButtonStatus.HIGHLIGHTED}
+          status={Status.SELECTED}
           description={'enable/disable'}
           image={DownloadIcon}
           onClick={onClick}
@@ -44,7 +44,7 @@ storiesOf('Components|Shared Components/BadgedButton', module)
     <div className={styles.imageButtonWrapper}>
       <BadgedButton badgeContent={':)'} className={styles.badge}>
         <ImageButton
-          buttonStatus={ImageButtonStatus.HIGHLIGHTED}
+          status={Status.SELECTED}
           description={'enable/disable'}
           image={DownloadIcon}
           onClick={onClick}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Checkbox from 'src/shared/checkbox/Checkbox';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import { storiesOf } from '@storybook/react';
 import styles from './Checkbox.stories.scss';
 import { action } from '@storybook/addon-actions';
@@ -8,9 +8,9 @@ import { action } from '@storybook/addon-actions';
 const Wrapper = (props: any) => {
   const [checked, setChecked] = useState(false);
 
-  const handleOnchange = (checkedStatus: boolean) => {
-    setChecked(checkedStatus);
-    action('checkbox-toggled')(checkedStatus);
+  const handleOnchange = (isChecked: boolean) => {
+    setChecked(isChecked);
+    action('checkbox-toggled')(isChecked);
   };
 
   return (

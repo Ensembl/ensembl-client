@@ -1,14 +1,12 @@
-use std::fmt::Debug;
 use std::f32;
 
-use program::{
+use super::super::program::{
     ProgramAttribs, DataBatch, PTGeom, PTMethod, ProgramType,
     Input
 };
 
 use types::{
-    CFraction, cfraction, Dot, AxisSense, Bounds, Edge, Anchors, 
-    RFraction, TOPLEFT
+    CFraction, cfraction, AxisSense, Bounds, Anchors, RFraction, TOPLEFT
 };
 
 use super::GLShape;
@@ -17,7 +15,7 @@ use super::util::{
     colourspec_to_group
 };
 use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ColourSpec, ShapeSpec, MathsShape, PolyPosition, PinPolySpec };
+use model::shape::{ ColourSpec, MathsShape, PolyPosition, PinPolySpec };
 
 const CIRC_TOL : f32 = 1.; // max px undercut
 
@@ -59,13 +57,13 @@ impl GLShape for PinPolySpec {
         ppd.draw(geom_a, _art, e);
     }
 
-    fn get_geometry(&self) -> ProgramType {
+    fn get_geometry(&self) -> Option<ProgramType> {
         let mt = if self.width.is_some() {
             PTMethod::Strip
         } else {
             PTMethod::Triangle
         };
-        despot(program_type(&self),mt,&self.colspec)
+        Some(despot(program_type(&self),mt,&self.colspec))
     }
 }
 
@@ -118,7 +116,7 @@ impl PinPolyDraw {
         let v : Vec<CFraction> = v.iter().map(|s|
             bbox.flip_area(*s+middle,corner)+delta
         ).collect();
-        let w : Vec<&Input> = v.iter().map(|s| s as &Input).collect();
+        let w : Vec<&dyn Input> = v.iter().map(|s| s as &dyn Input).collect();
         match self.origin {
             PolyPosition::Pin(origin) => {
                 poly_p(b,geom,"aVertexPosition",&w);
@@ -179,6 +177,4 @@ impl PinPolyDraw {
             self.add(b,geom,v,self.points+1);
         }
     }
-
-    fn get_geometry(&self) -> ProgramType { self.geom }
 }

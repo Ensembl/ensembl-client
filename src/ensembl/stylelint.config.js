@@ -1,13 +1,12 @@
 module.exports = {
+  plugins: [
+  "stylelint-scss"
+  ],
   defaultSeverity: 'warning',
   extends: 'stylelint-config-recommended',
   rules: {
-    'at-rule-no-unknown': [true, {
-      ignoreAtRules: [
-        'include',
-        'mixin'
-      ]
-    }],
+    'at-rule-no-unknown': null,
+    'scss/at-rule-no-unknown': true,
     'selector-pseudo-class-no-unknown': [true, {
       ignorePseudoClasses: ['global']
     }],

@@ -1,61 +1,13 @@
 use std::iter;
-use composit::Leaf;
-use program::{
+use super::super::program::{
     ProgramAttribs, DataBatch, DataGroupIndex, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
 use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use model::shape::{ ColourSpec, DrawingSpec, ShapeSpec };
-use program::Input;
-use std::rc::Rc;
+use model::shape::ColourSpec;
+use super::super::program::Input;
 
-use drivers::webgl::{ GLProgs, GLProgData };
-use drivers::webgl::{ Artist, Artwork, Drawing, CarriageCanvases };
-
-pub enum FacadeType {
-    Drawing,
-    Colour
-}
-
-#[derive(Clone)]
-pub enum Facade {
-    Drawing(DrawingSpec),
-    Colour(Colour)
-}
-
-pub struct ShapeShortInstanceData {
-    pub pos_x: f32,
-    pub pos_y: i32,
-    pub aux_x: f32,
-    pub aux_y: i32,
-    pub facade: Facade
-}
-
-pub struct ShapeLongInstanceData {
-    pub pos_x: Vec<f64>,
-    pub pos_y: Vec<f64>,
-    pub aux_x: Vec<f64>,
-    pub aux_y: Vec<f64>,
-    pub facade: Facade
-}
-
-pub enum ShapeInstanceDataType {
-    Long,
-    Short
-}
-
-pub enum ShapeInstanceData {
-    Short(ShapeShortInstanceData),
-    Long(ShapeLongInstanceData)
-}
-
-pub trait TypeToShape {
-    fn new_short_shape(&self, sid: &ShapeShortInstanceData) -> Option<ShapeSpec> { None }
-    fn new_long_shape(&self, sid: &ShapeLongInstanceData) -> Option<ShapeSpec> { None }
-    fn get_facade_type(&self) -> FacadeType;
-    fn needs_scale(&self) -> (bool,bool);
-    fn sid_type(&self) -> ShapeInstanceDataType;
-}
+use drivers::webgl::GLProgData;
 
 pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RLeaf) {
     if let Some(obj) = pdata.get_object(key) {
@@ -84,7 +36,7 @@ pub fn rectangle_c(b: DataBatch, pdata: &mut ProgramAttribs,
     }
 }
 
-pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&Input]) {
+pub fn poly_p(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &[&dyn Input]) {
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,p);
     }
@@ -109,8 +61,8 @@ pub fn colour(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, c: &Colour) {
     }
 }
 
-pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &Input, mul: u16) {
-    let mut v = Vec::<&Input>::new();
+pub fn multi_gl(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, d: &dyn Input, mul: u16) {
+    let mut v = Vec::new();
     v.extend(iter::repeat(d).take(mul as usize));
     if let Some(obj) = pdata.get_object(key) {
         obj.add_data(&b,&v.as_slice());
@@ -192,6 +144,6 @@ pub fn despot(gt: PTGeom, mt: PTMethod, spec: &ColourSpec) -> ProgramType {
 pub fn colourspec_to_group(cs: &ColourSpec, g: &mut ProgramAttribs, e: &mut GLProgData) -> Option<DataGroupIndex> {
     match cs {
         ColourSpec::Spot(c) => Some(e.spot().get_group(g,c)),
-        ColourSpec::Colour(_) => None
+        _ => None
     }
 }

@@ -1,22 +1,19 @@
-use dom::event::CustomData;
 use serde_json::Value as JSONValue;
 use serde_json::Map as JSONMap;
-use dom::event::ICustomEvent;
 
 pub struct AppEventData {
     detail: Option<JSONValue>
 }
 
 impl AppEventData {
-    pub fn new(cd : &CustomData) -> AppEventData {
+    pub fn new(detail: &Option<JSONValue>) -> AppEventData {
         AppEventData {
-            detail: cd.details()
+            detail: detail.clone()
         }
     }
     
     pub fn get_simple_str(&self, key: &str, default: Option<&str>) -> Option<String> {
         let default = default.map(|v| v.to_string());
-        let value : Option<String> = None;
         let empty = JSONValue::Object(JSONMap::new());
         let obj = self.detail.as_ref().unwrap_or(&empty);
         let json_value = obj.get(key);
@@ -27,7 +24,6 @@ impl AppEventData {
     }
 
     pub fn get_simple_bool(&self, key: &str, default: Option<bool>) -> Option<bool> {
-        let value : Option<String> = None;
         let empty = JSONValue::Object(JSONMap::new());
         let obj = self.detail.as_ref().unwrap_or(&empty);
         let json_value = obj.get(key);

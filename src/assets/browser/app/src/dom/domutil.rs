@@ -1,6 +1,8 @@
 // We keep these separate from the other utils partly because these imports
 // are very hairy.
 
+use std::collections::HashMap;
+
 use itertools::Itertools;
 use serde_json::Value as JSONValue;
 use stdweb::Value;
@@ -15,29 +17,45 @@ use dom::webgl::{
     WebGLRenderingContext as glctx,
 };
 
-use types::{ CPixel, cpixel, RPixel, area };
+use types::{ area, Dot, Rect };
 
-pub fn query_selector_ok(root: &HtmlElement, sel: &str, message: &str) -> Element {
-    let x : Option<Element> = ok!(root.query_selector(sel));
+fn _to_html(el: Option<Element>) -> Option<HtmlElement> {
+    el.and_then(|el| el.try_into().ok())
+}
+
+pub fn query_selector_ok(root: &HtmlElement, sel: &str, message: &str) -> HtmlElement {
+    let x : Option<HtmlElement> = _to_html(ok!(root.query_selector(sel)));
     ok!(x.ok_or_else(|| message.to_string()))
 }
 
-pub fn query_selector_new(sel: &str) -> Option<Element> {
+pub fn query_selector_ok_doc(sel: &str, message: &str) -> HtmlElement {
+    let root : HtmlElement = document().document_element()
+            .expect("No root element").try_into().expect("no root element");
+    query_selector_ok(&root,sel,message)
+}
+
+pub fn query_selector_new(sel: &str) -> Option<HtmlElement> {
     if let Some(Some(el)) = document().query_selector(sel).ok() {
-        Some(el)
+        el.try_into().ok()
     } else {
         None
     }
 }
 
-pub fn query_selector2(root: &Element, sel: &str) -> Option<Element> {
+pub fn query_selector2(root: &HtmlElement, sel: &str) -> Option<HtmlElement> {
     if let Ok(Some(el)) = root.query_selector(sel) {
-        Some(el)
+        el.try_into().ok()
     } else {
         None
     }
 }
 
+pub fn in_page(el: &HtmlElement) -> bool {
+    let b = js! {
+        return document.body.contains(@{el.as_ref()});
+    };
+    b.try_into().unwrap()
+}
 
 #[deprecated(note="use query_selector_ok instead")]
 pub fn query_selector(el: &Element, sel: &str) -> Element {
@@ -48,32 +66,32 @@ pub fn query_select(sel: &str) -> Element {
     document().query_selector(sel).unwrap().unwrap()
 }
 
-pub fn size(el: &HtmlElement) -> CPixel {
+pub fn size(el: &HtmlElement) -> Dot<f64,f64> {
     let r = el.get_bounding_client_rect();
-    cpixel(r.get_width() as i32,r.get_height() as i32)
+    Dot(r.get_width(),r.get_height())
 }
 
-pub fn window_size() -> CPixel {
+pub fn window_size() -> Dot<f64,f64> {
     let v : Vec<f64> = js! { 
         return [document.documentElement.clientWidth,
                 document.documentElement.clientHeight];
     }.try_into().unwrap();
-    cpixel(v[0] as i32,v[1] as i32)
+    Dot(v[0],v[1])
 }
 
-pub fn position(el: &HtmlElement) -> RPixel {
+pub fn position(el: &HtmlElement) -> Rect<f64,f64> {
     let r = el.get_bounding_client_rect();
-    area(cpixel(r.get_left() as i32,r.get_top() as i32),
-         cpixel(r.get_right() as i32,r.get_bottom() as i32))
+    area(Dot(r.get_left(),r.get_top()),
+         Dot(r.get_right(),r.get_bottom()))
 }
 
-pub fn window_space(el: &HtmlElement) -> RPixel {
+pub fn window_space(el: &HtmlElement) -> Rect<f64,f64> {
     let pos = position(el).rectangle();
     let wsz = window_size();
-    area(pos[0],cpixel(wsz.0-pos[2].0,wsz.1-pos[2].1))
+    area(pos[0],Dot(wsz.0-pos[2].0,wsz.1-pos[2].1))
 }
 
-pub fn add_attr(el: &Element,key: &str, more: &str) {
+pub fn add_attr(el: &HtmlElement,key: &str, more: &str) {
     let val = match el.get_attribute(key) {
         Some(x) => x+" ",
         None => "".to_string(),
@@ -81,7 +99,7 @@ pub fn add_attr(el: &Element,key: &str, more: &str) {
     el.set_attribute(key,&val).ok();
 }
 
-pub fn remove_attr(el: &Element,key: &str, togo: &str) {
+pub fn remove_attr(el: &HtmlElement,key: &str, togo: &str) {
     let val = match el.get_attribute(key) {
         Some(x) => x,
         None => "".to_string(),
@@ -90,31 +108,57 @@ pub fn remove_attr(el: &Element,key: &str, togo: &str) {
     el.set_attribute(key,&val).ok();
 }
 
-#[allow(unused)]
-pub fn add_style(el: &Element, key: &str, value: &str) {
-    add_attr(el,"style",&format!("{}: {};",key,value));
+pub fn get_style_attr(el: &HtmlElement) -> HashMap<String,String> {
+    let mut out = HashMap::new();
+    if let Some(attr) = el.get_attribute("style") {
+        for part in attr.split(";") {
+            if let Some(colon) = part.find('.') {
+                let (k,v) = part.split_at(colon);
+                if k != "" || v != "" {
+                    out.insert(k.trim().to_string(),v.trim().to_string());
+                }
+            }
+        }
+    }
+    out
+}
+
+pub fn set_style_attr(el: &HtmlElement, val: &HashMap<String,String>) {
+    let mut attr = String::new();
+    for (k,v) in val {
+        if k != "" || v != "" {
+            attr.push_str(&format!("{}: {};",k,v));
+        }
+    }
+    el.set_attribute("style",&attr);
+}
+
+pub fn add_style(el: &HtmlElement, k: &str, v: &str) {
+    let mut style = get_style_attr(el);
+    style.insert(k.to_string(),v.to_string());
+    set_style_attr(el,&style);
 }
 
 pub fn get_inner_html(el: &Element) -> String {
     return js! { return @{el.as_ref()}.innerHTML; }.try_into().unwrap();
 }
 
-pub fn inner_html(el: &Element, value: &str) {
+pub fn inner_html(el: &HtmlElement, value: &str) {
     js! { @{el.as_ref()}.innerHTML = @{value} };
 }
 
-pub fn text_content(el: &Element, value: &str) {
+pub fn text_content(el: &HtmlElement, value: &str) {
     js! { @{el.as_ref()}.textContent = @{value} };
 }
 
-pub fn append_element(el: &Element, name: &str) -> Element {
+pub fn append_element(el: &HtmlElement, name: &str) -> HtmlElement {
     let doc = el.owner_document().unwrap();
     let new = doc.create_element(name).ok().unwrap();
     el.append_child(&new);
-    new
+    ok!(new.try_into())
 }
 
-pub fn remove(el: &Element) {
+pub fn remove(el: &HtmlElement) {
     let parent: Element = el.parent_node().unwrap().try_into().ok().unwrap();
     parent.remove_child(el).unwrap_or(el.clone().into());
 }
@@ -123,11 +167,23 @@ pub fn scroll_to_bottom(el: &Element) {
     js! { @{el.as_ref()}.scrollTop = @{el.as_ref()}.scrollHeight; };
 }
 
-pub fn send_custom_event(el: &Element, name: &str, data: &JSONValue) {
+pub fn send_custom_event(el: &HtmlElement, name: &str, data: &JSONValue) {
     let v: Value = data.clone().try_into().unwrap();
     js! {
         var e = new CustomEvent(@{name},{ detail: @{&v}, bubbles: true });
         @{el.as_ref()}.dispatchEvent(e);
+    };
+}
+
+pub fn send_post_message(name: &str, data: &JSONValue) {
+    let name = name.to_string();
+    let message = json! {{
+        "type": name,
+        "payload": data
+    }};
+    let message : Value = message.clone().try_into().unwrap();
+    js! {
+        window.postMessage(@{&message},"*");
     };
 }
 
@@ -150,7 +206,32 @@ pub fn get_context(canvas: &CanvasElement) -> glctx {
     }).try_into().ok().unwrap()
 }
 
+pub fn browser_time() -> f64 {
+    return  js! { return +new Date(); }.try_into().unwrap();
+}
+
+pub fn ancestor(younger: &HtmlElement, older: &HtmlElement) -> bool {
+    let mut younger = younger.clone();
+    loop {
+        if &younger == older {
+            return true;
+        }
+        if let Some(el) = younger.parent_element() {
+            let el: Option<HtmlElement> = el.try_into().ok();
+            if let Some(el) = el {
+                younger = el;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    return false;
+}
+
 /* Not sure why this isn't implemented in stdweb */
+#[allow(unused)]
 pub fn get_classes(el: &HtmlElement) -> Vec<String> {
     let raw = el.class_list();
     let parts : Vec<String> = js! { return Array.from(@{raw}.values()); }.try_into().ok().unwrap();

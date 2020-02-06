@@ -4,7 +4,7 @@ use dom::domutil;
 use stdweb::web::{ Element, HtmlElement };
 
 use controller::global::{ App, AppRunner };
-use controller::input::{ actions_run, Action };
+use controller::input::Action;
 use dom::event::{ 
     EventListener, EventControl, EventType, EventData, Target
 };
@@ -28,7 +28,7 @@ impl EventListener<()> for DomEventListener {
             }
             _ => Vec::<Action>::new()
         };
-        actions_run(&mut self.cg.lock().unwrap(),&evs);
+        self.cg.lock().unwrap().run_actions(&evs,None);
     }
 }
 

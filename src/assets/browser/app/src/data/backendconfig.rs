@@ -1,13 +1,11 @@
 use std::collections::HashMap;
-use std::fmt;
 use std::rc::Rc;
 use std::string::ToString;
 
 use serde_json::Value as SerdeValue;
 use tánaiste::Value;
-use url::Url;
 
-use composit::{ Leaf, Scale, Stick };
+use composit::Stick;
 
 #[derive(Debug,Clone)]
 pub struct BackendBytecode {
@@ -24,10 +22,10 @@ impl BackendBytecode {
 
 #[derive(Debug,Clone)]
 pub struct BackendTrack {
-    endpoints: Vec<(i32,i32,String)>,
     letter: String,
     wire: Option<String>,
     position: i32,
+    focus: bool,
     parts: Vec<String>
 }
 
@@ -36,6 +34,7 @@ impl BackendTrack {
     pub fn get_position(&self) -> i32 { self.position }
     pub fn get_parts(&self) -> &Vec<String> { &self.parts }
     pub fn get_wire(&self) -> &Option<String> { &self.wire }
+    pub fn focus_dependent(&self) -> bool { self.focus }
 }
 
 #[derive(Debug)]
@@ -55,8 +54,11 @@ pub struct BackendConfig {
     data_url: String,
     assets: HashMap<String,Rc<BackendAsset>>,
     tracks: HashMap<String,BackendTrack>,
+    wire_to_track: HashMap<String,String>,
     sticks: HashMap<String,Stick>,
-    bytecodes: HashMap<String,Rc<BackendBytecode>>
+    bytecodes: HashMap<String,Rc<BackendBytecode>>,
+    debug_url: Option<String>,
+    jumper_url: Option<String>
 }
 
 // TODO simplify with serde; error handling
@@ -69,6 +71,10 @@ impl BackendConfig {
     pub fn get_track(&self, name: &str) -> Option<&BackendTrack> {
         self.tracks.get(name)
     }
+
+    pub fn list_tracks(&self) -> impl Iterator<Item=&str> {
+        self.tracks.keys().map(|x| &**x)
+    }
     
     pub fn get_asset(&self, name: &str) -> Option<&Rc<BackendAsset>> {
         self.assets.get(name)
@@ -77,30 +83,35 @@ impl BackendConfig {
     pub fn get_sticks(&self) -> &HashMap<String,Stick> { &self.sticks }
 
     pub fn get_data_url(&self) -> &str { &self.data_url }
+    pub fn get_debug_url(&self) -> &Option<String> { &self.debug_url }
+    pub fn get_jumper_url(&self) -> &Option<String> { &self.jumper_url }
 
-    fn tracks_from_json(ep: &SerdeValue) -> HashMap<String,BackendTrack> {
-        let mut out = HashMap::<String,BackendTrack>::new();
+    fn tracks_from_json(ep: &SerdeValue) -> (HashMap<String,BackendTrack>,HashMap<String,String>) {
+        let mut out = HashMap::new();
+        let mut wire = HashMap::new();
         for (track_name,v) in ep.as_object().unwrap().iter() {
-            let mut endpoints = Vec::<(i32,i32,String)>::new();
-            for (scales,track) in v["endpoints"].as_object().unwrap().iter() {
-                let scales :Vec<char> = scales.chars().collect();
-                let min = Scale::new_from_letter(scales[0]).get_index();
-                let max = Scale::new_from_letter(scales[1]).get_index();
-                endpoints.push((min,max,track["endpoint"].as_str().unwrap().to_string()));
-            }
             let mut parts = Vec::<String>::new();
             for part in v["parts"].as_array().unwrap_or(&vec!{}).iter() {
                 parts.push(part.as_str().unwrap().to_string());
             }
             let track_name = format!("track:{}",track_name);
-            out.insert(track_name,BackendTrack { 
+            let track = BackendTrack { 
                 letter: v.get("letter").and_then(|x| x.as_str()).unwrap_or("").to_string(),
                 position: v.get("position").and_then(|x| x.as_i64()).unwrap_or(-1) as i32,
                 wire: v.get("wire").and_then(|x| x.as_str()).map(|x| x.to_string()),
-                endpoints, parts
-            });
+                focus: v.get("focus").and_then(|x| x.as_bool()).unwrap_or(false),
+                parts
+            };
+            if let Some(ref wire_name) = track.wire {
+                wire.insert(wire_name.to_string(),track_name.to_string());
+            }
+            out.insert(track_name,track);
         }
-        out
+        (out,wire)
+    }
+
+    pub fn wire_to_name(&self, name: &str) -> Option<String> {
+        self.wire_to_track.get(name).cloned()
     }
 
     fn bytecodes_from_json(ep: &SerdeValue) -> HashMap<String,Rc<BackendBytecode>> {
@@ -119,7 +130,7 @@ impl BackendConfig {
         let mut data = Vec::<Value>::new();
         for v in data_in[name].as_array().unwrap_or(&vec!{}).iter() {
             if v.is_string() {
-                data.push(Value::new_from_string(v.as_str().unwrap().to_string()));
+                data.push(Value::new_from_string(vec![v.as_str().unwrap().to_string()]));
             } else {
                 let mut array = Vec::<f64>::new();
                 for x in v.as_array().unwrap_or(&vec!{}).iter() {
@@ -133,7 +144,7 @@ impl BackendConfig {
     
     fn assets_from_json(assets: &SerdeValue, data: &SerdeValue) -> HashMap<String,Rc<BackendAsset>> {
         let mut out = HashMap::<String,Rc<BackendAsset>>::new();
-        for (name,v) in assets.as_object().unwrap().iter() {
+        for name in assets.as_object().unwrap().keys() {
             out.insert(name.to_string(),BackendConfig::one_asset_from_json(name,data));
         }
         out
@@ -150,12 +161,16 @@ impl BackendConfig {
 
     // TODO errors
     pub fn from_json_string(in_: &str) -> Result<BackendConfig,String> {
-        let data : SerdeValue = serde_json::from_str(in_).ok().unwrap();
+        let data : SerdeValue = unwrap!(serde_json::from_str(in_).ok());
         let assets = BackendConfig::assets_from_json(&data["assets"],&data["data"]);
         let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
-        let tracks = BackendConfig::tracks_from_json(&data["tracks"]);
+        let (tracks,wire_to_track) = BackendConfig::tracks_from_json(&data["tracks"]);
         let sticks = BackendConfig::sticks_from_json(&data["sticks"]);
-        let data_url = data["data-url"].as_str().unwrap().to_string();
-        Ok(BackendConfig { assets, tracks, sticks, data_url, bytecodes })
+        let data_url = unwrap!(data["data-url"].as_str()).to_string();
+        let jumper_url = data["jumper-url"].as_str().map(|x| x.to_string());
+        let debug_url = data.get("debug-url").and_then(|x| x.as_str()).map(|x| x.to_string());
+        Ok(BackendConfig { 
+            assets, tracks, sticks, data_url, bytecodes, debug_url, jumper_url, wire_to_track
+        })
     }
 }

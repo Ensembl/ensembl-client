@@ -2,6 +2,7 @@ mod coord;
 mod colour;
 mod area;
 mod corners;
+mod misctypes;
 
 pub use types::corners::{
     Anchors, Axis, AxisSense, Anchored, Corner, Edge, Anchor,
@@ -26,10 +27,11 @@ pub use types::area::{
     RFraction,
     RPixel,
     area, Rect, area_size, area_centred,
-    Bounds,
+    Bounds, Placement, XPosition, YPosition
 };
 
 pub use types::colour::{
     Colour
 };
 
+pub use types::misctypes::{ AsyncValue, Awaiting };

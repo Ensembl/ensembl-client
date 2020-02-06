@@ -1,17 +1,20 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { shallow, ShallowWrapper } from 'enzyme';
 
 import { HeaderButtons } from './HeaderButtons';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 
 describe('<HeaderButtons />', () => {
   let toggleLaunchbarFn: () => void;
   let toggleAccountFn: () => void;
-  let wrapper: any;
+  let shallowWrapper: ShallowWrapper;
 
   beforeEach(() => {
     toggleLaunchbarFn = jest.fn();
     toggleAccountFn = jest.fn();
-    wrapper = shallow(
+    shallowWrapper = shallow(
       <HeaderButtons
         toggleAccount={toggleAccountFn}
         toggleLaunchbar={toggleLaunchbarFn}
@@ -19,15 +22,21 @@ describe('<HeaderButtons />', () => {
     );
   });
 
-  test('calls toggleLaunchbar prop on launchbar button click', () => {
-    wrapper.find('.launchbarButton').simulate('click');
-
-    expect(toggleLaunchbarFn).toHaveBeenCalled();
+  test('contains button for toggling launchbar', () => {
+    const launchbarButton = shallowWrapper
+      .find(ImageButton)
+      .filterWhere(
+        (wrapper) => wrapper.prop('description') === 'Ensembl app launchbar'
+      );
+    expect(launchbarButton.prop('onClick')).toBe(toggleLaunchbarFn);
   });
 
-  test.skip('calls toggleAccount prop on account button click', () => {
-    wrapper.find('.accountButton').simulate('click');
-
-    expect(toggleAccountFn).toHaveBeenCalled();
+  test('contains disabled user account button', () => {
+    const launchbarButton = shallowWrapper
+      .find(ImageButton)
+      .filterWhere(
+        (wrapper) => wrapper.prop('description') === 'Ensembl account'
+      );
+    expect(launchbarButton.prop('status')).toBe(Status.DISABLED);
   });
 });

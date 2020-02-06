@@ -1,6 +1,7 @@
 use std::fmt;
 
 use composit::{ Stick, Scale };
+use types::Placement;
 
 #[derive(Clone,PartialEq,Eq,Hash)]
 pub struct Leaf {
@@ -14,6 +15,13 @@ impl Leaf {
         Leaf { hindex, scale: scale.clone(), stick: stick.clone() }
     }
     
+    pub fn from_short_spec(stick: &Stick, pane: &str) -> Leaf {
+        let mut pane = pane.to_string();
+        let hindex : i64 = ok!(pane.split_off(1).parse());
+        let scale = Scale::new_from_letter(unwrap!(pane.chars().next()));
+        Leaf::new(stick,hindex,&scale)
+    }
+
     pub fn containing(stick: &Stick, pos: f64, scale: &Scale) -> Leaf {
         let hindex = (pos / scale.total_bp()).floor() as i64;
         Leaf::new(stick,hindex,scale)
@@ -52,6 +60,10 @@ impl Leaf {
     pub fn get_short_spec(&self) -> (String,String) {
         (self.get_stick().get_name(),
          format!("{}{}",self.scale.letter(),self.hindex))
+    }
+    
+    pub fn fix_placement(&self, p: &Placement) -> Placement {
+        p.add_bp(self.get_start(),self.total_bp())
     }
 }
 

@@ -1,97 +1,16 @@
 @import 'src/styles/common';
 
 .browserBar {
-  @include flex;
-  background: $ens-light-grey;
-  box-shadow: 0 2px 3px $ens-grey;
-  height: 32px;
-  padding: 7px 0 3px 0;
+  display: flex;
+  width: 100%;
+  align-items: center;
   position: relative;
-  z-index: 200;
-
-  dd {
-    display: inline-block;
-    margin: 0 18px;
-  }
-
-  button {
-    &.selected {
-      background: $ens-white;
-    }
-  }
 }
 
-.browserInfo {
-  @include flex;
-  flex-wrap: nowrap;
-  font-size: 12px;
-  margin: 0;
-  width: calc(100vw - 36px);
+.browserResetWrapper {
+  margin-right: 14px;
+}
 
-  @include breakpoint(large) {
-    width: calc(100vw - 356px);
-  }
-
-  label {
-    color: $ens-dark-grey;
-    font-weight: $light;
-  }
-
-  .value {
-    color: $ens-black;
-    margin: 0 3px;
-  }
-
-  .nonLabelValue {
-    text-transform: lowercase;
-  }
-
-  &.browserInfoExpanded {
-    width: calc(100vw - 36px);
-  }
-
-  &.browserInfoGreyed {
-    .value,
-    .nonLabelValue {
-      color: $ens-dark-grey;
-    }
-  }
-
-  dd {
-    margin-right: 10px;
-    white-space: nowrap;
-  }
-
-  dl {
-    overflow: hidden;
-
-    &.browserInfoLeft {
-      flex: 1 1 auto;
-    }
-
-    &.browserInfoRight {
-      flex: 0 1 auto;
-      text-align: right;
-    }
-
-    .geneSymbol {
-      margin-left: 14px;
-
-      .value {
-        font-size: 13px;
-        font-weight: $bold;
-      }
-    }
-  }
-
-  .navigator {
-    margin: 0 10px 0 0;
-    position: relative;
-    top: -2px;
-
-    img {
-      height: 22px;
-      width: 22px;
-    }
-  }
+.browserLocationIndicatorWrapper {
+  margin-left: auto;
 }

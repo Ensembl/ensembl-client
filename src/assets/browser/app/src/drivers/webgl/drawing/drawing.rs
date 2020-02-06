@@ -2,8 +2,8 @@ use std::rc::Rc;
 
 use types::{ CPixel, RPixel, RFraction, cpixel, area };
 use super::alloc::Ticket;
-use super::{ Artist, OneCanvasManager, CarriageCanvases };
-use program::CanvasWeave;
+use super::{ Artist, OneCanvasManager };
+use super::super::program::CanvasWeave;
 use drivers::webgl::GLProgData;
 
 pub struct Artwork {
@@ -17,7 +17,7 @@ pub struct Artwork {
  * Artist and a ticket (to get a location, when ready)
  */
 pub struct DrawingImpl {
-    gen: Rc<Artist>,
+    gen: Rc<dyn Artist>,
     ticket: Ticket,
     mask_ticket: Ticket,
     margin: CPixel,
@@ -28,7 +28,7 @@ pub struct DrawingImpl {
 pub struct Drawing(Rc<DrawingImpl>);
 
 impl Drawing {
-    pub fn new(gen: Rc<Artist>, ticket: Ticket, mask_ticket: Ticket) -> Drawing {
+    pub fn new(gen: Rc<dyn Artist>, ticket: Ticket, mask_ticket: Ticket) -> Drawing {
         let margin = gen.margin();
         let padding = gen.padding();
         Drawing(

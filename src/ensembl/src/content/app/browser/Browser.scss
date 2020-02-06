@@ -1,37 +1,35 @@
 @import 'src/styles/common';
 
-.browser {
-  width: 100%;
-}
-
 .browserInnerWrapper {
-  @include flex;
-  height: calc(100% - 32px);
-}
-
-.browserImageWrapper {
-  &.semiExpanded {
-    width: calc(100vw - 356px);
-  }
-
-  &.expanded {
-    width: calc(100vw - 36px);
-  }
-
-  &.collapsed {
-    width: 41px;
-
-    .browserImage {
-      display: none;
-    }
-  }
-}
-
-.browserOverlay {
-  background: $ens-white;
+  display: grid;
   height: 100%;
-  opacity: 0.7;
-  position: absolute;
-  width: 100vw;
-  z-index: 150;
+  grid-template-rows: 80px 1fr;
+}
+
+.exampleLinks {
+  margin-top: 50px;
+  padding-left: 40px;
+
+  &__emptyTopbar {
+    height: 40px; // same as top bar height in StandardAppLayout
+    background: $light-grey;
+    box-shadow: 0 2px 3px $grey;
+  }
+}
+
+.exampleLink {
+  margin-left: 40px;
+  margin-bottom: 30px;
+}
+
+.objectType {
+  color: $grey;
+  margin-right: 15px;
+  width: 60px;
+  text-align: right;
+  display: inline-block;
+}
+
+.objectLabel {
+  color: $blue;
 }

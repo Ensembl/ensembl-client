@@ -1,50 +1,68 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent } from 'react';
+import { connect } from 'react-redux';
 
-import { ChrLocation } from '../browserState';
-import { BrowserInfoItem } from '../browserConfig';
+import {
+  getBrowserActiveEnsObject,
+  isFocusObjectPositionDefault
+} from '../browserSelectors';
+import { getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { changeFocusObject } from '../browserActions';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import styles from './BrowserReset.scss';
-import { getChrLocationStr } from '../browserHelper';
+import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 
-type BrowserResetProps = {
-  chrLocation: ChrLocation;
-  defaultChrLocation: ChrLocation;
-  details: BrowserInfoItem;
-  dispatchBrowserLocation: (chrLocation: ChrLocation) => void;
-  drawerOpened: boolean;
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { Status } from 'src/shared/types/status';
+import { RootState } from 'src/store';
+
+export type BrowserResetProps = {
+  focusObject: EnsObject | null;
+  changeFocusObject: (objectId: string) => void;
+  isActive: boolean;
 };
 
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const { chrLocation, defaultChrLocation, details, drawerOpened } = props;
+  const { focusObject } = props;
+  if (!focusObject) {
+    return null;
+  }
 
-  const getResetIcon = (): string => {
-    const chrLocationStr = getChrLocationStr(chrLocation);
-    const defaultChrLocationStr = getChrLocationStr(defaultChrLocation);
-
-    if (chrLocationStr === defaultChrLocationStr || drawerOpened === true) {
-      return details.icon.grey as string;
-    }
-
-    return details.icon.default;
+  const getResetIconStatus = () => {
+    return props.isActive ? Status.UNSELECTED : Status.DISABLED;
   };
 
-  const resetBrowser = useCallback(() => {
-    if (drawerOpened === true) {
-      return;
-    }
-
-    props.dispatchBrowserLocation(props.defaultChrLocation);
-  }, [chrLocation, drawerOpened]);
+  const handleClick = () => {
+    props.changeFocusObject(focusObject.object_id);
+  };
 
   return (
-    <dd className={styles.resetButton} onClick={resetBrowser}>
-      <button>
-        <img src={getResetIcon()} alt={details.description} />
-      </button>
-    </dd>
+    <div className={styles.resetButton}>
+      <ImageButton
+        status={getResetIconStatus()}
+        description={'Reset browser image'}
+        image={resetIcon}
+        onClick={handleClick}
+        classNames={{ disabled: styles.imageButtonDisabled }}
+      />
+    </div>
   );
 };
 
-export default BrowserReset;
+const mapStateToProps = (state: RootState) => {
+  const isFocusObjectInDefaultPosition = isFocusObjectPositionDefault(state);
+  const isDrawerOpened = getIsDrawerOpened(state);
+  return {
+    focusObject: getBrowserActiveEnsObject(state),
+    isActive: !isFocusObjectInDefaultPosition && !isDrawerOpened
+  };
+};
+
+const mapDispatchToProps = {
+  changeFocusObject
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserReset);

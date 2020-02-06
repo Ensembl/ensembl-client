@@ -1,40 +1,42 @@
-import React, { FunctionComponent, memo, useCallback } from 'react';
+import React, { FunctionComponent, memo } from 'react';
+
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { BrowserNavItem } from '../browserConfig';
+import { Status } from 'src/shared/types/status';
 
 import iconStyles from './BrowserNavIcon.scss';
 
 type BrowserNavIconProps = {
-  browserImageEl: HTMLDivElement;
   browserNavItem: BrowserNavItem;
-  maxState: boolean;
+  enabled: boolean;
 };
 
 export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
-  const { browserImageEl, browserNavItem, maxState } = props;
+  const { browserNavItem, enabled } = props;
   const { detail, icon } = browserNavItem;
 
-  const navEvent = new CustomEvent('bpane', {
-    bubbles: true,
-    detail
-  });
-
-  const navigateBrowser = useCallback(() => {
-    if (maxState === false) {
-      browserImageEl.dispatchEvent(navEvent);
+  const navigateBrowser = () => {
+    if (enabled) {
+      browserMessagingService.send('bpane', detail);
     }
-  }, [maxState, browserImageEl]);
+  };
 
-  const iconUrl = maxState ? icon.off : icon.on;
+  const iconStatus = enabled ? Status.DEFAULT : Status.DISABLED;
 
   return (
-    <dd className={iconStyles.browserNavIcon}>
-      <button title={browserNavItem.description} onClick={navigateBrowser}>
-        <img src={iconUrl} alt={browserNavItem.description} />
-      </button>
-    </dd>
+    <div className={iconStyles.browserNavIcon}>
+      <ImageButton
+        status={iconStatus}
+        description={browserNavItem.description}
+        onClick={navigateBrowser}
+        image={icon}
+      />
+    </div>
   );
 };
 

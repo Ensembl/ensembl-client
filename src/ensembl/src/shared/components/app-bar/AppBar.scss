@@ -1,0 +1,49 @@
+@import 'src/styles/common';
+
+.appBar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, auto);
+  align-content: start;
+  grid-template-areas:
+    'top top'
+    'main right';
+  align-items: center;
+  font-size: 12px;
+  padding: 8px 20px;
+  min-height: 80px;
+  width: 100%;
+}
+
+.appBarTop {
+  grid-area: top;
+  min-height: 30px;
+}
+
+.appBarMain {
+  grid-area: main;
+  margin-left: 2em;
+  max-width: 100%;
+}
+
+.appBarAside {
+  grid-area: right;
+}
+
+.helpLink {
+  flex: 0 1 auto;
+  position: relative;
+  margin-left: 2em;
+  text-align: right;
+
+  a {
+    color: $black;
+    font-size: 12px;
+    font-weight: $light;
+  }
+
+  img {
+    height: 14px;
+    margin-left: 5px;
+    width: 14px;
+  }
+}

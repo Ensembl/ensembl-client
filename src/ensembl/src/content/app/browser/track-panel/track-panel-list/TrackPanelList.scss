@@ -4,21 +4,14 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  padding: 15px;
-  width: 320px;
-
-  &.shorter {
-    height: calc(100vh - 177px);
-  }
-
-  &.taller {
-    height: calc(100vh - 129px);
-  }
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: $white;
 
   h4 {
-    border-bottom: 1px solid $ens-grey;
-    color: $ens-grey;
+    border-bottom: 1px solid $grey;
+    color: $grey;
     font-size: 10px;
     padding-bottom: 2px;
   }

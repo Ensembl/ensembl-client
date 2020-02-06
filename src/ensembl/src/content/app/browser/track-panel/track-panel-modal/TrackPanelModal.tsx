@@ -1,6 +1,5 @@
-import React, { FunctionComponent } from 'react';
-
-import closeIcon from 'static/img/track-panel/close.svg';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import TrackPanelSearch from './modal-views/TrackPanelSearch';
 import TracksManager from './modal-views/TracksManager';
@@ -9,25 +8,22 @@ import PersonalData from './modal-views/PersonalData';
 import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 
-import styles from './TrackPanelModal.scss';
+import { getTrackPanelModalView } from '../trackPanelSelectors';
+import { closeTrackPanelModal } from '../trackPanelActions';
+import { RootState } from 'src/store';
 
-type TrackPanelModalProps = {
-  closeTrackPanelModal: () => void;
-  launchbarExpanded: boolean;
+import closeIcon from 'static/img/shared/close.svg';
+
+import styles from './TrackPanelModal.scss';
+import { closeDrawer } from '../../drawer/drawerActions';
+
+export type TrackPanelModalProps = {
   trackPanelModalView: string;
+  closeTrackPanelModal: () => void;
+  closeDrawer: () => void;
 };
 
-const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
-  props: TrackPanelModalProps
-) => {
-  const getTrackPanelModalClasses = () => {
-    const heightClass: string = props.launchbarExpanded
-      ? styles.shorter
-      : styles.taller;
-
-    return `${styles.trackPanelModal} ${heightClass}`;
-  };
-
+export const TrackPanelModal = (props: TrackPanelModalProps) => {
   const getModalView = () => {
     switch (props.trackPanelModalView) {
       case 'search':
@@ -47,12 +43,13 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
     }
   };
 
+  const onClickHandler = () => {
+    props.closeDrawer();
+    props.closeTrackPanelModal();
+  };
   return (
-    <section className={getTrackPanelModalClasses()}>
-      <button
-        onClick={props.closeTrackPanelModal}
-        className={styles.closeButton}
-      >
+    <section className={styles.trackPanelModal}>
+      <button onClick={onClickHandler} className={styles.closeButton}>
         <img src={closeIcon} alt="Close track panel modal" />
       </button>
       <div className={styles.trackPanelModalView}>{getModalView()}</div>
@@ -60,4 +57,13 @@ const TrackPanelModal: FunctionComponent<TrackPanelModalProps> = (
   );
 };
 
-export default TrackPanelModal;
+const mapStateToProps = (state: RootState) => ({
+  trackPanelModalView: getTrackPanelModalView(state)
+});
+
+const mapDispatchToProps = {
+  closeTrackPanelModal,
+  closeDrawer
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelModal);

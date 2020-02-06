@@ -12,30 +12,28 @@ const ProteinCodingGenes: FunctionComponent<ProteinCodingGenesProps> = (
   const { forwardStrand } = props;
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Track name</label>
+    <div className={styles.drawerView}>
+      <div className={styles.container}>
+        <div className={styles.label}>Track name</div>
         <div className={styles.details}>
           <p>Protein coding genes</p>
         </div>
-      </dd>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>
           <p>
-            Shows all protein coding genes on the{' '}
-            {forwardStrand ? 'forward' : 'reverse'} strand of this chromosome.
-            Part of the GENCODE comprehensive gene set.
-          </p>
-          <p>
+            <span className={styles.nextLine}>
+              Shows all protein coding genes on the{' '}
+              {forwardStrand ? 'forward' : 'reverse'} strand of this chromosome.
+              Part of the GENCODE comprehensive gene set.
+            </span>
             <a href="https://www.gencodegenes.org">
               https://www.gencodegenes.org/
             </a>
           </p>
         </div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 

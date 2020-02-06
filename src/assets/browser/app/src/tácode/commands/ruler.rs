@@ -41,17 +41,18 @@ fn ruler(leaf: &Leaf, config: &Vec<f64>) -> (Vec<f64>, Vec<f64>, Vec<f64>, Strin
 pub struct Ruler(TáContext,usize,usize,usize,usize,usize);
 
 impl Command for Ruler {
+    #[allow(irrefutable_let_patterns)]
     fn execute(&self, rt: &mut DataState, proc: Arc<Mutex<ProcState>>) -> i64 {
         let pid = proc.lock().unwrap().get_pid().unwrap();
         self.0.with_task(pid,|task| {
-            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_) = task {
+            if let TáTask::MakeShapes(_,leaf,_,_,_,_,_,_,_) = task {
                 let regs = rt.registers();
                 regs.get(self.5).as_floats(|config| {
                      let (offset,height,text_len,text) = ruler(leaf,config);
                      regs.set(self.1,Value::new_from_float(offset));
                      regs.set(self.2,Value::new_from_float(height));
                      regs.set(self.3,Value::new_from_float(text_len));
-                     regs.set(self.4,Value::new_from_string(text));
+                     regs.set(self.4,Value::new_from_string(vec![text]));
                 });
             }
         });
@@ -63,7 +64,7 @@ pub struct RulerI(pub TáContext);
 
 impl Instruction for RulerI {
     fn signature(&self) -> Signature { Signature::new("ruler","rrrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Ruler(self.0.clone(),args[0].reg(),args[1].reg(),
                         args[2].reg(),args[3].reg(),args[4].reg()))
     }

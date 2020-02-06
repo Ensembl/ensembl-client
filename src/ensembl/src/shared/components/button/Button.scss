@@ -1,0 +1,30 @@
+@import 'src/styles/common';
+
+.primaryButton {
+  background-color: $green;
+  color: $white;
+  padding: 8px 18px;
+  font-weight: $bold;
+}
+
+.primaryButtonDisabled {
+  background-color: transparent;
+  color: $grey;
+  border: 1px solid $grey;
+  cursor: default;
+}
+
+.secondaryButton {
+  background-color: $blue;
+  color: $white;
+  font-weight: $bold;
+}
+
+.button {
+  padding: 8px 18px;
+  border-radius: 3px;
+  &:active,
+  &:focus {
+    outline: none;
+  }
+}

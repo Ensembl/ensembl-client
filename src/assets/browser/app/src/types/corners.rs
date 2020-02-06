@@ -1,8 +1,8 @@
 use std::cmp::{ Ordering, PartialOrd };
 use std::fmt::Debug;
-use std::ops::{ Add, Neg };
+use std::ops::{ Add, Neg, Sub };
 
-use program::Input;
+use drivers::webgl::program::Input;
 use types::{ Dot, area, Rect };
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
@@ -51,15 +51,23 @@ const AS : Anchor = Anchor(Some(AxisSense::Max));
 const AM : Anchor = Anchor(None);
 const AE : Anchor = Anchor(Some(AxisSense::Min));
 
+#[allow(unused)]
 pub const A_TOP        : Anchors = Dot(AM,AS);
+#[allow(unused)]
 pub const A_TOPLEFT    : Anchors = Dot(AS,AS);
+#[allow(unused)]
 pub const A_TOPRIGHT   : Anchors = Dot(AE,AS);
 #[allow(unused)]
 pub const A_BOTTOM     : Anchors = Dot(AM,AE);
+#[allow(unused)]
 pub const A_BOTTOMLEFT : Anchors = Dot(AS,AE);
+#[allow(unused)]
 pub const A_BOTTOMRIGHT: Anchors = Dot(AE,AE);
+#[allow(unused)]
 pub const A_LEFT       : Anchors = Dot(AS,AM);
+#[allow(unused)]
 pub const A_RIGHT      : Anchors = Dot(AE,AM);
+#[allow(unused)]
 pub const A_MIDDLE     : Anchors = Dot(AM,AM);
 
 #[derive(PartialEq,Eq,Debug)]
@@ -75,9 +83,13 @@ pub const IN : Direction = Direction(Axis::Zoom,AxisSense::Max);
 #[derive(Clone,Copy,Debug)]
 pub struct Corner(pub AxisSense, pub AxisSense);
 
+#[allow(unused)]
 pub const TOPLEFT    : Corner = Corner(AxisSense::Max,AxisSense::Max);
+#[allow(unused)]
 pub const TOPRIGHT   : Corner = Corner(AxisSense::Min,AxisSense::Max);
+#[allow(unused)]
 pub const BOTTOMLEFT : Corner = Corner(AxisSense::Max,AxisSense::Min);
+#[allow(unused)]
 pub const BOTTOMRIGHT: Corner = Corner(AxisSense::Min,AxisSense::Min);
 
 impl From<AxisSense> for f32 {
@@ -125,6 +137,15 @@ impl AxisSense {
 impl<T: Clone+Copy+Debug> Edge<T> {
     pub fn corner(self) -> AxisSense { self.0 }
     pub fn quantity(self) -> T { self.1 }
+}    
+
+impl<T: Clone+Copy+Debug+ Sub<T, Output=T>> Edge<T> {
+    pub fn min_dist(self, size: T) -> T {
+        match self.0 {
+            AxisSense::Max => self.1,
+            AxisSense::Min => size-self.1
+        }
+    }
 }
 
 impl<T: Clone+Copy+Debug> Anchored<T> {

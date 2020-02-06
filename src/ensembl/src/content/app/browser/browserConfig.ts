@@ -1,72 +1,21 @@
-import resetIcon from 'static/img/browser/reset.svg';
-import resetGreyIcon from 'static/img/browser/reset-grey.svg';
-
-import navigatorIcon from 'static/img/browser/navigator.svg';
-import navigatorSelectedIcon from 'static/img/browser/navigator-selected.svg';
-import navigatorGreyIcon from 'static/img/browser/navigator-grey.svg';
-
-import navigateUpIcon from 'static/img/browser/navigate-up.svg';
-import navigateUpOffIcon from 'static/img/browser/navigate-up-off.svg';
-
-import zoomOutIcon from 'static/img/browser/zoom-out.svg';
-import zoomOutOffIcon from 'static/img/browser/zoom-out-off.svg';
-
-import zoomInIcon from 'static/img/browser/zoom-in.svg';
-import zoomInOffIcon from 'static/img/browser/zoom-in-off.svg';
-
-import navigateDownIcon from 'static/img/browser/navigate-down.svg';
-import navigateDownOffIcon from 'static/img/browser/navigate-down-off.svg';
-
-import navigateLeftIcon from 'static/img/browser/navigate-left.svg';
-import navigateLeftOffIcon from 'static/img/browser/navigate-left-off.svg';
-
-import navigateRightIcon from 'static/img/browser/navigate-right.svg';
-import navigateRightOffIcon from 'static/img/browser/navigate-right-off.svg';
-
-export type BrowserInfoItem = {
-  description: string;
-  icon: {
-    default: string;
-    grey?: string;
-    selected?: string;
-  };
-  name: string;
-};
-
-export type BrowserInfoType = {
-  [key: string]: BrowserInfoItem;
-};
+import { ReactComponent as zoomInIcon } from 'static/img/browser/zoom-in.svg';
+import { ReactComponent as zoomOutIcon } from 'static/img/browser/zoom-out.svg';
+import { ReactComponent as navigateUpIcon } from 'static/img/browser/navigate-up.svg';
+import { ReactComponent as navigateDownIcon } from 'static/img/browser/navigate-down.svg';
+import { ReactComponent as navigateLeftIcon } from 'static/img/browser/navigate-left.svg';
+import { ReactComponent as navigateRightIcon } from 'static/img/browser/navigate-right.svg';
+import { ReactComponent as trackHeightIcon } from 'static/img/browser/icon_tracks_height.svg';
+import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_lock_open.svg';
+import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
+import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
 export type BrowserNavItem = {
   description: string;
   detail: {
     [key: string]: number;
   };
-  icon: {
-    on: string;
-    off: string;
-  };
+  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   name: string;
-};
-
-export const browserInfoConfig: BrowserInfoType = {
-  navigator: {
-    description: 'toggle browser navigation',
-    icon: {
-      default: navigatorIcon,
-      grey: navigatorGreyIcon,
-      selected: navigatorSelectedIcon
-    },
-    name: 'navigator'
-  },
-  reset: {
-    description: 'reset browser image',
-    icon: {
-      default: resetIcon,
-      grey: resetGreyIcon
-    },
-    name: 'reset'
-  }
 };
 
 export const browserNavConfig: BrowserNavItem[] = [
@@ -75,10 +24,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_up_px: 50
     },
-    icon: {
-      off: navigateUpOffIcon,
-      on: navigateUpIcon
-    },
+    icon: navigateUpIcon,
     name: 'navigate-up'
   },
   {
@@ -86,10 +32,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_down_px: 50
     },
-    icon: {
-      off: navigateDownOffIcon,
-      on: navigateDownIcon
-    },
+    icon: navigateDownIcon,
     name: 'navigate-down'
   },
   {
@@ -97,10 +40,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       zoom_by: -0.3
     },
-    icon: {
-      off: zoomOutOffIcon,
-      on: zoomOutIcon
-    },
+    icon: zoomOutIcon,
     name: 'zoom-out'
   },
   {
@@ -108,10 +48,7 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       zoom_by: 0.3
     },
-    icon: {
-      off: zoomInOffIcon,
-      on: zoomInIcon
-    },
+    icon: zoomInIcon,
     name: 'zoom-in'
   },
   {
@@ -119,49 +56,34 @@ export const browserNavConfig: BrowserNavItem[] = [
     detail: {
       move_left_px: 50
     },
-    icon: {
-      off: navigateLeftOffIcon,
-      on: navigateLeftIcon
-    },
-    name: 'navigate left'
+    icon: navigateLeftIcon,
+    name: 'navigate-left'
   },
   {
     description: 'navigate right',
     detail: {
       move_right_px: 50
     },
-    icon: {
-      off: navigateRightOffIcon,
-      on: navigateRightIcon
-    },
-    name: 'navigate right'
+    icon: navigateRightIcon,
+    name: 'navigate-right'
   }
 ];
 
-export const chrOptions: string[] = [
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-  '19',
-  '20',
-  '21',
-  '22',
-  'X',
-  'Y',
-  'MT'
-];
+export const browserTrackConfig = {
+  trackHeightIcon: {
+    description: 'Change track height',
+    icon: trackHeightIcon
+  },
+  trackLockIcon: {
+    description: 'Lock track',
+    icon: trackLockIcon
+  },
+  trackHighlightIcon: {
+    description: 'Highlight track',
+    icon: trackHighlightIcon
+  },
+  trackMoveIcon: {
+    description: 'Move track',
+    icon: trackMoveIcon
+  }
+};

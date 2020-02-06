@@ -11,17 +11,20 @@ const ZOOMCODES : &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 impl Scale {
     pub fn new(index: i32) -> Scale {
+        if index < -12 || index > 7 {
+            panic!("Stupid scale: {:?}",index);
+        }
         Scale {
             index
         }
     }
     
     pub fn new_from_letter(letter: char) -> Scale {
-        Scale::new(ZOOMCODES.find(letter).unwrap() as i32-13)
+        Scale::new(unwrap!(ZOOMCODES.find(letter)) as i32-13)
     }
     
     pub fn letter(&self) -> char {
-        ZOOMCODES.chars().nth(self.index as usize+13).unwrap()
+        unwrap!(ZOOMCODES.chars().nth(self.index as usize+13))
     }
 
     pub fn get_index(&self) -> i32 { self.index }

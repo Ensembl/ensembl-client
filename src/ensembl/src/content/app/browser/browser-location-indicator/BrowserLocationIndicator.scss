@@ -1,0 +1,59 @@
+/* stylelint-disable no-descending-specificity */
+
+@import 'src/styles/common';
+
+.browserLocationIndicator {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  line-height: 1;
+  font-size: 14px;
+
+  &Disabled {
+    .chrCode,
+    .chrRegion {
+      cursor: default;
+    }
+
+    .chrCode {
+      background: $dark-grey;
+    }
+    .chrRegion {
+      color: $dark-grey;
+    }
+  }
+}
+
+.chrLocationView {
+  display: inline-block;
+}
+
+.chrLabel {
+  font-size: 12px;
+  font-weight: $light;
+}
+
+.chrCode,
+.chrRegion {
+  cursor: pointer;
+}
+
+.chrCode {
+  background: $dark-blue;
+  color: $white;
+  display: inline-block;
+  font-weight: $bold;
+  margin: 0 0.5em;
+  padding: 5px 5px;
+  text-align: center;
+}
+
+.chrSeparator {
+  margin: 0 2px;
+}
+
+.chrRegion {
+  color: $dark-blue;
+  display: inline-block;
+}

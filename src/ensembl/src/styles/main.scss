@@ -1,33 +1,22 @@
 @import 'common';
+@import 'normalize';
 @import 'fonts';
-@import 'animation';
+@import 'scrollbars';
 
-@include foundation-global-styles;
-@include foundation-prototype-classes;
-@include foundation-visibility-classes;
-
-// apply a natural box layout model
-html {
-  box-sizing: border-box;
-}
-
-// inherit the natural box layout from html; allow box-sizing to easily change if necessary
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-*:focus {
-  outline: none;
+html,
+body,
+[class='ens-app'] {
+  height: 100%;
+  width: 100%;
+  min-width: 980px; // when mobile phones in portrait mode scale the page down to fill the screen, they usually go to 980px
 }
 
 a {
-  color: $ens-dark-blue;
+  color: $dark-blue;
   text-decoration: none;
 
   &.inactive {
-    color: $ens-dark-grey;
+    color: $dark-grey;
   }
 }
 
@@ -51,4 +40,10 @@ img {
   content: '';
   display: table;
   clear: both;
+}
+
+@media print {
+  body {
+    color-adjust: exact;
+  }
 }

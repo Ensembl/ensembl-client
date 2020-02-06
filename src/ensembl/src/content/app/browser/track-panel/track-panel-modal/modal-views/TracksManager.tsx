@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 
-const TracksManager: FunctionComponent = () => {
+const TracksManager = () => {
   return (
     <section className="tracksManager">
       <h3>Tracks Manager</h3>

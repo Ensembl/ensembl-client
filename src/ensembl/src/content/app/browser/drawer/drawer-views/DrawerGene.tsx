@@ -1,55 +1,35 @@
 import React, { FunctionComponent } from 'react';
 
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+
 import styles from '../Drawer.scss';
 
 type DrawerGeneProps = {
-  ensObjectInfo: any;
+  ensObject: EnsObject;
 };
 
 const DrawerGene: FunctionComponent<DrawerGeneProps> = (
   props: DrawerGeneProps
 ) => {
-  const { ensObjectInfo } = props;
-
-  let geneSymbol = ensObjectInfo.obj_symbol;
-  let geneStableId = ensObjectInfo.stable_id;
-
-  if (ensObjectInfo.obj_type === 'transcript') {
-    geneSymbol = ensObjectInfo.associated_object.obj_symbol;
-    geneStableId = ensObjectInfo.associated_object.stable_id;
-  }
+  const { ensObject } = props;
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Gene</label>
+    <div className={styles.drawerView}>
+      <div className={styles.container}>
+        <div className={styles.label}>Gene</div>
         <div className={styles.details}>
-          <p>
-            <span className={styles.mainDetail}>{geneSymbol}</span>
-          </p>
+          <span className={styles.mainDetail}>{ensObject.label}</span>
         </div>
-      </dd>
 
-      <dd className="clearfix">
-        <label htmlFor="">Stable ID</label>
-        <div className={styles.details}>
-          <p>{geneStableId}</p>
-        </div>
-      </dd>
+        <div className={styles.label}>Stable ID</div>
+        <div className={styles.details}>{getDisplayStableId(ensObject)}</div>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
-        <div className={styles.details}>
-          <p>DNA repair associated</p>
-          <p>This gene is part of the GENCODE Comprehensive gene set</p>
-          <p>
-            <a href="https://www.gencodegenes.org">
-              https://www.gencodegenes.org/
-            </a>
-          </p>
-        </div>
-      </dd>
-    </dl>
+        <div className={styles.label}>Description</div>
+        <div className={styles.details}>{ensObject.description || '--'}</div>
+      </div>
+    </div>
   );
 };
 

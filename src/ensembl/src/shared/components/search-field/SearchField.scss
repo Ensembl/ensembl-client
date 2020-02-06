@@ -1,0 +1,19 @@
+@import 'src/styles/common';
+
+.searchField {
+  border: 1px solid $grey;
+  display: inline-flex;
+  padding: 0 0.6em;
+}
+
+.searchFieldRightCorner {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-left: 0.6em;
+}
+
+.searchFieldInput {
+  flex-grow: 1;
+  border: none;
+}

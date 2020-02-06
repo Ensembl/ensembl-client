@@ -1,43 +1,61 @@
 import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
+import merge from 'lodash/merge';
+import pickBy from 'lodash/pickBy';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
-import * as drawerActions from './drawer/drawerActions';
-import * as trackPanelActions from './track-panel/trackPanelActions';
 import {
   BrowserState,
   defaultBrowserState,
-  BrowserOpenState,
   BrowserLocationState,
   defaultBrowserLocationState,
   BrowserNavState,
   defaultBrowserNavState,
   TrackConfigState,
-  defaultTrackConfigState
+  defaultTrackConfigState,
+  BrowserEntityState,
+  defaultBrowserEntityState
 } from './browserState';
+import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
 
-function browserInfo(
+export function browserInfo(
   state: BrowserState = defaultBrowserState,
   action: ActionType<RootAction>
 ): BrowserState {
   switch (action.type) {
     case getType(browserActions.updateBrowserActivated):
       return { ...state, browserActivated: action.payload };
-    case getType(trackPanelActions.toggleTrackPanel):
+    default:
+      return state;
+  }
+}
+
+export function browserEntity(
+  state: BrowserEntityState = defaultBrowserEntityState,
+  action: ActionType<typeof browserActions>
+): BrowserEntityState {
+  switch (action.type) {
+    case getType(browserActions.setDataFromUrl): {
+      const { activeGenomeId, activeEnsObjectId } = action.payload;
+      const newState = {
+        ...state,
+        activeGenomeId
+      };
+      if (activeEnsObjectId) {
+        newState.activeEnsObjectIds[activeGenomeId] = activeEnsObjectId;
+      }
+      return newState;
+    }
+    case getType(browserActions.updateBrowserActiveEnsObjectIds):
+      return { ...state, activeEnsObjectIds: action.payload };
+    case getType(browserActions.updateTrackStates):
       return {
         ...state,
-        browserOpenState: action.payload
-          ? BrowserOpenState.SEMI_EXPANDED
-          : BrowserOpenState.EXPANDED
+        trackStates: merge({}, state.trackStates, action.payload)
       };
-    case getType(drawerActions.toggleDrawer):
-      return {
-        ...state,
-        browserOpenState: action.payload
-          ? BrowserOpenState.COLLAPSED
-          : BrowserOpenState.SEMI_EXPANDED
-      };
+    case getType(browserActions.updateMessageCounter):
+      return { ...state, messageCounter: action.payload };
     default:
       return state;
   }
@@ -62,16 +80,48 @@ export function browserLocation(
   action: ActionType<typeof browserActions>
 ) {
   switch (action.type) {
+    case getType(browserActions.setDataFromUrl): {
+      const { activeGenomeId, chrLocation } = action.payload;
+      if (chrLocation) {
+        return {
+          ...state,
+          chrLocations: {
+            ...state.chrLocations,
+            [activeGenomeId]: chrLocation
+          }
+        };
+      } else {
+        return {
+          ...state,
+          chLocations: pickBy(
+            state.chrLocations,
+            (value, key) => key !== activeGenomeId
+          )
+        };
+      }
+    }
     case getType(browserActions.updateChrLocation):
-      return { ...state, chrLocation: action.payload };
-    case getType(browserActions.updateDefaultChrLocation):
       return {
         ...state,
-        chrLocation: action.payload,
-        defaultChrLocation: action.payload
+        chrLocations: {
+          ...state.chrLocations,
+          ...action.payload
+        }
       };
-    case getType(browserActions.toggleGenomeSelector):
-      return { ...state, genomeSelectorActive: action.payload };
+    case getType(browserActions.updateActualChrLocation):
+      return {
+        ...state,
+        actualChrLocations: {
+          ...state.actualChrLocations,
+          ...action.payload
+        }
+      };
+    case getType(browserActions.toggleRegionEditorActive):
+      return { ...state, regionEditorActive: action.payload };
+    case getType(browserActions.toggleRegionFieldActive):
+      return { ...state, regionFieldActive: action.payload };
+    case getType(browserActions.updateDefaultPositionFlag):
+      return { ...state, isObjectInDefaultPosition: action.payload };
     default:
       return state;
   }
@@ -113,7 +163,9 @@ export function trackConfig(
 
 export default combineReducers({
   browserInfo,
+  browserEntity,
   browserLocation,
   browserNav,
-  trackConfig
+  trackConfig,
+  trackPanel: trackPanelReducer
 });

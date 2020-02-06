@@ -3,5 +3,5 @@ use super::command::Command;
 
 pub trait Instruction {
     fn signature(&self) -> Signature;
-    fn build(&self, args: &Vec<Argument>) -> Box<Command>;
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command>;
 }

@@ -1,15 +1,11 @@
-use types::{ CLeaf, Colour, cleaf };
-
 use super::{ GLShape };
 use super::util::{
-    Facade, FacadeType, points_g, ShapeLongInstanceData, 
-    ShapeInstanceData, TypeToShape, vertices_strip, 
-    ShapeInstanceDataType, colourspec_to_group
+    points_g, vertices_strip, colourspec_to_group
 };
 
-use program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
+use super::super::program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
 use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ColourSpec, ShapeSpec, StretchWiggle };
+use model::shape::{ ColourSpec, StretchWiggle };
 
 impl GLShape for StretchWiggle {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {
@@ -18,7 +14,7 @@ impl GLShape for StretchWiggle {
         points_g(b,geom,"aVertexPosition",&self.points,self.y);
     }
     
-    fn get_geometry(&self) -> ProgramType { 
-        ProgramType(PTGeom::Stretch,PTMethod::Strip,PTSkin::Spot)
+    fn get_geometry(&self) -> Option<ProgramType> { 
+        Some(ProgramType(PTGeom::Stretch,PTMethod::Strip,PTSkin::Spot))
     }
 }

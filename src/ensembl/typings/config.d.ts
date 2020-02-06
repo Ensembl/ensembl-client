@@ -1,4 +1,9 @@
 declare module 'config' {
-  const config: { [key: string]: string };
+  const config: {
+    isDevelopment: boolean;
+    isProduction: boolean;
+    isTest: boolean;
+    [key: string]: string;
+  };
   export = config;
 }

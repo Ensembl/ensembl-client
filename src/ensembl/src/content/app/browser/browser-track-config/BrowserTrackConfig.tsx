@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, CSSProperties } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -15,155 +15,182 @@ import {
   getBrowserSelectedCog
 } from '../browserSelectors';
 
-import styles from './BrowserTrackConfig.scss';
+import analyticsTracking from 'src/services/analytics-service';
 
-import tracksSliderOnIcon from 'static/img/browser/icon_tracks_slider_on.svg';
-import tracksSliderOffIcon from 'static/img/browser/icon_tracks_slider_off.svg';
-import trackHeightBtn from 'static/img/browser/icon_tracks_height_grey.svg';
-import trackLockBtn from 'static/img/browser/icon_tracks_lock_open_grey.svg';
-import trackHighlightBtn from 'static/img/browser/icon_tracks_highlight_grey.svg';
-import trackMoveBtn from 'static/img/browser/icon_tracks_move_grey.svg';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+
+import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+
+import { browserTrackConfig } from '../browserConfig';
+
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
+import { Status } from 'src/shared/types/status';
 
-type StateProps = {
+import styles from './BrowserTrackConfig.scss';
+
+export type BrowserTrackConfigProps = {
   applyToAll: boolean;
   browserCogTrackList: CogList;
-  selectedCog: any;
-  trackConfigLabel: any;
-  trackConfigNames: any;
-};
-
-type DispatchProps = {
+  selectedCog: string | null;
+  trackConfigLabel: { [key: string]: boolean };
+  trackConfigNames: { [key: string]: boolean };
   updateApplyToAll: (yn: boolean) => void;
-  updateTrackConfigLabel: (selectedCog: any, sense: boolean) => void;
-  updateTrackConfigNames: (selectedCog: any, sense: boolean) => void;
+  updateTrackConfigLabel: (selectedCog: string, sense: boolean) => void;
+  updateTrackConfigNames: (selectedCog: string, sense: boolean) => void;
+  onClose: () => void;
 };
 
-type OwnProps = {
-  ypos: number;
-};
-
-type BrowserTrackConfigProps = StateProps & DispatchProps & OwnProps;
-
-const BrowserTrackConfig: FunctionComponent<BrowserTrackConfigProps> = (
-  props: BrowserTrackConfigProps
-) => {
-  /* TODO: not inline */
-  const inline: CSSProperties = {
-    position: 'absolute',
-    right: '40px',
-    top: props.ypos + 'px'
-  };
-
+export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   const {
     applyToAll,
     browserCogTrackList,
-    selectedCog,
     trackConfigNames,
     trackConfigLabel
   } = props;
 
-  const trackOurConfigName = trackConfigNames[selectedCog];
-  const trackOurConfigLabel = trackConfigLabel[selectedCog];
+  const selectedCog = props.selectedCog || '';
 
-  const nameIcon = trackOurConfigName
-    ? tracksSliderOnIcon
-    : tracksSliderOffIcon;
-  const labelIcon =
-    trackOurConfigLabel !== false ? tracksSliderOnIcon : tracksSliderOffIcon;
+  const shouldShowTrackName = trackConfigNames[selectedCog] || false;
+  const shouldShowTrackLabels =
+    selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
+
+  const ref = useRef(null);
+  useOutsideClick(ref, props.onClose);
 
   const toggleName = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigNames(name, !trackOurConfigName);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigNames(name, !shouldShowTrackName);
       });
     } else {
-      props.updateTrackConfigNames(selectedCog, !trackOurConfigName);
+      props.updateTrackConfigNames(selectedCog, !shouldShowTrackName);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'track_name_' + (shouldShowTrackName ? 'off' : 'on')
+    });
   }, [
     selectedCog,
     props.updateTrackConfigNames,
-    trackOurConfigName,
+    shouldShowTrackName,
     applyToAll,
     browserCogTrackList
   ]);
 
   const toggleLabel = useCallback(() => {
     if (applyToAll) {
-      Object.keys(browserCogTrackList).map((name) => {
-        props.updateTrackConfigLabel(name, !trackOurConfigLabel);
+      Object.keys(browserCogTrackList).forEach((name) => {
+        props.updateTrackConfigLabel(name, !shouldShowTrackLabels);
       });
     } else {
-      props.updateTrackConfigLabel(selectedCog, !trackOurConfigLabel);
+      props.updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'feature_label_' + (shouldShowTrackLabels ? 'off' : 'on')
+    });
   }, [
     selectedCog,
     updateTrackConfigLabel,
-    trackOurConfigLabel,
+    shouldShowTrackLabels,
     applyToAll,
     browserCogTrackList
   ]);
 
   const applyToAllToggle = useCallback(() => {
     props.updateApplyToAll(!applyToAll);
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
+    });
   }, [applyToAll, updateApplyToAll]);
 
-  return selectedCog ? (
-    <div style={inline}>
-      <section className={styles.trackConfig}>
-        <dl className="category">
-          <dd className={styles.allTracks}>
-            <input
-              type="checkbox"
-              defaultChecked={applyToAll}
-              onChange={applyToAllToggle}
+  const checkboxStyles = {
+    checkboxHolder: styles.allTracks
+  };
+
+  return (
+    <section className={styles.trackConfig} ref={ref}>
+      <dl>
+        <dd>
+          <Checkbox
+            classNames={checkboxStyles}
+            label="All tracks"
+            checked={applyToAll}
+            onChange={applyToAllToggle}
+          />
+        </dd>
+      </dl>
+      <dl>
+        <dd>
+          <label>Track name</label>
+          <SlideToggle
+            isOn={shouldShowTrackName}
+            onChange={toggleName}
+            className={styles.slideToggle}
+          />
+        </dd>
+        <dd>
+          <label>Feature labels</label>
+          <SlideToggle
+            isOn={shouldShowTrackLabels}
+            onChange={toggleLabel}
+            className={styles.slideToggle}
+          />
+        </dd>
+        <dd className={styles.heightSwitcher}>
+          <div className={styles.trackHeightIcon}>
+            <ImageButton
+              status={Status.DISABLED}
+              image={browserTrackConfig.trackHeightIcon.icon}
+              description={browserTrackConfig.trackHeightIcon.description}
             />
-            <label htmlFor="">All tracks</label>
-          </dd>
-        </dl>
-        <dl className="category">
-          <dd className="trackName">
-            <label htmlFor="">Track name</label>
-            <button className={styles.trackConfigSlider} onClick={toggleName}>
-              <img src={nameIcon} />
-            </button>
-          </dd>
-          <dd className="featureLabels">
-            <label htmlFor="">Feature labels</label>
-            <button className={styles.trackConfigSlider} onClick={toggleLabel}>
-              <img src={labelIcon} />
-            </button>
-          </dd>
-          <dd className={styles.heightSwitcher}>
-            <button className={styles.trackHeightBtn}>
-              <img src={trackHeightBtn} />
-            </button>
-          </dd>
-        </dl>
-        <dl className="category">
-          <dd className={styles.trackLock}>
-            <button className={styles.trackLockBtn}>
-              <img src={trackLockBtn} />
-            </button>
-          </dd>
-          <dd className="trackHighlight disabled">
-            <button className={styles.trackHighlightBtn}>
-              <img src={trackHighlightBtn} />
-            </button>
-          </dd>
-          <dd className="trackMove disabled">
-            <button className={styles.trackMoveBtn}>
-              <img src={trackMoveBtn} />
-            </button>
-          </dd>
-        </dl>
-      </section>
-    </div>
-  ) : null;
+          </div>
+        </dd>
+      </dl>
+      <dl>
+        <dd className={styles.trackLock}>
+          <div className={styles.trackLockIcon}>
+            <ImageButton
+              status={Status.DISABLED}
+              image={browserTrackConfig.trackLockIcon.icon}
+              description={browserTrackConfig.trackLockIcon.description}
+            />
+          </div>
+        </dd>
+        <dd>
+          <div className={styles.trackHighlightIcon}>
+            <ImageButton
+              status={Status.DISABLED}
+              image={browserTrackConfig.trackHighlightIcon.icon}
+              description={browserTrackConfig.trackHighlightIcon.description}
+            />
+          </div>
+        </dd>
+        <dd>
+          <div className={styles.trackMoveIcon}>
+            <ImageButton
+              status={Status.DISABLED}
+              image={browserTrackConfig.trackMoveIcon.icon}
+              description={browserTrackConfig.trackMoveIcon.description}
+            />
+          </div>
+        </dd>
+      </dl>
+    </section>
+  );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   applyToAll: getApplyToAll(state),
   browserCogTrackList: getBrowserCogTrackList(state),
   selectedCog: getBrowserSelectedCog(state),
@@ -171,13 +198,10 @@ const mapStateToProps = (state: RootState): StateProps => ({
   trackConfigNames: getTrackConfigNames(state)
 });
 
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   updateApplyToAll,
   updateTrackConfigLabel,
   updateTrackConfigNames
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserTrackConfig);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowserTrackConfig);

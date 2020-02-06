@@ -1,0 +1,39 @@
+import faker from 'faker';
+
+import { Status } from 'src/shared/types/status';
+import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+
+export const createTrackStates = (): BrowserTrackStates => ({
+  triticum_aestivum_GCA_900519105_1: {
+    [faker.lorem.words()]: {
+      [faker.lorem.words()]: Status.SELECTED,
+      [faker.lorem.words()]: Status.UNSELECTED
+    }
+  }
+});
+
+export const createTrackInfo = (): EnsObjectTrack => ({
+  additional_info: faker.lorem.words(),
+  description: faker.lorem.words(),
+  label: faker.lorem.words(),
+  track_id: 'gene-pc-fwd'
+});
+
+export const createMainTrackInfo = (): EnsObjectTrack => ({
+  additional_info: faker.lorem.words(),
+  child_tracks: [
+    {
+      additional_info: faker.lorem.words(),
+      colour: faker.lorem.words(),
+      description: faker.lorem.words(),
+      label: faker.lorem.words(),
+      support_level: faker.lorem.words(),
+      track_id: 'gene-feat-1'
+    }
+  ],
+  description: faker.lorem.words(),
+  ensembl_object_id: faker.lorem.words(),
+  label: faker.lorem.words(),
+  track_id: 'gene-feat'
+});

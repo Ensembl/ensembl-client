@@ -1,34 +1,40 @@
 @import 'src/styles/common';
+@import 'src/shared/components/selected-species/selected-species-common';
 
 $selectedSpeciesBorderRadius: 20px;
-$selectedSpeciesPadding: 7px 28px;
+$selectedSpeciesPadding: 6px 20px;
 $deleteButtonPadding: 8px 20px 8px 28px;
 
 .selectedSpecies {
+  @include selected-species-common;
   position: relative;
-  display: inline-block;
-  padding: $selectedSpeciesPadding;
-  background-color: $ens-black;
-  border-radius: $selectedSpeciesBorderRadius;
-  line-height: 1;
+  background-color: $black;
+  margin-bottom: 4px;
   cursor: pointer;
-  user-select: none;
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  &:not(:last-child) {
+    margin-right: 1em;
+  }
 
   .name {
-    font-size: 16px; // FIXME
+    font-size: 14px;
     color: white;
     font-weight: $bold;
-    margin-right: 0.6rem;
+    margin-right: 0.5rem;
   }
 
   .assembly {
-    font-size: 11px; // FIXME
+    font-size: 11px;
     color: $white;
   }
 }
 
 .selectedSpeciesDisabled {
-  background-color: $ens-grey;
+  background-color: $grey;
 }
 
 .selectedSpeciesOverlay {
@@ -40,12 +46,12 @@ $deleteButtonPadding: 8px 20px 8px 28px;
   height: 100%;
   line-height: 1;
   background: white;
-  border: 1px solid $ens-blue;
+  border: 1px solid $blue;
   border-radius: $selectedSpeciesBorderRadius;
   cursor: default;
 
   .overlayText,
-  .closeButton {
+  .clearButtonContainer {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -54,13 +60,15 @@ $deleteButtonPadding: 8px 20px 8px 28px;
 
   .overlayText {
     padding: $selectedSpeciesPadding;
+    padding-left: 15px;
     left: 0;
-    color: $ens-blue;
+    color: $blue;
   }
 
-  .closeButton {
+  .clearButtonContainer {
     display: flex;
     padding: $deleteButtonPadding;
+    padding-right: 15px;
     align-items: center;
     right: -0.5em;
   }

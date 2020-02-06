@@ -8,20 +8,16 @@ Accepted
 
 ## Context
 
-A frontend framework is necessary for the development of the new website. This framework needs to be modern, well supported and documented, as well as have good performance. Also, a styling library is required.
+A frontend framework is necessary for the development of the new website. This framework needs to be modern, well supported and documented, as well as have good performance.
 
 ## Decision
 
 [React.js](https://reactjs.org/) is used as the frontend framework for building the new website. React.js is used with [TypeScript](https://www.typescriptlang.org/), which is a superset of JavaScript.
-
-[Foundation for Sites](https://foundation.zurb.com/sites.html) is used as the styling library. It is used with [SASS](https://sass-lang.com/), which is a superset of CSS.
 
 ## Consequences
 
 Due to the declarative nature of React.js, building components necessary for the new website becomes a lot easier compared to using a library such as jQuery. React.js is widely supported and also is easier to learn. This should help the existing team members and new members to get on board quickly.
 
 Using strict TypeScript would help to detect errors in the code quite early as there is a compile step involved. Also, using TypeScript itself means the code is partially documented due its static typing nature. This would help the team to understand the code better and also focus less on documenting the code.
-
-Foundation for Sites is one of the popular CSS libraries among frontend developers. Unlike Twitter's Bootstrap library, it is easier to customise.
 
 SASS offers a lot of features that are not currently available with CSS. Writing reusable style code is also possible with SASS.

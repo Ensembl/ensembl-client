@@ -1,6 +1,5 @@
 use types::{ CPixel, RPixel, Colour };
-use drivers::webgl::{ Artist, Mark };
-use super::DrawingSpec;
+use drivers::webgl::Mark;
 
 #[derive(Clone,Debug)]
 pub struct RectMark {
@@ -14,7 +13,7 @@ pub enum MarkSpec {
 }
 
 impl MarkSpec {
-    pub fn to_mark(&self) -> Box<Mark> {
+    pub fn to_mark(&self) -> Box<dyn Mark> {
         match self {
             MarkSpec::Rect(rm) => Box::new(rm.clone())
         }

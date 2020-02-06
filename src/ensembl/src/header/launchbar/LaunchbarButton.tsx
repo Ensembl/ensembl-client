@@ -1,5 +1,11 @@
-import React, { FunctionComponent, memo, Props } from 'react';
+import React, { FunctionComponent } from 'react';
 import { NavLink } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router';
+import ImageButton, {
+  ImageButtonStatus
+} from 'src/shared/components/image-button/ImageButton';
+
+import { Status } from 'src/shared/types/status';
 
 import styles from './Launchbar.scss';
 
@@ -8,39 +14,62 @@ type LaunchbarButtonProps = {
   description: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
   enabled: boolean;
-};
+} & RouteComponentProps;
 
-export const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
+const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
-  const icon =
-    typeof props.icon === 'string' ? (
-      <img
-        src={props.icon}
-        className={styles.LaunchbarButton}
-        alt={props.description}
-      />
-    ) : (
-      <props.icon />
-    );
+  const pathTo = `/app/${props.app}`;
+  const isActive = new RegExp(`^${pathTo}`).test(props.location.pathname);
+  const imageButtonStatus = getImageButtonStatus({
+    isDisabled: !props.enabled,
+    isActive
+  });
+
+  const imageButton = (
+    <ImageButton
+      classNames={{
+        [Status.UNSELECTED]: styles.launchbarButtonImage,
+        [Status.SELECTED]: styles.launchbarButtonSelectedImage,
+        [Status.DISABLED]: styles.launchbarButtonDisabledImage
+      }}
+      status={imageButtonStatus}
+      description={props.description}
+      image={props.icon}
+    />
+  );
 
   return props.enabled ? (
     <NavLink
       className={styles.launchbarButton}
-      title={props.description}
-      to={`/app/${props.app}`}
-      activeClassName={styles.launchbarButtonActive}
+      to={pathTo}
+      activeClassName={styles.launchbarButtonSelected}
     >
-      {icon}
+      {imageButton}
     </NavLink>
   ) : (
-    <span
+    <div
       className={`${styles.launchbarButton} ${styles.launchbarButtonDisabled}`}
-      title={props.description}
     >
-      {icon}
-    </span>
+      {imageButton}
+    </div>
   );
 };
 
-export default memo(LaunchbarButton);
+const getImageButtonStatus = ({
+  isDisabled,
+  isActive
+}: {
+  isDisabled: boolean;
+  isActive: boolean;
+}): ImageButtonStatus => {
+  if (isDisabled) {
+    return Status.DISABLED;
+  } else if (isActive) {
+    return Status.SELECTED;
+  } else {
+    return Status.UNSELECTED;
+  }
+};
+
+export default withRouter(LaunchbarButton);

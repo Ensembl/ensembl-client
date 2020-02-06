@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.speciesSearchPanel {
+  background-color: $light-grey;
+  height: 235px;
+  padding: 65px 40px;
+  padding-left: $global-padding-left;
+  box-shadow: 0 3px 5px $global-box-shadow;
+}
+
+.speciesSearchPanelRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+  margin-left: -22px;
+}
+
+.assemblyWrapper {
+  margin-left: 1em;
+}

@@ -1,19 +1,17 @@
-use composit::SourceResponseData;
-use composit::Source;
+use model::item::UnpackedSubassembly;
 use super::super::drawing::{ Drawing, CarriageCanvases };
-use super::{ GLProgInstances, GLProgs };
+use super::GLProgInstances;
 use super::super::shape::GLShape;
-use model::shape::ShapeSpec;
 
 pub struct GLDrawing {
     drawings: Vec<Option<Drawing>>,
-    sr: SourceResponseData,
+    sr: UnpackedSubassembly,
 }
 
 impl GLDrawing {
-    pub fn new(sr: SourceResponseData) -> GLDrawing {
+    pub fn new(sr: &UnpackedSubassembly) -> GLDrawing {
         GLDrawing { 
-            sr, 
+            sr: sr.clone(), 
             drawings: Vec::<Option<Drawing>>::new(),
         }
     }
@@ -23,7 +21,7 @@ impl GLDrawing {
     
     pub fn redraw(&mut self, ds: &mut CarriageCanvases) {
         self.drawings.clear();
-        for mut s in self.sr.get_shapes() {
+        for s in self.sr.get_shapes() {
             if let Some(a) = s.get_artist() {
                 let ocm = a.select_canvas(ds);
                 self.drawings.push(Some(ocm.add_request(a)));
@@ -35,13 +33,14 @@ impl GLDrawing {
 
     pub fn into_objects(&mut self, e: &mut GLProgInstances) {
         let mut di = self.drawings.iter();
-        for mut s in self.sr.get_shapes().iter() {
+        for s in self.sr.get_shapes().iter() {
             let d = di.next();
-            let geom_name = s.get_geometry();
-            let (progs,data) = e.get_progs_data();
-            if let Some(geom) = progs.map.get_mut(&geom_name) {
-                let artwork = d.unwrap().as_ref().map(|r| r.artwork(data));
-                s.into_objects(&mut geom.data,artwork,data);
+            if let Some(geom_name) = s.get_geometry() {
+                let (progs,data) = e.get_progs_data();
+                if let Some(geom) = progs.map.get_mut(&geom_name) {
+                    let artwork = d.unwrap().as_ref().map(|r| r.artwork(data));
+                    s.into_objects(&mut geom.data,artwork,data);
+                }
             }
         }
     }

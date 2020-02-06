@@ -8,7 +8,7 @@ export default function globalReducer(
   action: ActionType<typeof global>
 ) {
   switch (action.type) {
-    case getType(global.updateBreakpointWidth):
+    case getType(global.setBreakpointWidth):
       return { ...state, breakpointWidth: action.payload };
     default:
       return state;

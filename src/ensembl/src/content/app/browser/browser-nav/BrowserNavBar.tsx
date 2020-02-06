@@ -1,62 +1,34 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { browserNavConfig, BrowserNavItem } from '../browserConfig';
+import BrowserNavBarControls from './BrowserNavBarControls';
+import BrowserNavBarMain from './BrowserNavBarMain';
 
 import { RootState } from 'src/store';
-import { getBrowserNavStates } from '../browserSelectors';
-import { getTrackPanelOpened } from '../track-panel/trackPanelSelectors';
-import { BrowserNavStates } from '../browserState';
-
-import BrowserNavIcon from './BrowserNavIcon';
+import { getIsTrackPanelOpened } from '../track-panel/trackPanelSelectors';
 
 import styles from './BrowserNavBar.scss';
 
-type StateProps = {
-  browserNavStates: BrowserNavStates;
-  trackPanelOpened: boolean;
+export type BrowserNavBarProps = {
+  expanded: boolean;
 };
 
-type DispatchProps = {};
-
-type OwnProps = {
-  browserElement: HTMLDivElement;
-};
-
-type BrowserNavBarProps = StateProps & DispatchProps & OwnProps;
-
-export const BrowserNavBar: FunctionComponent<BrowserNavBarProps> = (
-  props: BrowserNavBarProps
-) => {
+export const BrowserNavBar = (props: BrowserNavBarProps) => {
   const className = classNames(styles.browserNavBar, {
-    [styles.browserNavBarExpanded]: !props.trackPanelOpened
+    [styles.browserNavBarExpanded]: props.expanded
   });
 
   return (
     <div className={className}>
-      <dl>
-        {browserNavConfig.map((item: BrowserNavItem, index: number) => (
-          <BrowserNavIcon
-            key={item.name}
-            browserNavItem={item}
-            browserImageEl={props.browserElement}
-            maxState={props.browserNavStates[index]}
-          />
-        ))}
-      </dl>
+      <BrowserNavBarControls />
+      <BrowserNavBarMain />
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  browserNavStates: getBrowserNavStates(state),
-  trackPanelOpened: getTrackPanelOpened(state)
+const mapStateToProps = (state: RootState) => ({
+  expanded: !getIsTrackPanelOpened(state)
 });
 
-const mapDispatchToProps: DispatchProps = {};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserNavBar);
+export default connect(mapStateToProps)(BrowserNavBar);

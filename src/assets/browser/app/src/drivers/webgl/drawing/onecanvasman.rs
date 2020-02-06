@@ -1,13 +1,10 @@
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::hash::Hash;
-use std::hash::Hasher;
-use std::collections::hash_map::DefaultHasher;
 
 use types::{ CPixel, RPixel, area_size, cpixel };
 use super::alloc::{ Ticket, Allocator };
 use super::{ FlatCanvas, Drawing, Artist,  AllCanvasAllocator };
-use program::CanvasWeave;
+use super::super::program::CanvasWeave;
 use model::shape::DrawingHash;
 
 struct DrawingMemory {
@@ -25,7 +22,7 @@ impl DrawingMemory {
         self.cache.insert(key.get(),val);
     }
     
-    fn lookup(&self, a: &Rc<Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
+    fn lookup(&self, a: &Rc<dyn Artist>) -> (Option<DrawingHash>,Option<Drawing>) {
         let tdrk = a.memoize_key();
         if let Some(tdrk) = tdrk {
             if let Some(obj) = self.cache.get(&tdrk.get()) {
@@ -70,7 +67,7 @@ impl OneCanvasManager {
         }
     }
 
-    pub fn add_request(&mut self, a: Rc<Artist>) -> Drawing {
+    pub fn add_request(&mut self, a: Rc<dyn Artist>) -> Drawing {
         let (tdrk,val) = self.cache.lookup(&a);
         if let Some(tdrh) = val {
             // already in cache

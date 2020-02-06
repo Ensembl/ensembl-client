@@ -1,70 +1,124 @@
-import React, { FunctionComponent, useCallback } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 
-import { trackPanelBarConfig, TrackPanelBarItem } from './trackPanelBarConfig';
+import {
+  getIsTrackPanelModalOpened,
+  getIsTrackPanelOpened,
+  getTrackPanelModalView
+} from '../trackPanelSelectors';
+import {
+  toggleTrackPanel,
+  closeTrackPanelModal,
+  openTrackPanelModal
+} from '../trackPanelActions';
 
-import TrackPanelBarIcon from './TrackPanelBarIcon';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import chevronLeftIcon from 'static/img/shared/chevron-left.svg';
-import chevronRightIcon from 'static/img/shared/chevron-right.svg';
+import { ReactComponent as searchIcon } from 'static/img/sidebar/search.svg';
+import { ReactComponent as tracksManagerIcon } from 'static/img/sidebar/tracks-manager.svg';
+import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
+import { ReactComponent as personalDataIcon } from 'static/img/sidebar/own-data.svg';
+import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
+import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
 
-import styles from './TrackPanelBar.scss';
+import { RootState } from 'src/store';
+import { Status } from 'src/shared/types/status';
 
-type TrackPanelBarProps = {
-  closeTrackPanelModal: () => void;
-  drawerOpened: boolean;
-  launchbarExpanded: boolean;
-  openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleDrawer: (drawerOpened: boolean) => void;
-  toggleTrackPanel: (trackPanelOpened?: boolean) => void;
-  trackPanelModalOpened: boolean;
+import styles from 'src/shared/components/layout/StandardAppLayout.scss';
+
+export type TrackPanelBarProps = {
+  isTrackPanelModalOpened: boolean;
+  isTrackPanelOpened: boolean;
   trackPanelModalView: string;
-  trackPanelOpened: boolean;
+  closeTrackPanelModal: () => void;
+  openTrackPanelModal: (trackPanelModalView: string) => void;
+  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
 };
 
-const TrackPanelBar: FunctionComponent<TrackPanelBarProps> = (
-  props: TrackPanelBarProps
-) => {
-  const moveTrackPanel = useCallback(() => {
-    if (props.drawerOpened === true) {
-      props.toggleDrawer(false);
-    } else {
-      props.toggleTrackPanel();
+export const TrackPanelBar = (props: TrackPanelBarProps) => {
+  const toggleModalView = (selectedItem: string) => {
+    if (!props.isTrackPanelOpened) {
+      props.toggleTrackPanel(true);
     }
-  }, [props.drawerOpened, props.toggleDrawer, props.toggleTrackPanel]);
 
-  const getClassNames = () => {
-    const heightClass: string = props.launchbarExpanded
-      ? styles.shorter
-      : styles.taller;
+    if (selectedItem === props.trackPanelModalView) {
+      props.closeTrackPanelModal();
+    } else {
+      props.openTrackPanelModal(selectedItem);
+    }
+  };
 
-    return `${styles.trackPanelBar} ${heightClass}`;
+  const getViewIconStatus = (selectedItem: string) => {
+    return selectedItem === props.trackPanelModalView &&
+      props.isTrackPanelOpened
+      ? Status.SELECTED
+      : Status.UNSELECTED;
   };
 
   return (
-    <div className={getClassNames()}>
-      <dl>
-        <dt className={styles.sliderButton}>
-          <button onClick={moveTrackPanel}>
-            {props.trackPanelOpened ? (
-              <img src={chevronRightIcon} alt="collapse" />
-            ) : (
-              <img src={chevronLeftIcon} alt="expand" />
-            )}
-          </button>
-        </dt>
-        {trackPanelBarConfig.map((item: TrackPanelBarItem) => (
-          <TrackPanelBarIcon
-            key={item.name}
-            iconConfig={item}
-            closeTrackPanelModal={props.closeTrackPanelModal}
-            openTrackPanelModal={props.openTrackPanelModal}
-            trackPanelModalOpened={props.trackPanelModalOpened}
-            trackPanelModalView={props.trackPanelModalView}
-          />
-        ))}
-      </dl>
-    </div>
+    <>
+      <div className={styles.sidebarIcon} key="search">
+        <ImageButton
+          status={Status.DISABLED}
+          description="Track search"
+          onClick={() => toggleModalView('search')}
+          image={searchIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="tracks-manager">
+        <ImageButton
+          status={Status.DISABLED}
+          description="Tracks manager"
+          onClick={() => toggleModalView('tracks-manager')}
+          image={tracksManagerIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="bookmarks">
+        <ImageButton
+          status={getViewIconStatus('bookmarks')}
+          description="Bookmarks"
+          onClick={() => toggleModalView('bookmarks')}
+          image={bookmarkIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="personal-data">
+        <ImageButton
+          status={Status.DISABLED}
+          description="Personal data"
+          onClick={() => toggleModalView('personal-data')}
+          image={personalDataIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="share">
+        <ImageButton
+          status={Status.DISABLED}
+          description="Share"
+          onClick={() => toggleModalView('share')}
+          image={shareIcon}
+        />
+      </div>
+      <div className={styles.sidebarIcon} key="downloads">
+        <ImageButton
+          status={Status.DISABLED}
+          description="Downloads"
+          onClick={() => toggleModalView('downloads')}
+          image={downloadIcon}
+        />
+      </div>
+    </>
   );
 };
 
-export default TrackPanelBar;
+const mapStateToProps = (state: RootState) => ({
+  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
+  isTrackPanelOpened: getIsTrackPanelOpened(state),
+  trackPanelModalView: getTrackPanelModalView(state)
+});
+
+const mapDispatchToProps = {
+  closeTrackPanelModal,
+  openTrackPanelModal,
+  toggleTrackPanel
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelBar);

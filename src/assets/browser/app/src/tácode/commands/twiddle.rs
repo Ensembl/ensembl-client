@@ -14,9 +14,9 @@ fn not(data: &Vec<f64>) -> Vec<f64> {
     out
 }
 
-fn elide(data: &Vec<f64>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
+fn elide<T: Clone>(data: &Vec<T>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<T> {
     if bools.len() == 0 { return vec!{}; }
-    let mut out = Vec::<f64>::new();
+    let mut out = Vec::<T>::new();
     let mut data_iter = data.iter();
     let mut bool_iter = bools.iter().cycle();
     let mut term = false;
@@ -24,7 +24,7 @@ fn elide(data: &Vec<f64>, bools: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
         let b = *bool_iter.next().unwrap() != 0.;
         for _ in 0..stride[0] as usize {
             match data_iter.next() {
-                Some(v) => { if b { out.push(*v); } }
+                Some(v) => { if b { out.push(v.clone()); } }
                 None => { term = true; break; }
             }
         }
@@ -42,6 +42,21 @@ fn pick(source: &Vec<f64>, palette: &Vec<f64>, stride: &Vec<f64>) -> Vec<f64> {
                 console!("ERROR IN PICK source={:?} palette={:?} stride={:?} offset={:?}",source,palette,stride,offset);
             }
             out.push(palette[offset]);
+        }
+    }
+    out
+}
+
+fn picks(source: &Vec<f64>, palette: &Vec<String>, stride: &Vec<f64>) -> Vec<String> {
+    let mut out = Vec::<String>::new();
+    let stride = stride[0] as usize;
+    for s in source.iter() {
+        for i in 0..stride {
+            let offset = *s as usize*stride+i;
+            if offset >= palette.len() {
+                console!("ERROR IN PICK source={:?} palette={:?} stride={:?} offset={:?}",source,palette,stride,offset);
+            }
+            out.push(palette[offset].clone());
         }
     }
     out
@@ -76,7 +91,7 @@ fn runs_of(lens: &Vec<f64>, values: &Vec<f64>) -> Vec<f64> {
     let mut out = Vec::<f64>::new();
     let mut val_iter = values.iter().cycle();
     for len in lens.iter() {
-        let val = val_iter.next().unwrap();
+        let val = unwrap!(val_iter.next());
         for _ in 0..*len as usize {
             out.push(*val);
         }
@@ -123,8 +138,11 @@ fn accn(data: &Vec<f64>, strides: &Vec<f64>) -> Vec<f64> {
 pub struct Not(usize,usize);
 // elide #target, #bools, #stride
 pub struct Elide(usize,usize,usize);
+pub struct ElideStr(usize,usize,usize);
 // pick #tagret, #source, #palette, #stride
 pub struct Pick(usize,usize,usize,usize);
+// picks #tagret, #source, #palette, #stride
+pub struct Picks(usize,usize,usize,usize);
 // all #out, #start/end
 pub struct All(usize,usize);
 // index #out, #source, #palette
@@ -139,8 +157,12 @@ pub struct Get(usize,usize,usize);
 pub struct Merge(usize,usize,Vec<usize>);
 // accn #out, #parts, #strides
 pub struct AccN(usize,usize,usize);
-// length #len(in), #in
+// length #len(in), #in [floats]
 pub struct Length(usize,usize);
+// lengths #len(string), #strings
+pub struct Lengths(usize,usize);
+// burst #out-strings, #in-strings
+pub struct Burst(usize,usize);
 
 impl Command for Elide {
     fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
@@ -150,6 +172,21 @@ impl Command for Elide {
                 regs.get(self.2).as_floats(|stride| {
                     let data = elide(data,bools,stride);
                     regs.set(self.0,Value::new_from_float(data));
+                });
+            });
+        });                   
+        return 1;
+    }
+}
+
+impl Command for ElideStr {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.0).as_string(|data| {
+            regs.get(self.1).as_floats(|bools| {
+                regs.get(self.2).as_floats(|stride| {
+                    let data = elide(data,bools,stride);
+                    regs.set(self.0,Value::new_from_string(data));
                 });
             });
         });                   
@@ -175,6 +212,21 @@ impl Command for Pick {
                 regs.get(self.3).as_floats(|stride| {
                     let data = pick(source,palette,stride);
                     regs.set(self.0,Value::new_from_float(data));
+                });
+            });
+        });                   
+        return 1;
+    }
+}
+
+impl Command for Picks {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_floats(|source| {
+            regs.get(self.2).as_string(|palette| {
+                regs.get(self.3).as_floats(|stride| {
+                    let data = picks(source,palette,stride);
+                    regs.set(self.0,Value::new_from_string(data));
                 });
             });
         });                   
@@ -289,9 +341,36 @@ impl Command for Length {
     }
 }
 
+impl Command for Lengths {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_string(|strings| {
+            let lengths = strings.iter().map(|x| x.len() as f64).collect();
+            regs.set(self.0,Value::new_from_float(lengths));
+        });
+        return 1;
+    }
+}
+
+impl Command for Burst {
+    fn execute(&self, rt: &mut DataState, _proc: Arc<Mutex<ProcState>>) -> i64 {
+        let regs = rt.registers();
+        regs.get(self.1).as_string(|strings| {
+            let burst : Vec<Vec<String>> = strings.iter().map(|x|
+                x.chars().map(|x| x.to_string()).collect()
+            ).collect();
+            let burst = burst.iter().cloned().flatten().collect();
+            regs.set(self.0,Value::new_from_string(burst));
+        });
+        return 1;
+    }
+}
+
 pub struct ElideI();
+pub struct ElideStrI();
 pub struct NotI();
 pub struct PickI();
+pub struct PicksI();
 pub struct AllI();
 pub struct IndexI();
 pub struct RunsI();
@@ -300,66 +379,82 @@ pub struct GetI();
 pub struct MergeI();
 pub struct AccNI();
 pub struct LengthI();
+pub struct LengthsI();
+pub struct BurstI();
 
 impl Instruction for ElideI {
     fn signature(&self) -> Signature { Signature::new("elide","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Elide(args[0].reg(),args[1].reg(),args[2].reg()))
+    }
+}
+
+impl Instruction for ElideStrI {
+    fn signature(&self) -> Signature { Signature::new("elidestr","rrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
+        Box::new(ElideStr(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for NotI {
     fn signature(&self) -> Signature { Signature::new("not","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Not(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for PickI {
     fn signature(&self) -> Signature { Signature::new("pick","rrrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Pick(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
+    }
+}
+
+impl Instruction for PicksI {
+    fn signature(&self) -> Signature { Signature::new("picks","rrrr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
+        Box::new(Picks(args[0].reg(),args[1].reg(),args[2].reg(),args[3].reg()))
     }
 }
 
 impl Instruction for AllI {
     fn signature(&self) -> Signature { Signature::new("all","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(All(args[0].reg(),args[1].reg()))
     }
 }
 
 impl Instruction for IndexI {
     fn signature(&self) -> Signature { Signature::new("index","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Index(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for RunsI {
     fn signature(&self) -> Signature { Signature::new("runs","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Runs(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for RunsOfI {
     fn signature(&self) -> Signature { Signature::new("runsof","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(RunsOf(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for GetI {
     fn signature(&self) -> Signature { Signature::new("get","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Get(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for MergeI {
     fn signature(&self) -> Signature { Signature::new("merge","rrr+") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         let mut rest = args.clone();
         rest.remove(0);
         rest.remove(0);
@@ -370,14 +465,28 @@ impl Instruction for MergeI {
 
 impl Instruction for AccNI {
     fn signature(&self) -> Signature { Signature::new("accn","rrr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(AccN(args[0].reg(),args[1].reg(),args[2].reg()))
     }
 }
 
 impl Instruction for LengthI {
     fn signature(&self) -> Signature { Signature::new("length","rr") }
-    fn build(&self, args: &Vec<Argument>) -> Box<Command> {
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
         Box::new(Length(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for LengthsI {
+    fn signature(&self) -> Signature { Signature::new("lengths","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
+        Box::new(Lengths(args[0].reg(),args[1].reg()))
+    }
+}
+
+impl Instruction for BurstI {
+    fn signature(&self) -> Signature { Signature::new("burst","rr") }
+    fn build(&self, args: &Vec<Argument>) -> Box<dyn Command> {
+        Box::new(Burst(args[0].reg(),args[1].reg()))
     }
 }

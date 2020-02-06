@@ -1,158 +1,254 @@
-import React, {
-  FunctionComponent,
-  Fragment,
-  MouseEvent,
-  ReactNode,
-  RefObject,
-  useState,
-  useCallback
-} from 'react';
+import React, { MouseEvent, ReactNode, useEffect, useCallback } from 'react';
+import { connect } from 'react-redux';
+import classNames from 'classnames';
 
-import { TrackItemColour, TrackPanelItem } from '../trackPanelConfig';
+import { RootState } from 'src/store';
+
+import analyticsTracking from 'src/services/analytics-service';
+import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
+
+import {
+  TrackItemColour,
+  TrackItemColourKey,
+  TrackId,
+  BrowserTrackStates,
+  TrackActivityStatus
+} from '../trackPanelConfig';
+import { Status } from 'src/shared/types/status';
+
+import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
+import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
+
+import {
+  getHighlightedTrackId,
+  isTrackCollapsed
+} from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
+import {
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId
+} from '../../browserSelectors';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
-import { ReactComponent as Eye } from 'static/img/track-panel/eye.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
 import styles from './TrackPanelListItem.scss';
 
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/image-button/ImageButton';
-
-type TrackPanelListItemProps = {
-  browserRef: RefObject<HTMLDivElement>;
+// the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
+type OwnProps = {
+  categoryName: string;
   children?: ReactNode[];
-  drawerOpened: boolean;
-  drawerView: string;
-  track: TrackPanelItem;
-  updateDrawerView: (drawerView: string) => void;
+  trackStatus: TrackActivityStatus;
+  defaultTrackStatus: TrackActivityStatus;
+  track: EnsObjectTrack;
 };
 
-// delete this when there is a better place to put this
-const trackPrefix = 'track:';
+type PropsFromRedux = {
+  activeGenomeId: string | null;
+  activeEnsObjectId: string | null;
+  isDrawerOpened: boolean;
+  drawerView: string;
+  highlightedTrackId: string;
+  isCollapsed: boolean;
+  changeDrawerView: (drawerView: string) => void;
+  toggleDrawer: (isDrawerOpened: boolean) => void;
+  updateTrackStatesAndSave: (payload: BrowserTrackStates) => void;
+  updateCollapsedTrackIds: (payload: {
+    trackId: string;
+    isCollapsed: boolean;
+  }) => void;
+};
 
-const TrackPanelListItem: FunctionComponent<TrackPanelListItemProps> = (
-  props: TrackPanelListItemProps
-) => {
-  const [expanded, setExpanded] = useState(true);
-  const [trackStatus, setTrackStatus] = useState(ImageButtonStatus.ACTIVE);
+export type TrackPanelListItemProps = OwnProps & PropsFromRedux;
 
-  const { browserRef, drawerView, track } = props;
+export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
+  const {
+    activeGenomeId,
+    activeEnsObjectId,
+    categoryName,
+    isDrawerOpened,
+    drawerView,
+    track,
+    trackStatus
+  } = props;
 
-  const getListItemClasses = useCallback((): string => {
-    let classNames: string = styles.listItem;
-
-    if (track.name === 'gene') {
-      classNames += ` ${styles.main}`;
+  useEffect(() => {
+    const { defaultTrackStatus } = props;
+    if (trackStatus !== defaultTrackStatus) {
+      updateGenomeBrowser(trackStatus);
     }
+  }, []);
 
-    if (drawerView === track.name || drawerView === track.drawerView) {
-      classNames += ` ${styles.currentDrawerView}`;
+  const updateDrawerView = (currentTrack: string) => {
+    const { isDrawerOpened, toggleDrawer, changeDrawerView } = props;
+
+    changeDrawerView(currentTrack);
+
+    if (!isDrawerOpened) {
+      toggleDrawer(true);
     }
+  };
 
-    return classNames;
-  }, [drawerView]);
+  const getBoxClasses = (colour: TrackItemColourKey) => {
+    const colourValue = colour ? TrackItemColour[colour] : '';
 
-  const getBoxClasses = (colour: any) => {
-    let classNames = styles.box;
-
-    if (colour) {
-      const colourValue = TrackItemColour[colour];
-      classNames += ` ${styles[colourValue]}`;
-    }
-
-    return classNames;
+    return classNames(styles.box, {
+      [styles[colourValue]]: !!colourValue
+    });
   };
 
   const drawerViewListHandler = (event: MouseEvent) => {
     event.preventDefault();
 
-    if (props.drawerOpened === false) {
+    if (!isDrawerOpened) {
       return;
     }
 
-    const viewName = track.drawerView || track.name;
+    const viewName = track.track_id;
 
-    props.updateDrawerView(viewName);
+    updateDrawerView(viewName);
   };
 
-  const drawerViewButtonHandler = () => {
-    const viewName = track.drawerView || track.name;
+  const drawerViewButtonHandler = useCallback(() => {
+    const viewName = track.track_id;
 
-    props.updateDrawerView(viewName);
-  };
+    if (drawerView !== viewName) {
+      analyticsTracking.trackEvent({
+        category: 'track_drawer',
+        label: viewName,
+        action: 'opened'
+      });
+    }
+
+    updateDrawerView(viewName);
+  }, [track.track_id, drawerView, props.isDrawerOpened]);
 
   const toggleExpand = () => {
-    setExpanded(!expanded);
+    const { track_id: trackId } = props.track;
+    const { isCollapsed } = props;
+    props.updateCollapsedTrackIds({ trackId, isCollapsed: !isCollapsed });
   };
 
-  const toggleTrack = () => {
-    const currentTrackStatus =
-      trackStatus === ImageButtonStatus.ACTIVE ? 'off' : 'on';
+  const toggleTrack = useCallback(() => {
+    const newStatus =
+      trackStatus === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
 
-    const trackEvent = new CustomEvent('bpane', {
-      bubbles: true,
-      detail: {
-        [currentTrackStatus]: `${trackPrefix}${track.name}`
-      }
-    });
+    updateGenomeBrowser(newStatus);
 
-    if (browserRef.current) {
-      browserRef.current.dispatchEvent(trackEvent);
-    }
-
-    if (trackStatus === ImageButtonStatus.ACTIVE) {
-      setTrackStatus(ImageButtonStatus.INACTIVE);
+    if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
-    setTrackStatus(ImageButtonStatus.ACTIVE);
+    // FIXME: Temporary hack until we have a set of proper track names
+    if (track.track_id.startsWith('track:gene')) {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          objectTracks: {
+            [activeEnsObjectId]: {
+              [categoryName]: {
+                [track.track_id]: newStatus
+              }
+            }
+          }
+        }
+      });
+    } else {
+      props.updateTrackStatesAndSave({
+        [activeGenomeId]: {
+          commonTracks: {
+            [categoryName]: {
+              [track.track_id]: newStatus
+            }
+          }
+        }
+      });
+    }
+  }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
+
+  const updateGenomeBrowser = (status: Status) => {
+    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
+
+    const payload = {
+      [currentTrackStatus]: `${track.track_id}`
+    };
+
+    browserMessagingService.send('bpane', payload);
   };
 
+  const trackClassNames = classNames(styles.track, {
+    [styles.main]: track.track_id === TrackId.GENE,
+    [styles.trackHighlighted]:
+      track.track_id === drawerView ||
+      track.track_id === props.highlightedTrackId
+  });
+
   return (
-    <Fragment>
-      <dd className={getListItemClasses()} onClick={drawerViewListHandler}>
+    <>
+      <dd className={trackClassNames} onClick={drawerViewListHandler}>
         <label>
-          {track.color && <span className={getBoxClasses(track.color)} />}
-          <span className={styles.mainText}>{track.label}</span>
-          {track.selectedInfo && (
-            <span className={styles.selectedInfo}>{track.selectedInfo}</span>
+          {track.colour && (
+            <span
+              className={getBoxClasses(track.colour as TrackItemColourKey)}
+            />
           )}
-          {track.additionalInfo && (
+          <span className={styles.mainText}>{track.label}</span>
+          {track.support_level && (
+            <span className={styles.selectedInfo}>{track.support_level}</span>
+          )}
+          {track.additional_info && (
             <span className={styles.additionalInfo}>
-              {track.additionalInfo}
+              {track.additional_info}
             </span>
           )}
-          {track.childTrackList && (
+          {track.child_tracks && (
             <button onClick={toggleExpand} className={styles.expandBtn}>
               <img
-                src={expanded ? chevronUpIcon : chevronDownIcon}
-                alt={expanded ? 'collapse' : 'expand'}
+                src={props.isCollapsed ? chevronDownIcon : chevronUpIcon}
+                alt={props.isCollapsed ? 'expand' : 'collapse'}
               />
             </button>
           )}
         </label>
         <div className={styles.ellipsisHolder}>
           <ImageButton
-            buttonStatus={ImageButtonStatus.ACTIVE}
+            status={Status.DEFAULT}
             description={`Go to ${track.label}`}
             onClick={drawerViewButtonHandler}
             image={Ellipsis}
           />
         </div>
         <div className={styles.eyeHolder}>
-          <ImageButton
-            buttonStatus={trackStatus}
+          <VisibilityIcon
+            status={trackStatus}
             description={'enable/disable track'}
             onClick={toggleTrack}
-            image={Eye}
           />
         </div>
       </dd>
-      {expanded && props.children}
-    </Fragment>
+      {!props.isCollapsed && props.children}
+    </>
   );
 };
 
-export default TrackPanelListItem;
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  activeGenomeId: getBrowserActiveGenomeId(state),
+  activeEnsObjectId: getBrowserActiveEnsObjectId(state),
+  isDrawerOpened: getIsDrawerOpened(state),
+  drawerView: getDrawerView(state),
+  highlightedTrackId: getHighlightedTrackId(state),
+  isCollapsed: isTrackCollapsed(state, ownProps.track.track_id)
+});
+
+const mapDispatchToProps = {
+  updateCollapsedTrackIds,
+  changeDrawerView,
+  toggleDrawer,
+  updateTrackStatesAndSave
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelListItem);

@@ -1,0 +1,52 @@
+@import 'src/styles/common';
+
+.imageButton {
+  position: relative;
+  font-size: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.4s;
+  }
+
+  button {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.default {
+  svg {
+    fill: $dark-blue;
+  }
+}
+
+.selected {
+  svg {
+    fill: $white;
+    background: $dark-blue;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.unselected {
+  svg {
+    fill: $dark-blue;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.disabled {
+  svg {
+    fill: $grey;
+    opacity: 1;
+  }
+  button {
+    cursor: default;
+  }
+}

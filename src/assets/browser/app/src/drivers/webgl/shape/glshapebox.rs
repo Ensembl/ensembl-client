@@ -1,10 +1,10 @@
 use drivers::webgl::{ Artwork, GLProgData };
 use super::super::shape::GLShape;
-use program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
+use super::super::program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
 use super::util::{
     despot, vertices_hollowpoly, poly_p, multi_gl, colourspec_to_group 
 };
-use types::{ RLeaf, CFraction, CLeaf, cfraction, cleaf };
+use types::{ CFraction, CLeaf, cfraction, cleaf };
 use model::shape::{ BoxSpec, ColourSpec };
 
 const DELTA_X: &[f32] = &[0.,1.,0.,1.,0.,-1.,0.,-1.];
@@ -37,17 +37,17 @@ impl GLShape for BoxSpec {
         let group = colourspec_to_group(&self.colspec,geom,e);
         let b = vertices_hollowpoly(geom,4,group);
         let origins = origins(&self);
-        let origins : Vec<&Input> = origins.iter().map(|s| s as &Input).collect();
+        let origins : Vec<&dyn Input> = origins.iter().map(|s| s as &dyn Input).collect();
         poly_p(b,geom,"aOrigin",&origins);
         let offsets = offsets(&self);
-        let offsets : Vec<&Input> = offsets.iter().map(|s| s as &Input).collect();
+        let offsets : Vec<&dyn Input> = offsets.iter().map(|s| s as &dyn Input).collect();
         poly_p(b,geom,"aVertexPosition",&offsets);
         if let ColourSpec::Colour(c) = self.colspec {        
             multi_gl(b,geom,"aVertexColour",&c,8);
         }
     }
     
-    fn get_geometry(&self) -> ProgramType {
-        despot(PTGeom::Pin,PTMethod::Strip,&self.colspec)
+    fn get_geometry(&self) -> Option<ProgramType> {
+        Some(despot(PTGeom::Pin,PTMethod::Strip,&self.colspec))
     }
 }

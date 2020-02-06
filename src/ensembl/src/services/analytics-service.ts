@@ -1,15 +1,17 @@
 import ReactGA from 'react-ga';
-import { AnalyticsType } from 'src/analyticsHelper';
+import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 
-const googleTrackingID = process.env.GOOGLE_ANALYTICS_KEY
-  ? process.env.GOOGLE_ANALYTICS_KEY
-  : '';
+import config from 'config';
+
+const { googleAnalyticsKey } = config;
 
 class AnalyticsTracking {
   private reactGA: typeof ReactGA;
 
-  constructor() {
-    ReactGA.initialize(googleTrackingID);
+  public constructor() {
+    ReactGA.initialize(googleAnalyticsKey, {
+      titleCase: false
+    });
     this.reactGA = ReactGA;
   }
 
@@ -19,11 +21,9 @@ class AnalyticsTracking {
   }
 
   // Track an event
-  public trackEvent(action: any) {
-    const { ga } = action.meta as AnalyticsType;
-
+  public trackEvent(ga: AnalyticsOptions) {
     this.reactGA.event({
-      action: ga.action ? ga.action : action.type,
+      action: ga.action,
       category: ga.category,
       label: ga.label,
       nonInteraction: ga.nonInteraction,
@@ -31,8 +31,18 @@ class AnalyticsTracking {
       value: ga.value
     });
   }
+
+  // Set app custom dimension
+  public setAppDimension(page: string) {
+    this.reactGA.ga('set', CustomDimensions.APP, page);
+  }
+
+  // Set species custom dimension
+  public setSpeciesDimension(genomeId: string) {
+    this.reactGA.ga('set', CustomDimensions.SPECIES, genomeId);
+  }
 }
 
-const GoogleAnalyticsTracking = new AnalyticsTracking();
+const analyticsTracking = new AnalyticsTracking();
 
-export default GoogleAnalyticsTracking;
+export default analyticsTracking;

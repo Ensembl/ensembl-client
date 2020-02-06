@@ -1,12 +1,29 @@
 import { createAction } from 'typesafe-actions';
+import { ActionCreator, Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 import { BreakpointWidth } from './globalConfig';
-import { getGlobalAnalyticsObject } from '../analyticsHelper';
+import { getBreakpointWidth } from './globalSelectors';
 
-export const updateBreakpointWidth = createAction(
-  'browser/update-breakpoint-width',
-  (resolve) => {
-    return (breakpointWidth: BreakpointWidth) =>
-      resolve(breakpointWidth, getGlobalAnalyticsObject('Default Action'));
+import { RootState } from 'src/store';
+
+export const setBreakpointWidth = createAction(
+  'browser/update-breakpoint-width'
+)<BreakpointWidth>();
+
+export const updateBreakpointWidth: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (viewportWidth: BreakpointWidth) => async (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const currentBreakpointWidth = getBreakpointWidth(state);
+
+  if (viewportWidth !== currentBreakpointWidth) {
+    dispatch(setBreakpointWidth(viewportWidth));
   }
-);
+};

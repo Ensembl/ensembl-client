@@ -1,0 +1,34 @@
+@import 'src/styles/common';
+
+.default {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  border: 2px solid $blue;
+  border-radius: 50%;
+
+  > svg {
+    width: 70%;
+    height: 70%;
+    fill: $blue;
+  }
+
+  *[class*='tooltip'] {
+    max-width: 300px;
+  }
+}
+
+.in-input-field {
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+}
+
+.inline {
+  width: 17px;
+  height: 17px;
+  margin-left: 17px;
+}

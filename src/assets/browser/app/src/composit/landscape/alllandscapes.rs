@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::{ Mutex };
 
 use util::ValueStore;
 
@@ -8,12 +7,14 @@ use super::landscape::Landscape;
 
 pub struct AllLandscapesImpl {
     vs: ValueStore<Landscape>,
+    focus: Option<String>
 }
 
 impl AllLandscapesImpl {
     fn new() -> AllLandscapesImpl {
         AllLandscapesImpl {
             vs: ValueStore::<Landscape>::new(),
+            focus: None
         }
     }
     
@@ -27,7 +28,7 @@ impl AllLandscapesImpl {
         self.vs.get_mut(lid).map(|ls| cb(ls))
     }
 
-    pub fn every<F,G>(&mut self, mut cb: F) -> Vec<Option<G>>
+    fn every<F,G>(&mut self, mut cb: F) -> Vec<Option<G>>
             where F: FnMut(usize, &mut Landscape) -> G {
         let mut out = Vec::<Option<G>>::new();
         let lids : Vec<usize> = self.vs.every().collect();
@@ -37,7 +38,7 @@ impl AllLandscapesImpl {
         out
     }
     
-    pub fn get_low_watermark(&self) -> i32 {
+    fn get_low_watermark(&self) -> i32 {
         let mut max = 0;
         for lid in self.vs.every() {
             if let Some(ls) = self.vs.get(lid) {

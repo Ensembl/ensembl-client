@@ -1,12 +1,11 @@
 use std::rc::Rc;
 use std::collections::HashMap;
-use std::ops::{ BitAnd, BitOr, Not };
 
 pub trait StateExpr {
     fn is_on(&self, _m: &StateManager) -> bool { false }
 }
 
-pub struct StateFixed(bool);
+pub struct StateFixed(pub bool);
 
 impl StateExpr for StateFixed {
     fn is_on(&self, _m: &StateManager) -> bool { self.0 }
@@ -30,11 +29,10 @@ impl StateExpr for StateAtom {
     }
 }
 
-#[allow(unused)]
 pub enum StateOp {
-    And(Rc<StateExpr>,Rc<StateExpr>),
-    Or(Rc<StateExpr>,Rc<StateExpr>),
-    Not(Rc<StateExpr>)
+    And(Rc<dyn StateExpr>,Rc<dyn StateExpr>),
+    Or(Rc<dyn StateExpr>,Rc<dyn StateExpr>),
+    Not(Rc<dyn StateExpr>)
 }
 
 impl StateExpr for StateOp {
@@ -53,7 +51,7 @@ impl StateExpr for StateOp {
 #[allow(unused,dead_code)]
 pub struct StateManager {
     atoms: HashMap<String,bool>,
-    exprs: HashMap<String,Rc<StateExpr>>,
+    exprs: HashMap<String,Rc<dyn StateExpr>>,
     changed: bool
 }
 
@@ -62,7 +60,7 @@ impl StateManager {
     pub fn new() -> StateManager {
         StateManager {
             atoms: HashMap::<String,bool>::new(),
-            exprs: HashMap::<String,Rc<StateExpr>>::new(),
+            exprs: HashMap::<String,Rc<dyn StateExpr>>::new(),
             changed: false
         }
     }

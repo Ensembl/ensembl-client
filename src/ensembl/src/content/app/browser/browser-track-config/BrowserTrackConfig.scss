@@ -1,10 +1,16 @@
+@import 'src/styles/common';
+
 .trackConfig {
   box-sizing: border-box;
   background: #f1f2f4;
   box-shadow: 1px 1px 10px #6f8190;
   display: inline-block;
   font: 13px Lato, helvetica, Arial, sans-serif;
-
+  position: absolute;
+  left: -614px;
+  top: -12px;
+  height: 45px;
+  width: 614px;
   img {
     height: 100%;
     width: 100%;
@@ -12,12 +18,13 @@
 
   dl {
     display: inline-block;
-    margin: 10px 0;
-    padding: 0 20px;
+    margin: 8px 0px;
+    padding: 0px 12px;
   }
 
-  dl:not(:first-child) {
+  dl:nth-child(2) {
     border-left: 1px solid #b7c0c8;
+    border-right: 1px solid #b7c0c8;
   }
 
   dl:last-child {
@@ -26,7 +33,7 @@
 
   dd {
     display: inline-block;
-    margin: 0 15px;
+    margin: 0 6px;
     vertical-align: middle;
   }
 
@@ -37,35 +44,23 @@
   label {
     position: relative;
     vertical-align: middle;
+    font-size: 12px;
   }
 
-  button {
-    background-color: transparent;
-    background-repeat: no-repeat;
-    border: none;
-    height: 22px;
-    width: 22px;
-  }
-
-  button:focus {
-    outline: none;
-  }
-
-  input[type='checkbox'] {
-    border: 1px solid #b7c0c8;
-    display: inline-block;
-    height: 15px;
-    margin: 0 5px 0 0;
-    position: relative;
-    width: 15px;
+  .wrapper {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
   }
 
   /* individual track config item (button container) styling */
 
   .allTracks {
-    /* color: #b7c0c8; */
     position: relative;
-    height: 22px;
+    display: flex;
+    width: 110px;
+    justify-content: center;
+    top: 3px;
   }
 
   .heightSwitcher {
@@ -74,21 +69,27 @@
 
   /* button styling */
 
-  .trackConfigSlider {
-    height: 22px;
-    margin-left: 10px;
-    position: relative;
-    width: 22px;
+  .slideToggle {
+    height: 12px;
+    margin-left: 2px;
+    display: inline-block;
+    vertical-align: middle;
   }
 
-  .trackHeightBtn {
-    height: 33px;
-    position: relative;
-    width: 66px;
+  .trackHeightIcon {
+    height: 12px;
+    width: 50px;
   }
 
-  .trackMoveBtn {
-    height: 33px;
-    width: 33px;
+  .trackHighlightIcon,
+  .trackConfigIcon,
+  .trackLockIcon {
+    height: 18px;
+    width: 18px;
+  }
+
+  .trackMoveIcon {
+    height: 28px;
+    width: 14px;
   }
 }

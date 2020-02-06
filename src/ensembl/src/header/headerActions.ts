@@ -1,25 +1,14 @@
 import { createAction } from 'typesafe-actions';
+import analyticsTracking from 'src/services/analytics-service';
 
-import { getHeaderAnalyticsObject } from 'src/analyticsHelper';
+export const toggleAccount = createAction('header/toggle-account')();
 
-export const toggleAccount = createAction(
-  'header/toggle-account',
-  (resolve) => {
-    return () => resolve(undefined, getHeaderAnalyticsObject('Navigation'));
-  }
-);
-
-export const toggleLaunchbar = createAction(
-  'header/toggle-launchbar',
-  (resolve) => {
-    return () => resolve(undefined, getHeaderAnalyticsObject('Navigation'));
-  }
-);
+export const toggleLaunchbar = createAction('header/toggle-launchbar')();
 
 export const changeCurrentApp = createAction(
   'header/change-current-app',
-  (resolve) => {
-    return (currentApp: string) =>
-      resolve(currentApp, getHeaderAnalyticsObject('Navigation'));
+  (appName: string) => {
+    analyticsTracking.setAppDimension(appName);
+    return appName;
   }
-);
+)();

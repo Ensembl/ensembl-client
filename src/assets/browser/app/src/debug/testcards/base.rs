@@ -1,5 +1,5 @@
 use controller::global::App;
-use controller::input::{ Action, actions_run };
+use controller::input::Action;
 use types::Dot;
 use super::super::support::{ DEBUG_SOURCES, DEMO_SOURCES };
 
@@ -17,7 +17,7 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
         }
         out.extend(vec! {
             Action::SetStick(stick.to_string()),
-            Action::Pos(Dot(0_f64,0_f64),None),
+            Action::Pos(Dot(1000000_f64,0_f64),None),
             Action::ZoomTo(-5.)
         });
 
@@ -28,7 +28,7 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
         }
         out.extend(vec! {
             Action::SetStick(name.to_string()),
-            Action::Pos(Dot(0_f64,0_f64),None),
+            Action::Pos(Dot(1000000_f64,0_f64),None),
             Action::ZoomTo(-5.)
         });
     }
@@ -37,5 +37,5 @@ fn debug_initial_actions(name: &str) -> Vec<Action> {
 
 pub fn select_testcard(a: &mut App, stick_name: &str) {
     let acts = debug_initial_actions(stick_name);
-    actions_run(a,&acts);
+    a.run_actions(&acts,None);
 }

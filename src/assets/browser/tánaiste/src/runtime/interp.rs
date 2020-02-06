@@ -63,7 +63,7 @@ pub const DEFAULT_CONFIG : InterpConfig = InterpConfig {
 };
 
 pub struct Interp {
-    env: Box<Environment>,
+    env: Box<dyn Environment>,
     config: InterpConfig,
     procs: ValueStore<InterpProcess>,
     runq: HashSet<usize>,
@@ -72,7 +72,7 @@ pub struct Interp {
 }
 
 impl Interp {
-    pub fn new(env: Box<Environment>, config: InterpConfig) -> Interp {
+    pub fn new(env: Box<dyn Environment>, config: InterpConfig) -> Interp {
         Interp {
             env, config,
             procs: ValueStore::<InterpProcess>::new(),
@@ -118,15 +118,15 @@ impl Interp {
         self.unq.clear();
         for pid in &self.runq {
             let status = {
-                let mut ip = self.procs.get_mut(*pid).unwrap();
+                let ip = self.procs.get_mut(*pid).unwrap();
                 ip.status()
             };
             if status.state == ProcessState::Running {
-                let mut ip = self.procs.get_mut(*pid).unwrap();
+                let ip = self.procs.get_mut(*pid).unwrap();
                 ip.run_proc(&mut self.env,self.config.cycles_per_run);
             }
             let status = {
-                let mut ip = self.procs.get_mut(*pid).unwrap();
+                let ip = self.procs.get_mut(*pid).unwrap();
                 ip.status()
             };
             if status.state != ProcessState::Running {
@@ -230,7 +230,7 @@ mod test {
         let tc = TestContext::new();
         let bin = command_compile("set-reg",&tc);
         let pid = t.exec(&bin,None,None).ok().unwrap();
-        t.set_reg(pid,2,Value::new_from_string("YES".to_string()));
+        t.set_reg(pid,2,Value::new_from_string(vec!["YES".to_string()]));
         t.start(pid);
         while t.run(1000) {}
         assert_eq!("YES",t_env.get_exit_str()[0]);
@@ -262,10 +262,10 @@ mod test {
         let pid = t.exec(&bin,None,None).ok().unwrap();
         t.start(pid);
         t.run(0);
-        assert_eq!(192,t.status(pid).cycles);
+        assert_eq!(194,t.status(pid).cycles);
         assert_eq!(ProcessState::Running,t.status(pid).state);
         t.run(0);
-        assert_eq!(384,t.status(pid).cycles);
+        assert_eq!(386,t.status(pid).cycles);
         assert_eq!(ProcessState::Running,t.status(pid).state);
         t.run(1000);
         assert_eq!(t_env.get_exit_state().unwrap(),ProcessState::Halted);

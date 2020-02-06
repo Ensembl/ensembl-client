@@ -1,77 +1,74 @@
-import React, { FunctionComponent, Fragment } from 'react';
+import React, { FunctionComponent } from 'react';
+import get from 'lodash/get';
+import find from 'lodash/find';
+
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
 
 type DrawerTranscriptProps = {
-  ensObjectInfo: any;
+  ensObject: EnsObject;
 };
+
+// TODO: Once we start supporting multiple transcripts, we need to either remove this constant or move it to trackConfig
+const TRANSCRIPT_GENE_NAME = 'track:gene-feat-1';
 
 const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   props: DrawerTranscriptProps
 ) => {
-  const { ensObjectInfo } = props;
+  const { ensObject } = props;
 
-  let transcriptStableId = ensObjectInfo.associated_object.stable_id;
-  let selectedInfo = ensObjectInfo.associated_object.selected_info;
-  let geneSymbol = ensObjectInfo.obj_symbol;
-  let geneStableId = ensObjectInfo.stable_id;
+  if (!ensObject.track) {
+    return null;
+  }
 
-  if (ensObjectInfo.obj_type === 'transcript') {
-    transcriptStableId = ensObjectInfo.stable_id;
-    selectedInfo = ensObjectInfo.selected_info;
-    geneSymbol = ensObjectInfo.associated_object.obj_symbol;
-    geneStableId = ensObjectInfo.associated_object.stable_id;
+  // FIXME: this is a temporary function; need to come up with something more robust
+  const getTranscriptTrack = () => {
+    const childTracks = get(ensObject, 'track.child_tracks', []);
+
+    return find(childTracks, { track_id: TRANSCRIPT_GENE_NAME }) || null;
+  };
+
+  // FIXME: this is a very horrible temporary function;
+  // it will break when multiple transcripts are added
+  // but by that time we'll have to do a major refactor for ensObject and ensObject tracks anyway
+  const getTranscriptStableId = () => {
+    return get(ensObject, 'track.child_tracks.0.label', '');
+  };
+
+  const transcriptTrack = getTranscriptTrack();
+
+  if (!transcriptTrack) {
+    return null;
   }
 
   return (
-    <dl className={styles.drawerView}>
-      <dd className="clearfix">
-        <label htmlFor="">Transcript</label>
+    <div className={styles.drawerView}>
+      <div className={styles.container}>
+        <div className={styles.label}>Transcript</div>
         <div className={styles.details}>
-          <p>
-            <span className={styles.mainDetail}>{transcriptStableId}</span>
-            <span className={styles.secondaryDetail}>{selectedInfo}</span>
-          </p>
+          <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
+          <span className={styles.secondaryDetail}>
+            {transcriptTrack.additional_info}
+          </span>
         </div>
-      </dd>
 
-      <dd className="clearfix">
-        <label htmlFor="">Gene</label>
+        <div className={styles.label}>Gene</div>
         <div className={styles.details}>
-          <p>
-            <span>{geneSymbol}</span>
-            <span className={styles.secondaryDetail}>{geneStableId}</span>
-          </p>
+          <span>{ensObject.label}</span>
+          <span className={styles.secondaryDetail}>
+            {getDisplayStableId(ensObject)}
+          </span>
         </div>
-      </dd>
 
-      <dd className="clearfix">
-        <label htmlFor="">Description</label>
+        <div className={styles.label}>Description</div>
         <div className={styles.details}>
-          {selectedInfo === 'MANE Select' ? (
-            <Fragment>
-              <p>
-                MANE Select transcripts match GRCh38 and are 100% identical
-                between Ensembl-GENCODE and RefSeq for 5' UTR, CDS, splicing and
-                3' UTR.
-              </p>
-              <p>
-                The MANE project (Matched Annotation from NCBI and EMBL-EBI) is
-                collaboration betwen Ensembl-GENCODE and RefSeq to select a
-                default transcript per human protein coding locus that is
-                representative of biology, and is well-supported, expressed and
-                conserved.
-              </p>
-            </Fragment>
-          ) : (
-            <p>
-              The Selected transcript is defined as either the longest CDS (if
-              the gene has translated transcripts) or the longest cDNA
-            </p>
-          )}
+          {transcriptTrack.description || '--'}
         </div>
-      </dd>
-    </dl>
+      </div>
+    </div>
   );
 };
 

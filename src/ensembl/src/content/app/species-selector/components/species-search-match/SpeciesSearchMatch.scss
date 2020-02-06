@@ -1,22 +1,33 @@
 @import 'src/styles/common';
 
 .speciesSearchMatch {
-  color: $ens-black;
+  color: $black;
   padding: 2px 24px;
   margin: 0 -23px;
   cursor: pointer;
 
   &:hover {
-    background-color: $ens-light-blue;
+    background-color: $light-blue;
   }
 }
 
-.speciesSearchMatchMatched {
+.matched {
   font-weight: $dark;
 }
 
-.speciesSearchMatchScientificName {
+.assemblyName {
+  font-size: 10px;
+
+  &:not(:first-of-type) {
+    margin-left: 1rem;
+  }
+}
+
+.scientificName {
   font-style: italic;
   font-weight: $light;
-  margin-left: 1rem;
+
+  &:not(:first-of-type) {
+    margin-left: 1rem;
+  }
 }
