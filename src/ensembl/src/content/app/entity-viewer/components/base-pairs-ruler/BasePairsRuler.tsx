@@ -1,3 +1,18 @@
+/*
+This component is a ruler for displaying alongside visualisation of a nucleic acid
+
+It follows the following rules for displaying labelled and unlabelled ticks
+1. The ruler starts at 1 and ends at the length of the feature.
+  Both the start and the end positions of the ruler are labelled.
+2. Apart from the start and the end positions, there should be at least one label, but no greater than 5 labels
+3. There may also be some unlabelled ticks. The total number of ticks (both labelled and unlabelled)
+  between the start and the end positions should not be greater than 10.
+4. Last tick cannot be labelled if it is at a less than 10% distance from the end of the ruler
+5. Ticks can be either:
+  a) multiple of the same power of 10 as the length of the feature, or
+  b) half of this power of 10
+*/
+
 import React, { useEffect } from 'react';
 import { scaleLinear } from 'd3';
 
