@@ -16,10 +16,11 @@ export const getTicks = (scale: ScaleLinear<number, number>) => {
     return handleLengthAsPowerOfTen(ticks, powerOfTen, step, length);
   }
 
-  ticks = ticks.filter((number) => {
-    // do not add a tick in the end of the ruler (it is handled specially)
+  ticks = ticks.filter((tick) => {
+    // do not add a tick if it is the beginning of the ruler (position 1)
+    // or in the end of the ruler (tick == length), because these cases are handled separately;
     // and throw away all the possible 'inelegant' intermediate ticks, such as 50, etc.
-    return number !== length && number % powerOfTen === 0;
+    return tick !== 1 && tick !== length && tick % powerOfTen === 0;
   });
 
   let labelledTicks = getLabelledTicks(ticks, powerOfTen, length);

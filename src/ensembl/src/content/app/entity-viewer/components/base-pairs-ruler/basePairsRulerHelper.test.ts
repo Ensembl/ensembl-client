@@ -11,6 +11,21 @@ type Example = {
 // concrete test cases (because it's hard to come up with a random number generator for this)
 const examples: Example[] = [
   {
+    length: 5,
+    ticks: [2, 3, 4],
+    labelledTicks: [2, 3, 4]
+  },
+  {
+    length: 7,
+    ticks: [2, 3, 4, 5, 6],
+    labelledTicks: [2, 3, 4, 5, 6] // 5 intermediate labels at most
+  },
+  {
+    length: 8,
+    ticks: [2, 3, 4, 5, 6, 7],
+    labelledTicks: [5]
+  },
+  {
     length: 100, // edge case: length is equal to the power of ten that we use to filter the ticks
     ticks: [10, 20, 30, 40, 50, 60, 70, 80, 90],
     labelledTicks: [50]
