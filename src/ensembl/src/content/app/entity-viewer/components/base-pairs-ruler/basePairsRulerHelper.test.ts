@@ -1,6 +1,6 @@
 import { scaleLinear } from 'd3';
 
-import { getTicks } from './featureLengthAxisHelper';
+import { getTicks } from './basePairsRulerHelper';
 
 type Example = {
   length: number;

@@ -1,1 +1,1 @@
-import './feature-length-axis/FeatureLengthAxis.stories';
+import './base-pairs-ruler/BasePairsRuler.stories';

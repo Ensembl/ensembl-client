@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import FeatureLengthAxis from 'src/content/app/entity-viewer/components/feature-length-axis/FeatureLengthAxis';
+import BasePairsRuler from 'src/content/app/entity-viewer/components/base-pairs-ruler/BasePairsRuler';
 
-import styles from './FeatureLengthAxis.stories.scss';
+import styles from './BasePairsRuler.stories.scss';
 
 type ContainerProps = {
   value: number;
@@ -41,7 +41,7 @@ storiesOf('Components|EntityViewer/FeatureLengthAxis', module).add(
 
     return (
       <div className={styles.container}>
-        <FeatureLengthAxis length={length} width={800} standalone={true} />
+        <BasePairsRuler length={length} width={800} standalone={true} />
         <div>
           <LengthInputForm value={length} onChange={handleLenghtChange} />
         </div>

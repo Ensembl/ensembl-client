@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { scaleLinear } from 'd3';
 
-import { getTicks } from './featureLengthAxisHelper';
-
-import styles from './FeatureLengthAxis.scss';
+import { getTicks } from './basePairsRulerHelper';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+
+import styles from './BasePairsRuler.scss';
 
 type Ticks = {
   ticks: number[];
