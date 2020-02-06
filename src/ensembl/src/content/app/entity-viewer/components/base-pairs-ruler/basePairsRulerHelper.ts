@@ -44,9 +44,9 @@ const handleLengthAsPowerOfTen = (
   step: number,
   totalLength: number
 ) => {
-  ticks = ticks.filter((number) => {
-    if (number === powerOfTen) {
-      return totalLength - number > step * 0.2; // show last tick if it's more that 20% of step length removed from end of ruler
+  ticks = ticks.filter((tick, index) => {
+    if (index === ticks.length - 1) {
+      return totalLength - tick > step * 0.2; // show last tick if it's more that 20% of step length removed from end of ruler
     }
     return true;
   });
@@ -79,17 +79,17 @@ const getLabelledTicks = (
 };
 
 const buildFilterForLabels = (powerOfTen: number, totalLength: number) => (
-  number: number,
+  tick: number,
   index: number,
   ticks: number[]
 ) => {
   const lastIndex = ticks.length - 1;
 
-  if (number % powerOfTen !== 0) {
+  if (tick % powerOfTen !== 0) {
     return false;
   } else if (index !== lastIndex) {
     return true;
   } else {
-    return totalLength - number > totalLength * 0.1;
+    return totalLength - tick > totalLength * 0.1;
   }
 };
