@@ -30,7 +30,7 @@ enum FeatureType {
 }
 
 // the in-response types below describe shape of features retrieved from the rest /overlap endpoint
-type GeneInResponse = {
+export type GeneInResponse = {
   feature_type: 'gene';
   id: string;
   start: number;
@@ -45,7 +45,7 @@ type TranscriptInResponse = {
   end: number;
 };
 
-type ExonInResponse = {
+export type ExonInResponse = {
   feature_type: 'exon';
   id: string;
   Parent: string; // transcript id
@@ -61,9 +61,12 @@ type CDSInResponse = {
   end: number;
 };
 
-type FeatureWithParent = TranscriptInResponse | ExonInResponse | CDSInResponse;
+export type FeatureWithParent =
+  | TranscriptInResponse
+  | ExonInResponse
+  | CDSInResponse;
 
-type FeatureInResponse =
+export type FeatureInResponse =
   | GeneInResponse
   | TranscriptInResponse
   | ExonInResponse

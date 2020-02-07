@@ -1,5 +1,13 @@
 export type Exon = {
-  id: string; // see CDM?
-  start: number;
-  end: number;
+  id: string;
+  slice: {
+    location: {
+      start: number;
+      end: number;
+    };
+  };
+  relative_location: {
+    start: number;
+    end: number;
+  };
 };

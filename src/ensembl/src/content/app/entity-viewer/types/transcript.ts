@@ -1,11 +1,11 @@
 import { Strand } from './strand';
 import { Exon } from './exon';
+import { CDS } from './cds';
 
-// temporary type; modelled after the way data is currently stored
 export type Transcript = {
   type: 'Transcript';
   id: string;
-  name: string; // or is it symbol?
+  symbol: string;
   so_term: string; // is there a better name for it?
   slice: {
     location: {
@@ -15,8 +15,11 @@ export type Transcript = {
     };
     region: {
       name: string;
-      strand: Strand;
+      strand: {
+        code: Strand;
+      };
     };
   };
   exons: Exon[];
+  cds: CDS | null;
 };
