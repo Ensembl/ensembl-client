@@ -120,6 +120,22 @@ Test_N_Build:WP-staging:
   only:
   - /^migration\/.*$/
 
+Test_N_Build:WP-internal:
+  extends: .build-static
+
+  variables:
+    GOOGLE_ANALYTICS_KEY: ${GA_KEY}
+    ENVIRONMENT: internal
+    API_HOST: ""
+
+  script:
+  - npm run test
+  - export NODE_ENV=development
+  - npm run build
+
+  only:
+  - /^migration\/.*$/
+
 Test_N_Build:internal:
   image: node:12.13.0
   stage: test_build_static
@@ -203,6 +219,15 @@ Nginx:WP:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
   only:
   - migration/wp-hx
+  needs: ["Test_N_Build:WP-staging"]
+
+Nginx:WP-internal:
+  extends: .build-nginx-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-int-ingress
+  only:
+  - migration/wp-hx
+  needs: ["Test_N_Build:WP-internal"]
 
 Nginx:internal:
   image: docker
@@ -301,6 +326,17 @@ Staging:WP-HX:
     name : wp-hx-staging
   only:
   - migration/wp-hx
+  needs: ["Test_N_Build:WP-staging"]
+
+Staging:WP-HH:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-int-ingress
+  environment:
+    name : wp-hh-staging
+  only:
+  - migration/wp-hx
+  needs: ["Test_N_Build:WP-internal"]
 
 Live:
   stage: deploy
