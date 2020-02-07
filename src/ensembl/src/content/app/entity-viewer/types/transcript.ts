@@ -1,4 +1,5 @@
 import { Strand } from './strand';
+import { Exon } from './exon';
 
 // temporary type; modelled after the way data is currently stored
 export type Transcript = {
@@ -17,4 +18,5 @@ export type Transcript = {
       strand: Strand;
     };
   };
+  exons: Exon[];
 };
