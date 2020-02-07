@@ -29,7 +29,7 @@ const LengthInputForm = (props: ContainerProps) => {
   );
 };
 
-storiesOf('Components|EntityViewer/FeatureLengthAxis', module).add(
+storiesOf('Components|EntityViewer/BasePairsRuler', module).add(
   'default',
   () => {
     const initialLength = 80792;
