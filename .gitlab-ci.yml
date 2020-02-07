@@ -39,9 +39,6 @@ variables:
 
   stage: build_docker_images
 
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
-
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
@@ -58,8 +55,6 @@ variables:
 .deploy-wp:
   stage: deploy
   image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
   - git -C ensembl-client-caas-deploy/ checkout migration/wp-hx
