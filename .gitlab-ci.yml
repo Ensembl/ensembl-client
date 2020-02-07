@@ -198,25 +198,9 @@ Nginx:
   - Test_N_Build
 
 Nginx:WP:
-  image: docker
-
-  services:
-    - docker:dind
-
-  stage: build_docker_images
-
-  script:
-  - apk update && apk add git
-  - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - git -C ensembl-client-nginx checkout migration/wp-hx/ingress
-  - cat ensembl-client-nginx/config/conf.d/local.conf
-  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
-  - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
-  - docker push ${CONTAINER_IMAGE}
-  - docker rmi ${CONTAINER_IMAGE}
-  - docker logout "$GITLAB_REGISTRY_URL"
-
+  extends: .build-nginx-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
   only:
   - migration/wp-hx
 
@@ -311,6 +295,8 @@ Staging:
 
 Staging:WP-HX:
   extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
   environment:
     name : wp-hx-staging
   only:
