@@ -1,0 +1,28 @@
+@import 'src/styles/common';
+
+.selected {
+  svg {
+    fill: $dark-blue;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.unselected {
+  svg {
+    fill: $grey;
+  }
+  &svg:hover {
+    opacity: 0.8;
+  }
+}
+
+.partiallySelected {
+  svg {
+    fill: $dark-blue;
+    [class*='rightHalf'] {
+      fill: $grey;
+    }
+  }
+}

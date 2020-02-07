@@ -16,7 +16,7 @@ import {
 
 import * as browserHelper from '../browserHelper';
 
-describe('<BrowserRegionField', () => {
+describe('<BrowserRegionField />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });

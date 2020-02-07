@@ -7,10 +7,10 @@ const GeneView = () => (
     <div className={styles.featureImage}>This is the feature image...</div>
     <div className={styles.viewInLinks}>View in GB</div>
 
-    <div className={styles.entityViewerTabs}>
+    <div className={styles.geneViewTabs}>
       These are the Entity Viewer tabs...
     </div>
-    <div className={styles.entityViewerTable}>
+    <div className={styles.geneViewTable}>
       This is the Entity Viewer table...
     </div>
   </div>

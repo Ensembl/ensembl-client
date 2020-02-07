@@ -2,9 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import { TrackPanelBar, TrackPanelBarProps } from './TrackPanelBar';
-import TrackPanelBarIcon from './TrackPanelBarIcon';
-
-import { trackPanelBarConfig } from './trackPanelBarConfig';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 describe('<TrackPanelBar />', () => {
   afterEach(() => {
@@ -23,9 +21,7 @@ describe('<TrackPanelBar />', () => {
   describe('rendering', () => {
     test('displays all track panel bar icons', () => {
       const wrapper = mount(<TrackPanelBar {...defaultProps} />);
-      expect(wrapper.find(TrackPanelBarIcon).length).toBe(
-        trackPanelBarConfig.length
-      );
+      expect(wrapper.find(ImageButton).length).toBe(6);
     });
   });
 });

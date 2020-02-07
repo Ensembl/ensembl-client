@@ -11,13 +11,19 @@ import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/sta
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
+import {
+  setDataFromUrl,
+  updateEnsObject
+} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
-import EntityViewerSidebarTabs from 'src/content/app/entity-viewer/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
-import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
 import GeneView from './components/views/gene-view/GeneView';
+import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
+import EntityViewerSidebar from './components/entity-viewer-sidebar/EntityViewerSideBar';
+import EntityViewerSidebarTabs from './components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
+import EntityViewerSidebarToolstrip from './components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
+import EntityViewerTopbar from './components/entity-viewer-topbar/EntityViewerTopbar';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
@@ -31,6 +37,7 @@ type Props = {
   exampleGenes: EnsObject[];
   viewportWidth: BreakpointWidth;
   setDataFromUrl: (params: EntityViewerParams) => void;
+  updateEnsObject: (objectId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleSidebar: (status?: SidebarStatus) => void;
 };
@@ -53,9 +60,10 @@ const EntityViewer = (props: Props) => {
       {params.entityId ? (
         <StandardAppLayout
           mainContent={<GeneView />}
-          sidebarContent={<div>Sidebar content is coming...</div>}
+          sidebarContent={<EntityViewerSidebar />}
           sidebarNavigation={<EntityViewerSidebarTabs />}
-          topbarContent={<div>Entity info summary goes here</div>}
+          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+          topbarContent={<EntityViewerTopbar />}
           isSidebarOpen={props.isSidebarOpen}
           onSidebarToggle={props.toggleSidebar}
           isDrawerOpen={false}
@@ -85,7 +93,7 @@ const ExampleLinks = (props: Props) => {
 
   return (
     <div>
-      <div className={styles.exampleLinks__emptyTopBar} />
+      <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>{links}</div>
     </div>
   );
@@ -108,7 +116,8 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = {
   setDataFromUrl,
   fetchGenomeData,
-  toggleSidebar
+  toggleSidebar,
+  updateEnsObject
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

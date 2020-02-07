@@ -35,7 +35,7 @@ export const Copyright = () => (
 
 export const Header = () => (
   <header>
-    <div className={styles.topBar}>
+    <div className={styles.topbar}>
       <div>
         <HomeLink />
         <ReleaseVersion />

@@ -47,10 +47,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         });
 
         return (
-          <div
-            key={`exampleLinks__${exampleObject.object_id}`}
-            className={styles.linkHolder}
-          >
+          <div key={exampleObject.object_id} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
               {exampleObject.label}
             </Link>
@@ -95,7 +92,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
           return (
             <div
-              key={`viewedLinks__${previouslyViewedObject.object_id}`}
+              key={previouslyViewedObject.object_id}
               className={styles.linkHolder}
             >
               <Link
@@ -158,7 +155,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
                 <ImageButton
-                  buttonStatus={Status.ACTIVE}
+                  status={Status.DEFAULT}
                   description={'View all'}
                   image={EllipsisIcon}
                   onClick={onEllipsisClick}

@@ -58,8 +58,10 @@ const Launchbar = (props: LaunchbarProps) => {
               description="Entity Viewer"
               icon={EntityViewerIcon}
               enabled={
-                isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) &&
-                props.committedSpecies.length > 0
+                isEnvironment([
+                  Environment.DEVELOPMENT,
+                  Environment.INTERNAL
+                ]) && props.committedSpecies.length > 0
               }
             />
           </div>

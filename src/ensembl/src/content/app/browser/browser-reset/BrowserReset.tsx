@@ -32,7 +32,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   }
 
   const getResetIconStatus = () => {
-    return props.isActive ? Status.ACTIVE : Status.DISABLED;
+    return props.isActive ? Status.UNSELECTED : Status.DISABLED;
   };
 
   const handleClick = () => {
@@ -42,7 +42,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   return (
     <div className={styles.resetButton}>
       <ImageButton
-        buttonStatus={getResetIconStatus()}
+        status={getResetIconStatus()}
         description={'Reset browser image'}
         image={resetIcon}
         onClick={handleClick}

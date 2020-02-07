@@ -9,10 +9,7 @@ import {
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import BrowserReset from '../browser-reset/BrowserReset';
-import {
-  GeneSummaryStrip,
-  RegionSummaryStrip
-} from 'src/shared/components/feature-summary-strip';
+import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
 import { RootState } from 'src/store';
@@ -28,11 +25,6 @@ export type BrowserBarProps = {
   ensObject: EnsObject | null;
 };
 
-type BrowserInfoProps = {
-  ensObject: EnsObject;
-  isDrawerOpened: boolean;
-};
-
 export const BrowserBar = (props: BrowserBarProps) => {
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
@@ -45,30 +37,17 @@ export const BrowserBar = (props: BrowserBarProps) => {
       <div className={styles.browserResetWrapper}>
         <BrowserReset />
       </div>
-      <BrowserInfo
-        ensObject={props.ensObject}
-        isDrawerOpened={props.isDrawerOpened}
-      />
+      {props.ensObject && (
+        <FeatureSummaryStrip
+          ensObject={props.ensObject}
+          isGhosted={props.isDrawerOpened}
+        />
+      )}
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator />
       </div>
     </div>
   );
-};
-
-export const BrowserInfo = (props: BrowserInfoProps) => {
-  const { ensObject, isDrawerOpened } = props;
-  const childProps = {
-    isGhosted: isDrawerOpened
-  };
-  switch (ensObject.object_type) {
-    case 'gene':
-      return <GeneSummaryStrip gene={ensObject} {...childProps} />;
-    case 'region':
-      return <RegionSummaryStrip region={ensObject} {...childProps} />;
-    default:
-      return null;
-  }
 };
 
 const mapStateToProps = (state: RootState) => ({

@@ -103,7 +103,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
           classNames={{
             [Status.DEFAULT]: styles.speciesHomeButton
           }}
-          buttonStatus={Status.DEFAULT}
+          status={Status.DEFAULT}
           description="Species home page"
           image={HomeIcon}
         />
@@ -115,7 +115,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
             classNames={{
               [Status.DEFAULT]: styles.homepageAppLinkButton
             }}
-            buttonStatus={Status.DEFAULT}
+            status={Status.DEFAULT}
             description="Genome browser"
             image={BrowserIcon}
           />
@@ -125,7 +125,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
             classNames={{
               [Status.DEFAULT]: styles.homepageAppLinkButton
             }}
-            buttonStatus={Status.DEFAULT}
+            status={Status.DEFAULT}
             description="Entity viewer"
             image={EntityViewerIcon}
           />
