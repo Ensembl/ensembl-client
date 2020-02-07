@@ -80,31 +80,6 @@ Test:
   - /^migration\/.*$/
 
 Test_N_Build:
-  image: node:12.13.0
-  stage: test_build_static
-
-  before_script:
-  - cd src/ensembl
-  - npm ci
-
-  script:
-  - npm run test
-  - export NODE_ENV=production
-  - export GOOGLE_ANALYTICS_KEY=${GA_KEY}
-  - export ENVIRONMENT=production
-  - export API_HOST=""
-  - npm run build
-
-  artifacts:
-    name: static_assets
-    paths:
-    - src/ensembl/dist/
-
-  only:
-  - dev
-  - master
-
-Test_N_Build:WP-staging:
   extends: .build-static
 
   variables:
@@ -118,9 +93,10 @@ Test_N_Build:WP-staging:
   - npm run build
 
   only:
-  - /^migration\/.*$/
+  - dev
+  - master
 
-Test_N_Build:WP-internal:
+Test_N_Build:internal:
   extends: .build-static
 
   variables:
@@ -133,27 +109,8 @@ Test_N_Build:WP-internal:
   - export NODE_ENV=development
   - npm run build
 
-  only:
-  - /^migration\/.*$/
-
-Test_N_Build:internal:
-  image: node:12.13.0
-  stage: test_build_static
-
-  before_script:
-  - cd src/ensembl
-  - npm ci
-
-  script:
-  - npm run test
-  - export NODE_ENV=development
-  - export GOOGLE_ANALYTICS_KEY=${GA_KEY}
-  - export ENVIRONMENT=internal
-  - export API_HOST=""
-  - npm run build
-
   artifacts:
-    name: static_assets_internal
+    name: static_assets
     paths:
     - src/ensembl/dist/
 
@@ -210,24 +167,16 @@ Nginx:
   - dev
   - master
 
-  dependencies:
-  - Test_N_Build
+  needs: ["Test_N_Build"]
 
 Nginx:WP:
   extends: .build-nginx-wp
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
   only:
-  - migration/wp-hx
-  needs: ["Test_N_Build:WP-staging"]
-
-Nginx:WP-internal:
-  extends: .build-nginx-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-int-ingress
-  only:
-  - migration/wp-hx
-  needs: ["Test_N_Build:WP-internal"]
+  - dev
+  - master
+  needs: ["Test_N_Build"]
 
 Nginx:internal:
   image: docker
@@ -255,8 +204,7 @@ Nginx:internal:
   only:
   - dev
 
-  dependencies:
-  - Test_N_Build:internal
+  needs: ["Test_N_Build:internal"]
 
 Nginx:feature:
   image: docker
@@ -289,7 +237,7 @@ Nginx:feature:
   dependencies:
   - Test_N_Build:feature
 
-Staging:
+Staging:EHK-HH:
   stage: deploy
   image: alpine
   before_script:
@@ -315,8 +263,7 @@ Staging:
   only:
   - dev
 
-  dependencies:
-  - Nginx
+  needs: ["Nginx"]
 
 Staging:WP-HX:
   extends: .deploy-wp
@@ -325,18 +272,8 @@ Staging:WP-HX:
   environment:
     name : wp-hx-staging
   only:
-  - migration/wp-hx
+  - dev
   needs: ["Nginx:WP"]
-
-Staging:WP-HH:
-  extends: .deploy-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-int-ingress
-  environment:
-    name : wp-hh-staging
-  only:
-  - migration/wp-hx
-  needs: ["Nginx:WP-internal"]
 
 Live:
   stage: deploy
@@ -367,7 +304,7 @@ Live:
   dependencies:
   - Nginx
 
-Deploy:internal:
+Internal:EHK-HH:
   stage: deploy
   image: alpine
   before_script:
@@ -397,7 +334,7 @@ Deploy:internal:
   dependencies:
   - Nginx:internal
 
-Deploy:feature:
+Feature:EHK-HH:
   stage: deploy
   image: alpine
   before_script:
