@@ -326,7 +326,7 @@ Staging:WP-HX:
     name : wp-hx-staging
   only:
   - migration/wp-hx
-  needs: ["Test_N_Build:WP-staging"]
+  needs: ["Nginx:WP"]
 
 Staging:WP-HH:
   extends: .deploy-wp
@@ -336,7 +336,7 @@ Staging:WP-HH:
     name : wp-hh-staging
   only:
   - migration/wp-hx
-  needs: ["Test_N_Build:WP-internal"]
+  needs: ["Nginx:WP-internal"]
 
 Live:
   stage: deploy
