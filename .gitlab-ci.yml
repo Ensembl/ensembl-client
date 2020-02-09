@@ -164,6 +164,23 @@ Test_N_Build:feature:
   only:
   - /^feature\/.*$/
 
+
+Nginx:Staging-EHK:
+  extends: .build-nginx-ehk
+  variables:
+    DEPLOYENV: staging
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-staging
+  only:
+  - dev
+
+Nginx:Live-EHK:
+  extends: .build-nginx-ehk
+  variables:
+    DEPLOYENV: prod
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
+  only:
+  - master
+
 Nginx:WP:
   extends: .build-nginx-wp
   variables:
