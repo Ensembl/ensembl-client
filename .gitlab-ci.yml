@@ -84,6 +84,23 @@ variables:
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
+# Template to deploy to EHK k8s cluster
+.deploy-ehk:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  before_script:
+  - export KUBECONFIG=/etc/deploy/config
+  - mkdir -p /etc/deploy
+  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
+  script:
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - git -C ensembl-client-caas-deploy checkout refactor-manifest
+  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-${DEPLOYENV}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s/<DEPLOYMNET_ENV>/${DEPLOYENV}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl config use-context ${KUBECONTEXT}
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+
 Test:
   image: node:12.13.0
   stage: test
