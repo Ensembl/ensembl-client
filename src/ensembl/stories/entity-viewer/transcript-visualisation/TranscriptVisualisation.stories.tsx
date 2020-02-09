@@ -19,7 +19,8 @@ const TranscriptVisualisationStory = () => {
   const [data, setData] = useState<GeneData | TranscriptData | null>(null);
 
   useEffect(() => {
-    getTranscriptData(id).then(setData);
+    getTranscriptData(id).then(console.log);
+    // getTranscriptData(id).then(setData);
   }, [id]);
 
   const onIdChange = (id: string) => {

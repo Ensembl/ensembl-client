@@ -1,40 +1,43 @@
-import pick from 'lodash/pick';
+import { buildTranscript } from './rest-transcript-adaptor';
 
 import {
   GeneInResponse,
   FeatureWithParent,
-  ExonInResponse,
+  TranscriptInResponse,
   FeatureInResponse
 } from 'src/content/app/entity-viewer/rest/rest-data-fetchers/transcriptData';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 // transform ensembl rest /overlap data into a gene data structure
-export const restGeneAdaptor = (geneId: string, data: FeatureInResponse[]) => {
+export const restGeneAdaptor = (
+  geneId: string,
+  data: FeatureInResponse[]
+): Gene => {
   const gene = data.find((feature) => feature.id === geneId) as GeneInResponse;
-  const exons = data.filter((feature) => feature.feature_type === 'exon');
   const transcripts = data
     .filter((feature) => (feature as FeatureWithParent).Parent === geneId)
-    .map((feature) => {
-      const transcriptExons = exons.filter(
-        (exon) => (exon as ExonInResponse).Parent === feature.id
-      );
-      return {
-        type: 'transcript',
-        id: feature.id,
-        start: feature.start,
-        end: feature.end,
-        exons: transcriptExons.map((exon) =>
-          pick(exon, ['id', 'start', 'end'])
-        ),
-        cds: buildCDS(feature.id, data)
-      };
-    }) as TranscriptData[];
+    .map((transcript) =>
+      buildTranscript(transcript as TranscriptInResponse, data)
+    );
 
   return {
     id: geneId,
-    type: 'gene',
-    start: gene.start,
-    end: gene.end,
+    type: 'Gene',
+    symbol: gene.external_name,
+    so_term: gene.biotype,
+    slice: {
+      location: {
+        start: gene.start,
+        end: gene.end
+      },
+      region: {
+        name: gene.seq_region_name,
+        strand: {
+          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE
+        }
+      }
+    },
     transcripts
   };
 };
