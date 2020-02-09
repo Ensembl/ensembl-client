@@ -267,32 +267,14 @@ Nginx:feature:
   - Test_N_Build:feature
 
 Staging:EHK-HH:
-  stage: deploy
-  image: alpine
-  before_script:
-  - export KUBECONFIG=/etc/deploy/config
-  - mkdir -p /etc/deploy
-  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
-  script:
-  - apk update && apk add --no-cache curl git
-  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-  - chmod +x ./kubectl
-  - mv ./kubectl /usr/local/bin/kubectl
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - cd ensembl-client-caas-deploy
-  - git checkout refactor-manifest
-  - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s/<DEPLOYMNET_ENV>/staging/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl config view
-  - kubectl config use-context ens-stage-ctx
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-
+  extends: .deploy-ehk
+  variables:
+    DEPLOYENV: staging
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-staging
+    KUBECONTEXT: ens-stage-ctx
   only:
   - dev
-
-  needs: ["Nginx"]
+  needs: ["Nginx:Staging-EHK"]
 
 Staging:WP-HX:
   extends: .deploy-wp
@@ -304,34 +286,15 @@ Staging:WP-HX:
   - dev
   needs: ["Nginx:WP"]
 
-Live:
-  stage: deploy
-  image: alpine
-  before_script:
-  - export KUBECONFIG=/etc/deploy/config
-  - mkdir -p /etc/deploy
-  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
-  script:
-  - apk update && apk add --no-cache curl git
-  - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-  - chmod +x ./kubectl
-  - mv ./kubectl /usr/local/bin/kubectl
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - cd ensembl-client-caas-deploy
-  - git checkout refactor-manifest
-  - cd ..
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s/<DEPLOYMNET_ENV>/prod/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl config view
-  - kubectl config use-context ens-prod-ctx
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-
+Live:EHK-HH:
+  extends: .deploy-ehk
+  variables:
+    DEPLOYENV: prod
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
+    KUBECONTEXT: ens-prod-ctx
   only:
   - master
-
-  dependencies:
-  - Nginx
+  needs: ["Nginx:Live-EHK"]
 
 Internal:EHK-HH:
   stage: deploy
