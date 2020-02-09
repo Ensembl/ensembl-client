@@ -1,4 +1,9 @@
-# DEploy feature branch
+# CI/CD Pipeline
+# dev branch -> staging
+# dev branch -> internal (Custom Downloads + Entity Viewer)
+# master branch -> live
+
+# Define stages for the CI/CD pipeline
 stages:
   - test
   - test_build_static
@@ -12,6 +17,7 @@ variables:
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
 
+# Template to build static assets
 .build-static:
   stage: test_build_static
   image: node:12.13.0
@@ -30,6 +36,8 @@ variables:
     paths:
     - src/ensembl/dist/
 
+# Template to build nginx docker image for WP k8s cluster
+# WP k8s cluster uses ingress
 .build-nginx-wp:
   image: docker
 
@@ -51,6 +59,7 @@ variables:
     - docker rmi ${CONTAINER_IMAGE}
     - docker logout $CI_REGISTRY
 
+# Template to build nginx docker image for EHK k8s cluster
 .build-nginx-ehk:
   image: docker
 
@@ -74,6 +83,7 @@ variables:
 
   needs: ["Test_N_Build"]
 
+# Template to deploy to WP k8s cluster
 .deploy-wp:
   stage: deploy
   image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
@@ -118,6 +128,9 @@ Test:
   - /^feature\/.*$/
   - /^migration\/.*$/
 
+# Job to build static asset for staging and live environment
+# dev branch -> Staging
+# master branch -> Live
 Test_N_Build:
   extends: .build-static
 
@@ -135,6 +148,8 @@ Test_N_Build:
   - dev
   - master
 
+# Job to build static asset for internal environment
+# dev branch -> Internal
 Test_N_Build:internal:
   extends: .build-static
 
@@ -180,6 +195,7 @@ Test_N_Build:feature:
   only:
   - /^feature\/.*$/
 
+# Job to build nginx docker image for staging environment (EHK k8s cluster)
 Nginx:Staging-EHK:
   extends: .build-nginx-ehk
   variables:
@@ -188,6 +204,7 @@ Nginx:Staging-EHK:
   only:
   - dev
 
+# Job to build nginx docker image for live environment (EHK k8s cluster)
 Nginx:Live-EHK:
   extends: .build-nginx-ehk
   variables:
@@ -196,6 +213,9 @@ Nginx:Live-EHK:
   only:
   - master
 
+# Job to build nginx docker image for staging and live environment
+# dev branch -> Staging
+# master branch -> Live
 Nginx:WP:
   extends: .build-nginx-wp
   variables:
@@ -205,6 +225,8 @@ Nginx:WP:
   - master
   needs: ["Test_N_Build"]
 
+# Job to build nginx docker image for staging and internal environment
+# dev branch -> internal
 Nginx:Internal-EHK:
   extends: .build-nginx-ehk
   variables:
@@ -245,6 +267,7 @@ Nginx:feature:
   dependencies:
   - Test_N_Build:feature
 
+# Job to deploy to staging environment (EHK k8s cluster)
 Staging:EHK-HH:
   extends: .deploy-ehk
   variables:
@@ -255,6 +278,7 @@ Staging:EHK-HH:
   - dev
   needs: ["Nginx:Staging-EHK"]
 
+# Job to deploy to staging environment (WP-HX k8s cluster)
 Staging:WP-HX:
   extends: .deploy-wp
   variables:
@@ -265,6 +289,7 @@ Staging:WP-HX:
   - dev
   needs: ["Nginx:WP"]
 
+# Job to deploy to live environment (EHK k8s cluster)
 Live:EHK-HH:
   extends: .deploy-ehk
   variables:
@@ -275,6 +300,7 @@ Live:EHK-HH:
   - master
   needs: ["Nginx:Live-EHK"]
 
+# Job to deploy to internal environment (EHK k8s cluster)
 Internal:EHK-HH:
   extends: .deploy-ehk
   variables:
