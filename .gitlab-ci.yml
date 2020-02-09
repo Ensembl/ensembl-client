@@ -181,7 +181,6 @@ Test_N_Build:feature:
   only:
   - /^feature\/.*$/
 
-
 Nginx:Staging-EHK:
   extends: .build-nginx-ehk
   variables:
@@ -207,32 +206,13 @@ Nginx:WP:
   - master
   needs: ["Test_N_Build"]
 
-Nginx:internal:
-  image: docker
-
-  services:
-    - docker:dind
-
-  stage: build_docker_images
-
-  before_script:
-  - case "${CI_COMMIT_REF_NAME}" in dev) DEPLOYENV="staging" ;; master) DEPLOYENV="prod" ;; cicd-test) DEPLOYENV="staging" ;; *) DEPLOYENV="dev" ;; esac
-
-  script:
-  - apk update && apk add git
-  - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - sed -i "s/<DEPLOYMENT_ENV>/internal/g" ensembl-client-nginx/config/conf.d/local.conf
-  - cat ensembl-client-nginx/config/conf.d/local.conf
-  - docker build -t ${CONTAINER_INTERNAL_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
-  - echo "$GITLAB_REGISTRY_TOKEN" | docker login -u "$GITLAB_REGISTRY_USER" --password-stdin https://"$GITLAB_REGISTRY_URL"
-  - docker push ${CONTAINER_IMAGE}-internal
-  - docker rmi ${CONTAINER_IMAGE}-internal
-  - docker logout "$GITLAB_REGISTRY_URL"
-
+Nginx:Internal-EHK:
+  extends: .build-nginx-ehk
+  variables:
+    DEPLOYENV: internal
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
   only:
   - dev
-
   needs: ["Test_N_Build:internal"]
 
 Nginx:feature:
