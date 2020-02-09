@@ -12,7 +12,7 @@ stages:
 
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
-  KUBECONTEXT: ens-dev-ctx
+  KUBE_CONTEXT: ens-dev-ctx
   DEPLOYENV: dev
   ENVIRONMENT: production
   DOCKER_TLS_CERTDIR: ""
@@ -107,7 +107,7 @@ variables:
   - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-${DEPLOYENV}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s/<DEPLOYMNET_ENV>/${DEPLOYENV}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl config use-context ${KUBECONTEXT}
+  - kubectl config use-context ${KUBE_CONTEXT}
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
 Test:
@@ -273,7 +273,7 @@ Staging:EHK-HH:
   variables:
     DEPLOYENV: staging
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-staging
-    KUBECONTEXT: ens-stage-ctx
+    KUBE_CONTEXT: ens-stage-ctx
   only:
   - dev
   needs: ["Nginx:Staging-EHK"]
@@ -295,7 +295,7 @@ Live:EHK-HH:
   variables:
     DEPLOYENV: prod
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
-    KUBECONTEXT: ens-prod-ctx
+    KUBE_CONTEXT: ens-prod-ctx
   only:
   - master
   needs: ["Nginx:Live-EHK"]
@@ -306,7 +306,7 @@ Internal:EHK-HH:
   variables:
     DEPLOYENV: internal
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
-    KUBECONTEXT: ens-dev-ctx
+    KUBE_CONTEXT: ens-dev-ctx
   only:
   - dev
   needs: ["Nginx:Internal-EHK"]
