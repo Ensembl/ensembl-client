@@ -290,12 +290,12 @@ Staging:EHK-HH:
 Staging:WP-HX:
   extends: .deploy-wp
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
   environment:
     name : wp-hx-staging
   only:
   - dev
-  needs: ["Nginx:WP"]
+  needs: ["Nginx:Staging-WP"]
 
 # Job to deploy to live environment (EHK k8s cluster)
 Live:EHK-HH:
