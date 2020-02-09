@@ -213,15 +213,23 @@ Nginx:Live-EHK:
   only:
   - master
 
-# Job to build nginx docker image for staging and live environment
+# Job to build nginx docker image for staging environment
 # dev branch -> Staging
-# master branch -> Live
-Nginx:WP:
+Nginx:Staging-WP:
   extends: .build-nginx-wp
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-wp-ingress
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
   only:
   - dev
+  needs: ["Test_N_Build"]
+
+# Job to build nginx docker image for live environment
+# master branch -> Live
+Nginx:Live-WP:
+  extends: .build-nginx-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+  only:
   - master
   needs: ["Test_N_Build"]
 
