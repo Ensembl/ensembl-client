@@ -28,7 +28,6 @@ variables:
 
   script:
   - npm run test
-  - export NODE_ENV=production
   - npm run build
 
   artifacts:
@@ -141,7 +140,6 @@ Test_N_Build:
 
   script:
   - npm run test
-  - export NODE_ENV=production
   - npm run build
 
   only:
