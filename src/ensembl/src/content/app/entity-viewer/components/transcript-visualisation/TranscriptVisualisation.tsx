@@ -2,35 +2,17 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
+import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
+
+import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/types/transcript';
+import { Exon } from 'src/content/app/entity-viewer/types/exon';
+import { CDS } from 'src/content/app/entity-viewer/types/cds';
+
 import styles from './TranscriptVisualisation.scss';
 
-export type Exon = {
-  start: number;
-  end: number;
-};
-
-// this is a temporary type; the actual data will likely contain UTRs rather than CDS
-export type CDS = {
-  start: number;
-  end: number;
-};
-
-type TranscriptBiologicalData = {
-  start: number;
-  end: number;
-  exons: Exon[];
-  cds?: CDS;
-  // strand: Strand;
-  // we also will need the actual length of the transcript, because for circular chromosomes if transcript spans origin length is not equal to simply end - start
-};
-
-// TODO: custom classnames for stick and blocks?
 export type Props = {
-  start: number;
-  end: number;
+  transcript: TranscriptType;
   width: number; // available width for drawing, in pixels
-  exons: Exon[];
-  cds?: CDS;
   classNames?: {
     transcript?: string;
     backbone?: string;
@@ -41,7 +23,11 @@ export type Props = {
 
 // TODO: untranslated regions
 const Transcript = (props: Props) => {
-  const length = getLength(props.start, props.end);
+  const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
+    props.transcript
+  );
+  const { exons, cds } = props.transcript;
+  const length = getLength(transcriptStart, transcriptEnd);
   const scale = scaleLinear()
     .domain([1, length])
     .range([1, props.width]);
@@ -54,12 +40,12 @@ const Transcript = (props: Props) => {
   const renderedTranscript = (
     <g className={transcriptClasses}>
       <Backbone {...props} scale={scale} />
-      {props.exons.map((exon, index) => (
+      {exons.map((exon, index) => (
         <ExonBlock
           key={index}
           exon={exon}
-          cds={props.cds}
-          transcriptStart={props.start}
+          cds={cds}
+          transcriptStart={transcriptStart}
           className={props.classNames?.exon}
           scale={scale}
         />
@@ -82,12 +68,19 @@ Transcript.defaultProps = {
 
 const Backbone = (props: Props & { scale: ScaleLinear<number, number> }) => {
   let intervals: [number, number][] = [];
+  const {
+    transcript: { exons },
+    scale
+  } = props;
+  const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
+    props.transcript
+  );
   const backboneClasses = classNames(
     styles.backbone,
     props.classNames?.backbone
   );
 
-  if (!props.exons.length) {
+  if (!exons.length) {
     return (
       <rect
         className={backboneClasses}
@@ -100,17 +93,19 @@ const Backbone = (props: Props & { scale: ScaleLinear<number, number> }) => {
   }
   // if no exons...
 
-  for (let i = 0; i < props.exons.length; i++) {
-    const exon = props.exons[i];
+  for (let i = 0; i < exons.length; i++) {
+    const exon = exons[i];
+    const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
     if (i === 0) {
-      intervals.push([props.start, exon.start]);
+      intervals.push([transcriptStart, exonStart]);
     } else {
-      const previousExon = props.exons[i - 1];
-      intervals.push([previousExon.end, exon.start]);
+      const previousExon = exons[i - 1];
+      const { end: previousExonEnd } = getFeatureCoordinates(previousExon);
+      intervals.push([previousExonEnd, exonStart]);
     }
 
-    if (i === props.exons.length - 1) {
-      intervals.push([exon.end, props.end]);
+    if (i === exons.length - 1) {
+      intervals.push([exonEnd, transcriptEnd]);
     }
   }
 
@@ -124,8 +119,8 @@ const Backbone = (props: Props & { scale: ScaleLinear<number, number> }) => {
           className={backboneClasses}
           y={0}
           height={1}
-          x={props.scale(start - props.start)}
-          width={props.scale(end - start)}
+          x={scale(start - transcriptStart)}
+          width={scale(end - start)}
         />
       ))}
     </g>
@@ -134,37 +129,33 @@ const Backbone = (props: Props & { scale: ScaleLinear<number, number> }) => {
 
 type ExonBlockProps = {
   exon: Exon;
-  cds?: CDS;
+  cds?: CDS | null;
   transcriptStart: number;
   className?: string;
   scale: ScaleLinear<number, number>;
 };
 
 const ExonBlock = (props: ExonBlockProps) => {
+  const { cds, transcriptStart } = props;
+  const { start: exonStart, end: exonEnd } = getFeatureCoordinates(props.exon);
+
   const isCompletelyNonCoding =
-    props.cds &&
-    (props.exon.end < props.cds.start || props.exon.start > props.cds.end);
-  const isNonCodingLeft =
-    props.cds &&
-    props.exon.start < props.cds.start &&
-    props.exon.end > props.cds.start;
-  const isNonCodingRight =
-    props.cds &&
-    props.exon.start < props.cds.end &&
-    props.exon.end > props.cds.end;
+    cds && (exonEnd < cds.start || exonStart > cds.end);
+  const isNonCodingLeft = cds && exonStart < cds.start && exonEnd > cds.start;
+  const isNonCodingRight = cds && exonStart < cds.end && exonEnd > cds.end;
   const y = -3;
   const height = 7;
 
   const exonClasses = classNames(styles.exon, props.className);
 
-  if (props.cds && isNonCodingLeft) {
+  if (cds && isNonCodingLeft) {
     const nonCodingPart = (
       <rect
         className={classNames(exonClasses, styles.emptyBlock)}
         y={y}
         height={height}
-        x={props.scale(props.exon.start - props.transcriptStart)}
-        width={props.scale(getLength(props.exon.start, props.cds.start))}
+        x={props.scale(exonStart - transcriptStart)}
+        width={props.scale(getLength(exonStart, cds.start))}
       />
     );
     const codingPart = (
@@ -172,24 +163,24 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={exonClasses}
         y={y}
         height={height}
-        x={props.scale(props.cds.start - props.transcriptStart)}
-        width={props.scale(getLength(props.cds.start, props.exon.end))}
+        x={props.scale(cds.start - transcriptStart)}
+        width={props.scale(getLength(cds.start, exonEnd))}
       />
     );
     return (
-      <g key={props.exon.start}>
+      <g key={exonStart}>
         {nonCodingPart}
         {codingPart}
       </g>
     );
-  } else if (props.cds && isNonCodingRight) {
+  } else if (cds && isNonCodingRight) {
     const codingPart = (
       <rect
         className={exonClasses}
         y={y}
         height={height}
-        x={props.scale(props.exon.start - props.transcriptStart)}
-        width={props.scale(getLength(props.exon.start, props.cds.end))}
+        x={props.scale(exonStart - transcriptStart)}
+        width={props.scale(getLength(exonStart, cds.end))}
       />
     );
     const nonCodingPart = (
@@ -197,13 +188,13 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={classNames(exonClasses, styles.emptyBlock)}
         y={y}
         height={height}
-        x={props.scale(props.cds.end - props.transcriptStart)}
-        width={props.scale(getLength(props.cds.end, props.exon.end))}
+        x={props.scale(cds.end - props.transcriptStart)}
+        width={props.scale(getLength(cds.end, exonEnd))}
       />
     );
 
     return (
-      <g key={props.exon.start}>
+      <g key={exonStart}>
         {codingPart}
         {nonCodingPart}
       </g>
@@ -214,12 +205,12 @@ const ExonBlock = (props: ExonBlockProps) => {
     });
     return (
       <rect
-        key={props.exon.start}
+        key={exonStart}
         className={classes}
         y={y}
         height={height}
-        x={props.scale(props.exon.start - props.transcriptStart)}
-        width={props.scale(getLength(props.exon.start, props.exon.end))}
+        x={props.scale(exonStart - transcriptStart)}
+        width={props.scale(getLength(exonStart, exonEnd))}
       />
     );
   }

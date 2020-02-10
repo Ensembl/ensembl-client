@@ -1,4 +1,4 @@
-import { Strand } from './strand';
+import { Slice } from './slice';
 import { Exon } from './exon';
 import { CDS } from './cds';
 
@@ -7,19 +7,7 @@ export type Transcript = {
   id: string;
   symbol: string;
   so_term: string; // is there a better name for it?
-  slice: {
-    location: {
-      start: number;
-      end: number;
-      // length: number,
-    };
-    region: {
-      name: string;
-      strand: {
-        code: Strand;
-      };
-    };
-  };
+  slice: Slice;
   exons: Exon[];
   cds: CDS | null;
 };

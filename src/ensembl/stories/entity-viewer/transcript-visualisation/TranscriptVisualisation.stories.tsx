@@ -3,9 +3,13 @@ import { scaleLinear } from 'd3';
 import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 
-import { getTranscriptData, TranscriptData, GeneData } from './transcriptData';
+import { getTranscriptData } from './transcriptData';
+import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/components/transcript-visualisation/TranscriptVisualisation';
+
+import { Gene as GeneType } from 'src/content/app/entity-viewer/types/gene';
+import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './TranscriptVisualisation.stories.scss';
 
@@ -16,11 +20,11 @@ const BRCA2Id = 'ENSG00000139618';
 
 const TranscriptVisualisationStory = () => {
   const [id, setId] = useState(BRCA2Id);
-  const [data, setData] = useState<GeneData | TranscriptData | null>(null);
+  const [data, setData] = useState<GeneType | TranscriptType | null>(null);
 
   useEffect(() => {
-    getTranscriptData(id).then(console.log);
-    // getTranscriptData(id).then(setData);
+    // getTranscriptData(id).then(console.log);
+    getTranscriptData(id).then(setData);
   }, [id]);
 
   const onIdChange = (id: string) => {
@@ -29,10 +33,10 @@ const TranscriptVisualisationStory = () => {
 
   let content = null;
 
-  if (data?.type === 'transcript') {
+  if (data?.type === 'Transcript') {
     content = (
       <Transcript
-        {...data}
+        transcript={data}
         width={GRAPHIC_WIDTH}
         classNames={{
           transcript: styles.transcript
@@ -40,8 +44,8 @@ const TranscriptVisualisationStory = () => {
         standalone={true}
       />
     );
-  } else if (data?.type === 'gene') {
-    content = <MultipleTranscripts {...(data as GeneData)} />;
+  } else if (data?.type === 'Gene') {
+    content = <MultipleTranscripts gene={data} />;
   }
 
   return (
@@ -52,8 +56,10 @@ const TranscriptVisualisationStory = () => {
   );
 };
 
-const MultipleTranscripts = (props: GeneData) => {
+const MultipleTranscripts = (props: { gene: GeneType }) => {
   const [view, setView] = useState('expanded');
+  const { gene } = props;
+  const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene);
 
   const changeView = (view: string) => setView(view);
 
@@ -66,18 +72,22 @@ const MultipleTranscripts = (props: GeneData) => {
 
   // won't work on circular chromosomes
   const scale = scaleLinear()
-    .domain([props.start, props.end])
+    .domain([geneStart, geneEnd])
     .range([0, GRAPHIC_WIDTH]);
 
-  const renderedTranscripts = props.transcripts.map((transcript, index) => {
-    const startX = scale(transcript.start);
-    const endX = scale(transcript.end);
+  const renderedTranscripts = gene.transcripts.map((transcript, index) => {
+    const {
+      start: transcriptStart,
+      end: transcriptEnd
+    } = getFeatureCoordinates(transcript);
+    const startX = scale(transcriptStart);
+    const endX = scale(transcriptEnd);
     const y = view === 'expanded' ? index * VERTICAL_SPACE : 10;
     const width = Math.floor(endX - startX);
     return (
       <g key={index} transform={`translate(${startX} ${y})`}>
         <Transcript
-          {...transcript}
+          transcript={transcript}
           width={width}
           classNames={{
             transcript: styles.transcript,

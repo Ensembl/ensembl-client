@@ -1,4 +1,4 @@
-import { Strand } from './strand';
+import { Slice } from './slice';
 import { Transcript } from './transcript';
 
 export type Gene = {
@@ -6,18 +6,6 @@ export type Gene = {
   id: string;
   symbol: string;
   so_term: string; // is there a better name for it?
-  slice: {
-    location: {
-      start: number;
-      end: number;
-      // length: number,
-    };
-    region: {
-      name: string;
-      strand: {
-        code: Strand;
-      };
-    };
-  };
+  slice: Slice;
   transcripts: Transcript[];
 };
