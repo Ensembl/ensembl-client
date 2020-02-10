@@ -158,11 +158,6 @@ Test_N_Build:internal:
     ENVIRONMENT: internal
     API_HOST: ""
 
-  script:
-  - npm run test
-  - export NODE_ENV=development
-  - npm run build
-
   artifacts:
     name: static_assets
     paths:
