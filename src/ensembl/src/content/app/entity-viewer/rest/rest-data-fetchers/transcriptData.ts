@@ -1,31 +1,8 @@
-import {
-  Exon,
-  CDS
-} from 'src/content/app/entity-viewer/components/transcript-visualisation/TranscriptVisualisation';
-
 import { restGeneAdaptor } from 'src/content/app/entity-viewer/rest/rest-adaptors/rest-gene-adaptor';
 import { restTranscriptAdaptor } from 'src/content/app/entity-viewer/rest/rest-adaptors/rest-transcript-adaptor';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-
-// FIXME — change
-export type TranscriptData = {
-  type: 'transcript';
-  id: string;
-  start: number;
-  end: number;
-  exons: Exon[];
-  cds: CDS;
-};
-
-export type GeneData = {
-  type: 'gene';
-  id: string;
-  start: number;
-  end: number;
-  transcripts: TranscriptData[];
-};
 
 // the in-response types below describe shape of features retrieved from the rest /overlap endpoint
 export type GeneInResponse = {
