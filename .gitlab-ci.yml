@@ -302,6 +302,28 @@ Live:EHK-HH:
   - master
   needs: ["Nginx:Live-EHK"]
 
+# Job to deploy to live environment (WP-HX k8s cluster)
+Live:WP-HX:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+  environment:
+    name : wp-hx-live
+  only:
+  - master
+  needs: ["Nginx:Live-WP"]
+
+# Job to deploy to live environment (WP-HH k8s cluster)
+Live:WP-HH:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+  environment:
+    name : wp-hh-live
+  only:
+  - master
+  needs: ["Nginx:Live-WP"]
+
 # Job to deploy to internal environment (EHK k8s cluster)
 Internal:EHK-HH:
   extends: .deploy-ehk
