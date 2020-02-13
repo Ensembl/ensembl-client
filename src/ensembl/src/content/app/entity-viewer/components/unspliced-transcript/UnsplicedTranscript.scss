@@ -2,6 +2,7 @@
   overflow: visible;
 }
 
-.emptyBlock {
-  fill: none !important;
+// duplicate class name to increase selector's specificity and override the fill rule from the parent class
+.emptyBlock.emptyBlock {
+  fill: none;
 }
