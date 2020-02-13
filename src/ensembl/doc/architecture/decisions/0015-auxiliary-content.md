@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready to review
+Draft.
 
 ## Context
 
@@ -17,12 +17,16 @@ In order to support users of the new site, we need infrastructure that will supp
 
 Current best practice in content management is to use a headless CMS - a backend storage which can be queried by frontend components, with a ready-made editing interface that can be used for content creation. There are many contenders in this arena, including some well-established free, open-source projects.
 
-Markdown has been suggested as an appropriate format for stored documents, but its limited feature set makes it unsuitable for the variety of content we will need. In particular, it does not support tables, or embedded videos, both of which are essential to our documentation. There are extended flavours of Markdown available, such as Markdown Extra and GFM (GitHub Flavoured Markdown), but they are still limited in functionality.
+Most headless CMS projects store content in Markdown format. The more sophisticated ones add some capabilities we need, such as video embedding, but it seems likely that at least some content will still require writing HTML by hand.
 
-At the other end of the scale is Strapi (www.strapi.io), a fully-featured headless CMS that allows you to define your own content templates, permissions, etc. Data can be fetched using either REST or GraphQL. Strapi is open source, and free if self-hosted; it is written in JavaScript and runs on NodeJS.
+Our final choice of CMS depends on our priorities, as there is unlikely to be any one product that fulfils all our needs.
+
+Criteria to consider:
+
+* Do we need version control?
+* Who will be managing the CMS?
+* Does it support a publication workflow?
 
 ## Consequences
 
-A fully-featured headless CMS will require more initial setup to create the templates, but should be much easier for non-web staff such as Outreach to maintain, as they will not have to start each time with a blank page.
-
-Frontend developers would also need to create components that fetch the content via the appropriate API and drop it into an HTML template. This allows us to style the content to match the look'n'feel of the rest of the 2020 site, and even reuse and "remix" sections of content instead of having monolithic pages.
+Frontend developers will need to create React components that fetch the content via the CMS's API and drop it into an HTML template.
