@@ -4,14 +4,14 @@ import { scaleLinear, ScaleLinear } from 'd3';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
 
-import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/types/transcript';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
 
-import styles from './TranscriptVisualisation.scss';
+import styles from './UnsplicedTranscript.scss';
 
 export type Props = {
-  transcript: TranscriptType;
+  transcript: Transcript;
   width: number; // available width for drawing, in pixels
   classNames?: {
     transcript?: string;
@@ -21,8 +21,24 @@ export type Props = {
   standalone: boolean;
 };
 
-// TODO: untranslated regions
-const Transcript = (props: Props) => {
+/*
+NOTE: here are the ways the current diagram's implementation may be different from
+what we do when the api becomes mature:
+
+1) The diagram relies on the actual start and end positions of features.
+This works for forward strand of linear DNA, but does not take into account
+adjustments required for drawing a feature from reverse strand or from a circular DNA.
+When the backend api matures, it will likely send us relative positions of features
+nested in a larger feature (e.g. relative positions of exons to the start of the transcript).
+This will work both for reverse strand and for circular DNA.
+
+2) The diagram currently uses the CDS property of the transcript
+for drawing filled/empty boxes representing the exons.
+It's possible that later we will switch to using UTRs for this purpose
+
+*/
+
+const UnsplicedTranscript = (props: Props) => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
     props.transcript
   );
@@ -62,7 +78,7 @@ const Transcript = (props: Props) => {
   );
 };
 
-Transcript.defaultProps = {
+UnsplicedTranscript.defaultProps = {
   standalone: false
 };
 
@@ -91,7 +107,6 @@ const Backbone = (props: Props & { scale: ScaleLinear<number, number> }) => {
       />
     );
   }
-  // if no exons...
 
   for (let i = 0; i < exons.length; i++) {
     const exon = exons[i];
@@ -216,7 +231,7 @@ const ExonBlock = (props: ExonBlockProps) => {
   }
 };
 
-// FIXME: handle circular chromosomes correctly; probably by asking backend to include the length property
+// NOTE: provisional method; this is going to break on circular DNA and on reverse strand
 const getLength = (start: number, end: number) => end - start;
 
-export { Transcript };
+export default UnsplicedTranscript;

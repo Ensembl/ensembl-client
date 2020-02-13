@@ -22,7 +22,7 @@ export const getTranscriptData = async (
   } else if (featureType === FeatureType.Transcript) {
     return fetchTranscript(id);
   } else {
-    console.log(`${id} is not a valid id`);
+    console.log(`${id} is not a valid id`); // eslint-disable-line no-console
     return null;
   }
 };

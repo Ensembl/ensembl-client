@@ -6,24 +6,23 @@ import { storiesOf } from '@storybook/react';
 import { getTranscriptData } from './transcriptData';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
 
-import { Transcript } from 'src/content/app/entity-viewer/components/transcript-visualisation/TranscriptVisualisation';
+import UnsplicedTranscript from 'src/content/app/entity-viewer/components/unspliced-transcript/UnsplicedTranscript';
 
 import { Gene as GeneType } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/types/transcript';
 
-import styles from './TranscriptVisualisation.stories.scss';
+import styles from './UnsplicedTranscripts.stories.scss';
 
 const GRAPHIC_WIDTH = 1200;
 const VERTICAL_SPACE = 50;
 const BRCA2Id = 'ENSG00000139618';
-// const id = 'ENST00000544455';
+// single transcript id example: 'ENST00000544455';
 
-const TranscriptVisualisationStory = () => {
+const UnsplicedTranscriptsStory = () => {
   const [id, setId] = useState(BRCA2Id);
   const [data, setData] = useState<GeneType | TranscriptType | null>(null);
 
   useEffect(() => {
-    // getTranscriptData(id).then(console.log);
     getTranscriptData(id).then(setData);
   }, [id]);
 
@@ -35,7 +34,7 @@ const TranscriptVisualisationStory = () => {
 
   if (data?.type === 'Transcript') {
     content = (
-      <Transcript
+      <UnsplicedTranscript
         transcript={data}
         width={GRAPHIC_WIDTH}
         classNames={{
@@ -86,7 +85,7 @@ const MultipleTranscripts = (props: { gene: GeneType }) => {
     const width = Math.floor(endX - startX);
     return (
       <g key={index} transform={`translate(${startX} ${y})`}>
-        <Transcript
+        <UnsplicedTranscript
           transcript={transcript}
           width={width}
           classNames={{
@@ -136,7 +135,7 @@ const FeatureIdForm = (props: {
   );
 };
 
-storiesOf('Components|EntityViewer/TranscriptVisualisation', module).add(
-  'default',
-  TranscriptVisualisationStory
+storiesOf('Components|EntityViewer/Transcripts', module).add(
+  'unspliced',
+  UnsplicedTranscriptsStory
 );

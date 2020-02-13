@@ -1,2 +1,2 @@
 import './base-pairs-ruler/BasePairsRuler.stories';
-import './transcript-visualisation/TranscriptVisualisation.stories';
+import './transcripts/UnsplicedTranscripts.stories';
