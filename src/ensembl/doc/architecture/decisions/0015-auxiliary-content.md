@@ -2,9 +2,11 @@
 
 ## Status
 
+Ready to review
+
 ## Context
 
-In order to support users of the new site, we need infrastructure that will supply help and documentation content (referred to hereafter as "auxiliary content")in a format that is easy to integrate into the React framework. This content will include the following:
+In order to support users of the new site, we need infrastructure that will supply help and documentation content (referred to hereafter as "auxiliary content") in a format that is easy to integrate into the React framework. This content will include the following:
 
 * Context-sensitive help articles
 * Images
