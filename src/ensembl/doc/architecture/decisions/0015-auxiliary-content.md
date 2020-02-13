@@ -6,27 +6,30 @@ Draft.
 
 ## Context
 
-In order to support users of the new site, we need infrastructure that will supply help and documentation content (referred to hereafter as "auxiliary content") in a format that is easy to integrate into the React framework. This content will include the following:
+In order to support users of the new site, we need infrastructure that will supply help and documentation (referred to hereafter as "auxiliary content") in a format that is easy to integrate into the React framework. This content will include the following:
 
 * Context-sensitive help articles
-* Images
+* Arbitrarily organised and nested web pages, e.g. technical documentation
 * Tutorial videos
-* Glossary terms fetched from the OLS REST service
+
+**Exception**: glossary terms will be fetched direct from the OLS or made available via a backend micro-service similar to other biological data.
+
+### Required features
+
+* User-friendly editing interface
+* Flexible, customisable content templates (not just monolithic pages)
+* Media support, e.g. image uploads
+* Efficient fetching of content for embedding in the client, e.g. through a REST API
+* Data stored in a format that allows it to be consumed by our React components
+* Free and open-source
 
 ## Decision
 
-Current best practice in content management is to use a headless CMS - a backend storage which can be queried by frontend components, with a ready-made editing interface that can be used for content creation. There are many contenders in this arena, including some well-established free, open-source projects.
+Current best practice in content management is to use a headless CMS - a backend content store with a ready-made editing interface that can be used for content creation. There are many contenders in this arena, including some well-established free, open-source projects, but no one product is likely to fulfil all our requirements.
 
-Most headless CMS projects store content in Markdown format. The more sophisticated ones add some capabilities we need, such as video embedding, but it seems likely that at least some content will still require writing HTML by hand.
-
-Our final choice of CMS depends on our priorities, as there is unlikely to be any one product that fulfils all our needs.
-
-Criteria to consider:
-
-* Do we need version control?
-* Who will be managing the CMS?
-* Does it support a publication workflow?
 
 ## Consequences
 
-Frontend developers will need to create React components that fetch the content via the CMS's API and drop it into an HTML template.
+* Most headless CMS projects store content in Markdown format, which does not direcly support tables, video embedding, etc, so it seems likely that at least some content will still require writing HTML by hand. However large tables are probably better served through custom React components rather than static content.
+
+* Frontend developers will need to create React components that fetch the content, parse any Markdown and drop it into an HTML template.
