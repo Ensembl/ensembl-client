@@ -97,13 +97,14 @@ mod test {
     use std::sync::{ Arc, Mutex };
     use ordered_float::OrderedFloat;
     use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
-    use crate::task::Task;
+    use crate::task::{ Task, TaskSummary };
     use super::*;
 
     struct FakeTask(i8);
     impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
+        fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
     }
 
     #[test]

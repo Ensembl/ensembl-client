@@ -10,11 +10,15 @@ use crate::task::Task;
 #[derive(Clone,PartialEq,Eq,PartialOrd,Ord,Hash)]
 pub(crate) struct TaskContainerHandle(usize,u64);
 
+impl TaskContainerHandle {
+    pub(crate) fn identity(&self) -> u64 { self.1 }
+}
+
 pub(crate) struct TaskContainer {
     free_slots: BinaryHeap<usize,MinComparator>,
     tasks: Vec<Option<Box<dyn Task>>>,
-    current: HashSet<u64>,
-    next_slot: u64
+    current: HashSet<TaskContainerHandle>,
+    identity: u64
 }
 
 impl TaskContainer {
@@ -23,7 +27,7 @@ impl TaskContainer {
             free_slots: BinaryHeap::new_min(),
             tasks: Vec::new(),
             current: HashSet::new(),
-            next_slot: 0
+            identity: 2
         }
     }
 
@@ -33,10 +37,14 @@ impl TaskContainer {
             self.tasks.len()-1
         });
         self.tasks[slot] = None;
-        let out = TaskContainerHandle(slot,self.next_slot);
-        self.current.insert(self.next_slot);
-        self.next_slot += 1;
+        let out = TaskContainerHandle(slot,self.identity);
+        self.current.insert(out.clone());
+        self.identity += 1;
         out
+    }
+
+    pub(crate) fn all_handles(&self) -> Vec<TaskContainerHandle> {
+        self.current.iter().cloned().collect()
     }
 
     pub(crate) fn set<T>(&mut self, handle: &TaskContainerHandle, task: T) where T: Task + 'static {
@@ -44,15 +52,15 @@ impl TaskContainer {
     }
 
     pub(crate) fn remove(&mut self, handle: &TaskContainerHandle) {
-        if self.current.contains(&handle.1) {
-            self.current.remove(&handle.1);
+        if self.current.contains(&handle) {
+            self.current.remove(&handle);
             self.tasks[handle.0] = None;
             self.free_slots.push(handle.0);
         }
     }
 
     pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn Task>> { 
-        if self.current.contains(&handle.1) {
+        if self.current.contains(&handle) {
             self.tasks[handle.0].as_ref()
         } else {
             None
@@ -60,7 +68,7 @@ impl TaskContainer {
     }
 
     pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn Task>> {
-        if self.current.contains(&handle.1) {
+        if self.current.contains(&handle) {
            self.tasks[handle.0].as_mut()
         } else {
             None
@@ -74,11 +82,13 @@ impl TaskContainer {
 #[allow(unused)]
 mod test {
     use super::*;
+    use crate::task::TaskSummary;
 
     struct FakeTask(i8);
     impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
+        fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
     }
 
     #[test]

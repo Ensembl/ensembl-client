@@ -4,9 +4,32 @@ use std::sync::{ Arc, Mutex };
 use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use crate::agent::Agent;
 
+#[cfg_attr(test,derive(Debug))]
+#[derive(Clone)]
+pub struct TaskSummary {
+    identity: u64,
+    name: String,
+    waits: Vec<String>
+}
+
+impl TaskSummary {
+    pub(crate) fn new(identity: u64, name: &str, waits: &Vec<String>) -> TaskSummary {
+        TaskSummary {
+            identity,
+            name: name.to_string(),
+            waits: waits.to_vec()
+        }
+    }
+
+    pub fn identity(&self) -> u64 { self.identity }
+    pub fn get_name(&self) -> &str { &self.name }
+    pub fn get_waits(&self) -> &Vec<String> { &self.waits }
+}
+
 pub(crate) trait Task {
     fn run(&mut self, tick_index: u64);
     fn get_priority(&self) -> i8;
+    fn summarize(&self) -> TaskSummary;
 }
 
 #[derive(Clone,PartialEq,Eq)]
@@ -24,6 +47,7 @@ pub enum TaskResult {
 }
 
 pub struct TaskHandleState<R> {
+    identity: u64,
     future: Pin<Box<dyn Future<Output=R>>>,
     agent: Agent,
     result: Option<R>,
@@ -40,8 +64,9 @@ impl<R> Clone for TaskHandle<R> {
 }
 
 impl<R> TaskHandle<R> {
-    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R>>>) -> TaskHandle<R> {
+    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R>>>, identity: u64) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
+            identity,
             future,
             agent: agent.clone(),
             result: None,
@@ -93,6 +118,10 @@ impl<R> TaskHandle<R> {
     pub fn get_name(&self) -> String {
         self.get_agent().get_name()
     }
+
+    pub fn summary(&self) -> TaskSummary {
+        self.summarize()
+    }
 }
 
 impl<R> Task for TaskHandle<R> {
@@ -106,6 +135,11 @@ impl<R> Task for TaskHandle<R> {
             state.result = Some(r);
             state.done = true;
         }
+    }
+
+    fn summarize(&self) -> TaskSummary {
+        let state = self.0.lock().unwrap();
+        TaskSummary::new(state.identity,&state.agent.get_name(),&state.agent.get_waits())
     }
 }
 
@@ -165,7 +199,7 @@ mod test {
             ctx.tick(0).await;
         });
         let mut tc2 = tc.clone();
-        let mut t = TaskHandle::new(&tc,s1);
+        let mut t = TaskHandle::new(&tc,s1,42);
         /* simple accessors */
         assert_eq!(3,t.get_priority());
         /* simple running to completion */

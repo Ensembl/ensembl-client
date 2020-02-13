@@ -9,7 +9,7 @@ use crate::timer::TimerSet;
 use crate::runnable::Runnable;
 use crate::agent::Agent;
 use crate::step::RunConfig;
-use crate::task::{ TaskHandle, KillReason };
+use crate::task::{ TaskHandle, KillReason, TaskSummary };
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -46,7 +46,7 @@ impl Executor {
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
-        let handle = TaskHandle::new(&mut context,Box::pin(run));
+        let handle = TaskHandle::new(&mut context,Box::pin(run),container_handle.identity());
         self.tasks.set(&container_handle,handle.clone());
         if let Some(timeout) = context.get_config().get_timeout() {
             let control = context.clone();
@@ -54,6 +54,16 @@ impl Executor {
         }
         self.runnable.add(&self.tasks,&container_handle);
         handle
+    }
+
+    pub fn summarize_all(&self) -> Vec<TaskSummary> {
+        let mut out = vec![];
+        for th in self.tasks.all_handles().to_vec().iter() {
+            if let Some(t) = self.tasks.get(th) {
+                out.push(t.summarize());
+            }
+        }
+        out
     }
 
     fn remove(&mut self, handle: &TaskContainerHandle) {
@@ -150,6 +160,7 @@ impl Executor {
 mod test {
     use super::*;
 
+    use std::collections::HashSet;
     use std::sync::{ Arc, Mutex };
     use crate::task::{ KillReason, TaskResult };
     use crate::integration::SleepQuantity;
@@ -522,5 +533,67 @@ mod test {
         x.run();
         x.run();
         assert_eq!("second-name",handle.get_name());
+    }
+
+    #[test]
+    pub fn test_summary() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let agent = x.make_context(&cfg,"name");
+        let agent2 = agent.clone();
+        let step = async move {
+            agent2.tick(1).await;
+            let agent3 = agent2.clone();
+            agent2.named_wait(async move {
+                agent3.tick(1).await;
+            },"test").await;
+            agent2.tick(1).await;
+        };
+        let mut handle = x.add(step,agent);
+        x.tick(1.);
+        x.tick(1.);
+        let summary = handle.summary();
+        assert_eq!(2,summary.identity());
+        assert_eq!("name",summary.get_name());
+        assert_eq!(&vec!["test".to_string()],summary.get_waits());
+    }
+
+    #[test]
+    pub fn test_all_summaries() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let mut handles = vec![];
+        for j in 0..3 {
+            for i in 0..5 {
+                let name = format!("name-{}",j*5+i);
+                let agent = x.make_context(&cfg,&name);
+                let agent2 = agent.clone();
+                let step = async move {
+                    agent2.tick(1).await;
+                    let agent3 = agent2.clone();
+                    agent2.named_wait(async move {
+                        agent3.tick(1).await;
+                    },"test").await;
+                };
+                handles.push(x.add(step,agent));
+            }
+            x.tick(1.);
+        }
+        print!("{:?}",x.summarize_all());
+        let mut expected = HashSet::new();
+        for i in 6..17 {
+            expected.insert(i);
+        }
+        for summary in x.summarize_all() {
+            let id = summary.identity();
+            let match_name = format!("name-{}",id-2);
+            assert_eq!(summary.get_name(),match_name);
+            let waits = if id < 12 { vec!["test".to_string()] } else { vec![] };
+            assert_eq!(&waits,summary.get_waits());
+            assert!(expected.contains(&id));
+            expected.remove(&id);
+        }
     }
 }

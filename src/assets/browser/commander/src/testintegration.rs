@@ -113,9 +113,7 @@ mod test {
         let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let finished = Arc::new(Mutex::new(false));
         let ctx = x.make_context(&cfg,"test");
-        let out = Arc::new(Mutex::new(0));
         let tc = x.add(future_tick(ctx.clone(),2),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
@@ -134,10 +132,8 @@ mod test {
         let finished2 = finished.clone();
         let finished3 = finished.clone();
         let ctx = x.make_context(&cfg,"test");
-        let ctx2 = ctx.clone();
         let tc = x.add(again_future(ctx.clone(),2,Some(finished2.clone()),false),ctx);
         let ctx = x.make_context(&cfg,"test");
-        let ctx2 = ctx.clone();
         let tc2 = x.add(tick_future(ctx.clone(),2,Some(finished3.clone()),true),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
@@ -160,7 +156,6 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let finished = Arc::new(Mutex::new(false));
-        let finished2 = finished.clone(); 
         let ctx = x.make_context(&cfg,"test");       
         let tc = x.add(future_timer(ctx.clone(),2,finished),ctx);
         x.tick(10.);
@@ -239,7 +234,7 @@ mod test {
     }
 
     async fn sequence_short(ctx: Agent) -> Result<u32,()> {
-        let x = future_result(&ctx,Err(())).await?;
+        future_result(&ctx,Err(())).await?;
         future_result(&ctx,Ok(2)).await
     }
 
@@ -250,13 +245,13 @@ mod test {
 
     #[test]
     pub fn test_sequence() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.make_context(&cfg,"test");
-        let mut tc_short = x.add(sequence_short(ctx.clone()),ctx);
+        let tc_short = x.add(sequence_short(ctx.clone()),ctx);
         let ctx = x.make_context(&cfg,"test");
-        let mut tc_good = x.add(sequence_good(ctx.clone()),ctx);
+        let tc_good = x.add(sequence_good(ctx.clone()),ctx);
         x.tick(10.);
         assert!(tc_short.peek_result() == TaskResult::Ongoing);
         assert!(tc_good.peek_result() == TaskResult::Ongoing);
@@ -293,9 +288,9 @@ mod test {
             };
             future::try_join3(a,b,c).await
         };
-        let mut tc = x.add(p,ctx);
+        let tc = x.add(p,ctx);
         /* simulate */
-        for i in 0..7 {
+        for _ in 0..7 {
             x.tick(10.);
             assert!(tc.peek_result() == TaskResult::Ongoing);
         }
@@ -307,7 +302,7 @@ mod test {
 
     #[test]
     pub fn test_parallel_error() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.make_context(&cfg,"test");

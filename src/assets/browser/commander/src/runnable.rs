@@ -57,13 +57,14 @@ impl Runnable {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
-    use crate::task::Task;
+    use crate::task::{ Task, TaskSummary };
 
     #[derive(Clone)]
     struct FakeTask(i8,Arc<Mutex<i8>>);
     impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { *self.1.lock().unwrap() += 1; }
         fn get_priority(&self) -> i8 { self.0 }
+        fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
     }
 
     // XXX common harness
