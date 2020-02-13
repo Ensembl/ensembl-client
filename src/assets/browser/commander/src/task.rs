@@ -32,6 +32,7 @@ pub(crate) trait Task {
     fn summarize(&self) -> TaskSummary;
 }
 
+#[cfg_attr(test,derive(Debug))]
 #[derive(Clone,PartialEq,Eq)]
 pub enum KillReason { // XXX test it
     Timeout,
@@ -39,6 +40,7 @@ pub enum KillReason { // XXX test it
     NotNeeded
 }
 
+#[cfg_attr(test,derive(Debug))]
 #[derive(Clone,PartialEq,Eq)]
 pub enum TaskResult {
     Ongoing,
@@ -87,6 +89,10 @@ impl<R> TaskHandle<R> {
         } else {
             TaskResult::Ongoing
         }
+    }
+
+    pub fn kill(&self, reason: KillReason) {
+        self.get_agent().finish(Some(&reason));
     }
 
     pub fn take_result(&self) -> Option<R> {

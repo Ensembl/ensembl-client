@@ -596,4 +596,30 @@ mod test {
             expected.remove(&id);
         }
     }
+
+    #[test]
+    pub fn test_kill() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let mut handles = vec![];
+        for i in 0..3 {
+            let name = format!("name-{}",i);
+            let agent = x.make_context(&cfg,&name);
+            let agent2 = agent.clone();
+            let step = async move {
+                agent2.tick(1).await;
+                let agent3 = agent2.clone();
+                agent2.named_wait(async move {
+                    agent3.tick(1).await;
+                },"test").await;
+            };
+            handles.push(x.add(step,agent));
+        }
+        handles[1].kill(KillReason::Cancelled);
+        assert_eq!(TaskResult::Killed(KillReason::Cancelled),handles[1].peek_result());
+        assert_eq!(1,x.summarize_all().iter().map(|x| x.identity()).filter(|x| *x==3).count());
+        x.tick(1.);
+        assert_eq!(0,x.summarize_all().iter().map(|x| x.identity()).filter(|x| *x==3).count());
+    }
 }

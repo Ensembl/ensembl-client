@@ -115,7 +115,7 @@ impl Agent {
     fn finish_internal(&self, state: &mut AgentState, reason: Option<&KillReason>) -> bool {
         if !state.finished {
             if let Some(reason) = reason {
-                state.kill_reason = Some(reason.clone());                
+                state.kill_reason = Some(reason.clone());
             }
             state.action_handle.add(AnonAction::Done());
             state.finished = true;
