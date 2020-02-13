@@ -8,7 +8,8 @@ use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use crate::timer::TimerSet;
 use crate::runnable::Runnable;
 use crate::agent::Agent;
-use crate::step::RunConfig;
+use crate::slot::RunSlot;
+use crate::runconfig::RunConfig;
 use crate::task::{ TaskHandle, KillReason, TaskSummary };
 
 pub struct Executor {
@@ -20,6 +21,7 @@ pub struct Executor {
     ticks: TimerSet<u64,Option<TaskContainerHandle>>,
     blocked_by: HashMap<TaskContainerHandle,Block>,
     tick_index: u64,
+    slot_map: HashMap<RunSlot,TaskContainerHandle>
 }
 
 impl Executor {
@@ -32,9 +34,12 @@ impl Executor {
             timers: TimerSet::new(),
             ticks: TimerSet::new(),
             blocked_by: HashMap::new(),
-            tick_index: 0
+            tick_index: 0,
+            slot_map: HashMap::new()
         }
     }
+
+    pub fn new_slot(&self) -> RunSlot { RunSlot::new() }
 
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
@@ -42,9 +47,21 @@ impl Executor {
         Agent::new(run_config,&self.actions,&self.integration,name)
     }
 
+    fn check_slot(&mut self, agent: &Agent, handle: &TaskContainerHandle) {
+        if let Some(slot) = agent.get_config().get_slot() {
+            if let Some(tch) = self.slot_map.get(slot) {
+                if let Some(task) = self.tasks.get(tch) {
+                    task.evict();
+                }
+            }
+            self.slot_map.insert(slot.clone(),handle.clone());
+        }
+    }
+
     pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
         let now = self.integration.current_time();
         let container_handle = self.tasks.allocate();
+        self.check_slot(&context,&container_handle);
         context.register(&container_handle);
         let handle = TaskHandle::new(&mut context,Box::pin(run),container_handle.identity());
         self.tasks.set(&container_handle,handle.clone());
@@ -581,7 +598,6 @@ mod test {
             }
             x.tick(1.);
         }
-        print!("{:?}",x.summarize_all());
         let mut expected = HashSet::new();
         for i in 6..17 {
             expected.insert(i);

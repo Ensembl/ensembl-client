@@ -95,7 +95,7 @@ mod test {
     use super::*;
     use crate::timer::TimerSet;
     use crate::taskcontainer::TaskContainer;
-    use crate::step::RunConfig;
+    use crate::runconfig::RunConfig;
     use crate::action::ActionLink;
     use crate::testintegration::TestIntegration;
     use crate::integration::ReenteringIntegration;

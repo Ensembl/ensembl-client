@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use crate::slot::RunSlot;
 
 #[derive(Clone)]
 pub struct RunConfig {
@@ -6,8 +7,6 @@ pub struct RunConfig {
     priority: i8,
     timeout: Option<f64>
 }
-
-pub struct RunSlot {}
 
 impl RunConfig {
     pub fn new(slot: Option<RunSlot>, priority: i8, timeout: Option<f64>) -> RunConfig {

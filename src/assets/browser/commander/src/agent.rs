@@ -10,7 +10,7 @@ use crate::blockagent::BlockAgent;
 use crate::action::{ AnonAction, ActionLink, TaskActionLink };
 use crate::integration::ReenteringIntegration;
 use crate::named::{ NamedWait, NamedFuture };
-use crate::step::RunConfig;
+use crate::runconfig::RunConfig;
 use crate::taskcontainer::TaskContainerHandle;
 use crate::turnstile::TurnstileFuture;
 use crate::task::KillReason;

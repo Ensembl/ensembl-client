@@ -28,6 +28,7 @@ impl TaskSummary {
 
 pub(crate) trait Task {
     fn run(&mut self, tick_index: u64);
+    fn evict(&self);
     fn get_priority(&self) -> i8;
     fn summarize(&self) -> TaskSummary;
 }
@@ -147,6 +148,10 @@ impl<R> Task for TaskHandle<R> {
         let state = self.0.lock().unwrap();
         TaskSummary::new(state.identity,&state.agent.get_name(),&state.agent.get_waits())
     }
+
+    fn evict(&self) {
+        self.get_agent().finish(Some(&KillReason::NotNeeded));
+    }
 }
 
 #[cfg(test)]
@@ -154,7 +159,7 @@ impl<R> Task for TaskHandle<R> {
 mod test {
     use super::*;
     use crate::testintegration::{ TestIntegration, tick_helper };
-    use crate::step::RunConfig;
+    use crate::runconfig::RunConfig;
     use crate::executor::Executor;
     use crate::integration::ReenteringIntegration;
     use crate::taskcontainer::TaskContainer;

@@ -96,7 +96,8 @@ mod test {
     use crate::oneshot::OneShot;
     use crate::testintegration::TestIntegration;
     use crate::executor::Executor;
-    use crate::step::RunConfig;
+    use crate::slot::RunSlot;
+    use crate::runconfig::RunConfig;
     use std::future::Future;
     use std::sync::{ Arc, Mutex };
     use futures::future;

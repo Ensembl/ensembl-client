@@ -105,6 +105,7 @@ mod test {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
+        fn evict(&self) {}
     }
 
     #[test]

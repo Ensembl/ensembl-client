@@ -36,7 +36,7 @@ pub async fn tick_helper(ctx: Agent, ticks: &[u64]) {
 mod test {
     use super::*;
     use crate::executor::Executor;
-    use crate::step::RunConfig;
+    use crate::runconfig::RunConfig;
     use crate::task::TaskResult;
     use futures::future;
 
