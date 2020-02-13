@@ -73,7 +73,7 @@ mod test {
     #[test]
     pub fn test_first_smoke() {
         /* setup */
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.make_context(&cfg,"test");
@@ -110,7 +110,7 @@ mod test {
 
     #[test]
     pub fn test_future_tick() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let finished = Arc::new(Mutex::new(false));
@@ -127,7 +127,7 @@ mod test {
 
     #[test]
     pub fn test_future_again() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let finished = Arc::new(Mutex::new(false));
@@ -192,7 +192,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.make_context(&cfg,"test");
-        let mut tc = x.add(timeout_smoke_helper(ctx.clone(),timeout),ctx);
+        let tc = x.add(timeout_smoke_helper(ctx.clone(),timeout),ctx);
         for i in 0..10 {
             integration.set_time(i.into());
             x.tick(10.);
@@ -213,7 +213,7 @@ mod test {
     #[test]
     pub fn test_sequencesimple_smoke() {
         /* setup */
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.make_context(&cfg,"test");
@@ -222,7 +222,7 @@ mod test {
             ctx2.tick(2).await;
             ctx2.tick(1).await;
         };
-        let mut tc = x.add(c,ctx);
+        let tc = x.add(c,ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);

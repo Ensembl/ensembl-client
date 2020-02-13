@@ -162,17 +162,17 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg,"test");
-        let ctx2 = ctx.clone();
+        let agent = x.make_context(&cfg,"test");
+        let agent2 = agent.clone();
         let step = async move {
-            ctx2.tick(0).await;
+            agent2.tick(0).await;
         };
-        let mut tc = x.add(step,ctx);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        let mut handle = x.add(step,agent);
+        assert!(handle.peek_result() == TaskResult::Ongoing);
         x.run();
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(handle.peek_result() == TaskResult::Ongoing);
         x.run();
-        assert!(tc.get_agent().is_finished());
+        assert!(handle.get_agent().is_finished());
         assert!(!x.run());
     }
 
@@ -504,5 +504,23 @@ mod test {
         assert!(tc.peek_result() == TaskResult::Done);
         x.tick(10.);
         assert_eq!((Ok(6),Ok(3)),tc.take_result().unwrap());
+    }
+
+    #[test]
+    pub fn test_executor_name() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let agent = x.make_context(&cfg,"first-name");
+        let agent2 = agent.clone();
+        let step = async move {
+            agent2.tick(0).await;
+            agent2.set_name("second-name");
+        };
+        let mut handle = x.add(step,agent);
+        assert_eq!("first-name",handle.get_name());
+        x.run();
+        x.run();
+        assert_eq!("second-name",handle.get_name());
     }
 }

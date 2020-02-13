@@ -1,5 +1,6 @@
 /* An agent provides methods on behalf of an Executor within a future. */
 
+use hashbrown::HashSet;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
@@ -8,6 +9,7 @@ use crate::block::Block;
 use crate::blockagent::BlockAgent;
 use crate::action::{ AnonAction, ActionLink, TaskActionLink };
 use crate::integration::ReenteringIntegration;
+use crate::named::{ NamedWait, NamedFuture };
 use crate::step::RunConfig;
 use crate::taskcontainer::TaskContainerHandle;
 use crate::turnstile::TurnstileFuture;
@@ -22,13 +24,14 @@ struct AgentState {
     finished: bool,
     kill_reason: Option<KillReason>,
     name: String,
+    named_waits: HashSet<NamedWait>,
     config: RunConfig,
     integration: ReenteringIntegration,
     action_handle: TaskActionLink,
     blocker: BlockAgent
 }
 
-// XXX all Arc to state obj
+// XXX all Arc to state obj?
 #[derive(Clone)]
 pub struct Agent {
     state: Arc<Mutex<AgentState>>
@@ -47,6 +50,7 @@ impl Agent {
                 finished: false,
                 kill_reason: None,
                 name: name.to_string(),
+                named_waits: HashSet::new(),
                 config: config.clone(),
                 integration: integration.clone(),
                 action_handle,
@@ -75,6 +79,22 @@ impl Agent {
 
     pub fn get_name(&self) -> String {
         self.state.lock().unwrap().name.to_string()
+    }
+
+    pub fn set_name(&self, name: &str) {
+        self.state.lock().unwrap().name = name.to_string();
+    }
+
+    pub(crate) fn push_wait(&self, wait: &NamedWait) {
+        self.state.lock().unwrap().named_waits.insert(wait.clone());
+    }
+
+    pub(crate) fn pop_wait(&self, wait: &NamedWait) {
+        self.state.lock().unwrap().named_waits.remove(wait);
+    }
+
+    pub(crate) fn get_waits(&self) -> Vec<String> {
+        self.state.lock().unwrap().named_waits.iter().map(|x| x.get_name().to_string()).collect()
     }
 
     pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
@@ -118,6 +138,7 @@ impl Agent {
      * be relied on to detect finish cases which would definitely have
      * occured before this call.
      */
+    #[cfg(test)]
     pub(crate) fn is_finished(&self) -> bool { self.state.lock().unwrap().finished }
 
     pub(crate) fn kill_reason(&self) -> Option<KillReason> {
@@ -160,6 +181,10 @@ impl Agent {
 
     pub fn turnstile<R,T>(&self, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send, R: Send {
         TurnstileFuture::new(&self,inner)
+    }
+
+    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> NamedFuture<R> where T: Future<Output=R> + 'static + Send, R: Send {
+        NamedFuture::new(&self,inner,name)
     }
 
     pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64) -> Option<R> {

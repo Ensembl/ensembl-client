@@ -85,6 +85,14 @@ impl<R> TaskHandle<R> {
             None
         }
     }
+
+    pub fn get_waits(&self) -> Vec<String> {
+        self.get_agent().get_waits()
+    }
+
+    pub fn get_name(&self) -> String {
+        self.get_agent().get_name()
+    }
 }
 
 impl<R> Task for TaskHandle<R> {

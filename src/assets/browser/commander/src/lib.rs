@@ -4,6 +4,7 @@ mod agent;
 mod executor;
 mod action;
 mod integration;
+mod named;
 mod oneshot;
 mod runnable;
 mod runqueue;
