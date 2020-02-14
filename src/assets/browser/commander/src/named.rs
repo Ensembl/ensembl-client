@@ -8,27 +8,15 @@ use std::future::Future;
 use std::task::{ Context, Poll };
 use crate::agent::Agent;
 
-use std::hash::{Hash, Hasher};
-
 sequence!(IDENTITY);
 
-#[derive(Eq,Clone)]
+#[derive(Clone)]
 pub(crate) struct NamedWait {
     identity: u64,
     name: String
 }
 
-impl Hash for NamedWait {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.identity.hash(state);
-    }
-}
-
-impl PartialEq for NamedWait {
-    fn eq(&self, other: &Self) -> bool {
-        self.identity == other.identity
-    }
-}
+hashable!(IDENTITY,NamedWait,identity);
 
 impl NamedWait {
     pub(crate) fn new(name: &str) -> NamedWait {

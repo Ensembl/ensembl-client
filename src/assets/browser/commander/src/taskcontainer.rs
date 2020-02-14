@@ -83,6 +83,7 @@ impl TaskContainer {
 mod test {
     use super::*;
     use crate::task::TaskSummary;
+    use crate::tidier::Tidier;
 
     struct FakeTask(i8);
     impl Task for FakeTask {

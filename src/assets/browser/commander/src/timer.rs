@@ -98,6 +98,7 @@ mod test {
     use ordered_float::OrderedFloat;
     use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
     use crate::task::{ Task, TaskSummary };
+    use crate::tidier::Tidier;
     use super::*;
 
     struct FakeTask(i8);

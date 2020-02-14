@@ -1,16 +1,21 @@
-#[derive(PartialEq,Eq,Hash,Clone)]
-pub struct RunSlot(u64,bool);
+#[derive(Clone)]
+pub struct RunSlot { 
+    identity: u64,
+    push: bool
+}
 
 sequence!(IDENTITY);
 
 impl RunSlot {
     pub(crate) fn new(push: bool) -> RunSlot {
         let identity = IDENTITY.next();
-        RunSlot(identity,push)
+        RunSlot{ identity, push }
     }
 
-    pub(crate) fn is_push(&self) -> bool { self.1 }
+    pub(crate) fn is_push(&self) -> bool { self.push }
 }
+
+hashable!(IDENTITY,RunSlot,identity);
 
 #[cfg(test)]
 #[allow(unused)]

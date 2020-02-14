@@ -58,6 +58,7 @@ mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
     use crate::task::{ Task, TaskSummary };
+    use crate::tidier::Tidier;
 
     #[derive(Clone)]
     struct FakeTask(i8,Arc<Mutex<i8>>);

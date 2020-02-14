@@ -23,11 +23,7 @@ pub struct Block {
     identity: u64
 }
 
-impl PartialEq for Block {
-    fn eq(&self, other: &Self) -> bool {
-        self.identity == other.identity
-    }
-}
+hashable!(IDENTITY,Block,identity);
 
 pub(crate) struct StepWaker(Mutex<Block>);
 

@@ -15,6 +15,7 @@ mod runqueue;
 mod slot;
 mod taskcontainer;
 mod task;
+mod tidier;
 mod timer;
 mod turnstile;
 

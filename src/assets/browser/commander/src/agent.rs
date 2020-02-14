@@ -14,6 +14,7 @@ use crate::runconfig::RunConfig;
 use crate::taskcontainer::TaskContainerHandle;
 use crate::turnstile::TurnstileFuture;
 use crate::task::KillReason;
+use crate::tidier::Tidier;
 use crate::oneshot::OneShot;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
@@ -21,7 +22,9 @@ use futures::task::{ Context, waker_ref };
 struct AgentState {
     blocks: Vec<Block>,
     tick_index: u64,
-    finished: bool,
+    tidiers: Vec<Pin<Box<Tidier>>>,
+    done_sent: bool,
+    finishing: bool,
     kill_reason: Option<KillReason>,
     name: String,
     named_waits: HashSet<NamedWait>,
@@ -47,7 +50,9 @@ impl Agent {
             state: Arc::new(Mutex::new(AgentState {
                 blocks: Vec::new(),
                 tick_index: 0,
-                finished: false,
+                finishing: false,
+                done_sent: false,
+                tidiers: Vec::new(),
                 kill_reason: None,
                 name: name.to_string(),
                 named_waits: HashSet::new(),
@@ -112,13 +117,23 @@ impl Agent {
     }
 
     /* kills */
+
+    fn send_done_if_unsent(&self, state: &mut AgentState) {
+        if !state.done_sent {
+            state.action_handle.add(AnonAction::Done());
+        }
+        state.done_sent = true;
+    }
+
     fn finish_internal(&self, state: &mut AgentState, reason: Option<&KillReason>) -> bool {
-        if !state.finished {
+        if !state.finishing {
             if let Some(reason) = reason {
                 state.kill_reason = Some(reason.clone());
             }
-            state.finished = true;
-            state.action_handle.add(AnonAction::Done());
+            state.finishing = true;
+            if state.tidiers.len() == 0 {
+                self.send_done_if_unsent(state);
+            }
             true
         } else {
             false
@@ -139,7 +154,7 @@ impl Agent {
      * occured before this call.
      */
     #[cfg(test)]
-    pub(crate) fn is_finished(&self) -> bool { self.state.lock().unwrap().finished }
+    pub(crate) fn is_finished(&self) -> bool { self.state.lock().unwrap().finishing }
 
     pub(crate) fn kill_reason(&self) -> Option<KillReason> {
         self.state.lock().unwrap().kill_reason.as_ref().map(|x| x.clone())
@@ -186,11 +201,35 @@ impl Agent {
         NamedFuture::new(&self,inner,name)
     }
 
-    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64) -> Option<R> {
+    pub fn tidy<T>(&self, inner: T) -> Tidier where T: Future<Output=()> + 'static + Send {
+        let t = Tidier::new(Box::pin(inner));
+        self.state.lock().unwrap().tidiers.push(Box::pin(t.clone()));
+        t
+    }
+
+    fn check_tidiers(&self) {
         let mut state = self.state.lock().unwrap();
+        let mut finished = Vec::new();
+        let mut idx = 0;
+        for t in state.tidiers.iter() {
+            if t.finished() {
+                finished.push(idx);
+            } else {
+                idx += 1;
+            }
+        }
+        for idx in finished {
+            state.tidiers.remove(idx);
+        }
+    }
+
+    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64, result: &mut Option<R>) -> bool {
+        let mut state = self.state.lock().unwrap();
+        let finishing = state.finishing;
         /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
-        if state.finished { 
-            return None;
+        if finishing && state.tidiers.len() == 0 {
+            self.send_done_if_unsent(&mut state);
+            return false;
         }
         state.blocks = vec![Block::new(&state.blocker)];
         /* prepare tick index, blocker */
@@ -198,20 +237,39 @@ impl Agent {
         /* run */
         let waker = state.blocks[0].future_waker();
         drop(state);
-        let out = future.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
-        let mut state = self.state.lock().unwrap();
-        match out {
-            Poll::Pending => {
-                /* blocked so note that (for next call) and tell blocker to notify executor */
-                state.blocker.block_task(&state.blocks[0]);
-                return None;
-
-            },
-            Poll::Ready(v) => {
-                self.finish_internal(&mut state,None);
-                return Some(v);
+        let wr = &*waker_ref(&waker);
+        let context = &mut Context::from_waker(wr);
+        if finishing {
+            /* destructors */
+            let mut tidier = self.state.lock().unwrap().tidiers[0].clone();
+            match tidier.as_mut().poll(context) {
+                Poll::Pending => {
+                    let state = self.state.lock().unwrap();
+                    state.blocker.block_task(&state.blocks[0]);
+                },
+                Poll::Ready(_) => {}
             }
-        };
+        } else {
+            /* main call */
+            let out = future.as_mut().poll(context);
+            let mut state = self.state.lock().unwrap();
+            match out {
+                Poll::Pending => {
+                    state.blocker.block_task(&state.blocks[0]);
+                },
+                Poll::Ready(v) => {
+                    self.finish_internal(&mut state,None);
+                    *result = Some(v);
+                }
+            };
+        }
+        self.check_tidiers();
+        let mut state = self.state.lock().unwrap();
+        let finished = state.finishing && state.tidiers.len() == 0;
+        if finished {
+            self.send_done_if_unsent(&mut state);
+        }
+        finished
     }
 }
 

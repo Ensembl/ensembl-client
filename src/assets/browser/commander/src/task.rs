@@ -97,12 +97,14 @@ impl<R> TaskHandle<R> {
     }
 
     pub fn take_result(&self) -> Option<R> {
-        self.0.lock().unwrap().result.take()
+        let mut state = self.0.lock().unwrap();
+        if !state.done { return None; }
+        state.result.take()
     }
 
     pub fn get_result(&self) -> Option<MutexGuardRef<TaskHandleState<R>,R>> {
         let state = self.0.lock().unwrap();
-        if state.result.is_some() {
+        if state.done && state.result.is_some() {
             Some(MutexGuardRef::new(state).map(|x| x.result.as_ref().unwrap()))
         } else {
             None
@@ -111,7 +113,7 @@ impl<R> TaskHandle<R> {
 
     pub fn get_result_mut(&self) -> Option<MutexGuardRefMut<TaskHandleState<R>,R>> {
         let state = self.0.lock().unwrap();
-        if state.result.is_some() {
+        if state.done && state.result.is_some() {
             Some(MutexGuardRefMut::new(state).map_mut(|x| x.result.as_mut().unwrap()))
         } else {
             None
@@ -137,9 +139,12 @@ impl<R> Task for TaskHandle<R> {
     fn run(&mut self, tick_index: u64) {
         let mut state = self.0.lock().unwrap();
         let agent = state.agent.clone();
-        let ret = agent.more(&mut state.future, tick_index);
-        if let Some(r) = ret {
-            state.result = Some(r);
+        let mut r = None;
+        let finished = agent.more(&mut state.future, tick_index,&mut r);
+        if r.is_some() {
+            state.result = r;
+        }
+        if finished {
             state.done = true;
         }
     }
