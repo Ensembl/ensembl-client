@@ -8,9 +8,7 @@ use futures::task::ArcWake;
 
 use crate::blockagent::BlockAgent;
 
-lazy_static! {
-    static ref IDENTITY : Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
-}
+sequence!(IDENTITY);
 
 struct BlockState {
     blocked: bool,
@@ -41,9 +39,7 @@ impl ArcWake for StepWaker {
 
 impl Block {
     pub(crate) fn new(blocker: &BlockAgent) -> Block {
-        let mut identity_source = IDENTITY.lock().unwrap();
-        let identity = *identity_source;
-        *identity_source += 1;
+        let identity = IDENTITY.next();
         Block {
             state: Arc::new(Mutex::new(BlockState {
                 blocked: true,

@@ -1,3 +1,6 @@
+#[macro_use]
+mod sequence;
+
 mod block;
 mod blockagent;
 mod agent;
@@ -29,7 +32,6 @@ extern crate owning_ref;
 #[macro_use]
 extern crate lazy_static;
 
-#[macro_use]
 extern crate futures;
 
 #[cfg(test)]

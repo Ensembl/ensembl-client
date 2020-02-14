@@ -1,18 +1,11 @@
-use std::sync::{ Arc, Mutex };
-
 #[derive(PartialEq,Eq,Hash,Clone)]
 pub struct RunSlot(u64,bool);
 
-// Abstract away sequences
-lazy_static! {
-    static ref IDENTITY : Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
-}
+sequence!(IDENTITY);
 
 impl RunSlot {
     pub(crate) fn new(push: bool) -> RunSlot {
-        let mut identity_source = IDENTITY.lock().unwrap();
-        let identity = *identity_source;
-        *identity_source += 1;  
+        let identity = IDENTITY.next();
         RunSlot(identity,push)
     }
 

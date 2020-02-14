@@ -9,11 +9,8 @@ use std::task::{ Context, Poll };
 use crate::agent::Agent;
 
 use std::hash::{Hash, Hasher};
-use std::sync::{ Arc, Mutex };
 
-lazy_static! {
-    static ref IDENTITY : Arc<Mutex<u64>> = Arc::new(Mutex::new(0));
-}
+sequence!(IDENTITY);
 
 #[derive(Eq,Clone)]
 pub(crate) struct NamedWait {
@@ -35,9 +32,7 @@ impl PartialEq for NamedWait {
 
 impl NamedWait {
     pub(crate) fn new(name: &str) -> NamedWait {
-        let mut identity_source = IDENTITY.lock().unwrap();
-        let identity = *identity_source;
-        *identity_source += 1;
+        let identity = IDENTITY.next();
         NamedWait {
             name: name.to_string(),
             identity
