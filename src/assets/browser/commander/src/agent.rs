@@ -205,8 +205,7 @@ impl Agent {
         t
     }
 
-    fn check_tidiers(&self) {
-        let mut state = self.state.lock().unwrap();
+    fn check_tidiers(&self, state: &mut AgentState) {
         let mut finished = Vec::new();
         let mut idx = 0;
         for t in state.tidiers.iter() {
@@ -238,14 +237,17 @@ impl Agent {
         let context = &mut Context::from_waker(wr);
         if finishing {
             /* destructors */
-            let mut tidier = state.tidiers[0].clone();
-            drop(state);
-            match tidier.as_mut().poll(context) {
-                Poll::Pending => {
-                    let state = self.state.lock().unwrap();
-                    state.blocker.block_task(&state.blocks[0]);
-                },
-                Poll::Ready(_) => {}
+            self.check_tidiers(&mut state);
+            if let Some(tidier) = state.tidiers.get(0) {
+                let mut tidier = tidier.clone();
+                drop(state);
+                match tidier.as_mut().poll(context) {
+                    Poll::Pending => {
+                        let state = self.state.lock().unwrap();
+                        state.blocker.block_task(&state.blocks[0]);
+                    },
+                    Poll::Ready(_) => {}
+                }
             }
         } else {
             /* main call */
@@ -262,8 +264,8 @@ impl Agent {
                 }
             };
         }
-        self.check_tidiers();
         let mut state = self.state.lock().unwrap();
+        self.check_tidiers(&mut state);
         let finished = state.finishing && state.tidiers.len() == 0;
         if finished {
             self.send_done_if_unsent(&mut state);
