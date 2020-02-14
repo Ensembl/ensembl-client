@@ -93,7 +93,7 @@ impl<R> TaskHandle<R> {
     }
 
     pub fn kill(&self, reason: KillReason) {
-        self.get_agent().finish(Some(&reason));
+        self.get_agent().finish(reason);
     }
 
     pub fn take_result(&self) -> Option<R> {
@@ -150,7 +150,7 @@ impl<R> Task for TaskHandle<R> {
     }
 
     fn evict(&self) {
-        self.get_agent().finish(Some(&KillReason::NotNeeded));
+        self.get_agent().finish(KillReason::NotNeeded);
     }
 }
 

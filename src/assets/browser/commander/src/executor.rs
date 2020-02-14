@@ -74,7 +74,7 @@ impl Executor {
             }
             if let Some(timeout) = context.get_config().get_timeout() {
                 let control = context.clone();
-                self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(Some(&KillReason::Timeout)));
+                self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(KillReason::Timeout));
             }
             self.runnable.add(&self.tasks,&container_handle);
         }

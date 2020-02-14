@@ -117,17 +117,17 @@ impl Agent {
             if let Some(reason) = reason {
                 state.kill_reason = Some(reason.clone());
             }
-            state.action_handle.add(AnonAction::Done());
             state.finished = true;
+            state.action_handle.add(AnonAction::Done());
             true
         } else {
             false
         }
     }
 
-    pub fn finish(&self, reason: Option<&KillReason>) {
+    pub fn finish(&self, reason: KillReason) {
         let mut state = self.state.lock().unwrap();
-        if self.finish_internal(&mut state,reason) {
+        if self.finish_internal(&mut state,Some(&reason)) {
             state.integration.cause_reentry();
         }
     }
@@ -148,7 +148,6 @@ impl Agent {
     /* misc */
     pub fn get_config(&self) -> RunConfig { self.state.lock().unwrap().config.clone() }
     //pub fn get_remaining(&self) -> f64 { 0. }
-    //pub fn dropped(&self) -> bool { false }
 
     // XXX demut
     /* running steps */
@@ -261,9 +260,9 @@ mod test {
         tc.register(&h);
         /* test */
         assert!(!tc.is_finished());
-        tc.finish(Some(&KillReason::Cancelled));
+        tc.finish(KillReason::Cancelled);
         assert!(tc.is_finished());
-        tc.finish(Some(&KillReason::Timeout));
+        tc.finish(KillReason::Timeout);
         assert!(tc.is_finished());
         let actions = eah.drain();
         assert_eq!(1,actions.len());
@@ -331,7 +330,7 @@ mod test {
         /* but kills which maybe from outside must */
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
-        tc.finish(None);
+        tc.finish(KillReason::NotNeeded);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
     }
 }
