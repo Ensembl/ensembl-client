@@ -29,6 +29,8 @@ import {
 } from 'src/shared/helpers/numberFormatter';
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionEditor.scss';
@@ -145,6 +147,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     } else {
       props.changeFocusObject(regionId);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'browser_navigation',
+      label: 'region_editor',
+      action: 'change_region'
+    });
   };
 
   const closeForm = (event: Event) => {
