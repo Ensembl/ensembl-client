@@ -2,6 +2,7 @@ use crate::block::Block;
 use crate::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
 
+// XXX don't be dumb: tch+AnonAction here
 pub(crate) enum Action {
     Block(TaskContainerHandle,Block),
     Unblock(TaskContainerHandle,Block),

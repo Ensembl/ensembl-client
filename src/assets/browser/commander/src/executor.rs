@@ -39,7 +39,7 @@ impl Executor {
         }
     }
 
-    pub fn new_slot(&self) -> RunSlot { RunSlot::new() }
+    pub fn new_slot(&self, push: bool) -> RunSlot { RunSlot::new(push) }
 
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
@@ -47,29 +47,37 @@ impl Executor {
         Agent::new(run_config,&self.actions,&self.integration,name)
     }
 
-    fn check_slot(&mut self, agent: &Agent, handle: &TaskContainerHandle) {
+    fn check_slot(&mut self, agent: &Agent) -> bool {
         if let Some(slot) = agent.get_config().get_slot() {
             if let Some(tch) = self.slot_map.get(slot) {
                 if let Some(task) = self.tasks.get(tch) {
+                    if !slot.is_push() { return false }
                     task.evict();
                 }
             }
-            self.slot_map.insert(slot.clone(),handle.clone());
         }
+        true
     }
 
     pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
         let now = self.integration.current_time();
+        let prekill = !self.check_slot(&context);
         let container_handle = self.tasks.allocate();
-        self.check_slot(&context,&container_handle);
         context.register(&container_handle);
         let handle = TaskHandle::new(&mut context,Box::pin(run),container_handle.identity());
         self.tasks.set(&container_handle,handle.clone());
-        if let Some(timeout) = context.get_config().get_timeout() {
-            let control = context.clone();
-            self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(Some(&KillReason::Timeout)));
+        if prekill {
+            handle.kill(KillReason::NotNeeded);
+        } else {
+            if let Some(slot) = context.get_config().get_slot() {
+                self.slot_map.insert(slot.clone(),container_handle.clone());
+            }
+            if let Some(timeout) = context.get_config().get_timeout() {
+                let control = context.clone();
+                self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(Some(&KillReason::Timeout)));
+            }
+            self.runnable.add(&self.tasks,&container_handle);
         }
-        self.runnable.add(&self.tasks,&container_handle);
         handle
     }
 
