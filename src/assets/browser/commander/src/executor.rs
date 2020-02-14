@@ -118,6 +118,10 @@ impl Executor {
                         }
                     }
                 },
+                Action::Finishing(ref handle) => {
+                    self.blocked_by.remove(handle);
+                    self.runnable.add(&self.tasks,handle);
+                },
                 Action::Done(handle) => {
                     self.remove(&handle);
                 },

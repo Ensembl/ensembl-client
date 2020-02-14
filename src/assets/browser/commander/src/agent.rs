@@ -131,9 +131,7 @@ impl Agent {
                 state.kill_reason = Some(reason.clone());
             }
             state.finishing = true;
-            if state.tidiers.len() == 0 {
-                self.send_done_if_unsent(state);
-            }
+            state.action_handle.add(AnonAction::Finishing());
             true
         } else {
             false
@@ -236,12 +234,12 @@ impl Agent {
         state.tick_index = tick_index;
         /* run */
         let waker = state.blocks[0].future_waker();
-        drop(state);
         let wr = &*waker_ref(&waker);
         let context = &mut Context::from_waker(wr);
         if finishing {
             /* destructors */
-            let mut tidier = self.state.lock().unwrap().tidiers[0].clone();
+            let mut tidier = state.tidiers[0].clone();
+            drop(state);
             match tidier.as_mut().poll(context) {
                 Poll::Pending => {
                     let state = self.state.lock().unwrap();
@@ -251,6 +249,7 @@ impl Agent {
             }
         } else {
             /* main call */
+            drop(state);
             let out = future.as_mut().poll(context);
             let mut state = self.state.lock().unwrap();
             match out {
@@ -324,7 +323,7 @@ mod test {
         assert!(tc.is_finished());
         let actions = eah.drain();
         assert_eq!(1,actions.len());
-        if let Action::Done(_) = actions[0] {
+        if let Action::Finishing(_) = actions[0] {
         } else {
             assert!(false);
         }

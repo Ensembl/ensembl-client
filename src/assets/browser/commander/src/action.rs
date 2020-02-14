@@ -7,6 +7,7 @@ pub(crate) enum Action {
     Block(TaskContainerHandle,Block),
     Unblock(TaskContainerHandle,Block),
     Done(TaskContainerHandle),
+    Finishing(TaskContainerHandle),
     Tick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
     Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
 }
@@ -16,6 +17,7 @@ pub(crate) enum AnonAction {
     Block(Block),
     Unblock(Block),
     Done(),
+    Finishing(),
     Tick(u64,Box<dyn FnMut() + 'static + Send>),
     Timer(f64,Box<dyn FnMut() + 'static + Send>)
 }
@@ -27,6 +29,7 @@ impl AnonAction {
             AnonAction::Block(b) => Action::Block(handle,b),
             AnonAction::Unblock(b) => Action::Unblock(handle,b),
             AnonAction::Done() => Action::Done(handle),
+            AnonAction::Finishing() => Action::Finishing(handle),
             AnonAction::Tick(t,f) => Action::Tick(handle,t,f),
             AnonAction::Timer(t,f) => Action::Timer(handle,t,f)
         }
