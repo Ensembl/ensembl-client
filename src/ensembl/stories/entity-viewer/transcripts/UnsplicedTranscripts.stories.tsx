@@ -38,7 +38,8 @@ const UnsplicedTranscriptsStory = () => {
         transcript={data}
         width={GRAPHIC_WIDTH}
         classNames={{
-          transcript: styles.transcript
+          transcript: styles.transcript,
+          exon: styles.exon
         }}
         standalone={true}
       />
