@@ -3,7 +3,7 @@
 use hashbrown::HashSet;
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::{ Arc, Mutex };
+use std::sync::{ Arc, Mutex, MutexGuard };
 
 use crate::block::Block;
 use crate::blockagent::BlockAgent;
@@ -220,6 +220,38 @@ impl Agent {
         }
     }
 
+    fn run_one_destructor(&self, mut state: MutexGuard<AgentState>, context: &mut Context) {
+        self.check_tidiers(&mut state);
+        if let Some(tidier) = state.tidiers.get(0) {
+            let mut tidier = tidier.clone();
+            drop(state);
+            match tidier.as_mut().poll(context) {
+                Poll::Pending => {
+                    let state = self.state.lock().unwrap();
+                    state.blocker.block_task(&state.blocks[0]);
+                },
+                Poll::Ready(_) => {}
+            }
+        } else {
+            drop(state);
+        }
+    }
+
+    fn run_one_main<R>(&self, state: MutexGuard<AgentState>, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R>>>, result: &mut Option<R>) {
+        drop(state);
+        let out = future.as_mut().poll(context);
+        let mut state = self.state.lock().unwrap();
+        match out {
+            Poll::Pending => {
+                state.blocker.block_task(&state.blocks[0]);
+            },
+            Poll::Ready(v) => {
+                self.finish_internal(&mut state,None);
+                *result = Some(v);
+            }
+        };
+    }
+
     pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64, result: &mut Option<R>) -> bool {
         let mut state = self.state.lock().unwrap();
         let finishing = state.finishing;
@@ -236,33 +268,9 @@ impl Agent {
         let wr = &*waker_ref(&waker);
         let context = &mut Context::from_waker(wr);
         if finishing {
-            /* destructors */
-            self.check_tidiers(&mut state);
-            if let Some(tidier) = state.tidiers.get(0) {
-                let mut tidier = tidier.clone();
-                drop(state);
-                match tidier.as_mut().poll(context) {
-                    Poll::Pending => {
-                        let state = self.state.lock().unwrap();
-                        state.blocker.block_task(&state.blocks[0]);
-                    },
-                    Poll::Ready(_) => {}
-                }
-            }
+            self.run_one_destructor(state,context);
         } else {
-            /* main call */
-            drop(state);
-            let out = future.as_mut().poll(context);
-            let mut state = self.state.lock().unwrap();
-            match out {
-                Poll::Pending => {
-                    state.blocker.block_task(&state.blocks[0]);
-                },
-                Poll::Ready(v) => {
-                    self.finish_internal(&mut state,None);
-                    *result = Some(v);
-                }
-            };
+            self.run_one_main(state,context,future,result);
         }
         let mut state = self.state.lock().unwrap();
         self.check_tidiers(&mut state);
