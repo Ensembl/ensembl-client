@@ -7,15 +7,16 @@ use std::sync::{ Arc, Mutex, MutexGuard };
 
 use crate::block::Block;
 use crate::blockagent::BlockAgent;
-use crate::action::{ Action, ActionLink, TaskActionLink };
-use crate::integration::ReenteringIntegration;
-use crate::named::{ NamedWait, NamedFuture };
-use crate::runconfig::RunConfig;
-use crate::taskcontainer::TaskContainerHandle;
-use crate::turnstile::TurnstileFuture;
-use crate::task::{ KillReason, TaskHandle };
-use crate::tidier::Tidier;
-use crate::oneshot::OneShot;
+use crate::executor::action::{ Action, ActionLink, TaskActionLink };
+use crate::integration::reentering::ReenteringIntegration;
+use crate::helper::named::{ NamedWait, NamedFuture };
+use crate::task::runconfig::RunConfig;
+use crate::executor::taskcontainer::TaskContainerHandle;
+use crate::helper::turnstile::TurnstileFuture;
+use crate::task::task::KillReason;
+use crate::task::taskhandle::TaskHandle;
+use crate::helper::tidier::Tidier;
+use crate::helper::flagfuture::FlagFuture;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
 
@@ -44,7 +45,7 @@ impl Agent {
     pub(crate) fn new(config: &RunConfig,
                       action_handle: &ActionLink,
                       integration: &ReenteringIntegration, name: &str) -> Agent {
-        let action_handle = action_handle.new_task();
+        let action_handle = action_handle.new_task_action_link();
         let blocker = BlockAgent::new(integration,&action_handle);
         let out = Agent {
             state: Arc::new(Mutex::new(AgentState {
@@ -65,17 +66,15 @@ impl Agent {
         out
     }
 
-    pub(crate) fn push_block(&self, new: &Block) {
-        let mut state = self.state.lock().unwrap();
-        let last = state.blocks.len()-1;
-        state.blocks[last].add(&new);
-        state.blocks.push(new.clone());
-    }
-
-    pub(crate) fn add_block(&self, new: &Block) {
+    pub(crate) fn add_upstream_block(&self, new: &Block) {
         let state = self.state.lock().unwrap();
         let last = state.blocks.len()-1;
-        state.blocks[last].add(&new);
+        state.blocks[last].add_upstream(&new);
+    }
+
+    pub(crate) fn push_block(&self, new: &Block) {
+        let mut state = self.state.lock().unwrap();
+        state.blocks.push(new.clone());
     }
 
     pub(crate) fn pop_block(&self) {
@@ -187,7 +186,7 @@ impl Agent {
     }
 
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
-        let future = OneShot::new();
+        let future = FlagFuture::new();
         let future2 = future.clone();
         self.add_ticks_timer(ticks,move || {
             future2.flag();
@@ -196,7 +195,7 @@ impl Agent {
     }
 
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
-        let future = OneShot::new();
+        let future = FlagFuture::new();
         let future2 = future.clone();
         self.add_timer(timeout,move || {
             future2.flag();
@@ -277,7 +276,7 @@ impl Agent {
         /* prepare tick index, blocker */
         state.tick_index = tick_index;
         /* run */
-        let waker = state.blocks[0].future_waker();
+        let waker = state.blocks[0].make_waker();
         let wr = &*waker_ref(&waker);
         let context = &mut Context::from_waker(wr);
         if finishing {
@@ -299,10 +298,10 @@ impl Agent {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::executor::Executor;
-    use crate::taskcontainer::TaskContainer;
-    use crate::integration::{ CommanderIntegration2, SleepQuantity };
-    use crate::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::executor::taskcontainer::TaskContainer;
+    use crate::integration::integration::{ Integration, SleepQuantity };
+    use crate::integration::testintegration::TestIntegration;
 
     #[test]
     pub fn test_control_timers() {
@@ -343,7 +342,7 @@ mod test {
         assert!(tc.is_finished());
         tc.finish(KillReason::Timeout);
         assert!(tc.is_finished());
-        let actions = eah.drain();
+        let actions = eah.drain_actions();
         assert_eq!(1,actions.len());
         if let Action::Finishing() = actions[0].1 {
         } else {

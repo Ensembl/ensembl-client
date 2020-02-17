@@ -1,11 +1,19 @@
+
+
 /* Somewhere convenient to store tasks without requiring too much of their
  * signature but allowing handles.
  */
 
 use binary_heap_plus::{ BinaryHeap, MinComparator };
 use hashbrown::HashSet;
+use crate::task::taskhandle::ExecutorTaskHandle;
 
-use crate::task::Task;
+/* A TaskContainer is a place to store ExecutorTasks and give them a convenient
+ * handle, a TaskContainerHandle. This can be passed around, cloned, etc, with
+ * impunity. The executor can then extract the corresponding ExecutorTask. The
+ * handle comprises a tuple. The first arg is the slot where the Task is/was stored,
+ * the second a globally unique identifier to ensure that the handle is current.
+ */
 
 #[derive(Clone,PartialEq,Eq,PartialOrd,Ord,Hash)]
 pub(crate) struct TaskContainerHandle(usize,u64);
@@ -16,7 +24,7 @@ impl TaskContainerHandle {
 
 pub(crate) struct TaskContainer {
     free_slots: BinaryHeap<usize,MinComparator>,
-    tasks: Vec<Option<Box<dyn Task>>>,
+    tasks: Vec<Option<Box<dyn ExecutorTaskHandle>>>,
     current: HashSet<TaskContainerHandle>,
     identity: u64
 }
@@ -43,11 +51,11 @@ impl TaskContainer {
         out
     }
 
-    pub(crate) fn all_handles(&self) -> Vec<TaskContainerHandle> {
+    pub(super) fn all_handles(&self) -> Vec<TaskContainerHandle> {
         self.current.iter().cloned().collect()
     }
 
-    pub(crate) fn set(&mut self, handle: &TaskContainerHandle, task: Box<dyn Task>) {
+    pub(crate) fn set(&mut self, handle: &TaskContainerHandle, task: Box<dyn ExecutorTaskHandle>) {
         self.tasks[handle.0] = Some(task);
     }
 
@@ -59,7 +67,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn Task>> { 
+    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn ExecutorTaskHandle>> { 
         if self.current.contains(&handle) {
             self.tasks[handle.0].as_ref()
         } else {
@@ -67,7 +75,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn Task>> {
+    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn ExecutorTaskHandle>> {
         if self.current.contains(&handle) {
            self.tasks[handle.0].as_mut()
         } else {
@@ -76,17 +84,17 @@ impl TaskContainer {
     }
 
     #[allow(unused)] /* used in tests */
-    pub(crate) fn len(&self) -> usize { self.tasks.len() - self.free_slots.len() }
+    pub(super) fn len(&self) -> usize { self.tasks.len() - self.free_slots.len() }
 }
 
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::task::{ KillReason, TaskSummary };
-    use crate::tidier::Tidier;
+    use crate::task::task::{ KillReason, TaskSummary };
+    use crate::helper::tidier::Tidier;
 
     struct FakeTask(i8);
-    impl Task for FakeTask {
+    impl ExecutorTaskHandle for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn summarize(&self) -> Option<TaskSummary> { None }

@@ -1,34 +1,39 @@
 use hashbrown::HashSet;
+use crate::executor::taskcontainer::{ TaskContainer, TaskContainerHandle };
 
-use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
+/* A RunQueue contains a list of runnable tasks of the same priority. They are
+ * run in order, once per call to run() with this struct remembering the next
+ * task to run. It sits inside a Runnable which contains all the RunQueues of
+ * different priorities. This, in turn, sits inside the excutor.
+ */
 
-pub(crate) struct RunQueue2 {
+pub(super) struct RunQueue {
     present: HashSet<TaskContainerHandle>,
     tasks: Vec<TaskContainerHandle>,
     next_task: usize
 }
 
-impl RunQueue2 {
-    pub(crate) fn new() -> RunQueue2 {
-        RunQueue2 {
+impl RunQueue {
+    pub(super) fn new() -> RunQueue {
+        RunQueue {
             present: HashSet::new(),
             tasks: Vec::new(),
             next_task: 0
         }
     }
 
-    pub(crate) fn empty(&self) -> bool {
+    pub(super) fn empty(&self) -> bool {
         self.tasks.len() == 0
     }
 
-    pub(crate) fn add(&mut self, handle: &TaskContainerHandle) {
+    pub(super) fn add(&mut self, handle: &TaskContainerHandle) {
         if !self.present.contains(&handle) {
             self.present.insert(handle.clone());
             self.tasks.push(handle.clone());
         }
     }
 
-    pub(crate) fn remove(&mut self, handle: &TaskContainerHandle) {
+    pub(super) fn remove(&mut self, handle: &TaskContainerHandle) {
         if let Some(index) = self.tasks.iter().position(|h| h == handle) {
             if index < self.next_task {
                 self.next_task -= 1;
@@ -38,7 +43,7 @@ impl RunQueue2 {
         }
     }
 
-    pub(crate) fn run(&mut self, tasks: &mut TaskContainer, tick_index: u64) {
+    pub(super) fn run(&mut self, tasks: &mut TaskContainer, tick_index: u64) {
         if self.next_task >= self.tasks.len() {
             self.next_task = 0;
         }
@@ -52,12 +57,13 @@ impl RunQueue2 {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::task::{ Task, TaskSummary, KillReason };
-    use crate::taskcontainer::TaskContainer;
-    use crate::tidier::Tidier;
+    use crate::task::task::{ TaskSummary, KillReason };
+    use crate::task::taskhandle::ExecutorTaskHandle;
+    use crate::executor::taskcontainer::TaskContainer;
+    use crate::helper::tidier::Tidier;
 
     struct FakeTask(i8);
-    impl Task for FakeTask {
+    impl ExecutorTaskHandle for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn summarize(&self) -> Option<TaskSummary> { None }
@@ -69,7 +75,7 @@ mod test {
     #[test]
     pub fn test_runqueue() {
         let mut tasks = TaskContainer::new();
-        let mut q = RunQueue2::new();
+        let mut q = RunQueue::new();
         /* test */
         assert!(q.empty());
         let h1 = tasks.allocate();

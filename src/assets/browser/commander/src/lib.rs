@@ -1,26 +1,44 @@
 #[macro_use]
-mod sequence;
+mod util {
+    #[macro_use]
+    pub(crate) mod sequence;
+}
+
+mod executor {
+    pub(crate) mod action;
+    pub(crate) mod executor;
+    pub(crate) mod taskcontainer;
+    mod runnable;
+    mod runqueue;
+    mod timerset;
+}
+
+mod helper {
+    pub(crate) mod named;
+    pub(crate) mod flagfuture;
+    pub(crate) mod tidier;
+    pub(crate) mod turnstile;
+}
+
+mod integration {
+    pub(crate) mod integration;
+    pub(crate) mod reentering;
+    mod sleepcatcher;
+
+    #[cfg(test)]
+    pub(crate) mod testintegration;
+}
+
+mod task {
+    pub(crate) mod runconfig;
+    pub(crate) mod slot;
+    pub(crate) mod task;
+    pub(crate) mod taskhandle;
+}
 
 mod block;
 mod blockagent;
 mod agent;
-mod executor;
-mod action;
-mod integration;
-mod named;
-mod oneshot;
-mod runconfig;
-mod runnable;
-mod runqueue;
-mod slot;
-mod taskcontainer;
-mod task;
-mod tidier;
-mod timer;
-mod turnstile;
-
-#[cfg(test)]
-mod testintegration;
 
 #[cfg(test)]
 extern crate async_std;
@@ -38,4 +56,4 @@ extern crate futures;
 #[cfg(test)]
 extern crate regex;
 
-pub use crate::executor::Executor;
+pub use crate::executor::executor::Executor; // XXX for unused warnings

@@ -6,8 +6,8 @@
  */
 
 use crate::block::Block;
-use crate::action::{ Action, TaskActionLink };
-use crate::integration::ReenteringIntegration;
+use crate::executor::action::{ Action, TaskActionLink };
+use crate::integration::reentering::ReenteringIntegration;
 
 #[derive(Clone)]
 pub(crate) struct BlockAgent {

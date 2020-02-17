@@ -1,3 +1,10 @@
+/* A Tidier is a future which wraps an inner future. It is guaranteed that the
+ * inner future is driven to completion even if a task is killed. The inner
+ * future can be completed by awaiting on the returned Tidier. If this doesn't
+ * happen, it is run when the task is finished. This is useful for freeing up
+ * resources when also using kills or slots.
+ */
+
 use std::pin::Pin;
 use std::future::Future;
 use std::sync::{ Arc, Mutex };
@@ -52,11 +59,11 @@ impl Future for Tidier {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::testintegration::TestIntegration;
-    use crate::executor::Executor;
-    use crate::oneshot::OneShot;
-    use crate::runconfig::RunConfig;
-    use crate::task::TaskResult;
+    use crate::integration::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::helper::flagfuture::FlagFuture;
+    use crate::task::runconfig::RunConfig;
+    use crate::task::task::TaskResult;
 
     #[test]
     pub fn test_tidier_smoke() {

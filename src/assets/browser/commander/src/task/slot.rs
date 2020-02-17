@@ -1,3 +1,9 @@
+/* A RunSlot is a unique value which can be created by an executor and
+ * associated with a task. Should another task be added with the same
+ * RunSlot only one will run. If push is true for the RunSlot, the old
+ * task will be killed. If push is false, the new slot will be killed.
+ */
+
 #[derive(Clone)]
 pub struct RunSlot { 
     identity: u64,
@@ -22,10 +28,10 @@ hashable!(IDENTITY,RunSlot,identity);
 mod test {
     use super::*;
 
-    use crate::executor::Executor;
-    use crate::runconfig::RunConfig;
-    use crate::task::{ KillReason, TaskResult };
-    use crate::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::task::runconfig::RunConfig;
+    use crate::task::task::{ KillReason, TaskResult };
+    use crate::integration::testintegration::TestIntegration;
 
     #[test]
     pub fn test_slots() {

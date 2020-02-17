@@ -4,17 +4,26 @@ use std::pin::Pin;
 use std::task::Poll;
 use futures::task::{ Context, Waker };
 
-struct OneShotState {
+/* A FlagFuture is a future which is always pending until its flag method is
+ * called (probably from outside the future) after which it is always ready.
+ * The flag method also calls the waker.wake() method to alert the Executor
+ * for speedy resumption.
+ * 
+ * FlagFuture is used internally in a number of places, but should also be
+ * useful outside the crate.
+ */
+
+struct FlagFutureState {
     flag: bool,
     waker: Option<Waker>
 }
 
 #[derive(Clone)]
-pub struct OneShot(Arc<Mutex<OneShotState>>);
+pub struct FlagFuture(Arc<Mutex<FlagFutureState>>);
 
-impl OneShot {
-    pub fn new() -> OneShot {
-        OneShot(Arc::new(Mutex::new(OneShotState {
+impl FlagFuture {
+    pub fn new() -> FlagFuture {
+        FlagFuture(Arc::new(Mutex::new(FlagFutureState {
             flag: false,
             waker: None
         })))
@@ -31,7 +40,7 @@ impl OneShot {
     }
 }
 
-impl Future for OneShot {
+impl Future for FlagFuture {
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, ctx: &mut Context) -> Poll<()> {

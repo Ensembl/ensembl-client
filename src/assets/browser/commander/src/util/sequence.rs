@@ -1,5 +1,10 @@
 use std::sync::{ Arc, Mutex };
 
+/* A common pattern in this crate is a globally unique source of a sequence of integers,
+ * mainly for unique IDs. This file provides this through the sequence! and hashable!
+ * macros. lazy_static is used to create a Sequence object.
+ */
+
 pub(crate) struct Sequence(Arc<Mutex<u64>>);
 
 impl Sequence {
@@ -18,7 +23,7 @@ impl Sequence {
 macro_rules! sequence {
     ($ident: ident) => {
         lazy_static! {
-            static ref $ident : crate::sequence::Sequence = crate::sequence::Sequence::new();
+            static ref $ident : crate::util::sequence::Sequence = crate::util::sequence::Sequence::new();
         }    
     };
 }

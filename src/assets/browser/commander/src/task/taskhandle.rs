@@ -1,54 +1,33 @@
 use std::pin::Pin;
 use std::future::Future;
 use std::sync::{ Arc, Mutex };
-use owning_ref::{ MutexGuardRef, MutexGuardRefMut };
 use crate::agent::Agent;
+use owning_ref::MutexGuardRef;
+use super::task::{ TaskSummary, KillReason, TaskResult };
 
-#[cfg_attr(test,derive(Debug))]
-#[derive(Clone)]
-pub struct TaskSummary {
-    identity: u64,
-    name: String,
-    waits: Vec<String>
-}
+#[cfg(test)]
+use owning_ref::MutexGuardRefMut;
 
-impl TaskSummary {
-    pub(crate) fn new(identity: u64, name: &str, waits: &Vec<String>) -> TaskSummary {
-        TaskSummary {
-            identity,
-            name: name.to_string(),
-            waits: waits.to_vec()
-        }
-    }
+/* A TaskHandle is the principal data-structure by which code OUTSIDE the task itself
+ * interacts with it, prinicpally being examining its status, name, etc, whether or
+ * not it is complete and its final result. A TaskHandle is visible outside the crate.
+ * 
+ * To avoid polymorphism in the executor, methods required by the executor use a trait
+ * of a full TaskHandle, ExecutorTaskHandle, which is not polymorphic.
+ * 
+ * The state of a TaskHandle is actually stored in a TaskHandleState to allow clone to
+ * be implemented via Arc. Not only is this a nice-to-have, we need at least two copies
+ * of state: one in the executor and one given to the user, so some sharing would have
+ * been needed in any case.
+ */
 
-    pub fn identity(&self) -> u64 { self.identity }
-    pub fn get_name(&self) -> &str { &self.name }
-    pub fn get_waits(&self) -> &Vec<String> { &self.waits }
-}
-
-pub(crate) trait Task {
+pub(crate) trait ExecutorTaskHandle {
     fn run(&mut self, tick_index: u64);
     fn evict(&self);
     fn get_priority(&self) -> i8;
     fn summarize(&self) -> Option<TaskSummary>;
     fn kill(&self, reason: KillReason);
     fn set_identity(&self, identity: u64);
-}
-
-#[cfg_attr(test,derive(Debug))]
-#[derive(Clone,PartialEq,Eq)]
-pub enum KillReason { // XXX test it
-    Timeout,
-    Cancelled,
-    NotNeeded
-}
-
-#[cfg_attr(test,derive(Debug))]
-#[derive(Clone,PartialEq,Eq)]
-pub enum TaskResult {
-    Ongoing,
-    Done,
-    Killed(KillReason)
 }
 
 pub struct TaskHandleState<R: 'static + Send> {
@@ -100,7 +79,8 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         state.result.take()
     }
 
-    pub fn get_result(&self) -> Option<MutexGuardRef<TaskHandleState<R>,R>> {
+    #[cfg(test)]
+    fn get_result(&self) -> Option<MutexGuardRef<TaskHandleState<R>,R>> {
         let state = self.0.lock().unwrap();
         if state.done && state.result.is_some() {
             Some(MutexGuardRef::new(state).map(|x| x.result.as_ref().unwrap()))
@@ -109,7 +89,8 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         }
     }
 
-    pub fn get_result_mut(&self) -> Option<MutexGuardRefMut<TaskHandleState<R>,R>> {
+    #[cfg(test)]
+    fn get_result_mut(&self) -> Option<MutexGuardRefMut<TaskHandleState<R>,R>> {
         let state = self.0.lock().unwrap();
         if state.done && state.result.is_some() {
             Some(MutexGuardRefMut::new(state).map_mut(|x| x.result.as_mut().unwrap()))
@@ -131,14 +112,14 @@ impl<R> TaskHandle<R> where R: 'static + Send {
     }
 }
 
-impl<R> Task for TaskHandle<R> where R: 'static + Send {
+impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
     fn get_priority(&self) -> i8 { self.get_agent().get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {
         let mut state = self.0.lock().unwrap();
         let agent = state.agent.clone();
         let mut r = None;
-        let finished = agent.more(&mut state.future, tick_index,&mut r);
+        let finished = agent.more(&mut state.future,tick_index,&mut r);
         if r.is_some() {
             state.result = r;
         }
@@ -173,12 +154,12 @@ impl<R> Task for TaskHandle<R> where R: 'static + Send {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::testintegration::{ TestIntegration, tick_helper };
-    use crate::runconfig::RunConfig;
-    use crate::executor::Executor;
-    use crate::integration::ReenteringIntegration;
-    use crate::taskcontainer::TaskContainer;
-    use crate::action::{ Action, ActionLink };
+    use crate::integration::testintegration::{ TestIntegration, tick_helper };
+    use crate::task::runconfig::RunConfig;
+    use crate::executor::executor::Executor;
+    use crate::integration::reentering::ReenteringIntegration;
+    use crate::executor::taskcontainer::TaskContainer;
+    use crate::executor::action::{ Action, ActionLink };
 
     #[test]
     pub fn test_handle_smoke() {
@@ -235,7 +216,7 @@ mod test {
         t.run(0);
         assert!(!tc.is_finished());
         /* check for tick action in one of those two runs */
-        let actions = eah.drain();
+        let actions = eah.drain_actions();
         assert_eq!(3,actions.len());
         if let Action::Timer(_,_) = actions[0].1 {
         } else {

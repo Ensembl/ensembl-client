@@ -1,6 +1,9 @@
-/* Blocks are unblocked in two stages. An unblock can bre REQUESTED from anywhere, asynchronously.
- * The unblock only actually occurs, though, when the executor spots that request. That ensures
- * that no changes of state to block can race tast execution.
+/* NamedFuture implements named futures. NamedFutures wrap inner futures. While these have
+ * been called at least once but are unfinished, a string is pushed into the state of the
+ * task. This is useful for debugging purposes.
+ * 
+ * NamedWait wraps a string in a struct with per-creation uniqueness. This allows for
+ * later clean removal.
  */
 
 use std::pin::Pin;
@@ -76,11 +79,10 @@ impl<R> Future for NamedFuture<R> {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::oneshot::OneShot;
-    use crate::testintegration::TestIntegration;
-    use crate::executor::Executor;
-    use crate::slot::RunSlot;
-    use crate::runconfig::RunConfig;
+    use crate::helper::flagfuture::FlagFuture;
+    use crate::integration::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::task::runconfig::RunConfig;
     use std::future::Future;
     use std::sync::{ Arc, Mutex };
     use futures::future;

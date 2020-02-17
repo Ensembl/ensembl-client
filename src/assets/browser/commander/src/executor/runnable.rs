@@ -1,28 +1,33 @@
 use std::collections::BTreeMap;
-use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
-use crate::runqueue::RunQueue2;
+use crate::executor::taskcontainer::{ TaskContainer, TaskContainerHandle };
+use super::runqueue::RunQueue;
 
-pub(crate) struct Runnable {
-    queues: BTreeMap<i8,RunQueue2>
+/* A Runnable contains a group of RunQueues. Each RunQueue has a different priority.
+ * When asked to run a task, Runnable diverts the call to the RunQueue with the
+ * highest priority.
+ */
+
+pub(super) struct Runnable {
+    queues: BTreeMap<i8,RunQueue>
 }
 
 impl Runnable {
-    pub(crate) fn new() -> Runnable {
+    pub(super) fn new() -> Runnable {
         Runnable {
             queues: BTreeMap::new()
         }
     }
 
-    pub(crate) fn add(&mut self, tasks: &TaskContainer, handle: &TaskContainerHandle) {
+    pub(super) fn add(&mut self, tasks: &TaskContainer, handle: &TaskContainerHandle) {
         if let Some(task) = tasks.get(handle) {
             let queue = self.queues.entry(task.get_priority()).or_insert_with(||
-                RunQueue2::new()
+                RunQueue::new()
             );
             queue.add(handle);
         }
     }
 
-    pub(crate) fn remove(&mut self, tasks: &TaskContainer, handle: &TaskContainerHandle) {
+    pub(super) fn remove(&mut self, tasks: &TaskContainer, handle: &TaskContainerHandle) {
         if let Some(task) = tasks.get(handle) {
             let mut doomed = false;
             if let Some(queue) = self.queues.get_mut(&task.get_priority()) {
@@ -37,13 +42,13 @@ impl Runnable {
         }
     }
 
-    fn first_queue(&mut self) -> Option<&mut RunQueue2> {
+    fn first_queue(&mut self) -> Option<&mut RunQueue> {
         self.queues.iter_mut().next().map(|x| x.1)
     }
 
-    pub(crate) fn empty(&self) -> bool { self.queues.len() == 0 }
+    pub(super) fn empty(&self) -> bool { self.queues.len() == 0 }
 
-    pub(crate) fn run(&mut self, tasks: &mut TaskContainer, tick_index: u64) -> bool {
+    pub(super) fn run(&mut self, tasks: &mut TaskContainer, tick_index: u64) -> bool {
         if let Some(queue) = self.first_queue() {
             queue.run(tasks,tick_index);
             true
@@ -57,12 +62,13 @@ impl Runnable {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
-    use crate::task::{ Task, TaskSummary, KillReason };
-    use crate::tidier::Tidier;
+    use crate::task::task::{ TaskSummary, KillReason };
+    use crate::task::taskhandle::ExecutorTaskHandle;
+    use crate::helper::tidier::Tidier;
 
     #[derive(Clone)]
     struct FakeTask(i8,Arc<Mutex<i8>>);
-    impl Task for FakeTask {
+    impl ExecutorTaskHandle for FakeTask {
         fn run(&mut self, tick_index: u64) { *self.1.lock().unwrap() += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn summarize(&self) -> Option<TaskSummary> { None }

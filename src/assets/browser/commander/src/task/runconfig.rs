@@ -1,5 +1,10 @@
 use std::sync::Arc;
-use crate::slot::RunSlot;
+use super::slot::RunSlot;
+
+/* A RunConfig implements settings for running a task which are likely to be constant
+ * across invocations to reduce the number of arguments passed to run methods. Future
+ * extensions will likely extend or alter RunConfig to keep the rest of the API stable.
+ */
 
 #[derive(Clone)]
 pub struct RunConfig {

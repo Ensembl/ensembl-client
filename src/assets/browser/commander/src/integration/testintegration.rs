@@ -1,6 +1,13 @@
 use std::sync::{ Arc, Mutex, MutexGuard };
 use crate::agent::Agent;
-use crate::integration::{ CommanderIntegration2, SleepQuantity };
+use crate::integration::integration::{ Integration, SleepQuantity };
+
+/* TestIntegration is the integration used in unit tests. The time can be set
+ * and retrieved, and the current sleep setting retrieved.
+ * 
+ * Additional odds-and-ends are also here such as a method to schedule a
+ * range of ticks.
+ */
 
 #[derive(Clone)]
 pub struct TestIntegration {
@@ -22,7 +29,7 @@ impl TestIntegration {
     pub(crate) fn get_sleeps(&self) -> MutexGuard<Vec<SleepQuantity>> { self.sleeps.lock().unwrap() }
 }
 
-impl CommanderIntegration2 for TestIntegration {
+impl Integration for TestIntegration {
     fn current_time(&mut self) -> f64 {*self.timer.lock().unwrap() }
     fn sleep(&self, quantity: SleepQuantity) { self.sleeps.lock().unwrap().push(quantity); }
 }
@@ -35,9 +42,9 @@ pub async fn tick_helper(ctx: Agent, ticks: &[u64]) {
 
 mod test {
     use super::*;
-    use crate::executor::Executor;
-    use crate::runconfig::RunConfig;
-    use crate::task::TaskResult;
+    use crate::executor::executor::Executor;
+    use crate::task::runconfig::RunConfig;
+    use crate::task::task::TaskResult;
     use futures::future;
 
     async fn tick_future(ctx: Agent,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {

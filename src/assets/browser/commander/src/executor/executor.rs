@@ -2,15 +2,17 @@ use std::future::Future;
 use hashbrown::HashMap;
 use ordered_float::OrderedFloat;
 use crate::block::Block;
-use crate::action::{ Action, ActionLink };
-use crate::integration::{ CommanderIntegration2, ReenteringIntegration, SleepQuantity };
-use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
-use crate::timer::TimerSet;
-use crate::runnable::Runnable;
+use super::action::{ Action, ActionLink };
+use crate::integration::integration::{ Integration, SleepQuantity };
+use crate::integration::reentering::ReenteringIntegration;
+use super::taskcontainer::{ TaskContainer, TaskContainerHandle };
+use super::timerset::TimerSet;
+use super::runnable::Runnable;
 use crate::agent::Agent;
-use crate::slot::RunSlot;
-use crate::runconfig::RunConfig;
-use crate::task::{ TaskHandle, KillReason, TaskSummary, Task };
+use crate::task::slot::RunSlot;
+use crate::task::runconfig::RunConfig;
+use crate::task::task::{ KillReason, TaskSummary };
+use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -25,7 +27,7 @@ pub struct Executor {
 }
 
 impl Executor {
-    pub fn new<T>(integration: T) -> Executor where T: CommanderIntegration2 + 'static {
+    pub fn new<T>(integration: T) -> Executor where T: Integration + 'static {
         Executor {
             integration: ReenteringIntegration::new(integration),
             tasks: TaskContainer::new(),
@@ -66,7 +68,7 @@ impl Executor {
         handle
     }
 
-    fn try_add_task(&mut self, handle: Box<dyn Task>, context: Agent) {
+    fn try_add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, context: Agent) {
         if self.check_slot(&context) {
             self.add_task(handle,context);
         } else {
@@ -75,7 +77,7 @@ impl Executor {
     }
 
     // XXX if not already killed
-    fn add_task(&mut self, handle: Box<dyn Task>, context: Agent) {
+    fn add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, context: Agent) {
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
         handle.set_identity(container_handle.identity());
@@ -115,14 +117,14 @@ impl Executor {
     }
 
     pub(crate) fn run_actions(&mut self) {
-        for mut action in self.actions.drain() {
+        for mut action in self.actions.drain_actions() {
             match action {
                 (ref handle,Action::Block(ref block)) => {
                     self.runnable.remove(&self.tasks,&handle);
                     self.blocked_by.insert(handle.clone(),block.clone());
                 },
                 (ref handle,Action::Unblock(ref mut block)) => {
-                    block.unblock_real();
+                    block.do_unblock();
                     if let Some(blocked_by) = self.blocked_by.get(&handle) {
                         if blocked_by == block {
                             self.blocked_by.remove(&handle);
@@ -206,10 +208,10 @@ mod test {
 
     use std::collections::HashSet;
     use std::sync::{ Arc, Mutex };
-    use crate::task::{ KillReason, TaskResult };
-    use crate::integration::SleepQuantity;
-    use crate::testintegration::{ TestIntegration, tick_helper };
-    use crate::oneshot::OneShot;
+    use crate::task::task::{ KillReason, TaskResult };
+    use crate::integration::integration::SleepQuantity;
+    use crate::integration::testintegration::{ TestIntegration, tick_helper };
+    use crate::helper::flagfuture::FlagFuture;
     use futures::future;
 
     #[test]
@@ -236,7 +238,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fos = OneShot::new();
+        let fos = FlagFuture::new();
         let fos2 = fos.clone();
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
@@ -334,11 +336,11 @@ mod test {
         let ctxa2 = ctxa.clone();
         let step = async move {
             ctxa2.tick(1).await;
-            OneShot::new().await;
+            FlagFuture::new().await;
         };
         let ctxb = x.new_agent(&cfg,"test2");
         let step2 = async move {
-            OneShot::new().await;
+            FlagFuture::new().await;
         };
         let mut tc = x.add(step,ctxa);
         let mut tc2 = x.add(step2,ctxb);
@@ -422,7 +424,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fos = OneShot::new();
+        let fos = FlagFuture::new();
         let fos2 = fos.clone();
         let ctx = x.new_agent(&cfg,"test");
         let mut tx = x.add(async {
@@ -441,7 +443,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fosa = OneShot::new();
+        let fosa = FlagFuture::new();
         let fosa2 = fosa.clone();
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
@@ -449,7 +451,7 @@ mod test {
             fosa2.await;
             tick_helper(ctx2.clone(),&[0,1,1]).await;
             ctx2.timer(3.);
-            OneShot::new().await;
+            FlagFuture::new().await;
         };
         let mut tc = x.add(step,ctx);
         /* simulate */
@@ -478,13 +480,13 @@ mod test {
 
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
-        let mut os1 = OneShot::new();
+        let mut os1 = FlagFuture::new();
         let os1b = os1.clone();
         let step = async move {
             integration2.set_time(1.);
             os1b.await;
             ctx2.timer(2.);
-            OneShot::new().await;
+            FlagFuture::new().await;
         };
         let tx = x.add(step,ctx);
         /* simulate */

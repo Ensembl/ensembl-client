@@ -1,6 +1,18 @@
 use std::collections::BTreeMap;
 use std::sync::{ Arc, Mutex };
 
+/* A TimerSet manages a set of timers. Timers are registered with add() and register a callback.
+ * When a timer expires its callback is run on the next call to check(). When a Timer is 
+ * registered it also registers some state. tidy_handles() can be called with a callback to
+ * ensure that timers are still relevant. The state of each timer is passed to the callback
+ * and the timer removed, untriggered, if the callback returns false.
+ * 
+ * TimerSet is the externally visible object. All state and methods are actually inside TimersState.
+ * Within TimersState is a BTree of Timeouts.
+ * 
+ * TimerSets are used exclusively by Executor.
+ */
+
 struct Timeout<S> {
     callback: Box<dyn FnMut() + 'static + Send>,
     state: S
@@ -11,7 +23,7 @@ struct TimersState<T,S> where T: Ord {
 }
 
 impl<T,S> TimersState<T,S> where T: Ord+Clone {
-    pub fn new() -> TimersState<T,S> {
+    fn new() -> TimersState<T,S> {
         TimersState {
             timeouts: BTreeMap::new(),
         }
@@ -68,26 +80,26 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone {
 }
 
 #[derive(Clone)]
-pub(crate) struct TimerSet<T,S>(Arc<Mutex<TimersState<T,S>>>) where T: Ord;
+pub(super) struct TimerSet<T,S>(Arc<Mutex<TimersState<T,S>>>) where T: Ord;
 
 impl<T,S> TimerSet<T,S> where T: Ord + Clone {
-    pub(crate) fn new() -> TimerSet<T,S> {
+    pub(super) fn new() -> TimerSet<T,S> {
         TimerSet(Arc::new(Mutex::new(TimersState::new())))
     }
 
-    pub(crate) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
+    pub(super) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
         self.0.lock().unwrap().add(state,timeout,callback);
     }
 
-    pub(crate) fn min(&mut self) -> Option<T> {
+    pub(super) fn min(&mut self) -> Option<T> {
         self.0.lock().unwrap().min()
     }
 
-    pub(crate) fn check(&mut self, now: T) {
+    pub(super) fn check(&mut self, now: T) {
         self.0.lock().unwrap().check(now);
     }
 
-    pub(crate) fn tidy_handles<F>(&mut self, tidy_fn: F) where F: Fn(&S) -> bool {
+    pub(super) fn tidy_handles<F>(&mut self, tidy_fn: F) where F: Fn(&S) -> bool {
         self.0.lock().unwrap().tidy_handles(tidy_fn);
     }
 }
@@ -96,14 +108,14 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
 mod test {
     use std::sync::{ Arc, Mutex };
     use ordered_float::OrderedFloat;
-    use crate::taskcontainer::{ TaskContainer, TaskContainerHandle };
-    use crate::task::{ Task, TaskSummary, KillReason };
-    use crate::tidier::Tidier;
+    use crate::executor::taskcontainer::{ TaskContainer, TaskContainerHandle };
+    use crate::task::task::{ TaskSummary, KillReason };
+    use crate::task::taskhandle::ExecutorTaskHandle;
     use super::*;
 
     #[derive(Clone)]
     struct FakeTask(i8);
-    impl Task for FakeTask {
+    impl ExecutorTaskHandle for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
         fn summarize(&self) -> Option<TaskSummary> { None }

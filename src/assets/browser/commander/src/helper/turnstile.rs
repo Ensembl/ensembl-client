@@ -1,3 +1,9 @@
+/* A TurnstileFuture wraps an inner future, and ensures that the inner future
+ * is not awoken by wakeup events from futures outside of it. This is useful
+ * as an optimisation for exmaple in very broad joins to prevent too many
+ * wakeups.
+ */
+
 use std::pin::Pin;
 use std::future::Future;
 use std::task::{ Context, Poll };
@@ -27,17 +33,18 @@ impl<R> Future for TurnstileFuture<R> {
 
     fn poll(mut self: Pin<&mut Self>, _context: &mut Context) -> Poll<R> {
         if let Some(ref block) = self.block {
-            if block.step_blocked() {
+            if block.is_blocked() {
                 let block = self.block.as_ref().unwrap().clone();
-                self.context.add_block(&block);
+                self.context.add_upstream_block(&block);
                 return Poll::Pending;
             }
         } else {
             self.block = Some(self.context.block());
         }
         let block = self.block.as_ref().unwrap().clone();
+        self.context.add_upstream_block(&block);
         self.context.push_block(&block);
-        let waker = block.future_waker();
+        let waker = block.make_waker();
         let out = self.inner.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
         self.context.pop_block();
         out
@@ -48,10 +55,10 @@ impl<R> Future for TurnstileFuture<R> {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::oneshot::OneShot;
-    use crate::testintegration::TestIntegration;
-    use crate::executor::Executor;
-    use crate::runconfig::RunConfig;
+    use crate::helper::flagfuture::FlagFuture;
+    use crate::integration::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::task::runconfig::RunConfig;
     use std::future::Future;
     use std::sync::{ Arc, Mutex };
     use futures::future;
