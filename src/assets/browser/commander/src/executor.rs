@@ -60,7 +60,7 @@ impl Executor {
         true
     }
 
-    pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
+    pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static+Send {
         let handle = TaskHandle::new(&mut context,Box::pin(run));
         self.try_add_task(Box::new(handle.clone()),context);
         handle

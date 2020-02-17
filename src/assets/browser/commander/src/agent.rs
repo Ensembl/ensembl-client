@@ -116,12 +116,16 @@ impl Agent {
         state.action_handle.add(AnonAction::Tick(state.tick_index+ticks,Box::new(callback)));
     }
 
-    pub fn add<R,T>(&self, name: &str, rc: Option<RunConfig>, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static {
+    pub fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
         let state = self.state.lock().unwrap();
         let rc = rc.unwrap_or(state.config.clone());
-        let mut agent2 = Agent::new(&rc,&state.action_handle.get_action_link(),&state.integration,name);
+        Agent::new(&rc,&state.action_handle.get_action_link(),&state.integration,name)
+    }
+
+    pub fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
+        let state = self.state.lock().unwrap();
         let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
-        //state.action_handle.add(AnonAction::Create(Box::new(handle2.clone()),agent2));
+        state.action_handle.add(AnonAction::Create(Box::new(handle2.clone()),agent2.clone()));
         handle2
     }
 
@@ -246,7 +250,7 @@ impl Agent {
         }
     }
 
-    fn run_one_main<R>(&self, state: MutexGuard<AgentState>, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R>>>, result: &mut Option<R>) {
+    fn run_one_main<R>(&self, state: MutexGuard<AgentState>, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, result: &mut Option<R>) {
         drop(state);
         let out = future.as_mut().poll(context);
         let mut state = self.state.lock().unwrap();
@@ -261,7 +265,7 @@ impl Agent {
         };
     }
 
-    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R>>>, tick_index: u64, result: &mut Option<R>) -> bool {
+    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, tick_index: u64, result: &mut Option<R>) -> bool {
         let mut state = self.state.lock().unwrap();
         let finishing = state.finishing;
         /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
@@ -417,22 +421,26 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"test");
         let agent2 = agent.clone();
-        let agent3 = agent.clone();
         let tidied = Arc::new(Mutex::new(false));
         let tidied2 = tidied.clone();
-        let step2 = async move {
-            let t = agent3.tidy(async move {
-                *tidied2.lock().unwrap() = true;
-            });
-        };
         let step = async move {
-            agent2.tick(1).await;
-            agent2.add("task2",None,step2);
+            let agentb = agent2.new_agent("task2",None);
+            let agentb2 = agentb.clone();
+            agent2.submit(agentb,async move {
+                agentb2.tick(1).await;
+                *tidied2.lock().unwrap() = true;
+                agentb2.tick(1).await;
+            });
+            42
         };
         let mut handle = x.add(step,agent);
         x.tick(1.);
         assert!(!*tidied.lock().unwrap());
+        assert_eq!(Some(42),handle.take_result());
         x.tick(1.);
         assert!(*tidied.lock().unwrap());
+        let all = x.summarize_all();
+        assert_eq!(1,all.len());
+        assert_eq!("task2",all[0].get_name());
     }
 }

@@ -34,7 +34,7 @@ impl NamedWait {
 
 pub struct NamedFuture<R> {
     context: Agent,
-    inner: Pin<Box<dyn Future<Output=R>>>,
+    inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
     name: String,
     namedwait: Option<NamedWait>
 }

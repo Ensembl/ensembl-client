@@ -8,7 +8,7 @@ use futures::task::waker_ref;
 
 pub struct TurnstileFuture<R> {
     context: Agent,
-    inner: Pin<Box<dyn Future<Output=R>>>,
+    inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
     block: Option<Block>
 }
 

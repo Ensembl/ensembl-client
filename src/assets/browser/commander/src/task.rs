@@ -51,25 +51,25 @@ pub enum TaskResult {
     Killed(KillReason)
 }
 
-pub struct TaskHandleState<R> {
+pub struct TaskHandleState<R: 'static + Send> {
     identity: Option<u64>,
-    future: Pin<Box<dyn Future<Output=R>>>,
+    future: Pin<Box<dyn Future<Output=R> + 'static + Send>>,
     agent: Agent,
     result: Option<R>,
     done: bool
 }
 
-pub struct TaskHandle<R>(Arc<Mutex<TaskHandleState<R>>>);
+pub struct TaskHandle<R: 'static + Send>(Arc<Mutex<TaskHandleState<R>>>);
 
 // Rust bug means dan't derive Clone on polymorphic types
-impl<R> Clone for TaskHandle<R> {
+impl<R> Clone for TaskHandle<R> where R: 'static + Send {
     fn clone(&self) -> Self {
         TaskHandle(self.0.clone())
     }
 }
 
-impl<R> TaskHandle<R> {
-    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R>>>) -> TaskHandle<R> {
+impl<R> TaskHandle<R> where R: 'static + Send {
+    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R> + 'static + Send>>) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
             identity: None,
             future,
@@ -131,7 +131,7 @@ impl<R> TaskHandle<R> {
     }
 }
 
-impl<R> Task for TaskHandle<R> {
+impl<R> Task for TaskHandle<R> where R: 'static + Send {
     fn get_priority(&self) -> i8 { self.get_agent().get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {
