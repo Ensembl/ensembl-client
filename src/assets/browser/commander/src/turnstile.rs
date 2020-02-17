@@ -106,7 +106,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let mut left = TurnstileTestBranch::new();
         let mut right = TurnstileTestBranch::new();

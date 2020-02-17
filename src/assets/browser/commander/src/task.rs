@@ -30,7 +30,9 @@ pub(crate) trait Task {
     fn run(&mut self, tick_index: u64);
     fn evict(&self);
     fn get_priority(&self) -> i8;
-    fn summarize(&self) -> TaskSummary;
+    fn summarize(&self) -> Option<TaskSummary>;
+    fn kill(&self, reason: KillReason);
+    fn set_identity(&self, identity: u64);
 }
 
 #[cfg_attr(test,derive(Debug))]
@@ -50,7 +52,7 @@ pub enum TaskResult {
 }
 
 pub struct TaskHandleState<R> {
-    identity: u64,
+    identity: Option<u64>,
     future: Pin<Box<dyn Future<Output=R>>>,
     agent: Agent,
     result: Option<R>,
@@ -67,9 +69,9 @@ impl<R> Clone for TaskHandle<R> {
 }
 
 impl<R> TaskHandle<R> {
-    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R>>>, identity: u64) -> TaskHandle<R> {
+    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R>>>) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
-            identity,
+            identity: None,
             future,
             agent: agent.clone(),
             result: None,
@@ -90,10 +92,6 @@ impl<R> TaskHandle<R> {
         } else {
             TaskResult::Ongoing
         }
-    }
-
-    pub fn kill(&self, reason: KillReason) {
-        self.get_agent().finish(reason);
     }
 
     pub fn take_result(&self) -> Option<R> {
@@ -128,7 +126,7 @@ impl<R> TaskHandle<R> {
         self.get_agent().get_name()
     }
 
-    pub fn summary(&self) -> TaskSummary {
+    pub fn summary(&self) -> Option<TaskSummary> {
         self.summarize()
     }
 }
@@ -149,13 +147,25 @@ impl<R> Task for TaskHandle<R> {
         }
     }
 
-    fn summarize(&self) -> TaskSummary {
+    fn summarize(&self) -> Option<TaskSummary> {
         let state = self.0.lock().unwrap();
-        TaskSummary::new(state.identity,&state.agent.get_name(),&state.agent.get_waits())
+        if let Some(identity) = state.identity {
+            Some(TaskSummary::new(identity,&state.agent.get_name(),&state.agent.get_waits()))
+        } else {
+            None
+        }
     }
 
     fn evict(&self) {
         self.get_agent().finish(KillReason::NotNeeded);
+    }
+
+    fn kill(&self, reason: KillReason) {
+        self.get_agent().finish(reason);
+    }
+
+    fn set_identity(&self, identity: u64) {
+        self.0.lock().unwrap().identity = Some(identity);
     }
 }
 
@@ -176,7 +186,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let a = async move {
             tick_helper(ctx2,&[0,0,0]).await;
@@ -215,7 +225,7 @@ mod test {
             ctx.tick(0).await;
         });
         let mut tc2 = tc.clone();
-        let mut t = TaskHandle::new(&tc,s1,42);
+        let mut t = TaskHandle::new(&tc,s1);
         /* simple accessors */
         assert_eq!(3,t.get_priority());
         /* simple running to completion */

@@ -45,7 +45,7 @@ mod test {
                 _ => &cfg4
             };
             let name = format!("name-{}",i);
-            let agent = x.make_context(cfg,&name);
+            let agent = x.new_agent(cfg,&name);
             let agent2 = agent.clone();
             let step = async move {
                 agent2.tick(1).await;

@@ -90,7 +90,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"first-name");
+        let agent = x.new_agent(&cfg,"first-name");
         let agent2 = agent.clone();
         let step = async move {
             agent2.tick(1).await;

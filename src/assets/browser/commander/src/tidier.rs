@@ -63,7 +63,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"test");
+        let agent = x.new_agent(&cfg,"test");
         let agent2 = agent.clone();
         let tidied = Arc::new(Mutex::new(false));
         let tidied2 = tidied.clone();
@@ -86,7 +86,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"test");
+        let agent = x.new_agent(&cfg,"test");
         let agent2 = agent.clone();
         let tidied = Arc::new(Mutex::new(false));
         let tidied2 = tidied.clone();
@@ -114,7 +114,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"test");
+        let agent = x.new_agent(&cfg,"test");
         let agent2 = agent.clone();
         let tidied = Arc::new(Mutex::new(0));
         let tidied2 = tidied.clone();

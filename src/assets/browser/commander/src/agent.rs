@@ -13,7 +13,7 @@ use crate::named::{ NamedWait, NamedFuture };
 use crate::runconfig::RunConfig;
 use crate::taskcontainer::TaskContainerHandle;
 use crate::turnstile::TurnstileFuture;
-use crate::task::KillReason;
+use crate::task::{ KillReason, TaskHandle };
 use crate::tidier::Tidier;
 use crate::oneshot::OneShot;
 use std::task::Poll;
@@ -114,6 +114,15 @@ impl Agent {
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         let state = self.state.lock().unwrap();
         state.action_handle.add(AnonAction::Tick(state.tick_index+ticks,Box::new(callback)));
+    }
+
+    pub fn add<R,T>(&self, name: &str, rc: Option<RunConfig>, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static {
+        let state = self.state.lock().unwrap();
+        let rc = rc.unwrap_or(state.config.clone());
+        let mut agent2 = Agent::new(&rc,&state.action_handle.get_action_link(),&state.integration,name);
+        let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
+        //state.action_handle.add(AnonAction::Create(Box::new(handle2.clone()),agent2));
+        handle2
     }
 
     /* kills */
@@ -302,7 +311,7 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let eah = ActionLink::new();
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let mut tc = x.add(async {},ctx);        
         /* test */
         let mut shared = Arc::new(Mutex::new(false));
@@ -399,5 +408,31 @@ mod test {
         tc.register(&h);
         tc.finish(KillReason::NotNeeded);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
+    }
+
+    #[test]
+    pub fn test_create_subtask() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let agent = x.new_agent(&cfg,"test");
+        let agent2 = agent.clone();
+        let agent3 = agent.clone();
+        let tidied = Arc::new(Mutex::new(false));
+        let tidied2 = tidied.clone();
+        let step2 = async move {
+            let t = agent3.tidy(async move {
+                *tidied2.lock().unwrap() = true;
+            });
+        };
+        let step = async move {
+            agent2.tick(1).await;
+            agent2.add("task2",None,step2);
+        };
+        let mut handle = x.add(step,agent);
+        x.tick(1.);
+        assert!(!*tidied.lock().unwrap());
+        x.tick(1.);
+        assert!(*tidied.lock().unwrap());
     }
 }

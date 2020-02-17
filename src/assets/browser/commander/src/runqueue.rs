@@ -52,7 +52,7 @@ impl RunQueue2 {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::task::{ Task, TaskSummary };
+    use crate::task::{ Task, TaskSummary, KillReason };
     use crate::taskcontainer::TaskContainer;
     use crate::tidier::Tidier;
 
@@ -60,8 +60,10 @@ mod test {
     impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
-        fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
+        fn summarize(&self) -> Option<TaskSummary> { None }
         fn evict(&self) {}
+        fn kill(&self, reason: KillReason) {}
+        fn set_identity(&self, identity: u64) {}
     }
 
     #[test]
@@ -72,7 +74,7 @@ mod test {
         assert!(q.empty());
         let h1 = tasks.allocate();
         let t1 = FakeTask(0);
-        tasks.set(&h1,t1);
+        tasks.set(&h1,Box::new(t1));
         /* single task: check runs */
         q.add(&h1);
         assert!(!q.empty());
@@ -84,10 +86,10 @@ mod test {
         /* add second and third task and check run fairly */
         let h2 = tasks.allocate();
         let t2 = FakeTask(0);
-        tasks.set(&h2,t2);
+        tasks.set(&h2,Box::new(t2));
         let h3 = tasks.allocate();
         let t3 = FakeTask(0);
-        tasks.set(&h3,t3);
+        tasks.set(&h3,Box::new(t3));
         q.add(&h2);
         q.add(&h3);
         q.run(&mut tasks,0);

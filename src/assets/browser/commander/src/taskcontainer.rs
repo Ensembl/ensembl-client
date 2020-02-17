@@ -47,8 +47,8 @@ impl TaskContainer {
         self.current.iter().cloned().collect()
     }
 
-    pub(crate) fn set<T>(&mut self, handle: &TaskContainerHandle, task: T) where T: Task + 'static {
-        self.tasks[handle.0] = Some(Box::new(task));
+    pub(crate) fn set(&mut self, handle: &TaskContainerHandle, task: Box<dyn Task>) {
+        self.tasks[handle.0] = Some(task);
     }
 
     pub(crate) fn remove(&mut self, handle: &TaskContainerHandle) {
@@ -82,15 +82,17 @@ impl TaskContainer {
 #[allow(unused)]
 mod test {
     use super::*;
-    use crate::task::TaskSummary;
+    use crate::task::{ KillReason, TaskSummary };
     use crate::tidier::Tidier;
 
     struct FakeTask(i8);
     impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { self.0 += 1; }
         fn get_priority(&self) -> i8 { self.0 }
-        fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
+        fn summarize(&self) -> Option<TaskSummary> { None }
         fn evict(&self) {}
+        fn kill(&self, reason: KillReason) {}
+        fn set_identity(&self, identity: u64) {}
     }
 
     #[test]
@@ -102,11 +104,11 @@ mod test {
         let t2 = FakeTask(2);
         let t3 = FakeTask(3);
         let h1 = tasks.allocate();
-        tasks.set(&h1,t1);
+        tasks.set(&h1,Box::new(t1));
         let h2 = tasks.allocate();
-        tasks.set(&h2,t2);
+        tasks.set(&h2,Box::new(t2));
         let h3 = tasks.allocate();
-        tasks.set(&h3,t3);
+        tasks.set(&h3,Box::new(t3));
         assert_eq!(0,h1.0);
         assert_eq!(1,h2.0);
         assert_eq!(2,h3.0);
@@ -118,7 +120,7 @@ mod test {
         assert_eq!(0,*tasks.free_slots.peek().unwrap());
         let t4 = FakeTask(4);
         let h4 = tasks.allocate();
-        tasks.set(&h4,t4);
+        tasks.set(&h4,Box::new(t4));
         assert_eq!(0,h4.0);
         assert!(tasks.free_slots.len()==1);
         assert_eq!(1,*tasks.free_slots.peek().unwrap());
@@ -137,8 +139,8 @@ mod test {
         let h2 = tasks.allocate();
         let t1 = FakeTask(1);
         let t2 = FakeTask(2);
-        tasks.set(&h1,t1);
-        tasks.set(&h2,t2);
+        tasks.set(&h1,Box::new(t1));
+        tasks.set(&h2,Box::new(t2));
         assert_eq!(0,h1.0);
         assert_eq!(1,h2.0);
         assert!(tasks.get(&h1).is_some());
@@ -148,7 +150,7 @@ mod test {
         /* allocate t3/h3 in h1's place */
         let h3 = tasks.allocate();
         let t3 = FakeTask(3);
-        tasks.set(&h3,t3);
+        tasks.set(&h3,Box::new(t3));
         assert_eq!(0,h3.0);
         assert!(tasks.get(&h1).is_none());
         assert!(tasks.get(&h3).is_some());

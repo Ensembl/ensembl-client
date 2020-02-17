@@ -10,7 +10,7 @@ use crate::runnable::Runnable;
 use crate::agent::Agent;
 use crate::slot::RunSlot;
 use crate::runconfig::RunConfig;
-use crate::task::{ TaskHandle, KillReason, TaskSummary };
+use crate::task::{ TaskHandle, KillReason, TaskSummary, Task };
 
 pub struct Executor {
     integration: ReenteringIntegration,
@@ -43,10 +43,11 @@ impl Executor {
 
     pub fn get_tick_index(&self) -> u64 { self.tick_index }
 
-    pub fn make_context(&self, run_config: &RunConfig, name: &str) -> Agent {
+    pub fn new_agent(&self, run_config: &RunConfig, name: &str) -> Agent {
         Agent::new(run_config,&self.actions,&self.integration,name)
     }
 
+    // XXX race with eviction
     fn check_slot(&mut self, agent: &Agent) -> bool {
         if let Some(slot) = agent.get_config().get_slot() {
             if let Some(tch) = self.slot_map.get(slot) {
@@ -60,32 +61,43 @@ impl Executor {
     }
 
     pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static, T: Future<Output=R>+'static {
-        let now = self.integration.current_time();
-        let prekill = !self.check_slot(&context);
+        let handle = TaskHandle::new(&mut context,Box::pin(run));
+        self.try_add_task(Box::new(handle.clone()),context);
+        handle
+    }
+
+    fn try_add_task(&mut self, handle: Box<dyn Task>, context: Agent) {
+        if self.check_slot(&context) {
+            self.add_task(handle,context);
+        } else {
+            handle.kill(KillReason::NotNeeded);
+        }
+    }
+
+    // XXX if not already killed
+    fn add_task(&mut self, handle: Box<dyn Task>, context: Agent) {
         let container_handle = self.tasks.allocate();
         context.register(&container_handle);
-        let handle = TaskHandle::new(&mut context,Box::pin(run),container_handle.identity());
-        self.tasks.set(&container_handle,handle.clone());
-        if prekill {
-            handle.kill(KillReason::NotNeeded);
-        } else {
-            if let Some(slot) = context.get_config().get_slot() {
-                self.slot_map.insert(slot.clone(),container_handle.clone());
-            }
-            if let Some(timeout) = context.get_config().get_timeout() {
-                let control = context.clone();
-                self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(KillReason::Timeout));
-            }
-            self.runnable.add(&self.tasks,&container_handle);
+        handle.set_identity(container_handle.identity());
+        self.tasks.set(&container_handle,handle);
+        let now = self.integration.current_time();
+        if let Some(slot) = context.get_config().get_slot() {
+            self.slot_map.insert(slot.clone(),container_handle.clone());
         }
-        handle
+        if let Some(timeout) = context.get_config().get_timeout() {
+            let control = context.clone();
+            self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(KillReason::Timeout));
+        }
+        self.runnable.add(&self.tasks,&container_handle);
     }
 
     pub fn summarize_all(&self) -> Vec<TaskSummary> {
         let mut out = vec![];
         for th in self.tasks.all_handles().to_vec().iter() {
             if let Some(t) = self.tasks.get(th) {
-                out.push(t.summarize());
+                if let Some(summary) = t.summarize() {
+                    out.push(summary);
+                }
             }
         }
         out
@@ -130,6 +142,9 @@ impl Executor {
                 },
                 Action::Tick(handle,tick,callback) => {
                     self.ticks.add(Some(handle.clone()),tick,callback);
+                },
+                Action::Create(_handle,task,agent) => {
+                    self.try_add_task(task,agent);
                 }
             }
         }
@@ -202,7 +217,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"test");
+        let agent = x.new_agent(&cfg,"test");
         let agent2 = agent.clone();
         let step = async move {
             agent2.tick(0).await;
@@ -223,7 +238,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let fos = OneShot::new();
         let fos2 = fos.clone();
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.tick(2).await;
@@ -246,7 +261,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(1.));
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.tick(2).await;
@@ -262,7 +277,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let ctx = x.make_context(&cfg,"name");
+        let ctx = x.new_agent(&cfg,"name");
         let mut tc = x.add(tick_helper(ctx.clone(),&[0,0,0]),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
@@ -283,7 +298,7 @@ mod test {
         let integration2 = integration.clone();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let ctx = x.make_context(&cfg,"name");
+        let ctx = x.new_agent(&cfg,"name");
         let step = again_timeout(ctx.clone(),integration.clone());
         let mut tc = x.add(step,ctx);
         x.tick(2.);
@@ -297,7 +312,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let mut tc = x.add(tick_helper(ctx.clone(),&[3]),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
@@ -315,13 +330,13 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
-        let ctxa = x.make_context(&cfg,"test");
+        let ctxa = x.new_agent(&cfg,"test");
         let ctxa2 = ctxa.clone();
         let step = async move {
             ctxa2.tick(1).await;
             OneShot::new().await;
         };
-        let ctxb = x.make_context(&cfg,"test2");
+        let ctxb = x.new_agent(&cfg,"test2");
         let step2 = async move {
             OneShot::new().await;
         };
@@ -344,7 +359,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(12.));
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let z = async move {
             future::join(sleep_hepler(ctx2.clone(),5.),
@@ -378,7 +393,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(10.));
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             ctx2.timer(10.).await;
@@ -409,7 +424,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let fos = OneShot::new();
         let fos2 = fos.clone();
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let mut tx = x.add(async {
             fos2.await;
         },ctx);
@@ -428,7 +443,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let fosa = OneShot::new();
         let fosa2 = fosa.clone();
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let step = async move {
             fosa2.await;
@@ -461,7 +476,7 @@ mod test {
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(5.)); /* time=0; SleepQuantity::Time(5.) */
 
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let mut os1 = OneShot::new();
         let os1b = os1.clone();
@@ -488,7 +503,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let p = async move { 
             let a = async {
@@ -515,7 +530,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let ctx = x.make_context(&cfg,"test");
+        let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
         let p = async move {
             let a = async {
@@ -551,7 +566,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"first-name");
+        let agent = x.new_agent(&cfg,"first-name");
         let agent2 = agent.clone();
         let step = async move {
             agent2.tick(0).await;
@@ -569,7 +584,7 @@ mod test {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let agent = x.make_context(&cfg,"name");
+        let agent = x.new_agent(&cfg,"name");
         let agent2 = agent.clone();
         let step = async move {
             agent2.tick(1).await;
@@ -582,7 +597,7 @@ mod test {
         let mut handle = x.add(step,agent);
         x.tick(1.);
         x.tick(1.);
-        let summary = handle.summary();
+        let summary = handle.summary().unwrap();
         assert_eq!(2,summary.identity());
         assert_eq!("name",summary.get_name());
         assert_eq!(&vec!["test".to_string()],summary.get_waits());
@@ -597,7 +612,7 @@ mod test {
         for j in 0..3 {
             for i in 0..5 {
                 let name = format!("name-{}",j*5+i);
-                let agent = x.make_context(&cfg,&name);
+                let agent = x.new_agent(&cfg,&name);
                 let agent2 = agent.clone();
                 let step = async move {
                     agent2.tick(1).await;
@@ -633,7 +648,7 @@ mod test {
         let mut handles = vec![];
         for i in 0..3 {
             let name = format!("name-{}",i);
-            let agent = x.make_context(&cfg,&name);
+            let agent = x.new_agent(&cfg,&name);
             let agent2 = agent.clone();
             let step = async move {
                 agent2.tick(1).await;

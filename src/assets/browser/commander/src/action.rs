@@ -1,4 +1,6 @@
+use crate::agent::Agent;
 use crate::block::Block;
+use crate::task::Task;
 use crate::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
 
@@ -9,7 +11,8 @@ pub(crate) enum Action {
     Done(TaskContainerHandle),
     Finishing(TaskContainerHandle),
     Tick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
-    Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>)
+    Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>),
+    Create(TaskContainerHandle,Box<dyn Task + 'static + Send>,Agent)
 }
 
 /* For before we end up on the executor */
@@ -19,7 +22,8 @@ pub(crate) enum AnonAction {
     Done(),
     Finishing(),
     Tick(u64,Box<dyn FnMut() + 'static + Send>),
-    Timer(f64,Box<dyn FnMut() + 'static + Send>)
+    Timer(f64,Box<dyn FnMut() + 'static + Send>),
+    Create(Box<dyn Task + 'static + Send>,Agent)
 }
 
 impl AnonAction {
@@ -31,7 +35,8 @@ impl AnonAction {
             AnonAction::Done() => Action::Done(handle),
             AnonAction::Finishing() => Action::Finishing(handle),
             AnonAction::Tick(t,f) => Action::Tick(handle,t,f),
-            AnonAction::Timer(t,f) => Action::Timer(handle,t,f)
+            AnonAction::Timer(t,f) => Action::Timer(handle,t,f),
+            AnonAction::Create(t,a) => Action::Create(handle,t,a)
         }
     }
 }
@@ -54,6 +59,10 @@ impl TaskActionLink {
                 task: None
             }
         )))
+    }
+
+    pub(crate) fn get_action_link(&self) -> ActionLink {
+        self.0.lock().unwrap().eah.clone()
     }
 
     pub(crate) fn register(&self, handle: &TaskContainerHandle) {

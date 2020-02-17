@@ -57,7 +57,7 @@ impl Runnable {
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
-    use crate::task::{ Task, TaskSummary };
+    use crate::task::{ Task, TaskSummary, KillReason };
     use crate::tidier::Tidier;
 
     #[derive(Clone)]
@@ -65,8 +65,10 @@ mod test {
     impl Task for FakeTask {
         fn run(&mut self, tick_index: u64) { *self.1.lock().unwrap() += 1; }
         fn get_priority(&self) -> i8 { self.0 }
-        fn summarize(&self) -> TaskSummary { TaskSummary::new(0,&"",&vec![]) }
+        fn summarize(&self) -> Option<TaskSummary> { None }
         fn evict(&self) {}
+        fn kill(&self, reason: KillReason) {}
+        fn set_identity(&self, identity: u64) {}
     }
 
     // XXX common harness
@@ -78,16 +80,16 @@ mod test {
         /* 1: h1, h2; 2: h3, 3: h4 */
         let h1 = tasks.allocate();
         let t1 = FakeTask(1,Arc::new(Mutex::new(0)));
-        tasks.set(&h1,t1.clone());
+        tasks.set(&h1,Box::new(t1.clone()));
         let h2 = tasks.allocate();
         let t2 = FakeTask(1,Arc::new(Mutex::new(0)));
-        tasks.set(&h2,t2.clone());
+        tasks.set(&h2,Box::new(t2.clone()));
         let h3 = tasks.allocate();
         let t3 = FakeTask(2,Arc::new(Mutex::new(0)));
-        tasks.set(&h3,t3.clone());
+        tasks.set(&h3,Box::new(t3.clone()));
         let h4 = tasks.allocate();
         let t4 = FakeTask(3,Arc::new(Mutex::new(0)));
-        tasks.set(&h4,t4.clone());
+        tasks.set(&h4,Box::new(t4.clone()));
         /* add all four and check just h1, h2 run */
         r.add(&mut tasks,&h1);
         r.add(&mut tasks,&h2);
