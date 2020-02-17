@@ -3,9 +3,9 @@
 .geneView {
   display: grid;
   background-color: $black;
-  grid-template-columns: 1fr 5fr 2fr;
+  grid-template-columns: 228px 902px 1fr;
   grid-template-rows: auto;
-  padding: 15px;
+  padding-top: 75px;
   height: 100%; // may need to change this later
   width: 100%;
 }
