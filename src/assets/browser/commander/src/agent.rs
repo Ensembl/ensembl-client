@@ -7,7 +7,7 @@ use std::sync::{ Arc, Mutex, MutexGuard };
 
 use crate::block::Block;
 use crate::blockagent::BlockAgent;
-use crate::action::{ AnonAction, ActionLink, TaskActionLink };
+use crate::action::{ Action, ActionLink, TaskActionLink };
 use crate::integration::ReenteringIntegration;
 use crate::named::{ NamedWait, NamedFuture };
 use crate::runconfig::RunConfig;
@@ -108,12 +108,12 @@ impl Agent {
 
     /* timers */
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
-        self.state.lock().unwrap().action_handle.add(AnonAction::Timer(timeout,Box::new(callback)));
+        self.state.lock().unwrap().action_handle.add(Action::Timer(timeout,Box::new(callback)));
     }
 
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         let state = self.state.lock().unwrap();
-        state.action_handle.add(AnonAction::Tick(state.tick_index+ticks,Box::new(callback)));
+        state.action_handle.add(Action::Tick(state.tick_index+ticks,Box::new(callback)));
     }
 
     pub fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
@@ -125,7 +125,7 @@ impl Agent {
     pub fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
         let state = self.state.lock().unwrap();
         let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
-        state.action_handle.add(AnonAction::Create(Box::new(handle2.clone()),agent2.clone()));
+        state.action_handle.add(Action::Create(Box::new(handle2.clone()),agent2.clone()));
         handle2
     }
 
@@ -133,7 +133,7 @@ impl Agent {
 
     fn send_done_if_unsent(&self, state: &mut AgentState) {
         if !state.done_sent {
-            state.action_handle.add(AnonAction::Done());
+            state.action_handle.add(Action::Done());
         }
         state.done_sent = true;
     }
@@ -144,7 +144,7 @@ impl Agent {
                 state.kill_reason = Some(reason.clone());
             }
             state.finishing = true;
-            state.action_handle.add(AnonAction::Finishing());
+            state.action_handle.add(Action::Finishing());
             true
         } else {
             false
@@ -303,7 +303,6 @@ mod test {
     use crate::taskcontainer::TaskContainer;
     use crate::integration::{ CommanderIntegration2, SleepQuantity };
     use crate::testintegration::TestIntegration;
-    use crate::action::Action;
 
     #[test]
     pub fn test_control_timers() {
@@ -346,7 +345,7 @@ mod test {
         assert!(tc.is_finished());
         let actions = eah.drain();
         assert_eq!(1,actions.len());
-        if let Action::Finishing(_) = actions[0] {
+        if let Action::Finishing() = actions[0].1 {
         } else {
             assert!(false);
         }

@@ -4,19 +4,8 @@ use crate::task::Task;
 use crate::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
 
-// XXX don't be dumb: tch+AnonAction here
-pub(crate) enum Action {
-    Block(TaskContainerHandle,Block),
-    Unblock(TaskContainerHandle,Block),
-    Done(TaskContainerHandle),
-    Finishing(TaskContainerHandle),
-    Tick(TaskContainerHandle,u64,Box<dyn FnMut() + 'static + Send>),
-    Timer(TaskContainerHandle,f64,Box<dyn FnMut() + 'static + Send>),
-    Create(TaskContainerHandle,Box<dyn Task + 'static + Send>,Agent)
-}
-
 /* For before we end up on the executor */
-pub(crate) enum AnonAction {
+pub(crate) enum Action {
     Block(Block),
     Unblock(Block),
     Done(),
@@ -26,23 +15,8 @@ pub(crate) enum AnonAction {
     Create(Box<dyn Task + 'static + Send>,Agent)
 }
 
-impl AnonAction {
-    fn map(self, handle: &TaskContainerHandle) -> Action {
-        let handle = handle.clone();
-        match self {
-            AnonAction::Block(b) => Action::Block(handle,b),
-            AnonAction::Unblock(b) => Action::Unblock(handle,b),
-            AnonAction::Done() => Action::Done(handle),
-            AnonAction::Finishing() => Action::Finishing(handle),
-            AnonAction::Tick(t,f) => Action::Tick(handle,t,f),
-            AnonAction::Timer(t,f) => Action::Timer(handle,t,f),
-            AnonAction::Create(t,a) => Action::Create(handle,t,a)
-        }
-    }
-}
-
 struct TaskActionLinkState {
-    queue: Vec<AnonAction>,
+    queue: Vec<Action>,
     eah: ActionLink,
     task: Option<TaskContainerHandle>
 }
@@ -70,15 +44,15 @@ impl TaskActionLink {
         let mut queue = Vec::new();
         queue.append(&mut state.queue);
         for action in queue.drain(..) {
-            state.eah.add(action.map(handle));
+            state.eah.add(&handle,action);
         }
         state.task = Some(handle.clone());
     }
 
-    pub(crate) fn add(&self, action: AnonAction) {
+    pub(crate) fn add(&self, action: Action) {
         let mut state = self.0.lock().unwrap();
         if let Some(task) = &state.task {
-            state.eah.add(action.map(task));
+            state.eah.add(task,action);
         } else {
             state.queue.push(action);
         }
@@ -86,7 +60,7 @@ impl TaskActionLink {
 }
 
 #[derive(Clone)]
-pub(crate) struct ActionLink(Arc<Mutex<Option<Vec<Action>>>>);
+pub(crate) struct ActionLink(Arc<Mutex<Option<Vec<(TaskContainerHandle,Action)>>>>);
 
 impl ActionLink {
     pub(crate) fn new() -> ActionLink {
@@ -97,11 +71,11 @@ impl ActionLink {
         TaskActionLink::new(&self)
     }
 
-    fn add(&self, action: Action) {
-        self.0.lock().unwrap().as_mut().unwrap().push(action);
+    fn add(&self, tch: &TaskContainerHandle, action: Action) {
+        self.0.lock().unwrap().as_mut().unwrap().push((tch.clone(),action));
     }
 
-    pub(crate) fn drain(&mut self) -> Vec<Action> {
+    pub(crate) fn drain(&mut self) -> Vec<(TaskContainerHandle,Action)> {
         self.0.lock().unwrap().replace(Vec::new()).unwrap()
     }
 }
@@ -117,17 +91,17 @@ mod test {
         let mut c = TaskContainer::new();
         let mut eah = ActionLink::new();
         let h = c.allocate();
-        eah.add(Action::Timer(h.clone(),0.,Box::new(|| {})));
-        eah.add(Action::Done(h.clone()));
+        eah.add(&h,Action::Timer(0.,Box::new(|| {})));
+        eah.add(&h,Action::Done());
         let actions = eah.drain();
-        if let (Action::Timer(_,_,_),Action::Done(_)) = (&actions[0],&actions[1]) {
+        if let (Action::Timer(_,_),Action::Done()) = (&actions[0].1,&actions[1].1) {
         } else {
             assert!(false);
         }
         assert!(eah.drain().len() == 0);
-        eah.add(Action::Tick(h,0,Box::new(|| {})));
+        eah.add(&h,Action::Tick(0,Box::new(|| {})));
         let actions = eah.drain();
-        if let Action::Tick(_,0,_) = &actions[0] {
+        if let Action::Tick(0,_) = &actions[0].1 {
         } else {
             assert!(false);
         }

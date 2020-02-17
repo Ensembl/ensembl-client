@@ -6,7 +6,7 @@
  */
 
 use crate::block::Block;
-use crate::action::{ AnonAction, TaskActionLink };
+use crate::action::{ Action, TaskActionLink };
 use crate::integration::ReenteringIntegration;
 
 #[derive(Clone)]
@@ -24,14 +24,14 @@ impl BlockAgent {
     }
 
     pub(crate) fn block_task(&self, blocker: &Block) {
-        self.action_handle.add(AnonAction::Block(blocker.clone()));
+        self.action_handle.add(Action::Block(blocker.clone()));
         if blocker.unblock_was_sent() {
-            self.action_handle.add(AnonAction::Unblock(blocker.clone()));
+            self.action_handle.add(Action::Unblock(blocker.clone()));
         }
     }
 
     pub(crate) fn unblock_task(&self, blocker: &Block) {
-        self.action_handle.add(AnonAction::Unblock(blocker.clone()));
+        self.action_handle.add(Action::Unblock(blocker.clone()));
         self.integration.cause_reentry();
     }
 }

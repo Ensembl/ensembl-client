@@ -237,11 +237,11 @@ mod test {
         /* check for tick action in one of those two runs */
         let actions = eah.drain();
         assert_eq!(3,actions.len());
-        if let Action::Timer(_,_,_) = actions[0] {
+        if let Action::Timer(_,_) = actions[0].1 {
         } else {
             assert!(false);
         }
-        if let Action::Block(_,_) = actions[1] {
+        if let Action::Block(_) = actions[1].1 {
         } else {
             assert!(false);
         }

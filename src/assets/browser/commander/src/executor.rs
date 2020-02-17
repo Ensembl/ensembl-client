@@ -117,33 +117,33 @@ impl Executor {
     pub(crate) fn run_actions(&mut self) {
         for mut action in self.actions.drain() {
             match action {
-                Action::Block(ref handle,ref block) => {
+                (ref handle,Action::Block(ref block)) => {
                     self.runnable.remove(&self.tasks,&handle);
                     self.blocked_by.insert(handle.clone(),block.clone());
                 },
-                Action::Unblock(ref handle,ref mut block) => {
+                (ref handle,Action::Unblock(ref mut block)) => {
                     block.unblock_real();
-                    if let Some(blocked_by) = self.blocked_by.get(handle) {
+                    if let Some(blocked_by) = self.blocked_by.get(&handle) {
                         if blocked_by == block {
-                            self.blocked_by.remove(handle);
-                            self.runnable.add(&self.tasks,handle);
+                            self.blocked_by.remove(&handle);
+                            self.runnable.add(&self.tasks,&handle);
                         }
                     }
                 },
-                Action::Finishing(ref handle) => {
-                    self.blocked_by.remove(handle);
-                    self.runnable.add(&self.tasks,handle);
+                (handle,Action::Finishing()) => {
+                    self.blocked_by.remove(&handle);
+                    self.runnable.add(&self.tasks,&handle);
                 },
-                Action::Done(handle) => {
+                (handle,Action::Done()) => {
                     self.remove(&handle);
                 },
-                Action::Timer(handle,timeout,callback) => {
+                (handle,Action::Timer(timeout,callback)) => {
                     self.add_timer(&handle,timeout,callback);
                 },
-                Action::Tick(handle,tick,callback) => {
+                (handle,Action::Tick(tick,callback)) => {
                     self.ticks.add(Some(handle.clone()),tick,callback);
                 },
-                Action::Create(_handle,task,agent) => {
+                (_handle,Action::Create(task,agent)) => {
                     self.try_add_task(task,agent);
                 }
             }
