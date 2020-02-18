@@ -6,33 +6,22 @@
   grid-template-columns: 1fr 5fr 2fr;
   grid-template-rows: auto;
   padding: 15px;
+  height: 100%; // may need to change this later
   width: 100%;
 }
 
-// NOTE:
-// Remove the background colours and the heights once the PR is approved.
-// They are for demostration purposes only.
-
 .featureImage {
-  background-color: lightgrey;
-  height: 150px;
   grid-area: 1 / 1 / 2 / 3;
 }
 
 .viewInLinks {
-  background-color: lightblue;
-  height: 150px;
   grid-area: 1 / 3 / 2 / 4;
 }
 
 .geneViewTabs {
-  background-color: lightyellow;
-  height: 75px;
   grid-area: 2 / 2 / 3 / 4;
 }
 
 .geneViewTable {
-  background-color: lightgreen;
-  height: calc(100vh - 451px);
   grid-area: 3 / 1 / 4 / 4;
 }
