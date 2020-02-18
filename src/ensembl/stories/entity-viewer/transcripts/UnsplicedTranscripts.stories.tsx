@@ -6,7 +6,7 @@ import { storiesOf } from '@storybook/react';
 import { getTranscriptData } from './transcriptData';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
 
-import UnsplicedTranscript from 'src/content/app/entity-viewer/components/unspliced-transcript/UnsplicedTranscript';
+import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 
 import { Gene as GeneType } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/types/transcript';
