@@ -18,12 +18,12 @@ import {
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
-import GeneView from './gene-view/GeneView';
 import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/EntityViewerAppBar';
-import EntityViewerSidebar from './gene-view/components/entity-viewer-sidebar/EntityViewerSideBar';
-import EntityViewerSidebarTabs from './gene-view/components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
 import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
 import EntityViewerTopbar from './shared/components/entity-viewer-topbar/EntityViewerTopbar';
+import GeneView from './gene-view/GeneView';
+import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
+import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
@@ -60,8 +60,8 @@ const EntityViewer = (props: Props) => {
       {params.entityId ? (
         <StandardAppLayout
           mainContent={<GeneView />}
-          sidebarContent={<EntityViewerSidebar />}
-          sidebarNavigation={<EntityViewerSidebarTabs />}
+          sidebarContent={<GeneViewSideBar />}
+          sidebarNavigation={<GeneViewSidebarTabs />}
           sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
           topbarContent={<EntityViewerTopbar />}
           isSidebarOpen={props.isSidebarOpen}
