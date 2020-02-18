@@ -13,7 +13,9 @@ const ScaleSwitcher = () => {
 };
 
 const renderEmptyDots = (number: number) => {
-  return [...Array(number)].map((_, index) => <div key={index} className={styles.emptyNode} />);
-}
+  return [...Array(number)].map((_, index) => (
+    <div key={index} className={styles.emptyNode} />
+  ));
+};
 
 export default ScaleSwitcher;

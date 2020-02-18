@@ -15,7 +15,7 @@ import {
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 import { RootState } from 'src/store';
 
-import styles from './EntityViewerSidebarTabs.scss';
+import styles from './GeneViewSidebarTabs.scss';
 
 type Props = {
   activeTabName: SidebarTabName | null;
@@ -24,7 +24,7 @@ type Props = {
   openSidebar: () => void;
 };
 
-const EntityViewerSidebarTabs = (props: Props) => {
+const GeneViewSidebarTabs = (props: Props) => {
   if (!props.activeTabName) {
     return null;
   }
@@ -73,4 +73,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(EntityViewerSidebarTabs);
+)(GeneViewSidebarTabs);
