@@ -1,0 +1,33 @@
+@import 'src/styles/common';
+
+.transcriptVisualisationColumnWrapper {
+  position: relative;
+  margin-left: 228px; // FIXME: remove this when the table container is ready
+}
+
+.transcriptVisualisationColumn {
+  display: grid;
+  grid-auto-rows: 50px;
+  align-items: center;
+
+  svg rect {
+    fill: white;
+  }
+}
+
+.stripedBackground {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  .stripe {
+    position: absolute;
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    background: $orange;
+    opacity: 0.4;
+  }
+}

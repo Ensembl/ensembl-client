@@ -69,8 +69,9 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
     </g>
   );
 
+  // FIXME: fix the height issue for standalone (move height to top-level constant, avoid negative margin for blocks)
   return props.standalone ? (
-    <svg className={styles.containerSvg} width={props.width}>
+    <svg className={styles.containerSvg} width={props.width} height={7}>
       {renderedTranscript}
     </svg>
   ) : (
