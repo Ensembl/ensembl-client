@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { storiesOf } from '@storybook/react';
 
 import { getTranscriptData } from './transcriptData';
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
+import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 

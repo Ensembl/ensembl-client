@@ -1,7 +1,7 @@
 import {
   fetchGene,
   fetchTranscript
-} from 'src/content/app/entity-viewer/rest/rest-data-fetchers/transcriptData';
+} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';

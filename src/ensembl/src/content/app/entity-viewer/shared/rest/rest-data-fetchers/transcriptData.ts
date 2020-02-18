@@ -1,5 +1,5 @@
-import { restGeneAdaptor } from 'src/content/app/entity-viewer/rest/rest-adaptors/rest-gene-adaptor';
-import { restTranscriptAdaptor } from 'src/content/app/entity-viewer/rest/rest-adaptors/rest-transcript-adaptor';
+import { restGeneAdaptor } from 'src/content/app/entity-viewer/shared/rest/rest-adaptors/rest-gene-adaptor';
+import { restTranscriptAdaptor } from 'src/content/app/entity-viewer/shared/rest/rest-adaptors/rest-transcript-adaptor';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';

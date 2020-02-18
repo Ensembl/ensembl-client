@@ -4,7 +4,7 @@ import {
   TranscriptInResponse,
   ExonInResponse,
   FeatureInResponse
-} from 'src/content/app/entity-viewer/rest/rest-data-fetchers/transcriptData';
+} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';

@@ -5,7 +5,7 @@ import {
   FeatureWithParent,
   TranscriptInResponse,
   FeatureInResponse
-} from 'src/content/app/entity-viewer/rest/rest-data-fetchers/transcriptData';
+} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 

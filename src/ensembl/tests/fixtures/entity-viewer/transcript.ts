@@ -2,7 +2,7 @@ import faker from 'faker';
 import times from 'lodash/times';
 
 import { createSlice } from './slice';
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/helpers/entity-helpers';
+import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
