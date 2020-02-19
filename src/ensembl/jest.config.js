@@ -9,7 +9,7 @@ module.exports = {
     '(static/browser/.*)$': '<rootDir>/$1.stub.js',
     '\\.(css|scss)$': 'identity-obj-proxy'
   },
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/src', '<rootDir>/scripts'],
   setupFiles: ['<rootDir>/tests/setup-jest.js'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup-enzyme.ts'],
   testEnvironment: 'jsdom',

@@ -34,7 +34,9 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --max-warnings=0"
+      "eslint --max-warnings=0",
+      "node scripts/legal/add-license.js",
+      "git add"
     ],
     "*.{scss}": [
       "stylelint"
