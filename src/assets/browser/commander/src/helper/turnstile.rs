@@ -38,9 +38,10 @@ impl<R> Future for TurnstileFuture<R> {
             }
         } else {
             let their_block = self.context.block_agent().top_block();
-            self.our_block = Some(self.context.new_block(Box::new(move |_| {
+            let our_block = Some(self.context.block_agent().new_block(Box::new(move |_| {
                 their_block.send_unblock_to_executor();
             })));
+            self.our_block = our_block;
         }
         let block = self.our_block.as_ref().unwrap();
         self.context.block_agent().push_block(&block);

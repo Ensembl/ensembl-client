@@ -78,7 +78,7 @@ impl Executor {
     // XXX if not already killed
     fn add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, context: Agent) {
         let container_handle = self.tasks.allocate();
-        context.register(&container_handle);
+        context.run_agent().register(&container_handle);
         handle.set_identity(container_handle.identity());
         self.tasks.set(&container_handle,handle);
         let now = self.integration.current_time();

@@ -198,7 +198,7 @@ mod test {
         let mut eah = ActionLink::new();
         let mut integration = TestIntegration::new();
         let mut tc = Agent::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
-        tc.register(&h);
+        tc.run_agent().register(&h);
         let ctx = tc.clone();
         let s1 = Box::pin(async move {
             ctx.timer(1.).await;

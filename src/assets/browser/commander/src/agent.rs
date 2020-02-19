@@ -26,13 +26,17 @@ use owning_ref::MutexGuardRefMut;
 // Run
 
 pub(crate) struct BlockAgent {
-    blocks: Vec<Block>
+    blocks: Vec<Block>,
+    integration: ReenteringIntegration,
+    task_action_link: TaskActionLink,
 }
 
 impl BlockAgent {
-    pub(crate) fn new(integration: &ReenteringIntegration, action_handle: &TaskActionLink) -> BlockAgent {
+    pub(crate) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink) -> BlockAgent {
         BlockAgent {
-            blocks: vec![Block::new_main(integration,action_handle)]
+            blocks: vec![Block::new_main(integration,task_action_link)],
+            integration: integration.clone(),
+            task_action_link: task_action_link.clone()
         }
     }
 
@@ -48,8 +52,16 @@ impl BlockAgent {
         self.blocks.pop();
     }
 
+    pub(crate) fn block_task(&mut self) {
+        self.task_action_link.add(Action::BlockTask());
+    }
+
     pub(crate) fn root_block(&mut self) -> &mut Block {
         &mut self.blocks[0]
+    }
+
+    pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
+        Block::new(&self.integration,&self.task_action_link,unblock)
     }
 }
 
@@ -162,17 +174,62 @@ impl NameAgent {
     pub(crate) fn get_waits(&self) -> Vec<String> {
         self.named_waits.iter().map(|x| x.get_name().to_string()).collect()
     }
+}
 
+pub(crate) struct RunAgent {
+    tick_index: u64,
+    config: RunConfig,
+    integration: ReenteringIntegration,
+    action_handle: TaskActionLink
+}
+
+impl RunAgent {
+    pub(crate) fn new(integration: &ReenteringIntegration, action_handle: &TaskActionLink, config: &RunConfig) -> RunAgent {
+        RunAgent {
+            tick_index: 0,
+            config: config.clone(),
+            integration: integration.clone(),
+            action_handle: action_handle.clone()
+        }
+    }
+
+    pub(crate) fn set_tick_index(&mut self, tick: u64) {
+        self.tick_index = tick;
+    }
+
+    pub(crate) fn get_tick_index(&self) -> u64 { self.tick_index }
+
+    pub(crate) fn get_config(&self) -> &RunConfig { &self.config }
+
+    pub(crate) fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
+        let rc = rc.unwrap_or(self.config.clone());
+        Agent::new(&rc,&self.action_handle.get_action_link(),&self.integration,name)
+    }
+
+    pub(crate) fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
+        let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
+        self.action_handle.add(Action::Create(Box::new(handle2.clone()),agent2.clone()));
+        handle2
+    }
+
+    pub(crate) fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
+        self.action_handle.add(Action::Timer(timeout,Box::new(callback)));
+    }
+
+    pub(crate) fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
+        self.action_handle.add(Action::Tick(self.tick_index+ticks,Box::new(callback)));
+    }
+
+    pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
+        self.action_handle.register(task_handle);
+    }
 }
 
 pub(crate) struct AgentState {
     block_agent: BlockAgent,
     finish_agent: FinishAgent,
     name_agent: NameAgent,
-    tick_index: u64, // r
-    config: RunConfig, // r
-    integration: ReenteringIntegration, // r
-    action_handle: TaskActionLink // r
+    run_agent: RunAgent
 }
 
 // XXX all Arc to state obj?
@@ -191,10 +248,7 @@ impl Agent {
                 block_agent: BlockAgent::new(integration,&action_handle),
                 finish_agent: FinishAgent::new(integration,&action_handle),
                 name_agent: NameAgent::new(name),
-                tick_index: 0,
-                config: config.clone(),
-                integration: integration.clone(),
-                action_handle
+                run_agent: RunAgent::new(integration,&action_handle,config)
             }))
         };
         out
@@ -212,9 +266,8 @@ impl Agent {
         MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.name_agent)
     }
 
-    pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
-        let state = self.state.lock().unwrap();
-        Block::new(&state.integration,&state.action_handle,unblock)
+    pub(crate) fn run_agent(&self) -> MutexGuardRefMut<AgentState,RunAgent> {
+        MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.run_agent)
     }
 
     pub fn get_name(&self) -> String {
@@ -225,32 +278,20 @@ impl Agent {
         self.name_agent().set_name(name);
     }
 
-    pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
-        self.state.lock().unwrap().action_handle.register(task_handle);
-    }
-
-    /* timers */
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
-        self.state.lock().unwrap().action_handle.add(Action::Timer(timeout,Box::new(callback)));
+        self.run_agent().add_timer(timeout,callback);
     }
 
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
-        let state = self.state.lock().unwrap();
-        state.action_handle.add(Action::Tick(state.tick_index+ticks,Box::new(callback)));
+        self.run_agent().add_ticks_timer(ticks,callback);
     }
 
-    /* resubmissions */
     pub fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
-        let state = self.state.lock().unwrap();
-        let rc = rc.unwrap_or(state.config.clone());
-        Agent::new(&rc,&state.action_handle.get_action_link(),&state.integration,name)
+        self.run_agent().new_agent(name,rc)
     }
 
     pub fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
-        let state = self.state.lock().unwrap();
-        let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
-        state.action_handle.add(Action::Create(Box::new(handle2.clone()),agent2.clone()));
-        handle2
+        self.run_agent().submit(agent2,future)
     }
 
     /* kills */
@@ -260,14 +301,12 @@ impl Agent {
     }
 
     /* misc */
-    pub fn get_config(&self) -> RunConfig { self.state.lock().unwrap().config.clone() }
+    pub fn get_config(&self) -> RunConfig { self.run_agent().get_config().clone() }
 
     // XXX demut
     /* running steps */
 
-    pub fn get_tick_index(&self) -> u64 {
-        self.state.lock().unwrap().tick_index
-    }
+    pub fn get_tick_index(&self) -> u64 { self.run_agent().get_tick_index() }
 
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
         let future = FlagFuture::new();
@@ -302,8 +341,7 @@ impl Agent {
             match tidier.as_mut().poll(context) {
                 Poll::Pending => {
                     self.block_agent().root_block().block();
-                    let state = self.state.lock().unwrap();
-                    state.action_handle.add(Action::BlockTask());
+                    self.block_agent().block_task();
                 },
                 Poll::Ready(_) => {}
             }
@@ -315,8 +353,7 @@ impl Agent {
         match out {
             Poll::Pending => {
                 self.block_agent().root_block().block();
-                let state = self.state.lock().unwrap();
-                state.action_handle.add(Action::BlockTask());
+                self.block_agent().block_task();
             },
             Poll::Ready(v) => {
                 self.finish_agent().finish(None,false);
@@ -326,9 +363,7 @@ impl Agent {
     }
 
     pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, tick_index: u64, result: &mut Option<R>) -> bool {
-        let mut state = self.state.lock().unwrap();
-        state.tick_index = tick_index;
-        drop(state);
+        self.run_agent().set_tick_index(tick_index);
         if self.finish_agent().finished() {
             return false;
         }
@@ -386,7 +421,7 @@ mod test {
         let mut eah = ActionLink::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let mut tc = Agent::new(&cfg,&eah,&integration,"test");
-        tc.register(&h);
+        tc.run_agent().register(&h);
         /* test */
         assert!(!tc.finish_agent().finishing);
         tc.finish(KillReason::Cancelled);
@@ -412,7 +447,7 @@ mod test {
         let mut ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
-        tc.register(&h);
+        tc.run_agent().register(&h);
         /* simulate */
         integration.sleep(SleepQuantity::Time(1.));
         integration.cause_reentry(); /* sets one-shot, sends SleepQuantity::None */
@@ -438,12 +473,12 @@ mod test {
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
-        tc.register(&h);
+        tc.run_agent().register(&h);
         tc.finish_agent().finish(None,false);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
-        tc.register(&h);
+        tc.run_agent().register(&h);
         tc.finish(KillReason::NotNeeded);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
     }
