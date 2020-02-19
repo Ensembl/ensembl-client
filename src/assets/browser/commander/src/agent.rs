@@ -18,19 +18,54 @@ use crate::helper::tidier::Tidier;
 use crate::helper::flagfuture::FlagFuture;
 use std::task::Poll;
 use futures::task::{ Context, waker_ref };
+use owning_ref::MutexGuardRefMut;
 
-struct AgentState {
-    blocks: Vec<Block>,
-    tick_index: u64,
-    tidiers: Vec<Pin<Box<Tidier>>>,
-    done_sent: bool,
-    finishing: bool,
-    kill_reason: Option<KillReason>,
-    name: String,
-    named_waits: HashSet<NamedWait>,
-    config: RunConfig,
-    integration: ReenteringIntegration,
-    action_handle: TaskActionLink
+// BlockAgent
+// FinishAgent
+// NameAgent
+// Run
+
+pub(crate) struct BlockAgent {
+    blocks: Vec<Block>
+}
+
+impl BlockAgent {
+    pub(crate) fn new(integration: &ReenteringIntegration, action_handle: &TaskActionLink) -> BlockAgent {
+        BlockAgent {
+            blocks: vec![Block::new_main(integration,action_handle)]
+        }
+    }
+
+    pub(crate) fn top_block(&self) -> Block {
+        self.blocks[self.blocks.len()-1].clone()
+    }
+
+    pub(crate) fn push_block(&mut self, new: &Block) {
+        self.blocks.push(new.clone());
+    }
+
+    pub(crate) fn pop_block(&mut self) {
+        self.blocks.pop();
+    }
+
+    pub(crate) fn root_block(&mut self) -> &mut Block {
+        &mut self.blocks[0]
+    }
+}
+
+
+pub(crate) struct AgentState {
+    block_agent: BlockAgent,
+    tick_index: u64, // r
+    tidiers: Vec<Pin<Box<Tidier>>>, // f
+    done_sent: bool, // f
+    finishing: bool, // f
+    kill_reason: Option<KillReason>, // f
+    name: String, // n
+    named_waits: HashSet<NamedWait>, // n
+    config: RunConfig, // r
+    integration: ReenteringIntegration, // r
+    action_handle: TaskActionLink // r
 }
 
 // XXX all Arc to state obj?
@@ -46,7 +81,7 @@ impl Agent {
         let action_handle = action_handle.new_task_action_link();
         let out = Agent {
             state: Arc::new(Mutex::new(AgentState {
-                blocks: vec![Block::new_main(&integration,&action_handle)],
+                block_agent: BlockAgent::new(integration,&action_handle),
                 tick_index: 0,
                 finishing: false,
                 done_sent: false,
@@ -62,23 +97,13 @@ impl Agent {
         out
     }
 
+    pub(crate) fn block_agent(&self) -> MutexGuardRefMut<AgentState,BlockAgent> {
+        MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.block_agent)
+    }
+
     pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
         let state = self.state.lock().unwrap();
         Block::new(&state.integration,&state.action_handle,unblock)
-    }
-
-    pub(crate) fn top_block(&self) -> Block {
-        let blocks = &self.state.lock().unwrap().blocks;
-        blocks[blocks.len()-1].clone()
-    }
-
-    pub(crate) fn push_block(&self, new: &Block) {
-        let mut state = self.state.lock().unwrap();
-        state.blocks.push(new.clone());
-    }
-
-    pub(crate) fn pop_block(&self) {
-        self.state.lock().unwrap().blocks.pop();
     }
 
     pub fn get_name(&self) -> String {
@@ -184,18 +209,14 @@ impl Agent {
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
         let future = FlagFuture::new();
         let future2 = future.clone();
-        self.add_ticks_timer(ticks,move || {
-            future2.flag();
-        });
+        self.add_ticks_timer(ticks, move || future2.flag());
         future
     }
 
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
         let future = FlagFuture::new();
         let future2 = future.clone();
-        self.add_timer(timeout,move || {
-            future2.flag();
-        });
+        self.add_timer(timeout, move || future2.flag());
         future
     }
 
@@ -235,8 +256,8 @@ impl Agent {
             drop(state);
             match tidier.as_mut().poll(context) {
                 Poll::Pending => {
-                    let state = self.state.lock().unwrap();
-                    state.blocks[0].block();
+                    self.block_agent().root_block().block();
+                    let mut state = self.state.lock().unwrap();
                     state.action_handle.add(Action::BlockTask());
                 },
                 Poll::Ready(_) => {}
@@ -251,8 +272,8 @@ impl Agent {
         let out = future.as_mut().poll(context);
         match out {
             Poll::Pending => {
+                self.block_agent().root_block().block();
                 let state = self.state.lock().unwrap();
-                state.blocks[0].block();
                 state.action_handle.add(Action::BlockTask());
             },
             Poll::Ready(v) => {
@@ -274,7 +295,7 @@ impl Agent {
         /* prepare tick index, blocker */
         state.tick_index = tick_index;
         /* run */
-        let waker = state.blocks[0].make_waker();
+        let waker = state.block_agent.root_block().make_waker();
         let wr = &*waker_ref(&waker);
         let context = &mut Context::from_waker(wr);
         if finishing {

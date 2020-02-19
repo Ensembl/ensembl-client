@@ -37,16 +37,16 @@ impl<R> Future for TurnstileFuture<R> {
                 return Poll::Pending;
             }
         } else {
-            let their_block = self.context.top_block();
+            let their_block = self.context.block_agent().top_block();
             self.our_block = Some(self.context.new_block(Box::new(move |_| {
                 their_block.send_unblock_to_executor();
             })));
         }
         let block = self.our_block.as_ref().unwrap();
-        self.context.push_block(&block);
+        self.context.block_agent().push_block(&block);
         let waker = block.make_waker();
         let out = self.inner.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
-        self.context.pop_block();
+        self.context.block_agent().pop_block();
         if let Poll::Pending = out {
             self.our_block.as_ref().unwrap().block();
         }
