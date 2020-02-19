@@ -1,7 +1,6 @@
 use std::future::Future;
-use hashbrown::HashMap;
+use hashbrown::{ HashMap, HashSet };
 use ordered_float::OrderedFloat;
-use crate::block::Block;
 use super::action::{ Action, ActionLink };
 use crate::integration::integration::{ Integration, SleepQuantity };
 use crate::integration::reentering::ReenteringIntegration;
@@ -21,7 +20,7 @@ pub struct Executor {
     actions: ActionLink,
     timers: TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>>,
     ticks: TimerSet<u64,Option<TaskContainerHandle>>,
-    blocked_by: HashMap<TaskContainerHandle,Block>,
+    blocked_by: HashSet<TaskContainerHandle>,
     tick_index: u64,
     slot_map: HashMap<RunSlot,TaskContainerHandle>
 }
@@ -35,7 +34,7 @@ impl Executor {
             actions: ActionLink::new(),
             timers: TimerSet::new(),
             ticks: TimerSet::new(),
-            blocked_by: HashMap::new(),
+            blocked_by: HashSet::new(),
             tick_index: 0,
             slot_map: HashMap::new()
         }
@@ -117,36 +116,38 @@ impl Executor {
     }
 
     pub(crate) fn run_actions(&mut self) {
-        for mut action in self.actions.drain_actions() {
-            match action {
-                (ref handle,Action::Block(ref block)) => {
-                    self.runnable.remove(&self.tasks,&handle);
-                    self.blocked_by.insert(handle.clone(),block.clone());
-                },
-                (ref handle,Action::Unblock(ref mut block)) => {
-                    block.do_unblock();
-                    if let Some(blocked_by) = self.blocked_by.get(&handle) {
-                        if blocked_by == block {
-                            self.blocked_by.remove(&handle);
-                            self.runnable.add(&self.tasks,&handle);
-                        }
+        loop {
+            let actions = self.actions.drain_actions();
+            if actions.len() == 0 { break; }
+            for mut action in actions {
+                match action {
+                    (ref handle,Action::BlockTask()) => {
+                        self.runnable.remove(&self.tasks,&handle);
+                        self.blocked_by.insert(handle.clone());
+                    },
+                    (ref _handle,Action::Unblock(ref mut block)) => {
+                        block.run_unblock();
+                    },
+                    (handle,Action::UnblockTask()) => {
+                        self.blocked_by.remove(&handle);
+                        self.runnable.add(&self.tasks,&handle);
+                    },
+                    (handle,Action::Finishing()) => {
+                        self.blocked_by.remove(&handle);
+                        self.runnable.add(&self.tasks,&handle);
+                    },
+                    (handle,Action::Done()) => {
+                        self.remove(&handle);
+                    },
+                    (handle,Action::Timer(timeout,callback)) => {
+                        self.add_timer(&handle,timeout,callback);
+                    },
+                    (handle,Action::Tick(tick,callback)) => {
+                        self.ticks.add(Some(handle.clone()),tick,callback);
+                    },
+                    (_handle,Action::Create(task,agent)) => {
+                        self.try_add_task(task,agent);
                     }
-                },
-                (handle,Action::Finishing()) => {
-                    self.blocked_by.remove(&handle);
-                    self.runnable.add(&self.tasks,&handle);
-                },
-                (handle,Action::Done()) => {
-                    self.remove(&handle);
-                },
-                (handle,Action::Timer(timeout,callback)) => {
-                    self.add_timer(&handle,timeout,callback);
-                },
-                (handle,Action::Tick(tick,callback)) => {
-                    self.ticks.add(Some(handle.clone()),tick,callback);
-                },
-                (_handle,Action::Create(task,agent)) => {
-                    self.try_add_task(task,agent);
                 }
             }
         }

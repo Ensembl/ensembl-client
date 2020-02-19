@@ -222,7 +222,7 @@ mod test {
         } else {
             assert!(false);
         }
-        if let Action::Block(_) = actions[1].1 {
+        if let Action::BlockTask() = actions[1].1 {
         } else {
             assert!(false);
         }

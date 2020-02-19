@@ -8,14 +8,14 @@ use std::pin::Pin;
 use std::future::Future;
 use std::task::{ Context, Poll };
 
-use crate::block::Block;
+use crate::task::block::Block;
 use crate::agent::Agent;
 use futures::task::waker_ref;
 
 pub struct TurnstileFuture<R> {
     context: Agent,
     inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
-    block: Option<Block>
+    our_block: Option<Block>,
 }
 
 impl<R> TurnstileFuture<R> where R: Send {
@@ -23,7 +23,7 @@ impl<R> TurnstileFuture<R> where R: Send {
         TurnstileFuture {
             inner: Box::pin(inner),
             context: context.clone(),
-            block: None
+            our_block: None
         }
     }
 }
@@ -32,21 +32,24 @@ impl<R> Future for TurnstileFuture<R> {
     type Output = R;
 
     fn poll(mut self: Pin<&mut Self>, _context: &mut Context) -> Poll<R> {
-        if let Some(ref block) = self.block {
+        if let Some(ref block) = self.our_block {
             if block.is_blocked() {
-                let block = self.block.as_ref().unwrap().clone();
-                self.context.add_upstream_block(&block);
                 return Poll::Pending;
             }
         } else {
-            self.block = Some(self.context.block());
+            let their_block = self.context.top_block();
+            self.our_block = Some(self.context.new_block(Box::new(move |_| {
+                their_block.send_unblock_to_executor();
+            })));
         }
-        let block = self.block.as_ref().unwrap().clone();
-        self.context.add_upstream_block(&block);
+        let block = self.our_block.as_ref().unwrap();
         self.context.push_block(&block);
         let waker = block.make_waker();
         let out = self.inner.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
         self.context.pop_block();
+        if let Poll::Pending = out {
+            self.our_block.as_ref().unwrap().block();
+        }
         out
     }
 }

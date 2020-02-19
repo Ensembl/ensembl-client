@@ -30,14 +30,13 @@ mod integration {
 }
 
 mod task {
+    pub(crate) mod block;
     pub(crate) mod runconfig;
     pub(crate) mod slot;
     pub(crate) mod task;
     pub(crate) mod taskhandle;
 }
 
-mod block;
-mod blockagent;
 mod agent;
 
 #[cfg(test)]

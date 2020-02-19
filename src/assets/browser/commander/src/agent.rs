@@ -5,8 +5,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex, MutexGuard };
 
-use crate::block::Block;
-use crate::blockagent::BlockAgent;
+use crate::task::block::Block;
 use crate::executor::action::{ Action, ActionLink, TaskActionLink };
 use crate::integration::reentering::ReenteringIntegration;
 use crate::helper::named::{ NamedWait, NamedFuture };
@@ -31,8 +30,7 @@ struct AgentState {
     named_waits: HashSet<NamedWait>,
     config: RunConfig,
     integration: ReenteringIntegration,
-    action_handle: TaskActionLink,
-    blocker: BlockAgent
+    action_handle: TaskActionLink
 }
 
 // XXX all Arc to state obj?
@@ -46,10 +44,9 @@ impl Agent {
                       action_handle: &ActionLink,
                       integration: &ReenteringIntegration, name: &str) -> Agent {
         let action_handle = action_handle.new_task_action_link();
-        let blocker = BlockAgent::new(integration,&action_handle);
         let out = Agent {
             state: Arc::new(Mutex::new(AgentState {
-                blocks: Vec::new(),
+                blocks: vec![Block::new_main(&integration,&action_handle)],
                 tick_index: 0,
                 finishing: false,
                 done_sent: false,
@@ -59,17 +56,20 @@ impl Agent {
                 named_waits: HashSet::new(),
                 config: config.clone(),
                 integration: integration.clone(),
-                action_handle,
-                blocker
+                action_handle
             }))
         };
         out
     }
 
-    pub(crate) fn add_upstream_block(&self, new: &Block) {
+    pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
         let state = self.state.lock().unwrap();
-        let last = state.blocks.len()-1;
-        state.blocks[last].add_upstream(&new);
+        Block::new(&state.integration,&state.action_handle,unblock)
+    }
+
+    pub(crate) fn top_block(&self) -> Block {
+        let blocks = &self.state.lock().unwrap().blocks;
+        blocks[blocks.len()-1].clone()
     }
 
     pub(crate) fn push_block(&self, new: &Block) {
@@ -115,6 +115,7 @@ impl Agent {
         state.action_handle.add(Action::Tick(state.tick_index+ticks,Box::new(callback)));
     }
 
+    /* resubmissions */
     pub fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
         let state = self.state.lock().unwrap();
         let rc = rc.unwrap_or(state.config.clone());
@@ -172,17 +173,12 @@ impl Agent {
 
     /* misc */
     pub fn get_config(&self) -> RunConfig { self.state.lock().unwrap().config.clone() }
-    //pub fn get_remaining(&self) -> f64 { 0. }
 
     // XXX demut
     /* running steps */
 
     pub fn get_tick_index(&self) -> u64 {
         self.state.lock().unwrap().tick_index
-    }
-
-    pub fn block(&self) -> Block {
-        Block::new(&self.state.lock().unwrap().blocker)
     }
 
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
@@ -240,7 +236,8 @@ impl Agent {
             match tidier.as_mut().poll(context) {
                 Poll::Pending => {
                     let state = self.state.lock().unwrap();
-                    state.blocker.block_task(&state.blocks[0]);
+                    state.blocks[0].block();
+                    state.action_handle.add(Action::BlockTask());
                 },
                 Poll::Ready(_) => {}
             }
@@ -252,12 +249,14 @@ impl Agent {
     fn run_one_main<R>(&self, state: MutexGuard<AgentState>, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, result: &mut Option<R>) {
         drop(state);
         let out = future.as_mut().poll(context);
-        let mut state = self.state.lock().unwrap();
         match out {
             Poll::Pending => {
-                state.blocker.block_task(&state.blocks[0]);
+                let state = self.state.lock().unwrap();
+                state.blocks[0].block();
+                state.action_handle.add(Action::BlockTask());
             },
             Poll::Ready(v) => {
+                let mut state = self.state.lock().unwrap();
                 self.finish_internal(&mut state,None);
                 *result = Some(v);
             }
@@ -272,7 +271,6 @@ impl Agent {
             self.send_done_if_unsent(&mut state);
             return false;
         }
-        state.blocks = vec![Block::new(&state.blocker)];
         /* prepare tick index, blocker */
         state.tick_index = tick_index;
         /* run */
@@ -349,21 +347,6 @@ mod test {
             assert!(false);
         }
         assert!(Some(KillReason::Cancelled) == tc.kill_reason());
-    }
-
-    #[test]
-    pub fn test_blocking() {
-        /* setup */
-        let cfg = RunConfig::new(None,2,None);
-        let mut tasks = TaskContainer::new();
-        let h = tasks.allocate();
-        let mut eah = ActionLink::new();
-        let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = Agent::new(&cfg,&eah,&integration,"name");
-        tc.register(&h);
-
-        // XXX todo
-
     }
 
     #[test]

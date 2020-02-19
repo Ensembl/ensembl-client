@@ -1,5 +1,5 @@
 use crate::agent::Agent;
-use crate::block::Block;
+use crate::task::block::Block;
 use crate::task::taskhandle::ExecutorTaskHandle;
 use super::taskcontainer::TaskContainerHandle;
 use std::sync::{ Arc, Mutex };
@@ -18,8 +18,9 @@ use std::sync::{ Arc, Mutex };
  */
 
 pub(crate) enum Action {
-    Block(Block),
+    BlockTask(),
     Unblock(Block),
+    UnblockTask(),
     Done(),
     Finishing(),
     Tick(u64,Box<dyn FnMut() + 'static + Send>),
