@@ -64,7 +64,8 @@ impl<R> TaskHandle<R> where R: 'static + Send {
 
     pub fn peek_result(&self) -> TaskResult {
         let state = self.0.lock().unwrap();
-        if let Some(kill) = state.agent.kill_reason() {
+        let kill = state.agent.finish_agent().kill_reason();
+        if let Some(kill) = kill.clone() {
             TaskResult::Killed(kill)
         } else if state.done {
             TaskResult::Done
@@ -210,11 +211,11 @@ mod test {
         /* simple accessors */
         assert_eq!(3,t.get_priority());
         /* simple running to completion */
-        assert!(!tc.is_finished());
+        assert!(!tc.finish_agent().finishing());
         t.run(0);
-        assert!(!tc.is_finished());
+        assert!(!tc.finish_agent().finishing());
         t.run(0);
-        assert!(!tc.is_finished());
+        assert!(!tc.finish_agent().finishing());
         /* check for tick action in one of those two runs */
         let actions = eah.drain_actions();
         assert_eq!(3,actions.len());

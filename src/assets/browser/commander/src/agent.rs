@@ -53,14 +53,87 @@ impl BlockAgent {
     }
 }
 
+pub(crate) struct FinishAgent {
+    tidiers: Vec<Pin<Box<Tidier>>>,
+    kill_reason: Option<KillReason>,
+    finishing: bool,
+    done_sent: bool,
+    integration: ReenteringIntegration,
+    task_action_link: TaskActionLink,
+}
+
+impl FinishAgent {
+    pub(crate) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink) -> FinishAgent {
+        FinishAgent {
+            tidiers: Vec::new(),
+            kill_reason: None,
+            finishing: false,
+            done_sent: false,
+            integration: integration.clone(),
+            task_action_link: task_action_link.clone()
+        }
+    }
+
+    pub(crate) fn make_tidier<T>(&mut self, inner: T) -> Tidier where T: Future<Output=()> + 'static + Send {
+        let t = Tidier::new(Box::pin(inner));
+        self.tidiers.push(Box::pin(t.clone()));
+        t
+    }
+
+    pub(crate) fn check_tidiers(&mut self) {
+        let mut finished = Vec::new();
+        let mut idx = 0;
+        for t in self.tidiers.iter() {
+            if t.finished() {
+                finished.push(idx);
+            } else {
+                idx += 1;
+            }
+        }
+        for idx in finished {
+            self.tidiers.remove(idx);
+        }
+    }
+
+    pub(crate) fn finishing(&self) -> bool { self.finishing }
+
+    pub(crate) fn finished(&self) -> bool {
+        self.finishing && self.tidiers.len() == 0
+    }
+
+    pub(crate) fn get_tidier(&self) -> Option<&Pin<Box<Tidier>>> {
+        self.tidiers.get(0)
+    }
+
+    pub(crate) fn finish(&mut self, reason: Option<&KillReason>, is_async: bool) {
+        if !self.finishing {
+            if let Some(reason) = reason {
+                self.kill_reason = Some(reason.clone());
+            }
+            self.finishing = true;
+            self.task_action_link.add(Action::Finishing());
+            if is_async {
+                self.integration.cause_reentry();
+            }
+        }
+    }
+
+    pub(crate) fn send_done_if_unsent(&mut self) {
+        if !self.done_sent {
+            self.task_action_link.add(Action::Done());
+        }
+        self.done_sent = true;
+    }
+
+    pub(crate) fn kill_reason(&self) -> Option<KillReason> {
+        self.kill_reason.as_ref().map(|x| x.clone())
+    }
+}
 
 pub(crate) struct AgentState {
     block_agent: BlockAgent,
+    finish_agent: FinishAgent,
     tick_index: u64, // r
-    tidiers: Vec<Pin<Box<Tidier>>>, // f
-    done_sent: bool, // f
-    finishing: bool, // f
-    kill_reason: Option<KillReason>, // f
     name: String, // n
     named_waits: HashSet<NamedWait>, // n
     config: RunConfig, // r
@@ -82,11 +155,8 @@ impl Agent {
         let out = Agent {
             state: Arc::new(Mutex::new(AgentState {
                 block_agent: BlockAgent::new(integration,&action_handle),
+                finish_agent: FinishAgent::new(integration,&action_handle),
                 tick_index: 0,
-                finishing: false,
-                done_sent: false,
-                tidiers: Vec::new(),
-                kill_reason: None,
                 name: name.to_string(),
                 named_waits: HashSet::new(),
                 config: config.clone(),
@@ -99,6 +169,10 @@ impl Agent {
 
     pub(crate) fn block_agent(&self) -> MutexGuardRefMut<AgentState,BlockAgent> {
         MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.block_agent)
+    }
+
+    pub(crate) fn finish_agent(&self) -> MutexGuardRefMut<AgentState,FinishAgent> {
+        MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.finish_agent)
     }
 
     pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
@@ -156,44 +230,8 @@ impl Agent {
 
     /* kills */
 
-    fn send_done_if_unsent(&self, state: &mut AgentState) {
-        if !state.done_sent {
-            state.action_handle.add(Action::Done());
-        }
-        state.done_sent = true;
-    }
-
-    fn finish_internal(&self, state: &mut AgentState, reason: Option<&KillReason>) -> bool {
-        if !state.finishing {
-            if let Some(reason) = reason {
-                state.kill_reason = Some(reason.clone());
-            }
-            state.finishing = true;
-            state.action_handle.add(Action::Finishing());
-            true
-        } else {
-            false
-        }
-    }
-
     pub fn finish(&self, reason: KillReason) {
-        let mut state = self.state.lock().unwrap();
-        if self.finish_internal(&mut state,Some(&reason)) {
-            state.integration.cause_reentry();
-        }
-    }
-
-    /* NOTE: relying on this value to detect completion here is racey. 
-     * If true it has definitely finished, but if not it may well have
-     * finished even before you get the false. Therefore it should only
-     * be relied on to detect finish cases which would definitely have
-     * occured before this call.
-     */
-    #[cfg(test)]
-    pub(crate) fn is_finished(&self) -> bool { self.state.lock().unwrap().finishing }
-
-    pub(crate) fn kill_reason(&self) -> Option<KillReason> {
-        self.state.lock().unwrap().kill_reason.as_ref().map(|x| x.clone())
+        self.finish_agent().finish(Some(&reason),true);
     }
 
     /* misc */
@@ -229,41 +267,21 @@ impl Agent {
     }
 
     pub fn tidy<T>(&self, inner: T) -> Tidier where T: Future<Output=()> + 'static + Send {
-        let t = Tidier::new(Box::pin(inner));
-        self.state.lock().unwrap().tidiers.push(Box::pin(t.clone()));
-        t
+        self.finish_agent().make_tidier(inner)
     }
 
-    fn check_tidiers(&self, state: &mut AgentState) {
-        let mut finished = Vec::new();
-        let mut idx = 0;
-        for t in state.tidiers.iter() {
-            if t.finished() {
-                finished.push(idx);
-            } else {
-                idx += 1;
-            }
-        }
-        for idx in finished {
-            state.tidiers.remove(idx);
-        }
-    }
-
-    fn run_one_destructor(&self, mut state: MutexGuard<AgentState>, context: &mut Context) {
-        self.check_tidiers(&mut state);
-        if let Some(tidier) = state.tidiers.get(0) {
+    fn run_one_destructor(&self, context: &mut Context) {
+        self.finish_agent().check_tidiers();
+        if let Some(tidier) = self.finish_agent().get_tidier() {
             let mut tidier = tidier.clone();
-            drop(state);
             match tidier.as_mut().poll(context) {
                 Poll::Pending => {
                     self.block_agent().root_block().block();
-                    let mut state = self.state.lock().unwrap();
+                    let state = self.state.lock().unwrap();
                     state.action_handle.add(Action::BlockTask());
                 },
                 Poll::Ready(_) => {}
             }
-        } else {
-            drop(state);
         }
     }
 
@@ -277,8 +295,7 @@ impl Agent {
                 state.action_handle.add(Action::BlockTask());
             },
             Poll::Ready(v) => {
-                let mut state = self.state.lock().unwrap();
-                self.finish_internal(&mut state,None);
+                self.finish_agent().finish(None,false);
                 *result = Some(v);
             }
         };
@@ -286,30 +303,30 @@ impl Agent {
 
     pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, tick_index: u64, result: &mut Option<R>) -> bool {
         let mut state = self.state.lock().unwrap();
-        let finishing = state.finishing;
+        state.tick_index = tick_index;
+        drop(state);
         /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
-        if finishing && state.tidiers.len() == 0 {
-            self.send_done_if_unsent(&mut state);
+        if self.finish_agent().finished() {
+            self.finish_agent().send_done_if_unsent();
             return false;
         }
-        /* prepare tick index, blocker */
-        state.tick_index = tick_index;
         /* run */
-        let waker = state.block_agent.root_block().make_waker();
+        let waker = self.block_agent().root_block().make_waker();
         let wr = &*waker_ref(&waker);
         let context = &mut Context::from_waker(wr);
-        if finishing {
-            self.run_one_destructor(state,context);
+        if self.finish_agent().finishing() {
+            self.run_one_destructor(context);
         } else {
+            let state = self.state.lock().unwrap();
             self.run_one_main(state,context,future,result);
         }
-        let mut state = self.state.lock().unwrap();
-        self.check_tidiers(&mut state);
-        let finished = state.finishing && state.tidiers.len() == 0;
-        if finished {
-            self.send_done_if_unsent(&mut state);
+        self.finish_agent().check_tidiers();
+        if self.finish_agent().finished() {
+            self.finish_agent().send_done_if_unsent();
+            true
+        } else {
+            false
         }
-        finished
     }
 }
 
@@ -356,18 +373,18 @@ mod test {
         let mut tc = Agent::new(&cfg,&eah,&integration,"test");
         tc.register(&h);
         /* test */
-        assert!(!tc.is_finished());
+        assert!(!tc.finish_agent().finishing);
         tc.finish(KillReason::Cancelled);
-        assert!(tc.is_finished());
+        assert!(tc.finish_agent().finishing);
         tc.finish(KillReason::Timeout);
-        assert!(tc.is_finished());
+        assert!(tc.finish_agent().finishing);
         let actions = eah.drain_actions();
         assert_eq!(1,actions.len());
         if let Action::Finishing() = actions[0].1 {
         } else {
             assert!(false);
         }
-        assert!(Some(KillReason::Cancelled) == tc.kill_reason());
+        assert!(Some(KillReason::Cancelled) == tc.finish_agent().kill_reason());
     }
 
     #[test]
@@ -407,7 +424,7 @@ mod test {
         /* kills are known to be from inside a task should not force reentry */
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.register(&h);
-        tc.finish_internal(&mut tc.state.lock().unwrap(),None);
+        tc.finish_agent().finish(None,false);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
         let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");

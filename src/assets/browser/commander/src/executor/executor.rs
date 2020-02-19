@@ -230,7 +230,7 @@ mod test {
         x.run();
         assert!(handle.peek_result() == TaskResult::Ongoing);
         x.run();
-        assert!(handle.get_agent().is_finished());
+        assert!(handle.get_agent().finish_agent().finishing());
         assert!(!x.run());
     }
 
