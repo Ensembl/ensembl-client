@@ -59,14 +59,14 @@ impl<R> Future for NamedFuture<R> {
     fn poll(mut self: Pin<&mut Self>, context: &mut Context) -> Poll<R> {
         if self.namedwait.is_none() {
             let namedwait = NamedWait::new(&self.name);
-            self.context.push_wait(&namedwait);
+            self.context.name_agent().push_wait(&namedwait);
             self.namedwait = Some(namedwait);
         }
         let out = self.inner.as_mut().poll(context);
         match &out {
             Poll::Ready(_) => {
                 if let Some(namedwait) = self.namedwait.take() {
-                    self.context.pop_wait(&namedwait);
+                    self.context.name_agent().pop_wait(&namedwait);
                 }
             },
             _ => ()

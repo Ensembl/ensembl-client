@@ -101,7 +101,7 @@ impl<R> TaskHandle<R> where R: 'static + Send {
     }
 
     pub fn get_waits(&self) -> Vec<String> {
-        self.get_agent().get_waits()
+        self.get_agent().name_agent().get_waits()
     }
 
     pub fn get_name(&self) -> String {
@@ -132,7 +132,7 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
     fn summarize(&self) -> Option<TaskSummary> {
         let state = self.0.lock().unwrap();
         if let Some(identity) = state.identity {
-            Some(TaskSummary::new(identity,&state.agent.get_name(),&state.agent.get_waits()))
+            Some(TaskSummary::new(identity,&state.agent.get_name(),&state.agent.name_agent().get_waits()))
         } else {
             None
         }

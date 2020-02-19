@@ -3,7 +3,7 @@
 use hashbrown::HashSet;
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::{ Arc, Mutex, MutexGuard };
+use std::sync::{ Arc, Mutex };
 
 use crate::task::block::Block;
 use crate::executor::action::{ Action, ActionLink, TaskActionLink };
@@ -97,8 +97,15 @@ impl FinishAgent {
 
     pub(crate) fn finishing(&self) -> bool { self.finishing }
 
-    pub(crate) fn finished(&self) -> bool {
-        self.finishing && self.tidiers.len() == 0
+    pub(crate) fn finished(&mut self) -> bool {
+        let out = self.finishing && self.tidiers.len() == 0;
+        if out {
+            if !self.done_sent {
+                self.task_action_link.add(Action::Done());
+            }
+            self.done_sent = true;
+        }
+        out
     }
 
     pub(crate) fn get_tidier(&self) -> Option<&Pin<Box<Tidier>>> {
@@ -118,24 +125,51 @@ impl FinishAgent {
         }
     }
 
-    pub(crate) fn send_done_if_unsent(&mut self) {
-        if !self.done_sent {
-            self.task_action_link.add(Action::Done());
-        }
-        self.done_sent = true;
-    }
-
     pub(crate) fn kill_reason(&self) -> Option<KillReason> {
         self.kill_reason.as_ref().map(|x| x.clone())
     }
 }
 
+pub(crate) struct NameAgent {
+    name: String,
+    named_waits: HashSet<NamedWait>
+}
+
+impl NameAgent {
+    pub(crate) fn new(name: &str) -> NameAgent {
+        NameAgent {
+            name: name.to_string(),
+            named_waits: HashSet::new(),
+        }
+    }
+
+    pub(crate) fn get_name(&self) -> String {
+        self.name.to_string()
+    }
+
+    pub(crate) fn set_name(&mut self, name: &str) {
+        self.name = name.to_string();
+    }
+
+    pub(crate) fn push_wait(&mut self, wait: &NamedWait) {
+        self.named_waits.insert(wait.clone());
+    }
+
+    pub(crate) fn pop_wait(&mut self, wait: &NamedWait) {
+        self.named_waits.remove(wait);
+    }
+
+    pub(crate) fn get_waits(&self) -> Vec<String> {
+        self.named_waits.iter().map(|x| x.get_name().to_string()).collect()
+    }
+
+}
+
 pub(crate) struct AgentState {
     block_agent: BlockAgent,
     finish_agent: FinishAgent,
+    name_agent: NameAgent,
     tick_index: u64, // r
-    name: String, // n
-    named_waits: HashSet<NamedWait>, // n
     config: RunConfig, // r
     integration: ReenteringIntegration, // r
     action_handle: TaskActionLink // r
@@ -156,9 +190,8 @@ impl Agent {
             state: Arc::new(Mutex::new(AgentState {
                 block_agent: BlockAgent::new(integration,&action_handle),
                 finish_agent: FinishAgent::new(integration,&action_handle),
+                name_agent: NameAgent::new(name),
                 tick_index: 0,
-                name: name.to_string(),
-                named_waits: HashSet::new(),
                 config: config.clone(),
                 integration: integration.clone(),
                 action_handle
@@ -175,29 +208,21 @@ impl Agent {
         MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.finish_agent)
     }
 
+    pub(crate) fn name_agent(&self) -> MutexGuardRefMut<AgentState,NameAgent> {
+        MutexGuardRefMut::new(self.state.lock().unwrap()).map_mut(|x| &mut x.name_agent)
+    }
+
     pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
         let state = self.state.lock().unwrap();
         Block::new(&state.integration,&state.action_handle,unblock)
     }
 
     pub fn get_name(&self) -> String {
-        self.state.lock().unwrap().name.to_string()
+        self.name_agent().get_name()
     }
 
     pub fn set_name(&self, name: &str) {
-        self.state.lock().unwrap().name = name.to_string();
-    }
-
-    pub(crate) fn push_wait(&self, wait: &NamedWait) {
-        self.state.lock().unwrap().named_waits.insert(wait.clone());
-    }
-
-    pub(crate) fn pop_wait(&self, wait: &NamedWait) {
-        self.state.lock().unwrap().named_waits.remove(wait);
-    }
-
-    pub(crate) fn get_waits(&self) -> Vec<String> {
-        self.state.lock().unwrap().named_waits.iter().map(|x| x.get_name().to_string()).collect()
+        self.name_agent().set_name(name);
     }
 
     pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
@@ -285,8 +310,7 @@ impl Agent {
         }
     }
 
-    fn run_one_main<R>(&self, state: MutexGuard<AgentState>, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, result: &mut Option<R>) {
-        drop(state);
+    fn run_one_main<R>(&self, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, result: &mut Option<R>) {
         let out = future.as_mut().poll(context);
         match out {
             Poll::Pending => {
@@ -305,28 +329,19 @@ impl Agent {
         let mut state = self.state.lock().unwrap();
         state.tick_index = tick_index;
         drop(state);
-        /* Race ok because killing is not guaranteed synchronous and done happens in the same thread as this. */
         if self.finish_agent().finished() {
-            self.finish_agent().send_done_if_unsent();
             return false;
         }
-        /* run */
         let waker = self.block_agent().root_block().make_waker();
         let wr = &*waker_ref(&waker);
         let context = &mut Context::from_waker(wr);
         if self.finish_agent().finishing() {
             self.run_one_destructor(context);
         } else {
-            let state = self.state.lock().unwrap();
-            self.run_one_main(state,context,future,result);
+            self.run_one_main(context,future,result);
         }
         self.finish_agent().check_tidiers();
-        if self.finish_agent().finished() {
-            self.finish_agent().send_done_if_unsent();
-            true
-        } else {
-            false
-        }
+        self.finish_agent().finished()
     }
 }
 
