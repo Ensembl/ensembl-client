@@ -1,7 +1,7 @@
 use std::pin::Pin;
 use std::future::Future;
 use std::sync::{ Arc, Mutex };
-use crate::agent::Agent;
+use crate::agent::agent::Agent;
 use owning_ref::MutexGuardRef;
 use super::task::{ TaskSummary, KillReason, TaskResult };
 

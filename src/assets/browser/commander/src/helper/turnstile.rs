@@ -9,7 +9,7 @@ use std::future::Future;
 use std::task::{ Context, Poll };
 
 use crate::task::block::Block;
-use crate::agent::Agent;
+use crate::agent::agent::Agent;
 use futures::task::waker_ref;
 
 pub struct TurnstileFuture<R> {

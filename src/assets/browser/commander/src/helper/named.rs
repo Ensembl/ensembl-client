@@ -9,7 +9,7 @@
 use std::pin::Pin;
 use std::future::Future;
 use std::task::{ Context, Poll };
-use crate::agent::Agent;
+use crate::agent::agent::Agent;
 
 sequence!(IDENTITY);
 

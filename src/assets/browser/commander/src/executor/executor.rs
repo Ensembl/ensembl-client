@@ -7,7 +7,7 @@ use crate::integration::reentering::ReenteringIntegration;
 use super::taskcontainer::{ TaskContainer, TaskContainerHandle };
 use super::timerset::TimerSet;
 use super::runnable::Runnable;
-use crate::agent::Agent;
+use crate::agent::agent::Agent;
 use crate::task::slot::RunSlot;
 use crate::task::runconfig::RunConfig;
 use crate::task::task::{ KillReason, TaskSummary };

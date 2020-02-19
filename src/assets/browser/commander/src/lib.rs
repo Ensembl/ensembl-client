@@ -37,7 +37,13 @@ mod task {
     pub(crate) mod taskhandle;
 }
 
-mod agent;
+mod agent {
+    pub(crate) mod agent;
+    mod blockagent;
+    mod finishagent;
+    mod runagent;
+    mod nameagent;
+}
 
 #[cfg(test)]
 extern crate async_std;

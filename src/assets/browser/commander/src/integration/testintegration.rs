@@ -1,5 +1,5 @@
 use std::sync::{ Arc, Mutex, MutexGuard };
-use crate::agent::Agent;
+use crate::agent::agent::Agent;
 use crate::integration::integration::{ Integration, SleepQuantity };
 
 /* TestIntegration is the integration used in unit tests. The time can be set
