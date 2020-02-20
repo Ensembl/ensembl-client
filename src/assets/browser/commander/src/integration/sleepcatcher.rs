@@ -28,7 +28,6 @@ impl SleepCatcherIntegration {
         self.integration.lock().unwrap().current_time()
     }
 
-    // XXX test non-sc sleep
     pub(super) fn sleep(&self, amount: SleepQuantity) {
         let mut prev_sleep = self.prev_sleep.lock().unwrap();
         match amount {

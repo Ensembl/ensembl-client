@@ -32,7 +32,6 @@ impl ExecutorTasks {
         true
     }
 
-    // XXX race with eviction
     pub(crate) fn check_slot(&mut self, agent: &Agent) -> bool {
         if let Some(slot) = agent.get_config().get_slot() {
             if let Some(tch) = self.slot_map.get(slot) {

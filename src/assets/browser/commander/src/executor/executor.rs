@@ -52,17 +52,18 @@ impl Executor {
     }
 
     // XXX if not already killed
-    fn try_add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, agent: Agent) {
-        if self.get_tasks_mut().check_slot(&agent) {
-            let container_handle = self.get_tasks_mut().create_handle(&agent,handle);
-            self.get_tasks_mut().use_slot(&agent,&container_handle);
+    fn try_add_task(&mut self, task: Box<dyn ExecutorTaskHandle>, agent: Agent) {
+        let tasks = self.get_tasks_mut(); // shared to avoid race to slot
+        if tasks.check_slot(&agent) {
+            let container_handle = tasks.create_handle(&agent,task);
+            tasks.use_slot(&agent,&container_handle);
+            tasks.unblock_task(&container_handle);
             if let Some(timeout) = agent.get_config().get_timeout() {
                 let agent2 = agent.clone();
                 self.get_timings_mut().add_timer(&container_handle,timeout,Box::new(move || agent2.finish(KillReason::Timeout)));
             }
-            self.get_tasks_mut().unblock_task(&container_handle);
         } else {
-            handle.kill(KillReason::NotNeeded);
+            task.kill(KillReason::NotNeeded);
         }
     }
 
