@@ -22,11 +22,11 @@ A `Format` specifies the detail which a record retrieval requires (for example, 
 
 There are three ways of interacting with models
 
- * A model may be created *directly* with a new function, and used directly through the methods on that object.
- * The *static* model is expected to be used most frequently. A single, global, thread-safe instance is accessed by API utility methods.
- * The *thread-local* model is used in unit-tests wherem ultiple threads are to be treated as distinct applications. This is most useful in unit-tests.
+ * A model may be created ***directly*** with a `new` function, and used directly through the methods on that object.
+ * The ***static*** model is expected to be used most frequently. A single, global, thread-safe instance is accessed by API utility methods.
+ * The ***thread-local*** model is used in unit-tests wherem ultiple threads are to be treated as distinct applications. This is most useful in unit-tests.
 
- Typically, the static and thread-local models are mainly accessed through macros which are more ergonomic and are zero-cost when neither the `blackbox` nor `test` compile options are given.
+ Typically, the static and thread-local models are mainly accessed through macros which are more ergonomic and are zero-cost when the `blackbox-stub` crate is used in place of this one.
 
 ## API
 
@@ -59,18 +59,19 @@ There are three ways of interacting with models
 * `blackbox_push` and `blackbox_pop` maintain the stack (but see the `blackbox_stack!` macro);
 * `blackbox_log` adds a log record (but see the `blackbox_log!` macro);
 * `blackbox_count`, `blackbox_set_count` and `blackbox_reset_count` create, set, and reset counter records. The value is only added to the dataset when `blackbox_reset_count` is called (which also resets the count to zero);
-* `blackbox_start` and `blackbox_end` allow elapsed records (but see the `blackbox_time!` macro);
+* `blackbox_start` and `blackbox_end` allow elapsed records (but see the `blackbox_time!` macro for something which is usually easier);
 * `blackbox_metronome` is called to tick a metronome record;
 * `blackbox_model` and  `blackbox_format` retrieve `Model`s and `Format`s directly;
 * `blackbox_clear` is used in thread-local mode to remove a model for a thread which is terminating, but best efforts thread-termination interception does its best to do that for you. Calling it again manually will do no harm.
 
 ### Macros
 
-* `blackbox_log!` is a convenience macro for access to `blackbox_log` which does formatting. As the macro compiles to nothing except when blackbox is in use any expensive operations in the arguments, and the formatting, compile to nothing.
+* `blackbox_log!` is a convenience macro for access to `blackbox_log` which does formatting. As the macro compiles to nothing except when blackbox is in use, any expensive operations in the arguments, and the formatting, compile to nothing.
 * `blackbox_stack!` wraps a code block to push a stack level string whenever it's executing;
 * `blackbox_count!`, `blackbox_set_count!` and `blackbox_reset_count!` are wrappers around the count record static methods which compile to nothing except when blackbox is compiled in use;
-* `blackbox_metronome` is wrapper around the metronome record static method which compiles to nothing except when blackbox is compiled in use;
-* `blackbox_time` wraps code and sends the execution time to an elapsed record.
+* `blackbox_metronome!` is wrapper around the metronome record static method which compiles to nothing except when blackbox is compiled in use;
+* `blackbox_start!` and `blackbox_end!` implement elapsed records (but see `blackbox_time!` below for something which is usually easier);
+* `blackbox_time!` wraps code and sends the execution time to an elapsed record.
 
 ## Example
 
@@ -95,4 +96,4 @@ print!("{}\n",blackbox_take_lines().join("\n"));
 
 ## Naming
 
-Blackbox is named after the avionics item more properly called the Flight Data Recorder, not the fine Italian House music group.
+Blackbox is named after the avionics items more properly called the Flight Data Recorder and Cockpit Voice Recorder, not the fine Italian House music group, though timing is also important to the implementors of this crate.

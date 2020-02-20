@@ -111,12 +111,18 @@ impl<R> TaskHandle<R> where R: 'static + Send {
     pub fn summary(&self) -> Option<TaskSummary> {
         self.summarize()
     }
+
+    #[cfg(feature="use-blackbox")]
+    fn task_key(&self) -> String {
+        format!("commander-run-{}",self.summary().map(|x| x.get_name().to_string()).unwrap_or("".to_string()))
+    }
 }
 
 impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
     fn get_priority(&self) -> i8 { self.get_agent().get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {
+        blackbox_start!("commander",&self.task_key());
         let mut state = self.0.lock().unwrap();
         let agent = state.agent.clone();
         let mut r = None;
@@ -127,6 +133,8 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
         if finished {
             state.done = true;
         }
+        drop(state);
+        blackbox_end!("commander",&self.task_key());
     }
 
     fn summarize(&self) -> Option<TaskSummary> {

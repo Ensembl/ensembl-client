@@ -50,11 +50,9 @@ mod agent {
     mod nameagent;
 }
 
-#[cfg(test)]
-extern crate async_std;
-
 #[macro_use]
 extern crate blackbox;
+
 extern crate hashbrown;
 extern crate owning_ref;
 
@@ -62,9 +60,6 @@ extern crate owning_ref;
 extern crate lazy_static;
 
 extern crate futures;
-
-#[cfg(test)]
-extern crate regex;
 
 pub use crate::agent::agent::Agent;
 pub use crate::executor::executor::Executor;

@@ -73,6 +73,11 @@ impl ExecutorTasks {
         !self.runnable.empty()
     }
 
+    #[cfg(feature="use-blackbox")]
+    pub(crate) fn summarize(&self, handle: &TaskContainerHandle) -> Option<TaskSummary> {
+        self.tasks.get(handle).and_then(|x| x.summarize())
+    }
+
     pub(crate) fn create_handle(&mut self, agent: &Agent, handle: Box<dyn ExecutorTaskHandle>) -> TaskContainerHandle {
         let container_handle = self.tasks.allocate();
         agent.run_agent().register(&container_handle);

@@ -4,6 +4,9 @@ edition = '2018'
 version = "0.0.0"
 authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 
+[features]
+use-blackbox = ["blackbox/use-blackbox"]
+
 [dependencies]
 hashbrown="*"
 futures="*"
@@ -12,16 +15,6 @@ binary-heap-plus="*"
 ordered-float = "*"
 lazy_static="*"
 
-#[dev-dependencies]
-regex="*"
-async-std = "1.4.0"
-
-# XXX doesn't work with features. Need two blackbox crates.
-[target.'cfg(test)'.dependencies.blackbox]
-version="0.0.0"
-path="../blackbox"
-features=["blackbox"]
-
-[target.'cfg(not(test))'.dependencies.blackbox]
+[dependencies.blackbox]
 version="0.0.0"
 path="../blackbox"

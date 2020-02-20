@@ -10,4 +10,4 @@ owning_ref = "*"
 serde_json = "*"
 
 [features]
-blackbox = []
+use-blackbox = []

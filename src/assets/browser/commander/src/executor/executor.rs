@@ -10,6 +10,9 @@ use crate::task::runconfig::RunConfig;
 use crate::task::task::{ KillReason, TaskSummary };
 use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
 
+#[cfg(feature="use-blackbox")]
+use super::taskcontainer::TaskContainerHandle;
+
 pub struct Executor {
     timings: ExecutorTimings,
     tasks: ExecutorTasks,
@@ -19,6 +22,7 @@ pub struct Executor {
 
 impl Executor {
     pub fn new<T>(integration: T) -> Executor where T: Integration + 'static {
+        blackbox_log!("commander","Commander Executor starting");
         let integration = ReenteringIntegration::new(integration);
         Executor {
             timings: ExecutorTimings::new(&integration),
@@ -52,12 +56,14 @@ impl Executor {
     }
 
     fn try_add_task(&mut self, task: Box<dyn ExecutorTaskHandle>, agent: Agent) {
+        blackbox_log!("commander","Adding task '{}' to executor",agent.get_name());
         let tasks = self.get_tasks_mut(); // shared to avoid race to slot
         if tasks.check_slot(&agent) {
             let container_handle = tasks.create_handle(&agent,task);
             tasks.use_slot(&agent,&container_handle);
             if !agent.finish_agent().finished() {
                 tasks.unblock_task(&container_handle);
+                blackbox_start!("commander",&self.task_key(&container_handle.clone()));
                 if let Some(timeout) = agent.get_config().get_timeout() {
                     let agent2 = agent.clone();
                     self.get_timings_mut().add_timer(&container_handle,timeout,Box::new(move || agent2.finish(KillReason::Timeout)));
@@ -68,6 +74,16 @@ impl Executor {
         }
     }
 
+    #[cfg(feature="use-blackbox")]
+    fn task_name(&self, handle: &TaskContainerHandle) -> String {
+        self.get_tasks().summarize(handle).map(|x| x.make_line()).unwrap_or("".to_string())
+    }
+
+    #[cfg(feature="use-blackbox")]
+    fn task_key(&self, handle: &TaskContainerHandle) -> String {
+        format!("commander-elapsed-{}",self.get_tasks().summarize(handle).map(|x| x.get_name().to_string()).unwrap_or("".to_string()))
+    }
+
     pub(crate) fn service(&mut self) {
         loop {
             let actions = self.actions.drain_actions();
@@ -75,15 +91,19 @@ impl Executor {
             for mut action in actions {
                 match action {
                     (ref handle,Action::BlockTask()) => {
+                        blackbox_log!("commander","Task '{}' blocked",self.task_name(handle));
                         self.get_tasks_mut().block_task(&handle);
                     },
                     (ref _handle,Action::Unblock(ref mut block)) => {
                         block.run_unblock();
                     },
-                    (handle,Action::UnblockTask()) => {
+                    (ref handle,Action::UnblockTask()) => {
+                        blackbox_log!("commander","Task '{}' unblocked",self.task_name(handle));
                         self.get_tasks_mut().unblock_task(&handle);
                     },
-                    (handle,Action::Done()) => {
+                    (ref handle,Action::Done()) => {
+                        blackbox_log!("commander","Task '{}' finished",self.task_name(handle));
+                        blackbox_end!("commander",&self.task_key(handle));
                         self.get_tasks_mut().remove_task(&handle);
                     },
                     (handle,Action::Timer(timeout,callback)) => {
@@ -147,6 +167,7 @@ impl Executor {
 #[cfg(test)]
 mod test {
     use super::*;
+    use blackbox::*;
 
     use std::collections::HashSet;
     use crate::task::task::{ KillReason, TaskResult };
@@ -581,7 +602,55 @@ mod test {
         handles[1].kill(KillReason::Cancelled);
         assert_eq!(TaskResult::Killed(KillReason::Cancelled),handles[1].peek_result());
         assert_eq!(1,x.summarize_all().iter().map(|x| x.identity()).filter(|x| *x==3).count());
+        assert_eq!(2,handles[0].summarize().unwrap().identity());
         x.tick(1.);
         assert_eq!(0,x.summarize_all().iter().map(|x| x.identity()).filter(|x| *x==3).count());
+    }
+
+    #[test]
+    pub fn test_blackbox() {
+        /* configure blackbox */
+        if !blackbox_enabled!() { return; }
+        let mut ign = SimpleIntegration::new("commander");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_enable("commander");
+        /* on with the test */
+        let integration = TestIntegration::new();
+        let mut ign2 = ign.clone();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let agent = x.new_agent(&cfg,"test-task");
+        let agent2 = agent.clone();
+        let step = async move {
+            agent2.tick(1).await;
+            let agent3 = agent2.clone();
+            agent2.named_wait(async move {
+                ign2.tick();
+                agent3.tick(1).await;
+            },"test").await;
+            let agentb = agent2.new_agent("task2",None);
+            let agentb2 = agentb.clone();
+            agent2.submit(agentb,async move {
+                agentb2.tick(1).await;
+            });
+            agent2.tick(3).await;
+        };
+        x.add(step,agent);
+        for _ in 0..10 {
+            x.tick(1.);
+            ign.tick();
+        }
+        let all_lines = blackbox_take_lines().join("\n");
+        assert!(all_lines.contains("Commander Executor starting"));
+        assert!(all_lines.contains("Adding task 'test-task' to executor"));
+        assert!(all_lines.contains("commander-run-task2: num=2"));
+
+        assert!(all_lines.contains("commander-elapsed-test-task: num=1"));
+        assert!(all_lines.contains("commander-elapsed-task2: num=1"));
+        assert!(all_lines.contains("commander-run-test-task: num=4"));
+        assert!(all_lines.contains("num=4 total=1.00units"));
+        assert!(all_lines.contains("num=1 total=6.00units"));
+        assert!(all_lines.contains("[11][commander] commander-run-test-task"));
     }
 }

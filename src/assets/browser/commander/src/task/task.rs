@@ -26,6 +26,10 @@ impl TaskSummary {
     pub fn identity(&self) -> u64 { self.identity }
     pub fn get_name(&self) -> &str { &self.name }
     pub fn get_waits(&self) -> &Vec<String> { &self.waits }
+
+    pub fn make_line(&self) -> String {
+        format!("[{}] '{}' [{}]",self.identity,self.name,self.waits.join(","))
+    }
 }
 
 #[cfg_attr(test,derive(Debug))]
