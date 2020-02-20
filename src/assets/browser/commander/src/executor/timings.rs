@@ -20,7 +20,7 @@ impl ExecutorTimings {
             tick_index: 0,
         }
     }
-
+    
     pub(crate) fn check_timers(&self, tasks: &TaskContainer) {
         let now = self.integration.current_time();
         let (timers,ticks) = (&self.timers,&self.ticks);
@@ -56,5 +56,40 @@ impl ExecutorTimings {
             SleepQuantity::Forever
         }
     }
+}
 
+#[cfg(test)]
+#[allow(unused)]
+mod test {
+    use super::*;
+    use std::sync::{ Arc, Mutex };
+    use crate::integration::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::task::runconfig::RunConfig;
+    use crate::executor::action::ActionLink;
+
+    #[test]
+    pub fn test_control_timers() {
+        /* setup */
+        let time = Arc::new(Mutex::new(0.));
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,2,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let eah = ActionLink::new();
+        let ctx = x.new_agent(&cfg,"test");
+        let mut tc = x.add(async {},ctx);        
+        /* test */
+        let mut shared = Arc::new(Mutex::new(false));
+        let shared2 = shared.clone();
+        tc.get_agent().add_timer(1.,move || { *shared2.lock().unwrap() = true; });
+        x.service();
+        integration.set_time(0.5);
+        x.get_tasks().check_timers(x.get_timings());
+        assert!(!*shared.lock().unwrap());
+        integration.set_time(1.5);
+        x.get_tasks().check_timers(x.get_timings());
+        assert!(*shared.lock().unwrap());
+    } 
 }

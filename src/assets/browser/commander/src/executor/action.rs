@@ -22,7 +22,6 @@ pub(crate) enum Action {
     Unblock(Block),
     UnblockTask(),
     Done(),
-    Finishing(),
     Tick(u64,Box<dyn FnMut() + 'static + Send>),
     Timer(f64,Box<dyn FnMut() + 'static + Send>),
     Create(Box<dyn ExecutorTaskHandle + 'static + Send>,Agent)
@@ -40,8 +39,8 @@ impl ActionLink {
         TaskActionLink::new(&self)
     }
 
-    fn add_action(&self, tch: &TaskContainerHandle, action: Action) {
-        self.0.lock().unwrap().as_mut().unwrap().push((tch.clone(),action));
+    fn add_action(&self, handle: &TaskContainerHandle, action: Action) {
+        self.0.lock().unwrap().as_mut().unwrap().push((handle.clone(),action));
     }
 
     pub(crate) fn drain_actions(&mut self) -> Vec<(TaskContainerHandle,Action)> {
@@ -60,11 +59,11 @@ struct TaskActionLinkState {
 pub(crate) struct TaskActionLink(Arc<Mutex<TaskActionLinkState>>);
 
 impl TaskActionLink {
-    fn new(eah: &ActionLink) -> TaskActionLink {
+    fn new(action_link: &ActionLink) -> TaskActionLink {
         TaskActionLink(Arc::new(Mutex::new(
             TaskActionLinkState {
                 pre_queue: Vec::new(),
-                action_link: eah.clone(),
+                action_link: action_link.clone(),
                 task: None
             }
         )))

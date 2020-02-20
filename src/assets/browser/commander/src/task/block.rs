@@ -41,7 +41,7 @@ sequence!(IDENTITY);
 pub struct Block {
     blocked: Arc<Mutex<bool>>,
     callback: Arc<Mutex<Box<dyn Fn(&TaskActionLink) + Send>>>,
-    action_handle: TaskActionLink,
+    task_action_link: TaskActionLink,
     integration: ReenteringIntegration,
     identity: u64
 }
@@ -57,19 +57,19 @@ impl ArcWake for StepWaker {
 }
 
 impl Block {
-    pub(crate) fn new(integration: &ReenteringIntegration, action_handle: &TaskActionLink, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
+    pub(crate) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
         let identity = IDENTITY.next();
         Block {
             callback: Arc::new(Mutex::new(unblock)),
             blocked: Arc::new(Mutex::new(false)),
-            action_handle: action_handle.clone(),
+            task_action_link: task_action_link.clone(),
             integration: integration.clone(),
             identity
         }
     }
 
-    pub(crate) fn new_main(integration: &ReenteringIntegration, action_handle: &TaskActionLink) -> Block {
-        Block::new(integration,action_handle,Box::new(move |ah| {
+    pub(crate) fn new_main(integration: &ReenteringIntegration, task_action_link: &TaskActionLink) -> Block {
+        Block::new(integration,task_action_link,Box::new(move |ah| {
             ah.add(Action::UnblockTask());
         }))
     }
@@ -79,7 +79,7 @@ impl Block {
     }
 
     pub(crate) fn send_unblock_to_executor(&self) {
-        self.action_handle.add(Action::Unblock(self.clone()));
+        self.task_action_link.add(Action::Unblock(self.clone()));
         self.integration.cause_reentry();
     }
 
@@ -93,6 +93,6 @@ impl Block {
 
     pub(crate) fn run_unblock(&self) {
         *self.blocked.lock().unwrap() = false;
-        (self.callback.lock().unwrap())(&self.action_handle);
+        (self.callback.lock().unwrap())(&self.task_action_link);
     }
 }

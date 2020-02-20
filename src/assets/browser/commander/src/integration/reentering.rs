@@ -52,8 +52,37 @@ impl ReenteringIntegration {
 #[allow(unused)]
 mod test {
     use super::*;
-    use super::super::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::executor::taskcontainer::TaskContainer;
+    use crate::integration::integration::{ Integration, SleepQuantity };
+    use crate::executor::action::{ Action, ActionLink };
+    use crate::agent::agent::Agent;
+    use crate::task::runconfig::RunConfig;
+
+    #[test]
+    pub fn test_reentry() {
+        /* setup */
+        let cfg = RunConfig::new(None,2,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let mut eah = ActionLink::new();
+        let mut ti = TestIntegration::new();
+        let mut integration = ReenteringIntegration::new(ti.clone());
+        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        tc.run_agent().register(&h);
+        /* simulate */
+        integration.sleep(SleepQuantity::Time(1.));
+        integration.cause_reentry(); /* sets one-shot, sends SleepQuantity::None */
+        integration.sleep(SleepQuantity::Time(2.)); /* not sent */
+        integration.reentering(); /* sent by executor at start of tick */
+        integration.sleep(SleepQuantity::Time(3.));
+        assert_eq!(vec![
+            SleepQuantity::Time(1.),
+            SleepQuantity::None,
+            SleepQuantity::Time(3.)
+        ],*ti.get_sleeps());
+    }
 
     pub fn test_force_no_delay() {
         let mut integration = TestIntegration::new();

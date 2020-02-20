@@ -66,7 +66,7 @@ impl ExecutorTasks {
         self.tasks.remove(&handle);
     }
 
-    pub(crate) fn run_tasks(&mut self, tick: u64) -> bool {
+    pub(crate) fn execute(&mut self, tick: u64) -> bool {
         self.runnable.run(&mut self.tasks,tick)
     }
 

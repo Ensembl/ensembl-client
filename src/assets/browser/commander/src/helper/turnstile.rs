@@ -13,16 +13,16 @@ use crate::agent::agent::Agent;
 use futures::task::waker_ref;
 
 pub struct TurnstileFuture<R> {
-    context: Agent,
+    agent: Agent,
     inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
     our_block: Option<Block>,
 }
 
 impl<R> TurnstileFuture<R> where R: Send {
-    pub(crate) fn new<T>(context: &Agent, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send {
+    pub(crate) fn new<T>(agent: &Agent, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send {
         TurnstileFuture {
             inner: Box::pin(inner),
-            context: context.clone(),
+            agent: agent.clone(),
             our_block: None
         }
     }
@@ -37,17 +37,17 @@ impl<R> Future for TurnstileFuture<R> {
                 return Poll::Pending;
             }
         } else {
-            let their_block = self.context.block_agent().top_block();
-            let our_block = Some(self.context.block_agent().new_block(Box::new(move |_| {
+            let their_block = self.agent.block_agent().top_block();
+            let our_block = Some(self.agent.block_agent().new_block(Box::new(move |_| {
                 their_block.send_unblock_to_executor();
             })));
             self.our_block = our_block;
         }
         let block = self.our_block.as_ref().unwrap();
-        self.context.block_agent().push_block(&block);
+        self.agent.block_agent().push_block(&block);
         let waker = block.make_waker();
         let out = self.inner.as_mut().poll(&mut Context::from_waker(&*waker_ref(&waker)));
-        self.context.block_agent().pop_block();
+        self.agent.block_agent().pop_block();
         if let Poll::Pending = out {
             self.our_block.as_ref().unwrap().block();
         }

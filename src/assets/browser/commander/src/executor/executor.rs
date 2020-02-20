@@ -45,20 +45,20 @@ impl Executor {
         self.get_tasks().summarize_all()
     }
 
-    pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static+Send {
-        let handle = TaskHandle::new(&mut context,Box::pin(run));
-        self.try_add_task(Box::new(handle.clone()),context);
+    pub fn add<R,T>(&mut self, run: T, mut agent: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static+Send {
+        let handle = TaskHandle::new(&mut agent,Box::pin(run));
+        self.try_add_task(Box::new(handle.clone()),agent);
         handle
     }
 
     // XXX if not already killed
-    fn try_add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, context: Agent) {
-        if self.get_tasks_mut().check_slot(&context) {
-            let container_handle = self.get_tasks_mut().create_handle(&context,handle);
-            self.get_tasks_mut().use_slot(&context,&container_handle);
-            if let Some(timeout) = context.get_config().get_timeout() {
-                let control = context.clone();
-                self.get_timings_mut().add_timer(&container_handle,timeout,Box::new(move || control.finish(KillReason::Timeout)));
+    fn try_add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, agent: Agent) {
+        if self.get_tasks_mut().check_slot(&agent) {
+            let container_handle = self.get_tasks_mut().create_handle(&agent,handle);
+            self.get_tasks_mut().use_slot(&agent,&container_handle);
+            if let Some(timeout) = agent.get_config().get_timeout() {
+                let agent2 = agent.clone();
+                self.get_timings_mut().add_timer(&container_handle,timeout,Box::new(move || agent2.finish(KillReason::Timeout)));
             }
             self.get_tasks_mut().unblock_task(&container_handle);
         } else {
@@ -66,7 +66,7 @@ impl Executor {
         }
     }
 
-    pub(crate) fn run_actions(&mut self) {
+    pub(crate) fn service(&mut self) {
         loop {
             let actions = self.actions.drain_actions();
             if actions.len() == 0 { break; }
@@ -79,9 +79,6 @@ impl Executor {
                         block.run_unblock();
                     },
                     (handle,Action::UnblockTask()) => {
-                        self.get_tasks_mut().unblock_task(&handle);
-                    },
-                    (handle,Action::Finishing()) => {
                         self.get_tasks_mut().unblock_task(&handle);
                     },
                     (handle,Action::Done()) => {
@@ -103,14 +100,14 @@ impl Executor {
 
     fn main_step(&mut self) -> bool {
         self.get_tasks().check_timers(self.get_timings());
-        self.run_actions();
+        self.service();
         let tick = self.get_timings().get_tick_index();
-        let out = self.get_tasks_mut().run_tasks(tick);
-        self.run_actions();
+        let out = self.get_tasks_mut().execute(tick);
+        self.service();
         out
     }
 
-    fn main_loop(&mut self, slice: f64) -> f64 {
+    fn run_one_tick(&mut self, slice: f64) -> f64 {
         let mut now = self.integration.current_time();
         let expiry = now+slice;
         loop {
@@ -130,17 +127,16 @@ impl Executor {
     }
 
     fn make_next_tick_runnable(&mut self) {
-        /* advance to next tick and service to make sure runnable are marked as such */
+        /* advance to next tick and service, to make sure runnable are marked as such */
         self.get_timings().check_ticks(1);
-        self.run_actions();
+        self.service();
     }
 
     pub fn tick(&mut self, slice: f64) {
         self.integration.reentering();
         self.get_timings_mut().advance_tick();
         self.get_timings().check_ticks(0);
-        /* main tick loop */
-        let now = self.main_loop(slice);
+        let now = self.run_one_tick(slice);
         self.make_next_tick_runnable();
         self.integration.sleep(self.calculate_sleep(now));
     }
@@ -339,7 +335,7 @@ mod test {
     }
 
     #[test]
-    pub fn test_oneshot() {
+    pub fn test_forever() {
         /* setup */
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());

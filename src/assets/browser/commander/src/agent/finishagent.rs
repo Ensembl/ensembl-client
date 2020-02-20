@@ -53,14 +53,15 @@ impl FinishAgent {
     pub(crate) fn finishing(&self) -> bool { self.finishing }
 
     pub(super) fn finished(&mut self) -> bool {
-        let out = self.finishing && self.tidiers.len() == 0;
-        if out {
+        if self.finishing && self.tidiers.len() == 0 {
             if !self.done_sent {
                 self.task_action_link.add(Action::Done());
             }
             self.done_sent = true;
+            true
+        } else {
+            false
         }
-        out
     }
 
     pub(super) fn get_tidier(&self) -> Option<&Pin<Box<Tidier>>> {
@@ -73,7 +74,7 @@ impl FinishAgent {
                 self.kill_reason = Some(reason.clone());
             }
             self.finishing = true;
-            self.task_action_link.add(Action::Finishing());
+            self.task_action_link.add(Action::UnblockTask());
             if is_async {
                 self.integration.cause_reentry();
             }
@@ -82,5 +83,65 @@ impl FinishAgent {
 
     pub(crate) fn kill_reason(&self) -> Option<KillReason> {
         self.kill_reason.as_ref().map(|x| x.clone())
+    }
+}
+
+#[cfg(test)]
+#[allow(unused)]
+mod test {
+    use super::*;
+    use crate::integration::integration::SleepQuantity;
+    use crate::integration::testintegration::TestIntegration;
+    use crate::executor::executor::Executor;
+    use crate::task::runconfig::RunConfig;
+    use crate::executor::action::ActionLink;
+    use crate::executor::taskcontainer::TaskContainer;
+    use crate::agent::agent::Agent;
+
+    #[test]
+    pub fn test_control_kill() {
+        /* setup */
+        let cfg = RunConfig::new(None,0,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let mut eah = ActionLink::new();
+        let integration = ReenteringIntegration::new(TestIntegration::new());
+        let mut tc = Agent::new(&cfg,&eah,&integration,"test");
+        tc.run_agent().register(&h);
+        /* test */
+        assert!(!tc.finish_agent().finishing());
+        tc.finish(KillReason::Cancelled);
+        assert!(tc.finish_agent().finishing());
+        tc.finish(KillReason::Timeout);
+        assert!(tc.finish_agent().finishing());
+        let actions = eah.drain_actions();
+        assert_eq!(1,actions.len());
+        if let Action::UnblockTask() = actions[0].1 {
+        } else {
+            assert!(false);
+        }
+        assert!(Some(KillReason::Cancelled) == tc.finish_agent().kill_reason());
+    }
+
+    #[test]
+    pub fn test_internal_finish() {
+        /* setup */
+        let cfg = RunConfig::new(None,2,None);
+        let mut tasks = TaskContainer::new();
+        let h = tasks.allocate();
+        let mut eah = ActionLink::new();
+        let mut ti = TestIntegration::new();
+        let mut integration = ReenteringIntegration::new(ti.clone());
+        /* simulate */
+        /* kills are known to be from inside a task should not force reentry */
+        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        tc.run_agent().register(&h);
+        tc.finish_agent().finish(None,false);
+        assert_eq!(ti.get_sleeps().len(),0);
+        /* but kills which maybe from outside must */
+        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        tc.run_agent().register(&h);
+        tc.finish(KillReason::NotNeeded);
+        assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());
     }
 }
