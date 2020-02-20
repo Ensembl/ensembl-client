@@ -335,6 +335,17 @@ Internal:EHK-HH:
   - dev
   needs: ["Nginx:Internal-EHK"]
 
+# Job to deploy to internal environment (WP-HX k8s cluster)
+Internal:WP-HX:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
+  environment:
+    name : wp-hx-internal
+  only:
+  - dev
+  needs: ["Nginx:Internal-WP"]
+
 Feature:EHK-HH:
   stage: deploy
   image: alpine
