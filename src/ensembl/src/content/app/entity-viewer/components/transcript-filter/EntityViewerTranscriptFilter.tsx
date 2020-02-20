@@ -62,7 +62,8 @@ const EntityViewerTranscriptFilter = (props: Props) => {
                       handleChange(status, [groupIndex, itemIndex])
                     }
                     classNames={{
-                      unchecked: styles.checkboxUnchecked
+                      unchecked: styles.checkboxUnchecked,
+                      checked: styles.checkboxChecked
                     }}
                   />
                 </div>

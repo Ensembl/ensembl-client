@@ -6,20 +6,27 @@
 }
 
 .checkboxPadding {
-  padding-left: 15px;
+  padding-left: 20px;
 }
 
 .optionGroup:not(:last-child) {
-  padding-bottom: 20px;
+  padding-bottom: 18px;
   margin-bottom: 20px;
   border-bottom: 1px solid $orange;
 }
 
 .checkboxLabel {
   color: $grey;
-  font-size: 13px;
+  font-weight: $normal;
+  padding-left: 20px;
 }
 
 .checkboxUnchecked {
   background-color: $black;
+  border-color: $dark-grey;
+}
+
+.checkboxChecked {
+  border-color: $dark-grey;
+  background-color: $green;
 }
