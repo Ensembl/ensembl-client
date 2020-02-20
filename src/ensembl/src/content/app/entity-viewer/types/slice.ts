@@ -4,7 +4,6 @@ export type Slice = {
   location: {
     start: number;
     end: number;
-    // length: number,
   };
   region: {
     name: string;

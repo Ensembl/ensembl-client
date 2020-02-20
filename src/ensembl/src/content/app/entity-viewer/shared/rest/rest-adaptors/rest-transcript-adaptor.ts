@@ -15,7 +15,7 @@ import { CDS } from 'src/content/app/entity-viewer/types/cds';
 export const restTranscriptAdaptor = (
   transcriptId: string,
   data: FeatureInResponse[]
-): Transcript => {
+) => {
   const transcript = data.find(
     (feature) => feature.id === transcriptId
   ) as TranscriptInResponse;
