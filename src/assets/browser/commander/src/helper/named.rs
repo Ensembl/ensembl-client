@@ -1,3 +1,8 @@
+use std::future::Future;
+use std::pin::Pin;
+use std::task::{ Context, Poll };
+use crate::agent::agent::Agent;
+
 /* NamedFuture implements named futures. NamedFutures wrap inner futures. While these have
  * been called at least once but are unfinished, a string is pushed into the state of the
  * task. This is useful for debugging purposes.
@@ -5,11 +10,6 @@
  * NamedWait wraps a string in a struct with per-creation uniqueness. This allows for
  * later clean removal.
  */
-
-use std::pin::Pin;
-use std::future::Future;
-use std::task::{ Context, Poll };
-use crate::agent::agent::Agent;
 
 sequence!(IDENTITY);
 
@@ -77,8 +77,8 @@ impl<R> Future for NamedFuture<R> {
 
 #[cfg(test)]
 mod test {
-    use crate::integration::testintegration::TestIntegration;
     use crate::executor::executor::Executor;
+    use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
 
     #[test]

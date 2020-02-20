@@ -56,9 +56,9 @@ impl RunQueue {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    use crate::task::faketask::FakeTask;
     use crate::executor::taskcontainer::TaskContainer;
+    use crate::task::faketask::FakeTask;
+    use super::*;
 
     #[test]
     pub fn test_runqueue() {

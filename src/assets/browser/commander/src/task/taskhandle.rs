@@ -1,10 +1,10 @@
-use std::pin::Pin;
+use owning_ref::MutexGuardRef;
 use std::future::Future;
+use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 use crate::agent::agent::Agent;
-use owning_ref::MutexGuardRef;
-use super::task::{ TaskSummary, KillReason, TaskResult };
 use crate::helper::flagfuture::FlagFuture;
+use super::task::{ KillReason, TaskResult, TaskSummary };
 
 #[cfg(test)]
 use owning_ref::MutexGuardRefMut;
@@ -169,13 +169,13 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use crate::executor::action::{ Action, ActionLink };
+    use crate::executor::executor::Executor;
+    use crate::executor::taskcontainer::TaskContainer;
+    use crate::integration::reentering::ReenteringIntegration;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
     use crate::task::runconfig::RunConfig;
-    use crate::executor::executor::Executor;
-    use crate::integration::reentering::ReenteringIntegration;
-    use crate::executor::taskcontainer::TaskContainer;
-    use crate::executor::action::{ Action, ActionLink };
+    use super::*;
 
     #[test]
     pub fn test_handle_smoke() {

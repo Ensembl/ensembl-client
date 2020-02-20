@@ -1,3 +1,8 @@
+use futures::task::ArcWake;
+use std::sync::{ Arc, Mutex };
+use crate::executor::action::{ Action, TaskActionLink };
+use crate::integration::reentering::ReenteringIntegration;
+
 /* A Block sits behind a Waker and is responsible for
  *   1. blocking and unblocking a task when approriate;
  *   2. indicating whether a branch is "worth" investigating: for turnstiles, etc.
@@ -28,12 +33,6 @@
  * Currently only turnstile uses inner blocks but it is anticipated that other
  * users may follow which are more selective in their propagation.
  */
-
-use std::sync::{ Arc, Mutex };
-use futures::task::ArcWake;
-
-use crate::integration::reentering::ReenteringIntegration;
-use crate::executor::action::{ Action, TaskActionLink };
 
 sequence!(IDENTITY);
 

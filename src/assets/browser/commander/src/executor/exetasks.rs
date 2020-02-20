@@ -1,11 +1,11 @@
-use hashbrown::{ HashSet, HashMap };
-use super::timings::ExecutorTimings;
-use super::taskcontainer::{ TaskContainer, TaskContainerHandle };
-use super::runnable::Runnable;
+use hashbrown::{ HashMap, HashSet };
 use crate::agent::agent::Agent;
 use crate::task::slot::RunSlot;
 use crate::task::task::TaskSummary;
 use crate::task::taskhandle::ExecutorTaskHandle;
+use super::runnable::Runnable;
+use super::taskcontainer::{ TaskContainer, TaskContainerHandle };
+use super::timings::ExecutorTimings;
 
 pub(crate) struct ExecutorTasks {
     tasks: TaskContainer,
@@ -105,11 +105,11 @@ impl ExecutorTasks {
 
 #[cfg(test)]
 mod test {
-    use super::super::executor::Executor;
-    use crate::task::task::TaskResult;
-    use crate::integration::testintegration::TestIntegration;
     use crate::helper::flagfuture::FlagFuture;
+    use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
+    use crate::task::task::TaskResult;
+    use super::super::executor::Executor;
 
     #[test]
     pub fn test_executor_block() {

@@ -1,9 +1,3 @@
-
-
-/* Somewhere convenient to store tasks without requiring too much of their
- * signature but allowing handles.
- */
-
 use binary_heap_plus::{ BinaryHeap, MinComparator };
 use hashbrown::HashSet;
 use crate::task::taskhandle::ExecutorTaskHandle;
@@ -89,8 +83,8 @@ impl TaskContainer {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use crate::task::faketask::FakeTask;
+    use super::*;
 
     #[test]
     pub fn test_container() {

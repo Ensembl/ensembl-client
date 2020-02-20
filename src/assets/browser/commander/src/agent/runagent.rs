@@ -1,12 +1,11 @@
 use std::future::Future;
 
-use super::agent::Agent;
 use crate::executor::action::{ Action, TaskActionLink };
+use crate::executor::taskcontainer::TaskContainerHandle;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::runconfig::RunConfig;
-use crate::executor::taskcontainer::TaskContainerHandle;
-
 use crate::task::taskhandle::TaskHandle;
+use super::agent::Agent;
 
 /* RunAgent is the Agent mixin responsible for various odds and ends around step execution */
 
@@ -61,11 +60,11 @@ impl RunAgent {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use std::sync::{ Arc, Mutex };
     use crate::executor::executor::Executor;
     use crate::integration::testintegration::TestIntegration;
     use crate::task::task::KillReason;
+    use super::*;
 
     #[test]
     pub fn test_create_subtask() {

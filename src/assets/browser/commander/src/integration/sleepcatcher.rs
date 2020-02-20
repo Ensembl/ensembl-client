@@ -45,9 +45,9 @@ impl SleepCatcherIntegration {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use crate::integration::testintegration::TestIntegration;
     use super::super::integration::SleepQuantity;
+    use super::*;
 
     #[test]
     pub fn test_sleep_catcher() {

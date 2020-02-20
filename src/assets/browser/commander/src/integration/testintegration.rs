@@ -42,11 +42,11 @@ pub async fn tick_helper(ctx: Agent, ticks: &[u64]) {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use futures::future;
     use crate::executor::executor::Executor;
     use crate::task::runconfig::RunConfig;
     use crate::task::task::TaskResult;
-    use futures::future;
+    use super::*;
 
     async fn tick_future(ctx: Agent,x: u32, finished: Option<Arc<Mutex<bool>>>, set: bool) -> u32 {
         ctx.tick(1).await;

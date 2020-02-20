@@ -16,8 +16,8 @@ mod executor {
 }
 
 mod helper {
-    pub(crate) mod named;
     pub(crate) mod flagfuture;
+    pub(crate) mod named;
     pub(crate) mod tidier;
     pub(crate) mod turnstile;
 }
@@ -46,20 +46,17 @@ mod agent {
     pub(crate) mod agent;
     mod blockagent;
     mod finishagent;
-    mod runagent;
     mod nameagent;
+    mod runagent;
 }
 
 #[macro_use]
 extern crate blackbox;
-
+extern crate futures;
 extern crate hashbrown;
-extern crate owning_ref;
-
 #[macro_use]
 extern crate lazy_static;
-
-extern crate futures;
+extern crate owning_ref;
 
 pub use crate::agent::agent::Agent;
 pub use crate::executor::executor::Executor;

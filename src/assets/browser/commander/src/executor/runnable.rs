@@ -60,8 +60,8 @@ impl Runnable {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use crate::task::faketask::FakeTask;
+    use super::*;
 
     #[test]
     pub fn test_runnable() {

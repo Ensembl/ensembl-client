@@ -61,8 +61,8 @@ impl ExecutorTimings {
 #[cfg(test)]
 mod test {
     use std::sync::{ Arc, Mutex };
-    use crate::integration::testintegration::TestIntegration;
     use crate::executor::executor::Executor;
+    use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
 
     #[test]

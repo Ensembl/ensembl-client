@@ -106,8 +106,8 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
 
 #[cfg(test)]
 mod test {
-    use std::sync::{ Arc, Mutex };
     use ordered_float::OrderedFloat;
+    use std::sync::{ Arc, Mutex };
     use crate::executor::taskcontainer::{ TaskContainer, TaskContainerHandle };
     use crate::task::faketask::FakeTask;
     use super::*;

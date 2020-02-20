@@ -1,8 +1,8 @@
+use std::sync::{ Arc, Mutex };
 use crate::agent::agent::Agent;
 use crate::task::block::Block;
 use crate::task::taskhandle::ExecutorTaskHandle;
 use super::taskcontainer::TaskContainerHandle;
-use std::sync::{ Arc, Mutex };
 
 /* Actions are the back-channel to the executor from tasks. A queue of actions, the ActionLink
  * is populated by the Agent and TaskHandle when performing tasks and then drained by the
@@ -95,9 +95,8 @@ impl TaskActionLink {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-
     use super::super::taskcontainer::TaskContainer;
+    use super::*;
 
     #[test]
     pub fn test_executoraction() {

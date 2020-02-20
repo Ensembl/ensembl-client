@@ -1,23 +1,22 @@
+use futures::task::{ Context, waker_ref };
+use owning_ref::MutexGuardRefMut;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
-
+use std::task::Poll;
+use crate::executor::action::ActionLink;
+use crate::helper::flagfuture::FlagFuture;
+use crate::helper::named::NamedFuture;
+use crate::helper::tidier::Tidier;
+use crate::helper::turnstile::TurnstileFuture;
+use crate::integration::reentering::ReenteringIntegration;
+use crate::task::runconfig::RunConfig;
+use crate::task::task::KillReason;
+use crate::task::taskhandle::TaskHandle;
 use super::blockagent::BlockAgent;
 use super::finishagent::FinishAgent;
 use super::nameagent::NameAgent;
 use super::runagent::RunAgent;
-use crate::executor::action::ActionLink;
-use crate::integration::reentering::ReenteringIntegration;
-use crate::helper::named::{ NamedFuture };
-use crate::task::runconfig::RunConfig;
-use crate::helper::turnstile::TurnstileFuture;
-use crate::task::task::KillReason;
-use crate::task::taskhandle::TaskHandle;
-use crate::helper::tidier::Tidier;
-use crate::helper::flagfuture::FlagFuture;
-use std::task::Poll;
-use futures::task::{ Context, waker_ref };
-use owning_ref::MutexGuardRefMut;
 
 /* An agent provides methods on behalf of an Executor for use within a future. It
  * is also ultimately responsible for executing the future and for destructors.

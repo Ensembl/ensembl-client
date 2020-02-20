@@ -1,10 +1,9 @@
 use std::future::Future;
 use std::pin::Pin;
-
 use crate::executor::action::{ Action, TaskActionLink };
+use crate::helper::tidier::Tidier;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::task::KillReason;
-use crate::helper::tidier::Tidier;
 
 /* FinishAgent is the Agent mixin responsible for destructors and signals */
 
@@ -88,13 +87,13 @@ impl FinishAgent {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use crate::agent::agent::Agent;
+    use crate::executor::action::ActionLink;
+    use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
-    use crate::executor::action::ActionLink;
-    use crate::executor::taskcontainer::TaskContainer;
-    use crate::agent::agent::Agent;
+    use super::*;
 
     #[test]
     pub fn test_control_kill() {

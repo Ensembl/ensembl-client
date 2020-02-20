@@ -26,9 +26,9 @@ hashable!(IDENTITY,RunSlot,identity);
 #[cfg(test)]
 mod test {
     use crate::executor::executor::Executor;
+    use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
     use crate::task::task::{ KillReason, TaskResult };
-    use crate::integration::testintegration::TestIntegration;
 
     #[test]
     pub fn test_slots() {

@@ -1,8 +1,8 @@
-use std::sync::{ Arc, Mutex };
-use std::future::{ Future };
-use std::pin::Pin;
-use std::task::Poll;
 use futures::task::{ Context, Waker };
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::{ Arc, Mutex };
+use std::task::Poll;
 
 /* A FlagFuture is a future which is always pending until its flag method is
  * called (probably from outside the future) after which it is always ready.

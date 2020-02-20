@@ -1,14 +1,14 @@
 use std::future::Future;
-use super::exetasks::ExecutorTasks;
-use super::timings::ExecutorTimings;
-use super::action::{ Action, ActionLink };
+use crate::agent::agent::Agent;
 use crate::integration::integration::{ Integration, SleepQuantity };
 use crate::integration::reentering::ReenteringIntegration;
-use crate::agent::agent::Agent;
-use crate::task::slot::RunSlot;
 use crate::task::runconfig::RunConfig;
+use crate::task::slot::RunSlot;
 use crate::task::task::{ KillReason, TaskSummary };
 use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
+use super::action::{ Action, ActionLink };
+use super::exetasks::ExecutorTasks;
+use super::timings::ExecutorTimings;
 
 #[cfg(feature="use-blackbox")]
 use super::taskcontainer::TaskContainerHandle;
@@ -166,15 +166,14 @@ impl Executor {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use blackbox::*;
-
+    use futures::future;
     use std::collections::HashSet;
-    use crate::task::task::{ KillReason, TaskResult };
+    use crate::helper::flagfuture::FlagFuture;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
-    use crate::helper::flagfuture::FlagFuture;
-    use futures::future;
+    use crate::task::task::{ KillReason, TaskResult };
+    use super::*;
 
     #[test]
     pub fn test_executor_smoke() {

@@ -50,13 +50,13 @@ impl ReenteringIntegration {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    use crate::integration::testintegration::TestIntegration;
+    use crate::agent::agent::Agent;
+    use crate::executor::action::ActionLink;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::integration::SleepQuantity;
-    use crate::executor::action::ActionLink;
-    use crate::agent::agent::Agent;
+    use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
+    use super::*;
 
     #[test]
     pub fn test_reentry() {

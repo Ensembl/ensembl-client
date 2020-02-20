@@ -1,16 +1,15 @@
+use futures::task::waker_ref;
+use std::future::Future;
+use std::pin::Pin;
+use std::task::{ Context, Poll };
+use crate::agent::agent::Agent;
+use crate::task::block::Block;
+
 /* A TurnstileFuture wraps an inner future, and ensures that the inner future
  * is not awoken by wakeup events from futures outside of it. This is useful
  * as an optimisation for exmaple in very broad joins to prevent too many
  * wakeups.
  */
-
-use std::pin::Pin;
-use std::future::Future;
-use std::task::{ Context, Poll };
-
-use crate::task::block::Block;
-use crate::agent::agent::Agent;
-use futures::task::waker_ref;
 
 pub struct TurnstileFuture<R> {
     agent: Agent,
@@ -57,13 +56,13 @@ impl<R> Future for TurnstileFuture<R> {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    use crate::integration::testintegration::TestIntegration;
-    use crate::executor::executor::Executor;
-    use crate::task::runconfig::RunConfig;
+    use futures::future;
     use std::future::Future;
     use std::sync::{ Arc, Mutex };
-    use futures::future;
+    use crate::executor::executor::Executor;
+    use crate::integration::testintegration::TestIntegration;
+    use crate::task::runconfig::RunConfig;
+    use super::*;
 
     struct TurnstileTestBranchState {
         called: bool,
