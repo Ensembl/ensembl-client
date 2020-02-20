@@ -37,6 +37,9 @@ mod task {
     pub(crate) mod slot;
     pub(crate) mod task;
     pub(crate) mod taskhandle;
+
+    #[cfg(test)]
+    pub(crate) mod faketask;
 }
 
 mod agent {

@@ -93,6 +93,7 @@ impl TaskActionLink {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;

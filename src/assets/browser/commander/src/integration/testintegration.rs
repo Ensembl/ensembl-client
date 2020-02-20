@@ -40,6 +40,7 @@ pub async fn tick_helper(ctx: Agent, ticks: &[u64]) {
     }
 }
 
+#[cfg(test)]
 mod test {
     use super::*;
     use crate::executor::executor::Executor;

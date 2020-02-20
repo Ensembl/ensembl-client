@@ -54,23 +54,15 @@ impl RunQueue {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
     use crate::task::task::{ TaskSummary, KillReason };
+    use crate::task::faketask::FakeTask;
     use crate::task::taskhandle::ExecutorTaskHandle;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::helper::tidier::Tidier;
-
-    struct FakeTask(i8);
-    impl ExecutorTaskHandle for FakeTask {
-        fn run(&mut self, tick_index: u64) { self.0 += 1; }
-        fn get_priority(&self) -> i8 { self.0 }
-        fn summarize(&self) -> Option<TaskSummary> { None }
-        fn evict(&self) {}
-        fn kill(&self, reason: KillReason) {}
-        fn set_identity(&self, identity: u64) {}
-    }
 
     #[test]
     pub fn test_runqueue() {
@@ -79,39 +71,39 @@ mod test {
         /* test */
         assert!(q.empty());
         let h1 = tasks.allocate();
-        let t1 = FakeTask(0);
-        tasks.set(&h1,Box::new(t1));
+        let t1 = FakeTask::new(0);
+        tasks.set(&h1,Box::new(t1.clone()));
         /* single task: check runs */
         q.add(&h1);
         assert!(!q.empty());
-        assert_eq!(0,tasks.get(&h1).unwrap().get_priority());
+        assert_eq!(0,t1.run_count());
         q.run(&mut tasks,0);
-        assert_eq!(1,tasks.get(&h1).unwrap().get_priority());
+        assert_eq!(1,t1.run_count());
         q.run(&mut tasks,0);
-        assert_eq!(2,tasks.get(&h1).unwrap().get_priority());
+        assert_eq!(2,t1.run_count());
         /* add second and third task and check run fairly */
         let h2 = tasks.allocate();
-        let t2 = FakeTask(0);
-        tasks.set(&h2,Box::new(t2));
+        let t2 = FakeTask::new(0);
+        tasks.set(&h2,Box::new(t2.clone()));
         let h3 = tasks.allocate();
-        let t3 = FakeTask(0);
-        tasks.set(&h3,Box::new(t3));
+        let t3 = FakeTask::new(0);
+        tasks.set(&h3,Box::new(t3.clone()));
         q.add(&h2);
         q.add(&h3);
         q.run(&mut tasks,0);
         q.run(&mut tasks,0);
-        assert_eq!(1,tasks.get(&h2).unwrap().get_priority());
-        assert_eq!(1,tasks.get(&h3).unwrap().get_priority());
+        assert_eq!(1,t2.run_count());
+        assert_eq!(1,t3.run_count());
         q.run(&mut tasks,0);
-        assert_eq!(3,tasks.get(&h1).unwrap().get_priority());
+        assert_eq!(3,t1.run_count());
         /* remove first and check for queue rewind */
         q.remove(&h1);
         q.run(&mut tasks,0);
-        assert_eq!(2,tasks.get(&h2).unwrap().get_priority());
+        assert_eq!(2,t2.run_count());
         /* remove three and check for end-skip and no rewind */
         q.remove(&h3);
         q.run(&mut tasks,0);
-        assert_eq!(3,tasks.get(&h2).unwrap().get_priority());
+        assert_eq!(3,t2.run_count());
         /* remove two to check for emptying */
         q.remove(&h2);
         assert!(q.empty());

@@ -58,26 +58,15 @@ impl Runnable {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
     use crate::task::task::{ TaskSummary, KillReason };
+    use crate::task::faketask::FakeTask;
     use crate::task::taskhandle::ExecutorTaskHandle;
     use crate::helper::tidier::Tidier;
-
-    #[derive(Clone)]
-    struct FakeTask(i8,Arc<Mutex<i8>>);
-    impl ExecutorTaskHandle for FakeTask {
-        fn run(&mut self, tick_index: u64) { *self.1.lock().unwrap() += 1; }
-        fn get_priority(&self) -> i8 { self.0 }
-        fn summarize(&self) -> Option<TaskSummary> { None }
-        fn evict(&self) {}
-        fn kill(&self, reason: KillReason) {}
-        fn set_identity(&self, identity: u64) {}
-    }
-
-    // XXX common harness
 
     #[test]
     pub fn test_runnable() {
@@ -85,16 +74,16 @@ mod test {
         let mut r = Runnable::new();
         /* 1: h1, h2; 2: h3, 3: h4 */
         let h1 = tasks.allocate();
-        let t1 = FakeTask(1,Arc::new(Mutex::new(0)));
+        let t1 = FakeTask::new(1);
         tasks.set(&h1,Box::new(t1.clone()));
         let h2 = tasks.allocate();
-        let t2 = FakeTask(1,Arc::new(Mutex::new(0)));
+        let t2 = FakeTask::new(1);
         tasks.set(&h2,Box::new(t2.clone()));
         let h3 = tasks.allocate();
-        let t3 = FakeTask(2,Arc::new(Mutex::new(0)));
+        let t3 = FakeTask::new(2);
         tasks.set(&h3,Box::new(t3.clone()));
         let h4 = tasks.allocate();
-        let t4 = FakeTask(3,Arc::new(Mutex::new(0)));
+        let t4 = FakeTask::new(3);
         tasks.set(&h4,Box::new(t4.clone()));
         /* add all four and check just h1, h2 run */
         r.add(&mut tasks,&h1);
@@ -104,26 +93,26 @@ mod test {
         r.run(&mut tasks,0);
         r.run(&mut tasks,0);
         r.run(&mut tasks,0);
-        assert_eq!(2,*t1.1.lock().unwrap());
-        assert_eq!(1,*t2.1.lock().unwrap());
-        assert_eq!(0,*t3.1.lock().unwrap());
-        assert_eq!(0,*t4.1.lock().unwrap());
+        assert_eq!(2,t1.run_count());
+        assert_eq!(1,t2.run_count());
+        assert_eq!(0,t3.run_count());
+        assert_eq!(0,t4.run_count());
         /* remove h1 and check h2 just runs */
         r.remove(&mut tasks,&h1);
         r.run(&mut tasks,0);
         r.run(&mut tasks,0);
-        assert_eq!(2,*t1.1.lock().unwrap());
-        assert_eq!(3,*t2.1.lock().unwrap());
-        assert_eq!(0,*t3.1.lock().unwrap());
-        assert_eq!(0,*t4.1.lock().unwrap());
+        assert_eq!(2,t1.run_count());
+        assert_eq!(3,t2.run_count());
+        assert_eq!(0,t3.run_count());
+        assert_eq!(0,t4.run_count());
         /* remove h2 and check just h3 runs */
         r.remove(&mut tasks,&h2);
         r.run(&mut tasks,0);
         assert!(r.run(&mut tasks,0));
-        assert_eq!(2,*t1.1.lock().unwrap());
-        assert_eq!(3,*t2.1.lock().unwrap());
-        assert_eq!(2,*t3.1.lock().unwrap());
-        assert_eq!(0,*t4.1.lock().unwrap());
+        assert_eq!(2,t1.run_count());
+        assert_eq!(3,t2.run_count());
+        assert_eq!(2,t3.run_count());
+        assert_eq!(0,t4.run_count());
         /* remove h3 and h4 and check run returns false */
         r.remove(&mut tasks,&h3);
         r.remove(&mut tasks,&h4);

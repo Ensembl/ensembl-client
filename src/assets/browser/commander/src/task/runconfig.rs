@@ -27,6 +27,7 @@ impl RunConfig {
     pub fn get_timeout(&self) -> Option<f64> { self.timeout }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use super::*;

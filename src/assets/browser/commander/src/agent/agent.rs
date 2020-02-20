@@ -34,7 +34,6 @@ pub(crate) struct AgentState {
     run_agent: RunAgent
 }
 
-// XXX demut
 #[derive(Clone)]
 pub struct Agent {
     state: Arc<Mutex<AgentState>>

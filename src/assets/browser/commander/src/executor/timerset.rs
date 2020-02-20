@@ -74,7 +74,7 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone {
         }
     }
 
-    fn min(&mut self) -> Option<T> {
+    fn min(&self) -> Option<T> {
         self.timeouts.iter().next().map(|x| x.0.clone())
     }
 }
@@ -104,6 +104,7 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
     }
 }
 
+#[cfg(test)]
 #[allow(unused)]
 mod test {
     use std::sync::{ Arc, Mutex };
@@ -111,18 +112,8 @@ mod test {
     use crate::executor::taskcontainer::{ TaskContainer, TaskContainerHandle };
     use crate::task::task::{ TaskSummary, KillReason };
     use crate::task::taskhandle::ExecutorTaskHandle;
+    use crate::task::faketask::FakeTask;
     use super::*;
-
-    #[derive(Clone)]
-    struct FakeTask(i8);
-    impl ExecutorTaskHandle for FakeTask {
-        fn run(&mut self, tick_index: u64) { self.0 += 1; }
-        fn get_priority(&self) -> i8 { self.0 }
-        fn summarize(&self) -> Option<TaskSummary> { None }
-        fn evict(&self) {}
-        fn kill(&self, reason: KillReason) {}
-        fn set_identity(&self, identity: u64) {}
-    }
 
     #[test]
     pub fn test_timer() {
@@ -159,13 +150,13 @@ mod test {
         let mut tasks = TaskContainer::new();
         let mut timers = TimerSet::new();
         let h1 = tasks.allocate();
-        let t1 = FakeTask(0);
+        let t1 = FakeTask::new(0);
         tasks.set(&h1,Box::new(t1));
         let h2 = tasks.allocate();
-        let t2 = FakeTask(1);
+        let t2 = FakeTask::new(1);
         tasks.set(&h2,Box::new(t2));
         let h3 = tasks.allocate();
-        let t3 = FakeTask(2);
+        let t3 = FakeTask::new(2);
         tasks.set(&h3,Box::new(t3));
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         timers.add(Some(h1.clone()),OrderedFloat(1.),|| {});
