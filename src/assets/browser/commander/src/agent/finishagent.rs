@@ -52,7 +52,7 @@ impl FinishAgent {
 
     pub(crate) fn finishing(&self) -> bool { self.finishing }
 
-    pub(super) fn finished(&mut self) -> bool {
+    pub(crate) fn finished(&mut self) -> bool {
         if self.finishing && self.tidiers.len() == 0 {
             if !self.done_sent {
                 self.task_action_link.add(Action::Done());

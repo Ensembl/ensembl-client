@@ -65,6 +65,7 @@ mod test {
     use std::sync::{ Arc, Mutex };
     use crate::executor::executor::Executor;
     use crate::integration::testintegration::TestIntegration;
+    use crate::task::task::KillReason;
 
     #[test]
     pub fn test_create_subtask() {
@@ -94,5 +95,29 @@ mod test {
         let all = x.summarize_all();
         assert_eq!(1,all.len());
         assert_eq!("task2",all[0].get_name());
+    }
+
+    #[test]
+    pub fn test_kill_before_run() {
+        let integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let agent = x.new_agent(&cfg,"test");
+        let agent2 = agent.clone();
+        let tidied = Arc::new(Mutex::new(false));
+        let tidied2 = tidied.clone();
+        let step = async move {
+            let agentb = agent2.new_agent("task2",None);
+            agentb.finish(KillReason::Cancelled);
+            let agentb2 = agentb.clone();
+            agent2.submit(agentb,async move {
+                agentb2.tick(1).await;
+                *tidied2.lock().unwrap() = true;
+                agentb2.tick(1).await;
+            });
+            42
+        };
+        x.add(step,agent);
+        assert_eq!(1,x.get_tasks().summarize_all().len());
     }
 }
