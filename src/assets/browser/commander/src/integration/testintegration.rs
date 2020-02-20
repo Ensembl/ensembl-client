@@ -30,7 +30,7 @@ impl TestIntegration {
 }
 
 impl Integration for TestIntegration {
-    fn current_time(&mut self) -> f64 {*self.timer.lock().unwrap() }
+    fn current_time(&self) -> f64 {*self.timer.lock().unwrap() }
     fn sleep(&self, quantity: SleepQuantity) { self.sleeps.lock().unwrap().push(quantity); }
 }
 
@@ -107,7 +107,7 @@ mod test {
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
         assert_eq!(2,tc.take_result().unwrap());
-        assert_eq!(2,x.get_tick_index());
+        assert_eq!(2,x.get_timings_mut().get_tick_index());
     }
 
     async fn future_tick(ctx: Agent, x: u32) -> u32 {

@@ -1,12 +1,9 @@
 use std::future::Future;
-use hashbrown::{ HashMap, HashSet };
-use ordered_float::OrderedFloat;
+use super::exetasks::ExecutorTasks;
+use super::timings::ExecutorTimings;
 use super::action::{ Action, ActionLink };
 use crate::integration::integration::{ Integration, SleepQuantity };
 use crate::integration::reentering::ReenteringIntegration;
-use super::taskcontainer::{ TaskContainer, TaskContainerHandle };
-use super::timerset::TimerSet;
-use super::runnable::Runnable;
 use crate::agent::agent::Agent;
 use crate::task::slot::RunSlot;
 use crate::task::runconfig::RunConfig;
@@ -14,51 +11,38 @@ use crate::task::task::{ KillReason, TaskSummary };
 use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
 
 pub struct Executor {
+    timings: ExecutorTimings,
+    tasks: ExecutorTasks,
     integration: ReenteringIntegration,
-    tasks: TaskContainer,
-    runnable: Runnable,
-    actions: ActionLink,
-    timers: TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>>,
-    ticks: TimerSet<u64,Option<TaskContainerHandle>>,
-    blocked_by: HashSet<TaskContainerHandle>,
-    tick_index: u64,
-    slot_map: HashMap<RunSlot,TaskContainerHandle>
+    actions: ActionLink
 }
 
 impl Executor {
     pub fn new<T>(integration: T) -> Executor where T: Integration + 'static {
+        let integration = ReenteringIntegration::new(integration);
         Executor {
-            integration: ReenteringIntegration::new(integration),
-            tasks: TaskContainer::new(),
-            runnable: Runnable::new(),
-            actions: ActionLink::new(),
-            timers: TimerSet::new(),
-            ticks: TimerSet::new(),
-            blocked_by: HashSet::new(),
-            tick_index: 0,
-            slot_map: HashMap::new()
+            timings: ExecutorTimings::new(&integration),
+            tasks: ExecutorTasks::new(),
+            integration,
+            actions: ActionLink::new()
         }
     }
 
-    pub fn new_slot(&self, push: bool) -> RunSlot { RunSlot::new(push) }
+    pub(crate) fn get_timings(&self) -> &ExecutorTimings { &self.timings }
+    pub(crate) fn get_timings_mut(&mut self) -> &mut ExecutorTimings { &mut self.timings }
 
-    pub fn get_tick_index(&self) -> u64 { self.tick_index }
+    pub(crate) fn get_tasks(&self) -> &ExecutorTasks { &self.tasks }
+    pub(crate) fn get_tasks_mut(&mut self) -> &mut ExecutorTasks { &mut self.tasks }
+
+
+    pub fn new_slot(&self, push: bool) -> RunSlot { RunSlot::new(push) }
 
     pub fn new_agent(&self, run_config: &RunConfig, name: &str) -> Agent {
         Agent::new(run_config,&self.actions,&self.integration,name)
     }
 
-    // XXX race with eviction
-    fn check_slot(&mut self, agent: &Agent) -> bool {
-        if let Some(slot) = agent.get_config().get_slot() {
-            if let Some(tch) = self.slot_map.get(slot) {
-                if let Some(task) = self.tasks.get(tch) {
-                    if !slot.is_push() { return false }
-                    task.evict();
-                }
-            }
-        }
-        true
+    pub fn summarize_all(&self) -> Vec<TaskSummary> {
+        self.get_tasks().summarize_all()
     }
 
     pub fn add<R,T>(&mut self, run: T, mut context: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static+Send {
@@ -67,52 +51,19 @@ impl Executor {
         handle
     }
 
+    // XXX if not already killed
     fn try_add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, context: Agent) {
-        if self.check_slot(&context) {
-            self.add_task(handle,context);
+        if self.get_tasks_mut().check_slot(&context) {
+            let container_handle = self.get_tasks_mut().create_handle(&context,handle);
+            self.get_tasks_mut().use_slot(&context,&container_handle);
+            if let Some(timeout) = context.get_config().get_timeout() {
+                let control = context.clone();
+                self.get_timings_mut().add_timer(&container_handle,timeout,Box::new(move || control.finish(KillReason::Timeout)));
+            }
+            self.get_tasks_mut().unblock_task(&container_handle);
         } else {
             handle.kill(KillReason::NotNeeded);
         }
-    }
-
-    // XXX if not already killed
-    fn add_task(&mut self, handle: Box<dyn ExecutorTaskHandle>, context: Agent) {
-        let container_handle = self.tasks.allocate();
-        context.run_agent().register(&container_handle);
-        handle.set_identity(container_handle.identity());
-        self.tasks.set(&container_handle,handle);
-        let now = self.integration.current_time();
-        if let Some(slot) = context.get_config().get_slot() {
-            self.slot_map.insert(slot.clone(),container_handle.clone());
-        }
-        if let Some(timeout) = context.get_config().get_timeout() {
-            let control = context.clone();
-            self.timers.add(Some(container_handle.clone()),OrderedFloat(now+timeout),move || control.finish(KillReason::Timeout));
-        }
-        self.runnable.add(&self.tasks,&container_handle);
-    }
-
-    pub fn summarize_all(&self) -> Vec<TaskSummary> {
-        let mut out = vec![];
-        for th in self.tasks.all_handles().to_vec().iter() {
-            if let Some(t) = self.tasks.get(th) {
-                if let Some(summary) = t.summarize() {
-                    out.push(summary);
-                }
-            }
-        }
-        out
-    }
-
-    fn remove(&mut self, handle: &TaskContainerHandle) {
-        self.runnable.remove(&self.tasks,handle);
-        self.blocked_by.remove(&handle);
-        self.tasks.remove(handle);
-    }
-
-    fn add_timer(&mut self, handle: &TaskContainerHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
-        let now = self.integration.current_time();
-        self.timers.add(Some(handle.clone()),OrderedFloat(now+timeout),callback);
     }
 
     pub(crate) fn run_actions(&mut self) {
@@ -122,28 +73,25 @@ impl Executor {
             for mut action in actions {
                 match action {
                     (ref handle,Action::BlockTask()) => {
-                        self.runnable.remove(&self.tasks,&handle);
-                        self.blocked_by.insert(handle.clone());
+                        self.get_tasks_mut().block_task(&handle);
                     },
                     (ref _handle,Action::Unblock(ref mut block)) => {
                         block.run_unblock();
                     },
                     (handle,Action::UnblockTask()) => {
-                        self.blocked_by.remove(&handle);
-                        self.runnable.add(&self.tasks,&handle);
+                        self.get_tasks_mut().unblock_task(&handle);
                     },
                     (handle,Action::Finishing()) => {
-                        self.blocked_by.remove(&handle);
-                        self.runnable.add(&self.tasks,&handle);
+                        self.get_tasks_mut().unblock_task(&handle);
                     },
                     (handle,Action::Done()) => {
-                        self.remove(&handle);
+                        self.get_tasks_mut().remove_task(&handle);
                     },
                     (handle,Action::Timer(timeout,callback)) => {
-                        self.add_timer(&handle,timeout,callback);
+                        self.get_timings_mut().add_timer(&handle,timeout,callback);
                     },
                     (handle,Action::Tick(tick,callback)) => {
-                        self.ticks.add(Some(handle.clone()),tick,callback);
+                        self.get_timings_mut().add_tick(&handle,tick,callback);
                     },
                     (_handle,Action::Create(task,agent)) => {
                         self.try_add_task(task,agent);
@@ -153,52 +101,48 @@ impl Executor {
         }
     }
 
-    pub(crate) fn check_timers(&mut self,now: f64) {
-        let (timers,ticks,tasks) = (&mut self.timers,&mut self.ticks,&mut self.tasks);
-        timers.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
-        ticks.tidy_handles(|h| h.as_ref().map(|j| tasks.get(&j).is_some()).unwrap_or(true) );
-        self.timers.check(OrderedFloat(now));
-        self.ticks.check(self.tick_index);
-    }
-
-    fn run(&mut self) -> bool {
-        let now = self.integration.current_time();
-        self.check_timers(now);
+    fn main_step(&mut self) -> bool {
+        self.get_tasks().check_timers(self.get_timings());
         self.run_actions();
-        let out = self.runnable.run(&mut self.tasks,self.tick_index);
+        let tick = self.get_timings().get_tick_index();
+        let out = self.get_tasks_mut().run_tasks(tick);
         self.run_actions();
         out
     }
 
-    fn calculate_sleep(&mut self, now: f64) -> SleepQuantity {
-        if self.runnable.empty() {
-            if let Some(timer) = self.timers.min() {
-                SleepQuantity::Time(timer.0-now)
-            } else {
-                SleepQuantity::Forever
-            }
-        } else {
-            SleepQuantity::None
+    fn main_loop(&mut self, slice: f64) -> f64 {
+        let mut now = self.integration.current_time();
+        let expiry = now+slice;
+        loop {
+            if !self.main_step() { break; }
+            now = self.integration.current_time();
+            if now >= expiry { break; }
         }
+        now
+    }
+
+    fn calculate_sleep(&self, now: f64) -> SleepQuantity {
+        if self.get_tasks().any_runnable() {
+            SleepQuantity::None            
+        } else {
+            self.get_timings().calculate_sleep(now)
+        }
+    }
+
+    fn make_next_tick_runnable(&mut self) {
+        /* advance to next tick and service to make sure runnable are marked as such */
+        self.get_timings().check_ticks(1);
+        self.run_actions();
     }
 
     pub fn tick(&mut self, slice: f64) {
         self.integration.reentering();
-        let mut now = self.integration.current_time();
-        let expiry = now+slice;
-        self.tick_index += 1;
-        self.ticks.check(self.tick_index);        
+        self.get_timings_mut().advance_tick();
+        self.get_timings().check_ticks(0);
         /* main tick loop */
-        loop {
-            if !self.run() { break; }
-            now = self.integration.current_time();
-            if now >= expiry { break; }
-        }
-        /* these ensure tick sleeps make it through before we calculate sleep */
-        self.ticks.check(self.tick_index+1);
-        self.run_actions();
-        let sleep = self.calculate_sleep(now);
-        self.integration.sleep(sleep);
+        let now = self.main_loop(slice);
+        self.make_next_tick_runnable();
+        self.integration.sleep(self.calculate_sleep(now));
     }
 }
 
@@ -227,36 +171,11 @@ mod test {
         };
         let mut handle = x.add(step,agent);
         assert!(handle.peek_result() == TaskResult::Ongoing);
-        x.run();
+        x.main_step();
         assert!(handle.peek_result() == TaskResult::Ongoing);
-        x.run();
+        x.main_step();
         assert!(handle.get_agent().finish_agent().finishing());
-        assert!(!x.run());
-    }
-
-    #[test]
-    pub fn test_executor_block() {
-        let mut integration = TestIntegration::new();
-        let mut x = Executor::new(integration.clone());
-        let cfg = RunConfig::new(None,3,None);
-        let fos = FlagFuture::new();
-        let fos2 = fos.clone();
-        let ctx = x.new_agent(&cfg,"test");
-        let ctx2 = ctx.clone();
-        let step = async move {
-            ctx2.tick(2).await;
-            fos2.await;
-        };
-        let mut tc = x.add(step,ctx);
-        x.tick(10.);
-        x.tick(10.);
-        x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
-        fos.flag();
-        assert_eq!(1,x.tasks.len());
-        x.tick(10.);
-        x.tick(10.);
-        assert_eq!(0,x.tasks.len());
+        assert!(!x.main_step());
     }
 
     #[test]
@@ -271,7 +190,7 @@ mod test {
         };
         let mut tc = x.add(step,ctx);
         integration.set_time(10.);
-        x.run();
+        x.main_step();
         assert!(tc.peek_result() == TaskResult::Killed(KillReason::Timeout));
     }
 
@@ -577,8 +496,8 @@ mod test {
         };
         let mut handle = x.add(step,agent);
         assert_eq!("first-name",handle.get_name());
-        x.run();
-        x.run();
+        x.main_step();
+        x.main_step();
         assert_eq!("second-name",handle.get_name());
     }
 

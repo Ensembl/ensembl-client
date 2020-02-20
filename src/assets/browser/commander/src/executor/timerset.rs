@@ -91,15 +91,15 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
         self.0.lock().unwrap().add(state,timeout,callback);
     }
 
-    pub(super) fn min(&mut self) -> Option<T> {
+    pub(super) fn min(&self) -> Option<T> {
         self.0.lock().unwrap().min()
     }
 
-    pub(super) fn check(&mut self, now: T) {
+    pub(super) fn check(&self, now: T) {
         self.0.lock().unwrap().check(now);
     }
 
-    pub(super) fn tidy_handles<F>(&mut self, tidy_fn: F) where F: Fn(&S) -> bool {
+    pub(super) fn tidy_handles<F>(&self, tidy_fn: F) where F: Fn(&S) -> bool {
         self.0.lock().unwrap().tidy_handles(tidy_fn);
     }
 }

@@ -19,6 +19,6 @@ pub enum SleepQuantity {
 }
 
 pub trait Integration : Send {
-    fn current_time(&mut self) -> f64;
+    fn current_time(&self) -> f64;
     fn sleep(&self, amount: SleepQuantity);
 }

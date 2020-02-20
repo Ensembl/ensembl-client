@@ -209,9 +209,11 @@ mod test {
         let shared2 = shared.clone();
         tc.get_agent().add_timer(1.,move || { *shared2.lock().unwrap() = true; });
         x.run_actions();
-        x.check_timers(0.5);
+        integration.set_time(0.5);
+        x.get_tasks().check_timers(x.get_timings());
         assert!(!*shared.lock().unwrap());
-        x.check_timers(1.5);
+        integration.set_time(1.5);
+        x.get_tasks().check_timers(x.get_timings());
         assert!(*shared.lock().unwrap());
     }
 

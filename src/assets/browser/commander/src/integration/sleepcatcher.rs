@@ -24,7 +24,7 @@ impl SleepCatcherIntegration {
         }
     }
 
-    pub(super) fn current_time(&mut self) -> f64 {
+    pub(super) fn current_time(&self) -> f64 {
         self.integration.lock().unwrap().current_time()
     }
 

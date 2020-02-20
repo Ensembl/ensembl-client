@@ -24,7 +24,7 @@ impl ReenteringIntegration {
         }
     }
 
-    pub(crate) fn current_time(&mut self) -> f64 {
+    pub(crate) fn current_time(&self) -> f64 {
         self.integration.current_time()
     }
 
