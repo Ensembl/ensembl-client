@@ -4,6 +4,7 @@ use std::sync::{ Arc, Mutex };
 use crate::agent::agent::Agent;
 use owning_ref::MutexGuardRef;
 use super::task::{ TaskSummary, KillReason, TaskResult };
+use crate::helper::flagfuture::FlagFuture;
 
 #[cfg(test)]
 use owning_ref::MutexGuardRefMut;
@@ -31,6 +32,7 @@ pub(crate) trait ExecutorTaskHandle {
 }
 
 pub(crate) struct TaskHandleState<R: 'static + Send> {
+    finish_flag: FlagFuture,
     identity: Option<u64>,
     future: Pin<Box<dyn Future<Output=R> + 'static + Send>>,
     agent: Agent,
@@ -50,6 +52,7 @@ impl<R> Clone for TaskHandle<R> where R: 'static + Send {
 impl<R> TaskHandle<R> where R: 'static + Send {
     pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R> + 'static + Send>>) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
+            finish_flag: FlagFuture::new(),
             identity: None,
             future,
             agent: agent.clone(),
@@ -60,6 +63,10 @@ impl<R> TaskHandle<R> where R: 'static + Send {
 
     pub(crate) fn get_agent(&self) -> MutexGuardRef<TaskHandleState<R>,Agent> {
         MutexGuardRef::new(self.0.lock().unwrap()).map(|x| &x.agent)
+    }
+
+    pub fn finish_future(&self) -> impl Future<Output=()> {
+        self.0.lock().unwrap().finish_flag.clone()
     }
 
     pub fn peek_result(&self) -> TaskResult {
@@ -132,6 +139,7 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
         }
         if finished {
             state.done = true;
+            state.finish_flag.flag();
         }
         drop(state);
         blackbox_end!("commander",&self.task_key());
@@ -232,6 +240,29 @@ mod test {
         if let Action::BlockTask() = actions[1].1 {
         } else {
             assert!(false);
+        }
+    }
+
+    #[test]
+    pub fn test_handle_finish() {
+        let integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,None);
+        let agent = x.new_agent(&cfg,"test-task");
+        let agent2 = agent.clone();
+        let step = async move {
+            let agentb = agent2.new_agent("task2",None);
+            let agentb2 = agentb.clone();
+            let th = agent2.submit(agentb,async move {
+                agentb2.tick(4).await;
+            });
+            th.finish_future().await;
+        };
+        let h = x.add(step,agent);
+        for i in 0..10 {
+            x.tick(1.);
+            let cmp = if i<4 { TaskResult::Ongoing } else { TaskResult::Done };
+            assert_eq!(cmp,h.peek_result());
         }
     }
 }
