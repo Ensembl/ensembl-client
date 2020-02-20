@@ -59,29 +59,22 @@ impl ExecutorTimings {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
-    use super::*;
     use std::sync::{ Arc, Mutex };
     use crate::integration::testintegration::TestIntegration;
     use crate::executor::executor::Executor;
     use crate::task::runconfig::RunConfig;
-    use crate::executor::action::ActionLink;
 
     #[test]
     pub fn test_control_timers() {
         /* setup */
-        let time = Arc::new(Mutex::new(0.));
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,2,None);
-        let mut tasks = TaskContainer::new();
-        let h = tasks.allocate();
-        let eah = ActionLink::new();
         let ctx = x.new_agent(&cfg,"test");
-        let mut tc = x.add(async {},ctx);        
+        let tc = x.add(async {},ctx);        
         /* test */
-        let mut shared = Arc::new(Mutex::new(false));
+        let shared = Arc::new(Mutex::new(false));
         let shared2 = shared.clone();
         tc.get_agent().add_timer(1.,move || { *shared2.lock().unwrap() = true; });
         x.service();

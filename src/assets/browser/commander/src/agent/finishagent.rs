@@ -87,12 +87,10 @@ impl FinishAgent {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;
-    use crate::executor::executor::Executor;
     use crate::task::runconfig::RunConfig;
     use crate::executor::action::ActionLink;
     use crate::executor::taskcontainer::TaskContainer;
@@ -106,7 +104,7 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ActionLink::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let mut tc = Agent::new(&cfg,&eah,&integration,"test");
+        let tc = Agent::new(&cfg,&eah,&integration,"test");
         tc.run_agent().register(&h);
         /* test */
         assert!(!tc.finish_agent().finishing());
@@ -129,17 +127,17 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ActionLink::new();
-        let mut ti = TestIntegration::new();
-        let mut integration = ReenteringIntegration::new(ti.clone());
+        let eah = ActionLink::new();
+        let ti = TestIntegration::new();
+        let integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        let tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.run_agent().register(&h);
         tc.finish_agent().finish(None,false);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let mut tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        let tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
         tc.run_agent().register(&h);
         tc.finish(KillReason::NotNeeded);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());

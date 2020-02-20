@@ -66,4 +66,15 @@ extern crate futures;
 #[cfg(test)]
 extern crate regex;
 
-pub use crate::executor::executor::Executor; // XXX for unused warnings
+pub use crate::agent::agent::Agent;
+pub use crate::executor::executor::Executor;
+pub use crate::helper::flagfuture::FlagFuture;
+pub use crate::helper::named::NamedFuture;
+pub use crate::helper::tidier::Tidier;
+pub use crate::helper::turnstile::TurnstileFuture;
+pub use crate::integration::integration::{ Integration, SleepQuantity };
+pub use crate::task::block::Block;
+pub use crate::task::runconfig::RunConfig;
+pub use crate::task::slot::RunSlot;
+pub use crate::task::task::{ KillReason, TaskResult, TaskSummary };
+pub use crate::task::taskhandle::TaskHandle;

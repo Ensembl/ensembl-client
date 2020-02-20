@@ -76,20 +76,14 @@ impl<R> Future for NamedFuture<R> {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
-    use super::*;
-    use crate::helper::flagfuture::FlagFuture;
     use crate::integration::testintegration::TestIntegration;
     use crate::executor::executor::Executor;
     use crate::task::runconfig::RunConfig;
-    use std::future::Future;
-    use std::sync::{ Arc, Mutex };
-    use futures::future;
 
     #[test]
     pub fn test_named_smoke() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"first-name");
@@ -102,7 +96,7 @@ mod test {
             },"test").await;
             agent2.tick(1).await;
         };
-        let mut handle = x.add(step,agent);
+        let handle = x.add(step,agent);
         assert_eq!("first-name",handle.get_name());
         assert_eq!(0,handle.get_waits().len());
         x.tick(1.);

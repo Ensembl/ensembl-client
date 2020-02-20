@@ -56,10 +56,8 @@ impl<R> Future for TurnstileFuture<R> {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
-    use crate::helper::flagfuture::FlagFuture;
     use crate::integration::testintegration::TestIntegration;
     use crate::executor::executor::Executor;
     use crate::task::runconfig::RunConfig;
@@ -101,7 +99,7 @@ mod test {
     impl Future for TurnstileTestBranch {
         type Output = ();
 
-        fn poll(mut self: Pin<&mut Self>, context: &mut Context) -> Poll<()> {
+        fn poll(self: Pin<&mut Self>, context: &mut Context) -> Poll<()> {
             let mut state = self.0.lock().unwrap();
             if state.flag {
                 context.waker().wake_by_ref();
@@ -114,7 +112,7 @@ mod test {
 
     #[test]
     pub fn test_turnstile_smoke() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let ctx = x.new_agent(&cfg,"test");

@@ -100,9 +100,7 @@ impl ExecutorTasks {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
-    use super::*;
     use super::super::executor::Executor;
     use crate::task::task::TaskResult;
     use crate::integration::testintegration::TestIntegration;
@@ -111,7 +109,7 @@ mod test {
 
     #[test]
     pub fn test_executor_block() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let fos = FlagFuture::new();
@@ -122,7 +120,7 @@ mod test {
             ctx2.tick(2).await;
             fos2.await;
         };
-        let mut tc = x.add(step,ctx);
+        let tc = x.add(step,ctx);
         x.tick(10.);
         x.tick(10.);
         x.tick(10.);

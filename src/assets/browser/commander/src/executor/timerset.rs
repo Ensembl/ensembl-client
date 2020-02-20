@@ -105,19 +105,15 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use std::sync::{ Arc, Mutex };
     use ordered_float::OrderedFloat;
     use crate::executor::taskcontainer::{ TaskContainer, TaskContainerHandle };
-    use crate::task::task::{ TaskSummary, KillReason };
-    use crate::task::taskhandle::ExecutorTaskHandle;
     use crate::task::faketask::FakeTask;
     use super::*;
 
     #[test]
     pub fn test_timer() {
-        let tc = TaskContainer::new();
         let mut timers : TimerSet<OrderedFloat<f64>,Option<TaskContainerHandle>> = TimerSet::new();
         assert!(timers.0.lock().unwrap().timeouts.len()==0);
         timers.check(OrderedFloat(0.));

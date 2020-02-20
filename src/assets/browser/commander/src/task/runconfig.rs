@@ -28,7 +28,6 @@ impl RunConfig {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
 

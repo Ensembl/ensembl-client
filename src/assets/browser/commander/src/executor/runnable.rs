@@ -59,14 +59,9 @@ impl Runnable {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
-    use std::sync::{ Arc, Mutex };
-    use crate::task::task::{ TaskSummary, KillReason };
     use crate::task::faketask::FakeTask;
-    use crate::task::taskhandle::ExecutorTaskHandle;
-    use crate::helper::tidier::Tidier;
 
     #[test]
     pub fn test_runnable() {

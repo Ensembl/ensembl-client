@@ -45,7 +45,6 @@ impl SleepCatcherIntegration {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
     use crate::integration::testintegration::TestIntegration;
@@ -53,8 +52,8 @@ mod test {
 
     #[test]
     pub fn test_sleep_catcher() {
-        let mut integration = TestIntegration::new();
-        let mut sc = SleepCatcherIntegration::new(integration.clone());
+        let integration = TestIntegration::new();
+        let sc = SleepCatcherIntegration::new(integration.clone());
         sc.sleep(SleepQuantity::None); /* pushed (new) */
         sc.sleep(SleepQuantity::None); /* not pushed (copy) */
         sc.sleep(SleepQuantity::Forever); /* pushed (different) */

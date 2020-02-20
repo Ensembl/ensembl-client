@@ -60,19 +60,15 @@ impl RunAgent {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
     use std::sync::{ Arc, Mutex };
     use crate::executor::executor::Executor;
-    use crate::executor::taskcontainer::TaskContainer;
-    use crate::integration::integration::{ Integration, SleepQuantity };
     use crate::integration::testintegration::TestIntegration;
-    use crate::executor::action::Action;
 
     #[test]
     pub fn test_create_subtask() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"test");
@@ -89,7 +85,7 @@ mod test {
             });
             42
         };
-        let mut handle = x.add(step,agent);
+        let handle = x.add(step,agent);
         x.tick(1.);
         assert!(!*tidied.lock().unwrap());
         assert_eq!(Some(42),handle.take_result());

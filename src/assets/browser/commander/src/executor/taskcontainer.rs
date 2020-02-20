@@ -83,17 +83,14 @@ impl TaskContainer {
         }
     }
 
-    #[allow(unused)] /* used in tests */
+    #[cfg(test)]
     pub(super) fn len(&self) -> usize { self.tasks.len() - self.free_slots.len() }
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
-    use crate::task::task::{ KillReason, TaskSummary };
     use crate::task::faketask::FakeTask;
-    use crate::helper::tidier::Tidier;
 
     #[test]
     pub fn test_container() {

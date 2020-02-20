@@ -55,14 +55,10 @@ impl RunQueue {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
-    use crate::task::task::{ TaskSummary, KillReason };
     use crate::task::faketask::FakeTask;
-    use crate::task::taskhandle::ExecutorTaskHandle;
     use crate::executor::taskcontainer::TaskContainer;
-    use crate::helper::tidier::Tidier;
 
     #[test]
     pub fn test_runqueue() {

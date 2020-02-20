@@ -143,12 +143,10 @@ impl Executor {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
 
     use std::collections::HashSet;
-    use std::sync::{ Arc, Mutex };
     use crate::task::task::{ KillReason, TaskResult };
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
@@ -157,7 +155,7 @@ mod test {
 
     #[test]
     pub fn test_executor_smoke() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"test");
@@ -165,7 +163,7 @@ mod test {
         let step = async move {
             agent2.tick(0).await;
         };
-        let mut handle = x.add(step,agent);
+        let handle = x.add(step,agent);
         assert!(handle.peek_result() == TaskResult::Ongoing);
         x.main_step();
         assert!(handle.peek_result() == TaskResult::Ongoing);
@@ -184,7 +182,7 @@ mod test {
         let step = async move {
             ctx2.tick(2).await;
         };
-        let mut tc = x.add(step,ctx);
+        let tc = x.add(step,ctx);
         integration.set_time(10.);
         x.main_step();
         assert!(tc.peek_result() == TaskResult::Killed(KillReason::Timeout));
@@ -192,11 +190,11 @@ mod test {
 
     #[test]
     pub fn test_again() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
         let ctx = x.new_agent(&cfg,"name");
-        let mut tc = x.add(tick_helper(ctx.clone(),&[0,0,0]),ctx);
+        let tc = x.add(tick_helper(ctx.clone(),&[0,0,0]),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Done);
     }
@@ -212,13 +210,12 @@ mod test {
 
     #[test]
     pub fn test_again_timeout() {
-        let mut integration = TestIntegration::new();
-        let integration2 = integration.clone();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
         let ctx = x.new_agent(&cfg,"name");
         let step = again_timeout(ctx.clone(),integration.clone());
-        let mut tc = x.add(step,ctx);
+        let tc = x.add(step,ctx);
         x.tick(2.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(2.);
@@ -227,11 +224,11 @@ mod test {
 
     #[test]
     pub fn test_tick() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(20.));
         let ctx = x.new_agent(&cfg,"test");
-        let mut tc = x.add(tick_helper(ctx.clone(),&[3]),ctx);
+        let tc = x.add(tick_helper(ctx.clone(),&[3]),ctx);
         x.tick(10.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         x.tick(10.);
@@ -244,7 +241,7 @@ mod test {
 
     #[test]
     pub fn test_sleep_forever() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
@@ -258,8 +255,8 @@ mod test {
         let step2 = async move {
             FlagFuture::new().await;
         };
-        let mut tc = x.add(step,ctxa);
-        let mut tc2 = x.add(step2,ctxb);
+        let tc = x.add(step,ctxa);
+        x.add(step2,ctxb);
         x.tick(2.);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(SleepQuantity::None == integration.get_sleeps().remove(0));
@@ -284,7 +281,7 @@ mod test {
                          sleep_hepler(ctx2.clone(),21.)).await
         };
         /* drop success */
-        let mut tc = x.add(z,ctx.clone());
+        x.add(z,ctx.clone());
         x.tick(10.);
         integration.set_time(5.);
         x.tick(10.);
@@ -317,7 +314,7 @@ mod test {
             ctx2.timer(10.).await;
             ()
         };
-        let mut tc = x.add(step,ctx);
+        x.add(step,ctx);
         x.tick(10.); /* (Block) time_at_end = 1 => sleep 9 */
         integration.set_time(11.);
         x.tick(10.);
@@ -337,13 +334,13 @@ mod test {
     #[test]
     pub fn test_forever() {
         /* setup */
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let fos = FlagFuture::new();
         let fos2 = fos.clone();
         let ctx = x.new_agent(&cfg,"test");
-        let mut tx = x.add(async {
+        x.add(async {
             fos2.await;
         },ctx);
         /* simulate */
@@ -353,10 +350,11 @@ mod test {
         assert_eq!(vec![SleepQuantity::Forever,SleepQuantity::None],*integration.get_sleeps());
     }
 
+    #[allow(unused_must_use)]
     #[test]
     pub fn test_sleep_algorithm() {
         /* setup */
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let fosa = FlagFuture::new();
@@ -369,7 +367,7 @@ mod test {
             ctx2.timer(3.);
             FlagFuture::new().await;
         };
-        let mut tc = x.add(step,ctx);
+        x.add(step,ctx);
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
@@ -386,17 +384,18 @@ mod test {
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Time(3.));
     }
 
+    #[allow(unused_must_use)]
     #[test]
     pub fn test_timeout_delta() {
         /* setup */
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut integration2 = integration.clone();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(5.)); /* time=0; SleepQuantity::Time(5.) */
 
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
-        let mut os1 = FlagFuture::new();
+        let os1 = FlagFuture::new();
         let os1b = os1.clone();
         let step = async move {
             integration2.set_time(1.);
@@ -404,7 +403,7 @@ mod test {
             ctx2.timer(2.);
             FlagFuture::new().await;
         };
-        let tx = x.add(step,ctx);
+        x.add(step,ctx);
         /* simulate */
         x.tick(10.); /* (Block) time=1 on exit => task-timout=5 => delta = 4. ==>> SleepQuantity::Time(4.) */
         assert_eq!(1.,integration.get_time());
@@ -428,7 +427,7 @@ mod test {
                 tick_helper(ctx2.clone(),&[4]).await;
                 Ok::<u64,()>(ctx2.get_tick_index())
             };
-            let mut b = async { 
+            let b = async { 
                 tick_helper(ctx2.clone(),&[0,0,0,0,1]).await;
                 Ok::<u64,()>(ctx2.get_tick_index())
             };
@@ -436,7 +435,7 @@ mod test {
         };
         let tc = x.add(p,ctx);
         /* simulate */
-        for i in 0..7 {
+        for _ in 0..7 {
             x.tick(10.);
             integration.set_time(integration.get_time()+1.);
         }
@@ -461,7 +460,7 @@ mod test {
             };
             future::join(a,b).await
         };
-        let mut tc = x.add(p,ctx);
+        let tc = x.add(p,ctx);
         /* simulate */
         x.tick(10.);
         x.tick(10.);
@@ -481,7 +480,7 @@ mod test {
 
     #[test]
     pub fn test_executor_name() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"first-name");
@@ -490,7 +489,7 @@ mod test {
             agent2.tick(0).await;
             agent2.set_name("second-name");
         };
-        let mut handle = x.add(step,agent);
+        let handle = x.add(step,agent);
         assert_eq!("first-name",handle.get_name());
         x.main_step();
         x.main_step();
@@ -499,7 +498,7 @@ mod test {
 
     #[test]
     pub fn test_summary() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"name");
@@ -512,7 +511,7 @@ mod test {
             },"test").await;
             agent2.tick(1).await;
         };
-        let mut handle = x.add(step,agent);
+        let handle = x.add(step,agent);
         x.tick(1.);
         x.tick(1.);
         let summary = handle.summary().unwrap();
@@ -523,7 +522,7 @@ mod test {
 
     #[test]
     pub fn test_all_summaries() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut handles = vec![];
@@ -560,7 +559,7 @@ mod test {
 
     #[test]
     pub fn test_kill() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
         let mut handles = vec![];

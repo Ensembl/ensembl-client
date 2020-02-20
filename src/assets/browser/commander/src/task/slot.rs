@@ -24,10 +24,7 @@ impl RunSlot {
 hashable!(IDENTITY,RunSlot,identity);
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
-    use super::*;
-
     use crate::executor::executor::Executor;
     use crate::task::runconfig::RunConfig;
     use crate::task::task::{ KillReason, TaskResult };
@@ -35,7 +32,7 @@ mod test {
 
     #[test]
     pub fn test_slots() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg1 = RunConfig::new(Some(x.new_slot(true)),3,None);
         let cfg2 = RunConfig::new(None,3,None);

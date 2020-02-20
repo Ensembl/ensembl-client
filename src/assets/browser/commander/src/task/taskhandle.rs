@@ -30,7 +30,7 @@ pub(crate) trait ExecutorTaskHandle {
     fn set_identity(&self, identity: u64);
 }
 
-pub struct TaskHandleState<R: 'static + Send> {
+pub(crate) struct TaskHandleState<R: 'static + Send> {
     identity: Option<u64>,
     future: Pin<Box<dyn Future<Output=R> + 'static + Send>>,
     agent: Agent,
@@ -152,7 +152,6 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
 }
 
 #[cfg(test)]
-#[allow(unused)]
 mod test {
     use super::*;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
@@ -164,7 +163,7 @@ mod test {
 
     #[test]
     pub fn test_handle_smoke() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
 
@@ -174,7 +173,7 @@ mod test {
             tick_helper(ctx2,&[0,0,0]).await;
             42
         };
-        let mut tc = x.add(a,ctx);
+        let tc = x.add(a,ctx);
         assert!(tc.peek_result() == TaskResult::Ongoing);
         assert!(tc.take_result().is_none());
         assert!(tc.get_result().is_none());
@@ -196,8 +195,8 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ActionLink::new();
-        let mut integration = TestIntegration::new();
-        let mut tc = Agent::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
+        let integration = TestIntegration::new();
+        let tc = Agent::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
         tc.run_agent().register(&h);
         let ctx = tc.clone();
         let s1 = Box::pin(async move {
@@ -206,7 +205,6 @@ mod test {
             ctx.tick(0).await;
             ctx.tick(0).await;
         });
-        let mut tc2 = tc.clone();
         let mut t = TaskHandle::new(&tc,s1);
         /* simple accessors */
         assert_eq!(3,t.get_priority());
