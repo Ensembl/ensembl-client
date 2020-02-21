@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
-use crate::task::task::{ KillReason, TaskSummary };
-use crate::task::taskhandle::ExecutorTaskHandle;
+use super::task::{ KillReason, TaskSummary };
+use super::taskhandle::ExecutorTaskHandle;
 
 struct FakeTaskState {
     runs: u32,

@@ -24,6 +24,7 @@ hashable!(IDENTITY,RunSlot,identity);
 
 #[cfg(test)]
 mod test {
+    use std::sync::{ Arc, Mutex };
     use crate::executor::executor::Executor;
     use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
@@ -64,5 +65,38 @@ mod test {
                         TaskResult::Ongoing,
                         TaskResult::Killed(KillReason::NotNeeded)],
                     handles.iter().map(|x| x.task_state()).collect::<Vec<_>>());
+    }
+
+    #[allow(unused_must_use)]
+    #[test]
+    pub fn test_slot_wait() {
+        let integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(Some(x.new_slot(true)),3,None);
+        let flag = Arc::new(Mutex::new(false));
+        let agenta = x.new_agent(&cfg,"A");
+        let agenta2 = agenta.clone();
+        let flag2 = flag.clone();
+        let stepa = async move {
+            let agenta3 = agenta2.clone();
+            agenta2.tidy(async move {
+                agenta3.tick(1).await;
+                assert!(!*flag2.lock().unwrap());
+                ()
+            });
+            agenta2.tick(10).await;
+        };
+        x.add(stepa,agenta);
+        x.tick(1.);
+        let agentb = x.new_agent(&cfg,"B");
+        let agentb2 = agentb.clone();
+        let stepb = async move {
+            *flag.lock().unwrap() = true;
+            agentb2.tick(10).await;
+        };
+        x.add(stepb,agentb);
+        for _ in 0..20 {
+            x.tick(1.);
+        }
     }
 }

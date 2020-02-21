@@ -11,7 +11,8 @@ pub(crate) struct ExecutorTasks {
     tasks: TaskContainer,
     runnable: Runnable,
     blocked_by: HashSet<TaskContainerHandle>,
-    slot_map: HashMap<RunSlot,TaskContainerHandle>
+    slot_queue: HashMap<RunSlot,Vec<TaskContainerHandle>>,
+    handle_slot: HashMap<TaskContainerHandle,RunSlot>
 }
 
 impl ExecutorTasks {
@@ -20,24 +21,22 @@ impl ExecutorTasks {
             tasks: TaskContainer::new(),
             runnable: Runnable::new(),
             blocked_by: HashSet::new(),
-            slot_map: HashMap::new()
+            slot_queue: HashMap::new(),
+            handle_slot: HashMap::new()
         }
-    }
-
-    fn free_slot(&self, handle: &TaskContainerHandle, slot: &RunSlot) -> bool {
-        if let Some(task) = self.tasks.get(handle) {
-            if !slot.is_push() { return false }
-            task.evict();
-        }
-        true
     }
 
     pub(crate) fn check_slot(&mut self, agent: &Agent) -> bool {
         if let Some(slot) = agent.get_config().get_slot() {
-            if let Some(tch) = self.slot_map.get(slot) {
-                if !self.free_slot(tch,slot) {
-                    return false;
+            let queue = self.slot_queue.entry(slot.clone()).or_insert_with(|| Vec::new());
+            if slot.is_push() {
+                for handle in queue.iter_mut() {
+                    if let Some(task) = self.tasks.get(handle) {
+                        task.evict();
+                    }
                 }
+            } else {
+                return queue.len() == 0;
             }
         }
         true
@@ -45,7 +44,8 @@ impl ExecutorTasks {
 
     pub(crate) fn use_slot(&mut self, agent: &Agent, handle: &TaskContainerHandle) {
         if let Some(slot) = agent.get_config().get_slot() {
-            self.slot_map.insert(slot.clone(),handle.clone());
+            self.slot_queue.entry(slot.clone()).or_insert_with(|| Vec::new()).push(handle.clone());
+            self.handle_slot.insert(handle.clone(),slot.clone());
         }
     }
 
@@ -54,13 +54,49 @@ impl ExecutorTasks {
         self.blocked_by.insert(handle.clone());
     }
 
+    fn other_using_slot(&self, slot: &RunSlot, handle: &TaskContainerHandle) -> bool {
+        if let Some(queue) = self.slot_queue.get(slot) {
+            if let Some(head) = queue.get(0) {
+                if head != handle {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    pub(crate) fn start_task(&mut self, handle: &TaskContainerHandle) {
+        if let Some(slot) = self.handle_slot.get(&handle) {
+            if self.other_using_slot(slot,handle) {
+                /* Don't add to runnable until slot is free */
+                return;
+            }
+        }
+        self.runnable.add(&self.tasks,&handle);
+    }
+
     pub(crate) fn unblock_task(&mut self, handle: &TaskContainerHandle) {
         self.blocked_by.remove(&handle);
         self.runnable.add(&self.tasks,&handle);
     }
 
+    fn remove_from_slot_queue(&mut self, handle: &TaskContainerHandle) {
+        if let Some(slot) = self.handle_slot.get(&handle) {
+            if let Some(queue) = self.slot_queue.get_mut(slot) {
+                if let Some(pos) = queue.iter().position(|v| v == handle) {
+                    queue.remove(pos);
+                }
+                if let Some(next) = queue.get(0) {
+                    self.runnable.add(&self.tasks,&next);
+                }
+            }
+        }
+    }
+
     pub(crate) fn remove_task(&mut self, handle: &TaskContainerHandle) {
-        self.runnable.remove(&self.tasks,&handle);
+        self.runnable.remove(&self.tasks,handle);
+        self.remove_from_slot_queue(handle);
+        self.handle_slot.remove(&handle);
         self.blocked_by.remove(&handle);
         self.tasks.remove(&handle);
     }

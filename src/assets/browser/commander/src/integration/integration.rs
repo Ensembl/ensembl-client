@@ -10,7 +10,6 @@
  *   call to sleep countermanding this).
  */
 
-
 /// How long an integration may hold off polling until further notice.
 /// 
 /// Used in `Integration.sleep()` to indicate how long polling may be suspended.

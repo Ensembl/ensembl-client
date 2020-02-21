@@ -42,7 +42,6 @@ impl Executor {
     pub(crate) fn get_tasks(&self) -> &ExecutorTasks { &self.tasks }
     pub(crate) fn get_tasks_mut(&mut self) -> &mut ExecutorTasks { &mut self.tasks }
 
-
     /// Create new `RunSlot`.
     /// 
     /// A `RunSlot` can only be occupied by one task at once. If `push` is true, submission of a new
@@ -74,7 +73,7 @@ impl Executor {
             let container_handle = tasks.create_handle(&agent,task);
             tasks.use_slot(&agent,&container_handle);
             if !agent.finish_agent().finished() {
-                tasks.unblock_task(&container_handle);
+                tasks.start_task(&container_handle);
                 blackbox_start!("commander",&self.task_key(&container_handle.clone()));
                 if let Some(timeout) = agent.get_config().get_timeout() {
                     let agent2 = agent.clone();
