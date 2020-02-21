@@ -8,6 +8,14 @@ guarantee of simultaneously executing threads.
 Though not slow, its focus is not on speed but on solid engineering practices in a deployed environment for real-world 
 loads: loads which fail, timeout, need to be profiled, etc.
 
+In this context *non-preemptive* is used loosly to mean the following:
+  * there is no mechanism to force a task to interrupt its work;
+  * there *may* be only a single thread of execution so spawning threads which sleep, for exmaple, won't work as an 
+    implementation of a timer;
+  * bad things would happen unless the executor periodically returned to its invoking environment.
+
+The principal target which can be characterised in this way is the basic web environment.
+
 ## Integration
 
 Commander is designed to sit in an environment where a periodic servicing call (here known as a "tick") is the principal
