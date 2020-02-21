@@ -183,8 +183,8 @@ impl Agent {
 
     fn run_one_destructor(&self, context: &mut Context) {
         self.finish_agent().check_tidiers();
-        if let Some(tidier) = self.finish_agent().get_tidier() {
-            let mut tidier = tidier.clone();
+        let mut tidier = self.finish_agent().get_tidier().cloned();
+        if let Some(ref mut tidier) = tidier {
             match tidier.as_mut().poll(context) {
                 Poll::Pending => {
                     self.block_agent().root_block().block();
