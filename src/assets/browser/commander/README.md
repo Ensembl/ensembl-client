@@ -52,10 +52,112 @@ To avoid this problem, futures can be wrapped inside "turnstiles". Once the inne
 
 The backing mechanism for implementing turnstiles within commander is very flexible and can handle cases beyond turnstiles. That functionality is not currently exposed but this is seen as a future expansion area, as need arises.
 
+### Summaries and Named Waits
+
+Each task can be summarized to allow a task-list type view. The summary is currently quite limited but having a list of running jobs, their names, and any named waits can help with diagnostics.
+
+Because some tasks may spend a long time waiting on some external resource, it can be useful to evidence this in summaries. A future exist which wraps an internal, potentially slow future and takes a name. When a task is pending on a future inside this wrapper, the name of this wait is included in summary information, for diagnostic purposes.
+
 ### Blackbox
 
 Commander is implemented with the blackbox logging and diagnostics system through use of a flag. This allows task execution times and invocation and termination to be logged through blackbox.
 
 ## Usage
 
-## Implementaiton
+### Creating an Executor
+
+Before an executor can be created, an integrator must create an integration. This integration provides a means of retrieveing the current time and a method to handle any notifications from the executor about the possibility of skipping polls. Given this, an Executor can be created.
+
+```
+pub struct TestIntegration {
+    ...
+}
+
+impl Integration for MyIntegration {
+    fn current_time(&self) -> f64 { ... }
+    fn sleep(&self, quantity: SleepQuantity) { ... }
+}
+
+let executor = Executor::new(MyIntegration::new());
+```
+
+### Submitting a Task
+
+A task is submitted in three stages.
+
+First, a RunConfig is created. RunConfigs contain various parameters describing a task which are expected to be shared across many sumbissions. If you are unlucky, you may have to create a RunConfig each call. If you are lucky you can reuse one. These aren't expensive to create, they exist as a separate entity solely to simplify code.
+
+Second, an Agent is created. This takes the RunConfig and a name. 
+
+Third, the Agent and the async are passed to the executor.
+
+The reason that these last two steps are separate is that it means the created Agent (or a clone) can be passed to the async, allowing the async to communicate with the executor and use its facilities.
+
+
+In a simple case where that is not required:
+```
+let cfg = RunConfig::new(None,3,None);
+let agent = x.new_agent(&cfg,"test");
+let step = async {
+    ...
+};
+let handle = x.add(step,agent);
+```
+
+A case where agent is used internally, in this case to yield for zero ticks:
+```
+let cfg = RunConfig::new(None,3,None);
+let agent = x.new_agent(&cfg,"test");
+let agent2 = agent.clone();
+let step = async move {
+    ...
+    agent2.tick(0).await;
+    ...
+};
+let handle = x.add(step,agent);
+```
+
+### Using Agents
+
+From within a future an agent can be used to wait for a certain number of ticks or a certain time. Waiting for zero ticks is a simple yield. Methods on agent also exist for creating simple timers (based both on time and tick) which call callbacks (the invoking of which is handled by the executor). Named waits, turnstiles, and destructors are also created by a simple call to Agent. Agent also contains the new_agent and submit methods which correspond to the new_agent and add methods of the Executorm allowing spawning of new, independent tasks.
+
+For example, this task waits ten time units and then submits a new, independent task.
+
+```
+let cfg = RunConfig::new(None,3,None);
+let agent = executor.new_agent(&cfg,"test");
+let agent2 = agent.clone();
+let step = async move {
+    let agentb = agent2.timer(10.).await;
+    agent2.submit(agentb,async move {
+        ...
+    });
+    ...
+};
+executor.add(step,agent);
+```
+
+### Using TaskHandles
+
+Whereas an Agent is a means of interacting with an executor from within the future, a TaskHandle is the equivalent struct from the perspective of the invoker. It can be used to retrieve the result of the task, to get summary information about its status, and to send signals. If can also return a future which can be later used to wait on comletion of the task from inside some other future. In most simple cases an invoker will not care about the taskhandle and need not keep it.
+
+## API
+
+## Implementation
+
+## Glossary (API-visible)
+
+ * **agent**:
+ * **executor**:
+ * **integration**:
+ * **runconfig**:
+ * **task**:
+ * **taskhandle**:
+ * **tick**:
+ * **timer**:
+
+## Glossary (internal)
+
+## TODO
+
+* Due to time-constraints, in places the implementation is not very Rust-ideomatic due to time constraints. Lifetimes and references are not leveraged extensively and there is far too much cloning, the result being a bit C++-y. This was a consequence of this implementation being the result of "feeling around" this space. This should be fixed now there is a good spec.
