@@ -41,7 +41,7 @@ const getRandomSelectedValues = () => {
 const selectedValues = getRandomSelectedValues();
 
 const defaultProps = {
-  options: optionGroups,
+  optionsGroup: optionGroups,
   selectedValues: selectedValues,
   onChange
 };

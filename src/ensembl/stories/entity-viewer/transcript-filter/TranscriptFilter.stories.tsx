@@ -47,7 +47,7 @@ const Wrapper = (props: any) => {
     <div className={styles.defaultWrapper}>
       {
         <EntityViewerTranscriptFilter
-          options={optionGroups}
+          optionsGroup={optionGroups}
           onChange={onChange}
           selectedValues={values}
           {...props}

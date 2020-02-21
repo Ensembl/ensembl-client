@@ -15,21 +15,21 @@ export type OptionsGroup = Option[];
 type Props = {
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
-  options: OptionsGroup[];
+  optionsGroup: OptionsGroup[];
   hideUnchecked?: boolean;
 };
 
 const EntityViewerTranscriptFilter = (props: Props) => {
-  const handleChange = (status: boolean, optionIndex: [number, number]) => {
+  const handleChange = (isChecked: boolean, optionIndex: [number, number]) => {
     const [groupIndex, itemIndex] = optionIndex;
-    const selectedOption = props.options[groupIndex][itemIndex].value;
+    const selectedOption = props.optionsGroup[groupIndex][itemIndex].value;
 
-    if (status) {
+    if (isChecked) {
       const newSelectedOptions = [...props.selectedValues, selectedOption];
       props.onChange(newSelectedOptions);
     } else {
       const newSelectedOptions = [...props.selectedValues].filter(
-        (option) => option != selectedOption
+        (option) => option !== selectedOption
       );
 
       props.onChange(newSelectedOptions);
@@ -37,8 +37,8 @@ const EntityViewerTranscriptFilter = (props: Props) => {
   };
 
   return (
-    <div className={styles.defaultWrapper}>
-      {props.options.map((options, groupIndex) => {
+    <div className={styles.wrapper}>
+      {props.optionsGroup.map((options, groupIndex) => {
         const optionGroupClassName = classNames(styles.checkboxPadding, {
           [styles.optionGroup]: !props.hideUnchecked
         });
