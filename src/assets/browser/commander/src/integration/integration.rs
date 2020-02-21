@@ -10,15 +10,27 @@
  *   call to sleep countermanding this).
  */
 
+
+/// How long an integration may hold off polling until further notice.
+/// 
+/// Used in `Integration.sleep()` to indicate how long polling may be suspended.
 #[derive(PartialEq,Clone)]
 #[cfg_attr(test,derive(Debug))]
 pub enum SleepQuantity {
+    /// Do not suspend. Carry on polling.
     None,
+    /// Polling may be suspnded for time given (in integration time units).
     Time(f64),
+    /// Polling may be suspended indefinitely (until this method is called again).
     Forever
 }
 
+/// The integration needs to provide these methods to the executor.
 pub trait Integration : Send {
+    /// What is the current time? (in units of your choosing).
     fn current_time(&self) -> f64;
+    /// You may suspend polling for the given period.
+    /// 
+    /// See `SleepQuantity` for details.
     fn sleep(&self, amount: SleepQuantity);
 }

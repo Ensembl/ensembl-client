@@ -35,7 +35,7 @@ impl NamedWait {
     }
 }
 
-pub struct NamedFuture<R> {
+pub(crate) struct NamedFuture<R> {
     agent: Agent,
     inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
     name: String,

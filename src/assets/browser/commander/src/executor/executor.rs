@@ -13,6 +13,7 @@ use super::timings::ExecutorTimings;
 #[cfg(feature="use-blackbox")]
 use super::taskcontainer::TaskContainerHandle;
 
+/// The main top-level object for commander, responsible for running tasks to completion.
 pub struct Executor {
     timings: ExecutorTimings,
     tasks: ExecutorTasks,
@@ -21,6 +22,9 @@ pub struct Executor {
 }
 
 impl Executor {
+    /// Create new integration.
+    /// 
+    /// Requires an implementation of `Integration` which you supply.
     pub fn new<T>(integration: T) -> Executor where T: Integration + 'static {
         blackbox_log!("commander","Commander Executor starting");
         let integration = ReenteringIntegration::new(integration);
@@ -39,16 +43,24 @@ impl Executor {
     pub(crate) fn get_tasks_mut(&mut self) -> &mut ExecutorTasks { &mut self.tasks }
 
 
+    /// Create new `RunSlot`.
+    /// 
+    /// A `RunSlot` can only be occupied by one task at once. If `push` is true, submission of a new
+    /// task evicts the old. If `push` is false, the new submission fails.
     pub fn new_slot(&self, push: bool) -> RunSlot { RunSlot::new(push) }
 
-    pub fn new_agent(&self, run_config: &RunConfig, name: &str) -> Agent {
-        Agent::new(run_config,&self.actions,&self.integration,name)
-    }
-
+    /// Return `TaskSummary` objects for all tasks currently running on this executor.
     pub fn summarize_all(&self) -> Vec<TaskSummary> {
         self.get_tasks().summarize_all()
     }
 
+    /// Create a new `Agent` to pass to add and, if you wish, pass into your future for access to executor
+    /// functionality.
+    pub fn new_agent(&self, run_config: &RunConfig, name: &str) -> Agent {
+        Agent::new(run_config,&self.actions,&self.integration,name)
+    }
+
+    /// Add given future and agent to the executor for running.
     pub fn add<R,T>(&mut self, run: T, mut agent: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static+Send {
         let handle = TaskHandle::new(&mut agent,Box::pin(run));
         self.try_add_task(Box::new(handle.clone()),agent);
@@ -154,6 +166,10 @@ impl Executor {
         self.service();
     }
 
+    /// Callback for executing tasks in future, called each periodic tick.
+    /// 
+    /// `slice` is a time which, when exceeded, causes no more tasks to run in this tick. Note that because our
+    /// environment is non-preemptive, this relies on co-operation from the tasks (yielding regularly).
     pub fn tick(&mut self, slice: f64) {
         self.integration.reentering();
         self.get_timings_mut().advance_tick();
@@ -186,9 +202,9 @@ mod test {
             agent2.tick(0).await;
         };
         let handle = x.add(step,agent);
-        assert!(handle.peek_result() == TaskResult::Ongoing);
+        assert!(handle.task_state() == TaskResult::Ongoing);
         x.main_step();
-        assert!(handle.peek_result() == TaskResult::Ongoing);
+        assert!(handle.task_state() == TaskResult::Ongoing);
         x.main_step();
         assert!(handle.get_agent().finish_agent().finishing());
         assert!(!x.main_step());
@@ -207,7 +223,7 @@ mod test {
         let tc = x.add(step,ctx);
         integration.set_time(10.);
         x.main_step();
-        assert!(tc.peek_result() == TaskResult::Killed(KillReason::Timeout));
+        assert!(tc.task_state() == TaskResult::Killed(KillReason::Timeout));
     }
 
     #[test]
@@ -218,7 +234,7 @@ mod test {
         let ctx = x.new_agent(&cfg,"name");
         let tc = x.add(tick_helper(ctx.clone(),&[0,0,0]),ctx);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
     }
 
     async fn again_timeout(ctx: Agent, mut integration: TestIntegration) {
@@ -239,9 +255,9 @@ mod test {
         let step = again_timeout(ctx.clone(),integration.clone());
         let tc = x.add(step,ctx);
         x.tick(2.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(2.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
     }
 
     #[test]
@@ -252,13 +268,13 @@ mod test {
         let ctx = x.new_agent(&cfg,"test");
         let tc = x.add(tick_helper(ctx.clone(),&[3]),ctx);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);    
+        assert!(tc.task_state() == TaskResult::Done);    
     }
 
     #[test]
@@ -280,10 +296,10 @@ mod test {
         let tc = x.add(step,ctxa);
         x.add(step2,ctxb);
         x.tick(2.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         assert!(SleepQuantity::None == integration.get_sleeps().remove(0));
         x.tick(2.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         assert!(SleepQuantity::Forever == integration.get_sleeps().remove(0));
     }
 
@@ -495,7 +511,7 @@ mod test {
         x.tick(10.);
         integration.set_time(9.);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
         x.tick(10.);
         assert_eq!((Ok(6),Ok(3)),tc.take_result().unwrap());
     }
@@ -599,7 +615,7 @@ mod test {
             handles.push(x.add(step,agent));
         }
         handles[1].kill(KillReason::Cancelled);
-        assert_eq!(TaskResult::Killed(KillReason::Cancelled),handles[1].peek_result());
+        assert_eq!(TaskResult::Killed(KillReason::Cancelled),handles[1].task_state());
         assert_eq!(1,x.summarize_all().iter().map(|x| x.identity()).filter(|x| *x==3).count());
         assert_eq!(2,handles[0].summarize().unwrap().identity());
         x.tick(1.);

@@ -128,7 +128,7 @@ mod test {
         x.tick(10.);
         x.tick(10.);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         fos.flag();
         assert_eq!(1,x.get_tasks().tasks.len());
         x.tick(10.);

@@ -7,7 +7,6 @@ use std::task::Poll;
 use crate::executor::action::ActionLink;
 use crate::helper::flagfuture::FlagFuture;
 use crate::helper::named::NamedFuture;
-use crate::helper::tidier::Tidier;
 use crate::helper::turnstile::TurnstileFuture;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::runconfig::RunConfig;
@@ -34,6 +33,11 @@ pub(crate) struct AgentState {
 }
 
 #[derive(Clone)]
+
+/// Agents provide access to executor functionality from within a running future.
+/// 
+/// This allows them to create and wait on timers, create subtasks, etc. For an overview see the top-level 
+/// documentation.
 pub struct Agent {
     state: Arc<Mutex<AgentState>>
 }
@@ -74,38 +78,63 @@ impl Agent {
 
     /* public API */
 
+    /// Retrieve current name of task.
     pub fn get_name(&self) -> String {
         self.name_agent().get_name()
     }
 
+    /// Set name of task.
     pub fn set_name(&self, name: &str) {
         self.name_agent().set_name(name);
     }
 
+    /// Add a callback to be run by the executor in a tick after the given timeout.
+    /// 
+    /// Lower-level than `timer()` and not generally as useful an interface to the same functionality.
     pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
         self.run_agent().add_timer(timeout,callback);
     }
 
+    /// Add a callback to be run by the executor after the given number of ticks. zero implies a yield.
+    /// 
+    /// Lower-level than `tick()` and not generally as useful an interface to the same functionality.
     pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
         self.run_agent().add_ticks_timer(ticks,callback);
     }
 
+    /// Create a new agent for eventual submission of a subtask with `submit()`.
+    /// 
+    /// If rc is `None`, the rc of this task is reused. As with top-level submission direct to the executor, keeping 
+    /// `new_agent()` and `submit()` separate allows the agent to be cloned and moved into the new future.
     pub fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
         self.run_agent().new_agent(name,rc)
     }
 
+    /// Submit a given agent and future for running as a new, independent task.
+    /// 
+    /// The agent passed should have been created with `new_agent()`. Do not pass self!
     pub fn submit<R,T>(&self, agent: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
         self.run_agent().submit(agent,future)
     }
 
+    /// Cause the current task to finish via signal with the given reason.
     pub fn finish(&self, reason: KillReason) {
         self.finish_agent().finish(Some(&reason),true);
     }
 
+    /// Get RunConfig used by this task
     pub fn get_config(&self) -> RunConfig { self.run_agent().get_config().clone() }
 
+    /// Get the current tick number.
+    /// 
+    /// The tick number advances by one each tick.
     pub fn get_tick_index(&self) -> u64 { self.run_agent().get_tick_index() }
 
+    /// Return a `Future` which waits the given number of ticks.
+    /// 
+    /// It is a good idea to call this with value `0` and await if you are inside a tight loop in your future. This
+    /// allows the tick timeout to be checked and for other tasks of the same priority to run. If there is still "time
+    /// on the clock" after that, your future will resume, even in the same tick.
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
         let future = FlagFuture::new();
         let future2 = future.clone();
@@ -113,6 +142,9 @@ impl Agent {
         future
     }
 
+    /// Return a `Future` which waits for the given time.
+    /// 
+    /// Time units are those of your integration.
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
         let future = FlagFuture::new();
         let future2 = future.clone();
@@ -120,15 +152,30 @@ impl Agent {
         future
     }
 
-    pub fn turnstile<R,T>(&self, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send, R: Send {
+    /// Return turnstile `Future` for more efficient waits.
+    /// 
+    /// Typically in a Rust futures executor, when some wake-up occurs within a futures tree, the whole task is 
+    /// rescanned, including other branches which may be blocked and not awoken. This can potentially be problematic for
+    /// very large tasks where rechecking is expensive. 
+    /// 
+    /// For further details see the crate overview.
+    pub fn turnstile<R,T>(&self, inner: T) -> impl Future<Output=R> + Send where T: Future<Output=R> + 'static + Send, R: Send {
         TurnstileFuture::new(&self,inner)
     }
 
-    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> NamedFuture<R> where T: Future<Output=R> + 'static + Send, R: Send {
+    /// Return a named wait `Future` for diagnostic purposes.
+    /// 
+    /// When the future wrapped in this named_wait is waiting its name is added to a list accessible from this
+    /// task's summary. This allows the waiting to be evidenced for diagnosis.
+    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> impl Future<Output=R> + Send where T: Future<Output=R> + 'static + Send, R: Send {
         NamedFuture::new(&self,inner,name)
     }
 
-    pub fn tidy<T>(&self, inner: T) -> Tidier where T: Future<Output=()> + 'static + Send {
+    /// Return a tidier: a kind of destructor.
+    /// 
+    /// This future can be waited on directly but, if it isn't, then on completion it is run anyway, even if abandoned
+    /// with a signal.
+    pub fn tidy<T>(&self, inner: T) -> impl Future<Output=()> + Send where T: Future<Output=()> + 'static + Send {
         self.finish_agent().make_tidier(inner)
     }
 

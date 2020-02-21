@@ -1,14 +1,14 @@
 use std::future::Future;
 use std::pin::Pin;
 use crate::executor::action::{ Action, TaskActionLink };
-use crate::helper::tidier::Tidier;
+use crate::helper::tidierfuture::TidierFuture;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::task::KillReason;
 
 /* FinishAgent is the Agent mixin responsible for destructors and signals */
 
 pub(crate) struct FinishAgent {
-    tidiers: Vec<Pin<Box<Tidier>>>,
+    tidiers: Vec<Pin<Box<TidierFuture>>>,
     kill_reason: Option<KillReason>,
     finishing: bool,
     done_sent: bool,
@@ -28,8 +28,8 @@ impl FinishAgent {
         }
     }
 
-    pub(super) fn make_tidier<T>(&mut self, inner: T) -> Tidier where T: Future<Output=()> + 'static + Send {
-        let t = Tidier::new(Box::pin(inner));
+    pub(super) fn make_tidier<T>(&mut self, inner: T) -> TidierFuture where T: Future<Output=()> + 'static + Send {
+        let t = TidierFuture::new(Box::pin(inner));
         self.tidiers.push(Box::pin(t.clone()));
         t
     }
@@ -63,7 +63,7 @@ impl FinishAgent {
         }
     }
 
-    pub(super) fn get_tidier(&self) -> Option<&Pin<Box<Tidier>>> {
+    pub(super) fn get_tidier(&self) -> Option<&Pin<Box<TidierFuture>>> {
         self.tidiers.get(0)
     }
 

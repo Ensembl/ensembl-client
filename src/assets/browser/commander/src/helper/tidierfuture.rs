@@ -18,16 +18,16 @@ pub struct TidierState {
 }
 
 #[derive(Clone)]
-pub struct Tidier {
+pub(crate) struct TidierFuture {
     state: Arc<Mutex<TidierState>>,
     identity: u64
 }
 
-hashable!(IDENTITY,Tidier,identity);
+hashable!(IDENTITY,TidierFuture,identity);
 
-impl Tidier {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=()> + Send>>) -> Tidier {
-        Tidier {
+impl TidierFuture {
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=()> + Send>>) -> TidierFuture {
+        TidierFuture {
             state: Arc::new(Mutex::new(TidierState {
                 future,
                 done: false
@@ -39,7 +39,7 @@ impl Tidier {
     pub(crate) fn finished(&self) -> bool { self.state.lock().unwrap().done }
 }
 
-impl Future for Tidier {
+impl Future for TidierFuture {
     type Output = ();
 
     fn poll(self: Pin<&mut Self>, waker: &mut Context) -> Poll<()> {
@@ -63,6 +63,7 @@ mod test {
     use crate::task::task::TaskResult;
     use super::*;
 
+    #[allow(unused_must_use)]
     #[test]
     pub fn test_tidier_smoke() {
         let integration = TestIntegration::new();
@@ -79,7 +80,7 @@ mod test {
             agent2.tick(1).await;
         };
         let handle = x.add(step,agent);
-        assert!(handle.peek_result() == TaskResult::Ongoing);
+        assert!(handle.task_state() == TaskResult::Ongoing);
         x.tick(1.);
         assert!(!*tidied.lock().unwrap());
         x.tick(1.);
@@ -104,7 +105,7 @@ mod test {
             agent2.tick(1).await;
         };
         let handle = x.add(step,agent);
-        assert!(handle.peek_result() == TaskResult::Ongoing);
+        assert!(handle.task_state() == TaskResult::Ongoing);
         x.tick(1.);
         assert!(!*tidied.lock().unwrap());
         x.tick(1.);
@@ -114,6 +115,7 @@ mod test {
         assert!(!*tidied.lock().unwrap());
     }
 
+    #[allow(unused_must_use)]
     #[test]
     pub fn test_tidier_multiple() {
         let integration = TestIntegration::new();
@@ -121,7 +123,7 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let agent = x.new_agent(&cfg,"test");
         let agent2 = agent.clone();
-        let tidied = Arc::new(Mutex::new(0));
+        let tidied = Arc::new(Mutex::new(0_u32));
         let tidied2 = tidied.clone();
         let step = async move {
             let tidied3 = tidied2.clone();
@@ -140,7 +142,7 @@ mod test {
             agent2.tick(1).await;
         };
         let handle = x.add(step,agent);
-        assert!(handle.peek_result() == TaskResult::Ongoing);
+        assert!(handle.task_state() == TaskResult::Ongoing);
         x.tick(1.);
         assert_eq!(*tidied.lock().unwrap(),0);
         x.tick(1.);

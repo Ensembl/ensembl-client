@@ -37,7 +37,7 @@ use crate::integration::reentering::ReenteringIntegration;
 sequence!(IDENTITY);
 
 #[derive(Clone)]
-pub struct Block {
+pub(crate) struct Block {
     blocked: Arc<Mutex<bool>>,
     callback: Arc<Mutex<Box<dyn Fn(&TaskActionLink) + Send>>>,
     task_action_link: TaskActionLink,

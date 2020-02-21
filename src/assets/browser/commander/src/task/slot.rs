@@ -1,9 +1,7 @@
-/* A RunSlot is a unique value which can be created by an executor and
- * associated with a task. Should another task be added with the same
- * RunSlot only one will run. If push is true for the RunSlot, the old
- * task will be killed. If push is false, the new slot will be killed.
- */
-
+/// A  unique value which can be created by an executor and associated with a task.
+/// 
+/// Should another task be added with the same RunSlot only one will run. If push is true for the RunSlot, the old task
+/// will be killed. If push is false, the new slot will be killed.
 #[derive(Clone)]
 pub struct RunSlot { 
     identity: u64,
@@ -11,6 +9,7 @@ pub struct RunSlot {
 }
 
 sequence!(IDENTITY);
+
 
 impl RunSlot {
     pub(crate) fn new(push: bool) -> RunSlot {
@@ -64,6 +63,6 @@ mod test {
                         TaskResult::Ongoing,TaskResult::Ongoing,TaskResult::Ongoing,
                         TaskResult::Ongoing,
                         TaskResult::Killed(KillReason::NotNeeded)],
-                    handles.iter().map(|x| x.peek_result()).collect::<Vec<_>>());
+                    handles.iter().map(|x| x.task_state()).collect::<Vec<_>>());
     }
 }

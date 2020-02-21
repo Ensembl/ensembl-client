@@ -11,7 +11,7 @@ use crate::task::block::Block;
  * wakeups.
  */
 
-pub struct TurnstileFuture<R> {
+pub(crate) struct TurnstileFuture<R> {
     agent: Agent,
     inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
     our_block: Option<Block>,

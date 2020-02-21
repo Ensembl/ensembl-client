@@ -105,7 +105,7 @@ mod test {
         let tc = x.add(p,ctx);
         /* simulate */
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
         assert_eq!(2,tc.take_result().unwrap());
         assert_eq!(2,x.get_timings_mut().get_tick_index());
@@ -124,9 +124,9 @@ mod test {
         let ctx = x.new_agent(&cfg,"test");
         let tc = x.add(future_tick(ctx.clone(),2),ctx);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
         assert_eq!(4,tc.take_result().unwrap());
     }
 
@@ -144,10 +144,10 @@ mod test {
         let ctx = x.new_agent(&cfg,"test");
         let tc2 = x.add(tick_future(ctx.clone(),2,Some(finished3.clone()),true),ctx);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
-        assert!(tc2.peek_result() != TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
+        assert!(tc2.task_state() != TaskResult::Done);
         x.tick(10.);
-        assert!(tc2.peek_result() == TaskResult::Done);
+        assert!(tc2.task_state() == TaskResult::Done);
         assert_eq!(4,tc.take_result().unwrap());
     }
 
@@ -167,10 +167,10 @@ mod test {
         let ctx = x.new_agent(&cfg,"test");       
         let tc = x.add(future_timer(ctx.clone(),2,finished),ctx);
         x.tick(10.);
-        assert!(tc.peek_result() != TaskResult::Done);
+        assert!(tc.task_state() != TaskResult::Done);
         integration.set_time(2.);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
         assert_eq!((0,4),tc.take_result().unwrap());
     }
 
@@ -227,13 +227,13 @@ mod test {
         };
         let tc = x.add(c,ctx);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
     }
 
     async fn future_result<X,Y>(ctx: &Agent, r: Result<X,Y>) -> Result<X,Y> {
@@ -261,14 +261,14 @@ mod test {
         let ctx = x.new_agent(&cfg,"test");
         let tc_good = x.add(sequence_good(ctx.clone()),ctx);
         x.tick(10.);
-        assert!(tc_short.peek_result() == TaskResult::Ongoing);
-        assert!(tc_good.peek_result() == TaskResult::Ongoing);
+        assert!(tc_short.task_state() == TaskResult::Ongoing);
+        assert!(tc_good.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc_short.peek_result() != TaskResult::Ongoing);
-        assert!(tc_good.peek_result() == TaskResult::Ongoing);
+        assert!(tc_short.task_state() != TaskResult::Ongoing);
+        assert!(tc_good.task_state() == TaskResult::Ongoing);
         assert!(tc_short.take_result().unwrap().is_err());
         x.tick(10.);
-        assert!(tc_good.peek_result() != TaskResult::Ongoing);
+        assert!(tc_good.task_state() != TaskResult::Ongoing);
         assert!(tc_good.take_result().unwrap().is_ok());
     }
 
@@ -300,11 +300,11 @@ mod test {
         /* simulate */
         for _ in 0..7 {
             x.tick(10.);
-            assert!(tc.peek_result() == TaskResult::Ongoing);
+            assert!(tc.task_state() == TaskResult::Ongoing);
         }
         integration.set_time(100.);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
         assert_eq!(Ok((5,2,0)),tc.take_result().unwrap());
     }
 
@@ -328,9 +328,9 @@ mod test {
         };
         let tc = x.add(p,ctx);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
         assert_eq!(Err(6),tc.take_result().unwrap());
     }
 }

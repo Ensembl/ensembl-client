@@ -75,7 +75,7 @@ clean API for expressing that in many cases.
 
 ## Turnstiles
 
-Typically in a Rust futures executor, when some wake-up occurs within a futures tree the whole task is rescanned,
+Typically in a Rust futures executor, when some wake-up occurs within a futures tree, the whole task is rescanned,
 including other branches which may be blocked and not awoken. This can potentially be problematic for very large tasks
 where rechecking is expensive. 
 
@@ -114,7 +114,7 @@ Before an executor can be created, an integrator must create an integration. Thi
 retrieveing the current time and a method to handle any notifications from the executor about the possibility of
 skipping polls. Given this, an Executor can be created.
 
-```
+```ignore
 pub struct TestIntegration {
     ...
 }
@@ -144,7 +144,7 @@ async, allowing the async to communicate with the executor and use its facilitie
 
 
 In a simple case where that is not required:
-```
+```ignore
 let cfg = RunConfig::new(None,3,None);
 let agent = x.new_agent(&cfg,"test");
 let step = async {
@@ -154,7 +154,7 @@ let handle = x.add(step,agent);
 ```
 
 A case where agent is used internally, in this case to yield for zero ticks:
-```
+```ignore
 let cfg = RunConfig::new(None,3,None);
 let agent = x.new_agent(&cfg,"test");
 let agent2 = agent.clone();
@@ -176,7 +176,7 @@ add methods of the Executorm allowing spawning of new, independent tasks.
 
 For example, this task waits ten time units and then submits a new, independent task.
 
-```
+```ignore
 let cfg = RunConfig::new(None,3,None);
 let agent = executor.new_agent(&cfg,"test");
 let agent2 = agent.clone();
@@ -198,22 +198,7 @@ information about its status, and to send signals. If can also return a future w
 completion of the task from inside some other future. In most simple cases an invoker will not care about the taskhandle
 and need not keep it.
 
-# API
-
 # Implementation
-
-# Glossary (API-visible)
-
- * **agent**:
- * **executor**:
- * **integration**:
- * **runconfig**:
- * **task**:
- * **taskhandle**:
- * **tick**:
- * **timer**:
-
-# Glossary (internal)
 
 # TODO
 
@@ -244,7 +229,7 @@ mod executor {
 mod helper {
     pub(crate) mod flagfuture;
     pub(crate) mod named;
-    pub(crate) mod tidier;
+    pub(crate) mod tidierfuture;
     pub(crate) mod turnstile;
 }
 
@@ -287,11 +272,7 @@ extern crate owning_ref;
 pub use crate::agent::agent::Agent;
 pub use crate::executor::executor::Executor;
 pub use crate::helper::flagfuture::FlagFuture;
-pub use crate::helper::named::NamedFuture;
-pub use crate::helper::tidier::Tidier;
-pub use crate::helper::turnstile::TurnstileFuture;
 pub use crate::integration::integration::{ Integration, SleepQuantity };
-pub use crate::task::block::Block;
 pub use crate::task::runconfig::RunConfig;
 pub use crate::task::slot::RunSlot;
 pub use crate::task::task::{ KillReason, TaskResult, TaskSummary };

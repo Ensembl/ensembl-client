@@ -40,6 +40,9 @@ pub(crate) struct TaskHandleState<R: 'static + Send> {
     done: bool
 }
 
+/// The handle on a submitted task from an executor.
+/// 
+/// In most simple cases an invoker will not care about the taskhandle and need not keep it.
 pub struct TaskHandle<R: 'static + Send>(Arc<Mutex<TaskHandleState<R>>>);
 
 // Rust bug means dan't derive Clone on polymorphic types
@@ -65,11 +68,13 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         MutexGuardRef::new(self.0.lock().unwrap()).map(|x| &x.agent)
     }
 
+    /// Returns a future which will be ready when the task is complete.
     pub fn finish_future(&self) -> impl Future<Output=()> {
         self.0.lock().unwrap().finish_flag.clone()
     }
 
-    pub fn peek_result(&self) -> TaskResult {
+    /// Examines the current status of this task.
+    pub fn task_state(&self) -> TaskResult {
         let state = self.0.lock().unwrap();
         let kill = state.agent.finish_agent().kill_reason();
         if let Some(kill) = kill.clone() {
@@ -81,6 +86,11 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         }
     }
 
+    /// Removes the task result for use elsewhere.
+    /// 
+    /// Note that future calls after a successful return will return `None`, as will Ongoing or Killed tasks. 
+    /// We don't want to have to insist on a Result being clone, nor handle long-lived references to our internal,
+    /// mutexed state object which a caller might forget to release. See `task_state()` for task status.
     pub fn take_result(&self) -> Option<R> {
         let mut state = self.0.lock().unwrap();
         if !state.done { return None; }
@@ -107,14 +117,19 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         }
     }
 
+    /// List all currently runing named waits.
     pub fn get_waits(&self) -> Vec<String> {
         self.get_agent().name_agent().get_waits()
     }
 
+    /// Get current task name.
     pub fn get_name(&self) -> String {
         self.get_agent().get_name()
     }
 
+    /// Return TaskSummary for this running task, if any.
+    /// 
+    /// Maybe `None` if not yet running, complete, etc.
     pub fn summary(&self) -> Option<TaskSummary> {
         self.summarize()
     }
@@ -190,18 +205,18 @@ mod test {
             42
         };
         let tc = x.add(a,ctx);
-        assert!(tc.peek_result() == TaskResult::Ongoing);
+        assert!(tc.task_state() == TaskResult::Ongoing);
         assert!(tc.take_result().is_none());
         assert!(tc.get_result().is_none());
         assert!(tc.get_result_mut().is_none());
         x.tick(10.);
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
         assert_eq!(Some(42),tc.get_result().map(|x| *x));
         assert_eq!(Some(42),tc.get_result_mut().map(|x| *x));
         assert_eq!(Some(42),tc.take_result());
         assert!(tc.get_result().is_none());
         assert!(tc.get_result_mut().is_none());
-        assert!(tc.peek_result() == TaskResult::Done);
+        assert!(tc.task_state() == TaskResult::Done);
     }
 
     #[test]
@@ -262,7 +277,7 @@ mod test {
         for i in 0..10 {
             x.tick(1.);
             let cmp = if i<4 { TaskResult::Ongoing } else { TaskResult::Done };
-            assert_eq!(cmp,h.peek_result());
+            assert_eq!(cmp,h.task_state());
         }
     }
 }
