@@ -237,6 +237,17 @@ Nginx:Internal-EHK:
   - dev
   needs: ["Test_N_Build:internal"]
 
+# Job to build nginx docker image for staging and internal environment at WP
+# dev branch -> internal
+Nginx:Internal-WP:
+  extends: .build-nginx-wp
+  variables:
+    DEPLOYENV: internal
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+  only:
+  - dev
+  needs: ["Test_N_Build:internal"]
+
 Nginx:feature:
   image: docker
 
@@ -339,7 +350,7 @@ Internal:EHK-HH:
 Internal:WP-HX:
   extends: .deploy-wp
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
   environment:
     name : wp-hx-internal
   only:
