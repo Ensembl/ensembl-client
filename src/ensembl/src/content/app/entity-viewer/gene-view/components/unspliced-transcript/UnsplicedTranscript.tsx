@@ -10,7 +10,7 @@ import { CDS } from 'src/content/app/entity-viewer/types/cds';
 
 import styles from './UnsplicedTranscript.scss';
 
-export type Props = {
+export type UnsplicedTranscriptProps = {
   transcript: Transcript;
   width: number; // available width for drawing, in pixels
   classNames?: {
@@ -38,7 +38,7 @@ It's possible that later we will switch to using UTRs for this purpose
 
 */
 
-const UnsplicedTranscript = (props: Props) => {
+const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
     props.transcript
   );
@@ -82,7 +82,9 @@ UnsplicedTranscript.defaultProps = {
   standalone: false
 };
 
-const Backbone = (props: Props & { scale: ScaleLinear<number, number> }) => {
+const Backbone = (
+  props: UnsplicedTranscriptProps & { scale: ScaleLinear<number, number> }
+) => {
   let intervals: [number, number][] = [];
   const {
     transcript: { exons },
