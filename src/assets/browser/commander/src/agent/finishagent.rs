@@ -64,7 +64,7 @@ impl FinishAgent {
     }
 
     pub(super) fn get_tidier(&self) -> Option<&Pin<Box<TidierFuture>>> {
-        self.tidiers.get(0)
+        self.tidiers.last()
     }
 
     pub(super) fn finish(&mut self, reason: Option<&KillReason>, is_async: bool) {

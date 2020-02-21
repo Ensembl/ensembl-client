@@ -135,7 +135,7 @@ mod test {
                 *tidied4.lock().unwrap() += 2;
             });
             agent2.tidy(async move {
-                *tidied2.lock().unwrap() += 4;
+                *tidied2.lock().unwrap() *= 4;
             });
             agent2.tick(1).await;
             u.await;
@@ -148,6 +148,7 @@ mod test {
         x.tick(1.);
         assert_eq!(*tidied.lock().unwrap(),2);
         x.tick(1.);
-        assert_eq!(*tidied.lock().unwrap(),7);
+        /* check third task completes before first, ie (2*4)+1 = 9, not (2+1)*4 = 12 */
+        assert_eq!(*tidied.lock().unwrap(),9);
     }
 }
