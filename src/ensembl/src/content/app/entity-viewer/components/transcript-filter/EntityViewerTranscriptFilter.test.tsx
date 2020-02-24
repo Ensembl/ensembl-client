@@ -109,16 +109,16 @@ describe('<EntityViewerTranscriptFilter />', () => {
     );
   });
 
-  it('does not display any unchecked checkbox when hideUnchecked is true', () => {
-    wrapper = renderTranscriptFilter({ hideUnchecked: true });
+  it('does not display any unchecked checkbox when isExpanded is false', () => {
+    wrapper = renderTranscriptFilter({ isExpanded: false });
 
     expect(wrapper.find('input[checked=false]').length).toBeFalsy();
   });
 
-  it('does not apply optionGroup className when hideUnchecked is true', () => {
+  it('does not apply optionGroup className when isExpanded is false', () => {
     expect(wrapper.find('.optionGroup').length).toBeTruthy();
 
-    wrapper = renderTranscriptFilter({ hideUnchecked: true });
+    wrapper = renderTranscriptFilter({ isExpanded: false });
 
     expect(wrapper.find('.optionGroup').length).toBeFalsy();
   });

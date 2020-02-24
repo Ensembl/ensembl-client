@@ -16,7 +16,7 @@ type Props = {
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
   optionsGroup: OptionsGroup[];
-  hideUnchecked?: boolean;
+  isExpanded: boolean;
 };
 
 const EntityViewerTranscriptFilter = (props: Props) => {
@@ -40,7 +40,7 @@ const EntityViewerTranscriptFilter = (props: Props) => {
     <div className={styles.wrapper}>
       {props.optionsGroup.map((options, groupIndex) => {
         const optionGroupClassName = classNames(styles.checkboxPadding, {
-          [styles.optionGroup]: !props.hideUnchecked
+          [styles.optionGroup]: props.isExpanded
         });
 
         return (
@@ -48,7 +48,7 @@ const EntityViewerTranscriptFilter = (props: Props) => {
             {options.map((option, itemIndex) => {
               const checkedStatus =
                 props.selectedValues.indexOf(option.value) !== -1;
-              if (props.hideUnchecked && !checkedStatus) {
+              if (!props.isExpanded && !checkedStatus) {
                 return null;
               }
 
@@ -74,6 +74,10 @@ const EntityViewerTranscriptFilter = (props: Props) => {
       })}
     </div>
   );
+};
+
+EntityViewerTranscriptFilter.defaultProps = {
+  isExpanded: true
 };
 
 export default EntityViewerTranscriptFilter;

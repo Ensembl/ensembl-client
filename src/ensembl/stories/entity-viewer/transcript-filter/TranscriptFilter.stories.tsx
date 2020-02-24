@@ -58,9 +58,9 @@ const Wrapper = (props: any) => {
 };
 
 storiesOf('Components|EntityViewer/Transcript Filter', module)
-  .add('default', () => {
+  .add('expanded', () => {
     return <Wrapper />;
   })
-  .add('hide-unchecked', () => {
-    return <Wrapper hideUnchecked />;
+  .add('collapsed', () => {
+    return <Wrapper isExpanded={false} />;
   });
