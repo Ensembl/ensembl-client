@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.geneView {
+  display: grid;
+  background-color: $black;
+  grid-template-columns: 1fr 5fr 2fr;
+  grid-template-rows: auto;
+  padding: 15px;
+  height: 100%; // may need to change this later
+  width: 100%;
+}
+
+.featureImage {
+  grid-area: 1 / 1 / 2 / 3;
+}
+
+.viewInLinks {
+  grid-area: 1 / 3 / 2 / 4;
+}
+
+.geneViewTabs {
+  grid-area: 2 / 2 / 3 / 4;
+}
+
+.geneViewTable {
+  grid-area: 3 / 1 / 4 / 4;
+}
