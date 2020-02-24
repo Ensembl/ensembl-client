@@ -35,7 +35,6 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
 
 export const GeneImage = (props: GeneOverviewImageProps) => {
   const width = 695;
-  // const height = 18;
   const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene);
 
   // FIXME: use the "length" property of the gene when it is added to payload;
@@ -88,7 +87,7 @@ const DirectionIndicator = () => {
   );
 };
 
-// FIXME translating response into display name (forward strand, reverse strandt) should be a shared function
+// FIXME translating response into display name (forward strand, reverse strand) should be a shared function
 const StrandIndicator = (props: GeneOverviewImageProps) => {
   const {
     gene: {
@@ -100,13 +99,8 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
     }
   } = props;
 
-  let strandDisplayName;
-
-  if (strandCode === Strand.FORWARD) {
-    strandDisplayName = 'forward strand';
-  } else {
-    strandDisplayName = 'reverse strand';
-  }
+  const strandDisplayName =
+    strandCode === Strand.FORWARD ? 'forward strand' : 'reverse strand';
 
   return <div className={styles.strand}>{strandDisplayName}</div>;
 };

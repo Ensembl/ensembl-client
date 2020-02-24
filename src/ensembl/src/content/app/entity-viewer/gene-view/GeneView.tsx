@@ -67,10 +67,10 @@ const GeneView = (props: GeneViewProps) => {
     return null;
   }
 
-  return <GeneViewGeneViewWithData gene={data.gene} />;
+  return <GeneViewWithData gene={data.gene} />;
 };
 
-const GeneViewGeneViewWithData = (props: GeneViewWithDataProps) => {
+const GeneViewWithData = (props: GeneViewWithDataProps) => {
   return (
     <div className={styles.geneView}>
       <div className={styles.featureImage}>
