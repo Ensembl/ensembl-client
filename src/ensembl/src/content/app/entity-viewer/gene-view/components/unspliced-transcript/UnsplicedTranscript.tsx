@@ -128,6 +128,10 @@ const Backbone = (
 
   intervals = intervals.filter((interval) => interval[0] !== interval[1]);
 
+  // NOTE: the intervals, from which backbone segments are rendered below, have been calculated from the start and the end coordinates of exons.
+  // This means that the right and left borders of exon boxes will have the same coordinates as the right and left edges of each backbone segment.
+  // In order to prevent backbone segments from invading exon boxes (which produces tiny bumps on both sides of empty boxes),
+  // we are adjusting the x-coordinate and the width of every backbone segment by moving it 1 point to the right and subtracting 2 points from its width.
   return (
     <g>
       {intervals.map(([start, end]) => (
@@ -136,8 +140,8 @@ const Backbone = (
           className={backboneClasses}
           y={0}
           height={1}
-          x={scale(start - transcriptStart)}
-          width={scale(end - start)}
+          x={scale(start - transcriptStart) + 1}
+          width={scale(end - start) - 2}
         />
       ))}
     </g>
