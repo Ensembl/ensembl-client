@@ -209,6 +209,8 @@ and need not keep it.
 
 # Implementation
 
+To see details of internals for work on this library, see INTERNALS.md.
+
 # TODO
 
 * Due to time-constraints, in places the implementation is not very Rust-ideomatic due to time constraints. Lifetimes
