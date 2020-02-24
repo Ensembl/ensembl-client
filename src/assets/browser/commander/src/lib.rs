@@ -189,7 +189,8 @@ let cfg = RunConfig::new(None,3,None);
 let agent = executor.new_agent(&cfg,"test");
 let agent2 = agent.clone();
 let step = async move {
-    let agentb = agent2.timer(10.).await;
+    agent2.timer(10.).await;
+    let agentb = agent2.new_agent("test2",None);
     agent2.submit(agentb,async move {
         ...
     });
