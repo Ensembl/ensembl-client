@@ -12,14 +12,14 @@ export type Option = {
 
 export type OptionsGroup = Option[];
 
-type Props = {
+export type EntityViewerTranscriptFilterProps = {
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
   optionGroups: OptionsGroup[];
   isExpanded: boolean;
 };
 
-const EntityViewerTranscriptFilter = (props: Props) => {
+const EntityViewerTranscriptFilter = (props: EntityViewerTranscriptFilterProps) => {
   const handleChange = (isChecked: boolean, optionIndex: [number, number]) => {
     const [groupIndex, itemIndex] = optionIndex;
     const selectedOption = props.optionGroups[groupIndex][itemIndex].value;

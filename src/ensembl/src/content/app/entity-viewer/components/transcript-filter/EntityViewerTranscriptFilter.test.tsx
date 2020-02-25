@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 import times from 'lodash/times';
 import faker from 'faker';
 
-import EntityViewerTranscriptFilter from './EntityViewerTranscriptFilter';
+import EntityViewerTranscriptFilter, {EntityViewerTranscriptFilterProps} from './EntityViewerTranscriptFilter';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 let totalOptions = 0;
@@ -46,7 +46,7 @@ const defaultProps = {
   onChange
 };
 
-const renderTranscriptFilter = (props?: any) => {
+const renderTranscriptFilter = (props?: Partial<EntityViewerTranscriptFilterProps>) => {
   return mount(<EntityViewerTranscriptFilter {...defaultProps} {...props} />);
 };
 
@@ -57,11 +57,11 @@ describe('<EntityViewerTranscriptFilter />', () => {
     wrapper = renderTranscriptFilter();
   });
 
-  it('displays N number of Checkbox based on the number of options', () => {
+  it('it displays the same number of checkboxes as there are options', () => {
     expect(wrapper.find(Checkbox).length).toBe(totalOptions);
   });
 
-  it('displays N number of option groups based on the number of option groups', () => {
+  it('it displays all option groups', () => {
     expect(wrapper.find('.optionGroup').length).toBe(optionGroups.length);
   });
 
