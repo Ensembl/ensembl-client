@@ -46,6 +46,12 @@
 
 .tableMiddle {
   grid-area: 1 / 2 / auto / 3;
+
+  .tableRow {
+    display: inline-grid;
+    grid-template-rows: auto;
+    width: 100%;
+  }
 }
 
 .transcriptIdColumn {
