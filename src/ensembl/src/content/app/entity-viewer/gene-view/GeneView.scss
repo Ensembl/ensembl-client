@@ -1,10 +1,12 @@
 @import 'src/styles/common';
 
 .geneView {
+  color: $white;
   display: grid;
   background-color: $black;
   grid-template-columns: 1fr 5fr 2fr;
   grid-template-rows: auto;
+  overflow: auto;
   padding: 15px;
   height: 100%; // may need to change this later
   width: 100%;

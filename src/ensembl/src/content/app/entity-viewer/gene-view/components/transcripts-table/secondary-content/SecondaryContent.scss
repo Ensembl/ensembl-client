@@ -1,0 +1,8 @@
+.secondaryContent {
+  & > div > div {
+    display: inline-grid;
+    grid-template-columns: 1.5fr 1fr 1.5fr 1fr 2fr;
+    grid-template-rows: auto;
+    width: 100%;
+  }
+}

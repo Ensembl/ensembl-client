@@ -1,0 +1,87 @@
+@import 'src/styles/common';
+
+.table {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr 1fr 2fr;
+  grid-template-rows: auto;
+  min-width: 1900px;
+}
+
+.tableRow {
+  border-bottom: 1px solid $dark-grey;
+}
+
+.tableCell {
+  display: inline-block;
+  padding: 8px 4px;
+}
+
+.tableBody {
+  padding-top: 20px;
+}
+
+.tableHeader {
+  color: $grey;
+
+  .tableRow {
+    border-bottom: 1px solid #8d621c;
+  }
+}
+
+.tableLeftWing {
+  grid-area: 1 / 1 / auto / 2;
+
+  .tableHeader {
+    text-align: center;
+  }
+
+  .tableBody {
+    text-align: right;
+
+    .tableRow {
+      border-bottom: none;
+    }
+  }
+}
+
+.tableMiddle {
+  grid-area: 1 / 2 / auto / 3;
+}
+
+.transcriptIdColumn {
+  grid-area: 1 / 3 / auto / 4;
+}
+
+.tableRightWing {
+  grid-area: 1 / 4 / auto / 5;
+  text-align: center;
+}
+
+.tableFilters {
+  grid-area: 1 / 5 / auto / 6;
+}
+
+.paginationNumber {
+  display: inline-block;
+  margin-right: 25px;
+
+  .currentPaginationNumber {
+    color: $white;
+  }
+}
+
+.paginationButton {
+  display: inline-block;
+  vertical-align: bottom;
+
+  svg {
+    background: $dark-blue;
+    border-radius: 4px;
+    height: 21px;
+    width: 21px;
+
+    [class*='chevron'] {
+      fill: $white;
+    }
+  }
+}
