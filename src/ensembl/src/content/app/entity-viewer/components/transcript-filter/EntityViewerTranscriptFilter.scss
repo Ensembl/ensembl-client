@@ -1,9 +1,5 @@
 @import 'src/styles/common';
 
-$checkbox-border-color: rgba(154, 167, 177, 0.4);
-$checkbox-background-color: rgba(111, 129, 144, 0.3);
-$option-group-border-color: rgba(255, 153, 0, 0.4);
-
 .wrapper {
   padding: 40px;
   width: 400px;
@@ -16,7 +12,7 @@ $option-group-border-color: rgba(255, 153, 0, 0.4);
 .optionGroup:not(:last-child) {
   padding-bottom: 18px;
   margin-bottom: 20px;
-  border-bottom: 1px solid $option-group-border-color;
+  border-bottom: 1px solid rgba($orange, 0.4);
 }
 
 .checkboxLabel {
@@ -26,11 +22,11 @@ $option-group-border-color: rgba(255, 153, 0, 0.4);
 }
 
 .checkboxUnchecked {
-  background-color: $checkbox-background-color;
-  border-color: $checkbox-border-color;
+  background-color: rgba($dark-grey, 0.3);
+  border-color: rgba($medium-dark-grey, 0.4);
 }
 
 .checkboxChecked {
-  border-color: $checkbox-border-color;
+  border-color: rgba($medium-dark-grey, 0.4);
   background-color: $green;
 }

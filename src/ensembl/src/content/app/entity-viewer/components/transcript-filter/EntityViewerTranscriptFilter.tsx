@@ -15,14 +15,14 @@ export type OptionsGroup = Option[];
 type Props = {
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
-  optionsGroup: OptionsGroup[];
+  optionGroups: OptionsGroup[];
   isExpanded: boolean;
 };
 
 const EntityViewerTranscriptFilter = (props: Props) => {
   const handleChange = (isChecked: boolean, optionIndex: [number, number]) => {
     const [groupIndex, itemIndex] = optionIndex;
-    const selectedOption = props.optionsGroup[groupIndex][itemIndex].value;
+    const selectedOption = props.optionGroups[groupIndex][itemIndex].value;
 
     if (isChecked) {
       const newSelectedOptions = [...props.selectedValues, selectedOption];
@@ -38,7 +38,7 @@ const EntityViewerTranscriptFilter = (props: Props) => {
 
   return (
     <div className={styles.wrapper}>
-      {props.optionsGroup.map((options, groupIndex) => {
+      {props.optionGroups.map((options, groupIndex) => {
         const optionGroupClassName = classNames(styles.checkboxPadding, {
           [styles.optionGroup]: props.isExpanded
         });
@@ -46,8 +46,7 @@ const EntityViewerTranscriptFilter = (props: Props) => {
         return (
           <div key={groupIndex} className={optionGroupClassName}>
             {options.map((option, itemIndex) => {
-              const checkedStatus =
-                props.selectedValues.indexOf(option.value) !== -1;
+              const checkedStatus = props.selectedValues.includes(option.value);
               if (!props.isExpanded && !checkedStatus) {
                 return null;
               }
