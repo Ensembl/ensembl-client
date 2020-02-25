@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import ApolloClient from 'apollo-boost';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlHelper from 'src/shared/helpers/urlHelper';
@@ -47,6 +49,10 @@ export type EntityViewerParams = {
   entityId?: string;
 };
 
+const client = new ApolloClient({
+  uri: 'http://193.62.55.158:30466'
+});
+
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
 
@@ -55,24 +61,26 @@ const EntityViewer = (props: Props) => {
   }, [params.genomeId, params.entityId]);
 
   return (
-    <div className={styles.entityViewer}>
-      <EntityViewerAppBar />
-      {params.entityId ? (
-        <StandardAppLayout
-          mainContent={<GeneView />}
-          sidebarContent={<GeneViewSideBar />}
-          sidebarNavigation={<GeneViewSidebarTabs />}
-          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-          topbarContent={<EntityViewerTopbar />}
-          isSidebarOpen={props.isSidebarOpen}
-          onSidebarToggle={props.toggleSidebar}
-          isDrawerOpen={false}
-          viewportWidth={props.viewportWidth}
-        />
-      ) : (
-        <ExampleLinks {...props} />
-      )}
-    </div>
+    <ApolloProvider client={client}>
+      <div className={styles.entityViewer}>
+        <EntityViewerAppBar />
+        {params.entityId ? (
+          <StandardAppLayout
+            mainContent={<GeneView />}
+            sidebarContent={<GeneViewSideBar />}
+            sidebarNavigation={<GeneViewSidebarTabs />}
+            sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+            topbarContent={<EntityViewerTopbar />}
+            isSidebarOpen={props.isSidebarOpen}
+            onSidebarToggle={props.toggleSidebar}
+            isDrawerOpen={false}
+            viewportWidth={props.viewportWidth}
+          />
+        ) : (
+          <ExampleLinks {...props} />
+        )}
+      </div>
+    </ApolloProvider>
   );
 };
 
