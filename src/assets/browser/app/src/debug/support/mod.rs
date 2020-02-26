@@ -1,6 +1,3 @@
-#[cfg(not(deploy))]
-pub mod closuresource;
-
 mod sources;
 mod stickmanager;
 

@@ -6,8 +6,6 @@ use controller::global::{ AppRunner, GlobalWeak, Global };
 
 use data::{ HttpManager, BackendConfig };
 
-#[cfg(not(deploy))]
-use debug::{ DebugBling, create_interactors };
 use dom::{ Bling, NoBling };
 
 pub struct Booting {
@@ -32,16 +30,6 @@ impl Booting {
         }
     }
     
-    #[cfg(not(deploy))]
-    fn bling(&self) -> Box<dyn Bling> {
-        if self.debug {
-            Box::new(DebugBling::new(create_interactors()))
-        } else { 
-            Box::new(NoBling::new())
-        }
-    }
-    
-    #[cfg(deploy)]
     fn bling(&self) -> Box<dyn Bling> {
         Box::new(NoBling::new())
     }

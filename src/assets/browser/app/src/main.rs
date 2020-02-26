@@ -1,3 +1,4 @@
+#![allow(warnings)] // XXX get rid when under control
 #![feature(non_ascii_idents)] // (help put the E into EMBL)
 #![feature(linkage)]
 #![feature(drain_filter)]
@@ -14,7 +15,6 @@ extern crate stdweb_derive;
 extern crate lazy_static;
 #[macro_use]
 extern crate serde_json;
-extern crate rand;
 extern crate itertools;
 extern crate hsl;
 extern crate url;

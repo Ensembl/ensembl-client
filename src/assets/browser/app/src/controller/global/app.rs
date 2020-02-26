@@ -12,7 +12,6 @@ use model::supply::ProductList;
 use controller::input::{ Action, actions_run, startup_actions };
 use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
 use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Locator, XferCache };
-use debug::add_debug_sticks;
 use dom::domutil;
 use drivers::webgl::GLPrinter;
 use model::driver::{ Printer, PrinterManager };
@@ -54,7 +53,6 @@ impl App {
         let canv_el : HtmlElement = domutil::query_selector(&browser_el.clone().into(),"canvas").try_into().unwrap();
         let bsm = BackendStickManager::new(config);
         let mut csm = CombinedStickManager::new(bsm);
-        add_debug_sticks(&mut csm);
         let cache = XferCache::new(1024,config);
         let mut product_list = ProductList::new();
         let printer = PrinterManager::new(Box::new(GLPrinter::new(&canv_el)));
