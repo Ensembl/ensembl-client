@@ -39,8 +39,8 @@ mod model;
 mod tácode;
 mod types;
 
-use controller::global;
-use util::build_summary;
+use crate::controller::global;
+use crate::util::build_summary;
 
 fn main() {
     stdweb::initialize();

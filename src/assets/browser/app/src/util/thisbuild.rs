@@ -2,7 +2,7 @@ include!(concat!(env!("OUT_DIR"), "/thisbuild.rs"));
 
 pub const API_VERSION: u32 = 3;
 
-use util::get_instance_id;
+use crate::util::get_instance_id;
 
 pub fn build_summary() -> String {
     format!(r##"BROWSER APP BUILD SUMMARY

@@ -1,4 +1,4 @@
-use composit::Leaf;
+use crate::composit::Leaf;
 use super::Product;
 
 #[derive(Clone,Debug,PartialEq,Eq,Hash)]

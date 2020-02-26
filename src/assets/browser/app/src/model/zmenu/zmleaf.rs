@@ -3,10 +3,10 @@ use hashbrown::HashMap;
 
 use serde_json::Value as JSONValue;
 
-use composit::Leaf;
-use model::stage::{ Screen, Position };
-use controller::input::Action;
-use types::{ Placement, Dot };
+use crate::composit::Leaf;
+use crate::model::stage::{ Screen, Position };
+use crate::controller::input::Action;
+use crate::types::{ Placement, Dot };
 
 use super::{ ZMenuFeatureTmpl, ZMenuData };
 

@@ -3,13 +3,13 @@ use stdweb::web::HtmlElement;
 use url::Url;
 
 use serde_json::Value as JSONValue;
-use controller::global::Global;
-use controller::input::Action;
-use debug::DEMO_SOURCES;
+use crate::controller::global::Global;
+use crate::controller::input::Action;
+use crate::debug::DEMO_SOURCES;
 
-use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target, ICustomEvent, IMessageEvent };
-use dom::AppEventData;
+use crate::dom::domutil;
+use crate::dom::event::{ EventListener, EventType, EventData, EventControl, Target, ICustomEvent, IMessageEvent };
+use crate::dom::AppEventData;
 use super::eventutil::{ extract_element, parse_message };
 
 

@@ -1,6 +1,6 @@
-use types::{ CLeaf, Colour, cleaf };
+use crate::types::{ CLeaf, Colour, cleaf };
 
-use model::shape::{
+use crate::model::shape::{
     ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     TypeToShape, ShapeLongInstanceData, GenericShape
 };

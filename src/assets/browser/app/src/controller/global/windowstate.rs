@@ -1,12 +1,12 @@
 /* window will eventually replace App, but be less mad. Migration will be incremental. */
 
-use composit::{ AllLandscapes, CombinedStickManager };
-use controller::animate::ActionAnimator;
-use data::{ BackendConfig, HttpXferClerk, Locator };
-use debug::BlackboxSender;
-use model::supply::ProductList;
-use model::train::TrainManager;
-use tácode::Tácode;
+use crate::composit::{ AllLandscapes, CombinedStickManager };
+use crate::controller::animate::ActionAnimator;
+use crate::data::{ BackendConfig, HttpXferClerk, Locator };
+use crate::debug::BlackboxSender;
+use crate::model::supply::ProductList;
+use crate::model::train::TrainManager;
+use crate::tácode::Tácode;
 
 #[derive(Clone)]
 pub struct WindowState {

@@ -3,7 +3,7 @@ use hashbrown::HashSet;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use controller::global::WindowState;
+use crate::controller::global::WindowState;
 use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
 use url::Url;
@@ -13,8 +13,8 @@ use super::{
     HttpResponseConsumer, HttpManager
 };
 use super::parsedelivereditem::parse_delivereditem;
-use model::item::{ DeliveredItem, ItemUnpacker };
-use model::supply::{ PurchaseOrder, Supplier };
+use crate::model::item::{ DeliveredItem, ItemUnpacker };
+use crate::model::supply::{ PurchaseOrder, Supplier };
 
 struct XferPaceManagerImpl {
     limit: i32,

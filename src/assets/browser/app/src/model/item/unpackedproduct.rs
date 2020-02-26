@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use hashbrown::HashMap;
 use std::rc::Rc;
 
-use model::supply::Subassembly;
+use crate::model::supply::Subassembly;
 use super::UnpackedSubassembly;
 
 #[derive(Clone,Debug)]

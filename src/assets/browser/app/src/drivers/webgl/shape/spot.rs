@@ -1,7 +1,7 @@
 use hashbrown::HashMap;
 
 use super::super::program::{ ProgramAttribs, DataGroupIndex, ProgramType, PTSkin };
-use types::Colour;
+use crate::types::Colour;
 
 pub struct Spot {
     group: HashMap<ProgramType,HashMap<Colour,DataGroupIndex>>

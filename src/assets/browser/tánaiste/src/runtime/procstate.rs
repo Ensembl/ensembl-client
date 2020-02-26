@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 
-use util::PollManager;
+use crate::util::PollManager;
 use super::interp::Signals;
 
 pub struct ProcState {

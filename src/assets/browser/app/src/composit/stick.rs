@@ -3,7 +3,7 @@ use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
-use composit::Wrapping;
+use crate::composit::Wrapping;
 
 #[derive(Debug)]
 pub struct StickImpl {

@@ -1,10 +1,10 @@
-use controller::global::WindowState;
-use data::UnpackedProductConsumer;
-use model::item::{ DeliveredItem, UnpackedProduct};
-use model::shape::DrawingSpec;
-use model::supply::Subassembly;
-use model::focus::FocusObjectId;
-use tácode::TáTask;
+use crate::controller::global::WindowState;
+use crate::data::UnpackedProductConsumer;
+use crate::model::item::{ DeliveredItem, UnpackedProduct};
+use crate::model::shape::DrawingSpec;
+use crate::model::supply::Subassembly;
+use crate::model::focus::FocusObjectId;
+use crate::tácode::TáTask;
 
 pub fn run_tánaiste_makeshapes(window: &mut WindowState, consumer: Box<dyn UnpackedProductConsumer>, unpacked_item: &mut UnpackedProduct, 
                                item: &DeliveredItem, context: &FocusObjectId) {

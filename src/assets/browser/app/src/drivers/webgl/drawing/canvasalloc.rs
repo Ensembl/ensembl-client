@@ -4,10 +4,10 @@ use stdweb::web::{ Element, INode, document };
 use stdweb::web::html_element::CanvasElement;
 use stdweb::unstable::TryInto;
 
-use dom::domutil;
+use crate::dom::domutil;
 use super::{  CarriageCanvases, FlatCanvas };
 use super::super::program::{ CanvasCache, CanvasWeave };
-use types::Dot;
+use crate::types::Dot;
 
 #[derive(Debug)]
 pub struct CanvasRemover(CanvasElement,u32);

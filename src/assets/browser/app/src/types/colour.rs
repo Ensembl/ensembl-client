@@ -1,4 +1,4 @@
-use drivers::webgl::program::{ UniformValue, Input };
+use crate::drivers::webgl::program::{ UniformValue, Input };
 use hsl::HSL;
 
 /* Colour */

@@ -1,4 +1,4 @@
-use model::stage::{ Position, Screen };
+use crate::model::stage::{ Position, Screen };
 
 #[derive(Clone)]
 pub(super) struct GLCamera {

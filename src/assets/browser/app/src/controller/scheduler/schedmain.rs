@@ -1,4 +1,4 @@
-use dom::domutil::browser_time;
+use crate::dom::domutil::browser_time;
 
 use super::jank::JankBuster;
 use super::schedqueuelist::{ SchedNewTask, SchedQueueList };

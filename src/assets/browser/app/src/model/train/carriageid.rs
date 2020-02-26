@@ -1,4 +1,4 @@
-use composit::Leaf;
+use crate::composit::Leaf;
 use super::TrainId;
 
 #[derive(Clone,PartialEq,Eq,Hash,Debug)]

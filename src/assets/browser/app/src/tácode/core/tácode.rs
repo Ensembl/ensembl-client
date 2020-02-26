@@ -7,7 +7,7 @@ use tánaiste::{
 };
 
 use super::appenv::AppEnv;
-use tácode::{ instruction_bundle_app, TáContext };
+use crate::tácode::{ instruction_bundle_app, TáContext };
 
 pub struct TácodeImpl {
     tc: TáContext,

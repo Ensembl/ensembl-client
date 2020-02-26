@@ -1,4 +1,4 @@
-use model::item::UnpackedProduct;
+use crate::model::item::UnpackedProduct;
 
 pub trait UnpackedProductConsumer {
     fn consume(&mut self, ui: UnpackedProduct);

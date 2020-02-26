@@ -1,10 +1,10 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use composit::Leaf;
-use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, ItemUnpacker };
-use model::supply::{ PurchaseOrder, Product };
-use data::{ BackendConfig, XferClerk, XferConsumer };
+use crate::composit::Leaf;
+use crate::model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, ItemUnpacker };
+use crate::model::supply::{ PurchaseOrder, Product };
+use crate::data::{ BackendConfig, XferClerk, XferConsumer };
 
 use misc_algorithms::index::{ AndWalker, OrWalker, SimpleIndex, WalkerIter };
 use misc_algorithms::store::Cache;

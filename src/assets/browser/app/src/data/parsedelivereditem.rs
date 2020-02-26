@@ -1,9 +1,9 @@
 use serde_json::Value as SerdeValue;
 use tánaiste::Value;
 
-use composit::{ Leaf, StickManager };
-use controller::global::WindowState;
-use model::item::{ DeliveredItemId, DeliveredItem, FocusSpecificity };
+use crate::composit::{ Leaf, StickManager };
+use crate::controller::global::WindowState;
+use crate::model::item::{ DeliveredItemId, DeliveredItem, FocusSpecificity };
 use misc_algorithms::marshal::{ json_str, json_array };
 
 fn marshal(data: &SerdeValue) -> Vec<Value> {

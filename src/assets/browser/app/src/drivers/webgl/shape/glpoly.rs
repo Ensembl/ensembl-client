@@ -5,7 +5,7 @@ use super::super::program::{
     Input
 };
 
-use types::{
+use crate::types::{
     CFraction, cfraction, AxisSense, Bounds, Anchors, RFraction, TOPLEFT
 };
 
@@ -14,8 +14,8 @@ use super::util::{
     multi_gl, poly_p, vertices_poly, vertices_hollowpoly, despot,
     colourspec_to_group
 };
-use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ColourSpec, MathsShape, PolyPosition, PinPolySpec };
+use crate::drivers::webgl::{ GLProgData, Artwork };
+use crate::model::shape::{ ColourSpec, MathsShape, PolyPosition, PinPolySpec };
 
 const CIRC_TOL : f32 = 1.; // max px undercut
 

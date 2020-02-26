@@ -2,7 +2,7 @@ use std::sync::{ Arc, Mutex };
 
 use stdweb::web::HtmlElement;
 
-use controller::global::App;
+use crate::controller::global::App;
 
 pub trait Bling {
     fn apply_bling(&self, el: &HtmlElement) -> HtmlElement;

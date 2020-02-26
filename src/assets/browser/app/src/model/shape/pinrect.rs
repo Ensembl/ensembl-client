@@ -1,7 +1,7 @@
-use types::{ 
+use crate::types::{ 
     AxisSense, Rect, area_size, cpixel, Placement, XPosition, YPosition, Dot
 };
-use model::shape::{ 
+use crate::model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     ShapeShortInstanceData, TypeToShape, PatinaSpec, ZPosition, RectSpec,
     RectPosition, ZMenuRectSpec

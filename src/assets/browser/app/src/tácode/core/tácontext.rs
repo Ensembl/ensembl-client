@@ -2,11 +2,11 @@ use std::cell::RefCell;
 use hashbrown::HashMap;
 use std::rc::Rc;
 
-use composit::{ AllLandscapes, Leaf };
-use data::{ BackendConfig, UnpackedProductConsumer };
-use model::item::UnpackedProduct;
-use model::shape::DrawingSpec;
-use model::supply::Subassembly;
+use crate::composit::{ AllLandscapes, Leaf };
+use crate::data::{ BackendConfig, UnpackedProductConsumer };
+use crate::model::item::UnpackedProduct;
+use crate::model::shape::DrawingSpec;
+use crate::model::supply::Subassembly;
 
 pub enum TáTask {
     MakeShapes(BackendConfig,Leaf,UnpackedProduct,Vec<DrawingSpec>,usize,Option<Subassembly>,AllLandscapes,Option<String>,Box<dyn UnpackedProductConsumer>)

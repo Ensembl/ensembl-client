@@ -1,5 +1,6 @@
 [package]
 name = "hellostdweb"
+edition = '2018'
 version = "0.1.0"
 authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
 build = "build/build.rs"
@@ -17,10 +18,12 @@ url="*"
 base64="*"
 hashbrown = "*"
 owning_ref="*"
+futures="^0.3.4"
 
 "blackbox" = { version="0.0.0", path="../blackbox" }
 "t\u00E1naiste" = { version="0.1.1", path="../t\u00E1naiste" }
 "misc_algorithms" = { version="0.1.1", path="../misc_algorithms" }
+"commander" = { version="0.0.0", path="../commander", featuress = ["use-blackbox"] }
 "zhoosh" = { version="0.1.1", path="../zhoosh" }
 
 [build-dependencies]

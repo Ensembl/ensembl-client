@@ -2,8 +2,8 @@ use std::cmp::{ Ordering, PartialOrd };
 use std::fmt::Debug;
 use std::ops::{ Add, Neg, Sub };
 
-use drivers::webgl::program::Input;
-use types::{ Dot, area, Rect };
+use crate::drivers::webgl::program::Input;
+use crate::types::{ Dot, area, Rect };
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
 pub enum Axis { Horiz, Vert, Zoom }

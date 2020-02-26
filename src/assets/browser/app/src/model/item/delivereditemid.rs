@@ -1,5 +1,5 @@
-use composit::Leaf;
-use model::supply::Product;
+use crate::composit::Leaf;
+use crate::model::supply::Product;
 
 #[derive(Clone,Debug,PartialEq,Eq,Hash)]
 pub enum FocusSpecificity {

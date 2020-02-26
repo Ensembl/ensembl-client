@@ -1,4 +1,4 @@
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx
 };
 

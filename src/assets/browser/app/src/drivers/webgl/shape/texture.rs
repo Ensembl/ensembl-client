@@ -1,15 +1,15 @@
 use std::rc::Rc;
 
 use super::super::program::{ ProgramType, PTGeom, PTSkin, PTMethod, ProgramAttribs };
-use types::{
+use crate::types::{
     APixel, AxisSense, CPixel, area_centred, cfraction
 };
 
-use drivers::webgl::GLShape;
+use crate::drivers::webgl::GLShape;
 use super::util::{ rectangle_t, multi_gl, vertices_rect };
 
-use drivers::webgl::{ GLProgData, Artist, Artwork };
-use model::shape::{ DrawingSpec, TexturePosition, TextureSpec };
+use crate::drivers::webgl::{ GLProgData, Artist, Artwork };
+use crate::model::shape::{ DrawingSpec, TexturePosition, TextureSpec };
 
 impl GLShape for TextureSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, 

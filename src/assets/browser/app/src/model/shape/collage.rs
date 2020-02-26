@@ -1,5 +1,5 @@
-use types::{ CPixel, RPixel, Colour };
-use drivers::webgl::Mark;
+use crate::types::{ CPixel, RPixel, Colour };
+use crate::drivers::webgl::Mark;
 
 #[derive(Clone,Debug)]
 pub struct RectMark {

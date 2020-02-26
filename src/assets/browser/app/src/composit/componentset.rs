@@ -1,6 +1,6 @@
 use hashbrown::{ HashMap, HashSet };
 
-use model::supply::Product;
+use crate::model::supply::Product;
 
 #[derive(Clone)]
 pub struct ComponentSet {

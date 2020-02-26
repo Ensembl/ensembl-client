@@ -5,16 +5,16 @@ use tánaiste::{
     Value
 };
 
-use composit::{ Leaf };
-use model::item::UnpackedProduct;
-use model::shape::{
+use crate::composit::{ Leaf };
+use crate::model::item::UnpackedProduct;
+use crate::model::shape::{
     Facade, FacadeType, TypeToShape, ShapeShortInstanceData,
     ShapeInstanceDataType, ShapeLongInstanceData, DrawingSpec
 };
-use model::supply::Subassembly;
-use tácode::core::{ TáContext, TáTask };
+use crate::model::supply::Subassembly;
+use crate::tácode::core::{ TáContext, TáTask };
 use super::super::shapecmd::{ build_meta };
-use types::Colour;
+use crate::types::Colour;
 
 fn do_scale(spec: &Box<dyn TypeToShape>, leaf: &Leaf, x_start: f64, x_aux: f64) -> Option<(f32,f32)> {
     let needs_scale = spec.needs_scale();

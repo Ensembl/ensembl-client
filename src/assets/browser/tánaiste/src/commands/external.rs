@@ -6,7 +6,7 @@ use std::thread;
 use assembly::{ Argument, Signature };
 use core::{ Command, Instruction, Value };
 use runtime::{ DataState, ProcState };
-use util::ValueStore;
+use crate::util::ValueStore;
 
 struct Result {
     exit_code: i32,

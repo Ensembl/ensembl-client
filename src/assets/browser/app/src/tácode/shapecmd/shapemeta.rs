@@ -59,11 +59,11 @@
  * the first two arguments are used.
  */
 
-use model::shape::{
+use crate::model::shape::{
     StretchWiggleTypeSpec, PinRectTypeSpec, StretchRectTypeSpec, 
     TextureTypeSpec, TypeToShape, PatinaSpec
 };
-use types::AxisSense;
+use crate::types::AxisSense;
 
 fn sea_option(meta: &Vec<f64>, idx: usize) -> Option<AxisSense> {
     match meta[idx] as i32 {

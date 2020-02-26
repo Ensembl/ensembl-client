@@ -1,8 +1,8 @@
 use std::sync::{ Arc, Mutex };
 use hashbrown::{ HashMap, HashSet };
-use composit::Leaf;
-use model::stage::{ Screen, Position };
-use types::Dot;
+use crate::composit::Leaf;
+use crate::model::stage::{ Screen, Position };
+use crate::types::Dot;
 
 use super::{ ZMenuLeaf, ZMenuLeafSet, ZMenuData, ZMenuIntersection };
 

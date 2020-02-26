@@ -1,9 +1,9 @@
 use std::rc::Rc;
 
 use super::super::program::{ ProgramAttribs, ProgramType };
-use drivers::webgl::GLProgData;
-use drivers::webgl::{ Artist, Artwork };
-use model::shape::ShapeSpec;
+use crate::drivers::webgl::GLProgData;
+use crate::drivers::webgl::{ Artist, Artwork };
+use crate::model::shape::ShapeSpec;
 
 pub trait GLShape {
     fn get_artist(&self) -> Option<Rc<dyn Artist>> { None }

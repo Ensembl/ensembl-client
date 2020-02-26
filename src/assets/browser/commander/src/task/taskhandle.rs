@@ -134,7 +134,6 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         self.summarize()
     }
 
-    #[cfg(feature="use-blackbox")]
     fn task_key(&self) -> String {
         format!("commander-run-{}",self.summary().map(|x| x.get_name().to_string()).unwrap_or("".to_string()))
     }

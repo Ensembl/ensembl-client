@@ -109,7 +109,6 @@ impl ExecutorTasks {
         !self.runnable.empty()
     }
 
-    #[cfg(feature="use-blackbox")]
     pub(crate) fn summarize(&self, handle: &TaskContainerHandle) -> Option<TaskSummary> {
         self.tasks.get(handle).and_then(|x| x.summarize())
     }

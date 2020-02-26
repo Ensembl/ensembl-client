@@ -1,7 +1,7 @@
 use std::rc::Rc;
 use super::{ DrawingHash, DrawingSpec };
 
-use types::CPixel;
+use crate::types::CPixel;
 
 #[derive(Clone,Debug)]
 pub struct BitmapArtist {

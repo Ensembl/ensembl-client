@@ -1,4 +1,4 @@
-use model::supply::SupplierChooser;
+use crate::model::supply::SupplierChooser;
 
 #[cfg(deploy)]
 pub const DEBUG_SOURCES : [&str;0] = [];

@@ -13,11 +13,11 @@ use stdweb::web::{
 };
 use stdweb::web::html_element::CanvasElement;
 
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx,
 };
 
-use types::{ area, Dot, Rect };
+use crate::types::{ area, Dot, Rect };
 
 fn _to_html(el: Option<Element>) -> Option<HtmlElement> {
     el.and_then(|el| el.try_into().ok())

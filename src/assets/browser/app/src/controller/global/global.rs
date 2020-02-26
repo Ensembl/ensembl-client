@@ -4,16 +4,16 @@ use std::rc::{ Rc, Weak };
 
 use stdweb::web::{ HtmlElement, window };
 use url::Url;
-use util::{ set_instance_id, get_instance_id };
+use crate::util::{ set_instance_id, get_instance_id };
 
-use controller::input::{
+use crate::controller::input::{
     register_startup_events, register_shutdown_events, register_direct_events
 };
-use controller::global::{ AppRunner, Booting };
-use controller::output::Counter;
-use controller::scheduler::{ Scheduler, SchedulerGroup };
-use data::{ BackendConfigBootstrap, HttpManager };
-use dom::domutil;
+use crate::controller::global::{ AppRunner, Booting };
+use crate::controller::output::Counter;
+use crate::controller::scheduler::{ Scheduler, SchedulerGroup };
+use crate::data::{ BackendConfigBootstrap, HttpManager };
+use crate::dom::domutil;
 
 use super::activate::activate;
 

@@ -4,22 +4,22 @@ use stdweb::web::HtmlElement;
 use stdweb::unstable::TryInto;
 use url::Url;
 
-use composit::{
+use crate::composit::{
     Compositor, StateManager, CombinedStickManager, AllLandscapes
 };
-use model::stage::Screen;
-use model::supply::ProductList;
-use controller::input::{ Action, actions_run, startup_actions };
-use controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
-use data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Locator, XferCache };
-use dom::domutil;
-use drivers::webgl::GLPrinter;
-use model::driver::{ Printer, PrinterManager };
-use model::stage::{ Intended, Viewpoint };
-use model::supply::build_product;
-use model::train::{ TrainManager, TravellerCreator };
-use tácode::Tácode;
-use types::Dot;
+use crate::model::stage::Screen;
+use crate::model::supply::ProductList;
+use crate::controller::input::{ Action, actions_run, startup_actions };
+use crate::controller::output::{ Report, ViewportReport, ZMenuReports, Counter };
+use crate::data::{ BackendConfig, BackendStickManager, HttpManager, HttpXferClerk, Locator, XferCache };
+use crate::dom::domutil;
+use crate::drivers::webgl::GLPrinter;
+use crate::model::driver::{ Printer, PrinterManager };
+use crate::model::stage::{ Intended, Viewpoint };
+use crate::model::supply::build_product;
+use crate::model::train::{ TrainManager, TravellerCreator };
+use crate::tácode::Tácode;
+use crate::types::Dot;
 
 use super::WindowState;
 

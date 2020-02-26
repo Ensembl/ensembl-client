@@ -1,11 +1,11 @@
 use std::sync::{ Arc, Mutex };
 
-use dom::domutil;
+use crate::dom::domutil;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ App, AppRunner };
-use controller::input::Action;
-use dom::event::{ 
+use crate::controller::global::{ App, AppRunner };
+use crate::controller::input::Action;
+use crate::dom::event::{ 
     EventListener, EventControl, EventType, EventData, Target
 };
 

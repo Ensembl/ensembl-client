@@ -9,18 +9,18 @@ use super::{ GLProgs, GLCarriage, GLTraveller };
 use super::glcamera::GLCamera;
 use super::gltrainprinter::GLTrainPrinter;
 use super::super::program::{ UniformValue, ProgramType };
-use controller::global::WindowState;
-use model::driver::{ DriverTraveller, Printer };
-use model::item::UnpackedSubassembly;
-use model::stage::Screen;
-use composit::Compositor;
-use model::train::{ CarriageId, Carriage, Train, TrainSet, TravellerId, TrainManager };
+use crate::controller::global::WindowState;
+use crate::model::driver::{ DriverTraveller, Printer };
+use crate::model::item::UnpackedSubassembly;
+use crate::model::stage::Screen;
+use crate::composit::Compositor;
+use crate::model::train::{ CarriageId, Carriage, Train, TrainSet, TravellerId, TrainManager };
 use super::super::drawing::{ AllCanvasAllocator };
-use model::zmenu::{ ZMenuLeafSet };
-use dom::domutil;
-use types::{ Dot };
+use crate::model::zmenu::{ ZMenuLeafSet };
+use crate::dom::domutil;
+use crate::types::{ Dot };
 
-use dom::webgl::WebGLRenderingContext as glctx;
+use crate::dom::webgl::WebGLRenderingContext as glctx;
 use stdweb::web::html_element::{
     CanvasElement
 };

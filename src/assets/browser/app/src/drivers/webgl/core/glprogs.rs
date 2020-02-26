@@ -1,8 +1,8 @@
 use hashbrown::HashMap;
 
-use dom::webgl::WebGLRenderingContext as glctx;
+use crate::dom::webgl::WebGLRenderingContext as glctx;
 
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::GLProgData;
 
 use super::super::program::{ Program, GPUSpec, ProgramType };
 

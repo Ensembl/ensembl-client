@@ -1,4 +1,4 @@
-use model::item::UnpackedSubassembly;
+use crate::model::item::UnpackedSubassembly;
 use super::super::drawing::{ Drawing, CarriageCanvases };
 use super::GLProgInstances;
 use super::super::shape::GLShape;

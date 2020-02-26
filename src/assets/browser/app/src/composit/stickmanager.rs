@@ -1,4 +1,4 @@
-use composit::Stick;
+use crate::composit::Stick;
 
 pub trait StickManager {
     fn get_stick(&mut self, name: &str) -> Option<Stick>;

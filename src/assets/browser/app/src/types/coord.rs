@@ -2,9 +2,9 @@ use std::cmp::{ Ordering, PartialEq, PartialOrd };
 use std::fmt::Debug;
 use std::ops::{ Add, Sub, Mul, Div, Neg };
 
-use drivers::webgl::program::Input;
-use model::stage::{ Screen, Position };
-use types::{
+use crate::drivers::webgl::program::Input;
+use crate::model::stage::{ Screen, Position };
+use crate::types::{
     Rect, Anchored, Axis, Edge, Corner, Anchor, Direction,
     RIGHT, LEFT, DOWN, UP
 };

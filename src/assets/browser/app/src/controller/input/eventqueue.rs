@@ -1,9 +1,9 @@
 use std::sync::{ Arc, Mutex };
 use hashbrown::{ HashMap, HashSet };
 use stdweb::web::{HtmlElement, IElement };
-use controller::input::Action;
-use controller::global::{ AppRunner, App };
-use dom::domutil;
+use crate::controller::input::Action;
+use crate::controller::global::{ AppRunner, App };
+use crate::dom::domutil;
 
 struct ActionSet {
     actions: Vec<Action>,

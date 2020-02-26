@@ -4,11 +4,11 @@ use stdweb::unstable::TryInto;
 use stdweb::web::{ ArrayBuffer, TypedArray, XmlHttpRequest, XhrResponseType };
 use url::Url;
 
-use dom::domutil::browser_time;
-use util::get_instance_id;
+use crate::dom::domutil::browser_time;
+use crate::util::get_instance_id;
 use blackbox::{ blackbox_config, blackbox_disable_all, blackbox_integration, blackbox_take_json, Integration };
 
-use data::{ BackendConfig, HttpManager, HttpResponseConsumer };
+use crate::data::{ BackendConfig, HttpManager, HttpResponseConsumer };
 
 const INTERVAL : f64 = 10000.;
 

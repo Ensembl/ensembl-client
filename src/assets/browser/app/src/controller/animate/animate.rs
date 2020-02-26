@@ -7,8 +7,8 @@ use std::sync::{ Arc, Mutex };
 
 use zhoosh::{ Zhoosh, ZhooshBangOps, ZhooshSequenceControl, ZhooshStepHandle, ZhooshOps, ZhooshStep, ZhooshRunner, ZhooshSequence, ZhooshShape, ZHOOSH_LINEAR_F64_OPS };
 
-use controller::input::Action;
-use types::Dot;
+use crate::controller::input::Action;
+use crate::types::Dot;
 
 use super::crossfade::{ CrossFade, CrossFader };
 

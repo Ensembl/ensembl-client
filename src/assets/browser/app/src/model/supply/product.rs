@@ -5,8 +5,8 @@ use std::fmt;
 use std::hash::{ Hash, Hasher };
 use std::rc::Rc;
 
-use composit::StateManager;
-use composit::StateExpr;
+use crate::composit::StateManager;
+use crate::composit::StateExpr;
 
 use super::{ Subassembly, Supplier };
 

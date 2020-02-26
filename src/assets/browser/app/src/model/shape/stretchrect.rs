@@ -1,5 +1,5 @@
-use types::{ RLeaf, area_size, cleaf, Placement };
-use model::shape::{ 
+use crate::types::{ RLeaf, area_size, cleaf, Placement };
+use crate::model::shape::{ 
     ColourSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     ShapeShortInstanceData, TypeToShape, GenericShape, PatinaSpec,
     ZPosition, RectSpec, RectPosition, ZMenuRectSpec

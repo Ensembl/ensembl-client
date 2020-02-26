@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::sync::{ Arc, Mutex };
 
 use core::{ BinaryCode, Value };
-use util::ValueStore;
+use crate::util::ValueStore;
 use super::environment::Environment;
 use super::interproc::InterpProcess;
 use super::procconf::{ ProcessConfig, PROCESS_CONFIG_DEFAULT };

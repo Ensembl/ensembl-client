@@ -1,4 +1,4 @@
-use types::{ Direction, LEFT, RIGHT };
+use crate::types::{ Direction, LEFT, RIGHT };
 
 pub struct Wrapping {
     min_x_bumper: f64,

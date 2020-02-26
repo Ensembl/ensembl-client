@@ -1,6 +1,6 @@
 use std::sync::{ Arc, Mutex };
 use runtime::ProcState;
-use util::ValueStore;
+use crate::util::ValueStore;
 
 struct PollGroup {
     waiters: Vec<Arc<Mutex<ProcState>>>,

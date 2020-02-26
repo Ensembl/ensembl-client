@@ -1,4 +1,4 @@
-use util::Smallest;
+use crate::util::Smallest;
 
 pub struct ValueStore<T> {
     smallest: Smallest,

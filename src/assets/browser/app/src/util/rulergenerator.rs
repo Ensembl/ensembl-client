@@ -2,7 +2,7 @@ use std::cmp::max;
 use hashbrown::HashSet;
 use std::iter::FromIterator;
 
-use composit::Leaf;
+use crate::composit::Leaf;
 
 const BY125 : &[f64] = &[0.05,0.1,0.2,0.5,1.,2.,5.,10.,20.];
 const BY12 : &[f64] =  &[     0.1,0.2,    1.,   5.,10.    ];

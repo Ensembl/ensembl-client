@@ -1,7 +1,7 @@
 use tánaiste::{ Environment, ProcessState };
 
-use tácode::TáContext;
-use dom::domutil::browser_time;
+use crate::tácode::TáContext;
+use crate::dom::domutil::browser_time;
 
 pub struct AppEnv {
     tc: TáContext,

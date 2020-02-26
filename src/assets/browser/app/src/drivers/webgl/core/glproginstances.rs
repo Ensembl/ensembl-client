@@ -1,7 +1,7 @@
 use super::{ GLProgs, GLProgData };
 use super::super::drawing::CarriageCanvases;
 
-use dom::webgl::WebGLRenderingContext as glctx;
+use crate::dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct GLProgInstances {
     e: GLProgData,

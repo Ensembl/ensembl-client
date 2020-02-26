@@ -1,8 +1,8 @@
 use hashbrown::{ HashMap, HashSet };
 use itertools::Itertools;
 
-use controller::global::WindowState;
-use model::supply::{ PurchaseOrder };
+use crate::controller::global::WindowState;
+use crate::model::supply::{ PurchaseOrder };
 
 struct ChromBuilder {
     input: HashSet<(String,String)>,

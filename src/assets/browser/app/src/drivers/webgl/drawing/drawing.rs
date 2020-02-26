@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
-use types::{ CPixel, RPixel, RFraction, cpixel, area };
+use crate::types::{ CPixel, RPixel, RFraction, cpixel, area };
 use super::alloc::Ticket;
 use super::{ Artist, OneCanvasManager };
 use super::super::program::CanvasWeave;
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::GLProgData;
 
 pub struct Artwork {
     pub pos: RFraction,

@@ -1,6 +1,6 @@
 use hashbrown::HashMap;
 
-use composit::{ Stick, StickManager };
+use crate::composit::{ Stick, StickManager };
 use super::BackendConfig;
 
 pub struct BackendStickManager {

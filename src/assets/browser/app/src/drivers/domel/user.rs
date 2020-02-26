@@ -1,13 +1,13 @@
 use std::sync::{ Arc, Mutex };
-use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
+use crate::dom::domutil;
+use crate::dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 use stdweb::web::{ Element, HtmlElement, IHtmlElement };
 use stdweb::traits::IEvent;
 
-use controller::global::{ App, AppRunner };
-use controller::input::Action;
-use controller::animate::{ MousePhysics, Optical };
-use types::{ Dot, CPixel };
+use crate::controller::global::{ App, AppRunner };
+use crate::controller::input::Action;
+use crate::controller::animate::{ MousePhysics, Optical };
+use crate::types::{ Dot, CPixel };
 
 pub struct UserEventListener {
     canv_el: HtmlElement,

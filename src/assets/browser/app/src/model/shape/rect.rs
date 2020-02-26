@@ -1,5 +1,5 @@
-use types::Placement;
-use model::shape::{ ColourSpec, GenericShape };
+use crate::types::Placement;
+use crate::model::shape::{ ColourSpec, GenericShape };
 
 #[derive(Clone,Copy,Debug)]
 pub enum ZPosition {

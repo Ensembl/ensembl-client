@@ -1,5 +1,5 @@
 /* TODO deduplicate from tánaiste when we have enough for a crate of utilities */
-use util::Smallest;
+use crate::util::Smallest;
 
 pub struct ValueStore<T> {
     smallest: Smallest,

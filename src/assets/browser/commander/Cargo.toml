@@ -9,7 +9,7 @@ use-blackbox = ["blackbox/use-blackbox"]
 
 [dependencies]
 hashbrown="*"
-futures="*"
+futures="^0.3.4"
 owning_ref="*"
 binary-heap-plus="*"
 ordered-float = "*"

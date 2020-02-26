@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use dom::domutil::browser_time;
+use crate::dom::domutil::browser_time;
 
 lazy_static! {
     static ref INSTANCE_ID: Mutex<Option<String>> = Mutex::new(None);

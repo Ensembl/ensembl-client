@@ -1,6 +1,6 @@
-use types::{ CPixel, area_size, cpixel };
+use crate::types::{ CPixel, area_size, cpixel };
 use super::{ FlatCanvas, CarriageCanvases, OneCanvasManager };
-use model::shape::DrawingHash;
+use crate::model::shape::DrawingHash;
 use super::super::program::CanvasWeave;
 
 /* A Artist can service some class of DrawingImpls.

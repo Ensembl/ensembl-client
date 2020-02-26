@@ -1,7 +1,7 @@
-use composit::Leaf;
-use model::shape::{ GenericShape, ShapeSpec };
-use model::supply::Product;
-use model::zmenu::ZMenuLeaf;
+use crate::composit::Leaf;
+use crate::model::shape::{ GenericShape, ShapeSpec };
+use crate::model::supply::Product;
+use crate::model::zmenu::ZMenuLeaf;
 
 // XXX cache compressed and remove clone!
 #[derive(Clone,Debug)]

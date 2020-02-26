@@ -1,4 +1,4 @@
-use types::{
+use crate::types::{
     CPixel, Dot, LEFT, UP, XPosition, YPosition, Placement
 };
 use super::Position;

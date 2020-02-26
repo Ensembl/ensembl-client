@@ -1,6 +1,6 @@
 use hashbrown::{ HashSet, HashMap };
 
-use composit::{ Leaf, Scale, Stick };
+use crate::composit::{ Leaf, Scale, Stick };
 
 pub struct PsychicPosition {
     min_leaf_index: i64,

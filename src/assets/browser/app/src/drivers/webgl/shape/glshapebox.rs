@@ -1,11 +1,11 @@
-use drivers::webgl::{ Artwork, GLProgData };
+use crate::drivers::webgl::{ Artwork, GLProgData };
 use super::super::shape::GLShape;
 use super::super::program::{ PTGeom, PTMethod, ProgramType, ProgramAttribs, Input };
 use super::util::{
     despot, vertices_hollowpoly, poly_p, multi_gl, colourspec_to_group 
 };
-use types::{ CFraction, CLeaf, cfraction, cleaf };
-use model::shape::{ BoxSpec, ColourSpec };
+use crate::types::{ CFraction, CLeaf, cfraction, cleaf };
+use crate::model::shape::{ BoxSpec, ColourSpec };
 
 const DELTA_X: &[f32] = &[0.,1.,0.,1.,0.,-1.,0.,-1.];
 const DELTA_Y: &[i32] = &[0, 1, 0,-1, 0, -1, 0,  1];

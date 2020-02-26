@@ -3,8 +3,8 @@ use url::Url;
 
 use serde_json::Value as JSONValue;
 
-use composit::{ Stick, StickManager, CombinedStickManager };
-use data::{ HttpManager, HttpResponseConsumer, BackendConfig };
+use crate::composit::{ Stick, StickManager, CombinedStickManager };
+use crate::data::{ HttpManager, HttpResponseConsumer, BackendConfig };
 
 use misc_algorithms::marshal::{ json_str, json_obj_get, json_f64, json_bool };
 

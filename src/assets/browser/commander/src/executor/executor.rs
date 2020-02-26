@@ -8,10 +8,8 @@ use crate::task::task::{ KillReason, TaskSummary };
 use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
 use super::action::{ Action, ActionLink };
 use super::exetasks::ExecutorTasks;
-use super::timings::ExecutorTimings;
-
-#[cfg(feature="use-blackbox")]
 use super::taskcontainer::TaskContainerHandle;
+use super::timings::ExecutorTimings;
 
 /// The main top-level object for commander, responsible for running tasks to completion.
 pub struct Executor {
@@ -85,12 +83,10 @@ impl Executor {
         }
     }
 
-    #[cfg(feature="use-blackbox")]
     fn task_name(&self, handle: &TaskContainerHandle) -> String {
         self.get_tasks().summarize(handle).map(|x| x.make_line()).unwrap_or("".to_string())
     }
 
-    #[cfg(feature="use-blackbox")]
     fn task_key(&self, handle: &TaskContainerHandle) -> String {
         format!("commander-elapsed-{}",self.get_tasks().summarize(handle).map(|x| x.get_name().to_string()).unwrap_or("".to_string()))
     }

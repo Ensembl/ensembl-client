@@ -3,14 +3,14 @@ use stdweb::unstable::TryInto;
 use serde_json::Value as JSONValue;
 use stdweb::web::{ Element, HtmlElement };
 
-use controller::global::{ App, Global, GlobalWeak };
-use controller::input::Action;
-use dom::event::{ 
+use crate::controller::global::{ App, Global, GlobalWeak };
+use crate::controller::input::Action;
+use crate::dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
     ICustomEvent, Target, IMessageEvent
 };
-use dom::domutil;
-use types::{ Move, Distance, Units };
+use crate::dom::domutil;
+use crate::types::{ Move, Distance, Units };
 use super::eventutil::{ extract_element, parse_message };
 use super::eventqueue::EventQueueManager;
 

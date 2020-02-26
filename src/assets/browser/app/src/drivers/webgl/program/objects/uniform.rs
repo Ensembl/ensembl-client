@@ -1,7 +1,7 @@
 use hashbrown::HashMap;
 use std::rc::Rc;
 
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLUniformLocation as gluni,
     WebGLProgram as glprog,

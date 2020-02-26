@@ -2,14 +2,14 @@ use hashbrown::HashMap;
 use std::rc::Rc;
 
 use stdweb::web::TypedArray;
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLBuffer as glbuf,
     WebGLProgram as glprog,
 };
 
 use super::super::data::{ DataBatch, Input };
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::GLProgData;
 
 use super::objects::Object;
 

@@ -2,12 +2,12 @@ use std::cell::RefCell;
 use hashbrown::HashMap;
 use std::rc::Rc;
 
-use composit::Compositor;
-use controller::global::WindowState;
-use model::stage::Screen;
-use model::train::{ CarriageId, TravellerId };
-use model::item::UnpackedSubassembly;
-use types::Dot;
+use crate::composit::Compositor;
+use crate::controller::global::WindowState;
+use crate::model::stage::Screen;
+use crate::model::train::{ CarriageId, TravellerId };
+use crate::model::item::UnpackedSubassembly;
+use crate::types::Dot;
 use super::{ DriverTraveller, Printer };
 
 struct PrinterManagerImpl {

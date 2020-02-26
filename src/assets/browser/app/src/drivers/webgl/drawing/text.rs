@@ -1,6 +1,6 @@
-use model::shape::{ TextArtist, DrawingHash };
+use crate::model::shape::{ TextArtist, DrawingHash };
 use super::{ Artist, FlatCanvas };
-use types::{ Colour, CPixel };
+use crate::types::{ Colour, CPixel };
 
 impl Artist for TextArtist {
     fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {

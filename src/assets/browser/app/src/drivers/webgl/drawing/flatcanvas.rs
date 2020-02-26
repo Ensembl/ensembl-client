@@ -10,8 +10,8 @@ use stdweb::web::TypedArray;
 
 use super::{ CanvasRemover, AllCanvasAllocator };
 use super::super::program::CanvasWeave;
-use types::{ Colour, CPixel, RPixel, cpixel, Dot };
-use util::ChangeDetect;
+use crate::types::{ Colour, CPixel, RPixel, cpixel, Dot };
+use crate::util::ChangeDetect;
 
 #[derive(Clone,Copy,Debug)]
 pub enum FontVariety {

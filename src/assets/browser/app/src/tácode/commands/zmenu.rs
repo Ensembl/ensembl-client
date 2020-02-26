@@ -1,12 +1,12 @@
 use std::sync::{ Arc, Mutex };
 
-use model::item::UnpackedProduct;
-use model::supply::Subassembly;
+use crate::model::item::UnpackedProduct;
+use crate::model::supply::Subassembly;
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
-use tácode::core::{ TáContext, TáTask };
+use crate::tácode::core::{ TáContext, TáTask };
 
 fn zmenu(po: &mut UnpackedProduct, ids: &Vec<String>, keys: &Vec<String>, values: &Vec<String>, sa: &Subassembly) {
     let mut values = values.iter().cycle();

@@ -1,4 +1,4 @@
-use model::item::UnpackedSubassembly;
+use crate::model::item::UnpackedSubassembly;
 
 pub trait DriverTraveller {
     fn set_state(&self, state: bool);

@@ -3,11 +3,11 @@ use super::super::program::{
     ProgramAttribs, DataBatch, DataGroupIndex, ProgramType, PTMethod, 
     PTGeom, PTSkin
 };
-use types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
-use model::shape::ColourSpec;
+use crate::types::{ RFraction, CLeaf, RPixel, RLeaf, cleaf, Rect, Edge, Colour };
+use crate::model::shape::ColourSpec;
 use super::super::program::Input;
 
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::GLProgData;
 
 pub fn rectangle_g(b: DataBatch, pdata: &mut ProgramAttribs, key: &str, p: &RLeaf) {
     if let Some(obj) = pdata.get_object(key) {

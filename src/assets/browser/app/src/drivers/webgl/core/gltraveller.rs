@@ -5,9 +5,9 @@ use std::rc::Rc;
 
 use super::{ GLDrawing, GLProgInstances, GLPrinter };
 use super::super::drawing::CarriageCanvases;
-use model::driver::DriverTraveller;
-use model::item::UnpackedSubassembly;
-use model::train::TravellerId;
+use crate::model::driver::DriverTraveller;
+use crate::model::item::UnpackedSubassembly;
+use crate::model::train::TravellerId;
 
 #[derive(Clone)]
 pub struct GLTraveller {

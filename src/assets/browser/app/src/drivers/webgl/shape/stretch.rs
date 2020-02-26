@@ -1,14 +1,14 @@
 use std::rc::Rc;
 
-use types::{ RLeaf, cfraction, cleaf, area_size };
+use crate::types::{ RLeaf, cfraction, cleaf, area_size };
 use super::GLShape;
 use super::util::{ rectangle_g, rectangle_t, vertices_rect };
 
 use super::super::program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
-use drivers::webgl::GLProgData;
-use drivers::webgl::{ Artist, Artwork };
+use crate::drivers::webgl::GLProgData;
+use crate::drivers::webgl::{ Artist, Artwork };
 
-use model::shape::{ DrawingSpec, ShapeSpec };
+use crate::model::shape::{ DrawingSpec, ShapeSpec };
 
 #[derive(Clone,Debug)]
 pub struct StretchTextureSpec {

@@ -1,7 +1,7 @@
-use controller::global::Global;
+use crate::controller::global::Global;
 
-use dom::domutil;
-use dom::event::{ EventListener, EventType, EventData, EventControl, Target };
+use crate::dom::domutil;
+use crate::dom::event::{ EventListener, EventType, EventData, EventControl, Target };
 
 pub struct ShutdownEventListener {
     g: Global

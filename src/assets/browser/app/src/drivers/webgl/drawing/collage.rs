@@ -1,6 +1,6 @@
-use types::{ CPixel, RPixel, Colour };
+use crate::types::{ CPixel, RPixel, Colour };
 use super::{ FlatCanvas, Artist, Mark };
-use model::shape::{ CollageArtist, DrawingSpec, MarkSpec, RectMark };
+use crate::model::shape::{ CollageArtist, DrawingSpec, MarkSpec, RectMark };
 
 impl Artist for CollageArtist {
     fn draw(&self, canvs: &FlatCanvas, pos: CPixel) {

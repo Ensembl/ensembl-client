@@ -4,8 +4,8 @@ use super::util::{
 };
 
 use super::super::program::{ PTGeom, PTMethod, PTSkin, ProgramType, ProgramAttribs };
-use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ColourSpec, StretchWiggle };
+use crate::drivers::webgl::{ GLProgData, Artwork };
+use crate::model::shape::{ ColourSpec, StretchWiggle };
 
 impl GLShape for StretchWiggle {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {

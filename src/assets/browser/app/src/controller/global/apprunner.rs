@@ -4,21 +4,21 @@ use std::sync::{ Arc, Mutex, Weak };
 
 use stdweb::web::HtmlElement;
 use url::Url;
-use dom::domutil;
-use composit::register_compositor_ticks;
-use controller::global::{ App, GlobalWeak };
-use controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
-use controller::input::register_dom_events;
-use drivers::domel::{ register_user_events };
-use controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
-use controller::animate::animate_jump_to;
+use crate::dom::domutil;
+use crate::composit::register_compositor_ticks;
+use crate::controller::global::{ App, GlobalWeak };
+use crate::controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
+use crate::controller::input::register_dom_events;
+use crate::drivers::domel::{ register_user_events };
+use crate::controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
+use crate::controller::animate::animate_jump_to;
 
-use data::{ HttpManager, BackendConfig };
-use debug::BlackboxSender;
-use dom::Bling;
-use dom::event::EventControl;
-use dom::domutil::browser_time;
-use tácode::Tácode;
+use crate::data::{ HttpManager, BackendConfig };
+use crate::debug::BlackboxSender;
+use crate::dom::Bling;
+use crate::dom::event::EventControl;
+use crate::dom::domutil::browser_time;
+use crate::tácode::Tácode;
 
 pub struct AppRunnerImpl {
     g: GlobalWeak,

@@ -1,9 +1,9 @@
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx,
 };
 
-use drivers::webgl::Drawing;
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::Drawing;
+use crate::drivers::webgl::GLProgData;
 use super::super::data::{ DataBatch, DataGroupIndex, Input };
 use super::UniformValue;
 

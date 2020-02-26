@@ -4,11 +4,11 @@ use std::rc::Rc;
 use super::{ GLTraveller, GLProgs, GLProgInstances };
 use super::glcamera::GLCamera;
 use super::super::program::{ Program, UniformValue };
-use model::stage::{ Position, Screen };
-use composit::Leaf;
+use crate::model::stage::{ Position, Screen };
+use crate::composit::Leaf;
 use super::super::drawing::{ CarriageCanvases, AllCanvasAllocator };
 
-use dom::webgl::WebGLRenderingContext as glctx;
+use crate::dom::webgl::WebGLRenderingContext as glctx;
 
 pub struct GLCarriage {
     srr: HashSet<GLTraveller>,

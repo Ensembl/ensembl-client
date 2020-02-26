@@ -1,7 +1,7 @@
-use types::{ LEFT, RIGHT };
-use composit::Stick;
-use controller::output::Report;
-use model::stage::Viewpoint;
+use crate::types::{ LEFT, RIGHT };
+use crate::composit::Stick;
+use crate::controller::output::Report;
+use crate::model::stage::Viewpoint;
 
 use super::Position;
 

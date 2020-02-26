@@ -49,7 +49,7 @@ impl<K,V> Awaiting<K,V> where K: PartialEq {
         Awaiting::No
     }
 
-    pub fn await(&mut self, key: K) {
+    pub fn wait(&mut self, key: K) {
         if let Awaiting::Yes(k,_) = self {
             if k == &key { return; }
         }

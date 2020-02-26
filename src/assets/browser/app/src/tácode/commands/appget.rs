@@ -4,7 +4,7 @@ use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature
 };
 
-use tácode::core::TáContext;
+use crate::tácode::core::TáContext;
 
 pub struct AppGet(pub TáContext);
 

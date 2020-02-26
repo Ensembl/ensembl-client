@@ -1,11 +1,11 @@
 use std::fmt::Debug;
 
-use types::{
+use crate::types::{
     EPixel, Edge, APixel, AxisSense, Dot, CPixel, 
     Anchors, Anchor, cpixel, cleaf
 };
 
-use model::shape::{
+use crate::model::shape::{
     DrawingSpec, ShapeSpec, Facade, FacadeType, ShapeInstanceDataType,
     ShapeShortInstanceData, TypeToShape, GenericShape
 };

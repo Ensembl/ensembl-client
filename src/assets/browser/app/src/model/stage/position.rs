@@ -1,7 +1,7 @@
 use super::Screen;
-use composit::{ Stick, Wrapping };
-use controller::output::{ Report, ViewportReport };
-use types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
+use crate::composit::{ Stick, Wrapping };
+use crate::controller::output::{ Report, ViewportReport };
+use crate::types::{ Dot, Direction, LEFT, RIGHT, UP, DOWN, IN, OUT, AxisSense };
 
 pub fn bp_to_zoomfactor(bp: f64) -> f64 {
     -bp.log10()

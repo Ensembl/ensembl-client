@@ -1,9 +1,9 @@
 use serde_json::Value as JSONValue;
 
-use composit::Stick;
-use controller::global::AppRunner;
-use controller::input::Action;
-use dom::domutil;
+use crate::composit::Stick;
+use crate::controller::global::AppRunner;
+use crate::controller::input::Action;
+use crate::dom::domutil;
 
 #[derive(Clone)]
 pub enum OutputAction {

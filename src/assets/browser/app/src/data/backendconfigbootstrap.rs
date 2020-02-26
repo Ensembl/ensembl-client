@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use stdweb::web::{XmlHttpRequest, XhrResponseType };
 use url::Url;
-use util::API_VERSION;
+use crate::util::API_VERSION;
 
 use super::{ BackendConfig, HttpManager, HttpResponseConsumer };
 

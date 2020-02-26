@@ -1,5 +1,5 @@
-use drivers::webgl::FCFont;
-use types::Colour;
+use crate::drivers::webgl::FCFont;
+use crate::types::Colour;
 
 use super::DrawingSpec;
 

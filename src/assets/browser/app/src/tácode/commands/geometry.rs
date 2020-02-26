@@ -1,13 +1,13 @@
 use std::sync::{ Arc, Mutex };
 
-use model::supply::Subassembly;
+use crate::model::supply::Subassembly;
 
 use tánaiste::{
     Argument, Command, DataState, Instruction, ProcState, Signature,
     Value
 };
 
-use tácode::core::{ TáContext, TáTask };
+use crate::tácode::core::{ TáContext, TáTask };
 
 
 // TODO check ranges

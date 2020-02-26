@@ -1,5 +1,5 @@
 use std::fmt::Debug;
-use types::{ Dot, Edge, Anchors };
+use crate::types::{ Dot, Edge, Anchors };
 use super::{ MathsShape, ColourSpec, ShapeSpec, GenericShape };
 
 #[derive(Clone,Copy,Debug)]

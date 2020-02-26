@@ -1,6 +1,6 @@
 use super::focusobjectid::FocusObjectId;
-use composit::Stick;
-use model::stage::Position;
+use crate::composit::Stick;
+use crate::model::stage::Position;
 
 #[derive(Clone)]
 pub enum ObjectLocation {

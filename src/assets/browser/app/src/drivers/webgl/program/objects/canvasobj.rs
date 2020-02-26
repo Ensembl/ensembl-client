@@ -1,13 +1,13 @@
 use hashbrown::HashMap;
 use std::rc::Rc;
 use stdweb::web::html_element::CanvasElement;
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLTexture as gltex,
     GLint, GLenum,
 };
 
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::GLProgData;
 use super::super::data::DataBatch;
 use super::super::objects::Object;
 

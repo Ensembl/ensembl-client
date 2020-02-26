@@ -1,9 +1,9 @@
 use std::rc::Rc;
 
-use controller::global::WindowState;
-use composit::{ Plot,StateAtom, StateExpr, StateOp };
+use crate::controller::global::WindowState;
+use crate::composit::{ Plot,StateAtom, StateExpr, StateOp };
 use super::product::Product;
-use debug::add_debug_sources;
+use crate::debug::add_debug_sources;
 
 use super::{ Subassembly, SupplierChooser };
 

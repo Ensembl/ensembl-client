@@ -4,7 +4,7 @@ mod area;
 mod corners;
 mod misctypes;
 
-pub use types::corners::{
+pub use crate::types::corners::{
     Anchors, Axis, AxisSense, Anchored, Corner, Edge, Anchor,
     cedge, Direction,
 
@@ -16,13 +16,13 @@ pub use types::corners::{
     A_BOTTOMLEFT, A_BOTTOM, A_BOTTOMRIGHT
 };
 
-pub use types::coord::{
+pub use crate::types::coord::{
     CPixel, CLeaf, CFraction, APixel, CDFraction,
     cpixel, cleaf, cfraction, cdfraction, ddiv,
     EPixel, Dot, Move, Distance, Units,
 };
 
-pub use types::area::{
+pub use crate::types::area::{
     RLeaf,
     RFraction,
     RPixel,
@@ -30,8 +30,8 @@ pub use types::area::{
     Bounds, Placement, XPosition, YPosition
 };
 
-pub use types::colour::{
+pub use crate::types::colour::{
     Colour
 };
 
-pub use types::misctypes::{ AsyncValue, Awaiting };
+pub use crate::types::misctypes::{ AsyncValue, Awaiting };

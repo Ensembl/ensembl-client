@@ -1,8 +1,8 @@
 use std::sync::{ Arc, Mutex };
-use types::{ CPixel, CDFraction, cdfraction };
-use controller::global::{ App, AppRunner };
-use controller::input::Action;
-use types::{ Move, Distance, Units, ddiv };
+use crate::types::{ CPixel, CDFraction, cdfraction };
+use crate::controller::global::{ App, AppRunner };
+use crate::controller::input::Action;
+use crate::types::{ Move, Distance, Units, ddiv };
 
 pub struct MousePhysicsImpl {
     last_t: Option<f64>,              /* last update */

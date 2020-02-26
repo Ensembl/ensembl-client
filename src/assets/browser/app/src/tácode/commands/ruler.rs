@@ -5,9 +5,9 @@ use tánaiste::{
     Value
 };
 
-use composit::Leaf;
-use tácode::core::{ TáContext, TáTask };
-use util::RulerGenerator;
+use crate::composit::Leaf;
+use crate::tácode::core::{ TáContext, TáTask };
+use crate::util::RulerGenerator;
 
 fn extract_config(config: &Vec<f64>) -> (i32,i32,i32,[i32;4]) {
     (config[0] as i32,config[1] as i32,config[2] as i32,

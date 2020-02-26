@@ -1,5 +1,5 @@
-use model::item::{ DeliveredItem, ItemUnpacker };
-use model::supply::PurchaseOrder;
+use crate::model::item::{ DeliveredItem, ItemUnpacker };
+use crate::model::supply::PurchaseOrder;
 
 pub trait XferConsumer {
     fn consume(&mut self, item: &DeliveredItem, unpacker: &mut ItemUnpacker);

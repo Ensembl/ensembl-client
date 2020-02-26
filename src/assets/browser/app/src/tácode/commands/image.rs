@@ -6,10 +6,10 @@ use tánaiste::{
     Value
 };
 
-use data::BackendConfig;
-use model::shape::{ DrawingSpec, DrawingHash, bitmap_texture };
-use tácode::{ TáContext, TáTask };
-use types::cpixel;
+use crate::data::BackendConfig;
+use crate::model::shape::{ DrawingSpec, DrawingHash, bitmap_texture };
+use crate::tácode::{ TáContext, TáTask };
+use crate::types::cpixel;
 
 fn load_asset(cfg: &BackendConfig, asset: &str, index: usize) -> Value {
     if let Some(asset) = cfg.get_asset(asset) {

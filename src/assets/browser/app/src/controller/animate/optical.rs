@@ -1,7 +1,7 @@
 use std::sync::{ Arc, Mutex };
-use controller::global::{ App, AppRunner };
-use controller::input::Action;
-use types::CDFraction;
+use crate::controller::global::{ App, AppRunner };
+use crate::controller::input::Action;
+use crate::types::CDFraction;
 
 pub struct OpticalImpl {
     missing: f64,

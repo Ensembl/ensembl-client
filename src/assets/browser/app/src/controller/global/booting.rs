@@ -1,12 +1,12 @@
 use stdweb::web::HtmlElement;
 use url::Url;
 
-use controller::input::{ initial_actions };
-use controller::global::{ AppRunner, GlobalWeak, Global };
+use crate::controller::input::{ initial_actions };
+use crate::controller::global::{ AppRunner, GlobalWeak, Global };
 
-use data::{ HttpManager, BackendConfig };
+use crate::data::{ HttpManager, BackendConfig };
 
-use dom::{ Bling, NoBling };
+use crate::dom::{ Bling, NoBling };
 
 pub struct Booting {
     global: Global,

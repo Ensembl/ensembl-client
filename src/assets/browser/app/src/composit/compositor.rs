@@ -1,16 +1,16 @@
 use hashbrown::HashSet;
 
-use composit::{ Stick, Scale, ComponentSet, StateManager };
-use model::driver::{ Printer };
-use model::stage::{ Screen };
-use model::supply::{ Product };
-use model::train::{ Train, TravellerCreator };
-use model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
+use crate::composit::{ Stick, Scale, ComponentSet, StateManager };
+use crate::model::driver::{ Printer };
+use crate::model::stage::{ Screen };
+use crate::model::supply::{ Product };
+use crate::model::train::{ Train, TravellerCreator };
+use crate::model::zmenu::{ ZMenuRegistry, ZMenuLeafSet, ZMenuIntersection };
 
-use controller::global::{ App, AppRunner, WindowState };
-use controller::output::Report;
-use data::{ Psychic, PsychicPacer, XferCache };
-use types::Dot;
+use crate::controller::global::{ App, AppRunner, WindowState };
+use crate::controller::output::Report;
+use crate::data::{ Psychic, PsychicPacer, XferCache };
+use crate::types::Dot;
 
 const MS_PER_UPDATE : f64 = 100.;
 const MS_PRIME_DELAY: f64 = 2000.;

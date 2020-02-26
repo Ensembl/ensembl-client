@@ -1,6 +1,6 @@
-use composit::Stick;
-use model::focus::FocusObjectId;
-use types::Dot;
+use crate::composit::Stick;
+use crate::model::focus::FocusObjectId;
+use crate::types::Dot;
 
 use super::Position;
 

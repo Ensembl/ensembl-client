@@ -2,8 +2,8 @@ use std::cmp::{ min, max };
 
 use super::{ FlatCanvas, Artist, CarriageCanvases, OneCanvasManager };
 use super::super::program::CanvasWeave;
-use model::shape::{ BitmapArtist, DrawingHash };
-use types::{ CPixel, area_size, cpixel };
+use crate::model::shape::{ BitmapArtist, DrawingHash };
+use crate::types::{ CPixel, area_size, cpixel };
 
 fn copy_data(out: &mut Vec<u8>, in_: &Vec<u8>, size: CPixel,
              row: i32, col: Option<i32>) {

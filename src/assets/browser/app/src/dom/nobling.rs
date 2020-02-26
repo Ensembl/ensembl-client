@@ -2,7 +2,7 @@ use stdweb::unstable::TryInto;
 
 use stdweb::web::HtmlElement;
 
-use dom::{ domutil, Bling };
+use crate::dom::{ domutil, Bling };
 
 pub const PLAINSTAGE : &str = r##"
 <div class="bpane-container">

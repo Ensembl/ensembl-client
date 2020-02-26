@@ -1,7 +1,7 @@
 use std::fmt;
 
-use composit::{ Stick, Scale };
-use types::Placement;
+use crate::composit::{ Stick, Scale };
+use crate::types::Placement;
 
 #[derive(Clone,PartialEq,Eq,Hash)]
 pub struct Leaf {

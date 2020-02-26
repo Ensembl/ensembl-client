@@ -1,4 +1,4 @@
-use model::supply::Subassembly;
+use crate::model::supply::Subassembly;
 use super::CarriageId;
 
 #[derive(Clone,PartialEq,Eq,Hash,Debug)]

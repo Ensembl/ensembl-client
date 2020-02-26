@@ -9,7 +9,7 @@ use stdweb::unstable::TryInto;
 use stdweb::Reference;
 use stdweb::web::{ window, Element };
 use stdweb::web::event::{ IEvent, IUiEvent, IMouseEvent, IKeyboardEvent };
-use types::{ CPixel, cpixel };
+use crate::types::{ CPixel, cpixel };
 
 pub struct EventControl<T> {
     handle: Arc<Mutex<Box<dyn EventListener<T>>>>,

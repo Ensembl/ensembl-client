@@ -5,11 +5,11 @@ use tánaiste::{
     Value
 };
 
-use model::shape::{ text_texture, DrawingSpec };
-use drivers::webgl::{ FCFont, FontVariety
+use crate::model::shape::{ text_texture, DrawingSpec };
+use crate::drivers::webgl::{ FCFont, FontVariety
      };
-use tácode::{ TáContext, TáTask };
-use types::{ Colour };
+use crate::tácode::{ TáContext, TáTask };
+use crate::types::{ Colour };
 
 fn process_meta(font_name: &str,meta: &Vec<f64>) -> (FCFont,Colour,Colour) {
     let variety = match meta[1].round() as i64 {

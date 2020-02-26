@@ -5,9 +5,9 @@ use serde_json::Value as JSONValue;
 use serde_json::Number as JSONNumber;
 
 
-use controller::global::{ App, AppRunner };
-use controller::output::OutputAction;
-use util::ChangeDetect;
+use crate::controller::global::{ App, AppRunner };
+use crate::controller::output::OutputAction;
+use crate::util::ChangeDetect;
 
 #[derive(Debug)]
 enum ViewportReportItem {

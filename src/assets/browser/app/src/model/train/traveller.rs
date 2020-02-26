@@ -2,13 +2,13 @@ use std::fmt;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex };
 
-use composit::Leaf;
-use composit::{ StateManager };
-use data::XferConsumer;
-use model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
-use model::supply::Subassembly;
-use model::driver::{ DriverTraveller, Printer, PrinterManager };
-use model::zmenu::ZMenuLeaf;
+use crate::composit::Leaf;
+use crate::composit::{ StateManager };
+use crate::data::XferConsumer;
+use crate::model::item::{ DeliveredItem, DeliveredItemId, FocusSpecificity, UnpackedSubassembly, UnpackedSubassemblyConsumer, ItemUnpacker };
+use crate::model::supply::Subassembly;
+use crate::model::driver::{ DriverTraveller, Printer, PrinterManager };
+use crate::model::zmenu::ZMenuLeaf;
 use super::{ CarriageId, TravellerId };
 
 pub struct TravellerImpl {

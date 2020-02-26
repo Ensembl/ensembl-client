@@ -2,8 +2,8 @@ use hashbrown::HashMap;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-use composit::{ Stick, StickManager };
-use data::BackendStickManager;
+use crate::composit::{ Stick, StickManager };
+use crate::data::BackendStickManager;
 
 struct CombinedStickManagerImpl {
     backend: BackendStickManager,

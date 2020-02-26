@@ -3,11 +3,11 @@ use hashbrown::HashMap;
 use hashbrown::hash_map::Entry;
 use std::rc::Rc;
 
-use model::driver::PrinterManager;
-use model::supply::{ Product, PurchaseOrder };
+use crate::model::driver::PrinterManager;
+use crate::model::supply::{ Product, PurchaseOrder };
 use super::{ CarriageId, Traveller };
 
-use composit::Leaf;
+use crate::composit::Leaf;
 
 #[derive(Clone)]
 pub struct TravellerCreator {

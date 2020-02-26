@@ -1,5 +1,5 @@
 use stdweb::unstable::TryInto;
-use dom::domutil;
+use crate::dom::domutil;
 use serde_json::Value as JSONValue;
 use stdweb::web::{ Element, HtmlElement };
 

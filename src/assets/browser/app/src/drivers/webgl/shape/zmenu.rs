@@ -1,8 +1,8 @@
 use super::{ GLShape };
 
 use super::super::program::{ ProgramType, ProgramAttribs };
-use drivers::webgl::{ GLProgData, Artwork };
-use model::shape::{ ZMenuRectSpec };
+use crate::drivers::webgl::{ GLProgData, Artwork };
+use crate::model::shape::{ ZMenuRectSpec };
 
 impl GLShape for ZMenuRectSpec {
     fn into_objects(&self, geom: &mut ProgramAttribs, _art: Option<Artwork>, e: &mut GLProgData) {

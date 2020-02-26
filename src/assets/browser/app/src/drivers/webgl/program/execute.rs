@@ -1,7 +1,7 @@
 use hashbrown::HashMap;
 use std::rc::Rc;
 
-use dom::webgl::{
+use crate::dom::webgl::{
     WebGLRenderingContext as glctx,
     WebGLProgram as glprog,
 };
@@ -11,7 +11,7 @@ use super::objects::Object;
 use super::data::{ DataBatch, DataGroupIndex, BatchManager };
 use super::gpuspec::GPUSpec;
 use super::impls::ProgramType;
-use drivers::webgl::GLProgData;
+use crate::drivers::webgl::GLProgData;
 
 pub struct ProgramAttribs {
     pt: ProgramType,

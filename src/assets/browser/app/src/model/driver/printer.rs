@@ -1,11 +1,11 @@
-use composit::Compositor;
-use model::stage::Screen;
-use types::Dot;
+use crate::composit::Compositor;
+use crate::model::stage::Screen;
+use crate::types::Dot;
 
 use super::DriverTraveller;
-use controller::global::WindowState;
-use model::train::{ CarriageId, TravellerId };
-use model::item::UnpackedSubassembly;
+use crate::controller::global::WindowState;
+use crate::model::train::{ CarriageId, TravellerId };
+use crate::model::item::UnpackedSubassembly;
 
 pub trait Printer {
     /* Print one run of objects from compositor with given stage and

@@ -1,9 +1,9 @@
-use types::{ Move, Units, Axis, Dot, CPixel };
-use controller::global::App;
-use composit::StickManager;
+use crate::types::{ Move, Units, Axis, Dot, CPixel };
+use crate::controller::global::App;
+use crate::composit::StickManager;
 
-use model::stage::{ bp_to_zoomfactor, zoomfactor_to_bp };
-use model::focus::FocusObjectId;
+use crate::model::stage::{ bp_to_zoomfactor, zoomfactor_to_bp };
+use crate::model::focus::FocusObjectId;
 
 use serde_json::Value as JSONValue;
 

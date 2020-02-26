@@ -2,9 +2,9 @@ use std::cell::RefCell;
 use hashbrown::HashMap;
 use std::rc::Rc;
 
-use dom::webgl::WebGLTexture as gltex;
+use crate::dom::webgl::WebGLTexture as gltex;
 
-use drivers::webgl::OneCanvasManager;
+use crate::drivers::webgl::OneCanvasManager;
 
 pub struct CanvasCacheImpl {
     cache: HashMap<(u32,u32),gltex>

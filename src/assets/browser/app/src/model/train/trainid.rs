@@ -1,6 +1,6 @@
-use composit::{ Stick, Scale };
+use crate::composit::{ Stick, Scale };
 
-use model::focus::FocusObjectId;
+use crate::model::focus::FocusObjectId;
 
 #[derive(Clone,PartialEq,Eq,Hash,Debug)]
 pub struct TrainId {

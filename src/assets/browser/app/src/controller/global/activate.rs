@@ -1,6 +1,6 @@
-use dom::domutil;
+use crate::dom::domutil;
 
-use dom::event::{ 
+use crate::dom::event::{ 
     EventListener, EventControl, EventType, EventData, 
     Target, IMessageEvent
 };

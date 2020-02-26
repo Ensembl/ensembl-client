@@ -5,14 +5,14 @@ use url::Url;
 
 use serde_json::Value as JSONValue;
 
-use composit::{ Stick, StickManager };
-use controller::animate::{ ActionAnimator, action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang, action_zhoosh_fade };
-use controller::global::App;
-use controller::input::Action;
-use dom::domutil::browser_time;
-use types::{ Dot,LEFT, RIGHT };
-use model::stage::{ Position, Screen, bp_to_zoomfactor, zoomfactor_to_bp };
-use model::train::TrainManager;
+use crate::composit::{ Stick, StickManager };
+use crate::controller::animate::{ ActionAnimator, action_zhoosh_pos, PendingActions, action_zhoosh_zoom, action_zhoosh_bang, action_zhoosh_fade };
+use crate::controller::global::App;
+use crate::controller::input::Action;
+use crate::dom::domutil::browser_time;
+use crate::types::{ Dot,LEFT, RIGHT };
+use crate::model::stage::{ Position, Screen, bp_to_zoomfactor, zoomfactor_to_bp };
+use crate::model::train::TrainManager;
 
 use super::crossfade::{ CrossFade, CrossFader };
 
