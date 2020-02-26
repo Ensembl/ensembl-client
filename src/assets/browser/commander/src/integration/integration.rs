@@ -13,8 +13,7 @@
 /// How long an integration may hold off polling until further notice.
 /// 
 /// Used in `Integration.sleep()` to indicate how long polling may be suspended.
-#[derive(PartialEq,Clone)]
-#[cfg_attr(test,derive(Debug))]
+#[derive(PartialEq,Clone,Debug)]
 pub enum SleepQuantity {
     /// Do not suspend. Carry on polling.
     None,
