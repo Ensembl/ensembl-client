@@ -18,7 +18,7 @@ impl TaskContainerHandle {
 
 pub(crate) struct TaskContainer {
     free_slots: BinaryHeap<usize,MinComparator>,
-    tasks: Vec<Option<Box<dyn ExecutorTaskHandle>>>,
+    tasks: Vec<Option<Box<dyn ExecutorTaskHandle + Send>>>,
     current: HashSet<TaskContainerHandle>,
     identity: u64
 }
@@ -49,7 +49,7 @@ impl TaskContainer {
         self.current.iter().cloned().collect()
     }
 
-    pub(crate) fn set(&mut self, handle: &TaskContainerHandle, task: Box<dyn ExecutorTaskHandle>) {
+    pub(crate) fn set(&mut self, handle: &TaskContainerHandle, task: Box<dyn ExecutorTaskHandle + Send>) {
         self.tasks[handle.0] = Some(task);
     }
 
@@ -61,7 +61,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn ExecutorTaskHandle>> { 
+    pub(crate) fn get(&self, handle: &TaskContainerHandle) -> Option<&Box<dyn ExecutorTaskHandle + Send>> { 
         if self.current.contains(&handle) {
             self.tasks[handle.0].as_ref()
         } else {
@@ -69,7 +69,7 @@ impl TaskContainer {
         }
     }
 
-    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn ExecutorTaskHandle>> {
+    pub(crate) fn get_mut(&mut self, handle: &TaskContainerHandle) -> Option<&mut Box<dyn ExecutorTaskHandle + Send>> {
         if self.current.contains(&handle) {
            self.tasks[handle.0].as_mut()
         } else {

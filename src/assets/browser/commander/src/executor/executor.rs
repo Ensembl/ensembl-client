@@ -64,7 +64,7 @@ impl Executor {
         handle
     }
 
-    fn try_add_task(&mut self, task: Box<dyn ExecutorTaskHandle>, agent: Agent) {
+    fn try_add_task(&mut self, task: Box<dyn ExecutorTaskHandle + Send>, agent: Agent) {
         blackbox_log!("commander","Adding task '{}' to executor",agent.get_name());
         let tasks = self.get_tasks_mut(); // shared to avoid race to slot
         if tasks.check_slot(&agent) {
