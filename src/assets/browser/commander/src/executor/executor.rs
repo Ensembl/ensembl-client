@@ -72,6 +72,7 @@ impl Executor {
             tasks.use_slot(&agent,&container_handle);
             if !agent.finish_agent().finished() {
                 tasks.start_task(&container_handle);
+                self.integration.cause_reentry();
                 blackbox_start!("commander",&self.task_key(&container_handle.clone()));
                 if let Some(timeout) = agent.get_config().get_timeout() {
                     let agent2 = agent.clone();
