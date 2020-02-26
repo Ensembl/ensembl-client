@@ -1,3 +1,4 @@
+use commander::RunConfig;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex, Weak };
@@ -7,7 +8,7 @@ use url::Url;
 use crate::dom::domutil;
 use crate::composit::register_compositor_ticks;
 use crate::controller::global::{ App, GlobalWeak };
-use crate::controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
+use crate::controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup, Commander };
 use crate::controller::input::register_dom_events;
 use crate::drivers::domel::{ register_user_events };
 use crate::controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
@@ -21,6 +22,7 @@ use crate::dom::domutil::browser_time;
 use crate::tácode::Tácode;
 
 pub struct AppRunnerImpl {
+    commander: Commander,
     g: GlobalWeak,
     counter: Counter,
     el: HtmlElement,
@@ -63,6 +65,7 @@ impl AppRunner {
             g.scheduler().make_group()
         };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
+            commander: Commander::new(),
             g: g.clone(),
             el: el.clone(),
             counter,
@@ -75,6 +78,23 @@ impl AppRunner {
             key: key.to_string()
         })));
         out.init();
+        out.0.lock().unwrap().commander.start();
+        /*
+        {
+            let imp = out.0.lock().unwrap();
+            let mut exe = imp.commander.executor();
+            let rc = RunConfig::new(None,0,None);
+            let agent = exe.new_agent(&rc,"hello");
+            let agent2 = agent.clone();
+            exe.add(async move {
+                loop {
+                    let x = agent2.timer(5000.);
+                    console!("hello");
+                    x.await;
+                }
+            },agent);
+        }
+        */
         let report = Report::new(&mut out);
         let viewport_report = ViewportReport::new(&mut out);
         let zmenu_reports = ZMenuReports::new(&mut out);

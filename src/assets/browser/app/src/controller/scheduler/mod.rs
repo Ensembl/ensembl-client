@@ -1,3 +1,4 @@
+mod commander;
 mod jank;
 mod scheduler;
 mod schedgroup;
@@ -7,6 +8,7 @@ mod schedqueuelist;
 mod schedtask;
 mod schedrun;
 
+pub use self::commander::Commander;
 pub use self::scheduler::Scheduler;
 pub use self::schedrun::SchedRun;
 pub use self::schedgroup::SchedulerGroup;
