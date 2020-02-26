@@ -331,3 +331,13 @@ Feature:EHK-HH:
   - /^feature\/.*$/
 
   needs: ["Nginx:feature"]
+
+Feature:WP-HX:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+  environment:
+    name : wp-hx-dev
+  only:
+  - /^feature\/.*$/
+  needs: ["Nginx:feature"]
