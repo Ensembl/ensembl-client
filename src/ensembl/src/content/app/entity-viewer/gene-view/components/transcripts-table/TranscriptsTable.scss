@@ -44,8 +44,7 @@
   grid-area: 1 / 2 / auto / 3;
 
   .tableRow {
-    display: inline-grid;
-    width: 100%;
+    display: grid;
   }
 }
 
