@@ -1,6 +1,7 @@
 use futures::task::ArcWake;
 use std::sync::{ Arc, Mutex };
-use crate::executor::action::{ Action, TaskActionLink };
+use crate::executor::action::Action;
+use crate::executor::link::{ Link, TaskLink };
 use crate::integration::reentering::ReenteringIntegration;
 
 /* A Block sits behind a Waker and is responsible for
@@ -39,8 +40,8 @@ sequence!(IDENTITY);
 #[derive(Clone)]
 pub(crate) struct Block {
     blocked: Arc<Mutex<bool>>,
-    callback: Arc<Mutex<Box<dyn Fn(&TaskActionLink) + Send>>>,
-    task_action_link: TaskActionLink,
+    callback: Arc<Mutex<Box<dyn Fn(&TaskLink<Action>) + Send>>>,
+    task_action_link: TaskLink<Action>,
     integration: ReenteringIntegration,
     identity: u64
 }
@@ -56,7 +57,7 @@ impl ArcWake for StepWaker {
 }
 
 impl Block {
-    pub(crate) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
+    pub(crate) fn new(integration: &ReenteringIntegration, task_action_link: &TaskLink<Action>, unblock: Box<dyn Fn(&TaskLink<Action>) + Send>) -> Block {
         let identity = IDENTITY.next();
         Block {
             callback: Arc::new(Mutex::new(unblock)),
@@ -67,7 +68,7 @@ impl Block {
         }
     }
 
-    pub(crate) fn new_main(integration: &ReenteringIntegration, task_action_link: &TaskActionLink) -> Block {
+    pub(crate) fn new_main(integration: &ReenteringIntegration, task_action_link: &TaskLink<Action>) -> Block {
         Block::new(integration,task_action_link,Box::new(move |ah| {
             ah.add(Action::UnblockTask());
         }))

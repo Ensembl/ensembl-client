@@ -51,8 +51,8 @@ impl ReenteringIntegration {
 #[cfg(test)]
 mod test {
     use crate::agent::agent::Agent;
-    use crate::executor::action::ActionLink;
-    use crate::executor::createqueue::CreateQueue;
+    use crate::executor::link::Link;
+    use crate::executor::request::Request;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;
@@ -65,10 +65,10 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let eah = ActionLink::new();
+        let eah = Link::new();
         let ti = TestIntegration::new();
         let mut integration = ReenteringIntegration::new(ti.clone());
-        let cq = CreateQueue::new();
+        let cq = Link::new();
         let tc = Agent::new(&cfg,&eah,&cq,&integration.clone(),"name");
         tc.run_agent().register(&h);
         /* simulate */

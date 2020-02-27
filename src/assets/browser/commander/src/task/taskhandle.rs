@@ -184,9 +184,10 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
 
 #[cfg(test)]
 mod test {
-    use crate::executor::action::{ Action, ActionLink };
-    use crate::executor::createqueue::CreateQueue;
+    use crate::executor::action::Action;
+    use crate::executor::request::Request;
     use crate::executor::executor::Executor;
+    use crate::executor::link::Link;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::reentering::ReenteringIntegration;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
@@ -226,9 +227,9 @@ mod test {
         let cfg = RunConfig::new(None,3,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ActionLink::new();
+        let mut eah = Link::new();
         let integration = TestIntegration::new();
-        let cq = CreateQueue::new();
+        let mut cq = Link::new();
         let tc = Agent::new(&cfg,&eah,&cq,&ReenteringIntegration::new(integration.clone()),"test");
         tc.run_agent().register(&h);
         let ctx = tc.clone();
@@ -248,13 +249,15 @@ mod test {
         t.run(0);
         assert!(!tc.finish_agent().finishing());
         /* check for tick action in one of those two runs */
-        let actions = eah.drain_actions();
-        assert_eq!(3,actions.len());
-        if let Action::Timer(_,_) = actions[0].1 {
+        let actions = cq.drain();
+        assert_eq!(1,actions.len());
+        if let Request::Timer(_,_) = actions[0].1 {
         } else {
             assert!(false);
         }
-        if let Action::BlockTask() = actions[1].1 {
+        let actions = eah.drain();
+        assert_eq!(2,actions.len());
+        if let Action::BlockTask() = actions[0].1 {
         } else {
             assert!(false);
         }

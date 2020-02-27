@@ -6,8 +6,9 @@ use crate::task::runconfig::RunConfig;
 use crate::task::slot::RunSlot;
 use crate::task::task::{ KillReason, TaskSummary };
 use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
-use super::action::{ Action, ActionLink };
-use super::createqueue::CreateQueue;
+use super::action::Action;
+use super::link::Link;
+use super::request::Request;
 use super::exetasks::ExecutorTasks;
 use super::taskcontainer::TaskContainerHandle;
 use super::timings::ExecutorTimings;
@@ -17,8 +18,8 @@ pub struct Executor {
     timings: ExecutorTimings,
     tasks: ExecutorTasks,
     integration: ReenteringIntegration,
-    actions: ActionLink,
-    creates: CreateQueue
+    actions: Link<Action>,
+    requests: Link<Request>
 }
 
 impl Executor {
@@ -30,10 +31,10 @@ impl Executor {
         let integration = ReenteringIntegration::new(integration);
         Executor {
             timings: ExecutorTimings::new(&integration),
-            creates: CreateQueue::new(),
+            requests: Link::new(),
             tasks: ExecutorTasks::new(),
             integration,
-            actions: ActionLink::new()
+            actions: Link::new()
         }
     }
 
@@ -57,7 +58,7 @@ impl Executor {
     /// Create a new `Agent` to pass to add and, if you wish, pass into your future for access to executor
     /// functionality.
     pub fn new_agent(&self, run_config: &RunConfig, name: &str) -> Agent {
-        Agent::new(run_config,&self.actions,&self.creates,&self.integration,name)
+        Agent::new(run_config,&self.actions,&self.requests,&self.integration,name)
     }
 
     /// Add given future and agent to the executor for running.
@@ -99,9 +100,9 @@ impl Executor {
 
     pub(crate) fn service(&mut self) {
         loop {
-            let actions = self.actions.drain_actions();
-            let creates = self.creates.drain_creates();
-            if actions.len() == 0 && creates.len() == 0 { break; }
+            let actions = self.actions.drain();
+            let requests = self.requests.drain();
+            if actions.len() == 0 && requests.len() == 0 { break; }
             for mut action in actions {
                 match action {
                     (ref handle,Action::BlockTask()) => {
@@ -119,17 +120,21 @@ impl Executor {
                         blackbox_log!("commander","Task '{}' finished",self.task_name(handle));
                         blackbox_end!("commander",&self.task_key(handle));
                         self.get_tasks_mut().remove_task(&handle);
-                    },
-                    (handle,Action::Timer(timeout,callback)) => {
-                        self.get_timings_mut().add_timer(&handle,timeout,callback);
-                    },
-                    (handle,Action::Tick(tick,callback)) => {
-                        self.get_timings_mut().add_tick(&handle,tick,callback);
                     }
                 }
             }
-            for (task,agent) in creates {
-                self.try_add_task(task,agent);
+            for request in requests {
+                match request {
+                    (_handle,Request::Create(task,agent)) => {
+                        self.try_add_task(task,agent);
+                    },
+                    (handle,Request::Timer(timeout,callback)) => {
+                        self.get_timings_mut().add_timer(&handle,timeout,callback);
+                    },
+                    (handle,Request::Tick(tick,callback)) => {
+                        self.get_timings_mut().add_tick(&handle,tick,callback);
+                    }
+                }
             }
         }
     }

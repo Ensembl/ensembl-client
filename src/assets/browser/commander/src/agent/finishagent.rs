@@ -1,6 +1,7 @@
 use std::future::Future;
 use std::pin::Pin;
-use crate::executor::action::{ Action, TaskActionLink };
+use crate::executor::action::Action;
+use crate::executor::link::TaskLink;
 use crate::helper::tidierfuture::TidierFuture;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::task::KillReason;
@@ -13,11 +14,11 @@ pub(crate) struct FinishAgent {
     finishing: bool,
     done_sent: bool,
     integration: ReenteringIntegration,
-    task_action_link: TaskActionLink,
+    task_action_link: TaskLink<Action>,
 }
 
 impl FinishAgent {
-    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink) -> FinishAgent {
+    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskLink<Action>) -> FinishAgent {
         FinishAgent {
             tidiers: Vec::new(),
             kill_reason: None,
@@ -88,8 +89,7 @@ impl FinishAgent {
 #[cfg(test)]
 mod test {
     use crate::agent::agent::Agent;
-    use crate::executor::action::ActionLink;
-    use crate::executor::createqueue::CreateQueue;
+    use crate::executor::link::Link;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;
@@ -102,8 +102,8 @@ mod test {
         let cfg = RunConfig::new(None,0,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let mut eah = ActionLink::new();
-        let cq = CreateQueue::new();
+        let mut eah = Link::new();
+        let cq = Link::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
         let tc = Agent::new(&cfg,&eah,&cq,&integration,"test");
         tc.run_agent().register(&h);
@@ -113,7 +113,7 @@ mod test {
         assert!(tc.finish_agent().finishing());
         tc.finish(KillReason::Timeout);
         assert!(tc.finish_agent().finishing());
-        let actions = eah.drain_actions();
+        let actions = eah.drain();
         assert_eq!(1,actions.len());
         if let Action::UnblockTask() = actions[0].1 {
         } else {
@@ -128,18 +128,18 @@ mod test {
         let cfg = RunConfig::new(None,2,None);
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
-        let eah = ActionLink::new();
+        let eah = Link::new();
         let ti = TestIntegration::new();
         let integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let cq = CreateQueue::new();
+        let cq = Link::new();
         let tc = Agent::new(&cfg,&eah,&cq,&integration.clone(),"name");
         tc.run_agent().register(&h);
         tc.finish_agent().finish(None,false);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let cq = CreateQueue::new();
+        let cq = Link::new();
         let tc = Agent::new(&cfg,&eah,&cq,&integration.clone(),"name");
         tc.run_agent().register(&h);
         tc.finish(KillReason::NotNeeded);

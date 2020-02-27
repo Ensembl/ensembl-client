@@ -1,7 +1,8 @@
 use std::future::Future;
 
-use crate::executor::action::{ Action, TaskActionLink };
-use crate::executor::createqueue::CreateQueue;
+use crate::executor::action::Action;
+use crate::executor::link::TaskLink;
+use crate::executor::request::Request;
 use crate::executor::taskcontainer::TaskContainerHandle;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::runconfig::RunConfig;
@@ -14,19 +15,19 @@ pub(crate) struct RunAgent {
     tick_index: u64,
     config: RunConfig,
     integration: ReenteringIntegration,
-    task_action_link: TaskActionLink,
-    create_queue: CreateQueue
+    task_action_link: TaskLink<Action>,
+    task_request_link: TaskLink<Request>
 }
 
 impl RunAgent {
-    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink, 
-                        create_queue: &CreateQueue, config: &RunConfig) -> RunAgent {
+    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskLink<Action>, 
+                        task_request_link: &TaskLink<Request>, config: &RunConfig) -> RunAgent {
         RunAgent {
             tick_index: 0,
             config: config.clone(),
             integration: integration.clone(),
             task_action_link: task_action_link.clone(),
-            create_queue: create_queue.clone()
+            task_request_link: task_request_link.clone()
         }
     }
 
@@ -40,25 +41,26 @@ impl RunAgent {
 
     pub(super) fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
         let rc = rc.unwrap_or(self.config.clone());
-        Agent::new(&rc,&self.task_action_link.get_action_link(),&self.create_queue,&self.integration,name)
+        Agent::new(&rc,&self.task_action_link.get_link(),&self.task_request_link.get_link(),&self.integration,name)
     }
 
     pub(super) fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static + Send {
         let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
-        self.create_queue.add(Box::new(handle2.clone()),agent2.clone());
+        self.task_request_link.add(Request::Create(Box::new(handle2.clone()),agent2.clone()));
         handle2
     }
 
-    pub(super) fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
-        self.task_action_link.add(Action::Timer(timeout,Box::new(callback)));
+    pub(super) fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static {
+        self.task_request_link.add(Request::Timer(timeout,Box::new(callback)));
     }
 
-    pub(super) fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
-        self.task_action_link.add(Action::Tick(self.tick_index+ticks,Box::new(callback)));
+    pub(super) fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static {
+        self.task_request_link.add(Request::Tick(self.tick_index+ticks,Box::new(callback)));
     }
 
     pub(crate) fn register(&self, task_handle: &TaskContainerHandle) {
         self.task_action_link.register(task_handle);
+        self.task_request_link.register(task_handle);
     }
 }
 

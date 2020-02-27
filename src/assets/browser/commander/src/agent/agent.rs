@@ -4,8 +4,9 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 use std::task::Poll;
-use crate::executor::action::ActionLink;
-use crate::executor::createqueue::CreateQueue;
+use crate::executor::action::Action;
+use crate::executor::link::Link;
+use crate::executor::request::Request;
 use crate::helper::flagfuture::FlagFuture;
 use crate::helper::named::NamedFuture;
 use crate::helper::turnstile::TurnstileFuture;
@@ -45,15 +46,16 @@ pub struct Agent {
 
 impl Agent {
     pub(crate) fn new(config: &RunConfig,
-                      action_link: &ActionLink, create_queue: &CreateQueue,
+                      action_link: &Link<Action>, request_link: &Link<Request>,
                       integration: &ReenteringIntegration, name: &str) -> Agent {
-        let task_action_link = action_link.new_task_action_link();
+        let task_action_link = action_link.new_task_link();
+        let task_request_link = request_link.new_task_link();
         let out = Agent {
             state: Arc::new(Mutex::new(AgentState {
                 block_agent: BlockAgent::new(integration,&task_action_link),
                 finish_agent: FinishAgent::new(integration,&task_action_link),
                 name_agent: NameAgent::new(name),
-                run_agent: RunAgent::new(integration,&task_action_link,&create_queue,config)
+                run_agent: RunAgent::new(integration,&task_action_link,&task_request_link,config)
             }))
         };
         out
@@ -92,14 +94,14 @@ impl Agent {
     /// Add a callback to be run by the executor in a tick after the given timeout.
     /// 
     /// Lower-level than `timer()` and not generally as useful an interface to the same functionality.
-    pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static + Send {
+    pub fn add_timer<T>(&self, timeout: f64, callback: T) where T: FnMut() + 'static {
         self.run_agent().add_timer(timeout,callback);
     }
 
     /// Add a callback to be run by the executor after the given number of ticks. zero implies a yield.
     /// 
     /// Lower-level than `tick()` and not generally as useful an interface to the same functionality.
-    pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static + Send {
+    pub fn add_ticks_timer<T>(&self, ticks: u64, callback: T) where T: FnMut() + 'static {
         self.run_agent().add_ticks_timer(ticks,callback);
     }
 

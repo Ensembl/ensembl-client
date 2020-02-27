@@ -1,4 +1,5 @@
-use crate::executor::action::{ Action, TaskActionLink };
+use crate::executor::action::Action;
+use crate::executor::link::TaskLink;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::block::Block;
 
@@ -7,11 +8,11 @@ use crate::task::block::Block;
 pub(crate) struct BlockAgent {
     blocks: Vec<Block>,
     integration: ReenteringIntegration,
-    task_action_link: TaskActionLink,
+    task_action_link: TaskLink<Action>,
 }
 
 impl BlockAgent {
-    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink) -> BlockAgent {
+    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskLink<Action>) -> BlockAgent {
         BlockAgent {
             blocks: vec![Block::new_main(integration,task_action_link)],
             integration: integration.clone(),
@@ -39,7 +40,7 @@ impl BlockAgent {
         &mut self.blocks[0]
     }
 
-    pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskActionLink) + Send>) -> Block {
+    pub(crate) fn new_block(&self, unblock: Box<dyn Fn(&TaskLink<Action>) + Send>) -> Block {
         Block::new(&self.integration,&self.task_action_link,unblock)
     }
 }
