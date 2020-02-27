@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import MainContent from './main-content/MainContent';
-import SecondaryContent from './secondary-content/SecondaryContent';
+import PanelTwo from './panel-two/PanelTwo';
+import PanelThree from './panel-three/PanelThree';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as chevronLeftIcon } from 'static/img/shared/chevron-left.svg';
@@ -12,28 +12,32 @@ import { Status } from 'src/shared/types/status';
 import styles from './TranscriptsTable.scss';
 
 const TranscriptsTable = () => {
-  const [paginationNumber, setPaginationNumber] = useState(1);
+  const [currentPanel, setCurrentPanel] = useState(1);
 
-  const gotoPrevious = () => {
-    if (paginationNumber > 1) {
-      setPaginationNumber(paginationNumber - 1);
+  const toPreviousPanel = () => {
+    if (currentPanel === 1) {
+      setCurrentPanel(3);
+    } else {
+      setCurrentPanel(currentPanel - 1);
     }
   };
 
-  const gotoNext = () => {
-    if (paginationNumber < 3) {
-      setPaginationNumber(paginationNumber + 1);
+  const toNextPanel = () => {
+    if (currentPanel === 3) {
+      setCurrentPanel(1);
+    } else {
+      setCurrentPanel(currentPanel + 1);
     }
   };
 
   const getCurrentTableMiddleComponent = () => {
-    switch (paginationNumber) {
+    switch (currentPanel) {
       case 1:
         return null;
       case 2:
-        return <MainContent />;
+        return <PanelTwo />;
       case 3:
-        return <SecondaryContent />;
+        return <PanelThree />;
     }
   };
 
@@ -42,24 +46,24 @@ const TranscriptsTable = () => {
       <div className={styles.tableLeftWing}>
         <div className={styles.tableHeader}>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>
+            <div className={styles.tableCell}>
               <span className={styles.paginationNumber}>
                 <span
                   className={styles.currentPaginationNumber}
-                >{`0${paginationNumber}`}</span>
+                >{`0${currentPanel}`}</span>
                 / 03
               </span>
               <ImageButton
-                onClick={gotoPrevious}
+                onClick={toPreviousPanel}
                 image={chevronLeftIcon}
                 classNames={{ [Status.DEFAULT]: styles.paginationButton }}
               />
-            </span>
+            </div>
           </div>
         </div>
         <div className={styles.tableBody}>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>Ensembl select</span>
+            <div className={styles.tableCell}>Ensembl select</div>
           </div>
         </div>
       </div>
@@ -67,38 +71,38 @@ const TranscriptsTable = () => {
       <div className={styles.transcriptIdColumn}>
         <div className={styles.tableHeader}>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>Transcript ID</span>
+            <div className={styles.tableCell}>Transcript ID</div>
           </div>
         </div>
         <div className={styles.tableBody}>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>ENST000000380152.7</span>
+            <div className={styles.tableCell}>ENST000000380152.7</div>
           </div>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>ENST000000544455.5</span>
+            <div className={styles.tableCell}>ENST000000544455.5</div>
           </div>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>ENST000000530893.6</span>
+            <div className={styles.tableCell}>ENST000000530893.6</div>
           </div>
         </div>
       </div>
       <div className={styles.tableRightWing}>
         <div className={styles.tableHeader}>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>
+            <div className={styles.tableCell}>
               <ImageButton
-                onClick={gotoNext}
+                onClick={toNextPanel}
                 image={chevronRightIcon}
                 classNames={{ [Status.DEFAULT]: styles.paginationButton }}
               />
-            </span>
+            </div>
           </div>
         </div>
       </div>
       <div className={styles.tableFilters}>
         <div className={styles.tableHeader}>
           <div className={styles.tableRow}>
-            <span className={styles.tableCell}>Filter transcripts</span>
+            <div className={styles.tableCell}>Filter transcripts</div>
           </div>
         </div>
       </div>

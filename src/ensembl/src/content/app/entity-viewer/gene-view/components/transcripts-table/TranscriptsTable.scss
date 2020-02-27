@@ -4,15 +4,11 @@
   display: grid;
   grid-template-columns: 1fr 3fr 1fr 1fr 2fr;
   grid-template-rows: auto;
-  min-width: 1900px;
-}
-
-.tableRow {
-  border-bottom: 1px solid $dark-grey;
+  min-width: 1600px;
 }
 
 .tableCell {
-  display: inline-block;
+  border-bottom: 1px solid $dark-grey;
   padding: 8px 4px;
 }
 
@@ -23,8 +19,8 @@
 .tableHeader {
   color: $grey;
 
-  .tableRow {
-    border-bottom: 1px solid #8d621c;
+  .tableCell {
+    border-bottom: 1px solid $orange;
   }
 }
 
@@ -38,7 +34,7 @@
   .tableBody {
     text-align: right;
 
-    .tableRow {
+    .tableCell {
       border-bottom: none;
     }
   }
@@ -49,7 +45,6 @@
 
   .tableRow {
     display: inline-grid;
-    grid-template-rows: auto;
     width: 100%;
   }
 }
