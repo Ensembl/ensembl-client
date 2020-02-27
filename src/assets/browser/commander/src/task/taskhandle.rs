@@ -31,7 +31,7 @@ pub(crate) trait ExecutorTaskHandle {
     fn set_identity(&self, identity: u64);
 }
 
-pub(crate) struct TaskHandleState<R: 'static + Send> {
+pub(crate) struct TaskHandleState<R: 'static> {
     finish_flag: FlagFuture,
     identity: Option<u64>,
     future: Pin<Box<dyn Future<Output=R> + 'static>>,
@@ -43,16 +43,16 @@ pub(crate) struct TaskHandleState<R: 'static + Send> {
 /// The handle on a submitted task from an executor.
 /// 
 /// In most simple cases an invoker will not care about the taskhandle and need not keep it.
-pub struct TaskHandle<R: 'static + Send>(Arc<Mutex<TaskHandleState<R>>>);
+pub struct TaskHandle<R: 'static>(Arc<Mutex<TaskHandleState<R>>>);
 
 // Rust bug means dan't derive Clone on polymorphic types
-impl<R> Clone for TaskHandle<R> where R: 'static + Send {
+impl<R> Clone for TaskHandle<R> where R: 'static {
     fn clone(&self) -> Self {
         TaskHandle(self.0.clone())
     }
 }
 
-impl<R> TaskHandle<R> where R: 'static + Send {
+impl<R> TaskHandle<R> where R: 'static {
     pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R> + 'static>>) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
             finish_flag: FlagFuture::new(),
@@ -140,7 +140,7 @@ impl<R> TaskHandle<R> where R: 'static + Send {
     }
 }
 
-impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
+impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static {
     fn get_priority(&self) -> i8 { self.get_agent().get_config().get_priority() }
 
     fn run(&mut self, tick_index: u64) {

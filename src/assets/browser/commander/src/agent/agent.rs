@@ -116,7 +116,7 @@ impl Agent {
     /// Submit a given agent and future for running as a new, independent task.
     /// 
     /// The agent passed should have been created with `new_agent()`. Do not pass self!
-    pub fn submit<R,T>(&self, agent: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static + Send {
+    pub fn submit<R,T>(&self, agent: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static {
         self.run_agent().submit(agent,future)
     }
 
@@ -162,7 +162,7 @@ impl Agent {
     /// very large tasks where rechecking is expensive. 
     /// 
     /// For further details see the crate overview.
-    pub fn turnstile<R,T>(&self, inner: T) -> impl Future<Output=R> where T: Future<Output=R> + 'static, R: Send {
+    pub fn turnstile<R,T>(&self, inner: T) -> impl Future<Output=R> where T: Future<Output=R> + 'static {
         TurnstileFuture::new(&self,inner)
     }
 
@@ -170,7 +170,7 @@ impl Agent {
     /// 
     /// When the future wrapped in this named_wait is waiting its name is added to a list accessible from this
     /// task's summary. This allows the waiting to be evidenced for diagnosis.
-    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> impl Future<Output=R> where T: Future<Output=R> + 'static, R: Send {
+    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> impl Future<Output=R> where T: Future<Output=R> + 'static {
         NamedFuture::new(&self,inner,name)
     }
 

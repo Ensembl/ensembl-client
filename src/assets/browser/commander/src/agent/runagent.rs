@@ -44,7 +44,7 @@ impl RunAgent {
         Agent::new(&rc,&self.task_action_link.get_link(),&self.task_request_link.get_link(),&self.integration,name)
     }
 
-    pub(super) fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static + Send {
+    pub(super) fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static {
         let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
         self.task_request_link.add(Request::Create(Box::new(handle2.clone()),agent2.clone()));
         handle2

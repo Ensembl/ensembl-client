@@ -17,7 +17,7 @@ pub(crate) struct TurnstileFuture<R> {
     our_block: Option<Block>,
 }
 
-impl<R> TurnstileFuture<R> where R: Send {
+impl<R> TurnstileFuture<R> {
     pub(crate) fn new<T>(agent: &Agent, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static {
         TurnstileFuture {
             inner: Box::pin(inner),

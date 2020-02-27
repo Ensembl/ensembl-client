@@ -42,7 +42,7 @@ pub(crate) struct NamedFuture<R> {
     namedwait: Option<NamedWait>
 }
 
-impl<R> NamedFuture<R> where R: Send {
+impl<R> NamedFuture<R> {
     pub(crate) fn new<T>(agent: &Agent, inner: T, name: &str) -> NamedFuture<R> where T: Future<Output=R> + 'static {
         NamedFuture {
             inner: Box::pin(inner),
