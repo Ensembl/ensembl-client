@@ -105,12 +105,17 @@ no other part of the code be able to access it as each must explicitly handle th
 A more sophisticated approach could probably have been devised, but at the samce time retaiining the clarity and lack of
 clutter of this approach would be more difficult.
 
-## Action Queue
+## ActionLink and RequestLink
 
-Tasks communicate with the `Executor` via their `Agent`. To do so, each `Agent` is associated with an `ActionLink` which
-is a queue to which the `Agent` adds and the `Executor` removes. Every message is associated with a particular task and
-so includes the corresponding `TaskContainerHandle`. `TaskActionLink` wraps the sending of messages for the `Agent` and
-supplies the correct `TaskContainerHandle`.
+Tasks communicate with the `Executor` via their `Agent`. To do so, each `Agent` is associated with to `Links`, a
+`Link<Action>` and a `Link<Request>` which are queues to which the `Agent` adds and the `Executor` removes. Every
+message is associated with a particular task and so includes the corresponding `TaskContainerHandle`. `TaskLink<Action>`
+and `TaskLink<Request>` wrap the sending of messages for the `Agent` and supplies the correct `TaskContainerHandle`.
+
+`Request` and `Action` handle different message types. `Action` handles blocking and unblocking of existing tasks. It
+has strict ordering requirements and must be `Send` so that it can be used as a waker in futures. `Request` handles
+other requests (new timers, tasks, etc), which initiate timers and tasks. To avoid unnecessary constraints on 
+commander's API, this is not `Send`. Both queues are exhausted during a single service phase of the executor.
 
 ## service/execute Alternation
 
