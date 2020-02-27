@@ -11,7 +11,7 @@ use crate::controller::input::{
 };
 use crate::controller::global::{ AppRunner, Booting };
 use crate::controller::output::Counter;
-use crate::controller::scheduler::{ Scheduler, SchedulerGroup };
+use crate::controller::scheduler::{ Commander, Scheduler, SchedulerGroup };
 use crate::data::{ BackendConfigBootstrap, HttpManager };
 use crate::dom::domutil;
 
@@ -26,7 +26,8 @@ pub struct GlobalImpl {
     scheduler: Scheduler,
     sched_group: SchedulerGroup,
     counter: Counter,
-    ar_init: Vec<Box<dyn FnMut(&AppRunner)>>
+    ar_init: Vec<Box<dyn FnMut(&AppRunner)>>,
+    commander: Commander
 }
 
 impl GlobalImpl {
@@ -41,7 +42,8 @@ impl GlobalImpl {
             http_manager: HttpManager::new(),
             scheduler,
             sched_group,
-            ar_init: Vec::new()
+            ar_init: Vec::new(),
+            commander: Commander::new()
         };
         out.init();
         out

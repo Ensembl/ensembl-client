@@ -64,6 +64,8 @@ impl Commander {
     }
 }
 
+unsafe impl Send for WeakCommander {} // XXX nooooooooooooooooooooo!
+
 #[derive(Clone)]
 pub struct WeakCommander {
     state: Weak<Mutex<CommanderState>>,
