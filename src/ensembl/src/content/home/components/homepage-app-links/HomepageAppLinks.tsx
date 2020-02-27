@@ -100,7 +100,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
       {speciesName}
       <div>
         <ImageButton
-          classNames={{
+          statusClasses={{
             [Status.DEFAULT]: styles.speciesHomeButton
           }}
           status={Status.DEFAULT}
@@ -112,7 +112,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
         <span className={styles.viewIn}>View in</span>
         <Link className={styles.homepageAppLink} to={urlFor.browser()}>
           <ImageButton
-            classNames={{
+            statusClasses={{
               [Status.DEFAULT]: styles.homepageAppLinkButton
             }}
             status={Status.DEFAULT}
@@ -122,7 +122,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
         </Link>
         <Link className={styles.homepageAppLink} to={urlFor.entityViewer()}>
           <ImageButton
-            classNames={{
+            statusClasses={{
               [Status.DEFAULT]: styles.homepageAppLinkButton
             }}
             status={Status.DEFAULT}

@@ -4,12 +4,11 @@ import classNames from 'classnames';
 
 import useHover from 'src/shared/hooks/useHover';
 
-import defaultStyles from './ImageButton.scss';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
-import imageButtonStyles from './ImageButton.scss';
-
 import { Status } from 'src/shared/types/status';
+
+import imageButtonStyles from './ImageButton.scss';
 
 export type ImageButtonStatus =
   | Status.DEFAULT
@@ -21,7 +20,8 @@ export type Props = {
   status: ImageButtonStatus;
   description: string;
   image: React.FunctionComponent<React.SVGProps<SVGSVGElement>> | string;
-  classNames?: { [key in ImageButtonStatus]?: string };
+  className?: string;
+  statusClasses?: { [key in ImageButtonStatus]?: string };
   onClick?: () => void;
 };
 
@@ -35,12 +35,13 @@ export const ImageButton = (props: Props) => {
   const buttonProps =
     props.status === Status.DISABLED ? {} : { onClick: handleClick };
 
-  const styles = props.classNames
-    ? { ...defaultStyles, ...props.classNames }
-    : defaultStyles;
+  const styles = props.statusClasses
+    ? { ...imageButtonStyles, ...props.statusClasses }
+    : imageButtonStyles;
 
   const imageButtonClasses = classNames(
     imageButtonStyles.imageButton,
+    props.className,
     styles[props.status]
   );
 

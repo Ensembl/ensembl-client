@@ -24,24 +24,22 @@ type OwnProps = {};
 type HeaderButtonsProps = StateProps & DispatchProps & OwnProps;
 
 export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
-  <div className={styles.headerButtons}>
-    <div className={styles.buttonWrapper}>
-      <ImageButton
-        image={LaunchbarIcon}
-        description="Ensembl app launchbar"
-        onClick={props.toggleLaunchbar}
-      />
-    </div>
-    <div className={styles.buttonWrapper}>
-      <ImageButton
-        image={UserIcon}
-        description="Ensembl account"
-        status={Status.DISABLED}
-        classNames={{
-          [Status.DISABLED]: styles.headerButtonDisabled
-        }}
-      />
-    </div>
+  <div>
+    <ImageButton
+      image={LaunchbarIcon}
+      description="Ensembl app launchbar"
+      className={styles.button}
+      onClick={props.toggleLaunchbar}
+    />
+    <ImageButton
+      image={UserIcon}
+      description="Ensembl account"
+      status={Status.DISABLED}
+      className={styles.button}
+      statusClasses={{
+        [Status.DISABLED]: styles.headerButtonDisabled
+      }}
+    />
   </div>
 );
 
