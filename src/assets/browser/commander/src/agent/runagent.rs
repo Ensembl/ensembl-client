@@ -1,6 +1,7 @@
 use std::future::Future;
 
 use crate::executor::action::{ Action, TaskActionLink };
+use crate::executor::createqueue::CreateQueue;
 use crate::executor::taskcontainer::TaskContainerHandle;
 use crate::integration::reentering::ReenteringIntegration;
 use crate::task::runconfig::RunConfig;
@@ -13,16 +14,19 @@ pub(crate) struct RunAgent {
     tick_index: u64,
     config: RunConfig,
     integration: ReenteringIntegration,
-    task_action_link: TaskActionLink
+    task_action_link: TaskActionLink,
+    create_queue: CreateQueue
 }
 
 impl RunAgent {
-    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink, config: &RunConfig) -> RunAgent {
+    pub(super) fn new(integration: &ReenteringIntegration, task_action_link: &TaskActionLink, 
+                        create_queue: &CreateQueue, config: &RunConfig) -> RunAgent {
         RunAgent {
             tick_index: 0,
             config: config.clone(),
             integration: integration.clone(),
-            task_action_link: task_action_link.clone()
+            task_action_link: task_action_link.clone(),
+            create_queue: create_queue.clone()
         }
     }
 
@@ -36,12 +40,12 @@ impl RunAgent {
 
     pub(super) fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
         let rc = rc.unwrap_or(self.config.clone());
-        Agent::new(&rc,&self.task_action_link.get_action_link(),&self.integration,name)
+        Agent::new(&rc,&self.task_action_link.get_action_link(),&self.create_queue,&self.integration,name)
     }
 
-    pub(super) fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
+    pub(super) fn submit<R,T>(&self, mut agent2: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static + Send {
         let handle2 = TaskHandle::new(&mut agent2,Box::pin(future));
-        self.task_action_link.add(Action::Create(Box::new(handle2.clone()),agent2.clone()));
+        self.create_queue.add(Box::new(handle2.clone()),agent2.clone());
         handle2
     }
 

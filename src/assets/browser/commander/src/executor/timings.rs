@@ -40,12 +40,12 @@ impl ExecutorTimings {
 
     pub(crate) fn get_tick_index(&self) -> u64 { self.tick_index }
 
-    pub(crate) fn add_timer(&mut self, handle: &TaskContainerHandle, timeout: f64, callback: Box<dyn FnMut() + Send + 'static>) {
+    pub(crate) fn add_timer(&mut self, handle: &TaskContainerHandle, timeout: f64, callback: Box<dyn FnMut() + 'static>) {
         let now = self.integration.current_time();
         self.timers.add(Some(handle.clone()),OrderedFloat(now+timeout),callback);
     }
 
-    pub(crate) fn add_tick(&mut self, handle: &TaskContainerHandle, tick: u64, callback: Box<dyn FnMut() + Send + 'static>) {
+    pub(crate) fn add_tick(&mut self, handle: &TaskContainerHandle, tick: u64, callback: Box<dyn FnMut() + 'static>) {
         self.ticks.add(Some(handle.clone()),tick,callback);
     }
 

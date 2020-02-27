@@ -34,7 +34,7 @@ pub(crate) trait ExecutorTaskHandle {
 pub(crate) struct TaskHandleState<R: 'static + Send> {
     finish_flag: FlagFuture,
     identity: Option<u64>,
-    future: Pin<Box<dyn Future<Output=R> + 'static + Send>>,
+    future: Pin<Box<dyn Future<Output=R> + 'static>>,
     agent: Agent,
     result: Option<R>,
     done: bool
@@ -53,7 +53,7 @@ impl<R> Clone for TaskHandle<R> where R: 'static + Send {
 }
 
 impl<R> TaskHandle<R> where R: 'static + Send {
-    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R> + 'static + Send>>) -> TaskHandle<R> {
+    pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R> + 'static>>) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
             finish_flag: FlagFuture::new(),
             identity: None,
@@ -134,6 +134,7 @@ impl<R> TaskHandle<R> where R: 'static + Send {
         self.summarize()
     }
 
+    #[allow(unused)]
     fn task_key(&self) -> String {
         format!("commander-run-{}",self.summary().map(|x| x.get_name().to_string()).unwrap_or("".to_string()))
     }
@@ -184,6 +185,7 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static + Send {
 #[cfg(test)]
 mod test {
     use crate::executor::action::{ Action, ActionLink };
+    use crate::executor::createqueue::CreateQueue;
     use crate::executor::executor::Executor;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::reentering::ReenteringIntegration;
@@ -226,7 +228,8 @@ mod test {
         let h = tasks.allocate();
         let mut eah = ActionLink::new();
         let integration = TestIntegration::new();
-        let tc = Agent::new(&cfg,&eah,&ReenteringIntegration::new(integration.clone()),"test");
+        let cq = CreateQueue::new();
+        let tc = Agent::new(&cfg,&eah,&cq,&ReenteringIntegration::new(integration.clone()),"test");
         tc.run_agent().register(&h);
         let ctx = tc.clone();
         let s1 = Box::pin(async move {

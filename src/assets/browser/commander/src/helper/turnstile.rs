@@ -13,12 +13,12 @@ use crate::task::block::Block;
 
 pub(crate) struct TurnstileFuture<R> {
     agent: Agent,
-    inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
+    inner: Pin<Box<dyn Future<Output=R> + 'static>>,
     our_block: Option<Block>,
 }
 
 impl<R> TurnstileFuture<R> where R: Send {
-    pub(crate) fn new<T>(agent: &Agent, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static + Send {
+    pub(crate) fn new<T>(agent: &Agent, inner: T) -> TurnstileFuture<R> where T: Future<Output=R> + 'static {
         TurnstileFuture {
             inner: Box::pin(inner),
             agent: agent.clone(),

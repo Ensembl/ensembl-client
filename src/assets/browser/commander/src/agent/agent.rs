@@ -5,6 +5,7 @@ use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 use std::task::Poll;
 use crate::executor::action::ActionLink;
+use crate::executor::createqueue::CreateQueue;
 use crate::helper::flagfuture::FlagFuture;
 use crate::helper::named::NamedFuture;
 use crate::helper::turnstile::TurnstileFuture;
@@ -44,7 +45,7 @@ pub struct Agent {
 
 impl Agent {
     pub(crate) fn new(config: &RunConfig,
-                      action_link: &ActionLink,
+                      action_link: &ActionLink, create_queue: &CreateQueue,
                       integration: &ReenteringIntegration, name: &str) -> Agent {
         let task_action_link = action_link.new_task_action_link();
         let out = Agent {
@@ -52,7 +53,7 @@ impl Agent {
                 block_agent: BlockAgent::new(integration,&task_action_link),
                 finish_agent: FinishAgent::new(integration,&task_action_link),
                 name_agent: NameAgent::new(name),
-                run_agent: RunAgent::new(integration,&task_action_link,config)
+                run_agent: RunAgent::new(integration,&task_action_link,&create_queue,config)
             }))
         };
         out
@@ -113,7 +114,7 @@ impl Agent {
     /// Submit a given agent and future for running as a new, independent task.
     /// 
     /// The agent passed should have been created with `new_agent()`. Do not pass self!
-    pub fn submit<R,T>(&self, agent: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static + Send, R: 'static + Send {
+    pub fn submit<R,T>(&self, agent: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static + Send {
         self.run_agent().submit(agent,future)
     }
 
@@ -159,7 +160,7 @@ impl Agent {
     /// very large tasks where rechecking is expensive. 
     /// 
     /// For further details see the crate overview.
-    pub fn turnstile<R,T>(&self, inner: T) -> impl Future<Output=R> + Send where T: Future<Output=R> + 'static + Send, R: Send {
+    pub fn turnstile<R,T>(&self, inner: T) -> impl Future<Output=R> where T: Future<Output=R> + 'static, R: Send {
         TurnstileFuture::new(&self,inner)
     }
 
@@ -167,7 +168,7 @@ impl Agent {
     /// 
     /// When the future wrapped in this named_wait is waiting its name is added to a list accessible from this
     /// task's summary. This allows the waiting to be evidenced for diagnosis.
-    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> impl Future<Output=R> + Send where T: Future<Output=R> + 'static + Send, R: Send {
+    pub fn named_wait<R,T>(&self, inner: T, name: &str) -> impl Future<Output=R> where T: Future<Output=R> + 'static, R: Send {
         NamedFuture::new(&self,inner,name)
     }
 
@@ -175,7 +176,7 @@ impl Agent {
     /// 
     /// This future can be waited on directly but, if it isn't, then on completion it is run anyway, even if abandoned
     /// with a signal.
-    pub fn tidy<T>(&self, inner: T) -> impl Future<Output=()> + Send where T: Future<Output=()> + 'static + Send {
+    pub fn tidy<T>(&self, inner: T) -> impl Future<Output=()> where T: Future<Output=()> + 'static  {
         self.finish_agent().make_tidier(inner)
     }
 
@@ -195,7 +196,7 @@ impl Agent {
         }
     }
 
-    fn run_one_main<R>(&self, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, result: &mut Option<R>) {
+    fn run_one_main<R>(&self, context: &mut Context, future: &mut Pin<Box<dyn Future<Output=R> + 'static>>, result: &mut Option<R>) {
         let out = future.as_mut().poll(context);
         match out {
             Poll::Pending => {
@@ -209,7 +210,7 @@ impl Agent {
         };
     }
 
-    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R> + 'static+Send>>, tick_index: u64, result: &mut Option<R>) -> bool {
+    pub(crate) fn more<R>(&self, future: &mut Pin<Box<dyn Future<Output=R> + 'static>>, tick_index: u64, result: &mut Option<R>) -> bool {
         self.run_agent().set_tick_index(tick_index);
         if self.finish_agent().finished() {
             return false;

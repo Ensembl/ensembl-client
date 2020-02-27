@@ -28,7 +28,7 @@ impl FinishAgent {
         }
     }
 
-    pub(super) fn make_tidier<T>(&mut self, inner: T) -> TidierFuture where T: Future<Output=()> + 'static + Send {
+    pub(super) fn make_tidier<T>(&mut self, inner: T) -> TidierFuture where T: Future<Output=()> + 'static {
         let t = TidierFuture::new(Box::pin(inner));
         self.tidiers.push(Box::pin(t.clone()));
         t
@@ -89,6 +89,7 @@ impl FinishAgent {
 mod test {
     use crate::agent::agent::Agent;
     use crate::executor::action::ActionLink;
+    use crate::executor::createqueue::CreateQueue;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;
@@ -102,8 +103,9 @@ mod test {
         let mut tasks = TaskContainer::new();
         let h = tasks.allocate();
         let mut eah = ActionLink::new();
+        let cq = CreateQueue::new();
         let integration = ReenteringIntegration::new(TestIntegration::new());
-        let tc = Agent::new(&cfg,&eah,&integration,"test");
+        let tc = Agent::new(&cfg,&eah,&cq,&integration,"test");
         tc.run_agent().register(&h);
         /* test */
         assert!(!tc.finish_agent().finishing());
@@ -131,12 +133,14 @@ mod test {
         let integration = ReenteringIntegration::new(ti.clone());
         /* simulate */
         /* kills are known to be from inside a task should not force reentry */
-        let tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        let cq = CreateQueue::new();
+        let tc = Agent::new(&cfg,&eah,&cq,&integration.clone(),"name");
         tc.run_agent().register(&h);
         tc.finish_agent().finish(None,false);
         assert_eq!(ti.get_sleeps().len(),0);
         /* but kills which maybe from outside must */
-        let tc = Agent::new(&cfg,&eah,&integration.clone(),"name");
+        let cq = CreateQueue::new();
+        let tc = Agent::new(&cfg,&eah,&cq,&integration.clone(),"name");
         tc.run_agent().register(&h);
         tc.finish(KillReason::NotNeeded);
         assert_eq!(vec![SleepQuantity::None],*ti.get_sleeps());

@@ -14,7 +14,7 @@ use std::sync::{ Arc, Mutex };
  */
 
 struct Timeout<S> {
-    callback: Box<dyn FnMut() + 'static + Send>,
+    callback: Box<dyn FnMut() + 'static>,
     state: S
 }
 
@@ -29,7 +29,7 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone {
         }
     }
 
-    fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
+    fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static, T: Ord {
         self.timeouts.entry(timeout).or_insert_with(|| {
             Vec::new()
         }).push(Timeout {
@@ -87,7 +87,7 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
         TimerSet(Arc::new(Mutex::new(TimersState::new())))
     }
 
-    pub(super) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static + Send, T: Ord {
+    pub(super) fn add<C>(&mut self, state: S, timeout: T, callback: C) where C: FnMut() + 'static, T: Ord {
         self.0.lock().unwrap().add(state,timeout,callback);
     }
 

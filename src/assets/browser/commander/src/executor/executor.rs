@@ -7,6 +7,7 @@ use crate::task::slot::RunSlot;
 use crate::task::task::{ KillReason, TaskSummary };
 use crate::task::taskhandle::{ ExecutorTaskHandle, TaskHandle };
 use super::action::{ Action, ActionLink };
+use super::createqueue::CreateQueue;
 use super::exetasks::ExecutorTasks;
 use super::taskcontainer::TaskContainerHandle;
 use super::timings::ExecutorTimings;
@@ -16,7 +17,8 @@ pub struct Executor {
     timings: ExecutorTimings,
     tasks: ExecutorTasks,
     integration: ReenteringIntegration,
-    actions: ActionLink
+    actions: ActionLink,
+    creates: CreateQueue
 }
 
 impl Executor {
@@ -28,6 +30,7 @@ impl Executor {
         let integration = ReenteringIntegration::new(integration);
         Executor {
             timings: ExecutorTimings::new(&integration),
+            creates: CreateQueue::new(),
             tasks: ExecutorTasks::new(),
             integration,
             actions: ActionLink::new()
@@ -54,17 +57,17 @@ impl Executor {
     /// Create a new `Agent` to pass to add and, if you wish, pass into your future for access to executor
     /// functionality.
     pub fn new_agent(&self, run_config: &RunConfig, name: &str) -> Agent {
-        Agent::new(run_config,&self.actions,&self.integration,name)
+        Agent::new(run_config,&self.actions,&self.creates,&self.integration,name)
     }
 
     /// Add given future and agent to the executor for running.
-    pub fn add<R,T>(&mut self, run: T, mut agent: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static+Send {
+    pub fn add<R,T>(&mut self, run: T, mut agent: Agent) -> TaskHandle<R> where R: 'static+Send, T: Future<Output=R>+'static {
         let handle = TaskHandle::new(&mut agent,Box::pin(run));
         self.try_add_task(Box::new(handle.clone()),agent);
         handle
     }
 
-    fn try_add_task(&mut self, task: Box<dyn ExecutorTaskHandle + Send>, agent: Agent) {
+    fn try_add_task(&mut self, task: Box<dyn ExecutorTaskHandle>, agent: Agent) {
         blackbox_log!("commander","Adding task '{}' to executor",agent.get_name());
         let tasks = self.get_tasks_mut(); // shared to avoid race to slot
         if tasks.check_slot(&agent) {
@@ -84,10 +87,12 @@ impl Executor {
         }
     }
 
+    #[allow(unused)]
     fn task_name(&self, handle: &TaskContainerHandle) -> String {
         self.get_tasks().summarize(handle).map(|x| x.make_line()).unwrap_or("".to_string())
     }
 
+    #[allow(unused)]
     fn task_key(&self, handle: &TaskContainerHandle) -> String {
         format!("commander-elapsed-{}",self.get_tasks().summarize(handle).map(|x| x.get_name().to_string()).unwrap_or("".to_string()))
     }
@@ -95,7 +100,8 @@ impl Executor {
     pub(crate) fn service(&mut self) {
         loop {
             let actions = self.actions.drain_actions();
-            if actions.len() == 0 { break; }
+            let creates = self.creates.drain_creates();
+            if actions.len() == 0 && creates.len() == 0 { break; }
             for mut action in actions {
                 match action {
                     (ref handle,Action::BlockTask()) => {
@@ -119,11 +125,11 @@ impl Executor {
                     },
                     (handle,Action::Tick(tick,callback)) => {
                         self.get_timings_mut().add_tick(&handle,tick,callback);
-                    },
-                    (_handle,Action::Create(task,agent)) => {
-                        self.try_add_task(task,agent);
                     }
                 }
+            }
+            for (task,agent) in creates {
+                self.try_add_task(task,agent);
             }
         }
     }

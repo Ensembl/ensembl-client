@@ -37,13 +37,13 @@ impl NamedWait {
 
 pub(crate) struct NamedFuture<R> {
     agent: Agent,
-    inner: Pin<Box<dyn Future<Output=R> + 'static+Send>>,
+    inner: Pin<Box<dyn Future<Output=R> + 'static>>,
     name: String,
     namedwait: Option<NamedWait>
 }
 
 impl<R> NamedFuture<R> where R: Send {
-    pub(crate) fn new<T>(agent: &Agent, inner: T, name: &str) -> NamedFuture<R> where T: Future<Output=R> + 'static + Send {
+    pub(crate) fn new<T>(agent: &Agent, inner: T, name: &str) -> NamedFuture<R> where T: Future<Output=R> + 'static {
         NamedFuture {
             inner: Box::pin(inner),
             agent: agent.clone(),

@@ -1,7 +1,5 @@
 use std::sync::{ Arc, Mutex };
-use crate::agent::agent::Agent;
 use crate::task::block::Block;
-use crate::task::taskhandle::ExecutorTaskHandle;
 use super::taskcontainer::TaskContainerHandle;
 
 /* Actions are the back-channel to the executor from tasks. A queue of actions, the ActionLink
@@ -24,7 +22,6 @@ pub(crate) enum Action {
     Done(),
     Tick(u64,Box<dyn FnMut() + 'static + Send>),
     Timer(f64,Box<dyn FnMut() + 'static + Send>),
-    Create(Box<dyn ExecutorTaskHandle + 'static + Send>,Agent)
 }
 
 #[derive(Clone)]
@@ -47,7 +44,6 @@ impl ActionLink {
         self.0.lock().unwrap().replace(Vec::new()).unwrap()
     }
 }
-
 
 struct TaskActionLinkState {
     pre_queue: Vec<Action>,

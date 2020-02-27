@@ -13,7 +13,7 @@ use std::task::{ Context, Poll };
 sequence!(IDENTITY);
 
 pub struct TidierState {
-    future: Pin<Box<dyn Future<Output=()> + Send>>,
+    future: Pin<Box<dyn Future<Output=()>>>,
     done: bool
 }
 
@@ -26,7 +26,7 @@ pub(crate) struct TidierFuture {
 hashable!(IDENTITY,TidierFuture,identity);
 
 impl TidierFuture {
-    pub(crate) fn new(future: Pin<Box<dyn Future<Output=()> + Send>>) -> TidierFuture {
+    pub(crate) fn new(future: Pin<Box<dyn Future<Output=()>>>) -> TidierFuture {
         TidierFuture {
             state: Arc::new(Mutex::new(TidierState {
                 future,
