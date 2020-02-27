@@ -327,6 +327,7 @@ mod test {
         x.tick(10.);
         x.tick(10.);
         assert_eq!(vec![
+            SleepQuantity::None,
             SleepQuantity::Time(5.),
             SleepQuantity::None,
             SleepQuantity::Time(7.),
@@ -353,11 +354,13 @@ mod test {
         integration.set_time(11.);
         x.tick(10.);
         assert_eq!(vec![
+            SleepQuantity::None,
             SleepQuantity::Time(10.),
             SleepQuantity::None
         ],*integration.get_sleeps());
         x.tick(10.); /* (Done) => Expiry => Forever */
         assert_eq!(vec![
+            SleepQuantity::None,
             SleepQuantity::Time(10.),
             SleepQuantity::None,
             SleepQuantity::Forever
@@ -381,7 +384,7 @@ mod test {
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
         fos.flag();
-        assert_eq!(vec![SleepQuantity::Forever,SleepQuantity::None],*integration.get_sleeps());
+        assert_eq!(vec![SleepQuantity::None,SleepQuantity::Forever,SleepQuantity::None],*integration.get_sleeps());
     }
 
     #[allow(unused_must_use)]
@@ -445,7 +448,12 @@ mod test {
         x.tick(10.); /* (Block) time=1 on entry and exit => +2  ==>> SleepQuantity::Time(2.) */
         assert_eq!(1.,integration.get_time());
         /* verify */
-        assert_eq!(vec![SleepQuantity::Time(4.),SleepQuantity::None,SleepQuantity::Time(2.)],*integration.get_sleeps());
+        assert_eq!(vec![
+            SleepQuantity::None,
+            SleepQuantity::Time(4.),
+            SleepQuantity::None,
+            SleepQuantity::Time(2.)],
+            *integration.get_sleeps());
     }
 
     #[test]
