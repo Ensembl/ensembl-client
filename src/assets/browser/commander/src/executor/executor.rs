@@ -316,7 +316,7 @@ mod test {
 
     #[test]
     pub fn test_sleep_tick() {
-        let mut integration = TestIntegration::new();
+        let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,Some(12.));
         let ctx = x.new_agent(&cfg,"test");
@@ -329,6 +329,25 @@ mod test {
         assert_eq!(vec![
             SleepQuantity::None,
         ],*integration.get_sleeps());
+    }
+
+    #[test]
+    pub fn test_reenter_on_add() {
+        let integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,Some(12.));
+        let ctx = x.new_agent(&cfg,"test");
+        let ctx2 = ctx.clone();
+        let z = async move {
+            ctx2.tick(3).await;
+        };
+        x.tick(10.);
+        x.add(z,ctx);
+        assert_eq!(vec![
+            SleepQuantity::Forever,
+            SleepQuantity::None,
+        ],*integration.get_sleeps());
+
     }
 
     #[test]
