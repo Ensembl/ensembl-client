@@ -77,6 +77,10 @@ impl<T,S> TimersState<T,S> where T: Ord+Clone {
     fn min(&self) -> Option<T> {
         self.timeouts.iter().next().map(|x| x.0.clone())
     }
+
+    fn len(&self) -> usize {
+        self.timeouts.len()
+    }
 }
 
 #[derive(Clone)]
@@ -93,6 +97,10 @@ impl<T,S> TimerSet<T,S> where T: Ord + Clone {
 
     pub(super) fn min(&self) -> Option<T> {
         self.0.lock().unwrap().min()
+    }
+
+    pub(super) fn len(&self) -> usize {
+        self.0.lock().unwrap().len()
     }
 
     pub(super) fn check(&self, now: T) {

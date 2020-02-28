@@ -315,6 +315,23 @@ mod test {
     }
 
     #[test]
+    pub fn test_sleep_tick() {
+        let mut integration = TestIntegration::new();
+        let mut x = Executor::new(integration.clone());
+        let cfg = RunConfig::new(None,3,Some(12.));
+        let ctx = x.new_agent(&cfg,"test");
+        let ctx2 = ctx.clone();
+        let z = async move {
+            ctx2.tick(3).await;
+        };
+        x.add(z,ctx);
+        x.tick(10.);
+        assert_eq!(vec![
+            SleepQuantity::None,
+        ],*integration.get_sleeps());
+    }
+
+    #[test]
     pub fn test_sleep_time() {
         let mut integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());

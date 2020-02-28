@@ -50,7 +50,9 @@ impl ExecutorTimings {
     }
 
     pub(crate) fn calculate_sleep(&self, now: f64) -> SleepQuantity {
-        if let Some(timer) = self.timers.min() {
+        if self.ticks.len() > 0 {
+            SleepQuantity::None
+        } else if let Some(timer) = self.timers.min() {
             SleepQuantity::Time(timer.0-now)
         } else {
             SleepQuantity::Forever
