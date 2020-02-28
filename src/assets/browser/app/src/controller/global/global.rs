@@ -1,8 +1,9 @@
+use commander::RunConfig;
 use std::cell::RefCell;
 use hashbrown::HashMap;
 use std::rc::{ Rc, Weak };
 
-use stdweb::web::{ HtmlElement, window };
+use stdweb::web::{ document, HtmlElement, window };
 use url::Url;
 use crate::util::{ set_instance_id, get_instance_id };
 
@@ -14,6 +15,7 @@ use crate::controller::output::Counter;
 use crate::controller::scheduler::{ Commander, Scheduler, SchedulerGroup };
 use crate::data::{ BackendConfigBootstrap, HttpManager };
 use crate::dom::domutil;
+use stdweb::unstable::TryInto;
 
 use super::activate::activate;
 
@@ -43,7 +45,7 @@ impl GlobalImpl {
             scheduler,
             sched_group,
             ar_init: Vec::new(),
-            commander: Commander::new()
+            commander: Commander::new(&document().document_element().unwrap().try_into().unwrap())
         };
         out.init();
         out
@@ -57,6 +59,19 @@ impl GlobalImpl {
                 sr.unproductive();
             }
         }),3,false);
+    }
+
+    fn legacy(&self, handle: Global) {
+        let mut exe = self.commander.executor();
+        let rc = RunConfig::new(None,0,None);
+        let agent = exe.new_agent(&rc,"legacy");
+        let agent2 = agent.clone();
+        exe.add(async move {
+            loop {
+                handle.scheduler().beat(SCHEDULER_ALLOC);
+                agent2.tick(1).await;
+            }
+        },agent);
     }
 
     pub fn counter(&self) -> Counter {
@@ -123,13 +138,14 @@ impl Global {
         register_startup_events(&mut out);
         register_shutdown_events(&mut out);
         out.tick();
+        out.0.borrow().legacy(out.clone());
         out
     }
 
     /* scheduler-related */    
     pub fn tick(&mut self) {
         let sched = self.0.borrow_mut().scheduler().clone();
-        sched.beat(SCHEDULER_ALLOC);
+        //sched.beat(SCHEDULER_ALLOC);
         let mut out = self.clone();
         window().request_animation_frame(
             move |_| out.tick()

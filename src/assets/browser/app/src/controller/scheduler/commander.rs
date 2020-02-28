@@ -1,38 +1,42 @@
 use commander::{ Executor, Integration, SleepQuantity };
 use owning_ref::MutexGuardRefMut;
 use std::sync::{ Arc, Mutex, MutexGuard, Weak };
-use stdweb::web::{ IWindowOrWorker, TimeoutHandle, window };
+use stdweb::web::{ IWindowOrWorker, TimeoutHandle, window, HtmlElement };
 
 use crate::dom::domutil::browser_time;
+use crate::dom::{ make_bell, BellSender, BellReceiver };
 
 const MS_PER_TICK : f64 = 7.;
 
 #[derive(Clone)]
 pub struct Commander {
     state: Arc<Mutex<CommanderState>>,
-    executor: Arc<Mutex<Executor>>
+    executor: Arc<Mutex<Executor>>,
+    bell_receiver: BellReceiver
 }
 
 impl Commander {
-    pub fn new() -> Commander {
-        let fake_executor = Executor::new(WeakCommander::fake());
-        let out = Commander {
-            state: Arc::new(Mutex::new(CommanderState {
-                raf_pending: false,
-                quantity: SleepQuantity::Forever,
-                timeout: None
-            })),
-            executor: Arc::new(Mutex::new(fake_executor))
+    pub fn new(el: &HtmlElement) -> Commander {
+        let state = Arc::new(Mutex::new(CommanderState {
+            raf_pending: false,
+            quantity: SleepQuantity::Forever,
+            timeout: None,
+        }));
+        let (bell_sender, bell_receiver) = make_bell(el);
+        let integration = CommanderIntegration {
+            state: Arc::downgrade(&state),
+            bell_sender
         };
-        *out.executor.lock().unwrap() = Executor::new(out.clone_weak());
+        let mut out = Commander {
+            state,
+            executor: Arc::new(Mutex::new(Executor::new(integration))),
+            bell_receiver
+        };
+        let mut out2 = out.clone();
+        out.bell_receiver.add(move || {
+            out2.schedule();
+        });
         out
-    }
-
-    fn clone_weak(&self) -> WeakCommander {
-        WeakCommander {
-            state: Arc::downgrade(&self.state),
-            executor: Arc::downgrade(&self.executor)
-        }
     }
 
     fn tick(&self) {
@@ -62,43 +66,47 @@ impl Commander {
         self.tick();
         self.state().schedule(self.clone());
     }
+
+    fn schedule(&mut self) {
+        let mut state = self.state();
+        if let Some(timeout) = state.timeout.take() {
+            timeout.clear();
+        }
+        match state.quantity {
+            SleepQuantity::Forever => {},
+            SleepQuantity::None => {
+                if !state.raf_pending {
+                    state.raf_pending = true;
+                    let handle = self.clone();
+                    window().request_animation_frame(move |_| handle.raf_tick());
+                }
+            },
+            SleepQuantity::Time(t) => {
+                let handle = self.clone();
+                state.timeout = Some(window().set_clearable_timeout(move || handle.timer_tick(),t as u32));
+            }
+        }
+    }
+
 }
 
-unsafe impl Send for WeakCommander {} // XXX nooooooooooooooooooooo!
+unsafe impl Send for CommanderIntegration {} // XXX nooooooooooooooooooooo!
 
 #[derive(Clone)]
-pub struct WeakCommander {
+pub struct CommanderIntegration {
     state: Weak<Mutex<CommanderState>>,
-    executor: Weak<Mutex<Executor>>
+    bell_sender: BellSender
 }
 
-impl WeakCommander {
-    fn fake() -> WeakCommander {
-        WeakCommander {
-            state: Weak::new(),
-            executor: Weak::new()
-        }
-    }
-
-    fn upgrade(&self) -> Option<Commander> {
-        let (state,executor) = (self.state.upgrade(),self.executor.upgrade());
-        if let (Some(state),Some(executor)) = (state,executor) {
-            Some(Commander { state, executor })
-        } else {
-            None
-        }
-    }
-}
-
-impl Integration for WeakCommander {
+impl Integration for CommanderIntegration {
     fn current_time(&self) -> f64 {
         browser_time()
     }
 
     fn sleep(&self, amount: SleepQuantity) {
-        if let Some(ign) = self.upgrade() {
-            let ign2 = ign.clone();
-            ign.state().sleep(amount,ign2);
+        if let Some(state) = self.state.upgrade() {
+            state.lock().unwrap().sleep(amount);
+            self.bell_sender.ring();
         }
     }
 }
@@ -136,8 +144,7 @@ impl CommanderState {
         self.timeout.take();
     }
 
-    fn sleep(&mut self, amount: SleepQuantity, handle: Commander) {
+    fn sleep(&mut self, amount: SleepQuantity) {
         self.quantity = amount;
-        self.schedule(handle);
     }
 }

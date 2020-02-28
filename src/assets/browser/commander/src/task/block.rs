@@ -1,7 +1,7 @@
 use futures::task::ArcWake;
 use std::sync::{ Arc, Mutex };
 use crate::executor::action::Action;
-use crate::executor::link::{ Link, TaskLink };
+use crate::executor::link::TaskLink;
 use crate::integration::reentering::ReenteringIntegration;
 
 /* A Block sits behind a Waker and is responsible for

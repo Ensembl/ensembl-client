@@ -2,8 +2,9 @@ use commander::RunConfig;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex, Weak };
+use stdweb::unstable::TryInto;
 
-use stdweb::web::HtmlElement;
+use stdweb::web::{ document, HtmlElement };
 use url::Url;
 use crate::dom::domutil;
 use crate::composit::register_compositor_ticks;
@@ -65,7 +66,7 @@ impl AppRunner {
             g.scheduler().make_group()
         };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
-            commander: Commander::new(),
+            commander: Commander::new(&document().document_element().unwrap().try_into().unwrap()),
             g: g.clone(),
             el: el.clone(),
             counter,
