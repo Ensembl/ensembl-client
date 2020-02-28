@@ -12,7 +12,7 @@ use crate::controller::input::{
 };
 use crate::controller::global::{ AppRunner, Booting };
 use crate::controller::output::Counter;
-use crate::controller::scheduler::{ Commander, Scheduler, SchedulerGroup };
+use crate::controller::scheduler::Commander;
 use crate::data::{ BackendConfigBootstrap, HttpManager };
 use crate::dom::domutil;
 use stdweb::unstable::TryInto;
@@ -25,8 +25,6 @@ pub struct GlobalImpl {
     inst_id: String,
     app_runners: HashMap<String,AppRunner>,
     http_manager: HttpManager,
-    scheduler: Scheduler,
-    sched_group: SchedulerGroup,
     counter: Counter,
     ar_init: Vec<Box<dyn FnMut(&AppRunner)>>,
     commander: Commander
@@ -34,16 +32,12 @@ pub struct GlobalImpl {
 
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
-        let scheduler = Scheduler::new();
-        let sched_group = scheduler.make_group();
         set_instance_id();
         let mut out = GlobalImpl {
             counter: Counter::new(),
             inst_id: get_instance_id(),
             app_runners: HashMap::new(),
             http_manager: HttpManager::new(),
-            scheduler,
-            sched_group,
             ar_init: Vec::new(),
             commander: Commander::new(&document().document_element().unwrap().try_into().unwrap())
         };
@@ -65,28 +59,11 @@ impl GlobalImpl {
         exe.add(GlobalImpl::http_manager_loop(agent.clone(),self.http_manager.clone()),agent);
     }
 
-    fn legacy(&self, handle: Global) {
-        let mut exe = self.commander.executor();
-        let rc = RunConfig::new(None,0,None);
-        let agent = exe.new_agent(&rc,"legacy");
-        let agent2 = agent.clone();
-        exe.add(async move {
-            loop {
-                handle.scheduler().beat(SCHEDULER_ALLOC);
-                agent2.tick(1).await;
-            }
-        },agent);
-    }
-
     pub fn counter(&self) -> Counter {
         self.counter.clone()
     }
 
     pub fn get_instance_id(&self) -> &str { &self.inst_id }
-
-    pub fn scheduler(&self) -> Scheduler {
-        self.scheduler.clone()
-    }
 
     pub fn destroy(&mut self) {
         for app_runner in self.app_runners.values_mut() {
@@ -141,14 +118,8 @@ impl Global {
         let mut out = Global(Rc::new(RefCell::new(GlobalImpl::new())));
         register_startup_events(&mut out);
         register_shutdown_events(&mut out);
-        out.0.borrow().legacy(out.clone());
         out
     }
-
-    /* scheduler-related */        
-    pub fn scheduler(&self) -> Scheduler {
-        self.0.borrow().scheduler()
-    }    
     
     pub fn counter(&self) -> Counter {
         self.0.borrow().counter()

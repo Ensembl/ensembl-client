@@ -9,7 +9,6 @@ use url::Url;
 use crate::dom::domutil;
 use crate::composit::register_compositor_ticks;
 use crate::controller::global::{ App, GlobalWeak };
-use crate::controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use crate::controller::input::register_dom_events;
 use crate::drivers::domel::{ register_user_events };
 use crate::controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
@@ -59,10 +58,6 @@ impl AppRunner {
             g.counter()
         };
         let st = App::new(&tc,config,&http_manager,&browser_el,&config_url,&counter);
-        let sched_group = {
-            let g = unwrap!(g.clone().upgrade()).clone();
-            g.scheduler().make_group()
-        };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
             g: g.clone(),
             el: el.clone(),
@@ -104,7 +99,7 @@ impl AppRunner {
     }
 
     async fn timer_loop<F>(agent: Agent, ar: AppRunner, mut cb: F)
-            where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
+            where F: FnMut(&mut App, f64) -> Vec<OutputAction> + 'static {
         let mut ar = ar.clone();
         loop {
             let oas = {
@@ -112,7 +107,7 @@ impl AppRunner {
                 {
                     let app_ref = imp.app.clone();
                     let mut app = ok!(app_ref.lock());
-                    let out = cb(&mut app,browser_time(),&mut SchedRun::new(7.));
+                    let out = cb(&mut app,browser_time());
                     out
                 }
             };
@@ -124,7 +119,7 @@ impl AppRunner {
     }
 
     pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize, agent: &Agent)
-                            where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
+                            where F: FnMut(&mut App, f64) -> Vec<OutputAction> + 'static {
         let mut ar = self.clone();
         let rc = RunConfig::new(None,0,None);
         let agent2 = agent.new_agent(name,Some(rc.clone()));
@@ -190,19 +185,17 @@ impl AppRunner {
                 agent.submit(agent2.clone(),AppRunner::draw_loop(agent2,imp.app.clone()));
             }
             /* xfer */
-            self.add_timer("xfer",move |app,_,sr| {
-                if !app.tick_xfer() {
-                    sr.unproductive();
-                }
+            self.add_timer("xfer",move |app,_| {
+                app.tick_xfer();
                 vec![]
             },2,agent);
             /* resize check */
-            self.add_timer("resizer",move |app,_,_| {
+            self.add_timer("resizer",move |app,_| {
                 app.check_size();
                 vec![]
             },0,agent);
             /* gone check */
-            self.add_timer("gone-check",move |app,_,_| {
+            self.add_timer("gone-check",move |app,_| {
                 if app.check_gone() {
                     vec![OutputAction::Destroy]
                 } else {

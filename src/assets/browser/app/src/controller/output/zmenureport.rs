@@ -66,14 +66,13 @@ impl ZMenuReports {
             activated: None
         };
         let queue = out.queue.clone();
-        ar.add_timer("zmenu-report", move |_,_,sr| {
+        ar.add_timer("zmenu-report", move |_,_| {
             let mut reports = ok!(queue.lock()).get_reports();
             if reports.len() != 0 {
                 reports.drain(..).map(|report| {
                     OutputAction::SendCustomEvent("bpane-zmenu".to_string(),report)
                 }).collect()
             } else {
-                sr.unproductive();
                 vec![]
             }
         },4,agent);

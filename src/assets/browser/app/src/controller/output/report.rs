@@ -256,13 +256,13 @@ impl Report {
             out.set_interval(k,*v);
             if *vital { out.set_vital(k); }
         }
-        ar.add_timer("report",enclose! { (out) move |app,t,sr| {
+        ar.add_timer("report",enclose! { (out) move |app,t| {
             app.with_counter(|counter| {
                 if let Some(report) = out.new_report(t,counter) {
                     vec!{
                         OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone())
                     }
-                } else { sr.unproductive(); vec!{} }
+                } else { vec!{} }
             })
         }},4,agent);
         out

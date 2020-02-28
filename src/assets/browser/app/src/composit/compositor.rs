@@ -131,7 +131,7 @@ impl Compositor {
 }
 
 pub fn register_compositor_ticks(ar: &mut AppRunner, agent: &Agent) {
-    ar.add_timer("compositor",|app,t,_| {
+    ar.add_timer("compositor",|app,t| {
         let mut tm = app.get_window().get_train_manager().clone();
         tm.tick(app,t);
         app.with_compo(|co| co.tick(t) );
