@@ -4,7 +4,7 @@ pub struct SchedRun {
 }
 
 impl SchedRun {
-    pub(in super) fn new(available: f64) -> SchedRun {
+    pub fn new(available: f64) -> SchedRun {
         SchedRun {
             productive: true,
             available

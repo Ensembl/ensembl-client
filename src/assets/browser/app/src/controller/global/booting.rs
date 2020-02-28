@@ -1,3 +1,4 @@
+use commander::Agent;
 use stdweb::web::HtmlElement;
 use url::Url;
 
@@ -37,12 +38,12 @@ impl Booting {
         Box::new(NoBling::new())
     }
     
-    pub fn boot(&mut self, config: &BackendConfig) {
+    pub fn boot(&mut self, config: &BackendConfig, agent: &Agent) {
         let mut global = self.global.clone();
         let bling : Box<dyn Bling> = self.bling();
         let debug_url = config.get_debug_url();
         let ar = AppRunner::new(
-            &GlobalWeak::new(&global),&self.commander,
+            &GlobalWeak::new(&global),agent,
             &self.http_manager,
             &self.el,bling,&self.config_url,config,
             &self.key

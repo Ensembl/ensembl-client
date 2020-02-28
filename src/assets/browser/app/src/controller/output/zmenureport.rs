@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::sync::{ Arc, Mutex };
 
 use serde_json::Value as JSONValue;
@@ -59,7 +60,7 @@ impl ZMenuReports {
         }
     }
     
-    pub fn new(ar: &mut AppRunner) -> ZMenuReports {
+    pub fn new(ar: &mut AppRunner, agent: &Agent) -> ZMenuReports {
         let out = ZMenuReports{
             queue: Arc::new(Mutex::new(ZMenuEventQueue::new())),
             activated: None
@@ -75,7 +76,7 @@ impl ZMenuReports {
                 sr.unproductive();
                 vec![]
             }
-        },4);
+        },4,agent);
         out
     }
 }

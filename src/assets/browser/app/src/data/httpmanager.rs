@@ -1,10 +1,11 @@
+use commander::Agent;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use stdweb::web::{ XmlHttpRequest, XhrReadyState };
 
 pub trait HttpResponseConsumer {
-    fn consume(&mut self,req: XmlHttpRequest);
+    fn consume(&mut self,req: XmlHttpRequest, agent: &Agent);
 }
 
 pub struct HttpManagerImpl {
@@ -49,11 +50,11 @@ impl HttpManager {
         self.0.borrow_mut().add_request(req,data,consumer);
     }
     
-    pub fn tick(&self) -> bool {
+    pub fn tick(&self, agent: &Agent) -> bool {
         let done = self.0.borrow_mut().get_done();
         let len = done.len();
         for (req,mut cons) in done {
-            cons.consume(req);
+            cons.consume(req,agent);
         }
         return len != 0
     }

@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -9,31 +10,28 @@ use super::{ BackendConfig, HttpManager, HttpResponseConsumer };
 
 pub struct BackendConfigBootstrapImpl {
     config: Option<BackendConfig>,
-    callbacks: Vec<Box<dyn Fn(&BackendConfig)>>
+    callbacks: Vec<Box<dyn Fn(&BackendConfig,&Agent)>>
 }
 
 impl BackendConfigBootstrapImpl {
     fn new() -> BackendConfigBootstrapImpl {
         BackendConfigBootstrapImpl {
             config: None,
-            callbacks: Vec::<Box<dyn Fn(&BackendConfig)>>::new()
+            callbacks: Vec::new()
         }
     }
     
-    fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig)>) {
-        match self.config {
-            Some(ref mut cfg) => cb(&cfg),
-            None => self.callbacks.push(cb)
-        };
+    fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig,&Agent)>) {
+        self.callbacks.push(cb)
     }
 }
 
 impl HttpResponseConsumer for BackendConfigBootstrapImpl {
-    fn consume(&mut self, req: XmlHttpRequest) {
+    fn consume(&mut self, req: XmlHttpRequest, agent: &Agent) {
         let value = req.response_text().ok().unwrap().unwrap();
         let backend = BackendConfig::from_json_string(&value).expect("couldn't get remote config");
         for cb in self.callbacks.drain(..) {
-            cb(&backend);
+            cb(&backend,&agent);
         }
     }
 }
@@ -42,8 +40,9 @@ impl HttpResponseConsumer for BackendConfigBootstrapImpl {
 pub struct BackendConfigBootstrap(Rc<RefCell<BackendConfigBootstrapImpl>>,Url);
 
 impl BackendConfigBootstrap {
-    pub fn new(http_manager: &HttpManager, base: &Url) -> BackendConfigBootstrap {
-        let imp = BackendConfigBootstrapImpl::new();
+    pub fn new(http_manager: &HttpManager, base: &Url, callback: Box<dyn Fn(&BackendConfig,&Agent)>) -> BackendConfigBootstrap {
+        let mut imp = BackendConfigBootstrapImpl::new();
+        imp.add_callback(callback);
         let out = BackendConfigBootstrap(Rc::new(RefCell::new(imp)),base.clone());
         let xhr = XmlHttpRequest::new();
         xhr.set_response_type(XhrResponseType::Text);
@@ -53,16 +52,12 @@ impl BackendConfigBootstrap {
         http_manager.add_request(xhr,None,Box::new(out.clone()));
         out
     }
-    
-    pub fn add_callback(&mut self, cb: Box<dyn Fn(&BackendConfig)>) {
-        self.0.borrow_mut().add_callback(cb);
-    }
-    
+        
     pub fn get_base(&self) -> &Url { &self.1 }
 }
 
 impl HttpResponseConsumer for BackendConfigBootstrap {
-    fn consume(&mut self, req: XmlHttpRequest) {
-        self.0.borrow_mut().consume(req);
+    fn consume(&mut self, req: XmlHttpRequest, agent: &Agent) {
+        self.0.borrow_mut().consume(req,agent);
     }
 }

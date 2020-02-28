@@ -1,3 +1,4 @@
+use commander::Agent;
 use stdweb::web::XmlHttpRequest;
 use url::Url;
 
@@ -43,7 +44,7 @@ impl LocateConsumer {
 }
 
 impl HttpResponseConsumer for LocateConsumer {
-    fn consume(&mut self, req: XmlHttpRequest) {
+    fn consume(&mut self, req: XmlHttpRequest, agent: &Agent) {
         self.locate(req);
     }
 }

@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::sync::{ Arc, Mutex };
 use crate::dom::domutil;
 use crate::dom::event::{ EventListener, EventType, EventData, EventControl, Target };
@@ -138,9 +139,9 @@ impl EventListener<()> for UserEventListenerBody {
     }
 }
 
-pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement) {
-    let mp = Arc::new(Mutex::new(MousePhysics::new(gc)));
-    let op = Arc::new(Mutex::new(Optical::new(gc)));
+pub fn register_user_events(gc: &mut AppRunner, el: &HtmlElement, agent: &Agent) {
+    let mp = Arc::new(Mutex::new(MousePhysics::new(gc,agent)));
+    let op = Arc::new(Mutex::new(Optical::new(gc,agent)));
     let uel = UserEventListener::new(&gc.state(),el,&mp,&op);
     let mut ec_canv = EventControl::new(Box::new(uel),());
     ec_canv.add_event(EventType::MouseClickEvent);

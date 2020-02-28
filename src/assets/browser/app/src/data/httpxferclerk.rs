@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::cell::RefCell;
 use hashbrown::HashSet;
 use std::rc::Rc;
@@ -102,7 +103,7 @@ impl PendingXferBatch {
 }
 
 impl HttpResponseConsumer for PendingXferBatch {
-    fn consume(&mut self, req: XmlHttpRequest) {
+    fn consume(&mut self, req: XmlHttpRequest, agent: &Agent) {
         let value : ArrayBuffer = ok!(req.raw_response().try_into());
         let value : TypedArray<u8> = value.into();
         let data = ok!(String::from_utf8(value.to_vec()));

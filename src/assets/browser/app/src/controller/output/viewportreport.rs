@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::sync::{ Arc, Mutex };
 
 use serde_json::Map as JSONMap;
@@ -91,7 +92,7 @@ impl ViewportReportImpl {
 pub struct ViewportReport(Arc<Mutex<ViewportReportImpl>>);
 
 impl ViewportReport {
-    pub fn new(ar: &mut AppRunner) -> ViewportReport {
+    pub fn new(ar: &mut AppRunner, agent: &Agent) -> ViewportReport {
         let out = ViewportReport(Arc::new(Mutex::new(ViewportReportImpl::new())));
         ar.add_timer("viewport-report",enclose! { (out) move |app,_,sr| {
             if let Some(report) = out.clone().make_report(app) {
@@ -102,7 +103,7 @@ impl ViewportReport {
                 sr.unproductive();
                 vec!{}
             }
-        }},4);
+        }},4,agent);
         out
     }
     

@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::sync::{ Arc, Mutex };
 use crate::controller::global::{ App, AppRunner };
 use crate::controller::input::Action;
@@ -65,10 +66,10 @@ impl OpticalImpl {
 pub struct Optical(Arc<Mutex<OpticalImpl>>);
 
 impl Optical {
-    pub fn new(ru: &mut AppRunner) -> Optical {
+    pub fn new(ru: &mut AppRunner, agent: &Agent) -> Optical {
         let out = Optical(Arc::new(Mutex::new(OpticalImpl::new())));
         let c = out.clone();
-        ru.add_timer("optical",move |cg,t,_| { c.clone().tick(cg,t); vec!{} },1);
+        ru.add_timer("optical",move |cg,t,_| { c.clone().tick(cg,t); vec!{} },1,agent);
         out
     }
 

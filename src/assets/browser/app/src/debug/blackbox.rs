@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::sync::{ Arc, Mutex };
 use serde_json::Value as SerdeValue;
 use stdweb::unstable::TryInto;
@@ -42,7 +43,7 @@ impl BlackBoxResponseConsumer {
 }
 
 impl HttpResponseConsumer for BlackBoxResponseConsumer {
-    fn consume(&mut self, req: XmlHttpRequest) {
+    fn consume(&mut self, req: XmlHttpRequest, agent: &Agent) {
         let res = self.try_consume(req);
         if let Err(s) = res {
             console!("bad response from debug endpoint (don't worry): {}",s);

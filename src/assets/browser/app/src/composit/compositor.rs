@@ -1,3 +1,4 @@
+use commander::Agent;
 use hashbrown::HashSet;
 
 use crate::composit::{ Stick, Scale, ComponentSet, StateManager };
@@ -129,7 +130,7 @@ impl Compositor {
     }    
 }
 
-pub fn register_compositor_ticks(ar: &mut AppRunner) {
+pub fn register_compositor_ticks(ar: &mut AppRunner, agent: &Agent) {
     ar.add_timer("compositor",|app,t,_| {
         let mut tm = app.get_window().get_train_manager().clone();
         tm.tick(app,t);
@@ -140,5 +141,5 @@ pub fn register_compositor_ticks(ar: &mut AppRunner) {
         app.update_position(&screen);
         *app.get_screen_mut() = screen;
         vec![]
-    },2);
+    },2,agent);
 }

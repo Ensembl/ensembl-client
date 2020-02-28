@@ -1,3 +1,4 @@
+use commander::Agent;
 use hashbrown::HashMap;
 use std::sync::{ Arc, Mutex };
 
@@ -245,7 +246,7 @@ impl ReportImpl {
 pub struct Report(Arc<Mutex<ReportImpl>>);
 
 impl Report {
-    pub fn new(ar: &mut AppRunner) -> Report {
+    pub fn new(ar: &mut AppRunner, agent: &Agent) -> Report {
         let mut out = Report(Arc::new(Mutex::new(ReportImpl::new())));
         for (k,j,v,vital) in REPORT_CONFIG.iter() {
             {
@@ -263,7 +264,7 @@ impl Report {
                     }
                 } else { sr.unproductive(); vec!{} }
             })
-        }},4);
+        }},4,agent);
         out
     }
     

@@ -1,4 +1,4 @@
-use commander::RunConfig;
+use commander::{ Agent, RunConfig };
 use std::cell::RefCell;
 use hashbrown::HashMap;
 use std::rc::{ Rc, Weak };
@@ -47,18 +47,22 @@ impl GlobalImpl {
             ar_init: Vec::new(),
             commander: Commander::new(&document().document_element().unwrap().try_into().unwrap())
         };
-        out.init();
+        out.init_http_manager();
         out
     }
 
-    fn init(&mut self) {
-        self.scheduler.set_timesig(2);
-        let http_manager = self.http_manager.clone();
-        self.sched_group.add("http-manager",Box::new(move |sr| {
-            if !http_manager.tick() {
-                sr.unproductive();
-            }
-        }),3,false);
+    async fn http_manager_loop(agent: Agent, http_manager: HttpManager) {
+        loop {
+            http_manager.tick(&agent);
+            agent.tick(1).await;
+        }
+    }
+
+    fn init_http_manager(&mut self) {
+        let mut exe = self.commander.executor();
+        let rc = RunConfig::new(None,0,None);
+        let agent = exe.new_agent(&rc,"http-manager");
+        exe.add(GlobalImpl::http_manager_loop(agent.clone(),self.http_manager.clone()),agent);
     }
 
     fn legacy(&self, handle: Global) {
@@ -137,21 +141,11 @@ impl Global {
         let mut out = Global(Rc::new(RefCell::new(GlobalImpl::new())));
         register_startup_events(&mut out);
         register_shutdown_events(&mut out);
-        out.tick();
         out.0.borrow().legacy(out.clone());
         out
     }
 
-    /* scheduler-related */    
-    pub fn tick(&mut self) {
-        let sched = self.0.borrow_mut().scheduler().clone();
-        //sched.beat(SCHEDULER_ALLOC);
-        let mut out = self.clone();
-        window().request_animation_frame(
-            move |_| out.tick()
-        );
-    }
-    
+    /* scheduler-related */        
     pub fn scheduler(&self) -> Scheduler {
         self.0.borrow().scheduler()
     }    
@@ -177,14 +171,13 @@ impl Global {
         self.unregister_app(key,true);
         let http_manager = &self.0.borrow().http_manager.clone();
         let commander = self.0.borrow().commander.clone();
-        let mut bcb = BackendConfigBootstrap::new(&http_manager.clone(),config_url);
         let b : Rc<RefCell<Booting>> = Rc::new(
             RefCell::new(
                 Booting::new(self,&commander,http_manager,config_url,el,key,debug)
             )
         );
-        bcb.add_callback(Box::new(move |config| {
-            b.borrow_mut().boot(config);
+        BackendConfigBootstrap::new(&http_manager.clone(),config_url,Box::new(move |config,agent| {
+            b.borrow_mut().boot(config,agent);
         }));
     }
     

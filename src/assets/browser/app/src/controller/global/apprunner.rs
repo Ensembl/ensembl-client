@@ -1,4 +1,4 @@
-use commander::RunConfig;
+use commander::{ Agent, RunConfig };
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{ Arc, Mutex, Weak };
@@ -9,7 +9,7 @@ use url::Url;
 use crate::dom::domutil;
 use crate::composit::register_compositor_ticks;
 use crate::controller::global::{ App, GlobalWeak };
-use crate::controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup, Commander };
+use crate::controller::scheduler::{ Scheduler, SchedRun, SchedulerGroup };
 use crate::controller::input::register_dom_events;
 use crate::drivers::domel::{ register_user_events };
 use crate::controller::output::{ OutputAction, Report, ViewportReport, ZMenuReports, Counter };
@@ -24,13 +24,11 @@ use crate::tácode::Tácode;
 
 pub struct AppRunnerImpl {
     g: GlobalWeak,
-    commander: Commander,
     counter: Counter,
     el: HtmlElement,
     bling: Box<dyn Bling>,
     app: Arc<Mutex<App>>,
     controls: Vec<Box<EventControl<()>>>,
-    sched_group: SchedulerGroup,
     tc: Tácode,
     browser_el: HtmlElement,
     key: String
@@ -53,7 +51,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, commander: &Commander, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, key: &str) -> AppRunner {
+    pub fn new(g: &GlobalWeak, agent: &Agent, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let counter = {
@@ -66,38 +64,21 @@ impl AppRunner {
             g.scheduler().make_group()
         };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
-            commander: commander.clone(),
             g: g.clone(),
             el: el.clone(),
             counter,
             bling,
             app: Arc::new(Mutex::new(st)),
             controls: Vec::<Box<EventControl<()>>>::new(),
-            sched_group,
+            //sched_group,
             tc: tc.clone(),
             browser_el: browser_el.clone(),
             key: key.to_string()
         })));
-        out.init();
-        /*
-        {
-            let imp = out.0.lock().unwrap();
-            let mut exe = imp.commander.executor();
-            let rc = RunConfig::new(None,0,None);
-            let agent = exe.new_agent(&rc,"hello");
-            let agent2 = agent.clone();
-            exe.add(async move {
-                loop {
-                    let x = agent2.timer(5000.);
-                    console!("hello");
-                    x.await;
-                }
-            },agent);
-        }
-        */
-        let report = Report::new(&mut out);
-        let viewport_report = ViewportReport::new(&mut out);
-        let zmenu_reports = ZMenuReports::new(&mut out);
+        out.init(agent);
+        let report = Report::new(&mut out,agent);
+        let viewport_report = ViewportReport::new(&mut out,agent);
+        let zmenu_reports = ZMenuReports::new(&mut out,agent);
         {
             let mut imp = out.0.lock().unwrap();
             let app = imp.app.clone();
@@ -122,51 +103,78 @@ impl AppRunner {
         self.0.lock().unwrap().el.clone()
     }
 
-    pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize)
-                            where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
-        let mut ar = self.clone();
-        ok!(self.0.lock()).sched_group.add(name,Box::new(move |sr| {
+    async fn timer_loop<F>(agent: Agent, ar: AppRunner, mut cb: F)
+            where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
+        let mut ar = ar.clone();
+        loop {
             let oas = {
                 let imp = ok!(ar.0.lock());
                 {
                     let app_ref = imp.app.clone();
-                    let mut app = app_ref.lock().unwrap();
-                    let out = cb(&mut app,browser_time(),sr);
+                    let mut app = ok!(app_ref.lock());
+                    let out = cb(&mut app,browser_time(),&mut SchedRun::new(7.));
                     out
                 }
             };
             for oa in oas {
                 oa.run(&mut ar);
             }
-        }),prio,false);
+            agent.tick(1).await;
+        }
     }
 
-    pub fn scheduler(&self) -> Scheduler {
-        let g = unwrap!(ok!(self.0.lock()).g.upgrade()).clone();
-        g.scheduler()
+    pub fn add_timer<F>(&mut self, name: &str, mut cb: F, prio: usize, agent: &Agent)
+                            where F: FnMut(&mut App, f64, &mut SchedRun) -> Vec<OutputAction> + 'static {
+        let mut ar = self.clone();
+        let rc = RunConfig::new(None,0,None);
+        let agent2 = agent.new_agent(name,Some(rc.clone()));
+        agent.submit(agent2.clone(),AppRunner::timer_loop(agent2,self.clone(),cb));
     }
-    
-    pub fn init(&mut self) {
+
+    async fn draw_loop(agent: Agent, app: Arc<Mutex<App>>) {
+        loop {
+            let mut imp = app.lock().unwrap();
+            let t = browser_time();
+            let actions = imp.get_window().get_animator().tick(t);
+            imp.run_actions(&actions,None);
+            imp.draw();
+            drop(imp);
+            agent.tick(1).await;
+        }
+    }
+
+    async fn tácode_loop(agent: Agent, tc: Tácode) {
+        loop {
+            tc.step(7.); // XXX
+            agent.tick(1).await;
+        }
+    }
+
+    async fn blackbox_loop(agent: Agent, http_manager: HttpManager, mut sender: BlackboxSender, config: BackendConfig) {
+        loop {
+            sender.send(&http_manager,&config,browser_time());
+            agent.timer(10.).await;
+        }
+    }
+
+    pub fn init(&mut self, agent: &Agent) {
         /* register main heartbeat of compositor */
-        register_compositor_ticks(self);
+        register_compositor_ticks(self,agent);
         
         /* register canvas-bound events */
         {
             let el = self.0.lock().unwrap().el.clone();
-            register_user_events(self,&el);
+            register_user_events(self,&el,agent);
             register_dom_events(self,&el);
         }
 
         {
             {
                 let mut imp = self.0.lock().unwrap();
-                /* tacode */
-                {
-                    let tc = imp.tc.clone();
-                    imp.sched_group.add("tácode",Box::new(move |sr| {
-                        tc.step(sr.available());
-                    }),2,false);
-                }
+                let rc = RunConfig::new(None,0,None);
+                let agent2 = agent.new_agent("tácode",Some(rc.clone()));
+                agent.submit(agent2.clone(),AppRunner::tácode_loop(agent2,imp.tc.clone()));
+
                 /* blackbox */
                 #[cfg(blackbox)]
                 {
@@ -174,19 +182,12 @@ impl AppRunner {
                     let http_manager = app.lock().unwrap().get_http_manager().clone();
                     let config = app.lock().unwrap().get_window().get_backend_config().clone();
                     let mut sender = app.lock().unwrap().get_window().get_blackbox_sender().clone();
-                    imp.sched_group.add("blackbox",Box::new(move |sr| {
-                        sender.send(&http_manager,&config,browser_time());
-                    }),10,false);
+                    let agent2 = agent.new_agent("blackbox",Some(rc.clone()));
+                    agent.submit(agent2.clone(),AppRunner::blackbox_loop(agent2,http_manager,sender,config));
                 }
                 /* animate & draw */
-                let app = imp.app.clone();
-                imp.sched_group.add("draw",Box::new(move |_| {
-                    let t = browser_time();
-                    let mut imp = app.lock().unwrap();
-                    let actions = imp.get_window().get_animator().tick(t);
-                    imp.run_actions(&actions,None);
-                    imp.draw();
-                }),0,true);
+                let agent2 = agent.new_agent("draw",Some(rc.clone()));
+                agent.submit(agent2.clone(),AppRunner::draw_loop(agent2,imp.app.clone()));
             }
             /* xfer */
             self.add_timer("xfer",move |app,_,sr| {
@@ -194,12 +195,12 @@ impl AppRunner {
                     sr.unproductive();
                 }
                 vec![]
-            },2);
+            },2,agent);
             /* resize check */
             self.add_timer("resizer",move |app,_,_| {
                 app.check_size();
                 vec![]
-            },0);
+            },0,agent);
             /* gone check */
             self.add_timer("gone-check",move |app,_,_| {
                 if app.check_gone() {
@@ -207,7 +208,7 @@ impl AppRunner {
                 } else {
                     vec![]
                 }
-            },0);
+            },0,agent);
         }
         blackbox_log!("main","debug reporter initialised");
     }
@@ -224,7 +225,6 @@ impl AppRunner {
         let (mut g,key) = {
             let mut imp = self.0.lock().unwrap();
             imp.clear_controls();
-            imp.sched_group.clear();
             let r = &imp.app;
             r.lock().unwrap().destroy();
             let g = imp.g.upgrade().unwrap().clone();

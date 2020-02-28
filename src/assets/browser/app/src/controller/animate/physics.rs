@@ -1,3 +1,4 @@
+use commander::Agent;
 use std::sync::{ Arc, Mutex };
 use crate::types::{ CPixel, CDFraction, cdfraction };
 use crate::controller::global::{ App, AppRunner };
@@ -172,10 +173,10 @@ impl MousePhysicsImpl {
 }
 
 impl MousePhysics {
-    pub fn new(ru: &mut AppRunner) -> MousePhysics {
+    pub fn new(ru: &mut AppRunner, agent: &Agent) -> MousePhysics {
         let out = MousePhysics(Arc::new(Mutex::new(MousePhysicsImpl::new())));
         let c = out.clone();
-        ru.add_timer("physics",move |cg,t,_| { c.clone().tick(cg,t); vec!{} },1);
+        ru.add_timer("physics",move |cg,t,_| { c.clone().tick(cg,t); vec!{} },1,agent);
         out
     }
 
