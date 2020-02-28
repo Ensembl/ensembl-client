@@ -109,14 +109,14 @@ impl Agent {
     /// 
     /// If rc is `None`, the rc of this task is reused. As with top-level submission direct to the executor, keeping 
     /// `new_agent()` and `submit()` separate allows the agent to be cloned and moved into the new future.
-    pub fn new_agent(&self, name: &str, rc: Option<RunConfig>) -> Agent {
+    pub fn new_agent(&self, rc: Option<RunConfig>, name: &str) -> Agent {
         self.run_agent().new_agent(name,rc)
     }
 
     /// Submit a given agent and future for running as a new, independent task.
     /// 
     /// The agent passed should have been created with `new_agent()`. Do not pass self!
-    pub fn submit<R,T>(&self, agent: Agent, future: T) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static {
+    pub fn add<R,T>(&self, future: T, agent: Agent) -> TaskHandle<R> where T: Future<Output=R> + 'static, R: 'static {
         self.run_agent().submit(agent,future)
     }
 

@@ -82,13 +82,13 @@ mod test {
         let tidied = Arc::new(Mutex::new(false));
         let tidied2 = tidied.clone();
         let step = async move {
-            let agentb = agent2.new_agent("task2",None);
+            let agentb = agent2.new_agent(None,"task2");
             let agentb2 = agentb.clone();
-            agent2.submit(agentb,async move {
+            agent2.add(async move {
                 agentb2.tick(1).await;
                 *tidied2.lock().unwrap() = true;
                 agentb2.tick(1).await;
-            });
+            },agentb);
             42
         };
         let handle = x.add(step,agent);
@@ -112,14 +112,14 @@ mod test {
         let tidied = Arc::new(Mutex::new(false));
         let tidied2 = tidied.clone();
         let step = async move {
-            let agentb = agent2.new_agent("task2",None);
+            let agentb = agent2.new_agent(None,"task2");
             agentb.finish(KillReason::Cancelled);
             let agentb2 = agentb.clone();
-            agent2.submit(agentb,async move {
+            agent2.add(async move {
                 agentb2.tick(1).await;
                 *tidied2.lock().unwrap() = true;
                 agentb2.tick(1).await;
-            });
+            },agentb);
             42
         };
         x.add(step,agent);

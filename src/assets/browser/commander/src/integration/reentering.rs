@@ -52,7 +52,6 @@ impl ReenteringIntegration {
 mod test {
     use crate::agent::agent::Agent;
     use crate::executor::link::Link;
-    use crate::executor::request::Request;
     use crate::executor::taskcontainer::TaskContainer;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::TestIntegration;

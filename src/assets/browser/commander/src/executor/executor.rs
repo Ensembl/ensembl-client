@@ -659,11 +659,11 @@ mod test {
                 ign2.tick();
                 agent3.tick(1).await;
             },"test").await;
-            let agentb = agent2.new_agent("task2",None);
+            let agentb = agent2.new_agent(None,"task2");
             let agentb2 = agentb.clone();
-            agent2.submit(agentb,async move {
+            agent2.add(async move {
                 agentb2.tick(1).await;
-            });
+            },agentb);
             agent2.tick(3).await;
         };
         x.add(step,agent);

@@ -271,11 +271,11 @@ mod test {
         let agent = x.new_agent(&cfg,"test-task");
         let agent2 = agent.clone();
         let step = async move {
-            let agentb = agent2.new_agent("task2",None);
+            let agentb = agent2.new_agent(None,"task2");
             let agentb2 = agentb.clone();
-            let th = agent2.submit(agentb,async move {
+            let th = agent2.add(async move {
                 agentb2.tick(4).await;
-            });
+            },agentb);
             th.finish_future().await;
         };
         let h = x.add(step,agent);

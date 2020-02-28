@@ -122,8 +122,8 @@ impl AppRunner {
                             where F: FnMut(&mut App, f64) -> Vec<OutputAction> + 'static {
         let mut ar = self.clone();
         let rc = RunConfig::new(None,0,None);
-        let agent2 = agent.new_agent(name,Some(rc.clone()));
-        agent.submit(agent2.clone(),AppRunner::timer_loop(agent2,self.clone(),cb));
+        let agent2 = agent.new_agent(Some(rc.clone()),name);
+        agent.add(AppRunner::timer_loop(agent2.clone(),self.clone(),cb),agent2);
     }
 
     async fn draw_loop(agent: Agent, app: Arc<Mutex<App>>) {
@@ -167,8 +167,8 @@ impl AppRunner {
             {
                 let mut imp = self.0.lock().unwrap();
                 let rc = RunConfig::new(None,0,None);
-                let agent2 = agent.new_agent("tácode",Some(rc.clone()));
-                agent.submit(agent2.clone(),AppRunner::tácode_loop(agent2,imp.tc.clone()));
+                let agent2 = agent.new_agent(Some(rc.clone()),"tácode");
+                agent.add(AppRunner::tácode_loop(agent2.clone(),imp.tc.clone()),agent2);
 
                 /* blackbox */
                 #[cfg(blackbox)]
@@ -177,12 +177,12 @@ impl AppRunner {
                     let http_manager = app.lock().unwrap().get_http_manager().clone();
                     let config = app.lock().unwrap().get_window().get_backend_config().clone();
                     let mut sender = app.lock().unwrap().get_window().get_blackbox_sender().clone();
-                    let agent2 = agent.new_agent("blackbox",Some(rc.clone()));
-                    agent.submit(agent2.clone(),AppRunner::blackbox_loop(agent2,http_manager,sender,config));
+                    let agent2 = agent.new_agent(Some(rc.clone()),"blackbox");
+                    agent.add(AppRunner::blackbox_loop(agent2.clone(),http_manager,sender,config),agent2);
                 }
                 /* animate & draw */
-                let agent2 = agent.new_agent("draw",Some(rc.clone()));
-                agent.submit(agent2.clone(),AppRunner::draw_loop(agent2,imp.app.clone()));
+                let agent2 = agent.new_agent(Some(rc.clone()),"draw");
+                agent.add(AppRunner::draw_loop(agent2.clone(),imp.app.clone()),agent2);
             }
             /* xfer */
             self.add_timer("xfer",move |app,_| {
