@@ -8,93 +8,130 @@ use crate::dom::{ make_bell, BellSender, BellReceiver };
 
 const MS_PER_TICK : f64 = 7.;
 
-#[derive(Clone)]
-pub struct Commander {
-    state: Arc<Mutex<CommanderState>>,
-    executor: Arc<Mutex<Executor>>,
-    bell_receiver: BellReceiver
+/* The entity relationship here is crazy complex. This is all to allow non-Send methods in Executor. The BellReceiver
+ * needs to be able to call schedule and so needs a reference to both the sleep state (to check it) and the executor
+ * (to build a callback). So, to avoid reference loops we need the Executor and the sleep state to be inside an inner
+ * object (CommanderState) and the BellReciever outside it, in the Commander. We need the Executor to be inside an
+ * Arc because it isn't Clone but CommanderState (which it is within) must be Clone. We can't put the whole of
+ * CommanderState inside an Arc because we need easy access to executor from Commander to the outside world, ie not
+ * protedcted by nested Arcs. Anyway, CommanderSleepState (the other entry in CommanderState) needs to be in its own
+ * Arc anyway as it's shared with the CommanderIntegration.
+ *
+ * So the dependency graph is:
+ *
+ *                                                            Arc
+ * Commander -+-> BellReceiver ---> CommanderState (clone 1) --+---> CommanderSleepState
+ *            +-------------------> CommanderState|(clone 2) --+
+ *                                                ||           +--------------------------------+
+ *                                            Arc ++---> Executor -> CommanderIntegration -> BellSender
+ *
+ * The Mutexes must be locked in the order Excecutor before CommanderSleepState (if both are to be held). This avoids
+ * deadlock. CommanderSleepState is not kept locked between public methods and is not exposed. Executor is exposed but
+ * this guarantees externally no harm can be done. Internally, except in schedule() CommanderSleepState is held only
+ * momentarily to update data fields, so that is safe. Inside schedule, only callbacks can (indirectly) take a lock
+ * on executor (via raf_tick or timer_tick) and callbacks don't run until we return to the main loop. In a threaded
+ * world, they would block until schedule exited.
+ */
+
+struct CommanderSleepState {
+    raf_pending: bool,
+    quantity: SleepQuantity,
+    timeout: Option<TimeoutHandle>
 }
 
-impl Commander {
-    pub fn new(el: &HtmlElement) -> Commander {
-        let state = Arc::new(Mutex::new(CommanderState {
-            raf_pending: false,
-            quantity: SleepQuantity::Forever,
-            timeout: None,
-        }));
-        let (bell_sender, bell_receiver) = make_bell(el);
-        let integration = CommanderIntegration {
-            state: Arc::downgrade(&state),
-            bell_sender
-        };
-        let mut out = Commander {
-            state,
-            executor: Arc::new(Mutex::new(Executor::new(integration))),
-            bell_receiver
-        };
-        let mut out2 = out.clone();
-        out.bell_receiver.add(move || {
-            out2.schedule();
-        });
-        out
-    }
+#[derive(Clone)]
+struct CommanderState {
+    sleep_state: Arc<Mutex<CommanderSleepState>>,
+    executor: Arc<Mutex<Executor>>
+}
 
+impl CommanderState {
     fn tick(&self) {
         self.executor.lock().unwrap().tick(MS_PER_TICK);
     }
 
-    pub fn start(&self) {
+    fn raf_tick(&mut self) {
+        self.sleep_state.lock().unwrap().raf_pending = false;
         self.tick();
+        self.schedule();
     }
 
-    pub fn executor(&self) -> MutexGuardRefMut<Executor> {
-        MutexGuardRefMut::new(self.executor.lock().unwrap())
-    }
-
-    fn state(&self) -> MutexGuardRefMut<CommanderState> {
-        MutexGuardRefMut::new(self.state.lock().unwrap())
-    }
-
-    fn raf_tick(&self) {
-        self.state().register_raf();
+    fn timer_tick(&mut self) {
+        self.sleep_state.lock().unwrap().timeout.take();
         self.tick();
-        self.state().schedule(self.clone());
-    }
-
-    fn timer_tick(&self) {
-        self.state().register_timer();
-        self.tick();
-        self.state().schedule(self.clone());
+        self.schedule();
     }
 
     fn schedule(&mut self) {
-        let mut state = self.state();
+        let mut state = self.sleep_state.lock().unwrap();
         if let Some(timeout) = state.timeout.take() {
             timeout.clear();
         }
         match state.quantity {
             SleepQuantity::Forever => {},
             SleepQuantity::None => {
+                let mut handle = self.clone();
                 if !state.raf_pending {
                     state.raf_pending = true;
-                    let handle = self.clone();
                     window().request_animation_frame(move |_| handle.raf_tick());
                 }
             },
             SleepQuantity::Time(t) => {
-                let handle = self.clone();
+                let mut handle = self.clone();
                 state.timeout = Some(window().set_clearable_timeout(move || handle.timer_tick(),t as u32));
             }
         }
     }
 
+    fn executor(&self) -> MutexGuardRefMut<Executor> {
+        MutexGuardRefMut::new(self.executor.lock().unwrap())
+    }
 }
 
-unsafe impl Send for CommanderIntegration {} // XXX nooooooooooooooooooooo!
+#[derive(Clone)]
+pub struct Commander {
+    state: CommanderState,
+    bell_receiver: BellReceiver
+}
+
+impl Commander {
+    pub fn new(el: &HtmlElement) -> Commander {
+        let sleep_state = Arc::new(Mutex::new(CommanderSleepState {
+            raf_pending: false,
+            quantity: SleepQuantity::Forever,
+            timeout: None,
+        }));
+        let (bell_sender, bell_receiver) = make_bell(el);
+        let integration = CommanderIntegration {
+            sleep_state: sleep_state.clone(),
+            bell_sender
+        };
+        let mut state = CommanderState {
+            sleep_state,
+            executor: Arc::new(Mutex::new(Executor::new(integration)))
+        };
+        let mut out = Commander {
+            state: state.clone(),
+            bell_receiver
+        };
+        out.bell_receiver.add(move || {
+            state.schedule();
+        });
+        out
+    }
+
+    pub fn start(&self) {
+        self.state.tick();
+    }
+
+    pub fn executor(&self) -> MutexGuardRefMut<Executor> {
+        MutexGuardRefMut::new(self.state.executor.lock().unwrap())
+    }
+}
 
 #[derive(Clone)]
 pub struct CommanderIntegration {
-    state: Weak<Mutex<CommanderState>>,
+    sleep_state: Arc<Mutex<CommanderSleepState>>,
     bell_sender: BellSender
 }
 
@@ -104,47 +141,7 @@ impl Integration for CommanderIntegration {
     }
 
     fn sleep(&self, amount: SleepQuantity) {
-        if let Some(state) = self.state.upgrade() {
-            state.lock().unwrap().sleep(amount);
-            self.bell_sender.ring();
-        }
-    }
-}
-
-struct CommanderState {
-    raf_pending: bool,
-    quantity: SleepQuantity,
-    timeout: Option<TimeoutHandle>
-}
-
-impl CommanderState {
-    fn schedule(&mut self, handle: Commander) {
-        if let Some(timeout) = self.timeout.take() {
-            timeout.clear();
-        }
-        match self.quantity {
-            SleepQuantity::Forever => {},
-            SleepQuantity::None => {
-                if !self.raf_pending {
-                    self.raf_pending = true;
-                    window().request_animation_frame(move |_| handle.raf_tick());
-                }
-            },
-            SleepQuantity::Time(t) => {
-                self.timeout = Some(window().set_clearable_timeout(move || handle.timer_tick(),t as u32));
-            }
-        }
-    }
-
-    fn register_raf(&mut self) {
-        self.raf_pending = false;
-    }
-
-    fn register_timer(&mut self) {
-        self.timeout.take();
-    }
-
-    fn sleep(&mut self, amount: SleepQuantity) {
-        self.quantity = amount;
+        self.sleep_state.lock().unwrap().quantity = amount;
+        self.bell_sender.ring();
     }
 }

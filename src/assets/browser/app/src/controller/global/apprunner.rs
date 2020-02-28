@@ -23,8 +23,8 @@ use crate::dom::domutil::browser_time;
 use crate::tácode::Tácode;
 
 pub struct AppRunnerImpl {
-    commander: Commander,
     g: GlobalWeak,
+    commander: Commander,
     counter: Counter,
     el: HtmlElement,
     bling: Box<dyn Bling>,
@@ -53,7 +53,7 @@ pub struct AppRunner(Arc<Mutex<AppRunnerImpl>>);
 pub struct AppRunnerWeak(Weak<Mutex<AppRunnerImpl>>);
 
 impl AppRunner {
-    pub fn new(g: &GlobalWeak, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, key: &str) -> AppRunner {
+    pub fn new(g: &GlobalWeak, commander: &Commander, http_manager: &HttpManager, el: &HtmlElement, bling: Box<dyn Bling>, config_url: &Url, config: &BackendConfig, key: &str) -> AppRunner {
         let browser_el : HtmlElement = bling.apply_bling(&el);
         let tc = Tácode::new();
         let counter = {
@@ -66,7 +66,7 @@ impl AppRunner {
             g.scheduler().make_group()
         };
         let mut out = AppRunner(Arc::new(Mutex::new(AppRunnerImpl {
-            commander: Commander::new(&document().document_element().unwrap().try_into().unwrap()),
+            commander: commander.clone(),
             g: g.clone(),
             el: el.clone(),
             counter,
@@ -79,7 +79,6 @@ impl AppRunner {
             key: key.to_string()
         })));
         out.init();
-        out.0.lock().unwrap().commander.start();
         /*
         {
             let imp = out.0.lock().unwrap();

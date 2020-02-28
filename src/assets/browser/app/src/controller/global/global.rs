@@ -176,10 +176,11 @@ impl Global {
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
         self.unregister_app(key,true);
         let http_manager = &self.0.borrow().http_manager.clone();
+        let commander = self.0.borrow().commander.clone();
         let mut bcb = BackendConfigBootstrap::new(&http_manager.clone(),config_url);
         let b : Rc<RefCell<Booting>> = Rc::new(
             RefCell::new(
-                Booting::new(self,http_manager,config_url,el,key,debug)
+                Booting::new(self,&commander,http_manager,config_url,el,key,debug)
             )
         );
         bcb.add_callback(Box::new(move |config| {

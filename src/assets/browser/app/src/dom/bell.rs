@@ -32,72 +32,68 @@ impl BellSender {
     }
 }
 
-// XXX drop/unregister
-
-struct BellReceiverCallbacks {
-    callbacks: Vec<Box<FnMut() + 'static>>,
-    listener: Option<Value>
+struct BellReceiverState {
+    callbacks: Arc<Mutex<Vec<Box<FnMut() + 'static>>>>,
+    name: String,
+    el: HtmlElement,
+    js_ref: Option<Value>
 }
 
-impl BellReceiverCallbacks {
-    fn new() -> BellReceiverCallbacks {
-        BellReceiverCallbacks {
-            callbacks: Vec::new(),
-            listener: None
-        }
+impl BellReceiverState {
+    fn new(identity: u64, el: &HtmlElement) -> BellReceiverState {
+        let mut out = BellReceiverState {
+            name: format!("{}-{}",MESSAGE_KEY,identity),
+            callbacks: Arc::new(Mutex::new(Vec::new())),
+            el: el.clone(),
+            js_ref: None
+        };
+        out.call_dom();
+        out
     }
 
     fn add(&mut self, callback: Box<FnMut() + 'static>) {
-        self.callbacks.push(callback);
+        self.callbacks.lock().unwrap().push(callback);
     }
 
-    fn run_all(&mut self) {
-        for cb in self.callbacks.iter_mut() {
-            (cb)();
-        }
-    }
-
-    fn call_dom(&mut self, el: &HtmlElement, name: &str, again: BellReceiver) {
-        let js_cb : Box<FnMut(Reference)> = Box::new(move |_: Reference| {
-            again.callbacks.lock().unwrap().run_all();
-        });
-        if let Some(listener) = self.listener.take() {
-            js! { @{listener}.drop() };
-        }
-        let el = el.clone();
-        self.listener = Some(js! {
+    fn call_dom(&mut self) {
+        let callbacks = self.callbacks.clone();
+        let js_cb = move |_: Reference| {
+            for cb in callbacks.lock().unwrap().iter_mut() {
+                (cb)();
+            }
+        };
+        let el = self.el.clone();
+        let name = self.name.clone();
+        self.js_ref = Some(js! {
             let cb = @{js_cb};
-            return @{el}.addEventListener(@{name},cb);
+            @{el}.addEventListener(@{name},cb);
+            return cb;
         });
+    }
+}
+
+impl Drop for BellReceiverState {
+    fn drop(&mut self) {
+        if let Some(cb) = self.js_ref.take() {
+            js! { 
+                let cb = @{cb};
+                @{&self.el}.removeEventListener(@{&self.name},cb);
+                cb.drop()
+            };
+        }
     }
 }
 
 #[derive(Clone)]
-pub struct BellReceiver {
-    identity: u64,
-    el: HtmlElement,
-    callbacks: Arc<Mutex<BellReceiverCallbacks>>
-}
+pub struct BellReceiver(Arc<Mutex<BellReceiverState>>);
 
 impl BellReceiver {
     fn new(identity: u64, el: &HtmlElement) -> BellReceiver {
-        let mut out = BellReceiver {
-            identity,
-            el: el.clone(),
-            callbacks: Arc::new(Mutex::new(BellReceiverCallbacks::new()))
-        };
-        out.listen();
-        out
+        BellReceiver(Arc::new(Mutex::new(BellReceiverState::new(identity,el))))
     }
 
     pub fn add<T>(&mut self, callback: T) where T: FnMut() + 'static {
-        self.callbacks.lock().unwrap().add(Box::new(callback));
-    }
-
-    fn listen(&mut self) {
-        let mut again = self.clone();
-        let name = &format!("{}-{}",MESSAGE_KEY,self.identity);
-        self.callbacks.lock().unwrap().call_dom(&self.el,name,again);
+        self.0.lock().unwrap().add(Box::new(callback));
     }
 }
 
