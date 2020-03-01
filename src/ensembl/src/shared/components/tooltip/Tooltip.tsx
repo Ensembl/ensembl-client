@@ -116,10 +116,12 @@ const TooltipWithAnchor = (props: Props) => {
     setIsPositioning(false);
   };
 
+  const hasInlineStyles = () => Object.keys(inlineStyles.bodyStyles).length;
+
   const className = classNames(
     styles.tooltip,
     positionRef.current || props.position,
-    { [styles.tooltipInvisible]: isPositioning }
+    { [styles.tooltipInvisible]: isPositioning || !hasInlineStyles() }
   );
 
   return isWaiting

@@ -3,12 +3,19 @@
 
 import React, { ReactNode } from 'react';
 
+import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+
 type HoverboxProps = {
+  anchor: HTMLElement;
   children: ReactNode;
 };
 
 const Hoverbox = (props: HoverboxProps) => {
-  return <div>{props.children}</div>;
+  return (
+    <Tooltip position={Position.RIGHT_BOTTOM} anchor={props.anchor} delay={0}>
+      {props.children}
+    </Tooltip>
+  );
 };
 
 export default Hoverbox;
