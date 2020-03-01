@@ -1,5 +1,8 @@
 import React, { useState, ReactNode } from 'react';
 
+import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
+
 import styles from './HoverboxExpandableContent.scss';
 
 type HoverboxExpandableContentProps = {
@@ -21,17 +24,20 @@ const HoverboxExpandableContent = (props: HoverboxExpandableContentProps) => {
 
   return (
     <div>
-      <div>{props.mainContent}</div>
-      <ToggleButton isOpen={isExpanded} onClick={toggleExpanded} />
+      <div className={styles.main}>
+        {props.mainContent}
+        <ToggleButton isOpen={isExpanded} onClick={toggleExpanded} />
+      </div>
       {isExpanded && <div>{props.footerContent}</div>}
     </div>
   );
 };
 
 const ToggleButton = (props: ToggleButtonProps) => {
+  const Icon = props.isOpen ? CloseIcon : DownloadIcon;
   return (
     <div className={styles.toggleButton} onClick={props.onClick}>
-      Toggle Button
+      <Icon />
     </div>
   );
 };

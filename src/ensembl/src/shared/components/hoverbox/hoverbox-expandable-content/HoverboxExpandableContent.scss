@@ -1,0 +1,22 @@
+@import 'src/styles/common';
+
+$toggleButtonHeight: 14px;
+
+.main {
+  position: relative;
+}
+
+.toggleButton {
+  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: inline-block;
+  font-size: 0;
+  user-select: none;
+  svg {
+    cursor: pointer;
+    fill: $blue;
+    height: $toggleButtonHeight;
+  }
+}
