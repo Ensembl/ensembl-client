@@ -4,7 +4,7 @@ use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 use std::task::Poll;
 
-/* A  future which is always pending until its flag method is called (probably from outside the future),
+/* A future which is always pending until its flag method is called (probably from outside the future),
  * after which it is always ready. The flag method also calls the waker.wake() method to alert the Executor for speedy
  * resumption.
  * 

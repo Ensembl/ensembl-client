@@ -79,7 +79,8 @@ the crate.
 ## derivedfutures/
 
 The `derivedfutures/` directory contains various utilities for managing futures for use by the crate user. Unlike
-`corefutures/` these futures use no non-public methods and so could have been implemented outside of this crate.
+`corefutures/` these futures use no non-public methods and so could have been implemented outside of this crate. Many
+of these could be delegated to external, possibly third-party crates in time.
 
 * `SempahoreFutureMaker` implements signal/wait in terms of futures (eg for
 use in blcking queues).

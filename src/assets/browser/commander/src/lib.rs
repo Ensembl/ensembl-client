@@ -247,7 +247,9 @@ mod corefutures {
 }
 
 mod derivedfutures {
+  pub(crate) mod commanderstream;
   pub(crate) mod semaphorefuture;
+  pub(crate) mod valuefuture;
 }
 
 mod integration {
@@ -289,7 +291,9 @@ extern crate owning_ref;
 pub use crate::agent::agent::Agent;
 pub use crate::executor::executor::Executor;
 pub use crate::corefutures::flagfuture::FlagFuture;
+pub use crate::derivedfutures::commanderstream::CommanderStream;
 pub use crate::derivedfutures::semaphorefuture::SemaphoreFutureMaker;
+pub use crate::derivedfutures::valuefuture::ValueFuture;
 pub use crate::integration::integration::{ Integration, SleepQuantity };
 pub use crate::task::runconfig::RunConfig;
 pub use crate::task::slot::RunSlot;
