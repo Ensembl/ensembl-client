@@ -82,6 +82,17 @@ describe('StandardAppLayout', () => {
       ).toBe(1);
     });
 
+    it('floats the sidebar over the main content when isSidebarFloating set to true', () => {
+      const props = {
+        ...minimalProps,
+        isSidebarFloating: true,
+        isSidebarOpen: true
+      };
+      const wrapper = render(<StandardAppLayout {...props} />);
+      const sidebarWrapper = wrapper.find('.sidebarWrapper');
+      expect(sidebarWrapper.hasClass('sidebarWrapperFloating')).toBe(true);
+    });
+
     describe('with drawer', () => {
       const props = {
         ...minimalProps,
