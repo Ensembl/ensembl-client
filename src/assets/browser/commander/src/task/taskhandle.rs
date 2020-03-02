@@ -3,7 +3,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 use crate::agent::agent::Agent;
-use crate::corefutures::flagfuture::FlagFuture;
+use crate::corefutures::promisefuture::PromiseFuture;
 use super::task::{ KillReason, TaskResult, TaskSummary };
 
 #[cfg(test)]
@@ -32,7 +32,7 @@ pub(crate) trait ExecutorTaskHandle {
 }
 
 pub(crate) struct TaskHandleState<R: 'static> {
-    finish_flag: FlagFuture,
+    finish_flag: PromiseFuture<()>,
     identity: Option<u64>,
     future: Pin<Box<dyn Future<Output=R> + 'static>>,
     agent: Agent,
@@ -55,7 +55,7 @@ impl<R> Clone for TaskHandle<R> where R: 'static {
 impl<R> TaskHandle<R> where R: 'static {
     pub(crate) fn new(agent: &Agent, future: Pin<Box<dyn Future<Output=R> + 'static>>) -> TaskHandle<R> {
         TaskHandle(Arc::new(Mutex::new(TaskHandleState {
-            finish_flag: FlagFuture::new(),
+            finish_flag: PromiseFuture::new(),
             identity: None,
             future,
             agent: agent.clone(),
@@ -154,7 +154,7 @@ impl<R> ExecutorTaskHandle for TaskHandle<R> where R: 'static {
         }
         if finished {
             state.done = true;
-            state.finish_flag.flag();
+            state.finish_flag.satisfy(());
         }
         drop(state);
         blackbox_end!("commander",&self.task_key());

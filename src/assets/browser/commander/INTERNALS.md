@@ -67,7 +67,7 @@ subfutures, and so on.
 
 The `corefutures/` directory contains various implementations of `Future` which expose functionality to the crate user.
 
-* `FlagFuture` is a useful utility for implementing callback-based code with futures. It is used extensively in the
+* `PromiseFuture` is a useful utility for implementing callback-based code with futures. It is used extensively in the
 crate and exposed for potential use outside of the crate.
 * `NamedFuture` is the future returned by `Agent.named_wait()`. 
 * `TidierFuture` is the future resturned by `Agent.tidy()`. 
@@ -82,8 +82,7 @@ The `derivedfutures/` directory contains various utilities for managing futures 
 `corefutures/` these futures use no non-public methods and so could have been implemented outside of this crate. Many
 of these could be delegated to external, possibly third-party crates in time.
 
-* `SempahoreFutureMaker` implements signal/wait in terms of futures (eg for
-use in blcking queues).
+* `CommanderStream` implements a blocking queue based around futures.
 
 ## util/
 

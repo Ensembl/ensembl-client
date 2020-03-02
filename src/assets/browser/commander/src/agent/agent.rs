@@ -7,7 +7,7 @@ use std::task::Poll;
 use crate::executor::action::Action;
 use crate::executor::link::Link;
 use crate::executor::request::Request;
-use crate::corefutures::flagfuture::FlagFuture;
+use crate::corefutures::promisefuture::PromiseFuture;
 use crate::corefutures::namedfuture::NamedFuture;
 use crate::corefutures::turnstilefuture::TurnstileFuture;
 use crate::integration::reentering::ReenteringIntegration;
@@ -139,9 +139,9 @@ impl Agent {
     /// allows the tick timeout to be checked and for other tasks of the same priority to run. If there is still "time
     /// on the clock" after that, your future will resume, even in the same tick.
     pub fn tick(&self,ticks: u64) -> impl Future<Output=()> {
-        let future = FlagFuture::new();
+        let future = PromiseFuture::new();
         let future2 = future.clone();
-        self.add_ticks_timer(ticks, move || future2.flag());
+        self.add_ticks_timer(ticks, move || future2.satisfy(()));
         future
     }
 
@@ -149,9 +149,9 @@ impl Agent {
     /// 
     /// Time units are those of your integration.
     pub fn timer(&self, timeout: f64) -> impl Future<Output=()> {
-        let future = FlagFuture::new();
+        let future = PromiseFuture::new();
         let future2 = future.clone();
-        self.add_timer(timeout, move || future2.flag());
+        self.add_timer(timeout, move || future2.satisfy(()));
         future
     }
 

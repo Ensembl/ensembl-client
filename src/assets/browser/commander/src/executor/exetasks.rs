@@ -140,7 +140,7 @@ impl ExecutorTasks {
 
 #[cfg(test)]
 mod test {
-    use crate::corefutures::flagfuture::FlagFuture;
+    use crate::corefutures::promisefuture::PromiseFuture;
     use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
     use crate::task::task::TaskResult;
@@ -151,7 +151,7 @@ mod test {
         let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fos = FlagFuture::new();
+        let fos = PromiseFuture::new();
         let fos2 = fos.clone();
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
@@ -164,7 +164,7 @@ mod test {
         x.tick(10.);
         x.tick(10.);
         assert!(tc.task_state() == TaskResult::Ongoing);
-        fos.flag();
+        fos.satisfy(());
         assert_eq!(1,x.get_tasks().tasks.len());
         x.tick(10.);
         x.tick(10.);

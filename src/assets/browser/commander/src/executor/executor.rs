@@ -192,7 +192,7 @@ mod test {
     use blackbox::*;
     use futures::future;
     use std::collections::HashSet;
-    use crate::corefutures::flagfuture::FlagFuture;
+    use crate::corefutures::promisefuture::PromiseFuture;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
     use crate::task::task::{ KillReason, TaskResult };
@@ -294,11 +294,11 @@ mod test {
         let ctxa2 = ctxa.clone();
         let step = async move {
             ctxa2.tick(1).await;
-            FlagFuture::new().await;
+            PromiseFuture::<()>::new().await;
         };
         let ctxb = x.new_agent(&cfg,"test2");
         let step2 = async move {
-            FlagFuture::new().await;
+            PromiseFuture::<()>::new().await;
         };
         let tc = x.add(step,ctxa);
         x.add(step2,ctxb);
@@ -421,7 +421,7 @@ mod test {
         let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fos = FlagFuture::new();
+        let fos = PromiseFuture::new();
         let fos2 = fos.clone();
         let ctx = x.new_agent(&cfg,"test");
         x.add(async {
@@ -430,7 +430,7 @@ mod test {
         /* simulate */
         /* none runnable, none next-tick, no timers => Forever */
         x.tick(1.);
-        fos.flag();
+        fos.satisfy(());
         assert_eq!(vec![SleepQuantity::None,SleepQuantity::Forever,SleepQuantity::None],*integration.get_sleeps());
     }
 
@@ -441,7 +441,7 @@ mod test {
         let integration = TestIntegration::new();
         let mut x = Executor::new(integration.clone());
         let cfg = RunConfig::new(None,3,None);
-        let fosa = FlagFuture::new();
+        let fosa = PromiseFuture::new();
         let fosa2 = fosa.clone();
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
@@ -449,7 +449,7 @@ mod test {
             fosa2.await;
             tick_helper(ctx2.clone(),&[0,1,1]).await;
             ctx2.timer(3.);
-            FlagFuture::new().await;
+            PromiseFuture::<()>::new().await;
         };
         x.add(step,ctx);
         /* simulate */
@@ -457,7 +457,7 @@ mod test {
         x.tick(1.);
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::Forever);
         /* runnable => None */
-        fosa.flag();
+        fosa.satisfy(());
         x.tick(1.);
         assert_eq!(x.calculate_sleep(0.),SleepQuantity::None);
         /* next tick => None */
@@ -479,19 +479,19 @@ mod test {
 
         let ctx = x.new_agent(&cfg,"test");
         let ctx2 = ctx.clone();
-        let os1 = FlagFuture::new();
+        let os1 = PromiseFuture::new();
         let os1b = os1.clone();
         let step = async move {
             integration2.set_time(1.);
             os1b.await;
             ctx2.timer(2.);
-            FlagFuture::new().await;
+            PromiseFuture::<()>::new().await;
         };
         x.add(step,ctx);
         /* simulate */
         x.tick(10.); /* (Block) time=1 on exit => task-timout=5 => delta = 4. ==>> SleepQuantity::Time(4.) */
         assert_eq!(1.,integration.get_time());
-        os1.flag();
+        os1.satisfy(());
         x.tick(10.); /* (Block) time=1 on entry and exit => +2  ==>> SleepQuantity::Time(2.) */
         assert_eq!(1.,integration.get_time());
         /* verify */
