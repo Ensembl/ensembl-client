@@ -3,7 +3,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::{ Arc, Mutex };
 use crate::agent::agent::Agent;
-use crate::helper::flagfuture::FlagFuture;
+use crate::corefutures::flagfuture::FlagFuture;
 use super::task::{ KillReason, TaskResult, TaskSummary };
 
 #[cfg(test)]

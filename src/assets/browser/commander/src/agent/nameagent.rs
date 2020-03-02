@@ -1,5 +1,5 @@
 use hashbrown::HashSet;
-use crate::helper::named::NamedWait;
+use crate::corefutures::namedfuture::NamedWait;
 
 /* NameAgent is the Agent mixin responsible for naming the task */
 

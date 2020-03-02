@@ -192,7 +192,7 @@ mod test {
     use blackbox::*;
     use futures::future;
     use std::collections::HashSet;
-    use crate::helper::flagfuture::FlagFuture;
+    use crate::corefutures::flagfuture::FlagFuture;
     use crate::integration::integration::SleepQuantity;
     use crate::integration::testintegration::{ TestIntegration, tick_helper };
     use crate::task::task::{ KillReason, TaskResult };

@@ -63,9 +63,9 @@ code to handle the use of blocks and waking by futures. `FinishAgent` handles si
 handles tasks related to naming and diagnostics. `RunAgent` handles tasks related to timers and ticks, creating
 subfutures, and so on.
 
-## helper/
+## corefutures/
 
-The `helper/` directory contains various implementations of `Future` which expose functionality to the crate user.
+The `corefutures/` directory contains various implementations of `Future` which expose functionality to the crate user.
 
 * `FlagFuture` is a useful utility for implementing callback-based code with futures. It is used extensively in the
 crate and exposed for potential use outside of the crate.

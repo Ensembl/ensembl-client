@@ -140,7 +140,7 @@ impl ExecutorTasks {
 
 #[cfg(test)]
 mod test {
-    use crate::helper::flagfuture::FlagFuture;
+    use crate::corefutures::flagfuture::FlagFuture;
     use crate::integration::testintegration::TestIntegration;
     use crate::task::runconfig::RunConfig;
     use crate::task::task::TaskResult;
