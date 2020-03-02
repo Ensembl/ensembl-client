@@ -50,12 +50,19 @@ impl HttpManager {
         self.0.borrow_mut().add_request(req,data,consumer);
     }
     
-    pub fn tick(&self, agent: &Agent) -> bool {
+    fn tick(&self, agent: &Agent) -> bool {
         let done = self.0.borrow_mut().get_done();
         let len = done.len();
         for (req,mut cons) in done {
             cons.consume(req,agent);
         }
         return len != 0
+    }
+
+    pub async fn main_loop(self, agent: Agent) {
+        loop {
+            self.tick(&agent);
+            agent.tick(1).await;
+        }
     }
 }

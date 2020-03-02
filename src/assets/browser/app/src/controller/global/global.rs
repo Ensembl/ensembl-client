@@ -45,18 +45,11 @@ impl GlobalImpl {
         out
     }
 
-    async fn http_manager_loop(agent: Agent, http_manager: HttpManager) {
-        loop {
-            http_manager.tick(&agent);
-            agent.tick(1).await;
-        }
-    }
-
     fn init_http_manager(&mut self) {
         let mut exe = self.commander.executor();
         let rc = RunConfig::new(None,0,None);
         let agent = exe.new_agent(&rc,"http-manager");
-        exe.add(GlobalImpl::http_manager_loop(agent.clone(),self.http_manager.clone()),agent);
+        exe.add(self.http_manager.clone().main_loop(agent.clone()),agent);
     }
 
     pub fn counter(&self) -> Counter {
