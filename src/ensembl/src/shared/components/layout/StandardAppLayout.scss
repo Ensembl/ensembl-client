@@ -68,6 +68,7 @@ $drawerWindowWidth: 45px;
     transform: translateX(
       calc(100% - #{$sidebarContentWidth} - #{$sidebarToolstripWidth})
     );
+    z-index: 4;
   }
 
   &DrawerOpen {

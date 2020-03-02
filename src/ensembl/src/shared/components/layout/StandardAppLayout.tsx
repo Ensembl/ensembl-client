@@ -26,6 +26,7 @@ type StandardAppLayoutProps = {
   sidebarToolstripContent?: ReactNode;
   sidebarNavigation: ReactNode;
   topbarContent: ReactNode;
+  isSidebarFloating?: boolean;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
   isDrawerOpen: boolean;
@@ -45,8 +46,8 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
   const mainClassNames = classNames(
     styles.main,
-    { [styles.mainDefault]: props.isSidebarOpen },
-    { [styles.mainFullWidth]: !props.isSidebarOpen }
+    { [styles.mainDefault]: props.isSidebarOpen && !props.isSidebarFloating },
+    { [styles.mainFullWidth]: !props.isSidebarOpen || props.isSidebarFloating }
   );
 
   const shouldShowSidebarNavigation =
@@ -103,6 +104,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
 StandardAppLayout.defaultProps = {
   isDrawerOpen: false,
+  isSidebarFloating: false,
   onDrawerClose: noop
 };
 

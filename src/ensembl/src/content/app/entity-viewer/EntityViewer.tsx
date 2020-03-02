@@ -71,6 +71,7 @@ const EntityViewer = (props: Props) => {
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
             topbarContent={<EntityViewerTopbar />}
+            isSidebarFloating={true}
             isSidebarOpen={props.isSidebarOpen}
             onSidebarToggle={props.toggleSidebar}
             isDrawerOpen={false}
