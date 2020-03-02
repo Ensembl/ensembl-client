@@ -17,7 +17,7 @@ const leftSide = [Position.LEFT_TOP, Position.LEFT_BOTTOM];
 const rightSide = [Position.RIGHT_TOP, Position.RIGHT_BOTTOM];
 
 type FindOptimalPositionParams = {
-  tooltipBoundingRect: ClientRect;
+  pointerBoxBoundingRect: ClientRect;
   rootBoundingRect: ClientRect;
   anchorBoundingRect: ClientRect;
   position: Position;

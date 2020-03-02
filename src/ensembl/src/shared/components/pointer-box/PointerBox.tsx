@@ -5,29 +5,36 @@ import noop from 'lodash/noop';
 
 import windowService from 'src/services/window-service';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
-
 import { findOptimalPosition } from './pointer-box-helper';
-import { Position } from './pointer-box-types';
+import {
+  getStylesForRenderingIntoBody
+} from './pointer-box-inline-styles';
+
 import {
   POINTER_WIDTH,
   POINTER_HEIGHT,
   POINTER_OFFSET
 } from './pointer-box-constants';
 
+import { Position } from './pointer-box-types';
+
 import styles from './PointerBox.scss';
 
 type InlineStyles = { [key: string]: string | number | undefined };
-type InlineStylesState = {
+export type InlineStylesState = {
   bodyStyles: InlineStyles;
-  tipStyles: InlineStyles;
+  pointerStyles: InlineStyles;
 };
 
-type PointerBoxProps = {
+export type PointerBoxProps = {
   position: Position;
   anchor: HTMLElement;
   container?: HTMLElement | null; // area within which the box should try to position itself; defaults to window if null
   autoAdjust: boolean; // whether to adjust pointer box position so as not to extend beyond screen bounds
   renderInsideAnchor: boolean; // whether to render PointerBox inside the anchor (which should have position: relative to display it properly); renders to body if false
+  pointerWidth: number;
+  pointerHeight: number;
+  pointerOffset: number;
   children: ReactNode;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -39,7 +46,7 @@ const PointerBox = (props: PointerBoxProps) => {
   const positionRef = useRef<Position | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
     bodyStyles: {},
-    tipStyles: {}
+    pointerStyles: {}
   });
   const pointerBoxRef = useRef<HTMLDivElement>(null);
 
@@ -48,12 +55,49 @@ const PointerBox = (props: PointerBoxProps) => {
   useEffect(() => {
     const pointerBoxElement = pointerBoxRef.current as HTMLDivElement;
 
-    setInlineStyles(getInlineStyles(props));
+    setInlineStyles(getStylesForRenderingIntoBody(props));
 
     if (props.autoAdjust) {
       adjustPosition(pointerBoxElement, props.anchor);
     }
   }, []);
+
+  const adjustPosition = (
+    pointerBox: HTMLDivElement,
+    anchor: HTMLElement
+  ) => {
+    const pointerBoxBoundingRect = pointerBox.getBoundingClientRect();
+    const rootBoundingRect = props.container
+      ? props.container.getBoundingClientRect()
+      : windowService.getDimensions();
+    const anchorBoundingRect = anchor.getBoundingClientRect();
+
+    const optimalPosition = findOptimalPosition({
+      pointerBoxBoundingRect,
+      anchorBoundingRect,
+      rootBoundingRect,
+      position: positionRef.current || props.position
+    });
+
+    if (optimalPosition !== positionRef.current) {
+      positionRef.current = optimalPosition;
+    }
+    setInlineStyles(
+      getStylesForRenderingIntoBody({
+        ...props,
+        position: optimalPosition
+      })
+    );
+    setIsPositioning(false);
+  };
+
+  const hasInlineStyles = () => Object.keys(inlineStyles.bodyStyles).length;
+
+  const className = classNames(
+    styles.tooltip,
+    positionRef.current || props.position,
+    { [styles.tooltipInvisible]: isPositioning || !hasInlineStyles() }
+  );
 
   const renderTarget = props.renderInsideAnchor ? props.anchor : document.body;
   console.log(props.anchor.getBoundingClientRect())
@@ -74,6 +118,9 @@ PointerBox.defaultProps = {
   position: Position.BOTTOM_RIGHT,
   renderInsideAnchor: false,
   autoAdjust: false,
+  pointerWidth: POINTER_WIDTH,
+  pointerHeight: POINTER_HEIGHT,
+  pointerOffset: POINTER_OFFSET,
   onMouseEnter: noop,
   onMouseLeave: noop,
   onOutsideClick: noop,
