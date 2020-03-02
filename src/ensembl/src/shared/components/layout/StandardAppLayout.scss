@@ -68,6 +68,9 @@ $drawerWindowWidth: 45px;
     transform: translateX(
       calc(100% - #{$sidebarContentWidth} - #{$sidebarToolstripWidth})
     );
+  }
+
+  &Floating {
     z-index: 4;
   }
 

@@ -139,6 +139,10 @@ const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
     { [styles.sidebarWrapperOpen]: props.isSidebarOpen },
     { [styles.sidebarWrapperClosed]: !props.isSidebarOpen },
     {
+      [styles.sidebarWrapperFloating]:
+        props.isSidebarOpen && props.isSidebarFloating
+    },
+    {
       [styles.sidebarWrapperDrawerOpen]: props.isDrawerOpen ?? false
     },
     { [styles.instantaneous]: isInstantaneous }
