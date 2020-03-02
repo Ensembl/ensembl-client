@@ -30,7 +30,7 @@ impl<T> PromiseFuture<T> {
         })))
     }
 
-    /// Flag future as Ready.
+    /// Satisfy promise.
     pub fn satisfy(&self, value: T) {
         let mut state = self.0.lock().unwrap();
         if state.value.is_none() {
