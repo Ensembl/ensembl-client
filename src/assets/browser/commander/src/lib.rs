@@ -222,28 +222,32 @@ good spec.
 
 #[macro_use]
 mod util {
-    #[macro_use]
-    pub(crate) mod sequence;
+  #[macro_use]
+  pub(crate) mod sequence;
 }
 
 mod executor {
-    pub(crate) mod action;
-    pub(crate) mod executor;
-    pub(crate) mod link;
-    pub(crate) mod taskcontainer;
-    pub(crate) mod request;
-    mod exetasks;
-    mod runnable;
-    mod runqueue;
-    mod timerset;
-    mod timings;
+  pub(crate) mod action;
+  pub(crate) mod executor;
+  pub(crate) mod link;
+  pub(crate) mod taskcontainer;
+  pub(crate) mod request;
+  mod exetasks;
+  mod runnable;
+  mod runqueue;
+  mod timerset;
+  mod timings;
 }
 
 mod corefutures {
-    pub(crate) mod flagfuture;
-    pub(crate) mod namedfuture;
-    pub(crate) mod tidierfuture;
-    pub(crate) mod turnstilefuture;
+  pub(crate) mod flagfuture;
+  pub(crate) mod namedfuture;
+  pub(crate) mod tidierfuture;
+  pub(crate) mod turnstilefuture;
+}
+
+mod derivedfutures {
+  pub(crate) mod semaphorefuture;
 }
 
 mod integration {
@@ -285,6 +289,7 @@ extern crate owning_ref;
 pub use crate::agent::agent::Agent;
 pub use crate::executor::executor::Executor;
 pub use crate::corefutures::flagfuture::FlagFuture;
+pub use crate::derivedfutures::semaphorefuture::SemaphoreFutureMaker;
 pub use crate::integration::integration::{ Integration, SleepQuantity };
 pub use crate::task::runconfig::RunConfig;
 pub use crate::task::slot::RunSlot;

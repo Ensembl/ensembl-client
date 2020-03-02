@@ -73,6 +73,17 @@ crate and exposed for potential use outside of the crate.
 * `TidierFuture` is the future resturned by `Agent.tidy()`. 
 * `TurnstileFuture` is the future returned by `Agent.turnstile()`.
 
+They differ from `derivedfutures/` in that they expose otherwise features which are otherwise unaccessible from outside
+the crate.
+
+## derivedfutures/
+
+The `derivedfutures/` directory contains various utilities for managing futures for use by the crate user. Unlike
+`corefutures/` these futures use no non-public methods and so could have been implemented outside of this crate.
+
+* `SempahoreFutureMaker` implements signal/wait in terms of futures (eg for
+use in blcking queues).
+
 ## util/
 
 This contains utility functions and macros for use within the crate which might be better pulled in from an external
