@@ -76,7 +76,10 @@ const PointerBox = (props: PointerBoxProps) => {
       pointerBoxBoundingRect,
       anchorBoundingRect,
       rootBoundingRect,
-      position: positionRef.current || props.position
+      position: positionRef.current || props.position,
+      pointerWidth: props.pointerWidth,
+      pointerHeight: props.pointerHeight,
+      pointerOffset: props.pointerOffset
     });
 
     if (optimalPosition !== positionRef.current) {
@@ -94,20 +97,21 @@ const PointerBox = (props: PointerBoxProps) => {
   const hasInlineStyles = () => Object.keys(inlineStyles.bodyStyles).length;
 
   const className = classNames(
-    styles.tooltip,
+    styles.pointerBox,
     positionRef.current || props.position,
     { [styles.tooltipInvisible]: isPositioning || !hasInlineStyles() }
   );
 
   const renderTarget = props.renderInsideAnchor ? props.anchor : document.body;
-  console.log(props.anchor.getBoundingClientRect())
 
   return (
     ReactDOM.createPortal(
       <div
         className={styles.pointerBox}
         ref={pointerBoxRef}
+        style={inlineStyles.bodyStyles}
       >
+        { props.children }
       </div>,
       renderTarget
     )
@@ -127,4 +131,5 @@ PointerBox.defaultProps = {
   onClose: noop
 };
 
+export { Position };
 export default PointerBox;

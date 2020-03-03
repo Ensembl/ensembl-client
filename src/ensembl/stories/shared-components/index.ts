@@ -3,6 +3,7 @@ import './button/Button.stories';
 import './clear-button/ClearButton.stories';
 import './question-button/QuestionButton.stories';
 import './select/Select.stories';
+import './pointer-box/PointerBox.stories';
 import './tooltip/Tooltip.stories';
 import './hoverbox/Hoverbox.stories';
 import './input/Input.stories';

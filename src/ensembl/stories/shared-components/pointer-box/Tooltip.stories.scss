@@ -1,0 +1,142 @@
+@import 'src/styles/common';
+
+.container {
+  display: grid;
+  background: cornsilk;
+  height: 80vh;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 150px;
+  margin-left: calc(100vw - 200px);
+  width: 100px;
+  height: 100px;
+  background-color: $grey;
+  user-select: 'none';
+  cursor: 'pointer';
+}
+
+.variantsStoryLayout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    position: absolute;
+    top: 2em;
+  }
+}
+
+.variantsStoryContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.variantsStoryAnchor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  cursor: pointer;
+  &:hover {
+    background: green;
+  }
+}
+
+.variantsStoryTopLeft {
+  left: 10%;
+  top: 0;
+}
+
+.variantsStoryTopRight {
+  right: 10%;
+  top: 0;
+}
+
+.variantsStoryRightTop {
+  right: 0%;
+  top: 10%;
+}
+
+.variantsStoryRightBottom {
+  right: 0;
+  bottom: 10%;
+}
+
+.variantsStoryBottomLeft {
+  bottom: 0;
+  left: 10%;
+}
+
+.variantsStoryBottomRight {
+  bottom: 0;
+  right: 10%;
+}
+
+.variantsStoryLeftTop {
+  left: 0;
+  top: 10%;
+}
+
+.variantsStoryLeftBottom {
+  left: 0;
+  bottom: 10%;
+}
+
+.positioningStoryLayout {
+  min-height: 100vh;
+  max-width: 900px;
+  margin: auto;
+}
+
+.positioningStoryContainer {
+  position: relative;
+  height: 600px;
+  width: 600px;
+  background: $light-grey;
+}
+
+.positioningStoryItem {
+  position: absolute;
+  padding: 1.5em;
+  background: $grey;
+}
+
+.positioningStoryItemTopLeft {
+  left: 2em;
+  top: 2em;
+}
+
+.positioningStoryItemTopRight {
+  right: 2em;
+  top: 2em;
+}
+
+.positioningStoryItemBottomLeft {
+  left: 2em;
+  bottom: 2em;
+}
+
+.positioningStoryItemBottomRight {
+  right: 2em;
+  bottom: 2em;
+}
+
+.positioningStoryItemCenter {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.positioningStorySelector {
+  display: inline-block;
+  margin-top: 1em;
+}
