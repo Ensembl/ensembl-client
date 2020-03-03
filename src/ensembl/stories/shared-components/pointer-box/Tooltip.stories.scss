@@ -140,3 +140,16 @@
   display: inline-block;
   margin-top: 1em;
 }
+
+.scrollingStoryContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 150vh;
+}
+
+.scrollingStoryButton {
+  padding: 1.5em;
+  background: $grey;
+}
