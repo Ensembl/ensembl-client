@@ -82,11 +82,10 @@ describe('StandardAppLayout', () => {
       ).toBe(1);
     });
 
-    it.only('main content remains full width when sidebar behaviour is slideover', () => {
+    it('does not change main area styles when sidebar slides over it', () => {
       const props = {
         ...minimalProps,
-        sidebarBehaviour: SidebarBehaviourType.SLIDEOVER,
-        isSidebarOpen: true
+        sidebarBehaviour: SidebarBehaviourType.SLIDEOVER
       };
       const wrapper = render(<StandardAppLayout {...props} />);
       const mainContent = wrapper.find('.main');
