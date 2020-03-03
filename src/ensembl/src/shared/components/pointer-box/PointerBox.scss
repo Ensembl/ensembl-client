@@ -1,6 +1,11 @@
 .pointerBox {
   position: absolute;
   z-index: 1000;
+  
+  // delete below
+  background: black;
+  color: white;
+  // border: 1px solid black;
 }
 
 // Class applied to pointer box while the code is finding appropriate position for it.
@@ -12,4 +17,13 @@
   position: fixed;
   top: 0;
   left: 0;
+}
+
+.pointer {
+  position: absolute;
+// delete below
+  fill: black;
+  // stroke: black;
+  // font-size: 0;
+  // line-height: 0;
 }

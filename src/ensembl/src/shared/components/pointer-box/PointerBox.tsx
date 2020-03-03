@@ -26,6 +26,12 @@ export type InlineStylesState = {
   pointerStyles: InlineStyles;
 };
 
+type PointerProps = {
+  style: InlineStyles;
+  pointerWidth: number;
+  pointerHeight: number;
+};
+
 export type PointerBoxProps = {
   position: Position;
   anchor: HTMLElement;
@@ -98,7 +104,7 @@ const PointerBox = (props: PointerBoxProps) => {
 
   const className = classNames(
     styles.pointerBox,
-    positionRef.current || props.position,
+    // positionRef.current || props.position,
     { [styles.tooltipInvisible]: isPositioning || !hasInlineStyles() }
   );
 
@@ -107,10 +113,11 @@ const PointerBox = (props: PointerBoxProps) => {
   return (
     ReactDOM.createPortal(
       <div
-        className={styles.pointerBox}
+        className={className}
         ref={pointerBoxRef}
         style={inlineStyles.bodyStyles}
       >
+        <Pointer pointerWidth={props.pointerWidth} pointerHeight={props.pointerWidth} style={inlineStyles.pointerStyles} />
         { props.children }
       </div>,
       renderTarget
@@ -129,6 +136,33 @@ PointerBox.defaultProps = {
   onMouseLeave: noop,
   onOutsideClick: noop,
   onClose: noop
+};
+
+const Pointer = (props: PointerProps) => {
+  const {
+    pointerWidth,
+    pointerHeight
+  } = props;
+  const pointerEndX = pointerWidth / 2;
+  const style = {
+    ...props.style,
+    width: `${pointerWidth}px`,
+    height: `${pointerHeight}px`
+  }
+
+  const polygonPoints = `0,${pointerHeight} ${pointerWidth},${pointerHeight} ${pointerEndX},0`;
+
+  return (
+    <svg
+      className={styles.pointer}
+      style={style}
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      viewBox={`0 0 ${pointerWidth} ${pointerHeight}`}
+    >
+      <polygon points={polygonPoints} />
+    </svg>
+  );
 };
 
 export { Position };
