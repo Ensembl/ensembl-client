@@ -39,16 +39,17 @@ Prismic is a simple but fully featured headless CMS that offers a variety of ine
 * Revision history
 * React API, including search capability
 * Ability to preview pages directly in our apps
+* No hard limit on storage or API calls
 
-The Professional Medium package costs $100 per month, and provides:
+The Professional Medium package costs $1200 per year, and provides:
 * 25 users
 * User roles
-* Publication workflow
+* Publication workflows
 * SLA with 99.5% uptime and basic support
 
 Note that we would not be able to have individual user accounts for everyone in Ensembl on this package. Regular users like web FE and Outreach would need them, but other teams would have to have a shared team account.
 
-(The Platinum package has slightly better terms and unlimited users, but costs $500 per month.)
+(The Platinum package has slightly better terms and unlimited users, but costs $6000 per year!)
 
 ## Consequences
 
