@@ -87,11 +87,15 @@ const Wrapper = (props: {
         sidebarNavigation={<SidebarNavigation />}
         sidebarToolstripContent={<SidebarToolstripContent />}
         drawerContent={props.drawerContent || null}
-        sidebarBehaviour={props.sidebarBehaviour || SidebarBehaviourType.PUSH}
+        {...(props.sidebarBehaviour
+          ? { sidebarBehaviour: props.sidebarBehaviour }
+          : null)}
         isSidebarOpen={props.isSidebarOpen}
-        isDrawerOpen={props.isDrawerOpen || false}
+        {...(props.isDrawerOpen ? { isDrawerOpen: props.isDrawerOpen } : null)}
         onSidebarToggle={props.onSidebarToggle}
-        onDrawerClose={props.onDrawerClose}
+        {...(props.onDrawerClose
+          ? { onDrawerClose: props.onDrawerClose }
+          : null)}
         viewportWidth={BreakpointWidth.BIG_DESKTOP}
       />
     </div>
