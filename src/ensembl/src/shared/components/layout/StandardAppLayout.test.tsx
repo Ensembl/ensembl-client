@@ -2,9 +2,9 @@ import React from 'react';
 import { mount, render } from 'enzyme';
 import faker from 'faker';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
+import StandardAppLayout, { SidebarBehaviourType } from './StandardAppLayout';
 
-import StandardAppLayout from './StandardAppLayout';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 const MainContent = () => (
   <div className="mainContent">This is main content</div>
@@ -82,15 +82,15 @@ describe('StandardAppLayout', () => {
       ).toBe(1);
     });
 
-    it('floats the sidebar over the main content when isSidebarFloating set to true', () => {
+    it.only('main content remains full width when sidebar behaviour is slideover', () => {
       const props = {
         ...minimalProps,
-        isSidebarFloating: true,
+        sidebarBehaviour: SidebarBehaviourType.SLIDEOVER,
         isSidebarOpen: true
       };
       const wrapper = render(<StandardAppLayout {...props} />);
-      const sidebarWrapper = wrapper.find('.sidebarWrapper');
-      expect(sidebarWrapper.hasClass('sidebarWrapperFloating')).toBe(true);
+      const mainContent = wrapper.find('.main');
+      expect(mainContent.hasClass('mainFullWidth')).toBe(true);
     });
 
     describe('with drawer', () => {

@@ -70,10 +70,6 @@ $drawerWindowWidth: 45px;
     );
   }
 
-  &Floating {
-    z-index: 4;
-  }
-
   &DrawerOpen {
     transform: translateX(#{$drawerWindowWidth});
   }

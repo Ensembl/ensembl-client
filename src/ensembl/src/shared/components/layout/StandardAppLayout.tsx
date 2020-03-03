@@ -15,6 +15,11 @@ enum SidebarModeToggleAction {
   CLOSE = 'close'
 }
 
+export enum SidebarBehaviourType {
+  PUSH = 'push',
+  SLIDEOVER = 'slideover'
+}
+
 type SidebarModeToggleProps = {
   onClick: () => void;
   showAction: SidebarModeToggleAction;
@@ -26,7 +31,7 @@ type StandardAppLayoutProps = {
   sidebarToolstripContent?: ReactNode;
   sidebarNavigation: ReactNode;
   topbarContent: ReactNode;
-  isSidebarFloating?: boolean;
+  sidebarBehaviour: SidebarBehaviourType;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
   isDrawerOpen: boolean;
@@ -46,8 +51,16 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
   const mainClassNames = classNames(
     styles.main,
-    { [styles.mainDefault]: props.isSidebarOpen && !props.isSidebarFloating },
-    { [styles.mainFullWidth]: !props.isSidebarOpen || props.isSidebarFloating }
+    {
+      [styles.mainDefault]:
+        props.isSidebarOpen &&
+        props.sidebarBehaviour === SidebarBehaviourType.PUSH
+    },
+    {
+      [styles.mainFullWidth]:
+        !props.isSidebarOpen ||
+        props.sidebarBehaviour === SidebarBehaviourType.SLIDEOVER
+    }
   );
 
   const shouldShowSidebarNavigation =
@@ -104,7 +117,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
 StandardAppLayout.defaultProps = {
   isDrawerOpen: false,
-  isSidebarFloating: false,
+  sidebarBehaviour: SidebarBehaviourType.PUSH,
   onDrawerClose: noop
 };
 
@@ -138,10 +151,6 @@ const useSidebarWrapperClassNames = (props: StandardAppLayoutProps) => {
     styles.sidebarWrapper,
     { [styles.sidebarWrapperOpen]: props.isSidebarOpen },
     { [styles.sidebarWrapperClosed]: !props.isSidebarOpen },
-    {
-      [styles.sidebarWrapperFloating]:
-        props.isSidebarOpen && props.isSidebarFloating
-    },
     {
       [styles.sidebarWrapperDrawerOpen]: props.isDrawerOpen ?? false
     },
