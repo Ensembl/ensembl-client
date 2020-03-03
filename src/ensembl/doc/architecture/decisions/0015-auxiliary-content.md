@@ -22,36 +22,46 @@ In order to support users of the new site, we need infrastructure that will supp
 * Media support, e.g. image uploads
 * Efficient fetching of content for embedding in the client
 * Data stored in a format that allows it to be easily consumed by our React components
-* Free and open-source
-* Based on modern technologies - JAMstack, not LAMP
 
 ## Decision
 
-Current best practice in content management is to use a headless CMS - a backend content store with a ready-made editing interface that can be used for content creation. There are many contenders in this arena, but few that fulfil all our requirements.
+Current best practice in content management is to use a headless CMS: a backend content store with a ready-made editing interface that can be used for content creation.
 
-Two projects that were considered but ultimately rejected were NetlifyCMS and Ghost. NetlifyCMS is an admin layer over a GitHub repository, which is good for content creation but not so efficient for content retrieval.
-Ghost, on the other hand, has an efficient content API but is heavily oriented towards blogging and might be difficult to repurpose for our needs.
+The three leading open-source projects were considered but ultimately rejected. NetlifyCMS is an admin layer over a GitHub repository, which is good for content creation but not so efficient for content retrieval. Ghost has an efficient content API but is heavily oriented towards blogging. Strapi was the closest to what we need, but is a very new product and still lacks some features that would make for a smooth experience for both developers and content providers.
 
-Strapi (https://strapi.io/), though a relative newcomer, seems to offer the best of both worlds. It is a Node/React app that uses either MySQL/MariaDB or SQLite as its backend, and its record templates are entirely customisable. Text content is stored as Markdown, and records can be fetched as JSON using either REST or GraphQL. Strapi integrates well with many modern JS frameworks, including both vanilla React components and the Gatsby static site generator.
+A commercial PaaS (Platform as a Service) CMS, on the other hand, is likely to have a much fuller feature set and also greatly reduce developer time and effort. However most of the ones researched were very expensive: $500 or more per month for the level of service we require, with possible additional costs if bandwidth usage turned out to be higher than anticipated. Only one product stood out as being within our budget.
+
+Prismic is a simple but fully featured headless CMS that offers a variety of inexpensive packages, including a free single-user account that could be used for initial development.
+
+### Features
+* Customisable user interface
+* Draft, live and archived content status
+* Revision history
+* React API, including search capability
+* Ability to preview pages directly in our apps
+
+The Professional Medium package costs $100 per month, and provides:
+* 25 users
+* User roles
+* Publication workflow
+* SLA with 99.5% uptime and basic support
+
+Note that we would not be able to have individual user accounts for everyone in Ensembl on this package. Regular users like web FE and Outreach would need them, but other teams would have to have a shared team account.
+
+(The Platinum package has slightly better terms and unlimited users, but costs $500 per month.)
 
 ## Consequences
 
 ### Pros
 
-* Using a headless CMS will allow us to both pull content into the Ensembl client and, if desired, run a separate "documentation" website from the same backend.
+* Using a headless CMS will allow us to pull content into the Ensembl client and organise it in any way we see fit
 
 * Content providers will be able to write documentation, tutorials, etc using a familiar web interface, similar to the WordPress dashboard
 
-* Storing content as Markdown will reduce the tendency for our static content to vary wildly in styling and appearance
-
-* Markdown-to-HTML converters are readily available for React
+* Prismic's rich text editor can be customised to limit the formatting options allowed, which will reduce the tendency for our static content to vary wildly in styling and appearance
 
 ### Cons
 
-* There is always a learning curve with unfamiliar technologies
+* Tying ourselves into a paid service will make it impossible for us to distribute this content to external users setting up a local mirror, so our code will need to fall back to placeholder content if a service is not configured
 
-* Strapi is a relatively new project
-
-* Initial setup will be required for the Strapi admin interface before it can be used by content providers
-
-* For anything other than contextual help (which will need its own React components integrated into our apps), some development work will be needed to display content as web pages - either within the Ensembl client or as part of a third-party frontend such as Gatsby.
+* Initial setup will be required for the Prismic admin interface before it can be used by content providers
