@@ -49,7 +49,8 @@ export type PointerBoxProps = {
 
 const PointerBox = (props: PointerBoxProps) => {
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
-  const positionRef = useRef<Position | null>(null);
+  const positionRef = useRef<Position | null>(props.position);
+  const anchorRectRef = useRef<DOMRect|null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
     bodyStyles: {},
     pointerStyles: {}
@@ -62,6 +63,7 @@ const PointerBox = (props: PointerBoxProps) => {
     const pointerBoxElement = pointerBoxRef.current as HTMLDivElement;
 
     setInlineStyles(getStylesForRenderingIntoBody(props));
+    anchorRectRef.current = props.anchor.getBoundingClientRect();
 
     if (props.autoAdjust) {
       adjustPosition(pointerBoxElement, props.anchor);
@@ -71,14 +73,24 @@ const PointerBox = (props: PointerBoxProps) => {
   // from Stack Overflow: https://stackoverflow.com/questions/59792071/how-to-observe-dom-element-position-changes
   // (listen to all scroll events in the event capturing phase on the body and re-evaluate anchor position)
   useEffect(() => {
-    console.log('I will add event listener');
     document.addEventListener('scroll', getAnchorPosition, true);
 
     return () => document.removeEventListener('scroll', getAnchorPosition, true);
   }, []);
 
   const getAnchorPosition = () => {
-    console.log(props.anchor.getBoundingClientRect());
+    const currentAnchorBoundingRect = props.anchor.getBoundingClientRect();
+    if(anchorRectRef?.current?.top !== currentAnchorBoundingRect.top || anchorRectRef?.current?.left !== currentAnchorBoundingRect.left) {
+      // FIXME — request animation frame?
+      // FIXME — closeWhenLeaving ? IntersectionObserver?
+      setInlineStyles(
+        getStylesForRenderingIntoBody({
+          ...props,
+          position: positionRef.current as Position
+        })
+      );
+      anchorRectRef.current = currentAnchorBoundingRect;
+    }
   }
 
   const adjustPosition = (
