@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import PointerBox, { Position } from 'src/shared/components/pointer-box/PointerBox';
+import PointerBox, {
+  Position
+} from 'src/shared/components/pointer-box/PointerBox';
 
 import styles from './Tooltip.stories.scss';
 
@@ -20,7 +22,7 @@ type PositionsProps = {
 };
 
 const Item = (props: ItemProps) => {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showPointerBox, setShowPointerBox] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
 
   const className = classNames(styles.positioningStoryItem, props.className);
@@ -29,13 +31,13 @@ const Item = (props: ItemProps) => {
     <div
       ref={anchorRef}
       className={className}
-      onClick={() => setShowTooltip(!showTooltip)}
+      onClick={() => setShowPointerBox(!showPointerBox)}
     >
       Click me
-      {showTooltip && (
+      {showPointerBox && (
         <PointerBox
           anchor={anchorRef.current as HTMLDivElement}
-          onClose={() => setShowTooltip(false)}
+          onClose={() => setShowPointerBox(false)}
           position={props.position}
           container={props.container.current}
           autoAdjust={true}
