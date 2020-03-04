@@ -75,7 +75,7 @@ const devConfig = {
         secure: false
       },
       '/browser': {
-        target: 'https://staging-2020.ensembl.org',
+        target: 'http://127.0.0.1:4000',
         changeOrigin: true,
         secure: false
       }

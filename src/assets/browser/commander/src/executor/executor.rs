@@ -106,14 +106,12 @@ impl Executor {
             for mut action in actions {
                 match action {
                     (ref handle,Action::BlockTask()) => {
-                        blackbox_log!("commander","Task '{}' blocked",self.task_name(handle));
                         self.get_tasks_mut().block_task(&handle);
                     },
                     (ref _handle,Action::Unblock(ref mut block)) => {
                         block.run_unblock();
                     },
                     (ref handle,Action::UnblockTask()) => {
-                        blackbox_log!("commander","Task '{}' unblocked",self.task_name(handle));
                         self.get_tasks_mut().unblock_task(&handle);
                     },
                     (ref handle,Action::Done()) => {

@@ -1,67 +1,79 @@
-use commander::Agent;
+use commander::{ Agent, CommanderStream };
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use stdweb::web::{ XmlHttpRequest, XhrReadyState };
 
+struct HttpRequest {
+    xml: XmlHttpRequest,
+    consumer: Box<dyn HttpResponseConsumer>
+}
+
+impl HttpRequest {
+    fn new(xml: XmlHttpRequest, consumer: Box<dyn HttpResponseConsumer>) -> HttpRequest {
+        blackbox_log!("http-manager","request added");
+        HttpRequest { xml, consumer }
+    }
+
+    fn is_done(&self) -> bool {
+        self.xml.ready_state() == XhrReadyState::Done
+    }
+
+    fn finish(mut self, agent: &Agent) {
+        blackbox_log!("http-manager","request finished");
+        self.consumer.consume(self.xml,agent);
+    }
+}
+
 pub trait HttpResponseConsumer {
     fn consume(&mut self,req: XmlHttpRequest, agent: &Agent);
 }
 
-pub struct HttpManagerImpl {
-    requests: Vec<(XmlHttpRequest,Box<dyn HttpResponseConsumer>)>
+#[derive(Clone)]
+pub struct HttpManager {
+    requests: CommanderStream<HttpRequest>
 }
 
-impl HttpManagerImpl {
-    pub fn new() -> HttpManagerImpl {
-        HttpManagerImpl {
-            requests: Vec::<(XmlHttpRequest,Box<dyn HttpResponseConsumer>)>::new()
+impl HttpManager {
+    pub fn new() -> HttpManager {
+        HttpManager {
+            requests: CommanderStream::new()
         }
     }
 
     // TODO error handling
-    pub fn add_request(&mut self, req: XmlHttpRequest, data: Option<&[u8]>,
+    pub fn add_request(&self, req: XmlHttpRequest, data: Option<&[u8]>,
                        consumer: Box<dyn HttpResponseConsumer>) {
         if let Some(data) = data {
             req.send_with_bytes(data);
         } else {
             req.send();
         }
-        self.requests.push((req,consumer));
+        self.requests.add(HttpRequest::new(req,consumer));
     }
     
-    pub fn get_done(&mut self) -> Vec<(XmlHttpRequest,Box<dyn HttpResponseConsumer>)> {
-        self.requests.drain_filter(|x|
-            x.0.ready_state() == XhrReadyState::Done
-        ).collect()
-    }
-}
-
-#[derive(Clone)]
-pub struct HttpManager(Rc<RefCell<HttpManagerImpl>>);
-
-impl HttpManager {
-    pub fn new() -> HttpManager {
-        HttpManager(Rc::new(RefCell::new(HttpManagerImpl::new())))
-    }
-    
-    pub fn add_request(&self, req: XmlHttpRequest, data: Option<&[u8]>,
-                       consumer: Box<dyn HttpResponseConsumer>) {
-        self.0.borrow_mut().add_request(req,data,consumer);
-    }
-    
-    fn tick(&self, agent: &Agent) -> bool {
-        let done = self.0.borrow_mut().get_done();
-        let len = done.len();
-        for (req,mut cons) in done {
-            cons.consume(req,agent);
+    async fn get_done(&self) -> Vec<HttpRequest> {
+        let mut finished = Vec::new();
+        let mut unfinished = Vec::new();
+        let mut reqs = self.requests.get_multi().await;
+        for r in reqs.drain(..) {
+            if r.is_done() {
+                finished.push(r);
+            } else {
+                unfinished.push(r);
+            };
         }
-        return len != 0
+        for r in unfinished.drain(..) {
+            self.requests.add(r);
+        }
+        finished
     }
-
-    pub async fn main_loop(self, agent: Agent) {
+    
+    pub async fn main_loop(mut self, agent: Agent) {
         loop {
-            self.tick(&agent);
+            for r in self.get_done().await {
+                r.finish(&agent);
+            }
             agent.tick(1).await;
         }
     }
