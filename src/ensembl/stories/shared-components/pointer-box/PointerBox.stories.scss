@@ -149,6 +149,27 @@
   height: 150vh;
 }
 
+.scrollingStoryAnchorContainer {
+  height: 40vh;
+  width: 30vw;
+  overflow: auto;
+  border: 1px black dashed;
+  transform: translateY(-60%);
+}
+
+.scrollingStoryAnchorContainerInner {
+  height: 150%;
+  width: 150%;
+  padding: 2em;
+}
+
+.scrollingStoryInfo {
+  width: 600px;
+  margin: auto;
+  padding-top: 0.6em;
+  font-size: 16px;
+}
+
 .scrollingStoryButton {
   padding: 1.5em;
   background: $grey;

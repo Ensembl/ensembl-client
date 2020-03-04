@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
-import styles from './Tooltip.stories.scss';
+import styles from './PointerBox.stories.scss';
 
 const VariantsStory = () => {
   const [visibleId, setVisibleId] = useState<Position | null>(null);

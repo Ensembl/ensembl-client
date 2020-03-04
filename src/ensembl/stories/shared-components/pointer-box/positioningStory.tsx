@@ -5,7 +5,7 @@ import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
 
-import styles from './Tooltip.stories.scss';
+import styles from './PointerBox.stories.scss';
 
 type ItemsProps = {
   container: React.RefObject<HTMLElement>;
