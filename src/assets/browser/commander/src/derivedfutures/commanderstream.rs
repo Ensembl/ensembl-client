@@ -33,6 +33,10 @@ impl<T> CommanderStreamState<T> {
         }
         out
     }
+
+    fn get_nowait(&mut self) -> Option<T> {
+        self.data.pop_front()
+    }
 }
 
 
@@ -61,6 +65,23 @@ impl<T> CommanderStream<T> {
     pub fn get(&self) -> impl Future<Output=T> {
         self.0.lock().unwrap().get()
     }
+
+    /// Get head of queue or None.
+    pub fn get_nowait(&self) -> Option<T> {
+        self.0.lock().unwrap().get_nowait()
+    }
+
+    /// Return at least one queue member. Wait if none present. If multiple are present, return all.
+    pub async fn get_multi(&self) -> Vec<T> {
+        let mut out = Vec::new();
+        while let Some(value) = self.get_nowait() {
+            out.push(value);
+        }
+        if out.len() == 0 {
+            out.push(self.get().await);
+        }
+        out
+    }
 }
 
 #[cfg(test)]
@@ -83,6 +104,12 @@ mod test {
      * 11: 6 pushed
      * 12: waits waited upon => 6 pulled
      * 13: 7 pushed, pulled
+     * 14: 8 pushed, 9 pushed
+     * 15: 8,9 pulled (nowait)
+     * 16: 10,11 pushed
+     * 17: 10,11 pulled (multi)
+     * 19: 12 pushed, pulled (multi)
+     * 
      */
 
     async fn smoke_1(agent: Agent, s: CommanderStream<i32>) {
@@ -98,6 +125,15 @@ mod test {
         s.add(6);
         agent.tick(2).await;
         s.add(7);
+        agent.tick(1).await;
+        s.add(8);
+        s.add(9);
+        agent.tick(2).await;
+        s.add(10);
+        s.add(11);
+        agent.tick(3).await;
+        s.add(12);
+
     }
 
     fn smoke2_record(out: &mut Vec<(u64,i32)>, start: u64, agent: &Agent, v: i32) {
@@ -132,6 +168,16 @@ mod test {
         smoke2_record(&mut out,start,&agent,v);
         let v2 = v2.await;
         smoke2_record(&mut out,start,&agent,v2);
+        agent.tick(2).await;
+        smoke2_record(&mut out,start,&agent,s.get_nowait().unwrap());
+        smoke2_record(&mut out,start,&agent,s.get_nowait().unwrap());
+        assert_eq!(None,s.get_nowait());
+        agent.tick(2).await;
+        assert_eq!(vec![10,11],s.get_multi().await);
+        smoke2_record(&mut out,start,&agent,10);
+        smoke2_record(&mut out,start,&agent,11);
+        agent.tick(1).await;
+        smoke2_record(&mut out,start,&agent,s.get().await);
         out
     }
 
@@ -149,6 +195,8 @@ mod test {
             x.tick(10.);
         }
         let out = th.take_result();
-        assert_eq!(Some(vec![(2, 0),(3, 1),(5, 2),(8, 3),(8, 4),(9, 5),(12, 6),(13, 7)]),out);
+        assert_eq!(Some(vec![
+            (2,0),(3,1),(5,2),(8,3),(8,4),(9,5),(12,6),(13,7),(15,8),(15,9),(17,10),(17,11),(19,12)
+        ]),out);
     }
 }
