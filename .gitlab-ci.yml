@@ -278,6 +278,17 @@ Staging:WP-HX:
   - dev
   needs: ["Nginx:Staging-WP"]
 
+# Job to deploy to staging environment (WP-HH k8s cluster)
+Staging:WP-HH:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
+  environment:
+    name : wp-hh-staging
+  only:
+  - dev
+  needs: ["Nginx:Staging-WP"]
+
 # Job to deploy to live environment (EHK k8s cluster)
 Live:EHK-HH:
   extends: .deploy-ehk
@@ -329,6 +340,17 @@ Internal:WP-HX:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
   environment:
     name : wp-hx-internal
+  only:
+  - dev
+  needs: ["Nginx:Internal-WP"]
+
+# Job to deploy to internal environment (WP-HH k8s cluster)
+Internal:WP-HH:
+  extends: .deploy-wp
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+  environment:
+    name : wp-hh-internal
   only:
   - dev
   needs: ["Nginx:Internal-WP"]
