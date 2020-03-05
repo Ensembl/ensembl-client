@@ -7,7 +7,7 @@ import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/st
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 
-import TranscriptVisualisationColumn from './components/transcripts-table/TranscriptVisualisationColumn';
+import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptslist';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { OnTicksCalculatedPayload } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
@@ -94,7 +94,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       </div>
       <div className={styles.geneViewTable}>
         {basePairsRulerTicks && (
-          <TranscriptVisualisationColumn
+          <DefaultTranscriptslist
             gene={props.gene}
             rulerTicks={basePairsRulerTicks}
           />
