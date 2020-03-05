@@ -77,7 +77,7 @@ impl Executor {
             if !agent.finish_agent().finished() {
                 tasks.start_task(&container_handle);
                 self.integration.cause_reentry();
-                blackbox_start!("commander",&self.task_key(&container_handle.clone()));
+                blackbox_start!("commander",&self.task_key(&container_handle.clone()),"");
                 if let Some(timeout) = agent.get_config().get_timeout() {
                     let agent2 = agent.clone();
                     self.get_timings_mut().add_timer(&container_handle,timeout,Box::new(move || agent2.finish(KillReason::Timeout)));
@@ -116,7 +116,7 @@ impl Executor {
                     },
                     (ref handle,Action::Done()) => {
                         blackbox_log!("commander","Task '{}' finished",self.task_name(handle));
-                        blackbox_end!("commander",&self.task_key(handle));
+                        blackbox_end!("commander",&self.task_key(handle),"");
                         self.get_tasks_mut().remove_task(&handle);
                     }
                 }
