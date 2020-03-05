@@ -1,12 +1,6 @@
 # Running the ensembl-client application
 
-## Installation
-
-The Ensembl client runs on NodeJS, and all supplementary libraries required for the genome browser (e.g. Rust) are included in this repository. To setup Node.js you only need to run `npm install`. This will install all the necessary NPM packages for app development and the build.
-
 ## Build Scripts
-
-There are several script commands that have been baked into the NPM configuration. They are briefly described below:
 
 ### Basic commands
 - `npm start` - This will start the development server via `webpack`. There is no need to do any compilation manually, as `webpack` will take care of it.
@@ -25,13 +19,9 @@ There are several script commands that have been baked into the NPM configuratio
 - `npm run coverage` - Updates the `jest` coverage of the React.js code, and shows the test coverage.
 - `npm run snapshot` - Updates the `jest` snapshots. You will sometimes need to run this after a change is made to the React.js code. However, first check whether the unit tests are passing after updating them. If you get any errors related to `jest` snapshots, you will then need to run this script.
 
-### Deployment (interal use only)
+### Production builds and deployment
 - `npm run serve:prod` - This runs the built production site locally using `http`.
 - `npm run serve:prod:secure` - Runs the build production site locally securely using `https`. You will need to run `certify` before running this, in case you already haven't generated an SSL certificate.
-- `npm run build` - Runs the production build. It will initially delete the existing local production build and replace it with the new one.
-- `npm run prod:analyse` — Runs production build, and also uses `webpack-bundle-analyzer` to report the size of the bundle.
-- `npm run certify` - Runs `setup-ssl.js` to create a local SSL certificate to run the production build on `HTTPS`. There are two files that are created for this: `localhost.crt` and `localhost.key`.
-- `npm run deploy` - Runs `deploy.js` file to deploy the production build into the master machine. You will need to pass the full address of the machine name along with your username as an argument.
 - `npm run deploy-docs` — Builds the Storybook application and deploys it, along with the docs on Genome browser, to Github Pages ([link](https://ensembl.github.io/ensembl-client))
 
 ## Development
