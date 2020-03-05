@@ -4,15 +4,20 @@ use std::rc::Rc;
 
 use stdweb::web::{ XmlHttpRequest, XhrReadyState };
 
+identitynumber!(ID);
+
 struct HttpRequest {
+    id: u64,
     xml: XmlHttpRequest,
     consumer: Box<dyn HttpResponseConsumer>
 }
 
 impl HttpRequest {
     fn new(xml: XmlHttpRequest, consumer: Box<dyn HttpResponseConsumer>) -> HttpRequest {
-        blackbox_log!("http-manager","request added");
-        HttpRequest { xml, consumer }
+        let id = ID.next();
+        blackbox_log!("http-manager","request {} added",id);
+        blackbox_start!("http-manager","latency",&format!("{}",id));
+        HttpRequest { xml, consumer, id }
     }
 
     fn is_done(&self) -> bool {
@@ -20,7 +25,8 @@ impl HttpRequest {
     }
 
     fn finish(mut self, agent: &Agent) {
-        blackbox_log!("http-manager","request finished");
+        blackbox_log!("http-manager","request {} finished",self.id);
+        blackbox_end!("http-manager","latency",&format!("{}",self.id));
         self.consumer.consume(self.xml,agent);
     }
 }
