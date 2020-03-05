@@ -236,7 +236,7 @@ Nginx:Internal-WP:
 Nginx:feature:
   extends: .build-nginx-ehk
   variables:
-    DEPLOYENV: internal
+    DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   only:
   - /^feature\/.*$/
