@@ -1,7 +1,7 @@
 # Running the ensembl-client application
 
 ## Installation
-1. Have Node.js installed on your computer — either directly from the [Node.js site](https://nodejs.org/), or through a Node version manager, such as [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n)
+1. Have Node.js installed on your computer — either directly from the [Node.js site](https://nodejs.org/), or through a Node version manager, such as [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).  
   NOTE: While the project may work with older versions of Node, it is developed and tested with the latest LTS version.
 2. Run `npm install` to install the dependencies.
 
