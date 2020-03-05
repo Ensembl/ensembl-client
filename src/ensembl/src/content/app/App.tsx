@@ -17,6 +17,7 @@ const SpeciesSelector = lazy(() =>
 const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
+const AboutEnsembl = lazy(() => import('./about-ensembl/AboutEnsembl'));
 
 type StateProps = {
   currentApp: string;
@@ -63,6 +64,7 @@ const AppInner = (props: AppProps) => {
     <Suspense fallback={<div>Loading...</div>}>
       <Switch>
         <Route path={`${url}/global-search`} component={GlobalSearch} />
+        <Route path={`${url}/about-ensembl`} component={AboutEnsembl} />
         <Route path={`${url}/species-selector`} component={SpeciesSelector} />
         <Route path={`${url}/custom-download`} component={CustomDownload} />
         <Route
