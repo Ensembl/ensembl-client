@@ -7,20 +7,18 @@ import DefaultTranscriptslistItem from './default-transcripts-list-item/DefaultT
 import { OnTicksCalculatedPayload } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
-import styles from './TranscriptsTable.scss';
+import styles from './DefaultTranscriptsList.scss';
 
 type Props = {
   gene: Gene;
   rulerTicks: OnTicksCalculatedPayload;
 };
 
-// NOTE: we should make sure that the width of the column is the same as the width of GeneOverviewImage, i.e. 695px
-
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
 
   return (
-    <div className={styles.transcriptVisualisationColumnWrapper}>
+    <div className={styles.defaultTranscriptsList}>
       {gene.transcripts.map((transcript, index) => (
         <DefaultTranscriptslistItem
           key={index}

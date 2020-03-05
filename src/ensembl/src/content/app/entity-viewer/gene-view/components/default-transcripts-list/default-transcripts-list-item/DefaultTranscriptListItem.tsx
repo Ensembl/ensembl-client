@@ -16,6 +16,8 @@ type Props = {
   rulerTicks: OnTicksCalculatedPayload;
 };
 
+// NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px
+
 const DefaultTranscriptListItem = (props: Props) => {
   const { scale } = props.rulerTicks;
   const { start: geneStart } = getFeatureCoordinates(props.gene);
