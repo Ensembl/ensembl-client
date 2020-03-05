@@ -20,7 +20,9 @@ The following apps are currently in development:
 
 Additional apps will become available as the site expands.
 
-In addition to the main web frontend, the codebase includes an installation of [Storybook](https://storybook.js.org/) which can be used to examine individual components.
+Detailed technical documentation on these apps is under development on our [GitHub Pages](https://ensembl.github.io/ensembl-client/).
+
+In addition to the main web frontend, the codebase includes an installation of [Storybook](https://storybook.js.org/) which can be used to examine individual components. This can be run locally, or you can [view our current deployment of Storybook](https://ensembl.github.io/ensembl-client/storybook/index.html) on GitHub Pages.
 
 ### Genome Browser
 
