@@ -57,6 +57,7 @@ dependencies = [
  "blackbox 0.0.0",
  "futures 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "hashbrown 0.6.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "identitynumber 0.0.0",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "owning_ref 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -184,6 +185,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "ahash 0.2.18 (registry+https://github.com/rust-lang/crates.io-index)",
  "autocfg 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "identitynumber"
+version = "0.0.0"
+dependencies = [
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

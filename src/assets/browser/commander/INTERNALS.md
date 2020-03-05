@@ -84,12 +84,6 @@ of these could be delegated to external, possibly third-party crates in time.
 
 * `CommanderStream` implements a blocking queue based around futures.
 
-## util/
-
-This contains utility functions and macros for use within the crate which might be better pulled in from an external
-crate, if only one could be found. Currently there is an implementation here of a global sequence generator macro and a
-hashable trait generating macro.
-
 # Architecture
 
 ## TaskContainerHandles

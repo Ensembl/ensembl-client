@@ -35,7 +35,7 @@ use crate::integration::reentering::ReenteringIntegration;
  * users may follow which are more selective in their propagation.
  */
 
-sequence!(IDENTITY);
+identitynumber!(IDENTITY);
 
 #[derive(Clone)]
 pub(crate) struct Block {
@@ -46,7 +46,7 @@ pub(crate) struct Block {
     identity: u64
 }
 
-hashable!(IDENTITY,Block,identity);
+hashable!(Block,identity);
 
 pub(crate) struct StepWaker(Mutex<Block>);
 

@@ -11,7 +11,7 @@ use crate::agent::agent::Agent;
  * later clean removal.
  */
 
-sequence!(IDENTITY);
+identitynumber!(IDENTITY);
 
 #[derive(Clone)]
 pub(crate) struct NamedWait {
@@ -19,7 +19,7 @@ pub(crate) struct NamedWait {
     name: String
 }
 
-hashable!(IDENTITY,NamedWait,identity);
+hashable!(NamedWait,identity);
 
 impl NamedWait {
     pub(crate) fn new(name: &str) -> NamedWait {

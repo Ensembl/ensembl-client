@@ -8,8 +8,7 @@ pub struct RunSlot {
     push: bool
 }
 
-sequence!(IDENTITY);
-
+identitynumber!(IDENTITY);
 
 impl RunSlot {
     pub(crate) fn new(push: bool) -> RunSlot {
@@ -20,7 +19,7 @@ impl RunSlot {
     pub(crate) fn is_push(&self) -> bool { self.push }
 }
 
-hashable!(IDENTITY,RunSlot,identity);
+hashable!(RunSlot,identity);
 
 #[cfg(test)]
 mod test {

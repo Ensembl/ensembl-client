@@ -221,10 +221,7 @@ good spec.
 */
 
 #[macro_use]
-mod util {
-  #[macro_use]
-  pub(crate) mod sequence;
-}
+extern crate identitynumber;
 
 mod executor {
   pub(crate) mod action;

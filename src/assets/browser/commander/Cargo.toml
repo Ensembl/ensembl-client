@@ -18,3 +18,7 @@ lazy_static="*"
 [dependencies.blackbox]
 version="0.0.0"
 path="../blackbox"
+
+[dependencies.identitynumber]
+version="0.0.0"
+path="../identitynumber"

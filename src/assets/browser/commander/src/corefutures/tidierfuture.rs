@@ -10,7 +10,7 @@ use std::task::{ Context, Poll };
  * resources when also using kills or slots.
  */
 
-sequence!(IDENTITY);
+identitynumber!(IDENTITY);
 
 pub struct TidierState {
     future: Pin<Box<dyn Future<Output=()>>>,
@@ -23,7 +23,7 @@ pub(crate) struct TidierFuture {
     identity: u64
 }
 
-hashable!(IDENTITY,TidierFuture,identity);
+hashable!(TidierFuture,identity);
 
 impl TidierFuture {
     pub(crate) fn new(future: Pin<Box<dyn Future<Output=()>>>) -> TidierFuture {
