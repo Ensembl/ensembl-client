@@ -1,28 +1,31 @@
 # Running the ensembl-client application
 
-## Build Scripts
+## NPM Scripts
 
 ### Basic commands
-- `npm start` - This will start the development server via `webpack`. There is no need to do any compilation manually, as `webpack` will take care of it.
+- `npm start` - Will start the development version of the project using `webpack` development server.
+- `npm run build` – Will build production-ready (optimized and minified) version of the project
 - `npm run storybook` - Starts the Storybook application
 
 ### Development and testing
 - `npm run copy-dotenv` - Makes a copy of `.env.example` file named as `.env` in case it doesn't exist. This command will always run before `serve:dev`.
 - `npm run serve:dev` - This does the same as `npm start`. The latter is actually an alias to this script.
-- `npm run lint` - Runs both `lint:scripts` and `lint:style`. There is no need to run any of these lint scripts during development. This is because, each time a change is made to the code, the linters run along with the build.
-- `npm run lint:scripts` - Runs ESLint to check code errors in TypeScript and React. Also, suggests improvements to the code.
-- `npm run lint:styles` - Does the same as above through `stylelint` for the SASS code.
-- `npm run check-types` – Runs typescript compiler to check for type correctness
-- `npm jest` - Runs `jest`in non-verbose mode.
-- `npm test` - Runs `jest` to check whether the unit tests pass in verbose mode.
-- `npm test:watch` - Runs `jest` on watch mode.
+- `npm run lint` - Runs both `lint:scripts` and `lint:style`.
+- `npm run lint:scripts` - Runs ESLint against all typescript files to make sure they conform to the style guide.
+- `npm run lint:styles` - Runs `stylelint` against SCSS files to make sure they conform to the style guide.
+- `npm run check-types` – Runs typescript compiler to check for type correctness.
+- `npm test` - Runs the suit of unit tests with `jest`.
+- `npm test:watch` - Runs `jest` in watch mode.
 - `npm run coverage` - Updates the `jest` coverage of the React.js code, and shows the test coverage.
-- `npm run snapshot` - Updates the `jest` snapshots. You will sometimes need to run this after a change is made to the React.js code. However, first check whether the unit tests are passing after updating them. If you get any errors related to `jest` snapshots, you will then need to run this script.
 
-### Production builds and deployment
-- `npm run serve:prod` - This runs the built production site locally using `http`.
-- `npm run serve:prod:secure` - Runs the build production site locally securely using `https`. You will need to run `certify` before running this, in case you already haven't generated an SSL certificate.
-- `npm run deploy-docs` — Builds the Storybook application and deploys it, along with the docs on Genome browser, to Github Pages ([link](https://ensembl.github.io/ensembl-client))
+### Testing production build locally
+- `npm run prod:analyse` — Runs production build, and also uses `webpack-bundle-analyzer` to report the size of the bundle.
+- `npm run serve:prod` - Runs the server that serves the production build locally over `http`.
+- `npm run certify` - Runs `setup-ssl.js` to create a local SSL certificate to run the production build on `HTTPS`. There are two files that are created for this: `localhost.crt` and `localhost.key`.
+- `npm run serve:prod:secure` - Runs the server that serves the production build locally over `https`. You will need to run `certify` before running this, in case you already haven't generated an SSL certificate.
+
+### Deployment (interal use only)
+- `npm run deploy-docs` — Builds the Storybook application and deploys it, along with the docs for Genome browser, to Github Pages ([link](https://ensembl.github.io/ensembl-client))
 
 ## Development
 
