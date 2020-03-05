@@ -18,9 +18,9 @@ The following apps are currently in development:
 * Custom Download
 * Global Search
 
-Additional apps will be added as the site expands.
+Additional apps will become available as the site expands.
 
-In addition to the main web frontend, the codebase includes an installation of Storybook which can be used to examine individual components.
+In addition to the main web frontend, the codebase includes an installation of [Storybook](https://storybook.js.org/) which can be used to examine individual components.
 
 ### Genome Browser
 
@@ -44,7 +44,7 @@ Similar to our current site-wide search, the Global Search will give access to o
 
 ## Installation
 
-
+The Ensembl client runs on NodeJS - full instructions on how to install and run the application can be found in a separate README within the source directory src/ensembl.
 
 ## Community
 
