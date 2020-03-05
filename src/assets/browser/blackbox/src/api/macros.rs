@@ -55,6 +55,22 @@ macro_rules! blackbox_stack {
     }}
 }
 
+/* values */
+
+#[macro_export]
+#[cfg(any(blackbox,test,feature = "use-blackbox"))]
+macro_rules! blackbox_value {
+    ($stream:expr,$name:expr,$amt:expr) => {{
+        $crate::blackbox_value($stream,$name,$amt);
+    }}
+}
+
+#[macro_export]
+#[cfg(not(any(blackbox,test,feature = "use-blackbox")))]
+macro_rules! blackbox_value {
+        ($stream:expr,$name:expr,$amt:expr) => {{}}
+}
+
 /* counts */
 
 #[macro_export]

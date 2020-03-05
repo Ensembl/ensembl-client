@@ -1,9 +1,7 @@
 use hashbrown::HashMap;
 use std::sync::Arc;
 
-use crate::{
-    CountRecord, ElapsedRecord, LogRecord, MetronomeRecord, Record
-};
+use crate::{ CountRecord, DatasetRecord, ElapsedRecord, LogRecord, MetronomeRecord, Record };
 
 pub struct Stream {
     name: String,
@@ -11,6 +9,7 @@ pub struct Stream {
     count_records: HashMap<String,CountRecord>,
     elapsed_records: HashMap<String,ElapsedRecord>,
     metronome_records: HashMap<String,MetronomeRecord>,
+    dataset_records: HashMap<String,DatasetRecord>,
     time_units: String
 }
 
@@ -22,6 +21,7 @@ impl Stream {
             count_records: HashMap::new(),
             elapsed_records: HashMap::new(),
             metronome_records: HashMap::new(),
+            dataset_records: HashMap::new(),
             time_units: time_units.to_string(),
         }
     }
@@ -31,6 +31,14 @@ impl Stream {
     pub fn add_log(&mut self, time: f64, stack: Arc<Vec<String>>, text: &str) {
         let record = LogRecord::new(&self.name,time,stack,text.to_string());
         self.log_records.push(record);
+    }
+
+    pub fn get_dataset(&mut self, name: &str) -> &mut DatasetRecord {
+        let stream_name = self.name.to_string();
+        let units = self.time_units.to_string();
+        self.dataset_records.entry(name.to_string()).or_insert_with(|| {
+            DatasetRecord::new(&stream_name,name,&units)
+        })
     }
 
     pub fn get_count(&mut self, name: &str) -> &mut CountRecord {
@@ -60,6 +68,7 @@ impl Stream {
     pub(crate) fn take_records(&mut self) -> Vec<Box<dyn Record>> {
         let mut out = Vec::new();
         out.extend(self.log_records.drain(..).map(|r| Box::new(r) as Box<dyn Record>));
+        out.extend(self.dataset_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));
         out.extend(self.count_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));
         out.extend(self.elapsed_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));
         out.extend(self.metronome_records.drain().map(|r| Box::new(r.1) as Box<dyn Record>));

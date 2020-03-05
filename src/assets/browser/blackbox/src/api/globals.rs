@@ -175,6 +175,15 @@ pub fn blackbox_log(stream_name: &str, text: &str) {
     }
 }
 
+pub fn blackbox_value(stream: &str, name: &str, value: f64) {
+    let model = blackbox_model();
+    let mut model = model.lock().unwrap();
+    let time = model.get_time();
+    if let Some(stream) = model.get_stream(stream) {
+        stream.get_dataset(name).add_datapoint(time,value);
+    }
+}
+
 pub fn blackbox_count(stream: &str, name: &str, amt: f64) {
     let model = blackbox_model();
     let mut model = model.lock().unwrap();

@@ -60,6 +60,24 @@ pub fn test_blackbox_count() {
 }
 
 #[test]
+pub fn test_blackbox_value() {
+    read_lock(|| {
+        let ign = SimpleIntegration::new("test1");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_format().lock().unwrap().reset_raw_data();
+        blackbox_enable("test");
+        blackbox_raw_on("test","raw");
+        blackbox_value!("test","raw",1.);
+        blackbox_value!("test","raw",2.);
+        blackbox_value!("test","raw",0.);
+        blackbox_value!("test","raw",1.);
+        let lines = blackbox_take_lines();
+        assert!(lines_contains(&lines,"[1,2,0,1] ago [0,0,0,0]"));
+    });
+}
+
+#[test]
 pub fn test_blackbox_elapsed() {
     read_lock(|| {
         let mut ign = SimpleIntegration::new("test1");
