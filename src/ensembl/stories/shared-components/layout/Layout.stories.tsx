@@ -3,15 +3,11 @@ import { storiesOf } from '@storybook/react';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
-import { StandardAppLayout } from 'src/shared/components/layout';
+import { StandardAppLayout, DocLayout } from 'src/shared/components/layout';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import styles from './Layout.stories.scss';
 import { SidebarBehaviourType } from 'src/shared/components/layout/StandardAppLayout';
-
-const TopbarContent = () => (
-  <div className={styles.topbarContent}>This is top bar content</div>
-);
 
 const MainContent = () => (
   <div className={styles.mainContent}>
@@ -21,6 +17,25 @@ const MainContent = () => (
 
 const SidebarContentSimple = () => (
   <div className={styles.sidebarContent}>This is sidebar content</div>
+);
+
+storiesOf('Components|Shared Components/Layout/DocLayout', module).add(
+  'default',
+  () => {
+    return (
+      <div className={styles.wrapper}>
+        <DocLayout
+          sidebarContent={<SidebarContentSimple />}
+          mainContent={<MainContent />}
+          viewportWidth={BreakpointWidth.BIG_DESKTOP}
+        />
+      </div>
+    );
+  }
+);
+
+const TopbarContent = () => (
+  <div className={styles.topbarContent}>This is top bar content</div>
 );
 
 const SidebarContentWithDrawerOpener = (props: {

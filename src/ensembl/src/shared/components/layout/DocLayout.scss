@@ -1,0 +1,52 @@
+@import 'src/styles/common';
+
+$sidebarContentWidth: 320px;
+
+.DocLayout {
+  height: 100%;
+  min-height: 550px; // based on the current interface of genome browser
+  overflow: hidden;
+}
+
+.mainWrapper {
+  height: 100%;
+  position: relative;
+}
+
+.main {
+  height: 100%;
+
+  &Default {
+    margin-left: $sidebarContentWidth;
+  }
+}
+
+.sidebarWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 1;
+  transition: transform 0.3s ease-in-out;
+
+  &Open {
+    transform: translateX(calc(100% - #{$sidebarContentWidth}));
+  }
+
+  &Closed {
+    transform: translateX(100%);
+  }
+}
+
+.instantaneous {
+  transition: none;
+}
+
+.sidebar {
+  flex: 0 0 auto;
+  height: 100%;
+  width: $sidebarContentWidth;
+  background-color: white;
+}
