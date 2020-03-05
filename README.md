@@ -10,11 +10,11 @@ If you are interested in the latest developments in this project, please join ou
 
 The Ensembl client runs on Node.js, and is managed using NPM and webpack. All supplementary libraries required for the genome browser (e.g. Rust) are included in this repository. To install and run ensembl-client:
 
-1. Install Node.js
+1. Install Node.js if you don't have it already — either directly from the [Node.js site](https://nodejs.org/), or through a Node version manager, such as [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n). NOTE: While the project may work with older versions of Node, it is developed and tested with the latest LTS version.
 
 2. Clone this repository
 
-3. In a terminal, `cd` to the repository and run `npm install`. This will install all the necessary NPM packages for app development and the build.
+3. In a terminal, cd to `src/ensembl` and run `npm install`. This will install all the necessary NPM packages for app development and the build.
 
 4. Run `npm start` to launch the application.
 
