@@ -82,10 +82,6 @@ impl CommanderState {
             }
         }
     }
-
-    fn executor(&self) -> MutexGuardRefMut<Executor> {
-        MutexGuardRefMut::new(ok!(self.executor.lock()))
-    }
 }
 
 #[derive(Clone)]
@@ -125,7 +121,7 @@ impl Commander {
     }
 
     pub fn executor(&self) -> MutexGuardRefMut<Executor> {
-        MutexGuardRefMut::new(self.state.executor.lock().unwrap())
+        MutexGuardRefMut::new(ok!(self.state.executor.lock()))
     }
 }
 

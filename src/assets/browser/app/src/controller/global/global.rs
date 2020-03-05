@@ -33,13 +33,14 @@ pub struct GlobalImpl {
 impl GlobalImpl {
     pub fn new() -> GlobalImpl {
         set_instance_id();
+        let commander = Commander::new(&document().document_element().unwrap().try_into().unwrap());
         let mut out = GlobalImpl {
             counter: Counter::new(),
             inst_id: get_instance_id(),
             app_runners: HashMap::new(),
-            http_manager: HttpManager::new(),
+            http_manager: HttpManager::new(&commander),
             ar_init: Vec::new(),
-            commander: Commander::new(&document().document_element().unwrap().try_into().unwrap())
+            commander
         };
         out.init_http_manager();
         out
