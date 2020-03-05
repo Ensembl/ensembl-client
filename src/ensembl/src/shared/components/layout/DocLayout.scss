@@ -15,10 +15,7 @@ $sidebarContentWidth: 320px;
 
 .main {
   height: 100%;
-
-  &Default {
-    margin-left: $sidebarContentWidth;
-  }
+  margin-left: $sidebarContentWidth;
 }
 
 .sidebarWrapper {
@@ -29,19 +26,6 @@ $sidebarContentWidth: 320px;
   height: 100%;
   display: flex;
   z-index: 1;
-  transition: transform 0.3s ease-in-out;
-
-  &Open {
-    transform: translateX(calc(100% - #{$sidebarContentWidth}));
-  }
-
-  &Closed {
-    transform: translateX(100%);
-  }
-}
-
-.instantaneous {
-  transition: none;
 }
 
 .sidebar {
