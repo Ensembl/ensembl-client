@@ -15,6 +15,11 @@ enum SidebarModeToggleAction {
   CLOSE = 'close'
 }
 
+export enum SidebarBehaviourType {
+  PUSH = 'push',
+  SLIDEOVER = 'slideover'
+}
+
 type SidebarModeToggleProps = {
   onClick: () => void;
   showAction: SidebarModeToggleAction;
@@ -26,6 +31,7 @@ type StandardAppLayoutProps = {
   sidebarToolstripContent?: ReactNode;
   sidebarNavigation: ReactNode;
   topbarContent: ReactNode;
+  sidebarBehaviour: SidebarBehaviourType;
   isSidebarOpen: boolean;
   onSidebarToggle: () => void;
   isDrawerOpen: boolean;
@@ -45,8 +51,16 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
   const mainClassNames = classNames(
     styles.main,
-    { [styles.mainDefault]: props.isSidebarOpen },
-    { [styles.mainFullWidth]: !props.isSidebarOpen }
+    {
+      [styles.mainDefault]:
+        props.isSidebarOpen &&
+        props.sidebarBehaviour === SidebarBehaviourType.PUSH
+    },
+    {
+      [styles.mainFullWidth]:
+        !props.isSidebarOpen ||
+        props.sidebarBehaviour === SidebarBehaviourType.SLIDEOVER
+    }
   );
 
   const shouldShowSidebarNavigation =
@@ -103,6 +117,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
 
 StandardAppLayout.defaultProps = {
   isDrawerOpen: false,
+  sidebarBehaviour: SidebarBehaviourType.PUSH,
   onDrawerClose: noop
 };
 
