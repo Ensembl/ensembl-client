@@ -91,10 +91,10 @@ const Launchbar = (props: LaunchbarProps) => {
       <div className={styles.about}>
         <span className={styles.aboutText}>Genome research database</span>
         <LaunchbarButton
-          app="about"
+          app="about-ensembl"
           description="About Ensembl"
           icon={ensemblIcon}
-          enabled={false}
+          enabled={true}
         />
       </div>
     </div>

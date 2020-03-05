@@ -16,6 +16,7 @@ $sidebarContentWidth: 320px;
 .main {
   height: 100%;
   margin-left: $sidebarContentWidth;
+  margin-right: 48px;
 }
 
 .sidebarWrapper {
@@ -33,4 +34,23 @@ $sidebarContentWidth: 320px;
   height: 100%;
   width: $sidebarContentWidth;
   background-color: white;
+  padding: 0px 36px;
+
+  .runningHeader {
+    font-size: 12px;
+    font-weight: bold;
+    color: $dark-grey;
+    margin-bottom: 24px;
+  }
+
+  ul {
+    list-style: none;
+    margin-left: -40px;
+    line-height: 48px;
+
+    li.current a {
+      font-weight: bold;
+      color: $dark-grey;
+    }
+  }
 }

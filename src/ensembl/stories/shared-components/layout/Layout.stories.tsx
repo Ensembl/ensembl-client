@@ -27,7 +27,6 @@ storiesOf('Components|Shared Components/Layout/DocLayout', module).add(
         <DocLayout
           sidebarContent={<SidebarContentSimple />}
           mainContent={<MainContent />}
-          viewportWidth={BreakpointWidth.BIG_DESKTOP}
         />
       </div>
     );

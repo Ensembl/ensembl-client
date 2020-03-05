@@ -1,14 +1,11 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
-
 import styles from './DocLayout.scss';
 
 type DocLayoutProps = {
   mainContent: ReactNode;
   sidebarContent: ReactNode;
-  viewportWidth: BreakpointWidth;
 };
 
 const DocLayout = (props: DocLayoutProps) => {
