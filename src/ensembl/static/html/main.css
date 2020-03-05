@@ -1,0 +1,23 @@
+/* CSS for documentation home page */
+
+body {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'),
+    url('../../static/fonts/lato/lato-v14-latin-regular.woff2') format('woff2'),
+    url('../../static/fonts/lato/lato-v14-latin-regular.woff') format('woff');
+}
+
+main {
+  max-width: 800px;
+  margin: auto;
+}
+
+.footer {
+  margin-top: 4em;
+}
+
+.footer p {
+  font-size: 90%;
+}
