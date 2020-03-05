@@ -54,7 +54,7 @@ export const getStylesForRenderingIntoBody = (params: Params): InlineStylesState
     case Position.BOTTOM_LEFT:
       return {
         bodyStyles: {
-          top: `${anchorTop + anchorHeight + pointerHeight}px`,
+          top: `${anchorTop + window.scrollY + anchorHeight + pointerHeight}px`,
           left: `${anchorLeft + anchorWidth / 2}px`,
           transform: `translateX(calc(-100% + ${pointerOffset}px + ${halfPointerWidth}px)`
         },
@@ -71,7 +71,7 @@ export const getStylesForRenderingIntoBody = (params: Params): InlineStylesState
             halfAnchorWidth -
             pointerOffset -
             halfPointerWidth}px`,
-          top: `${anchorTop + anchorHeight + pointerHeight}px`
+          top: `${anchorTop + window.scrollY + anchorHeight + pointerHeight}px`
         },
         pointerStyles: {
           top: `${-pointerHeight + 1}px`,

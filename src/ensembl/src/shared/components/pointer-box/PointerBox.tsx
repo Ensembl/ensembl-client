@@ -1,6 +1,7 @@
 import React, { ReactNode, useRef, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
+import once from 'lodash/once';
 import noop from 'lodash/noop';
 
 import windowService from 'src/services/window-service';
@@ -45,6 +46,7 @@ export type PointerBoxProps = {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onOutsideClick: () => void;
+  onClose: () => void;
 };
 
 const PointerBox = (props: PointerBoxProps) => {
@@ -70,28 +72,30 @@ const PointerBox = (props: PointerBoxProps) => {
     }
   }, []);
 
+  const closeOnScroll = once(props.onClose);
+
   // from Stack Overflow: https://stackoverflow.com/questions/59792071/how-to-observe-dom-element-position-changes
   // (listen to all scroll events in the event capturing phase on the body and re-evaluate anchor position)
   useEffect(() => {
-    document.addEventListener('scroll', getAnchorPosition, true);
+    document.addEventListener('scroll', closeOnScroll, true);
 
-    return () => document.removeEventListener('scroll', getAnchorPosition, true);
+    return () => document.removeEventListener('scroll', closeOnScroll, true);
   }, []);
 
-  const getAnchorPosition = () => {
-    const currentAnchorBoundingRect = props.anchor.getBoundingClientRect();
-    if(anchorRectRef?.current?.top !== currentAnchorBoundingRect.top || anchorRectRef?.current?.left !== currentAnchorBoundingRect.left) {
-      // FIXME — request animation frame?
-      // FIXME — closeWhenLeaving ? IntersectionObserver?
-      setInlineStyles(
-        getStylesForRenderingIntoBody({
-          ...props,
-          position: positionRef.current as Position
-        })
-      );
-      anchorRectRef.current = currentAnchorBoundingRect;
-    }
-  }
+  // const getAnchorPosition = () => {
+  //   const currentAnchorBoundingRect = props.anchor.getBoundingClientRect();
+  //   if(anchorRectRef?.current?.top !== currentAnchorBoundingRect.top || anchorRectRef?.current?.left !== currentAnchorBoundingRect.left) {
+  //     // FIXME — request animation frame?
+  //     // FIXME — closeWhenLeaving ? IntersectionObserver?
+  //     setInlineStyles(
+  //       getStylesForRenderingIntoBody({
+  //         ...props,
+  //         position: positionRef.current as Position
+  //       })
+  //     );
+  //     anchorRectRef.current = currentAnchorBoundingRect;
+  //   }
+  // }
 
   const adjustPosition = (
     pointerBox: HTMLDivElement,
