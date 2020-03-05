@@ -160,8 +160,7 @@ impl BackendConfig {
     }
 
     // TODO errors
-    pub fn from_json_string(in_: &str) -> Result<BackendConfig,String> {
-        let data : SerdeValue = unwrap!(serde_json::from_str(in_).ok());
+    pub fn from_json(data: SerdeValue) -> Result<BackendConfig,String> {
         let assets = BackendConfig::assets_from_json(&data["assets"],&data["data"]);
         let bytecodes = BackendConfig::bytecodes_from_json(&data["bytecodes"]);
         let (tracks,wire_to_track) = BackendConfig::tracks_from_json(&data["tracks"]);

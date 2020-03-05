@@ -132,18 +132,18 @@ impl Global {
         self.0.borrow_mut().any_app()
     }
 
+    async fn boot(mut self, agent: Agent, key: String, el: HtmlElement, debug: bool, config_url: Url) {
+        let http_manager = &self.0.borrow().http_manager.clone();
+        BackendConfigBootstrap::new(&agent,self,&http_manager.clone(),&config_url,&el,&key,debug).await;
+    }
+
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
         self.unregister_app(key,true);
-        let http_manager = &self.0.borrow().http_manager.clone();
-        let commander = self.0.borrow().commander.clone();
-        let b : Rc<RefCell<Booting>> = Rc::new(
-            RefCell::new(
-                Booting::new(self,&commander,http_manager,config_url,el,key,debug)
-            )
-        );
-        BackendConfigBootstrap::new(&http_manager.clone(),config_url,Box::new(move |config,agent| {
-            b.borrow_mut().boot(config,agent);
-        }));
+        let cmd = self.0.borrow_mut().commander.clone();
+        let mut exe = cmd.executor();
+        let rc = RunConfig::new(None,0,None);
+        let agent = exe.new_agent(&rc,"legacy-app");
+        exe.add(self.clone().boot(agent.clone(),key.to_string(),el.clone(),debug,config_url.clone()),agent);
     }
     
     pub fn register_app_now(&mut self, key: &str, ar: AppRunner) {

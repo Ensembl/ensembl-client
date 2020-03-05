@@ -12,7 +12,6 @@ use crate::dom::{ Bling, NoBling };
 
 pub struct Booting {
     global: Global,
-    commander: Commander,
     http_manager: HttpManager,
     config_url: Url,
     el: HtmlElement,
@@ -21,11 +20,10 @@ pub struct Booting {
 }
 
 impl Booting {
-    pub fn new(g: &mut Global, commander: &Commander, http_manager: &HttpManager, config_url: &Url,
+    pub fn new(g: &mut Global, http_manager: &HttpManager, config_url: &Url,
             el: &HtmlElement, key: &str, debug: bool) -> Booting {
          Booting {
             global: g.clone(),
-            commander: commander.clone(),
             http_manager: http_manager.clone(),
             config_url: config_url.clone(),
             el: el.clone(),

@@ -1,9 +1,11 @@
 use commander::{ Agent, CommanderStream, PromiseFuture, RunConfig };
 use std::cell::RefCell;
 use std::rc::Rc;
+use url::Url;
 
-use stdweb::web::{ XmlHttpRequest, XhrReadyState };
+use stdweb::web::{ XmlHttpRequest, XhrReadyState, XhrResponseType };
 use crate::controller::scheduler::Commander;
+use serde_json::Value as JSONValue;
 
 identitynumber!(ID);
 
@@ -63,6 +65,25 @@ impl HttpManager {
         let promise = PromiseFuture::new();
         self.requests.add(HttpRequest::new(req,promise.clone()));
         promise.await
+    }
+
+    fn catch<T>(type_: &str, url: &Url, result: Result<Option<String>,T>) -> Result<String,String> {
+        result.map_err(|_| ()).and_then(|v| v.ok_or(())).map_err(|_| {
+            format!("request for {} to {} failed",type_,url)
+        })
+    }
+
+    pub async fn go_get_json(&self, url: &Url) -> Result<JSONValue,String> {
+        let xhr = XmlHttpRequest::new();
+        xhr.set_response_type(XhrResponseType::Text);
+        xhr.open("GET",&url.as_str());
+        let xhr = self.go(xhr,None).await;
+        let value = HttpManager::catch("json",url,xhr.response_text())?;
+        let out = serde_json::from_str(&value);
+        match out {
+            Ok(out) => Ok(out),
+            Err(e) => Err(format!("{:?}",e))
+        }
     }
 
     fn legacy_init(&self) {
