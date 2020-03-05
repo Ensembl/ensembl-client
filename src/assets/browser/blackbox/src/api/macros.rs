@@ -104,38 +104,38 @@ macro_rules! blackbox_reset_count {
 #[macro_export]
 #[cfg(any(blackbox,test,feature = "use-blackbox"))]
 macro_rules! blackbox_start {
-    ($stream:expr,$name:expr) => {{
-        $crate::blackbox_start($stream,$name);
+    ($stream:expr,$name:expr,$point:expr) => {{
+        $crate::blackbox_start($stream,$name,Some($point));
     }}
 }
 
 #[macro_export]
 #[cfg(not(any(blackbox,test,feature = "use-blackbox")))]
 macro_rules! blackbox_start {
-    ($stream:expr,$name:expr) => {{}}
+    ($stream:expr,$name:expr,$point:expr) => {{}}
 }
 
 #[macro_export]
 #[cfg(any(blackbox,test,feature = "use-blackbox"))]
 macro_rules! blackbox_end {
-    ($stream:expr,$name:expr) => {{
-        $crate::blackbox_end($stream,$name);
+    ($stream:expr,$name:expr,$point:expr) => {{
+        $crate::blackbox_end($stream,$name,Some($point));
     }}
 }
 
 #[macro_export]
 #[cfg(not(any(blackbox,test,feature = "use-blackbox")))]
 macro_rules! blackbox_end {
-    ($stream:expr,$name:expr) => {{}}
+    ($stream:expr,$name:expr,$point:expr) => {{}}
 }
 
 #[macro_export]
 #[cfg(any(blackbox,test,feature = "use-blackbox"))]
 macro_rules! blackbox_time {
     ($stream:expr,$name:expr,$code:block) => {{
-        $crate::blackbox_start($stream,$name);
+        $crate::blackbox_start($stream,$name,None);
         let ret = (|| { $code })();
-        $crate::blackbox_end($stream,$name);
+        $crate::blackbox_end($stream,$name,None);
         ret
     }}
 }

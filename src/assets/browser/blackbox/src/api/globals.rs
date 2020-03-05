@@ -200,21 +200,21 @@ pub fn blackbox_reset_count(stream: &str, name: &str) {
     }
 }
 
-pub fn blackbox_start(stream: &str, name: &str) {
+pub fn blackbox_start(stream: &str, name: &str, point: Option<&str>) {
     let model = blackbox_model();
     let mut model = model.lock().unwrap();
     let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
-        stream.get_elapsed(name).add_start(time);
+        stream.get_elapsed(name).add_start(point,time);
     }
 }
 
-pub fn blackbox_end(stream: &str, name: &str) {
+pub fn blackbox_end(stream: &str, name: &str, point: Option<&str>) {
     let model = blackbox_model();
     let mut model = model.lock().unwrap();
     let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
-        stream.get_elapsed(name).add_end(time);
+        stream.get_elapsed(name).add_end(point,time);
     }
 }
 

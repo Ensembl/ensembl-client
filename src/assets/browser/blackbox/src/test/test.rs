@@ -82,6 +82,26 @@ pub fn test_blackbox_elapsed() {
 }
 
 #[test]
+pub fn test_blackbox_start_end() {
+    read_lock(|| {
+        let mut ign = SimpleIntegration::new("test1");
+        blackbox_use_threadlocals(true);
+        blackbox_integration(ign.clone());
+        blackbox_enable("test");
+        blackbox_raw_on("test","raw");
+        blackbox_start!("test","raw","A");
+        ign.tick();
+        blackbox_start!("test","raw","B");
+        ign.tick();
+        blackbox_end!("test","raw","A");
+        blackbox_end!("test","raw","B");
+        let lines = blackbox_take_lines();
+        print!("{:?}",lines);
+        assert!(lines_contains(&lines,"[2,1] ago [0,0]"));
+    });
+}
+
+#[test]
 pub fn test_blackbox_metronome() {
     read_lock(|| {
         let mut ign = SimpleIntegration::new("test1");

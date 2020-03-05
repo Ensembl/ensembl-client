@@ -1,26 +1,27 @@
+use hashbrown::HashMap;
 use crate::{ Format, Record };
 use super::datasetrecord::DatasetRecord;
 use serde_json::Value as SerdeValue;
 
 pub struct ElapsedRecord {
     dataset_record: DatasetRecord,
-    start: Option<f64>
+    start: HashMap<Option<String>,f64>
 }
 
 impl ElapsedRecord {
     pub fn new(stream_name: &str, record_name: &str, units: &str) -> ElapsedRecord {
         ElapsedRecord {
             dataset_record: DatasetRecord::new(stream_name,record_name,units),
-            start: None
+            start: HashMap::new()
         }
     }
 
-    pub fn add_start(&mut self, time: f64) {
-        self.start = Some(time);
+    pub fn add_start(&mut self, name: Option<&str>, time: f64) {
+        self.start.insert(name.map(|x| x.to_string()),time);
     }
 
-    pub fn add_end(&mut self, time: f64) {
-        if let Some(start) = self.start.take() {
+    pub fn add_end(&mut self, name: Option<&str>, time: f64) {
+        if let Some(start) = self.start.remove(&name.map(|x| x.to_string())) {
             self.dataset_record.add_datapoint(time,time-start);
         }
     }
