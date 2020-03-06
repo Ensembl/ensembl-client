@@ -128,6 +128,7 @@ impl HttpManager {
         for r in unfinished.drain(..) {
             self.requests.add(r);
         }
+        blackbox_log!("http-manager","{} requests remaining after processing",unfinished.len());
         finished
     }
 

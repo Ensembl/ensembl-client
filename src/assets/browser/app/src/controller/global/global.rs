@@ -1,6 +1,6 @@
 use commander::{ Agent, RunConfig };
 use std::cell::RefCell;
-use hashbrown::HashMap;
+use hashbrown::{ HashMap, HashSet };
 use std::rc::{ Rc, Weak };
 
 use stdweb::web::{ document, HtmlElement, window };
@@ -16,8 +16,11 @@ use crate::controller::scheduler::Commander;
 use crate::data::{ BackendConfigBootstrap, HttpManager };
 use crate::dom::domutil;
 use stdweb::unstable::TryInto;
+use crate::debug::{ BlackboxSender, BlackboxIntegration };
+use blackbox::blackbox_integration;
 
 use super::activate::activate;
+use crate::dom::domutil::browser_time;
 
 const SCHEDULER_ALLOC : f64 = 12.; /* ms per raf */
 
@@ -27,7 +30,8 @@ pub struct GlobalImpl {
     http_manager: HttpManager,
     counter: Counter,
     ar_init: Vec<Box<dyn FnMut(&AppRunner)>>,
-    commander: Commander
+    commander: Commander,
+    blackbox_senders: HashSet<BlackboxSender>
 }
 
 impl GlobalImpl {
@@ -40,7 +44,8 @@ impl GlobalImpl {
             app_runners: HashMap::new(),
             http_manager: HttpManager::new(&commander),
             ar_init: Vec::new(),
-            commander
+            commander,
+            blackbox_senders: HashSet::new()
         };
         out.init_http_manager();
         out
@@ -51,6 +56,16 @@ impl GlobalImpl {
         let rc = RunConfig::new(None,0,None);
         let agent = exe.new_agent(&rc,"http-manager");
         exe.add(self.http_manager.clone().main_loop(agent.clone()),agent);
+    }
+
+    fn add_blackbox(&mut self, sender: BlackboxSender) {
+        self.blackbox_senders.insert(sender);
+    }
+
+    fn blackbox_send(&mut self) {
+        for sender in self.blackbox_senders.iter() {
+            sender.send(&self.http_manager,browser_time());
+        }
     }
 
     pub fn counter(&self) -> Counter {
@@ -112,11 +127,17 @@ impl Global {
         let mut out = Global(Rc::new(RefCell::new(GlobalImpl::new())));
         register_startup_events(&mut out);
         register_shutdown_events(&mut out);
+        console!("A");
+        out.init_blackbox_loop();
         out
     }
     
     pub fn counter(&self) -> Counter {
         self.0.borrow().counter()
+    }
+
+    pub fn add_blackbox(&self, sender: BlackboxSender) {
+        self.0.borrow_mut().add_blackbox(sender);
     }
 
     /* app registration */
@@ -136,6 +157,26 @@ impl Global {
         let http_manager = &self.0.borrow().http_manager.clone();
         BackendConfigBootstrap::new(&agent,self,&http_manager.clone(),&config_url,&el,&key,debug).await;
     }
+
+    async fn blackbox_loop(mut self, agent: Agent) {
+        loop {
+            self.0.borrow_mut().blackbox_send();
+            agent.timer(10000.).await;
+        }
+    }
+
+    #[cfg(blackbox)]
+    fn init_blackbox_loop(&self) {
+        blackbox_integration(BlackboxIntegration{});
+        let cmd = self.0.borrow_mut().commander.clone();
+        let mut exe = cmd.executor();
+        let rc = RunConfig::new(None,0,None);
+        let agent = exe.new_agent(&rc,"blackbox");
+        exe.add(self.clone().blackbox_loop(agent.clone()),agent);
+    }
+
+    #[cfg(not(blackbox))]
+    fn init_blackbox_loop(&self) {}
 
     pub fn trigger_app(&mut self, key: &str, el: &HtmlElement, debug: bool, config_url: &Url) {
         self.unregister_app(key,true);

@@ -36,7 +36,7 @@ impl WindowState {
             all_landscapes: landscapes.clone(),
             locator: locator.clone(),
             animator: ActionAnimator::new(),
-            blackbox: BlackboxSender::new()
+            blackbox: BlackboxSender::new(backend_config).ok().unwrap() // XXX
         };
         http_clerk.set_window_state(&mut out);
         out

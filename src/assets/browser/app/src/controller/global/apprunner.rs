@@ -148,14 +148,6 @@ impl AppRunner {
         }
     }
 
-    async fn blackbox_loop(agent: Agent, app: Arc<Mutex<App>>, http_manager: HttpManager, mut sender: BlackboxSender, config: BackendConfig) {
-        loop {
-            sender.send(&http_manager,&config,browser_time());
-            if app.lock().unwrap().is_killed() { break; }
-            agent.timer(10.).await;
-        }
-    }
-
     pub fn init(&mut self, agent: &Agent) {
         /* register main heartbeat of compositor */
         register_compositor_ticks(self,agent);
@@ -175,14 +167,16 @@ impl AppRunner {
                 agent.add(AppRunner::tácode_loop(agent2.clone(), imp.app.clone(),imp.tc.clone()),agent2);
 
                 /* blackbox */
+                
                 #[cfg(blackbox)]
                 {
-                    let app = imp.app.clone();
-                    let http_manager = app.lock().unwrap().get_http_manager().clone();
-                    let config = app.lock().unwrap().get_window().get_backend_config().clone();
-                    let mut sender = app.lock().unwrap().get_window().get_blackbox_sender().clone();
-                    let agent2 = agent.new_agent(Some(rc.clone()),"blackbox");
-                    agent.add(AppRunner::blackbox_loop(agent2.clone(),imp.app.clone(),http_manager,sender,config),agent2);
+                    if let Some(g) = imp.g.upgrade() {
+                        let app = imp.app.clone();
+                        let http_manager = app.lock().unwrap().get_http_manager().clone();
+                        let config = app.lock().unwrap().get_window().get_backend_config().clone();
+                        let mut sender = app.lock().unwrap().get_window().get_blackbox_sender().clone();
+                        g.add_blackbox(sender);
+                    }
                 }
                 /* animate & draw */
                 let agent2 = agent.new_agent(Some(rc.clone()),"draw");

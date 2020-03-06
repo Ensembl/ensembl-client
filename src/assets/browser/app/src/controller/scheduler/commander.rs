@@ -111,6 +111,7 @@ impl Commander {
             bell_receiver
         };
         out.bell_receiver.add(move || {
+            blackbox_log!("commander-integration","bell received");
             state.schedule();
         });
         out
@@ -137,7 +138,9 @@ impl Integration for CommanderIntegration {
     }
 
     fn sleep(&self, amount: SleepQuantity) {
+        blackbox_log!("commander-integration","setting sleep to {:?}",amount);
         self.sleep_state.lock().unwrap().quantity = amount;
         self.bell_sender.ring();
+        blackbox_log!("commander-integration","bell sent");
     }
 }
