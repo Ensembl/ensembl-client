@@ -2,7 +2,7 @@ import React from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import DefaultTranscriptslistItem from './default-transcripts-list-item/DefaultTranscriptListItem';
+import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -20,7 +20,7 @@ const DefaultTranscriptslist = (props: Props) => {
   return (
     <div className={styles.defaultTranscriptsList}>
       {gene.transcripts.map((transcript, index) => (
-        <DefaultTranscriptslistItem
+        <DefaultTranscriptsListItem
           key={index}
           gene={gene}
           transcript={transcript}
