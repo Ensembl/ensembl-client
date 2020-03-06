@@ -27,7 +27,9 @@ pub fn records_to_json<'a,S>(streams: S, now: f64, instance: &str, format: &Form
     time_sort(&mut all_records);
     let mut records_json = Vec::new();
     for record in all_records.iter() {
-        records_json.push(record.get_as_json(now,&instance,format));
+        if let Some(value) = record.get_as_json(now,&instance,format) {
+            records_json.push(value);
+        }
     }
     json!({
         "records": records_json,
