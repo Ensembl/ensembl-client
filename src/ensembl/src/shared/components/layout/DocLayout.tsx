@@ -13,7 +13,7 @@ const DocLayout = (props: DocLayoutProps) => {
   const sidebarWrapperClassnames = classNames(styles.sidebarWrapper);
 
   return (
-    <div className={styles.DocLayout}>
+    <div className={styles.docLayout}>
       <div className={styles.mainWrapper}>
         <div className={mainClassNames}>{props.mainContent}</div>
         <div className={sidebarWrapperClassnames}>
