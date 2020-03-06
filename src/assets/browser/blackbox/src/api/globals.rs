@@ -180,7 +180,7 @@ pub fn blackbox_value(stream: &str, name: &str, value: f64) {
     let mut model = model.lock().unwrap();
     let time = model.get_time();
     if let Some(stream) = model.get_stream(stream) {
-        stream.get_dataset(name).add_datapoint(time,value);
+        stream.get_value(name).set(time,value);
     }
 }
 

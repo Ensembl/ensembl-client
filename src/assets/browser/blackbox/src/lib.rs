@@ -26,6 +26,7 @@ mod model {
         pub(crate) mod elapsedrecord;
         pub(crate) mod metronomerecord;
         pub(crate) mod countrecord;
+        pub(crate) mod valuerecord;
     }
     pub(crate) mod config;
     pub(crate) mod format;
@@ -46,7 +47,8 @@ pub use crate::model::record::{
     datasetrecord::DatasetRecord,
     elapsedrecord::ElapsedRecord,
     metronomerecord::MetronomeRecord,
-    countrecord::CountRecord
+    countrecord::CountRecord,
+    valuerecord::ValueRecord
 };
 
 pub use crate::model::config::Config;
