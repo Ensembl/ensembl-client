@@ -107,6 +107,7 @@ impl AppRunner {
                 {
                     let app_ref = imp.app.clone();
                     let mut app = ok!(app_ref.lock());
+                    if app.is_killed() { break; }
                     let out = cb(&mut app,browser_time());
                     out
                 }
@@ -129,6 +130,7 @@ impl AppRunner {
     async fn draw_loop(agent: Agent, app: Arc<Mutex<App>>) {
         loop {
             let mut imp = app.lock().unwrap();
+            if imp.is_killed() { break; }
             let t = browser_time();
             let actions = imp.get_window().get_animator().tick(t);
             imp.run_actions(&actions,None);
@@ -138,16 +140,18 @@ impl AppRunner {
         }
     }
 
-    async fn tácode_loop(agent: Agent, tc: Tácode) {
+    async fn tácode_loop(agent: Agent, app: Arc<Mutex<App>>, tc: Tácode) {
         loop {
             tc.step(7.); // XXX
+            if app.lock().unwrap().is_killed() { break; }
             agent.tick(1).await;
         }
     }
 
-    async fn blackbox_loop(agent: Agent, http_manager: HttpManager, mut sender: BlackboxSender, config: BackendConfig) {
+    async fn blackbox_loop(agent: Agent, app: Arc<Mutex<App>>, http_manager: HttpManager, mut sender: BlackboxSender, config: BackendConfig) {
         loop {
             sender.send(&http_manager,&config,browser_time());
+            if app.lock().unwrap().is_killed() { break; }
             agent.timer(10.).await;
         }
     }
@@ -168,7 +172,7 @@ impl AppRunner {
                 let mut imp = self.0.lock().unwrap();
                 let rc = RunConfig::new(None,0,None);
                 let agent2 = agent.new_agent(Some(rc.clone()),"tácode");
-                agent.add(AppRunner::tácode_loop(agent2.clone(),imp.tc.clone()),agent2);
+                agent.add(AppRunner::tácode_loop(agent2.clone(), imp.app.clone(),imp.tc.clone()),agent2);
 
                 /* blackbox */
                 #[cfg(blackbox)]
@@ -178,7 +182,7 @@ impl AppRunner {
                     let config = app.lock().unwrap().get_window().get_backend_config().clone();
                     let mut sender = app.lock().unwrap().get_window().get_blackbox_sender().clone();
                     let agent2 = agent.new_agent(Some(rc.clone()),"blackbox");
-                    agent.add(AppRunner::blackbox_loop(agent2.clone(),http_manager,sender,config),agent2);
+                    agent.add(AppRunner::blackbox_loop(agent2.clone(),imp.app.clone(),http_manager,sender,config),agent2);
                 }
                 /* animate & draw */
                 let agent2 = agent.new_agent(Some(rc.clone()),"draw");

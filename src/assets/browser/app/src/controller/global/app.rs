@@ -43,7 +43,8 @@ pub struct App {
     window: WindowState,
     intended: Intended,
     screen: Screen,
-    http_manager: HttpManager
+    http_manager: HttpManager,
+    killed: bool
 }
 
 impl App {
@@ -79,11 +80,16 @@ impl App {
             intended: Intended::new(),
             screen: Screen::new(),
             counter: counter.clone(),
-            http_manager: http_manager.clone()
+            http_manager: http_manager.clone(),
+            killed: false
         };
         out.populate_products();
         out.run_actions(&startup_actions(),None);        
         out
+    }
+
+    pub fn is_killed(&self) -> bool {
+        self.killed
     }
 
     pub fn get_http_manager(&self) -> &HttpManager {
@@ -130,6 +136,7 @@ impl App {
     pub fn get_canvas_element(&self) -> &HtmlElement { &self.canv_el }
     
     pub fn destroy(&mut self) {
+        self.killed = true;
         self.printer.lock().unwrap().destroy();
     }
     
