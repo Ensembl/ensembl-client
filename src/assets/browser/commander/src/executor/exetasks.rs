@@ -136,6 +136,8 @@ impl ExecutorTasks {
         }
         out
     }
+
+    pub(super) fn len(&self) -> usize { self.tasks.len() }
 }
 
 #[cfg(test)]

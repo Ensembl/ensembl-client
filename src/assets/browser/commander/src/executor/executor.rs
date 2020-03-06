@@ -180,6 +180,7 @@ impl Executor {
         self.get_timings_mut().advance_tick();
         self.get_timings().check_ticks(0);
         let now = self.run_one_tick(slice);
+        blackbox_value!("commander","num-running",self.tasks.len() as f64);
         self.make_next_tick_runnable();
         self.integration.sleep(self.calculate_sleep(now));
     }

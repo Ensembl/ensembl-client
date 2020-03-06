@@ -77,7 +77,7 @@ impl TaskContainer {
         }
     }
 
-    #[cfg(test)]
+    #[allow(unused)]
     pub(super) fn len(&self) -> usize { self.tasks.len() - self.free_slots.len() }
 }
 
