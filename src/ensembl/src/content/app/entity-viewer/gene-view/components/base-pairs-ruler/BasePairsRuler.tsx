@@ -27,14 +27,14 @@ type Ticks = {
   labelledTicks: number[];
 };
 
-export type OnTicksCalculatedPayload = Ticks & {
+export type TicksAndScale = Ticks & {
   scale: ScaleLinear<number, number>;
 };
 
 type Props = {
   length: number; // number of biological building blocks (e.g. nucleotides) in the feature
   width: number; // number of pixels allotted to the axis on the screen
-  onTicksCalculated?: (payload: OnTicksCalculatedPayload) => void; // way to pass the ticks to the parent if it is interested in them
+  onTicksCalculated?: (payload: TicksAndScale) => void; // way to pass the ticks to the parent if it is interested in them
   standalone: boolean; // wrap the component in an svg element if true
 };
 

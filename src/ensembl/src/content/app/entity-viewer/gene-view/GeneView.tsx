@@ -10,7 +10,7 @@ import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImag
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { OnTicksCalculatedPayload } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { RootState } from 'src/store';
 
 import styles from './GeneView.scss';
@@ -77,7 +77,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [
     basePairsRulerTicks,
     setBasePairsRulerTicks
-  ] = useState<OnTicksCalculatedPayload | null>(null);
+  ] = useState<TicksAndScale | null>(null);
 
   return (
     <div className={styles.geneView}>

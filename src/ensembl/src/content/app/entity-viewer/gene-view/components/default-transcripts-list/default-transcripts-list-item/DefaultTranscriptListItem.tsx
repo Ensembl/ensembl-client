@@ -6,14 +6,14 @@ import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/compone
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { OnTicksCalculatedPayload } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './DefaultTranscriptListItem.scss';
 
 type Props = {
   gene: Gene;
   transcript: Transcript;
-  rulerTicks: OnTicksCalculatedPayload;
+  rulerTicks: TicksAndScale;
 };
 
 // NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px

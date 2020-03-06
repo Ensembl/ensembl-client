@@ -4,14 +4,14 @@ import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/help
 
 import DefaultTranscriptslistItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
-import { OnTicksCalculatedPayload } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './DefaultTranscriptsList.scss';
 
 type Props = {
   gene: Gene;
-  rulerTicks: OnTicksCalculatedPayload;
+  rulerTicks: TicksAndScale;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
