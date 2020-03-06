@@ -1,6 +1,7 @@
 import React from 'react';
 
 import styles from './GeneView.scss';
+import InfoButtonStrip from './components/info-button-strip/InfoButtonStrip';
 
 const GeneView = () => (
   <div className={styles.geneView}>
@@ -8,7 +9,7 @@ const GeneView = () => (
     <div className={styles.viewInLinks}>View in GB</div>
 
     <div className={styles.geneViewTabs}>
-      These are the Entity Viewer tabs...
+      <InfoButtonStrip />
     </div>
     <div className={styles.geneViewTable}>
       This is the Entity Viewer table...
