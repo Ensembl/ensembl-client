@@ -1,0 +1,27 @@
+@import '../constants';
+
+.defaultTranscriptListItem {
+  display: grid;
+  grid-template-columns: $left_column $middle_column $middle_column_right_gap $right_column;
+
+  svg rect {
+    fill: white;
+  }
+}
+
+.left {
+  grid-column: 1/2;
+  text-align: right;
+  padding-right: 1em; // Check w/Andrea
+
+  color: white; //FIXME remove when start working on the left column
+}
+
+.middle {
+  grid-column: 2/3;
+}
+
+.right {
+  color: white; //FIXME remove when start working on the left column
+  grid-column: 4/5;
+}

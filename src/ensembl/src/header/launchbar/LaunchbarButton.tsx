@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { NavLink } from 'react-router-dom';
 import { withRouter, RouteComponentProps } from 'react-router';
+
 import ImageButton, {
   ImageButtonStatus
 } from 'src/shared/components/image-button/ImageButton';
@@ -28,7 +29,8 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
 
   const imageButton = (
     <ImageButton
-      classNames={{
+      className={props.enabled ? '' : styles.launchbarButton}
+      statusClasses={{
         [Status.UNSELECTED]: styles.launchbarButtonImage,
         [Status.SELECTED]: styles.launchbarButtonSelectedImage,
         [Status.DISABLED]: styles.launchbarButtonDisabledImage
@@ -48,11 +50,7 @@ const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
       {imageButton}
     </NavLink>
   ) : (
-    <div
-      className={`${styles.launchbarButton} ${styles.launchbarButtonDisabled}`}
-    >
-      {imageButton}
-    </div>
+    imageButton
   );
 };
 

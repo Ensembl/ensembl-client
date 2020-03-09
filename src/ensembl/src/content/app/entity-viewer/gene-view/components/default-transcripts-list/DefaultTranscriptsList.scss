@@ -1,0 +1,22 @@
+@import 'src/styles/common';
+@import 'constants';
+
+.defaultTranscriptsList {
+  position: relative;
+}
+
+.stripedBackground {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: $left_column;
+
+  .stripe {
+    position: absolute;
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    background: $orange;
+    opacity: 0.4;
+  }
+}

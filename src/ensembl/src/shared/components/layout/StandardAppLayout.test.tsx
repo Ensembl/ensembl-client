@@ -2,9 +2,9 @@ import React from 'react';
 import { mount, render } from 'enzyme';
 import faker from 'faker';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
+import StandardAppLayout, { SidebarBehaviourType } from './StandardAppLayout';
 
-import StandardAppLayout from './StandardAppLayout';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 const MainContent = () => (
   <div className="mainContent">This is main content</div>
@@ -80,6 +80,16 @@ describe('StandardAppLayout', () => {
         wrapper.find('.sidebarToolstripContent').find('.toolstripContent')
           .length
       ).toBe(1);
+    });
+
+    it('does not change main area styles when sidebar slides over it', () => {
+      const props = {
+        ...minimalProps,
+        sidebarBehaviour: SidebarBehaviourType.SLIDEOVER
+      };
+      const wrapper = render(<StandardAppLayout {...props} />);
+      const mainContent = wrapper.find('.main');
+      expect(mainContent.hasClass('mainFullWidth')).toBe(true);
     });
 
     describe('with drawer', () => {

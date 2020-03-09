@@ -11,7 +11,7 @@ serde = "*"
 serde_derive = "*"
 serde_json = "*"
 lazy_static = "*"
-rand="*"
+rand = { version = "*", features = ["small_rng"] }
 itertools = "*"
 hsl = "*"
 url="*"
