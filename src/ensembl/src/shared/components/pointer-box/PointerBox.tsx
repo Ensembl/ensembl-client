@@ -8,7 +8,8 @@ import windowService from 'src/services/window-service';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 import { findOptimalPosition } from './pointer-box-helper';
 import {
-  getStylesForRenderingIntoBody
+  getStylesForRenderingIntoBody,
+  getStylesForRenderingIntoAnchor
 } from './pointer-box-inline-styles';
 
 import {
@@ -64,7 +65,7 @@ const PointerBox = (props: PointerBoxProps) => {
   useEffect(() => {
     const pointerBoxElement = pointerBoxRef.current as HTMLDivElement;
 
-    setInlineStyles(getStylesForRenderingIntoBody(props));
+    setInlineStyles(getInlineStyles(props));
     anchorRectRef.current = props.anchor.getBoundingClientRect();
 
     if (props.autoAdjust) {
@@ -97,6 +98,14 @@ const PointerBox = (props: PointerBoxProps) => {
   //   }
   // }
 
+  const getInlineStyles = (props: PointerBoxProps) => {
+    if (props.renderInsideAnchor) {
+      return getStylesForRenderingIntoAnchor(props);
+    } else {
+      return getStylesForRenderingIntoBody(props);
+    }
+  };
+
   const adjustPosition = (
     pointerBox: HTMLDivElement,
     anchor: HTMLElement
@@ -121,7 +130,7 @@ const PointerBox = (props: PointerBoxProps) => {
       positionRef.current = optimalPosition;
     }
     setInlineStyles(
-      getStylesForRenderingIntoBody({
+      getInlineStyles({
         ...props,
         position: optimalPosition
       })
@@ -134,7 +143,7 @@ const PointerBox = (props: PointerBoxProps) => {
   const className = classNames(
     styles.pointerBox,
     // positionRef.current || props.position,
-    { [styles.tooltipInvisible]: isPositioning || !hasInlineStyles() }
+    { [styles.invisible]: isPositioning || !hasInlineStyles() }
   );
 
   const renderTarget = props.renderInsideAnchor ? props.anchor : document.body;

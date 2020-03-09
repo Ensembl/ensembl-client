@@ -5,6 +5,9 @@
   // delete below
   background: black;
   color: white;
+  width: max-content; // not supported in IE or non-webkit Edge
+  box-sizing: content-box; // Safari doesn't seem to respect "width: max-content" if box-sizing is border-box
+  padding: 6px;
   // border: 1px solid black;
 }
 

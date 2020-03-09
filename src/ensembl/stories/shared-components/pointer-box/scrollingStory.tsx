@@ -26,6 +26,7 @@ const ScrollingStory = () => {
           anchor={anchorRef.current as HTMLButtonElement}
           position={Position.BOTTOM_LEFT}
           onClose={() => setShowPointerBox(false)}
+          renderInsideAnchor={true}
         >
           Hello sailor!
         </PointerBox>
