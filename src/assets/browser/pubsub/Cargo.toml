@@ -1,0 +1,12 @@
+[package]
+name = "pubsub"
+version = "0.0.0"
+authors = ["Dan Sheppard <dan@ebi.ac.uk>"]
+edition = "2018"
+
+[dependencies]
+hashbrown="*"
+
+[dependencies.identitynumber]
+version="0.0.0"
+path="../identitynumber"
