@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+
 import ScaleSwitcher from './scale-switcher/ScaleSwitcher';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import styles from './EntityViewerTopbar.scss';
 

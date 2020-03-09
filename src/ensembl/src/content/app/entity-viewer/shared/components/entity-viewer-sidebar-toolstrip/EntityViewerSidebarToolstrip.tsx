@@ -15,38 +15,38 @@ import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 export const EntityViewerSidebarToolstrip = () => {
   return (
     <>
-      <div className={styles.sidebarIcon} key="search">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Search"
-          onClick={noop}
-          image={searchIcon}
-        />
-      </div>
-      <div className={styles.sidebarIcon} key="bookmarks">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Bookmarks"
-          onClick={noop}
-          image={bookmarkIcon}
-        />
-      </div>
-      <div className={styles.sidebarIcon} key="share">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Share"
-          onClick={noop}
-          image={shareIcon}
-        />
-      </div>
-      <div className={styles.sidebarIcon} key="downloads">
-        <ImageButton
-          status={Status.DISABLED}
-          description="Downloads"
-          onClick={noop}
-          image={downloadIcon}
-        />
-      </div>
+      <ImageButton
+        status={Status.DISABLED}
+        description="Search"
+        className={styles.sidebarIcon}
+        key="search"
+        onClick={noop}
+        image={searchIcon}
+      />
+      <ImageButton
+        status={Status.DISABLED}
+        description="Bookmarks"
+        className={styles.sidebarIcon}
+        key="bookmarks"
+        onClick={noop}
+        image={bookmarkIcon}
+      />
+      <ImageButton
+        status={Status.DISABLED}
+        description="Share"
+        className={styles.sidebarIcon}
+        key="share"
+        onClick={noop}
+        image={shareIcon}
+      />
+      <ImageButton
+        status={Status.DISABLED}
+        description="Downloads"
+        className={styles.sidebarIcon}
+        key="downloads"
+        onClick={noop}
+        image={downloadIcon}
+      />
     </>
   );
 };

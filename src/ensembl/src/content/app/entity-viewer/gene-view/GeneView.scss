@@ -4,10 +4,9 @@
   color: $white;
   display: grid;
   background-color: $black;
-  grid-template-columns: 1fr 5fr 2fr;
-  grid-template-rows: auto;
-  overflow: auto;
-  padding: 15px;
+  grid-template-columns: 228px 902px 1fr;
+  grid-template-rows: min-content 150px 1fr;
+  padding-top: 75px;
   height: 100%; // may need to change this later
   width: 100%;
 }

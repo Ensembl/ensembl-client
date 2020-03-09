@@ -7,6 +7,7 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import styles from './Layout.stories.scss';
+import { SidebarBehaviourType } from 'src/shared/components/layout/StandardAppLayout';
 
 const TopbarContent = () => (
   <div className={styles.topbarContent}>This is top bar content</div>
@@ -72,6 +73,7 @@ const Wrapper = (props: {
   isSidebarOpen: boolean;
   isDrawerOpen?: boolean;
   sidebarContent: ReactNode;
+  sidebarBehaviour?: SidebarBehaviourType;
   drawerContent?: ReactNode;
   onSidebarToggle: () => void;
   onDrawerClose?: () => void;
@@ -81,15 +83,10 @@ const Wrapper = (props: {
       <StandardAppLayout
         mainContent={<MainContent />}
         topbarContent={<TopbarContent />}
-        sidebarContent={props.sidebarContent}
         sidebarNavigation={<SidebarNavigation />}
         sidebarToolstripContent={<SidebarToolstripContent />}
-        drawerContent={props.drawerContent || null}
-        isSidebarOpen={props.isSidebarOpen}
-        isDrawerOpen={props.isDrawerOpen || false}
-        onSidebarToggle={props.onSidebarToggle}
-        onDrawerClose={props.onDrawerClose}
         viewportWidth={BreakpointWidth.BIG_DESKTOP}
+        {...props}
       />
     </div>
   );
@@ -136,6 +133,21 @@ storiesOf('Components|Shared Components/Layout/StandardAppLayout', module)
         isDrawerOpen={isDrawerOpen}
         drawerContent={<DrawerContent />}
         onDrawerClose={closeDrawer}
+      />
+    );
+  })
+  .add('with slideover sidebar', () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const toggleSidebar = () => {
+      setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    return (
+      <Wrapper
+        isSidebarOpen={isSidebarOpen}
+        sidebarContent={<SidebarContentSimple />}
+        sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
+        onSidebarToggle={toggleSidebar}
       />
     );
   });
