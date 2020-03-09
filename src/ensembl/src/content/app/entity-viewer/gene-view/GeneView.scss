@@ -4,7 +4,7 @@
   display: grid;
   background-color: $black;
   grid-template-columns: 228px 902px 1fr;
-  grid-template-rows: auto;
+  grid-template-rows: min-content 150px 1fr;
   padding-top: 75px;
   height: 100%; // may need to change this later
   width: 100%;

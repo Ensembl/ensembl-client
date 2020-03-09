@@ -8,11 +8,13 @@ import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/b
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneOverviewImage.scss';
 
 type GeneOverviewImageProps = {
   gene: Gene;
+  onTicksCalculated: (payload: TicksAndScale) => void;
 };
 
 const GeneOverviewImage = (props: GeneOverviewImageProps) => {
@@ -27,7 +29,12 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
       <StrandIndicator {...props} />
       <NumberOfTranscripts {...props} />
       <div className={styles.ruler}>
-        <BasePairsRuler length={length} width={695} standalone={true} />
+        <BasePairsRuler
+          length={length}
+          width={695}
+          onTicksCalculated={props.onTicksCalculated}
+          standalone={true}
+        />
       </div>
     </div>
   );

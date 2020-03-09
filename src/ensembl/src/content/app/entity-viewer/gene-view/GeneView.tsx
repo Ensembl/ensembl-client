@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
@@ -7,7 +7,10 @@ import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/st
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 
+import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
+
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { RootState } from 'src/store';
 
 import styles from './GeneView.scss';
@@ -71,10 +74,18 @@ const GeneView = (props: GeneViewProps) => {
 };
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
+  const [
+    basePairsRulerTicks,
+    setBasePairsRulerTicks
+  ] = useState<TicksAndScale | null>(null);
+
   return (
     <div className={styles.geneView}>
       <div className={styles.featureImage}>
-        <GeneOverviewImage gene={props.gene} />
+        <GeneOverviewImage
+          gene={props.gene}
+          onTicksCalculated={setBasePairsRulerTicks}
+        />
       </div>
       <div className={styles.viewInLinks}>View in GB</div>
 
@@ -82,7 +93,12 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         These are the Entity Viewer tabs...
       </div>
       <div className={styles.geneViewTable}>
-        This is the Entity Viewer table...
+        {basePairsRulerTicks && (
+          <DefaultTranscriptslist
+            gene={props.gene}
+            rulerTicks={basePairsRulerTicks}
+          />
+        )}
       </div>
     </div>
   );

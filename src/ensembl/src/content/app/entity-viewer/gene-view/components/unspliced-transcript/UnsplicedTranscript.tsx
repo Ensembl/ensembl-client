@@ -10,6 +10,8 @@ import { CDS } from 'src/content/app/entity-viewer/types/cds';
 
 import styles from './UnsplicedTranscript.scss';
 
+const BLOCK_HEIGHT = 7;
+
 export type UnsplicedTranscriptProps = {
   transcript: Transcript;
   width: number; // available width for drawing, in pixels
@@ -46,7 +48,8 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   const length = getLength(transcriptStart, transcriptEnd);
   const scale = scaleLinear()
     .domain([1, length])
-    .range([1, props.width]);
+    .range([1, props.width])
+    .clamp(true);
 
   const transcriptClasses = classNames(
     styles.transcript,
@@ -70,7 +73,11 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   );
 
   return props.standalone ? (
-    <svg className={styles.containerSvg} width={props.width}>
+    <svg
+      className={styles.containerSvg}
+      width={props.width}
+      height={BLOCK_HEIGHT}
+    >
       {renderedTranscript}
     </svg>
   ) : (
@@ -141,7 +148,7 @@ const Backbone = (
           y={0}
           height={1}
           x={scale(start - transcriptStart) + 1}
-          width={scale(end - start) - 2}
+          width={Math.max(0, scale(end - start) - 2)}
         />
       ))}
     </g>
@@ -165,7 +172,7 @@ const ExonBlock = (props: ExonBlockProps) => {
   const isNonCodingLeft = cds && exonStart < cds.start && exonEnd > cds.start;
   const isNonCodingRight = cds && exonStart < cds.end && exonEnd > cds.end;
   const y = -3;
-  const height = 7;
+  const height = BLOCK_HEIGHT;
 
   const exonClasses = classNames(styles.exon, props.className);
 
