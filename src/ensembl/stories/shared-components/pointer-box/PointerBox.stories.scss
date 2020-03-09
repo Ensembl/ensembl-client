@@ -143,8 +143,9 @@
 
 .scrollingStoryContainer {
   display: flex;
+  padding-top: 10vh;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   height: 150vh;
 }
@@ -154,12 +155,10 @@
   width: 30vw;
   overflow: auto;
   border: 1px black dashed;
-  transform: translateY(-60%);
 }
 
-.scrollingStoryAnchorHeader {
-  position: relative;
-  top: -10%;
+.scrollingStoryHeader {
+  padding-bottom: 1em;
 }
 
 .scrollingStoryAnchorContainerInner {
@@ -179,4 +178,24 @@
   position: relative;
   padding: 1.5em;
   background: $grey;
+}
+
+.renderSwitch {
+  text-align: center;
+}
+
+.renderSwitchItem {
+  color: $blue;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+
+  &:first-child {
+    margin-right: 1em;
+  }
+}
+
+.renderSwitchItemActive {
+  color: black;
+  text-decoration: none;
 }
