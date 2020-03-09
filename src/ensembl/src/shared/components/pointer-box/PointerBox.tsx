@@ -78,9 +78,10 @@ const PointerBox = (props: PointerBoxProps) => {
   // from Stack Overflow: https://stackoverflow.com/questions/59792071/how-to-observe-dom-element-position-changes
   // (listen to all scroll events in the event capturing phase on the body and re-evaluate anchor position)
   useEffect(() => {
-    document.addEventListener('scroll', closeOnScroll, true);
-
-    return () => document.removeEventListener('scroll', closeOnScroll, true);
+    if (!props.renderInsideAnchor) {
+      document.addEventListener('scroll', closeOnScroll, true);
+      return () => document.removeEventListener('scroll', closeOnScroll, true);
+    }
   }, []);
 
   // const getAnchorPosition = () => {

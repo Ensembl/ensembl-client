@@ -157,6 +157,11 @@
   transform: translateY(-60%);
 }
 
+.scrollingStoryAnchorHeader {
+  position: relative;
+  top: -10%;
+}
+
 .scrollingStoryAnchorContainerInner {
   height: 150%;
   width: 150%;
