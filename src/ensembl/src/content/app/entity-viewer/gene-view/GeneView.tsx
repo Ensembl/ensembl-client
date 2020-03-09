@@ -92,7 +92,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.geneViewTabs}>
         These are the Entity Viewer tabs...
       </div>
-      <div className={styles.geneViewTable}>
+      <div className={styles.transcriptsListWrapper}>
         {basePairsRulerTicks && (
           <DefaultTranscriptslist
             gene={props.gene}

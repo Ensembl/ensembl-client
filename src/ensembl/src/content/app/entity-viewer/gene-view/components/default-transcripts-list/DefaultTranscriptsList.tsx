@@ -19,15 +19,24 @@ const DefaultTranscriptslist = (props: Props) => {
 
   return (
     <div className={styles.defaultTranscriptsList}>
-      {gene.transcripts.map((transcript, index) => (
-        <DefaultTranscriptsListItem
-          key={index}
-          gene={gene}
-          transcript={transcript}
-          rulerTicks={props.rulerTicks}
-        />
-      ))}
-      <StripedBackground {...props} />
+      <div className={styles.header}>
+        <div className={styles.row}>
+          <div className={styles.left}>Filter &amp; sort</div>
+          <div className={styles.middle}></div>
+          <div className={styles.right}>Transcript ID</div>
+        </div>
+      </div>
+      <div className={styles.content}>
+        {gene.transcripts.map((transcript, index) => (
+          <DefaultTranscriptsListItem
+            key={index}
+            gene={gene}
+            transcript={transcript}
+            rulerTicks={props.rulerTicks}
+          />
+        ))}
+        <StripedBackground {...props} />
+      </div>
     </div>
   );
 };
