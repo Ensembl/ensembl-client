@@ -5,7 +5,7 @@ import './question-button/QuestionButton.stories';
 import './select/Select.stories';
 import './pointer-box/PointerBox.stories';
 import './tooltip/Tooltip.stories';
-import './hoverbox/Hoverbox.stories';
+import './toolbox/Toolbox.stories';
 import './input/Input.stories';
 import './accordion/Accordion.stories';
 import './image-button/ImageButton.stories';

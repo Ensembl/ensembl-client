@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import HoverboxExpandableContent from './HoverboxExpandableContent';
+import HoverboxExpandableContent from './ToolboxExpandableContent';
 
 const MainContent = () => <div>This is main content</div>;
 const FooterContent = () => <div>This is footer content</div>;

@@ -2,11 +2,11 @@ import React, { useState, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import {
-  Hoverbox,
-  HoverboxExpandableContent
-} from 'src/shared/components/hoverbox';
+  Toolbox,
+  ToolboxExpandableContent
+} from 'src/shared/components/toolbox';
 
-import styles from './Hoverbox.stories.scss';
+import styles from './Toolbox.stories.scss';
 
 const DefaultStory = () => {
   const [isShowing, setIsShowing] = useState(false);
@@ -40,18 +40,18 @@ const DefaultStory = () => {
         Click me
       </button>
       {isShowing && buttonRef.current && (
-        <Hoverbox anchor={buttonRef.current}>
-          <HoverboxExpandableContent
+        <Toolbox anchor={buttonRef.current}>
+          <ToolboxExpandableContent
             mainContent={mainHoverboxContent}
             footerContent={hoverboxFooterContent}
           />
-        </Hoverbox>
+        </Toolbox>
       )}
     </div>
   );
 };
 
-storiesOf('Components|Shared Components/Hoverbox', module).add(
+storiesOf('Components|Shared Components/Toolbox', module).add(
   'default',
   DefaultStory
 );

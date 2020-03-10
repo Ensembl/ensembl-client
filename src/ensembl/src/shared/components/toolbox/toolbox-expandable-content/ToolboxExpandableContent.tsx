@@ -3,7 +3,7 @@ import React, { useState, ReactNode } from 'react';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
 
-import styles from './HoverboxExpandableContent.scss';
+import styles from './ToolboxExpandableContent.scss';
 
 type HoverboxExpandableContentProps = {
   mainContent: ReactNode;
