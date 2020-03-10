@@ -116,6 +116,7 @@ $drawerWindowWidth: 45px;
 
 .sidebarModeToggleChevron {
   cursor: pointer;
+  fill: $dark-blue;
 
   &Open {
     transform: rotate(180deg);

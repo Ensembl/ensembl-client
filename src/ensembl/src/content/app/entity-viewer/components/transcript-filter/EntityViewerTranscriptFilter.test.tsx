@@ -3,7 +3,9 @@ import { mount } from 'enzyme';
 import times from 'lodash/times';
 import faker from 'faker';
 
-import EntityViewerTranscriptFilter, {EntityViewerTranscriptFilterProps} from './EntityViewerTranscriptFilter';
+import EntityViewerTranscriptFilter, {
+  EntityViewerTranscriptFilterProps
+} from './EntityViewerTranscriptFilter';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 let totalOptions = 0;
@@ -46,7 +48,9 @@ const defaultProps = {
   onChange
 };
 
-const renderTranscriptFilter = (props?: Partial<EntityViewerTranscriptFilterProps>) => {
+const renderTranscriptFilter = (
+  props?: Partial<EntityViewerTranscriptFilterProps>
+) => {
   return mount(<EntityViewerTranscriptFilter {...defaultProps} {...props} />);
 };
 

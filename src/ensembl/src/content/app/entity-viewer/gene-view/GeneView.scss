@@ -1,11 +1,12 @@
 @import 'src/styles/common';
 
 .geneView {
+  color: $white;
   display: grid;
   background-color: $black;
   grid-template-columns: 228px 902px 1fr;
   grid-template-rows: min-content 150px 1fr;
-  padding-top: 75px;
+  padding: 75px 20px 10px 20px;
   height: 100%; // may need to change this later
   width: 100%;
 }
@@ -22,6 +23,6 @@
   grid-area: 2 / 2 / 3 / 4;
 }
 
-.geneViewTable {
+.transcriptsListWrapper {
   grid-area: 3 / 1 / 4 / 4;
 }
