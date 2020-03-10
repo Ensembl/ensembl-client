@@ -7,8 +7,30 @@ import styles from './AboutEnsembl.scss';
 const AboutEnsembl = () => {
   return (
     <div className={styles.aboutEnsembl}>
-      <DocLayout mainContent={<Page />} sidebarContent={<Links />} />
+      <DocLayout
+        appHeaderContent={<AppHeaderContent />}
+        searchBoxContent={<SearchBoxContent />}
+        globalNavContent={<GlobalLinks />}
+        mainContent={<Page />}
+        localNavContent={<LocalLinks />}
+      />
     </div>
+  );
+};
+
+const AppHeaderContent = () => {
+  return (
+    <>
+      <p className={docStyles.runningHeader}>About Ensembl</p>
+    </>
+  );
+};
+
+const SearchBoxContent = () => {
+  return (
+    <>
+      <input type="text" placeholder="Search About Ensembl" />
+    </>
   );
 };
 
@@ -37,18 +59,26 @@ const Page = () => {
   );
 };
 
-const Links = () => {
+const GlobalLinks = () => {
   return (
     <>
-      <p className={docStyles.runningHeader}>About Ensembl</p>
       <ul>
-        <li className={docStyles.current}>
-          <a href="/app/about-ensembl">The Ensembl project</a>
-        </li>
+        <li>The Ensembl project</li>
+        <li>Collaborations</li>
         <li>Contact Us</li>
-        <li>
-          <a href="https://www.ensembl.info">Blog</a>
-        </li>
+        <li>Legal</li>
+      </ul>
+    </>
+  );
+};
+
+const LocalLinks = () => {
+  return (
+    <>
+      <ul>
+        <li>Taxonomic coverage</li>
+        <li>Funding</li>
+        <li>Scientific Advisory Board</li>
       </ul>
     </>
   );

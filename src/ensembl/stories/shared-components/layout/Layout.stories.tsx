@@ -15,8 +15,20 @@ const MainContent = () => (
   </div>
 );
 
-const SidebarContentSimple = () => (
-  <div className={styles.sidebarContent}>This is sidebar content</div>
+const AppHeaderContent = () => (
+  <div className={styles.appNameContent}>Documentation</div>
+);
+
+const SearchBoxContent = () => (
+  <div className={styles.searchBoxContent}>Search goes here</div>
+);
+
+const GlobalNavContent = () => (
+  <div className={styles.globalNavContent}>This is global navigation</div>
+);
+
+const LocalNavContent = () => (
+  <div className={styles.localNavContent}>This is local navigation</div>
 );
 
 storiesOf('Components|Shared Components/Layout/DocLayout', module).add(
@@ -25,12 +37,19 @@ storiesOf('Components|Shared Components/Layout/DocLayout', module).add(
     return (
       <div className={styles.wrapper}>
         <DocLayout
-          sidebarContent={<SidebarContentSimple />}
+          appHeaderContent={<AppHeaderContent />}
+          searchBoxContent={<SearchBoxContent />}
+          globalNavContent={<GlobalNavContent />}
           mainContent={<MainContent />}
+          localNavContent={<LocalNavContent />}
         />
       </div>
     );
   }
+);
+
+const SidebarContentSimple = () => (
+  <div className={styles.sidebarContent}>This is sidebar content</div>
 );
 
 const TopbarContent = () => (

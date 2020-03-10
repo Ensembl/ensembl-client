@@ -1,56 +1,86 @@
 @import 'src/styles/common';
 
-$sidebarContentWidth: 320px;
+$topbarHeight: 48px;
+$globalNavWidth: 320px;
+$localNavWidth: 320px;
+$columnPadding: 36px;
 
 .docLayout {
   height: 100%;
   min-height: 550px; // based on the current interface of genome browser
   overflow: hidden;
+  display: grid;
+  grid-template-columns: $globalNavWidth auto $localNavWidth;
+  grid-template-rows: $topbarHeight auto;
 }
 
-.mainWrapper {
-  height: 100%;
-  position: relative;
+/* grid
+
+|-----------|----------------------------------------|
+| appName   |                          searchBox     |
+|-----------|----------------------------------------|
+|           |                             |          |
+| globalNav |           main              | localNav |
+|           |                             |          |
+|-----------|-----------------------------|----------|
+*/
+
+.appHeader {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  padding: 8px $columnPadding;
+}
+
+.searchBox {
+  grid-column-start: 2;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  padding: 8px $columnPadding 8px 0px;
+  text-align: right;
+}
+
+.globalNav {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  padding: 0px $columnPadding;
+  background-color: white;
 }
 
 .main {
-  height: 100%;
-  margin-left: $sidebarContentWidth;
-  margin-right: 48px;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
 }
 
-.sidebarWrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  z-index: 1;
-}
-
-.sidebar {
-  flex: 0 0 auto;
-  height: 100%;
-  width: $sidebarContentWidth;
+.localNav {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  padding: 0px $columnPadding;
   background-color: white;
-  padding: 0px 36px;
+}
 
-  .runningHeader {
-    font-size: 12px;
+.runningHeader {
+  font-size: 12px;
+  font-weight: bold;
+  color: $dark-grey;
+  margin-bottom: 24px;
+}
+
+ul {
+  list-style: none;
+  margin-left: -40px;
+  line-height: 48px;
+
+  li.current a {
     font-weight: bold;
     color: $dark-grey;
-    margin-bottom: 24px;
-  }
-
-  ul {
-    list-style: none;
-    margin-left: -40px;
-    line-height: 48px;
-
-    li.current a {
-      font-weight: bold;
-      color: $dark-grey;
-    }
   }
 }
