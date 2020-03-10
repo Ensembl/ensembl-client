@@ -1,6 +1,12 @@
-import pluralDictionary from '../data/pluralisedNouns';
+type PluralDictionary = {
+  [key: string]: string;
+};
 
-export default function pluralise(word: string, count: number) {
+const pluralDictionary: PluralDictionary = {
+  species: 'species'
+};
+
+export function pluralise(word: string, count: number) {
   if (count === 1) {
     return word;
   } else {
