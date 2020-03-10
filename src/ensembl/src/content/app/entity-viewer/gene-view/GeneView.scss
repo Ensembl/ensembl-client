@@ -4,7 +4,7 @@
   display: grid;
   background-color: $black;
   grid-template-columns: 228px 902px 1fr;
-  grid-template-rows: min-content 150px 1fr;
+  grid-template-rows: min-content 31px 1fr;
   padding-top: 75px;
   height: 100%; // may need to change this later
   width: 100%;
@@ -20,8 +20,9 @@
 
 .geneViewTabs {
   grid-area: 2 / 2 / 3 / 4;
+  z-index: 10;
 }
 
-.geneViewTable {
+.geneViewTabContent {
   grid-area: 3 / 1 / 4 / 4;
 }
