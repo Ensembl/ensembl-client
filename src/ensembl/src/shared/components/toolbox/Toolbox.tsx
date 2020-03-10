@@ -11,7 +11,11 @@ type HoverboxProps = {
 
 const Hoverbox = (props: HoverboxProps) => {
   return (
-    <PointerBox position={Position.RIGHT_BOTTOM} anchor={props.anchor}>
+    <PointerBox
+      position={Position.RIGHT_BOTTOM}
+      anchor={props.anchor}
+      renderInsideAnchor={true}
+    >
       {props.children}
     </PointerBox>
   );
