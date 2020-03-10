@@ -1,3 +1,21 @@
+/*! A simple crate to layer Pub/Sub on top of `CommanderStream`s.
+
+The Pub/Sub architecture decouples producers of data from consumers in a manner similar to the historic Blackbord
+architectures. A publisher generates events and subscribers may be generated to receive them, these subscribers being 
+registered with the publisher.
+
+This crate is designed to interface with callback-based architectures, so provides a `Listen` trait with `add` and
+`remove` methods to handle registering of callbacks (for exmaple in a browser). Subscribers are futures-based. An
+async function gets the next value. Subscriptions are removed RAII via `Drop`.
+
+This crate also provides a map/filter callback for each subscriber which transforms the published data for each
+subscriber. This serves three purposes: it can be useful to abstract away any filtering a subscriber wishes to apply to
+an overly broad publication; it can be useful to subtype or otherwise cast highly generic arguments typical of
+callbacks; subscribers only get a reference passed to this callback, so values must be cloned before being passed to
+subscribers (the output must of this callback have a static lifetime).
+
+*/
+
 extern crate commander;
 extern crate hashbrown;
 #[macro_use]
@@ -22,8 +40,12 @@ use std::sync::{ Arc, Mutex };
  * Subscriber: Subscriber end of U pipe and PublisherHandle for deletion when dropped.
  */
 
+/// For interfacing publishers with callbacks.
 pub trait Listener<T> {
+    /// Please register a callback. Here is the publisher to use to send future values.
     fn add(&mut self, pc: &Publisher<T>);
+
+    /// Please unregister callback. It is no longer needed.
     fn remove(&mut self);
 }
 
@@ -65,6 +87,10 @@ impl<T> PublisherImpl<T> {
     }
 }
 
+/// Create a publisher into which values can be published.
+/// 
+/// Values can be published directly via `publish()` or via the given `Listener`. Subscribers are registered at creation
+/// time for the subscriber.
 pub struct Publisher<T>(Arc<Mutex<PublisherImpl<T>>>);
 
 impl<T> Clone for Publisher<T> {
@@ -74,10 +100,12 @@ impl<T> Clone for Publisher<T> {
 }
 
 impl<T> Publisher<T> {
+    /// Create a publisher with the given listener, if any.
     pub fn new(listener: Option<Box<dyn Listener<T>>>) -> Publisher<T> {
         Publisher(Arc::new(Mutex::new(PublisherImpl::new(listener))))
     }
 
+    /// Publish the given value to subscribers. Also the correct way to pubilish via a callback in a `Listener`.
     pub fn publish(&self, value: T) {
         self.0.lock().unwrap().publish(value);
     }
@@ -117,6 +145,7 @@ impl<T,U> PubSub<T> for PubSubState<T,U> {
     }
 }
 
+/// Subscribe to a publisher to provide an async method to get values when published.
 #[derive(Clone)]
 pub struct Subscriber<U> {
     stream: Arc<Mutex<CommanderStream<U>>>,
@@ -125,6 +154,7 @@ pub struct Subscriber<U> {
 }
 
 impl<U> Subscriber<U> where U: 'static {
+    /// Create new subscription. Unsubscribing is RAII via `Drop`.
     pub fn new<A,T>(pubcore: &Publisher<T>, filter: A) -> Subscriber<U> where T: 'static, A: Fn(&T) -> Option<U> + 'static {
         let stream = Arc::new(Mutex::new(CommanderStream::new()));
         let id = SUB_ID.next();
@@ -140,6 +170,7 @@ impl<U> Subscriber<U> where U: 'static {
         }
     }
 
+    /// Get next value from subscription.
     pub async fn next(&self) -> U {
         self.stream.lock().unwrap().get().await
     }
