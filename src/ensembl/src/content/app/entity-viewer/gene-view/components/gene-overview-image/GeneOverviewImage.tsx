@@ -2,12 +2,12 @@ import React from 'react';
 import { scaleLinear } from 'd3';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getStrandDisplayName } from 'src/shared/helpers/strandFormatter';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneOverviewImage.scss';
@@ -106,10 +106,9 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
     }
   } = props;
 
-  const strandDisplayName =
-    strandCode === Strand.FORWARD ? 'forward strand' : 'reverse strand';
-
-  return <div className={styles.strand}>{strandDisplayName}</div>;
+  return (
+    <div className={styles.strand}>{getStrandDisplayName(strandCode)}</div>
+  );
 };
 
 const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
