@@ -30,8 +30,9 @@ export type InlineStylesState = {
 
 type PointerProps = {
   style: InlineStyles;
-  pointerWidth: number;
-  pointerHeight: number;
+  className?: string;
+  width: number;
+  height: number;
 };
 
 export type PointerBoxProps = {
@@ -43,12 +44,21 @@ export type PointerBoxProps = {
   pointerWidth: number;
   pointerHeight: number;
   pointerOffset: number;
+  classNames?: {
+    body?: string,
+    pointer?: string
+  }
   children: ReactNode;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onOutsideClick: () => void;
   onClose: () => void;
 };
+
+// const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
+//   e.stopPropagation();
+// };
+
 
 const PointerBox = (props: PointerBoxProps) => {
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
@@ -83,21 +93,6 @@ const PointerBox = (props: PointerBoxProps) => {
       return () => document.removeEventListener('scroll', closeOnScroll, true);
     }
   }, []);
-
-  // const getAnchorPosition = () => {
-  //   const currentAnchorBoundingRect = props.anchor.getBoundingClientRect();
-  //   if(anchorRectRef?.current?.top !== currentAnchorBoundingRect.top || anchorRectRef?.current?.left !== currentAnchorBoundingRect.left) {
-  //     // FIXME — request animation frame?
-  //     // FIXME — closeWhenLeaving ? IntersectionObserver?
-  //     setInlineStyles(
-  //       getStylesForRenderingIntoBody({
-  //         ...props,
-  //         position: positionRef.current as Position
-  //       })
-  //     );
-  //     anchorRectRef.current = currentAnchorBoundingRect;
-  //   }
-  // }
 
   const getInlineStyles = (props: PointerBoxProps) => {
     if (props.renderInsideAnchor) {
@@ -141,27 +136,31 @@ const PointerBox = (props: PointerBoxProps) => {
 
   const hasInlineStyles = () => Object.keys(inlineStyles.bodyStyles).length;
 
-  const className = classNames(
+  const bodyClasses = classNames(
     styles.pointerBox,
-    // positionRef.current || props.position,
+    props.classNames?.body,
+    props.position,
     { [styles.invisible]: isPositioning || !hasInlineStyles() }
   );
 
+  const renderedPointerBox = (
+    <div
+      className={bodyClasses}
+      ref={pointerBoxRef}
+      style={inlineStyles.bodyStyles}
+    >
+      <Pointer
+        className={props.classNames?.pointer}
+        width={props.pointerWidth}
+        height={props.pointerWidth}
+        style={inlineStyles.pointerStyles}
+      />
+      { props.children }
+    </div>
+  );
   const renderTarget = props.renderInsideAnchor ? props.anchor : document.body;
 
-  return (
-    ReactDOM.createPortal(
-      <div
-        className={className}
-        ref={pointerBoxRef}
-        style={inlineStyles.bodyStyles}
-      >
-        <Pointer pointerWidth={props.pointerWidth} pointerHeight={props.pointerWidth} style={inlineStyles.pointerStyles} />
-        { props.children }
-      </div>,
-      renderTarget
-    )
-  );
+  return ReactDOM.createPortal(renderedPointerBox, renderTarget)
 };
 
 PointerBox.defaultProps = {
@@ -179,21 +178,26 @@ PointerBox.defaultProps = {
 
 const Pointer = (props: PointerProps) => {
   const {
-    pointerWidth,
-    pointerHeight
+    width: pointerWidth,
+    height: pointerHeight
   } = props;
   const pointerEndX = pointerWidth / 2;
+
   const style = {
     ...props.style,
     width: `${pointerWidth}px`,
     height: `${pointerHeight}px`
-  }
+  };
 
+  const pointerClasses = classNames(
+    styles.pointer,
+    props.className
+  );
   const polygonPoints = `0,${pointerHeight} ${pointerWidth},${pointerHeight} ${pointerEndX},0`;
 
   return (
     <svg
-      className={styles.pointer}
+      className={pointerClasses}
       style={style}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"

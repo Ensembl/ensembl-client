@@ -3,12 +3,11 @@
 $fill-color: $dark-grey;
 
 .tooltip {
-  position: absolute;
   background: $fill-color;
   padding: 6px 18px 8px;
   box-shadow: 2px 2px 5px $shadow-color;
-  width: max-content; // not supported in IE or non-webkit Edge
-  box-sizing: content-box; // Safari doesn't seem to respect "width: max-content" if box-sizing is border-box
+  width: max-content;
+  // box-sizing: content-box; // Safari doesn't seem to respect "width: max-content" if box-sizing is border-box
   cursor: default;
   color: $white;
   border-radius: 4px;
@@ -34,22 +33,6 @@ $fill-color: $dark-grey;
   }
 }
 
-// Class applied to tooltip while the code is finding appropriate position for it.
-// The tooltip should be invisible, but have width and height required for calculations.
-// It should also not change body dimensions (and cause sliders to appear);
-// hence it is placed in top left corner of the screen with position: fixed
-.tooltipInvisible {
-  visibility: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-
 .tooltipTip {
-  position: absolute;
-  height: 13px;
-  width: 18px;
   fill: $fill-color;
-  font-size: 0;
-  line-height: 0;
 }
