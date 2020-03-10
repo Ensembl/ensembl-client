@@ -1,0 +1,18 @@
+@import 'src/styles/common';
+
+$fill-color: $black;
+
+.toolbox {
+  background: $fill-color;
+  padding: 12px 20px;
+  filter: drop-shadow(2px 2px 3px $shadow-color);
+  cursor: default;
+  color: $white;
+  font-size: 14px;
+  min-height: 40px;
+  font-size: 13px;
+}
+
+.tooltipTip {
+  fill: $fill-color;
+}
