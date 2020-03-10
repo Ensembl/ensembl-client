@@ -10,3 +10,7 @@ hashbrown="*"
 [dependencies.identitynumber]
 version="0.0.0"
 path="../identitynumber"
+
+[dependencies.commander]
+version="*"
+path="../commander"
