@@ -48,12 +48,12 @@ const TooltipWithAnchor = (props: Props) => {
       autoAdjust={props.autoAdjust}
       onClose={props.onClose}
       classNames={{ body: styles.tooltip, pointer: styles.tooltipTip }}
+      onOutsideClick={props.onClose}
     >
-      { props.children }
+      {props.children}
     </PointerBox>
   );
 };
-
 
 export { Position };
 export default Tooltip;

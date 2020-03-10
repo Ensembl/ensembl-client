@@ -45,9 +45,9 @@ export type PointerBoxProps = {
   pointerHeight: number;
   pointerOffset: number;
   classNames?: {
-    body?: string,
-    pointer?: string
-  }
+    body?: string;
+    pointer?: string;
+  };
   children: ReactNode;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -59,18 +59,17 @@ export type PointerBoxProps = {
 //   e.stopPropagation();
 // };
 
-
 const PointerBox = (props: PointerBoxProps) => {
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
   const positionRef = useRef<Position | null>(props.position);
-  const anchorRectRef = useRef<DOMRect|null>(null);
+  const anchorRectRef = useRef<DOMRect | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
     bodyStyles: {},
     pointerStyles: {}
   });
   const pointerBoxRef = useRef<HTMLDivElement>(null);
 
-  // useOutsideClick(tooltipElementRef, props.onClose);
+  useOutsideClick(pointerBoxRef, props.onOutsideClick);
 
   useEffect(() => {
     const pointerBoxElement = pointerBoxRef.current as HTMLDivElement;
@@ -102,10 +101,7 @@ const PointerBox = (props: PointerBoxProps) => {
     }
   };
 
-  const adjustPosition = (
-    pointerBox: HTMLDivElement,
-    anchor: HTMLElement
-  ) => {
+  const adjustPosition = (pointerBox: HTMLDivElement, anchor: HTMLElement) => {
     const pointerBoxBoundingRect = pointerBox.getBoundingClientRect();
     const rootBoundingRect = props.container
       ? props.container.getBoundingClientRect()
@@ -155,12 +151,12 @@ const PointerBox = (props: PointerBoxProps) => {
         height={props.pointerWidth}
         style={inlineStyles.pointerStyles}
       />
-      { props.children }
+      {props.children}
     </div>
   );
   const renderTarget = props.renderInsideAnchor ? props.anchor : document.body;
 
-  return ReactDOM.createPortal(renderedPointerBox, renderTarget)
+  return ReactDOM.createPortal(renderedPointerBox, renderTarget);
 };
 
 PointerBox.defaultProps = {
@@ -177,10 +173,7 @@ PointerBox.defaultProps = {
 };
 
 const Pointer = (props: PointerProps) => {
-  const {
-    width: pointerWidth,
-    height: pointerHeight
-  } = props;
+  const { width: pointerWidth, height: pointerHeight } = props;
   const pointerEndX = pointerWidth / 2;
 
   const style = {
@@ -189,10 +182,7 @@ const Pointer = (props: PointerProps) => {
     height: `${pointerHeight}px`
   };
 
-  const pointerClasses = classNames(
-    styles.pointer,
-    props.className
-  );
+  const pointerClasses = classNames(styles.pointer, props.className);
   const polygonPoints = `0,${pointerHeight} ${pointerWidth},${pointerHeight} ${pointerEndX},0`;
 
   return (
