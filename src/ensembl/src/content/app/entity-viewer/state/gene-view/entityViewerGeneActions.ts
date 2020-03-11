@@ -44,7 +44,59 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
       activeObjectId,
       data: set(
         getEntityViewerActiveGenomeConfiguration(getState()),
-        'activeGeneTab',
+        'selectedGeneTab',
+        selectedTab
+      )
+    })
+  );
+};
+
+export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (selectedTab: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
+  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
+
+  if (!activeGenomeId || !activeObjectId) {
+    return;
+  }
+
+  dispatch(
+    updateActiveGeneObjectState({
+      activeGenomeId,
+      activeObjectId,
+      data: set(
+        getEntityViewerActiveGenomeConfiguration(getState()),
+        'geneFunction.selectedTab',
+        selectedTab
+      )
+    })
+  );
+};
+
+export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (selectedTab: boolean) => (dispatch, getState: () => RootState) => {
+  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
+  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
+
+  if (!activeGenomeId || !activeObjectId) {
+    return;
+  }
+
+  dispatch(
+    updateActiveGeneObjectState({
+      activeGenomeId,
+      activeObjectId,
+      data: set(
+        getEntityViewerActiveGenomeConfiguration(getState()),
+        'geneRelationships.selectedTab',
         selectedTab
       )
     })

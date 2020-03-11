@@ -30,7 +30,7 @@ export const setSidebarTabName: ActionCreator<ThunkAction<
   dispatch(
     updateSidebar({
       genomeId: activeGenomeId,
-      fragment: { activeTabName: tabName }
+      fragment: { selectedTabName: tabName }
     })
   );
 };

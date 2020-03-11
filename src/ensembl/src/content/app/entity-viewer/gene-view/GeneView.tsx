@@ -15,19 +15,19 @@ import { RootState } from 'src/store';
 
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneSelectors';
-
-import styles from './GeneView.scss';
 import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 
+import styles from './GeneView.scss';
+
 type GeneViewProps = {
   geneId: string | null;
-  activeGeneTab: string | null;
+  selectedGeneTab: string | null;
 };
 
 type GeneViewWithDataProps = {
   gene: Gene;
-  activeGeneTab: string | null;
+  selectedGeneTab: string | null;
 };
 
 const QUERY = gql`
@@ -78,7 +78,10 @@ const GeneView = (props: GeneViewProps) => {
   }
 
   return (
-    <GeneViewWithData gene={data.gene} activeGeneTab={props.activeGeneTab} />
+    <GeneViewWithData
+      gene={data.gene}
+      selectedGeneTab={props.selectedGeneTab}
+    />
   );
 };
 
@@ -102,7 +105,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         <GeneViewTabs />
       </div>
       <div className={styles.geneViewTabContent}>
-        {props.activeGeneTab === 'Transcripts' && (
+        {props.selectedGeneTab === 'Transcripts' && (
           <div className={styles.geneViewTable}>
             {basePairsRulerTicks && (
               <DefaultTranscriptslist
@@ -113,9 +116,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           </div>
         )}
 
-        {props.activeGeneTab === 'Gene function' && <GeneFunction />}
+        {props.selectedGeneTab === 'Gene function' && <GeneFunction />}
 
-        {props.activeGeneTab === 'Gene relationships' && <GeneRelationships />}
+        {props.selectedGeneTab === 'Gene relationships' && (
+          <GeneRelationships />
+        )}
       </div>
     </div>
   );
@@ -124,7 +129,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 const mapStateToProps = (state: RootState) => ({
   // FIXME: this will have to be superseded with a proper way we get ids
   geneId: getEntityViewerActiveEnsObject(state)?.stable_id || null,
-  activeGeneTab: getEntityViewerActiveGeneTab(state)
+  selectedGeneTab: getEntityViewerActiveGeneTab(state)
 });
 
 export default connect(mapStateToProps)(GeneView);

@@ -19,4 +19,12 @@ export const getEntityViewerActiveGenomeConfiguration = (state: RootState) => {
 };
 
 export const getEntityViewerActiveGeneTab = (state: RootState) =>
-  getEntityViewerActiveGenomeConfiguration(state).activeGeneTab;
+  getEntityViewerActiveGenomeConfiguration(state).selectedGeneTab;
+
+export const getEntityViewerActiveGeneFunction = (state: RootState) =>
+  getEntityViewerActiveGenomeConfiguration(state).geneFunction ||
+  defaultEntityViewerGeneObjectState.geneFunction;
+
+export const getEntityViewerActiveGeneRelationships = (state: RootState) =>
+  getEntityViewerActiveGenomeConfiguration(state).geneRelationships ||
+  defaultEntityViewerGeneObjectState.geneRelationships;

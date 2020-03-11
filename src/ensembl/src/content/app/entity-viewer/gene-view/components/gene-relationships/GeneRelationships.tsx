@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
+import { RootState } from 'src/store';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { getEntityViewerActiveGeneRelationships } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneSelectors';
+import { setActiveGeneRelationshipsTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneActions';
 
 import styles from './GeneRelationships.scss';
 
@@ -15,34 +20,49 @@ const tabClassNames = {
   default: styles.defaultTab
 };
 
-const TabWrapper = () => {
-  const [selectedTab, setselectedTab] = useState('Orthologues');
-
-  const onTabChange = (tab: string) => {
-    setselectedTab(tab);
-  };
-
-  return (
-    <Tabs
-      tabs={tabsData}
-      selectedTab={selectedTab}
-      classNames={tabClassNames}
-      onTabChange={onTabChange}
-    />
-  );
+type Props = {
+  isSidebarOpen: boolean;
+  selectedTab: string;
+  setActiveGeneRelationshipsTab: (tab: string) => void;
 };
 
-const GeneRelationships = () => {
+const GeneRelationships = (props: Props) => {
+  const TabWrapper = () => {
+    const onTabChange = (tab: string) => {
+      props.setActiveGeneRelationshipsTab(tab);
+    };
+
+    return (
+      <Tabs
+        tabs={tabsData}
+        selectedTab={props.selectedTab}
+        classNames={tabClassNames}
+        onTabChange={onTabChange}
+      />
+    );
+  };
+
   return (
     <Panel
       header={<TabWrapper />}
       classNames={{
-        panel: styles.fullWidthPanel
+        panel: props.isSidebarOpen
+          ? styles.shrinkedPanel
+          : styles.fullWidthPanel
       }}
     >
-      <div>Panel Content</div>
+      <div>Panel content is coming...</div>
     </Panel>
   );
 };
 
-export default GeneRelationships;
+const mapStateToProps = (state: RootState) => ({
+  isSidebarOpen: isEntityViewerSidebarOpen(state),
+  selectedTab: getEntityViewerActiveGeneRelationships(state).selectedTab
+});
+
+const mapDispatchToProps = {
+  setActiveGeneRelationshipsTab
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GeneRelationships);
