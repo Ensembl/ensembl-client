@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useImperativeHandle,
-  forwardRef,
-  ReactNode,
-  RefForwardingComponent,
-  MutableRefObject
-} from 'react';
+import React, { useState, useContext, ReactNode } from 'react';
 import noop from 'lodash/noop';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
@@ -14,9 +6,9 @@ import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg'
 
 import styles from './ToolboxExpandableContent.scss';
 
-export type ToolboxExpandableContentHandles = {
-  getIsExpanded: () => boolean;
-  toggleExpanded: () => boolean
+export type ToolboxContext = {
+  toggleExpanded: () => void;
+  isExpanded: boolean;
 };
 
 type ToolboxExpandableContentProps = {
@@ -24,61 +16,40 @@ type ToolboxExpandableContentProps = {
   footerContent: ReactNode;
 };
 
-type ToggleButtonProps = {
-  // isOpen: boolean;
-  toolboxContentHandles: ToolboxExpandableContentHandles | null
-  // onClick: () => void;
-};
+const ToolboxExpandableContentContext = React.createContext<ToolboxContext | null>(
+  null
+);
 
-const ToolboxExpandableContent: RefForwardingComponent<ToolboxExpandableContentHandles, ToolboxExpandableContentProps> = (props, ref) => {
+const ToolboxExpandableContent = (props: ToolboxExpandableContentProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
-  console.log('before useImperativeHandle', ref);
-
-  useImperativeHandle(ref, () => ({
-    foo: () => elementRef,
-    getIsExpanded: () => isExpanded,
-    toggleExpanded: () => toggleExpanded()
-  }), [isExpanded]);
 
   const toggleExpanded = () => {
     const updated = !isExpanded;
-    console.log('toggling to', updated);
     setIsExpanded(updated);
-    return updated;
   };
 
   return (
-    <div ref={elementRef}>
-      <div className={styles.main}>
-        {props.mainContent}
+    <ToolboxExpandableContentContext.Provider
+      value={{ toggleExpanded, isExpanded }}
+    >
+      <div>
+        <div className={styles.main}>{props.mainContent}</div>
+        {isExpanded && <div>{props.footerContent}</div>}
       </div>
-      {isExpanded && <div>{props.footerContent}</div>}
-    </div>
+    </ToolboxExpandableContentContext.Provider>
   );
 };
 
-export const ToggleButton = (props: ToggleButtonProps) => {
-  const {
-    getIsExpanded = noop,
-    toggleExpanded = noop
-  } = props.toolboxContentHandles || {};
-  console.log('props.toolboxContentHandles', props.toolboxContentHandles);
-  const [isOpen, setIsOpen] = useState(getIsExpanded());
+export const ToggleButton = () => {
+  const { toggleExpanded = noop, isExpanded = false } =
+    useContext(ToolboxExpandableContentContext) || {};
 
-  const handleClick = () => {
-    console.log(toggleExpanded);
-    const isOpen = toggleExpanded();
-    console.log(isOpen);
-    setIsOpen(isOpen);
-  }
-
-  const Icon = isOpen ? CloseIcon : DownloadIcon;
+  const Icon = isExpanded ? CloseIcon : DownloadIcon;
   return (
-    <div className={styles.toggleButton} onClick={handleClick}>
+    <span className={styles.toggleButton} onClick={toggleExpanded}>
       <Icon />
-    </div>
+    </span>
   );
 };
 
-export default forwardRef(ToolboxExpandableContent);
+export default ToolboxExpandableContent;

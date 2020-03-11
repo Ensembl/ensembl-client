@@ -10,3 +10,15 @@
   padding: 1em;
   background: pink;
 }
+
+.mainToolboxContent {
+  .toggleButton {
+    margin-left: 1em;
+    vertical-align: middle;
+  }
+}
+
+.mainToolboxContent,
+.footerToolboxContent {
+  text-align: left;
+}

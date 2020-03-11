@@ -7,15 +7,11 @@ $toggleButtonHeight: 14px;
 }
 
 .toggleButton {
-  float: right;
-  position: absolute;
-  right: 0;
-  bottom: 0;
   display: inline-block;
   font-size: 0;
   user-select: none;
+  cursor: pointer;
   svg {
-    cursor: pointer;
     fill: $blue;
     height: $toggleButtonHeight;
   }

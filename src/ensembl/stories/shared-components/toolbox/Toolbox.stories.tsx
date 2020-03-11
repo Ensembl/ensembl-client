@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
 import {
   Toolbox,
   ToolboxExpandableContent,
-  ToggleButton as ToolboxToggleButton,
-  ToolboxExpandableContentHandles
+  ToggleButton as ToolboxToggleButton
 } from 'src/shared/components/toolbox';
 
 import styles from './Toolbox.stories.scss';
@@ -13,50 +12,25 @@ import styles from './Toolbox.stories.scss';
 const DefaultStory = () => {
   const [isShowing, setIsShowing] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [isToolboxContentRefSet, setToolboxContentRef] = useState(false);
-  const toolboxContentRef = useRef<ToolboxExpandableContentHandles>(null);
 
-  const toggleHoverbox = () => {
+  const toggleToolbox = () => {
     setIsShowing(!isShowing);
   };
 
-  useEffect(() => {
-    toolboxContentRef.current && setToolboxContentRef(true);
-  }, [toolboxContentRef.current]);
+  const mainToolboxContent = (
+    <div className={styles.mainToolboxContent}>
+      <p>This is main toolbox content</p>
+      <p>
+        This is the second paragraph
+        <span className={styles.toggleButton}>
+          <ToolboxToggleButton />
+        </span>
+      </p>
+    </div>
+  );
 
-  const onRef = (node) => toolboxContentRef.current = node;
-
-  const getMainHoverboxContent = () => {
-    console.log('will pass', toolboxContentRef.current);
-    return (
-      <div>
-        <p>This is main hoverbox content</p>
-        <p>This is the second paragraph</p>
-        {
-          isToolboxContentRefSet &&
-          <ToolboxToggleButton
-            toolboxContentHandles={toolboxContentRef.current}
-          />
-        }
-      </div>
-    );
-  }
-
-  // const mainHoverboxContent = (
-  //   <div>
-  //     <p>This is main hoverbox content</p>
-  //     <p>This is the second paragraph</p>
-  //     {
-  //       isToolboxContentRefSet &&
-  //       <ToolboxToggleButton
-  //         toolboxContentHandles={toolboxContentRef.current}
-  //       />
-  //     }
-  //   </div>
-  // );
-
-  const hoverboxFooterContent = (
-    <div>
+  const toolboxFooterContent = (
+    <div className={styles.footerToolboxContent}>
       <p>This is footer content</p>
       <p>This is footer second paragraph</p>
     </div>
@@ -64,19 +38,14 @@ const DefaultStory = () => {
 
   return (
     <div className={styles.container}>
-      <button
-        className={styles.button}
-        onClick={toggleHoverbox}
-        ref={buttonRef}
-      >
+      <button className={styles.button} onClick={toggleToolbox} ref={buttonRef}>
         Click me
       </button>
       {isShowing && buttonRef.current && (
         <Toolbox anchor={buttonRef.current}>
           <ToolboxExpandableContent
-            ref={(node) => { console.log ('node', node); onRef(node)}}
-            mainContent={getMainHoverboxContent()}
-            footerContent={hoverboxFooterContent}
+            mainContent={mainToolboxContent}
+            footerContent={toolboxFooterContent}
           />
         </Toolbox>
       )}
