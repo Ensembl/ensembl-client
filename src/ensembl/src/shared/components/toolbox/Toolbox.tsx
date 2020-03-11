@@ -11,7 +11,7 @@ type HoverboxProps = {
   children: ReactNode;
 };
 
-const Hoverbox = (props: HoverboxProps) => {
+const Toolbox = (props: HoverboxProps) => {
   return (
     <PointerBox
       position={Position.RIGHT_BOTTOM}
@@ -24,4 +24,4 @@ const Hoverbox = (props: HoverboxProps) => {
   );
 };
 
-export default Hoverbox;
+export default Toolbox;
