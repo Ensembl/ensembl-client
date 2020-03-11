@@ -105,7 +105,7 @@ impl<T> Publisher<T> {
         Publisher(Arc::new(Mutex::new(PublisherImpl::new(listener))))
     }
 
-    /// Publish the given value to subscribers. Also the correct way to pubilish via a callback in a `Listener`.
+    /// Publish the given value to subscribers. Also used in `Listener` callbacks.
     pub fn publish(&self, value: T) {
         self.0.lock().unwrap().publish(value);
     }

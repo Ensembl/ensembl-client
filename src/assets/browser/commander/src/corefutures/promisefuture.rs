@@ -9,9 +9,9 @@ struct PromiseFutureState<T> {
     waker: Option<Waker>
 }
 
-/// A PromiseFuture is pending until its `value()` method is called in which case it is ready with that value.
+/// A PromiseFuture is pending until `satisfy(value: T)` is called in which case it is ready with that value.
 /// 
-/// `value()` is threadsafe. Used internally in many places but probably of utility outside this crate.
+/// Used internally in many places, but useful outside this crate.
 pub struct PromiseFuture<T>(Arc<Mutex<PromiseFutureState<T>>>);
 
 // Rust bug means dan't derive Clone on polymorphic types
