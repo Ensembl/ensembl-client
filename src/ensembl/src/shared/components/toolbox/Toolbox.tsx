@@ -6,15 +6,20 @@ import PointerBox, {
 
 import styles from './Toolbox.scss';
 
-type HoverboxProps = {
+export type ToolboxPosition =
+  | Position.LEFT_TOP
+  | Position.RIGHT_TOP;
+
+type ToolboxProps = {
+  position: ToolboxPosition;
   anchor: HTMLElement;
   children: ReactNode;
 };
 
-const Toolbox = (props: HoverboxProps) => {
+const Toolbox = (props: ToolboxProps) => {
   return (
     <PointerBox
-      position={Position.RIGHT_BOTTOM}
+      position={props.position}
       anchor={props.anchor}
       renderInsideAnchor={true}
       classNames={{ body: styles.toolbox, pointer: styles.tooltipTip }}
@@ -23,5 +28,9 @@ const Toolbox = (props: HoverboxProps) => {
     </PointerBox>
   );
 };
+
+Toolbox.defaultProps = {
+  position: Position.RIGHT_TOP
+} as Partial<ToolboxProps>;;
 
 export default Toolbox;

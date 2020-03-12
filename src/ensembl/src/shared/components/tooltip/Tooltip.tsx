@@ -1,8 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 
-import PointerBox from 'src/shared/components/pointer-box/PointerBox';
+import PointerBox, { Position } from 'src/shared/components/pointer-box/PointerBox';
 
-import { Position } from 'src/shared/components/pointer-box/PointerBox';
 import { TooltipPosition } from './tooltip-types';
 
 import styles from './Tooltip.scss';
