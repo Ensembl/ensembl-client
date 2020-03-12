@@ -2,18 +2,19 @@ import React, { ReactNode, useEffect, useState } from 'react';
 
 import PointerBox from 'src/shared/components/pointer-box/PointerBox';
 
-import { Position } from './tooltip-types';
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
+import { TooltipPosition } from './tooltip-types';
 
 import styles from './Tooltip.scss';
 
 type Props = {
-  position: Position;
+  position: TooltipPosition;
   anchor: HTMLElement;
   container?: HTMLElement | null;
-  autoAdjust: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
+  autoAdjust?: boolean; // try to adjust tooltip position so as not to extend beyond screen bounds
   delay: number;
   children: ReactNode;
-  onClose: () => void;
+  onClose?: () => void;
 };
 
 type PropsWithNullableAnchor = Omit<Props, 'anchor'> & {
@@ -55,5 +56,9 @@ const TooltipWithAnchor = (props: Props) => {
   );
 };
 
-export { Position };
+Tooltip.defaultProps = {
+  delay: 0,
+  position: Position.BOTTOM_RIGHT
+};
+
 export default Tooltip;

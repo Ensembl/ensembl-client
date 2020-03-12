@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
-import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { ChrLocation } from '../browserState';
@@ -22,6 +22,7 @@ import {
   toggleRegionEditorActive
 } from '../browserActions';
 import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
 import {
   getCommaSeparatedNumber,
