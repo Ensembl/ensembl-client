@@ -94,7 +94,10 @@ const Launchbar = (props: LaunchbarProps) => {
           app="about-ensembl"
           description="About Ensembl"
           icon={ensemblIcon}
-          enabled={true}
+          enabled={isEnvironment([
+            Environment.DEVELOPMENT,
+            Environment.INTERNAL
+          ])}
         />
       </div>
     </div>
