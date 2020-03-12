@@ -50,7 +50,8 @@ const GeneFunction = (props: Props) => {
       classNames={{
         panel: props.isSidebarOpen
           ? styles.shrinkedPanel
-          : styles.fullWidthPanel
+          : styles.fullWidthPanel,
+        body: styles.panelBody
       }}
     >
       <div>Panel content is coming...</div>
