@@ -16,13 +16,12 @@ const tabsData: Tab[] = [
 ];
 
 const tabClassNames = {
-  selected: styles.selectedTab,
-  default: styles.defaultTab
+  selected: styles.selectedTabName
 };
 
 type Props = {
   isSidebarOpen: boolean;
-  selectedTab: string;
+  selectedTabName: string;
   setActiveGeneRelationshipsTab: (tab: string) => void;
 };
 
@@ -35,7 +34,7 @@ const GeneRelationships = (props: Props) => {
     return (
       <Tabs
         tabs={tabsData}
-        selectedTab={props.selectedTab}
+        selectedTab={props.selectedTabName}
         classNames={tabClassNames}
         onTabChange={onTabChange}
       />
@@ -58,7 +57,7 @@ const GeneRelationships = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   isSidebarOpen: isEntityViewerSidebarOpen(state),
-  selectedTab: getEntityViewerActiveGeneRelationships(state).selectedTab
+  selectedTabName: getEntityViewerActiveGeneRelationships(state).selectedTabName
 });
 
 const mapDispatchToProps = {

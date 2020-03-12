@@ -19,13 +19,12 @@ const tabsData: Tab[] = [
 ];
 
 const tabClassNames = {
-  selected: styles.selectedTab,
-  default: styles.defaultTab
+  selected: styles.selectedTabName
 };
 
 type Props = {
   isSidebarOpen: boolean;
-  selectedTab: string;
+  selectedTabName: string;
   setActiveGeneFunctionTab: (tab: string) => void;
 };
 
@@ -38,7 +37,7 @@ const GeneFunction = (props: Props) => {
     return (
       <Tabs
         tabs={tabsData}
-        selectedTab={props.selectedTab}
+        selectedTab={props.selectedTabName}
         classNames={tabClassNames}
         onTabChange={onTabChange}
       />
@@ -61,7 +60,7 @@ const GeneFunction = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   isSidebarOpen: isEntityViewerSidebarOpen(state),
-  selectedTab: getEntityViewerActiveGeneFunction(state).selectedTab
+  selectedTabName: getEntityViewerActiveGeneFunction(state).selectedTabName
 });
 
 const mapDispatchToProps = {

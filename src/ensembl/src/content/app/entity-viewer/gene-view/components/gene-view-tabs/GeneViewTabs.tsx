@@ -15,14 +15,14 @@ const tabsData: Tab[] = [
 ];
 
 type Props = {
-  selectedGeneTab: string | null;
-  setActiveGeneTab: (selectedTab: string) => void;
+  selectedGeneTabName: string | null;
+  setActiveGeneTab: (selectedTabName: string) => void;
 };
 
 const GeneViewTabs = (props: Props) => {
   const tabClassNames = {
     default: styles.geneTab,
-    selected: styles.selectedGeneTab,
+    selected: styles.selectedGeneTabName,
     disabled: styles.disabledGeneTab
   };
 
@@ -30,14 +30,14 @@ const GeneViewTabs = (props: Props) => {
     <Tabs
       classNames={tabClassNames}
       tabs={tabsData}
-      selectedTab={props.selectedGeneTab || 'Transcripts'}
+      selectedTab={props.selectedGeneTabName || 'Transcripts'}
       onTabChange={props.setActiveGeneTab}
     />
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
-  selectedGeneTab: getEntityViewerActiveGeneTab(state)
+  selectedGeneTabName: getEntityViewerActiveGeneTab(state)
 });
 
 const mapDispatchToProps = {

@@ -12,16 +12,7 @@
   height: 100%;
 }
 
-.defaultTab {
-  &:first-of-type {
-    margin-left: 30px;
-  }
-  &:last-of-type {
-    margin-right: 30px;
-  }
-}
-
-.selectedTab {
+.selectedTabName {
   background-color: transparent;
   color: $black;
   &::after {

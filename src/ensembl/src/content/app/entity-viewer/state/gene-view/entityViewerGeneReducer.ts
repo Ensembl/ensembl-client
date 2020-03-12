@@ -1,10 +1,9 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import {
-  defaultEntityViewerGeneObjectStates,
   initialEntityViewerGeneState,
   EntityViewerGeneState,
-  EntityViewerGeneObjectStates
+  EntityViewerGeneObjectState
 } from './entityViewerGeneState';
 import * as actions from './entityViewerGeneActions';
 
@@ -16,7 +15,7 @@ export default function entityViewerGeneReducer(
     case getType(actions.updateActiveGeneObjectState):
       return {
         ...state,
-        [action.payload.activeGenomeId]: activeGeneObjectStates(
+        [action.payload.activeGenomeId]: entityViewerGeneObjectReducer(
           state[action.payload.activeGenomeId],
           action
         )
@@ -26,16 +25,16 @@ export default function entityViewerGeneReducer(
   }
 }
 
-function activeGeneObjectStates(
-  state: EntityViewerGeneObjectStates = defaultEntityViewerGeneObjectStates,
+function entityViewerGeneObjectReducer(
+  state: { [activeObjectId: string]: EntityViewerGeneObjectState } = {},
   action: ActionType<typeof actions>
-): EntityViewerGeneObjectStates {
+) {
   switch (action.type) {
     case getType(actions.updateActiveGeneObjectState):
       return {
         ...state,
         [action.payload.activeObjectId]: action.payload.data
-      } as EntityViewerGeneObjectStates;
+      };
     default:
       return state;
   }

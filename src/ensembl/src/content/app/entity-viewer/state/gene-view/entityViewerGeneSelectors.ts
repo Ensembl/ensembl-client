@@ -19,7 +19,7 @@ export const getEntityViewerActiveGenomeConfiguration = (state: RootState) => {
 };
 
 export const getEntityViewerActiveGeneTab = (state: RootState) =>
-  getEntityViewerActiveGenomeConfiguration(state).selectedGeneTab;
+  getEntityViewerActiveGenomeConfiguration(state).selectedGeneTabName;
 
 export const getEntityViewerActiveGeneFunction = (state: RootState) =>
   getEntityViewerActiveGenomeConfiguration(state).geneFunction ||

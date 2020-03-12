@@ -30,7 +30,7 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (selectedTab: boolean) => (dispatch, getState: () => RootState) => {
+>> = (selectedTabName: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
@@ -44,8 +44,8 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
       activeObjectId,
       data: set(
         getEntityViewerActiveGenomeConfiguration(getState()),
-        'selectedGeneTab',
-        selectedTab
+        'selectedGeneTabName',
+        selectedTabName
       )
     })
   );
@@ -56,7 +56,7 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (selectedTab: boolean) => (dispatch, getState: () => RootState) => {
+>> = (selectedTabName: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
@@ -70,8 +70,8 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
       activeObjectId,
       data: set(
         getEntityViewerActiveGenomeConfiguration(getState()),
-        'geneFunction.selectedTab',
-        selectedTab
+        'geneFunction.selectedTabName',
+        selectedTabName
       )
     })
   );
@@ -82,7 +82,7 @@ export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (selectedTab: boolean) => (dispatch, getState: () => RootState) => {
+>> = (selectedTabName: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
@@ -96,8 +96,8 @@ export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
       activeObjectId,
       data: set(
         getEntityViewerActiveGenomeConfiguration(getState()),
-        'geneRelationships.selectedTab',
-        selectedTab
+        'geneRelationships.selectedTabName',
+        selectedTabName
       )
     })
   );

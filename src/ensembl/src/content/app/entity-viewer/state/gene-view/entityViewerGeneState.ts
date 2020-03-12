@@ -1,36 +1,33 @@
 export type EntityViewerGeneFunctionState = {
-  selectedTab: string;
+  selectedTabName: string;
 };
 
 export type EntityViewerGeneRelationshipsState = {
-  selectedTab: string;
+  selectedTabName: string;
 };
 
 export type EntityViewerGeneObjectState = {
-  selectedGeneTab: string;
+  selectedGeneTabName: string;
   geneFunction: EntityViewerGeneFunctionState;
   geneRelationships: EntityViewerGeneRelationshipsState;
 };
 
-export type EntityViewerGeneObjectStates = {
-  [activeObjectId: string]: EntityViewerGeneObjectState;
-};
-
 export type EntityViewerGeneState = Readonly<{
-  [activeGenomeId: string]: EntityViewerGeneObjectStates;
+  [activeGenomeId: string]: {
+    [activeObjectId: string]: EntityViewerGeneObjectState;
+  };
 }>;
 
 export const defaultEntityViewerGeneObjectState = {
-  selectedGeneTab: 'Transcripts',
+  selectedGeneTabName: 'Transcripts',
   geneFunction: {
-    selectedTab: 'Proteins'
+    selectedTabName: 'Proteins'
   },
   geneRelationships: {
-    selectedTab: 'Orthologues'
+    selectedTabName: 'Orthologues'
   }
 };
 
-export const defaultEntityViewerGeneObjectStates: EntityViewerGeneObjectStates = {};
 export const defaultEntityViewerGeneState: EntityViewerGeneState = {};
 
 // TODO: This will be loaded from storage services once it is setup
