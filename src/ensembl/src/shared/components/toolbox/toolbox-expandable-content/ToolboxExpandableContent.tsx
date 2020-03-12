@@ -2,7 +2,6 @@ import React, { useState, useContext, ReactNode } from 'react';
 import noop from 'lodash/noop';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
-import { ReactComponent as DownloadIcon } from 'static/img/sidebar/download.svg';
 
 import styles from './ToolboxExpandableContent.scss';
 
@@ -14,6 +13,10 @@ export type ToolboxContext = {
 type ToolboxExpandableContentProps = {
   mainContent: ReactNode;
   footerContent: ReactNode;
+};
+
+type ToggleButtonProps = {
+  openElement: ReactNode;
 };
 
 const ToolboxExpandableContentContext = React.createContext<ToolboxContext | null>(
@@ -40,14 +43,14 @@ const ToolboxExpandableContent = (props: ToolboxExpandableContentProps) => {
   );
 };
 
-export const ToggleButton = () => {
+export const ToggleButton = (props: ToggleButtonProps) => {
   const { toggleExpanded = noop, isExpanded = false } =
     useContext(ToolboxExpandableContentContext) || {};
 
-  const Icon = isExpanded ? CloseIcon : DownloadIcon;
+  const button = isExpanded ? <CloseIcon /> : props.openElement;
   return (
     <span className={styles.toggleButton} onClick={toggleExpanded}>
-      <Icon />
+      {button}
     </span>
   );
 };
