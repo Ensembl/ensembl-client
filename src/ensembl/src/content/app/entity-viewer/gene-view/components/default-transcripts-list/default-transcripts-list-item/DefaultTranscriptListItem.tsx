@@ -8,6 +8,7 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
+import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 
 type Props = {
@@ -29,9 +30,11 @@ const DefaultTranscriptListItem = (props: Props) => {
   const style = { transform: `translateX(${transcriptStartX}px)` };
 
   return (
-    <div className={styles.defaultTranscriptListItem}>
-      <div className={styles.left}>Left</div>
-      <div className={styles.middle}>
+    <div
+      className={`${styles.defaultTranscriptListItem} ${transcriptsListStyles.row}`}
+    >
+      <div className={transcriptsListStyles.left}>Left</div>
+      <div className={transcriptsListStyles.middle}>
         <div style={style}>
           <UnsplicedTranscript
             transcript={props.transcript}
@@ -40,7 +43,7 @@ const DefaultTranscriptListItem = (props: Props) => {
           />
         </div>
       </div>
-      <div className={styles.right}>Right</div>
+      <div className={transcriptsListStyles.right}>Right</div>
     </div>
   );
 };

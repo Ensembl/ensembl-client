@@ -19,7 +19,9 @@ export type EntityViewerTranscriptFilterProps = {
   isExpanded: boolean;
 };
 
-const EntityViewerTranscriptFilter = (props: EntityViewerTranscriptFilterProps) => {
+const EntityViewerTranscriptFilter = (
+  props: EntityViewerTranscriptFilterProps
+) => {
   const handleChange = (isChecked: boolean, optionIndex: [number, number]) => {
     const [groupIndex, itemIndex] = optionIndex;
     const selectedOption = props.optionGroups[groupIndex][itemIndex].value;
