@@ -23,7 +23,8 @@ const GeneViewTabs = (props: Props) => {
   const tabClassNames = {
     default: styles.geneTab,
     selected: styles.selectedGeneTabName,
-    disabled: styles.disabledGeneTab
+    disabled: styles.disabledGeneTab,
+    tabsContainer: styles.geneViewTabs
   };
 
   return (

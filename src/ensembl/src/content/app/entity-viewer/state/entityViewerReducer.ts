@@ -7,5 +7,5 @@ import entityViewerGeneReducer from './gene-view/entityViewerGeneViewReducer';
 export default combineReducers({
   general: entityViewerGeneralReducer,
   sidebar: entityViewerSidebarReducer,
-  gene: entityViewerGeneReducer
+  geneView: entityViewerGeneReducer
 });

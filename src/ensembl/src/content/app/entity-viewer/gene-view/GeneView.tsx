@@ -115,7 +115,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           <GeneFunction />
         )}
 
-        {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
+        {props.selectedGeneTabName === GeneViewTabName.GENE_RELATIONSHIPS && (
           <GeneRelationships />
         )}
       </div>

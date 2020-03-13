@@ -1,6 +1,4 @@
 import { createAction } from 'typesafe-actions';
-import set from 'lodash/set';
-import cloneDeep from 'lodash/cloneDeep';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
@@ -8,29 +6,34 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { getEntityViewerActiveGenomeConfiguration } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { EntityViewerGeneViewObjectState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import {
+  EntityViewerGeneViewObjectState,
+  GeneViewTabName,
+  GeneFunctionTabName,
+  GeneRelationshipsTabName,
+  EntityViewerGeneFunctionState,
+  EntityViewerGeneRelationshipsState
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 import { RootState } from 'src/store';
 
-export const updateActiveGeneObjectState = createAction(
-  'entity-viewer/update-state-for-active-genome',
-  (payload: {
-    activeGenomeId: string;
-    activeObjectId: string;
-    data: EntityViewerGeneViewObjectState;
-  }) => {
-    const { activeGenomeId, activeObjectId, data } = payload;
-    return { activeGenomeId, activeObjectId, data: cloneDeep(data) };
-  }
-)();
+export const updateActiveGeneViewObjectState = createAction(
+  'entity-viewer/update-active-gene-view-object-state'
+)<{
+  activeGenomeId: string;
+  activeObjectId: string;
+  fragment: Partial<EntityViewerGeneViewObjectState>;
+}>();
 
 export const setActiveGeneTab: ActionCreator<ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = (selectedTabName: boolean) => (dispatch, getState: () => RootState) => {
+>> = (selectedTabName: GeneViewTabName) => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
@@ -39,24 +42,33 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateActiveGeneObjectState({
+    updateActiveGeneViewObjectState({
       activeGenomeId,
       activeObjectId,
-      data: set(
-        getEntityViewerActiveGenomeConfiguration(getState()),
-        'selectedGeneTabName',
-        selectedTabName
-      )
+      fragment: {
+        selectedGeneTabName: selectedTabName
+      }
     })
   );
 };
+
+export const updateActiveGeneViewObjectGeneFunctionState = createAction(
+  'entity-viewer/update-active-gene-view-object-gene-function-state'
+)<{
+  activeGenomeId: string;
+  activeObjectId: string;
+  fragment: Partial<EntityViewerGeneFunctionState>;
+}>();
 
 export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = (selectedTabName: boolean) => (dispatch, getState: () => RootState) => {
+>> = (selectedTabName: GeneFunctionTabName) => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
@@ -65,24 +77,35 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateActiveGeneObjectState({
+    updateActiveGeneViewObjectState({
       activeGenomeId,
       activeObjectId,
-      data: set(
-        getEntityViewerActiveGenomeConfiguration(getState()),
-        'geneFunction.selectedTabName',
-        selectedTabName
-      )
+      fragment: {
+        geneFunction: {
+          selectedTabName
+        }
+      }
     })
   );
 };
+
+export const updateActiveGeneViewObjectGeneRelationshipsState = createAction(
+  'entity-viewer/update-active-gene-view-object-gene-relationships-state'
+)<{
+  activeGenomeId: string;
+  activeObjectId: string;
+  fragment: Partial<EntityViewerGeneRelationshipsState>;
+}>();
 
 export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = (selectedTabName: boolean) => (dispatch, getState: () => RootState) => {
+>> = (selectedTabName: GeneRelationshipsTabName) => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
@@ -91,14 +114,14 @@ export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateActiveGeneObjectState({
+    updateActiveGeneViewObjectState({
       activeGenomeId,
       activeObjectId,
-      data: set(
-        getEntityViewerActiveGenomeConfiguration(getState()),
-        'geneRelationships.selectedTabName',
-        selectedTabName
-      )
+      fragment: {
+        geneRelationships: {
+          selectedTabName
+        }
+      }
     })
   );
 };

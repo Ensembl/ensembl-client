@@ -13,7 +13,7 @@ export const getEntityViewerActiveGenomeConfiguration = (state: RootState) => {
     return defaultEntityViewerGeneViewObjectState;
   }
   return (
-    state.entityViewer.gene?.[activeGenomeId]?.[activeObjectId] ||
+    state.entityViewer.geneView?.[activeGenomeId]?.[activeObjectId] ||
     defaultEntityViewerGeneViewObjectState
   );
 };
