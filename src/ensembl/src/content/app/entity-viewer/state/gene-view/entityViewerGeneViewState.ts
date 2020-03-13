@@ -1,13 +1,13 @@
 export type EntityViewerGeneFunctionState = {
-  selectedTabName: string;
+  selectedTabName: GeneFunctionTabName;
 };
 
 export type EntityViewerGeneRelationshipsState = {
-  selectedTabName: string;
+  selectedTabName: GeneRelationshipsTabName;
 };
 
 export type EntityViewerGeneViewObjectState = {
-  selectedGeneTabName: string;
+  selectedGeneTabName: GeneViewTabName;
   geneFunction: EntityViewerGeneFunctionState;
   geneRelationships: EntityViewerGeneRelationshipsState;
 };
@@ -18,13 +18,34 @@ export type EntityViewerGeneViewState = Readonly<{
   };
 }>;
 
+export enum GeneViewTabName {
+  TRANSCRIPTS = 'Transcripts',
+  GENE_FUNCTION = 'Gene function',
+  GENE_RELATIONSHIPS = 'Gene relationships'
+}
+
+export enum GeneFunctionTabName {
+  PROTEINS = 'Proteins',
+  VARIANTS = 'Variants',
+  PHENOTYPES = 'Phenotypes',
+  GENE_EXPRESSION = 'Gene expression',
+  GENE_ONTOLOGY = 'Gene ontology',
+  GENE_PATHWAYS = 'Gene pathways'
+}
+
+export enum GeneRelationshipsTabName {
+  ORTHOLOGUES = 'Orthologues',
+  GENE_FAMILIES = 'Gene families',
+  GENE_PANELS = 'Gene panels'
+}
+
 export const defaultEntityViewerGeneViewObjectState = {
-  selectedGeneTabName: 'Transcripts',
+  selectedGeneTabName: GeneViewTabName.TRANSCRIPTS,
   geneFunction: {
-    selectedTabName: 'Proteins'
+    selectedTabName: GeneFunctionTabName.PROTEINS
   },
   geneRelationships: {
-    selectedTabName: 'Orthologues'
+    selectedTabName: GeneRelationshipsTabName.ORTHOLOGUES
   }
 };
 

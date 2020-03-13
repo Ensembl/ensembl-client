@@ -5,6 +5,7 @@ import { gql } from 'apollo-boost';
 
 import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
@@ -102,7 +103,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         <GeneViewTabs />
       </div>
       <div className={styles.geneViewTabbedContent}>
-        {props.selectedGeneTabName === 'Transcripts' &&
+        {props.selectedGeneTabName === GeneViewTabName.TRANSCRIPTS &&
           basePairsRulerTicks && (
             <DefaultTranscriptslist
               gene={props.gene}
@@ -110,9 +111,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             />
           )}
 
-        {props.selectedGeneTabName === 'Gene function' && <GeneFunction />}
+        {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
+          <GeneFunction />
+        )}
 
-        {props.selectedGeneTabName === 'Gene relationships' && (
+        {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
           <GeneRelationships />
         )}
       </div>
