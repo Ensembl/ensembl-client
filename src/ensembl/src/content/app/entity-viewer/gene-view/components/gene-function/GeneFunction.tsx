@@ -2,7 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
+
 import { RootState } from 'src/store';
+import { GeneFunctionTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getEntityViewerActiveGeneFunction } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setActiveGeneFunctionTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
@@ -24,7 +26,7 @@ const tabClassNames = {
 
 type Props = {
   isSidebarOpen: boolean;
-  selectedTabName: string;
+  selectedTabName: GeneFunctionTabName;
   setActiveGeneFunctionTab: (tab: string) => void;
 };
 

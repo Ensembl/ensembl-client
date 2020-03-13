@@ -20,12 +20,12 @@ import styles from './GeneView.scss';
 
 type GeneViewProps = {
   geneId: string | null;
-  selectedGeneTabName: string;
+  selectedGeneTabName: GeneViewTabName;
 };
 
 type GeneViewWithDataProps = {
   gene: Gene;
-  selectedGeneTabName: string;
+  selectedGeneTabName: GeneViewTabName;
 };
 
 const QUERY = gql`
