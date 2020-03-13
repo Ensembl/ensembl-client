@@ -14,6 +14,7 @@ export enum ToolboxPosition {
 type ToolboxProps = {
   position: ToolboxPosition;
   anchor: HTMLElement;
+  onOutsideClick?: () => void;
   children: ReactNode;
 };
 
@@ -26,6 +27,7 @@ const Toolbox = (props: ToolboxProps) => {
     <PointerBox
       position={pointerBoxPosition}
       anchor={props.anchor}
+      onOutsideClick={props.onOutsideClick}
       renderInsideAnchor={true}
       classNames={{ body: styles.toolbox, pointer: styles.tooltipTip }}
     >
