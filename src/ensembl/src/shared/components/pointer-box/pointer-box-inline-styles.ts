@@ -95,7 +95,8 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.LEFT_BOTTOM:
       return {
         bodyStyles: {
-          transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset}px - ${halfPointerWidth}px)`
+          // transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset}px - ${halfPointerWidth}px)`
+          transform: `translateX(-100%) translateY(-${pointerOffset}px)`
         },
         pointerStyles: {
           left: 'calc(100% - 4px)',

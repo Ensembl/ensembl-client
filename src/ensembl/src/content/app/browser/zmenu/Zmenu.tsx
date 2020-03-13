@@ -4,12 +4,14 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 
 import {
   Toolbox,
+  ToolboxPosition,
   ToolboxExpandableContent,
   ToggleButton as ToolboxToggleButton
 } from 'src/shared/components/toolbox';
 import ZmenuContent from './ZmenuContent';
 
 import { ZmenuData, ZmenuAction, AnchorCoordinates } from './zmenu-types';
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
 import styles from './Zmenu.scss';
 
@@ -56,11 +58,11 @@ const Zmenu = (props: ZmenuProps) => {
     });
 
   const direction = chooseDirection(props);
+  const toolboxPosition = direction === Direction.LEFT
+    ? ToolboxPosition.LEFT
+    : ToolboxPosition.RIGHT;
+
   const mainContent = <ZmenuContent content={props.content} />;
-  // const inlineStyles = getInlineStyles({
-  //   direction,
-  //   anchorCoordinates: props.anchor_coordinates
-  // });
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
@@ -71,6 +73,7 @@ const Zmenu = (props: ZmenuProps) => {
       { isRendered && anchorRef.current &&
         <Toolbox
           anchor={anchorRef.current}
+          position={toolboxPosition}
         >
           { mainContent }
         </Toolbox>

@@ -1,7 +1,10 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+import PointerBox, {
+  Position
+} from 'src/shared/components/pointer-box/PointerBox';
+// import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
 import styles from './PointerBox.stories.scss';
 
@@ -22,7 +25,7 @@ const VariantsStory = () => {
 
   return (
     <div className={styles.variantsStoryLayout}>
-      <h1>Click on the dots to see the tooltip</h1>
+      <h1>Click on the dots to see the pointer box</h1>
       <div className={styles.variantsStoryContainer}>
         <div
           ref={topLeftRef}
@@ -32,15 +35,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.TOP_LEFT)}
         >
-          {visibleId === Position.TOP_LEFT && (
-            <Tooltip
+          {visibleId === Position.TOP_LEFT && topLeftRef.current && (
+            <PointerBox
               anchor={topLeftRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.TOP_LEFT}
             >
               TOP LEFT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -51,15 +53,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.TOP_RIGHT)}
         >
-          {visibleId === Position.TOP_RIGHT && (
-            <Tooltip
+          {visibleId === Position.TOP_RIGHT && topRightRef.current && (
+            <PointerBox
               anchor={topRightRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.TOP_RIGHT}
             >
               TOP RIGHT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -70,15 +71,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.RIGHT_TOP)}
         >
-          {visibleId === Position.RIGHT_TOP && (
-            <Tooltip
+          {visibleId === Position.RIGHT_TOP && rightTopRef.current && (
+            <PointerBox
               anchor={rightTopRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.RIGHT_TOP}
             >
               RIGHT TOP
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -89,15 +89,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
         >
-          {visibleId === Position.RIGHT_BOTTOM && (
-            <Tooltip
+          {visibleId === Position.RIGHT_BOTTOM && rightBottomRef.current && (
+            <PointerBox
               anchor={rightBottomRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.RIGHT_BOTTOM}
             >
               RIGHT BOTTOM
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -108,15 +107,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.BOTTOM_LEFT)}
         >
-          {visibleId === Position.BOTTOM_LEFT && (
-            <Tooltip
+          {visibleId === Position.BOTTOM_LEFT && bottomLeftRef.current && (
+            <PointerBox
               anchor={bottomLeftRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.BOTTOM_LEFT}
             >
               BOTTOM LEFT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -127,15 +125,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.BOTTOM_RIGHT)}
         >
-          {visibleId === Position.BOTTOM_RIGHT && (
-            <Tooltip
+          {visibleId === Position.BOTTOM_RIGHT && bottomRightRef.current && (
+            <PointerBox
               anchor={bottomRightRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.BOTTOM_RIGHT}
             >
               BOTTOM RIGHT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -146,15 +143,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.LEFT_TOP)}
         >
-          {visibleId === Position.LEFT_TOP && (
-            <Tooltip
+          {visibleId === Position.LEFT_TOP && leftTopRef.current && (
+            <PointerBox
               anchor={leftTopRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.LEFT_TOP}
             >
               LEFT TOP
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -165,15 +161,14 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
         >
-          {visibleId === Position.LEFT_BOTTOM && (
-            <Tooltip
+          {visibleId === Position.LEFT_BOTTOM && leftBottomRef.current && (
+            <PointerBox
               anchor={leftBottomRef.current}
-              delay={0}
               onClose={handleClose}
               position={Position.LEFT_BOTTOM}
             >
               LEFT BOTTOM
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
       </div>
