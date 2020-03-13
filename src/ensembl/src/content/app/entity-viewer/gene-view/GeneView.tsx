@@ -4,10 +4,10 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
 import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
-import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneSelectors';
 import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 
@@ -19,12 +19,12 @@ import styles from './GeneView.scss';
 
 type GeneViewProps = {
   geneId: string | null;
-  selectedGeneTabName: string | null;
+  selectedGeneTabName: string;
 };
 
 type GeneViewWithDataProps = {
   gene: Gene;
-  selectedGeneTabName: string | null;
+  selectedGeneTabName: string;
 };
 
 const QUERY = gql`
@@ -102,16 +102,13 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         <GeneViewTabs />
       </div>
       <div className={styles.geneViewTabbedContent}>
-        {props.selectedGeneTabName === 'Transcripts' && (
-          <div className={styles.geneViewTable}>
-            {basePairsRulerTicks && (
-              <DefaultTranscriptslist
-                gene={props.gene}
-                rulerTicks={basePairsRulerTicks}
-              />
-            )}
-          </div>
-        )}
+        {props.selectedGeneTabName === 'Transcripts' &&
+          basePairsRulerTicks && (
+            <DefaultTranscriptslist
+              gene={props.gene}
+              rulerTicks={basePairsRulerTicks}
+            />
+          )}
 
         {props.selectedGeneTabName === 'Gene function' && <GeneFunction />}
 

@@ -6,19 +6,19 @@ export type EntityViewerGeneRelationshipsState = {
   selectedTabName: string;
 };
 
-export type EntityViewerGeneObjectState = {
+export type EntityViewerGeneViewObjectState = {
   selectedGeneTabName: string;
   geneFunction: EntityViewerGeneFunctionState;
   geneRelationships: EntityViewerGeneRelationshipsState;
 };
 
-export type EntityViewerGeneState = Readonly<{
+export type EntityViewerGeneViewState = Readonly<{
   [activeGenomeId: string]: {
-    [activeObjectId: string]: EntityViewerGeneObjectState;
+    [activeObjectId: string]: EntityViewerGeneViewObjectState;
   };
 }>;
 
-export const defaultEntityViewerGeneObjectState = {
+export const defaultEntityViewerGeneViewObjectState = {
   selectedGeneTabName: 'Transcripts',
   geneFunction: {
     selectedTabName: 'Proteins'
@@ -28,7 +28,7 @@ export const defaultEntityViewerGeneObjectState = {
   }
 };
 
-export const defaultEntityViewerGeneState: EntityViewerGeneState = {};
+export const defaultEntityViewerGeneViewState: EntityViewerGeneViewState = {};
 
 // TODO: This will be loaded from storage services once it is setup
-export const initialEntityViewerGeneState: EntityViewerGeneState = {};
+export const initialEntityViewerGeneViewState: EntityViewerGeneViewState = {};

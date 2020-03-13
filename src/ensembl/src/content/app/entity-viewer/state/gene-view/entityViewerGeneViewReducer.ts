@@ -1,14 +1,14 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import {
-  initialEntityViewerGeneState,
-  EntityViewerGeneState,
-  EntityViewerGeneObjectState
-} from './entityViewerGeneState';
-import * as actions from './entityViewerGeneActions';
+  initialEntityViewerGeneViewState,
+  EntityViewerGeneViewState,
+  EntityViewerGeneViewObjectState
+} from './entityViewerGeneViewState';
+import * as actions from './entityViewerGeneViewActions';
 
 export default function entityViewerGeneReducer(
-  state: EntityViewerGeneState = initialEntityViewerGeneState,
+  state: EntityViewerGeneViewState = initialEntityViewerGeneViewState,
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {
@@ -26,7 +26,7 @@ export default function entityViewerGeneReducer(
 }
 
 function entityViewerGeneObjectReducer(
-  state: { [activeObjectId: string]: EntityViewerGeneObjectState } = {},
+  state: { [activeObjectId: string]: EntityViewerGeneViewObjectState } = {},
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {

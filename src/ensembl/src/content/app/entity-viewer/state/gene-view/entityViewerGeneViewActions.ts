@@ -8,8 +8,8 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { getEntityViewerActiveGenomeConfiguration } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneSelectors';
-import { EntityViewerGeneObjectState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneState';
+import { getEntityViewerActiveGenomeConfiguration } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { EntityViewerGeneViewObjectState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 import { RootState } from 'src/store';
 
@@ -18,7 +18,7 @@ export const updateActiveGeneObjectState = createAction(
   (payload: {
     activeGenomeId: string;
     activeObjectId: string;
-    data: EntityViewerGeneObjectState;
+    data: EntityViewerGeneViewObjectState;
   }) => {
     const { activeGenomeId, activeObjectId, data } = payload;
     return { activeGenomeId, activeObjectId, data: cloneDeep(data) };

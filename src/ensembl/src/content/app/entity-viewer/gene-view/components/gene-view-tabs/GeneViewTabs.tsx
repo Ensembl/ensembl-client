@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
-import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneSelectors';
-import { setActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneActions';
+import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { setActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 
 import styles from './GeneViewTabs.scss';
 
