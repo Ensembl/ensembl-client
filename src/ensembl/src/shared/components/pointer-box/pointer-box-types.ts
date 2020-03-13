@@ -1,3 +1,25 @@
+/*
+The first part of position name signifies the direction in which PointerBox
+is positioned relative to the anchor.
+The second part of position name refers to the direction in which the body
+of the pointer box will grow with more content
+
+Eexamples:
+
+anchor
+__/\____________
+| BOTTOM_RIGHT |
+|______________|
+
+__________
+|          \ 
+|  LEFT    /  anchor
+|  BOTTOM |
+|         |
+|_________|
+
+*/
+
 export enum Position {
   TOP_LEFT = 'top_left',
   TOP_RIGHT = 'top_right',

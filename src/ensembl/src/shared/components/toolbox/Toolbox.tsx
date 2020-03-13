@@ -6,9 +6,7 @@ import PointerBox, {
 
 import styles from './Toolbox.scss';
 
-export type ToolboxPosition =
-  | Position.LEFT_TOP
-  | Position.RIGHT_TOP;
+export type ToolboxPosition = Position.LEFT_BOTTOM | Position.RIGHT_BOTTOM;
 
 type ToolboxProps = {
   position: ToolboxPosition;
@@ -30,7 +28,7 @@ const Toolbox = (props: ToolboxProps) => {
 };
 
 Toolbox.defaultProps = {
-  position: Position.RIGHT_TOP
-} as Partial<ToolboxProps>;;
+  position: Position.RIGHT_BOTTOM
+} as Partial<ToolboxProps>;
 
 export default Toolbox;
