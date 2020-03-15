@@ -5,8 +5,7 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 import {
   Toolbox,
   ToolboxPosition,
-  ToolboxExpandableContent,
-  ToggleButton as ToolboxToggleButton
+  ToolboxExpandableContent
 } from 'src/shared/components/toolbox';
 import ZmenuContent from './ZmenuContent';
 
@@ -51,6 +50,9 @@ const Zmenu = (props: ZmenuProps) => {
     : ToolboxPosition.RIGHT;
 
   const mainContent = <ZmenuContent content={props.content} />;
+  const footerContent = (
+    <div className={styles.zmenuFooterContent}>Zmenu footer content</div>
+  );
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
@@ -64,7 +66,10 @@ const Zmenu = (props: ZmenuProps) => {
           anchor={anchorRef.current}
           position={toolboxPosition}
         >
-          { mainContent }
+          <ToolboxExpandableContent
+            mainContent={ mainContent }
+            footerContent={footerContent}
+          />
         </Toolbox>
       }
     </div>

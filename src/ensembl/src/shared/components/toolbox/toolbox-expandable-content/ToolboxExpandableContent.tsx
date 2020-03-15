@@ -1,4 +1,5 @@
 import React, { useState, useContext, ReactNode } from 'react';
+import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
@@ -16,6 +17,7 @@ type ToolboxExpandableContentProps = {
 };
 
 type ToggleButtonProps = {
+  className?: string;
   openElement: ReactNode;
 };
 
@@ -47,9 +49,20 @@ export const ToggleButton = (props: ToggleButtonProps) => {
   const { toggleExpanded = noop, isExpanded = false } =
     useContext(ToolboxExpandableContentContext) || {};
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation(); // because we want to prevent propagation to document, which is outsite React's synthetic event system
+    toggleExpanded();
+  }
+
   const button = isExpanded ? <CloseIcon /> : props.openElement;
+  const buttonClasses = classNames(
+    styles.toggleButton,
+    props.className
+  );
   return (
-    <span className={styles.toggleButton} onClick={toggleExpanded}>
+    <span className={buttonClasses} onClick={handleClick}>
       {button}
     </span>
   );

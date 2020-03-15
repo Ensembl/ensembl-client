@@ -144,6 +144,7 @@ const PointerBox = (props: PointerBoxProps) => {
       className={bodyClasses}
       ref={pointerBoxRef}
       style={inlineStyles.bodyStyles}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation() }}
     >
       <Pointer
         className={props.classNames?.pointer}
