@@ -11,6 +11,7 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneOverviewImage.scss';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 type GeneOverviewImageProps = {
   gene: Gene;
@@ -116,8 +117,8 @@ const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
     <div className={styles.numberOfTranscripts}>
       <span className={styles.transcriptsCount}>
         {props.gene.transcripts.length}
-      </span>{' '}
-      transcripts
+      </span>
+      {` ${pluralise('transcript', props.gene.transcripts.length)}`}
     </div>
   );
 };
