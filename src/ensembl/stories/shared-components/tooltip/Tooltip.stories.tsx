@@ -1,13 +1,18 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import VariantsStory from './variantsStory';
-import PositioningStory from './positioningStory';
+const DefaultTooltipStory = () => {
+  return <div>Hello?</div>;
+};
+
+const OnScrollTooltipStory = () => {
+  return <div>Hello?</div>;
+};
 
 storiesOf('Components|Shared Components/Tooltip', module)
-  .add('variants', () => {
-    return <VariantsStory />;
+  .add('default', () => {
+    return <DefaultTooltipStory />;
   })
-  .add('positioning', () => {
-    return <PositioningStory />;
+  .add('scrolling', () => {
+    return <OnScrollTooltipStory />;
   });

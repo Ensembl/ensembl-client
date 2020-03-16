@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
-// import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
 
 import styles from './PointerBox.stories.scss';
 
