@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { RootState } from 'src/store';
 
-import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+import { RootState } from 'src/store';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+
+import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
 import styles from './GeneViewTabs.scss';
 

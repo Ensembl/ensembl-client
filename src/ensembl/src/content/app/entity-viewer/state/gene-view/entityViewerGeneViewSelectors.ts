@@ -3,18 +3,18 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { defaultEntityViewerGeneViewObjectState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import { defaultEntityViewerGeneViewUIStateState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 export const getEntityViewerActiveGenomeConfiguration = (state: RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
 
   if (!activeGenomeId || !activeObjectId) {
-    return defaultEntityViewerGeneViewObjectState;
+    return defaultEntityViewerGeneViewUIStateState;
   }
   return (
     state.entityViewer.geneView?.[activeGenomeId]?.[activeObjectId] ||
-    defaultEntityViewerGeneViewObjectState
+    defaultEntityViewerGeneViewUIStateState
   );
 };
 
@@ -23,8 +23,8 @@ export const getEntityViewerActiveGeneTab = (state: RootState) =>
 
 export const getEntityViewerActiveGeneFunction = (state: RootState) =>
   getEntityViewerActiveGenomeConfiguration(state).geneFunction ||
-  defaultEntityViewerGeneViewObjectState.geneFunction;
+  defaultEntityViewerGeneViewUIStateState.geneFunction;
 
 export const getEntityViewerActiveGeneRelationships = (state: RootState) =>
   getEntityViewerActiveGenomeConfiguration(state).geneRelationships ||
-  defaultEntityViewerGeneViewObjectState.geneRelationships;
+  defaultEntityViewerGeneViewUIStateState.geneRelationships;

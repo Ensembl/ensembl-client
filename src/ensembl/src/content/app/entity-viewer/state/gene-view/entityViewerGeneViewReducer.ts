@@ -1,10 +1,10 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import {
-  defaultEntityViewerGeneViewObjectState,
+  defaultEntityViewerGeneViewUIStateState,
   initialEntityViewerGeneViewState,
   EntityViewerGeneViewState,
-  EntityViewerGeneViewObjectState,
+  EntityViewerGeneViewUIStateState,
   EntityViewerGeneFunctionState,
   EntityViewerGeneRelationshipsState
 } from './entityViewerGeneViewState';
@@ -37,7 +37,7 @@ export default function entityViewerGeneViewReducer(
 }
 
 function entityViewerGeneViewObjectReducer(
-  state: { [activeObjectId: string]: EntityViewerGeneViewObjectState } = {},
+  state: { [activeObjectId: string]: EntityViewerGeneViewUIStateState } = {},
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {
@@ -75,7 +75,7 @@ function entityViewerGeneViewObjectReducer(
 }
 
 function entityViewerGeneViewObjectGeneFunctionReducer(
-  state: EntityViewerGeneFunctionState = defaultEntityViewerGeneViewObjectState.geneFunction,
+  state: EntityViewerGeneFunctionState = defaultEntityViewerGeneViewUIStateState.geneFunction,
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {
@@ -90,7 +90,7 @@ function entityViewerGeneViewObjectGeneFunctionReducer(
 }
 
 function entityViewerGeneViewObjectGeneRelationshipsReducer(
-  state: EntityViewerGeneRelationshipsState = defaultEntityViewerGeneViewObjectState.geneRelationships,
+  state: EntityViewerGeneRelationshipsState = defaultEntityViewerGeneViewUIStateState.geneRelationships,
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {

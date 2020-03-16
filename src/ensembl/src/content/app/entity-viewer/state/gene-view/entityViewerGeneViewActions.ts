@@ -7,7 +7,7 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
-  EntityViewerGeneViewObjectState,
+  EntityViewerGeneViewUIStateState,
   GeneViewTabName,
   GeneFunctionTabName,
   GeneRelationshipsTabName,
@@ -22,7 +22,7 @@ export const updateActiveGeneViewObjectState = createAction(
 )<{
   activeGenomeId: string;
   activeObjectId: string;
-  fragment: Partial<EntityViewerGeneViewObjectState>;
+  fragment: Partial<EntityViewerGeneViewUIStateState>;
 }>();
 
 export const setActiveGeneTab: ActionCreator<ThunkAction<

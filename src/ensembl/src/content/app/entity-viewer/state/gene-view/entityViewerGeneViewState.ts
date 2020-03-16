@@ -6,15 +6,15 @@ export type EntityViewerGeneRelationshipsState = {
   selectedTabName: GeneRelationshipsTabName;
 };
 
-export type EntityViewerGeneViewObjectState = {
+export type EntityViewerGeneViewUIStateState = {
   selectedGeneTabName: GeneViewTabName;
   geneFunction: EntityViewerGeneFunctionState;
   geneRelationships: EntityViewerGeneRelationshipsState;
 };
 
 export type EntityViewerGeneViewState = Readonly<{
-  [activeGenomeId: string]: {
-    [activeObjectId: string]: EntityViewerGeneViewObjectState;
+  [genomeId: string]: {
+    [objectId: string]: EntityViewerGeneViewUIStateState;
   };
 }>;
 
@@ -39,7 +39,7 @@ export enum GeneRelationshipsTabName {
   GENE_PANELS = 'Gene panels'
 }
 
-export const defaultEntityViewerGeneViewObjectState = {
+export const defaultEntityViewerGeneViewUIStateState = {
   selectedGeneTabName: GeneViewTabName.TRANSCRIPTS,
   geneFunction: {
     selectedTabName: GeneFunctionTabName.PROTEINS
