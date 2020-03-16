@@ -1,20 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { push } from 'connected-react-router';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
+  getBrowserActiveGenomeId,
   isFocusObjectPositionDefault
 } from '../browserSelectors';
 
-import { changeFocusObject } from '../browserActions';
-
-import ImageButton, {
-  ImageButtonStatus
-} from 'src/shared/components/image-button/ImageButton';
-import {
-  ToggleButton as ToolboxToggleButton
-} from 'src/shared/components/toolbox';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
 import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
@@ -25,15 +22,13 @@ import styles from './Zmenu.scss';
 
 type Props = {
   featureId: string;
+  genomeId: string | null;
   isInDefaultPosition: boolean;
-}
+  push: (path: string) => void;
+};
 
 const ZmenuAppLinks = (props: Props) => {
-
-  if (!isEnvironment([
-    Environment.DEVELOPMENT,
-    Environment.INTERNAL
-  ])) {
+  if (!isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
     return null;
   }
 
@@ -44,16 +39,29 @@ const ZmenuAppLinks = (props: Props) => {
     return null;
   }
 
+  const getBrowserLink = () =>
+    urlFor.browser({ genomeId: props.genomeId, focus: props.featureId });
+
+  const getEntityViewerLink = () =>
+    urlFor.entityViewer({
+      genomeId: props.genomeId,
+      entityId: props.featureId
+    });
+
   return (
     <div className={styles.zmenuAppLinks}>
       <span>View in</span>
-      <ImageButton
-        className={styles.zmenuAppButton}
-        image={BrowserIcon}
-      />
+      {!props.isInDefaultPosition && (
+        <ImageButton
+          className={styles.zmenuAppButton}
+          image={BrowserIcon}
+          onClick={() => props.push(getBrowserLink())}
+        />
+      )}
       <ImageButton
         className={styles.zmenuAppButton}
         image={EntityViewerIcon}
+        onClick={() => props.push(getEntityViewerLink())}
       />
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
@@ -64,11 +72,12 @@ const ZmenuAppLinks = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
+  genomeId: getBrowserActiveGenomeId(state),
   isInDefaultPosition: isFocusObjectPositionDefault(state)
 });
 
 const mapDispatchToProps = {
-  changeFocusObject
+  push
 };
 
-export default connect(mapStateToProps)(ZmenuAppLinks);
+export default connect(mapStateToProps, mapDispatchToProps)(ZmenuAppLinks);
