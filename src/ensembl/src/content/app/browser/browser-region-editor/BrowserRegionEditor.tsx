@@ -26,7 +26,7 @@ import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
-} from 'src/shared/helpers/numberFormatter';
+} from 'src/shared/helpers/formatters/numberFormatter';
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';

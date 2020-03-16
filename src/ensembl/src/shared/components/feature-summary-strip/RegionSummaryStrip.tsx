@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 
 import styles from './FeatureSummaryStrip.scss';
 

@@ -18,7 +18,7 @@ import { scaleLinear, ScaleLinear } from 'd3';
 
 import { getTicks } from './basePairsRulerHelper';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import styles from './BasePairsRuler.scss';
 

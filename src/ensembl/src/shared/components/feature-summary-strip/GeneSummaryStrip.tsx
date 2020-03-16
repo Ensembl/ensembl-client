@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
-import { getStrandDisplayName } from 'src/shared/helpers/strandFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 

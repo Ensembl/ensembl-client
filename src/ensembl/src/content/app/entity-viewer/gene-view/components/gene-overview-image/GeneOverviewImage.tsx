@@ -2,7 +2,7 @@ import React from 'react';
 import { scaleLinear } from 'd3';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { getStrandDisplayName } from 'src/shared/helpers/strandFormatter';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
