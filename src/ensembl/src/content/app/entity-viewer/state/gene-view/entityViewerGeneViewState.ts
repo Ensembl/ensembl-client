@@ -14,7 +14,7 @@ export type EntityViewerGeneViewUIState = {
 
 export type EntityViewerGeneViewState = Readonly<{
   [genomeId: string]: {
-    [objectId: string]: EntityViewerGeneViewUIState;
+    [geneId: string]: EntityViewerGeneViewUIState;
   };
 }>;
 
