@@ -33,10 +33,9 @@ const GeneViewTabs = (props: Props) => {
   const onTabChange = (selectedTabName: string) => {
     if (selectedTabName === props.selectedGeneTabName) {
       props.setActiveGeneTab(DEFAULT_TAB);
-      return;
+    } else {
+      props.setActiveGeneTab(selectedTabName);
     }
-
-    props.setActiveGeneTab(selectedTabName);
   };
 
   return (

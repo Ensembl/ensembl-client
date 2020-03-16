@@ -10,9 +10,7 @@ import {
   EntityViewerGeneViewUIState,
   GeneViewTabName,
   GeneFunctionTabName,
-  GeneRelationshipsTabName,
-  EntityViewerGeneFunctionState,
-  EntityViewerGeneRelationshipsState
+  GeneRelationshipsTabName
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 import { RootState } from 'src/store';
@@ -52,14 +50,6 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
   );
 };
 
-export const updateActiveGeneViewUIGeneFunctionState = createAction(
-  'entity-viewer/update-active-gene-view-object-gene-function-state'
-)<{
-  activeGenomeId: string;
-  activeObjectId: string;
-  fragment: Partial<EntityViewerGeneFunctionState>;
-}>();
-
 export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   void,
   any,
@@ -88,14 +78,6 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
     })
   );
 };
-
-export const updateActiveGeneViewUIGeneRelationshipsState = createAction(
-  'entity-viewer/update-active-gene-view-object-gene-relationships-state'
-)<{
-  activeGenomeId: string;
-  activeObjectId: string;
-  fragment: Partial<EntityViewerGeneRelationshipsState>;
-}>();
 
 export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
   void,

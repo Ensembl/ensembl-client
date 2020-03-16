@@ -26,7 +26,7 @@ const tabClassNames = {
 };
 
 type Props = {
-  isSidebarOpen: boolean;
+  isNarrow: boolean;
   selectedTabName: GeneFunctionTabName;
   setActiveGeneFunctionTab: (tab: string) => void;
 };
@@ -51,7 +51,7 @@ const GeneFunction = (props: Props) => {
     <Panel
       header={<TabWrapper />}
       classNames={{
-        panel: props.isSidebarOpen ? styles.narrowPanel : styles.fullWidthPanel,
+        panel: props.isNarrow ? styles.narrowPanel : styles.fullWidthPanel,
         body: styles.panelBody
       }}
     >
@@ -61,7 +61,7 @@ const GeneFunction = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  isSidebarOpen: isEntityViewerSidebarOpen(state),
+  isNarrow: isEntityViewerSidebarOpen(state),
   selectedTabName: getEntityViewerActiveGeneFunction(state).selectedTabName
 });
 
