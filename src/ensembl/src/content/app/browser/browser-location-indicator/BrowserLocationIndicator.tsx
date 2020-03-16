@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { toggleBrowserNav } from '../browserActions';
 

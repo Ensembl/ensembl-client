@@ -1,4 +1,4 @@
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { EnsObjectLocation } from 'src/shared/state/ens-object/ensObjectTypes';
 

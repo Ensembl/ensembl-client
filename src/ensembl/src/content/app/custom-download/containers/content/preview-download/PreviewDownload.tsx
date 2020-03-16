@@ -8,7 +8,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
 import CustomDownloadInfoCard from 'src/content/app/custom-download/components/info-card/CustomDownloadInfoCard';
 import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { setShowPreview } from 'src/content/app/custom-download/state/customDownloadActions';
 import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
@@ -123,7 +123,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PreviewDownload);
+export default connect(mapStateToProps, mapDispatchToProps)(PreviewDownload);

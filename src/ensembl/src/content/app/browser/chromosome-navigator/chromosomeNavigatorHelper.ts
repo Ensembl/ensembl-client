@@ -1,4 +1,4 @@
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { measureText } from 'src/shared/helpers/textHelpers';
 
 import * as constants from './chromosomeNavigatorConstants';

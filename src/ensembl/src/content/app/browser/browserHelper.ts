@@ -2,7 +2,7 @@ import noop from 'lodash/noop';
 import apiService from 'src/services/api-service';
 
 import { ChrLocation } from './browserState';
-import { getNumberWithoutCommas } from 'src/shared/helpers/numberFormatter';
+import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');

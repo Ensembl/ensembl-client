@@ -14,7 +14,7 @@ import {
 import JSONValue from 'src/shared/types/JSON';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { ReactComponent as ResetIcon } from 'static/img/shared/trash.svg';
 import FiltersAccordionSection from 'src/content/app/custom-download/containers/content/filter-accordion/sections/FiltersAccordionSection';
 import {

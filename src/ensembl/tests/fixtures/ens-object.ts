@@ -1,6 +1,7 @@
 import faker from 'faker';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { Strand } from 'src/content/app/entity-viewer/types/strand';
 
 export const createEnsObject = (objectType?: string): EnsObject => ({
   bio_type: faker.lorem.words(),
@@ -11,7 +12,7 @@ export const createEnsObject = (objectType?: string): EnsObject => ({
   object_type: objectType || 'gene',
   stable_id: faker.lorem.word(),
   versioned_stable_id: faker.lorem.word(),
-  strand: 'forward',
+  strand: Strand.FORWARD,
   description: faker.lorem.words(),
   track: createTrackInfo()
 });

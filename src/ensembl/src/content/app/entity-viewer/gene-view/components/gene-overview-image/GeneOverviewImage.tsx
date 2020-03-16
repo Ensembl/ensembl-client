@@ -2,15 +2,16 @@ import React from 'react';
 import { scaleLinear } from 'd3';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneOverviewImage.scss';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
 type GeneOverviewImageProps = {
   gene: Gene;
@@ -106,10 +107,9 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
     }
   } = props;
 
-  const strandDisplayName =
-    strandCode === Strand.FORWARD ? 'forward strand' : 'reverse strand';
-
-  return <div className={styles.strand}>{strandDisplayName}</div>;
+  return (
+    <div className={styles.strand}>{getStrandDisplayName(strandCode)}</div>
+  );
 };
 
 const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
@@ -117,8 +117,8 @@ const NumberOfTranscripts = (props: GeneOverviewImageProps) => {
     <div className={styles.numberOfTranscripts}>
       <span className={styles.transcriptsCount}>
         {props.gene.transcripts.length}
-      </span>{' '}
-      transcripts
+      </span>
+      {` ${pluralise('transcript', props.gene.transcripts.length)}`}
     </div>
   );
 };
