@@ -3,7 +3,7 @@ import merge from 'lodash/merge';
 import get from 'lodash/get';
 
 import {
-  defaultEntityViewerGeneViewUIStateState,
+  defaultEntityViewerGeneViewUIState,
   initialEntityViewerGeneViewState,
   EntityViewerGeneViewState
 } from './entityViewerGeneViewState';
@@ -14,12 +14,12 @@ export default function entityViewerGeneViewReducer(
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {
-    case getType(actions.updateActiveGeneViewObjectState):
+    case getType(actions.updateActiveGeneViewUIState):
       const { activeGenomeId, activeObjectId, fragment } = action.payload;
       const oldStateFragment = get(
         state,
         `${activeGenomeId}.${activeObjectId}`,
-        defaultEntityViewerGeneViewUIStateState
+        defaultEntityViewerGeneViewUIState
       );
       const updatedStateFragment = merge({}, oldStateFragment, fragment);
       return {

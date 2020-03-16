@@ -7,7 +7,7 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
-  EntityViewerGeneViewUIStateState,
+  EntityViewerGeneViewUIState,
   GeneViewTabName,
   GeneFunctionTabName,
   GeneRelationshipsTabName,
@@ -17,12 +17,12 @@ import {
 
 import { RootState } from 'src/store';
 
-export const updateActiveGeneViewObjectState = createAction(
+export const updateActiveGeneViewUIState = createAction(
   'entity-viewer/update-active-gene-view-object-state'
 )<{
   activeGenomeId: string;
   activeObjectId: string;
-  fragment: Partial<EntityViewerGeneViewUIStateState>;
+  fragment: Partial<EntityViewerGeneViewUIState>;
 }>();
 
 export const setActiveGeneTab: ActionCreator<ThunkAction<
@@ -42,7 +42,7 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateActiveGeneViewObjectState({
+    updateActiveGeneViewUIState({
       activeGenomeId,
       activeObjectId,
       fragment: {
@@ -52,7 +52,7 @@ export const setActiveGeneTab: ActionCreator<ThunkAction<
   );
 };
 
-export const updateActiveGeneViewObjectGeneFunctionState = createAction(
+export const updateActiveGeneViewUIGeneFunctionState = createAction(
   'entity-viewer/update-active-gene-view-object-gene-function-state'
 )<{
   activeGenomeId: string;
@@ -77,7 +77,7 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateActiveGeneViewObjectState({
+    updateActiveGeneViewUIState({
       activeGenomeId,
       activeObjectId,
       fragment: {
@@ -89,7 +89,7 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   );
 };
 
-export const updateActiveGeneViewObjectGeneRelationshipsState = createAction(
+export const updateActiveGeneViewUIGeneRelationshipsState = createAction(
   'entity-viewer/update-active-gene-view-object-gene-relationships-state'
 )<{
   activeGenomeId: string;
@@ -114,7 +114,7 @@ export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateActiveGeneViewObjectState({
+    updateActiveGeneViewUIState({
       activeGenomeId,
       activeObjectId,
       fragment: {
