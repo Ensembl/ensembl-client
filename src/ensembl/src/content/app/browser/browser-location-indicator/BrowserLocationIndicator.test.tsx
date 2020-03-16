@@ -2,7 +2,7 @@ import React from 'react';
 import faker from 'faker';
 import { render, mount } from 'enzyme';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { BrowserLocationIndicator } from './BrowserLocationIndicator';
 

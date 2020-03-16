@@ -17,7 +17,7 @@ impl InstructionBundle {
         self.0.append(&mut c);
     }
     
-    pub fn drain(&mut self) -> impl Iterator<Item=Box<dyn Instruction>> {
+    pub fn drain(&mut self) -> impl Iterator<Item=Box<dyn Instruction>> +'_ {
         self.0.drain(..)
     }
 }

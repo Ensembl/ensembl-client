@@ -26,8 +26,10 @@ import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
-} from 'src/shared/helpers/numberFormatter';
+} from 'src/shared/helpers/formatters/numberFormatter';
 import { validateRegion, RegionValidationErrors } from '../browserHelper';
+
+import analyticsTracking from 'src/services/analytics-service';
 
 import applyIcon from 'static/img/shared/apply.svg';
 
@@ -145,6 +147,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     } else {
       props.changeFocusObject(regionId);
     }
+
+    analyticsTracking.trackEvent({
+      category: 'browser_navigation',
+      label: 'region_editor',
+      action: 'change_region'
+    });
   };
 
   const closeForm = (event: Event) => {

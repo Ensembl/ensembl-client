@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import BasePairsRuler from 'src/content/app/entity-viewer/components/base-pairs-ruler/BasePairsRuler';
+import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './BasePairsRuler.stories.scss';
 
@@ -29,7 +29,7 @@ const LengthInputForm = (props: ContainerProps) => {
   );
 };
 
-storiesOf('Components|EntityViewer/FeatureLengthAxis', module).add(
+storiesOf('Components|EntityViewer/BasePairsRuler', module).add(
   'default',
   () => {
     const initialLength = 80792;

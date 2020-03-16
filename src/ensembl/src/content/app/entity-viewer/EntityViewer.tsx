@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import ApolloClient from 'apollo-boost';
 import { connect } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlHelper from 'src/shared/helpers/urlHelper';
@@ -18,15 +20,17 @@ import {
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
-import EntityViewerAppBar from 'src/content/app/entity-viewer/components/entity-viewer-app-bar/EntityViewerAppBar';
-import EntityViewerSidebar from './components/entity-viewer-sidebar/EntityViewerSideBar';
-import EntityViewerSidebarTabs from './components/entity-viewer-sidebar-tabs/EntityViewerSidebarTabs';
-import EntityViewerSidebarToolstrip from './components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
-import EntityViewerTopbar from './components/entity-viewer-topbar/EntityViewerTopbar';
+import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/EntityViewerAppBar';
+import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
+import EntityViewerTopbar from './shared/components/entity-viewer-topbar/EntityViewerTopbar';
+import GeneView from './gene-view/GeneView';
+import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
+import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { SidebarBehaviourType } from 'src/shared/components/layout/StandardAppLayout';
 
 import styles from './EntityViewer.scss';
 
@@ -46,6 +50,10 @@ export type EntityViewerParams = {
   entityId?: string;
 };
 
+const client = new ApolloClient({
+  uri: 'http://193.62.55.158:30466'
+});
+
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
 
@@ -54,24 +62,27 @@ const EntityViewer = (props: Props) => {
   }, [params.genomeId, params.entityId]);
 
   return (
-    <div className={styles.entityViewer}>
-      <EntityViewerAppBar />
-      {params.entityId ? (
-        <StandardAppLayout
-          mainContent={<div>Main content is coming...</div>}
-          sidebarContent={<EntityViewerSidebar />}
-          sidebarNavigation={<EntityViewerSidebarTabs />}
-          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-          topbarContent={<EntityViewerTopbar />}
-          isSidebarOpen={props.isSidebarOpen}
-          onSidebarToggle={props.toggleSidebar}
-          isDrawerOpen={false}
-          viewportWidth={props.viewportWidth}
-        />
-      ) : (
-        <ExampleLinks {...props} />
-      )}
-    </div>
+    <ApolloProvider client={client}>
+      <div className={styles.entityViewer}>
+        <EntityViewerAppBar />
+        {params.entityId ? (
+          <StandardAppLayout
+            mainContent={<GeneView />}
+            topbarContent={<EntityViewerTopbar />}
+            sidebarContent={<GeneViewSideBar />}
+            sidebarNavigation={<GeneViewSidebarTabs />}
+            sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+            sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
+            isSidebarOpen={props.isSidebarOpen}
+            onSidebarToggle={props.toggleSidebar}
+            isDrawerOpen={false}
+            viewportWidth={props.viewportWidth}
+          />
+        ) : (
+          <ExampleLinks {...props} />
+        )}
+      </div>
+    </ApolloProvider>
   );
 };
 

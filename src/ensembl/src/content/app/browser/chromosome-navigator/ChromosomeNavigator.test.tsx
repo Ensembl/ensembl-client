@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 import random from 'lodash/random';
 
 import * as textHelpers from 'src/shared/helpers/textHelpers';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import * as constants from './chromosomeNavigatorConstants';
 

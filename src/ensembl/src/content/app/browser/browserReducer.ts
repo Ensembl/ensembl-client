@@ -66,8 +66,10 @@ export function browserNav(
   action: ActionType<typeof browserActions>
 ) {
   switch (action.type) {
-    case getType(browserActions.toggleBrowserNav):
-      return { ...state, browserNavOpened: !state.browserNavOpened };
+    case getType(browserActions.openBrowserNav):
+      return { ...state, browserNavOpened: true };
+    case getType(browserActions.closeBrowserNav):
+      return { ...state, browserNavOpened: false };
     case getType(browserActions.updateBrowserNavStates):
       return { ...state, browserNavStates: action.payload };
     default:

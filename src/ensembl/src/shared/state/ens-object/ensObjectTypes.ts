@@ -1,3 +1,5 @@
+import { Strand } from 'src/content/app/entity-viewer/types/strand';
+
 export type EnsObjectLocation = {
   chromosome: string;
   end: number;
@@ -12,7 +14,7 @@ export type EnsObject = {
   location: EnsObjectLocation;
   object_type: string;
   stable_id: string | null;
-  strand: string | null;
+  strand: Strand | null;
   description: string | null;
   versioned_stable_id: string | null;
   track: EnsObjectTrack | null;

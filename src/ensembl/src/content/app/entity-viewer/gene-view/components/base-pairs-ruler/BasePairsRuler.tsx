@@ -14,11 +14,11 @@ It follows the following rules for displaying labelled and unlabelled ticks
 */
 
 import React, { useEffect } from 'react';
-import { scaleLinear } from 'd3';
+import { scaleLinear, ScaleLinear } from 'd3';
 
 import { getTicks } from './basePairsRulerHelper';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import styles from './BasePairsRuler.scss';
 
@@ -27,10 +27,14 @@ type Ticks = {
   labelledTicks: number[];
 };
 
+export type TicksAndScale = Ticks & {
+  scale: ScaleLinear<number, number>;
+};
+
 type Props = {
   length: number; // number of biological building blocks (e.g. nucleotides) in the feature
   width: number; // number of pixels allotted to the axis on the screen
-  onTicksCalculated?: (ticks: Ticks) => void; // way to pass the ticks to the parent if it is interested in them
+  onTicksCalculated?: (payload: TicksAndScale) => void; // way to pass the ticks to the parent if it is interested in them
   standalone: boolean; // wrap the component in an svg element if true
 };
 
@@ -44,7 +48,7 @@ const FeatureLengthAxis = (props: Props) => {
 
   useEffect(() => {
     if (props.onTicksCalculated) {
-      props.onTicksCalculated({ ticks, labelledTicks });
+      props.onTicksCalculated({ ticks, labelledTicks, scale });
     }
   }, [props.length]);
 
@@ -86,7 +90,7 @@ const FeatureLengthAxis = (props: Props) => {
   );
 
   return props.standalone ? (
-    <svg className={styles.containerSvg} width={props.width}>
+    <svg className={styles.containerSvg} width={props.width} height={30}>
       {renderedAxis}
     </svg>
   ) : (

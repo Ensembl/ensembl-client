@@ -12,7 +12,7 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/numberFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import {
   createChrLocationValues,
   createRegionValidationMessages

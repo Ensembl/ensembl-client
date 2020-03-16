@@ -4,11 +4,12 @@ import classNames from 'classnames';
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getFormattedLocation } from 'src/shared/helpers/regionFormatter';
-
-import styles from './FeatureSummaryStrip.scss';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+
+import styles from './FeatureSummaryStrip.scss';
 
 const MEDIUM_WIDTH = 800;
 const SMALL_WIDTH = 500;
@@ -97,7 +98,7 @@ const FullContent = ({ gene }: { gene: EnsObject }) => (
   <>
     <CompactContent gene={gene} />
     {gene.bio_type && <div>{gene.bio_type.toLowerCase()}</div>}
-    <div>{gene.strand} strand</div>
+    {gene.strand && <div>{getStrandDisplayName(gene.strand)}</div>}
     <div>{getFormattedLocation(gene.location)}</div>
   </>
 );

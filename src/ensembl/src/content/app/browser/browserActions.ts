@@ -20,7 +20,8 @@ import {
   getBrowserTrackStates,
   getChrLocation,
   getBrowserMessageCount,
-  getBrowserActiveEnsObjectIds
+  getBrowserActiveEnsObjectIds,
+  getBrowserNavOpened
 } from './browserSelectors';
 
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -40,6 +41,7 @@ import {
 } from './browserState';
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
+import analyticsTracking from 'src/services/analytics-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -199,9 +201,37 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
   });
 };
 
-export const toggleBrowserNav = createAction(
-  'browser/toggle-browser-navigation'
+export const openBrowserNav = createAction(
+  'browser/open-browser-navigation',
+  () => {
+    analyticsTracking.trackEvent({
+      category: 'browser_navigation',
+      label: 'open_browser_navigation',
+      action: 'clicked'
+    });
+  }
 )();
+
+export const closeBrowserNav = createAction(
+  'browser/close-browser-navigation'
+)();
+
+export const toggleBrowserNav: ActionCreator<ThunkAction<
+  any,
+  any,
+  null,
+  Action<string>
+>> = () => {
+  return (dispatch: Dispatch, getState: () => RootState) => {
+    const isBrowserNavOpened = getBrowserNavOpened(getState());
+
+    if (isBrowserNavOpened) {
+      dispatch(closeBrowserNav());
+    } else {
+      dispatch(openBrowserNav());
+    }
+  };
+};
 
 export const updateBrowserNavStates = createAction(
   'browser/update-browser-nav-states'
