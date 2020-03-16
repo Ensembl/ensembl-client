@@ -20,10 +20,10 @@
   background-color: $grey;
 }
 
-.selectedGeneTabName {
+.selectedGeneTab {
   background-color: transparent;
   border: 1px solid $blue;
-
+  cursor: pointer;
   &::after {
     width: 12px;
     height: 12px;
@@ -42,5 +42,9 @@
 .geneTab:first-of-type {
   &::after {
     display: none;
+  }
+
+  &.selectedGeneTab {
+    cursor: default;
   }
 }

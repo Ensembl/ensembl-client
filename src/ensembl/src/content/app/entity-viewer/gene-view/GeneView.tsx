@@ -102,7 +102,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.geneViewTabs}>
         <GeneViewTabs />
       </div>
-      <div className={styles.geneViewTabbedContent}>
+      <div className={styles.geneViewTabContent}>
         {props.selectedGeneTabName === GeneViewTabName.TRANSCRIPTS &&
           basePairsRulerTicks && (
             <DefaultTranscriptslist

@@ -15,6 +15,8 @@ const tabsData: Tab[] = [
   { title: 'Gene relationships' }
 ];
 
+const DEFAULT_TAB = tabsData[0].title;
+
 type Props = {
   selectedGeneTabName: string | null;
   setActiveGeneTab: (selectedTabName: string) => void;
@@ -23,17 +25,26 @@ type Props = {
 const GeneViewTabs = (props: Props) => {
   const tabClassNames = {
     default: styles.geneTab,
-    selected: styles.selectedGeneTabName,
+    selected: styles.selectedGeneTab,
     disabled: styles.disabledGeneTab,
     tabsContainer: styles.geneViewTabs
+  };
+
+  const onTabChange = (selectedTabName: string) => {
+    if (selectedTabName === props.selectedGeneTabName) {
+      props.setActiveGeneTab(DEFAULT_TAB);
+      return;
+    }
+
+    props.setActiveGeneTab(selectedTabName);
   };
 
   return (
     <Tabs
       classNames={tabClassNames}
       tabs={tabsData}
-      selectedTab={props.selectedGeneTabName || 'Transcripts'}
-      onTabChange={props.setActiveGeneTab}
+      selectedTab={props.selectedGeneTabName || DEFAULT_TAB}
+      onTabChange={onTabChange}
     />
   );
 };
