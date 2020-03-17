@@ -78,7 +78,7 @@ const Positions = (props: PositionsProps) => {
 
   return (
     <>
-      <span>Select tooltip position: </span>
+      <span>Select pointer box position: </span>
       <div className={styles.positioningStorySelector}>
         <select
           onChange={(e) => props.onChange(e.target.value as Position)}
@@ -97,7 +97,7 @@ const PositioningStory = () => {
 
   return (
     <div className={styles.positioningStoryLayout}>
-      <h1>Auto-positioning of the tooltip</h1>
+      <h1>Auto-positioning of the pointer box</h1>
       <div ref={containerRef} className={styles.positioningStoryContainer}>
         <Items container={containerRef} position={position} />
       </div>

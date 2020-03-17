@@ -14,26 +14,6 @@
   fill: black;
 }
 
-.container {
-  display: grid;
-  background: cornsilk;
-  height: 80vh;
-}
-
-.item {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin: 150px;
-  margin-left: calc(100vw - 200px);
-  width: 100px;
-  height: 100px;
-  background-color: $grey;
-  user-select: 'none';
-  cursor: 'pointer';
-}
-
 .variantsStoryLayout {
   height: 100vh;
   display: flex;
@@ -106,9 +86,13 @@
 }
 
 .positioningStoryLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-height: 100vh;
   max-width: 900px;
   margin: auto;
+  padding-bottom: 70px;
 }
 
 .positioningStoryContainer {
