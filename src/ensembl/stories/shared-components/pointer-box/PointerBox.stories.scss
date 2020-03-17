@@ -1,5 +1,13 @@
 @import 'src/styles/common';
 
+div[class^='pointer'] {
+  padding: 6px 12px;
+
+  p {
+    max-width: 200px;
+  }
+}
+
 .container {
   display: grid;
   background: cornsilk;

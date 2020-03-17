@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
+import faker from 'faker';
 
 import PointerBox, {
   Position
@@ -37,7 +38,7 @@ const VariantsStory = () => {
           {visibleId === Position.TOP_LEFT && topLeftRef.current && (
             <PointerBox
               anchor={topLeftRef.current}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.TOP_LEFT}
             >
               TOP LEFT
@@ -55,7 +56,7 @@ const VariantsStory = () => {
           {visibleId === Position.TOP_RIGHT && topRightRef.current && (
             <PointerBox
               anchor={topRightRef.current}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.TOP_RIGHT}
             >
               TOP RIGHT
@@ -68,15 +69,16 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryRightTop
           )}
-          onClick={() => setVisibleId(Position.RIGHT_TOP)}
+          onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
         >
-          {visibleId === Position.RIGHT_TOP && rightTopRef.current && (
+          {visibleId === Position.RIGHT_BOTTOM && rightTopRef.current && (
             <PointerBox
               anchor={rightTopRef.current}
-              onClose={handleClose}
-              position={Position.RIGHT_TOP}
+              onOutsideClick={handleClose}
+              position={Position.RIGHT_BOTTOM}
             >
-              RIGHT TOP
+              <p>RIGHT BOTTOM (grows down)</p>
+              <p>{faker.lorem.paragraph()}</p>
             </PointerBox>
           )}
         </div>
@@ -86,15 +88,16 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryRightBottom
           )}
-          onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
+          onClick={() => setVisibleId(Position.RIGHT_TOP)}
         >
-          {visibleId === Position.RIGHT_BOTTOM && rightBottomRef.current && (
+          {visibleId === Position.RIGHT_TOP && rightBottomRef.current && (
             <PointerBox
               anchor={rightBottomRef.current}
-              onClose={handleClose}
-              position={Position.RIGHT_BOTTOM}
+              onOutsideClick={handleClose}
+              position={Position.RIGHT_TOP}
             >
-              RIGHT BOTTOM
+              <p>RIGHT TOP (grows up)</p>
+              <p>{faker.lorem.sentence()}</p>
             </PointerBox>
           )}
         </div>
@@ -109,7 +112,7 @@ const VariantsStory = () => {
           {visibleId === Position.BOTTOM_LEFT && bottomLeftRef.current && (
             <PointerBox
               anchor={bottomLeftRef.current}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.BOTTOM_LEFT}
             >
               BOTTOM LEFT
@@ -127,7 +130,7 @@ const VariantsStory = () => {
           {visibleId === Position.BOTTOM_RIGHT && bottomRightRef.current && (
             <PointerBox
               anchor={bottomRightRef.current}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.BOTTOM_RIGHT}
             >
               BOTTOM RIGHT
@@ -140,15 +143,16 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryLeftTop
           )}
-          onClick={() => setVisibleId(Position.LEFT_TOP)}
+          onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
         >
-          {visibleId === Position.LEFT_TOP && leftTopRef.current && (
+          {visibleId === Position.LEFT_BOTTOM && leftTopRef.current && (
             <PointerBox
               anchor={leftTopRef.current}
-              onClose={handleClose}
-              position={Position.LEFT_TOP}
+              onOutsideClick={handleClose}
+              position={Position.LEFT_BOTTOM}
             >
-              LEFT TOP
+              <p>LEFT TOP (grows up)</p>
+              <p>{faker.lorem.sentence()}</p>
             </PointerBox>
           )}
         </div>
@@ -158,15 +162,16 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryLeftBottom
           )}
-          onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
+          onClick={() => setVisibleId(Position.LEFT_TOP)}
         >
-          {visibleId === Position.LEFT_BOTTOM && leftBottomRef.current && (
+          {visibleId === Position.LEFT_TOP && leftBottomRef.current && (
             <PointerBox
               anchor={leftBottomRef.current}
-              onClose={handleClose}
-              position={Position.LEFT_BOTTOM}
+              onOutsideClick={handleClose}
+              position={Position.LEFT_TOP}
             >
-              LEFT BOTTOM
+              <p>LEFT BOTTOM (grows down)</p>
+              <p>{faker.lorem.sentence()}</p>
             </PointerBox>
           )}
         </div>

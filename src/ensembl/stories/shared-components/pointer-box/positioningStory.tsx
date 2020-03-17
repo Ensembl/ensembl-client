@@ -37,7 +37,7 @@ const Item = (props: ItemProps) => {
       {showPointerBox && (
         <PointerBox
           anchor={anchorRef.current as HTMLDivElement}
-          onClose={() => setShowPointerBox(false)}
+          onOutsideClick={() => setShowPointerBox(false)}
           position={props.position}
           container={props.container.current}
           autoAdjust={true}
