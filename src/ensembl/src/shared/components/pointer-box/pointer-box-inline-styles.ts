@@ -83,11 +83,12 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.LEFT_TOP:
       return {
         bodyStyles: {
-          transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset}px))`
+          transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset +
+            halfPointerWidth}px))`
         },
         pointerStyles: {
           left: 'calc(100% - 4px)',
-          bottom: `${pointerOffset + halfPointerWidth}px`,
+          bottom: `${pointerOffset + pointerWidth}px`,
           transform: 'rotate(90deg)',
           transformOrigin: 'left bottom'
         }
@@ -95,12 +96,12 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.LEFT_BOTTOM:
       return {
         bodyStyles: {
-          // transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset}px - ${halfPointerWidth}px)`
-          transform: `translateX(-100%) translateY(-${pointerOffset}px)`
+          transform: `translateX(-100%) translateY(-${pointerOffset +
+            halfPointerWidth}px)`
         },
         pointerStyles: {
           left: 'calc(100% - 4px)',
-          top: `calc(${pointerOffset}px - ${pointerHeight}px - ${halfPointerWidth}px)`,
+          top: `${pointerOffset - pointerWidth}px`,
           transform: `rotate(90deg)`,
           transformOrigin: 'left bottom'
         }
@@ -108,11 +109,11 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.RIGHT_TOP:
       return {
         bodyStyles: {
-          transform: `translateY(-100%)`
+          transform: `translateY(calc(-100% + ${halfPointerWidth}px))`
         },
         pointerStyles: {
-          left: `1px`,
-          bottom: `${pointerOffset - halfPointerWidth}px`,
+          left: `4px`,
+          bottom: `${pointerOffset}px`,
           transform: 'rotate(-90deg)',
           transformOrigin: 'left bottom'
         }
@@ -120,13 +121,16 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.RIGHT_BOTTOM:
       return {
         bodyStyles: {
-          transform: `translateY(-${pointerOffset}px)`
+          transform: `translateY(-${pointerOffset + halfPointerWidth}px)`
         },
         pointerStyles: {
-          left: `1px`,
-          top: `calc(${pointerOffset}px + ${halfPointerWidth}px)`,
-          transform: `rotate(-90deg) translateY(-${pointerHeight}px)`,
-          transformOrigin: 'left 0'
+          left: `4px`,
+          top: `${pointerOffset}px`,
+          transform: `rotate(-90deg)`,
+          transformOrigin: 'left bottom'
+          // top: `calc(${pointerOffset}px + ${halfPointerWidth}px)`,
+          // transform: `rotate(-90deg) translateY(-${pointerHeight}px)`,
+          // transformOrigin: 'left 0'
         }
       };
   }
@@ -149,7 +153,10 @@ const getBodyStylesForRenderingIntoBody = (
     case Position.TOP_LEFT:
       return {
         left: `${anchorLeft + anchorWidth / 2}px`,
-        bottom: `${window.innerHeight - anchorTop + pointerHeight}px`
+        bottom: `${window.innerHeight -
+          window.scrollY -
+          anchorTop +
+          pointerHeight}px`
       };
     case Position.TOP_RIGHT:
       return {
@@ -157,7 +164,10 @@ const getBodyStylesForRenderingIntoBody = (
           halfAnchorWidth -
           pointerOffset -
           halfPointerWidth}px`,
-        bottom: `${window.innerHeight - anchorTop + pointerHeight}px`
+        bottom: `${window.innerHeight -
+          window.scrollY -
+          anchorTop +
+          pointerHeight}px`
       };
     case Position.BOTTOM_LEFT:
       return {
@@ -175,22 +185,25 @@ const getBodyStylesForRenderingIntoBody = (
     case Position.LEFT_TOP:
       return {
         left: `${anchorLeft - pointerHeight}px`,
-        top: `${anchorTop + halfAnchorHeight}px`
+        top: `${anchorTop + window.scrollY + halfAnchorHeight}px`
       };
     case Position.LEFT_BOTTOM:
       return {
         left: `${anchorLeft - pointerHeight}px`,
-        top: `${anchorTop + halfAnchorHeight}px`
+        top: `${anchorTop + window.scrollY + halfAnchorHeight}px`
       };
     case Position.RIGHT_TOP:
       return {
         left: `${anchorLeft + anchorWidth + pointerHeight}px`,
-        top: `${anchorTop + halfAnchorHeight + pointerOffset}px`
+        top: `${anchorTop +
+          window.scrollY +
+          halfAnchorHeight +
+          pointerOffset}px`
       };
     case Position.RIGHT_BOTTOM:
       return {
         left: `${anchorLeft + anchorWidth + pointerHeight}px`,
-        top: `${anchorTop + halfAnchorHeight}px`
+        top: `${anchorTop + window.scrollY + halfAnchorHeight}px`
       };
   }
 };

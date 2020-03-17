@@ -45,6 +45,7 @@ const Item = (props: ItemProps) => {
             body: styles.pointerBox,
             pointer: styles.pointerBoxPointer
           }}
+          pointerOffset={5}
         >
           Hello sailor!
         </PointerBox>
