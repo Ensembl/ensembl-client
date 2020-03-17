@@ -1,16 +1,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import noop from 'lodash/noop';
 
 import ToolboxExpandableContent, {
   ToggleButton
 } from './ToolboxExpandableContent';
-
-const mouseEvent = {
-  preventDefault: noop,
-  stopPropagation: noop,
-  nativeEvent: { stopImmediatePropagation: noop }
-};
 
 const MainContent = () => (
   <div>
@@ -36,7 +29,7 @@ describe('<ToolboxExpandableContent />', () => {
   it('shows footer content when ToggleButton is clicked', () => {
     const wrapper = mount(<ToolboxExpandableContent {...minimalProps} />);
     const toggleButton = wrapper.find(ToggleButton);
-    toggleButton.simulate('click', mouseEvent);
+    toggleButton.simulate('click');
 
     expect(wrapper.exists(FooterContent)).toBe(true);
   });

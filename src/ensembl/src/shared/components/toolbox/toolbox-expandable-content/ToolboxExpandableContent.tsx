@@ -49,11 +49,7 @@ export const ToggleButton = (props: ToggleButtonProps) => {
   const { toggleExpanded = noop, isExpanded = false } =
     useContext(ToolboxExpandableContentContext) || {};
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation(); // this works within React's event system
-    e.nativeEvent.stopImmediatePropagation(); // also prevent propagation to DOM elements outside of React (e.g. document)
-
+  const handleClick = () => {
     toggleExpanded();
   };
 

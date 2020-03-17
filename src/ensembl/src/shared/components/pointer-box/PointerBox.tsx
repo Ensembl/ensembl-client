@@ -55,9 +55,11 @@ export type PointerBoxProps = {
   onClose: () => void;
 };
 
-// const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
-//   e.stopPropagation();
-// };
+const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
+  e.preventDefault();
+  e.stopPropagation(); // this works within React's event system
+  e.nativeEvent.stopImmediatePropagation(); // also prevent propagation to DOM elements outside of React (e.g. document)
+};
 
 const PointerBox = (props: PointerBoxProps) => {
   const [isPositioning, setIsPositioning] = useState(props.autoAdjust);
@@ -144,7 +146,7 @@ const PointerBox = (props: PointerBoxProps) => {
       className={bodyClasses}
       ref={pointerBoxRef}
       style={inlineStyles.bodyStyles}
-      onClick={(e) => { e.preventDefault(); e.stopPropagation() }}
+      onClick={handleClickInside}
     >
       <Pointer
         className={props.classNames?.pointer}
