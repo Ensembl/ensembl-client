@@ -1,14 +1,9 @@
 .pointerBox {
   position: absolute;
   z-index: 1000;
-  
-  // delete below
-  background: black;
-  color: white;
   width: max-content; // not supported in IE or non-webkit Edge
   box-sizing: content-box; // Safari doesn't seem to respect "width: max-content" if box-sizing is border-box
   padding: 6px;
-  // border: 1px solid black;
 }
 
 // Class applied to pointer box while the code is finding appropriate position for it.
@@ -25,9 +20,4 @@
 .pointer {
   position: absolute;
   mix-blend-mode: lighten;
-// delete below
-  fill: black;
-  // stroke: black;
-  // font-size: 0;
-  // line-height: 0;
 }

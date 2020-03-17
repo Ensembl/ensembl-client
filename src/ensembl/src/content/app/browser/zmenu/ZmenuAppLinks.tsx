@@ -35,6 +35,7 @@ const ZmenuAppLinks = (props: Props) => {
   // FIXME: the row of buttons should be shown only for the gene feature.
   // Change this temporary hack to using the "type" field when genome browser
   // starts reporting the type of clicked features
+  // (also, probably move this check in a parent component)
   if (!props.featureId.includes(':gene:')) {
     return null;
   }

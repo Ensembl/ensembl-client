@@ -22,6 +22,10 @@ const VariantsStory = () => {
   const handleClose = () => {
     setVisibleId(null);
   };
+  const pointerBoxClasses = {
+    body: styles.pointerBox,
+    pointer: styles.pointerBoxPointer
+  };
 
   return (
     <div className={styles.variantsStoryLayout}>
@@ -40,6 +44,7 @@ const VariantsStory = () => {
               anchor={topLeftRef.current}
               onOutsideClick={handleClose}
               position={Position.TOP_LEFT}
+              classNames={pointerBoxClasses}
             >
               TOP LEFT
             </PointerBox>
@@ -58,6 +63,7 @@ const VariantsStory = () => {
               anchor={topRightRef.current}
               onOutsideClick={handleClose}
               position={Position.TOP_RIGHT}
+              classNames={pointerBoxClasses}
             >
               TOP RIGHT
             </PointerBox>
@@ -76,6 +82,7 @@ const VariantsStory = () => {
               anchor={rightTopRef.current}
               onOutsideClick={handleClose}
               position={Position.RIGHT_BOTTOM}
+              classNames={pointerBoxClasses}
             >
               <p>RIGHT BOTTOM (grows down)</p>
               <p>{faker.lorem.paragraph()}</p>
@@ -95,6 +102,7 @@ const VariantsStory = () => {
               anchor={rightBottomRef.current}
               onOutsideClick={handleClose}
               position={Position.RIGHT_TOP}
+              classNames={pointerBoxClasses}
             >
               <p>RIGHT TOP (grows up)</p>
               <p>{faker.lorem.sentence()}</p>
@@ -114,6 +122,7 @@ const VariantsStory = () => {
               anchor={bottomLeftRef.current}
               onOutsideClick={handleClose}
               position={Position.BOTTOM_LEFT}
+              classNames={pointerBoxClasses}
             >
               BOTTOM LEFT
             </PointerBox>
@@ -132,6 +141,7 @@ const VariantsStory = () => {
               anchor={bottomRightRef.current}
               onOutsideClick={handleClose}
               position={Position.BOTTOM_RIGHT}
+              classNames={pointerBoxClasses}
             >
               BOTTOM RIGHT
             </PointerBox>
@@ -150,6 +160,7 @@ const VariantsStory = () => {
               anchor={leftTopRef.current}
               onOutsideClick={handleClose}
               position={Position.LEFT_BOTTOM}
+              classNames={pointerBoxClasses}
             >
               <p>LEFT TOP (grows up)</p>
               <p>{faker.lorem.sentence()}</p>
@@ -169,6 +180,7 @@ const VariantsStory = () => {
               anchor={leftBottomRef.current}
               onOutsideClick={handleClose}
               position={Position.LEFT_TOP}
+              classNames={pointerBoxClasses}
             >
               <p>LEFT BOTTOM (grows down)</p>
               <p>{faker.lorem.sentence()}</p>

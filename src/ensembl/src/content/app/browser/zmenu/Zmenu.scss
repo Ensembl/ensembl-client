@@ -2,30 +2,8 @@
 
 $zmenuBackgroundColor: $black;
 
-.zmenuWrapper {
-  position: absolute;
-  filter: drop-shadow(2px 2px 3px $shadow-color);
-}
-
-.zmenu {
-  position: relative;
-  padding: 12px 20px;
-  color: $white;
-  background-color: $zmenuBackgroundColor;
-  min-height: 40px;
-  font-size: 13px;
-}
-
 .zmenuAnchor {
   position: absolute;
-}
-
-.zmenuTip {
-  position: absolute;
-
-  polygon {
-    fill: $zmenuBackgroundColor;
-  }
 }
 
 .zmenuContentFeature {

@@ -41,6 +41,10 @@ const Item = (props: ItemProps) => {
           position={props.position}
           container={props.container.current}
           autoAdjust={true}
+          classNames={{
+            body: styles.pointerBox,
+            pointer: styles.pointerBoxPointer
+          }}
         >
           Hello sailor!
         </PointerBox>
