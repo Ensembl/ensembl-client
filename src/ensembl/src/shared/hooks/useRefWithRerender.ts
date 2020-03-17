@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, MutableRefObject } from 'react';
 /*
 Normally, mutating ref.current will not cause React component
 to re-render. So if a child component is to be rendered only when
-a ref.current not null, we have to orchestrate a way to keep track
+a ref.current is not null, we have to orchestrate a way to keep track
 of ref.current changes. This logic can be abstracted into a custom hook.
 */
 
