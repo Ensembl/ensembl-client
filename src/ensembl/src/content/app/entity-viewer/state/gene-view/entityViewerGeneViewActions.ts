@@ -62,21 +62,19 @@ export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        geneFunction: {
-          selectedTabName
+  if (activeGenomeId && activeObjectId) {
+    dispatch(
+      updateActiveGeneViewUIState({
+        activeGenomeId,
+        activeObjectId,
+        fragment: {
+          geneFunction: {
+            selectedTabName
+          }
         }
-      }
-    })
-  );
+      })
+    );
+  }
 };
 
 export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
@@ -91,19 +89,17 @@ export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
 
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        geneRelationships: {
-          selectedTabName
+  if (activeGenomeId && activeObjectId) {
+    dispatch(
+      updateActiveGeneViewUIState({
+        activeGenomeId,
+        activeObjectId,
+        fragment: {
+          geneRelationships: {
+            selectedTabName
+          }
         }
-      }
-    })
-  );
+      })
+    );
+  }
 };
