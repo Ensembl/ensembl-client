@@ -4,10 +4,13 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
 import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-
+import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
-
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
+import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
+import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
+import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
@@ -17,10 +20,12 @@ import styles from './GeneView.scss';
 
 type GeneViewProps = {
   geneId: string | null;
+  selectedGeneTabName: GeneViewTabName;
 };
 
 type GeneViewWithDataProps = {
   gene: Gene;
+  selectedGeneTabName: GeneViewTabName;
 };
 
 const QUERY = gql`
@@ -70,7 +75,12 @@ const GeneView = (props: GeneViewProps) => {
     return null;
   }
 
-  return <GeneViewWithData gene={data.gene} />;
+  return (
+    <GeneViewWithData
+      gene={data.gene}
+      selectedGeneTabName={props.selectedGeneTabName}
+    />
+  );
 };
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
@@ -90,14 +100,23 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.viewInLinks}>View in GB</div>
 
       <div className={styles.geneViewTabs}>
-        These are the Entity Viewer tabs...
+        <GeneViewTabs />
       </div>
-      <div className={styles.transcriptsListWrapper}>
-        {basePairsRulerTicks && (
-          <DefaultTranscriptslist
-            gene={props.gene}
-            rulerTicks={basePairsRulerTicks}
-          />
+      <div className={styles.geneViewTabContent}>
+        {props.selectedGeneTabName === GeneViewTabName.TRANSCRIPTS &&
+          basePairsRulerTicks && (
+            <DefaultTranscriptslist
+              gene={props.gene}
+              rulerTicks={basePairsRulerTicks}
+            />
+          )}
+
+        {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
+          <GeneFunction />
+        )}
+
+        {props.selectedGeneTabName === GeneViewTabName.GENE_RELATIONSHIPS && (
+          <GeneRelationships />
         )}
       </div>
     </div>
@@ -106,7 +125,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   // FIXME: this will have to be superseded with a proper way we get ids
-  geneId: getEntityViewerActiveEnsObject(state)?.stable_id || null
+  geneId: getEntityViewerActiveEnsObject(state)?.stable_id || null,
+  selectedGeneTabName: getEntityViewerActiveGeneTab(state)
 });
 
 export default connect(mapStateToProps)(GeneView);

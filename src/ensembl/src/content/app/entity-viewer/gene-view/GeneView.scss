@@ -5,7 +5,7 @@
   display: grid;
   background-color: $black;
   grid-template-columns: 228px 902px 1fr;
-  grid-template-rows: min-content 150px 1fr;
+  grid-template-rows: min-content 90px 1fr;
   padding: 75px 20px 10px 20px;
   height: 100%; // may need to change this later
   width: 100%;
@@ -21,8 +21,10 @@
 
 .geneViewTabs {
   grid-area: 2 / 2 / 3 / 4;
+  z-index: 10;
+  align-self: end;
 }
 
-.transcriptsListWrapper {
+.geneViewTabContent {
   grid-area: 3 / 1 / 4 / 4;
 }
