@@ -58,7 +58,7 @@ export type PointerBoxProps = {
 const handleClickInside = (e: React.MouseEvent | React.TouchEvent) => {
   e.preventDefault();
   e.stopPropagation(); // this works within React's event system
-  e.nativeEvent.stopImmediatePropagation(); // also prevent propagation to DOM elements outside of React (e.g. document)
+  e.nativeEvent.stopImmediatePropagation(); // also prevent propagation to DOM elements outside of React (e.g. to document)
 };
 
 const PointerBox = (props: PointerBoxProps) => {

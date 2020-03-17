@@ -4,7 +4,7 @@ is positioned relative to the anchor.
 The second part of position name refers to the direction in which the body
 of the pointer box will grow with more content
 
-Eexamples:
+Examples:
 
 anchor
 __/\____________
