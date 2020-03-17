@@ -1,0 +1,35 @@
+@import 'src/styles/common';
+
+.fullWidthPanel {
+  width: 100%;
+  height: 100%;
+}
+
+.narrowPanel {
+  width: calc(100% - 320px);
+  height: 100%;
+}
+
+.panelBody {
+  color: $black;
+}
+
+.selectedTabName {
+  background-color: transparent;
+  color: $black;
+  &::after {
+    border: 6px solid $grey;
+    border-color: transparent transparent $light-grey $light-grey;
+    box-shadow: -2px 2px 2px 0 $medium-light-grey;
+
+    width: 0;
+    height: 0;
+    box-sizing: border-box;
+    content: '';
+    position: absolute;
+    left: calc(50% - 8px);
+    transform-origin: 0 0;
+    transform: rotate(-45deg);
+    top: 28px;
+  }
+}

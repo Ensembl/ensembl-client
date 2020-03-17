@@ -19,7 +19,7 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import styles from './GeneViewSidebarTabs.scss';
 
 type Props = {
-  activeTabName: SidebarTabName | null;
+  selectedTabName: SidebarTabName | null;
   isSidebarOpen: boolean;
   setSidebarTabName: (name: SidebarTabName) => void;
   openSidebar: () => void;
@@ -35,7 +35,7 @@ Object.values(SidebarTabName).forEach((value) =>
 const DEFAULT_TAB = tabsData[0].title;
 
 const GeneViewSidebarTabs = (props: Props) => {
-  if (!props.activeTabName) {
+  if (!props.selectedTabName) {
     return null;
   }
 
@@ -56,7 +56,7 @@ const GeneViewSidebarTabs = (props: Props) => {
   return (
     <Tabs
       tabs={tabsData}
-      selectedTab={props.activeTabName || DEFAULT_TAB}
+      selectedTab={props.selectedTabName || DEFAULT_TAB}
       onTabChange={handleTabChange}
       classNames={tabClassNames}
     />
@@ -64,7 +64,7 @@ const GeneViewSidebarTabs = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  activeTabName: getEntityViewerSidebarTabName(state),
+  selectedTabName: getEntityViewerSidebarTabName(state),
   isSidebarOpen: isEntityViewerSidebarOpen(state)
 });
 
