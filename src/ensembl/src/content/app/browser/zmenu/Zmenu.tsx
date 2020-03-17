@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import {
   Toolbox,
@@ -12,12 +13,6 @@ import ZmenuContent from './ZmenuContent';
 import { ZmenuData, ZmenuAction } from './zmenu-types';
 
 import styles from './Zmenu.scss';
-
-// const TIP_WIDTH = 18;
-// const TIP_HEIGHT = 13;
-// // extra height makes the tip a bit higher and is used to anchor the tip in zmenu body (goes inside the body)
-// const TIP_EXTRA_HEIGHT = 2;
-// const TIP_OFFSET = 10;
 
 enum Direction {
   LEFT = 'left',
@@ -31,12 +26,7 @@ export type ZmenuProps = ZmenuData & {
 };
 
 const Zmenu = (props: ZmenuProps) => {
-  const [isRendered, setIsRendered] = useState(false);
-  const anchorRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setIsRendered(true);
-  }, []);
+  const anchorRef = useRefWithRerender<HTMLDivElement>(null);
 
   const onOutsideClick = () =>
     browserMessagingService.send('bpane', {
@@ -45,9 +35,8 @@ const Zmenu = (props: ZmenuProps) => {
     });
 
   const direction = chooseDirection(props);
-  const toolboxPosition = direction === Direction.LEFT
-    ? ToolboxPosition.LEFT
-    : ToolboxPosition.RIGHT;
+  const toolboxPosition =
+    direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
   const mainContent = <ZmenuContent content={props.content} />;
   const footerContent = (
@@ -56,28 +45,27 @@ const Zmenu = (props: ZmenuProps) => {
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
-    <div
-      ref={anchorRef}
-      className={styles.zmenuAnchor} style={anchorStyles}
-    >
-      { isRendered && anchorRef.current &&
+    <div ref={anchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
+      {anchorRef.current && (
         <Toolbox
           onOutsideClick={onOutsideClick}
           anchor={anchorRef.current}
           position={toolboxPosition}
         >
           <ToolboxExpandableContent
-            mainContent={ mainContent }
+            mainContent={mainContent}
             footerContent={footerContent}
           />
         </Toolbox>
-      }
+      )}
     </div>
   );
 };
 
 const getAnchorInlineStyles = (params: ZmenuProps) => {
-  const { anchor_coordinates: { x, y } } = params;
+  const {
+    anchor_coordinates: { x, y }
+  } = params;
   return {
     left: `${x}px`,
     top: `${y}px`
