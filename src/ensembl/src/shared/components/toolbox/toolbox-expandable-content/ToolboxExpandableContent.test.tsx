@@ -1,9 +1,23 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import noop from 'lodash/noop';
 
-import HoverboxExpandableContent from './ToolboxExpandableContent';
+import ToolboxExpandableContent, {
+  ToggleButton
+} from './ToolboxExpandableContent';
 
-const MainContent = () => <div>This is main content</div>;
+const mouseEvent = {
+  preventDefault: noop,
+  stopPropagation: noop,
+  nativeEvent: { stopImmediatePropagation: noop }
+};
+
+const MainContent = () => (
+  <div>
+    <span>This is main content</span>
+    <ToggleButton openElement={<span>Click me!</span>} />
+  </div>
+);
 const FooterContent = () => <div>This is footer content</div>;
 
 const minimalProps = {
@@ -11,21 +25,19 @@ const minimalProps = {
   footerContent: <FooterContent />
 };
 
-describe('<HoverboxExpandableContent />', () => {
+describe('<ToolboxExpandableContent />', () => {
   it('renders only main content by default', () => {
-    const wrapper = mount(<HoverboxExpandableContent {...minimalProps} />);
+    const wrapper = mount(<ToolboxExpandableContent {...minimalProps} />);
 
     expect(wrapper.exists(MainContent)).toBe(true);
     expect(wrapper.exists(FooterContent)).toBe(false);
   });
 
-  it('shows footer content if footer is opened', () => {
-    const wrapper = mount(<HoverboxExpandableContent {...minimalProps} />);
-    const toggleButton = wrapper.find('.toggleButton');
-    toggleButton.simulate('click');
+  it('shows footer content when ToggleButton is clicked', () => {
+    const wrapper = mount(<ToolboxExpandableContent {...minimalProps} />);
+    const toggleButton = wrapper.find(ToggleButton);
+    toggleButton.simulate('click', mouseEvent);
 
     expect(wrapper.exists(FooterContent)).toBe(true);
   });
-
-  // add test about the icon that is renteded by toggle button
 });

@@ -18,6 +18,8 @@ import {
 } from './zmenu-types';
 import { createZmenuContent } from 'tests/fixtures/browser';
 
+jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
+
 describe('<ZmenuContent />', () => {
   afterEach(() => {
     jest.resetAllMocks();
@@ -38,7 +40,7 @@ describe('<ZmenuContent />', () => {
   });
 
   describe('rendering', () => {
-    test('renders the correct zmenu content information', () => {
+    it('renders the correct zmenu content information', () => {
       const firstLineData = wrapper
         .find(ZmenuContentLine)
         .first()

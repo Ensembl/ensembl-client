@@ -51,16 +51,14 @@ export const ToggleButton = (props: ToggleButtonProps) => {
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation(); // because we want to prevent propagation to document, which is outsite React's synthetic event system
+    e.stopPropagation(); // this works within React's event system
+    e.nativeEvent.stopImmediatePropagation(); // also prevent propagation to DOM elements outside of React (e.g. document)
+
     toggleExpanded();
-  }
+  };
 
   const button = isExpanded ? <CloseIcon /> : props.openElement;
-  const buttonClasses = classNames(
-    styles.toggleButton,
-    props.className
-  );
+  const buttonClasses = classNames(styles.toggleButton, props.className);
   return (
     <span className={buttonClasses} onClick={handleClick}>
       {button}
