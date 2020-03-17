@@ -1,8 +1,8 @@
 import { Status } from 'src/shared/types/status';
 
 export enum SidebarTabName {
-  OVERVIEW = 'overview',
-  PUBLICATIONS = 'publications'
+  OVERVIEW = 'Overview',
+  EXTERNAL_REFERENCES = 'External references'
 }
 
 export type SidebarStatus = Status.OPEN | Status.CLOSED;

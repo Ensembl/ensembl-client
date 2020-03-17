@@ -51,7 +51,7 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  uri: 'http://193.62.55.158:30466'
+  uri: 'http://localhost:5000'
 });
 
 const EntityViewer = (props: Props) => {

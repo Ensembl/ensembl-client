@@ -1,0 +1,10 @@
+@import 'src/styles/common';
+
+.titleWithSeparator {
+  color: $dark-grey;
+  font-size: 12px;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
