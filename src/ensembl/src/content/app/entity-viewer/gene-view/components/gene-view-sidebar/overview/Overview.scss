@@ -83,3 +83,48 @@
   font-size: 12px;
   color: $grey;
 }
+
+.providedBy {
+  color: $dark-grey;
+  font-size: 14px;
+}
+
+.sequenceAccordion {
+  & .geneDetails {
+    display: grid;
+    grid-template-columns: [gene-name] min-content 10px [stable-id] auto;
+    margin-bottom: 10px;
+    & .geneTitle {
+      grid-column: gene-name;
+      color: $dark-grey;
+    }
+
+    & .stableId {
+      grid-column: stable-id;
+      font-weight: $bold;
+    }
+  }
+}
+
+.accordionContentTitle {
+  color: $dark-grey;
+  margin-bottom: 15px;
+  margin-top: 20px;
+}
+
+.sequenceDownload {
+  text-align: right;
+  margin: 30px 0;
+}
+
+.customDownload {
+  display: grid;
+  grid-template-columns: [label] max-content 20px [icon] 30px;
+  & .label {
+    grid-column: label;
+  }
+
+  & .icon {
+    grid-column: icon;
+  }
+}

@@ -56,7 +56,9 @@ const GeneViewSidebarTabs = (props: Props) => {
   return (
     <Tabs
       tabs={tabsData}
-      selectedTab={props.selectedTabName || DEFAULT_TAB}
+      selectedTab={
+        !props.isSidebarOpen ? null : props.selectedTabName || DEFAULT_TAB
+      }
       onTabChange={handleTabChange}
       classNames={tabClassNames}
     />

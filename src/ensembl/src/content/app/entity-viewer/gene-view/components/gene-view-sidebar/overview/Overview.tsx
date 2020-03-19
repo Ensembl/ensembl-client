@@ -11,13 +11,41 @@ import {
 } from 'src/shared/components/accordion';
 
 import styles from './Overview.scss';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import noop from 'lodash/noop';
+import { PrimaryButton } from 'src/shared/components/button/Button';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-download.svg';
+import { Status } from 'src/shared/types/status';
 
 const synonyms = ['BRCC2', 'FACD', 'FAD', 'FAD1', 'FANCD', 'FANCD1', 'XRCC11'];
 const additionalAttributes = ['protein coding', 'another attribute'];
+const transcriptSequenceFilters = [
+  {
+    value: 'Genomic sequence',
+    label: 'Genomic sequence'
+  },
+  {
+    value: 'cDNA',
+    label: 'cDNA'
+  },
+  {
+    value: 'CDS',
+    label: 'CDS'
+  },
+  {
+    value: 'Protein sequence',
+    label: 'Protein sequence'
+  }
+];
 
 const otherAssemblies = [
   { speciesName: 'Human', assemblyName: 'GRCh37', stableId: 'ENSG00000139618' }
 ];
+
+// TODO: Remove me
+const mockOnClick = noop;
+
 const Overview = () => {
   return (
     <div>
@@ -96,6 +124,9 @@ const getMainAccordion = () => {
                 label={'Provided by UniProt'}
                 linkText={'P51587'}
                 linkUrl={'https://www.uniprot.org/uniprot/P51587'}
+                classNames={{
+                  labelClass: styles.providedBy
+                }}
               />
             </div>
           </AccordionItemPanel>
@@ -110,7 +141,45 @@ const getMainAccordion = () => {
           <AccordionItemPanel
             className={styles.entityViewerAccordionItemContent}
           >
-            <div>Sequence content</div>
+            <div className={styles.sequenceAccordion}>
+              <div className={styles.geneDetails}>
+                <div className={styles.geneTitle}>Gene</div>
+                <div className={styles.stableId}>ENSG00000139618.15</div>
+              </div>
+              <div className={styles.geneCheckboxList}>
+                {renderCheckbox({ label: 'Genomic sequence', checked: false })}
+              </div>
+
+              <div className={styles.accordionContentTitle}>
+                All transcripts
+              </div>
+              <div className={styles.transcriptsCheckboxList}>
+                {transcriptSequenceFilters.map((filter, key) =>
+                  renderCheckbox({
+                    label: filter.label,
+                    checked: false,
+                    key: key
+                  })
+                )}
+              </div>
+
+              <div className={styles.sequenceDownload}>
+                <PrimaryButton onClick={mockOnClick} isDisabled={true}>
+                  Download
+                </PrimaryButton>
+              </div>
+
+              <div className={styles.customDownload}>
+                <div className={styles.label}>Get a custom download</div>
+                <div className={styles.icon}>
+                  <ImageButton
+                    image={DownloadButton}
+                    onClick={mockOnClick}
+                    status={Status.SELECTED}
+                  ></ImageButton>
+                </div>
+              </div>
+            </div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -122,6 +191,21 @@ const getMainAccordion = () => {
           </AccordionItemHeading>
         </AccordionItem>
       </Accordion>
+    </div>
+  );
+};
+
+const renderCheckbox = (props: {
+  label: string;
+  checked: boolean;
+  key?: number;
+}) => {
+  // TODO: Remove me
+  const onChangeMock = noop;
+
+  return (
+    <div key={props.key}>
+      <Checkbox onChange={onChangeMock} {...props} />
     </div>
   );
 };
