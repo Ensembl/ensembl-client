@@ -158,3 +158,14 @@
     color: $dark-grey;
   }
 }
+
+.tark {
+  & .description {
+    margin: 20px 0 10px;
+    font-weight: $bold;
+  }
+}
+
+.tarkLabel {
+  color: $dark-grey;
+}

@@ -48,6 +48,8 @@ const otherDataSets = [
   { label: 'Gene', value: 'ENSG00000139618.15' }
 ];
 
+const tarkUrl = 'http://betatark.ensembl.org/web/search/';
+
 // TODO: Remove me
 const mockOnClick = noop;
 
@@ -269,6 +271,21 @@ const renderMainAccordion = () => {
                   ></ImageButton>
                 </div>
               </div>
+
+              {tarkUrl && (
+                <div className={styles.tark}>
+                  <div className={styles.description}>
+                    Archive of transcript sequences, including historical gene
+                    sets
+                  </div>
+                  <ExternalLink
+                    label={'Ensembl Transcript Archive'}
+                    linkText={'TARK'}
+                    linkUrl={tarkUrl}
+                    classNames={{ labelClass: styles.tarkLabel }}
+                  />
+                </div>
+              )}
             </div>
           </AccordionItemPanel>
         </AccordionItem>
