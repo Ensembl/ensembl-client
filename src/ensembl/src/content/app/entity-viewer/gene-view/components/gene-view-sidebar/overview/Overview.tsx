@@ -43,6 +43,11 @@ const otherAssemblies = [
   { speciesName: 'Human', assemblyName: 'GRCh37', stableId: 'ENSG00000139618' }
 ];
 
+const otherDataSets = [
+  { label: 'Current assembly', value: 'GRCh38.p13' },
+  { label: 'Gene', value: 'ENSG00000139618.15' }
+];
+
 // TODO: Remove me
 const mockOnClick = noop;
 
@@ -74,6 +79,8 @@ const Overview = () => {
         ))}
       </div>
 
+      <div>{renderMainAccordion()}</div>
+
       <div className={styles.titleWithSeparator}>
         Other assemblies with this gene
       </div>
@@ -89,12 +96,95 @@ const Overview = () => {
         ))}
       </div>
 
-      <div>{getMainAccordion()}</div>
+      <div>{renderPublicationsAccordion()}</div>
     </div>
   );
 };
 
-const getMainAccordion = () => {
+const renderPublicationsAccordion = () => {
+  return (
+    <div className={styles.accordionContainer}>
+      <Accordion className={styles.entityViewerAccordion}>
+        <AccordionItem className={styles.entityViewerAccordionItem}>
+          <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
+            <AccordionItemButton className={styles.entityViewerAccordionButton}>
+              Publications
+            </AccordionItemButton>
+          </AccordionItemHeading>
+          <AccordionItemPanel
+            className={styles.entityViewerAccordionItemContent}
+          >
+            <div>{publications.map((entry) => renderPublication(entry))}</div>
+          </AccordionItemPanel>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+};
+
+const renderPublication = (props: Publication) => {
+  return (
+    <div className={styles.publication}>
+      <div className={styles.title}>{props.title}</div>
+      <div className={styles.description}>{props.description}</div>
+      <ExternalLink linkText={props.linkText} linkUrl={props.linkUrl} />
+      <div className={styles.sourceDescription}>{props.sourceDescription}</div>
+    </div>
+  );
+};
+
+type Publication = {
+  title?: string;
+  description?: string;
+  linkUrl: string;
+  linkText: string;
+  sourceDescription?: string;
+};
+const publications: Publication[] = [
+  {
+    title: 'Identification of the breast cancer susceptibility gene BRCA2.',
+    description:
+      'Wooster R, Bignell G, Lancaster J, Swift S, Seal S, Mangion J, Collins N, Gregory S, Gumbs C, Micklem G, Barfoot R, Hamoudi R, Patel S, Rice C, Biggs P, Hashim Y, Smith A, Connor F, Stratton MR',
+    linkUrl: '',
+    linkText: 'Europe PMC',
+    sourceDescription: ''
+  },
+  {
+    title:
+      'The complete BRCA2 gene and mutations in chromosome 13q-linked kindreds',
+    description:
+      'Tavtigian SV, Simard J, Rommens J, Couch F, Shattuck-Eidens D, Neuhausen S, Merajver S, Thorlacius S, Offit K, Stoppa-Lyonnet D, Belanger C, Bell R, Berry S, Bogden R, Chen Q, Davis T, Dumont M, Frye C, Goldar DE',
+    linkUrl: '',
+    linkText: 'Europe PMC',
+    sourceDescription: ''
+  },
+  {
+    title: '',
+    description: '',
+    linkUrl: '',
+    linkText: 'NIEHS SNPs program',
+    sourceDescription: 'Submitted (OCT-2003) to the EMBL/GenBank/DDBJ databases'
+  },
+  {
+    title: 'The DNA sequence and analysis of human chromosome 13.',
+    description:
+      'Dunham A, Matthews LH, Burton J, Ashurst JL, Howe KL, Ashcroft KJ, Beare DM, Burford DC, Hunt SE, Griffiths-Jones S, Jones MC, Keenan SJ, Oliver K, Scott CE, Ainscough R, Almeida JP, Ambrose KD, Andrews DT, Ross MT',
+    linkUrl: '',
+    linkText: 'Europe PMC',
+    sourceDescription: ''
+  },
+  {
+    title:
+      'Germline BRCA2 6174delT mutations in Ashkenazi Jewish pancreatic cancer patients.',
+    description:
+      'Ozcelik H, Schmocker B, Di Nicola N, Shi X H, Langer B, Moore M, Taylor BR, Narod SA, Darlington G, Andrulis IL, Gallinger S, Redston M',
+    linkUrl: '',
+    linkText: 'Europe PMC',
+    sourceDescription: ''
+  }
+];
+
+const renderMainAccordion = () => {
   return (
     <div className={styles.accordionContainer}>
       <Accordion className={styles.entityViewerAccordion}>
@@ -189,8 +279,24 @@ const getMainAccordion = () => {
               Other data sets
             </AccordionItemButton>
           </AccordionItemHeading>
+          <AccordionItemPanel
+            className={styles.entityViewerAccordionItemContent}
+          >
+            <div>
+              {otherDataSets.map((entry) => renderStandardLabelValue(entry))}
+            </div>
+          </AccordionItemPanel>
         </AccordionItem>
       </Accordion>
+    </div>
+  );
+};
+
+const renderStandardLabelValue = (prop: { label: string; value: string }) => {
+  return (
+    <div className={styles.standardLabelValue}>
+      <div className={styles.label}>{prop.label}</div>
+      <div className={styles.value}>{prop.value}</div>
     </div>
   );
 };

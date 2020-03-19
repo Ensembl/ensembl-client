@@ -128,3 +128,33 @@
     grid-column: icon;
   }
 }
+
+.standardLabelValue {
+  display: grid;
+  grid-template-columns: [label] max-content 10px [value] auto;
+
+  .label {
+    grid-column: label;
+    color: $dark-grey;
+  }
+
+  .value {
+    grid-column: value;
+    font-weight: $bold;
+  }
+}
+
+.publication {
+  margin-bottom: 20px;
+  & .title {
+    font-weight: $bold;
+  }
+
+  & .description {
+    color: $dark-grey;
+  }
+
+  & .sourceDescription {
+    color: $dark-grey;
+  }
+}
