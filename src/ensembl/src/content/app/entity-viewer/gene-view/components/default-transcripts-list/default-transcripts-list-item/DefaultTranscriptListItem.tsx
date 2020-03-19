@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
+import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -29,22 +30,38 @@ const DefaultTranscriptListItem = (props: Props) => {
   const transcriptWidth = scale(transcriptEnd - transcriptStart); // FIXME  this too should be based on relative coordinates of transcript
   const style = { transform: `translateX(${transcriptStartX}px)` };
 
+  const [shouldShowInfo, setShouldShowInfo] = useState(false);
+  const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
+
   return (
-    <div
-      className={`${styles.defaultTranscriptListItem} ${transcriptsListStyles.row}`}
-    >
-      <div className={transcriptsListStyles.left}>Left</div>
-      <div className={transcriptsListStyles.middle}>
-        <div style={style}>
-          <UnsplicedTranscript
-            transcript={props.transcript}
-            width={transcriptWidth}
-            standalone={true}
-          />
+    <>
+      <div
+        className={`${styles.defaultTranscriptListItem} ${transcriptsListStyles.row}`}
+      >
+        <div className={transcriptsListStyles.left}>Left</div>
+        <div
+          className={transcriptsListStyles.middle}
+          onClick={toggleListItemInfo}
+        >
+          <div style={style}>
+            <UnsplicedTranscript
+              transcript={props.transcript}
+              width={transcriptWidth}
+              standalone={true}
+            />
+          </div>
+        </div>
+        <div
+          className={transcriptsListStyles.right}
+          onClick={toggleListItemInfo}
+        >
+          Right
         </div>
       </div>
-      <div className={transcriptsListStyles.right}>Right</div>
-    </div>
+      {shouldShowInfo ? (
+        <TranscriptsListItemInfo transcriptId={props.transcript.id} />
+      ) : null}
+    </>
   );
 };
 
