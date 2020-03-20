@@ -1,0 +1,58 @@
+@import 'src/styles/common';
+
+.titleWithSeparator {
+  color: $dark-grey;
+  font-size: 12px;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.geneDetails {
+  display: grid;
+  grid-template-columns: [gene-symbol] min-content 10px [stable-id] auto;
+
+  .geneSymbol {
+    grid-column: gene-symbol;
+    font-weight: $bold;
+  }
+
+  .stableId {
+    grid-column: stable-id;
+  }
+}
+
+.accordionContainer {
+  width: 100%;
+}
+
+.entityViewerAccordion {
+  border: none;
+  margin-top: 0px;
+}
+
+.entityViewerAccordionHeader {
+  background-color: transparent;
+  border-radius: 0px;
+}
+
+.entityViewerAccordionButton {
+  color: $black;
+  padding: 5px 0 5px 0px;
+
+  &:before,
+  &:after {
+    margin-top: -3px;
+  }
+}
+
+.entityViewerAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.entityViewerAccordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 20px;
+}

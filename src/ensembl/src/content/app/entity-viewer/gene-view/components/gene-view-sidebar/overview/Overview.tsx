@@ -10,7 +10,6 @@ import {
   AccordionItemButton
 } from 'src/shared/components/accordion';
 
-import styles from './Overview.scss';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import noop from 'lodash/noop';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -19,6 +18,8 @@ import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-do
 import { Status } from 'src/shared/types/status';
 
 import { entityViewResponse } from '../sampleData';
+
+import styles from './Overview.scss';
 
 // TODO: Remove me
 const mockOnClick = noop;
