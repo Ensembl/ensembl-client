@@ -98,6 +98,193 @@ export const entityViewResponse = {
         url: 'https://www.uniprot.org/uniprot/P51587'
       }
     },
+    xrefs: [
+      {
+        source: 'Expression Atlas',
+        links: [
+          {
+            label: 'Expression Atlas',
+            anchor_text: 'ENSG00000139618',
+            url: ''
+          }
+        ]
+      },
+      {
+        source: 'GENCODE comprehensive gene set',
+        links: [
+          {
+            label: 'GENCODE comprehensive gene set',
+            anchor_text: 'GENCODE',
+            url: ''
+          }
+        ]
+      },
+      {
+        source: 'Human CCDS',
+        links: [
+          {
+            label: 'Human CCDS',
+            anchor_text: 'PCCDS9344.1',
+            url: ''
+          }
+        ]
+      },
+      {
+        source: 'LRG',
+        links: [
+          {
+            label: 'LRG',
+            anchor_text: 'LRG_293',
+            url: ''
+          }
+        ]
+      },
+      {
+        source: 'NCBI Gene ID',
+        links: [
+          {
+            label: 'NCBI Gene ID',
+            anchor_text: '675',
+            url: ''
+          }
+        ]
+      },
+      {
+        source: 'OMIM',
+        links: [
+          {
+            label: 'OMIM',
+            anchor_text: '600185',
+            url: ''
+          }
+        ]
+      },
+
+      {
+        source: 'Reactome',
+        links: [
+          {
+            label: 'Cell Cycle',
+            anchor_text: 'R-HSA-1640170',
+            url: ''
+          },
+          {
+            label: 'DNA Double-Strand Break Repair',
+            anchor_text: 'R-HSA-5693532',
+            url: ''
+          },
+          {
+            label: 'DNA Repair',
+            anchor_text: 'R-HSA-73894',
+            url: ''
+          },
+          {
+            label: 'HDR through Homologous Recombination (HRR)',
+            anchor_text: 'R-HSA-5685942',
+            url: ''
+          },
+          {
+            label:
+              'HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)',
+            anchor_text: 'R-HSA-5693567',
+            url: ''
+          }
+        ]
+      },
+
+      {
+        source: 'UniProt',
+        links: [
+          {
+            label: 'UniProt',
+            anchor_text: 'P51587',
+            url: ''
+          }
+        ]
+      },
+
+      {
+        source: 'WikiGene',
+        links: [
+          {
+            label: 'WikiGene',
+            anchor_text: 'BRCA2',
+            url: ''
+          }
+        ]
+      }
+    ],
+    transcripts: [
+      {
+        stable_id: 'ENST00000380152.7',
+        xrefs: [
+          {
+            label: 'Human Protein Atlas',
+            anchor_text: 'HPA026815',
+            url: ''
+          },
+          {
+            label: 'UCSC Stable ID',
+            anchor_text: 'ENST00000380152.7',
+            url: ''
+          },
+          {
+            label: 'UniParc',
+            anchor_text: 'UPI00001FCBCC',
+            url: ''
+          }
+        ]
+      },
+      {
+        stable_id: 'ENST00000544455.5'
+      },
+      {
+        stable_id: 'ENST00000530893.6'
+      },
+      {
+        stable_id: 'ENST00000670614.1'
+      },
+      {
+        stable_id: 'ENST00000671466.1'
+      },
+      {
+        stable_id: 'ENST00000665585.1',
+        xrefs: [
+          {
+            label: 'UniParc',
+            anchor_text: 'UPI00114938A5',
+            url: ''
+          }
+        ]
+      },
+      {
+        stable_id: 'ENST00000470094.1'
+      },
+      {
+        stable_id: 'ENST00000666593.1'
+      },
+      {
+        stable_id: 'ENST00000528762.1'
+      },
+      {
+        stable_id: 'ENST00000533776.1',
+        xrefs: [
+          {
+            label: 'RNAcentral',
+            anchor_text: 'URS0000EACAD8',
+            url: ''
+          },
+          {
+            label: 'UCSC Stable ID',
+            anchor_text: 'ENST00000533776.1',
+            url: ''
+          }
+        ]
+      },
+      {
+        stable_id: 'ENST00000614259.1'
+      }
+    ],
     transcript: {
       sequence: {
         filters: [

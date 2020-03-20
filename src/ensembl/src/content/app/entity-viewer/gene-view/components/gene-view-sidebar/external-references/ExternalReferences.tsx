@@ -14,122 +14,6 @@ import {
 
 import styles from './ExternalReferences.scss';
 
-const xrefs = [
-  {
-    source: 'Expression Atlas',
-    links: [
-      {
-        label: 'Expression Atlas',
-        anchor_text: 'ENSG00000139618',
-        url: ''
-      }
-    ]
-  },
-  {
-    source: 'GENCODE comprehensive gene set',
-    links: [
-      {
-        label: 'GENCODE comprehensive gene set',
-        anchor_text: 'GENCODE',
-        url: ''
-      }
-    ]
-  },
-  {
-    source: 'Human CCDS',
-    links: [
-      {
-        label: 'Human CCDS',
-        anchor_text: 'PCCDS9344.1',
-        url: ''
-      }
-    ]
-  },
-  {
-    source: 'LRG',
-    links: [
-      {
-        label: 'LRG',
-        anchor_text: 'LRG_293',
-        url: ''
-      }
-    ]
-  },
-  {
-    source: 'NCBI Gene ID',
-    links: [
-      {
-        label: 'NCBI Gene ID',
-        anchor_text: '675',
-        url: ''
-      }
-    ]
-  },
-  {
-    source: 'OMIM',
-    links: [
-      {
-        label: 'OMIM',
-        anchor_text: '600185',
-        url: ''
-      }
-    ]
-  },
-
-  {
-    source: 'Reactome',
-    links: [
-      {
-        label: 'Cell Cycle',
-        anchor_text: 'R-HSA-1640170',
-        url: ''
-      },
-      {
-        label: 'DNA Double-Strand Break Repair',
-        anchor_text: 'R-HSA-5693532',
-        url: ''
-      },
-      {
-        label: 'DNA Repair',
-        anchor_text: 'R-HSA-73894',
-        url: ''
-      },
-      {
-        label: 'HDR through Homologous Recombination (HRR)',
-        anchor_text: 'R-HSA-5685942',
-        url: ''
-      },
-      {
-        label:
-          'HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)',
-        anchor_text: 'R-HSA-5693567',
-        url: ''
-      }
-    ]
-  },
-
-  {
-    source: 'UniProt',
-    links: [
-      {
-        label: 'UniProt',
-        anchor_text: 'P51587',
-        url: ''
-      }
-    ]
-  },
-
-  {
-    source: 'WikiGene',
-    links: [
-      {
-        label: 'WikiGene',
-        anchor_text: 'BRCA2',
-        url: ''
-      }
-    ]
-  }
-];
 const ExternalReferences = () => {
   return (
     <div>
@@ -143,8 +27,8 @@ const ExternalReferences = () => {
       </div>
 
       <div className={styles.titleWithSeparator}>Gene</div>
-      {xrefs &&
-        xrefs.map((xref, key) => {
+      {entityViewResponse.gene?.xrefs &&
+        entityViewResponse.gene.xrefs.map((xref, key) => {
           if (xref.links.length === 1) {
             return (
               <div key={key}>
@@ -158,19 +42,19 @@ const ExternalReferences = () => {
           } else {
             return (
               <div className={styles.accordionContainer}>
-                <Accordion className={styles.entityViewerAccordion}>
-                  <AccordionItem className={styles.entityViewerAccordionItem}>
+                <Accordion className={styles.xrefAccordion}>
+                  <AccordionItem className={styles.xrefAccordionItem}>
                     <AccordionItemHeading
-                      className={styles.entityViewerAccordionHeader}
+                      className={styles.xrefAccordionHeader}
                     >
                       <AccordionItemButton
-                        className={styles.entityViewerAccordionButton}
+                        className={styles.xrefAccordionButton}
                       >
                         {xref.source}
                       </AccordionItemButton>
                     </AccordionItemHeading>
                     <AccordionItemPanel
-                      className={styles.entityViewerAccordionItemContent}
+                      className={styles.xrefAccordionItemContent}
                     >
                       <div>
                         {xref.links.map((entry, key) => (
@@ -189,6 +73,31 @@ const ExternalReferences = () => {
             );
           }
         })}
+
+      {entityViewResponse.gene.transcripts && (
+        <div>
+          <div className={styles.titleWithSeparator}>Transcripts</div>
+          {entityViewResponse.gene.transcripts.map((transcript, key) => {
+            return (
+              <div key={key} className={styles.transcriptWrapper}>
+                <a href="">{transcript.stable_id}</a>
+                {transcript.xrefs && (
+                  <div className={styles.transcriptXrefs}>
+                    {transcript.xrefs.map((xref, key) => (
+                      <ExternalLink
+                        label={xref.label}
+                        linkUrl={xref.url}
+                        linkText={xref.anchor_text}
+                        key={key}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

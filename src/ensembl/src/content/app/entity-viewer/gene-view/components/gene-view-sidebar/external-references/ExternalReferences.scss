@@ -27,19 +27,23 @@
   width: 100%;
 }
 
-.entityViewerAccordion {
+.xrefAccordion {
   border: none;
   margin-top: 0px;
+  margin-bottom: 10px;
 }
 
-.entityViewerAccordionHeader {
+.xrefAccordionHeader {
   background-color: transparent;
   border-radius: 0px;
 }
 
-.entityViewerAccordionButton {
+.xrefAccordionButton {
   color: $black;
-  padding: 5px 0 5px 0px;
+  padding: 0px;
+  width: auto;
+  padding-right: 60px;
+  display: inline-block;
 
   &:before,
   &:after {
@@ -47,12 +51,31 @@
   }
 }
 
-.entityViewerAccordionItem:not(:first-child) {
+.xrefAccordionButton:before {
+  right: -2px;
+  top: 15px;
+  transform: rotate(45deg);
+}
+
+.xrefAccordionButton:after {
+  right: 5px;
+  top: 15px;
+  transform: rotate(-45deg);
+}
+
+.xrefAccordionItem:not(:first-child) {
   border-color: transparent;
 }
 
-.entityViewerAccordionItemContent {
+.xrefAccordionItemContent {
   background-color: transparent;
   border: none;
-  padding: 20px;
+  padding: 5px 0px 5px 20px;
+}
+
+.transcriptWrapper {
+  margin-bottom: 10px;
+}
+.transcriptXrefs {
+  margin: 10px 0 20px 20px;
 }

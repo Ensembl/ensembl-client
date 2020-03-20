@@ -35,12 +35,14 @@ const ExternalLink = (props: ExternalLinkProps) => {
   return (
     <div className={containerClass}>
       {!!props.label && <div className={labelClass}>{props.label}</div>}
-      <div className={iconClass}>
-        <LinkIcon />
+      <div className={styles.linkHolder}>
+        <div className={iconClass}>
+          <LinkIcon />
+        </div>
+        <a className={linkClass} href={props.linkUrl}>
+          {props.linkText}
+        </a>
       </div>
-      <a className={linkClass} href={props.linkUrl}>
-        {props.linkText}
-      </a>
     </div>
   );
 };
