@@ -1,8 +1,5 @@
 import React from 'react';
-
-import ExternalLink from 'src/content/app/entity-viewer/gene-view/components/external-link/ExternalLink';
-
-import { entityViewResponse } from '../sampleData';
+import { connect } from 'react-redux';
 
 import {
   Accordion,
@@ -11,31 +8,42 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/components/accordion';
+import ExternalLink from 'src/content/app/entity-viewer/gene-view/components/external-link/ExternalLink';
+
+import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+
+import { RootState } from 'src/store';
+import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './ExternalReferences.scss';
 
-const ExternalReferences = () => {
+type Props = {
+  sidebarPayload: EntityViewerSidebarPayload | null;
+};
+
+const ExternalReferences = (props: Props) => {
+  if (!props.sidebarPayload) {
+    return null;
+  }
   return (
     <div>
       <div className={styles.geneDetails}>
         <div className={styles.geneSymbol}>
-          {entityViewResponse.gene.symbol}
+          {props.sidebarPayload.gene.symbol}
         </div>
-        <div className={styles.stableId}>
-          {entityViewResponse.gene.stable_id}
-        </div>
+        <div className={styles.stableId}>{props.sidebarPayload.gene.id}</div>
       </div>
 
       <div className={styles.titleWithSeparator}>Gene</div>
-      {entityViewResponse.gene?.xrefs &&
-        entityViewResponse.gene.xrefs.map((xref, key) => {
+      {props.sidebarPayload.gene?.xrefs &&
+        props.sidebarPayload.gene.xrefs.map((xref, key) => {
           if (xref.links.length === 1) {
             return (
               <div key={key}>
                 <ExternalLink
-                  label={xref.links[0].label}
+                  label={xref.links[0].name}
                   linkUrl={xref.links[0].url}
-                  linkText={xref.links[0].anchor_text}
+                  linkText={xref.links[0].value}
                 />
               </div>
             );
@@ -50,7 +58,7 @@ const ExternalReferences = () => {
                       <AccordionItemButton
                         className={styles.xrefAccordionButton}
                       >
-                        {xref.source}
+                        {xref.source_name}
                       </AccordionItemButton>
                     </AccordionItemHeading>
                     <AccordionItemPanel
@@ -59,9 +67,9 @@ const ExternalReferences = () => {
                       <div>
                         {xref.links.map((entry, key) => (
                           <ExternalLink
-                            label={entry.label}
+                            label={entry.name}
                             linkUrl={entry.url}
-                            linkText={entry.anchor_text}
+                            linkText={entry.value}
                             key={key}
                           />
                         ))}
@@ -74,20 +82,20 @@ const ExternalReferences = () => {
           }
         })}
 
-      {entityViewResponse.gene.transcripts && (
+      {props.sidebarPayload.gene.transcripts && (
         <div>
           <div className={styles.titleWithSeparator}>Transcripts</div>
-          {entityViewResponse.gene.transcripts.map((transcript, key) => {
+          {props.sidebarPayload.gene.transcripts.map((transcript, key) => {
             return (
               <div key={key} className={styles.transcriptWrapper}>
-                <a href="">{transcript.stable_id}</a>
+                <a href="">{transcript.id}</a>
                 {transcript.xrefs && (
                   <div className={styles.transcriptXrefs}>
                     {transcript.xrefs.map((xref, key) => (
                       <ExternalLink
-                        label={xref.label}
+                        label={xref.name}
                         linkUrl={xref.url}
-                        linkText={xref.anchor_text}
+                        linkText={xref.value}
                         key={key}
                       />
                     ))}
@@ -102,4 +110,8 @@ const ExternalReferences = () => {
   );
 };
 
-export default ExternalReferences;
+const mapStateToProps = (state: RootState) => ({
+  sidebarPayload: getEntityViewerSidebarPayload(state)
+});
+
+export default connect(mapStateToProps)(ExternalReferences);

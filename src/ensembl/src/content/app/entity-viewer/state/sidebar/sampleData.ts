@@ -1,84 +1,11 @@
-// TODO: Need updating
-type Option = {
-  value: string;
-  label: string;
-};
+import { EntityViewerSidebarPayload } from './entityViewerSidebarState';
+import { DataSetType } from '../../types/dataSet';
 
-type ExternalLink = {
-  label: string | null;
-  url: string;
-  anchor_text: string;
-};
-
-type Assembly = {
-  species_name: string;
-  assembly_name: string;
-  stable_id: string;
-};
-
-type Allele = {
-  allele_name: string;
-  stable_id: string;
-};
-
-enum DataSetType {
-  'Current assembly',
-  'Gene',
-  'Protein'
-}
-
-type DataSet = {
-  type: DataSetType;
-  stable_id: string;
-};
-
-type Homeologue = {
-  type: string;
-  stable_id: string;
-};
-
-type Strain = {
-  strain_name: string;
-  stable_id: string;
-};
-
-type AdditionalAttribute = {
-  description: string;
-  displayName: string;
-  code: string;
-};
-
-export type EntityViewerSidebarResponse = {
-  gene_symbol: string;
-  gene_name: string;
-  stable_id: string;
-  dbprimary_acc: string; // HGNC:1101
-  synonyms: string[];
-  additional_attributes: AdditionalAttribute[];
-  function: {
-    description: string | null;
-    provider: ExternalLink;
-  };
-  sequence: {
-    transcripts: Option[];
-    gene: Option[]; // Find out if there is any indication to enable these options
-    tark_url: ExternalLink;
-  };
-  other_data_sets: DataSet[];
-  other_assemblies: {
-    assemblies: Assembly[];
-    strains: Strain[];
-  };
-  homeologues: Homeologue[];
-  alternative_alleles: Allele[];
-  external_references: ExternalLink[];
-};
-
-export const entityViewResponse = {
+export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload = {
   gene: {
     symbol: 'BRCA2',
     name: 'BRCA2, DNA repair associated',
-    stable_id: 'ENSG00000139618.15',
+    id: 'ENSG00000139618.15',
     synonyms: ['BRCC2', 'FACD', 'FAD', 'FAD1', 'FANCD', 'FANCD1', 'XRCC11'],
     attributes: ['protein coding', 'another attribute'],
     function: {
@@ -100,115 +27,115 @@ export const entityViewResponse = {
     },
     xrefs: [
       {
-        source: 'Expression Atlas',
+        source_name: 'Expression Atlas',
         links: [
           {
-            label: 'Expression Atlas',
-            anchor_text: 'ENSG00000139618',
+            name: 'Expression Atlas',
+            value: 'ENSG00000139618',
             url: ''
           }
         ]
       },
       {
-        source: 'GENCODE comprehensive gene set',
+        source_name: 'GENCODE comprehensive gene set',
         links: [
           {
-            label: 'GENCODE comprehensive gene set',
-            anchor_text: 'GENCODE',
+            name: 'GENCODE comprehensive gene set',
+            value: 'GENCODE',
             url: ''
           }
         ]
       },
       {
-        source: 'Human CCDS',
+        source_name: 'Human CCDS',
         links: [
           {
-            label: 'Human CCDS',
-            anchor_text: 'PCCDS9344.1',
+            name: 'Human CCDS',
+            value: 'PCCDS9344.1',
             url: ''
           }
         ]
       },
       {
-        source: 'LRG',
+        source_name: 'LRG',
         links: [
           {
-            label: 'LRG',
-            anchor_text: 'LRG_293',
+            name: 'LRG',
+            value: 'LRG_293',
             url: ''
           }
         ]
       },
       {
-        source: 'NCBI Gene ID',
+        source_name: 'NCBI Gene ID',
         links: [
           {
-            label: 'NCBI Gene ID',
-            anchor_text: '675',
+            name: 'NCBI Gene ID',
+            value: '675',
             url: ''
           }
         ]
       },
       {
-        source: 'OMIM',
+        source_name: 'OMIM',
         links: [
           {
-            label: 'OMIM',
-            anchor_text: '600185',
+            name: 'OMIM',
+            value: '600185',
             url: ''
           }
         ]
       },
 
       {
-        source: 'Reactome',
+        source_name: 'Reactome',
         links: [
           {
-            label: 'Cell Cycle',
-            anchor_text: 'R-HSA-1640170',
+            name: 'Cell Cycle',
+            value: 'R-HSA-1640170',
             url: ''
           },
           {
-            label: 'DNA Double-Strand Break Repair',
-            anchor_text: 'R-HSA-5693532',
+            name: 'DNA Double-Strand Break Repair',
+            value: 'R-HSA-5693532',
             url: ''
           },
           {
-            label: 'DNA Repair',
-            anchor_text: 'R-HSA-73894',
+            name: 'DNA Repair',
+            value: 'R-HSA-73894',
             url: ''
           },
           {
-            label: 'HDR through Homologous Recombination (HRR)',
-            anchor_text: 'R-HSA-5685942',
+            name: 'HDR through Homologous Recombination (HRR)',
+            value: 'R-HSA-5685942',
             url: ''
           },
           {
-            label:
+            name:
               'HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)',
-            anchor_text: 'R-HSA-5693567',
+            value: 'R-HSA-5693567',
             url: ''
           }
         ]
       },
 
       {
-        source: 'UniProt',
+        source_name: 'UniProt',
         links: [
           {
-            label: 'UniProt',
-            anchor_text: 'P51587',
+            name: 'UniProt',
+            value: 'P51587',
             url: ''
           }
         ]
       },
 
       {
-        source: 'WikiGene',
+        source_name: 'WikiGene',
         links: [
           {
-            label: 'WikiGene',
-            anchor_text: 'BRCA2',
+            name: 'WikiGene',
+            value: 'BRCA2',
             url: ''
           }
         ]
@@ -216,78 +143,78 @@ export const entityViewResponse = {
     ],
     transcripts: [
       {
-        stable_id: 'ENST00000380152.7',
+        id: 'ENST00000380152.7',
         xrefs: [
           {
-            label: 'Human Protein Atlas',
-            anchor_text: 'HPA026815',
+            name: 'Human Protein Atlas',
+            value: 'HPA026815',
             url: ''
           },
           {
-            label: 'UCSC Stable ID',
-            anchor_text: 'ENST00000380152.7',
+            name: 'UCSC Stable ID',
+            value: 'ENST00000380152.7',
             url: ''
           },
           {
-            label: 'UniParc',
-            anchor_text: 'UPI00001FCBCC',
+            name: 'UniParc',
+            value: 'UPI00001FCBCC',
             url: ''
           }
         ]
       },
       {
-        stable_id: 'ENST00000544455.5'
+        id: 'ENST00000544455.5'
       },
       {
-        stable_id: 'ENST00000530893.6'
+        id: 'ENST00000530893.6'
       },
       {
-        stable_id: 'ENST00000670614.1'
+        id: 'ENST00000670614.1'
       },
       {
-        stable_id: 'ENST00000671466.1'
+        id: 'ENST00000671466.1'
       },
       {
-        stable_id: 'ENST00000665585.1',
+        id: 'ENST00000665585.1',
         xrefs: [
           {
-            label: 'UniParc',
-            anchor_text: 'UPI00114938A5',
+            name: 'UniParc',
+            value: 'UPI00114938A5',
             url: ''
           }
         ]
       },
       {
-        stable_id: 'ENST00000470094.1'
+        id: 'ENST00000470094.1'
       },
       {
-        stable_id: 'ENST00000666593.1'
+        id: 'ENST00000666593.1'
       },
       {
-        stable_id: 'ENST00000528762.1'
+        id: 'ENST00000528762.1'
       },
       {
-        stable_id: 'ENST00000533776.1',
+        id: 'ENST00000533776.1',
         xrefs: [
           {
-            label: 'RNAcentral',
-            anchor_text: 'URS0000EACAD8',
+            name: 'RNAcentral',
+            value: 'URS0000EACAD8',
             url: ''
           },
           {
-            label: 'UCSC Stable ID',
-            anchor_text: 'ENST00000533776.1',
+            name: 'UCSC Stable ID',
+            value: 'ENST00000533776.1',
             url: ''
           }
         ]
       },
       {
-        stable_id: 'ENST00000614259.1'
+        id: 'ENST00000614259.1'
       }
     ],
-    transcript: {
-      sequence: {
-        filters: [
+    filters: {
+      transcript: {
+        sequence: [
           {
             value: 'Genomic sequence',
             label: 'Genomic sequence'
@@ -304,30 +231,30 @@ export const entityViewResponse = {
             value: 'Protein sequence',
             label: 'Protein sequence'
           }
-        ]
-      },
-      tark_url: 'http://betatark.ensembl.org/web/search/'
+        ],
+        tark_url: 'http://betatark.ensembl.org/web/search/'
+      }
     }
   },
   other_assemblies: [
     {
-      speciesName: 'Human',
-      assemblyName: 'GRCh37',
-      stableId: 'ENSG00000139618'
+      species_name: 'Human',
+      assembly_name: 'GRCh37',
+      stable_id: 'ENSG00000139618'
     }
   ],
-  other_date_sets: [
-    { label: 'Current assembly', value: 'GRCh38.p13' },
-    { label: 'Gene', value: 'ENSG00000139618.15' }
+  other_data_sets: [
+    { type: DataSetType.CURRENT_ASSEMBLY, value: 'GRCh38.p13' },
+    { type: DataSetType.GENE, value: 'ENSG00000139618.15' }
   ],
   homeologues: [
     {
       type: 'Gene',
-      stableId: 'TraesCS3A02G274400'
+      stable_id: 'TraesCS3A02G274400'
     },
     {
       type: 'Gene',
-      stableId: 'TraesCS3B02G308100'
+      stable_id: 'TraesCS3B02G308100'
     }
   ],
   publications: [
@@ -335,43 +262,64 @@ export const entityViewResponse = {
       title: 'Identification of the breast cancer susceptibility gene BRCA2.',
       description:
         'Wooster R, Bignell G, Lancaster J, Swift S, Seal S, Mangion J, Collins N, Gregory S, Gumbs C, Micklem G, Barfoot R, Hamoudi R, Patel S, Rice C, Biggs P, Hashim Y, Smith A, Connor F, Stratton MR',
-      linkUrl: '',
-      linkText: 'Europe PMC',
-      sourceDescription: ''
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
     },
     {
       title:
         'The complete BRCA2 gene and mutations in chromosome 13q-linked kindreds',
       description:
         'Tavtigian SV, Simard J, Rommens J, Couch F, Shattuck-Eidens D, Neuhausen S, Merajver S, Thorlacius S, Offit K, Stoppa-Lyonnet D, Belanger C, Bell R, Berry S, Bogden R, Chen Q, Davis T, Dumont M, Frye C, Goldar DE',
-      linkUrl: '',
-      linkText: 'Europe PMC',
-      sourceDescription: ''
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
     },
     {
       title: '',
       description: '',
-      linkUrl: '',
-      linkText: 'NIEHS SNPs program',
-      sourceDescription:
-        'Submitted (OCT-2003) to the EMBL/GenBank/DDBJ databases'
+      source: {
+        url: '',
+        value: 'NIEHS SNPs program',
+        name: 'Submitted (OCT-2003) to the EMBL/GenBank/DDBJ databases'
+      }
     },
     {
       title: 'The DNA sequence and analysis of human chromosome 13.',
       description:
         'Dunham A, Matthews LH, Burton J, Ashurst JL, Howe KL, Ashcroft KJ, Beare DM, Burford DC, Hunt SE, Griffiths-Jones S, Jones MC, Keenan SJ, Oliver K, Scott CE, Ainscough R, Almeida JP, Ambrose KD, Andrews DT, Ross MT',
-      linkUrl: '',
-      linkText: 'Europe PMC',
-      sourceDescription: ''
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
     },
     {
       title:
         'Germline BRCA2 6174delT mutations in Ashkenazi Jewish pancreatic cancer patients.',
       description:
         'Ozcelik H, Schmocker B, Di Nicola N, Shi X H, Langer B, Moore M, Taylor BR, Narod SA, Darlington G, Andrulis IL, Gallinger S, Redston M',
-      linkUrl: '',
-      linkText: 'Europe PMC',
-      sourceDescription: ''
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
     }
   ]
+};
+
+export const entityViewerSidebarSampleData: {
+  [genomeId: string]: {
+    objects: { [entityId: string]: EntityViewerSidebarPayload };
+  };
+} = {
+  homo_sapiens_GCA_000001405_27: {
+    objects: {
+      'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
+    }
+  }
 };

@@ -1,4 +1,6 @@
 import { ActionType, getType } from 'typesafe-actions';
+import merge from 'lodash/merge';
+import get from 'lodash/get';
 
 import * as generalActions from '../general/entityViewerGeneralActions';
 import * as actions from './entityViewerSidebarActions';
@@ -21,15 +23,28 @@ export default function entityViewerSidebarReducer(
             ...state,
             ...buildInitialStateForGenome(action.payload)
           };
-    case getType(actions.updateSidebar): {
-      const oldStateFragment = state[action.payload.genomeId];
-      const newStateFragment = {
-        ...oldStateFragment,
-        ...action.payload.fragment
-      };
+    case getType(actions.updateGenomeUIState): {
+      const oldStateFragment = get(state, `${action.payload.genomeId}`);
+      const updatedStateFragment = merge(
+        {},
+        oldStateFragment,
+        action.payload.fragment
+      );
+
       return {
         ...state,
-        [action.payload.genomeId]: newStateFragment
+        [action.payload.genomeId]: updatedStateFragment
+      };
+    }
+    case getType(actions.updateEntityUIState): {
+      const oldStateFragment = get(state, `${action.payload.genomeId}`);
+      const updatedStateFragment = merge({}, oldStateFragment, {
+        entities: { [action.payload.entityId]: action.payload.fragment }
+      });
+
+      return {
+        ...state,
+        [action.payload.genomeId]: updatedStateFragment
       };
     }
     default:
