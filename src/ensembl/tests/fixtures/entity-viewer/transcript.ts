@@ -14,7 +14,7 @@ import {
   ProductType
 } from 'src/content/app/entity-viewer/types/product';
 
-export const createTranscript = (): Transcript => {
+export const createTranscript = (fragment: Partial<Transcript> = {}): Transcript => {
   const transcriptSlice = createSlice();
 
   return {
@@ -25,7 +25,8 @@ export const createTranscript = (): Transcript => {
     slice: transcriptSlice,
     exons: createExons(transcriptSlice),
     cds: createCDS(transcriptSlice),
-    product: createProduct()
+    product: createProduct(),
+    ...fragment
   };
 };
 
