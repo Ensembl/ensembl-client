@@ -39,6 +39,7 @@ const QUERY = gql`
         }
       }
       transcripts {
+        id
         slice {
           location {
             start

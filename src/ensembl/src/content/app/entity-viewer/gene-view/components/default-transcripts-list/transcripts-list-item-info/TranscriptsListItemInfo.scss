@@ -1,0 +1,17 @@
+@import 'src/styles/common';
+
+.middle {
+  background: $dark-grey;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.5fr 1fr;
+  grid-template-rows: auto;
+  padding: 10px 15px;
+}
+
+.column:not(:last-child) {
+  margin-right: 15px;
+}
+
+.column:last-child {
+  text-align: right;
+}
