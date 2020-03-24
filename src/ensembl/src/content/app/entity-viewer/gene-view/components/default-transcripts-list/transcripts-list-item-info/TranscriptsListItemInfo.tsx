@@ -171,14 +171,17 @@ const ItemInfoWithData = (props: ItemInfoWithDataProps) => {
     );
   };
 
+  const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
-    <div className={transcriptsListStyles.row}>
+    <div className={mainStyles}>
       <div className={transcriptsListStyles.left}>bottom left</div>
       <div className={midStyles}>
         <div className={styles.column}>
-          <div>{transcript.biotype}</div>
+          <div>
+            <strong>{transcript.biotype}</strong>
+          </div>
           <div>{getTranscriptLocation()}</div>
         </div>
         <div className={styles.column}>

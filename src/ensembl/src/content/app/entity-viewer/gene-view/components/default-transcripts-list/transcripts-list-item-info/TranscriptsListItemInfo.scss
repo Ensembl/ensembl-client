@@ -1,15 +1,25 @@
 @import 'src/styles/common';
 
+.listItemInfo {
+  color: $grey;
+  line-height: 2;
+}
+
 .middle {
-  background: $dark-grey;
-  display: grid;
+  background: #374148;
+  display: flex;
   grid-template-columns: 1.5fr 1fr 1.5fr 1fr;
   grid-template-rows: auto;
-  padding: 10px 15px;
+  padding: 15px 20px;
+
+  strong {
+    color: $white;
+    font-weight: normal;
+  }
 }
 
 .column:not(:last-child) {
-  margin-right: 15px;
+  margin-right: 20px;
 }
 
 .column:last-child {
