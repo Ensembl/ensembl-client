@@ -1,6 +1,111 @@
 import { EntityViewerSidebarPayload } from './entityViewerSidebarState';
 import { DataSetType } from '../../types/dataSet';
 
+export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
+  gene: {
+    symbol: 'TraesCS3D02G273600.1 ',
+    name: 'Heat shock protein 101',
+    id: 'ENSG00000139618.15',
+    xrefs: [
+      {
+        source_name: 'KNETMINER_WHEAT',
+        links: [
+          {
+            name: 'KNETMINER_WHEAT',
+            value: 'TraesCS3D02G273600',
+            url: ''
+          }
+        ]
+      },
+      {
+        source_name: 'Wheat Expression',
+        links: [
+          {
+            name: 'Wheat Expression',
+            value: 'TraesCS3D02G273600',
+            url: ''
+          }
+        ]
+      }
+    ],
+    transcripts: [
+      {
+        id: 'TraesCS3D02G273600.1'
+      },
+      {
+        id: 'TraesCS3D02G273600.2'
+      }
+    ],
+    filters: {
+      transcript: {
+        sequence: [
+          {
+            value: 'Genomic sequence',
+            label: 'Genomic sequence'
+          },
+          {
+            value: 'cDNA',
+            label: 'cDNA'
+          },
+          {
+            value: 'CDS',
+            label: 'CDS'
+          },
+          {
+            value: 'Protein sequence',
+            label: 'Protein sequence'
+          }
+        ],
+        tark_url: 'http://betatark.ensembl.org/web/search/'
+      }
+    }
+  },
+  other_assemblies: [
+    {
+      species_name: 'Bread wheat ',
+      assembly_name: 'ASM34745v1',
+      stable_id: 'TRIUR3_14529'
+    },
+    {
+      species_name: 'Durum wheat',
+      assembly_name: 'Svevo.v1',
+      stable_id: 'TRITD4Av1G160860'
+    },
+    {
+      species_name: 'Emmer wheat',
+      assembly_name: 'WEWSeq_v.1.0',
+      stable_id: 'TRIDC4BG042680'
+    }
+  ],
+  other_data_sets: [
+    { type: DataSetType.CURRENT_ASSEMBLY, value: 'IWGSC' },
+    { type: DataSetType.GENE, value: 'TraesCS3D02G273600.1' },
+    { type: DataSetType.PROTEIN, value: 'TraesCS3D02G273600.1' }
+  ],
+  homeologues: [
+    {
+      type: 'Gene',
+      stable_id: 'TraesCS3A02G274400'
+    },
+    {
+      type: 'Gene',
+      stable_id: 'TraesCS3B02G308100'
+    }
+  ],
+  publications: [
+    {
+      title:
+        'Long noncoding RNA LINC00520 accelerates progression of papillary thyroid carcinoma by serving as a competing endogenous RNA of microRNA-577 to increase Sphk2 expression.',
+      description: 'Sun Y, Shi T, Ma Y, Qin H, Li K',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    }
+  ]
+};
+
 export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload = {
   gene: {
     symbol: 'BRCA2',
@@ -312,14 +417,328 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
   ]
 };
 
+export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
+  gene: {
+    symbol: 'grpE ',
+    name: 'heat shock protein',
+    id: 'b2614',
+    synonyms: ['b2614', 'ECK2610', 'JW2594'],
+    function: {
+      description:
+        'Participates actively in the response to hyperosmotic and heat shock by preventing the aggregation of stress-denatured proteins, in association with DnaK and GrpE. It is the nucleotide exchange factor for DnaK and may function as a thermosensor. Unfolded proteins bind initially to DnaJ; upon interaction with the DnaJ-bound protein, DnaK hydrolyzes its bound ATP, resulting in the formation of a stable complex. GrpE releases ADP from DnaK; ATP binding to DnaK triggers the release of the substrate protein, thus completing the reaction cycle. Several rounds of ATP-dependent interactions between DnaJ, DnaK and GrpE are required for fully efficient folding',
+      source: {
+        name: 'UniProt',
+        value: 'P09372',
+        url: 'https://www.uniprot.org/uniprot/P51587'
+      }
+    },
+    xrefs: [
+      {
+        source_name: 'EchoBase',
+        links: [
+          {
+            name: 'EchoBase',
+            value: 'EB0411',
+            url: ''
+          }
+        ]
+      },
+      {
+        source_name: 'EcoGene',
+        links: [
+          {
+            name: 'EcoGene',
+            value: 'EG10416',
+            url: ''
+          }
+        ]
+      },
+      {
+        source_name: 'BioCyc',
+        links: [
+          {
+            name: '',
+            value: 'ECOL316407:JW2594-MONOMER',
+            url: ''
+          },
+          {
+            name: '',
+            value: 'EcoCyc:EG10416-MONOMER',
+            url: ''
+          },
+          {
+            name: '',
+            value: 'MetaCyc:EG10416-MONOMER',
+            url: ''
+          }
+        ]
+      }
+    ],
+    transcripts: [
+      {
+        id: 'CHEMBL1293284',
+        xrefs: [
+          {
+            name: 'ChEMBL',
+            value: 'CHEMBL1293284',
+            url: ''
+          }
+        ]
+      },
+      {
+        id: 'TraesCS3D02G273600.2'
+      }
+    ],
+    filters: {
+      transcript: {
+        sequence: [
+          {
+            value: 'Genomic sequence',
+            label: 'Genomic sequence'
+          },
+          {
+            value: 'cDNA',
+            label: 'cDNA'
+          },
+          {
+            value: 'CDS',
+            label: 'CDS'
+          },
+          {
+            value: 'Protein sequence',
+            label: 'Protein sequence'
+          }
+        ],
+        tark_url: 'http://betatark.ensembl.org/web/search/'
+      }
+    }
+  },
+
+  other_data_sets: [
+    { type: DataSetType.CURRENT_ASSEMBLY, value: 'ASM584v2' },
+    { type: DataSetType.GENE, value: 'grpE b2614' },
+    { type: DataSetType.PROTEIN, value: 'AAC75663' }
+  ],
+
+  publications: [
+    {
+      title: 'Cannabidiol Is a Novel Modulator of Bacterial Membrane Vesicles.',
+      description:
+        'Kosgodage US, Matewele P, Awamaria B, Kraev I, Warde P, Mastroianni G, Nunn AV, Guy GW, Bell JD, Inal JM, Lange S',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'Conserved conformational selection mechanism of Hsp70 chaperone-substrate interactions.',
+      description:
+        'Sekhar A, Velyvis A, Zoltsman G, Rosenzweig R, Bouvignies G, Kay LE',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'Identification of hot regions in protein-protein interactions by sequential pattern mining.',
+      description: 'Hsu CM, Chen CY, Liu BJ, Huang CC, Laio MH, Lin CC, Wu TL',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'MAGIIC-PRO: detecting functional signatures by efficient discovery of long patterns in protein sequences',
+      description: 'Hsu CM, Chen CY, Liu BJ',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'Proteome-level responses of Escherichia coli to long-chain fatty acids and use of fatty acid inducible promoter in protein production.',
+      description: 'Han MJ, Lee JW, Lee SY, Yoo JS',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    }
+  ]
+};
+
+export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
+  gene: {
+    symbol: 'SFA1',
+    name: 'Sensitive to FormAldehyde',
+    id: 'YDL168W',
+    source: {
+      name: '',
+      value: 'SGD;Acc:S000002327',
+      url: ''
+    },
+    synonyms: ['ADH5'],
+    function: {
+      description:
+        'Oxidizes long-chain alcohols and, in the presence of glutathione, is able to oxidize formaldehyde. Is responsible for yeast resistance to formaldehyde',
+      source: {
+        name: 'UniProt',
+        value: 'P32771',
+        url: 'https://www.uniprot.org/uniprot/P32771'
+      }
+    },
+    xrefs: [
+      {
+        source_name: 'NCBI Gene ID ',
+        links: [
+          {
+            name: 'NCBI Gene ID ',
+            value: '851386',
+            url: ''
+          }
+        ]
+      }
+    ],
+    transcripts: [
+      {
+        id: 'RefSeq DNA',
+        xrefs: [
+          {
+            name: 'RefSeq DNA',
+            value: 'NM_001180228.1',
+            url: ''
+          }
+        ]
+      },
+      {
+        id: 'STRING',
+        xrefs: [
+          {
+            name: 'STRING',
+            value: '4932.YDL168W',
+            url: ''
+          }
+        ]
+      }
+    ],
+    filters: {
+      transcript: {
+        sequence: [
+          {
+            value: 'Genomic sequence',
+            label: 'Genomic sequence'
+          },
+          {
+            value: 'cDNA',
+            label: 'cDNA'
+          },
+          {
+            value: 'CDS',
+            label: 'CDS'
+          },
+          {
+            value: 'Protein sequence',
+            label: 'Protein sequence'
+          }
+        ],
+        tark_url: 'http://betatark.ensembl.org/web/search/'
+      }
+    }
+  },
+
+  other_data_sets: [
+    { type: DataSetType.CURRENT_ASSEMBLY, value: 'R64-1-1' },
+    { type: DataSetType.GENE, value: 'SFA1 YDL168W' },
+    { type: DataSetType.PROTEIN, value: 'YDL168W' }
+  ],
+
+  publications: [
+    {
+      title:
+        'Comparative transcriptional analysis of flavour-biosynthetic genes of a native Saccharomyces cerevisiae strain fermenting in its natural must environment, vs. a commercial strain and correlation of the genes’ activities with the produced flavour compounds.',
+      description:
+        'Parapouli M, Sfakianaki A, Monokrousos N, Perisynakis A, Hatziloukas E',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'GOGO: An improved algorithm to measure the semantic similarity between gene ontology terms.',
+      description: 'Zhao C, Wang Z',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'Metabolic engineering of the 2-ketobutyrate biosynthetic pathway for 1-propanol production in Saccharomyces cerevisiae.',
+      description: 'Nishimura Y, Matsui T, Ishii J, Kondo A',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'Genetic redundancy in the catabolism of methylated amines in the yeast Scheffersomyces stipitis.',
+      description: 'Linder T',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    },
+    {
+      title:
+        'Environmental change drives accelerated adaptation through stimulated copy number variation.',
+      description: 'Hull RM, Cruz C, Jack CV, Houseley J',
+      source: {
+        url: '',
+        value: 'Europe PMC',
+        name: ''
+      }
+    }
+  ]
+};
+
 export const entityViewerSidebarSampleData: {
   [genomeId: string]: {
-    objects: { [entityId: string]: EntityViewerSidebarPayload };
+    entities: { [entityId: string]: EntityViewerSidebarPayload };
   };
 } = {
   homo_sapiens_GCA_000001405_27: {
-    objects: {
+    entities: {
       'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
+    }
+  },
+
+  triticum_aestivum_GCA_900519105_1: {
+    entities: {
+      'triticum_aestivum_GCA_900519105_1:gene:TraesCS3D02G273600': entityViewerWheatSampleResponse
+    }
+  },
+  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
+    entities: {
+      'escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2:gene:b2614': entityViewerBacteriaSampleResponse
+    }
+  },
+  saccharomyces_cerevisiae_GCA_000146045_2: {
+    entities: {
+      'saccharomyces_cerevisiae_GCA_000146045_2:gene:YDL168W': entityViewerYeastSampleResponse
     }
   }
 };

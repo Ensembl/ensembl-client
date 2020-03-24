@@ -270,7 +270,7 @@ const renderMainAccordion = (props: Props) => {
             className={styles.entityViewerAccordionItemContent}
           >
             <div>
-              {props.sidebarPayload.other_data_sets.map((entry, key) =>
+              {props.sidebarPayload.other_data_sets?.map((entry, key) =>
                 renderStandardLabelValue({
                   label: entry.type,
                   value: entry.value,

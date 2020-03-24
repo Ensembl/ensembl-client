@@ -9,6 +9,7 @@ export type Gene = {
   id: string;
   symbol: string;
   name?: string;
+  source?: Source;
   so_term: string; // is there a better name for it?
   slice: Slice;
   transcripts: Transcript[];

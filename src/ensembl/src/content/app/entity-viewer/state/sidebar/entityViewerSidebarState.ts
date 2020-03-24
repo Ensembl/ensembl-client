@@ -24,16 +24,17 @@ type GeneViewGeneSidebarPayload = Pick<
   | 'id'
   | 'name'
   | 'symbol'
+  | 'source'
   | 'synonyms'
   | 'xrefs'
 > & { transcripts: GeneViewTranscriptSidebarPayload[] };
 
 export type EntityViewerSidebarPayload = {
   gene: GeneViewGeneSidebarPayload;
-  other_assemblies: Assembly[];
-  other_data_sets: DataSet[];
-  homeologues: Homeologue[];
-  publications: Publication[];
+  other_assemblies?: Assembly[];
+  other_data_sets?: DataSet[];
+  homeologues?: Homeologue[];
+  publications?: Publication[];
 };
 
 export type EntityViewerSidebarState = Readonly<{

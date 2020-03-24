@@ -91,7 +91,7 @@ export const fetchSidebarPayload: ActionCreator<ThunkAction<
   }
 
   const sidebarPayload =
-    entityViewerSidebarSampleData[genomeId].objects[entityId] || null;
+    entityViewerSidebarSampleData[genomeId].entities[entityId] || null;
 
   dispatch(
     updateEntityUIState({ genomeId, entityId, fragment: sidebarPayload })
