@@ -19,3 +19,4 @@ import './textarea/Textarea.stories';
 import './slide-toggle/SlideToggle.stories';
 import './panel/Panel.stories';
 import './tabs/Tabs.stories';
+import './external-link/ExternalLink.stories';

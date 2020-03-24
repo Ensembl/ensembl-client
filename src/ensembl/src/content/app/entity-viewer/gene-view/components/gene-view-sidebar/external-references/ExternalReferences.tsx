@@ -8,7 +8,7 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/components/accordion';
-import ExternalLink from 'src/content/app/entity-viewer/gene-view/components/external-link/ExternalLink';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 

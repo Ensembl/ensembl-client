@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import ExternalLink from 'src/content/app/entity-viewer/gene-view/components/external-link/ExternalLink';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 import {
   Accordion,
   AccordionItem,
