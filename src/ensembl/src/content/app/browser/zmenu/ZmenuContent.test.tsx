@@ -59,7 +59,7 @@ describe('<ZmenuContent />', () => {
   });
 
   describe('behaviour', () => {
-    test('changes focus feature when feature link is clicked', () => {
+    it('changes focus feature when feature link is clicked', () => {
       const props: ZmenuContentItemProps = {
         id: faker.lorem.words(),
         markup: [Markup.FOCUS],

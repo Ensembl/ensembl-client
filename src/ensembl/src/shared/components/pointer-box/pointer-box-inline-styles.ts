@@ -128,9 +128,6 @@ const getCommonStyles = (params: Params): InlineStylesState => {
           top: `${pointerOffset}px`,
           transform: `rotate(-90deg)`,
           transformOrigin: 'left bottom'
-          // top: `calc(${pointerOffset}px + ${halfPointerWidth}px)`,
-          // transform: `rotate(-90deg) translateY(-${pointerHeight}px)`,
-          // transformOrigin: 'left 0'
         }
       };
   }

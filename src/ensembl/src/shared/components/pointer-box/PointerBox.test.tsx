@@ -13,11 +13,7 @@ describe('<PointerBox />', () => {
   });
 
   afterEach(() => {
-    const pointerBox = document.querySelector('.pointerBox');
-    if (pointerBox) {
-      const parent = pointerBox.parentElement;
-      parent?.removeChild(pointerBox);
-    }
+    document.querySelector('.pointerBox')?.remove();
   });
 
   it('renders at the top level of document.body by default', () => {
