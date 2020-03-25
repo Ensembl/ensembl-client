@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-
 import Overview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/Overview';
 import ExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/ExternalReferences';
+
+import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { RootState } from 'src/store';
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';

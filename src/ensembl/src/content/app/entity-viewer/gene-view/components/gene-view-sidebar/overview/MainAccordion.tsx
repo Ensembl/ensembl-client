@@ -103,7 +103,7 @@ const MainAccordion = (props: Props) => {
             <div className={styles.sequenceAccordion}>
               <div className={styles.geneDetails}>
                 <div className={styles.geneTitle}>Gene</div>
-                <div className={styles.stableId}>ENSG00000139618.15</div>
+                <div className={styles.stableId}>{gene.id}</div>
               </div>
               <div className={styles.geneCheckboxList}>
                 {renderCheckbox({ label: 'Genomic sequence', checked: false })}

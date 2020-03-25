@@ -2,18 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import MainAccordion from './MainAccordion';
+import PublicationsAccordion from './PublicationsAccordion';
 
 import {
   getEntityViewerSidebarPayload,
   getEntityViewerSidebarUIState
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { updateEntityUI } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
-import MainAccordion from './MainAccordion';
-import PublicationsAccordion from './PublicationsAccordion';
 
 import { RootState } from 'src/store';
 import JSONValue from 'src/shared/types/JSON';
-
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './Overview.scss';
