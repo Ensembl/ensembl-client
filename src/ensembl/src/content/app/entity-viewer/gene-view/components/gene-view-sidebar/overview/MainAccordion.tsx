@@ -195,7 +195,7 @@ const renderCheckbox = (props: {
   checked: boolean;
   key?: number;
 }) => {
-  // TODO: Remove me
+  // TODO: Remove me once instant download component is available
   const onChangeMock = noop;
 
   return (
