@@ -15,12 +15,17 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-download.svg';
 
-import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import {
+  getEntityViewerSidebarPayload,
+  getEntityViewerSidebarUIState
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { updateEntityUI } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { RootState } from 'src/store';
 import { Status } from 'src/shared/types/status';
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 import { Publication } from 'src/content/app/entity-viewer/types/publication';
+import JSONValue from 'src/shared/types/JSON';
 
 import styles from './Overview.scss';
 
@@ -29,6 +34,8 @@ const mockOnClick = noop;
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
+  sidebarUIState: { [key: string]: JSONValue } | null;
+  updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
 };
 
 const Overview = (props: Props) => {
@@ -48,8 +55,8 @@ const Overview = (props: Props) => {
       <div className={styles.geneName}>
         <ExternalLink
           label={gene.name}
-          linkText={'HGNC:1101'}
-          linkUrl={'https://www.uniprot.org/uniprot/H0YE37'}
+          linkText={gene.source?.value || ''}
+          linkUrl={''}
         />
       </div>
       {gene.synonyms && (
@@ -108,17 +115,36 @@ const Overview = (props: Props) => {
 
       <div>
         {props.sidebarPayload.publications &&
-          renderPublicationsAccordion(props.sidebarPayload.publications)}
+          renderPublicationsAccordion(props)}
       </div>
     </div>
   );
 };
 
-const renderPublicationsAccordion = (publications: Publication[]) => {
+const renderPublicationsAccordion = (props: Props) => {
+  const publications = props.sidebarPayload?.publications || [];
+  const expandedPanels = props.sidebarUIState?.publicationsAccordion
+    ?.expandedPanels as string[];
+
+  const onChange = (expandedPanels: string[] = []) => {
+    props.updateEntityUI({
+      publicationsAccordion: {
+        expandedPanels
+      }
+    });
+  };
+
   return (
     <div className={styles.accordionContainer}>
-      <Accordion className={styles.entityViewerAccordion}>
-        <AccordionItem className={styles.entityViewerAccordionItem}>
+      <Accordion
+        className={styles.entityViewerAccordion}
+        preExpanded={expandedPanels}
+        onChange={onChange}
+      >
+        <AccordionItem
+          className={styles.entityViewerAccordionItem}
+          uuid={'publications'}
+        >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton className={styles.entityViewerAccordionButton}>
               Publications
@@ -153,11 +179,29 @@ const renderMainAccordion = (props: Props) => {
     return null;
   }
   const { gene } = props.sidebarPayload;
+  const expandedPanels = props.sidebarUIState?.mainAccordion
+    ?.expandedPanels as string[];
+
+  const onChange = (expandedPanels: string[] = []) => {
+    props.updateEntityUI({
+      mainAccordion: {
+        expandedPanels
+      }
+    });
+  };
 
   return (
     <div className={styles.accordionContainer}>
-      <Accordion className={styles.entityViewerAccordion}>
-        <AccordionItem className={styles.entityViewerAccordionItem}>
+      <Accordion
+        className={styles.entityViewerAccordion}
+        onChange={onChange}
+        preExpanded={expandedPanels}
+        allowMultipleExpanded={true}
+      >
+        <AccordionItem
+          className={styles.entityViewerAccordionItem}
+          uuid={'function'}
+        >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
               className={styles.entityViewerAccordionButton}
@@ -189,7 +233,10 @@ const renderMainAccordion = (props: Props) => {
           </AccordionItemPanel>
         </AccordionItem>
 
-        <AccordionItem className={styles.entityViewerAccordionItem}>
+        <AccordionItem
+          className={styles.entityViewerAccordionItem}
+          uuid={'sequence'}
+        >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton className={styles.entityViewerAccordionButton}>
               Sequence
@@ -257,7 +304,10 @@ const renderMainAccordion = (props: Props) => {
           </AccordionItemPanel>
         </AccordionItem>
 
-        <AccordionItem className={styles.entityViewerAccordionItem}>
+        <AccordionItem
+          className={styles.entityViewerAccordionItem}
+          uuid={'other_data_sets'}
+        >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
               className={styles.entityViewerAccordionButton}
@@ -314,7 +364,12 @@ const renderCheckbox = (props: {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  sidebarPayload: getEntityViewerSidebarPayload(state)
+  sidebarPayload: getEntityViewerSidebarPayload(state),
+  sidebarUIState: getEntityViewerSidebarUIState(state)
 });
 
-export default connect(mapStateToProps)(Overview);
+const mapDispatchToProps = {
+  updateEntityUI
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Overview);

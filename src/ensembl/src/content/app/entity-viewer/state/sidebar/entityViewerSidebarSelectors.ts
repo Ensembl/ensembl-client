@@ -24,6 +24,14 @@ export const getEntityViewerSidebarPayload = (state: RootState) => {
     : null;
 };
 
+export const getEntityViewerSidebarUIState = (state: RootState) => {
+  const activeEntityId = getEntityViewerActiveEnsObjectId(state);
+  return activeEntityId
+    ? getEntityViewerGenomeState(state)?.entities[activeEntityId].uIState ||
+        null
+    : null;
+};
+
 export const getEntityViewerSidebarTabName = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   return activeEntityId

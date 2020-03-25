@@ -49,7 +49,7 @@ const ExternalReferences = (props: Props) => {
             );
           } else {
             return (
-              <div className={styles.accordionContainer}>
+              <div className={styles.accordionContainer} key={key}>
                 <Accordion className={styles.xrefAccordion}>
                   <AccordionItem className={styles.xrefAccordionItem}>
                     <AccordionItemHeading

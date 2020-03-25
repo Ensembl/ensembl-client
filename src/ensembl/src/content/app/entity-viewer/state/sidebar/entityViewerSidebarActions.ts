@@ -16,6 +16,7 @@ import {
 } from './entityViewerSidebarState';
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
+import JSONValue from 'src/shared/types/JSON';
 
 import { entityViewerSidebarSampleData } from './sampleData';
 
@@ -101,5 +102,22 @@ export const updateEntityUIState = createAction(
 )<{
   genomeId: string;
   entityId: string;
-  fragment: Partial<EntityViewerSidebarPayload>;
+  fragment: JSONValue;
 }>();
+
+export const updateEntityUI: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (fragment: JSONValue) => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const genomeId = getEntityViewerActiveGenomeId(state);
+  const entityId = getEntityViewerActiveEnsObjectId(state);
+
+  if (!genomeId || !entityId) {
+    return;
+  }
+
+  dispatch(updateEntityUIState({ genomeId, entityId, fragment }));
+};

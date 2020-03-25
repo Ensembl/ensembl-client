@@ -48,7 +48,7 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   entities: {
     [entityId: string]: {
       payload: EntityViewerSidebarPayload | null;
-      uIstate: JSONValue;
+      uIState: { [key: string]: JSONValue };
     };
   };
 }>;

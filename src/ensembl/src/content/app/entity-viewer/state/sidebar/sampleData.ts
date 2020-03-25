@@ -130,6 +130,11 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
         url: 'https://www.uniprot.org/uniprot/P51587'
       }
     },
+    source: {
+      name: '',
+      value: 'HGNC:1011',
+      url: ''
+    },
     xrefs: [
       {
         source_name: 'Expression Atlas',
