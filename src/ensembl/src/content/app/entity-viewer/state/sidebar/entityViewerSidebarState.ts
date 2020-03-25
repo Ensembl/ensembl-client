@@ -5,6 +5,7 @@ import { Assembly } from '../../types/assembly';
 import { DataSet } from '../../types/dataSet';
 import { Homeologue } from '../../types/homeologue';
 import { Publication } from '../../types/publication';
+import JSONValue from 'src/shared/types/JSON';
 
 export enum SidebarTabName {
   OVERVIEW = 'Overview',
@@ -38,14 +39,17 @@ export type EntityViewerSidebarPayload = {
 };
 
 export type EntityViewerSidebarState = Readonly<{
-  [genomeId: string]: EntityViewerSidebarUIState;
+  [genomeId: string]: EntityViewerSidebarGenomeState;
 }>;
 
-export type EntityViewerSidebarUIState = Readonly<{
+export type EntityViewerSidebarGenomeState = Readonly<{
   status: SidebarStatus;
   selectedTabName: SidebarTabName;
   entities: {
-    [entityId: string]: EntityViewerSidebarPayload | null;
+    [entityId: string]: {
+      payload: EntityViewerSidebarPayload | null;
+      uIstate: JSONValue;
+    };
   };
 }>;
 

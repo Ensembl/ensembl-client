@@ -9,7 +9,7 @@ import {
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import {
-  EntityViewerSidebarUIState,
+  EntityViewerSidebarGenomeState,
   EntityViewerSidebarPayload,
   SidebarTabName,
   SidebarStatus
@@ -19,9 +19,9 @@ import { RootState } from 'src/store';
 
 import { entityViewerSidebarSampleData } from './sampleData';
 
-export const updateGenomeUIState = createAction(
+export const updateGenomeState = createAction(
   'entity-viewer-sidebar/update-genome-ui-state'
-)<{ genomeId: string; fragment: Partial<EntityViewerSidebarUIState> }>();
+)<{ genomeId: string; fragment: Partial<EntityViewerSidebarGenomeState> }>();
 
 export const setSidebarTabName: ActionCreator<ThunkAction<
   void,
@@ -36,7 +36,7 @@ export const setSidebarTabName: ActionCreator<ThunkAction<
   }
 
   dispatch(
-    updateGenomeUIState({
+    updateGenomeState({
       genomeId,
       fragment: { selectedTabName: tabName }
     })
@@ -61,15 +61,15 @@ export const toggleSidebar: ActionCreator<ThunkAction<
     const isCurrentlyOpen = isEntityViewerSidebarOpen(state);
     status = isCurrentlyOpen ? Status.CLOSED : Status.OPEN;
   }
-  dispatch(updateGenomeUIState({ genomeId, fragment: { status } }));
+  dispatch(updateGenomeState({ genomeId, fragment: { status } }));
 };
 
 export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 
-export const updateEntityUIState = createAction(
-  'entity-viewer-sidebar/update-object-ui-state'
+export const updateEntityState = createAction(
+  'entity-viewer-sidebar/update-entity-state'
 )<{
   genomeId: string;
   entityId: string;
@@ -93,7 +93,13 @@ export const fetchSidebarPayload: ActionCreator<ThunkAction<
   const sidebarPayload =
     entityViewerSidebarSampleData[genomeId].entities[entityId] || null;
 
-  dispatch(
-    updateEntityUIState({ genomeId, entityId, fragment: sidebarPayload })
-  );
+  dispatch(updateEntityState({ genomeId, entityId, fragment: sidebarPayload }));
 };
+
+export const updateEntityUIState = createAction(
+  'entity-viewer-sidebar/update-entity-ui-state'
+)<{
+  genomeId: string;
+  entityId: string;
+  fragment: Partial<EntityViewerSidebarPayload>;
+}>();

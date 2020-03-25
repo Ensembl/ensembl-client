@@ -23,7 +23,7 @@ export default function entityViewerSidebarReducer(
             ...state,
             ...buildInitialStateForGenome(action.payload)
           };
-    case getType(actions.updateGenomeUIState): {
+    case getType(actions.updateGenomeState): {
       const oldStateFragment = get(state, `${action.payload.genomeId}`);
       const updatedStateFragment = merge(
         {},
@@ -36,10 +36,25 @@ export default function entityViewerSidebarReducer(
         [action.payload.genomeId]: updatedStateFragment
       };
     }
+    case getType(actions.updateEntityState): {
+      const oldStateFragment = get(state, `${action.payload.genomeId}`);
+      const updatedStateFragment = merge({}, oldStateFragment, {
+        entities: {
+          [action.payload.entityId]: { payload: action.payload.fragment }
+        }
+      });
+
+      return {
+        ...state,
+        [action.payload.genomeId]: updatedStateFragment
+      };
+    }
     case getType(actions.updateEntityUIState): {
       const oldStateFragment = get(state, `${action.payload.genomeId}`);
       const updatedStateFragment = merge({}, oldStateFragment, {
-        entities: { [action.payload.entityId]: action.payload.fragment }
+        entities: {
+          [action.payload.entityId]: { uiState: action.payload.fragment }
+        }
       });
 
       return {

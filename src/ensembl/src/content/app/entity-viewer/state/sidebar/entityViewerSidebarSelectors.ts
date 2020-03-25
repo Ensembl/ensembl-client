@@ -5,34 +5,35 @@ import {
 
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
-import { EntityViewerSidebarUIState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { EntityViewerSidebarGenomeState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
-export const getEntityViewerGenomeUIState = (state: RootState) => {
+export const getEntityViewerGenomeState = (state: RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   return activeGenomeId
     ? (state.entityViewer.sidebar[
         activeGenomeId
-      ] as EntityViewerSidebarUIState) || null
+      ] as EntityViewerSidebarGenomeState) || null
     : null;
 };
 
 export const getEntityViewerSidebarPayload = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   return activeEntityId
-    ? getEntityViewerGenomeUIState(state)?.entities[activeEntityId] || null
+    ? getEntityViewerGenomeState(state)?.entities[activeEntityId].payload ||
+        null
     : null;
 };
 
 export const getEntityViewerSidebarTabName = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   return activeEntityId
-    ? getEntityViewerGenomeUIState(state)?.selectedTabName || null
+    ? getEntityViewerGenomeState(state)?.selectedTabName || null
     : null;
 };
 
 export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   return activeEntityId
-    ? getEntityViewerGenomeUIState(state)?.status === Status.OPEN
+    ? getEntityViewerGenomeState(state)?.status === Status.OPEN
     : false;
 };
