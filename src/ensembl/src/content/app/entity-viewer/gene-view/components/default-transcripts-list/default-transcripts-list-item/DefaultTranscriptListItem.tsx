@@ -28,7 +28,10 @@ const DefaultTranscriptListItem = (props: Props) => {
   );
   const transcriptStartX = scale(transcriptStart - geneStart); // FIXME In future, this should be done using relative position of transcript in gene
   const transcriptWidth = scale(transcriptEnd - transcriptStart); // FIXME  this too should be based on relative coordinates of transcript
-  const style = { transform: `translateX(${transcriptStartX}px)` };
+  const style = {
+    transform: `translateX(${transcriptStartX}px)`,
+    cursor: 'pointer'
+  };
 
   const [shouldShowInfo, setShouldShowInfo] = useState(false);
   const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
@@ -55,11 +58,11 @@ const DefaultTranscriptListItem = (props: Props) => {
           className={transcriptsListStyles.right}
           onClick={toggleListItemInfo}
         >
-          Right
+          <span className={styles.transcriptId}>{props.transcript.id}</span>
         </div>
       </div>
       {shouldShowInfo ? (
-        <TranscriptsListItemInfo transcriptId={props.transcript.id} />
+        <TranscriptsListItemInfo transcript={props.transcript} />
       ) : null}
     </>
   );

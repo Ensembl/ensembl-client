@@ -40,10 +40,18 @@ const QUERY = gql`
       }
       transcripts {
         id
+        symbol
+        biotype
         slice {
           location {
             start
             end
+          }
+          region {
+            name
+            strand {
+              code
+            }
           }
         }
         exons {
@@ -53,6 +61,10 @@ const QUERY = gql`
               end
             }
           }
+        }
+        cds {
+          start
+          end
         }
       }
     }

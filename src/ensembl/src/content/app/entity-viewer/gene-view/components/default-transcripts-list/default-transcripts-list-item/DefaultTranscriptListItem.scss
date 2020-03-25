@@ -1,7 +1,13 @@
+@import 'src/styles/settings';
 @import '../constants';
 
 .defaultTranscriptListItem {
   svg rect {
     fill: white;
   }
+}
+
+.transcriptId {
+  color: $blue;
+  cursor: pointer;
 }
