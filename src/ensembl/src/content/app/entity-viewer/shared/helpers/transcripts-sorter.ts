@@ -23,28 +23,14 @@ function compareTranscriptLengths(
 }
 
 export function defaultSort(transcripts: Transcript[]) {
-  const transcriptsWithCds = transcripts
-    .filter((transcript) => transcript.cds)
-    .sort(compareTranscriptLengths);
-
-  const transcriptsWithoutCds = transcripts.filter(
-    (transcript) => !transcript.cds
-  );
-
-  const proteinCodingTranscripts = transcriptsWithoutCds
+  const proteinCodingTranscripts = transcripts
     .filter((transcript) => transcript.biotype === 'protein_coding')
     .sort(compareTranscriptLengths);
 
   const nonProteinCodingTranscripts = sortBy(
-    transcriptsWithoutCds.filter(
-      (transcript) => transcript.biotype !== 'protein_coding'
-    ),
+    transcripts.filter((transcript) => transcript.biotype !== 'protein_coding'),
     ['biotype']
   );
 
-  return [
-    ...transcriptsWithCds,
-    ...proteinCodingTranscripts,
-    ...nonProteinCodingTranscripts
-  ];
+  return [...proteinCodingTranscripts, ...nonProteinCodingTranscripts];
 }
