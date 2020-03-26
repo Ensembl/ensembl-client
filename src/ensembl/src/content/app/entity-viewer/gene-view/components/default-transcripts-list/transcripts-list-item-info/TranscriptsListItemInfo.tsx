@@ -67,6 +67,7 @@ const ItemInfo = (props: ItemInfoProps) => {
     };
   };
 
+  // FIXME: remove this when the amino acid length can be retrieved via the API
   const getAminoAcidLength = () => {
     const { exons, cds } = transcript;
 

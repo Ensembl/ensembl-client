@@ -9,7 +9,6 @@ export type Slice = {
     name: string;
     strand: {
       code: Strand;
-      value?: number;
     };
   };
 };
