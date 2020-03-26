@@ -11,10 +11,11 @@ export const getFeatureCoordinates = (feature: {
 };
 
 export const getFeatureStrand = (feature: { slice: Slice }) =>
-  feature.slice.region.strand;
+  feature.slice.region.strand.code;
 
+// FIXME: remove this when we can get the length from the API
 export const getFeatureLength = (feature: { slice: Slice }) => {
   const { start, end } = getFeatureCoordinates(feature);
-  const { code: strandCode } = getFeatureStrand(feature);
+  const strandCode = getFeatureStrand(feature);
   return strandCode === 'forward' ? end - start + 1 : start - end + 1;
 };

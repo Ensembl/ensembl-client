@@ -1,16 +1,12 @@
 import React from 'react';
-import sortBy from 'lodash/sortBy';
 
-import {
-  getFeatureCoordinates,
-  getFeatureLength
-} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { defaultSort } from '../../../shared/helpers/transcripts-sorter';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './DefaultTranscriptsList.scss';
 
@@ -19,54 +15,9 @@ type Props = {
   rulerTicks: TicksAndScale;
 };
 
-const compareTranscriptLength = (
-  transcriptOne: Transcript,
-  transcriptTwo: Transcript
-) => {
-  const transcriptOneLength = getFeatureLength(transcriptOne);
-  const transcriptTwoLength = getFeatureLength(transcriptTwo);
-
-  if (transcriptOneLength < transcriptTwoLength) {
-    return -1;
-  }
-
-  if (transcriptOneLength > transcriptTwoLength) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const sortTranscripts = (transcripts: Transcript[]) => {
-  const transcriptsWithCds = transcripts
-    .filter((transcript) => transcript.cds)
-    .sort(compareTranscriptLength);
-
-  const transcriptsWithoutCds = transcripts.filter(
-    (transcript) => !transcript.cds
-  );
-
-  const proteinCodingTranscripts = transcriptsWithoutCds
-    .filter((transcript) => transcript.biotype === 'protein_coding')
-    .sort(compareTranscriptLength);
-
-  const nonProteinCodingTranscripts = sortBy(
-    transcriptsWithoutCds.filter(
-      (transcript) => transcript.biotype !== 'protein_coding'
-    ),
-    ['biotype']
-  );
-
-  return [
-    ...transcriptsWithCds,
-    ...proteinCodingTranscripts,
-    ...nonProteinCodingTranscripts
-  ];
-};
-
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
-  const sortedTranscripts = sortTranscripts(gene.transcripts);
+  const sortedTranscripts = defaultSort(gene.transcripts);
 
   return (
     <div>
