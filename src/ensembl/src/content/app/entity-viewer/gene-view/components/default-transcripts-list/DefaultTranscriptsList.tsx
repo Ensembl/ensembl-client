@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
@@ -16,6 +17,7 @@ type Props = {
 
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
+  const sortedTranscripts = defaultSort(gene.transcripts);
 
   return (
     <div>
@@ -27,7 +29,7 @@ const DefaultTranscriptslist = (props: Props) => {
         </div>
       </div>
       <div className={styles.content}>
-        {gene.transcripts.map((transcript, index) => (
+        {sortedTranscripts.map((transcript, index) => (
           <DefaultTranscriptsListItem
             key={index}
             gene={gene}
