@@ -1,6 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 
-import PointerBox, { Position } from 'src/shared/components/pointer-box/PointerBox';
+import PointerBox, {
+  Position
+} from 'src/shared/components/pointer-box/PointerBox';
 
 import { TooltipPosition } from './tooltip-types';
 
@@ -47,7 +49,7 @@ const TooltipWithAnchor = (props: Props) => {
       container={props.container}
       autoAdjust={props.autoAdjust}
       onClose={props.onClose}
-      classNames={{ body: styles.tooltip, pointer: styles.tooltipTip }}
+      classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
       onOutsideClick={props.onClose}
     >
       {props.children}

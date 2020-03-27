@@ -15,9 +15,9 @@ export const getStylesForRenderingIntoBody = (
 
   return {
     ...commonStyles,
-    bodyStyles: {
-      ...commonStyles.bodyStyles,
-      ...getBodyStylesForRenderingIntoBody(params)
+    boxStyles: {
+      ...commonStyles.boxStyles,
+      ...getBoxStylesForRenderingIntoBody(params)
     }
   };
 };
@@ -29,9 +29,9 @@ export const getStylesForRenderingIntoAnchor = (
 
   return {
     ...commonStyles,
-    bodyStyles: {
-      ...commonStyles.bodyStyles,
-      ...getBodyStylesForRenderingIntoAnchor(params)
+    boxStyles: {
+      ...commonStyles.boxStyles,
+      ...getBoxStylesForRenderingIntoAnchor(params)
     }
   };
 };
@@ -43,7 +43,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
   switch (params.position) {
     case Position.TOP_LEFT:
       return {
-        bodyStyles: {
+        boxStyles: {
           transform: `translateX(calc(${pointerOffset}px + ${halfPointerWidth}px - 100%))`
         },
         pointerStyles: {
@@ -54,7 +54,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.TOP_RIGHT:
       return {
-        bodyStyles: {},
+        boxStyles: {},
         pointerStyles: {
           bottom: `${-pointerHeight + 1}px`,
           left: `${pointerOffset}px`,
@@ -63,7 +63,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.BOTTOM_LEFT:
       return {
-        bodyStyles: {
+        boxStyles: {
           transform: `translateX(calc(-100% + ${pointerOffset}px + ${halfPointerWidth}px)`
         },
         pointerStyles: {
@@ -74,7 +74,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.BOTTOM_RIGHT:
       return {
-        bodyStyles: {},
+        boxStyles: {},
         pointerStyles: {
           top: `${-pointerHeight + 1}px`,
           left: `${pointerOffset}px`
@@ -82,7 +82,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.LEFT_TOP:
       return {
-        bodyStyles: {
+        boxStyles: {
           transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset +
             halfPointerWidth}px))`
         },
@@ -95,7 +95,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.LEFT_BOTTOM:
       return {
-        bodyStyles: {
+        boxStyles: {
           transform: `translateX(-100%) translateY(-${pointerOffset +
             halfPointerWidth}px)`
         },
@@ -108,7 +108,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.RIGHT_TOP:
       return {
-        bodyStyles: {
+        boxStyles: {
           transform: `translateY(calc(-100% + ${halfPointerWidth}px))`
         },
         pointerStyles: {
@@ -120,7 +120,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
       };
     case Position.RIGHT_BOTTOM:
       return {
-        bodyStyles: {
+        boxStyles: {
           transform: `translateY(-${pointerOffset + halfPointerWidth}px)`
         },
         pointerStyles: {
@@ -133,7 +133,7 @@ const getCommonStyles = (params: Params): InlineStylesState => {
   }
 };
 
-const getBodyStylesForRenderingIntoBody = (
+const getBoxStylesForRenderingIntoBody = (
   params: Params
 ): { [key: string]: string } => {
   const { anchor, pointerWidth, pointerHeight, pointerOffset } = params;
@@ -205,7 +205,7 @@ const getBodyStylesForRenderingIntoBody = (
   }
 };
 
-const getBodyStylesForRenderingIntoAnchor = (
+const getBoxStylesForRenderingIntoAnchor = (
   params: Params
 ): { [key: string]: string } => {
   const { anchor, pointerWidth, pointerHeight, pointerOffset } = params;

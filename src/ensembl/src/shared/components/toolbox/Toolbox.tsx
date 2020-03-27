@@ -9,7 +9,7 @@ import styles from './Toolbox.scss';
 export enum ToolboxPosition {
   LEFT = 'left',
   RIGHT = 'right'
-};
+}
 
 type ToolboxProps = {
   position: ToolboxPosition;
@@ -19,9 +19,10 @@ type ToolboxProps = {
 };
 
 const Toolbox = (props: ToolboxProps) => {
-  const pointerBoxPosition = props.position === ToolboxPosition.LEFT
-    ? Position.LEFT_BOTTOM
-    : Position.RIGHT_BOTTOM;
+  const pointerBoxPosition =
+    props.position === ToolboxPosition.LEFT
+      ? Position.LEFT_BOTTOM
+      : Position.RIGHT_BOTTOM;
 
   return (
     <PointerBox
@@ -29,7 +30,7 @@ const Toolbox = (props: ToolboxProps) => {
       anchor={props.anchor}
       onOutsideClick={props.onOutsideClick}
       renderInsideAnchor={true}
-      classNames={{ body: styles.toolbox, pointer: styles.tooltipTip }}
+      classNames={{ box: styles.toolbox, pointer: styles.tooltipTip }}
     >
       {props.children}
     </PointerBox>

@@ -41,7 +41,7 @@ const ScrollingStory = () => {
               onClose={() => setShowPointerBox(false)}
               renderInsideAnchor={renderingTarget === RenderingTarget.ANCHOR}
               classNames={{
-                body: styles.pointerBox,
+                box: styles.pointerBox,
                 pointer: styles.pointerBoxPointer
               }}
             >

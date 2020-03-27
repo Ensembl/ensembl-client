@@ -24,7 +24,7 @@ import styles from './PointerBox.scss';
 
 type InlineStyles = { [key: string]: string | number | undefined };
 export type InlineStylesState = {
-  bodyStyles: InlineStyles;
+  boxStyles: InlineStyles;
   pointerStyles: InlineStyles;
 };
 
@@ -45,7 +45,7 @@ export type PointerBoxProps = {
   pointerHeight: number;
   pointerOffset: number;
   classNames?: {
-    body?: string;
+    box?: string;
     pointer?: string;
   };
   children: ReactNode;
@@ -66,7 +66,7 @@ const PointerBox = (props: PointerBoxProps) => {
   const positionRef = useRef<Position | null>(props.position);
   const anchorRectRef = useRef<DOMRect | null>(null);
   const [inlineStyles, setInlineStyles] = useState<InlineStylesState>({
-    bodyStyles: {},
+    boxStyles: {},
     pointerStyles: {}
   });
   const pointerBoxRef = useRef<HTMLDivElement>(null);
@@ -132,11 +132,11 @@ const PointerBox = (props: PointerBoxProps) => {
     setIsPositioning(false);
   };
 
-  const hasInlineStyles = () => Object.keys(inlineStyles.bodyStyles).length;
+  const hasInlineStyles = () => Object.keys(inlineStyles.boxStyles).length;
 
   const bodyClasses = classNames(
     styles.pointerBox,
-    props.classNames?.body,
+    props.classNames?.box,
     props.position,
     { [styles.invisible]: isPositioning || !hasInlineStyles() }
   );
@@ -145,7 +145,7 @@ const PointerBox = (props: PointerBoxProps) => {
     <div
       className={bodyClasses}
       ref={pointerBoxRef}
-      style={inlineStyles.bodyStyles}
+      style={inlineStyles.boxStyles}
       onClick={handleClickInside}
     >
       <Pointer

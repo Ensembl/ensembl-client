@@ -42,7 +42,7 @@ const Item = (props: ItemProps) => {
           container={props.container.current}
           autoAdjust={true}
           classNames={{
-            body: styles.pointerBox,
+            box: styles.pointerBox,
             pointer: styles.pointerBoxPointer
           }}
           pointerOffset={5}

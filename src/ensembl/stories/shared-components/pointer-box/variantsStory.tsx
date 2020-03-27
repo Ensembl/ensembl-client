@@ -23,7 +23,7 @@ const VariantsStory = () => {
     setVisibleId(null);
   };
   const pointerBoxClasses = {
-    body: styles.pointerBox,
+    box: styles.pointerBox,
     pointer: styles.pointerBoxPointer
   };
 
