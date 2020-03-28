@@ -7,6 +7,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
   getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectId,
   isFocusObjectPositionDefault
 } from '../browserSelectors';
 
@@ -22,6 +23,7 @@ import styles from './Zmenu.scss';
 
 type Props = {
   featureId: string;
+  activeFeatureId: string | null;
   genomeId: string | null;
   isInDefaultPosition: boolean;
   push: (path: string) => void;
@@ -49,10 +51,13 @@ const ZmenuAppLinks = (props: Props) => {
       entityId: props.featureId
     });
 
+  const shouldShowBrowserButton =
+    props.featureId !== props.activeFeatureId || !props.isInDefaultPosition;
+
   return (
     <div className={styles.zmenuAppLinks}>
       <span>View in</span>
-      {!props.isInDefaultPosition && (
+      {shouldShowBrowserButton && (
         <ImageButton
           className={styles.zmenuAppButton}
           image={BrowserIcon}
@@ -74,6 +79,7 @@ const ZmenuAppLinks = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   genomeId: getBrowserActiveGenomeId(state),
+  activeFeatureId: getBrowserActiveEnsObjectId(state),
   isInDefaultPosition: isFocusObjectPositionDefault(state)
 });
 
