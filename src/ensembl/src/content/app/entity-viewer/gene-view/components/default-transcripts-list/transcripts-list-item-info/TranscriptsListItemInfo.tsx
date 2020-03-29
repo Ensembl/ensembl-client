@@ -133,7 +133,7 @@ const ItemInfo = (props: ItemInfoProps) => {
         <div className={styles.column}>
           {transcript.cds && (
             <>
-              <div>
+              <div id="amino-acid-length">
                 <strong>{getAminoAcidLength()} aa</strong>
               </div>
               <div>ENSP1000000000</div>
@@ -145,7 +145,8 @@ const ItemInfo = (props: ItemInfoProps) => {
             Spliced RNA length <strong>{getRNALength()} bp</strong>
           </div>
           <div>
-            Coding exons <strong>{getNumberOfCodingExons()}</strong> of 27
+            Coding exons <strong>{getNumberOfCodingExons()}</strong> of{' '}
+            {transcript.exons.length}
           </div>
         </div>
         <div className={styles.column}>
