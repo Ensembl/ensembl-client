@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Overview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/Overview';
-import ExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/ExternalReferences';
+import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
+import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
 
 import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
@@ -15,9 +15,9 @@ type Props = {
 
 const GeneViewSidebar = (props: Props) => {
   if (props.activeTabName === SidebarTabName.OVERVIEW) {
-    return <Overview />;
+    return <GeneOverview />;
   } else if (props.activeTabName === SidebarTabName.EXTERNAL_REFERENCES) {
-    return <ExternalReferences />;
+    return <GeneExternalReferences />;
   }
 
   return null;

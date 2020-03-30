@@ -8,7 +8,7 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/components/accordion';
-import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-download.svg';
@@ -18,7 +18,7 @@ import { Status } from 'src/shared/types/status';
 import JSONValue from 'src/shared/types/JSON';
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
-import styles from './Overview.scss';
+import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
@@ -60,7 +60,7 @@ const MainAccordion = (props: Props) => {
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
               className={styles.entityViewerAccordionButton}
-              disabled={gene.function ? false : true}
+              disabled={!gene.function}
             >
               Function
             </AccordionItemButton>
@@ -74,12 +74,12 @@ const MainAccordion = (props: Props) => {
                   {gene.function.description}
                 </div>
                 {gene.function.source?.value && (
-                  <ExternalLink
+                  <ExternalReference
                     label={gene.function.source.name}
                     linkText={gene.function.source.value}
-                    linkUrl={gene.function.source.url}
+                    href={gene.function.source.url}
                     classNames={{
-                      labelClass: styles.providedBy
+                      label: styles.providedBy
                     }}
                   />
                 )}
@@ -102,8 +102,8 @@ const MainAccordion = (props: Props) => {
           >
             <div className={styles.sequenceAccordion}>
               <div className={styles.geneDetails}>
-                <div className={styles.geneTitle}>Gene</div>
-                <div className={styles.stableId}>{gene.id}</div>
+                <span className={styles.geneTitle}>Gene</span>
+                <span className={styles.stableId}>{gene.id}</span>
               </div>
               <div className={styles.geneCheckboxList}>
                 {renderCheckbox({ label: 'Genomic sequence', checked: false })}
@@ -147,11 +147,11 @@ const MainAccordion = (props: Props) => {
                     Archive of transcript sequences, including historical gene
                     sets
                   </div>
-                  <ExternalLink
+                  <ExternalReference
                     label={'Ensembl Transcript Archive'}
                     linkText={'TARK'}
-                    linkUrl={gene.filters.transcript.tark_url as string}
-                    classNames={{ labelClass: styles.tarkLabel }}
+                    href={gene.filters.transcript.tark_url as string}
+                    classNames={{ label: styles.tarkLabel }}
                   />
                 </div>
               )}

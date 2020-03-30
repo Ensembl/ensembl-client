@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.titleWithSeparator {
+.sectionHead {
   color: $dark-grey;
   font-size: 12px;
   border-bottom: 1px solid $grey;
@@ -78,4 +78,12 @@
 }
 .transcriptXrefs {
   margin: 10px 0 20px 20px;
+}
+
+.xrefGroupSourceName {
+  margin-right: 5px;
+}
+
+.xrefGroupWithSameLabel {
+  display: flex;
 }

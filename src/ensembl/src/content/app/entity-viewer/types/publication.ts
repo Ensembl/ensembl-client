@@ -2,6 +2,6 @@ import { Source } from './source';
 
 export type Publication = {
   title: string;
-  description: string;
+  authors: string[];
   source: Source;
 };

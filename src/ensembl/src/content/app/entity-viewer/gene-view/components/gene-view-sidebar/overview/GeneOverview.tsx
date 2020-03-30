@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import MainAccordion from './MainAccordion';
 import PublicationsAccordion from './PublicationsAccordion';
 
@@ -15,7 +15,7 @@ import { RootState } from 'src/store';
 import JSONValue from 'src/shared/types/JSON';
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
-import styles from './Overview.scss';
+import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
@@ -23,7 +23,7 @@ type Props = {
   updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
 };
 
-const Overview = (props: Props) => {
+const GeneOverview = (props: Props) => {
   if (!props.sidebarPayload) {
     return null;
   }
@@ -31,28 +31,28 @@ const Overview = (props: Props) => {
   return (
     <div>
       <div className={styles.geneDetails}>
-        <div className={styles.geneSymbol}>{gene.symbol}</div>
-        <div className={styles.stableId}>{gene.id}</div>
+        <span className={styles.geneSymbol}>{gene.symbol}</span>
+        <span className={styles.stableId}>{gene.id}</span>
       </div>
 
-      <div className={styles.titleWithSeparator}>Gene name</div>
+      <div className={styles.sectionHead}>Gene name</div>
 
       <div className={styles.geneName}>
-        <ExternalLink
+        <ExternalReference
           label={gene.name}
           linkText={gene.source?.value || ''}
-          linkUrl={''}
+          href={''}
         />
       </div>
       {gene.synonyms && (
         <div>
-          <div className={styles.titleWithSeparator}>Synonyms</div>
+          <div className={styles.sectionHead}>Synonyms</div>
           <div className={styles.synonyms}>{gene.synonyms.join(', ')}</div>
         </div>
       )}
       {gene.attributes && (
         <div>
-          <div className={styles.titleWithSeparator}>Additional attributes</div>
+          <div className={styles.sectionHead}>Additional attributes</div>
           <div>
             {gene.attributes.map((attribute, key) => (
               <div key={key}> {attribute} </div>
@@ -67,7 +67,7 @@ const Overview = (props: Props) => {
 
       {props.sidebarPayload.homeologues && (
         <div className={styles.homeologues}>
-          <div className={styles.titleWithSeparator}>Homeologues</div>
+          <div className={styles.sectionHead}>Homeologues</div>
           <div>
             {props.sidebarPayload.homeologues.map((homeologue, key) => (
               <div className={styles.standardLabelValue} key={key}>
@@ -82,7 +82,7 @@ const Overview = (props: Props) => {
       )}
       {props.sidebarPayload.other_assemblies && (
         <div>
-          <div className={styles.titleWithSeparator}>
+          <div className={styles.sectionHead}>
             Other assemblies with this gene
           </div>
           <div>
@@ -119,4 +119,4 @@ const mapDispatchToProps = {
   updateEntityUI
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Overview);
+export default connect(mapStateToProps, mapDispatchToProps)(GeneOverview);

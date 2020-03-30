@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-.titleWithSeparator {
+.sectionHead {
   color: $dark-grey;
   font-size: 12px;
   border-bottom: 1px solid $grey;
@@ -10,16 +10,9 @@
 }
 
 .geneDetails {
-  display: grid;
-  grid-template-columns: [gene-symbol] min-content 10px [stable-id] auto;
-
   .geneSymbol {
-    grid-column: gene-symbol;
     font-weight: $bold;
-  }
-
-  .stableId {
-    grid-column: stable-id;
+    margin-right: 10px;
   }
 }
 
@@ -63,6 +56,10 @@
   &:after {
     margin-top: -3px;
   }
+
+  &Disabled {
+    color: $grey;
+  }
 }
 
 .entityViewerAccordionItem:not(:first-child) {
@@ -91,16 +88,13 @@
 
 .sequenceAccordion {
   & .geneDetails {
-    display: grid;
-    grid-template-columns: [gene-name] min-content 10px [stable-id] auto;
     margin-bottom: 10px;
     & .geneTitle {
-      grid-column: gene-name;
       color: $dark-grey;
+      margin-right: 10px;
     }
 
     & .stableId {
-      grid-column: stable-id;
       font-weight: $bold;
     }
   }

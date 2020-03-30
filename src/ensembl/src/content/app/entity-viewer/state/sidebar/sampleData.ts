@@ -96,7 +96,7 @@ export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Long noncoding RNA LINC00520 accelerates progression of papillary thyroid carcinoma by serving as a competing endogenous RNA of microRNA-577 to increase Sphk2 expression.',
-      description: 'Sun Y, Shi T, Ma Y, Qin H, Li K',
+      authors: ['Sun Y', 'Shi T', 'Ma Y', 'Qin H', 'Li K'],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -161,7 +161,17 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
         links: [
           {
             name: 'Human CCDS',
-            value: 'PCCDS9344.1',
+            value: 'CCDS4633.1',
+            url: ''
+          },
+          {
+            name: 'Human CCDS',
+            value: 'CCDS4633.2',
+            url: ''
+          },
+          {
+            name: 'Human CCDS',
+            value: 'CCDS4633.3',
             url: ''
           }
         ]
@@ -370,8 +380,27 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
   publications: [
     {
       title: 'Identification of the breast cancer susceptibility gene BRCA2.',
-      description:
-        'Wooster R, Bignell G, Lancaster J, Swift S, Seal S, Mangion J, Collins N, Gregory S, Gumbs C, Micklem G, Barfoot R, Hamoudi R, Patel S, Rice C, Biggs P, Hashim Y, Smith A, Connor F, Stratton MR',
+      authors: [
+        'Wooster R',
+        'Bignell G',
+        'Lancaster J',
+        'Swift S',
+        'Seal S',
+        'Mangion J',
+        'Collins N',
+        'Gregory S',
+        'Gumbs C',
+        'Micklem G',
+        'Barfoot R',
+        'Hamoudi R',
+        'Patel S',
+        'Rice C',
+        'Biggs P',
+        'Hashim Y',
+        'Smith A',
+        'Connor F',
+        'Stratton MR'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -381,8 +410,27 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
     {
       title:
         'The complete BRCA2 gene and mutations in chromosome 13q-linked kindreds',
-      description:
-        'Tavtigian SV, Simard J, Rommens J, Couch F, Shattuck-Eidens D, Neuhausen S, Merajver S, Thorlacius S, Offit K, Stoppa-Lyonnet D, Belanger C, Bell R, Berry S, Bogden R, Chen Q, Davis T, Dumont M, Frye C, Goldar DE',
+      authors: [
+        'Tavtigian SV',
+        'Simard J',
+        'Rommens J',
+        'Couch F',
+        'Shattuck-Eidens D',
+        'Neuhausen S',
+        'Merajver S',
+        'Thorlacius S',
+        'Offit K',
+        'Stoppa-Lyonnet D',
+        'Belanger C',
+        'Bell R',
+        'Berry S',
+        'Bogden R',
+        'Chen Q',
+        'Davis T',
+        'Dumont M',
+        'Frye C',
+        'Goldar DE'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -390,18 +438,28 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
       }
     },
     {
-      title: '',
-      description: '',
-      source: {
-        url: '',
-        value: 'NIEHS SNPs program',
-        name: 'Submitted (OCT-2003) to the EMBL/GenBank/DDBJ databases'
-      }
-    },
-    {
       title: 'The DNA sequence and analysis of human chromosome 13.',
-      description:
-        'Dunham A, Matthews LH, Burton J, Ashurst JL, Howe KL, Ashcroft KJ, Beare DM, Burford DC, Hunt SE, Griffiths-Jones S, Jones MC, Keenan SJ, Oliver K, Scott CE, Ainscough R, Almeida JP, Ambrose KD, Andrews DT, Ross MT',
+      authors: [
+        'Dunham A',
+        'Matthews LH',
+        'Burton J',
+        'Ashurst JL',
+        'Howe KL',
+        'Ashcroft KJ',
+        'Beare DM',
+        'Burford DC',
+        'Hunt SE',
+        'Griffiths-Jones S',
+        'Jones MC',
+        'Keenan SJ',
+        'Oliver K',
+        'Scott CE',
+        'Ainscough R',
+        'Almeida JP',
+        'Ambrose KD',
+        'Andrews DT',
+        'Ross MT'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -411,8 +469,20 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
     {
       title:
         'Germline BRCA2 6174delT mutations in Ashkenazi Jewish pancreatic cancer patients.',
-      description:
-        'Ozcelik H, Schmocker B, Di Nicola N, Shi X H, Langer B, Moore M, Taylor BR, Narod SA, Darlington G, Andrulis IL, Gallinger S, Redston M',
+      authors: [
+        'Ozcelik H',
+        'Schmocker B',
+        'Di Nicola N',
+        'Shi X H',
+        'Langer B',
+        'Moore M',
+        'Taylor BR',
+        'Narod SA',
+        'Darlington G',
+        'Andrulis IL',
+        'Gallinger S',
+        'Redston M'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -528,8 +598,19 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
   publications: [
     {
       title: 'Cannabidiol Is a Novel Modulator of Bacterial Membrane Vesicles.',
-      description:
-        'Kosgodage US, Matewele P, Awamaria B, Kraev I, Warde P, Mastroianni G, Nunn AV, Guy GW, Bell JD, Inal JM, Lange S',
+      authors: [
+        'Kosgodage US',
+        'Matewele P',
+        'Awamaria B',
+        'Kraev I',
+        'Warde P',
+        'Mastroianni G',
+        'Nunn AV',
+        'Guy GW',
+        'Bell JD',
+        'Inal JM',
+        'Lange S'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -539,8 +620,14 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Conserved conformational selection mechanism of Hsp70 chaperone-substrate interactions.',
-      description:
-        'Sekhar A, Velyvis A, Zoltsman G, Rosenzweig R, Bouvignies G, Kay LE',
+      authors: [
+        'Sekhar A',
+        'Velyvis A',
+        'Zoltsman G',
+        'Rosenzweig R',
+        'Bouvignies G',
+        'Kay LE'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -550,7 +637,15 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Identification of hot regions in protein-protein interactions by sequential pattern mining.',
-      description: 'Hsu CM, Chen CY, Liu BJ, Huang CC, Laio MH, Lin CC, Wu TL',
+      authors: [
+        'Hsu CM',
+        'Chen CY',
+        'Liu BJ',
+        'Huang CC',
+        'Laio MH',
+        'Lin CC',
+        'Wu TL'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -560,7 +655,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'MAGIIC-PRO: detecting functional signatures by efficient discovery of long patterns in protein sequences',
-      description: 'Hsu CM, Chen CY, Liu BJ',
+      authors: ['Hsu CM', 'Chen CY', 'Liu BJ'],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -570,7 +665,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Proteome-level responses of Escherichia coli to long-chain fatty acids and use of fatty acid inducible promoter in protein production.',
-      description: 'Han MJ, Lee JW, Lee SY, Yoo JS',
+      authors: ['Han MJ', 'Lee JW', 'Lee SY', 'Yoo JS'],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -669,8 +764,13 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Comparative transcriptional analysis of flavour-biosynthetic genes of a native Saccharomyces cerevisiae strain fermenting in its natural must environment, vs. a commercial strain and correlation of the genes’ activities with the produced flavour compounds.',
-      description:
-        'Parapouli M, Sfakianaki A, Monokrousos N, Perisynakis A, Hatziloukas E',
+      authors: [
+        'Parapouli M',
+        'Sfakianaki A',
+        'Monokrousos N',
+        'Perisynakis A',
+        'Hatziloukas E'
+      ],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -680,7 +780,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'GOGO: An improved algorithm to measure the semantic similarity between gene ontology terms.',
-      description: 'Zhao C, Wang Z',
+      authors: ['Zhao C', 'Wang Z'],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -690,7 +790,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Metabolic engineering of the 2-ketobutyrate biosynthetic pathway for 1-propanol production in Saccharomyces cerevisiae.',
-      description: 'Nishimura Y, Matsui T, Ishii J, Kondo A',
+      authors: ['Nishimura Y', 'Matsui T', 'Ishii J', 'Kondo A'],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -700,7 +800,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Genetic redundancy in the catabolism of methylated amines in the yeast Scheffersomyces stipitis.',
-      description: 'Linder T',
+      authors: ['Linder T'],
       source: {
         url: '',
         value: 'Europe PMC',
@@ -710,7 +810,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
     {
       title:
         'Environmental change drives accelerated adaptation through stimulated copy number variation.',
-      description: 'Hull RM, Cruz C, Jack CV, Houseley J',
+      authors: ['Hull RM', 'Cruz C', 'Jack CV', 'Houseley J'],
       source: {
         url: '',
         value: 'Europe PMC',

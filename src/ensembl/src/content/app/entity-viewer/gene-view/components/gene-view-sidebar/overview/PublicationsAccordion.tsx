@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import {
   Accordion,
@@ -7,13 +8,11 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/components/accordion';
-import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import JSONValue from 'src/shared/types/JSON';
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
-import { Publication } from 'src/content/app/entity-viewer/types/publication';
 
-import styles from './Overview.scss';
+import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
@@ -22,11 +21,16 @@ type Props = {
 };
 
 const PublicationsAccordion = (props: Props) => {
-  const publications = props.sidebarPayload?.publications || [];
-  const expandedPanels = props.sidebarUIState?.publicationsAccordion
-    ?.expandedPanels as string[];
+  // TODO: Put this back once we enable the accordion
+  // const publications = props.sidebarPayload?.publications || [];
+  // const expandedPanels = props.sidebarUIState?.publicationsAccordion
+  //   ?.expandedPanels as string[];
+  const accordionItemClassNames = classNames(
+    styles.entityViewerAccordionButton,
+    styles.entityViewerAccordionButtonDisabled
+  );
 
-  const onChange = (expandedPanels: (string | number)[] = []) => {
+  const onChange = (expandedPanels: (string | number)[]) => {
     props.updateEntityUI({
       publicationsAccordion: {
         expandedPanels
@@ -38,7 +42,7 @@ const PublicationsAccordion = (props: Props) => {
     <div className={styles.accordionContainer}>
       <Accordion
         className={styles.entityViewerAccordion}
-        preExpanded={expandedPanels}
+        preExpanded={['publications']}
         onChange={onChange}
       >
         <AccordionItem
@@ -46,7 +50,10 @@ const PublicationsAccordion = (props: Props) => {
           uuid={'publications'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton className={styles.entityViewerAccordionButton}>
+            <AccordionItemButton
+              className={accordionItemClassNames}
+              disabled={true}
+            >
               Publications
             </AccordionItemButton>
           </AccordionItemHeading>
@@ -54,7 +61,8 @@ const PublicationsAccordion = (props: Props) => {
             className={styles.entityViewerAccordionItemContent}
           >
             <div>
-              {publications.map((entry, key) => renderPublication(entry, key))}
+              {/* {publications.map((entry, key) => renderPublication(entry, key))} */}
+              No data to display here
             </div>
           </AccordionItemPanel>
         </AccordionItem>
@@ -63,15 +71,16 @@ const PublicationsAccordion = (props: Props) => {
   );
 };
 
-const renderPublication = (props: Publication, key: number) => {
-  return (
-    <div className={styles.publication} key={key}>
-      <div className={styles.title}>{props.title}</div>
-      <div className={styles.description}>{props.description}</div>
-      <ExternalLink linkText={props.source.value} linkUrl={props.source.url} />
-      <div className={styles.sourceDescription}>{props.source.name}</div>
-    </div>
-  );
-};
+// TODO: Put this back once we enable the accordion
+// const renderPublication = (props: Publication, key: number) => {
+//   return (
+//     <div className={styles.publication} key={key}>
+//       <div className={styles.title}>{props.title}</div>
+//       <div className={styles.description}>{props.authors.join(', ')}</div>
+//       <ExternalLink linkText={props.source.value} href={props.source.url} />
+//       <div className={styles.sourceDescription}>{props.source.name}</div>
+//     </div>
+//   );
+// };
 
 export default PublicationsAccordion;
