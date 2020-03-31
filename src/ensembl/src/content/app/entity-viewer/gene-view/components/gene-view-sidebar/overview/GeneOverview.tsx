@@ -39,8 +39,8 @@ const GeneOverview = (props: Props) => {
 
       <div className={styles.geneName}>
         <ExternalReference
-          label={gene.name}
-          linkText={gene.source?.value || ''}
+          label={gene.metadata?.name?.description}
+          linkText={gene.metadata?.name?.source?.value || ''}
           href={''}
         />
       </div>

@@ -23,9 +23,8 @@ type GeneViewGeneSidebarPayload = Pick<
   | 'filters'
   | 'function'
   | 'id'
-  | 'name'
   | 'symbol'
-  | 'source'
+  | 'metadata'
   | 'synonyms'
   | 'xrefs'
 > & { transcripts: GeneViewTranscriptSidebarPayload[] };

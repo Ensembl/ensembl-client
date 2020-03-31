@@ -4,8 +4,19 @@ import { DataSetType } from '../../types/dataSet';
 export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
   gene: {
     symbol: 'TraesCS3D02G273600.1 ',
-    name: 'Heat shock protein 101',
     id: 'ENSG00000139618.15',
+    metadata: {
+      name: {
+        value: 'UniProtKB/TrEMBL;Acc:Q9SPH4',
+        description: 'Heat shock protein 101',
+        source_uri: 'https://www.uniprot.org/',
+        source: {
+          name: 'UniProt',
+          url: 'https://www.genenames.org',
+          value: 'UniProtKB/TrEMBL;Acc:Q9SPH4'
+        }
+      }
+    },
     xrefs: [
       {
         source_name: 'KNETMINER_WHEAT',
@@ -109,7 +120,6 @@ export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
 export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload = {
   gene: {
     symbol: 'BRCA2',
-    name: 'BRCA2, DNA repair associated',
     id: 'ENSG00000139618.15',
     synonyms: ['BRCC2', 'FACD', 'FAD', 'FAD1', 'FANCD', 'FANCD1', 'XRCC11'],
     attributes: ['protein coding', 'another attribute'],
@@ -130,10 +140,18 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
         url: 'https://www.uniprot.org/uniprot/P51587'
       }
     },
-    source: {
-      name: '',
-      value: 'HGNC:1011',
-      url: ''
+    metadata: {
+      name: {
+        value: 'HGNC:1101',
+        description: 'BRCA2 DNA repair associated',
+        source_uri:
+          'https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1101',
+        source: {
+          name: 'Human Gene Naming Consortium',
+          url: 'https://www.genenames.org',
+          value: 'HGNC:1101'
+        }
+      }
     },
     xrefs: [
       {
@@ -495,9 +513,13 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
 export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
   gene: {
     symbol: 'grpE ',
-    name: 'heat shock protein',
     id: 'b2614',
     synonyms: ['b2614', 'ECK2610', 'JW2594'],
+    metadata: {
+      name: {
+        description: 'heat shock protein'
+      }
+    },
     function: {
       description:
         'Participates actively in the response to hyperosmotic and heat shock by preventing the aggregation of stress-denatured proteins, in association with DnaK and GrpE. It is the nucleotide exchange factor for DnaK and may function as a thermosensor. Unfolded proteins bind initially to DnaJ; upon interaction with the DnaJ-bound protein, DnaK hydrolyzes its bound ATP, resulting in the formation of a stable complex. GrpE releases ADP from DnaK; ATP binding to DnaK triggers the release of the substrate protein, thus completing the reaction cycle. Several rounds of ATP-dependent interactions between DnaJ, DnaK and GrpE are required for fully efficient folding',
@@ -678,12 +700,17 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
 export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
   gene: {
     symbol: 'SFA1',
-    name: 'Sensitive to FormAldehyde',
     id: 'YDL168W',
-    source: {
-      name: '',
-      value: 'SGD;Acc:S000002327',
-      url: ''
+    metadata: {
+      name: {
+        value: 'SGD;Acc:S000002327',
+        description: 'Sensitive to FormAldehyde',
+        source: {
+          name: '',
+          value: 'SGD;Acc:S000002327',
+          url: ''
+        }
+      }
     },
     synonyms: ['ADH5'],
     function: {
