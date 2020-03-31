@@ -1,19 +1,18 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
+import {
+  Toolbox,
+  ToolboxPosition,
+  ToolboxExpandableContent
+} from 'src/shared/components/toolbox';
 import ZmenuContent from './ZmenuContent';
 
+import { ZmenuData, ZmenuAction } from './zmenu-types';
+
 import styles from './Zmenu.scss';
-
-import { ZmenuData, ZmenuAction, AnchorCoordinates } from './zmenu-types';
-
-const TIP_WIDTH = 18;
-const TIP_HEIGHT = 13;
-// extra height makes the tip a bit higher and is used to anchor the tip in zmenu body (goes inside the body)
-const TIP_EXTRA_HEIGHT = 2;
-const TIP_OFFSET = 10;
 
 enum Direction {
   LEFT = 'left',
@@ -26,50 +25,51 @@ export type ZmenuProps = ZmenuData & {
   onLeave: (id: string) => void;
 };
 
-type InlineStyles = { [key: string]: string | number | undefined };
-type TipProps = {
-  direction: Direction; // where the tip is pointing
-  style: InlineStyles;
-};
-
-type GetInlineStylesParams = {
-  direction: Direction;
-  anchorCoordinates: AnchorCoordinates;
-};
-
 const Zmenu = (props: ZmenuProps) => {
+  const anchorRef = useRefWithRerender<HTMLDivElement>(null);
+
   const onOutsideClick = () =>
     browserMessagingService.send('bpane', {
       id: props.id,
       action: ZmenuAction.ACTIVITY_OUTSIDE
     });
-  const zmenuRef = useRef<HTMLDivElement>(null);
-
-  useOutsideClick(zmenuRef, onOutsideClick);
 
   const direction = chooseDirection(props);
-  const inlineStyles = getInlineStyles({
-    direction,
-    anchorCoordinates: props.anchor_coordinates
-  });
+  const toolboxPosition =
+    direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
+
+  const mainContent = <ZmenuContent content={props.content} />;
+  const footerContent = (
+    <div className={styles.zmenuFooterContent}>Zmenu footer content</div>
+  );
+  const anchorStyles = getAnchorInlineStyles(props);
 
   return (
-    <div
-      className={styles.zmenuWrapper}
-      style={inlineStyles.body}
-      ref={zmenuRef}
-      onMouseEnter={() => props.onEnter(props.id)}
-      onMouseLeave={() => props.onLeave(props.id)}
-    >
-      <div className={styles.zmenu}>
-        <ZmenuContent content={props.content} />
-      </div>
-      <Tip
-        direction={getInverseDirection(direction)}
-        style={inlineStyles.tip}
-      />
+    <div ref={anchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
+      {anchorRef.current && (
+        <Toolbox
+          onOutsideClick={onOutsideClick}
+          anchor={anchorRef.current}
+          position={toolboxPosition}
+        >
+          <ToolboxExpandableContent
+            mainContent={mainContent}
+            footerContent={footerContent}
+          />
+        </Toolbox>
+      )}
     </div>
   );
+};
+
+const getAnchorInlineStyles = (params: ZmenuProps) => {
+  const {
+    anchor_coordinates: { x, y }
+  } = params;
+  return {
+    left: `${x}px`,
+    top: `${y}px`
+  };
 };
 
 // choose how to position zmenu relative to its anchor point
@@ -78,75 +78,6 @@ const chooseDirection = (params: ZmenuProps) => {
   const { width } = browserElement.getBoundingClientRect();
   const { x } = params.anchor_coordinates;
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;
-};
-
-const getInlineStyles = (params: GetInlineStylesParams) => {
-  const { direction, anchorCoordinates } = params;
-  if (direction === Direction.LEFT) {
-    return {
-      body: {
-        // body is to the left of the anchor point
-        left: `${anchorCoordinates.x - TIP_HEIGHT}px`,
-        transform: `translateX(-100%)`,
-        top: `${anchorCoordinates.y - TIP_OFFSET - TIP_WIDTH / 2}px`
-      },
-      tip: {
-        // tip is on the right side of the body and points to the right
-        right: `-${TIP_HEIGHT}px`,
-        top: `${TIP_OFFSET}px`,
-        width: `${TIP_HEIGHT + TIP_EXTRA_HEIGHT}px`,
-        height: `${TIP_WIDTH}px`
-      }
-    };
-  } else {
-    // Direction.RIGHT
-    return {
-      body: {
-        // body is to the right of the anchor point
-        left: `${anchorCoordinates.x + TIP_HEIGHT}px`,
-        top: `${anchorCoordinates.y - TIP_OFFSET - TIP_WIDTH / 2}px`
-      },
-      tip: {
-        // tip is on the left side of the body and points to the left
-        left: `-${TIP_HEIGHT}px`,
-        top: `${TIP_OFFSET}px`,
-        width: `${TIP_HEIGHT + TIP_EXTRA_HEIGHT}px`,
-        height: `${TIP_WIDTH}px`
-      }
-    };
-  }
-};
-
-const getInverseDirection = (direction: Direction) => {
-  if (direction === Direction.LEFT) {
-    return Direction.RIGHT;
-  } else {
-    return Direction.LEFT;
-  }
-};
-
-export const Tip = (props: TipProps) => {
-  const halfBase = TIP_WIDTH / 2;
-  let polygonPoints;
-  const height = TIP_HEIGHT + TIP_EXTRA_HEIGHT;
-
-  if (props.direction === Direction.LEFT) {
-    polygonPoints = `0,${halfBase} ${height},0 ${height},${TIP_WIDTH}`;
-  } else {
-    polygonPoints = `0,0 ${height},${halfBase} 0,${TIP_WIDTH}`;
-  }
-
-  return (
-    <svg
-      className={styles.zmenuTip}
-      style={props.style}
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      viewBox={`0 0 ${height} ${TIP_WIDTH}`}
-    >
-      <polygon points={polygonPoints} />
-    </svg>
-  );
 };
 
 export default Zmenu;

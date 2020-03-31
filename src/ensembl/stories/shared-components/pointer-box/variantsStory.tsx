@@ -1,9 +1,12 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
+import faker from 'faker';
 
-import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+import PointerBox, {
+  Position
+} from 'src/shared/components/pointer-box/PointerBox';
 
-import styles from './Tooltip.stories.scss';
+import styles from './PointerBox.stories.scss';
 
 const VariantsStory = () => {
   const [visibleId, setVisibleId] = useState<Position | null>(null);
@@ -19,10 +22,14 @@ const VariantsStory = () => {
   const handleClose = () => {
     setVisibleId(null);
   };
+  const pointerBoxClasses = {
+    box: styles.pointerBox,
+    pointer: styles.pointerBoxPointer
+  };
 
   return (
     <div className={styles.variantsStoryLayout}>
-      <h1>Click on the dots to see the tooltip</h1>
+      <h1>Click on the dots to see the pointer box</h1>
       <div className={styles.variantsStoryContainer}>
         <div
           ref={topLeftRef}
@@ -32,15 +39,15 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.TOP_LEFT)}
         >
-          {visibleId === Position.TOP_LEFT && (
-            <Tooltip
+          {visibleId === Position.TOP_LEFT && topLeftRef.current && (
+            <PointerBox
               anchor={topLeftRef.current}
-              delay={0}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.TOP_LEFT}
+              classNames={pointerBoxClasses}
             >
               TOP LEFT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -51,15 +58,15 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.TOP_RIGHT)}
         >
-          {visibleId === Position.TOP_RIGHT && (
-            <Tooltip
+          {visibleId === Position.TOP_RIGHT && topRightRef.current && (
+            <PointerBox
               anchor={topRightRef.current}
-              delay={0}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.TOP_RIGHT}
+              classNames={pointerBoxClasses}
             >
               TOP RIGHT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -68,17 +75,18 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryRightTop
           )}
-          onClick={() => setVisibleId(Position.RIGHT_TOP)}
+          onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
         >
-          {visibleId === Position.RIGHT_TOP && (
-            <Tooltip
+          {visibleId === Position.RIGHT_BOTTOM && rightTopRef.current && (
+            <PointerBox
               anchor={rightTopRef.current}
-              delay={0}
-              onClose={handleClose}
-              position={Position.RIGHT_TOP}
+              onOutsideClick={handleClose}
+              position={Position.RIGHT_BOTTOM}
+              classNames={pointerBoxClasses}
             >
-              RIGHT TOP
-            </Tooltip>
+              <p>RIGHT BOTTOM (grows down)</p>
+              <p>{faker.lorem.paragraph()}</p>
+            </PointerBox>
           )}
         </div>
         <div
@@ -87,17 +95,18 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryRightBottom
           )}
-          onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
+          onClick={() => setVisibleId(Position.RIGHT_TOP)}
         >
-          {visibleId === Position.RIGHT_BOTTOM && (
-            <Tooltip
+          {visibleId === Position.RIGHT_TOP && rightBottomRef.current && (
+            <PointerBox
               anchor={rightBottomRef.current}
-              delay={0}
-              onClose={handleClose}
-              position={Position.RIGHT_BOTTOM}
+              onOutsideClick={handleClose}
+              position={Position.RIGHT_TOP}
+              classNames={pointerBoxClasses}
             >
-              RIGHT BOTTOM
-            </Tooltip>
+              <p>RIGHT TOP (grows up)</p>
+              <p>{faker.lorem.sentence()}</p>
+            </PointerBox>
           )}
         </div>
         <div
@@ -108,15 +117,15 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.BOTTOM_LEFT)}
         >
-          {visibleId === Position.BOTTOM_LEFT && (
-            <Tooltip
+          {visibleId === Position.BOTTOM_LEFT && bottomLeftRef.current && (
+            <PointerBox
               anchor={bottomLeftRef.current}
-              delay={0}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.BOTTOM_LEFT}
+              classNames={pointerBoxClasses}
             >
               BOTTOM LEFT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -127,15 +136,15 @@ const VariantsStory = () => {
           )}
           onClick={() => setVisibleId(Position.BOTTOM_RIGHT)}
         >
-          {visibleId === Position.BOTTOM_RIGHT && (
-            <Tooltip
+          {visibleId === Position.BOTTOM_RIGHT && bottomRightRef.current && (
+            <PointerBox
               anchor={bottomRightRef.current}
-              delay={0}
-              onClose={handleClose}
+              onOutsideClick={handleClose}
               position={Position.BOTTOM_RIGHT}
+              classNames={pointerBoxClasses}
             >
               BOTTOM RIGHT
-            </Tooltip>
+            </PointerBox>
           )}
         </div>
         <div
@@ -144,17 +153,18 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryLeftTop
           )}
-          onClick={() => setVisibleId(Position.LEFT_TOP)}
+          onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
         >
-          {visibleId === Position.LEFT_TOP && (
-            <Tooltip
+          {visibleId === Position.LEFT_BOTTOM && leftTopRef.current && (
+            <PointerBox
               anchor={leftTopRef.current}
-              delay={0}
-              onClose={handleClose}
-              position={Position.LEFT_TOP}
+              onOutsideClick={handleClose}
+              position={Position.LEFT_BOTTOM}
+              classNames={pointerBoxClasses}
             >
-              LEFT TOP
-            </Tooltip>
+              <p>LEFT TOP (grows up)</p>
+              <p>{faker.lorem.sentence()}</p>
+            </PointerBox>
           )}
         </div>
         <div
@@ -163,17 +173,18 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryLeftBottom
           )}
-          onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
+          onClick={() => setVisibleId(Position.LEFT_TOP)}
         >
-          {visibleId === Position.LEFT_BOTTOM && (
-            <Tooltip
+          {visibleId === Position.LEFT_TOP && leftBottomRef.current && (
+            <PointerBox
               anchor={leftBottomRef.current}
-              delay={0}
-              onClose={handleClose}
-              position={Position.LEFT_BOTTOM}
+              onOutsideClick={handleClose}
+              position={Position.LEFT_TOP}
+              classNames={pointerBoxClasses}
             >
-              LEFT BOTTOM
-            </Tooltip>
+              <p>LEFT BOTTOM (grows down)</p>
+              <p>{faker.lorem.sentence()}</p>
+            </PointerBox>
           )}
         </div>
       </div>

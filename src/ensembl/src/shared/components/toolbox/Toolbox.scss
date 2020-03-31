@@ -1,15 +1,15 @@
 @import 'src/styles/common';
 
-$fill-color: $dark-grey;
+$fill-color: $black;
 
-.tooltip {
+.toolbox {
   background: $fill-color;
-  padding: 6px 18px 8px;
+  padding: 12px 20px;
   filter: drop-shadow(2px 2px 3px $shadow-color);
   cursor: default;
   color: $white;
-  border-radius: 4px;
-  font-size: 14px;
+  min-height: 40px;
+  font-size: 13px;
 }
 
 .tooltipTip {

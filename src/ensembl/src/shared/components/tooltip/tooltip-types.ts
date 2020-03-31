@@ -1,10 +1,7 @@
-export enum Position {
-  TOP_LEFT = 'top_left',
-  TOP_RIGHT = 'top_right',
-  RIGHT_TOP = 'right_top',
-  RIGHT_BOTTOM = 'right_bottom',
-  BOTTOM_RIGHT = 'bottom_right',
-  BOTTOM_LEFT = 'bottom_left',
-  LEFT_BOTTOM = 'left_bottom',
-  LEFT_TOP = 'left_top'
-}
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
+
+export type TooltipPosition =
+  | Position.TOP_LEFT
+  | Position.TOP_RIGHT
+  | Position.BOTTOM_LEFT
+  | Position.BOTTOM_RIGHT;
