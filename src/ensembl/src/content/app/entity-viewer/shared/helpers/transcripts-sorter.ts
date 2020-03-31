@@ -1,4 +1,4 @@
-import sortBy from 'lodash/sortby';
+import sortBy from 'lodash/sortBy';
 
 import { getFeatureLength } from './entity-helpers';
 
