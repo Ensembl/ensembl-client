@@ -3,7 +3,7 @@ import { Slice } from './slice';
 import { Transcript } from './transcript';
 import { ExternalLink } from './externalLink';
 import { Source } from './source';
-import { Metadata } from './Metadata';
+import { Metadata } from './metadata';
 
 export type Gene = {
   type: 'Gene';
