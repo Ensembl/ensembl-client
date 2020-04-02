@@ -8,6 +8,8 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import { Slice } from 'src/content/app/entity-viewer/types/slice';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
+import { Translation } from 'src/content/app/entity-viewer/types/translation';
+import { ProteinFeature } from 'src/content/app/entity-viewer/types/protein-feature';
 
 export const createTranscript = (): Transcript => {
   const transcriptSlice = createSlice();
@@ -19,13 +21,50 @@ export const createTranscript = (): Transcript => {
     so_term: faker.lorem.word(),
     slice: transcriptSlice,
     exons: createExons(transcriptSlice),
-    cds: createCDS(transcriptSlice)
+    cds: createCDS(transcriptSlice),
+    translation: createTranslation(transcriptSlice)
+  };
+};
+
+const createTranslation = (transcriptSlice: Slice): Translation => {
+  const { start, end } = getFeatureCoordinates({ slice: transcriptSlice });
+  const length = faker.random.number({ min: 10, max: 100 });
+  const numberOfExons = faker.random.number({ min: 1, max: 10 });
+  const maxExonLength = Math.floor(length / numberOfExons);
+
+  const protein_features = times(numberOfExons, (index: number) => {
+    const minCoordinate = maxExonLength * index + 1;
+    const maxCoordinate = maxExonLength * index + 1;
+    const middleCoordinate =
+      maxCoordinate - (maxCoordinate - minCoordinate) / 2;
+    const start = faker.random.number({
+      min: minCoordinate,
+      max: middleCoordinate
+    });
+    const end = faker.random.number({
+      min: middleCoordinate + 1,
+      max: maxCoordinate - 1
+    });
+
+    return {
+      description: faker.random.words(),
+      start: start,
+      id: faker.random.uuid(),
+      type: faker.random.words(),
+      end: end
+    } as ProteinFeature;
+  });
+
+  return {
+    id: faker.random.uuid(),
+    start: start,
+    length: length,
+    end: end,
+    protein_features: protein_features
   };
 };
 
 const createExons = (transcriptSlice: Slice): Exon[] => {
-  const { start, end } = getFeatureCoordinates({ slice: transcriptSlice });
-  const length = end - start;
   const numberOfExons = faker.random.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
 

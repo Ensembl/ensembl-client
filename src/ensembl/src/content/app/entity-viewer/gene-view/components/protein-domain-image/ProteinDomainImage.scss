@@ -1,0 +1,57 @@
+@import 'src/styles/common';
+
+.containerSvg {
+  overflow: visible;
+}
+
+.transcript {
+  rect {
+    fill: $grey;
+  }
+}
+
+.backbone {
+  rect {
+    fill: $light-grey;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+
+  svg {
+    overflow: visible;
+  }
+}
+
+.featureGroup {
+  display: grid;
+  grid-template-columns: [type] 150px [images] min-content;
+  margin-bottom: 10px;
+  & .featureType {
+    grid-column: type;
+    text-align: right;
+    padding-right: 30px;
+    color: $dark-grey;
+  }
+
+  & .featureImages {
+    grid-column: images;
+  }
+}
+
+.featureImage {
+  display: grid;
+  grid-template-columns: [image] min-content [description] max-content;
+
+  & svg {
+    grid-column: image;
+  }
+
+  & .featureDescription {
+    grid-column: description;
+    padding-left: 40px;
+    color: $dark-grey;
+  }
+}

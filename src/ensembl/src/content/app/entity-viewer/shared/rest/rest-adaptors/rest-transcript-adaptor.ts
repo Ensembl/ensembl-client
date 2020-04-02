@@ -3,7 +3,8 @@ import sortBy from 'lodash/sortBy';
 import {
   TranscriptInResponse,
   ExonInResponse,
-  FeatureInResponse
+  FeatureInResponse,
+  TranslationInResponse
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -32,6 +33,25 @@ export const buildTranscript = (
         feature.feature_type === 'exon' && feature.Parent === transcript.id
     )
     .map((exon) => buildExon(exon as ExonInResponse, transcript));
+
+  const translationResponse =
+    (data[data.length - 1] as TranslationInResponse).object_type ===
+    'Translation'
+      ? (data[data.length - 1] as TranslationInResponse)
+      : null;
+
+  let translation = null;
+
+  if (translationResponse) {
+    translation = {
+      id: translationResponse.id,
+      start: translationResponse.start,
+      end: translationResponse.end,
+      length: translationResponse.length,
+      protein_features: translationResponse.protein_features
+    };
+  }
+
   const cds = buildCDS(transcript, data);
 
   return {
@@ -52,7 +72,8 @@ export const buildTranscript = (
       }
     },
     exons,
-    cds
+    cds,
+    translation
   };
 };
 
