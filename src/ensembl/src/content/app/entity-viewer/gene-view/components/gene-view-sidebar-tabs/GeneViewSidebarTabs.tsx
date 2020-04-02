@@ -18,14 +18,14 @@ import { RootState } from 'src/store';
 import styles from './GeneViewSidebarTabs.scss';
 
 type Props = {
-  activeTabName: SidebarTabName | null;
+  selectedTabName: SidebarTabName | null;
   isSidebarOpen: boolean;
   setSidebarTabName: (name: SidebarTabName) => void;
   openSidebar: () => void;
 };
 
 const GeneViewSidebarTabs = (props: Props) => {
-  if (!props.activeTabName) {
+  if (!props.selectedTabName) {
     return null;
   }
 
@@ -37,7 +37,7 @@ const GeneViewSidebarTabs = (props: Props) => {
   };
 
   const getTabProps = (name: SidebarTabName) => {
-    const isActiveTab = props.isSidebarOpen && name === props.activeTabName;
+    const isActiveTab = props.isSidebarOpen && name === props.selectedTabName;
     const classes = classNames(styles.tab, {
       [styles.tabUnselected]: !isActiveTab
     });
@@ -61,7 +61,7 @@ const GeneViewSidebarTabs = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  activeTabName: getEntityViewerSidebarTabName(state),
+  selectedTabName: getEntityViewerSidebarTabName(state),
   isSidebarOpen: isEntityViewerSidebarOpen(state)
 });
 

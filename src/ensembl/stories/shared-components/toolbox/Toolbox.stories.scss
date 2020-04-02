@@ -1,0 +1,31 @@
+@import 'src/styles/common';
+
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  position: relative;
+  padding: 1em;
+  background: pink;
+}
+
+.mainToolboxContent {
+  .toggleButton {
+    margin-left: 1em;
+    float: right;
+  }
+  .download {
+    color: $blue;
+    font-size: 12px;
+  }
+}
+
+.mainToolboxContent,
+.footerToolboxContent {
+  width: 250px;
+  text-align: left;
+}

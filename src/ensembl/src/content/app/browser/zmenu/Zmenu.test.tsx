@@ -39,22 +39,4 @@ describe('<Zmenu />', () => {
       expect(wrapper.find(ZmenuContent)).toHaveLength(1);
     });
   });
-
-  describe('behaviour', () => {
-    test('zmenu action is sent to browser on mouse enter', () => {
-      wrapper
-        .find('div')
-        .first()
-        .simulate('mouseenter');
-      expect(wrapper.props().onEnter).toHaveBeenCalledTimes(1);
-    });
-
-    test('zmenu action is sent to browser on mouse leave', () => {
-      wrapper
-        .find('div')
-        .first()
-        .simulate('mouseleave');
-      expect(wrapper.props().onLeave).toHaveBeenCalledTimes(1);
-    });
-  });
 });

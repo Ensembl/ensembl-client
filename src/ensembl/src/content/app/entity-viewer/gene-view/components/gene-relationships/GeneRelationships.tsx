@@ -1,0 +1,70 @@
+import React from 'react';
+import { connect } from 'react-redux';
+
+import { GeneRelationshipsTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { getEntityViewerActiveGeneRelationships } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { setActiveGeneRelationshipsTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+
+import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+import Panel from 'src/shared/components/panel/Panel';
+
+import { RootState } from 'src/store';
+
+import styles from './GeneRelationships.scss';
+
+const tabsData: Tab[] = [
+  { title: 'Orthologues' },
+  { title: 'Gene families' },
+  { title: 'Gene panels' }
+];
+
+const tabClassNames = {
+  selected: styles.selectedTabName
+};
+
+type Props = {
+  isSidebarOpen: boolean;
+  selectedTabName: GeneRelationshipsTabName;
+  setActiveGeneRelationshipsTab: (tab: string) => void;
+};
+
+const GeneRelationships = (props: Props) => {
+  const TabWrapper = () => {
+    const onTabChange = (tab: string) => {
+      props.setActiveGeneRelationshipsTab(tab);
+    };
+
+    return (
+      <Tabs
+        tabs={tabsData}
+        selectedTab={props.selectedTabName}
+        classNames={tabClassNames}
+        onTabChange={onTabChange}
+      />
+    );
+  };
+
+  return (
+    <Panel
+      header={<TabWrapper />}
+      classNames={{
+        panel: props.isSidebarOpen ? styles.narrowPanel : styles.fullWidthPanel,
+        body: styles.panelBody
+      }}
+    >
+      <div>Panel content is coming...</div>
+    </Panel>
+  );
+};
+
+const mapStateToProps = (state: RootState) => ({
+  isSidebarOpen: isEntityViewerSidebarOpen(state),
+  selectedTabName: getEntityViewerActiveGeneRelationships(state).selectedTabName
+});
+
+const mapDispatchToProps = {
+  setActiveGeneRelationshipsTab
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GeneRelationships);

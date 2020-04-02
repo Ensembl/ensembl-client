@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
 import classNames from 'classnames';
 
-import Tooltip, { Position } from 'src/shared/components/tooltip/Tooltip';
+import PointerBox, {
+  Position
+} from 'src/shared/components/pointer-box/PointerBox';
 
-import styles from './Tooltip.stories.scss';
+import styles from './PointerBox.stories.scss';
 
 type ItemsProps = {
   container: React.RefObject<HTMLElement>;
@@ -20,7 +22,7 @@ type PositionsProps = {
 };
 
 const Item = (props: ItemProps) => {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showPointerBox, setShowPointerBox] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
 
   const className = classNames(styles.positioningStoryItem, props.className);
@@ -29,20 +31,24 @@ const Item = (props: ItemProps) => {
     <div
       ref={anchorRef}
       className={className}
-      onClick={() => setShowTooltip(!showTooltip)}
+      onClick={() => setShowPointerBox(!showPointerBox)}
     >
       Click me
-      {showTooltip && (
-        <Tooltip
-          delay={0}
-          anchor={anchorRef.current}
-          onClose={() => setShowTooltip(false)}
+      {showPointerBox && (
+        <PointerBox
+          anchor={anchorRef.current as HTMLDivElement}
+          onOutsideClick={() => setShowPointerBox(false)}
           position={props.position}
           container={props.container.current}
           autoAdjust={true}
+          classNames={{
+            box: styles.pointerBox,
+            pointer: styles.pointerBoxPointer
+          }}
+          pointerOffset={5}
         >
           Hello sailor!
-        </Tooltip>
+        </PointerBox>
       )}
     </div>
   );
@@ -73,7 +79,7 @@ const Positions = (props: PositionsProps) => {
 
   return (
     <>
-      <span>Select tooltip position: </span>
+      <span>Select pointer box position: </span>
       <div className={styles.positioningStorySelector}>
         <select
           onChange={(e) => props.onChange(e.target.value as Position)}
@@ -92,7 +98,7 @@ const PositioningStory = () => {
 
   return (
     <div className={styles.positioningStoryLayout}>
-      <h1>Auto-positioning of the tooltip</h1>
+      <h1>Auto-positioning of the pointer box</h1>
       <div ref={containerRef} className={styles.positioningStoryContainer}>
         <Items container={containerRef} position={position} />
       </div>
