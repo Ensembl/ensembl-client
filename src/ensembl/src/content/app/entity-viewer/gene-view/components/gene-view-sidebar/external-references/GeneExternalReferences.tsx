@@ -43,7 +43,7 @@ const GeneExternalReferences = (props: Props) => {
               <div key={key}>
                 <ExternalReference
                   label={xref.links[0].name}
-                  href={xref.links[0].url}
+                  to={xref.links[0].url}
                   linkText={xref.links[0].value}
                 />
               </div>
@@ -67,7 +67,7 @@ const GeneExternalReferences = (props: Props) => {
                     {transcript.xrefs.map((xref, key) => (
                       <ExternalReference
                         label={xref.name}
-                        href={xref.url}
+                        to={xref.url}
                         linkText={xref.value}
                         key={key}
                       />
@@ -91,7 +91,7 @@ const renderXrefGroupWithSameLabels = (xref: ExternalLink, key: number) => {
         {xref.links.map((entry, key) => (
           <ExternalReference
             label={''}
-            href={entry.url}
+            to={entry.url}
             linkText={entry.value}
             key={key}
           />
@@ -119,7 +119,7 @@ const renderXrefGroupWithDifferentLabels = (
               {xref.links.map((entry, key) => (
                 <ExternalReference
                   label={entry.name}
-                  href={entry.url}
+                  to={entry.url}
                   linkText={entry.value}
                   key={key}
                 />

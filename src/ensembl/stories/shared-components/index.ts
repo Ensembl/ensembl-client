@@ -20,3 +20,4 @@ import './slide-toggle/SlideToggle.stories';
 import './panel/Panel.stories';
 import './tabs/Tabs.stories';
 import './external-reference/ExternalReference.stories';
+import './external-link/ExternalLink.stories';

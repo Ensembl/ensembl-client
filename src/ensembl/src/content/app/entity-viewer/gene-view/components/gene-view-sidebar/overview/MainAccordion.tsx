@@ -77,7 +77,7 @@ const MainAccordion = (props: Props) => {
                   <ExternalReference
                     label={gene.function.source.name}
                     linkText={gene.function.source.value}
-                    href={gene.function.source.url}
+                    to={gene.function.source.url}
                     classNames={{
                       label: styles.providedBy
                     }}
@@ -150,7 +150,7 @@ const MainAccordion = (props: Props) => {
                   <ExternalReference
                     label={'Ensembl Transcript Archive'}
                     linkText={'TARK'}
-                    href={gene.filters.transcript.tark_url as string}
+                    to={gene.filters.transcript.tark_url as string}
                     classNames={{ label: styles.tarkLabel }}
                   />
                 </div>

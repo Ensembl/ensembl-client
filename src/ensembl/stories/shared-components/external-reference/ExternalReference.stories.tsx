@@ -10,14 +10,14 @@ storiesOf('Components|Shared Components/ExternalReference', module)
     <ExternalReference
       label={'Source name'}
       linkText={'LinkText'}
-      href={''}
+      to={''}
       classNames={{ container: styles.wrapper }}
     />
   ))
   .add('without label', () => (
     <ExternalReference
       linkText={'LinkText'}
-      href={''}
+      to={''}
       classNames={{ container: styles.wrapper }}
     />
   ));
