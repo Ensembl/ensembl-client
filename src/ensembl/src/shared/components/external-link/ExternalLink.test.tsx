@@ -31,9 +31,6 @@ describe('<ExternalLink />', () => {
 
   it('applies the passed in classNames', () => {
     expect(
-      wrapper.find('.defaultLabel').hasClass(defaultProps.classNames?.label)
-    ).toBeTruthy();
-    expect(
       wrapper.find('.defaultIcon').hasClass(defaultProps.classNames?.icon)
     ).toBeTruthy();
     expect(
