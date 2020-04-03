@@ -49,9 +49,10 @@ const createProduct = (): Product => {
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
+    const resource_group_name = faker.random.words();
 
-    protein_domains_resources[faker.random.words()] = {
-      name: faker.random.words(),
+    protein_domains_resources[resource_group_name] = {
+      name: resource_group_name,
       domains: [
         {
           name: faker.random.words(),
