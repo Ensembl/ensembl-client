@@ -17,7 +17,7 @@ export type ProteinDomainImageProps = {
   classNames?: {
     backbone?: string;
     exon?: string;
-    transcript: string;
+    domain: string;
   };
 };
 
@@ -79,10 +79,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
     .range([1, props.width])
     .clamp(true);
 
-  const transcriptClasses = classNames(
-    styles.transcript,
-    props.classNames?.transcript
-  );
+  const domainClasses = classNames(styles.domain, props.classNames?.domain);
 
   return (
     <div className={styles.container}>
@@ -104,7 +101,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
                           width={props.width}
                           height={BLOCK_HEIGHT}
                         >
-                          <g className={transcriptClasses}>
+                          <g className={domainClasses}>
                             <Backbone {...props} scale={scale} />
                             {proteinDomainsResources[type][description].map(
                               (exon, index) => (
