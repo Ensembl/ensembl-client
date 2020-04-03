@@ -24,7 +24,7 @@ type Props = {
 
 const GeneExternalReferences = (props: Props) => {
   if (!props.sidebarPayload) {
-    return null;
+    return <div>No data to display</div>;
   }
   return (
     <div>

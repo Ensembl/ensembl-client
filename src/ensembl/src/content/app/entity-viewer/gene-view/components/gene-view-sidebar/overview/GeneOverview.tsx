@@ -25,7 +25,7 @@ type Props = {
 
 const GeneOverview = (props: Props) => {
   if (!props.sidebarPayload) {
-    return null;
+    return <div>No data to display</div>;
   }
   const { gene } = props.sidebarPayload;
   return (
