@@ -4,13 +4,19 @@ import {
   TranscriptInResponse,
   ExonInResponse,
   FeatureInResponse,
-  TranslationInResponse
+  TranslationInResponse,
+  ProteinFeature
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import {
+  Product,
+  ProductType
+} from 'src/content/app/entity-viewer/types/product';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
+import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
 
 // transform ensembl rest /overlap data into a transcript data structure
 export const restTranscriptAdaptor = (
@@ -21,6 +27,42 @@ export const restTranscriptAdaptor = (
     (feature) => feature.id === transcriptId
   ) as TranscriptInResponse;
   return buildTranscript(transcript, data);
+};
+
+const buildProteinDomainsResources = (
+  proteinFeatures: ProteinFeature[]
+): ProteinDomainsResources => {
+  const domainsResources: ProteinDomainsResources = {};
+
+  proteinFeatures.forEach((entry) => {
+    const resourceName = entry.type;
+    const domainName = entry.description;
+
+    const domain = {
+      name: domainName,
+      source_uri: '',
+      source: {
+        name: '',
+        uri: ''
+      },
+      location: {
+        start: entry.start,
+        end: entry.end
+      },
+      score: 0
+    };
+
+    if (!domainsResources[resourceName]) {
+      domainsResources[resourceName] = {
+        name: resourceName,
+        domains: [domain]
+      };
+    } else {
+      domainsResources[resourceName].domains.push(domain);
+    }
+  });
+
+  return domainsResources;
 };
 
 export const buildTranscript = (
@@ -40,16 +82,18 @@ export const buildTranscript = (
       ? (data[data.length - 1] as TranslationInResponse)
       : null;
 
-  let translation = null;
+  let product;
 
   if (translationResponse) {
-    translation = {
-      id: translationResponse.id,
-      start: translationResponse.start,
-      end: translationResponse.end,
+    const protein_domains_resources = buildProteinDomainsResources(
+      translationResponse.protein_domains_resources
+    );
+
+    product = {
+      type: ProductType.PROTEIN,
       length: translationResponse.length,
-      protein_features: translationResponse.protein_features
-    };
+      protein_domains_resources: protein_domains_resources
+    } as Product;
   }
 
   const cds = buildCDS(transcript, data);
@@ -73,7 +117,7 @@ export const buildTranscript = (
     },
     exons,
     cds,
-    translation
+    product: product as Product
   };
 };
 

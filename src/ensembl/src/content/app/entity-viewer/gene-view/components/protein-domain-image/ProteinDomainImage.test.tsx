@@ -4,7 +4,7 @@ import { mount } from 'enzyme';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
 import ProteinDomainImage, {
-  getProteinFeaturesByType
+  getDomainsByResourceGroups
 } from './ProteinDomainImage';
 
 const minimalProps = {
@@ -12,8 +12,8 @@ const minimalProps = {
   width: 600
 };
 
-const proteinFeaturesByType = getProteinFeaturesByType(
-  minimalProps.transcript.translation.protein_features
+const domainsByResourceGroups = getDomainsByResourceGroups(
+  minimalProps.transcript.product.protein_domains_resources
 );
 
 describe('<ProteinDomainImage />', () => {
@@ -27,11 +27,11 @@ describe('<ProteinDomainImage />', () => {
     jest.resetAllMocks();
   });
 
-  it(' renders N SVGs based on the number of protein features', () => {
+  it(' renders N SVGs based on the number of protein domains', () => {
     let totalDomains = 0;
 
-    Object.keys(proteinFeaturesByType).forEach((featureGroupType) => {
-      totalDomains += Object.keys(proteinFeaturesByType[featureGroupType])
+    Object.keys(domainsByResourceGroups).forEach((resourceGroupName) => {
+      totalDomains += Object.keys(domainsByResourceGroups[resourceGroupName])
         .length;
     });
     expect(totalDomains).toBeTruthy();
@@ -39,14 +39,14 @@ describe('<ProteinDomainImage />', () => {
   });
 
   it('renders the correct number of exons within the SVGs', () => {
-    const firstGroupKey = Object.keys(proteinFeaturesByType)[0];
+    const firstGroupKey = Object.keys(domainsByResourceGroups)[0];
 
     const firstGroupSubKey = Object.keys(
-      proteinFeaturesByType[firstGroupKey]
+      domainsByResourceGroups[firstGroupKey]
     )[0];
 
     const totalExonsInFirstSvg =
-      proteinFeaturesByType[firstGroupKey][firstGroupSubKey].length;
+      domainsByResourceGroups[firstGroupKey][firstGroupSubKey].length;
     expect(
       wrapper
         .find('svg')

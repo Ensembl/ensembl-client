@@ -1,11 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
-
 import { scaleLinear, ScaleLinear } from 'd3';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { ProteinFeature } from 'src/content/app/entity-viewer/types/protein-feature';
+import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -23,31 +22,39 @@ export type ProteinDomainImageProps = {
 };
 
 type ProteinDomainImageData = {
-  [feature_type: string]: {
-    [feature_description: string]: {
+  [resource_type: string]: {
+    [resource_description: string]: {
       start: number;
       end: number;
     }[];
   };
 };
 
-export const getProteinFeaturesByType = (proteinFeatures: ProteinFeature[]) => {
+export const getDomainsByResourceGroups = (
+  proteinDomainsResources: ProteinDomainsResources
+) => {
   const proteinDomains: ProteinDomainImageData = {};
 
-  proteinFeatures.map((feature) => {
-    const { start, end, type, description } = feature;
+  Object.values(proteinDomainsResources).map((resource) => {
+    const resourceName = resource.name;
 
-    if (!proteinDomains[type]) {
-      proteinDomains[type] = {};
+    if (!proteinDomains[resourceName]) {
+      proteinDomains[resourceName] = {};
     }
 
-    if (!proteinDomains[type][description]) {
-      proteinDomains[type][description] = [];
-    }
+    proteinDomainsResources[resourceName].domains.map((domain) => {
+      const domainName = domain.name;
 
-    proteinDomains[type][description].push({
-      start: start,
-      end: end
+      const { start, end } = domain.location;
+
+      if (!proteinDomains[resourceName][domainName]) {
+        proteinDomains[resourceName][domainName] = [];
+      }
+
+      proteinDomains[resourceName][domainName].push({
+        start: start,
+        end: end
+      });
     });
   });
 
@@ -57,14 +64,14 @@ export const getProteinFeaturesByType = (proteinFeatures: ProteinFeature[]) => {
 const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   const { start: transcriptStart } = getFeatureCoordinates(props.transcript);
 
-  if (!props.transcript.translation) {
+  if (!props.transcript.product.protein_domains_resources) {
     return null;
   }
 
-  const length = props.transcript.translation?.length || 0;
+  const length = props.transcript.product?.length || 0;
 
-  const proteinFeatures = getProteinFeaturesByType(
-    props.transcript.translation.protein_features
+  const proteinDomainsResources = getDomainsByResourceGroups(
+    props.transcript.product?.protein_domains_resources
   );
 
   const scale = scaleLinear()
@@ -79,44 +86,49 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
 
   return (
     <div className={styles.container}>
-      {Object.keys(proteinFeatures).map((type, key) => {
-        return (
-          <div key={key} className={styles.featureGroup}>
-            <div className={styles.featureType}>{type}</div>
-            <div className={styles.featureImages}>
-              {Object.keys(proteinFeatures[type]).map((description, key) => {
-                return (
-                  <div key={key} className={styles.featureImage}>
-                    <svg
-                      className={styles.containerSvg}
-                      width={props.width}
-                      height={BLOCK_HEIGHT}
-                    >
-                      <g className={transcriptClasses}>
-                        <Backbone {...props} scale={scale} />
-                        {proteinFeatures[type][description].map(
-                          (exon, index) => (
-                            <ExonBlock
-                              key={index}
-                              exon={exon}
-                              transcriptStart={transcriptStart}
-                              className={props.classNames?.exon}
-                              scale={scale}
-                            />
-                          )
-                        )}
-                      </g>
-                    </svg>
-                    <div className={styles.featureDescription}>
-                      {description}
-                    </div>
-                  </div>
-                );
-              })}
+      {/* TODO: The sorting needs to be done based on the `score`? once it is available */}
+      {Object.keys(proteinDomainsResources)
+        .sort()
+        .map((type, key) => {
+          return (
+            <div key={key} className={styles.resourceGroup}>
+              <div className={styles.resourceName}>{type}</div>
+              <div className={styles.resourceImages}>
+                {Object.keys(proteinDomainsResources[type])
+                  .sort()
+                  .map((description, key) => {
+                    return (
+                      <div key={key} className={styles.resourceImage}>
+                        <svg
+                          className={styles.containerSvg}
+                          width={props.width}
+                          height={BLOCK_HEIGHT}
+                        >
+                          <g className={transcriptClasses}>
+                            <Backbone {...props} scale={scale} />
+                            {proteinDomainsResources[type][description].map(
+                              (exon, index) => (
+                                <ExonBlock
+                                  key={index}
+                                  exon={exon}
+                                  transcriptStart={transcriptStart}
+                                  className={props.classNames?.exon}
+                                  scale={scale}
+                                />
+                              )
+                            )}
+                          </g>
+                        </svg>
+                        <div className={styles.resourceDescription}>
+                          {description}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
     </div>
   );
 };

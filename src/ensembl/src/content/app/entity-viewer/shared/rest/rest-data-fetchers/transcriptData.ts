@@ -3,7 +3,6 @@ import { restTranscriptAdaptor } from 'src/content/app/entity-viewer/shared/rest
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { ProteinFeature } from 'src/content/app/entity-viewer/types/protein-feature';
 
 // the in-response types below describe shape of features retrieved from the rest /overlap endpoint
 export type GeneInResponse = {
@@ -53,7 +52,16 @@ export type TranslationInResponse = {
   start: number;
   end: number;
   length: number;
-  protein_features: ProteinFeature[];
+  protein_domains_resources: ProteinFeature[];
+};
+
+export type ProteinFeature = {
+  translation_id: number;
+  description: string;
+  start: number;
+  id: string;
+  type: string;
+  end: number;
 };
 
 export type FeatureWithParent =
@@ -97,7 +105,7 @@ export const fetchTranscript = async (id: string): Promise<Transcript> => {
   );
   const proteinFeaturesUrl = `http://rest.ensembl.org/overlap/translation/${translationData.Translation.id}?feature=protein_feature;content-type=application/json`;
 
-  translationData.Translation.protein_features = await fetch(
+  translationData.Translation.protein_domains_resources = await fetch(
     proteinFeaturesUrl
   ).then((response) => response.json());
 

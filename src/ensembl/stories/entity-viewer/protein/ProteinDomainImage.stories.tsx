@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { getTranscriptData } from './transcriptData';
+import { getTranscriptData } from '../transcripts/transcriptData';
 
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 
@@ -28,7 +28,11 @@ const ProteinDomainImageStory = () => {
 
   let content;
 
-  if (data && data.translation && !data.translation.protein_features.length) {
+  if (
+    data &&
+    data.product &&
+    !Object.values(data.product.protein_domains_resources).length
+  ) {
     content = (
       <div>
         There are no features available for the given transcript. Please try a
@@ -65,15 +69,15 @@ const FeatureIdForm = (props: {
 
   return (
     <form className={styles.form}>
-      <p>Enter gene or transcript stable id to change view</p>
+      <p>Enter transcript stable id to change view</p>
       <input ref={inputRef} defaultValue={props.id} />
 
-      <button onClick={handleSubmit}>Get transcripts</button>
+      <button onClick={handleSubmit}>Get protein domains</button>
     </form>
   );
 };
 
-storiesOf('Components|EntityViewer/Transcripts', module).add(
-  'ProteinDomain',
+storiesOf('Components|EntityViewer/Protein', module).add(
+  'ProteinDomainImage',
   ProteinDomainImageStory
 );
