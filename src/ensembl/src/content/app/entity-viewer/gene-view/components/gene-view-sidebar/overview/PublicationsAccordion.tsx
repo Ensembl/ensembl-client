@@ -76,7 +76,7 @@ const PublicationsAccordion = (props: Props) => {
 //   return (
 //     <div className={styles.publication} key={key}>
 //       <div className={styles.title}>{props.title}</div>
-//       <div className={styles.description}>{props.authors.join(', ')}</div>
+//       <div className={styles.authors}>{props.authors.join(', ')}</div>
 //       <ExternalLink linkText={props.source.value} href={props.source.url} />
 //       <div className={styles.sourceDescription}>{props.source.name}</div>
 //     </div>

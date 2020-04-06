@@ -1,8 +1,12 @@
 @import 'src/styles/common';
 
+.overviewContainer {
+  font-size: 13px;
+}
 .sectionHead {
   color: $dark-grey;
   font-size: 12px;
+  font-weight: $light;
   border-bottom: 1px solid $grey;
   margin-bottom: 15px;
   position: relative;
@@ -27,6 +31,7 @@
   .geneName {
     grid-column: assembly;
     color: $dark-grey;
+    font-weight: $light;
   }
 
   .stableId {
@@ -83,7 +88,8 @@
 
 .providedBy {
   color: $dark-grey;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: $light;
 }
 
 .sequenceAccordion {
@@ -92,6 +98,8 @@
     & .geneTitle {
       color: $dark-grey;
       margin-right: 10px;
+      font-size: 12px;
+      font-weight: $light;
     }
 
     & .stableId {
@@ -144,8 +152,10 @@
     font-weight: $bold;
   }
 
-  & .description {
+  & .authors {
     color: $dark-grey;
+    font-size: 12px;
+    font-weight: 300;
   }
 
   & .sourceDescription {

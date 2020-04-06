@@ -16,12 +16,10 @@
   margin-right: 5px;
   width: 12px;
   fill: $orange;
+  margin-bottom: -1px;
 }
 
 .defaultLink {
   display: inline-block;
-}
-
-.linkHolder {
-  display: inline-block;
+  font-size: 12px;
 }

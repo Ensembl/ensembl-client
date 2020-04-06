@@ -29,7 +29,7 @@ const GeneOverview = (props: Props) => {
   }
   const { gene } = props.sidebarPayload;
   return (
-    <div>
+    <div className={styles.overviewContainer}>
       <div className={styles.geneDetails}>
         <span className={styles.geneSymbol}>{gene.symbol}</span>
         <span className={styles.stableId}>{gene.id}</span>

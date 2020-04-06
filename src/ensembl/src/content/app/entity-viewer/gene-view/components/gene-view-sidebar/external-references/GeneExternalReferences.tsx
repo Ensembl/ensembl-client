@@ -27,7 +27,7 @@ const GeneExternalReferences = (props: Props) => {
     return <div>No data to display</div>;
   }
   return (
-    <div>
+    <div className={styles.xrefsContainer}>
       <div className={styles.geneDetails}>
         <div className={styles.geneSymbol}>
           {props.sidebarPayload.gene.symbol}
@@ -87,7 +87,7 @@ const renderXrefGroupWithSameLabels = (xref: ExternalLink, key: number) => {
   return (
     <div key={key} className={styles.xrefGroupWithSameLabel}>
       <span className={styles.xrefGroupSourceName}>{xref.source_name}</span>
-      <span>
+      <span className={styles.xrefGroupLinks}>
         {xref.links.map((entry, key) => (
           <ExternalReference
             label={''}

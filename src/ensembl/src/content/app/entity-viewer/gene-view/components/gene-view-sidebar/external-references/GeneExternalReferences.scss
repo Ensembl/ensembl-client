@@ -1,5 +1,8 @@
 @import 'src/styles/common';
 
+.xrefsContainer {
+  font-size: 12px;
+}
 .sectionHead {
   color: $dark-grey;
   font-size: 12px;
@@ -85,5 +88,9 @@
 }
 
 .xrefGroupWithSameLabel {
-  display: flex;
+  display: inline-block;
+}
+
+.xrefGroupLinks {
+  display: inline-grid;
 }
