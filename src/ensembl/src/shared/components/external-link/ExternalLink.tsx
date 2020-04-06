@@ -21,7 +21,7 @@ const ExternalLink = (props: ExternalLinkProps) => {
   const linkClass = classNames(styles.defaultLink, props.classNames?.link);
 
   return (
-    <span>
+    <span className={styles.linkContainer}>
       <LinkIcon className={iconClass} />
       <a className={linkClass} href={props.to}>
         {props.linkText}

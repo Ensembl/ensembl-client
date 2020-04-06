@@ -26,14 +26,14 @@ const ExternalReference = (props: ExternalReferenceProps) => {
   const labelClass = classNames(styles.defaultLabel, props.classNames?.label);
 
   return (
-    <span className={containerClass}>
+    <div className={containerClass}>
       {!!props.label && <span className={labelClass}>{props.label}</span>}
       <ExternalLink
         to={props.to}
         linkText={props.linkText}
         classNames={props.classNames}
       />
-    </span>
+    </div>
   );
 };
 
