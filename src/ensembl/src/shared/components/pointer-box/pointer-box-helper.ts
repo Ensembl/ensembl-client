@@ -1,12 +1,6 @@
 import bringToFront from 'src/shared/utils/bringToFront';
 
-import {
-  TIP_WIDTH,
-  TIP_HEIGHT,
-  TIP_HORIZONTAL_OFFSET
-} from './tooltip-constants';
-
-import { Position } from './tooltip-types';
+import { Position } from './pointer-box-types';
 
 const topRow = [Position.TOP_LEFT, Position.TOP_RIGHT];
 
@@ -17,10 +11,13 @@ const leftSide = [Position.LEFT_TOP, Position.LEFT_BOTTOM];
 const rightSide = [Position.RIGHT_TOP, Position.RIGHT_BOTTOM];
 
 type FindOptimalPositionParams = {
-  tooltipBoundingRect: ClientRect;
+  pointerBoxBoundingRect: ClientRect;
   rootBoundingRect: ClientRect;
   anchorBoundingRect: ClientRect;
   position: Position;
+  pointerWidth: number;
+  pointerHeight: number;
+  pointerOffset: number;
 };
 
 export const findOptimalPosition = (params: FindOptimalPositionParams) => {
@@ -64,13 +61,17 @@ const getTooltipOutOfBoundsArea = (
   params: FindOptimalPositionParams
 ): number => {
   const {
-    tooltipBoundingRect,
+    pointerBoxBoundingRect,
     rootBoundingRect,
     anchorBoundingRect,
-    position
+    position,
+    pointerWidth,
+    pointerHeight,
+    pointerOffset
   } = params;
+  const halfPointerWidth = Math.floor(pointerWidth / 2);
 
-  const { width, height } = tooltipBoundingRect;
+  const { width, height } = pointerBoxBoundingRect;
 
   const {
     left: anchorLeft,
@@ -89,48 +90,44 @@ const getTooltipOutOfBoundsArea = (
     predictedBottom = 0;
 
   if (position === Position.TOP_LEFT) {
-    predictedLeft =
-      anchorCentreX - width + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
+    predictedLeft = anchorCentreX - width + halfPointerWidth + pointerOffset;
     predictedRight = predictedLeft + width;
-    predictedTop = anchorTop - TIP_HEIGHT - height;
+    predictedTop = anchorTop - pointerHeight - height;
     predictedBottom = anchorTop;
   } else if (position === Position.TOP_RIGHT) {
-    predictedLeft = anchorCentreX - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
+    predictedLeft = anchorCentreX - halfPointerWidth - pointerOffset;
     predictedRight = predictedLeft + width;
-    predictedTop = anchorTop - TIP_HEIGHT - height;
+    predictedTop = anchorTop - pointerHeight - height;
     predictedBottom = anchorTop;
   } else if (position === Position.BOTTOM_LEFT) {
-    predictedLeft =
-      anchorCentreX - width + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
+    predictedLeft = anchorCentreX - width + halfPointerWidth + pointerOffset;
     predictedRight = predictedLeft + width;
     predictedTop = anchorBottom;
-    predictedBottom = anchorBottom + TIP_HEIGHT + height;
+    predictedBottom = anchorBottom + pointerHeight + height;
   } else if (position === Position.BOTTOM_RIGHT) {
-    predictedLeft = anchorCentreX - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
+    predictedLeft = anchorCentreX - halfPointerWidth - pointerOffset;
     predictedRight = predictedLeft + width;
     predictedTop = anchorBottom;
-    predictedBottom = anchorBottom + TIP_HEIGHT + height;
+    predictedBottom = anchorBottom + pointerHeight + height;
   } else if (position === Position.LEFT_TOP) {
-    predictedLeft = anchorLeft - TIP_HEIGHT - width;
+    predictedLeft = anchorLeft - pointerHeight - width;
     predictedRight = anchorLeft;
-    predictedTop = anchorCentreY - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
+    predictedTop = anchorCentreY - halfPointerWidth - pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.LEFT_BOTTOM) {
-    predictedLeft = anchorLeft - TIP_HEIGHT - width;
+    predictedLeft = anchorLeft - pointerHeight - width;
     predictedRight = anchorLeft;
-    predictedTop =
-      anchorCentreY - height + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
+    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_TOP) {
     predictedLeft = anchorRight;
-    predictedRight = anchorRight + TIP_HEIGHT + width;
-    predictedTop = anchorCentreY - TIP_WIDTH / 2 - TIP_HORIZONTAL_OFFSET;
+    predictedRight = anchorRight + pointerHeight + width;
+    predictedTop = anchorCentreY - halfPointerWidth - pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_BOTTOM) {
     predictedLeft = anchorRight;
-    predictedRight = anchorRight + TIP_HEIGHT + width;
-    predictedTop =
-      anchorCentreY - height + TIP_WIDTH / 2 + TIP_HORIZONTAL_OFFSET;
+    predictedRight = anchorRight + pointerHeight + width;
+    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
     predictedBottom = predictedTop + height;
   }
 

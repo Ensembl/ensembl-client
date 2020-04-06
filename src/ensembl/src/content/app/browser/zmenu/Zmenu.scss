@@ -1,34 +1,12 @@
 @import 'src/styles/common';
 
-$zmenuBackgroundColor: $black;
-
-.zmenuWrapper {
+.zmenuAnchor {
   position: absolute;
-  filter: drop-shadow(2px 2px 3px $shadow-color);
-}
-
-.zmenu {
-  position: relative;
-  padding: 12px 20px;
-  color: $white;
-  background-color: $zmenuBackgroundColor;
-  min-height: 40px;
-  font-size: 13px;
-}
-
-.zmenuTip {
-  position: absolute;
-
-  polygon {
-    fill: $zmenuBackgroundColor;
-  }
 }
 
 .zmenuContentFeature {
   margin: 0;
-  &:not(:last-of-type) {
-    margin-bottom: 1em;
-  }
+  margin-bottom: 1em;
 }
 
 .zmenuContentLine {
@@ -57,4 +35,33 @@ $zmenuBackgroundColor: $black;
 .markupFocus {
   cursor: pointer;
   color: $blue;
+}
+
+.zmenuAppLinks {
+  display: flex;
+}
+
+.zmenuAppButton {
+  flex: 0 0 auto;
+  height: 20px;
+  width: 20px;
+  margin-left: 16px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: $white;
+    background-color: $blue;
+  }
+}
+
+.zmenuToggleFooter {
+  margin-left: auto;
+  color: $blue;
+}
+
+.zmenuFooterContent {
+  margin-top: 12px;
+  border-top: 1px solid rgba($grey, 0.3);
+  padding-top: 12px;
 }

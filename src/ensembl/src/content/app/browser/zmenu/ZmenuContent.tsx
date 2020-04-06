@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 
 import { changeFocusObject } from 'src/content/app/browser/browserActions';
 
+import ZmenuAppLinks from './ZmenuAppLinks';
+
 import {
   ZmenuContentFeature as ZmenuContentFeatureType,
   ZmenuContentLine as ZmenuContentLineType,
@@ -41,11 +43,10 @@ export type ZmenuContentItemProps = ZmenuContentItemType & {
 export const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
   const renderedContent = features.map((feature) => (
-    <ZmenuContentFeature
-      key={feature.id}
-      id={feature.id}
-      lines={feature.lines}
-    />
+    <div key={feature.id}>
+      <ZmenuContentFeature id={feature.id} lines={feature.lines} />
+      <ZmenuAppLinks featureId={feature.id} />
+    </div>
   ));
   return <>{renderedContent}</>;
 };
