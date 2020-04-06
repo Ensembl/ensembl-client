@@ -37,10 +37,8 @@ const DefaultTranscriptListItem = (props: Props) => {
   const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
 
   return (
-    <>
-      <div
-        className={`${styles.defaultTranscriptListItem} ${transcriptsListStyles.row}`}
-      >
+    <div className={styles.defaultTranscriptListItem}>
+      <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>Left</div>
         <div
           className={transcriptsListStyles.middle}
@@ -64,7 +62,7 @@ const DefaultTranscriptListItem = (props: Props) => {
       {shouldShowInfo ? (
         <TranscriptsListItemInfo transcript={props.transcript} />
       ) : null}
-    </>
+    </div>
   );
 };
 
