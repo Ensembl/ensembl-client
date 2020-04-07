@@ -100,7 +100,7 @@ const ItemInfo = (props: ItemInfoProps) => {
         cdsLength += end - start + 1;
       }
 
-      const aminoAcidLength = cdsLength / 3;
+      const aminoAcidLength = Math.floor(cdsLength / 3);
       return aminoAcidLength;
     } else {
       return 0;
