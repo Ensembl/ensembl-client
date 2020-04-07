@@ -29,6 +29,7 @@ const DefaultTranscriptslist = (props: Props) => {
         </div>
       </div>
       <div className={styles.content}>
+        <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => (
           <DefaultTranscriptsListItem
             key={index}
@@ -37,7 +38,6 @@ const DefaultTranscriptslist = (props: Props) => {
             rulerTicks={props.rulerTicks}
           />
         ))}
-        <StripedBackground {...props} />
       </div>
     </div>
   );
