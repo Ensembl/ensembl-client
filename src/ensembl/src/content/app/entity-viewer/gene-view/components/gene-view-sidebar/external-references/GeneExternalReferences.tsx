@@ -86,8 +86,8 @@ const GeneExternalReferences = (props: Props) => {
 const renderXrefGroupWithSameLabels = (xref: ExternalLink, key: number) => {
   return (
     <div key={key} className={styles.xrefGroupWithSameLabel}>
-      <span className={styles.xrefGroupSourceName}>{xref.source_name}</span>
-      <span className={styles.xrefGroupLinks}>
+      <div className={styles.xrefGroupSourceName}>{xref.source_name}</div>
+      <div className={styles.xrefGroupLinks}>
         {xref.links.map((entry, key) => (
           <ExternalReference
             label={''}
@@ -96,7 +96,7 @@ const renderXrefGroupWithSameLabels = (xref: ExternalLink, key: number) => {
             key={key}
           />
         ))}
-      </span>
+      </div>
     </div>
   );
 };

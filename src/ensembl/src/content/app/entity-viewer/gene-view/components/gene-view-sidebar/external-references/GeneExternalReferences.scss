@@ -56,13 +56,13 @@
 
 .xrefAccordionButton:before {
   right: -2px;
-  top: 15px;
+  top: 12px;
   transform: rotate(45deg);
 }
 
 .xrefAccordionButton:after {
   right: 5px;
-  top: 15px;
+  top: 12px;
   transform: rotate(-45deg);
 }
 
@@ -85,6 +85,7 @@
 
 .xrefGroupSourceName {
   margin-right: 5px;
+  display: inline-block;
 }
 
 .xrefGroupWithSameLabel {
