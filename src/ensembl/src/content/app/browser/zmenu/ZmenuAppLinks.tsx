@@ -11,11 +11,8 @@ import {
   isFocusObjectPositionDefault
 } from '../browserSelectors';
 
-import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
-
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { RootState } from 'src/store';
 
@@ -54,21 +51,21 @@ const ZmenuAppLinks = (props: Props) => {
   const shouldShowBrowserButton =
     props.featureId !== props.activeFeatureId || !props.isInDefaultPosition;
 
+  type linkType = {
+    ev?: string;
+    gb?: string;
+  };
+
+  const links: Partial<linkType> = {};
+
+  if (shouldShowBrowserButton) {
+    links['gb'] = getBrowserLink();
+  }
+  links['ev'] = getEntityViewerLink();
+
   return (
     <div className={styles.zmenuAppLinks}>
-      <span>View in</span>
-      {shouldShowBrowserButton && (
-        <ImageButton
-          className={styles.zmenuAppButton}
-          image={BrowserIcon}
-          onClick={() => props.push(getBrowserLink())}
-        />
-      )}
-      <ImageButton
-        className={styles.zmenuAppButton}
-        image={EntityViewerIcon}
-        onClick={() => props.push(getEntityViewerLink())}
-      />
+      <ViewInApp links={links} />
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         openElement={<span>Download</span>}

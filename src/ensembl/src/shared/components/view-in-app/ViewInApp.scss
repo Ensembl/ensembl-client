@@ -1,11 +1,10 @@
 @import 'src/styles/common';
 
 .viewIn {
-  font-size: 10px;
   color: $grey;
+  width: 50px;
 }
 .entityViewerAppLinkButtons {
-  grid-column: 3/4;
   display: flex;
   align-items: center;
 }
@@ -17,5 +16,7 @@
   svg {
     width: 25px;
     height: 25px;
+    fill: $white;
+    background-color: $blue;
   }
 }
