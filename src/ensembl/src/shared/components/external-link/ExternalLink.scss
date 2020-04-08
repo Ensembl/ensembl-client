@@ -1,0 +1,29 @@
+@import 'src/styles/common';
+
+.defaultContainer {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.defaultLabel {
+  grid-column: label;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.defaultIcon {
+  display: inline-block;
+  margin-right: 5px;
+  width: 12px;
+  fill: $orange;
+  margin-bottom: -1px;
+}
+
+.defaultLink {
+  display: inline-block;
+  font-size: 12px;
+}
+
+.linkContainer {
+  display: inline-block;
+}

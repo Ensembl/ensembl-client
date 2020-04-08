@@ -1,0 +1,97 @@
+@import 'src/styles/common';
+
+.xrefsContainer {
+  font-size: 13px;
+}
+.sectionHead {
+  color: $dark-grey;
+  font-size: 12px;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.geneDetails {
+  display: grid;
+  grid-template-columns: [gene-symbol] min-content 10px [stable-id] auto;
+
+  .geneSymbol {
+    grid-column: gene-symbol;
+    font-weight: $bold;
+  }
+
+  .stableId {
+    grid-column: stable-id;
+  }
+}
+
+.accordionContainer {
+  width: 100%;
+}
+
+.xrefAccordion {
+  border: none;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+.xrefAccordionHeader {
+  background-color: transparent;
+  border-radius: 0px;
+}
+
+.xrefAccordionButton {
+  color: $black;
+  padding: 0px;
+  width: auto;
+  padding-right: 60px;
+  display: inline-block;
+
+  &:before,
+  &:after {
+    margin-top: -3px;
+  }
+}
+
+.xrefAccordionButton:before {
+  right: -2px;
+  top: 12px;
+  transform: rotate(45deg);
+}
+
+.xrefAccordionButton:after {
+  right: 5px;
+  top: 12px;
+  transform: rotate(-45deg);
+}
+
+.xrefAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.xrefAccordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 5px 0px 5px 20px;
+}
+
+.transcriptWrapper {
+  margin-bottom: 10px;
+}
+.transcriptXrefs {
+  margin: 10px 0 20px 20px;
+}
+
+.xrefGroupSourceName {
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.xrefGroupWithSameLabel {
+  display: inline-block;
+}
+
+.xrefGroupLinks {
+  display: inline-grid;
+}

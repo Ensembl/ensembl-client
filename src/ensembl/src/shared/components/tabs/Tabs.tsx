@@ -17,7 +17,7 @@ export type TabsProps = {
     selected?: string;
     tabsContainer?: string;
   };
-  selectedTab: string;
+  selectedTab: string | null;
   onTabChange: (selectedTab: string) => void;
 };
 
