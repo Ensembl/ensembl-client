@@ -4,9 +4,7 @@ import classNames from 'classnames';
 
 import useHover from 'src/shared/hooks/useHover';
 
-import Tooltip, {
-  TOOLTIP_TIMEOUT
-} from 'src/shared/components/tooltip/Tooltip';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { Status } from 'src/shared/types/status';
 

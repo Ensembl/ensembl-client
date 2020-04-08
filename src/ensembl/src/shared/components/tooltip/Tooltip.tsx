@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 
-export { TOOLTIP_TIMEOUT } from './tooltip-constants';
+import { TOOLTIP_TIMEOUT } from './tooltip-constants';
 
 import PointerBox, {
   Position
@@ -60,8 +60,9 @@ const TooltipWithAnchor = (props: Props) => {
 };
 
 Tooltip.defaultProps = {
-  delay: 0,
+  delay: TOOLTIP_TIMEOUT,
   position: Position.BOTTOM_RIGHT
 };
 
+export { TOOLTIP_TIMEOUT };
 export default Tooltip;
