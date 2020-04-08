@@ -12,7 +12,7 @@ jest.mock('react-router-dom', () => ({
 describe('<ViewInApp />', () => {
   it('contains Link and ImageButton', () => {
     const url = urlFor.browser();
-    const wrapper = mount(<ViewInApp links={{ gb: url }} />);
+    const wrapper = mount(<ViewInApp links={{ genomeBrowser: url }} />);
     expect(wrapper.find(Link)).toHaveLength(1);
   });
 });

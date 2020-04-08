@@ -52,16 +52,16 @@ const ZmenuAppLinks = (props: Props) => {
     props.featureId !== props.activeFeatureId || !props.isInDefaultPosition;
 
   type linkType = {
-    ev?: string;
-    gb?: string;
+    genomeBrowser?: string;
+    entityViewer?: string;
   };
 
   const links: Partial<linkType> = {};
 
   if (shouldShowBrowserButton) {
-    links['gb'] = getBrowserLink();
+    links['genomeBrowser'] = getBrowserLink();
   }
-  links['ev'] = getEntityViewerLink();
+  links['entityViewer'] = getEntityViewerLink();
 
   return (
     <div className={styles.zmenuAppLinks}>

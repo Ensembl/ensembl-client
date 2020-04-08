@@ -11,55 +11,53 @@ import { Status } from 'src/shared/types/status';
 import styles from './ViewInApp.scss';
 
 export const Apps = {
-  gb: {
+  genomeBrowser: {
     tooltip: 'Genome Browser',
     icon: BrowserIcon
   },
-  ev: {
+  entityViewer: {
     tooltip: 'Entity Viewer',
     icon: EntityViewerIcon
   }
 };
 
-export type urlObj = {
-  gb: string;
-  ev: string;
-};
+type AppName = keyof typeof Apps;
+
+export type urlObj = Record<AppName, string>;
 
 export type ViewInAppProps = {
   links: Partial<urlObj>;
 };
 
 const ViewInApp = (props: ViewInAppProps) => {
-  return (
-    <div className={styles.entityViewerAppLinkButtons}>
-      <span className={styles.viewIn}>View in</span>
-      {Object.keys(props.links).map((appId) => {
-        const id = appId as keyof urlObj;
+  return Object.keys(props.links) ? (
+    <div className={styles.viewInAppLinkButtons}>
+      <span className={styles.viewInLabel}>View in</span>
+      {(Object.keys(props.links) as AppName[]).map((appId) => {
         return (
           <AppButton
-            key={'AppButton_' + appId}
+            key={appId}
             appId={appId}
-            url={props.links[id] as string}
+            url={props.links[appId] as string}
           />
         );
       })}
     </div>
-  );
+  ) : null;
 };
 
 type AppButtonProps = {
-  appId: string;
+  appId: AppName;
   url: string;
 };
 
 const AppButton = (props: AppButtonProps) => {
   return (
-    <Link className={styles.entityViewerAppLink} to={props.url}>
+    <Link className={styles.viewInAppLink} to={props.url}>
       <ImageButton
         status={Status.DEFAULT}
-        description={Apps[props.appId as keyof urlObj].tooltip}
-        image={Apps[props.appId as keyof urlObj].icon}
+        description={Apps[props.appId].tooltip}
+        image={Apps[props.appId].icon}
       />
     </Link>
   );

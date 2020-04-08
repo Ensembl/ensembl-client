@@ -109,7 +109,10 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
       </div>
       <div className={styles.homepageAppLinkButtons}>
         <ViewInApp
-          links={{ gb: urlFor.browser(), ev: urlFor.entityViewer() }}
+          links={{
+            genomeBrowser: urlFor.browser(),
+            entityViewer: urlFor.entityViewer()
+          }}
         />
       </div>
     </div>

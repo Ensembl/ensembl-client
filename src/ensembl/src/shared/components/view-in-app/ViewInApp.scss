@@ -1,14 +1,14 @@
 @import 'src/styles/common';
 
-.viewIn {
+.viewInLabel {
   color: $grey;
   width: 50px;
 }
-.entityViewerAppLinkButtons {
+.viewInAppLinkButtons {
   display: flex;
   align-items: center;
 }
-.entityViewerAppLink {
+.viewInAppLink {
   margin-left: 1.1em;
   &:first-of-type {
     margin-left: 0.6em;
