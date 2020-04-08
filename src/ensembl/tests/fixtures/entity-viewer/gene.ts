@@ -23,8 +23,8 @@ export const createGene = (): Gene => {
 };
 
 const getScale = () => {
-  const domain = [1, faker.random.number()];
-  const range = [0, faker.random.number()];
+  const domain = [1000, faker.random.number({ min: 2000, max: 100000 })];
+  const range = [100, faker.random.number({ min: 200, max: 600 })];
   const scale = scaleLinear()
     .domain(domain)
     .range(range);
@@ -33,7 +33,7 @@ const getScale = () => {
 };
 
 export const createRulerTicks = (): TicksAndScale => ({
-  labelledTicks: times(faker.random.number(), Number),
-  ticks: times(faker.random.number(), Number),
+  labelledTicks: times(faker.random.number({ min: 1, max: 10 }), Number),
+  ticks: times(faker.random.number({ min: 1, max: 5 }), Number),
   scale: getScale()
 });
