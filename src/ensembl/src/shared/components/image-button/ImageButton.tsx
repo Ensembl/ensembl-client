@@ -57,11 +57,7 @@ export const ImageButton = (props: Props) => {
         )}
       </button>
       {shouldShowTooltip && (
-        <Tooltip
-          anchor={hoverRef.current}
-          autoAdjust={true}
-          delay={TOOLTIP_TIMEOUT}
-        >
+        <Tooltip anchor={hoverRef.current} autoAdjust={true}>
           {props.description}
         </Tooltip>
       )}
