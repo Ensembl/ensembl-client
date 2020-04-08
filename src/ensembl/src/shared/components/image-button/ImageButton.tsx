@@ -4,7 +4,9 @@ import classNames from 'classnames';
 
 import useHover from 'src/shared/hooks/useHover';
 
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import Tooltip, {
+  TOOLTIP_TIMEOUT
+} from 'src/shared/components/tooltip/Tooltip';
 
 import { Status } from 'src/shared/types/status';
 
@@ -57,7 +59,11 @@ export const ImageButton = (props: Props) => {
         )}
       </button>
       {shouldShowTooltip && (
-        <Tooltip anchor={hoverRef.current} autoAdjust={true}>
+        <Tooltip
+          anchor={hoverRef.current}
+          autoAdjust={true}
+          delay={TOOLTIP_TIMEOUT}
+        >
           {props.description}
         </Tooltip>
       )}

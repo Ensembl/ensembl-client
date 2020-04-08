@@ -1,5 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 
+export { TOOLTIP_TIMEOUT } from './tooltip-constants';
+
 import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
