@@ -7,9 +7,8 @@ import { AppName } from 'src/global/globalConfig';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import AppBar, {
-  HelpAndDocumentation
-} from 'src/shared/components/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBarHelp from 'src/content/app/help-and-docs/app-bar/AppBarHelp';
 import { FocusableSelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
@@ -45,7 +44,7 @@ const CustomDownloadAppBar = (props: CustomDownloadAppBarProps) => {
     <AppBar
       appName={AppName.CUSTOM_DOWNLOADS}
       mainContent={wrappedSpecies}
-      aside={<HelpAndDocumentation />}
+      aside={<AppBarHelp />}
     />
   );
 };

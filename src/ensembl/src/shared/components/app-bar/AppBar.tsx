@@ -1,6 +1,4 @@
 import React from 'react';
-
-import chevronRightIcon from 'static/img/shared/chevron-right-grey.svg';
 import styles from './AppBar.scss';
 
 type AppBarProps = {
@@ -16,16 +14,5 @@ export const AppBar = (props: AppBarProps) => (
     <div className={styles.appBarAside}>{props.aside}</div>
   </section>
 );
-
-// this is a temporary component; will need update/refactoring once we have help resources
-export const HelpAndDocumentation = () => {
-  return (
-    <div className={styles.helpLink}>
-      <a className="inactive">
-        Help &amp; documentation <img src={chevronRightIcon} alt="" />
-      </a>
-    </div>
-  );
-};
 
 export default AppBar;

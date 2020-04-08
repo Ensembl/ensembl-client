@@ -10,6 +10,7 @@ import header from '../header/headerReducer';
 import ensObjects from '../shared/state/ens-object/ensObjectReducer';
 import speciesSelector from '../content/app/species-selector/state/speciesSelectorReducer';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
+import helpAndDocs from 'src/content/app/help-and-docs/state/helpAndDocsReducer';
 
 const rootReducer = (history: any) =>
   combineReducers({
@@ -22,7 +23,8 @@ const rootReducer = (history: any) =>
     header,
     router: connectRouter(history),
     speciesSelector,
-    entityViewer
+    entityViewer,
+    helpAndDocs
   });
 
 export default rootReducer;

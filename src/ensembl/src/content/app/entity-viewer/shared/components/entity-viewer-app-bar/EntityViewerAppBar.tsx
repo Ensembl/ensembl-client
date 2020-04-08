@@ -11,9 +11,9 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 
 import { changeActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 
-import AppBar, {
-  HelpAndDocumentation
-} from 'src/shared/components/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBarHelp from 'src/content/app/help-and-docs/app-bar/AppBarHelp';
+
 import { FocusableSelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
@@ -53,7 +53,7 @@ const EntityViewerAppBar = (props: EntityViewerAppBarProps) => {
     <AppBar
       appName={AppName.ENTITY_VIEWER}
       mainContent={wrappedSpecies}
-      aside={<HelpAndDocumentation />}
+      aside={<AppBarHelp />}
     />
   );
 };

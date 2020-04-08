@@ -9,9 +9,10 @@ import { AppName } from 'src/global/globalConfig';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import AppBar, {
-  HelpAndDocumentation
-} from 'src/shared/components/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+
+import AppBarHelp from 'src/content/app/help-and-docs/app-bar/AppBarHelp';
+
 import { FocusableSelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
@@ -51,7 +52,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     <AppBar
       appName={AppName.GENOME_BROWSER}
       mainContent={wrappedSpecies}
-      aside={<HelpAndDocumentation />}
+      aside={<AppBarHelp />}
     />
   );
 };

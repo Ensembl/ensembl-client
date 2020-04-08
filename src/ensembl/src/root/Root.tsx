@@ -11,7 +11,7 @@ import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { GeneralErrorScreen } from 'src/shared/components/error-screen';
-
+import PopupHelp from '../content/app/help-and-docs/popup-help/PopupHelp';
 import styles from './Root.scss';
 
 type Props = {
@@ -44,6 +44,8 @@ export const Root = (props: Props) => {
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
         <Header />
         <Content />
+        <PopupHelp />
+
         {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
       </ErrorBoundary>
     </div>

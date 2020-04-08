@@ -16,5 +16,8 @@ export default {
   googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
 
   // Genesearch endpoint
-  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT
+  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT,
+
+  // Prismic API endpoint
+  prismicApiEndpoint: process.env.PRISMIC_API_ENDPOINT
 };

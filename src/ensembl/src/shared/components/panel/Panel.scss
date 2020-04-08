@@ -34,10 +34,14 @@
 .closeButton {
   position: absolute;
   right: 10px;
-  top: 45px;
+  top: 10px;
   cursor: pointer;
   img {
     height: 15px;
     width: 15px;
   }
+}
+
+.closeButton + .header {
+  top: 45px;
 }

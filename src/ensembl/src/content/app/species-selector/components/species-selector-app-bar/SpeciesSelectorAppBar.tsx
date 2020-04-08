@@ -10,6 +10,7 @@ import {
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBarHelp from 'src/content/app/help-and-docs/app-bar/AppBarHelp';
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
@@ -39,7 +40,13 @@ export const SpeciesSelectorAppBar = (props: Props) => {
       <PlaceholderMessage />
     );
 
-  return <AppBar appName="Species Selector" mainContent={mainContent} />;
+  return (
+    <AppBar
+      appName="Species Selector"
+      mainContent={mainContent}
+      aside={<AppBarHelp />}
+    />
+  );
 };
 
 const SelectedSpeciesList = (props: Props) => {

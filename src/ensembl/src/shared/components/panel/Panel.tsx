@@ -6,7 +6,7 @@ import closeIcon from 'static/img/shared/close.svg';
 import styles from './Panel.scss';
 
 export type PanelProps = {
-  header: string | JSX.Element;
+  header?: string | JSX.Element;
   children: JSX.Element;
   classNames?: {
     panel?: string;
@@ -41,7 +41,7 @@ const Panel = (props: PanelProps) => {
           <img src={closeIcon}></img>
         </span>
       )}
-      <div className={headerClassNames}>{header}</div>
+      {header && <div className={headerClassNames}>{header}</div>}
       <div className={bodyClassNames}>
         <div>{props.children}</div>
       </div>

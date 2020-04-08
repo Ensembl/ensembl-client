@@ -1,0 +1,21 @@
+@import 'src/styles/common';
+
+.helpLink {
+  flex: 0 1 auto;
+  position: relative;
+  margin-left: 2em;
+  text-align: right;
+  cursor: pointer;
+
+  a {
+    color: $black;
+    font-size: 12px;
+    font-weight: $light;
+  }
+
+  img {
+    height: 14px;
+    margin-left: 5px;
+    width: 14px;
+  }
+}
