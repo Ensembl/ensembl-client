@@ -14,6 +14,9 @@ jest.mock('../content/Content', () => () => 'Content');
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
+jest.mock('../content/app/help-and-docs/popup-help/PopupHelp', () => () => (
+  <div>Popup help</div>
+));
 
 const updateBreakpointWidth = jest.fn();
 

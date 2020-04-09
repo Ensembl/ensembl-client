@@ -45,7 +45,7 @@ const AppBarHelp = (props: AppBarHelpProps) => {
   );
 };
 
-// TOTO: It might be better to set the active component using a middleware
+// TODO: It might be better to set the active component using a middleware
 const mapStateToProps = (state: RootState) => ({
   componentId: getActiveComponentId(state)
 });

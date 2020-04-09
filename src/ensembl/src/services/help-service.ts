@@ -28,7 +28,6 @@ class HelpService {
 
     if (response) {
       const data = response.results[0].data;
-
       const helpContent: HelpContent = {
         componentId,
         article: buildArticleFromResponse(response)

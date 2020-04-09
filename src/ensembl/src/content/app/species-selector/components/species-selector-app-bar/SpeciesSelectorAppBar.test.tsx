@@ -14,6 +14,10 @@ jest.mock('react-router-dom', () => ({
   Link: (props: any) => <div>{props.children}</div>
 }));
 
+jest.mock('src/content/app/help-and-docs/app-bar/AppBarHelp', () => () => (
+  <div>App bar help</div>
+));
+
 const toggleSpeciesUse = jest.fn();
 const onSpeciesDelete = jest.fn();
 
