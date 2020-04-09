@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import {
   getFeatureCoordinates,
   getRegionName
@@ -21,10 +22,13 @@ const ItemInfo = (props: ItemInfoProps) => {
 
   const getTranscriptLocation = () => {
     const { start, end } = getFeatureCoordinates(transcript);
-    const startStr = getCommaSeparatedNumber(start);
-    const endStr = getCommaSeparatedNumber(end);
-    const regionName = getRegionName(transcript);
-    return `${regionName}:${startStr}-${endStr}`;
+    const chromosome = getRegionName(transcript);
+
+    return getFormattedLocation({
+      chromosome,
+      start,
+      end
+    });
   };
 
   const getRNALength = () => {
