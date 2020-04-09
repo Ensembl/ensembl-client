@@ -1,12 +1,131 @@
+@import 'src/styles/common';
 .overlay {
   z-index: 5;
+  background-color: rgba($dark-grey, 0.3);
 }
 
 .helpPanel {
   position: absolute;
-  align-self: center;
+  margin-top: 120px;
   justify-self: center;
   width: 80%;
   z-index: 5;
   height: 80%;
+}
+
+.helpPanelContent {
+  margin-top: 45px;
+  display: inline-grid;
+  grid-template-columns: auto 60px 100px;
+
+  & .content {
+    grid-column: 1;
+  }
+
+  & .moreHelp {
+    grid-column: 3;
+
+    & .imageContainer {
+      background-color: $blue;
+      height: 20px;
+      padding: 3px;
+      width: 20px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-left: 10px;
+    }
+    & svg {
+      fill: #fff;
+    }
+  }
+}
+
+.articleContainer {
+  display: inline-grid;
+  grid-template-columns: 80px 500px 20px;
+  margin-bottom: 45px;
+  & .icon {
+    grid-column: 1;
+    text-align: right;
+
+    & .imageContainer {
+      background-color: $dark-grey;
+      height: 20px;
+      padding: 3px;
+      width: 20px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-right: 20px;
+    }
+
+    & svg {
+      fill: #fff;
+    }
+  }
+
+  & .content {
+    grid-column: 2;
+  }
+}
+
+.videoContainer {
+  display: inline-grid;
+  grid-template-columns: 80px 500px 20px;
+
+  & .icon {
+    grid-row: 1;
+    grid-column: 1;
+    text-align: right;
+    & .imageContainer {
+      background-color: $dark-grey;
+      height: 20px;
+      padding: 3px;
+      width: 28px;
+      border-radius: 5px;
+      display: inline-block;
+      margin-right: 20px;
+    }
+    & svg {
+      fill: #fff;
+    }
+  }
+
+  & .content {
+    grid-column: 2;
+  }
+}
+
+@media only screen and (min-width: 1480px) {
+  .videoContainer {
+    grid-template-columns: 80px 600px 20px;
+  }
+}
+
+.iconHint {
+  font-weight: $light;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.description {
+  margin-bottom: 40px;
+  padding-left: 15px;
+}
+
+.video {
+  margin-bottom: 40px;
+
+  & iframe {
+    width: 100%;
+  }
+}
+
+.relatedTitle {
+  font-weight: $light;
+  font-size: 13px;
+  margin-bottom: 20px;
 }

@@ -59,6 +59,7 @@ describe('<Browser />', () => {
     replace: jest.fn(),
     toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
+    setActiveComponentId: jest.fn(),
     setDataFromUrlAndSave: jest.fn(),
     viewportWidth: BreakpointWidth.DESKTOP
   };

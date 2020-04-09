@@ -41,6 +41,8 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
+import { setActiveComponentId } from 'src/content/app/help-and-docs/state/helpAndDocsActions';
+
 import BrowserBar from './browser-bar/BrowserBar';
 import BrowserImage from './browser-image/BrowserImage';
 import BrowserNavBar from './browser-nav/BrowserNavBar';
@@ -86,6 +88,7 @@ export type BrowserProps = {
   toggleTrackPanel: (isOpen: boolean) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   setDataFromUrlAndSave: (payload: ParsedUrlPayload) => void;
+  setActiveComponentId: (componentId: string | null) => void;
 };
 
 export const Browser = (props: BrowserProps) => {
@@ -196,6 +199,12 @@ export const Browser = (props: BrowserProps) => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
     props.restoreBrowserTrackStates();
   }, [props.activeGenomeId, props.activeEnsObjectId]);
+
+  useEffect(() => {
+    props.setActiveComponentId('app-genome-browser');
+
+    return () => props.setActiveComponentId(null);
+  }, []);
 
   useEffect(() => {
     const {
@@ -317,7 +326,8 @@ const mapDispatchToProps = {
   toggleDrawer,
   setDataFromUrlAndSave,
   restoreBrowserTrackStates,
-  toggleTrackPanel
+  toggleTrackPanel,
+  setActiveComponentId
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Browser);

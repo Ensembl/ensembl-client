@@ -10,7 +10,7 @@ import { HelpContent } from 'src/content/app/help-and-docs/types/help-content';
 
 export const setActiveComponentId = createAction(
   'help-and-docs/set-active-component-id'
-)<string>();
+)<string | null>();
 
 export const togglePopup = createAction('help-and-docs/toggle-help-popup')();
 

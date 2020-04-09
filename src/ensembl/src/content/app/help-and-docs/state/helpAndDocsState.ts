@@ -9,7 +9,7 @@ export type HelpAndDocsState = {
 };
 
 export const initialHelpAndDocsState: HelpAndDocsState = {
-  activeComponentId: 'app-species-selector',
+  activeComponentId: null,
   isPopupShown: false,
   fetchedContents: {}
 };

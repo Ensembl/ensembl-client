@@ -1,8 +1,8 @@
 import Prismic from 'prismic-javascript';
+import ApiSearchResponse from 'prismic-javascript/d.ts/ApiSearchResponse';
+
 import config from 'config';
 import { HelpContent } from 'src/content/app/help-and-docs/types/help-content';
-
-import { Video } from 'src/content/app/help-and-docs/types/video';
 
 export enum HelpType {
   CONTENT = 'content',
@@ -17,19 +17,6 @@ const { prismicApiEndpoint } = config;
 const Client = Prismic.client(prismicApiEndpoint);
 
 class HelpService {
-  public async searchContent() {
-    const response = await Client.query(
-      Prismic.Predicates.at('document.type', 'article'),
-      {}
-    );
-
-    if (response) {
-      return response.results as HelpContent;
-    }
-
-    return null;
-  }
-
   public async getContentsByComponentId(componentId: string) {
     if (!componentId) {
       return null;
@@ -44,11 +31,7 @@ class HelpService {
 
       const helpContent: HelpContent = {
         componentId,
-        article: {
-          title: data.title[0].text,
-          body: data.body[0].text,
-          parentArticle: data.parent?.uid
-        }
+        article: buildArticleFromResponse(response)
       };
 
       if (data.related_video) {
@@ -67,17 +50,31 @@ class HelpService {
     );
 
     if (response) {
-      const data = response.results[0].data;
-
-      // TODO: youtube_url is an object??????!!
-      return {
-        title: data.title[0].text,
-        uri: data.youtube_url.html,
-        description: data.youtube_url.title
-      } as Video;
+      // TODO: youtube_url is an object!!
+      return buildVideoFromResponse(response);
     }
   }
 }
+
+const buildArticleFromResponse = (response: ApiSearchResponse) => {
+  const data = response.results[0].data;
+
+  return {
+    title: data.title[0].text,
+    body: data.body[0].text,
+    parentArticle: data.parent?.uid
+  };
+};
+
+const buildVideoFromResponse = (response: ApiSearchResponse) => {
+  const data = response.results[0].data;
+  return {
+    title: data.title[0].text,
+    embed_url: data.youtube_url.embed_url,
+    description: data.youtube_url.title,
+    embed_html: data.youtube_url.html
+  };
+};
 
 const helpService = new HelpService();
 
