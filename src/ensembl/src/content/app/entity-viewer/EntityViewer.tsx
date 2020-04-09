@@ -51,8 +51,7 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  // uri: 'http://193.62.55.158:30466'
-  uri: 'http://localhost:5000'
+  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770'
 });
 
 const EntityViewer = (props: Props) => {

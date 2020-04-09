@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import classNames from 'classnames';
 
 import {
   openSidebar,
@@ -15,6 +14,8 @@ import {
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 import { RootState } from 'src/store';
 
+import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+
 import styles from './GeneViewSidebarTabs.scss';
 
 type Props = {
@@ -24,39 +25,43 @@ type Props = {
   openSidebar: () => void;
 };
 
+const tabsData: Tab[] = [];
+Object.values(SidebarTabName).forEach((value) =>
+  tabsData.push({
+    title: value
+  })
+);
+
+const DEFAULT_TAB = tabsData[0].title;
+
 const GeneViewSidebarTabs = (props: Props) => {
   if (!props.selectedTabName) {
     return null;
   }
 
-  const handleTabChange = (name: SidebarTabName) => {
+  const handleTabChange = (name: string) => {
     if (!props.isSidebarOpen) {
       props.openSidebar();
     }
-    props.setSidebarTabName(name);
+    props.setSidebarTabName(name as SidebarTabName);
   };
 
-  const getTabProps = (name: SidebarTabName) => {
-    const isActiveTab = props.isSidebarOpen && name === props.selectedTabName;
-    const classes = classNames(styles.tab, {
-      [styles.tabUnselected]: !isActiveTab
-    });
-
-    const onClick = isActiveTab
-      ? null
-      : { onClick: () => handleTabChange(name) };
-
-    return {
-      className: classes,
-      ...onClick
-    };
+  const tabClassNames = {
+    default: styles.defaultTab,
+    selected: styles.selectedTab,
+    disabled: styles.disabledTab,
+    tabsContainer: styles.tabsContainer
   };
 
   return (
-    <div className={styles.tabs}>
-      <span {...getTabProps(SidebarTabName.OVERVIEW)}>Overview</span>
-      <span {...getTabProps(SidebarTabName.PUBLICATIONS)}>Publications</span>
-    </div>
+    <Tabs
+      tabs={tabsData}
+      selectedTab={
+        !props.isSidebarOpen ? null : props.selectedTabName || DEFAULT_TAB
+      }
+      onTabChange={handleTabChange}
+      classNames={tabClassNames}
+    />
   );
 };
 
