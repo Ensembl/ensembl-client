@@ -31,7 +31,7 @@ const ItemInfo = (props: ItemInfoProps) => {
     });
   };
 
-  const getRNALength = () => {
+  const getSplicedRNALength = () => {
     const rnaLength = transcript.exons.reduce((length, exon) => {
       const { start, end } = getFeatureCoordinates(exon);
       return length + (end - start + 1);
@@ -46,23 +46,15 @@ const ItemInfo = (props: ItemInfoProps) => {
     let lastCodingExonIndex = exons.length - 1;
 
     if (cds) {
-      for (let index = 0; index < exons.length; index += 1) {
-        const exonLocation = getFeatureCoordinates(exons[index]);
+      firstCodingExonIndex = exons.findIndex((exon) => {
+        const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
+        return exonStart <= cds.start && exonEnd >= cds.start ? true : false;
+      });
 
-        if (exonLocation.start <= cds.start && exonLocation.end >= cds.start) {
-          firstCodingExonIndex = index;
-          break;
-        }
-      }
-
-      for (let index = exons.length - 1; index > -1; index -= 1) {
-        const exonLocation = getFeatureCoordinates(exons[index]);
-
-        if (exonLocation.start <= cds.end && exonLocation.end >= cds.end) {
-          lastCodingExonIndex = index;
-          break;
-        }
-      }
+      lastCodingExonIndex = exons.findIndex((exon) => {
+        const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
+        return exonStart <= cds.end && exonEnd >= cds.end ? true : false;
+      });
     }
 
     return {
@@ -146,7 +138,7 @@ const ItemInfo = (props: ItemInfoProps) => {
         </div>
         <div className={styles.column}>
           <div>
-            Spliced RNA length <strong>{getRNALength()} bp</strong>
+            Spliced RNA length <strong>{getSplicedRNALength()} bp</strong>
           </div>
           <div>
             Coding exons <strong>{getNumberOfCodingExons()}</strong> of{' '}
