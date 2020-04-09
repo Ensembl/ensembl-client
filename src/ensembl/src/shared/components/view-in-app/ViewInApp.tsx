@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { push, Push } from 'connected-react-router';
 
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
@@ -27,9 +28,10 @@ export type urlObj = Record<AppName, string>;
 
 export type ViewInAppProps = {
   links: Partial<urlObj>;
+  push: Push;
 };
 
-const ViewInApp = (props: ViewInAppProps) => {
+export const ViewInApp = (props: ViewInAppProps) => {
   return Object.keys(props.links) ? (
     <div className={styles.viewInAppLinkButtons}>
       <span className={styles.viewInLabel}>View in</span>
@@ -39,6 +41,7 @@ const ViewInApp = (props: ViewInAppProps) => {
             key={appId}
             appId={appId}
             url={props.links[appId] as string}
+            push={props.push}
           />
         );
       })}
@@ -49,18 +52,28 @@ const ViewInApp = (props: ViewInAppProps) => {
 type AppButtonProps = {
   appId: AppName;
   url: string;
+  push: Push;
 };
 
-const AppButton = (props: AppButtonProps) => {
+export const AppButton = (props: AppButtonProps) => {
+  const handleClick = () => {
+    props.push(props.url);
+  };
+
   return (
-    <Link className={styles.viewInAppLink} to={props.url}>
+    <div className={styles.viewInAppLink}>
       <ImageButton
         status={Status.DEFAULT}
         description={Apps[props.appId].tooltip}
         image={Apps[props.appId].icon}
+        onClick={handleClick}
       />
-    </Link>
+    </div>
   );
 };
 
-export default ViewInApp;
+const mapDispatchToProps = {
+  push
+};
+
+export default connect(null, mapDispatchToProps)(ViewInApp);
