@@ -54,7 +54,7 @@ const ItemInfo = (props: ItemInfoProps) => {
       for (let index = exons.length - 1; index > -1; index -= 1) {
         const exonLocation = getFeatureCoordinates(exons[index]);
 
-        if (exonLocation.start >= cds.end && exonLocation.end <= cds.end) {
+        if (exonLocation.start <= cds.end && exonLocation.end >= cds.end) {
           lastCodingExonIndex = index;
           break;
         }
