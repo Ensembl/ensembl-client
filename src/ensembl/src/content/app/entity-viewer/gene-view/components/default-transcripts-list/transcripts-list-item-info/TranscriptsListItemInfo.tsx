@@ -74,28 +74,26 @@ const ItemInfo = (props: ItemInfoProps) => {
       } = getFirstAndLastCodingExonIndexes();
       let cdsLength = 0;
 
-      if (firstCodingExonIndex > -1 && lastCodingExonIndex > -1) {
-        // add coding length of the first coding exon
-        const { end: firstCodingExonEnd } = getFeatureCoordinates(
-          exons[firstCodingExonIndex]
-        );
-        cdsLength += firstCodingExonEnd - cds.start + 1;
+      // add coding length of the first coding exon
+      const { end: firstCodingExonEnd } = getFeatureCoordinates(
+        exons[firstCodingExonIndex]
+      );
+      cdsLength += firstCodingExonEnd - cds.start + 1;
 
-        // add coding length of the last coding exon
-        const { start: lastCodingExonStart } = getFeatureCoordinates(
-          exons[lastCodingExonIndex]
-        );
-        cdsLength += cds.end - lastCodingExonStart + 1;
+      // add coding length of the last coding exon
+      const { start: lastCodingExonStart } = getFeatureCoordinates(
+        exons[lastCodingExonIndex]
+      );
+      cdsLength += cds.end - lastCodingExonStart + 1;
 
-        // add coding length of exons between first and last coding exons
-        for (
-          let index = firstCodingExonIndex + 1;
-          index <= lastCodingExonIndex - 1;
-          index += 1
-        ) {
-          const { start, end } = getFeatureCoordinates(exons[index]);
-          cdsLength += end - start + 1;
-        }
+      // add coding length of exons between first and last coding exons
+      for (
+        let index = firstCodingExonIndex + 1;
+        index <= lastCodingExonIndex - 1;
+        index += 1
+      ) {
+        const { start, end } = getFeatureCoordinates(exons[index]);
+        cdsLength += end - start + 1;
       }
 
       const aminoAcidLength = Math.floor(cdsLength / 3);
@@ -110,9 +108,9 @@ const ItemInfo = (props: ItemInfoProps) => {
       firstCodingExonIndex,
       lastCodingExonIndex
     } = getFirstAndLastCodingExonIndexes();
-    return firstCodingExonIndex > -1 && lastCodingExonIndex > -1
-      ? getCommaSeparatedNumber(lastCodingExonIndex - firstCodingExonIndex + 1)
-      : 0;
+    return getCommaSeparatedNumber(
+      lastCodingExonIndex - firstCodingExonIndex + 1
+    );
   };
 
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
