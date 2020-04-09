@@ -74,7 +74,7 @@ const ItemInfo = (props: ItemInfoProps) => {
       } = getFirstAndLastCodingExonIndexes();
       let cdsLength = 0;
 
-      if (firstCodingExonIndex !== -1 && lastCodingExonIndex !== -1) {
+      if (firstCodingExonIndex > -1 && lastCodingExonIndex > -1) {
         // add coding length of the first coding exon
         const { end: firstCodingExonEnd } = getFeatureCoordinates(
           exons[firstCodingExonIndex]
@@ -110,9 +110,9 @@ const ItemInfo = (props: ItemInfoProps) => {
       firstCodingExonIndex,
       lastCodingExonIndex
     } = getFirstAndLastCodingExonIndexes();
-    return getCommaSeparatedNumber(
-      lastCodingExonIndex - firstCodingExonIndex + 1
-    );
+    return firstCodingExonIndex > -1 && lastCodingExonIndex > -1
+      ? getCommaSeparatedNumber(lastCodingExonIndex - firstCodingExonIndex + 1)
+      : 0;
   };
 
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
