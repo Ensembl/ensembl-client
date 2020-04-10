@@ -1,12 +1,16 @@
 import React from 'react';
 import faker from 'faker';
 import { mount } from 'enzyme';
+import sampleSize from 'lodash/sampleSize';
 
-import { ViewInApp, AppButton, ViewInAppProps } from './ViewInApp';
+import {
+  ViewInApp,
+  AppButton,
+  AppName,
+  Apps,
+  ViewInAppProps
+} from './ViewInApp';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 
 const push = jest.fn();
 
@@ -22,37 +26,45 @@ const renderComponent = (props: Partial<ViewInAppProps>) => {
   return mount(renderedComponent);
 };
 
-const linkUrl = {
-  genomeBrowser: faker.internet.url(),
-  entityViewer: faker.internet.url()
-};
+const appLinkTuples = Object.keys(Apps).map(
+  (appName) => [appName as AppName, faker.internet.url()] as const
+);
+const randomSampleSize = Math.ceil(Math.random() * appLinkTuples.length);
+const tuplesSample = sampleSize(appLinkTuples, randomSampleSize);
 
-const linkIcon = {
-  genomeBrowser: BrowserIcon,
-  entityViewer: EntityViewerIcon
-};
+const links = tuplesSample.reduce((result, tuple) => {
+  const [appName, link] = tuple;
+  return {
+    ...result,
+    [appName]: link
+  };
+}, {}) as Record<AppName, string>;
 
 describe('<ViewInApp />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  it('checks if correct url is passed when image button is clicked', () => {
-    const wrapper = renderComponent({ links: linkUrl });
-    expect(wrapper.find(ImageButton)).toHaveLength(2);
-
-    wrapper.find(AppButton).forEach((button) => {
-      const k = button.key() as keyof typeof linkUrl;
-      button.find(ImageButton).simulate('click');
-      expect(push).toHaveBeenCalledWith(linkUrl[k]);
-    });
+  it('returns null if the links prop is empty', () => {
+    const wrapper = renderComponent({ links: {} });
+    expect(wrapper.html()).toBe(null);
   });
 
-  it('renders app buttons when configurations are passed as props', () => {
-    const wrapper = renderComponent({ links: linkUrl });
-    wrapper.find(AppButton).forEach((button) => {
-      const k = button.key() as keyof typeof linkUrl;
-      expect(button.find(ImageButton).prop('image')).toBe(linkIcon[k]);
+  it('renders correct number of buttons', () => {
+    const wrapper = renderComponent({ links });
+    expect(wrapper.find(ImageButton)).toHaveLength(Object.keys(links).length);
+  });
+
+  it('switches to correct url when clicked', () => {
+    const wrapper = renderComponent({ links });
+    tuplesSample.forEach(([appName, link]) => {
+      const imageButton = wrapper
+        .find(AppButton)
+        .findWhere((element) => element.prop('appId') === appName)
+        .find(ImageButton);
+
+      imageButton.simulate('click');
+      expect(push).toHaveBeenCalledWith(link);
     });
   });
 });

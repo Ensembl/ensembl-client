@@ -22,7 +22,7 @@ export const Apps = {
   }
 };
 
-type AppName = keyof typeof Apps;
+export type AppName = keyof typeof Apps;
 
 export type urlObj = Record<AppName, string>;
 
@@ -32,6 +32,10 @@ export type ViewInAppProps = {
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
+  if (Object.keys(props.links).length === 0) {
+    return null;
+  }
+
   return Object.keys(props.links) ? (
     <div className={styles.viewInAppLinkButtons}>
       <span className={styles.viewInLabel}>View in</span>
