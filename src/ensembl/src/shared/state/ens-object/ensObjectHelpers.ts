@@ -14,7 +14,85 @@
  * limitations under the License.
  */
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
+import {
+  EnsObject,
+  EnsObjectRegion
+} from 'src/shared/state/ens-object/ensObjectTypes';
+
+export type EnsObjectIdConstituents = {
+  genomeId: string;
+  type: string;
+  objectId: string;
+};
+
+export type UrlFocusIdConstituents = {
+  type: string;
+  objectId: string;
+}
+
+// NOTE: it's possible that we will prefer to omit type from the id
+// if focus objects of different type are saved into different slots in the state
+export const buildEnsObjectId = (params: EnsObjectIdConstituents) => {
+  const { genomeId, type, objectId } = params;
+  return `${genomeId}:${type}:${objectId}`;
+};
+
+export const parseEnsObjectId = (id: string): EnsObjectIdConstituents => {
+  const regex = /(.+?):(.+?):(.+)/;
+  const match = id.match(regex);
+  if (match?.length === 4) { // whole id plus its three constituent parts
+    const [_, genomeId, type, objectId] = match;
+    return {
+      genomeId,
+      type,
+      objectId,
+    };
+  } else {
+    throw new Error("Malformed Ensembl object id");
+  }
+};
+
+export const buildFocusIdForUrl = (params: UrlFocusIdConstituents) => {
+  const { type, objectId } = params;
+  return `${type}:${objectId}`;
+};
+
+export const parseFocusIdFromUrl = (id: string) => {
+  const [type, objectId] = id.split(':');
+  return {
+    type,
+    objectId
+  };
+};
+
+// focus object id in the url on the Genome Browser page has a format of <type>:<id>
+export const parseEnsObjectIdFromUrl = (
+  id: string
+): UrlFocusIdConstituents => {
+  const [type, objectId] = id.split(':');
+  return {
+    type,
+    objectId,
+  };
+};
+
+export const buildRegionObject = (payload: EnsObjectIdConstituents): EnsObjectRegion => {
+  const { genomeId, objectId: regionId } = payload;
+  const [chromosomeName, start, end] = getChrLocationFromStr(regionId);
+
+  return {
+    type: 'region',
+    genome_id: genomeId,
+    object_id: buildEnsObjectId(payload),
+    label: regionId,
+    location: {
+      chromosome: chromosomeName,
+      start,
+      end
+    },
+  };
+};
 
 type StableIdField = 'versioned_stable_id' | 'stable_id';
 export const getDisplayStableId = (ensObject: Pick<EnsObject, StableIdField>) =>

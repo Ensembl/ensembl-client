@@ -16,10 +16,13 @@
 
 import get from 'lodash/get';
 
-import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
+import { buildEnsObjectId, EnsObjectIdConstituents } from './ensObjectHelpers';
+
+import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { RootState } from '../../../store';
+import { RootState } from 'src/store';
 import { EnsObject } from './ensObjectTypes';
 
 export const getEnsObjectLoadingStatus = (
@@ -39,25 +42,34 @@ export const getEnsObjectById = (
   return get(state, `ensObjects.${objectId}.data`, null);
 };
 
-export const getExampleEnsObjects = (
+export const getEnsObjectByParams = (
   state: RootState,
-  genomeId: string
-): EnsObject[] => {
-  const genomeInfo = getGenomeInfoById(state, genomeId);
-  const exampleObjects = genomeInfo?.example_objects || [];
+  params: EnsObjectIdConstituents
+): EnsObject | null => {
+  const ensObjectId = buildEnsObjectId(params);
+  return getEnsObjectById(state, ensObjectId);
+};
+
+export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  if (!activeGenomeId) {
+    return [];
+  }
+  const exampleObjects = getGenomeExampleFocusObjects(state);
   return exampleObjects
-    .map((id) => state.ensObjects[id] && state.ensObjects[id].data)
+    .map(({ id, type }) => {
+      const ensObjectId = buildEnsObjectId({
+        genomeId: activeGenomeId,
+        type,
+        objectId: id,
+      });
+      return state.ensObjects[ensObjectId]?.data;
+    })
     .filter(Boolean) as EnsObject[]; // make sure there are no undefineds in the returned array;
 };
 
-export const getExampleGenes = (
-  genomeId: string,
-  state: RootState
-): EnsObject[] => {
-  const genomeInfo = getGenomeInfoById(state, genomeId);
-  const exampleObjectIds = genomeInfo?.example_objects || [];
-  return exampleObjectIds
-    .map((id) => getEnsObjectById(state, id))
-    .filter((item): item is EnsObject => item !== null)
-    .filter((entity) => entity.object_type === 'gene');
+export const getExampleGenes = (state: RootState): EnsObject[] => {
+  return getExampleEnsObjects(state).filter(
+    (entity) => entity.object_type === 'gene'
+  );
 };

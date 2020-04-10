@@ -51,7 +51,7 @@ const ZmenuAppLinks = (props: Props) => {
   // Change this temporary hack to using the "type" field when genome browser
   // starts reporting the type of clicked features
   // (also, probably move this check in a parent component)
-  if (!props.featureId.includes(':gene:')) {
+  if (!props.featureId.startsWith('gene:')) {
     return null;
   }
 

@@ -25,7 +25,6 @@ import { getBrowserActiveGenomeId } from '../../../browserSelectors';
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { fetchExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectActions';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { closeTrackPanelModal } from '../../trackPanelActions';
@@ -43,7 +42,6 @@ export type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
   exampleEnsObjects: EnsObject[];
   previouslyViewedObjects: PreviouslyViewedObject[];
-  fetchExampleEnsObjects: (objectId: string) => void;
   updateTrackStatesAndSave: (trackStates: BrowserTrackStates) => void;
   closeTrackPanelModal: () => void;
   changeDrawerViewAndOpen: (drawerView: string) => void;
@@ -59,7 +57,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
       {props.exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({
           genomeId: props.activeGenomeId,
-          focus: exampleObject.object_id
+          focus: exampleObject.object_id,
         });
 
         return (
@@ -68,7 +66,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
               {exampleObject.label}
             </Link>
             <span className={styles.previouslyViewedType}>
-              {upperFirst(exampleObject.object_type)}
+              {upperFirst(exampleObject.type)}
             </span>
           </div>
         );
@@ -90,7 +88,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       category: 'recent_bookmark_link',
       label: objectType,
       action: 'clicked',
-      value: index + 1
+      value: index + 1,
     });
 
     props.closeTrackPanelModal();
@@ -103,7 +101,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
         .map((previouslyViewedObject, index) => {
           const path = urlFor.browser({
             genomeId: previouslyViewedObject.genome_id,
-            focus: previouslyViewedObject.object_id
+            focus: previouslyViewedObject.object_id,
           });
 
           return (
@@ -135,7 +133,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     exampleEnsObjects,
     activeGenomeId,
     updateTrackStatesAndSave,
-    closeTrackPanelModal
+    closeTrackPanelModal,
   } = props;
 
   const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
@@ -145,7 +143,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       category: 'drawer_open',
       label: 'recent_bookmarks',
       action: 'clicked',
-      value: previouslyViewedObjects.length
+      value: previouslyViewedObjects.length,
     });
 
     props.changeDrawerViewAndOpen('bookmarks');
@@ -194,18 +192,15 @@ const mapStateToProps = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
   return {
     activeGenomeId,
-    exampleEnsObjects: activeGenomeId
-      ? getExampleEnsObjects(state, activeGenomeId)
-      : [],
-    previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
+    exampleEnsObjects: getExampleEnsObjects(state),
+    previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state),
   };
 };
 
 const mapDispatchToProps = {
-  fetchExampleEnsObjects,
   updateTrackStatesAndSave,
   closeTrackPanelModal,
-  changeDrawerViewAndOpen
+  changeDrawerViewAndOpen,
 };
 
 export default connect(

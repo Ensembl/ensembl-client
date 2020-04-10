@@ -19,9 +19,9 @@ import { useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
 import { Link } from 'react-router-dom';
-import find from 'lodash/find';
-import isEqual from 'lodash/isEqual';
 import upperFirst from 'lodash/upperFirst';
+
+import useBrowserRouting from './hooks/useBrowserRouting';
 
 import analyticsTracking from 'src/services/analytics-service';
 import browserStorageService from './browser-storage-service';
@@ -29,12 +29,15 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
+
 import {
   changeBrowserLocation,
   changeFocusObject,
   setDataFromUrlAndSave,
   ParsedUrlPayload,
-  restoreBrowserTrackStates
+  restoreBrowserTrackStates,
 } from './browserActions';
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -48,10 +51,9 @@ import {
   getBrowserQueryParams,
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations
+  getAllChrLocations,
 } from './browserSelectors';
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
-import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
@@ -106,98 +108,99 @@ export type BrowserProps = {
 
 export const Browser = (props: BrowserProps) => {
   const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
+  const { changeGenomeId } = useBrowserRouting();
 
   const { isDrawerOpened } = props;
   const params: { [key: string]: string } = useParams();
   const location = useLocation();
 
-  const setDataFromUrl = () => {
-    const { genomeId } = params;
-    const { focus = null, location = null } = props.browserQueryParams;
-    const chrLocation = location ? getChrLocationFromStr(location) : null;
+  // const setDataFromUrl = () => {
+  //   const { genomeId } = params;
+  //   const { focus = null, location = null } = props.browserQueryParams;
+  //   const chrLocation = location ? getChrLocationFromStr(location) : null;
 
-    if (
-      !genomeId ||
-      (genomeId === props.activeGenomeId &&
-        focus === props.activeEnsObjectId &&
-        isEqual(chrLocation, props.chrLocation))
-    ) {
-      return;
-    }
+  //   if (
+  //     !genomeId ||
+  //     (genomeId === props.activeGenomeId &&
+  //       focus === props.activeEnsObjectId &&
+  //       isEqual(chrLocation, props.chrLocation))
+  //   ) {
+  //     return;
+  //   }
 
-    const payload = {
-      activeGenomeId: genomeId,
-      activeEnsObjectId: focus || null,
-      chrLocation
-    };
+  //   const payload = {
+  //     activeGenomeId: genomeId,
+  //     activeEnsObjectId: focus || null,
+  //     chrLocation,
+  //   };
 
-    if (focus && !chrLocation) {
-      /*
-       changeFocusObject needs to be called before setDataFromUrlAndSave
-       in order to prevent creating an previouslyViewedObject entry
-       for the focus object that is viewed first.
-       */
-      props.changeFocusObject(focus);
-    } else if (focus && chrLocation) {
-      props.changeFocusObject(focus);
-      props.changeBrowserLocation({
-        genomeId,
-        ensObjectId: focus,
-        chrLocation
-      });
-    } else if (chrLocation) {
-      props.changeBrowserLocation({
-        genomeId,
-        ensObjectId: focus,
-        chrLocation
-      });
-    }
+  //   if (focus && !chrLocation) {
+  //     /*
+  //      changeFocusObject needs to be called before setDataFromUrlAndSave
+  //      in order to prevent creating an previouslyViewedObject entry
+  //      for the focus object that is viewed first.
+  //      */
+  //     props.changeFocusObject(focus);
+  //   } else if (focus && chrLocation) {
+  //     props.changeFocusObject(focus);
+  //     props.changeBrowserLocation({
+  //       genomeId,
+  //       ensObjectId: focus,
+  //       chrLocation,
+  //     });
+  //   } else if (chrLocation) {
+  //     props.changeBrowserLocation({
+  //       genomeId,
+  //       ensObjectId: focus,
+  //       chrLocation,
+  //     });
+  //   }
 
-    props.setDataFromUrlAndSave(payload);
-  };
+  //   props.setDataFromUrlAndSave(payload);
+  // };
 
-  const changeSelectedSpecies = useCallback(
-    (genomeId: string) => {
-      const { allChrLocations, allActiveEnsObjectIds } = props;
-      const chrLocation = allChrLocations[genomeId];
-      const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
+  // const changeSelectedSpecies = useCallback(
+  //   (genomeId: string) => {
+  //     const { allChrLocations, allActiveEnsObjectIds } = props;
+  //     const chrLocation = allChrLocations[genomeId];
+  //     const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
 
-      const params = {
-        genomeId,
-        focus: activeEnsObjectId,
-        location: chrLocation ? getChrLocationStr(chrLocation) : null
-      };
+  //     const params = {
+  //       genomeId,
+  //       focus: activeEnsObjectId,
+  //       location: chrLocation ? getChrLocationStr(chrLocation) : null,
+  //     };
 
-      props.replace(urlFor.browser(params));
-    },
-    [props.allChrLocations, props.allActiveEnsObjectIds]
-  );
+  //     props.replace(urlFor.browser(params));
+  //   },
+  //   [props.allChrLocations, props.allActiveEnsObjectIds]
+  // );
 
-  // handle url changes
-  useEffect(() => {
-    // handle navigation to /app/browser
-    if (!params.genomeId) {
-      // select either the species that the user viewed during the previous visit,
-      // of the first selected species
-      const { activeGenomeId, committedSpecies } = props;
-      if (
-        activeGenomeId &&
-        find(
-          committedSpecies,
-          ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
-        )
-      ) {
-        changeSelectedSpecies(activeGenomeId);
-      } else {
-        if (committedSpecies[0]) {
-          changeSelectedSpecies(committedSpecies[0].genome_id);
-        }
-      }
-    } else {
-      // handle navigation to /app/browser/:genomeId?focus=:focus&location=:location
-      setDataFromUrl();
-    }
-  }, [params.genomeId, location.search]);
+  // // handle url changes
+  // useEffect(() => {
+  //   // handle navigation to /app/browser
+  //   if (!params.genomeId) {
+  //     // select either the species that the user viewed during the previous visit,
+  //     // of the first selected species
+  //     const { activeGenomeId, committedSpecies } = props;
+  //     if (
+  //       activeGenomeId &&
+  //       find(
+  //         committedSpecies,
+  //         ({ genome_id }: CommittedItem) => genome_id === activeGenomeId
+  //       )
+  //     ) {
+  //       changeSelectedSpecies(activeGenomeId);
+  //     } else {
+  //       if (committedSpecies[0]) {
+  //         changeSelectedSpecies(committedSpecies[0].genome_id);
+  //       }
+  //     }
+  //   } else {
+  //     // handle navigation to /app/browser/:genomeId?focus=:focus&location=:location
+  //     setDataFromUrl();
+  //   }
+  // }, [params.genomeId, location.search]);
 
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
@@ -215,7 +218,7 @@ export const Browser = (props: BrowserProps) => {
 
   useEffect(() => {
     const {
-      browserQueryParams: { location }
+      browserQueryParams: { location },
     } = props;
     const { genomeId } = params;
     const chrLocation = location ? getChrLocationFromStr(location) : null;
@@ -249,7 +252,7 @@ export const Browser = (props: BrowserProps) => {
 
   return (
     <div className={styles.browserInnerWrapper}>
-      <BrowserAppBar onSpeciesSelect={changeSelectedSpecies} />
+      <BrowserAppBar onSpeciesSelect={changeGenomeId} />
       {props.browserQueryParams.focus ? (
         <StandardAppLayout
           mainContent={mainContent}
@@ -281,14 +284,14 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
   const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
     const path = urlFor.browser({
       genomeId: activeGenomeId,
-      focus: exampleObject.object_id
+      focus: exampleObject.object_id,
     });
 
     return (
       <div key={exampleObject.object_id} className={styles.exampleLink}>
         <Link to={path}>
           <span className={styles.objectType}>
-            {upperFirst(exampleObject.object_type)}
+            {upperFirst(exampleObject.type)}
           </span>
           <span className={styles.objectLabel}>{exampleObject.label}</span>
         </Link>
@@ -317,11 +320,9 @@ const mapStateToProps = (state: RootState) => {
     chrLocation: getChrLocation(state),
     isDrawerOpened: getIsDrawerOpened(state),
     isTrackPanelOpened: getIsTrackPanelOpened(state),
-    exampleEnsObjects: activeGenomeId
-      ? getExampleEnsObjects(state, activeGenomeId)
-      : [],
+    exampleEnsObjects: getExampleEnsObjects(state),
     committedSpecies: getEnabledCommittedSpecies(state),
-    viewportWidth: getBreakpointWidth(state)
+    viewportWidth: getBreakpointWidth(state),
   };
 };
 
@@ -333,7 +334,7 @@ const mapDispatchToProps = {
   toggleDrawer,
   setDataFromUrlAndSave,
   restoreBrowserTrackStates,
-  toggleTrackPanel
+  toggleTrackPanel,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Browser);

@@ -31,7 +31,7 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {
   setDataFromUrl,
-  updateEnsObject
+  updateEnsObject,
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
@@ -67,7 +67,7 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770'
+  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770',
 });
 
 const EntityViewer = (props: Props) => {
@@ -109,7 +109,7 @@ const ExampleLinks = (props: Props) => {
   const links = props.exampleGenes.map((gene) => {
     const path = urlHelper.entityViewer({
       genomeId: props.activeGenomeId,
-      entityId: gene.object_id
+      entityId: gene.object_id,
     });
 
     return (
@@ -129,16 +129,11 @@ const ExampleLinks = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const exampleGenes = activeGenomeId
-    ? getExampleGenes(activeGenomeId, state)
-    : [];
-
   return {
-    activeGenomeId,
-    exampleGenes,
+    activeGenomeId: getEntityViewerActiveGenomeId(state),
+    exampleGenes: getExampleGenes(state),
     isSidebarOpen: isEntityViewerSidebarOpen(state),
-    viewportWidth: getBreakpointWidth(state)
+    viewportWidth: getBreakpointWidth(state),
   };
 };
 
@@ -146,7 +141,7 @@ const mapDispatchToProps = {
   setDataFromUrl,
   fetchGenomeData,
   toggleSidebar,
-  updateEnsObject
+  updateEnsObject,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

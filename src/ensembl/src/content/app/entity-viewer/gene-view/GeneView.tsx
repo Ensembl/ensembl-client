@@ -31,6 +31,7 @@ import GeneRelationships from 'src/content/app/entity-viewer/gene-view/component
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { RootState } from 'src/store';
@@ -96,14 +97,20 @@ const QUERY = gql`
 `;
 
 const GeneView = (props: GeneViewProps) => {
-  const { data } = useQuery<{ gene: Gene }>(QUERY, {
+  const { loading, data } = useQuery<{ gene: Gene }>(QUERY, {
     variables: { id: props.geneId },
     skip: !props.geneId
   });
 
   // TODO decide about the loader and possibly about error handling
 
-  if (!data) {
+  if (loading) {
+    return (
+      <div className={styles.geneViewLoadingContainer}>
+        <CircleLoader />
+      </div>
+    );
+  } else if (!data) {
     return null;
   }
 

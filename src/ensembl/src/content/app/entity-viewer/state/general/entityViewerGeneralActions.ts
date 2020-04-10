@@ -125,7 +125,7 @@ export const updateEnsObject: ActionCreator<ThunkAction<
 
     dispatch(updateEntityViewerActiveEnsObjectIds(updatedActiveEnsObjectIds));
     if (!currentEnsObject) {
-      dispatch(fetchEnsObject(activeEnsObjectId));
+      dispatch(fetchEnsObject(activeGenomeId, activeEnsObjectId));
     }
   };
 };

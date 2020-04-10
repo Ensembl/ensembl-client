@@ -17,6 +17,8 @@
 import { RootState } from 'src/store';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
+import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
+
 export const getEntityViewerActiveGenomeId = (state: RootState) =>
   state.entityViewer.general.activeGenomeId;
 
@@ -29,10 +31,10 @@ export const getEntityViewerActiveEnsObjectId = (state: RootState) => {
   return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
 };
 
-export const getEntityViewerActiveEnsObject = (state: RootState) => {
+export const getEntityViewerActiveEnsObject = (state: RootState): EnsObjectGene | null => {
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
   if (!activeObjectId) {
     return null;
   }
-  return getEnsObjectById(state, activeObjectId);
+  return getEnsObjectById(state, activeObjectId) as EnsObjectGene;
 };
