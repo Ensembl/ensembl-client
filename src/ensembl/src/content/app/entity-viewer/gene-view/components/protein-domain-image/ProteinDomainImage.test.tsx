@@ -38,7 +38,7 @@ describe('<ProteinDomainImage />', () => {
     expect(wrapper.find('svg').length).toBe(totalDomains);
   });
 
-  it('renders the correct number of exons within the SVGs', () => {
+  it('renders the correct number of domains within the SVGs', () => {
     const firstGroupKey = Object.keys(domainsByResourceGroups)[0];
 
     const firstGroupSubKey = Object.keys(
@@ -51,7 +51,7 @@ describe('<ProteinDomainImage />', () => {
       wrapper
         .find('svg')
         .at(0)
-        .find('.exon').length
+        .find('.domain').length
     ).toBe(totalExonsInFirstSvg);
   });
 });

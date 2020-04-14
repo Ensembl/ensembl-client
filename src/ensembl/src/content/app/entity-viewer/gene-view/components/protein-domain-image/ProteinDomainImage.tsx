@@ -9,15 +9,14 @@ import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/pro
 import styles from './ProteinDomainImage.scss';
 
 const BLOCK_HEIGHT = 18;
-const BACKBONE_HEIGHT = 24;
+const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
   transcript: Transcript;
   width: number; // available width for drawing, in pixels
   classNames?: {
-    backbone?: string;
-    exon?: string;
-    domain: string;
+    track?: string;
+    domain?: string;
   };
 };
 
@@ -68,18 +67,16 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
     return null;
   }
 
-  const length = props.transcript.product?.length || 0;
+  const length = props.transcript.product.length || 0;
 
   const proteinDomainsResources = getDomainsByResourceGroups(
-    props.transcript.product?.protein_domains_resources
+    props.transcript.product.protein_domains_resources
   );
 
   const scale = scaleLinear()
     .domain([1, length])
     .range([1, props.width])
     .clamp(true);
-
-  const domainClasses = classNames(styles.domain, props.classNames?.domain);
 
   return (
     <div className={styles.container}>
@@ -101,15 +98,15 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
                           width={props.width}
                           height={BLOCK_HEIGHT}
                         >
-                          <g className={domainClasses}>
-                            <Backbone {...props} scale={scale} />
+                          <g>
+                            <Track {...props} scale={scale} />
                             {proteinDomainsResources[type][description].map(
-                              (exon, index) => (
-                                <ExonBlock
+                              (domain, index) => (
+                                <DomainBlock
                                   key={index}
-                                  exon={exon}
+                                  domain={domain}
                                   transcriptStart={transcriptStart}
-                                  className={props.classNames?.exon}
+                                  className={props.classNames?.domain}
                                   scale={scale}
                                 />
                               )
@@ -130,24 +127,21 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   );
 };
 
-const Backbone = (
+const Track = (
   props: ProteinDomainImageProps & { scale: ScaleLinear<number, number> }
 ) => {
-  const backboneClasses = classNames(
-    styles.backbone,
-    props.classNames?.backbone
-  );
+  const trackClasses = classNames(styles.track, props.classNames?.track);
 
-  // we are adjusting the width of every backbone segment by adding 2 points from its width.
+  // we are adjusting the width of every track segment by adding 2 points from its width.
   return (
-    <g className={backboneClasses}>
-      <rect height={BACKBONE_HEIGHT} width={props.width + 2} />
+    <g className={trackClasses}>
+      <rect height={TRACK_HEIGHT} width={props.width + 2} />
     </g>
   );
 };
 
-type ExonBlockProps = {
-  exon: {
+type DomainBlockProps = {
+  domain: {
     start: number;
     end: number;
   };
@@ -157,20 +151,18 @@ type ExonBlockProps = {
   scale: ScaleLinear<number, number>;
 };
 
-const ExonBlock = (props: ExonBlockProps) => {
+const DomainBlock = (props: DomainBlockProps) => {
   const y = 3;
-  const exonClasses = classNames(styles.exon, props.className);
-
-  const classes = classNames(exonClasses);
+  const domainClasses = classNames(styles.domain, props.className);
 
   return (
     <rect
-      key={props.exon.start}
-      className={classes}
+      key={props.domain.start}
+      className={domainClasses}
       y={y}
       height={BLOCK_HEIGHT}
-      x={props.scale(props.exon.start)}
-      width={props.scale(props.exon.end - props.exon.start)}
+      x={props.scale(props.domain.start)}
+      width={props.scale(props.domain.end - props.domain.start)}
     />
   );
 };
