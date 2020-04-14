@@ -10,6 +10,9 @@ export const getFeatureCoordinates = (feature: {
   return { start, end };
 };
 
+export const getRegionName = (feature: { slice: Slice }) =>
+  feature.slice.region.name;
+
 export const getFeatureStrand = (feature: { slice: Slice }) =>
   feature.slice.region.strand.code;
 

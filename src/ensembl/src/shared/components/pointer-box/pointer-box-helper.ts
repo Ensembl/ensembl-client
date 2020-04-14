@@ -15,9 +15,9 @@ type FindOptimalPositionParams = {
   rootBoundingRect: ClientRect;
   anchorBoundingRect: ClientRect;
   position: Position;
-  pointerWidth: number,
-  pointerHeight: number,
-  pointerOffset: number
+  pointerWidth: number;
+  pointerHeight: number;
+  pointerOffset: number;
 };
 
 export const findOptimalPosition = (params: FindOptimalPositionParams) => {
@@ -90,8 +90,7 @@ const getTooltipOutOfBoundsArea = (
     predictedBottom = 0;
 
   if (position === Position.TOP_LEFT) {
-    predictedLeft =
-      anchorCentreX - width + halfPointerWidth + pointerOffset;
+    predictedLeft = anchorCentreX - width + halfPointerWidth + pointerOffset;
     predictedRight = predictedLeft + width;
     predictedTop = anchorTop - pointerHeight - height;
     predictedBottom = anchorTop;
@@ -101,8 +100,7 @@ const getTooltipOutOfBoundsArea = (
     predictedTop = anchorTop - pointerHeight - height;
     predictedBottom = anchorTop;
   } else if (position === Position.BOTTOM_LEFT) {
-    predictedLeft =
-      anchorCentreX - width + halfPointerWidth + pointerOffset;
+    predictedLeft = anchorCentreX - width + halfPointerWidth + pointerOffset;
     predictedRight = predictedLeft + width;
     predictedTop = anchorBottom;
     predictedBottom = anchorBottom + pointerHeight + height;
@@ -119,8 +117,7 @@ const getTooltipOutOfBoundsArea = (
   } else if (position === Position.LEFT_BOTTOM) {
     predictedLeft = anchorLeft - pointerHeight - width;
     predictedRight = anchorLeft;
-    predictedTop =
-      anchorCentreY - height + halfPointerWidth + pointerOffset;
+    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
     predictedBottom = predictedTop + height;
   } else if (position === Position.RIGHT_TOP) {
     predictedLeft = anchorRight;
@@ -130,8 +127,7 @@ const getTooltipOutOfBoundsArea = (
   } else if (position === Position.RIGHT_BOTTOM) {
     predictedLeft = anchorRight;
     predictedRight = anchorRight + pointerHeight + width;
-    predictedTop =
-      anchorCentreY - height + halfPointerWidth + pointerOffset;
+    predictedTop = anchorCentreY - height + halfPointerWidth + pointerOffset;
     predictedBottom = predictedTop + height;
   }
 

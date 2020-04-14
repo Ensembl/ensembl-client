@@ -1,0 +1,33 @@
+@import 'src/styles/common';
+
+.listItemInfo {
+  color: $grey;
+  line-height: 2;
+}
+
+.middle {
+  background: #374148;
+  display: flex;
+  justify-content: space-between;
+  grid-template-columns: 1.5fr 1fr 1.5fr 1fr;
+  grid-template-rows: auto;
+  padding: 15px 20px;
+
+  strong {
+    color: $white;
+    font-weight: normal;
+  }
+}
+
+.column:not(:last-child) {
+  margin-right: 20px;
+  padding-bottom: 30px;
+}
+
+.column:last-child {
+  align-self: flex-end;
+}
+
+.downloadLink {
+  color: $blue;
+}

@@ -79,26 +79,31 @@ const createProduct = (): Product => {
 };
 
 const createExons = (transcriptSlice: Slice): Exon[] => {
+  const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates({
+    slice: transcriptSlice
+  });
+  const length = transcriptEnd - transcriptStart;
+
   const numberOfExons = faker.random.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
 
   return times(numberOfExons, (index: number) => {
-    const minCoordinate = maxExonLength * index + 1;
-    const maxCoordinate = maxExonLength * index + 1;
+    const minCoordinate = transcriptStart + (maxExonLength * index + 1);
+    const maxCoordinate = minCoordinate + maxExonLength;
     const middleCoordinate =
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
-    const start = faker.random.number({
+    const exonStart = faker.random.number({
       min: minCoordinate,
       max: middleCoordinate
     });
-    const end = faker.random.number({
+    const exonEnd = faker.random.number({
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
     const slice = {
       location: {
-        start,
-        end
+        start: index > 0 ? exonStart : transcriptStart,
+        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd
       },
       region: transcriptSlice.region
     };
