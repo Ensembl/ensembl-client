@@ -82,7 +82,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates({
     slice: transcriptSlice
   });
-  const length = transcriptEnd - transcriptStart;
+  const length = (transcriptEnd - transcriptStart) + 1;
 
   const numberOfExons = faker.random.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
