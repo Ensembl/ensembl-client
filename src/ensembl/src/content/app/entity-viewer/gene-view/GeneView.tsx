@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
+import { useParams } from 'react-router-dom';
 
 import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
@@ -11,6 +12,8 @@ import DefaultTranscriptslist from './components/default-transcripts-list/Defaul
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
 import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
@@ -102,6 +105,10 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
+  const params: { [key: string]: string } = useParams();
+  const { genomeId, entityId } = params;
+  const gbUrl = urlFor.browser({ genomeId, focus: entityId });
+
   return (
     <div className={styles.geneView}>
       <div className={styles.featureImage}>
@@ -110,7 +117,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           onTicksCalculated={setBasePairsRulerTicks}
         />
       </div>
-      <div className={styles.viewInLinks}>View in GB</div>
+      <div className={styles.viewInLinks}>
+        <ViewInApp links={{ genomeBrowser: gbUrl }} />
+      </div>
 
       <div className={styles.geneViewTabs}>
         <GeneViewTabs />

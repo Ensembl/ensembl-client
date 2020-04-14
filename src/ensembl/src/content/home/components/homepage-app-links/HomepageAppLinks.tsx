@@ -16,9 +16,8 @@ import {
 } from 'src/content/home/homePageSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
-import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
 
 import { RootState } from 'src/store';
@@ -109,27 +108,12 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
         />
       </div>
       <div className={styles.homepageAppLinkButtons}>
-        <span className={styles.viewIn}>View in</span>
-        <Link className={styles.homepageAppLink} to={urlFor.browser()}>
-          <ImageButton
-            statusClasses={{
-              [Status.DEFAULT]: styles.homepageAppLinkButton
-            }}
-            status={Status.DEFAULT}
-            description="Genome browser"
-            image={BrowserIcon}
-          />
-        </Link>
-        <Link className={styles.homepageAppLink} to={urlFor.entityViewer()}>
-          <ImageButton
-            statusClasses={{
-              [Status.DEFAULT]: styles.homepageAppLinkButton
-            }}
-            status={Status.DEFAULT}
-            description="Entity viewer"
-            image={EntityViewerIcon}
-          />
-        </Link>
+        <ViewInApp
+          links={{
+            genomeBrowser: urlFor.browser(),
+            entityViewer: urlFor.entityViewer()
+          }}
+        />
       </div>
     </div>
   ) : (
