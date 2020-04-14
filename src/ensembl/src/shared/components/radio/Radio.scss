@@ -1,7 +1,42 @@
 @import 'src/styles/common';
 
+.radioWrapper {
+  display: block;
+  padding: 4px;
+}
+
 .radioInput {
-  display: inline-block;
-  margin-left: 20px;
-  margin-right: 20px;
+  width: 0;
+  display: none;
+}
+
+.defaultRadio {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  border: 1px solid $grey;
+  background-color: none;
+  position: absolute;
+  margin-top: 4px;
+}
+
+.checked {
+  background-color: $white;
+}
+
+.checked:after {
+  top: 2px;
+  left: 2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: $green;
+  display: block;
+  content: '';
+  position: absolute;
+}
+
+.radioLabel {
+  margin-left: 30px;
+  color: $medium-light-grey;
 }

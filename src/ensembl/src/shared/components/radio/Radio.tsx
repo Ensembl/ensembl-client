@@ -2,6 +2,8 @@ import React from 'react';
 
 import defaultStyles from './Radio.scss';
 
+import classNamesMeger from 'classnames';
+
 export type RadioOption = {
   value: string | number | boolean;
   label: string;
@@ -14,6 +16,9 @@ type Props = {
   classNames?: {
     radioInput?: string;
     radioLabel?: string;
+    radioWrapper?: string;
+    defaultRadio?: string;
+    checked?: any;
   };
   options: RadioOptions;
   selectedOption: string | number | boolean;
@@ -36,8 +41,12 @@ const Radio = (props: Props) => {
   return (
     <div>
       {props.options.map((option: any, index: number) => {
+        const radioClass = classNamesMeger(styles.defaultRadio, {
+          [styles.checked]: option.value === props.selectedOption
+        });
+
         return (
-          <span key={index}>
+          <span key={index} className={styles.radioWrapper}>
             <input
               id={`radio_${index}`}
               className={styles.radioInput}
@@ -48,6 +57,7 @@ const Radio = (props: Props) => {
               disabled={props.disabled}
               name="radio"
             />
+            <div onClick={() => handleOnChange(index)} className={radioClass} />
             <label className={styles.radioLabel} htmlFor={`radio_${index}`}>
               {option.label}
             </label>
