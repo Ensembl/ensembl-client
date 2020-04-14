@@ -1,0 +1,14 @@
+@import 'src/styles/common';
+
+.wrapper {
+  padding: 20px;
+  background-color: #374148; //needs replacing with common code once previous PR #275 has been merged
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.radioWrapper {
+  display: block;
+  padding: 4px;
+}
