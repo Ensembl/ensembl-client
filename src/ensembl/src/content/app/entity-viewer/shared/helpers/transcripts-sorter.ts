@@ -11,11 +11,11 @@ function compareTranscriptLengths(
   const transcriptOneLength = getFeatureLength(transcriptOne);
   const transcriptTwoLength = getFeatureLength(transcriptTwo);
 
-  if (transcriptOneLength < transcriptTwoLength) {
+  if (transcriptOneLength > transcriptTwoLength) {
     return -1;
   }
 
-  if (transcriptOneLength > transcriptTwoLength) {
+  if (transcriptOneLength < transcriptTwoLength) {
     return 1;
   }
 

@@ -8,7 +8,7 @@ export type Transcript = {
   id: string;
   symbol: string;
   so_term?: string; // is there a better name for it?
-  biotype?: string;
+  biotype?: string; // either this or so_term above need to be removed in the future
   slice: Slice;
   exons: Exon[];
   cds: CDS | null;
