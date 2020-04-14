@@ -20,7 +20,7 @@ import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-
+import { fetchSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 export const setActiveGenomeId = createAction(
   'entity-viewer/set-active-genome-id'
 )<string>();
@@ -50,6 +50,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
 
   if (params.entityId && params.entityId !== activeEntityId) {
     dispatch(updateEnsObject(params.entityId));
+    dispatch(fetchSidebarPayload());
   }
 };
 

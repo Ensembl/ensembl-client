@@ -15,13 +15,13 @@ type WithLabelProps = WithoutLabelProps & {
   labelClassName?: string;
 };
 
-type Props = WithLabelProps | WithoutLabelProps;
+export type CheckboxProps = WithLabelProps | WithoutLabelProps;
 
-const isWithLabel = (props: Props): props is WithLabelProps => {
+const isWithLabel = (props: CheckboxProps): props is WithLabelProps => {
   return 'label' in props;
 };
 
-const Checkbox = (props: Props) => {
+const Checkbox = (props: CheckboxProps) => {
   const handleOnChange = () => {
     // Do nothing if it is disabled
     if (props.disabled) {

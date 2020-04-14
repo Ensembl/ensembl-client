@@ -1,0 +1,175 @@
+@import 'src/styles/common';
+
+.overviewContainer {
+  font-size: 13px;
+}
+.sectionHead {
+  color: $dark-grey;
+  font-size: 12px;
+  font-weight: $light;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.geneDetails {
+  .geneSymbol {
+    font-weight: $bold;
+    margin-right: 10px;
+  }
+}
+
+.otherAssembly {
+  display: grid;
+  grid-template-columns: [species] max-content 10px [assembly] auto 5px [stable-id] auto;
+
+  .speciesName {
+    grid-column: species;
+  }
+
+  .geneName {
+    grid-column: assembly;
+    color: $dark-grey;
+    font-weight: $light;
+  }
+
+  .stableId {
+    grid-column: stable-id;
+  }
+}
+
+.accordionContainer {
+  width: 100%;
+}
+
+.entityViewerAccordion {
+  border: none;
+  margin-top: 30px;
+}
+
+.entityViewerAccordionHeader {
+  background-color: $light-grey;
+  border-radius: 5px;
+}
+
+.entityViewerAccordionButton {
+  color: $blue;
+  padding: 5px 0 5px 20px;
+
+  &:before,
+  &:after {
+    margin-top: -3px;
+  }
+
+  &Disabled {
+    color: $grey;
+  }
+}
+
+.entityViewerAccordionItem:not(:first-child) {
+  border-color: transparent;
+}
+
+.entityViewerAccordionItemContent {
+  background-color: transparent;
+  border: none;
+  padding: 20px;
+}
+
+.geneFunction {
+  margin-bottom: 15px;
+}
+
+.geneFunctionLabel {
+  font-size: 12px;
+  color: $grey;
+}
+
+.providedBy {
+  color: $dark-grey;
+  font-size: 12px;
+  font-weight: $light;
+}
+
+.sequenceAccordion {
+  & .geneDetails {
+    margin-bottom: 10px;
+    & .geneTitle {
+      color: $dark-grey;
+      margin-right: 10px;
+      font-size: 12px;
+      font-weight: $light;
+    }
+
+    & .stableId {
+      font-weight: $bold;
+    }
+  }
+}
+
+.accordionContentTitle {
+  color: $dark-grey;
+  margin-bottom: 15px;
+  margin-top: 20px;
+}
+
+.sequenceDownload {
+  text-align: right;
+  margin: 30px 0;
+}
+
+.customDownload {
+  display: grid;
+  grid-template-columns: [label] max-content 20px [icon] 30px;
+  & .label {
+    grid-column: label;
+  }
+
+  & .icon {
+    grid-column: icon;
+  }
+}
+
+.standardLabelValue {
+  display: grid;
+  grid-template-columns: [label] max-content 10px [value] auto;
+
+  .label {
+    grid-column: label;
+    color: $dark-grey;
+  }
+
+  .value {
+    grid-column: value;
+    font-weight: $bold;
+  }
+}
+
+.publication {
+  margin-bottom: 20px;
+  & .title {
+    font-weight: $bold;
+  }
+
+  & .authors {
+    color: $dark-grey;
+    font-size: 12px;
+    font-weight: $light;
+  }
+
+  & .sourceDescription {
+    color: $dark-grey;
+  }
+}
+
+.tark {
+  & .description {
+    margin: 20px 0 10px;
+    font-weight: $bold;
+  }
+}
+
+.tarkLabel {
+  color: $dark-grey;
+}
