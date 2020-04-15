@@ -3,13 +3,20 @@ import sortBy from 'lodash/sortBy';
 import {
   TranscriptInResponse,
   ExonInResponse,
-  FeatureInResponse
+  FeatureInResponse,
+  TranslationInResponse,
+  ProteinFeature
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import {
+  Product,
+  ProductType
+} from 'src/content/app/entity-viewer/types/product';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
+import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
 
 // transform ensembl rest /overlap data into a transcript data structure
 export const restTranscriptAdaptor = (
@@ -22,6 +29,42 @@ export const restTranscriptAdaptor = (
   return buildTranscript(transcript, data);
 };
 
+const buildProteinDomainsResources = (
+  proteinFeatures: ProteinFeature[]
+): ProteinDomainsResources => {
+  const domainsResources: ProteinDomainsResources = {};
+
+  proteinFeatures.forEach((entry) => {
+    const resourceName = entry.type;
+    const domainName = entry.description;
+
+    const domain = {
+      name: domainName,
+      source_uri: '',
+      source: {
+        name: '',
+        uri: ''
+      },
+      location: {
+        start: entry.start,
+        end: entry.end
+      },
+      score: 0
+    };
+
+    if (!domainsResources[resourceName]) {
+      domainsResources[resourceName] = {
+        name: resourceName,
+        domains: [domain]
+      };
+    } else {
+      domainsResources[resourceName].domains.push(domain);
+    }
+  });
+
+  return domainsResources;
+};
+
 export const buildTranscript = (
   transcript: TranscriptInResponse,
   data: FeatureInResponse[]
@@ -32,6 +75,27 @@ export const buildTranscript = (
         feature.feature_type === 'exon' && feature.Parent === transcript.id
     )
     .map((exon) => buildExon(exon as ExonInResponse, transcript));
+
+  const translationResponse =
+    (data[data.length - 1] as TranslationInResponse).object_type ===
+    'Translation'
+      ? (data[data.length - 1] as TranslationInResponse)
+      : null;
+
+  let product;
+
+  if (translationResponse) {
+    const protein_domains_resources = buildProteinDomainsResources(
+      translationResponse.protein_domains_resources
+    );
+
+    product = {
+      type: ProductType.PROTEIN,
+      length: translationResponse.length,
+      protein_domains_resources: protein_domains_resources
+    } as Product;
+  }
+
   const cds = buildCDS(transcript, data);
 
   return {
@@ -52,7 +116,8 @@ export const buildTranscript = (
       }
     },
     exons,
-    cds
+    cds,
+    product: product as Product
   };
 };
 

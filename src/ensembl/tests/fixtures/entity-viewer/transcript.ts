@@ -8,6 +8,11 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import { Slice } from 'src/content/app/entity-viewer/types/slice';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
+import {
+  Product,
+  ProteinDomainsResources,
+  ProductType
+} from 'src/content/app/entity-viewer/types/product';
 
 export const createTranscript = (): Transcript => {
   const transcriptSlice = createSlice();
@@ -19,7 +24,57 @@ export const createTranscript = (): Transcript => {
     so_term: faker.lorem.word(),
     slice: transcriptSlice,
     exons: createExons(transcriptSlice),
-    cds: createCDS(transcriptSlice)
+    cds: createCDS(transcriptSlice),
+    product: createProduct()
+  };
+};
+
+const createProduct = (): Product => {
+  const length = faker.random.number({ min: 10, max: 100 });
+  const numberOfExons = faker.random.number({ min: 1, max: 10 });
+  const maxExonLength = Math.floor(length / numberOfExons);
+
+  const protein_domains_resources: ProteinDomainsResources = {};
+
+  times(numberOfExons, (index: number) => {
+    const minCoordinate = maxExonLength * index + 1;
+    const maxCoordinate = maxExonLength * index + 1;
+    const middleCoordinate =
+      maxCoordinate - (maxCoordinate - minCoordinate) / 2;
+    const start = faker.random.number({
+      min: minCoordinate,
+      max: middleCoordinate
+    });
+    const end = faker.random.number({
+      min: middleCoordinate + 1,
+      max: maxCoordinate - 1
+    });
+    const resource_group_name = faker.random.words();
+
+    protein_domains_resources[resource_group_name] = {
+      name: resource_group_name,
+      domains: [
+        {
+          name: faker.random.words(),
+          source_uri: '',
+          source: {
+            name: faker.random.words(),
+            uri: ''
+          },
+          location: {
+            start: start,
+            end: end
+          },
+          score: faker.random.number()
+        }
+      ]
+    };
+  });
+
+  return {
+    protein_domains_resources: protein_domains_resources,
+    type: ProductType.PROTEIN,
+    length: length
   };
 };
 
@@ -27,7 +82,8 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates({
     slice: transcriptSlice
   });
-  const length = transcriptEnd - transcriptStart;
+  const length = (transcriptEnd - transcriptStart) + 1;
+
   const numberOfExons = faker.random.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
 
