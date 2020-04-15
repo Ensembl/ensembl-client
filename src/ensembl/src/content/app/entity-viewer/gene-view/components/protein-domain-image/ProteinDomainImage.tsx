@@ -153,7 +153,7 @@ type DomainBlockProps = {
 
 const DomainBlock = (props: DomainBlockProps) => {
   const y = 3;
-  const domainClasses = classNames(styles.defaultDomain, props.className);
+  const domainClasses = classNames(styles.domain, props.className);
 
   return (
     <rect
