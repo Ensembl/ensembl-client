@@ -27,7 +27,7 @@ describe('<ProteinDomainImage />', () => {
     jest.resetAllMocks();
   });
 
-  it(' renders N SVGs based on the number of protein domains', () => {
+  it('renders the correct number of tracks', () => {
     let totalDomains = 0;
 
     Object.keys(domainsByResourceGroups).forEach((resourceGroupName) => {
@@ -45,13 +45,13 @@ describe('<ProteinDomainImage />', () => {
       domainsByResourceGroups[firstGroupKey]
     )[0];
 
-    const totalExonsInFirstSvg =
+    const totalDomainsInFirstSvg =
       domainsByResourceGroups[firstGroupKey][firstGroupSubKey].length;
     expect(
       wrapper
         .find('svg')
         .at(0)
         .find('.domain').length
-    ).toBe(totalExonsInFirstSvg);
+    ).toBe(totalDomainsInFirstSvg);
   });
 });

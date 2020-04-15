@@ -34,9 +34,7 @@ export const getDomainsByResourceGroups = (
 ) => {
   const proteinDomains: ProteinDomainImageData = {};
 
-  Object.values(proteinDomainsResources).map((resource) => {
-    const resourceName = resource.name;
-
+  Object.keys(proteinDomainsResources).forEach((resourceName) => {
     if (!proteinDomains[resourceName]) {
       proteinDomains[resourceName] = {};
     }
@@ -74,7 +72,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   );
 
   const scale = scaleLinear()
-    .domain([1, length])
+    .domain([1, length + 1])
     .range([1, props.width])
     .clamp(true);
 
@@ -83,46 +81,42 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
       {/* TODO: The sorting needs to be done based on the `score`? once it is available */}
       {Object.keys(proteinDomainsResources)
         .sort()
-        .map((type, key) => {
-          return (
-            <div key={key} className={styles.resourceGroup}>
-              <div className={styles.resourceName}>{type}</div>
-              <div className={styles.resourceImages}>
-                {Object.keys(proteinDomainsResources[type])
-                  .sort()
-                  .map((description, key) => {
-                    return (
-                      <div key={key} className={styles.resourceImage}>
-                        <svg
-                          className={styles.containerSvg}
-                          width={props.width}
-                          height={BLOCK_HEIGHT}
-                        >
-                          <g>
-                            <Track {...props} scale={scale} />
-                            {proteinDomainsResources[type][description].map(
-                              (domain, index) => (
-                                <DomainBlock
-                                  key={index}
-                                  domain={domain}
-                                  transcriptStart={transcriptStart}
-                                  className={props.classNames?.domain}
-                                  scale={scale}
-                                />
-                              )
-                            )}
-                          </g>
-                        </svg>
-                        <div className={styles.resourceDescription}>
-                          {description}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
+        .map((type, key) => (
+          <div key={key} className={styles.resourceGroup}>
+            <div className={styles.resourceName}>{type}</div>
+            <div className={styles.resourceImages}>
+              {Object.keys(proteinDomainsResources[type])
+                .sort()
+                .map((description, key) => (
+                  <div key={key} className={styles.resourceImage}>
+                    <svg
+                      className={styles.containerSvg}
+                      width={props.width}
+                      height={BLOCK_HEIGHT}
+                    >
+                      <g>
+                        <Track {...props} scale={scale} />
+                        {proteinDomainsResources[type][description].map(
+                          (domain, index) => (
+                            <DomainBlock
+                              key={index}
+                              domain={domain}
+                              transcriptStart={transcriptStart}
+                              className={props.classNames?.domain}
+                              scale={scale}
+                            />
+                          )
+                        )}
+                      </g>
+                    </svg>
+                    <div className={styles.resourceDescription}>
+                      {description}
+                    </div>
+                  </div>
+                ))}
             </div>
-          );
-        })}
+          </div>
+        ))}
     </div>
   );
 };
@@ -162,7 +156,7 @@ const DomainBlock = (props: DomainBlockProps) => {
       y={y}
       height={BLOCK_HEIGHT}
       x={props.scale(props.domain.start)}
-      width={props.scale(props.domain.end - props.domain.start)}
+      width={props.scale(props.domain.end - props.domain.start) + 1}
     />
   );
 };
