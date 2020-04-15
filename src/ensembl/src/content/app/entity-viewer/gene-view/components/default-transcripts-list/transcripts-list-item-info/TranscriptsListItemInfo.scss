@@ -6,11 +6,13 @@
 }
 
 .middle {
+  display: grid;
+  grid-template-areas:
+    'left middle right .'
+    '. . . downloadLink'
+    'download download download download';
+  grid-column-gap: 10px;
   background: #374148;
-  display: flex;
-  justify-content: space-between;
-  grid-template-columns: 1.5fr 1fr 1.5fr 1fr;
-  grid-template-rows: auto;
   padding: 15px 20px;
 
   strong {
@@ -19,15 +21,42 @@
   }
 }
 
-.column:not(:last-child) {
-  margin-right: 20px;
-  padding-bottom: 30px;
+.topLeft {
+  grid-area: left;
+  width: 190px;
 }
 
-.column:last-child {
-  align-self: flex-end;
+.topMiddle {
+  grid-area: middle;
+  width: 150px;
+}
+
+.topRight {
+  grid-area: right;
+  width: 210px;
 }
 
 .downloadLink {
+  grid-area: downloadLink;
   color: $blue;
+  width: 66px;
+  height: 16px;
+  text-align: right;
+  line-height: 1;
+
+  span {
+    cursor: pointer;
+  }
+}
+
+.download {
+  grid-area: download;
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid $dark-grey;
+}
+
+.closeIcon {
+  cursor: pointer;
+  height: 16px;
 }

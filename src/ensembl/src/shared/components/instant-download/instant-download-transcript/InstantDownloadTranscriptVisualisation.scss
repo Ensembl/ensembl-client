@@ -2,7 +2,12 @@
 
 $regularColor: $dark-grey;
 
-.outerExon {
+/* Duplicating class selectors below to increase sensitivity
+* and overwrite styles that can be added by the combination of
+* parentClass > rect
+*/
+
+.outerExon.outerExon {
   stroke: $regularColor;
   fill: none;
 
@@ -11,7 +16,7 @@ $regularColor: $dark-grey;
   }
 }
 
-.innerExon {
+.innerExon.innerExon {
   stroke: $regularColor;
   fill: $regularColor;
 
@@ -21,7 +26,7 @@ $regularColor: $dark-grey;
   }
 }
 
-.halfOuterExon {
+.halfOuterExon.halfOuterExon {
   stroke: $regularColor;
   fill: $regularColor;
 
@@ -31,7 +36,7 @@ $regularColor: $dark-grey;
   }
 }
 
-.intron {
+.intron.intron {
   stroke: $regularColor;
 
   &.highlighted {
