@@ -72,8 +72,8 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   );
 
   const scale = scaleLinear()
-    .domain([1, length + 1])
-    .range([1, props.width])
+    .domain([1, length])
+    .range([0, props.width])
     .clamp(true);
 
   return (
@@ -95,7 +95,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
                       height={BLOCK_HEIGHT}
                     >
                       <g>
-                        <Track {...props} scale={scale} />
+                        <Track {...props} />
                         {proteinDomainsResources[type][description].map(
                           (domain, index) => (
                             <DomainBlock
@@ -121,15 +121,13 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   );
 };
 
-const Track = (
-  props: ProteinDomainImageProps & { scale: ScaleLinear<number, number> }
-) => {
+const Track = (props: ProteinDomainImageProps) => {
   const trackClasses = classNames(styles.track, props.classNames?.track);
 
-  // we are adjusting the width of every track segment by adding 2 points from its width.
+  // we are adjusting the width of every track segment by adding 1 px to its width.
   return (
     <g className={trackClasses}>
-      <rect height={TRACK_HEIGHT} width={props.width + 2} />
+      <rect height={TRACK_HEIGHT} width={props.width + 1} />
     </g>
   );
 };
