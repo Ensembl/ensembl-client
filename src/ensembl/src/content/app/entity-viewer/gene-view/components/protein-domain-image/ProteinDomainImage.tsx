@@ -65,7 +65,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
     return null;
   }
 
-  const length = props.transcript.product.length || 0;
+  const length = props.transcript.product.length;
 
   const proteinDomainsResources = getDomainsByResourceGroups(
     props.transcript.product.protein_domains_resources
@@ -123,11 +123,9 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
 
 const Track = (props: ProteinDomainImageProps) => {
   const trackClasses = classNames(styles.track, props.classNames?.track);
-
-  // we are adjusting the width of every track segment by adding 1 px to its width.
   return (
     <g className={trackClasses}>
-      <rect height={TRACK_HEIGHT} width={props.width + 1} />
+      <rect height={TRACK_HEIGHT} width={props.width} />
     </g>
   );
 };
