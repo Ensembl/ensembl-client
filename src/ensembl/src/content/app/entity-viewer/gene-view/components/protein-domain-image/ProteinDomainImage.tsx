@@ -152,7 +152,7 @@ const DomainBlock = (props: DomainBlockProps) => {
       y={y}
       height={BLOCK_HEIGHT}
       x={props.scale(props.domain.start)}
-      width={props.scale(props.domain.end - props.domain.start) + 1}
+      width={props.scale(props.domain.end - props.domain.start + 1)}
     />
   );
 };
