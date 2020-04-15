@@ -39,7 +39,7 @@ export const getDomainsByResourceGroups = (
       proteinDomains[resourceName] = {};
     }
 
-    proteinDomainsResources[resourceName].domains.map((domain) => {
+    proteinDomainsResources[resourceName].domains.forEach((domain) => {
       const domainName = domain.name;
 
       const { start, end } = domain.location;
