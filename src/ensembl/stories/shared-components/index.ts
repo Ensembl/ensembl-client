@@ -14,7 +14,7 @@ import './loader/Loader.stories';
 import './panel/Panel.stories';
 import './pointer-box/PointerBox.stories';
 import './question-button/QuestionButton.stories';
-import './radio/Radio.stories';
+import './radio-group/RadioGroup.stories';
 import './round-button/RoundButton.stories';
 import './search-field/SearchField.stories';
 import './select/Select.stories';
