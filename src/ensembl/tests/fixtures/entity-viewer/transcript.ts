@@ -11,10 +11,12 @@ import { CDS } from 'src/content/app/entity-viewer/types/cds';
 import {
   Product,
   ProteinDomainsResources,
-  ProductType
+  ProductType,
 } from 'src/content/app/entity-viewer/types/product';
 
-export const createTranscript = (fragment: Partial<Transcript> = {}): Transcript => {
+export const createTranscript = (
+  fragment: Partial<Transcript> = {}
+): Transcript => {
   const transcriptSlice = createSlice();
 
   return {
@@ -26,29 +28,29 @@ export const createTranscript = (fragment: Partial<Transcript> = {}): Transcript
     exons: createExons(transcriptSlice),
     cds: createCDS(transcriptSlice),
     product: createProduct(),
-    ...fragment
+    ...fragment,
   };
 };
 
 const createProduct = (): Product => {
   const length = faker.random.number({ min: 10, max: 100 });
-  const numberOfExons = faker.random.number({ min: 1, max: 10 });
-  const maxExonLength = Math.floor(length / numberOfExons);
+  const numberOfDomains = faker.random.number({ min: 1, max: 10 });
+  const maxDomainLength = Math.floor(length / numberOfDomains);
 
   const protein_domains_resources: ProteinDomainsResources = {};
 
-  times(numberOfExons, (index: number) => {
-    const minCoordinate = maxExonLength * index + 1;
-    const maxCoordinate = maxExonLength * index + 1;
+  times(numberOfDomains, (index: number) => {
+    const minCoordinate = maxDomainLength * index + 1;
+    const maxCoordinate = maxDomainLength * (index + 1);
     const middleCoordinate =
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
     const start = faker.random.number({
       min: minCoordinate,
-      max: middleCoordinate
+      max: middleCoordinate,
     });
     const end = faker.random.number({
       min: middleCoordinate + 1,
-      max: maxCoordinate - 1
+      max: maxCoordinate - 1,
     });
     const resource_group_name = faker.random.words();
 
@@ -60,30 +62,30 @@ const createProduct = (): Product => {
           source_uri: '',
           source: {
             name: faker.random.words(),
-            uri: ''
+            uri: '',
           },
           location: {
             start: start,
-            end: end
+            end: end,
           },
-          score: faker.random.number()
-        }
-      ]
+          score: faker.random.number(),
+        },
+      ],
     };
   });
 
   return {
     protein_domains_resources: protein_domains_resources,
     type: ProductType.PROTEIN,
-    length: length
+    length: length,
   };
 };
 
 const createExons = (transcriptSlice: Slice): Exon[] => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates({
-    slice: transcriptSlice
+    slice: transcriptSlice,
   });
-  const length = (transcriptEnd - transcriptStart) + 1;
+  const length = transcriptEnd - transcriptStart + 1;
 
   const numberOfExons = faker.random.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
@@ -95,18 +97,18 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
     const exonStart = faker.random.number({
       min: minCoordinate,
-      max: middleCoordinate
+      max: middleCoordinate,
     });
     const exonEnd = faker.random.number({
       min: middleCoordinate + 1,
-      max: maxCoordinate - 1
+      max: maxCoordinate - 1,
     });
     const slice = {
       location: {
         start: index > 0 ? exonStart : transcriptStart,
-        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd
+        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd,
       },
-      region: transcriptSlice.region
+      region: transcriptSlice.region,
     };
 
     return {
@@ -115,8 +117,8 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
       relative_location: {
         // <-- we are still not sure about this relative location thing
         start: 0,
-        end: 0
-      }
+        end: 0,
+      },
     };
   });
 };
@@ -130,7 +132,7 @@ const createCDS = (transcriptSlice: Slice): CDS => {
     relative_location: {
       // <-- we are still not sure about this relative location thing
       start: 0,
-      end: 0
-    }
+      end: 0,
+    },
   };
 };
