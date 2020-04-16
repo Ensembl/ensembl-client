@@ -1,5 +1,45 @@
 @import 'src/styles/common';
 
+.checkboxGrid {
+  margin-top: 0.5em;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  grid-template-rows: auto;
+  grid-row-gap: 0.2em;
+}
+
+.label {
+  color: white;
+  margin-bottom: 0.5em;
+  font-weight: $light;
+  word-break: break-all;
+
+  .featureId {
+    margin-left: 0.5em;
+    font-weight: $bold;
+  }
+}
+
+.transcriptVis {
+  margin-top: 18px;
+  margin-bottom: 9px;
+}
+
+.checkboxUnchecked {
+  background-color: transparent;
+  border-color: $dark-grey;
+}
+
+.checkboxLabel {
+  font-size: 13px;
+  color: white;
+}
+
+.downloadButtonDisabled {
+  border-color: $dark-grey;
+  color: $dark-grey;
+}
+
 .layout {
   display: grid;
   font-size: 13px;
@@ -70,44 +110,4 @@
       align-self: end;
     }
   }
-}
-
-.checkboxUnchecked {
-  background-color: transparent;
-  border-color: $dark-grey;
-}
-
-.checkboxLabel {
-  font-size: 13px;
-  color: white;
-}
-
-.checkboxGrid {
-  margin-top: 0.5em;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: auto;
-  grid-row-gap: 0.2em;
-}
-
-.label {
-  color: white;
-  margin-bottom: 0.5em;
-  font-weight: $light;
-  word-break: break-all;
-
-  .featureId {
-    margin-left: 0.5em;
-    font-weight: $bold;
-  }
-}
-
-.transcriptVis {
-  margin-top: 18px;
-  margin-bottom: 9px;
-}
-
-.downloadButtonDisabled {
-  border-color: $dark-grey;
-  color: $dark-grey;
 }
