@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'enzyme';
 
 import InstantDownloadTranscriptVisualisation, {
-  Props
+  Props,
 } from './InstantDownloadTranscriptVisualisation';
 
 describe('InstantDownloadTranscriptVisualisation', () => {
@@ -36,7 +36,7 @@ describe('InstantDownloadTranscriptVisualisation', () => {
     expect(wrapper.find('.highlighted.backbone').length).toBe(0);
   });
 
-  it('correctly highlights cDNA segments', () => {
+  it('correctly highlights complete genomic sequence', () => {
     const wrapper = renderWrapper({ isGenomicSequenceEnabled: true });
     expect(wrapper.find('.highlighted.innerExon').length).toBeTruthy();
     expect(wrapper.find('.highlighted.halfOuterExon').length).toBeTruthy();
