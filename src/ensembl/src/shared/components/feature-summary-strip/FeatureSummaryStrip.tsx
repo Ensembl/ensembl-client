@@ -6,7 +6,7 @@ import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type FeatureSummaryStripProps = {
   ensObject: EnsObject;
-  isGhosted: boolean;
+  isGhosted?: boolean;
 };
 
 export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {

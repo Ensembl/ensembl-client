@@ -1,25 +1,60 @@
 import React from 'react';
-import { connect } from 'react-redux';
-
-import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 
 import ScaleSwitcher from './scale-switcher/ScaleSwitcher';
-import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
+import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 
-import { RootState } from 'src/store';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { Slice } from 'src/content/app/entity-viewer/types/slice';
 
 import styles from './EntityViewerTopbar.scss';
 
 export type EntityViewerTopbarProps = {
-  ensObject: EnsObject | null;
+  genomeId: string; // We'll need it for talking to Thoas
+  entityId: string;
+};
+
+const QUERY = gql`
+  query Gene($id: String!) {
+    gene(byId: { id: $id }) {
+      id
+      version
+      symbol
+      biotype
+      slice {
+        location {
+          start
+          end
+        }
+        region {
+          strand {
+            code
+          }
+        }
+      }
+    }
+  }
+`;
+
+type Gene = {
+  id: string;
+  version: string;
+  symbol: string;
+  biotype: string;
+  slice: Slice;
 };
 
 export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
+  const entityId = props.entityId.split(':').pop();
+  const { data } = useQuery<{ gene: Gene }>(QUERY, {
+    variables: { id: entityId },
+    // skip: !props.entityId
+  });
+
   return (
     <div className={styles.container}>
-      {props.ensObject ? (
-        <FeatureSummaryStrip ensObject={props.ensObject} isGhosted={false} />
+      {data ? (
+        <GeneSummaryStrip gene={geneToEnsObjectFields(data.gene)} />
       ) : null}
 
       <div className={styles.scaleSwitcher}>
@@ -29,10 +64,20 @@ export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
+// NOTE: temporary adaptor
+const geneToEnsObjectFields = (gene: Gene) => {
   return {
-    ensObject: getEntityViewerActiveEnsObject(state)
+    stable_id: gene.id,
+    versioned_stable_id: `${gene.id}.${gene.version}`,
+    label: gene.symbol,
+    bio_type: gene.biotype,
+    strand: gene.slice.region.strand.code,
+    location: {
+      chromosome: gene.slice.region.name,
+      start: gene.slice.location.start,
+      end: gene.slice.location.end,
+    },
   };
 };
 
-export default connect(mapStateToProps)(EntityViewerTopbar);
+export default EntityViewerTopbar;

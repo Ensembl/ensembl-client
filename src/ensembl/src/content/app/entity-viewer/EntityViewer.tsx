@@ -15,7 +15,7 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {
   setDataFromUrl,
-  updateEnsObject
+  updateEnsObject,
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
@@ -51,11 +51,12 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770'
+  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770',
 });
 
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
+  const { genomeId, entityId } = params;
 
   useEffect(() => {
     props.setDataFromUrl(params);
@@ -65,10 +66,12 @@ const EntityViewer = (props: Props) => {
     <ApolloProvider client={client}>
       <div className={styles.entityViewer}>
         <EntityViewerAppBar />
-        {params.entityId ? (
+        {genomeId && entityId ? (
           <StandardAppLayout
             mainContent={<GeneView />}
-            topbarContent={<EntityViewerTopbar />}
+            topbarContent={
+              <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
+            }
             sidebarContent={<GeneViewSideBar />}
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
@@ -90,7 +93,7 @@ const ExampleLinks = (props: Props) => {
   const links = props.exampleGenes.map((gene) => {
     const path = urlHelper.entityViewer({
       genomeId: props.activeGenomeId,
-      entityId: gene.object_id
+      entityId: gene.object_id,
     });
 
     return (
@@ -119,7 +122,7 @@ const mapStateToProps = (state: RootState) => {
     activeGenomeId,
     exampleGenes,
     isSidebarOpen: isEntityViewerSidebarOpen(state),
-    viewportWidth: getBreakpointWidth(state)
+    viewportWidth: getBreakpointWidth(state),
   };
 };
 
@@ -127,7 +130,7 @@ const mapDispatchToProps = {
   setDataFromUrl,
   fetchGenomeData,
   toggleSidebar,
-  updateEnsObject
+  updateEnsObject,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);
