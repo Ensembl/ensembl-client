@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import Radio, { RadioOptions } from 'src/shared/components/radio/Radio';
+import RadioGroup, { RadioOptions } from 'src/shared/components/radio-group/RadioGroup';
 
 import styles from './CheckboxWithRadios.scss';
 
@@ -34,7 +34,7 @@ const CheckboxWithRadios = (props: CheckboxWithRadiosProps) => {
           </td>
           {isChecked && (
             <td>
-              <Radio
+              <RadioGroup
                 onChange={props.onChange}
                 options={props.options}
                 selectedOption={props.selectedOption}
