@@ -103,7 +103,7 @@ export const fetchTranscript = async (id: string): Promise<Transcript> => {
   const translationData = await fetch(translationUrl).then((response) =>
     response.json()
   );
-  const proteinFeaturesUrl = `http://rest.ensembl.org/overlap/translation/${translationData.Translation.id}?feature=protein_feature;content-type=application/json`;
+  const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${translationData.Translation.id}?feature=protein_feature;content-type=application/json`;
 
   translationData.Translation.protein_domains_resources = await fetch(
     proteinFeaturesUrl
