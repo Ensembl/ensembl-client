@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import times from 'lodash/times';
 
 import styles from './InstantDownloadTranscriptVisualisation.scss';
 
@@ -63,7 +64,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
       props.isCDSEnabled,
   });
 
-  const exons = [...Array(exonsCount)].map((_, index) => {
+  const exons = times(exonsCount, (index) => {
     return (
       <rect
         key={index}
@@ -95,7 +96,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     </>
   );
 
-  const introns = [...Array(intronsCount)].map((_, index) => {
+  const introns = times(intronsCount, (index) => {
     const xStart = index * (exonWidth + halfExonWidth) + exonWidth;
     const xEnd = xStart + halfExonWidth;
     const y = Math.round(exonHeight / 2);
@@ -111,7 +112,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     );
   });
 
-  const proteinSegments = [...Array(exonsCount)].map((_, index) => {
+  const proteinSegments = times(exonsCount, (index) => {
     const isOuterSegment = index === 0 || index === exonsCount - 1;
     return (
       <rect
