@@ -1,77 +1,75 @@
-import Prismic from 'prismic-javascript';
-import ApiSearchResponse from 'prismic-javascript/d.ts/ApiSearchResponse';
-
+import Strapi from 'strapi-sdk-javascript/build/main';
 import config from 'config';
 import { HelpContent } from 'src/content/app/help-and-docs/types/help-content';
+import JSONValue from 'src/shared/types/JSON';
+import { Article } from 'src/content/app/help-and-docs/types/article';
+import { Video } from 'src/content/app/help-and-docs/types/video';
 
-export enum HelpType {
-  CONTENT = 'content',
-  ARTICLE = 'article',
-  VIDEO = 'video',
-  FAQ = 'faq',
-  DEFINITION = 'definition'
-}
+const { helpApiEndpoint } = config;
 
-const { prismicApiEndpoint } = config;
-
-const Client = Prismic.client(prismicApiEndpoint);
+const strapi = new Strapi(helpApiEndpoint);
 
 class HelpService {
   public async getContentsByComponentId(componentId: string) {
     if (!componentId) {
       return null;
     }
-    const response = await Client.query(
-      Prismic.Predicates.at(`my.article.component`, componentId),
-      {}
+
+    const response = await strapi.request(
+      'get',
+      `/articles?uid=${componentId}`
     );
 
-    if (response) {
-      const data = response.results[0].data;
+    if (response[0]) {
+      const article = response[0] as JSONValue;
       const helpContent: HelpContent = {
         componentId,
-        article: buildArticleFromResponse(response)
+        article: buildArticle(article)
       };
 
-      if (data.related_video) {
-        helpContent.video = await this.getVideo(data.related_video.uid);
+      if (article.related_video) {
+        const relatedVideo = article.related_video as JSONValue;
+        const videoResponse = await strapi.request(
+          'get',
+          `/videos/${relatedVideo.id}`
+        );
+        helpContent.video = buildVideo(videoResponse as JSONValue);
       }
 
       return helpContent;
     }
     return null;
   }
-
-  public async getVideo(videoUid: string) {
-    const response = await Client.query(
-      Prismic.Predicates.at('my.video.uid', videoUid),
-      {}
-    );
-
-    if (response) {
-      // TODO: youtube_url is an object!!
-      return buildVideoFromResponse(response);
-    }
-  }
 }
 
-const buildArticleFromResponse = (response: ApiSearchResponse) => {
-  const data = response.results[0].data;
+const buildArticle = (article: JSONValue): Article => {
+  let body = article.body as string;
+
+  // FIXME: Not sure if there is any other way to load the images
+  body = body.replace('(/uploads/', `(${helpApiEndpoint}/uploads/`);
 
   return {
-    title: data.title[0].text,
-    body: data.body[0].text,
-    parentArticle: data.parent?.uid
+    title: article.title as string,
+    body: body,
+    parentArticle: article.parent
+      ? buildArticle(article.parent as Article)
+      : undefined
   };
 };
 
-const buildVideoFromResponse = (response: ApiSearchResponse) => {
-  const data = response.results[0].data;
+const buildVideo = (video: JSONValue): Video => {
+  const previousVideo = video.previous_video as JSONValue;
+  const nextVideo = video.next_video as JSONValue;
+
   return {
-    title: data.title[0].text,
-    embed_url: data.youtube_url.embed_url,
-    description: data.youtube_url.title,
-    embed_html: data.youtube_url.html
+    title: video.title as string,
+    embedUrl: video.youtube_url as string,
+    previousVideo: previousVideo?.id
+      ? buildVideo(video.previous_video as JSONValue)
+      : undefined,
+    nextVideo: nextVideo?.id
+      ? buildVideo(video.next_video as JSONValue)
+      : undefined
   };
 };
 

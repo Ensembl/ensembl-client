@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-
+import ReactMarkdown from 'react-markdown';
 import Overlay from 'src/shared/components/overlay/Overlay';
 import Panel from 'src/shared/components/panel/Panel';
 
@@ -87,7 +87,9 @@ const renerArticle = (article: Article) => {
       <div className={styles.content}>
         <div className={styles.iconHint}>All about...</div>
         <div className={styles.title}>{article.title}</div>
-        <div className={styles.description}>{article.body}</div>
+        <div className={styles.description}>
+          <ReactMarkdown source={article.body} />
+        </div>
         <div className={styles.relatedTitle}>Related...</div>
         <div className={styles.relatedContent}>Related contents</div>
       </div>
@@ -110,7 +112,7 @@ const renderVideo = (video: Video) => {
         <div className={styles.title}>{video.title}</div>
         <div
           className={styles.video}
-          dangerouslySetInnerHTML={{ __html: video.embed_html }}
+          dangerouslySetInnerHTML={{ __html: video.embedUrl }}
         ></div>
         <div className={styles.relatedTitle}>Related...</div>
         <div className={styles.relatedContent}></div>

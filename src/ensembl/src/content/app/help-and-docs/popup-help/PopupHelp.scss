@@ -65,6 +65,10 @@
 
   & .content {
     grid-column: 2;
+
+    img {
+      max-width: 100%;
+    }
   }
 }
 

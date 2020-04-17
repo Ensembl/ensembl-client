@@ -18,6 +18,6 @@ export default {
   // Genesearch endpoint
   genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT,
 
-  // Prismic API endpoint
-  prismicApiEndpoint: process.env.PRISMIC_API_ENDPOINT
+  // Help API endpoint
+  helpApiEndpoint: process.env.HELP_API_ENDPOINT
 };
