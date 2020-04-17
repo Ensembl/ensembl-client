@@ -91,7 +91,9 @@ const renerArticle = (article: Article) => {
           <ReactMarkdown source={article.body} />
         </div>
         <div className={styles.relatedTitle}>Related...</div>
-        <div className={styles.relatedContent}>Related contents</div>
+        <div className={styles.relatedContent}>
+          {article.parentArticle && <div>{article.parentArticle.title}</div>}
+        </div>
       </div>
     </div>
   );
@@ -112,10 +114,15 @@ const renderVideo = (video: Video) => {
         <div className={styles.title}>{video.title}</div>
         <div
           className={styles.video}
-          dangerouslySetInnerHTML={{ __html: video.embedUrl }}
+          dangerouslySetInnerHTML={{
+            __html: `<iframe width="560" height="315" src="${video.embedUrl}" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true}></iframe>`
+          }}
         ></div>
         <div className={styles.relatedTitle}>Related...</div>
-        <div className={styles.relatedContent}></div>
+        <div className={styles.relatedContent}>
+          {video.nextVideo && <div>{video.nextVideo.title}</div>}
+          {video.previousVideo && <div>{video.previousVideo.title}</div>}
+        </div>
       </div>
     </div>
   );
