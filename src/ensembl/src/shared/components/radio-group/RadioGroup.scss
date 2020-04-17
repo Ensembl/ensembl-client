@@ -1,16 +1,15 @@
 @import 'src/styles/common';
 
-.radioWrapper {
-  display: block;
+.wrapper {
   padding: 4px;
 }
 
-.radioInput {
+.radio {
   width: 0;
   display: none;
 }
 
-.defaultRadio {
+.default {
   height: 15px;
   width: 15px;
   border-radius: 50%;
@@ -18,6 +17,7 @@
   background-color: none;
   position: absolute;
   margin-top: 4px;
+  cursor: pointer;
 }
 
 .checked {
@@ -31,12 +31,12 @@
   height: 9px;
   border-radius: 50%;
   background: $green;
-  display: block;
   content: '';
   position: absolute;
 }
 
-.radioLabel {
+.label {
   margin-left: 30px;
-  color: $medium-light-grey;
+  color: $black;
+  cursor: pointer;
 }

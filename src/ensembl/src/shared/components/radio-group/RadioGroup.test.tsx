@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Radio from './Radio';
+import RadioGroup from './RadioGroup';
 
 import faker from 'faker';
 import times from 'lodash/times';
@@ -12,7 +12,7 @@ const createOption = () => ({
   label: faker.random.words(5)
 });
 
-describe('<Radio />', () => {
+describe('<RadioGroup />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -27,17 +27,17 @@ describe('<Radio />', () => {
 
   it('renders without error', () => {
     expect(() => {
-      mount(<Radio {...defaultProps} />);
+      mount(<RadioGroup {...defaultProps} />);
     }).not.toThrow();
   });
 
   it('applies the style "radioInput" by default', () => {
-    wrapper = mount(<Radio {...defaultProps} />);
+    wrapper = mount(<RadioGroup {...defaultProps} />);
     expect(wrapper.find('.radioInput')).toBeTruthy();
   });
 
   it('calls the onChange function when radio is changed', () => {
-    wrapper = mount(<Radio {...defaultProps} />);
+    wrapper = mount(<RadioGroup {...defaultProps} />);
 
     wrapper
       .find('.radioInput')
@@ -48,7 +48,7 @@ describe('<Radio />', () => {
   });
 
   it('does not call onChange function if the status is disabled', () => {
-    wrapper = mount(<Radio {...defaultProps} disabled={true} />);
+    wrapper = mount(<RadioGroup {...defaultProps} disabled={true} />);
 
     wrapper
       .find('.radioInput')
@@ -59,7 +59,7 @@ describe('<Radio />', () => {
   });
 
   it('renders N number of radios based on the options passed', () => {
-    wrapper = mount(<Radio {...defaultProps} />);
+    wrapper = mount(<RadioGroup {...defaultProps} />);
 
     expect(wrapper.find('.radioInput').length).toBe(
       defaultProps.options.length
