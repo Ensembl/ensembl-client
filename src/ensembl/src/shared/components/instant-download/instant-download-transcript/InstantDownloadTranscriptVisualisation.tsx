@@ -35,7 +35,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
   const totalHeight = exonHeight + proteinHeight + verticalGap;
   const exonWidth = Math.floor(props.width / 7);
   const halfExonWidth = Math.floor(exonWidth / 2);
-  const backboneSegmentsCount = exonsCount - 1;
+  const intronsCount = exonsCount - 1;
 
   const getExonClasses = (exonIndex: number, exonsCount: number) => {
     const isOuterExon = exonIndex === 0 || exonIndex === exonsCount - 1;
@@ -49,18 +49,18 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     return classNames({
       [styles.outerExon]: isOuterExon,
       [styles.innerExon]: isInnerExon,
-      [styles.highlighted]: isHighlighted
+      [styles.highlighted]: isHighlighted,
     });
   };
-  // FIXME: rename to introns?
-  const backboneStyles = classNames(styles.backbone, {
-    [styles.highlighted]: props.isGenomicSequenceEnabled
+
+  const intronStyles = classNames(styles.intron, {
+    [styles.highlighted]: props.isGenomicSequenceEnabled,
   });
   const halfOuterExonStyles = classNames(styles.halfOuterExon, {
     [styles.highlighted]:
       props.isGenomicSequenceEnabled ||
       props.isCDNAEnabled ||
-      props.isCDSEnabled
+      props.isCDSEnabled,
   });
 
   const exons = [...Array(exonsCount)].map((_, index) => {
@@ -95,14 +95,14 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     </>
   );
 
-  const backboneSegments = [...Array(backboneSegmentsCount)].map((_, index) => {
+  const introns = [...Array(intronsCount)].map((_, index) => {
     const xStart = index * (exonWidth + halfExonWidth) + exonWidth;
     const xEnd = xStart + halfExonWidth;
     const y = Math.round(exonHeight / 2);
     return (
       <line
         key={index}
-        className={backboneStyles}
+        className={intronStyles}
         x1={xStart}
         x2={xEnd}
         y1={y}
@@ -133,7 +133,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     >
       {exons}
       {halfOuterExons}
-      {backboneSegments}
+      {introns}
       {props.isProteinSequenceEnabled && proteinSegments}
     </svg>
   );
@@ -144,7 +144,7 @@ InstantDownloadTranscriptVisualisation.defaultProps = {
   isCDNAEnabled: false,
   isCDSEnabled: false,
   isProteinSequenceEnabled: false,
-  width: 210
+  width: 210,
 } as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;
