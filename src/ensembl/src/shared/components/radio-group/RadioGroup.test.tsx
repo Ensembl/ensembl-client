@@ -31,16 +31,16 @@ describe('<RadioGroup />', () => {
     }).not.toThrow();
   });
 
-  it('applies the style "radioInput" by default', () => {
+  it('applies the style "default" by default', () => {
     wrapper = mount(<RadioGroup {...defaultProps} />);
-    expect(wrapper.find('.radioInput')).toBeTruthy();
+    expect(wrapper.find('.default')).toBeTruthy();
   });
 
   it('calls the onChange function when radio is changed', () => {
     wrapper = mount(<RadioGroup {...defaultProps} />);
 
     wrapper
-      .find('.radioInput')
+      .find('.radio')
       .first()
       .simulate('change');
 
@@ -51,7 +51,7 @@ describe('<RadioGroup />', () => {
     wrapper = mount(<RadioGroup {...defaultProps} disabled={true} />);
 
     wrapper
-      .find('.radioInput')
+      .find('.radio')
       .first()
       .simulate('change');
 
@@ -61,7 +61,7 @@ describe('<RadioGroup />', () => {
   it('renders N number of radios based on the options passed', () => {
     wrapper = mount(<RadioGroup {...defaultProps} />);
 
-    expect(wrapper.find('.radioInput').length).toBe(
+    expect(wrapper.find('.radio').length).toBe(
       defaultProps.options.length
     );
   });
