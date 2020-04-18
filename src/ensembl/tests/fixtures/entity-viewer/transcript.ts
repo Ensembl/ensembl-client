@@ -11,7 +11,7 @@ import { CDS } from 'src/content/app/entity-viewer/types/cds';
 import {
   Product,
   ProteinDomainsResources,
-  ProductType,
+  ProductType
 } from 'src/content/app/entity-viewer/types/product';
 
 export const createTranscript = (
@@ -28,7 +28,7 @@ export const createTranscript = (
     exons: createExons(transcriptSlice),
     cds: createCDS(transcriptSlice),
     product: createProduct(),
-    ...fragment,
+    ...fragment
   };
 };
 
@@ -46,11 +46,11 @@ const createProduct = (): Product => {
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
     const start = faker.random.number({
       min: minCoordinate,
-      max: middleCoordinate,
+      max: middleCoordinate
     });
     const end = faker.random.number({
       min: middleCoordinate + 1,
-      max: maxCoordinate - 1,
+      max: maxCoordinate - 1
     });
     const resource_group_name = faker.random.words();
 
@@ -62,28 +62,28 @@ const createProduct = (): Product => {
           source_uri: '',
           source: {
             name: faker.random.words(),
-            uri: '',
+            uri: ''
           },
           location: {
             start: start,
-            end: end,
+            end: end
           },
-          score: faker.random.number(),
-        },
-      ],
+          score: faker.random.number()
+        }
+      ]
     };
   });
 
   return {
     protein_domains_resources: protein_domains_resources,
     type: ProductType.PROTEIN,
-    length: length,
+    length: length
   };
 };
 
 const createExons = (transcriptSlice: Slice): Exon[] => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates({
-    slice: transcriptSlice,
+    slice: transcriptSlice
   });
   const length = transcriptEnd - transcriptStart + 1;
 
@@ -97,18 +97,18 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
     const exonStart = faker.random.number({
       min: minCoordinate,
-      max: middleCoordinate,
+      max: middleCoordinate
     });
     const exonEnd = faker.random.number({
       min: middleCoordinate + 1,
-      max: maxCoordinate - 1,
+      max: maxCoordinate - 1
     });
     const slice = {
       location: {
         start: index > 0 ? exonStart : transcriptStart,
-        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd,
+        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd
       },
-      region: transcriptSlice.region,
+      region: transcriptSlice.region
     };
 
     return {
@@ -117,8 +117,8 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
       relative_location: {
         // <-- we are still not sure about this relative location thing
         start: 0,
-        end: 0,
-      },
+        end: 0
+      }
     };
   });
 };
@@ -132,7 +132,7 @@ const createCDS = (transcriptSlice: Slice): CDS => {
     relative_location: {
       // <-- we are still not sure about this relative location thing
       start: 0,
-      end: 0,
-    },
+      end: 0
+    }
   };
 };
