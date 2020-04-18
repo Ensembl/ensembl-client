@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'enzyme';
 
 import InstantDownloadTranscriptVisualisation, {
-  Props,
+  Props
 } from './InstantDownloadTranscriptVisualisation';
 
 describe('InstantDownloadTranscriptVisualisation', () => {
@@ -41,7 +41,7 @@ describe('InstantDownloadTranscriptVisualisation', () => {
     expect(wrapper.find('.highlighted.innerExon').length).toBeTruthy();
     expect(wrapper.find('.highlighted.halfOuterExon').length).toBeTruthy();
     expect(wrapper.find('.highlighted.outerExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.backbone').length).toBeTruthy();
+    expect(wrapper.find('.highlighted.intron').length).toBeTruthy();
   });
 
   it('shows protein segments if protein sequence option is enabled', () => {
