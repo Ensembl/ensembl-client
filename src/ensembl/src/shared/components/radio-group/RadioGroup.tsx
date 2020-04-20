@@ -1,26 +1,26 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import defaultStyles from './RadioGroup.scss';
 
-import classNamesMerger from 'classnames';
-
+type OptionValue = string | number | boolean;
 export type RadioOption = {
-  value: string | number | boolean;
+  value: OptionValue;
   label: string;
 };
 
 export type RadioOptions = RadioOption[];
 
 type Props = {
-  onChange: (selectedOption: string | number | boolean) => void;
+  onChange: (selectedOption: OptionValue) => void;
   classNames?: {
     label?: string;
     wrapper?: string;
-    default?: string;
-    checked?: string;
+    radio?: string;
+    radioChecked?: string;
   };
   options: RadioOptions;
-  selectedOption: string | number | boolean;
+  selectedOption: OptionValue;
   disabled?: boolean;
 };
 
@@ -29,33 +29,35 @@ const RadioGroup = (props: Props) => {
     ? { ...defaultStyles, ...props.classNames }
     : defaultStyles;
 
-  const handleOnChange = (index: number) => {
-    if (props.disabled) {
+  const handleOnChange = (value: OptionValue) => {
+    if (props.disabled || value === props.selectedOption) {
       return;
     }
 
-    props.onChange(props.options[index].value);
+    props.onChange(value);
   };
 
   return (
     <div>
       {props.options.map((option, index) => {
-        const radioClass = classNamesMerger(
-          styles.default,
-          option.value === props.selectedOption ? styles.checked : undefined
+        const radioClass = classNames(
+          styles.radio,
+          option.value === props.selectedOption
+            ? styles.radioChecked
+            : undefined
         );
+        const { value } = option;
 
         return (
           <div key={index} className={styles.wrapper}>
-            <div onClick={() => handleOnChange(index)} className={radioClass} />
+            <div onClick={() => handleOnChange(value)} className={radioClass} />
             <label className={styles.label}>
               <input
-                className={defaultStyles.radio}
+                className={defaultStyles.input}
                 type="radio"
-                onChange={() => handleOnChange(index)}
+                onChange={() => handleOnChange(value)}
                 checked={option.value === props.selectedOption}
                 disabled={props.disabled}
-                name="radio"
               />
               {option.label}
             </label>

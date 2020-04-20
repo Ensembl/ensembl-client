@@ -36,13 +36,30 @@ describe('<RadioGroup />', () => {
     expect(wrapper.find('.default')).toBeTruthy();
   });
 
-  it('calls the onChange function when radio is changed', () => {
-    wrapper = mount(<RadioGroup {...defaultProps} />);
+  it('does not call the onChange function when clicking on already selected option', () => {
+    const selectedOption = defaultProps.options[0].value;
+    wrapper = mount(
+      <RadioGroup {...defaultProps} selectedOption={selectedOption} />
+    );
 
     wrapper
       .find('.radio')
       .first()
-      .simulate('change');
+      .simulate('click');
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('calls the onChange function when option is changed', () => {
+    const selectedOption = defaultProps.options[1].value;
+    wrapper = mount(
+      <RadioGroup {...defaultProps} selectedOption={selectedOption} />
+    );
+
+    wrapper
+      .find('.radio')
+      .first()
+      .simulate('click');
 
     expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });
@@ -61,8 +78,6 @@ describe('<RadioGroup />', () => {
   it('renders N number of radios based on the options passed', () => {
     wrapper = mount(<RadioGroup {...defaultProps} />);
 
-    expect(wrapper.find('.radio').length).toBe(
-      defaultProps.options.length
-    );
+    expect(wrapper.find('.radio').length).toBe(defaultProps.options.length);
   });
 });

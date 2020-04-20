@@ -4,12 +4,12 @@
   padding: 4px;
 }
 
-.radio {
+.input {
   width: 0;
   display: none;
 }
 
-.default {
+.radio {
   height: 15px;
   width: 15px;
   border-radius: 50%;
@@ -18,21 +18,21 @@
   position: absolute;
   margin-top: 4px;
   cursor: pointer;
-}
 
-.checked {
-  background-color: $white;
-}
+  &Checked {
+    background-color: $white;
 
-.checked:after {
-  top: 2px;
-  left: 2px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: $green;
-  content: '';
-  position: absolute;
+    &:after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: $green;
+    }
+  }
 }
 
 .label {
