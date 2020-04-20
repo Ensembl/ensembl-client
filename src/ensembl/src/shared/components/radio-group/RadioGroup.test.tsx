@@ -31,11 +31,6 @@ describe('<RadioGroup />', () => {
     }).not.toThrow();
   });
 
-  it('applies the style "default" by default', () => {
-    wrapper = mount(<RadioGroup {...defaultProps} />);
-    expect(wrapper.find('.default')).toBeTruthy();
-  });
-
   it('does not call the onChange function when clicking on already selected option', () => {
     const selectedOption = defaultProps.options[0].value;
     wrapper = mount(
@@ -75,7 +70,7 @@ describe('<RadioGroup />', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('renders N number of radios based on the options passed', () => {
+  it('renders as many radio buttons as the number of passed options', () => {
     wrapper = mount(<RadioGroup {...defaultProps} />);
 
     expect(wrapper.find('.radio').length).toBe(defaultProps.options.length);
