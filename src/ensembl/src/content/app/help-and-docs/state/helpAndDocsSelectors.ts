@@ -6,9 +6,11 @@ export const getActiveComponentId = (state: RootState) =>
 export const isPopupShown = (state: RootState) =>
   state.helpAndDocs.isPopupShown;
 
-export const getFetchedContents = (state: RootState) =>
-  state.helpAndDocs.fetchedContents;
+// FIXME: This function will not be required if we use GraphQL
+export const getFetchedArticles = (state: RootState) =>
+  state.helpAndDocs.fetchedArticles;
 
+// FIXME: This function will not be required if we use GraphQL
 export const getActiveComponentHelpContent = (state: RootState) => {
   const activeComponentId = getActiveComponentId(state);
 
@@ -16,5 +18,5 @@ export const getActiveComponentHelpContent = (state: RootState) => {
     return null;
   }
 
-  return getFetchedContents(state)[activeComponentId] || null;
+  return getFetchedArticles(state)[activeComponentId] || null;
 };

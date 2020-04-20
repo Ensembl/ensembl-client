@@ -19,11 +19,12 @@ export default function helpAndDocsReducer(
         ...state,
         isPopupShown: !state.isPopupShown
       };
+    // // FIXME: This case will not be required if we use GraphQL
     case getType(actions.setHelpContent):
       return {
         ...state,
         fetchedContents: {
-          ...state.fetchedContents,
+          ...state.fetchedArticles,
           [action.payload.componentId]: action.payload.content
         }
       };

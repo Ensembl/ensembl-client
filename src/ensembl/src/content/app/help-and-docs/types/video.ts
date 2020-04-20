@@ -1,8 +1,7 @@
 export type Video = {
   title: string;
   description?: string;
-  embedUrl: string;
-  embedHtml?: string;
-  previousVideo?: Video;
-  nextVideo?: Video;
+  youtube_url: string;
+  previous_video?: Video;
+  next_video?: Video;
 };

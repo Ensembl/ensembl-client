@@ -1,6 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 import ReactMarkdown from 'react-markdown';
+import config from 'config';
+
 import Overlay from 'src/shared/components/overlay/Overlay';
 import Panel from 'src/shared/components/panel/Panel';
 
@@ -11,16 +15,11 @@ import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
 
 import {
   isPopupShown,
-  getActiveComponentId,
-  getActiveComponentHelpContent
+  getActiveComponentId
 } from 'src/content/app/help-and-docs/state/helpAndDocsSelectors';
-import {
-  togglePopup,
-  fetchHelpContent
-} from 'src/content/app/help-and-docs/state/helpAndDocsActions';
+import { togglePopup } from 'src/content/app/help-and-docs/state/helpAndDocsActions';
 
 import { RootState } from 'src/store';
-import { HelpContent } from 'src/content/app/help-and-docs/types/help-content';
 import { Video } from 'src/content/app/help-and-docs/types/video';
 import { Article } from 'src/content/app/help-and-docs/types/article';
 
@@ -29,19 +28,61 @@ import styles from './PopupHelp.scss';
 type Props = {
   shouldShowPopup: boolean;
   componentId: string | null;
-  helpContent: HelpContent | null;
   togglePopup: () => void;
-  fetchHelpContent: (componentId: string | null) => void;
 };
 
-const PopupHelp = (props: Props) => {
-  useEffect(() => {
-    if (!props.helpContent?.article) {
-      props.fetchHelpContent(props.componentId);
+const QUERY = gql`
+  query Articles($uid: String) {
+    articles(where: { uid: $uid }) {
+      title
+      body
+      parent {
+        title
+        body
+        uid
+      }
+      related_video {
+        uid
+        youtube_url
+        title
+        next_video {
+          uid
+          youtube_url
+          title
+        }
+        previous_video {
+          uid
+          youtube_url
+          title
+        }
+      }
     }
-  }, [props.helpContent, props.componentId]);
+  }
+`;
 
-  if (!props.shouldShowPopup || !props.helpContent) {
+const PopupHelp = (props: Props) => {
+  const { data } = useQuery<{ articles: Article[] }>(QUERY, {
+    variables: { uid: props.componentId }
+  });
+
+  if (!data) {
+    return null;
+  }
+
+  return <PopupHelpWithData article={data.articles[0]} {...props} />;
+};
+
+type PopupHelpWithDataProps = {
+  shouldShowPopup: boolean;
+  componentId: string | null;
+  article: Article;
+  togglePopup: () => void;
+};
+
+const PopupHelpWithData = (props: PopupHelpWithDataProps) => {
+  const { article } = props;
+
+  if (!props.shouldShowPopup || !article) {
     return null;
   }
 
@@ -54,9 +95,8 @@ const PopupHelp = (props: Props) => {
       >
         <div className={styles.helpPanelContent}>
           <div className={styles.content}>
-            {props.helpContent.article &&
-              renerArticle(props.helpContent.article)}
-            {props.helpContent.video && renderVideo(props.helpContent.video)}
+            {article && renerArticle(article)}
+            {article.related_video && renderVideo(article.related_video)}
           </div>
           <div className={styles.moreHelp}>
             <span>more Help</span>
@@ -88,11 +128,11 @@ const renerArticle = (article: Article) => {
         <div className={styles.iconHint}>All about...</div>
         <div className={styles.title}>{article.title}</div>
         <div className={styles.description}>
-          <ReactMarkdown source={article.body} />
+          <ReactMarkdown source={formatImageURL(article.body)} />
         </div>
         <div className={styles.relatedTitle}>Related...</div>
         <div className={styles.relatedContent}>
-          {article.parentArticle && <div>{article.parentArticle.title}</div>}
+          {article.parent && <div>{article.parent.title}</div>}
         </div>
       </div>
     </div>
@@ -115,27 +155,30 @@ const renderVideo = (video: Video) => {
         <div
           className={styles.video}
           dangerouslySetInnerHTML={{
-            __html: `<iframe width="560" height="315" src="${video.embedUrl}" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true}></iframe>`
+            __html: `<iframe width="560" height="315" src="${video.youtube_url}" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true}></iframe>`
           }}
         ></div>
         <div className={styles.relatedTitle}>Related...</div>
         <div className={styles.relatedContent}>
-          {video.nextVideo && <div>{video.nextVideo.title}</div>}
-          {video.previousVideo && <div>{video.previousVideo.title}</div>}
+          {video.next_video && <div>{video.next_video.title}</div>}
+          {video.previous_video && <div>{video.previous_video.title}</div>}
         </div>
       </div>
     </div>
   );
 };
 
+const formatImageURL = (content: string): string => {
+  // FIXME: Not sure if there is any other way to load the images
+  return content.replace('(/uploads/', `(${config.helpApiEndpoint}/uploads/`);
+};
+
 const mapStateToProps = (state: RootState) => ({
   shouldShowPopup: isPopupShown(state),
-  componentId: getActiveComponentId(state),
-  helpContent: getActiveComponentHelpContent(state)
+  componentId: getActiveComponentId(state)
 });
 
 const mapDispatchToProps = {
-  fetchHelpContent,
   togglePopup
 };
 export default connect(mapStateToProps, mapDispatchToProps)(PopupHelp);

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from '@apollo/react-hooks';
+import config from 'config';
 
 import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
 import { updateBreakpointWidth } from '../global/globalActions';
@@ -17,6 +20,10 @@ import styles from './Root.scss';
 type Props = {
   updateBreakpointWidth: (breakpointWidth: BreakpointWidth) => void;
 };
+
+const helpClient = new ApolloClient({
+  uri: config.helpApiEndpoint + '/graphql'
+});
 
 export const Root = (props: Props) => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
@@ -44,7 +51,9 @@ export const Root = (props: Props) => {
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
         <Header />
         <Content />
-        <PopupHelp />
+        <ApolloProvider client={helpClient}>
+          <PopupHelp />
+        </ApolloProvider>
 
         {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
       </ErrorBoundary>

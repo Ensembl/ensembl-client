@@ -1,7 +1,10 @@
+import { Video } from './video';
+
 export type Article = {
   title: string;
   body: string;
-  parentArticle?: Article;
-  previousArticle?: Article;
-  nextArticle?: Article;
+  parent?: Article;
+  previous_rticle?: Article;
+  next_article?: Article;
+  related_video?: Video;
 };
