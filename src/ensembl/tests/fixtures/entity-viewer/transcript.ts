@@ -14,7 +14,9 @@ import {
   ProductType
 } from 'src/content/app/entity-viewer/types/product';
 
-export const createTranscript = (): Transcript => {
+export const createTranscript = (
+  fragment: Partial<Transcript> = {}
+): Transcript => {
   const transcriptSlice = createSlice();
 
   return {
@@ -25,20 +27,21 @@ export const createTranscript = (): Transcript => {
     slice: transcriptSlice,
     exons: createExons(transcriptSlice),
     cds: createCDS(transcriptSlice),
-    product: createProduct()
+    product: createProduct(),
+    ...fragment
   };
 };
 
 const createProduct = (): Product => {
   const length = faker.random.number({ min: 10, max: 100 });
-  const numberOfExons = faker.random.number({ min: 1, max: 10 });
-  const maxExonLength = Math.floor(length / numberOfExons);
+  const numberOfDomains = faker.random.number({ min: 1, max: 10 });
+  const maxDomainLength = Math.floor(length / numberOfDomains);
 
   const protein_domains_resources: ProteinDomainsResources = {};
 
-  times(numberOfExons, (index: number) => {
-    const minCoordinate = maxExonLength * index + 1;
-    const maxCoordinate = maxExonLength * index + 1;
+  times(numberOfDomains, (index: number) => {
+    const minCoordinate = maxDomainLength * index + 1;
+    const maxCoordinate = maxDomainLength * (index + 1);
     const middleCoordinate =
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
     const start = faker.random.number({
@@ -82,7 +85,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates({
     slice: transcriptSlice
   });
-  const length = (transcriptEnd - transcriptStart) + 1;
+  const length = transcriptEnd - transcriptStart + 1;
 
   const numberOfExons = faker.random.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);

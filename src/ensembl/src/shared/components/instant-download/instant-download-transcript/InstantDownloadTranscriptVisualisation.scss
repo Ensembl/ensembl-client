@@ -1,0 +1,44 @@
+@import 'src/styles/common';
+
+$regularColor: $dark-grey;
+
+.outerExon {
+  stroke: $regularColor;
+  fill: none;
+
+  &.highlighted {
+    stroke: white;
+  }
+}
+
+.innerExon {
+  stroke: $regularColor;
+  fill: $regularColor;
+
+  &.highlighted {
+    stroke: white;
+    fill: white;
+  }
+}
+
+.halfOuterExon {
+  stroke: $regularColor;
+  fill: $regularColor;
+
+  &.highlighted {
+    stroke: white;
+    fill: white;
+  }
+}
+
+.intron {
+  stroke: $regularColor;
+
+  &.highlighted {
+    stroke: white;
+  }
+}
+
+.protein {
+  fill: white;
+}
