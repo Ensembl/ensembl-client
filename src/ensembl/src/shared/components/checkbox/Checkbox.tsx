@@ -3,9 +3,16 @@ import classNames from 'classnames';
 
 import defaultStyles from './Checkbox.scss';
 
+type ClassNames = Partial<{
+  checkboxHolder: string;
+  checked: string;
+  unchecked: string;
+  disabled: string;
+}>;
+
 type WithoutLabelProps = {
   onChange: (status: boolean) => void;
-  classNames?: any;
+  classNames?: ClassNames;
   disabled?: boolean;
   checked: boolean;
 };
@@ -33,7 +40,7 @@ const Checkbox = (props: CheckboxProps) => {
   };
 
   const styles = props.classNames
-    ? { ...defaultStyles, ...props.classNames }
+    ? ({ ...defaultStyles, ...props.classNames } as { [key: string]: string })
     : defaultStyles;
   const className = classNames(
     styles.defaultCheckbox,

@@ -17,6 +17,9 @@
 
 .viewInLinks {
   grid-area: 1 / 3 / 2 / 4;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  align-items: end;
 }
 
 .geneViewTabs {

@@ -9,6 +9,7 @@ import './external-link/ExternalLink.stories';
 import './external-reference/ExternalReference.stories';
 import './image-button/ImageButton.stories';
 import './input/Input.stories';
+import './instant-download/InstantDownload.stories';
 import './layout/Layout.stories';
 import './loader/Loader.stories';
 import './panel/Panel.stories';

@@ -14,10 +14,13 @@
   transition: background-color 0.1s ease-in-out;
   float: left;
   margin-top: 2px;
+
+  & + label {
+    cursor: pointer;
+  }
 }
 
 .unchecked {
-  cursor: pointer;
   background-color: $white;
 }
 
@@ -28,6 +31,10 @@
 .disabled {
   background-color: $light-grey;
   cursor: default;
+
+  & + label {
+    cursor: default;
+  }
 }
 
 .defaultLabel {

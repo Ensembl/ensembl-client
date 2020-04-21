@@ -1,6 +1,7 @@
 @import 'src/styles/common';
 
 .primaryButton {
+  border: 1px solid $green;
   background-color: $green;
   color: $white;
   padding: 8px 18px;
@@ -15,6 +16,7 @@
 }
 
 .secondaryButton {
+  border: 1px solid $blue;
   background-color: $blue;
   color: $white;
   font-weight: $bold;

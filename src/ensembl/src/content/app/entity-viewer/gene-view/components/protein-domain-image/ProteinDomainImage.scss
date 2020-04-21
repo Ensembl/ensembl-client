@@ -1,0 +1,55 @@
+@import 'src/styles/common';
+
+.containerSvg {
+  overflow: visible;
+}
+
+.domain {
+  fill: $grey;
+}
+
+.track {
+  rect {
+    fill: $light-grey;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+
+  svg {
+    overflow: visible;
+  }
+}
+
+.resourceGroup {
+  display: grid;
+  grid-template-columns: [type] 150px [images] min-content;
+  margin-bottom: 10px;
+  & .resourceName {
+    grid-column: type;
+    text-align: right;
+    padding-right: 30px;
+    color: $dark-grey;
+  }
+
+  & .resourceImages {
+    grid-column: images;
+  }
+}
+
+.resourceImage {
+  display: grid;
+  grid-template-columns: [image] min-content [description] max-content;
+
+  & svg {
+    grid-column: image;
+  }
+
+  & .resourceDescription {
+    grid-column: description;
+    padding-left: 40px;
+    color: $dark-grey;
+  }
+}

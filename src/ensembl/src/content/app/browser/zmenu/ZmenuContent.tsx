@@ -44,10 +44,7 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
   const features = props.content;
   const renderedContent = features.map((feature) => (
     <div key={feature.id}>
-      <ZmenuContentFeature
-        id={feature.id}
-        lines={feature.lines}
-      />
+      <ZmenuContentFeature id={feature.id} lines={feature.lines} />
       <ZmenuAppLinks featureId={feature.id} />
     </div>
   ));

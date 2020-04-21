@@ -44,16 +44,38 @@ type CDSInResponse = {
   end: number;
 };
 
+export type TranslationInResponse = {
+  object_type: 'Translation';
+  feature_type: 'Translation';
+  id: string;
+  Parent: string; // transcript id
+  start: number;
+  end: number;
+  length: number;
+  protein_domains_resources: ProteinFeature[];
+};
+
+export type ProteinFeature = {
+  translation_id: number;
+  description: string;
+  start: number;
+  id: string;
+  type: string;
+  end: number;
+};
+
 export type FeatureWithParent =
   | TranscriptInResponse
   | ExonInResponse
-  | CDSInResponse;
+  | CDSInResponse
+  | TranslationInResponse;
 
 export type FeatureInResponse =
   | GeneInResponse
   | TranscriptInResponse
   | ExonInResponse
-  | CDSInResponse;
+  | CDSInResponse
+  | TranslationInResponse;
 
 export const fetchGene = async (id: string): Promise<Gene> => {
   const featuresQuery =
@@ -76,5 +98,17 @@ export const fetchTranscript = async (id: string): Promise<Transcript> => {
     response.json()
   )) as FeatureInResponse[];
 
+  const translationUrl = `https://rest.ensembl.org/lookup/id/${id}?content-type=application/json;expand=1`;
+
+  const translationData = await fetch(translationUrl).then((response) =>
+    response.json()
+  );
+  const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${translationData.Translation.id}?feature=protein_feature;content-type=application/json`;
+
+  translationData.Translation.protein_domains_resources = await fetch(
+    proteinFeaturesUrl
+  ).then((response) => response.json());
+
+  data.push(translationData.Translation);
   return restTranscriptAdaptor(id, data);
 };

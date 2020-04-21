@@ -29,6 +29,7 @@
 .row {
   display: grid;
   grid-template-columns: $left_column $middle_column $middle_column_right_gap $right_column;
+  padding: 3px 0;
 }
 
 .left {
@@ -41,6 +42,7 @@
 
 .middle {
   grid-column: 2/3;
+  position: relative;
 }
 
 .right {
