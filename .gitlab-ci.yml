@@ -108,6 +108,18 @@ variables:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
 
+.deploy-wp-feature:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  script:
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - git -C ensembl-client-caas-deploy/ checkout deployfeature
+  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
+
 # Template to deploy to EHK k8s cluster
 .deploy-ehk:
   stage: deploy
@@ -370,7 +382,7 @@ Feature:EHK-HH:
   needs: ["Nginx:feature"]
 
 Feature:WP-HX:
-  extends: .deploy-wp
+  extends: .deploy-wp-feature
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   environment:
