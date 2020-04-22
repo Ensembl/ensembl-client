@@ -58,12 +58,12 @@ const ItemInfo = (props: ItemInfoProps) => {
     if (cds) {
       firstCodingExonIndex = exons.findIndex((exon) => {
         const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-        return exonStart <= cds.start && exonEnd >= cds.start ? true : false;
+        return exonStart <= cds.start && exonEnd >= cds.start;
       });
 
       lastCodingExonIndex = exons.findIndex((exon) => {
         const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-        return exonStart <= cds.end && exonEnd >= cds.end ? true : false;
+        return exonStart <= cds.end && exonEnd >= cds.end;
       });
     }
 
@@ -82,6 +82,10 @@ const ItemInfo = (props: ItemInfoProps) => {
         firstCodingExonIndex,
         lastCodingExonIndex
       } = getFirstAndLastCodingExonIndexes();
+      if (firstCodingExonIndex === lastCodingExonIndex) {
+        return Math.floor((cds.end - cds.start + 1) / 3);
+      }
+
       let cdsLength = 0;
 
       // add coding length of the first coding exon
