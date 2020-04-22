@@ -116,7 +116,7 @@ variables:
   - git -C ensembl-client-caas-deploy/ checkout deployfeature
   - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
 
