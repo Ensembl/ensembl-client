@@ -116,7 +116,7 @@ variables:
   - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
-  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
+  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_ingress.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
 
@@ -402,7 +402,7 @@ Feature:EHK-HH:
 #  - /^feature\/.*$/
 #  needs: ["Nginx:feature"]
 
-deploy_review:
+Feature:WP-HX:
   extends: .deploy-wp-review
   environment:
     name: review/$CI_COMMIT_REF_SLUG
