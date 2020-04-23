@@ -23,7 +23,6 @@ variables:
   image: node:12.13.0
 
   before_script:
-  - cat values.yaml
   - cd src/ensembl
   - npm ci
 
@@ -48,7 +47,6 @@ variables:
 
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - cat values.yaml
 
   script:
     - apk update && apk add git
@@ -104,18 +102,20 @@ variables:
   - git -C ensembl-client-caas-deploy/ checkout deployfeature
   - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
 
-.deploy-wp-feature:
+# Template to deploy review-app to WP k8s cluster
+.deploy-wp-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout deployfeature
+  - git -C ensembl-client-caas-deploy/ checkout wp-review-apps
   - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
   - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
@@ -381,12 +381,24 @@ Feature:EHK-HH:
 
   needs: ["Nginx:feature"]
 
-Feature:WP-HX:
-  extends: .deploy-wp-feature
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+#Feature:WP-HX:
+#  extends: .deploy-wp-feature
+#  variables:
+#    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+#  environment:
+#    name : wp-hx-dev
+#  only:
+#  - /^feature\/.*$/
+#  needs: ["Nginx:feature"]
+
+deploy_review:
+  extends: .deploy-wp-review
   environment:
-    name : wp-hx-dev
+    name: review/$CI_COMMIT_REF_SLUG
+    url: https://$CI_COMMIT_REF_SLUG-review.ensembl.org
+    on_stop: stop_review
+    kubernetes:
+      namespace: ensembl-dev
   only:
   - /^feature\/.*$/
   needs: ["Nginx:feature"]
