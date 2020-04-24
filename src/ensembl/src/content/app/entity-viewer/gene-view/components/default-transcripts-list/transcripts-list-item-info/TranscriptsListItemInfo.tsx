@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -8,17 +8,27 @@ import {
   getRegionName
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
+import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
+
+import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
 
 type ItemInfoProps = {
+  gene: Gene;
   transcript: Transcript;
 };
 
 const ItemInfo = (props: ItemInfoProps) => {
+  const [isDownloadShown, setIsDownloadShown] = useState(false);
   const { transcript } = props;
+
+  const openDownload = () => setIsDownloadShown(true);
+  const closeDownload = () => setIsDownloadShown(false);
 
   const getTranscriptLocation = () => {
     const { start, end } = getFeatureCoordinates(transcript);
@@ -48,12 +58,12 @@ const ItemInfo = (props: ItemInfoProps) => {
     if (cds) {
       firstCodingExonIndex = exons.findIndex((exon) => {
         const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-        return exonStart <= cds.start && exonEnd >= cds.start ? true : false;
+        return exonStart <= cds.start && exonEnd >= cds.start;
       });
 
       lastCodingExonIndex = exons.findIndex((exon) => {
         const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-        return exonStart <= cds.end && exonEnd >= cds.end ? true : false;
+        return exonStart <= cds.end && exonEnd >= cds.end;
       });
     }
 
@@ -72,6 +82,10 @@ const ItemInfo = (props: ItemInfoProps) => {
         firstCodingExonIndex,
         lastCodingExonIndex
       } = getFirstAndLastCodingExonIndexes();
+      if (firstCodingExonIndex === lastCodingExonIndex) {
+        return Math.floor((cds.end - cds.start + 1) / 3);
+      }
+
       let cdsLength = 0;
 
       // add coding length of the first coding exon
@@ -120,23 +134,23 @@ const ItemInfo = (props: ItemInfoProps) => {
     <div className={mainStyles}>
       <div className={transcriptsListStyles.left}>bottom left</div>
       <div className={midStyles}>
-        <div className={styles.column}>
+        <div className={styles.topLeft}>
           <div>
             <strong>{transcript.biotype}</strong>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
-        <div className={styles.column}>
+        <div className={styles.topMiddle}>
           {transcript.cds && (
             <>
-              <div id="amino-acid-length">
+              <div>
                 <strong>{getAminoAcidLength()} aa</strong>
               </div>
               <div>ENSP1000000000</div>
             </>
           )}
         </div>
-        <div className={styles.column}>
+        <div className={styles.topRight}>
           <div>
             Spliced RNA length <strong>{getSplicedRNALength()} bp</strong>
           </div>
@@ -145,11 +159,24 @@ const ItemInfo = (props: ItemInfoProps) => {
             {transcript.exons.length}
           </div>
         </div>
-        <div className={styles.column}>
-          <div className={styles.downloadLink}>Download</div>
+        <div className={styles.downloadLink}>
+          {isDownloadShown ? (
+            <CloseIcon className={styles.closeIcon} onClick={closeDownload} />
+          ) : (
+            <span onClick={openDownload}>Download</span>
+          )}
         </div>
+        {isDownloadShown && renderInstantDownload(props)}
       </div>
       <div className={transcriptsListStyles.right}>{transcript.symbol}</div>
+    </div>
+  );
+};
+
+const renderInstantDownload = ({ gene, transcript }: ItemInfoProps) => {
+  return (
+    <div className={styles.download}>
+      <InstantDownloadTranscript transcript={transcript} gene={gene} />
     </div>
   );
 };
