@@ -16,3 +16,17 @@ export type Transcript = {
   product: Product;
   xrefs?: Source[];
 };
+
+export type TranscriptFromLookup = Pick<
+  Transcript,
+  'type' | 'id' | 'symbol' | 'so_term' | 'slice' | 'exons'
+> & {
+  translation: TranslationFromLookup;
+};
+
+export type TranslationFromLookup = {
+  id: string;
+  length: number;
+  start: number;
+  end: number;
+};
