@@ -1,11 +1,15 @@
-import { buildTranscript } from './rest-transcript-adaptor';
+import {
+  buildTranscript,
+  buildTranscriptFromLookup,
+} from './rest-transcript-adaptor';
 
 import {
   GeneInResponse,
   FeatureWithParent,
   TranscriptInResponse,
-  FeatureInResponse
+  FeatureInResponse,
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
+import { GeneInLookupResponse } from '../rest-data-fetchers/geneData';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
@@ -29,15 +33,44 @@ export const restGeneAdaptor = (
     slice: {
       location: {
         start: gene.start,
-        end: gene.end
+        end: gene.end,
       },
       region: {
         name: gene.seq_region_name,
         strand: {
-          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE
-        }
-      }
+          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE,
+        },
+      },
     },
-    transcripts
+    transcripts,
+  };
+};
+
+export const restGeneFromLookupAdaptor = (
+  geneId: string,
+  gene: GeneInLookupResponse
+) => {
+  const transcripts = gene.Transcript.filter(
+    (transcript) => !!transcript.Translation
+  ).map((transcript) => buildTranscriptFromLookup(transcript));
+
+  return {
+    id: geneId,
+    type: 'Gene',
+    symbol: gene.display_name,
+    so_term: gene.biotype,
+    slice: {
+      location: {
+        start: gene.start,
+        end: gene.end,
+      },
+      region: {
+        name: gene.seq_region_name,
+        strand: {
+          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE,
+        },
+      },
+    },
+    transcripts,
   };
 };

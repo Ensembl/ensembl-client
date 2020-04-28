@@ -5,18 +5,23 @@ import {
   ExonInResponse,
   FeatureInResponse,
   TranslationInResponse,
-  ProteinFeature
+  ProteinFeature,
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import {
   Product,
-  ProductType
+  ProductType,
 } from 'src/content/app/entity-viewer/types/product';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
 import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
+import {
+  TranscriptInLookupResponse,
+  ExonInLookupResponse,
+  TranslationInLookupResponse,
+} from '../rest-data-fetchers/geneData';
 
 // transform ensembl rest /overlap data into a transcript data structure
 export const restTranscriptAdaptor = (
@@ -43,19 +48,19 @@ const buildProteinDomainsResources = (
       source_uri: '',
       source: {
         name: '',
-        uri: ''
+        uri: '',
       },
       location: {
         start: entry.start,
-        end: entry.end
+        end: entry.end,
       },
-      score: 0
+      score: 0,
     };
 
     if (!domainsResources[resourceName]) {
       domainsResources[resourceName] = {
         name: resourceName,
-        domains: [domain]
+        domains: [domain],
       };
     } else {
       domainsResources[resourceName].domains.push(domain);
@@ -63,6 +68,38 @@ const buildProteinDomainsResources = (
   });
 
   return domainsResources;
+};
+
+export const buildTranscriptFromLookup = (
+  transcript: TranscriptInLookupResponse
+) => {
+  const exons = transcript.Exon.map((exon) => buildExon(exon, transcript));
+  let translation;
+
+  if (transcript.Translation) {
+    translation = buildTranslationFromLookup(transcript.Translation);
+  }
+
+  return {
+    type: 'Transcript',
+    id: transcript.id,
+    symbol: transcript.display_name,
+    so_term: transcript.biotype,
+    slice: {
+      location: {
+        start: transcript.start,
+        end: transcript.end,
+      },
+      region: {
+        name: transcript.seq_region_name,
+        strand: {
+          code: transcript.strand === 1 ? Strand.FORWARD : Strand.REFVERSE,
+        },
+      },
+    },
+    exons,
+    translation,
+  };
 };
 
 export const buildTranscript = (
@@ -92,7 +129,7 @@ export const buildTranscript = (
     product = {
       type: ProductType.PROTEIN,
       length: translationResponse.length,
-      protein_domains_resources: protein_domains_resources
+      protein_domains_resources: protein_domains_resources,
     } as Product;
   }
 
@@ -106,37 +143,48 @@ export const buildTranscript = (
     slice: {
       location: {
         start: transcript.start,
-        end: transcript.end
+        end: transcript.end,
       },
       region: {
         name: transcript.seq_region_name,
         strand: {
-          code: transcript.strand === 1 ? Strand.FORWARD : Strand.REFVERSE
-        }
-      }
+          code: transcript.strand === 1 ? Strand.FORWARD : Strand.REFVERSE,
+        },
+      },
     },
     exons,
     cds,
-    product: product as Product
+    product: product as Product,
   };
 };
 
 const buildExon = (
-  exon: ExonInResponse,
-  transcript: TranscriptInResponse
+  exon: ExonInResponse | ExonInLookupResponse,
+  transcript: TranscriptInResponse | TranscriptInLookupResponse
 ): Exon => {
   return {
     id: exon.id,
     slice: {
       location: {
         start: exon.start,
-        end: exon.end
-      }
+        end: exon.end,
+      },
     },
     relative_location: {
       start: calculateRelativeLocation(exon.start, transcript.start),
-      end: calculateRelativeLocation(exon.end, transcript.start)
-    }
+      end: calculateRelativeLocation(exon.end, transcript.start),
+    },
+  };
+};
+
+const buildTranslationFromLookup = (
+  translation: TranslationInLookupResponse
+) => {
+  return {
+    id: translation.id,
+    length: translation.length,
+    start: translation.start,
+    end: translation.end,
   };
 };
 
@@ -162,8 +210,8 @@ const buildCDS = (
     end: lastCds.end,
     relative_location: {
       start: calculateRelativeLocation(firstCds.start, transcript.start),
-      end: calculateRelativeLocation(lastCds.end, transcript.start)
-    }
+      end: calculateRelativeLocation(lastCds.end, transcript.start),
+    },
   };
 };
 
