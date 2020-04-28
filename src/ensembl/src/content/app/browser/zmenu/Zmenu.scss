@@ -65,3 +65,11 @@
   border-top: 1px solid rgba($grey, 0.3);
   padding-top: 12px;
 }
+
+.zmenuInstantDowload {
+  &Loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}

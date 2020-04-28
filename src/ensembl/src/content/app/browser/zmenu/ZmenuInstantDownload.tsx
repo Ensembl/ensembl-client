@@ -6,7 +6,7 @@ import { CircleLoader } from 'src/shared/components/loader/Loader';
 //   TranscriptInResponse
 // } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
-// homo_sapiens_GCA_000001405_27:transcript:ENSG00000073910
+import styles from './Zmenu.scss';
 
 type Props = {
   id: string;
@@ -37,7 +37,11 @@ const ZmenuInstantDownload = (props: Props) => {
   }, [props.id]);
 
   if (!payload) {
-    return <CircleLoader />;
+    return (
+      <div className={styles.zmenuInstantDowloadLoading}>
+        <CircleLoader />
+      </div>
+    );
   }
 
   return <InstantDownloadTranscript {...payload} layout="vertical" />;
