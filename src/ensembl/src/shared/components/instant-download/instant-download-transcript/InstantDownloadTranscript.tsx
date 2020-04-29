@@ -21,9 +21,12 @@ type GeneFields = {
   id: string;
 };
 
-type Props = {
+export type InstantDownloadTranscriptEntityProps = {
   transcript: TranscriptFields;
   gene: GeneFields;
+};
+
+type Props = InstantDownloadTranscriptEntityProps & {
   layout: Layout;
 };
 

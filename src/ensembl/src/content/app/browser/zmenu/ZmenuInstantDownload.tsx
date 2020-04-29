@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+
+import { ZmenuContext } from './ZmenuContext';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
@@ -12,31 +14,26 @@ type Props = {
   id: string;
 };
 
-// FIXME this type should come from InstantDownload component
-type InstantDownloadProps = {
-  gene: {
-    id: string;
-  };
-  transcript: {
-    id: string;
-    so_term: string;
-  };
-};
-
 const ZmenuInstantDownload = (props: Props) => {
-  const [payload, setPayload] = useState<InstantDownloadProps | null>(null);
+  const { instantDownloadCache, updateInstantDownloadCache } = useContext(
+    ZmenuContext
+  );
+  const instantDownloadPayload = instantDownloadCache[props.id];
 
   useEffect(() => {
+    if (instantDownloadPayload) {
+      return;
+    }
     // FIXME: genome browser erroneously reports gene id instead of transcript id; change this when ENSWBSITES-590 is done
     const geneId = getStableId(props.id);
     const url = `https://rest.ensembl.org/lookup/id/${geneId}?content-type=application/json;expand=1`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => preparePayload(data))
-      .then((payload) => setPayload(payload));
+      .then((payload) => updateInstantDownloadCache({ [props.id]: payload }));
   }, [props.id]);
 
-  if (!payload) {
+  if (!instantDownloadPayload) {
     return (
       <div className={styles.zmenuInstantDowloadLoading}>
         <CircleLoader />
@@ -44,7 +41,9 @@ const ZmenuInstantDownload = (props: Props) => {
     );
   }
 
-  return <InstantDownloadTranscript {...payload} layout="vertical" />;
+  return (
+    <InstantDownloadTranscript {...instantDownloadPayload} layout="vertical" />
+  );
 };
 
 const getStableId = (id: string) => id.split(':').pop();
