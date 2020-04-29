@@ -4,9 +4,7 @@ import { ZmenuContext } from './ZmenuContext';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
-// import {
-//   TranscriptInResponse
-// } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
+import { TranscriptInResponse } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import styles from './Zmenu.scss';
 
@@ -24,9 +22,9 @@ const ZmenuInstantDownload = (props: Props) => {
     if (instantDownloadPayload) {
       return;
     }
-    // FIXME: genome browser erroneously reports gene id instead of transcript id; change this when ENSWBSITES-590 is done
-    const geneId = getStableId(props.id);
-    const url = `https://rest.ensembl.org/lookup/id/${geneId}?content-type=application/json;expand=1`;
+
+    const transcriptId = getStableId(props.id);
+    const url = `https://rest.ensembl.org/lookup/id/${transcriptId}?content-type=application/json;expand=1`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => preparePayload(data))
@@ -46,14 +44,11 @@ const ZmenuInstantDownload = (props: Props) => {
   );
 };
 
+// TODO: we may want to move this to a common helper file that deals with messaging with Genome Browser
 const getStableId = (id: string) => id.split(':').pop();
 
-// FIXME: this should be transcript
-const preparePayload = (data: any) => {
-  const geneId = data.id;
-  const transcript = data.Transcript.find(
-    ({ is_canonical }: any) => is_canonical === 1
-  );
+const preparePayload = (transcript: TranscriptInResponse) => {
+  const geneId = transcript.Parent;
   const transcriptId = transcript.id;
   const so_term = transcript.biotype;
 

@@ -39,6 +39,7 @@
 
 .zmenuAppLinks {
   display: flex;
+  align-items: center;
 }
 
 .zmenuAppButton {
@@ -61,7 +62,7 @@
 }
 
 .zmenuFooterContent {
-  margin-top: 12px;
+  margin-top: 19px;
   border-top: 1px solid rgba($grey, 0.3);
   padding-top: 12px;
 }

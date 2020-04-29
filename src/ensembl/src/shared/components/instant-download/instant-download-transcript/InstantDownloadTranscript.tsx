@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
+import intersection from 'lodash/intersection';
 
 import { fetchForTranscript } from '../instant-download-fetch/fetchForTranscript';
 
@@ -152,7 +153,11 @@ InstantDownloadTranscript.defaultProps = {
 
 const TranscriptSection = (props: TranscriptSectionProps) => {
   const { transcript, options } = props;
-  const checkboxes = transcriptOptionsOrder.map((key) => (
+  const orderedOptionKeys = intersection(
+    transcriptOptionsOrder,
+    Object.keys(options)
+  );
+  const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
       classNames={{ unchecked: styles.checkboxUnchecked }}
