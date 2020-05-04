@@ -1,0 +1,49 @@
+@import 'src/styles/common';
+
+$regularColor: $dark-grey;
+
+/* Duplicating class selectors below to increase sensitivity
+* and overwrite styles that can be added by the combination of
+* parentClass > rect
+*/
+
+.outerExon.outerExon {
+  stroke: $regularColor;
+  fill: none;
+
+  &.highlighted {
+    stroke: white;
+  }
+}
+
+.innerExon.innerExon {
+  stroke: $regularColor;
+  fill: $regularColor;
+
+  &.highlighted {
+    stroke: white;
+    fill: white;
+  }
+}
+
+.halfOuterExon.halfOuterExon {
+  stroke: $regularColor;
+  fill: $regularColor;
+
+  &.highlighted {
+    stroke: white;
+    fill: white;
+  }
+}
+
+.intron.intron {
+  stroke: $regularColor;
+
+  &.highlighted {
+    stroke: white;
+  }
+}
+
+.protein {
+  fill: white;
+}

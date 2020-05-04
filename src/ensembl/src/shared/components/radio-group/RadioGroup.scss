@@ -1,0 +1,42 @@
+@import 'src/styles/common';
+
+.wrapper {
+  padding: 4px;
+}
+
+.input {
+  width: 0;
+  display: none;
+}
+
+.radio {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  border: 1px solid $grey;
+  background-color: none;
+  position: absolute;
+  margin-top: 4px;
+  cursor: pointer;
+
+  &Checked {
+    background-color: $white;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: $green;
+    }
+  }
+}
+
+.label {
+  margin-left: 30px;
+  color: $black;
+  cursor: pointer;
+}

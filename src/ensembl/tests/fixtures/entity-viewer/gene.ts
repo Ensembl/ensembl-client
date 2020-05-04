@@ -8,7 +8,7 @@ import { createTranscript } from './transcript';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
-export const createGene = (): Gene => {
+export const createGene = (fragment: Partial<Gene> = {}): Gene => {
   const geneSlice = createSlice();
   const transcript = createTranscript();
 
@@ -18,7 +18,8 @@ export const createGene = (): Gene => {
     symbol: faker.lorem.word(),
     so_term: faker.lorem.word(),
     slice: geneSlice,
-    transcripts: [transcript]
+    transcripts: [transcript],
+    ...fragment
   };
 };
 

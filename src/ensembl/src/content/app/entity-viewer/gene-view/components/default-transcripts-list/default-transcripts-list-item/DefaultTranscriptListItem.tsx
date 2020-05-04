@@ -60,7 +60,10 @@ const DefaultTranscriptListItem = (props: Props) => {
         </div>
       </div>
       {shouldShowInfo ? (
-        <TranscriptsListItemInfo transcript={props.transcript} />
+        <TranscriptsListItemInfo
+          gene={props.gene}
+          transcript={props.transcript}
+        />
       ) : null}
     </div>
   );
