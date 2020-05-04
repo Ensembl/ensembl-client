@@ -29,7 +29,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectId, buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getChrLocationFromStr, getChrLocationStr } from './browserHelper';
 
 import {
@@ -282,9 +282,11 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
   }
 
   const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
+    const parsedEnsObjectId = parseEnsObjectId(exampleObject.object_id);
+    const focusId = buildFocusIdForUrl(parsedEnsObjectId);
     const path = urlFor.browser({
       genomeId: activeGenomeId,
-      focus: exampleObject.object_id,
+      focus: focusId,
     });
 
     return (

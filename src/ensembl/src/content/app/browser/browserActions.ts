@@ -24,6 +24,7 @@ import get from 'lodash/get';
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr, stringifyGenomeBrowserFocusId } from './browserHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
@@ -306,7 +307,7 @@ export const setChrLocation: ActionCreator<ThunkAction<
     if (!isEqual(chrLocation, savedChrLocation)) {
       const newUrl = urlFor.browser({
         genomeId: activeGenomeId,
-        focus: activeEnsObjectId,
+        focus: buildFocusIdForUrl(activeEnsObjectId),
         location: getChrLocationStr(chrLocation)
       });
       dispatch(replace(newUrl));

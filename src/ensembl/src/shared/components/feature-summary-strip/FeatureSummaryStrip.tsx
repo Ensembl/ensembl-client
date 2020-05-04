@@ -28,7 +28,7 @@ export type FeatureSummaryStripProps = {
 export const FeatureSummaryStrip = (props: FeatureSummaryStripProps) => {
   const { ensObject, isGhosted } = props;
 
-  switch (ensObject.object_type) {
+  switch (ensObject.type) {
     case 'gene':
       return <GeneSummaryStrip gene={ensObject} isGhosted={isGhosted} />;
     case 'region':

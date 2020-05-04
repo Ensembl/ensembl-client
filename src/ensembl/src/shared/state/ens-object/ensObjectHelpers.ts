@@ -16,8 +16,8 @@
 
 import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
 import {
-  EnsObject,
-  EnsObjectRegion
+  EnsObjectRegion,
+  EnsObjectGene
 } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type EnsObjectIdConstituents = {
@@ -42,7 +42,7 @@ export const parseEnsObjectId = (id: string): EnsObjectIdConstituents => {
   const regex = /(.+?):(.+?):(.+)/;
   const match = id.match(regex);
   if (match?.length === 4) { // whole id plus its three constituent parts
-    const [_, genomeId, type, objectId] = match;
+    const [, genomeId, type, objectId] = match;
     return {
       genomeId,
       type,
@@ -53,8 +53,11 @@ export const parseEnsObjectId = (id: string): EnsObjectIdConstituents => {
   }
 };
 
-export const buildFocusIdForUrl = (params: UrlFocusIdConstituents) => {
-  const { type, objectId } = params;
+export const buildFocusIdForUrl = (payload: string | UrlFocusIdConstituents) => {
+  if (typeof payload === 'string') {
+    payload = parseEnsObjectId(payload);
+  }
+  const { type, objectId } = payload;
   return `${type}:${objectId}`;
 };
 
@@ -94,6 +97,5 @@ export const buildRegionObject = (payload: EnsObjectIdConstituents): EnsObjectRe
   };
 };
 
-type StableIdField = 'versioned_stable_id' | 'stable_id';
-export const getDisplayStableId = (ensObject: Pick<EnsObject, StableIdField>) =>
+export const getDisplayStableId = (ensObject: EnsObjectGene) =>
   ensObject.versioned_stable_id || ensObject.stable_id || '';

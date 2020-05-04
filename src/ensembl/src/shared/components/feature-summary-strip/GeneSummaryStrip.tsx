@@ -23,7 +23,7 @@ import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './FeatureSummaryStrip.scss';
 
@@ -43,7 +43,7 @@ type GeneFields =
   | 'stable_id'
   | 'strand'
   | 'location';
-type Gene = Pick<EnsObject, GeneFields>;
+type Gene = Pick<EnsObjectGene, GeneFields>;
 
 type Props = {
   gene: Gene;

@@ -94,9 +94,9 @@ const useBrowserRouting = () => {
        in order to prevent creating a previouslyViewedObject entry
        for the focus object that is viewed first.
        */
-      dispatch(changeFocusObject(focus));
+      dispatch(changeFocusObject(newFocusId as string));
     } else if (focus && chrLocation) {
-      dispatch(changeFocusObject(focus));
+      dispatch(changeFocusObject(newFocusId as string));
       dispatch(changeBrowserLocation({
         genomeId,
         ensObjectId: focus,
@@ -137,7 +137,7 @@ const useBrowserRouting = () => {
 
 const buildNewEnsObjectId = (genomeId: string, focusFromUrl: string) => {
   const parsedFocus = parseFocusIdFromUrl(focusFromUrl);
-  buildEnsObjectId({ genomeId, ...parsedFocus });
+  return buildEnsObjectId({ genomeId, ...parsedFocus });
 };
 
 export default useBrowserRouting;

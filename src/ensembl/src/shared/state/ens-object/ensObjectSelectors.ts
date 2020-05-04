@@ -70,6 +70,6 @@ export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
 
 export const getExampleGenes = (state: RootState): EnsObject[] => {
   return getExampleEnsObjects(state).filter(
-    (entity) => entity.object_type === 'gene'
+    (entity) => entity.type === 'gene'
   );
 };
