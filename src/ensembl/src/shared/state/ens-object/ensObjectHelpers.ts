@@ -29,7 +29,7 @@ export type EnsObjectIdConstituents = {
 export type UrlFocusIdConstituents = {
   type: string;
   objectId: string;
-}
+};
 
 // NOTE: it's possible that we will prefer to omit type from the id
 // if focus objects of different type are saved into different slots in the state
@@ -41,19 +41,22 @@ export const buildEnsObjectId = (params: EnsObjectIdConstituents) => {
 export const parseEnsObjectId = (id: string): EnsObjectIdConstituents => {
   const regex = /(.+?):(.+?):(.+)/;
   const match = id.match(regex);
-  if (match?.length === 4) { // whole id plus its three constituent parts
+  if (match?.length === 4) {
+    // whole id plus its three constituent parts
     const [, genomeId, type, objectId] = match;
     return {
       genomeId,
       type,
-      objectId,
+      objectId
     };
   } else {
-    throw new Error("Malformed Ensembl object id");
+    throw new Error('Malformed Ensembl object id');
   }
 };
 
-export const buildFocusIdForUrl = (payload: string | UrlFocusIdConstituents) => {
+export const buildFocusIdForUrl = (
+  payload: string | UrlFocusIdConstituents
+) => {
   if (typeof payload === 'string') {
     payload = parseEnsObjectId(payload);
   }
@@ -70,17 +73,17 @@ export const parseFocusIdFromUrl = (id: string) => {
 };
 
 // focus object id in the url on the Genome Browser page has a format of <type>:<id>
-export const parseEnsObjectIdFromUrl = (
-  id: string
-): UrlFocusIdConstituents => {
+export const parseEnsObjectIdFromUrl = (id: string): UrlFocusIdConstituents => {
   const [type, objectId] = id.split(':');
   return {
     type,
-    objectId,
+    objectId
   };
 };
 
-export const buildRegionObject = (payload: EnsObjectIdConstituents): EnsObjectRegion => {
+export const buildRegionObject = (
+  payload: EnsObjectIdConstituents
+): EnsObjectRegion => {
   const { genomeId, objectId: regionId } = payload;
   const [chromosomeName, start, end] = getChrLocationFromStr(regionId);
 
@@ -93,7 +96,7 @@ export const buildRegionObject = (payload: EnsObjectIdConstituents): EnsObjectRe
       chromosome: chromosomeName,
       start,
       end
-    },
+    }
   };
 };
 

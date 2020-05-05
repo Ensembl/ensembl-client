@@ -23,7 +23,7 @@ import get from 'lodash/get';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getChrLocationStr, stringifyGenomeBrowserFocusId } from './browserHelper';
+import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
@@ -126,7 +126,7 @@ export const fetchDataForLastVisitedObjects: ActionCreator<ThunkAction<
 >> = () => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeEnsObjectIdsMap = getBrowserActiveEnsObjectIds(state);
-  Object.entries(activeEnsObjectIdsMap).forEach(([genomeId, objectId]) =>
+  Object.values(activeEnsObjectIdsMap).forEach((objectId) =>
     dispatch(fetchEnsObject(objectId))
   );
 };
@@ -135,12 +135,9 @@ export const updateBrowserActiveEnsObjectIds = createAction(
   'browser/update-active-ens-object-ids'
 )<{ [objectId: string]: string }>();
 
-export const updateBrowserActiveEnsObjectIdsAndSave = (activeEnsObjectId: string): ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
-> => {
+export const updateBrowserActiveEnsObjectIdsAndSave = (
+  activeEnsObjectId: string
+): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -351,12 +348,12 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const changeFocusObject = (objectId: string): ThunkAction<
-  any,
-  any,
-  null,
-  Action<string>
-> =>  (dispatch, getState: () => RootState) => {
+export const changeFocusObject = (
+  objectId: string
+): ThunkAction<any, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
   const messageCount = getBrowserMessageCount(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
