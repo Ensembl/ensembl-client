@@ -294,7 +294,7 @@ export const setChrLocation: ActionCreator<ThunkAction<
     const activeGenomeId = getBrowserActiveGenomeId(state);
     const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
     const savedChrLocation = getChrLocation(state);
-    if (!activeGenomeId) {
+    if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
     const payload = {

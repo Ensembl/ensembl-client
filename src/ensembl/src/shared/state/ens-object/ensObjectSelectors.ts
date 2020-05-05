@@ -55,7 +55,7 @@ export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
   if (!activeGenomeId) {
     return [];
   }
-  const exampleObjects = getGenomeExampleFocusObjects(state);
+  const exampleObjects = getGenomeExampleFocusObjects(state, activeGenomeId);
   return exampleObjects
     .map(({ id, type }) => {
       const ensObjectId = buildEnsObjectId({

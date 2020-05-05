@@ -11,10 +11,11 @@ export const processPayload = (
   payload: ZmenuIncomingPayload
 ): ZmenuIncomingPayload => {
   return JSON.parse(JSON.stringify(payload), (key, value) => {
-    if (key === 'id') {
-      return parseFeatureId(value);
-    } else {
-      return value;
-    }
+    // if (key === 'id') {
+    //   return parseFeatureId(value);
+    // } else {
+    //   return value;
+    // }
+    return value;
   });
 };

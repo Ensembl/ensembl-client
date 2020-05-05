@@ -20,6 +20,8 @@ import { push } from 'connected-react-router';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { parseFeatureId } from 'src/content/app/browser/browserHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import {
   getBrowserActiveGenomeId,
@@ -46,22 +48,21 @@ const ZmenuAppLinks = (props: Props) => {
   if (!isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
     return null;
   }
+  const parsedFeatureId = parseFeatureId(props.featureId);
 
-  // FIXME: the row of buttons should be shown only for the gene feature.
-  // Change this temporary hack to using the "type" field when genome browser
-  // starts reporting the type of clicked features
-  // (also, probably move this check in a parent component)
-  if (!props.featureId.startsWith('gene:')) {
+  if (parsedFeatureId.type !== 'gene') {
     return null;
   }
 
+  const featureIdForUrl = buildFocusIdForUrl(parsedFeatureId);
+
   const getBrowserLink = () =>
-    urlFor.browser({ genomeId: props.genomeId, focus: props.featureId });
+    urlFor.browser({ genomeId: props.genomeId, focus: featureIdForUrl });
 
   const getEntityViewerLink = () =>
     urlFor.entityViewer({
       genomeId: props.genomeId,
-      entityId: props.featureId
+      entityId: featureIdForUrl
     });
 
   const shouldShowBrowserButton =

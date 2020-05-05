@@ -47,7 +47,6 @@ export const fetchEnsObject = (
   getState: () => RootState
 ) => {
   if (typeof payload === 'string') {
-    // TODO: check if this can be a two-part id (type:stable_id) rather than three-part
     payload = parseEnsObjectId(payload);
   }
   const state = getState();
@@ -102,7 +101,7 @@ export const fetchExampleEnsObjects = (
   getState: () => RootState
 ) => {
   const state = getState();
-  const exampleFocusObjects = getGenomeExampleFocusObjects(state);
+  const exampleFocusObjects = getGenomeExampleFocusObjects(state, genomeId);
 
   exampleFocusObjects.forEach(({ id, type }) => {
     dispatch(fetchEnsObject({ genomeId, type, objectId: id }));

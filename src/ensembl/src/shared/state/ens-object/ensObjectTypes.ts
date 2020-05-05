@@ -22,7 +22,7 @@ export type EnsObjectLocation = {
   start: number;
 };
 
-type EnsObjectType =
+export type EnsObjectType =
   | 'gene'
   | 'region'
 
