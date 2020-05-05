@@ -54,12 +54,6 @@ describe('<Browser />', () => {
   const defaultProps: BrowserProps = {
     activeGenomeId: faker.lorem.words(),
     activeEnsObjectId: faker.lorem.words(),
-    allActiveEnsObjectIds: {
-      [faker.lorem.words()]: faker.lorem.words()
-    },
-    allChrLocations: {
-      [faker.lorem.words()]: createChrLocationValues().tupleValue
-    },
     browserActivated: false,
     browserNavOpened: false,
     browserQueryParams: {},
@@ -67,15 +61,11 @@ describe('<Browser />', () => {
     isDrawerOpened: false,
     isTrackPanelOpened: false,
     exampleEnsObjects: [],
-    committedSpecies: [],
     changeBrowserLocation: jest.fn(),
-    changeFocusObject: jest.fn(),
     restoreBrowserTrackStates: jest.fn(),
     fetchGenomeData: jest.fn(),
-    replace: jest.fn(),
     toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
-    setDataFromUrlAndSave: jest.fn(),
     viewportWidth: BreakpointWidth.DESKTOP
   };
 
