@@ -7,8 +7,9 @@ import isEqual from 'lodash/isEqual';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
 import {
+  buildFocusIdForUrl,
   parseFocusIdFromUrl,
-  buildEnsObjectId,
+  buildEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 
@@ -18,29 +19,28 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations,
+  getAllChrLocations
 } from '../browserSelectors';
 
 import {
   changeBrowserLocation,
   changeFocusObject,
-  setDataFromUrlAndSave,
+  setDataFromUrlAndSave
 } from '../browserActions';
 
-
 /*
-* Possible urls that the GenomeBrowser page has to deal with:
-* - /browser (no genome id selected)
-* - /browser/:genome_id (no focus object or location selected)
-* - /browser/:genome_id?focus=:focus_object_id (no location selected)
-* - /browser/:genome_id?focus=:focus_object_id&location=:location_id
-*
-* We are not dealing with urls where genome id and location id are defined, but focus id isn't
-*
-*  NOTE: focus id in the url has the format <type>:<id>;
-*  but internally in the app we will use the focus id format that is <genome_id>:<type>:<id>
-*  because without the genome id the focus id is not unique enough to be used as key in our Redux store
-*/
+ * Possible urls that the GenomeBrowser page has to deal with:
+ * - /browser (no genome id selected)
+ * - /browser/:genome_id (no focus object or location selected)
+ * - /browser/:genome_id?focus=:focus_object_id (no location selected)
+ * - /browser/:genome_id?focus=:focus_object_id&location=:location_id
+ *
+ * We are not dealing with urls where genome id and location id are defined, but focus id isn't
+ *
+ *  NOTE: focus id in the url has the format <type>:<id>;
+ *  but internally in the app we will use the focus id format that is <genome_id>:<type>:<id>
+ *  because without the genome id the focus id is not unique enough to be used as key in our Redux store
+ */
 
 const useBrowserRouting = () => {
   const params: { [key: string]: string } = useParams();
@@ -61,10 +61,13 @@ const useBrowserRouting = () => {
   const chrLocation = location ? getChrLocationFromStr(location) : null;
 
   useEffect(() => {
-    if (!genomeId) { // handling navigation to /browser
+    if (!genomeId) {
+      // handling navigation to /browser
       // select either the species that the user viewed during the previous visit,
       // of the first selected species
-      const selectedSpecies = committedSpecies.find(({ genome_id }) => genome_id === activeGenomeId);
+      const selectedSpecies = committedSpecies.find(
+        ({ genome_id }) => genome_id === activeGenomeId
+      );
       const firstCommittedSpecies = committedSpecies[0];
       if (selectedSpecies) {
         changeGenomeId(selectedSpecies.genome_id);
@@ -74,7 +77,8 @@ const useBrowserRouting = () => {
       return;
     }
 
-    const isSameUrl = genomeId === activeGenomeId &&
+    const isSameUrl =
+      genomeId === activeGenomeId &&
       newFocusId === activeEnsObjectId &&
       isEqual(chrLocation, savedChrLocation);
 
@@ -85,7 +89,7 @@ const useBrowserRouting = () => {
     const payload = {
       activeGenomeId: genomeId,
       activeEnsObjectId: newFocusId,
-      chrLocation,
+      chrLocation
     };
 
     if (focus && !chrLocation) {
@@ -97,42 +101,51 @@ const useBrowserRouting = () => {
       dispatch(changeFocusObject(newFocusId as string));
     } else if (focus && chrLocation) {
       dispatch(changeFocusObject(newFocusId as string));
-      dispatch(changeBrowserLocation({
-        genomeId,
-        ensObjectId: focus,
-        chrLocation,
-      }));
+      dispatch(
+        changeBrowserLocation({
+          genomeId,
+          ensObjectId: focus,
+          chrLocation
+        })
+      );
     } else if (chrLocation) {
-      dispatch(changeBrowserLocation({
-        genomeId,
-        ensObjectId: focus,
-        chrLocation,
-      }));
+      dispatch(
+        changeBrowserLocation({
+          genomeId,
+          ensObjectId: focus,
+          chrLocation
+        })
+      );
     }
 
     dispatch(setDataFromUrlAndSave(payload));
-
   }, [genomeId, focus, location]);
 
-  const changeGenomeId = useCallback((genomeId: string) => {
-    const chrLocation = allChrLocations[genomeId];
-    const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
-  
-    const params = {
-      genomeId,
-      focus: activeEnsObjectId,
-      location: chrLocation ? getChrLocationStr(chrLocation) : null,
-    };
-  
-    dispatch(replace(urlFor.browser(params)));
-  }, [genomeId]);
+  const changeGenomeId = useCallback(
+    (genomeId: string) => {
+      const chrLocation = allChrLocations[genomeId];
+      const activeEnsObjectId = allActiveEnsObjectIds[genomeId];
+      const focusIdForUrl = activeEnsObjectId
+        ? buildFocusIdForUrl(activeEnsObjectId)
+        : null;
+
+      const params = {
+        genomeId,
+        focus: focusIdForUrl,
+        location: chrLocation ? getChrLocationStr(chrLocation) : null
+      };
+
+      dispatch(replace(urlFor.browser(params)));
+    },
+    [genomeId]
+  );
 
   return {
     genomeId,
     focusId: newFocusId,
     chrLocation,
     changeGenomeId
-  }
+  };
 };
 
 const buildNewEnsObjectId = (genomeId: string, focusFromUrl: string) => {
