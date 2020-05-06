@@ -1,6 +1,6 @@
 import JSONValue from 'src/shared/types/JSON';
 import { Slice } from './slice';
-import { Transcript, TranscriptFromLookup } from './transcript';
+import { Transcript } from './transcript';
 import { ExternalLink } from './externalLink';
 import { Source } from './source';
 import { Metadata } from './metadata';
@@ -24,11 +24,4 @@ export type Gene = {
   filters?: {
     [key: string]: JSONValue;
   };
-};
-
-export type GeneFromLookup = Pick<
-  Gene,
-  'id' | 'type' | 'symbol' | 'so_term' | 'slice'
-> & {
-  transcripts: TranscriptFromLookup[];
 };

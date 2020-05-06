@@ -1,76 +1,31 @@
-import {
-  buildTranscript,
-  buildTranscriptFromLookup,
-} from './rest-transcript-adaptor';
+import { buildTranscriptFromLookup } from './rest-transcript-adaptor';
 
-import {
-  GeneInResponse,
-  FeatureWithParent,
-  TranscriptInResponse,
-  FeatureInResponse,
-} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-import { GeneInLookupResponse } from '../rest-data-fetchers/geneData';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { GeneInResponse } from '../rest-data-fetchers/geneData';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Strand } from 'src/content/app/entity-viewer/types/strand';
 
-// transform ensembl rest /overlap data into a gene data structure
-export const restGeneAdaptor = (
-  geneId: string,
-  data: FeatureInResponse[]
-): Gene => {
-  const gene = data.find((feature) => feature.id === geneId) as GeneInResponse;
-  const transcripts = data
-    .filter((feature) => (feature as FeatureWithParent).Parent === geneId)
-    .map((transcript) =>
-      buildTranscript(transcript as TranscriptInResponse, data)
-    );
-
-  return {
-    id: geneId,
-    type: 'Gene',
-    symbol: gene.external_name,
-    so_term: gene.biotype,
-    slice: {
-      location: {
-        start: gene.start,
-        end: gene.end,
-      },
-      region: {
-        name: gene.seq_region_name,
-        strand: {
-          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE,
-        },
-      },
-    },
-    transcripts,
-  };
-};
-
-export const restGeneFromLookupAdaptor = (
-  geneId: string,
-  gene: GeneInLookupResponse
-) => {
+export const restGeneAdaptor = (gene: GeneInResponse): Gene => {
   const transcripts = gene.Transcript.filter(
     (transcript) => !!transcript.Translation
   ).map((transcript) => buildTranscriptFromLookup(transcript));
 
   return {
-    id: geneId,
+    id: gene.id,
     type: 'Gene',
     symbol: gene.display_name,
     so_term: gene.biotype,
     slice: {
       location: {
         start: gene.start,
-        end: gene.end,
+        end: gene.end
       },
       region: {
         name: gene.seq_region_name,
         strand: {
-          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE,
-        },
-      },
+          code: gene.strand === 1 ? Strand.FORWARD : Strand.REFVERSE
+        }
+      }
     },
-    transcripts,
+    transcripts
   };
 };

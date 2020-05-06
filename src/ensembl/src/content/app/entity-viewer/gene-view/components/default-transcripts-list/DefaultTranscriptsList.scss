@@ -35,9 +35,7 @@
 .left {
   grid-column: 1/2;
   text-align: right;
-  padding-right: 1em; // Check w/Andrea
-
-  color: white; //FIXME remove when start working on the left column
+  padding-right: 1em;
 }
 
 .middle {
@@ -46,6 +44,5 @@
 }
 
 .right {
-  color: white; //FIXME remove when start working on the left column
   grid-column: 4/5;
 }

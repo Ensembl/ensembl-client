@@ -1,10 +1,8 @@
-import {
-  fetchGene,
-  fetchTranscript
-} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
+import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/geneData';
+import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 enum FeatureType {
   Gene = 'Gene',
@@ -15,21 +13,15 @@ enum FeatureType {
 export const getTranscriptData = async (
   id: string
 ): Promise<Gene | Transcript | null> => {
-  const featureType = await getFeatureType(id);
+  const url = `https://rest.ensembl.org/lookup/id/${id}?content-type=application/json`;
+  const data = await fetch(url).then((response) => response.json());
 
-  if (featureType === FeatureType.Gene) {
-    return fetchGene(id);
-  } else if (featureType === FeatureType.Transcript) {
-    return fetchTranscript(id);
+  if (data.object_type === FeatureType.Gene) {
+    return fetchGene(data);
+  } else if (data.object_type === FeatureType.Transcript) {
+    return fetchTranscript(data);
   } else {
     console.error(`${id} is not a valid id`);
     return null;
   }
-};
-
-const getFeatureType = async (id: string) => {
-  const url = `https://rest.ensembl.org/lookup/id/${id}?content-type=application/json`;
-
-  const data = await fetch(url).then((response) => response.json());
-  return data.object_type;
 };

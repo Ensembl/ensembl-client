@@ -1,17 +1,17 @@
-import {
-  GeneInResponse,
-  TranscriptInResponse,
-  ExonInResponse,
-  TranslationInResponse,
-} from './transcriptData';
-import { GeneFromLookup } from '../../../types/gene';
-import { restGeneFromLookupAdaptor } from '../rest-adaptors/rest-gene-adaptor';
+import { restGeneAdaptor } from '../rest-adaptors/rest-gene-adaptor';
 
-export type GeneInLookupResponse = Pick<
-  GeneInResponse,
-  'id' | 'biotype' | 'seq_region_name' | 'strand' | 'start' | 'end'
-> & {
-  Transcript: TranscriptInLookupResponse[];
+import { Gene } from '../../../types/gene';
+import { TranscriptInResponse } from './transcriptData';
+
+export type GeneInResponse = {
+  object_type: 'Gene';
+  id: string;
+  biotype: string;
+  seq_region_name: string;
+  strand: 1 | -1;
+  start: number;
+  end: number;
+  Transcript: TranscriptInResponse[];
   assembly_name: string;
   description: string;
   version: number;
@@ -20,55 +20,14 @@ export type GeneInLookupResponse = Pick<
   display_name: string;
   source: string;
   logic_name: string;
-  object_type: 'Gene';
 };
 
-export type TranscriptInLookupResponse = Pick<
-  TranscriptInResponse,
-  'id' | 'biotype' | 'seq_region_name' | 'strand' | 'Parent' | 'start' | 'end'
-> & {
-  is_canonical: number;
-  object_type: 'Transcript';
-  Translation?: TranslationInLookupResponse;
-  logic_name: string;
-  source: string;
-  display_name: string;
-  species: string;
-  db_type: string;
-  version: number;
-  assembly_name: number;
-  Exon: ExonInLookupResponse[];
-};
-
-export type TranslationInLookupResponse = Pick<
-  TranslationInResponse,
-  'id' | 'object_type' | 'Parent' | 'start' | 'end' | 'length'
-> & {
-  db_type: string;
-  species: string;
-};
-
-export type ExonInLookupResponse = Pick<
-  ExonInResponse,
-  'id' | 'start' | 'end'
-> & {
-  species: string;
-  db_type: string;
-  strand: number;
-  object_type: 'Exon';
-  seq_region_name: string;
-  assembly_name: string;
-  version: string;
-};
-
-export const fetchGeneFromLookup = async (
-  id: string
-): Promise<GeneFromLookup> => {
+export const fetchGene = async (id: string): Promise<Gene> => {
   const url = `http://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
 
-  const data: GeneInLookupResponse = (await fetch(url).then((response) =>
+  const data: GeneInResponse = (await fetch(url).then((response) =>
     response.json()
-  )) as GeneInLookupResponse;
+  )) as GeneInResponse;
 
-  return restGeneFromLookupAdaptor(id, data);
+  return restGeneAdaptor(data);
 };

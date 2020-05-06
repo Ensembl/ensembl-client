@@ -1,19 +1,20 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import { createProtein } from 'tests/fixtures/entity-viewer/protein';
 
-import ProteinDomainImage, {
+import {
+  ProteinDomainImageWithData as ProteinDomainImage,
   getDomainsByResourceGroups
 } from './ProteinDomainImage';
 
 const minimalProps = {
-  transcript: createTranscript(),
+  protein: createProtein(),
   width: 600
 };
 
 const domainsByResourceGroups = getDomainsByResourceGroups(
-  minimalProps.transcript.product.protein_domains_resources
+  minimalProps.protein.product.protein_domains_resources
 );
 
 describe('<ProteinDomainImage />', () => {
@@ -47,11 +48,8 @@ describe('<ProteinDomainImage />', () => {
 
     const totalDomainsInFirstSvg =
       domainsByResourceGroups[firstGroupKey][firstGroupSubKey].length;
-    expect(
-      wrapper
-        .find('svg')
-        .at(0)
-        .find('.domain').length
-    ).toBe(totalDomainsInFirstSvg);
+    expect(wrapper.find('svg').at(0).find('.domain').length).toBe(
+      totalDomainsInFirstSvg
+    );
   });
 });

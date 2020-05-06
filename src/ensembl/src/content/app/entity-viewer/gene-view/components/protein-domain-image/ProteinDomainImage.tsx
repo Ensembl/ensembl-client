@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { fetchProtein } from '../../../shared/rest/rest-data-fetchers/proteinData';
+
 import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
+import { Protein } from '../../../types/protein';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -12,12 +13,19 @@ const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
-  transcript: Transcript;
+  proteinId: string;
   width: number; // available width for drawing, in pixels
   classNames?: {
     track?: string;
     domain?: string;
   };
+};
+
+type ProteinDomainImageWithDataProps = Pick<
+  ProteinDomainImageProps,
+  'width' | 'classNames'
+> & {
+  protein: Protein | null;
 };
 
 type ProteinDomainImageData = {
@@ -41,7 +49,6 @@ export const getDomainsByResourceGroups = (
 
     proteinDomainsResources[resourceName].domains.forEach((domain) => {
       const domainName = domain.name;
-
       const { start, end } = domain.location;
 
       if (!proteinDomains[resourceName][domainName]) {
@@ -59,18 +66,32 @@ export const getDomainsByResourceGroups = (
 };
 
 const ProteinDomainImage = (props: ProteinDomainImageProps) => {
-  const { start: transcriptStart } = getFeatureCoordinates(props.transcript);
+  const [data, setData] = useState<Protein | null>(null);
 
-  if (!props.transcript.product.protein_domains_resources) {
+  useEffect(() => {
+    fetchProtein(props.proteinId).then((result) => {
+      if (result) {
+        setData(result);
+      }
+    });
+  }, [props.proteinId]);
+
+  return <ProteinDomainImageWithData {...props} protein={data} />;
+};
+
+export const ProteinDomainImageWithData = (
+  props: ProteinDomainImageWithDataProps
+) => {
+  const product = props.protein?.product;
+
+  if (!product?.protein_domains_resources) {
     return null;
   }
 
-  const length = props.transcript.product.length;
-
+  const length = product.length;
   const proteinDomainsResources = getDomainsByResourceGroups(
-    props.transcript.product.protein_domains_resources
+    product.protein_domains_resources
   );
-
   const scale = scaleLinear()
     .domain([1, length])
     .range([0, props.width])
@@ -101,7 +122,6 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
                             <DomainBlock
                               key={index}
                               domain={domain}
-                              transcriptStart={transcriptStart}
                               className={props.classNames?.domain}
                               scale={scale}
                             />
@@ -121,7 +141,9 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   );
 };
 
-const Track = (props: ProteinDomainImageProps) => {
+type TrackProps = Pick<ProteinDomainImageProps, 'classNames' | 'width'>;
+
+const Track = (props: TrackProps) => {
   const trackClasses = classNames(styles.track, props.classNames?.track);
   return (
     <g className={trackClasses}>
@@ -135,8 +157,6 @@ type DomainBlockProps = {
     start: number;
     end: number;
   };
-
-  transcriptStart: number;
   className?: string;
   scale: ScaleLinear<number, number>;
 };

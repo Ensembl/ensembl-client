@@ -1,0 +1,12 @@
+@import 'src/styles/settings';
+
+.middle {
+  display: grid;
+  grid-template-columns: 400px 75px 200px;
+  grid-column-gap: 10px;
+}
+
+.transcriptId {
+  color: $blue;
+  cursor: pointer;
+}

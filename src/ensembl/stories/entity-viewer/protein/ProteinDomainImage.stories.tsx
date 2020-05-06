@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { getTranscriptData } from '../transcripts/transcriptData';
+import { getProteinData, ProteinData } from '../protein/proteinData';
 
-import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
-
-import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/types/transcript';
+import { ProteinDomainImageWithData as ProteinDomainImage } from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 
 import styles from './ProteinDomainImage.stories.scss';
 
@@ -14,12 +12,10 @@ const TranscriptId = 'ENST00000380152';
 
 const ProteinDomainImageStory = () => {
   const [id, setId] = useState(TranscriptId);
-  const [data, setData] = useState<TranscriptType | null>(null);
+  const [data, setData] = useState<ProteinData | null>(null);
 
   useEffect(() => {
-    getTranscriptData(id).then((response) =>
-      setData(response as TranscriptType)
-    );
+    getProteinData(id).then((response) => setData(response as ProteinData));
   }, [id]);
 
   const onIdChange = (id: string) => {
@@ -28,11 +24,7 @@ const ProteinDomainImageStory = () => {
 
   let content;
 
-  if (
-    data &&
-    data.product &&
-    !Object.values(data.product.protein_domains_resources).length
-  ) {
+  if (data?.protein.product?.protein_domains_resources.length) {
     content = (
       <div>
         There are no features available for the given transcript. Please try a
@@ -40,7 +32,7 @@ const ProteinDomainImageStory = () => {
       </div>
     );
   } else if (data) {
-    content = <ProteinDomainImage width={GRAPHIC_WIDTH} transcript={data} />;
+    content = <ProteinDomainImage width={GRAPHIC_WIDTH} {...data} />;
   }
 
   return (
