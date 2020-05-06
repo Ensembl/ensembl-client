@@ -33,10 +33,12 @@ type EntityViewerUrlParams = {
 export const browser = (params?: BrowserUrlParams) => {
   if (params) {
     const path = `/app/browser/${params.genomeId}`;
+    // NOTE: if a parameter passed to queryString is null, it will still get into query;
+    // so assign it to undefined in order to omit it from the query
     const query = queryString.stringify(
       {
-        focus: params.focus,
-        location: params.location || undefined // have to use undefined, because if location is null it will still get in query
+        focus: params.focus || undefined,
+        location: params.location || undefined
       },
       {
         encode: false
