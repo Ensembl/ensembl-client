@@ -17,9 +17,9 @@ export const getTranscriptData = async (
   const data = await fetch(url).then((response) => response.json());
 
   if (data.object_type === FeatureType.Gene) {
-    return fetchGene(data);
+    return fetchGene(id);
   } else if (data.object_type === FeatureType.Transcript) {
-    return fetchTranscript(data);
+    return fetchTranscript(id);
   } else {
     console.error(`${id} is not a valid id`);
     return null;

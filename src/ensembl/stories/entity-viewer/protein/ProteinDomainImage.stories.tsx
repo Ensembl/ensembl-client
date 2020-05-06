@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { getProteinData, ProteinData } from '../protein/proteinData';
+import { getProteinData } from '../protein/proteinData';
 
 import { ProteinDomainImageWithData as ProteinDomainImage } from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
+
+import { Protein as ProteinType } from 'src/content/app/entity-viewer/types/protein';
 
 import styles from './ProteinDomainImage.stories.scss';
 
 const GRAPHIC_WIDTH = 1200;
-const TranscriptId = 'ENST00000380152';
+const PROTEIN_ID = 'ENSP00000369497';
 
 const ProteinDomainImageStory = () => {
-  const [id, setId] = useState(TranscriptId);
-  const [data, setData] = useState<ProteinData | null>(null);
+  const [id, setId] = useState(PROTEIN_ID);
+  const [data, setData] = useState<ProteinType | null>(null);
 
   useEffect(() => {
-    getProteinData(id).then((response) => setData(response as ProteinData));
+    getProteinData(id).then((response) => setData(response as ProteinType));
   }, [id]);
 
   const onIdChange = (id: string) => {
@@ -24,15 +26,15 @@ const ProteinDomainImageStory = () => {
 
   let content;
 
-  if (data?.protein.product?.protein_domains_resources.length) {
+  if (data?.product?.protein_domains_resources.length) {
     content = (
       <div>
-        There are no features available for the given transcript. Please try a
+        There are no features available for the given protein. Please try a
         different id.
       </div>
     );
   } else if (data) {
-    content = <ProteinDomainImage width={GRAPHIC_WIDTH} {...data} />;
+    content = <ProteinDomainImage width={GRAPHIC_WIDTH} protein={data} />;
   }
 
   return (
@@ -61,7 +63,7 @@ const FeatureIdForm = (props: {
 
   return (
     <form className={styles.form}>
-      <p>Enter transcript stable id to change view</p>
+      <p>Enter protein stable id to change view</p>
       <input ref={inputRef} defaultValue={props.id} />
 
       <button onClick={handleSubmit}>Get protein domains</button>
