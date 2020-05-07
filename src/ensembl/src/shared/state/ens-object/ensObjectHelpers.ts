@@ -41,6 +41,7 @@ export const buildEnsObjectId = (params: EnsObjectIdConstituents) => {
 export const parseEnsObjectId = (id: string): EnsObjectIdConstituents => {
   const regex = /(.+?):(.+?):(.+)/;
   const match = id.match(regex);
+
   if (match?.length === 4) {
     // whole id plus its three constituent parts
     const [, genomeId, type, objectId] = match;
@@ -65,11 +66,19 @@ export const buildFocusIdForUrl = (
 };
 
 export const parseFocusIdFromUrl = (id: string) => {
-  const [type, objectId] = id.split(':');
-  return {
-    type,
-    objectId
-  };
+  const regex = /(.+?):(.+)/;
+  const match = id.match(regex);
+
+  if (match?.length === 3) {
+    // whole id plus its two constituent parts
+    const [, type, objectId] = match;
+    return {
+      type,
+      objectId
+    };
+  } else {
+    throw new Error('Malformed focus id in url');
+  }
 };
 
 // focus object id in the url on the Genome Browser page has a format of <type>:<id>

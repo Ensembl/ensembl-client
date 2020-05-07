@@ -19,21 +19,25 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
-import { RootState } from 'src/store';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-import { getBrowserActiveGenomeId } from '../../../browserSelectors';
-import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { closeTrackPanelModal } from '../../trackPanelActions';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
-import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
-import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import analyticsTracking from 'src/services/analytics-service';
 
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
+
+import { closeTrackPanelModal } from '../../trackPanelActions';
+import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
+import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
+
+import { RootState } from 'src/store';
+import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelBookmarks.scss';
@@ -57,7 +61,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
       {props.exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({
           genomeId: props.activeGenomeId,
-          focus: exampleObject.object_id,
+          focus: buildFocusIdForUrl(exampleObject.object_id)
         });
 
         return (
@@ -88,7 +92,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       category: 'recent_bookmark_link',
       label: objectType,
       action: 'clicked',
-      value: index + 1,
+      value: index + 1
     });
 
     props.closeTrackPanelModal();
@@ -101,7 +105,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
         .map((previouslyViewedObject, index) => {
           const path = urlFor.browser({
             genomeId: previouslyViewedObject.genome_id,
-            focus: previouslyViewedObject.object_id,
+            focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
           });
 
           return (
@@ -133,7 +137,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
     exampleEnsObjects,
     activeGenomeId,
     updateTrackStatesAndSave,
-    closeTrackPanelModal,
+    closeTrackPanelModal
   } = props;
 
   const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
@@ -143,7 +147,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       category: 'drawer_open',
       label: 'recent_bookmarks',
       action: 'clicked',
-      value: previouslyViewedObjects.length,
+      value: previouslyViewedObjects.length
     });
 
     props.changeDrawerViewAndOpen('bookmarks');
@@ -193,14 +197,14 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     exampleEnsObjects: getExampleEnsObjects(state),
-    previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state),
+    previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
   };
 };
 
 const mapDispatchToProps = {
   updateTrackStatesAndSave,
   closeTrackPanelModal,
-  changeDrawerViewAndOpen,
+  changeDrawerViewAndOpen
 };
 
 export default connect(
