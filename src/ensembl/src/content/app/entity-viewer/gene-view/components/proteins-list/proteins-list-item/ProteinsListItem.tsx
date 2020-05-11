@@ -38,7 +38,9 @@ const ProteinsListItem = (props: Props) => {
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>Protein description from UniProt</div>
           <div>{props.transcript.cds?.protein?.length} aa</div>
-          <div>Spliced RNA length {getSplicedRNALength()} bp</div>
+          <div className={styles.splicedLength}>
+            Spliced RNA length <strong>{getSplicedRNALength()}</strong> bp
+          </div>
         </div>
         <div
           className={transcriptsListStyles.right}

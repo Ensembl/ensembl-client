@@ -22,7 +22,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   return (
     <div className={mainStyles}>
-      <ProteinDomainImage proteinId={proteinId} width={1000} />
+      <ProteinDomainImage proteinId={proteinId} width={695} />
     </div>
   );
 };

@@ -6,7 +6,20 @@
   grid-column-gap: 10px;
 }
 
+.splicedLength {
+  font-weight: 300;
+
+  strong {
+    font-weight: 400;
+  }
+}
+
 .transcriptId {
   color: $blue;
   cursor: pointer;
+}
+
+.middle,
+.transcriptId {
+  font-weight: 400;
 }

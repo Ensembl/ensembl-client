@@ -25,12 +25,13 @@
 
 .resourceGroup {
   display: grid;
-  grid-template-columns: [type] 150px [images] min-content;
+  grid-template-columns: [type] 228px [images] 902px;
   margin-bottom: 10px;
+
   & .resourceName {
     grid-column: type;
     text-align: right;
-    padding-right: 30px;
+    padding-right: 1em;
     color: $dark-grey;
   }
 
@@ -49,7 +50,7 @@
 
   & .resourceDescription {
     grid-column: description;
-    padding-left: 40px;
+    padding-left: 27px;
     color: $dark-grey;
   }
 }
