@@ -16,7 +16,7 @@ type ApiServiceConfig = {
   host: string;
 };
 
-type FetchOptions = {
+export type FetchOptions = {
   host?: string;
   method?: HTTPMethod;
   headers?: { [key: string]: string };

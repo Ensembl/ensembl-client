@@ -6,8 +6,6 @@ import Zmenu from './Zmenu';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import ZmenuContextProvider from './ZmenuContext';
-
 import {
   ZmenuData,
   ZmenuAction,
@@ -107,7 +105,7 @@ const ZmenuController = (props: Props) => {
     />
   ));
 
-  return <ZmenuContextProvider>{zmenuElements}</ZmenuContextProvider>;
+  return <>{zmenuElements}</>;
 };
 const mapDispatchToProps = {
   changeHighlightedTrackId

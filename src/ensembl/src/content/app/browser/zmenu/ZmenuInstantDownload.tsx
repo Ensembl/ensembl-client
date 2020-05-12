@@ -1,10 +1,12 @@
-import React, { useEffect, useContext } from 'react';
+import React from 'react';
 
-import { ZmenuContext } from './ZmenuContext';
+import useApiService from 'src/shared/hooks/useApiService';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { TranscriptInResponse } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './Zmenu.scss';
 
@@ -13,25 +15,14 @@ type Props = {
 };
 
 const ZmenuInstantDownload = (props: Props) => {
-  const { instantDownloadCache, updateInstantDownloadCache } = useContext(
-    ZmenuContext
-  );
-  const instantDownloadPayload = instantDownloadCache[props.id];
+  const transcriptId = getStableId(props.id);
+  const params = {
+    endpoint: `/lookup/id/${transcriptId}?content-type=application/json;expand=1`,
+    host: 'https://rest.ensembl.org'
+  };
+  const { loadingState, data } = useApiService<TranscriptInResponse>(params);
 
-  useEffect(() => {
-    if (instantDownloadPayload) {
-      return;
-    }
-
-    const transcriptId = getStableId(props.id);
-    const url = `https://rest.ensembl.org/lookup/id/${transcriptId}?content-type=application/json;expand=1`;
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => preparePayload(data))
-      .then((payload) => updateInstantDownloadCache({ [props.id]: payload }));
-  }, [props.id]);
-
-  if (!instantDownloadPayload) {
+  if (loadingState === LoadingState.LOADING) {
     return (
       <div className={styles.zmenuInstantDowloadLoading}>
         <CircleLoader />
@@ -40,7 +31,10 @@ const ZmenuInstantDownload = (props: Props) => {
   }
 
   return (
-    <InstantDownloadTranscript {...instantDownloadPayload} layout="vertical" />
+    <InstantDownloadTranscript
+      {...preparePayload(data as TranscriptInResponse)}
+      layout="vertical"
+    />
   );
 };
 
