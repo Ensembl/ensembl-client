@@ -38,8 +38,9 @@ $drawerWindowWidth: 45px;
 }
 
 .mainWrapper {
-  height: calc(100% - #{$topbarHeight});
+  max-height: calc(100% - #{$topbarHeight});
   position: relative;
+  height: 100%;
 }
 
 .main {
