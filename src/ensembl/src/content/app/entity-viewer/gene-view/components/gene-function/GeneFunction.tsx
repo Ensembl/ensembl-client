@@ -7,7 +7,7 @@ import { setActiveGeneFunctionTab } from 'src/content/app/entity-viewer/state/ge
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
-import ProteinList from '../proteins-list/ProteinsList';
+import ProteinsList from '../proteins-list/ProteinsList';
 
 import { RootState } from 'src/store';
 import { GeneFunctionTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
@@ -58,7 +58,7 @@ const GeneFunction = (props: Props) => {
         body: styles.panelBody
       }}
     >
-      <ProteinList geneId={props.geneId} />
+      <ProteinsList geneId={props.geneId} />
     </Panel>
   );
 };

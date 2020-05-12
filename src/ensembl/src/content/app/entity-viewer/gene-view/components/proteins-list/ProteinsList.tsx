@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
-import { fetchGene } from '../../../shared/rest/rest-data-fetchers/geneData';
+import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/geneData';
 
-import { Gene } from '../../../types/gene';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './ProteinsList.scss';
 
@@ -12,8 +12,8 @@ type ProteinsListProps = {
   geneId: string;
 };
 
-type ProteinListWithDataProps = {
-  gene: Gene | null;
+type ProteinsListWithDataProps = {
+  gene: Gene;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
@@ -27,21 +27,17 @@ const ProteinsList = (props: ProteinsListProps) => {
     });
   }, [props.geneId]);
 
-  return <ProteinListWithData gene={geneData} />;
+  return geneData ? <ProteinsListWithData gene={geneData} /> : null;
 };
 
-const ProteinListWithData = (props: ProteinListWithDataProps) => {
-  if (!props.gene) {
-    return null;
-  }
-
-  const transcriptsWithProtein = props.gene.transcripts.filter(
+const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
+  const proteinCodingTranscripts = props.gene.transcripts.filter(
     (transcript) => !!transcript.cds
   );
 
   return (
     <div className={styles.proteinsList}>
-      {transcriptsWithProtein.map((transcript) => (
+      {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem key={transcript.id} transcript={transcript} />
       ))}
     </div>

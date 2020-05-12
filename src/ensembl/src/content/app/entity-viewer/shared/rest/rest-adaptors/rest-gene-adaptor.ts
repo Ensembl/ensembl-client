@@ -5,9 +5,9 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 
 export const restGeneAdaptor = (gene: GeneInResponse): Gene => {
-  const transcripts = gene.Transcript.filter(
-    (transcript) => !!transcript.Translation
-  ).map((transcript) => buildTranscriptFromLookup(transcript));
+  const transcripts = gene.Transcript.map((transcript) =>
+    buildTranscriptFromLookup(transcript)
+  );
 
   return {
     id: gene.id,

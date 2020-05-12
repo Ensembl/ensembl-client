@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ProteinDomainImage from '../../protein-domain-image/ProteinDomainImage';
+import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 
 import { getNumberOfCodingExons } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 

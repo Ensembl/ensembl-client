@@ -3,8 +3,8 @@ import {
   ProteinDomainsResources,
   ProductType,
   Product
-} from '../../../types/product';
-import { Protein } from '../../../types/protein';
+} from 'src/content/app/entity-viewer/types/product';
+import { Protein } from 'src/content/app/entity-viewer/types/protein';
 import { TranslationInResponse } from '../rest-data-fetchers/transcriptData';
 
 // transform ensembl rest /overlap data into a transcript data structure
