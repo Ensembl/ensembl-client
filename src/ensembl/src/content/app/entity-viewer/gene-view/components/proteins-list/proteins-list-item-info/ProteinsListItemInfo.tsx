@@ -1,11 +1,11 @@
 import React from 'react';
-import classNames from 'classnames';
 
 import ProteinDomainImage from '../../protein-domain-image/ProteinDomainImage';
 
+import { getNumberOfCodingExons } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
-import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
@@ -15,14 +15,18 @@ type Props = {
 const ProteinsListItemInfo = (props: Props) => {
   const proteinId = props.transcript.cds?.protein?.id as string;
 
-  const mainStyles = classNames(
-    transcriptsListStyles.row,
-    styles.proteinsListItemInfo
-  );
-
   return (
-    <div className={mainStyles}>
+    <div className={styles.proteinsListItemInfo}>
       <ProteinDomainImage proteinId={proteinId} width={695} />
+
+      <div className={styles.bottomWrapper}>
+        <div className={styles.codingExonCount}>
+          Coding exons <strong>{getNumberOfCodingExons(props.transcript)}</strong> of 27
+        </div>
+        <div className={styles.sequenceDownload}>
+          Sequence download component
+        </div>
+      </div>
     </div>
   );
 };
