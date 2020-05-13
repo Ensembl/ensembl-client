@@ -17,7 +17,7 @@ describe('isEnvironment', () => {
     expect(isAvailableOnEnvironment).toBe(false);
   });
 
-  it('suppoerts multiple environments as input and returns true if at least one matches', () => {
+  it('supports multiple environments as input and returns true if at least one matches', () => {
     const isAvailableOnEnvironment = isEnvironment([
       Environment.DEVELOPMENT,
       Environment.INTERNAL
