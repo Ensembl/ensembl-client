@@ -13,15 +13,17 @@ type Props = {
 };
 
 const ProteinsListItemInfo = (props: Props) => {
-  const proteinId = props.transcript.cds?.protein?.id as string;
+  const { transcript } = props;
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      <ProteinDomainImage proteinId={proteinId} width={695} />
-
+      {transcript.cds && (
+        <ProteinDomainImage transcriptId={transcript.id} width={695} />
+      )}
       <div className={styles.bottomWrapper}>
         <div className={styles.codingExonCount}>
-          Coding exons <strong>{getNumberOfCodingExons(props.transcript)}</strong> of 27
+          Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong> of{' '}
+          {transcript.exons.length}
         </div>
         <div className={styles.sequenceDownload}>
           Sequence download component

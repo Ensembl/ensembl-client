@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { fetchProtein } from '../../../shared/rest/rest-data-fetchers/proteinData';
+import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
-import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
-import { Protein } from '../../../types/protein';
+import {
+  ProteinDomainsResources,
+  Product
+} from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -13,7 +15,7 @@ const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
-  proteinId: string;
+  transcriptId: string;
   width: number; // available width for drawing, in pixels
   classNames?: {
     track?: string;
@@ -25,7 +27,7 @@ type ProteinDomainImageWithDataProps = Pick<
   ProteinDomainImageProps,
   'width' | 'classNames'
 > & {
-  protein: Protein | null;
+  product: Product;
 };
 
 type ProteinDomainImageData = {
@@ -66,34 +68,33 @@ export const getDomainsByResourceGroups = (
 };
 
 const ProteinDomainImage = (props: ProteinDomainImageProps) => {
-  const [data, setData] = useState<Protein | null>(null);
+  const [data, setData] = useState<Product | null>(null);
 
   useEffect(() => {
-    fetchProtein(props.proteinId).then((result) => {
-      if (result) {
-        setData(result);
+    fetchTranscript(props.transcriptId).then((result) => {
+      if (result?.product) {
+        setData(result.product);
       }
     });
-  }, [props.proteinId]);
+  }, [props.transcriptId]);
 
-  return <ProteinDomainImageWithData {...props} protein={data} />;
+  return data ? <ProteinDomainImageWithData {...props} product={data} /> : null;
 };
 
 export const ProteinDomainImageWithData = (
   props: ProteinDomainImageWithDataProps
 ) => {
-  const product = props.protein?.product;
+  const { product } = props;
 
   if (!product?.protein_domains_resources) {
     return null;
   }
 
-  const length = product.length;
   const proteinDomainsResources = getDomainsByResourceGroups(
     product.protein_domains_resources
   );
   const scale = scaleLinear()
-    .domain([1, length])
+    .domain([1, product.length])
     .range([0, props.width])
     .clamp(true);
 

@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { getProteinData } from '../protein/proteinData';
+import { getTranscriptData } from '../transcripts/transcriptData';
 
 import { ProteinDomainImageWithData as ProteinDomainImage } from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 
-import { Protein as ProteinType } from 'src/content/app/entity-viewer/types/protein';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './ProteinDomainImage.stories.scss';
 
 const GRAPHIC_WIDTH = 1200;
-const PROTEIN_ID = 'ENSP00000369497';
+const TRANSCRIPT_ID = 'ENST00000380152';
 
 const ProteinDomainImageStory = () => {
-  const [id, setId] = useState(PROTEIN_ID);
-  const [data, setData] = useState<ProteinType | null>(null);
+  const [id, setId] = useState(TRANSCRIPT_ID);
+  const [data, setData] = useState<Transcript | null>(null);
 
   useEffect(() => {
-    getProteinData(id).then((response) => setData(response as ProteinType));
+    getTranscriptData(id).then((response) => setData(response as Transcript));
   }, [id]);
 
   const onIdChange = (id: string) => {
@@ -26,15 +26,17 @@ const ProteinDomainImageStory = () => {
 
   let content;
 
-  if (data?.product?.protein_domains_resources.length) {
+  if (!data?.product?.protein_domains_resources.length) {
     content = (
       <div>
         There are no features available for the given protein. Please try a
         different id.
       </div>
     );
-  } else if (data) {
-    content = <ProteinDomainImage width={GRAPHIC_WIDTH} protein={data} />;
+  } else if (data?.product) {
+    content = (
+      <ProteinDomainImage width={GRAPHIC_WIDTH} product={data.product} />
+    );
   }
 
   return (
@@ -63,7 +65,7 @@ const FeatureIdForm = (props: {
 
   return (
     <form className={styles.form}>
-      <p>Enter protein stable id to change view</p>
+      <p>Enter transcript stable id to change view</p>
       <input ref={inputRef} defaultValue={props.id} />
 
       <button onClick={handleSubmit}>Get protein domains</button>

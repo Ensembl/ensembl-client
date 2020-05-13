@@ -25,6 +25,7 @@ export enum ProductType {
 
 export type Product = {
   type: ProductType;
+  stable_id: string;
   length: number;
   protein_domains_resources: ProteinDomainsResources;
 };

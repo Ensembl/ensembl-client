@@ -1,13 +1,13 @@
 import faker from 'faker';
 import times from 'lodash/times';
 
-import { Protein } from 'src/content/app/entity-viewer/types/protein';
 import {
   ProteinDomainsResources,
+  Product,
   ProductType
 } from 'src/content/app/entity-viewer/types/product';
 
-export const createProtein = (): Protein => {
+export const createProduct = (): Product => {
   const length = faker.random.number({ min: 10, max: 100 });
   const numberOfDomains = faker.random.number({ min: 1, max: 10 });
   const maxDomainLength = Math.floor(length / numberOfDomains);
@@ -50,11 +50,9 @@ export const createProtein = (): Protein => {
   });
 
   return {
-    transcriptId: faker.random.words(),
-    product: {
-      protein_domains_resources: protein_domains_resources,
-      type: ProductType.PROTEIN,
-      length: length
-    }
+    stable_id: faker.random.words(),
+    type: ProductType.PROTEIN,
+    length: length,
+    protein_domains_resources: protein_domains_resources
   };
 };

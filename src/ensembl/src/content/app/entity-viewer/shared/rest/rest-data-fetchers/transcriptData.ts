@@ -47,12 +47,31 @@ export type ExonInResponse = {
   version: string;
 };
 
+export type ProteinFeature = {
+  translation_id: number;
+  description: string;
+  start: number;
+  id: string;
+  type: string;
+  end: number;
+};
+
 export const fetchTranscript = async (id: string): Promise<Transcript> => {
-  const url = `http://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
+  const transcriptUrl = `http://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
 
-  const data: TranscriptInResponse = (await fetch(url).then((response) =>
-    response.json()
-  )) as TranscriptInResponse;
+  const transcript: TranscriptInResponse = (await fetch(
+    transcriptUrl
+  ).then((response) => response.json())) as TranscriptInResponse;
 
-  return restTranscriptAdaptor(data);
+  let proteinFeatures;
+
+  if (transcript.Translation) {
+    const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${transcript.Translation.id}?feature=protein_feature;content-type=application/json`;
+
+    proteinFeatures = (await fetch(proteinFeaturesUrl).then((response) =>
+      response.json()
+    )) as ProteinFeature[];
+  }
+
+  return restTranscriptAdaptor(transcript, proteinFeatures);
 };

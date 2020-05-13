@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import { createProtein } from 'tests/fixtures/entity-viewer/protein';
+import { createProduct } from 'tests/fixtures/entity-viewer/product';
 
 import {
   ProteinDomainImageWithData as ProteinDomainImage,
@@ -9,12 +9,12 @@ import {
 } from './ProteinDomainImage';
 
 const minimalProps = {
-  protein: createProtein(),
+  product: createProduct(),
   width: 600
 };
 
 const domainsByResourceGroups = getDomainsByResourceGroups(
-  minimalProps.protein.product.protein_domains_resources
+  minimalProps.product.protein_domains_resources
 );
 
 describe('<ProteinDomainImage />', () => {

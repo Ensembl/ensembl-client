@@ -1,4 +1,4 @@
-import { buildTranscriptFromLookup } from './rest-transcript-adaptor';
+import { restTranscriptAdaptor } from './rest-transcript-adaptor';
 
 import { GeneInResponse } from '../rest-data-fetchers/geneData';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -6,7 +6,7 @@ import { Strand } from 'src/content/app/entity-viewer/types/strand';
 
 export const restGeneAdaptor = (gene: GeneInResponse): Gene => {
   const transcripts = gene.Transcript.map((transcript) =>
-    buildTranscriptFromLookup(transcript)
+    restTranscriptAdaptor(transcript)
   );
 
   return {

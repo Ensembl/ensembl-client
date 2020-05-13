@@ -2,6 +2,7 @@ import faker from 'faker';
 import times from 'lodash/times';
 
 import { createSlice } from './slice';
+import { createProduct } from './product';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -22,6 +23,7 @@ export const createTranscript = (
     slice: transcriptSlice,
     exons: createExons(transcriptSlice),
     cds: createCDS(transcriptSlice),
+    product: createProduct(),
     ...fragment
   };
 };

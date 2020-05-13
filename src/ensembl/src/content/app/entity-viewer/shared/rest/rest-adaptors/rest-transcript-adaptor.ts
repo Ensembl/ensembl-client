@@ -1,25 +1,33 @@
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { CDS } from '../../../types/cds';
+import { CDS } from 'src/content/app/entity-viewer/types/cds';
 import { Strand } from 'src/content/app/entity-viewer/types/strand';
 import { Exon } from 'src/content/app/entity-viewer/types/exon';
 import {
   TranscriptInResponse,
   ExonInResponse,
-  TranslationInResponse
+  TranslationInResponse,
+  ProteinFeature
 } from '../rest-data-fetchers/transcriptData';
+import {
+  ProductType,
+  Product,
+  ProteinDomainsResources
+} from 'src/content/app/entity-viewer/types/product';
 
-export const restTranscriptAdaptor = (data: TranscriptInResponse) => {
-  return buildTranscriptFromLookup(data);
-};
-
-export const buildTranscriptFromLookup = (
-  transcript: TranscriptInResponse
+export const restTranscriptAdaptor = (
+  transcript: TranscriptInResponse,
+  proteinFeatures?: ProteinFeature[]
 ): Transcript => {
   const exons = transcript.Exon.map((exon) => buildExon(exon, transcript));
   let cds = null;
+  let product = null;
 
   if (transcript.Translation) {
     cds = buildCDSFromLookup(transcript.Translation, transcript);
+
+    if (proteinFeatures) {
+      product = buildProduct(transcript.Translation, proteinFeatures);
+    }
   }
 
   return {
@@ -40,7 +48,8 @@ export const buildTranscriptFromLookup = (
       }
     },
     exons,
-    cds
+    cds,
+    product
   };
 };
 
@@ -68,10 +77,7 @@ const buildCDSFromLookup = (
   transcript: TranscriptInResponse
 ): CDS => {
   return {
-    protein: {
-      id: translation.id,
-      length: translation.length
-    },
+    protein_length: translation.length,
     start: translation.start,
     end: translation.end,
     relative_location: {
@@ -86,4 +92,57 @@ const calculateRelativeLocation = (
   parentPosition: number
 ) => {
   return featurePosition - parentPosition; // not sure if this is correct
+};
+
+// transform ensembl rest /overlap data into a transcript data structure
+export const buildProduct = (
+  translation: TranslationInResponse,
+  proteinFeatures: ProteinFeature[]
+): Product => {
+  const protein_domains_resources = buildProteinDomainsResources(
+    proteinFeatures
+  );
+
+  return {
+    type: ProductType.PROTEIN,
+    stable_id: translation.id,
+    length: translation.length as number,
+    protein_domains_resources
+  };
+};
+
+const buildProteinDomainsResources = (
+  proteinFeatures: ProteinFeature[]
+): ProteinDomainsResources => {
+  const domainsResources: ProteinDomainsResources = {};
+
+  proteinFeatures.forEach((entry) => {
+    const resourceName = entry.type;
+    const domainName = entry.description;
+
+    const domain = {
+      name: domainName,
+      source_uri: '',
+      source: {
+        name: '',
+        uri: ''
+      },
+      location: {
+        start: entry.start,
+        end: entry.end
+      },
+      score: 0
+    };
+
+    if (!domainsResources[resourceName]) {
+      domainsResources[resourceName] = {
+        name: resourceName,
+        domains: [domain]
+      };
+    } else {
+      domainsResources[resourceName].domains.push(domain);
+    }
+  });
+
+  return domainsResources;
 };
