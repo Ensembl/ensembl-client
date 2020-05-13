@@ -28,7 +28,7 @@
     "deploy-docs": "./deploy-docs.sh",
     "check-types": "tsc",
     "test": "jest --verbose",
-    "test:watch": "jest --watch --maxWorkers=1",
+    "test:watch": "jest --watch",
     "coverage": "jest --coverage"
   },
   "lint-staged": {
