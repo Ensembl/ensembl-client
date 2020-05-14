@@ -32,7 +32,7 @@ const ProteinsListItem = (props: Props) => {
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
-    <div className={styles.proteinsListItem}>
+    <div>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>UniProt</div>
         <div onClick={toggleListItemInfo} className={midStyles}>
