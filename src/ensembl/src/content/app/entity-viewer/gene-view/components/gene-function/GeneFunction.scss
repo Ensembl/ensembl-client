@@ -14,9 +14,15 @@
   color: $black;
 }
 
+.defaultTabName {
+  padding: 3px 30px;
+}
+
 .selectedTabName {
   background-color: transparent;
   color: $black;
+  font-weight: bold;
+
   &::after {
     border: 6px solid $grey;
     border-color: transparent transparent $light-grey $light-grey;

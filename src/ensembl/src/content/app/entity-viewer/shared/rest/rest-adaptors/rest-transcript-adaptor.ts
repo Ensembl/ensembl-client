@@ -106,7 +106,7 @@ export const buildProduct = (
   return {
     type: ProductType.PROTEIN,
     stable_id: translation.id,
-    length: translation.length as number,
+    length: translation.length,
     protein_domains_resources
   };
 };

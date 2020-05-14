@@ -24,6 +24,7 @@ const tabsData: Tab[] = [
 ];
 
 const tabClassNames = {
+  default: styles.defaultTabName,
   selected: styles.selectedTabName
 };
 

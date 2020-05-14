@@ -32,9 +32,9 @@ const ProteinsListItem = (props: Props) => {
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
-    <div>
+    <>
       <div className={transcriptsListStyles.row}>
-        <div className={transcriptsListStyles.left}>UniProt</div>
+        <div className={transcriptsListStyles.left}>UniProt P51587</div>
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>Protein description from UniProt</div>
           <div>{props.transcript.cds?.protein_length} aa</div>
@@ -52,7 +52,7 @@ const ProteinsListItem = (props: Props) => {
       {shouldShowInfo ? (
         <ProteinsListItemInfo transcript={props.transcript} />
       ) : null}
-    </div>
+    </>
   );
 };
 
