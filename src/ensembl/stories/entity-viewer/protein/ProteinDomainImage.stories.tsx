@@ -9,7 +9,7 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './ProteinDomainImage.stories.scss';
 
-const GRAPHIC_WIDTH = 1200;
+const GRAPHIC_WIDTH = 695;
 const TRANSCRIPT_ID = 'ENST00000380152';
 
 const ProteinDomainImageStory = () => {
@@ -26,16 +26,16 @@ const ProteinDomainImageStory = () => {
 
   let content;
 
-  if (!data?.product?.protein_domains_resources.length) {
+  if (data?.product?.protein_domains_resources) {
+    content = (
+      <ProteinDomainImage width={GRAPHIC_WIDTH} product={data.product} />
+    );
+  } else {
     content = (
       <div>
         There are no features available for the given protein. Please try a
         different id.
       </div>
-    );
-  } else if (data?.product) {
-    content = (
-      <ProteinDomainImage width={GRAPHIC_WIDTH} product={data.product} />
     );
   }
 
