@@ -50,6 +50,15 @@ const GeneFunction = (props: Props) => {
     );
   };
 
+  const getCurrentTabContent = () => {
+    switch (props.selectedTabName) {
+      case GeneFunctionTabName.PROTEINS:
+        return <ProteinsList geneId={props.geneId} />;
+      default:
+        return <></>;
+    }
+  };
+
   return (
     <Panel
       header={<TabWrapper />}
@@ -58,7 +67,7 @@ const GeneFunction = (props: Props) => {
         body: styles.panelBody
       }}
     >
-      <ProteinsList geneId={props.geneId} />
+      {getCurrentTabContent()}
     </Panel>
   );
 };
