@@ -20,11 +20,17 @@ const ProteinsList = (props: ProteinsListProps) => {
   const [geneData, setGeneData] = useState<Gene | null>(null);
 
   useEffect(() => {
-    fetchGene(props.geneId).then((result) => {
+    const abortController = new AbortController();
+
+    fetchGene(props.geneId, abortController.signal).then((result) => {
       if (result) {
         setGeneData(result);
       }
     });
+
+    return function cleanup() {
+      abortController.abort();
+    };
   }, [props.geneId]);
 
   return geneData ? <ProteinsListWithData gene={geneData} /> : null;

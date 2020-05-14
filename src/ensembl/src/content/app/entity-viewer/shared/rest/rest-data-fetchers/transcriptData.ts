@@ -56,21 +56,23 @@ export type ProteinFeature = {
   end: number;
 };
 
-export const fetchTranscript = async (id: string): Promise<Transcript> => {
+export const fetchTranscript = async (
+  id: string,
+  signal?: AbortSignal
+): Promise<Transcript> => {
   const transcriptUrl = `http://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
-
-  const transcript: TranscriptInResponse = (await fetch(
-    transcriptUrl
-  ).then((response) => response.json())) as TranscriptInResponse;
+  const transcript: TranscriptInResponse = (await fetch(transcriptUrl, {
+    signal
+  }).then((response) => response.json())) as TranscriptInResponse;
 
   let proteinFeatures;
 
   if (transcript.Translation) {
     const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${transcript.Translation.id}?feature=protein_feature;content-type=application/json`;
 
-    proteinFeatures = (await fetch(proteinFeaturesUrl).then((response) =>
-      response.json()
-    )) as ProteinFeature[];
+    proteinFeatures = (await fetch(proteinFeaturesUrl, {
+      signal
+    }).then((response) => response.json())) as ProteinFeature[];
   }
 
   return restTranscriptAdaptor(transcript, proteinFeatures);

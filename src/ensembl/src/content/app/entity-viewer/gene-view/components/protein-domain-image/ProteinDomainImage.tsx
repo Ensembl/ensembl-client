@@ -23,9 +23,9 @@ export type ProteinDomainImageProps = {
   };
 };
 
-type ProteinDomainImageWithDataProps = Pick<
+type ProteinDomainImageWithDataProps = Omit<
   ProteinDomainImageProps,
-  'width' | 'classNames'
+  'transcriptId'
 > & {
   product: Product;
 };
@@ -71,11 +71,19 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   const [data, setData] = useState<Product | null>(null);
 
   useEffect(() => {
-    fetchTranscript(props.transcriptId).then((result) => {
-      if (result?.product) {
-        setData(result.product);
+    const abortController = new AbortController();
+
+    fetchTranscript(props.transcriptId, abortController.signal).then(
+      (result) => {
+        if (result?.product) {
+          setData(result.product);
+        }
       }
-    });
+    );
+
+    return function cleanup() {
+      abortController.abort();
+    };
   }, [props.transcriptId]);
 
   return data ? <ProteinDomainImageWithData {...props} product={data} /> : null;
@@ -86,7 +94,7 @@ export const ProteinDomainImageWithData = (
 ) => {
   const { product } = props;
 
-  if (!product?.protein_domains_resources) {
+  if (!product?.protein_domains_resources.length) {
     return null;
   }
 
