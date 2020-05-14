@@ -27,7 +27,7 @@ type ProteinDomainImageWithDataProps = Omit<
   ProteinDomainImageProps,
   'transcriptId'
 > & {
-  product: Product;
+  protein: Product;
 };
 
 type ProteinDomainImageData = {
@@ -86,23 +86,23 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
     };
   }, [props.transcriptId]);
 
-  return data ? <ProteinDomainImageWithData {...props} product={data} /> : null;
+  return data ? <ProteinDomainImageWithData {...props} protein={data} /> : null;
 };
 
 export const ProteinDomainImageWithData = (
   props: ProteinDomainImageWithDataProps
 ) => {
-  const { product } = props;
+  const { protein } = props;
 
-  if (!product?.protein_domains_resources.length) {
+  if (!protein?.protein_domains_resources.length) {
     return null;
   }
 
   const proteinDomainsResources = getDomainsByResourceGroups(
-    product.protein_domains_resources
+    protein.protein_domains_resources
   );
   const scale = scaleLinear()
-    .domain([1, product.length])
+    .domain([1, protein.length])
     .range([0, props.width])
     .clamp(true);
 

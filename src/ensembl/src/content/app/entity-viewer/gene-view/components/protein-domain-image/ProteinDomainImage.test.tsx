@@ -9,12 +9,12 @@ import {
 } from './ProteinDomainImage';
 
 const minimalProps = {
-  product: createProduct(),
+  protein: createProduct(),
   width: 600
 };
 
 const domainsByResourceGroups = getDomainsByResourceGroups(
-  minimalProps.product.protein_domains_resources
+  minimalProps.protein.protein_domains_resources
 );
 
 describe('<ProteinDomainImage />', () => {

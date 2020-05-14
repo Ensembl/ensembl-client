@@ -28,7 +28,7 @@ const ProteinDomainImageStory = () => {
 
   if (data?.product?.protein_domains_resources) {
     content = (
-      <ProteinDomainImage width={GRAPHIC_WIDTH} product={data.product} />
+      <ProteinDomainImage width={GRAPHIC_WIDTH} protein={data.product} />
     );
   } else {
     content = (
