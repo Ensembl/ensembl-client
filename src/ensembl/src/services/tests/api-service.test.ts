@@ -142,9 +142,11 @@ describe('api service', () => {
     });
 
     it('respects the option not to cache the response', async () => {
-      await apiService.fetch(endpoint, { skipCache: true });
+      const response = await apiService.fetch(endpoint, { noCache: true });
       expect(LRUCache.prototype.get).not.toHaveBeenCalled();
       expect(LRUCache.prototype.set).not.toHaveBeenCalled();
+
+      expect(response).toEqual(mockResponse);
     });
 
     describe('when request fails', () => {

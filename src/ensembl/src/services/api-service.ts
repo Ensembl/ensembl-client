@@ -22,7 +22,7 @@ type FetchOptions = {
   headers?: { [key: string]: string };
   body?: string; // stringified json
   preserveEndpoint?: boolean;
-  skipCache?: boolean;
+  noCache?: boolean;
 };
 
 const defaultMethod = HTTPMethod.GET;
@@ -68,7 +68,7 @@ class ApiService {
     const fetch = this.getFetch();
     const url = options.preserveEndpoint ? endpoint : `${host}${endpoint}`;
 
-    if (!options.skipCache) {
+    if (!options.noCache) {
       const cachedItem = this.cache.get(url);
       if (cachedItem) {
         return cachedItem;
@@ -86,7 +86,7 @@ class ApiService {
         response,
         fetchOptions
       );
-      if (!options.skipCache) {
+      if (!options.noCache) {
         this.cache.set(url, processedResponse);
       }
       return processedResponse;
