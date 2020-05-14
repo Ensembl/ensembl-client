@@ -94,7 +94,7 @@ export const ProteinDomainImageWithData = (
 ) => {
   const { protein } = props;
 
-  if (!protein?.protein_domains_resources.length) {
+  if (!protein?.protein_domains_resources) {
     return null;
   }
 
