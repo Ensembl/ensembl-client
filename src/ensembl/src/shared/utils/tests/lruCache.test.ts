@@ -41,7 +41,7 @@ describe('LRUCache', () => {
     });
   });
 
-  it('can successfully go through multiple cycles of replacing all stored items', () => {
+  it('keeps items that have been recently accessed', () => {
     const cache = new LRUCache({ size: 10 });
     const items = times(11, (index) => ({
       key: `${index}`,
@@ -51,14 +51,14 @@ describe('LRUCache', () => {
     items.forEach(({ key, value }) => {
       cache.set(key, value);
     });
-    const lastItem = items[items.length - 1];
-    const penultimateItem = items[items.length - 2];
+    const oldestItem = items[0];
+    const secondOldestItem = items[1];
 
-    cache.get(lastItem.key); // now last item has been used most recently
-    cache.set(extraItem.key, extraItem.value); // now penultimate item should have been dropped from cache
+    cache.get(oldestItem.key); // accessing the item that would have otherwise been dropped by the cache
+    cache.set(extraItem.key, extraItem.value); // now second oldest item should have been dropped from cache
 
-    expect(cache.get(lastItem.key)).toBe(lastItem.value);
-    expect(cache.get(penultimateItem.key)).toBeUndefined();
+    expect(cache.get(oldestItem.key)).toBe(oldestItem.value);
+    expect(cache.get(secondOldestItem.key)).toBeUndefined();
   });
 
   it('invalidates cached item if it’s gone stale', () => {
