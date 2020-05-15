@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { useParams } from 'react-router-dom';
 
-import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import {
+  getEntityViewerActiveEnsObject,
+  getEntityViewerQueryParams
+} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { setGeneViewMode } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
@@ -24,11 +28,12 @@ import styles from './GeneView.scss';
 type GeneViewProps = {
   geneId: string | null;
   selectedGeneTabName: GeneViewTabName;
+  setGeneViewMode: (view: string) => void;
+  entityViewerQueryParams: { [key: string]: string };
 };
 
-type GeneViewWithDataProps = {
+type GeneViewWithDataProps = Omit<GeneViewProps, 'geneId'> & {
   gene: Gene;
-  selectedGeneTabName: GeneViewTabName;
 };
 
 const QUERY = gql`
@@ -94,7 +99,9 @@ const GeneView = (props: GeneViewProps) => {
   return (
     <GeneViewWithData
       gene={data.gene}
+      entityViewerQueryParams={props.entityViewerQueryParams}
       selectedGeneTabName={props.selectedGeneTabName}
+      setGeneViewMode={props.setGeneViewMode}
     />
   );
 };
@@ -108,6 +115,12 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const gbUrl = urlFor.browser({ genomeId, focus: entityId });
+
+  useEffect(() => {
+    if (props.entityViewerQueryParams.view) {
+      props.setGeneViewMode(props.entityViewerQueryParams.view);
+    }
+  }, [props.entityViewerQueryParams.view]);
 
   return (
     <div className={styles.geneView}>
@@ -148,7 +161,12 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 const mapStateToProps = (state: RootState) => ({
   // FIXME: this will have to be superseded with a proper way we get ids
   geneId: getEntityViewerActiveEnsObject(state)?.stable_id || null,
+  entityViewerQueryParams: getEntityViewerQueryParams(state),
   selectedGeneTabName: getEntityViewerActiveGeneTab(state)
 });
 
-export default connect(mapStateToProps)(GeneView);
+const mapDispatchToProps = {
+  setGeneViewMode
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GeneView);

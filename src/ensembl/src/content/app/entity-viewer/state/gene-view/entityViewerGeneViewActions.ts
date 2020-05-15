@@ -1,6 +1,7 @@
 import { createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { batch } from 'react-redux';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -101,5 +102,32 @@ export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
         }
       })
     );
+  }
+};
+
+export const setGeneViewMode: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (view: string) => (dispatch) => {
+  const geneFunctionViews: { [key: string]: string } = {
+    protein: GeneFunctionTabName.PROTEINS,
+    variants: GeneFunctionTabName.VARIANTS
+  };
+  const geneRelationshipsViews: { [key: string]: string } = {
+    orthologues: GeneRelationshipsTabName.ORTHOLOGUES
+  };
+
+  if (geneFunctionViews[view]) {
+    batch(() => {
+      dispatch(setActiveGeneTab(GeneViewTabName.GENE_FUNCTION));
+      dispatch(setActiveGeneFunctionTab(geneFunctionViews[view]));
+    });
+  } else if (geneRelationshipsViews[view]) {
+    batch(() => {
+      dispatch(setActiveGeneTab(GeneViewTabName.GENE_RELATIONSHIPS));
+      dispatch(setActiveGeneRelationshipsTab(geneRelationshipsViews[view]));
+    });
   }
 };
