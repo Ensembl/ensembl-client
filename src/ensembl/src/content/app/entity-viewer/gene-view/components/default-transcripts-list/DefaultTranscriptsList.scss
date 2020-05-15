@@ -4,6 +4,10 @@
 .header {
   border-bottom: 1px solid $orange;
   padding: 8px 0;
+  position: sticky;
+  top: -15px;
+  background-color: $black;
+  z-index: 1;
 }
 
 .content {
