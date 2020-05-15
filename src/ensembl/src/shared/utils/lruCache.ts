@@ -100,10 +100,11 @@ export default class LRUCache implements LRUCacheInterface {
     if (nextNode) {
       nextNode.previous = previousNode;
     }
-    const formerHeadNode = this.head;
+    const formerHeadNode = this.head as LinkedListNode;
     this.head = node;
     node.next = formerHeadNode;
     node.previous = null;
+    formerHeadNode.previous = node;
     node.timestamp = Date.now(); // refresh timestamp
   }
 
