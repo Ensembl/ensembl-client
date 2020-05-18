@@ -140,7 +140,6 @@ Test:
   - master
   - /^feature\/.*$/
   - /^migration\/.*$/
-  - /^bugfix\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
@@ -187,7 +186,6 @@ Test_N_Build:feature:
 
   only:
   - /^feature\/.*$/
-  - /^bugfix\/.*$/
 
 # Job to build nginx docker image for staging environment (EHK k8s cluster)
 Nginx:Staging-EHK:
@@ -260,7 +258,6 @@ Nginx:feature:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   only:
   - /^feature\/.*$/
-  - /^bugfix\/.*$/
 
   needs:
     - "Test_N_Build:feature"
@@ -402,7 +399,6 @@ Feature:WP-HX:
     name : wp-hx-dev
   only:
   - /^feature\/.*$/
-  - /^bugfix\/.*$/
   needs:
     - Test_N_Build:feature
     - Nginx:feature
