@@ -256,8 +256,6 @@ Nginx:feature:
   only:
   - /^feature\/.*$/
   - /^bugfix\/.*$/
-  script:
-    - exit 1
 
   needs:
     - "Test_N_Build:feature"
