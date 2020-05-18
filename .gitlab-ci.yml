@@ -184,8 +184,6 @@ Test_N_Build:feature:
     ENVIRONMENT: development
     API_HOST: ""
 
-  script:
-  - exit 1
   only:
   - /^feature\/.*$/
   - /^bugfix\/.*$/
@@ -258,8 +256,11 @@ Nginx:feature:
   only:
   - /^feature\/.*$/
   - /^bugfix\/.*$/
+  script:
+    - exit 1
 
-  needs: ["Test_N_Build:feature"]
+  needs:
+    - "Test_N_Build:feature"
 
 # Job to deploy to staging environment (EHK k8s cluster)
 Staging:EHK-HH:
