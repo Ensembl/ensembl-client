@@ -139,6 +139,7 @@ Test:
   - master
   - /^feature\/.*$/
   - /^migration\/.*$/
+  - /^bugfix\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
