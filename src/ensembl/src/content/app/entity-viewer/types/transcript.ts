@@ -1,8 +1,8 @@
 import { Slice } from './slice';
 import { Exon } from './exon';
 import { CDS } from './cds';
-import { Product } from './product';
 import { Source } from './source';
+import { Product } from './product';
 
 export type Transcript = {
   type: 'Transcript';
@@ -13,6 +13,6 @@ export type Transcript = {
   slice: Slice;
   exons: Exon[];
   cds: CDS | null;
-  product: Product;
+  product: Product | null;
   xrefs?: Source[];
 };

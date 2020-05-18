@@ -1,0 +1,15 @@
+.bottomWrapper {
+  display: grid;
+  grid-template-columns: 200px 20px 475px;
+  margin: 10px 0 10px 178px;
+  width: 695px;
+}
+
+.codingExonCount {
+  grid-column: 1/2;
+}
+
+.sequenceDownload {
+  grid-column: 3/4;
+  text-align: right;
+}

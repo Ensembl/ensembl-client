@@ -1,0 +1,26 @@
+@import 'src/styles/settings';
+
+.middle {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 400px 75px 200px;
+  grid-column-gap: 10px;
+}
+
+.splicedLength {
+  font-weight: 300;
+
+  strong {
+    font-weight: 400;
+  }
+}
+
+.transcriptId {
+  color: $blue;
+  cursor: pointer;
+}
+
+.middle,
+.transcriptId {
+  font-weight: 400;
+}

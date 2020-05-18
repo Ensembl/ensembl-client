@@ -1,30 +1,18 @@
-import { buildTranscript } from './rest-transcript-adaptor';
+import { restTranscriptAdaptor } from './rest-transcript-adaptor';
 
-import {
-  GeneInResponse,
-  FeatureWithParent,
-  TranscriptInResponse,
-  FeatureInResponse
-} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { GeneInResponse } from '../rest-data-fetchers/geneData';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Strand } from 'src/content/app/entity-viewer/types/strand';
 
-// transform ensembl rest /overlap data into a gene data structure
-export const restGeneAdaptor = (
-  geneId: string,
-  data: FeatureInResponse[]
-): Gene => {
-  const gene = data.find((feature) => feature.id === geneId) as GeneInResponse;
-  const transcripts = data
-    .filter((feature) => (feature as FeatureWithParent).Parent === geneId)
-    .map((transcript) =>
-      buildTranscript(transcript as TranscriptInResponse, data)
-    );
+export const restGeneAdaptor = (gene: GeneInResponse): Gene => {
+  const transcripts = gene.Transcript.map((transcript) =>
+    restTranscriptAdaptor(transcript)
+  );
 
   return {
-    id: geneId,
+    id: gene.id,
     type: 'Gene',
-    symbol: gene.external_name,
+    symbol: gene.display_name,
     so_term: gene.biotype,
     slice: {
       location: {

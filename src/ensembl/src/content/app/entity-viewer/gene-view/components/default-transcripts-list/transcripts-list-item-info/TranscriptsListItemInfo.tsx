@@ -5,7 +5,9 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFor
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import {
   getFeatureCoordinates,
-  getRegionName
+  getRegionName,
+  getFirstAndLastCodingExonIndexes,
+  getNumberOfCodingExons
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
@@ -50,29 +52,6 @@ const ItemInfo = (props: ItemInfoProps) => {
     return getCommaSeparatedNumber(rnaLength);
   };
 
-  const getFirstAndLastCodingExonIndexes = () => {
-    const { exons, cds } = transcript;
-    let firstCodingExonIndex = 0;
-    let lastCodingExonIndex = exons.length - 1;
-
-    if (cds) {
-      firstCodingExonIndex = exons.findIndex((exon) => {
-        const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-        return exonStart <= cds.start && exonEnd >= cds.start;
-      });
-
-      lastCodingExonIndex = exons.findIndex((exon) => {
-        const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-        return exonStart <= cds.end && exonEnd >= cds.end;
-      });
-    }
-
-    return {
-      firstCodingExonIndex,
-      lastCodingExonIndex
-    };
-  };
-
   // FIXME: remove this when the amino acid length can be retrieved via the API
   const getAminoAcidLength = () => {
     const { exons, cds } = transcript;
@@ -81,7 +60,7 @@ const ItemInfo = (props: ItemInfoProps) => {
       const {
         firstCodingExonIndex,
         lastCodingExonIndex
-      } = getFirstAndLastCodingExonIndexes();
+      } = getFirstAndLastCodingExonIndexes(transcript);
       if (firstCodingExonIndex === lastCodingExonIndex) {
         return Math.floor((cds.end - cds.start + 1) / 3);
       }
@@ -117,16 +96,6 @@ const ItemInfo = (props: ItemInfoProps) => {
     }
   };
 
-  const getNumberOfCodingExons = () => {
-    const {
-      firstCodingExonIndex,
-      lastCodingExonIndex
-    } = getFirstAndLastCodingExonIndexes();
-    return getCommaSeparatedNumber(
-      lastCodingExonIndex - firstCodingExonIndex + 1
-    );
-  };
-
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -155,7 +124,7 @@ const ItemInfo = (props: ItemInfoProps) => {
             Spliced RNA length <strong>{getSplicedRNALength()} bp</strong>
           </div>
           <div>
-            Coding exons <strong>{getNumberOfCodingExons()}</strong> of{' '}
+            Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong> of{' '}
             {transcript.exons.length}
           </div>
         </div>
