@@ -378,4 +378,6 @@ Feature:WP-HX:
   only:
   - /^feature\/.*$/
   - /^bugfix\/.*$/
-  needs: ["Nginx:feature"]
+  needs:
+    - Test_N_Build:feature
+    - Nginx:feature
