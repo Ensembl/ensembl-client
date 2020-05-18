@@ -2,6 +2,7 @@
 // we will modify it to use a library once we decide which one to choose
 
 import config from 'config';
+import LRUCache from 'src/shared/utils/lruCache';
 
 export enum HTTPMethod {
   GET = 'GET',
@@ -21,6 +22,7 @@ type FetchOptions = {
   headers?: { [key: string]: string };
   body?: string; // stringified json
   preserveEndpoint?: boolean;
+  noCache?: boolean;
 };
 
 const defaultMethod = HTTPMethod.GET;
@@ -28,9 +30,11 @@ const defaultHeaders = { Accept: 'application/json' };
 
 class ApiService {
   private host: string;
+  private cache: LRUCache;
 
   public constructor(config: ApiServiceConfig) {
     this.host = config.host || '';
+    this.cache = new LRUCache({ maxAge: 60 * 60 * 1000 });
   }
 
   // temporary method, for easy testing, until we choose a library
@@ -63,6 +67,14 @@ class ApiService {
     const host = options.host || this.host;
     const fetch = this.getFetch();
     const url = options.preserveEndpoint ? endpoint : `${host}${endpoint}`;
+
+    if (!options.noCache) {
+      const cachedItem = this.cache.get(url);
+      if (cachedItem) {
+        return cachedItem;
+      }
+    }
+
     const fetchOptions = this.buildFetchOptions(options);
 
     try {
@@ -70,7 +82,14 @@ class ApiService {
       if (!response.ok) {
         throw await this.handleError(response);
       }
-      return await this.handleResponse(response, fetchOptions);
+      const processedResponse = await this.handleResponse(
+        response,
+        fetchOptions
+      );
+      if (!options.noCache) {
+        this.cache.set(url, processedResponse);
+      }
+      return processedResponse;
     } catch (error) {
       throw error;
     }

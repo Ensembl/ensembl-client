@@ -2,6 +2,7 @@ import faker from 'faker';
 
 import apiService, { HTTPMethod } from '../api-service';
 import config from 'config';
+import LRUCache from 'src/shared/utils/lruCache';
 
 jest.mock('config', () => ({
   apiHost: 'http://foo.bar'
@@ -33,6 +34,8 @@ describe('api service', () => {
   beforeEach(() => {
     const mockSuccessResponse = generateMockSuccessResponse();
     mockFetch = generateMockFetch(mockSuccessResponse);
+    LRUCache.prototype.get = jest.fn();
+    LRUCache.prototype.set = jest.fn();
     jest
       .spyOn(apiService, 'getFetch')
       .mockImplementation(() => mockFetch as any);
@@ -45,7 +48,7 @@ describe('api service', () => {
   describe('.fetch', () => {
     const endpoint = `/${faker.lorem.word()}/${faker.lorem.word()}`;
 
-    test('calls fetch passing it the endpoint', async () => {
+    it('calls fetch passing it the endpoint', async () => {
       await apiService.fetch(endpoint);
 
       expect(mockFetch).toHaveBeenCalled();
@@ -56,7 +59,7 @@ describe('api service', () => {
       expect(url).toEqual(`${config.apiHost}${endpoint}`);
     });
 
-    test('respects an option for not modifying the endpoint', async () => {
+    it('respects an option for not modifying the endpoint', async () => {
       await apiService.fetch(endpoint, { preserveEndpoint: true });
 
       expect(mockFetch).toHaveBeenCalled();
@@ -67,7 +70,7 @@ describe('api service', () => {
       expect(url).toEqual(endpoint);
     });
 
-    test('respects the host passed in options', async () => {
+    it('respects the host passed in options', async () => {
       const host = faker.internet.url();
       await apiService.fetch(endpoint, { host });
 
@@ -79,7 +82,7 @@ describe('api service', () => {
       expect(url).toEqual(`${host}${endpoint}`);
     });
 
-    test('passes options to fetch', async () => {
+    it('passes options to fetch', async () => {
       const options = {
         method: HTTPMethod.POST,
         body: JSON.stringify({ foo: 'bar' })
@@ -96,7 +99,7 @@ describe('api service', () => {
       });
     });
 
-    test('uses GET by default', async () => {
+    it('uses GET by default', async () => {
       await apiService.fetch(endpoint);
 
       const mockFetchCall: any[] = mockFetch.mock.calls[0];
@@ -105,8 +108,43 @@ describe('api service', () => {
       expect(options.method).toEqual(`GET`);
     });
 
-    test('returns response from the api endpoint', async () => {
+    it('returns response from the api endpoint', async () => {
       const response = await apiService.fetch(endpoint);
+
+      expect(response).toEqual(mockResponse);
+    });
+
+    it('caches the response', async () => {
+      let response = await apiService.fetch(endpoint, {
+        preserveEndpoint: true
+      });
+      // first, api service will try to access the cache
+      expect(LRUCache.prototype.get).toHaveBeenCalledTimes(1);
+      expect(LRUCache.prototype.get).toHaveBeenCalledWith(endpoint);
+      // since the cache is empty, api service will fetch the data
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      // and it will store response in the cache
+      expect(LRUCache.prototype.set).toHaveBeenCalledTimes(1);
+      expect(LRUCache.prototype.set).toHaveBeenCalledWith(endpoint, response);
+
+      jest.resetAllMocks();
+
+      const mockCachedResponse = { foo: 'this comes from cache' };
+      jest
+        .spyOn(LRUCache.prototype, 'get')
+        .mockImplementation(() => mockCachedResponse);
+
+      response = await apiService.fetch(endpoint, { preserveEndpoint: true });
+      expect(LRUCache.prototype.get).toHaveBeenCalledTimes(1); // checks cache and gets item from cache
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(LRUCache.prototype.set).not.toHaveBeenCalled();
+      expect(response).toEqual(mockCachedResponse);
+    });
+
+    it('respects the option not to cache the response', async () => {
+      const response = await apiService.fetch(endpoint, { noCache: true });
+      expect(LRUCache.prototype.get).not.toHaveBeenCalled();
+      expect(LRUCache.prototype.set).not.toHaveBeenCalled();
 
       expect(response).toEqual(mockResponse);
     });
@@ -122,7 +160,7 @@ describe('api service', () => {
         jest.spyOn(apiService, 'getFetch').mockImplementation(() => mockFetch);
       });
 
-      test('throws an error', async () => {
+      it('throws an error', async () => {
         const expectedError = {
           ...mockError,
           status: mockErrorResponse.status

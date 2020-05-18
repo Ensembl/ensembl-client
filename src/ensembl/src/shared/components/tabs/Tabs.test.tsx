@@ -9,7 +9,7 @@ const onTabChange = jest.fn();
 
 const createTabGroup = (): Tab[] => {
   const options = times(10, () => ({
-    title: faker.random.words(),
+    title: faker.random.uuid(),
     isDisabled: faker.random.boolean()
   }));
 
@@ -62,10 +62,7 @@ describe('<Tabs />', () => {
   it('adds respective class to the disabled tabs', () => {
     const disabledTabIndex = tabsData.findIndex((tab) => tab.isDisabled);
     expect(
-      wrapper
-        .find('.tab')
-        .at(disabledTabIndex)
-        .hasClass('disabled')
+      wrapper.find('.tab').at(disabledTabIndex).hasClass('disabled')
     ).toBeTruthy();
   });
 
@@ -74,10 +71,7 @@ describe('<Tabs />', () => {
       (tab) => tab.title === defaultProps.selectedTab
     );
     expect(
-      wrapper
-        .find('.tab')
-        .at(selectedTabIndex)
-        .hasClass('selected')
+      wrapper.find('.tab').at(selectedTabIndex).hasClass('selected')
     ).toBeTruthy();
   });
 
@@ -85,10 +79,7 @@ describe('<Tabs />', () => {
     const unselectedTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && !tab.isDisabled
     );
-    wrapper
-      .find('.tab')
-      .at(unselectedTabIndex)
-      .simulate('click');
+    wrapper.find('.tab').at(unselectedTabIndex).simulate('click');
 
     expect(onTabChange).toBeCalledWith(tabsData[unselectedTabIndex].title);
   });
@@ -97,20 +88,14 @@ describe('<Tabs />', () => {
     const unselectedDisabledTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && tab.isDisabled
     );
-    wrapper
-      .find('.tab')
-      .at(unselectedDisabledTabIndex)
-      .simulate('click');
+    wrapper.find('.tab').at(unselectedDisabledTabIndex).simulate('click');
 
     expect(onTabChange).not.toBeCalled();
   });
 
   it(' applies the passed in default class', () => {
     expect(
-      wrapper
-        .find('.tab')
-        .first()
-        .hasClass(tabClassNames.default)
+      wrapper.find('.tab').first().hasClass(tabClassNames.default)
     ).toBeTruthy();
   });
 
@@ -119,20 +104,14 @@ describe('<Tabs />', () => {
       (tab) => tab.title === defaultProps.selectedTab
     );
     expect(
-      wrapper
-        .find('.tab')
-        .at(selectedTabIndex)
-        .hasClass(tabClassNames.selected)
+      wrapper.find('.tab').at(selectedTabIndex).hasClass(tabClassNames.selected)
     ).toBeTruthy();
   });
 
   it(' applies the passed in disabled class', () => {
     const disabledTabIndex = tabsData.findIndex((tab) => tab.isDisabled);
     expect(
-      wrapper
-        .find('.tab')
-        .at(disabledTabIndex)
-        .hasClass(tabClassNames.disabled)
+      wrapper.find('.tab').at(disabledTabIndex).hasClass(tabClassNames.disabled)
     ).toBeTruthy();
   });
 
