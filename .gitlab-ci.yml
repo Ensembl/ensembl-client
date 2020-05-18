@@ -80,7 +80,8 @@ variables:
   - docker rmi ${CONTAINER_IMAGE}
   - docker logout "$CI_REGISTRY"
 
-  needs: ["Test_N_Build"]
+  needs:
+    - Test_N_Build
 
 # Template to deploy to WP k8s cluster
 .deploy-wp:
@@ -214,7 +215,8 @@ Nginx:Staging-WP:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
   only:
   - dev
-  needs: ["Test_N_Build"]
+  needs:
+    - Test_N_Build
 
 # Job to build nginx docker image for live environment
 # master branch -> Live
@@ -224,7 +226,8 @@ Nginx:Live-WP:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
   only:
   - master
-  needs: ["Test_N_Build"]
+  needs:
+    - Test_N_Build
 
 # Job to build nginx docker image for staging and internal environment
 # dev branch -> internal
@@ -235,7 +238,8 @@ Nginx:Internal-EHK:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
   only:
   - dev
-  needs: ["Test_N_Build:internal"]
+  needs:
+    - Test_N_Build:internal
 
 # Job to build nginx docker image for staging and internal environment at WP
 # dev branch -> internal
@@ -246,7 +250,8 @@ Nginx:Internal-WP:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
   only:
   - dev
-  needs: ["Test_N_Build:internal"]
+  needs:
+    - Test_N_Build:internal
 
 Nginx:feature:
   extends: .build-nginx-ehk
@@ -269,7 +274,8 @@ Staging:EHK-HH:
     KUBE_CONTEXT: ens-stage-ctx
   only:
   - dev
-  needs: ["Nginx:Staging-EHK"]
+  needs:
+    - Nginx:Staging-EHK
 
 # Job to deploy to staging environment (WP-HX k8s cluster)
 Staging:WP-HX:
@@ -280,7 +286,9 @@ Staging:WP-HX:
     name : wp-hx-staging
   only:
   - dev
-  needs: ["Nginx:Staging-WP"]
+  needs:
+    - Test_N_Build
+    - Nginx:Staging-WP
 
 # Job to deploy to staging environment (WP-HH k8s cluster)
 Staging:WP-HH:
@@ -291,7 +299,9 @@ Staging:WP-HH:
     name : wp-hh-staging
   only:
   - dev
-  needs: ["Nginx:Staging-WP"]
+  needs:
+    - Test_N_Build
+    - Nginx:Staging-WP
 
 # Job to deploy to live environment (EHK k8s cluster)
 Live:EHK-HH:
@@ -302,7 +312,8 @@ Live:EHK-HH:
     KUBE_CONTEXT: ens-prod-ctx
   only:
   - master
-  needs: ["Nginx:Live-EHK"]
+  needs:
+    - Nginx:Live-EHK
 
 # Job to deploy to live environment (WP-HX k8s cluster)
 Live:WP-HX:
@@ -313,7 +324,9 @@ Live:WP-HX:
     name : wp-hx-live
   only:
   - master
-  needs: ["Nginx:Live-WP"]
+  needs:
+    - Test_N_Build
+    - Nginx:Live-WP
 
 # Job to deploy to live environment (WP-HH k8s cluster)
 Live:WP-HH:
@@ -324,7 +337,9 @@ Live:WP-HH:
     name : wp-hh-live
   only:
   - master
-  needs: ["Nginx:Live-WP"]
+  needs:
+    - Test_N_Build
+    - Nginx:Live-WP
 
 # Job to deploy to internal environment (EHK k8s cluster)
 Internal:EHK-HH:
@@ -335,7 +350,9 @@ Internal:EHK-HH:
     KUBE_CONTEXT: ens-dev-ctx
   only:
   - dev
-  needs: ["Nginx:Internal-EHK"]
+  needs:
+    - Test_N_Build:internal
+    - Nginx:Internal-EHK
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
 Internal:WP-HX:
@@ -346,7 +363,9 @@ Internal:WP-HX:
     name : wp-hx-internal
   only:
   - dev
-  needs: ["Nginx:Internal-WP"]
+  needs:
+    - Test_N_Build:internal
+    - Nginx:Internal-WP
 
 # Job to deploy to internal environment (WP-HH k8s cluster)
 Internal:WP-HH:
@@ -357,7 +376,9 @@ Internal:WP-HH:
     name : wp-hh-internal
   only:
   - dev
-  needs: ["Nginx:Internal-WP"]
+  needs:
+    - Test_N_Build:internal
+    - Nginx:Internal-WP
 
 Feature:EHK-HH:
   extends: .deploy-ehk
@@ -369,7 +390,9 @@ Feature:EHK-HH:
   only:
   - /^feature\/.*$/
 
-  needs: ["Nginx:feature"]
+  needs:
+    - Test_N_Build:feature
+    - "Nginx:feature"
 
 Feature:WP-HX:
   extends: .deploy-wp-feature
