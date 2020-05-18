@@ -6,7 +6,7 @@ $topbarHeight: 38px;
 $drawerWindowWidth: 45px;
 
 .standardAppLayout {
-  height: 100%;
+  height: calc(100vh - 159px);
   min-height: 550px; // based on the current interface of genome browser
   overflow: hidden;
 }
@@ -61,7 +61,7 @@ $drawerWindowWidth: 45px;
   width: 100%;
   height: 100%;
   display: flex;
-  z-index: 1;
+  z-index: 5;
   transition: transform 0.3s ease-in-out;
 
   &Open {
