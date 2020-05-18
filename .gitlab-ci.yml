@@ -184,6 +184,8 @@ Test_N_Build:feature:
     ENVIRONMENT: development
     API_HOST: ""
 
+  script:
+  - exit 1
   only:
   - /^feature\/.*$/
   - /^bugfix\/.*$/
