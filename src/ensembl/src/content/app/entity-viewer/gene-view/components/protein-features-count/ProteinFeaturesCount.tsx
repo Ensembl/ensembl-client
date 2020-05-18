@@ -41,28 +41,34 @@ const ProteinFeaturesCount = (props: ProteinFeaturesCountProps) => {
           <div className={styles.featureImg}>
             <img src={structuresIcon} alt="" />
           </div>
-          <div className={styles.featureCount}>{proteinStats.structures}</div>
+          <div className={styles.featureCount}>
+            {proteinStats.structuresCount}
+          </div>
           <div className={styles.featureText}>Structures</div>
         </div>
         <div className={styles.feature}>
           <div className={styles.featureImg}>
             <img src={ligandsIcon} alt="" />
           </div>
-          <div className={styles.featureCount}>{proteinStats.ligands}</div>
+          <div className={styles.featureCount}>{proteinStats.ligandsCount}</div>
           <div className={styles.featureText}>Ligands</div>
         </div>
         <div className={styles.feature}>
           <div className={styles.featureImg}>
             <img src={interactionsIcon} alt="" />
           </div>
-          <div className={styles.featureCount}>{proteinStats.interactions}</div>
+          <div className={styles.featureCount}>
+            {proteinStats.interactionsCount}
+          </div>
           <div className={styles.featureText}>Interactions</div>
         </div>
         <div className={styles.feature}>
           <div className={styles.featureImg}>
             <img src={annotationsIcon} alt="" />
           </div>
-          <div className={styles.featureCount}>{proteinStats.annotations}</div>
+          <div className={styles.featureCount}>
+            {proteinStats.annotationsCount}
+          </div>
           <div className={styles.featureText}>Functional annotations</div>
         </div>
       </div>

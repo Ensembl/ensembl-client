@@ -28,9 +28,9 @@ export const fetchGene = async (
 ): Promise<Gene> => {
   const url = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
 
-  const data: GeneInResponse = (await fetch(url, { signal }).then((response) =>
+  const data: GeneInResponse = await fetch(url, { signal }).then((response) =>
     response.json()
-  )) as GeneInResponse;
+  );
 
   return restGeneAdaptor(data);
 };
