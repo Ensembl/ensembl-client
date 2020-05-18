@@ -28,12 +28,12 @@ export const fetchProteinSummaryStats = async (
   transcriptId: string,
   signal?: AbortSignal
 ): Promise<ProteinStats> => {
-  const transcriptUrl = `http://rest.ensembl.org/lookup/id/${transcriptId}?expand=1;content-type=application/json`;
+  const transcriptUrl = `https://rest.ensembl.org/lookup/id/${transcriptId}?expand=1;content-type=application/json`;
   const transcript: TranscriptInResponse = (await fetch(transcriptUrl, {
     signal
   }).then((response) => response.json())) as TranscriptInResponse;
 
-  const xrefsUrl = `http://rest.ensembl.org/xrefs/id/${transcript.Translation?.id}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
+  const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${transcript.Translation?.id}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
   const xrefsData: XrefsInResponse = (await fetch(xrefsUrl, {
     signal
   }).then((response) => response.json())) as XrefsInResponse;
