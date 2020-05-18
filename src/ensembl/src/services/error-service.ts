@@ -27,7 +27,8 @@ class ErrorService implements ErrorServiceInterface {
         dsn: 'https://ab4205dce9c047588d30ddfaafd0655a@sentry.io/1507303',
         ignoreErrors: [
           'ResizeObserver loop limit exceeded',
-          'ResizeObserver loop completed with undelivered notifications'
+          'ResizeObserver loop completed with undelivered notifications',
+          'AbortError'
         ]
       });
       this.isReportingServiceInitialized = true;
