@@ -23,6 +23,7 @@ export type FetchOptions = {
   body?: string; // stringified json
   preserveEndpoint?: boolean;
   noCache?: boolean;
+  signal?: AbortSignal;
 };
 
 const defaultMethod = HTTPMethod.GET;
@@ -59,7 +60,8 @@ class ApiService {
     return {
       method: options.method || defaultMethod,
       headers: { ...defaultHeaders, ...options.headers },
-      body: options.body
+      body: options.body,
+      signal: options.signal
     };
   }
 
@@ -91,7 +93,9 @@ class ApiService {
       }
       return processedResponse;
     } catch (error) {
-      throw error;
+      if (error.name !== 'AbortError') {
+        throw error;
+      }
     }
   }
 

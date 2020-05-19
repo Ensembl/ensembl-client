@@ -6,6 +6,7 @@ import { LoadingState } from 'src/shared/types/loading-state';
 
 type Params = FetchOptions & {
   endpoint: string;
+  isAbortable?: boolean;
 };
 
 type StateAtLoading = {
@@ -50,7 +51,6 @@ const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
   }
 };
 
-// TODO: might also think about request cancellation
 const useApiService = <T>(params: Params): State<T> => {
   const [state, dispatch] = useReducer<Reducer<State<T>, Action<T>>>(
     reducer,
@@ -60,7 +60,11 @@ const useApiService = <T>(params: Params): State<T> => {
   useEffect(() => {
     let canUpdate = true;
     dispatch({ type: 'loading' });
-    const { endpoint, ...fetchOptions } = params;
+    const { endpoint, isAbortable, ...fetchOptions } = params;
+    const abortController = new AbortController();
+    if (isAbortable) {
+      fetchOptions.signal = abortController.signal;
+    }
 
     apiService.fetch(endpoint, fetchOptions).then((data) => {
       if (canUpdate) {
@@ -70,6 +74,7 @@ const useApiService = <T>(params: Params): State<T> => {
 
     return () => {
       canUpdate = false;
+      isAbortable && abortController.abort();
     };
   }, [params.endpoint, params.host]);
 
