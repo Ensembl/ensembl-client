@@ -40,6 +40,11 @@ const devServerConfig = {
       target: 'https://staging-2020.ensembl.org',
       changeOrigin: true,
       secure: false
+    },
+    '/thoas': {
+      target: 'http://hx-rke-wp-webadmin-13-worker-1.caas.ebi.ac.uk:31497',
+      changeOrigin: true,
+      secure: false
     }
   },
 
