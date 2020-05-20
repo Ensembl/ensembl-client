@@ -4,6 +4,8 @@
 import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
 
+import JSONValue from 'src/shared/types/JSON';
+
 export enum HTTPMethod {
   GET = 'GET',
   POST = 'POST',
@@ -11,6 +13,12 @@ export enum HTTPMethod {
   PUT = 'PUT',
   DELETE = 'DELETE'
 }
+
+// Note: Currently does not conform to Core Data Modelling definition of an API error
+export type APIError = {
+  status: number;
+  message: string | JSONValue;
+};
 
 type ApiServiceConfig = {
   host: string;

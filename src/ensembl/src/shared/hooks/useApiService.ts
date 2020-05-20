@@ -1,6 +1,6 @@
 import { useEffect, useReducer, Reducer } from 'react';
 
-import apiService, { FetchOptions } from 'src/services/api-service';
+import apiService, { FetchOptions, APIError } from 'src/services/api-service';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
@@ -12,14 +12,22 @@ type Params = FetchOptions & {
 type StateAtLoading = {
   loadingState: LoadingState.LOADING;
   data: null;
+  error: null;
 };
 
 type StateAtSuccess<T> = {
   loadingState: LoadingState.SUCCESS;
   data: T;
+  error: null;
 };
 
-type State<T> = StateAtLoading | StateAtSuccess<T>;
+type StateAtError = {
+  loadingState: LoadingState.ERROR;
+  data: null;
+  error: APIError;
+};
+
+type State<T> = StateAtLoading | StateAtSuccess<T> | StateAtError;
 
 type LoadingAction = {
   type: 'loading';
@@ -30,11 +38,17 @@ type SuccessAction<T> = {
   payload: T;
 };
 
-type Action<T> = LoadingAction | SuccessAction<T>;
+type ErrorAction = {
+  type: 'error';
+  payload: APIError;
+};
+
+type Action<T> = LoadingAction | SuccessAction<T> | ErrorAction;
 
 const initialState: StateAtLoading = {
   loadingState: LoadingState.LOADING,
-  data: null
+  data: null,
+  error: null
 };
 
 const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
@@ -44,7 +58,14 @@ const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
     case 'success':
       return {
         loadingState: LoadingState.SUCCESS,
-        data: action.payload
+        data: action.payload,
+        error: null
+      };
+    case 'error':
+      return {
+        loadingState: LoadingState.ERROR,
+        data: null,
+        error: action.payload
       };
     default:
       return state;
@@ -66,11 +87,19 @@ const useApiService = <T>(params: Params): State<T> => {
       fetchOptions.signal = abortController.signal;
     }
 
-    apiService.fetch(endpoint, fetchOptions).then((data) => {
-      if (canUpdate) {
-        dispatch({ type: 'success', payload: data });
-      }
-    });
+    apiService
+      .fetch(endpoint, fetchOptions)
+      .then((data) => {
+        // notice that if the request has been aborted and the abort error caught in api service,
+        // the promise will resolve with empty data; but, since canUpdate will be false,
+        // the state will not get updated with empty data
+        if (canUpdate) {
+          dispatch({ type: 'success', payload: data });
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: 'error', payload: error });
+      });
 
     return () => {
       canUpdate = false;
@@ -78,7 +107,6 @@ const useApiService = <T>(params: Params): State<T> => {
     };
   }, [params.endpoint, params.host]);
 
-  // TODO: should also be able to signal error
   return state;
 };
 

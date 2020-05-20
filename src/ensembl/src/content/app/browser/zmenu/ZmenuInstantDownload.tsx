@@ -20,7 +20,9 @@ const ZmenuInstantDownload = (props: Props) => {
     endpoint: `/lookup/id/${transcriptId}?content-type=application/json;expand=1`,
     host: 'https://rest.ensembl.org'
   };
-  const { loadingState, data } = useApiService<TranscriptInResponse>(params);
+  const { loadingState, data, error } = useApiService<TranscriptInResponse>(
+    params
+  );
 
   if (loadingState === LoadingState.LOADING) {
     return (
@@ -28,6 +30,10 @@ const ZmenuInstantDownload = (props: Props) => {
         <CircleLoader />
       </div>
     );
+  }
+
+  if (error) {
+    return null;
   }
 
   return (
