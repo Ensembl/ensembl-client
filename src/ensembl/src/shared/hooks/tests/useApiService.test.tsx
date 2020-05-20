@@ -18,7 +18,10 @@ const onAbort = jest.fn();
 
 const mockEndpoint = faker.internet.url();
 
-const mockSuccessfulFetch = (_, { signal }: { signal: AbortSignal }) => {
+const mockSuccessfulFetch = (
+  _: string,
+  { signal }: { signal: AbortSignal }
+) => {
   signal && (signal.onabort = onAbort);
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockSuccessData), 1);
