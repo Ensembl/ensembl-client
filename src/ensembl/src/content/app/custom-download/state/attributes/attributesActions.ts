@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
@@ -25,9 +41,12 @@ export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-failure'
 )<undefined, {}, Error>();
 
-export const fetchAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
+export const fetchAttributes: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = () => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -56,9 +75,12 @@ export const fetchAttributes: ActionCreator<
   }
 };
 
-export const updateSelectedAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (selectedAttributes: JSONValue) => (
+export const updateSelectedAttributes: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (selectedAttributes: JSONValue) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -82,9 +104,12 @@ export const updateSelectedAttributes: ActionCreator<
   );
 };
 
-export const resetSelectedAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
+export const resetSelectedAttributes: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = () => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -105,9 +130,12 @@ export const resetSelectedAttributes: ActionCreator<
   );
 };
 
-export const updateUi: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (attributesUi: JSONValue) => (dispatch, getState: () => RootState) => {
+export const updateUi: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (attributesUi: JSONValue) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -128,9 +156,12 @@ export const updateUi: ActionCreator<
   );
 };
 
-export const setOrthologueAttributes: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (orthologues: { [key: string]: AttributeWithOptions }) => (
+export const setOrthologueAttributes: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (orthologues: { [key: string]: AttributeWithOptions }) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -154,9 +185,12 @@ export const setOrthologueAttributes: ActionCreator<
   );
 };
 
-export const setOrthologueShowBestMatches: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (showBestMatches: boolean) => (dispatch, getState: () => RootState) => {
+export const setOrthologueShowBestMatches: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (showBestMatches: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -177,9 +211,12 @@ export const setOrthologueShowBestMatches: ActionCreator<
   );
 };
 
-export const setOrthologueShowAll: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (showAll: boolean) => (dispatch, getState: () => RootState) => {
+export const setOrthologueShowAll: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (showAll: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -200,9 +237,12 @@ export const setOrthologueShowAll: ActionCreator<
   );
 };
 
-export const setOrthologueApplyToAllSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (applyToAllSpecies: boolean) => (dispatch, getState: () => RootState) => {
+export const setOrthologueApplyToAllSpecies: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (applyToAllSpecies: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -223,9 +263,12 @@ export const setOrthologueApplyToAllSpecies: ActionCreator<
   );
 };
 
-export const setOrthologueSearchTerm: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (searchTerm: string) => (dispatch, getState: () => RootState) => {
+export const setOrthologueSearchTerm: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (searchTerm: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -252,9 +295,12 @@ export const setOrthologueSpecies = createAsyncAction(
   'custom-download/set-orthologue-species-failure'
 )<{ searchTerm: string }, void, Error>();
 
-export const updateOrthologueSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (orthologueSpecies: CheckboxGridOption[]) => (
+export const updateOrthologueSpecies: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (orthologueSpecies: CheckboxGridOption[]) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -278,9 +324,12 @@ export const updateOrthologueSpecies: ActionCreator<
   );
 };
 
-export const fetchOrthologueSpecies: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) => (
+export const fetchOrthologueSpecies: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -342,9 +391,12 @@ export const fetchOrthologueSpecies: ActionCreator<
   }
 };
 
-export const setAttributesAccordionExpandedPanel: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
+export const setAttributesAccordionExpandedPanel: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {

@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Position } from './pointer-box-types';
 import { PointerBoxProps, InlineStylesState } from './PointerBox';
 
@@ -83,8 +99,9 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.LEFT_TOP:
       return {
         boxStyles: {
-          transform: `translateX(-100%) translateY(calc(-100% + ${pointerOffset +
-            halfPointerWidth}px))`
+          transform: `translateX(-100%) translateY(calc(-100% + ${
+            pointerOffset + halfPointerWidth
+          }px))`
         },
         pointerStyles: {
           left: 'calc(100% - 4px)',
@@ -96,8 +113,9 @@ const getCommonStyles = (params: Params): InlineStylesState => {
     case Position.LEFT_BOTTOM:
       return {
         boxStyles: {
-          transform: `translateX(-100%) translateY(-${pointerOffset +
-            halfPointerWidth}px)`
+          transform: `translateX(-100%) translateY(-${
+            pointerOffset + halfPointerWidth
+          }px)`
         },
         pointerStyles: {
           left: 'calc(100% - 4px)',
@@ -150,21 +168,18 @@ const getBoxStylesForRenderingIntoBody = (
     case Position.TOP_LEFT:
       return {
         left: `${anchorLeft + anchorWidth / 2}px`,
-        bottom: `${window.innerHeight -
-          window.scrollY -
-          anchorTop +
-          pointerHeight}px`
+        bottom: `${
+          window.innerHeight - window.scrollY - anchorTop + pointerHeight
+        }px`
       };
     case Position.TOP_RIGHT:
       return {
-        left: `${anchorLeft +
-          halfAnchorWidth -
-          pointerOffset -
-          halfPointerWidth}px`,
-        bottom: `${window.innerHeight -
-          window.scrollY -
-          anchorTop +
-          pointerHeight}px`
+        left: `${
+          anchorLeft + halfAnchorWidth - pointerOffset - halfPointerWidth
+        }px`,
+        bottom: `${
+          window.innerHeight - window.scrollY - anchorTop + pointerHeight
+        }px`
       };
     case Position.BOTTOM_LEFT:
       return {
@@ -173,10 +188,9 @@ const getBoxStylesForRenderingIntoBody = (
       };
     case Position.BOTTOM_RIGHT:
       return {
-        left: `${anchorLeft +
-          halfAnchorWidth -
-          pointerOffset -
-          halfPointerWidth}px`,
+        left: `${
+          anchorLeft + halfAnchorWidth - pointerOffset - halfPointerWidth
+        }px`,
         top: `${anchorTop + window.scrollY + anchorHeight + pointerHeight}px`
       };
     case Position.LEFT_TOP:
@@ -192,10 +206,9 @@ const getBoxStylesForRenderingIntoBody = (
     case Position.RIGHT_TOP:
       return {
         left: `${anchorLeft + anchorWidth + pointerHeight}px`,
-        top: `${anchorTop +
-          window.scrollY +
-          halfAnchorHeight +
-          pointerOffset}px`
+        top: `${
+          anchorTop + window.scrollY + halfAnchorHeight + pointerOffset
+        }px`
       };
     case Position.RIGHT_BOTTOM:
       return {
