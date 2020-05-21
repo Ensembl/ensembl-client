@@ -17,7 +17,7 @@ const SMALL_WIDTH = 500;
 enum Display {
   FULL = 'full',
   COMPACT = 'compact',
-  MINIMAL = 'minimal',
+  MINIMAL = 'minimal'
 }
 
 type GeneFields =
@@ -62,7 +62,7 @@ const GeneSummaryWrapper = (props: Props) => {
 
 const GeneSummaryStrip = ({ gene, isGhosted, display }: WidthAwareProps) => {
   const stripClasses = classNames(styles.featureSummaryStrip, {
-    [styles.featureSummaryStripGhosted]: isGhosted,
+    [styles.featureSummaryStripGhosted]: isGhosted
   });
 
   let content;

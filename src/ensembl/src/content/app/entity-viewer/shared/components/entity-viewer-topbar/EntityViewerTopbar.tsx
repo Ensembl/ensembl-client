@@ -10,7 +10,7 @@ import { Slice } from 'src/content/app/entity-viewer/types/slice';
 import styles from './EntityViewerTopbar.scss';
 
 export type EntityViewerTopbarProps = {
-  genomeId: string; // We'll need it for talking to Thoas
+  genomeId: string; // We'll need it when we start getting data from Thoas
   entityId: string;
 };
 
@@ -47,8 +47,7 @@ type Gene = {
 export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
   const entityId = props.entityId.split(':').pop();
   const { data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { id: entityId },
-    // skip: !props.entityId
+    variables: { id: entityId }
   });
 
   return (
@@ -75,8 +74,8 @@ const geneToEnsObjectFields = (gene: Gene) => {
     location: {
       chromosome: gene.slice.region.name,
       start: gene.slice.location.start,
-      end: gene.slice.location.end,
-    },
+      end: gene.slice.location.end
+    }
   };
 };
 
