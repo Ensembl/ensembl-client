@@ -20,8 +20,17 @@ enum Display {
   MINIMAL = 'minimal'
 }
 
+type GeneFields =
+  | 'bio_type'
+  | 'label'
+  | 'versioned_stable_id'
+  | 'stable_id'
+  | 'strand'
+  | 'location';
+type Gene = Pick<EnsObject, GeneFields>;
+
 type Props = {
-  gene: EnsObject;
+  gene: Gene;
   isGhosted?: boolean;
 };
 
@@ -69,7 +78,7 @@ const GeneSummaryStrip = ({ gene, isGhosted, display }: WidthAwareProps) => {
   return <div className={stripClasses}>{content}</div>;
 };
 
-const MinimalContent = ({ gene }: { gene: EnsObject }) => (
+const MinimalContent = ({ gene }: { gene: Gene }) => (
   <>
     <span className={styles.featureSummaryStripLabel}>Gene</span>
     {gene.label ? (
@@ -80,7 +89,7 @@ const MinimalContent = ({ gene }: { gene: EnsObject }) => (
   </>
 );
 
-const CompactContent = ({ gene }: { gene: EnsObject }) => {
+const CompactContent = ({ gene }: { gene: Gene }) => {
   const stableId = getDisplayStableId(gene);
 
   return (
@@ -94,7 +103,7 @@ const CompactContent = ({ gene }: { gene: EnsObject }) => {
   );
 };
 
-const FullContent = ({ gene }: { gene: EnsObject }) => (
+const FullContent = ({ gene }: { gene: Gene }) => (
   <>
     <CompactContent gene={gene} />
     {gene.bio_type && <div>{gene.bio_type.toLowerCase()}</div>}

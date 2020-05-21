@@ -56,6 +56,7 @@ const client = new ApolloClient({
 
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
+  const { genomeId, entityId } = params;
 
   useEffect(() => {
     props.setDataFromUrl(params);
@@ -65,10 +66,12 @@ const EntityViewer = (props: Props) => {
     <ApolloProvider client={client}>
       <div className={styles.entityViewer}>
         <EntityViewerAppBar />
-        {params.entityId ? (
+        {genomeId && entityId ? (
           <StandardAppLayout
             mainContent={<GeneView />}
-            topbarContent={<EntityViewerTopbar />}
+            topbarContent={
+              <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
+            }
             sidebarContent={<GeneViewSideBar />}
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
