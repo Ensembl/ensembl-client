@@ -406,7 +406,7 @@ Feature:WP-HX:
   extends: .deploy-wp-review
   environment:
     name: review/$CI_COMMIT_REF_SLUG
-    url: https://$CI_COMMIT_REF_SLUG-review.ensembl.org
+    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
     on_stop: stop_review
     kubernetes:
       namespace: ensembl-dev
