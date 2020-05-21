@@ -104,6 +104,7 @@ const GeneExternalReferences = () => {
 
   const entityId = params.entityId?.split(':').pop();
 
+  // TODO: The genomeId is temporarily hardcoded here as Thoas does ot have date for homo_sapiens_GCA_000001405_27.
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
       stable_id: entityId,
