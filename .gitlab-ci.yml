@@ -9,7 +9,6 @@ stages:
   - test_build_static
   - build_docker_images
   - deploy
-  - review
 
 variables:
   CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
@@ -109,7 +108,7 @@ variables:
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-wp-review:
-  stage: review
+  stage: deploy
   image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
