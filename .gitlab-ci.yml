@@ -421,3 +421,13 @@ Review:WP-HX:
   needs:
     - Test_N_Build:feature
     - Nginx:feature
+
+stop_review:
+  extends: .stop-wp-review
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    action: stop
+    kubernetes:
+      namespace: ensembl-dev
+  only:
+  - /^feature\/.*$/
