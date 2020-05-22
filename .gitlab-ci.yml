@@ -275,7 +275,7 @@ Nginx:feature:
   - /^feature\/.*$/
 
   needs:
-    - "Test_N_Build:feature"
+    - Test_N_Build:feature
 
 # Job to deploy to staging environment (EHK k8s cluster)
 Staging:EHK-HH:
