@@ -406,12 +406,16 @@ Feature:EHK-HH:
     - Test_N_Build:feature
     - "Nginx:feature"
 
-Feature:WP-HX:
-  extends: .deploy-wp-feature
+Review:WP-HX:
+  extends: .deploy-wp-review
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   environment:
-    name : wp-hx-dev
+    name: review/$CI_COMMIT_REF_SLUG
+    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: stop_review
+    kubernetes:
+      namespace: ensembl-dev
   only:
   - /^feature\/.*$/
   needs:
