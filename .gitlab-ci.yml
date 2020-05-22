@@ -121,6 +121,18 @@ variables:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_cluster.yaml
 
+# Template for stopping review app - Do cleanup here 
+.stop-wp-review:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  variables:
+    GIT_STRATEGY: none
+  when: manual
+  script:
+  - kubectl delete ingress ensembl-client-${CI_COMMIT_REF_SLUG}-ingress
+  - kubectl delete svc ensembl-client-${CI_COMMIT_REF_SLUG}-svc
+  - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-deployment
+
 # Template to deploy to EHK k8s cluster
 .deploy-ehk:
   stage: deploy
