@@ -33,12 +33,12 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --max-warnings=0"
+      "eslint --max-warnings=0",
+      "npx manage-licence-header add",
+      "prettier --write"
     ],
     "*.{scss}": [
-      "stylelint"
-    ],
-    "*.{scss,ts,tsx}": [
+      "stylelint",
       "prettier --write"
     ]
   },
@@ -142,6 +142,7 @@
     "koa-connect": "2.0.1",
     "koa-static": "5.0.0",
     "lint-staged": "10.2.2",
+    "licence-manager": "git+https://github.com/Ensembl/ensembl-licence-manager.git#36b534d28ff26d345b4ba4da0cbc18e1e0f7a6b7",
     "mini-css-extract-plugin": "0.9.0",
     "node-sass": "4.14.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
