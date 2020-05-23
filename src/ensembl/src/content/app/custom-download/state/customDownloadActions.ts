@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createAction, createAsyncAction } from 'typesafe-actions';
 import set from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
@@ -28,9 +44,12 @@ export const updateActiveGenomeId = createAction(
   'custom-download/set-active-genome-id'
 )<string | null>();
 
-export const setActiveGenomeId: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (activeGenomeId: string) => (dispatch, getState: () => RootState) => {
+export const setActiveGenomeId: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (activeGenomeId: string) => (dispatch, getState: () => RootState) => {
   dispatch(updateActiveGenomeId(activeGenomeId));
 
   if (!getActiveConfigurations(getState())[activeGenomeId]) {
@@ -55,9 +74,12 @@ export const updateActiveConfigurationForGenome = createAction(
   }
 )();
 
-export const updateSelectedPreFilter: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (selectedPreFilter: boolean) => (dispatch, getState: () => RootState) => {
+export const updateSelectedPreFilter: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (selectedPreFilter: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -76,9 +98,15 @@ export const updateSelectedPreFilter: ActionCreator<
   );
 };
 
-export const togglePreFiltersPanel: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (showPreFiltersPanel: boolean) => (dispatch, getState: () => RootState) => {
+export const togglePreFiltersPanel: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (showPreFiltersPanel: boolean) => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -103,9 +131,12 @@ export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-failure'
 )<{ endpointURL: string; headers: {} }, JSONValue, Error>();
 
-export const fetchPreviewResult: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (endpointURL: string) => (dispatch) => {
+export const fetchPreviewResult: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (endpointURL: string) => (dispatch) => {
   try {
     apiService
       .fetch(endpointURL, {
@@ -126,9 +157,12 @@ export const setIsLoadingResult = createAction(
   'custom-download/set-is-loading-result'
 )<boolean>();
 
-export const setShowPreview: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (showSummary: boolean) => (dispatch, getState: () => RootState) => {
+export const setShowPreview: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (showSummary: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -147,9 +181,12 @@ export const setShowPreview: ActionCreator<
   );
 };
 
-export const setShowExampleData: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (showExampleData: boolean) => (dispatch, getState: () => RootState) => {
+export const setShowExampleData: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (showExampleData: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -168,9 +205,12 @@ export const setShowExampleData: ActionCreator<
   );
 };
 
-export const setDownloadType: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (downloadType: string) => (dispatch, getState: () => RootState) => {
+export const setDownloadType: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (downloadType: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {

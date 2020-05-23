@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react';
 import { mount } from 'enzyme';
 import CheckboxWithSelects from './CheckboxWithSelects';
@@ -49,10 +65,7 @@ describe('<CheckboxWithSelects />', () => {
   it('displays one Select when the checkbox is checked', () => {
     wrapper = mount(<CheckboxWithSelects {...defaultProps} />);
 
-    wrapper
-      .find(Checkbox)
-      .find('.defaultCheckbox')
-      .simulate('click');
+    wrapper.find(Checkbox).find('.defaultCheckbox').simulate('click');
     expect(wrapper.find(Select).length).toBe(1);
   });
 
@@ -67,10 +80,7 @@ describe('<CheckboxWithSelects />', () => {
   it('does not display the remove button next to the Select if no option is selected ', () => {
     wrapper = mount(<CheckboxWithSelects {...defaultProps} />);
 
-    wrapper
-      .find(Checkbox)
-      .find('.defaultCheckbox')
-      .simulate('click');
+    wrapper.find(Checkbox).find('.defaultCheckbox').simulate('click');
     expect(wrapper.find(Select).length).toBe(1);
     expect(wrapper.find('.removeIconHolder').length).toBe(0);
   });
@@ -107,10 +117,7 @@ describe('<CheckboxWithSelects />', () => {
 
     expect(wrapper.find(Select)).toHaveLength(1);
 
-    wrapper
-      .find('.addIconHolder')
-      .find(ImageButton)
-      .simulate('click');
+    wrapper.find('.addIconHolder').find(ImageButton).simulate('click');
 
     expect(wrapper.find(Select)).toHaveLength(2);
   });
@@ -123,16 +130,8 @@ describe('<CheckboxWithSelects />', () => {
       />
     );
 
-    wrapper
-      .find('.addIconHolder')
-      .find(ImageButton)
-      .simulate('click');
-    expect(
-      wrapper
-        .find(Select)
-        .last()
-        .prop('options')
-    ).toHaveLength(4);
+    wrapper.find('.addIconHolder').find(ImageButton).simulate('click');
+    expect(wrapper.find(Select).last().prop('options')).toHaveLength(4);
   });
 
   it('does not display the Plus button when all the options are selected', () => {
@@ -156,23 +155,11 @@ describe('<CheckboxWithSelects />', () => {
       />
     );
 
-    wrapper
-      .find('.addIconHolder')
-      .find(ImageButton)
-      .simulate('click');
+    wrapper.find('.addIconHolder').find(ImageButton).simulate('click');
 
-    wrapper
-      .find(Select)
-      .last()
-      .find('.selectControl')
-      .simulate('click');
+    wrapper.find(Select).last().find('.selectControl').simulate('click');
     wrapper.update();
-    wrapper
-      .find('.optionsPanel')
-      .last()
-      .find('li')
-      .first()
-      .simulate('click');
+    wrapper.find('.optionsPanel').last().find('li').first().simulate('click');
 
     expect(onChange).toHaveBeenCalledWith([
       defaultProps.options[0].value,

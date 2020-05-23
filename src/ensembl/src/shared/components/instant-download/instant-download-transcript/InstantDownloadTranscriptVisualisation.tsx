@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react';
 import classNames from 'classnames';
 import times from 'lodash/times';
@@ -50,18 +66,18 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     return classNames({
       [styles.outerExon]: isOuterExon,
       [styles.innerExon]: isInnerExon,
-      [styles.highlighted]: isHighlighted,
+      [styles.highlighted]: isHighlighted
     });
   };
 
   const intronStyles = classNames(styles.intron, {
-    [styles.highlighted]: props.isGenomicSequenceEnabled,
+    [styles.highlighted]: props.isGenomicSequenceEnabled
   });
   const halfOuterExonStyles = classNames(styles.halfOuterExon, {
     [styles.highlighted]:
       props.isGenomicSequenceEnabled ||
       props.isCDNAEnabled ||
-      props.isCDSEnabled,
+      props.isCDSEnabled
   });
 
   const exons = times(exonsCount, (index) => {
@@ -145,7 +161,7 @@ InstantDownloadTranscriptVisualisation.defaultProps = {
   isCDNAEnabled: false,
   isCDSEnabled: false,
   isProteinSequenceEnabled: false,
-  width: 210,
+  width: 210
 } as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;
