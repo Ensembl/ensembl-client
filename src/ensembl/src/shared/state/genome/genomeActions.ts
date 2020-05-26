@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
@@ -25,9 +41,12 @@ export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_failure'
 )<undefined, GenomeInfoData, Error>();
 
-export const fetchGenomeData: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch) => {
+export const fetchGenomeData: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => async (dispatch) => {
   await Promise.all([
     dispatch(fetchGenomeInfo(genomeId)),
     dispatch(fetchGenomeTrackCategories(genomeId)),
@@ -39,9 +58,12 @@ export const fetchGenomeData: ActionCreator<
   dispatch(fetchExampleEnsObjects(genomeId));
 };
 
-export const fetchGenomeInfo: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchGenomeInfo: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const genomeInfo = getGenomeInfoById(state, genomeId);
   if (genomeInfo) {
@@ -68,9 +90,12 @@ export const fetchGenomeTrackCategoriesAsyncActions = createAsyncAction(
   'genome/fetch_genome_track_categories_failure'
 )<string, GenomeTrackCategories, Error>();
 
-export const fetchGenomeTrackCategories: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchGenomeTrackCategories: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
     const currentGenomeTrackCategories: GenomeTrackCategories = getGenomeTrackCategories(
       getState()
@@ -106,9 +131,12 @@ export const fetchGenomeKaryotypeAsyncActions = createAsyncAction(
   'genome/fetch_genome_karyotype_failure'
 )<string, any, Error>();
 
-export const fetchGenomeKaryotype: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchGenomeKaryotype: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
     const currentGenomeKaryotype:
       | GenomeKaryotypeItem[]
