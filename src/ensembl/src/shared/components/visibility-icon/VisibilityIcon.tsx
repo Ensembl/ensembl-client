@@ -41,7 +41,7 @@ export const VisibilityIcon = (props: VisibilityIconProps) => {
       status={imageButtonStatus}
       image={eyeIcon}
       description={props.description}
-      classNames={{
+      statusClasses={{
         [Status.DEFAULT]: className,
         [Status.SELECTED]: styles.selected,
         [Status.UNSELECTED]: styles.unselected
