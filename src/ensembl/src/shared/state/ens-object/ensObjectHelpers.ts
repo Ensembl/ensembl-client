@@ -94,7 +94,7 @@ export const buildRegionObject = (
   payload: EnsObjectIdConstituents
 ): EnsObjectRegion => {
   const { genomeId, objectId: regionId } = payload;
-  const [chromosomeName, start, end] = getChrLocationFromStr(regionId);
+  const [chromosome, start, end] = getChrLocationFromStr(regionId);
 
   return {
     type: 'region',
@@ -102,7 +102,7 @@ export const buildRegionObject = (
     object_id: buildEnsObjectId(payload),
     label: regionId,
     location: {
-      chromosome: chromosomeName,
+      chromosome,
       start,
       end
     }

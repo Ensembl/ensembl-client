@@ -20,7 +20,6 @@ import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { processPayload } from './zmenuGenomeBrowserAdaptor';
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
@@ -57,7 +56,6 @@ const ZmenuController = (props: Props) => {
   }, []);
 
   const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
-    payload = processPayload(payload);
     if (payload.action === ZmenuAction.CREATE) {
       handleZmenuCreate(payload);
     } else if (payload.action === ZmenuAction.DESTROY) {
