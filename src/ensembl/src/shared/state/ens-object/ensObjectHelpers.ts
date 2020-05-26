@@ -109,5 +109,5 @@ export const buildRegionObject = (
   };
 };
 
-export const getDisplayStableId = (ensObject: EnsObjectGene) =>
+export const getDisplayStableId = (ensObject: Partial<EnsObjectGene>) =>
   ensObject.versioned_stable_id || ensObject.stable_id || '';
