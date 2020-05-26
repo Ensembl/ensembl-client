@@ -32,7 +32,10 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { RootState } from 'src/store';
-import { CrossReference } from 'src/content/app/entity-viewer/types/crossReference';
+import {
+  CrossReference,
+  CrossReferenceGroup
+} from 'src/content/app/entity-viewer/types/crossReference';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 
 import styles from './GeneExternalReferences.scss';
@@ -81,30 +84,20 @@ type Gene = {
   cross_references: CrossReference[];
 };
 
-type ExternalLinks = {
-  source_name: string;
-  links: {
-    id: string;
-    url: string;
-    name: string;
-    description: string;
-  }[];
-};
-
 const getFormattedCrossReferences = (crossReferences: CrossReference[]) => {
-  const geneCrossReferences: { [key: string]: ExternalLinks } = {};
+  const geneCrossReferences: { [key: string]: CrossReferenceGroup } = {};
 
   crossReferences.forEach((xref) => {
     const sourceId = xref.source.id;
 
     if (!geneCrossReferences[sourceId]) {
       geneCrossReferences[sourceId] = {
-        source_name: xref.source.name,
-        links: []
+        source: xref.source,
+        references: []
       };
     }
 
-    geneCrossReferences[sourceId].links.push({
+    geneCrossReferences[sourceId].references.push({
       id: xref.id,
       url: xref.url,
       name: xref.name,
@@ -152,18 +145,18 @@ const GeneExternalReferences = () => {
       <div className={styles.sectionHead}>Gene</div>
       {data.gene.cross_references &&
         Object.values(geneCrossReferences).map((xrefs, key) => {
-          if (xrefs.links.length === 1) {
+          if (xrefs.references.length === 1) {
             return (
               <div key={key}>
                 <ExternalReference
-                  label={xrefs.source_name}
-                  to={xrefs.links[0].url}
-                  linkText={xrefs.links[0].id}
+                  label={xrefs.source.name}
+                  to={xrefs.references[0].url}
+                  linkText={xrefs.references[0].id}
                 />
               </div>
             );
           } else {
-            return xrefs.links[0].name === xrefs.source_name
+            return xrefs.references[0].name === xrefs.source.name
               ? renderXrefGroupWithSameLabels(xrefs, key)
               : renderXrefGroupWithDifferentLabels(xrefs, key);
           }
@@ -197,12 +190,15 @@ const GeneExternalReferences = () => {
   );
 };
 
-const renderXrefGroupWithSameLabels = (xref: ExternalLinks, key: number) => {
+const renderXrefGroupWithSameLabels = (
+  xref: CrossReferenceGroup,
+  key: number
+) => {
   return (
     <div key={key} className={styles.xrefGroupWithSameLabel}>
-      <div className={styles.xrefGroupSourceName}>{xref.source_name}</div>
+      <div className={styles.xrefGroupSourceName}>{xref.source.name}</div>
       <div className={styles.xrefGroupLinks}>
-        {xref.links.map((entry, key) => (
+        {xref.references.map((entry, key) => (
           <ExternalReference
             label={''}
             to={entry.url}
@@ -216,7 +212,7 @@ const renderXrefGroupWithSameLabels = (xref: ExternalLinks, key: number) => {
 };
 
 const renderXrefGroupWithDifferentLabels = (
-  xref: ExternalLinks,
+  xref: CrossReferenceGroup,
   key: number
 ) => {
   return (
@@ -225,12 +221,12 @@ const renderXrefGroupWithDifferentLabels = (
         <AccordionItem className={styles.xrefAccordionItem}>
           <AccordionItemHeading className={styles.xrefAccordionHeader}>
             <AccordionItemButton className={styles.xrefAccordionButton}>
-              {xref.source_name}
+              {xref.source.name}
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.xrefAccordionItemContent}>
             <div>
-              {xref.links.map((entry, key) => (
+              {xref.references.map((entry, key) => (
                 <ExternalReference
                   label={entry.description}
                   to={entry.url}
