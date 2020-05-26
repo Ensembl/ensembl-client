@@ -84,28 +84,28 @@ type Gene = {
   cross_references: CrossReference[];
 };
 
-const getFormattedCrossReferences = (crossReferences: CrossReference[]) => {
-  const geneCrossReferences: { [key: string]: CrossReferenceGroup } = {};
+const buildCrossReferenceGroups = (crossReferences: CrossReference[]) => {
+  const crossReferenceGroups: { [key: string]: CrossReferenceGroup } = {};
 
-  crossReferences.forEach((xref) => {
-    const sourceId = xref.source.id;
+  crossReferences.forEach((crossReference) => {
+    const sourceId = crossReference.source.id;
 
-    if (!geneCrossReferences[sourceId]) {
-      geneCrossReferences[sourceId] = {
-        source: xref.source,
+    if (!crossReferenceGroups[sourceId]) {
+      crossReferenceGroups[sourceId] = {
+        source: crossReference.source,
         references: []
       };
     }
 
-    geneCrossReferences[sourceId].references.push({
-      id: xref.id,
-      url: xref.url,
-      name: xref.name,
-      description: xref.description
+    crossReferenceGroups[sourceId].references.push({
+      id: crossReference.id,
+      url: crossReference.url,
+      name: crossReference.name,
+      description: crossReference.description
     });
   });
 
-  return geneCrossReferences;
+  return crossReferenceGroups;
 };
 
 const GeneExternalReferences = () => {
@@ -130,7 +130,7 @@ const GeneExternalReferences = () => {
     return <div>No data to display</div>;
   }
 
-  const geneCrossReferences = getFormattedCrossReferences(
+  const crossReferenceGroups = buildCrossReferenceGroups(
     data.gene.cross_references
   );
   const { transcripts } = data.gene;
@@ -144,21 +144,22 @@ const GeneExternalReferences = () => {
 
       <div className={styles.sectionHead}>Gene</div>
       {data.gene.cross_references &&
-        Object.values(geneCrossReferences).map((xrefs, key) => {
-          if (xrefs.references.length === 1) {
+        Object.values(crossReferenceGroups).map((crossReferenceGroup, key) => {
+          if (crossReferenceGroup.references.length === 1) {
             return (
               <div key={key}>
                 <ExternalReference
-                  label={xrefs.source.name}
-                  to={xrefs.references[0].url}
-                  linkText={xrefs.references[0].id}
+                  label={crossReferenceGroup.source.name}
+                  to={crossReferenceGroup.references[0].url}
+                  linkText={crossReferenceGroup.references[0].id}
                 />
               </div>
             );
           } else {
-            return xrefs.references[0].name === xrefs.source.name
-              ? renderXrefGroupWithSameLabels(xrefs, key)
-              : renderXrefGroupWithDifferentLabels(xrefs, key);
+            return crossReferenceGroup.references[0].name ===
+              crossReferenceGroup.source.name
+              ? renderXrefGroupWithSameLabels(crossReferenceGroup, key)
+              : renderXrefGroupWithDifferentLabels(crossReferenceGroup, key);
           }
         })}
 
@@ -191,14 +192,16 @@ const GeneExternalReferences = () => {
 };
 
 const renderXrefGroupWithSameLabels = (
-  xref: CrossReferenceGroup,
+  crossReferenceGroup: CrossReferenceGroup,
   key: number
 ) => {
   return (
     <div key={key} className={styles.xrefGroupWithSameLabel}>
-      <div className={styles.xrefGroupSourceName}>{xref.source.name}</div>
+      <div className={styles.xrefGroupSourceName}>
+        {crossReferenceGroup.source.name}
+      </div>
       <div className={styles.xrefGroupLinks}>
-        {xref.references.map((entry, key) => (
+        {crossReferenceGroup.references.map((entry, key) => (
           <ExternalReference
             label={''}
             to={entry.url}
@@ -212,7 +215,7 @@ const renderXrefGroupWithSameLabels = (
 };
 
 const renderXrefGroupWithDifferentLabels = (
-  xref: CrossReferenceGroup,
+  crossReferenceGroup: CrossReferenceGroup,
   key: number
 ) => {
   return (
@@ -221,12 +224,12 @@ const renderXrefGroupWithDifferentLabels = (
         <AccordionItem className={styles.xrefAccordionItem}>
           <AccordionItemHeading className={styles.xrefAccordionHeader}>
             <AccordionItemButton className={styles.xrefAccordionButton}>
-              {xref.source.name}
+              {crossReferenceGroup.source.name}
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.xrefAccordionItemContent}>
             <div>
-              {xref.references.map((entry, key) => (
+              {crossReferenceGroup.references.map((entry, key) => (
                 <ExternalReference
                   label={entry.description}
                   to={entry.url}
