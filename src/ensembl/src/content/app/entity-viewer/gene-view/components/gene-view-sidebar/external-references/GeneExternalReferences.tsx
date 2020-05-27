@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
@@ -74,13 +74,15 @@ const QUERY = gql`
   }
 `;
 
+type Transcript = {
+  stable_id: string;
+  cross_references: CrossReference[];
+};
+
 type Gene = {
   name: string;
   stable_id: string;
-  transcripts: {
-    stable_id: string;
-    cross_references: CrossReference[];
-  }[];
+  transcripts: Transcript[];
   cross_references: CrossReference[];
 };
 
@@ -166,29 +168,37 @@ const GeneExternalReferences = () => {
       {transcripts && (
         <div>
           <div className={styles.sectionHead}>Transcripts</div>
-          {transcripts.map((transcript, key) => {
-            return (
-              <div key={key} className={styles.transcriptWrapper}>
-                <a href="">{transcript.stable_id}</a>
-                {transcript.cross_references && (
-                  <div className={styles.transcriptXrefs}>
-                    {transcript.cross_references.map((xref, key) => (
-                      <ExternalReference
-                        label={xref.source.name}
-                        to={xref.url}
-                        linkText={xref.id}
-                        key={key}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {RenderTranscripts(transcripts)}
         </div>
       )}
     </div>
   );
+};
+
+const RenderTranscripts = (transcripts: Transcript[]) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return transcripts.map((transcript, key) => {
+    return (
+      <div key={key} className={styles.transcriptWrapper}>
+        <a href="" onClick={() => setIsExpanded(!isExpanded)}>
+          {transcript.stable_id}
+        </a>
+        {transcript.cross_references && isExpanded && (
+          <div className={styles.transcriptXrefs}>
+            {transcript.cross_references.map((xref, key) => (
+              <ExternalReference
+                label={xref.source.name}
+                to={xref.url}
+                linkText={xref.id}
+                key={key}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  });
 };
 
 const renderXrefGroupWithSameLabels = (
