@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import set from 'lodash/set';
@@ -69,9 +85,11 @@ const Orthologue = (props: Props) => {
     set(updatedAttributes, path, status);
     props.updateSelectedAttributes(updatedAttributes);
 
-    props.setOrthologueAttributes(newOrthologueAttributes as {
-      [key: string]: AttributeWithOptions;
-    });
+    props.setOrthologueAttributes(
+      newOrthologueAttributes as {
+        [key: string]: AttributeWithOptions;
+      }
+    );
   };
 
   const speciesOnChangeHandler = (status: boolean, attributeId: string) => {
@@ -222,7 +240,4 @@ const mapStateToProps = (state: RootState): StateProps => ({
   selectedAttributes: getSelectedAttributes(state)
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Orthologue);
+export default connect(mapStateToProps, mapDispatchToProps)(Orthologue);

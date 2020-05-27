@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { mount } from 'enzyme';
@@ -12,6 +28,9 @@ import BrowserNavBar from './browser-nav/BrowserNavBar';
 
 import { createChrLocationValues } from 'tests/fixtures/browser';
 
+jest.mock('./hooks/useBrowserRouting', () => () => ({
+  changeGenomeId: jest.fn()
+}));
 jest.mock('./browser-bar/BrowserBar', () => () => <div>BrowserBar</div>);
 jest.mock('./browser-image/BrowserImage', () => () => <div>BrowserImage</div>);
 jest.mock('./browser-nav/BrowserNavBar', () => () => <div>BrowserNavBar</div>);
@@ -38,12 +57,6 @@ describe('<Browser />', () => {
   const defaultProps: BrowserProps = {
     activeGenomeId: faker.lorem.words(),
     activeEnsObjectId: faker.lorem.words(),
-    allActiveEnsObjectIds: {
-      [faker.lorem.words()]: faker.lorem.words()
-    },
-    allChrLocations: {
-      [faker.lorem.words()]: createChrLocationValues().tupleValue
-    },
     browserActivated: false,
     browserNavOpened: false,
     browserQueryParams: {},
@@ -51,15 +64,11 @@ describe('<Browser />', () => {
     isDrawerOpened: false,
     isTrackPanelOpened: false,
     exampleEnsObjects: [],
-    committedSpecies: [],
     changeBrowserLocation: jest.fn(),
-    changeFocusObject: jest.fn(),
     restoreBrowserTrackStates: jest.fn(),
     fetchGenomeData: jest.fn(),
-    replace: jest.fn(),
     toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
-    setDataFromUrlAndSave: jest.fn(),
     viewportWidth: BreakpointWidth.DESKTOP
   };
 

@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
@@ -10,14 +26,18 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setGeneViewMode } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
-import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
 import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
@@ -85,14 +105,22 @@ const QUERY = gql`
 `;
 
 const GeneView = (props: GeneViewProps) => {
-  const { data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { id: props.geneId },
-    skip: !props.geneId
+  const params: { [key: string]: string } = useParams();
+  const { entityId } = params;
+  const { objectId: geneId } = parseFocusIdFromUrl(entityId);
+
+  const { loading, data } = useQuery<{ gene: Gene }>(QUERY, {
+    variables: { id: geneId }
   });
 
-  // TODO decide about the loader and possibly about error handling
-
-  if (!data) {
+  // TODO decide about error handling
+  if (loading) {
+    return (
+      <div className={styles.geneViewLoadingContainer}>
+        <CircleLoader />
+      </div>
+    );
+  } else if (!data) {
     return null;
   }
 

@@ -1,8 +1,35 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import noop from 'lodash/noop';
 import apiService from 'src/services/api-service';
 
-import { ChrLocation } from './browserState';
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
+import {
+  parseEnsObjectId,
+  buildEnsObjectId
+} from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import { ChrLocation } from './browserState';
+
+type GenomeBrowserFocusIdConstituents = {
+  genomeId: string;
+  type: string;
+  objectId: string;
+};
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');
@@ -22,6 +49,14 @@ export function getChrLocationStr(
 
   return `${chrCode}:${startBp}-${endBp}`;
 }
+
+export const stringifyGenomeBrowserFocusId = (
+  params: GenomeBrowserFocusIdConstituents
+) => buildEnsObjectId(params);
+
+// Genome browser sends focus feature id in the format <genome_id>:<feature_type>:<feature_id>.
+export const parseFeatureId = (id: string): GenomeBrowserFocusIdConstituents =>
+  parseEnsObjectId(id);
 
 export type RegionValidationErrors = {
   genomeIdError: string | null;
@@ -143,6 +178,12 @@ export const validateRegion = async (params: {
     try {
       const url = `/api/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
       const response: RegionValidationResponse = await apiService.fetch(url);
+      const regionId = buildEnsObjectId({
+        genomeId,
+        type: 'region',
+        objectId: regionInput
+      });
+      response.region_id = regionId;
 
       processValidationMessages(
         getRegionValidationMessages(response),

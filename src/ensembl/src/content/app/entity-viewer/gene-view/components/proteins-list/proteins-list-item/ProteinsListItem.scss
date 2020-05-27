@@ -1,6 +1,7 @@
 @import 'src/styles/settings';
 
 .middle {
+  cursor: pointer;
   display: grid;
   grid-template-columns: 400px 75px 200px;
   grid-column-gap: 10px;

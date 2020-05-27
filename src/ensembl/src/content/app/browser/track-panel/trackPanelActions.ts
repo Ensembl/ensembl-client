@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { Action, ActionCreator } from 'redux';
@@ -35,9 +51,12 @@ export const updateTrackPanelForGenome = createAction(
   }
 )();
 
-export const toggleTrackPanel: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (isTrackPanelOpened: boolean) => (dispatch, getState: () => RootState) => {
+export const toggleTrackPanel: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (isTrackPanelOpened: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -55,9 +74,12 @@ export const toggleTrackPanel: ActionCreator<
   );
 };
 
-export const selectTrackPanelTab: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (selectedTrackPanelTab: TrackSet) => (
+export const selectTrackPanelTab: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (selectedTrackPanelTab: TrackSet) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -86,9 +108,12 @@ export const selectTrackPanelTab: ActionCreator<
   );
 };
 
-export const changeTrackPanelModalViewForGenome: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
+export const changeTrackPanelModalViewForGenome: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -105,9 +130,12 @@ export const changeTrackPanelModalViewForGenome: ActionCreator<
   );
 };
 
-export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
+export const updatePreviouslyViewedObjectsAndSave: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = () => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObject = getBrowserActiveEnsObject(state);
@@ -128,7 +156,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
     previouslyViewedObjects.push({
       genome_id: activeEnsObject.genome_id,
       object_id: activeEnsObject.object_id,
-      object_type: activeEnsObject.object_type,
+      object_type: activeEnsObject.type,
       label: activeEnsObject.label
     });
   }
@@ -151,9 +179,12 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<
   );
 };
 
-export const changeHighlightedTrackId: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
+export const changeHighlightedTrackId: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
@@ -172,9 +203,12 @@ export const changeHighlightedTrackId: ActionCreator<
   );
 };
 
-export const openTrackPanelModal: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
+export const openTrackPanelModal: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
   const state = getState();
 
   const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -195,9 +229,12 @@ export const openTrackPanelModal: ActionCreator<
   );
 };
 
-export const closeTrackPanelModal: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (dispatch, getState: () => RootState) => {
+export const closeTrackPanelModal: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = () => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
@@ -217,9 +254,12 @@ export const closeTrackPanelModal: ActionCreator<
   );
 };
 
-export const updateCollapsedTrackIds: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (payload: { trackId: string; isCollapsed: boolean }) => (
+export const updateCollapsedTrackIds: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (payload: { trackId: string; isCollapsed: boolean }) => (
   dispatch,
   getState: () => RootState
 ) => {

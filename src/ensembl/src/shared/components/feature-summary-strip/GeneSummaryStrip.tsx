@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
@@ -7,7 +23,7 @@ import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './FeatureSummaryStrip.scss';
 
@@ -20,8 +36,17 @@ enum Display {
   MINIMAL = 'minimal'
 }
 
+type GeneFields =
+  | 'bio_type'
+  | 'label'
+  | 'versioned_stable_id'
+  | 'stable_id'
+  | 'strand'
+  | 'location';
+type Gene = Pick<EnsObjectGene, GeneFields>;
+
 type Props = {
-  gene: EnsObject;
+  gene: Gene;
   isGhosted?: boolean;
 };
 
@@ -69,7 +94,7 @@ const GeneSummaryStrip = ({ gene, isGhosted, display }: WidthAwareProps) => {
   return <div className={stripClasses}>{content}</div>;
 };
 
-const MinimalContent = ({ gene }: { gene: EnsObject }) => (
+const MinimalContent = ({ gene }: { gene: Gene }) => (
   <>
     <span className={styles.featureSummaryStripLabel}>Gene</span>
     {gene.label ? (
@@ -80,7 +105,7 @@ const MinimalContent = ({ gene }: { gene: EnsObject }) => (
   </>
 );
 
-const CompactContent = ({ gene }: { gene: EnsObject }) => {
+const CompactContent = ({ gene }: { gene: Gene }) => {
   const stableId = getDisplayStableId(gene);
 
   return (
@@ -94,7 +119,7 @@ const CompactContent = ({ gene }: { gene: EnsObject }) => {
   );
 };
 
-const FullContent = ({ gene }: { gene: EnsObject }) => (
+const FullContent = ({ gene }: { gene: Gene }) => (
   <>
     <CompactContent gene={gene} />
     {gene.bio_type && <div>{gene.bio_type.toLowerCase()}</div>}
