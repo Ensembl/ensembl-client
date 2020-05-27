@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { batch } from 'react-redux';
@@ -5,6 +21,10 @@ import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
+import {
+  buildEnsObjectId,
+  parseFocusIdFromUrl
+} from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -32,13 +52,15 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
   Action<string>
 >> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
   const state = getState();
+  let { genomeId } = params;
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
-  if (!params.genomeId) {
+  if (!genomeId) {
     dispatch(setDefaultActiveGenomeId());
-  } else if (params.genomeId !== activeGenomeId) {
-    dispatch(setActiveGenomeId(params.genomeId));
-    dispatch(fetchGenomeData(params.genomeId));
+    genomeId = getEntityViewerActiveGenomeId(state) as string;
+  } else if (genomeId !== activeGenomeId) {
+    dispatch(setActiveGenomeId(genomeId));
+    dispatch(fetchGenomeData(genomeId));
     // TODO: when backend is ready, entity info may also need fetching
   } else {
     // TODO: when backend is ready, fetch entity info
@@ -48,8 +70,14 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     }
   }
 
-  if (params.entityId && params.entityId !== activeEntityId) {
-    dispatch(updateEnsObject(params.entityId));
+  const entityId = params.entityId
+    ? buildEnsObjectId({
+        genomeId: genomeId as string,
+        ...parseFocusIdFromUrl(params.entityId)
+      })
+    : null;
+  if (entityId && entityId !== activeEntityId) {
+    dispatch(updateEnsObject(entityId));
     dispatch(fetchSidebarPayload());
   }
 };
