@@ -168,37 +168,46 @@ const GeneExternalReferences = () => {
       {transcripts && (
         <div>
           <div className={styles.sectionHead}>Transcripts</div>
-          {RenderTranscripts(transcripts)}
+          {transcripts.map((transcript, key) => {
+            return (
+              <div key={key}>
+                {' '}
+                <RenderTranscriptXrefGroup transcript={transcript} />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
   );
 };
 
-const RenderTranscripts = (transcripts: Transcript[]) => {
+const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
+  const { transcript } = props;
   const [isExpanded, setIsExpanded] = useState(false);
 
-  return transcripts.map((transcript, key) => {
-    return (
-      <div key={key} className={styles.transcriptWrapper}>
-        <a href="" onClick={() => setIsExpanded(!isExpanded)}>
-          {transcript.stable_id}
-        </a>
-        {transcript.cross_references && isExpanded && (
-          <div className={styles.transcriptXrefs}>
-            {transcript.cross_references.map((xref, key) => (
-              <ExternalReference
-                label={xref.source.name}
-                to={xref.url}
-                linkText={xref.id}
-                key={key}
-              />
-            ))}
-          </div>
-        )}
+  return (
+    <div className={styles.transcriptWrapper}>
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={styles.transcriptId}
+      >
+        {transcript.stable_id}
       </div>
-    );
-  });
+      {transcript.cross_references && isExpanded && (
+        <div className={styles.transcriptXrefs}>
+          {transcript.cross_references.map((xref, key) => (
+            <ExternalReference
+              label={xref.source.name}
+              to={xref.url}
+              linkText={xref.id}
+              key={key}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const renderXrefGroupWithSameLabels = (
