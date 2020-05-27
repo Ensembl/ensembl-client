@@ -21,6 +21,7 @@ import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
+import { buildEnsObjectId, parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -48,13 +49,15 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
   Action<string>
 >> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
   const state = getState();
+  let { genomeId } = params;
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
-  if (!params.genomeId) {
+  if (!genomeId) {
     dispatch(setDefaultActiveGenomeId());
-  } else if (params.genomeId !== activeGenomeId) {
-    dispatch(setActiveGenomeId(params.genomeId));
-    dispatch(fetchGenomeData(params.genomeId));
+    genomeId = getEntityViewerActiveGenomeId(state) as string;
+  } else if (genomeId !== activeGenomeId) {
+    dispatch(setActiveGenomeId(genomeId));
+    dispatch(fetchGenomeData(genomeId));
     // TODO: when backend is ready, entity info may also need fetching
   } else {
     // TODO: when backend is ready, fetch entity info
@@ -64,8 +67,14 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     }
   }
 
-  if (params.entityId && params.entityId !== activeEntityId) {
-    dispatch(updateEnsObject(params.entityId));
+  const entityId = params.entityId
+    ? buildEnsObjectId({
+        genomeId: genomeId as string,
+        ...parseFocusIdFromUrl(params.entityId)
+      })
+    : null;
+  if (entityId && entityId !== activeEntityId) {
+    dispatch(updateEnsObject(entityId));
     dispatch(fetchSidebarPayload());
   }
 };

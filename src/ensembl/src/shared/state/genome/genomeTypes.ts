@@ -17,13 +17,18 @@
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
+export type ExampleFocusObject = {
+  id: string;
+  type: string;
+};
+
 export type GenomeInfo = {
   genome_id: string;
   reference_genome_id: string | null;
   common_name: string;
   assembly_name: string;
   scientific_name: string;
-  example_objects: string[];
+  example_objects: ExampleFocusObject[];
 };
 
 export type GenomeInfoData = {
@@ -46,7 +51,7 @@ export type GenomeTrackCategories = {
 };
 
 export enum GenomeKaryotypeItemType {
-  CHROMOSOME = 'chromosome'
+  CHROMOSOME = 'chromosome',
 }
 
 export type GenomeKaryotypeItem = {

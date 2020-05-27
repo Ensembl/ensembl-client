@@ -24,6 +24,7 @@ import get from 'lodash/get';
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
@@ -125,20 +126,18 @@ export const fetchDataForLastVisitedObjects: ActionCreator<ThunkAction<
 >> = () => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeEnsObjectIdsMap = getBrowserActiveEnsObjectIds(state);
-  const activeEnsObjectIds = Object.values(activeEnsObjectIdsMap);
-  activeEnsObjectIds.forEach((id) => dispatch(fetchEnsObject(id)));
+  Object.values(activeEnsObjectIdsMap).forEach((objectId) =>
+    dispatch(fetchEnsObject(objectId))
+  );
 };
 
 export const updateBrowserActiveEnsObjectIds = createAction(
   'browser/update-active-ens-object-ids'
 )<{ [objectId: string]: string }>();
 
-export const updateBrowserActiveEnsObjectIdsAndSave: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (activeEnsObjectId: string) => {
+export const updateBrowserActiveEnsObjectIdsAndSave = (
+  activeEnsObjectId: string
+): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -182,7 +181,7 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = () => (dispatch, getState: () => RootState) => {
+>> = () => (_, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
@@ -292,7 +291,7 @@ export const setChrLocation: ActionCreator<ThunkAction<
     const activeGenomeId = getBrowserActiveGenomeId(state);
     const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
     const savedChrLocation = getChrLocation(state);
-    if (!activeGenomeId) {
+    if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
     const payload = {
@@ -305,7 +304,7 @@ export const setChrLocation: ActionCreator<ThunkAction<
     if (!isEqual(chrLocation, savedChrLocation)) {
       const newUrl = urlFor.browser({
         genomeId: activeGenomeId,
-        focus: activeEnsObjectId,
+        focus: buildFocusIdForUrl(activeEnsObjectId),
         location: getChrLocationStr(chrLocation)
       });
       dispatch(replace(newUrl));
@@ -327,7 +326,7 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
   ensObjectId: string | null;
   chrLocation: ChrLocation;
 }) => {
-  return (dispatch, getState: () => RootState) => {
+  return (_, getState: () => RootState) => {
     const state = getState();
     const [chrCode, startBp, endBp] = locationData.chrLocation;
 
@@ -335,11 +334,10 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
       locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
 
     const messageCount = getBrowserMessageCount(state);
-    const focusInstruction = activeEnsObjectId
-      ? {
-          focus: activeEnsObjectId
-        }
-      : {};
+    const focusInstruction: { focus?: string } = {};
+    if (activeEnsObjectId) {
+      focusInstruction.focus = activeEnsObjectId;
+    }
 
     browserMessagingService.send('bpane', {
       stick: `${locationData.genomeId}:${chrCode}`,
@@ -350,23 +348,26 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const changeFocusObject: ActionCreator<ThunkAction<
-  any,
-  any,
-  null,
-  Action<string>
->> = (objectId) => {
-  return (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const messageCount = getBrowserMessageCount(state);
+export const changeFocusObject = (
+  objectId: string
+): ThunkAction<any, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const messageCount = getBrowserMessageCount(state);
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
-    dispatch(updatePreviouslyViewedObjectsAndSave());
+  if (!activeGenomeId) {
+    return;
+  }
 
-    browserMessagingService.send('bpane', {
-      focus: objectId,
-      'message-counter': messageCount
-    });
-  };
+  dispatch(updatePreviouslyViewedObjectsAndSave());
+
+  browserMessagingService.send('bpane', {
+    focus: objectId,
+    'message-counter': messageCount
+  });
 };
 
 export const updateCogList = createAction('browser/update-cog-list')<number>();

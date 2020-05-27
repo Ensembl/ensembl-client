@@ -39,8 +39,8 @@ jest.mock('react-router-dom', () => ({
 
 const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
-  object_id: faker.random.uuid(),
-  object_type: faker.random.word(),
+  object_id: `${faker.random.word()}:gene:${faker.random.uuid()}`,
+  object_type: 'gene',
   label: faker.random.word()
 });
 

@@ -57,12 +57,5 @@ describe('<FeatureSummaryStrip />', () => {
         1
       );
     });
-
-    test('does not contain anything if focus object is not defined', () => {
-      const renderedFeatureSummaryStrip = mount(
-        renderFeatureSummaryStrip({ ensObject: createEnsObject('xyz') })
-      );
-      expect(renderedFeatureSummaryStrip.html()).toBe(null);
-    });
   });
 });

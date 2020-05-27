@@ -18,12 +18,12 @@ import React, { FunctionComponent } from 'react';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
 
 type DrawerGeneProps = {
-  ensObject: EnsObject;
+  ensObject: EnsObjectGene;
 };
 
 const DrawerGene: FunctionComponent<DrawerGeneProps> = (

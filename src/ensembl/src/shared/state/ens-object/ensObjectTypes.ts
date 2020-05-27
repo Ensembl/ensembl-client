@@ -22,19 +22,33 @@ export type EnsObjectLocation = {
   start: number;
 };
 
-export type EnsObject = {
-  bio_type: string | null;
-  label: string;
+export type EnsObjectType =
+  | 'gene'
+  | 'region'
+
+type BasicEnsObject = {
   object_id: string;
   genome_id: string;
+  label: string;
   location: EnsObjectLocation;
-  object_type: string;
+  type: EnsObjectType;
+};
+
+export type EnsObjectGene = BasicEnsObject & {
+  type: 'gene';
   stable_id: string | null;
-  strand: Strand | null;
-  description: string | null;
   versioned_stable_id: string | null;
+  bio_type: string;
+  strand: Strand;
+  description: string | null;
   track: EnsObjectTrack | null;
 };
+
+export type EnsObjectRegion = BasicEnsObject & {
+  type: 'region';
+};
+
+export type EnsObject = EnsObjectGene | EnsObjectRegion;
 
 export type EnsObjectTrack = {
   additional_info?: string;
@@ -54,4 +68,4 @@ a root-level namespace key, so the response type becomes:
   ens_object: EnsObject
 }
 */
-export type EnsObjectResponse = EnsObject;
+export type EnsObjectResponse = EnsObjectGene;

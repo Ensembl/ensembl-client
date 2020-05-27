@@ -20,17 +20,21 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { useParams } from 'react-router-dom';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+
 import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
 import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 
+import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { RootState } from 'src/store';
@@ -96,14 +100,22 @@ const QUERY = gql`
 `;
 
 const GeneView = (props: GeneViewProps) => {
-  const { data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { id: props.geneId },
-    skip: !props.geneId
+  const params: { [key: string]: string } = useParams();
+  const { entityId } = params;
+  const { objectId: geneId } = parseFocusIdFromUrl(entityId);
+
+  const { loading, data } = useQuery<{ gene: Gene }>(QUERY, {
+    variables: { id: geneId }
   });
 
-  // TODO decide about the loader and possibly about error handling
-
-  if (!data) {
+  // TODO decide about error handling
+  if (loading) {
+    return (
+      <div className={styles.geneViewLoadingContainer}>
+        <CircleLoader />
+      </div>
+    );
+  } else if (!data) {
     return null;
   }
 

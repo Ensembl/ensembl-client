@@ -120,7 +120,7 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
 
   return (
     <div className={styles.trackPanelList}>
-      {activeEnsObject && activeEnsObject.object_type === 'region' ? null : (
+      {activeEnsObject && activeEnsObject.type === 'region' ? null : (
         <section className="mainTrackItem">
           <dl>
             {getTrackListItem('main', activeEnsObject && activeEnsObject.track)}
