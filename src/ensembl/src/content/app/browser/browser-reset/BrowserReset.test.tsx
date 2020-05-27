@@ -16,11 +16,10 @@
 
 import React from 'react';
 import { mount } from 'enzyme';
+import faker from 'faker';
 
 import { BrowserReset, BrowserResetProps } from './BrowserReset';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-
-import { createEnsObject } from 'tests/fixtures/ens-object';
 
 describe('<BrowserReset />', () => {
   afterEach(() => {
@@ -28,7 +27,7 @@ describe('<BrowserReset />', () => {
   });
 
   const defaultProps: BrowserResetProps = {
-    focusObject: createEnsObject(),
+    focusObjectId: `${faker.lorem.word()}:gene:${faker.lorem.word()}`,
     changeFocusObject: jest.fn(),
     isActive: true
   };
@@ -41,7 +40,7 @@ describe('<BrowserReset />', () => {
 
     test('renders nothing when focus feature does not exist', () => {
       const wrapper = mount(
-        <BrowserReset {...defaultProps} focusObject={null} />
+        <BrowserReset {...defaultProps} focusObjectId={null} />
       );
       expect(wrapper.html()).toBe(null);
     });

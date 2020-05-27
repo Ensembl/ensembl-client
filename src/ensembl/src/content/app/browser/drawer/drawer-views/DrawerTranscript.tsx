@@ -20,12 +20,12 @@ import find from 'lodash/find';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from '../Drawer.scss';
 
 type DrawerTranscriptProps = {
-  ensObject: EnsObject;
+  ensObject: EnsObjectGene;
 };
 
 // TODO: Once we start supporting multiple transcripts, we need to either remove this constant or move it to trackConfig

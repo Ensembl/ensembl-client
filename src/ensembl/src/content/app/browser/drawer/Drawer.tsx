@@ -33,7 +33,10 @@ import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 import styles from './Drawer.scss';
 import SnpIndels from './drawer-views/SnpIndels';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import {
+  EnsObject,
+  EnsObjectGene
+} from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type DrawerProps = {
   drawerView: string;
@@ -50,9 +53,9 @@ export const Drawer = (props: DrawerProps) => {
   const getDrawerViewComponent = () => {
     switch (drawerView) {
       case 'track:gene-feat':
-        return <DrawerGene ensObject={ensObject} />;
+        return <DrawerGene ensObject={ensObject as EnsObjectGene} />;
       case 'track:gene-feat-1':
-        return <DrawerTranscript ensObject={ensObject} />;
+        return <DrawerTranscript ensObject={ensObject as EnsObjectGene} />;
       case 'track:gene-pc-fwd':
         return <ProteinCodingGenes forwardStrand={true} />;
       case 'track:gene-other-fwd':

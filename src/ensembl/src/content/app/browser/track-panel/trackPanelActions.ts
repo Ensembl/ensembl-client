@@ -156,7 +156,7 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<ThunkAction<
     previouslyViewedObjects.push({
       genome_id: activeEnsObject.genome_id,
       object_id: activeEnsObject.object_id,
-      object_type: activeEnsObject.object_type,
+      object_type: activeEnsObject.type,
       label: activeEnsObject.label
     });
   }

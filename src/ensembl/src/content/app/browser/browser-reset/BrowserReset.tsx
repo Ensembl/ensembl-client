@@ -18,7 +18,7 @@ import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
 import {
-  getBrowserActiveEnsObject,
+  getBrowserActiveEnsObjectId,
   isFocusObjectPositionDefault
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
@@ -29,12 +29,11 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import styles from './BrowserReset.scss';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
 
 export type BrowserResetProps = {
-  focusObject: EnsObject | null;
+  focusObjectId: string | null;
   changeFocusObject: (objectId: string) => void;
   isActive: boolean;
 };
@@ -42,8 +41,8 @@ export type BrowserResetProps = {
 export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
-  const { focusObject } = props;
-  if (!focusObject) {
+  const { focusObjectId } = props;
+  if (!focusObjectId) {
     return null;
   }
 
@@ -52,7 +51,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   };
 
   const handleClick = () => {
-    props.changeFocusObject(focusObject.object_id);
+    props.changeFocusObject(focusObjectId);
   };
 
   return (
@@ -71,7 +70,7 @@ const mapStateToProps = (state: RootState) => {
   const isFocusObjectInDefaultPosition = isFocusObjectPositionDefault(state);
   const isDrawerOpened = getIsDrawerOpened(state);
   return {
-    focusObject: getBrowserActiveEnsObject(state),
+    focusObjectId: getBrowserActiveEnsObjectId(state),
     isActive: !isFocusObjectInDefaultPosition && !isDrawerOpened
   };
 };
