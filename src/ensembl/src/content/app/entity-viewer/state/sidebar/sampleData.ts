@@ -29,32 +29,10 @@ export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
         source: {
           name: 'UniProt',
           url: 'https://www.genenames.org',
-          value: 'UniProtKB/TrEMBL;Acc:Q9SPH4'
+          id: 'UniProtKB/TrEMBL;Acc:Q9SPH4'
         }
       }
     },
-    xrefs: [
-      {
-        source_name: 'KNETMINER_WHEAT',
-        links: [
-          {
-            name: 'KNETMINER_WHEAT',
-            value: 'TraesCS3D02G273600',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'Wheat Expression',
-        links: [
-          {
-            name: 'Wheat Expression',
-            value: 'TraesCS3D02G273600',
-            url: ''
-          }
-        ]
-      }
-    ],
     transcripts: [
       {
         id: 'TraesCS3D02G273600.1'
@@ -67,19 +45,19 @@ export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
       transcript: {
         sequence: [
           {
-            value: 'Genomic sequence',
+            id: 'Genomic sequence',
             label: 'Genomic sequence'
           },
           {
-            value: 'cDNA',
+            id: 'cDNA',
             label: 'cDNA'
           },
           {
-            value: 'CDS',
+            id: 'CDS',
             label: 'CDS'
           },
           {
-            value: 'Protein sequence',
+            id: 'Protein sequence',
             label: 'Protein sequence'
           }
         ],
@@ -126,7 +104,7 @@ export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Sun Y', 'Shi T', 'Ma Y', 'Qin H', 'Li K'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     }
@@ -152,7 +130,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
                 centrosome duplication`,
       source: {
         name: 'UniProt',
-        value: 'P51587',
+        id: 'P51587',
         url: 'https://www.uniprot.org/uniprot/P51587'
       }
     },
@@ -165,153 +143,27 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
         source: {
           name: 'Human Gene Naming Consortium',
           url: 'https://www.genenames.org',
-          value: 'HGNC:1101'
+          id: 'HGNC:1101'
         }
       }
     },
-    xrefs: [
-      {
-        source_name: 'Expression Atlas',
-        links: [
-          {
-            name: 'Expression Atlas',
-            value: 'ENSG00000139618',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'GENCODE comprehensive gene set',
-        links: [
-          {
-            name: 'GENCODE comprehensive gene set',
-            value: 'GENCODE',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'Human CCDS',
-        links: [
-          {
-            name: 'Human CCDS',
-            value: 'CCDS4633.1',
-            url: ''
-          },
-          {
-            name: 'Human CCDS',
-            value: 'CCDS4633.2',
-            url: ''
-          },
-          {
-            name: 'Human CCDS',
-            value: 'CCDS4633.3',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'LRG',
-        links: [
-          {
-            name: 'LRG',
-            value: 'LRG_293',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'NCBI Gene ID',
-        links: [
-          {
-            name: 'NCBI Gene ID',
-            value: '675',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'OMIM',
-        links: [
-          {
-            name: 'OMIM',
-            value: '600185',
-            url: ''
-          }
-        ]
-      },
-
-      {
-        source_name: 'Reactome',
-        links: [
-          {
-            name: 'Cell Cycle',
-            value: 'R-HSA-1640170',
-            url: ''
-          },
-          {
-            name: 'DNA Double-Strand Break Repair',
-            value: 'R-HSA-5693532',
-            url: ''
-          },
-          {
-            name: 'DNA Repair',
-            value: 'R-HSA-73894',
-            url: ''
-          },
-          {
-            name: 'HDR through Homologous Recombination (HRR)',
-            value: 'R-HSA-5685942',
-            url: ''
-          },
-          {
-            name:
-              'HDR through Homologous Recombination (HRR) or Single Strand Annealing (SSA)',
-            value: 'R-HSA-5693567',
-            url: ''
-          }
-        ]
-      },
-
-      {
-        source_name: 'UniProt',
-        links: [
-          {
-            name: 'UniProt',
-            value: 'P51587',
-            url: ''
-          }
-        ]
-      },
-
-      {
-        source_name: 'WikiGene',
-        links: [
-          {
-            name: 'WikiGene',
-            value: 'BRCA2',
-            url: ''
-          }
-        ]
-      }
-    ],
     transcripts: [
       {
         id: 'ENST00000380152.7',
         xrefs: [
           {
             name: 'Human Protein Atlas',
-            value: 'HPA026815',
+            id: 'HPA026815',
             url: ''
           },
           {
             name: 'UCSC Stable ID',
-            value: 'ENST00000380152.7',
+            id: 'ENST00000380152.7',
             url: ''
           },
           {
             name: 'UniParc',
-            value: 'UPI00001FCBCC',
+            id: 'UPI00001FCBCC',
             url: ''
           }
         ]
@@ -333,7 +185,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
         xrefs: [
           {
             name: 'UniParc',
-            value: 'UPI00114938A5',
+            id: 'UPI00114938A5',
             url: ''
           }
         ]
@@ -352,12 +204,12 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
         xrefs: [
           {
             name: 'RNAcentral',
-            value: 'URS0000EACAD8',
+            id: 'URS0000EACAD8',
             url: ''
           },
           {
             name: 'UCSC Stable ID',
-            value: 'ENST00000533776.1',
+            id: 'ENST00000533776.1',
             url: ''
           }
         ]
@@ -370,19 +222,19 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
       transcript: {
         sequence: [
           {
-            value: 'Genomic sequence',
+            id: 'Genomic sequence',
             label: 'Genomic sequence'
           },
           {
-            value: 'cDNA',
+            id: 'cDNA',
             label: 'cDNA'
           },
           {
-            value: 'CDS',
+            id: 'CDS',
             label: 'CDS'
           },
           {
-            value: 'Protein sequence',
+            id: 'Protein sequence',
             label: 'Protein sequence'
           }
         ],
@@ -437,7 +289,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -467,7 +319,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -496,7 +348,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -519,7 +371,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     }
@@ -541,59 +393,17 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
         'Participates actively in the response to hyperosmotic and heat shock by preventing the aggregation of stress-denatured proteins, in association with DnaK and GrpE. It is the nucleotide exchange factor for DnaK and may function as a thermosensor. Unfolded proteins bind initially to DnaJ; upon interaction with the DnaJ-bound protein, DnaK hydrolyzes its bound ATP, resulting in the formation of a stable complex. GrpE releases ADP from DnaK; ATP binding to DnaK triggers the release of the substrate protein, thus completing the reaction cycle. Several rounds of ATP-dependent interactions between DnaJ, DnaK and GrpE are required for fully efficient folding',
       source: {
         name: 'UniProt',
-        value: 'P09372',
+        id: 'P09372',
         url: 'https://www.uniprot.org/uniprot/P51587'
       }
     },
-    xrefs: [
-      {
-        source_name: 'EchoBase',
-        links: [
-          {
-            name: 'EchoBase',
-            value: 'EB0411',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'EcoGene',
-        links: [
-          {
-            name: 'EcoGene',
-            value: 'EG10416',
-            url: ''
-          }
-        ]
-      },
-      {
-        source_name: 'BioCyc',
-        links: [
-          {
-            name: '',
-            value: 'ECOL316407:JW2594-MONOMER',
-            url: ''
-          },
-          {
-            name: '',
-            value: 'EcoCyc:EG10416-MONOMER',
-            url: ''
-          },
-          {
-            name: '',
-            value: 'MetaCyc:EG10416-MONOMER',
-            url: ''
-          }
-        ]
-      }
-    ],
     transcripts: [
       {
         id: 'CHEMBL1293284',
         xrefs: [
           {
             name: 'ChEMBL',
-            value: 'CHEMBL1293284',
+            id: 'CHEMBL1293284',
             url: ''
           }
         ]
@@ -606,19 +416,19 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
       transcript: {
         sequence: [
           {
-            value: 'Genomic sequence',
+            id: 'Genomic sequence',
             label: 'Genomic sequence'
           },
           {
-            value: 'cDNA',
+            id: 'cDNA',
             label: 'cDNA'
           },
           {
-            value: 'CDS',
+            id: 'CDS',
             label: 'CDS'
           },
           {
-            value: 'Protein sequence',
+            id: 'Protein sequence',
             label: 'Protein sequence'
           }
         ],
@@ -651,7 +461,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -668,7 +478,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -686,7 +496,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -696,7 +506,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Hsu CM', 'Chen CY', 'Liu BJ'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -706,7 +516,7 @@ export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Han MJ', 'Lee JW', 'Lee SY', 'Yoo JS'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     }
@@ -723,7 +533,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
         description: 'Sensitive to FormAldehyde',
         source: {
           name: '',
-          value: 'SGD;Acc:S000002327',
+          id: 'SGD;Acc:S000002327',
           url: ''
         }
       }
@@ -734,29 +544,17 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
         'Oxidizes long-chain alcohols and, in the presence of glutathione, is able to oxidize formaldehyde. Is responsible for yeast resistance to formaldehyde',
       source: {
         name: 'UniProt',
-        value: 'P32771',
+        id: 'P32771',
         url: 'https://www.uniprot.org/uniprot/P32771'
       }
     },
-    xrefs: [
-      {
-        source_name: 'NCBI Gene ID ',
-        links: [
-          {
-            name: 'NCBI Gene ID ',
-            value: '851386',
-            url: ''
-          }
-        ]
-      }
-    ],
     transcripts: [
       {
         id: 'RefSeq DNA',
         xrefs: [
           {
             name: 'RefSeq DNA',
-            value: 'NM_001180228.1',
+            id: 'NM_001180228.1',
             url: ''
           }
         ]
@@ -766,7 +564,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
         xrefs: [
           {
             name: 'STRING',
-            value: '4932.YDL168W',
+            id: '4932.YDL168W',
             url: ''
           }
         ]
@@ -776,19 +574,19 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
       transcript: {
         sequence: [
           {
-            value: 'Genomic sequence',
+            id: 'Genomic sequence',
             label: 'Genomic sequence'
           },
           {
-            value: 'cDNA',
+            id: 'cDNA',
             label: 'cDNA'
           },
           {
-            value: 'CDS',
+            id: 'CDS',
             label: 'CDS'
           },
           {
-            value: 'Protein sequence',
+            id: 'Protein sequence',
             label: 'Protein sequence'
           }
         ],
@@ -816,7 +614,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
       ],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -826,7 +624,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Zhao C', 'Wang Z'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -836,7 +634,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Nishimura Y', 'Matsui T', 'Ishii J', 'Kondo A'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -846,7 +644,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Linder T'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     },
@@ -856,7 +654,7 @@ export const entityViewerYeastSampleResponse: EntityViewerSidebarPayload = {
       authors: ['Hull RM', 'Cruz C', 'Jack CV', 'Houseley J'],
       source: {
         url: '',
-        value: 'Europe PMC',
+        id: 'Europe PMC',
         name: ''
       }
     }

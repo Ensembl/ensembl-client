@@ -42,7 +42,7 @@ type GeneViewGeneSidebarPayload = Pick<
   | 'symbol'
   | 'metadata'
   | 'synonyms'
-  | 'xrefs'
+  | 'cross_references'
 > & { transcripts: GeneViewTranscriptSidebarPayload[] };
 
 export type EntityViewerSidebarPayload = {

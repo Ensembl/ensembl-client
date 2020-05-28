@@ -89,10 +89,10 @@ const MainAccordion = (props: Props) => {
                 <div className={styles.geneFunction}>
                   {gene.function.description}
                 </div>
-                {gene.function.source?.value && (
+                {gene.function.source?.id && (
                   <ExternalReference
                     label={gene.function.source.name}
-                    linkText={gene.function.source.value}
+                    linkText={gene.function.source.id}
                     to={gene.function.source.url}
                     classNames={{
                       label: styles.providedBy
