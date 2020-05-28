@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { GeneRelationshipsTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getEntityViewerActiveGeneRelationships } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setActiveGeneRelationshipsTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
@@ -26,6 +25,7 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 
 import { RootState } from 'src/store';
+import { GeneRelationshipsTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneRelationships.scss';
 
@@ -42,13 +42,18 @@ const tabClassNames = {
 type Props = {
   isSidebarOpen: boolean;
   selectedTabName: GeneRelationshipsTabName;
+  changeViewMode: (tab?: string) => void;
   setActiveGeneRelationshipsTab: (tab: string) => void;
 };
 
 const GeneRelationships = (props: Props) => {
+  useEffect(() => {
+    props.changeViewMode(props.selectedTabName);
+  }, []);
+
   const TabWrapper = () => {
     const onTabChange = (tab: string) => {
-      props.setActiveGeneRelationshipsTab(tab);
+      props.changeViewMode(tab);
     };
 
     return (

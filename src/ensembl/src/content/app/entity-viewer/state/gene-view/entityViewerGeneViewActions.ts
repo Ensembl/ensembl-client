@@ -23,13 +23,18 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+
+import {
+  geneFunctionViews,
+  geneRelationshipsViews
+} from 'src/content/app/entity-viewer/gene-view/shared/views-helpers';
+
 import {
   EntityViewerGeneViewUIState,
   GeneViewTabName,
   GeneFunctionTabName,
   GeneRelationshipsTabName
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
-
 import { RootState } from 'src/store';
 
 export const updateActiveGeneViewUIState = createAction(
@@ -127,14 +132,6 @@ export const setGeneViewMode: ActionCreator<ThunkAction<
   null,
   Action<string>
 >> = (view: string) => (dispatch) => {
-  const geneFunctionViews: { [key: string]: string } = {
-    protein: GeneFunctionTabName.PROTEINS,
-    variants: GeneFunctionTabName.VARIANTS
-  };
-  const geneRelationshipsViews: { [key: string]: string } = {
-    orthologues: GeneRelationshipsTabName.ORTHOLOGUES
-  };
-
   if (geneFunctionViews[view]) {
     batch(() => {
       dispatch(setActiveGeneTab(GeneViewTabName.GENE_FUNCTION));
@@ -145,5 +142,7 @@ export const setGeneViewMode: ActionCreator<ThunkAction<
       dispatch(setActiveGeneTab(GeneViewTabName.GENE_RELATIONSHIPS));
       dispatch(setActiveGeneRelationshipsTab(geneRelationshipsViews[view]));
     });
+  } else {
+    dispatch(setActiveGeneTab(GeneViewTabName.TRANSCRIPTS));
   }
 };

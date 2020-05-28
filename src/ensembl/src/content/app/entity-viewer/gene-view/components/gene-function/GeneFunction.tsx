@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
@@ -48,13 +48,18 @@ type Props = {
   geneId: string;
   isNarrow: boolean;
   selectedTabName: GeneFunctionTabName;
+  changeViewMode: (tab?: string) => void;
   setActiveGeneFunctionTab: (tab: string) => void;
 };
 
 const GeneFunction = (props: Props) => {
+  useEffect(() => {
+    props.changeViewMode(props.selectedTabName);
+  }, []);
+
   const TabWrapper = () => {
     const onTabChange = (tab: string) => {
-      props.setActiveGeneFunctionTab(tab);
+      props.changeViewMode(tab);
     };
 
     return (

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -29,11 +29,16 @@ import styles from './DefaultTranscriptsList.scss';
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
+  changeViewMode: (tab?: string) => void;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
+
+  useEffect(() => {
+    props.changeViewMode();
+  }, []);
 
   return (
     <div>

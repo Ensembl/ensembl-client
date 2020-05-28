@@ -18,7 +18,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 
 import {
   getEntityViewerActiveEnsObject,
@@ -30,6 +30,7 @@ import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/e
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getViewModeName } from './shared/views-helpers';
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
@@ -140,15 +141,20 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
+  const history = useHistory();
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const gbUrl = urlFor.browser({ genomeId, focus: entityId });
 
   useEffect(() => {
-    if (props.entityViewerQueryParams.view) {
-      props.setGeneViewMode(props.entityViewerQueryParams.view);
-    }
+    props.setGeneViewMode(props.entityViewerQueryParams.view);
   }, [props.entityViewerQueryParams.view]);
+
+  const changeViewMode = (tab?: string) => {
+    const view = getViewModeName(props.selectedGeneTabName, tab);
+    const newPath = urlFor.entityViewer({ genomeId, entityId, view });
+    history.push(newPath);
+  };
 
   return (
     <div className={styles.geneView}>
@@ -171,15 +177,19 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             <DefaultTranscriptslist
               gene={props.gene}
               rulerTicks={basePairsRulerTicks}
+              changeViewMode={changeViewMode}
             />
           )}
 
         {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
-          <GeneFunction geneId={props.gene.id} />
+          <GeneFunction
+            geneId={props.gene.id}
+            changeViewMode={changeViewMode}
+          />
         )}
 
         {props.selectedGeneTabName === GeneViewTabName.GENE_RELATIONSHIPS && (
-          <GeneRelationships />
+          <GeneRelationships changeViewMode={changeViewMode} />
         )}
       </div>
     </div>
