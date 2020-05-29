@@ -1,9 +1,17 @@
 .feature {
   display: inline-block;
-  margin: 10px 25px 10px 0;
+  margin: 0 25px 10px 0;
   text-align: center;
   vertical-align: top;
   width: 70px;
+}
+
+.featureImg {
+  margin-bottom: 10px;
+
+  img {
+    width: 30px;
+  }
 }
 
 .featureCount {
