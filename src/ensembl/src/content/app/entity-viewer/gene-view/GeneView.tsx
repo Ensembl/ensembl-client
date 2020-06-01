@@ -147,7 +147,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const gbUrl = urlFor.browser({ genomeId, focus: entityId });
 
   useEffect(() => {
-    props.setGeneViewMode(props.entityViewerQueryParams.view);
+    if (props.entityViewerQueryParams.view) {
+      props.setGeneViewMode(props.entityViewerQueryParams.view);
+    }
   }, [props.entityViewerQueryParams.view]);
 
   const changeViewMode = (tab?: string) => {
