@@ -75,7 +75,16 @@ export const getNumberOfCodingExons = (transcript: Transcript) => {
   );
 };
 
-export const getCodingExons = (transcript: Transcript) => {
+export const getSplicedRNALength = (transcript: Transcript) =>
+  transcript.exons.reduce((length, exon) => {
+    const { start, end } = getFeatureCoordinates(exon);
+    return length + (end - start + 1);
+  }, 0);
+
+export const getCodingExonsForImage = (
+  transcript: Transcript,
+  nucleotidesPerPixel: number
+) => {
   const { exons, cds } = transcript;
 
   if (!cds) {
@@ -116,7 +125,7 @@ export const getCodingExons = (transcript: Transcript) => {
       exons[index]
     );
     const previousExonEnd = codingExons[codingExons.length - 1].end; // get the previous coding exon's end
-    const currentExonStart = previousExonEnd + 11; // append an extra 10 to have a gap between two exons
+    const currentExonStart = previousExonEnd + 1 + nucleotidesPerPixel; // append this to leave gap between exons
     codingExons.push({
       start: currentExonStart,
       end: currentExonStart + (exonEnd - exonStart)
@@ -128,7 +137,7 @@ export const getCodingExons = (transcript: Transcript) => {
     exons[lastCodingExonIndex]
   );
   const previousExonEnd = codingExons[codingExons.length - 1].end; // get the previous coding exon's end
-  const currentExonStart = previousExonEnd + 2; // append an extra 1 to have a gap between two exons
+  const currentExonStart = previousExonEnd + 1;
   codingExons.push({
     start: currentExonStart,
     end: currentExonStart + (cds.end - lastCodingExonStart)

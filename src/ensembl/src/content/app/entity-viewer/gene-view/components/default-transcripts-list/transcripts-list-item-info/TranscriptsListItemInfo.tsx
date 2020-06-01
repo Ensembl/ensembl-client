@@ -23,7 +23,8 @@ import {
   getFeatureCoordinates,
   getRegionName,
   getFirstAndLastCodingExonIndexes,
-  getNumberOfCodingExons
+  getNumberOfCodingExons,
+  getSplicedRNALength
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
@@ -57,15 +58,6 @@ const ItemInfo = (props: ItemInfoProps) => {
       start,
       end
     });
-  };
-
-  const getSplicedRNALength = () => {
-    const rnaLength = transcript.exons.reduce((length, exon) => {
-      const { start, end } = getFeatureCoordinates(exon);
-      return length + (end - start + 1);
-    }, 0);
-
-    return getCommaSeparatedNumber(rnaLength);
   };
 
   // FIXME: remove this when the amino acid length can be retrieved via the API
@@ -112,6 +104,10 @@ const ItemInfo = (props: ItemInfoProps) => {
     }
   };
 
+  const splicedRNALength = getCommaSeparatedNumber(
+    getSplicedRNALength(transcript)
+  );
+
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -137,7 +133,7 @@ const ItemInfo = (props: ItemInfoProps) => {
         </div>
         <div className={styles.topRight}>
           <div>
-            Spliced RNA length <strong>{getSplicedRNALength()} bp</strong>
+            Spliced RNA length <strong>{splicedRNALength} bp</strong>
           </div>
           <div>
             Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong>{' '}

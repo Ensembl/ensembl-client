@@ -20,8 +20,8 @@ import classNames from 'classnames';
 
 import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
-  getFirstAndLastCodingExonIndexes,
-  getCodingExons
+  getSplicedRNALength,
+  getCodingExonsForImage
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -29,7 +29,8 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './CollapsedExonsImage.scss';
 
-const BLOCK_HEIGHT = 18;
+const IMAGE_HEIGHT = 24;
+const EXON_HEIGHT = 18;
 
 type ExonsImageProps = {
   transcriptId: string;
@@ -76,24 +77,15 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
     return null;
   }
 
-  const codingExons = getCodingExons(transcript);
+  const splicedRNALength = getSplicedRNALength(transcript);
+  const nucleotidesPerPixel = splicedRNALength / props.width;
+  const codingExons = getCodingExonsForImage(transcript, nucleotidesPerPixel);
 
-  const getExonsImageLength = () => {
-    const cdsLength = (transcript.cds?.protein_length as number) * 3;
-    const {
-      firstCodingExonIndex,
-      lastCodingExonIndex
-    } = getFirstAndLastCodingExonIndexes(transcript);
-    const codingExonGaps = lastCodingExonIndex - firstCodingExonIndex;
-
-    return cdsLength + codingExonGaps * 10;
-  };
-
-  const shouldCodingExonsHaveBorder = (index: number) =>
-    index !== codingExons.length;
+  const shouldExonBlockHaveBorder = (index: number) =>
+    index !== codingExons.length - 1;
 
   const scale = scaleLinear()
-    .domain([1, getExonsImageLength()])
+    .domain([1, splicedRNALength])
     .range([1, props.width])
     .clamp(true);
 
@@ -106,14 +98,17 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
         <svg
           className={styles.containerSvg}
           width={props.width}
-          height={BLOCK_HEIGHT}
+          height={IMAGE_HEIGHT}
         >
           <g>
+            <g className={styles.splicedRNABlock}>
+              <rect height={IMAGE_HEIGHT} width={props.width} />
+            </g>
             {codingExons.map((exon, index) => (
               <ExonBlock
                 key={index}
                 exon={exon}
-                hasBorder={shouldCodingExonsHaveBorder(index)}
+                hasBorder={shouldExonBlockHaveBorder(index)}
                 className={props.className}
                 scale={scale}
               />
@@ -149,7 +144,7 @@ const ExonBlock = (props: ExonBlockProps) => {
         key={exon.start}
         className={exonClasses}
         y={y}
-        height={BLOCK_HEIGHT}
+        height={EXON_HEIGHT}
         x={scale(exon.start)}
         width={scale(exon.end - exon.start + 1)}
       />
@@ -158,9 +153,9 @@ const ExonBlock = (props: ExonBlockProps) => {
           key={exon.end + 1}
           className={styles.exonBorder}
           y={y}
-          height={BLOCK_HEIGHT}
+          height={EXON_HEIGHT}
           x={scale(exon.end + 1)}
-          width={10}
+          width="1px"
         />
       )}
     </g>
