@@ -50,20 +50,8 @@
 
   &:before,
   &:after {
-    margin-top: -5px;
+    margin-top: -10px;
   }
-}
-
-.xrefAccordionButton:before {
-  right: -2px;
-  top: 12px;
-  transform: rotate(45deg);
-}
-
-.xrefAccordionButton:after {
-  right: 5px;
-  top: 12px;
-  transform: rotate(-45deg);
 }
 
 .xrefAccordionItem:not(:first-child) {
