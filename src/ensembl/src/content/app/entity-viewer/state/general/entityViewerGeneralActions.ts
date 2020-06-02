@@ -21,7 +21,6 @@ import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
-import { buildEnsObjectId, parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -67,12 +66,8 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     }
   }
 
-  const entityId = params.entityId
-    ? buildEnsObjectId({
-        genomeId: genomeId as string,
-        ...parseFocusIdFromUrl(params.entityId)
-      })
-    : null;
+  const { entityId } = params;
+
   if (entityId && entityId !== activeEntityId) {
     dispatch(updateEnsObject(entityId));
     dispatch(fetchSidebarPayload());
