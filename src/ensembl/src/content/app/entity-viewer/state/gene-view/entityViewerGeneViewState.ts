@@ -51,17 +51,21 @@ export enum GeneFunctionTabName {
 
 export enum GeneRelationshipsTabName {
   ORTHOLOGUES = 'Orthologues',
+  PARALOGUES = 'Paralogues',
   GENE_FAMILIES = 'Gene families',
-  GENE_PANELS = 'Gene panels'
+  GENE_CLUSTERS = 'Gene clusters',
+  GENE_PANELS = 'Gene panels',
+  GENE_NEIGHBOUTHOOD = 'Gene neighbouthood',
+  GENE_SIMILARITY = 'Gene similarity within-genome'
 }
 
 export const defaultEntityViewerGeneViewUIState = {
   selectedGeneTabName: GeneViewTabName.TRANSCRIPTS,
   geneFunction: {
-    selectedTabName: GeneFunctionTabName.PROTEINS
+    selectedTabName: null
   },
   geneRelationships: {
-    selectedTabName: GeneRelationshipsTabName.ORTHOLOGUES
+    selectedTabName: null
   }
 };
 
