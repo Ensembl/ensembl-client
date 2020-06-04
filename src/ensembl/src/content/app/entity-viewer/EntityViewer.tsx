@@ -51,7 +51,6 @@ type Props = {
   isSidebarOpen: boolean;
   viewportWidth: BreakpointWidth;
   setDataFromUrl: (params: EntityViewerParams) => void;
-  updateEnsObject: (objectId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleSidebar: (status?: SidebarStatus) => void;
 };

@@ -17,7 +17,7 @@
 import JSONValue from 'src/shared/types/JSON';
 import { Slice } from './slice';
 import { Transcript } from './transcript';
-import { ExternalLink } from './externalLink';
+import { CrossReference } from './crossReference';
 import { Source } from './source';
 import { Metadata } from './metadata';
 
@@ -36,7 +36,7 @@ export type Gene = {
     description: string;
     source: Source;
   };
-  xrefs?: ExternalLink[];
+  cross_references?: CrossReference[];
   filters?: {
     [key: string]: JSONValue;
   };
