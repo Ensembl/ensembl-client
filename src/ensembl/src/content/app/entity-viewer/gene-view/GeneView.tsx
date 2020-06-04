@@ -16,9 +16,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { push, Push } from 'connected-react-router';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import {
   getEntityViewerActiveEnsObject,
@@ -48,9 +49,10 @@ import styles from './GeneView.scss';
 
 type GeneViewProps = {
   geneId: string | null;
-  selectedGeneTabName: GeneViewTabName;
-  setGeneViewMode: (view: string) => void;
   entityViewerQueryParams: { [key: string]: string };
+  selectedGeneTabName: GeneViewTabName;
+  push: Push;
+  setGeneViewMode: (view: string) => void;
 };
 
 type GeneViewWithDataProps = Omit<GeneViewProps, 'geneId'> & {
@@ -130,6 +132,7 @@ const GeneView = (props: GeneViewProps) => {
       gene={data.gene}
       entityViewerQueryParams={props.entityViewerQueryParams}
       selectedGeneTabName={props.selectedGeneTabName}
+      push={props.push}
       setGeneViewMode={props.setGeneViewMode}
     />
   );
@@ -141,7 +144,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
-  const history = useHistory();
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const gbUrl = urlFor.browser({ genomeId, focus: entityId });
@@ -155,7 +157,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const changeViewMode = (tab?: string) => {
     const view = getViewModeName(props.selectedGeneTabName, tab);
     const newPath = urlFor.entityViewer({ genomeId, entityId, view });
-    history.push(newPath);
+    props.push(newPath);
   };
 
   return (
@@ -203,6 +205,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
+  push,
   setGeneViewMode
 };
 

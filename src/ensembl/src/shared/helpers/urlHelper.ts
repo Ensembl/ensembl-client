@@ -60,7 +60,6 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   const genomeId = params?.genomeId || '';
   const entityId = params?.entityId || '';
   const path = `/app/entity-viewer/${genomeId}/${entityId}`;
-
   const query = queryString.stringify(
     {
       view: params?.view || undefined

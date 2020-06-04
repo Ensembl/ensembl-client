@@ -39,11 +39,10 @@ export const getViewModeName = (
   geneViewTab: GeneViewTabName,
   childTab?: string
 ) => {
-  const allGeneViewModes = Object.assign(
-    {},
-    geneFunctionViews,
-    geneRelationshipsViews
-  );
+  const allGeneViewModes = {
+    ...geneFunctionViews,
+    ...geneRelationshipsViews
+  };
 
   return Object.keys(allGeneViewModes).find(
     (view) => allGeneViewModes[view] === childTab
