@@ -60,9 +60,14 @@ const GeneFunction = (props: Props) => {
   } = props;
   let { selectedTabName } = props;
 
+  // Check if we have at least one protein coding transcript
+  const proteinCodingTranscriptIndex = transcripts.findIndex(
+    (transcript) => transcript.biotype === 'protein_coding'
+  );
+
   // Disable the Proteins tab if there are no transcripts data
   // TODO: We need a better logic to disable tabs once we have the data available for other tabs
-  if (!transcripts || !transcripts.length) {
+  if (proteinCodingTranscriptIndex === -1) {
     const proteinTabIndex = tabsData.findIndex(
       (tab) => tab.title === GeneFunctionTabName.PROTEINS
     );
@@ -74,7 +79,8 @@ const GeneFunction = (props: Props) => {
   const selectedTabIndex = tabsData.findIndex(
     (tab) => tab.title === selectedTabName
   );
-  if (!selectedTabIndex || tabsData[selectedTabIndex].isDisabled) {
+
+  if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
     const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
 
     selectedTabName = (nextAvailableTab?.title as GeneFunctionTabName) || null;
