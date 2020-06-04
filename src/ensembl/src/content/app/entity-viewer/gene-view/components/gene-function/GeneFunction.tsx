@@ -48,7 +48,6 @@ const tabClassNames = {
 };
 
 type Props = {
-  geneId: string;
   gene: Gene;
   isNarrow: boolean;
   selectedTabName: GeneFunctionTabName | null;
@@ -99,7 +98,7 @@ const GeneFunction = (props: Props) => {
   const getCurrentTabContent = () => {
     switch (selectedTabName) {
       case GeneFunctionTabName.PROTEINS:
-        return <ProteinsList geneId={props.geneId} />;
+        return <ProteinsList geneId={props.gene.id} />;
       default:
         return <>Data for these views will be available soon...</>;
     }
