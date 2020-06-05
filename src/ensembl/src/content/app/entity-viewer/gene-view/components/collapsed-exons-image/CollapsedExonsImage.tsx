@@ -19,10 +19,7 @@ import { scaleLinear, ScaleLinear } from 'd3';
 import classNames from 'classnames';
 
 import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-import {
-  getSplicedRNALength,
-  getCodingExonsForImage
-} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getCodingExonsForImage } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
@@ -34,11 +31,12 @@ const EXON_HEIGHT = 18;
 
 type ExonsImageProps = {
   transcriptId: string;
+  refSplicedRNALength: number;
   className?: string;
   width: number; // available width for drawing, in pixels
 };
 
-type ExonsImageWithDataProps = Pick<ExonsImageProps, 'className' | 'width'> & {
+type ExonsImageWithDataProps = Omit<ExonsImageProps, 'transcriptId'> & {
   transcript: Transcript;
 };
 
@@ -64,6 +62,7 @@ export const ExonsImage = (props: ExonsImageProps) => {
   return data ? (
     <ExonsImageWithData
       transcript={data}
+      refSplicedRNALength={props.refSplicedRNALength}
       className={props.className}
       width={props.width}
     />
@@ -77,15 +76,14 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
     return null;
   }
 
-  const splicedRNALength = getSplicedRNALength(transcript);
-  const nucleotidesPerPixel = splicedRNALength / props.width;
+  const nucleotidesPerPixel = props.refSplicedRNALength / props.width;
   const codingExons = getCodingExonsForImage(transcript, nucleotidesPerPixel);
 
   const shouldExonBlockHaveBorder = (index: number) =>
     index !== codingExons.length - 1;
 
   const scale = scaleLinear()
-    .domain([1, splicedRNALength])
+    .domain([1, props.refSplicedRNALength])
     .range([1, props.width])
     .clamp(true);
 

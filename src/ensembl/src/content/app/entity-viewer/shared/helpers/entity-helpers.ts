@@ -20,7 +20,8 @@ import {
   Slice,
   SliceWithLocationOnly
 } from 'src/content/app/entity-viewer/types/slice';
-import { Transcript } from '../../types/transcript';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 export const getFeatureCoordinates = (feature: {
   slice: SliceWithLocationOnly;
@@ -80,6 +81,26 @@ export const getSplicedRNALength = (transcript: Transcript) =>
     const { start, end } = getFeatureCoordinates(exon);
     return length + (end - start + 1);
   }, 0);
+
+export const getRefSplicedRNALength = (gene: Gene) => {
+  let refSplicedRNALength = 0;
+
+  gene.transcripts.forEach((transcript) => {
+    const transcriptSplicedRNALength = transcript.exons.reduce(
+      (length, exon) => {
+        const { start, end } = getFeatureCoordinates(exon);
+        return length + (end - start + 1);
+      },
+      0
+    );
+
+    if (transcriptSplicedRNALength > refSplicedRNALength) {
+      refSplicedRNALength = transcriptSplicedRNALength;
+    }
+  });
+
+  return refSplicedRNALength;
+};
 
 export const getCodingExonsForImage = (
   transcript: Transcript,

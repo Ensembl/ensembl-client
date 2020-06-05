@@ -16,7 +16,7 @@
 
 import { restGeneAdaptor } from '../rest-adaptors/rest-gene-adaptor';
 
-import { Gene } from '../../../types/gene';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TranscriptInResponse } from './transcriptData';
 
 export type GeneInResponse = {
