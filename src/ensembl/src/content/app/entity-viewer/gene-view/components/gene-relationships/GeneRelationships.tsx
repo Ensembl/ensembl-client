@@ -63,7 +63,7 @@ const GeneRelationships = (props: Props) => {
   const selectedTabIndex = tabsData.findIndex(
     (tab) => tab.title === selectedTabName
   );
-  if (!selectedTabIndex || tabsData[selectedTabIndex].isDisabled) {
+  if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
     const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
 
     selectedTabName =
