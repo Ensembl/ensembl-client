@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft.
+Under review.
 
 ## Context
 
@@ -27,42 +27,26 @@ In order to support users of the new site, we need infrastructure that will supp
 
 Current best practice in content management is to use a headless CMS: a backend content store with a ready-made editing interface that can be used for content creation.
 
-The three leading open-source projects were considered but ultimately rejected. NetlifyCMS is an admin layer over a GitHub repository, which is good for content creation but not so efficient for content retrieval. Ghost has an efficient content API but is heavily oriented towards blogging. Strapi was the closest to what we need, but is a very new product and still lacks some features that would make for a smooth experience for both developers and content providers.
+We trialled two such ready-made systems (Prismic, a commercial PaaS, and Strapi, an open-source headless CMS) as well as an in-house prototype using plain Markdown files in a GitHub repository. All three candidates were tried out by members of Outreach, who expressed a preference (slight in some cases, stronger in others) for the home-grown product, based mainly on the ease of navigating a document hierarchy vs the flat structure presented by the web-based GUIs.
 
-A commercial PaaS (Platform as a Service) CMS, on the other hand, is likely to have a much fuller feature set and also greatly reduce developer time and effort. However most of the ones researched were very expensive: $500 or more per month for the level of service we require, with possible additional costs if bandwidth usage turned out to be higher than anticipated. Only one product stood out as being within our budget.
+We have therefore decided to go with the home-grown option, on the understanding that we will be required to develop additional features that are normally baked into database-driven CMSes. These include:
 
-Prismic is a simple but fully featured headless CMS that offers a variety of inexpensive packages, including a free single-user account that could be used for initial development.
+* Validation scripts to ensure that page IDs are unique and metadata is consistent
 
-### Features
-* Customisable user interface
-* Draft, live and archived content status
-* Revision history
-* React API, including search capability
-* Ability to preview pages directly in our apps
-* No hard limit on storage or API calls
+* Search engine integration
 
-The Professional Medium package costs $1200 per year, and provides:
-* 25 users
-* User roles
-* Publication workflows
-* SLA with 99.5% uptime and basic support
-
-Note that we would not be able to have individual user accounts for everyone in Ensembl on this package. Regular users like web FE and Outreach would need them, but other teams would have to have a shared team account.
-
-(The Platinum package has slightly better terms and unlimited users, but costs $6000 per year!)
+We also discussed the desirability of using static site generation in order to incorporate dynamic content (such as the glossary) into static pages. This would also allow us to distribute the content more easily to end-users who wish to set up their own mirror.
 
 ## Consequences
 
 ### Pros
 
-* Using a headless CMS will allow us to pull content into the Ensembl client and organise it in any way we see fit
+* Building the system in-house will allow us to develop just the features we need
 
-* Content providers will be able to write documentation, tutorials, etc using a familiar web interface, similar to the WordPress dashboard
+* It also gives us complete ownership of the content
 
-* Prismic's rich text editor can be customised to limit the formatting options allowed, which will reduce the tendency for our static content to vary wildly in styling and appearance
+* Most of our staff are familiar with GitHub, and Markdown is easy to learn
 
 ### Cons
 
-* Tying ourselves into a paid service will make it impossible for us to distribute this content to external users setting up a local mirror, so our code will need to fall back to placeholder content if a service is not configured
-
-* Initial setup will be required for the Prismic admin interface before it can be used by content providers
+* A good deal more work is required by the webteam to develop such a system than if we had selected a prebuilt product
