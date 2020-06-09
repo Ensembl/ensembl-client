@@ -72,6 +72,7 @@ describe('useApiService', () => {
 
     expect(apiService.fetch).toHaveBeenCalledWith(mockEndpoint, {});
     expect(wrapper.find('.success').text()).toBe(mockSuccessData.message);
+    expect(onAbort).not.toHaveBeenCalled();
   });
 
   it('returns error if request errored out', async () => {
