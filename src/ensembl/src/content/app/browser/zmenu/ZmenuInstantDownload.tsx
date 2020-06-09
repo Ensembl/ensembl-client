@@ -33,6 +33,7 @@ const ZmenuInstantDownload = (props: Props) => {
   }
 
   if (error) {
+    // TODO: decide how we handle errors in this case
     return null;
   }
 
