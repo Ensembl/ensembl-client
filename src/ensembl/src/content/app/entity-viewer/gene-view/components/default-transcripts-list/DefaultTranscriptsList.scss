@@ -50,3 +50,22 @@
 .right {
   grid-column: 4/5;
 }
+
+.filterLabel {
+  grid-column: 1/2;
+  text-align: right;
+  padding-right: 2px;
+}
+
+.expandBtn {
+  margin-left: 10px;
+
+  img {
+    height: 12px;
+    width: 12px;
+  }
+}
+
+.hidden {
+  display: none;
+}
