@@ -1,10 +1,12 @@
 import React from 'react';
 import faker from 'faker';
+import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 
 import apiService from 'src/services/api-service';
 import useApiService from '../useApiService';
-import { act } from 'react-dom/test-utils';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 const mockSuccessData = {
   message: 'success'
@@ -32,12 +34,23 @@ const mockFailedFetch = () => {
   return Promise.reject(mockErrorData);
 };
 
-const TestingComponent = (props: { isAbortable?: boolean }) => {
+type TestingComponentProps = {
+  isAbortable?: boolean;
+  skip?: boolean;
+};
+
+const TestingComponent = (props: TestingComponentProps) => {
   const params = {
     endpoint: mockEndpoint,
-    isAbortable: props.isAbortable || false
+    ...props
   };
-  const { data, error } = useApiService<{ message: string }>(params);
+  const { loadingState, data, error } = useApiService<{ message: string }>(
+    params
+  );
+
+  if (loadingState === LoadingState.NOT_REQUESTED) {
+    return <div>Data not requested</div>;
+  }
 
   if (data) {
     return <div className="success">{data.message}</div>;
@@ -73,6 +86,20 @@ describe('useApiService', () => {
     expect(apiService.fetch).toHaveBeenCalledWith(mockEndpoint, {});
     expect(wrapper.find('.success').text()).toBe(mockSuccessData.message);
     expect(onAbort).not.toHaveBeenCalled();
+  });
+
+  it('does not fetch data if the `skip` option is set to true', async () => {
+    const wrapper = mount(<TestingComponent skip={true} />);
+    // waiting the same duration of time as in the test where the hook successfully fetches the data
+    await act(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 2);
+      });
+      wrapper.update();
+    });
+
+    expect(apiService.fetch).not.toHaveBeenCalled();
+    expect(wrapper.text()).toBe('Data not requested');
   });
 
   it('returns error if request errored out', async () => {

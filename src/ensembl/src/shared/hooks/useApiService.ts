@@ -7,6 +7,13 @@ import { LoadingState } from 'src/shared/types/loading-state';
 type Params = FetchOptions & {
   endpoint: string;
   isAbortable?: boolean;
+  skip?: boolean;
+};
+
+type StateBeforeRequest = {
+  loadingState: LoadingState.NOT_REQUESTED;
+  data: null;
+  error: null;
 };
 
 type StateAtLoading = {
@@ -27,7 +34,11 @@ type StateAtError = {
   error: APIError;
 };
 
-type State<T> = StateAtLoading | StateAtSuccess<T> | StateAtError;
+type State<T> =
+  | StateBeforeRequest
+  | StateAtLoading
+  | StateAtSuccess<T>
+  | StateAtError;
 
 type LoadingAction = {
   type: 'loading';
@@ -45,8 +56,8 @@ type ErrorAction = {
 
 type Action<T> = LoadingAction | SuccessAction<T> | ErrorAction;
 
-const initialState: StateAtLoading = {
-  loadingState: LoadingState.LOADING,
+const initialState: StateBeforeRequest = {
+  loadingState: LoadingState.NOT_REQUESTED,
   data: null,
   error: null
 };
@@ -79,6 +90,9 @@ const useApiService = <T>(params: Params): State<T> => {
   );
 
   useEffect(() => {
+    if (params.skip) {
+      return;
+    }
     let canUpdate = true;
     dispatch({ type: 'loading' });
     const { endpoint, isAbortable, ...fetchOptions } = params;
@@ -105,7 +119,7 @@ const useApiService = <T>(params: Params): State<T> => {
       canUpdate = false;
       isAbortable && abortController.abort();
     };
-  }, [params.endpoint, params.host]);
+  }, [params.endpoint, params.host, params.skip]);
 
   return state;
 };
