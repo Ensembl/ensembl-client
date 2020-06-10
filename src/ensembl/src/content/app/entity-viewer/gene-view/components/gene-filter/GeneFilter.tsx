@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
-import { isEntityViewerSidebarOpen } from '../../../state/sidebar/entityViewerSidebarSelectors';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
-import chevronUpIcon from 'static/img/shared/chevron-up.svg';
+import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 import RadioGroup, {
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
@@ -17,6 +17,8 @@ type Props = {
   toggleFilter : () => void ;
   isSidebarOpen : boolean;
 };
+
+type OptionValue = string | number | boolean;
 
 const radioData: RadioOptions = [
   { value: 'default', label: 'Default' },
@@ -33,30 +35,25 @@ const GeneFilter = (props: Props) => {
     { [styles.filterBoxFullWidth]: !props.isSidebarOpen }
   );
 
-  const [selectedRadio, setselectedRadio] = useState('default');
+  const [selectedRadio, setselectedRadio] = useState<OptionValue>('default');
 
-  const radioChange = (value: string) => {
+  const radioChange = (value: OptionValue ) => {
     setselectedRadio(value);
   };
-  
+
   const checkboxChange = (isChecked: boolean) => {
     setChecked(isChecked);
-  };  
+  };
 
   return (
     <div className={styles.container}>
-      <div className={styles.filterLabel}>
+      <div className={styles.filterLabel} onClick={props.toggleFilter} >
         Filter & sort
-        <button onClick={props.toggleFilter} className={styles.expandBtn}>
-          <img
-            src={chevronUpIcon}
-            alt={'expand'}
-          />
-        </button>         
+        <ChevronUp  className={styles.chevron}/>
       </div>
       <div className={ filterBoxClassnames }>
         <div className={styles.sort}>
-          <div className={styles.header}>Sort by</div>        
+          <div className={styles.header}>Sort by</div>
           <div className={styles.sortContent}>
             <RadioGroup
               {...props}
@@ -108,7 +105,7 @@ const GeneFilter = (props: Props) => {
               checked={isChecked}
               label="processed transcript"
               onChange={checkboxChange}
-            /> 
+            />
             </div>
             <div className={styles.filterColumn}>
               <Checkbox
@@ -132,7 +129,7 @@ const GeneFilter = (props: Props) => {
                 checked={isChecked}
                 label="no APRIS"
                 onChange={checkboxChange}
-              /> 
+              />
             </div>
             <div className={styles.filterColumn}>
               <Checkbox
@@ -156,11 +153,11 @@ const GeneFilter = (props: Props) => {
                 checked={isChecked}
                 label="TSL:2"
                 onChange={checkboxChange}
-              /> 
-            </div>            
+              />
+            </div>
           </div>
         </div>
-        <CloseIcon className={styles.closeIcon} onClick={props.toggleFilter} />    
+        <CloseIcon className={styles.closeIcon} onClick={props.toggleFilter} />
       </div>
     </div>
   );

@@ -25,7 +25,7 @@ import GeneFilter from '../gene-filter/GeneFilter';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
-import chevronDownIcon from 'static/img/shared/chevron-down.svg';
+import {ReactComponent as ChevronDown} from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
 
@@ -46,17 +46,12 @@ const DefaultTranscriptslist = (props: Props) => {
       <div className={styles.header}>
         {isFilterOpen && <GeneFilter toggleFilter={toggleFilter} />}
         <div className={styles.row}>
-          <div className={isFilterOpen ?  styles.hidden : styles.filterLabel}>
+          <div className={isFilterOpen ?  styles.hidden : styles.filterLabel} onClick={toggleFilter}>
             Filter & sort
-            <button onClick={toggleFilter} className={styles.expandBtn}>
-              <img
-                src={chevronDownIcon}
-                alt={'collapse'}
-              />
-            </button>            
-          </div>          
+            <ChevronDown className={styles.chevron}/>
+          </div>
           <div className={styles.right}>Transcript ID</div>
-        </div>       
+        </div>
       </div>
       <div className={styles.content}>
         <StripedBackground {...props} />

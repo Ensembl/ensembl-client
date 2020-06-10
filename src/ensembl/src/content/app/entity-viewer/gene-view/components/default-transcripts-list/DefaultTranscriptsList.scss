@@ -55,15 +55,14 @@
   grid-column: 1/2;
   text-align: right;
   padding-right: 2px;
+  cursor: pointer;
 }
 
-.expandBtn {
+.chevron {
   margin-left: 10px;
-
-  img {
-    height: 12px;
-    width: 12px;
-  }
+  margin-bottom: -3px;
+  height: 12px;
+  width: 12px;
 }
 
 .hidden {
