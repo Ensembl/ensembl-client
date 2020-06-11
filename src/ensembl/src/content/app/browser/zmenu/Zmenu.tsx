@@ -25,6 +25,7 @@ import {
   ToolboxExpandableContent
 } from 'src/shared/components/toolbox';
 import ZmenuContent from './ZmenuContent';
+import ZmenuInstantDownload from './ZmenuInstantDownload';
 
 import { ZmenuData, ZmenuAction } from './zmenu-types';
 
@@ -55,9 +56,6 @@ const Zmenu = (props: ZmenuProps) => {
     direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
   const mainContent = <ZmenuContent content={props.content} />;
-  const footerContent = (
-    <div className={styles.zmenuFooterContent}>Zmenu footer content</div>
-  );
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
@@ -70,7 +68,7 @@ const Zmenu = (props: ZmenuProps) => {
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={footerContent}
+            footerContent={getToolboxFooterContent(props.id)}
           />
         </Toolbox>
       )}
@@ -95,5 +93,11 @@ const chooseDirection = (params: ZmenuProps) => {
   const { x } = params.anchor_coordinates;
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;
 };
+
+const getToolboxFooterContent = (id: string) => (
+  <div className={styles.zmenuFooterContent}>
+    <ZmenuInstantDownload id={id} />
+  </div>
+);
 
 export default Zmenu;
