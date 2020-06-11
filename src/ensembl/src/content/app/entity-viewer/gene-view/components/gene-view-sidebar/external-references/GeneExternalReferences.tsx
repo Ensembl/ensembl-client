@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
+import { useParams } from 'react-router';
 
 import {
   Accordion,
@@ -29,67 +32,147 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { RootState } from 'src/store';
-import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
-import { ExternalLink } from 'src/content/app/entity-viewer/types/externalLink';
+import {
+  CrossReference,
+  CrossReferenceGroup
+} from 'src/content/app/entity-viewer/types/crossReference';
+import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 
 import styles from './GeneExternalReferences.scss';
 
-type Props = {
-  sidebarPayload: EntityViewerSidebarPayload | null;
+const QUERY = gql`
+  query Gene($stable_id: String!, $genome_id: String!) {
+    gene(byId: { stable_id: $stable_id, genome_id: $genome_id }) {
+      name
+      stable_id
+      cross_references {
+        id
+        name
+        description
+        url
+        source {
+          id
+          name
+          url
+        }
+      }
+      transcripts {
+        stable_id
+        cross_references {
+          id
+          name
+          description
+          url
+          source {
+            id
+            name
+            url
+          }
+        }
+      }
+    }
+  }
+`;
+
+type Transcript = {
+  stable_id: string;
+  cross_references: CrossReference[];
 };
 
-const GeneExternalReferences = (props: Props) => {
-  if (!props.sidebarPayload) {
+type Gene = {
+  name: string;
+  stable_id: string;
+  transcripts: Transcript[];
+  cross_references: CrossReference[];
+};
+
+const buildCrossReferenceGroups = (crossReferences: CrossReference[]) => {
+  const crossReferenceGroups: { [key: string]: CrossReferenceGroup } = {};
+
+  crossReferences.forEach((crossReference) => {
+    const sourceId = crossReference.source.id;
+
+    if (!crossReferenceGroups[sourceId]) {
+      crossReferenceGroups[sourceId] = {
+        source: crossReference.source,
+        references: []
+      };
+    }
+
+    crossReferenceGroups[sourceId].references.push({
+      id: crossReference.id,
+      url: crossReference.url,
+      name: crossReference.name,
+      description: crossReference.description
+    });
+  });
+
+  return crossReferenceGroups;
+};
+
+const GeneExternalReferences = () => {
+  const params: EntityViewerParams = useParams();
+
+  const entityId = params.entityId?.split(':').pop();
+
+  // TODO: The genomeId is temporarily hardcoded here as Thoas does ot have date for homo_sapiens_GCA_000001405_27.
+  const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
+    variables: {
+      stable_id: entityId,
+      genome_id: 'homo_sapiens_GCA_000001405_28'
+    },
+    skip: !entityId
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data || !data.gene) {
     return <div>No data to display</div>;
   }
+
+  const crossReferenceGroups = buildCrossReferenceGroups(
+    data.gene.cross_references
+  );
+  const { transcripts } = data.gene;
+
   return (
     <div className={styles.xrefsContainer}>
       <div className={styles.geneDetails}>
-        <div className={styles.geneSymbol}>
-          {props.sidebarPayload.gene.symbol}
-        </div>
-        <div className={styles.stableId}>{props.sidebarPayload.gene.id}</div>
+        <div className={styles.geneSymbol}>{data.gene.name}</div>
+        <div className={styles.stableId}>{data.gene.stable_id}</div>
       </div>
 
       <div className={styles.sectionHead}>Gene</div>
-      {props.sidebarPayload.gene?.xrefs &&
-        props.sidebarPayload.gene.xrefs.map((xref, key) => {
-          if (xref.links.length === 1) {
+      {data.gene.cross_references &&
+        Object.values(crossReferenceGroups).map((crossReferenceGroup, key) => {
+          if (crossReferenceGroup.references.length === 1) {
             return (
               <div key={key}>
                 <ExternalReference
-                  label={xref.links[0].name}
-                  to={xref.links[0].url}
-                  linkText={xref.links[0].value}
+                  label={crossReferenceGroup.source.name}
+                  to={crossReferenceGroup.references[0].url}
+                  linkText={crossReferenceGroup.references[0].id}
                 />
               </div>
             );
           } else {
-            return xref.links[0].name === xref.source_name
-              ? renderXrefGroupWithSameLabels(xref, key)
-              : renderXrefGroupWithDifferentLabels(xref, key);
+            return crossReferenceGroup.references[0].name ===
+              crossReferenceGroup.source.name
+              ? renderXrefGroupWithSameLabels(crossReferenceGroup, key)
+              : renderXrefGroupWithDifferentLabels(crossReferenceGroup, key);
           }
         })}
 
-      {props.sidebarPayload.gene.transcripts && (
+      {transcripts && (
         <div>
           <div className={styles.sectionHead}>Transcripts</div>
-          {props.sidebarPayload.gene.transcripts.map((transcript, key) => {
+          {transcripts.map((transcript, key) => {
             return (
-              <div key={key} className={styles.transcriptWrapper}>
-                <a href="">{transcript.id}</a>
-                {transcript.xrefs && (
-                  <div className={styles.transcriptXrefs}>
-                    {transcript.xrefs.map((xref, key) => (
-                      <ExternalReference
-                        label={xref.name}
-                        to={xref.url}
-                        linkText={xref.value}
-                        key={key}
-                      />
-                    ))}
-                  </div>
-                )}
+              <div key={key}>
+                {' '}
+                <RenderTranscriptXrefGroup transcript={transcript} />
               </div>
             );
           })}
@@ -99,16 +182,49 @@ const GeneExternalReferences = (props: Props) => {
   );
 };
 
-const renderXrefGroupWithSameLabels = (xref: ExternalLink, key: number) => {
+const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
+  const { transcript } = props;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className={styles.transcriptWrapper}>
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={styles.transcriptId}
+      >
+        {transcript.stable_id}
+      </div>
+      {transcript.cross_references && isExpanded && (
+        <div className={styles.transcriptXrefs}>
+          {transcript.cross_references.map((xref, key) => (
+            <ExternalReference
+              label={xref.source.name}
+              to={xref.url}
+              linkText={xref.id}
+              key={key}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const renderXrefGroupWithSameLabels = (
+  crossReferenceGroup: CrossReferenceGroup,
+  key: number
+) => {
   return (
     <div key={key} className={styles.xrefGroupWithSameLabel}>
-      <div className={styles.xrefGroupSourceName}>{xref.source_name}</div>
+      <div className={styles.xrefGroupSourceName}>
+        {crossReferenceGroup.source.name}
+      </div>
       <div className={styles.xrefGroupLinks}>
-        {xref.links.map((entry, key) => (
+        {crossReferenceGroup.references.map((entry, key) => (
           <ExternalReference
             label={''}
             to={entry.url}
-            linkText={entry.value}
+            linkText={entry.id}
             key={key}
           />
         ))}
@@ -118,7 +234,7 @@ const renderXrefGroupWithSameLabels = (xref: ExternalLink, key: number) => {
 };
 
 const renderXrefGroupWithDifferentLabels = (
-  xref: ExternalLink,
+  crossReferenceGroup: CrossReferenceGroup,
   key: number
 ) => {
   return (
@@ -127,16 +243,16 @@ const renderXrefGroupWithDifferentLabels = (
         <AccordionItem className={styles.xrefAccordionItem}>
           <AccordionItemHeading className={styles.xrefAccordionHeader}>
             <AccordionItemButton className={styles.xrefAccordionButton}>
-              {xref.source_name}
+              {crossReferenceGroup.source.name}
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel className={styles.xrefAccordionItemContent}>
             <div>
-              {xref.links.map((entry, key) => (
+              {crossReferenceGroup.references.map((entry, key) => (
                 <ExternalReference
-                  label={entry.name}
+                  label={entry.description}
                   to={entry.url}
-                  linkText={entry.value}
+                  linkText={entry.id}
                   key={key}
                 />
               ))}

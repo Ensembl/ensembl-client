@@ -76,6 +76,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
         ...parseFocusIdFromUrl(params.entityId)
       })
     : null;
+
   if (entityId && entityId !== activeEntityId) {
     dispatch(updateEnsObject(entityId));
     dispatch(fetchSidebarPayload());

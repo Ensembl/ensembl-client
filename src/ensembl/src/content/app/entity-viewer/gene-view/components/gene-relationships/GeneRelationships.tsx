@@ -29,10 +29,16 @@ import { RootState } from 'src/store';
 
 import styles from './GeneRelationships.scss';
 
+// TODO: the isDisabled flags are hardcoded here since we do not have any data available.
+// We need to update this logic once we have the data available
 const tabsData: Tab[] = [
-  { title: 'Orthologues' },
-  { title: 'Gene families' },
-  { title: 'Gene panels' }
+  { title: GeneRelationshipsTabName.ORTHOLOGUES, isDisabled: true },
+  { title: GeneRelationshipsTabName.PARALOGUES, isDisabled: true },
+  { title: GeneRelationshipsTabName.GENE_FAMILIES, isDisabled: true },
+  { title: GeneRelationshipsTabName.GENE_CLUSTERS, isDisabled: true },
+  { title: GeneRelationshipsTabName.GENE_PANELS, isDisabled: true },
+  { title: GeneRelationshipsTabName.GENE_NEIGHBOUTHOOD, isDisabled: true },
+  { title: GeneRelationshipsTabName.GENE_SIMILARITY, isDisabled: true }
 ];
 
 const tabClassNames = {
@@ -41,11 +47,24 @@ const tabClassNames = {
 
 type Props = {
   isSidebarOpen: boolean;
-  selectedTabName: GeneRelationshipsTabName;
+  selectedTabName: GeneRelationshipsTabName | null;
   setActiveGeneRelationshipsTab: (tab: string) => void;
 };
 
 const GeneRelationships = (props: Props) => {
+  let { selectedTabName } = props;
+
+  // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
+  const selectedTabIndex = tabsData.findIndex(
+    (tab) => tab.title === selectedTabName
+  );
+  if (!selectedTabIndex || tabsData[selectedTabIndex].isDisabled) {
+    const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
+
+    selectedTabName =
+      (nextAvailableTab?.title as GeneRelationshipsTabName) || null;
+  }
+
   const TabWrapper = () => {
     const onTabChange = (tab: string) => {
       props.setActiveGeneRelationshipsTab(tab);
@@ -54,11 +73,20 @@ const GeneRelationships = (props: Props) => {
     return (
       <Tabs
         tabs={tabsData}
-        selectedTab={props.selectedTabName}
+        selectedTab={selectedTabName}
         classNames={tabClassNames}
         onTabChange={onTabChange}
       />
     );
+  };
+
+  const getCurrentTabContent = () => {
+    switch (selectedTabName) {
+      case GeneRelationshipsTabName.GENE_FAMILIES:
+        return <>Gene families data</>;
+      default:
+        return <>Data for these views will be available soon...</>;
+    }
   };
 
   return (
@@ -69,7 +97,7 @@ const GeneRelationships = (props: Props) => {
         body: styles.panelBody
       }}
     >
-      <div>Panel content is coming...</div>
+      {getCurrentTabContent()}
     </Panel>
   );
 };

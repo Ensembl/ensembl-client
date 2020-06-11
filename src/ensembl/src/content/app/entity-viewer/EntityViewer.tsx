@@ -26,10 +26,7 @@ import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import {
-  setDataFromUrl,
-  updateEnsObject
-} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
+import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -51,7 +48,6 @@ type Props = {
   isSidebarOpen: boolean;
   viewportWidth: BreakpointWidth;
   setDataFromUrl: (params: EntityViewerParams) => void;
-  updateEnsObject: (objectId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleSidebar: (status?: SidebarStatus) => void;
 };
@@ -110,8 +106,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = {
   setDataFromUrl,
   fetchGenomeData,
-  toggleSidebar,
-  updateEnsObject
+  toggleSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

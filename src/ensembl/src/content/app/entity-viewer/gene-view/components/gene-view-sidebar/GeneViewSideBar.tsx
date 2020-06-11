@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
+import ApolloClient from 'apollo-boost';
 import { connect } from 'react-redux';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
 import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
@@ -29,14 +31,19 @@ type Props = {
   activeTabName: SidebarTabName | null;
 };
 
-const GeneViewSidebar = (props: Props) => {
-  if (props.activeTabName === SidebarTabName.OVERVIEW) {
-    return <GeneOverview />;
-  } else if (props.activeTabName === SidebarTabName.EXTERNAL_REFERENCES) {
-    return <GeneExternalReferences />;
-  }
+const client = new ApolloClient({
+  uri: 'http://hx-rke-wp-webadmin-13-worker-1.caas.ebi.ac.uk:31497'
+});
 
-  return null;
+const GeneViewSidebar = (props: Props) => {
+  return (
+    <ApolloProvider client={client}>
+      {props.activeTabName === SidebarTabName.OVERVIEW && <GeneOverview />}
+      {props.activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
+        <GeneExternalReferences />
+      )}
+    </ApolloProvider>
+  );
 };
 
 const mapStateToProps = (state: RootState) => ({

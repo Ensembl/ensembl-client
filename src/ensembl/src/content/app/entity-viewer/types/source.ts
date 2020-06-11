@@ -16,6 +16,6 @@
 
 export type Source = {
   name: string;
-  value: string;
+  id: string;
   url: string;
 };
