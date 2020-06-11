@@ -9,7 +9,8 @@ import { getQueryParamsMap } from 'src/global/globalHelper';
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
-  buildEnsObjectId
+  buildEnsObjectId,
+  parseEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 
@@ -76,7 +77,7 @@ const useBrowserRouting = () => {
       }
       return;
     }
-
+console.log(activeEnsObjectId);
     const isSameUrl =
       genomeId === activeGenomeId &&
       newFocusId === activeEnsObjectId &&
@@ -91,8 +92,10 @@ const useBrowserRouting = () => {
       activeEnsObjectId: newFocusId,
       chrLocation
     };
-
-    if (focus && !chrLocation) {
+    console.log(focus);
+    if (!focus && activeEnsObjectId) {
+      dispatch(replace(urlFor.browser({focus: buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId))})));
+    } else if (focus && !chrLocation) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        in order to prevent creating a previouslyViewedObject entry
