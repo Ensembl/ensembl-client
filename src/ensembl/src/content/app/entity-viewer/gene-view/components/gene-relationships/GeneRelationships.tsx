@@ -16,10 +16,17 @@
 
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { push, Push } from 'connected-react-router';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getEntityViewerActiveGeneRelationships } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setActiveGeneRelationshipsTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+
+import {
+  getGeneViewPath,
+  GeneViewChildTab
+} from 'src/content/app/entity-viewer/gene-view/shared/views-helpers';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
@@ -48,15 +55,16 @@ const tabClassNames = {
 type Props = {
   isSidebarOpen: boolean;
   selectedTabName: GeneRelationshipsTabName | null;
-  changeViewMode: (tab?: string) => void;
+  push: Push;
   setActiveGeneRelationshipsTab: (tab: string) => void;
 };
 
 const GeneRelationships = (props: Props) => {
+  const params: { [key: string]: string } = useParams();
   let { selectedTabName } = props;
 
   useEffect(() => {
-    props.changeViewMode(selectedTabName);
+    props.push(getGeneViewPath(params, selectedTabName));
   }, []);
 
   // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
@@ -72,7 +80,7 @@ const GeneRelationships = (props: Props) => {
 
   const TabWrapper = () => {
     const onTabChange = (tab: string) => {
-      props.changeViewMode(tab);
+      props.push(getGeneViewPath(params, tab as GeneViewChildTab));
     };
 
     return (
@@ -113,6 +121,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
+  push,
   setActiveGeneRelationshipsTab
 };
 

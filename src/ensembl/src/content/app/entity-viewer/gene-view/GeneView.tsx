@@ -31,7 +31,6 @@ import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/e
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getViewModeName } from './shared/views-helpers';
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
@@ -154,12 +153,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     }
   }, [props.entityViewerQueryParams.view]);
 
-  const changeViewMode = (tab?: string) => {
-    const view = getViewModeName(props.selectedGeneTabName, tab);
-    const newPath = urlFor.entityViewer({ genomeId, entityId, view });
-    props.push(newPath);
-  };
-
   return (
     <div className={styles.geneView}>
       <div className={styles.featureImage}>
@@ -181,16 +174,15 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             <DefaultTranscriptslist
               gene={props.gene}
               rulerTicks={basePairsRulerTicks}
-              changeViewMode={changeViewMode}
             />
           )}
 
         {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
-          <GeneFunction changeViewMode={changeViewMode} gene={props.gene} />
+          <GeneFunction gene={props.gene} />
         )}
 
         {props.selectedGeneTabName === GeneViewTabName.GENE_RELATIONSHIPS && (
-          <GeneRelationships changeViewMode={changeViewMode} />
+          <GeneRelationships />
         )}
       </div>
     </div>

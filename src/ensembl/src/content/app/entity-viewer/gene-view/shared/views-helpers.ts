@@ -16,9 +16,9 @@
 
 import {
   GeneFunctionTabName,
-  GeneRelationshipsTabName,
-  GeneViewTabName
+  GeneRelationshipsTabName
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 export const geneFunctionViews: { [key: string]: string } = {
   protein: GeneFunctionTabName.PROTEINS,
@@ -35,10 +35,9 @@ export const geneRelationshipsViews: { [key: string]: string } = {
   gene_panels: GeneRelationshipsTabName.GENE_PANELS
 };
 
-export const getViewModeName = (
-  geneViewTab: GeneViewTabName,
-  childTab?: string
-) => {
+export type GeneViewChildTab = GeneFunctionTabName | GeneRelationshipsTabName;
+
+const getViewModeName = (childTab: GeneViewChildTab | null) => {
   const allGeneViewModes = {
     ...geneFunctionViews,
     ...geneRelationshipsViews
@@ -47,4 +46,14 @@ export const getViewModeName = (
   return Object.keys(allGeneViewModes).find(
     (view) => allGeneViewModes[view] === childTab
   );
+};
+
+export const getGeneViewPath = (
+  params: { [key: string]: string },
+  childTab: GeneViewChildTab | null
+) => {
+  const view = getViewModeName(childTab);
+  const { genomeId, entityId } = params;
+
+  return urlFor.entityViewer({ genomeId, entityId, view });
 };

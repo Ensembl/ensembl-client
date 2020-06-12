@@ -16,10 +16,17 @@
 
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { push, Push } from 'connected-react-router';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getEntityViewerActiveGeneFunction } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setActiveGeneFunctionTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+
+import {
+  getGeneViewPath,
+  GeneViewChildTab
+} from 'src/content/app/entity-viewer/gene-view/shared/views-helpers';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
@@ -51,18 +58,19 @@ type Props = {
   gene: Gene;
   isNarrow: boolean;
   selectedTabName: GeneFunctionTabName | null;
-  changeViewMode: (tab?: string) => void;
+  push: Push;
   setActiveGeneFunctionTab: (tab: string) => void;
 };
 
 const GeneFunction = (props: Props) => {
+  const params: { [key: string]: string } = useParams();
   const {
     gene: { transcripts }
   } = props;
   let { selectedTabName } = props;
 
   useEffect(() => {
-    props.changeViewMode(selectedTabName);
+    props.push(getGeneViewPath(params, selectedTabName));
   }, []);
 
   // Check if we have at least one protein coding transcript
@@ -93,7 +101,7 @@ const GeneFunction = (props: Props) => {
 
   const TabWrapper = () => {
     const onTabChange = (tab: string) => {
-      props.changeViewMode(tab);
+      props.push(getGeneViewPath(params, tab as GeneViewChildTab));
     };
 
     return (
@@ -134,6 +142,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
+  push,
   setActiveGeneFunctionTab
 };
 
