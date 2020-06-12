@@ -32,7 +32,7 @@ const devServerConfig = {
   // rules to proxy requests to the backend server in development
   proxy: {
     '/api': {
-      target: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:32014',
+      target: 'https://staging-2020.ensembl.org',
       changeOrigin: true,
       secure: false
     },
