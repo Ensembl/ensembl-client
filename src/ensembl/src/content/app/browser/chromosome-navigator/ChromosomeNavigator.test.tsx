@@ -128,7 +128,10 @@ describe('Chromosome Navigator', () => {
           expect(areas.at(index).prop('x')).toBe(x);
         }
         if (width !== undefined) {
-          expect(areas.at(index).prop('width')).toBe(width);
+          const widthDifference = Math.abs(
+            areas.at(index).prop('width') - width
+          );
+          expect(widthDifference).toBeLessThanOrEqual(1);
         }
       });
     };
