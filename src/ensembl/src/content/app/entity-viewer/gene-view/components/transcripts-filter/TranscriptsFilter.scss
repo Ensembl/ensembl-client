@@ -23,7 +23,7 @@
 
 .filterBox {
   display: grid;
-  grid-template-columns: 300px minmax(245px,auto) 20px;
+  grid-template-columns: 270px minmax(210px,auto) 20px;
   background-color: $soft-black;
   color: $white;
   height: auto;
@@ -53,7 +53,7 @@
 
 .filterContent {
   display: grid;
-  grid-template-columns: 245px 245px 245px;
+  grid-template-columns: 210px 210px 210px;
   height: auto;
 }
 
