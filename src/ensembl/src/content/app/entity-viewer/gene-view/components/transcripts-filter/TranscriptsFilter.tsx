@@ -10,11 +10,11 @@ import RadioGroup, {
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
 
-import styles from './GeneFilter.scss';
+import styles from './TranscriptsFilter.scss';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 type Props = {
-  toggleFilter : () => void ;
+  toggleFilter : () => void;
   isSidebarOpen : boolean;
 };
 
@@ -26,7 +26,7 @@ const radioData: RadioOptions = [
   { value: 'length_shortest', label: 'Spliced length: shortest - longest' }
 ];
 
-const GeneFilter = (props: Props) => {
+const TranscriptsFilter = (props: Props) => {
 
   const [isChecked, setChecked] = useState(false);
 
@@ -169,4 +169,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export default connect(mapStateToProps)(GeneFilter);
+export default connect(mapStateToProps)(TranscriptsFilter);

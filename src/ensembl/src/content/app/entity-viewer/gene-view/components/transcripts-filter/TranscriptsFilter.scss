@@ -26,7 +26,6 @@
   grid-template-columns: 300px minmax(245px,auto) 20px;
   background-color: $soft-black;
   color: $white;
-  width: calc(100% - 320px);
   height: auto;
   text-align: left;
   padding: 15px 15px 45px 20px;
@@ -36,6 +35,14 @@
 
   &FullWidth {
     width: 100%;
+  }
+
+  @media screen and (min-width: 1600px) {
+    width: calc(100% - 320px);
+
+    &FullWidth {
+      width: 100%;
+    }
   }
 }
 

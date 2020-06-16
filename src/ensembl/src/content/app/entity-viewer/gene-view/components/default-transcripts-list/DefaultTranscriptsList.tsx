@@ -20,7 +20,7 @@ import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/help
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
-import GeneFilter from '../gene-filter/GeneFilter';
+import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -39,17 +39,19 @@ const DefaultTranscriptslist = (props: Props) => {
   const sortedTranscripts = defaultSort(gene.transcripts);
   const [isFilterOpen, setFilterOpen] = useState(false);
 
-  const toggleFilter = () => { isFilterOpen ? setFilterOpen(false) : setFilterOpen(true); }
+  const toggleFilter = () => {  setFilterOpen(!isFilterOpen); }
 
   return (
     <div>
       <div className={styles.header}>
-        {isFilterOpen && <GeneFilter toggleFilter={toggleFilter} />}
+        {isFilterOpen && <TranscriptsFilter toggleFilter={toggleFilter} />}
         <div className={styles.row}>
-          <div className={isFilterOpen ?  styles.hidden : styles.filterLabel} onClick={toggleFilter}>
-            Filter & sort
-            <ChevronDown className={styles.chevron}/>
-          </div>
+          { !isFilterOpen &&
+            <div className={styles.filterLabel} onClick={toggleFilter}>
+              Filter & sort
+              <ChevronDown className={styles.chevron}/>
+            </div>
+          }
           <div className={styles.right}>Transcript ID</div>
         </div>
       </div>
