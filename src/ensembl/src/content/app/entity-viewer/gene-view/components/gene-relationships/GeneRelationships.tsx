@@ -63,14 +63,19 @@ const GeneRelationships = (props: Props) => {
   const params: { [key: string]: string } = useParams();
   let { selectedTabName } = props;
 
+  const changeTab = (tab: string) => {
+    props.push(getGeneViewPath(params, tab as GeneViewChildTab));
+  };
+
   useEffect(() => {
-    props.push(getGeneViewPath(params, selectedTabName));
+    changeTab(selectedTabName as GeneViewChildTab);
   }, []);
 
   // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
   const selectedTabIndex = tabsData.findIndex(
     (tab) => tab.title === selectedTabName
   );
+
   if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
     const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
 
@@ -79,16 +84,12 @@ const GeneRelationships = (props: Props) => {
   }
 
   const TabWrapper = () => {
-    const onTabChange = (tab: string) => {
-      props.push(getGeneViewPath(params, tab as GeneViewChildTab));
-    };
-
     return (
       <Tabs
         tabs={tabsData}
         selectedTab={selectedTabName}
         classNames={tabClassNames}
-        onTabChange={onTabChange}
+        onTabChange={changeTab}
       />
     );
   };

@@ -69,8 +69,12 @@ const GeneFunction = (props: Props) => {
   } = props;
   let { selectedTabName } = props;
 
+  const changeTab = (tab: string) => {
+    props.push(getGeneViewPath(params, tab as GeneViewChildTab));
+  };
+
   useEffect(() => {
-    props.push(getGeneViewPath(params, selectedTabName));
+    changeTab(selectedTabName as GeneViewChildTab);
   }, []);
 
   // Check if we have at least one protein coding transcript
@@ -100,16 +104,12 @@ const GeneFunction = (props: Props) => {
   }
 
   const TabWrapper = () => {
-    const onTabChange = (tab: string) => {
-      props.push(getGeneViewPath(params, tab as GeneViewChildTab));
-    };
-
     return (
       <Tabs
         tabs={tabsData}
         selectedTab={selectedTabName}
         classNames={tabClassNames}
-        onTabChange={onTabChange}
+        onTabChange={changeTab}
       />
     );
   };
