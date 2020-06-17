@@ -26,8 +26,11 @@ import {
   getFirstAndLastCodingExonIndexes,
   getNumberOfCodingExons
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
@@ -36,9 +39,6 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
-import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 type ItemInfoProps = {
   gene: Gene;
