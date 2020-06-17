@@ -20,6 +20,8 @@
 import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
 
+import JSONValue from 'src/shared/types/JSON';
+
 export enum HTTPMethod {
   GET = 'GET',
   POST = 'POST',
@@ -28,17 +30,24 @@ export enum HTTPMethod {
   DELETE = 'DELETE'
 }
 
+// Note: Currently does not conform to Core Data Modelling definition of an API error
+export type APIError = {
+  status: number;
+  message: string | JSONValue;
+};
+
 type ApiServiceConfig = {
   host: string;
 };
 
-type FetchOptions = {
+export type FetchOptions = {
   host?: string;
   method?: HTTPMethod;
   headers?: { [key: string]: string };
   body?: string; // stringified json
   preserveEndpoint?: boolean;
   noCache?: boolean;
+  signal?: AbortSignal;
 };
 
 const defaultMethod = HTTPMethod.GET;
@@ -75,7 +84,8 @@ class ApiService {
     return {
       method: options.method || defaultMethod,
       headers: { ...defaultHeaders, ...options.headers },
-      body: options.body
+      body: options.body,
+      signal: options.signal
     };
   }
 
@@ -107,7 +117,9 @@ class ApiService {
       }
       return processedResponse;
     } catch (error) {
-      throw error;
+      if (error.name !== 'AbortError') {
+        throw error;
+      }
     }
   }
 
