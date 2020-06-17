@@ -16,7 +16,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { push, Push } from 'connected-react-router';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { useParams } from 'react-router-dom';
@@ -50,7 +49,6 @@ type GeneViewProps = {
   geneId: string | null;
   entityViewerQueryParams: { [key: string]: string };
   selectedGeneTabName: GeneViewTabName;
-  push: Push;
   setGeneViewMode: (view: string) => void;
 };
 
@@ -131,7 +129,6 @@ const GeneView = (props: GeneViewProps) => {
       gene={data.gene}
       entityViewerQueryParams={props.entityViewerQueryParams}
       selectedGeneTabName={props.selectedGeneTabName}
-      push={props.push}
       setGeneViewMode={props.setGeneViewMode}
     />
   );
@@ -197,7 +194,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  push,
   setGeneViewMode
 };
 
