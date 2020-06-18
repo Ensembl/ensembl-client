@@ -363,6 +363,7 @@ export const changeFocusObject = (
   }
 
   dispatch(updatePreviouslyViewedObjectsAndSave());
+
   browserMessagingService.send('bpane', {
     focus: objectId,
     'message-counter': messageCount
