@@ -201,14 +201,15 @@ Test_N_Build:internal:
   only:
   - dev
 
-Test_N_Build:feature:
+Test_N_Build:review:
   extends: .build-static
   variables:
     ENVIRONMENT: development
     API_HOST: ""
 
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
 
 # Job to build nginx docker image for staging environment (EHK k8s cluster)
 Nginx:Staging-EHK:
@@ -274,16 +275,17 @@ Nginx:Internal-WP:
   needs:
     - Test_N_Build:internal
 
-Nginx:feature:
+Nginx:review:
   extends: .build-nginx-ehk
   variables:
     DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
 
   needs:
-    - Test_N_Build:feature
+    - Test_N_Build:review
 
 # Job to deploy to staging environment (EHK k8s cluster)
 Staging:EHK-HH:
@@ -407,12 +409,13 @@ Feature:EHK-HH:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     KUBE_CONTEXT: ens-dev-ctx
 
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
 
   needs:
-    - Test_N_Build:feature
-    - "Nginx:feature"
+    - Test_N_Build:review
+    - Nginx:review
 
 Review:WP-HX:
   extends: .deploy-wp-review
@@ -424,11 +427,12 @@ Review:WP-HX:
     on_stop: stop_review
     kubernetes:
       namespace: ensembl-dev
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
   needs:
-    - Test_N_Build:feature
-    - Nginx:feature
+    - Test_N_Build:review
+    - Nginx:review
 
 stop_review:
   extends: .stop-wp-review
@@ -437,5 +441,6 @@ stop_review:
     action: stop
     kubernetes:
       namespace: ensembl-dev
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
