@@ -158,11 +158,11 @@ Test:
   - npm run check-types
   - npm run test
 
+  only:
+  - /^nodeploy\/.*$/
   except:
   - dev
   - master
-  - /^feature\/.*$/
-  - /^migration\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
@@ -210,6 +210,7 @@ Test_N_Build:review:
   except:
   - dev
   - master
+  - /^nodeploy\/.*$/
 
 # Job to build nginx docker image for staging environment (EHK k8s cluster)
 Nginx:Staging-EHK:
@@ -283,6 +284,7 @@ Nginx:review:
   except:
   - dev
   - master
+  - /^nodeploy\/.*$/
 
   needs:
     - Test_N_Build:review
@@ -412,6 +414,7 @@ Feature:EHK-HH:
   except:
   - dev
   - master
+  - /^nodeploy\/.*$/
 
   needs:
     - Test_N_Build:review
@@ -430,6 +433,7 @@ Review:WP-HX:
   except:
   - dev
   - master
+  - /^nodeploy\/.*$/
   needs:
     - Test_N_Build:review
     - Nginx:review
@@ -444,3 +448,4 @@ stop_review:
   except:
   - dev
   - master
+  - /^nodeploy\/.*$/
