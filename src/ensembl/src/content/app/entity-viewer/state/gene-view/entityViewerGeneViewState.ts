@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-export type EntityViewerGeneFunctionState = {
-  selectedTabName: GeneFunctionTabName;
-};
-
-export type EntityViewerGeneRelationshipsState = {
-  selectedTabName: GeneRelationshipsTabName;
-};
-
 export type EntityViewerGeneViewUIState = {
-  selectedGeneTabName: GeneViewTabName;
-  geneFunction: EntityViewerGeneFunctionState;
-  geneRelationships: EntityViewerGeneRelationshipsState;
+  view: View | null;
 };
 
 export type EntityViewerGeneViewState = Readonly<{
@@ -33,6 +23,18 @@ export type EntityViewerGeneViewState = Readonly<{
     [geneId: string]: EntityViewerGeneViewUIState;
   };
 }>;
+
+export enum View {
+  PROTEIN = 'protein',
+  VARIANTS = 'variants',
+  PHENOTYPES = 'phenotypes',
+  GENE_EXPRESSION = 'gene_expression',
+  GENE_ONTOLOGY = 'gene_ontology',
+  GENE_PATHWAYS = 'gene_pathways',
+  ORTHOLOGUES = 'orthologues',
+  GENE_FAMILIES = 'gene_families',
+  GENE_PANELS = 'gene_panels'
+}
 
 export enum GeneViewTabName {
   TRANSCRIPTS = 'Transcripts',
@@ -51,22 +53,120 @@ export enum GeneFunctionTabName {
 
 export enum GeneRelationshipsTabName {
   ORTHOLOGUES = 'Orthologues',
-  PARALOGUES = 'Paralogues',
   GENE_FAMILIES = 'Gene families',
-  GENE_CLUSTERS = 'Gene clusters',
-  GENE_PANELS = 'Gene panels',
-  GENE_NEIGHBOUTHOOD = 'Gene neighbouthood',
-  GENE_SIMILARITY = 'Gene similarity within-genome'
+  GENE_PANELS = 'Gene panels'
 }
 
-export const defaultEntityViewerGeneViewUIState = {
-  selectedGeneTabName: GeneViewTabName.TRANSCRIPTS,
-  geneFunction: {
-    selectedTabName: null
-  },
-  geneRelationships: {
-    selectedTabName: null
-  }
+export type GeneViewTabData = {
+  view: View | '';
+  primaryTab: GeneViewTabName;
+  secondaryTab: GeneFunctionTabName | GeneRelationshipsTabName | null;
+};
+
+export const transcriptsTabData: GeneViewTabData = {
+  view: '',
+  primaryTab: GeneViewTabName.TRANSCRIPTS,
+  secondaryTab: null
+};
+
+// using Map to guarantee the order of the inserted elements
+export const GeneViewTabMap: Map<View, GeneViewTabData> = new Map();
+GeneViewTabMap.set(View.PROTEIN, {
+  view: View.PROTEIN,
+  primaryTab: GeneViewTabName.GENE_FUNCTION,
+  secondaryTab: GeneFunctionTabName.PROTEINS
+});
+GeneViewTabMap.set(View.VARIANTS, {
+  view: View.VARIANTS,
+  primaryTab: GeneViewTabName.GENE_FUNCTION,
+  secondaryTab: GeneFunctionTabName.VARIANTS
+});
+GeneViewTabMap.set(View.PHENOTYPES, {
+  view: View.PHENOTYPES,
+  primaryTab: GeneViewTabName.GENE_FUNCTION,
+  secondaryTab: GeneFunctionTabName.PHENOTYPES
+});
+GeneViewTabMap.set(View.GENE_EXPRESSION, {
+  view: View.GENE_EXPRESSION,
+  primaryTab: GeneViewTabName.GENE_FUNCTION,
+  secondaryTab: GeneFunctionTabName.GENE_EXPRESSION
+});
+GeneViewTabMap.set(View.GENE_ONTOLOGY, {
+  view: View.GENE_ONTOLOGY,
+  primaryTab: GeneViewTabName.GENE_FUNCTION,
+  secondaryTab: GeneFunctionTabName.GENE_ONTOLOGY
+});
+GeneViewTabMap.set(View.GENE_PATHWAYS, {
+  view: View.GENE_PATHWAYS,
+  primaryTab: GeneViewTabName.GENE_FUNCTION,
+  secondaryTab: GeneFunctionTabName.GENE_PATHWAYS
+});
+GeneViewTabMap.set(View.ORTHOLOGUES, {
+  view: View.ORTHOLOGUES,
+  primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
+  secondaryTab: GeneRelationshipsTabName.ORTHOLOGUES
+});
+GeneViewTabMap.set(View.GENE_FAMILIES, {
+  view: View.GENE_FAMILIES,
+  primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
+  secondaryTab: GeneRelationshipsTabName.GENE_FAMILIES
+});
+GeneViewTabMap.set(View.GENE_PANELS, {
+  view: View.GENE_PANELS,
+  primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
+  secondaryTab: GeneRelationshipsTabName.GENE_PANELS
+});
+
+// export const GeneViewTabMap1: Record<View, GeneViewTabData> = {
+//   [View.PROTEIN]: {
+//     view: View.PROTEIN,
+//     primaryTab: GeneViewTabName.GENE_FUNCTION,
+//     secondaryTab: GeneFunctionTabName.PROTEINS
+//   },
+//   [View.VARIANTS]: {
+//     view: View.VARIANTS,
+//     primaryTab: GeneViewTabName.GENE_FUNCTION,
+//     secondaryTab: GeneFunctionTabName.VARIANTS
+//   },
+//   [View.PHENOTYPES]: {
+//     view: View.PHENOTYPES,
+//     primaryTab: GeneViewTabName.GENE_FUNCTION,
+//     secondaryTab: GeneFunctionTabName.PHENOTYPES
+//   },
+//   [View.GENE_EXPRESSION]: {
+//     view: View.GENE_EXPRESSION,
+//     primaryTab: GeneViewTabName.GENE_FUNCTION,
+//     secondaryTab: GeneFunctionTabName.GENE_EXPRESSION
+//   },
+//   [View.GENE_ONTOLOGY]: {
+//     view: View.GENE_ONTOLOGY,
+//     primaryTab: GeneViewTabName.GENE_FUNCTION,
+//     secondaryTab: GeneFunctionTabName.GENE_ONTOLOGY
+//   },
+//   [View.GENE_PATHWAYS]: {
+//     view: View.GENE_PATHWAYS,
+//     primaryTab: GeneViewTabName.GENE_FUNCTION,
+//     secondaryTab: GeneFunctionTabName.GENE_PATHWAYS
+//   },
+//   [View.ORTHOLOGUES]: {
+//     view: View.ORTHOLOGUES,
+//     primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
+//     secondaryTab: GeneRelationshipsTabName.ORTHOLOGUES
+//   },
+//   [View.GENE_FAMILIES]: {
+//     view: View.GENE_FAMILIES,
+//     primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
+//     secondaryTab: GeneRelationshipsTabName.GENE_FAMILIES
+//   },
+//   [View.GENE_PANELS]: {
+//     view: View.GENE_PANELS,
+//     primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
+//     secondaryTab: GeneRelationshipsTabName.GENE_PANELS
+//   },
+// };
+
+export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
+  view: null
 };
 
 export const defaultEntityViewerGeneViewState: EntityViewerGeneViewState = {};
