@@ -117,54 +117,6 @@ GeneViewTabMap.set(View.GENE_PANELS, {
   secondaryTab: GeneRelationshipsTabName.GENE_PANELS
 });
 
-// export const GeneViewTabMap1: Record<View, GeneViewTabData> = {
-//   [View.PROTEIN]: {
-//     view: View.PROTEIN,
-//     primaryTab: GeneViewTabName.GENE_FUNCTION,
-//     secondaryTab: GeneFunctionTabName.PROTEINS
-//   },
-//   [View.VARIANTS]: {
-//     view: View.VARIANTS,
-//     primaryTab: GeneViewTabName.GENE_FUNCTION,
-//     secondaryTab: GeneFunctionTabName.VARIANTS
-//   },
-//   [View.PHENOTYPES]: {
-//     view: View.PHENOTYPES,
-//     primaryTab: GeneViewTabName.GENE_FUNCTION,
-//     secondaryTab: GeneFunctionTabName.PHENOTYPES
-//   },
-//   [View.GENE_EXPRESSION]: {
-//     view: View.GENE_EXPRESSION,
-//     primaryTab: GeneViewTabName.GENE_FUNCTION,
-//     secondaryTab: GeneFunctionTabName.GENE_EXPRESSION
-//   },
-//   [View.GENE_ONTOLOGY]: {
-//     view: View.GENE_ONTOLOGY,
-//     primaryTab: GeneViewTabName.GENE_FUNCTION,
-//     secondaryTab: GeneFunctionTabName.GENE_ONTOLOGY
-//   },
-//   [View.GENE_PATHWAYS]: {
-//     view: View.GENE_PATHWAYS,
-//     primaryTab: GeneViewTabName.GENE_FUNCTION,
-//     secondaryTab: GeneFunctionTabName.GENE_PATHWAYS
-//   },
-//   [View.ORTHOLOGUES]: {
-//     view: View.ORTHOLOGUES,
-//     primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
-//     secondaryTab: GeneRelationshipsTabName.ORTHOLOGUES
-//   },
-//   [View.GENE_FAMILIES]: {
-//     view: View.GENE_FAMILIES,
-//     primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
-//     secondaryTab: GeneRelationshipsTabName.GENE_FAMILIES
-//   },
-//   [View.GENE_PANELS]: {
-//     view: View.GENE_PANELS,
-//     primaryTab: GeneViewTabName.GENE_RELATIONSHIPS,
-//     secondaryTab: GeneRelationshipsTabName.GENE_PANELS
-//   },
-// };
-
 export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
   view: null
 };

@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { push, Push } from 'connected-react-router';
+import React from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { getGeneViewPath } from 'src/content/app/entity-viewer/gene-view/shared/views-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
@@ -33,17 +29,11 @@ import styles from './DefaultTranscriptsList.scss';
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
-  push: Push;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
-  const params: { [key: string]: string } = useParams();
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
-
-  useEffect(() => {
-    props.push(getGeneViewPath(params, null));
-  }, []);
 
   return (
     <div>
@@ -84,8 +74,4 @@ const StripedBackground = (props: Props) => {
   return <div className={styles.stripedBackground}>{stripes}</div>;
 };
 
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(undefined, mapDispatchToProps)(DefaultTranscriptslist);
+export default DefaultTranscriptslist;
