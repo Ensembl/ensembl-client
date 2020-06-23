@@ -21,6 +21,7 @@ import { push, Push } from 'connected-react-router';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { setGeneViewName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -44,7 +45,7 @@ const tabsData = [...GeneViewTabMap.values()]
   .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_FUNCTION)
   .map((item) => ({
     title: item.secondaryTab,
-    isDisabled: true
+    isDisabled: false
   })) as Tab[];
 
 const tabClassNames = {
@@ -149,7 +150,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  push
+  push,
+  setGeneViewName
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GeneFunction);

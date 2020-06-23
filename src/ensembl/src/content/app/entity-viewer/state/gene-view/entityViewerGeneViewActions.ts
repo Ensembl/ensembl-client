@@ -23,7 +23,12 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { EntityViewerGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import {
+  View,
+  GeneViewTabMap,
+  GeneViewTabName,
+  EntityViewerGeneViewUIState
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { RootState } from 'src/store';
 
 export const updateActiveGeneViewUIState = createAction(
@@ -39,17 +44,39 @@ export const setGeneViewName: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (view: string | null) => (dispatch, getState: () => RootState) => {
+>> = (view: View | null) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
+  const primaryTabName = view ? GeneViewTabMap.get(view)?.primaryTab : null;
+  const primaryTab =
+    primaryTabName === GeneViewTabName.GENE_FUNCTION
+      ? 'geneFunctionTab'
+      : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
+      ? 'geneRelationshipsTab'
+      : null;
+  const tabView: {
+    selectedTabViews?: Record<
+      'geneFunctionTab' | 'geneRelationshipsTab',
+      View | null
+    >;
+  } = {};
+  if (primaryTab) {
+    tabView.selectedTabViews = { [primaryTab]: view } as Record<
+      'geneFunctionTab' | 'geneRelationshipsTab',
+      View | null
+    >;
+  }
   dispatch(
     updateActiveGeneViewUIState({
       activeGenomeId,
       activeObjectId,
-      fragment: { view }
+      fragment: {
+        view,
+        ...tabView
+      }
     })
   );
 };

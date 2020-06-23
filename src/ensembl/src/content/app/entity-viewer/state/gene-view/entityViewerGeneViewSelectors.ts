@@ -23,7 +23,8 @@ import {
   defaultEntityViewerGeneViewUIState,
   transcriptsTabData,
   GeneViewTabMap,
-  GeneViewTabData
+  GeneViewTabData,
+  SelectedTabViews
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 export const getGeneViewState = (state: RootState) => {
@@ -47,4 +48,8 @@ export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
   return view
     ? (GeneViewTabMap.get(view) as GeneViewTabData)
     : transcriptsTabData;
+};
+
+export const getSelectedTabViews = (state: RootState): SelectedTabViews => {
+  return getGeneViewState(state).selectedTabViews;
 };

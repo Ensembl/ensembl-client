@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+export type SelectedTabViews = Record<
+  'geneFunctionTab' | 'geneRelationshipsTab',
+  View | null
+>;
+
 export type EntityViewerGeneViewUIState = {
   view: View | null;
+  selectedTabViews: SelectedTabViews;
 };
 
 export type EntityViewerGeneViewState = Readonly<{
@@ -118,7 +124,11 @@ GeneViewTabMap.set(View.GENE_PANELS, {
 });
 
 export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
-  view: null
+  view: null,
+  selectedTabViews: {
+    geneFunctionTab: null,
+    geneRelationshipsTab: null
+  }
 };
 
 export const defaultEntityViewerGeneViewState: EntityViewerGeneViewState = {};

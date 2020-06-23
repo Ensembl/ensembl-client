@@ -14,39 +14,36 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { push, Push } from 'connected-react-router';
 
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { getEntityViewerActiveGeneRelationships } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { setActiveGeneRelationshipsTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import {
-  getGeneViewPath,
-  GeneViewChildTab
-} from 'src/content/app/entity-viewer/gene-view/shared/views-helpers';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 
 import { RootState } from 'src/store';
-import { GeneRelationshipsTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+import {
+  GeneViewTabMap,
+  GeneViewTabName,
+  GeneRelationshipsTabName
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneRelationships.scss';
 
 // TODO: the isDisabled flags are hardcoded here since we do not have any data available.
 // We need to update this logic once we have the data available
-const tabsData: Tab[] = [
-  { title: GeneRelationshipsTabName.ORTHOLOGUES, isDisabled: true },
-  { title: GeneRelationshipsTabName.PARALOGUES, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_FAMILIES, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_CLUSTERS, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_PANELS, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_NEIGHBOUTHOOD, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_SIMILARITY, isDisabled: true }
-];
+const tabsData = [...GeneViewTabMap.values()]
+  .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_RELATIONSHIPS)
+  .map((item) => ({
+    title: item.secondaryTab,
+    isDisabled: false
+  })) as Tab[];
 
 const tabClassNames = {
   selected: styles.selectedTabName
@@ -56,20 +53,27 @@ type Props = {
   isSidebarOpen: boolean;
   selectedTabName: GeneRelationshipsTabName | null;
   push: Push;
-  setActiveGeneRelationshipsTab: (tab: string) => void;
 };
 
 const GeneRelationships = (props: Props) => {
-  const params: { [key: string]: string } = useParams();
+  const { genomeId, entityId } = useParams() as { [key: string]: string };
   let { selectedTabName } = props;
 
   const changeTab = (tab: string) => {
-    props.push(getGeneViewPath(params, tab as GeneViewChildTab));
+    const match = [...GeneViewTabMap.entries()].find(
+      ([, { secondaryTab }]) => secondaryTab === tab
+    );
+    if (!match) {
+      return;
+    }
+    const [view] = match;
+    const url = urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view
+    });
+    props.push(url);
   };
-
-  useEffect(() => {
-    changeTab(selectedTabName as GeneViewChildTab);
-  }, []);
 
   // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
   const selectedTabIndex = tabsData.findIndex(
@@ -118,12 +122,12 @@ const GeneRelationships = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   isSidebarOpen: isEntityViewerSidebarOpen(state),
-  selectedTabName: getEntityViewerActiveGeneRelationships(state).selectedTabName
+  selectedTabName: getSelectedGeneViewTabs(state)
+    .secondaryTab as GeneRelationshipsTabName
 });
 
 const mapDispatchToProps = {
-  push,
-  setActiveGeneRelationshipsTab
+  push
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GeneRelationships);

@@ -20,15 +20,19 @@ import { connect } from 'react-redux';
 import { push, Push } from 'connected-react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import {
+  getSelectedGeneViewTabs,
+  getSelectedTabViews
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
 import { RootState } from 'src/store';
 import {
   GeneViewTabName,
-  View
+  View,
+  SelectedTabViews
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
-import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import styles from './GeneViewTabs.scss';
 
@@ -41,7 +45,8 @@ const tabsData: Tab[] = [
 const DEFAULT_TAB = tabsData[0].title;
 
 type Props = {
-  selectedGeneTabName: string;
+  selectedTab: string;
+  selectedTabViews: SelectedTabViews;
   push: Push;
 };
 
@@ -57,9 +62,9 @@ const GeneViewTabs = (props: Props) => {
   const onTabChange = (selectedTabName: string) => {
     let view;
     if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
-      view = View.PROTEIN;
+      view = props.selectedTabViews.geneFunctionTab || View.PROTEIN;
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
-      view = View.ORTHOLOGUES;
+      view = props.selectedTabViews.geneRelationshipsTab || View.ORTHOLOGUES;
     }
     const url = urlFor.entityViewer({
       genomeId,
@@ -73,14 +78,15 @@ const GeneViewTabs = (props: Props) => {
     <Tabs
       classNames={tabClassNames}
       tabs={tabsData}
-      selectedTab={props.selectedGeneTabName || DEFAULT_TAB}
+      selectedTab={props.selectedTab || DEFAULT_TAB}
       onTabChange={onTabChange}
     />
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
-  selectedGeneTabName: getSelectedGeneViewTabs(state).primaryTab
+  selectedTab: getSelectedGeneViewTabs(state).primaryTab,
+  selectedTabViews: getSelectedTabViews(state)
 });
 
 const mapDispatchToProps = {
