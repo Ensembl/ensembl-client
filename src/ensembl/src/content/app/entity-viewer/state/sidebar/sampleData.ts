@@ -668,23 +668,23 @@ export const entityViewerSidebarSampleData: {
 } = {
   homo_sapiens_GCA_000001405_27: {
     entities: {
-      'gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
+      'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
     }
   },
 
   triticum_aestivum_GCA_900519105_1: {
     entities: {
-      'gene:TraesCS3D02G273600': entityViewerWheatSampleResponse
+      'triticum_aestivum_GCA_900519105_1:gene:TraesCS3D02G273600': entityViewerWheatSampleResponse
     }
   },
   escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
     entities: {
-      'gene:b2614': entityViewerBacteriaSampleResponse
+      'escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2:gene:b2614': entityViewerBacteriaSampleResponse
     }
   },
   saccharomyces_cerevisiae_GCA_000146045_2: {
     entities: {
-      'gene:YDL168W': entityViewerYeastSampleResponse
+      'saccharomyces_cerevisiae_GCA_000146045_2:gene:YDL168W': entityViewerYeastSampleResponse
     }
   }
 };

@@ -26,10 +26,7 @@ import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import {
-  setDataFromUrl,
-  updateEnsObject,
-} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
+import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -51,7 +48,6 @@ type Props = {
   isSidebarOpen: boolean;
   viewportWidth: BreakpointWidth;
   setDataFromUrl: (params: EntityViewerParams) => void;
-  updateEnsObject: (objectId: string) => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleSidebar: (status?: SidebarStatus) => void;
 };
@@ -62,7 +58,7 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770',
+  uri: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:31770'
 });
 
 const EntityViewer = (props: Props) => {
@@ -103,15 +99,14 @@ const EntityViewer = (props: Props) => {
 const mapStateToProps = (state: RootState) => {
   return {
     isSidebarOpen: isEntityViewerSidebarOpen(state),
-    viewportWidth: getBreakpointWidth(state),
+    viewportWidth: getBreakpointWidth(state)
   };
 };
 
 const mapDispatchToProps = {
   setDataFromUrl,
   fetchGenomeData,
-  toggleSidebar,
-  updateEnsObject,
+  toggleSidebar
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);
