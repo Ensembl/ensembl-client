@@ -22,9 +22,7 @@ export type EnsObjectLocation = {
   start: number;
 };
 
-export type EnsObjectType =
-  | 'gene'
-  | 'region'
+export type EnsObjectType = 'gene' | 'region';
 
 type BasicEnsObject = {
   object_id: string;

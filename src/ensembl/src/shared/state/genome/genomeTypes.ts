@@ -51,7 +51,7 @@ export type GenomeTrackCategories = {
 };
 
 export enum GenomeKaryotypeItemType {
-  CHROMOSOME = 'chromosome',
+  CHROMOSOME = 'chromosome'
 }
 
 export type GenomeKaryotypeItem = {

@@ -17,6 +17,7 @@
 import React from 'react';
 
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
+import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 
 import { getNumberOfCodingExons } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
@@ -45,6 +46,7 @@ const ProteinsListItemInfo = (props: Props) => {
           Sequence download component
         </div>
       </div>
+      {transcript.cds && <ProteinFeaturesCount transcriptId={transcript.id} />}
     </div>
   );
 };

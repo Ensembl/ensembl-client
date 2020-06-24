@@ -31,7 +31,9 @@ export const getEntityViewerActiveEnsObjectId = (state: RootState) => {
   return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
 };
 
-export const getEntityViewerActiveEnsObject = (state: RootState): EnsObjectGene | null => {
+export const getEntityViewerActiveEnsObject = (
+  state: RootState
+): EnsObjectGene | null => {
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
   if (!activeObjectId) {
     return null;
