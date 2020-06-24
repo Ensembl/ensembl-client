@@ -103,6 +103,10 @@ export const Browser = (props: BrowserProps) => {
   const { isDrawerOpened } = props;
   const params: { [key: string]: string } = useParams();
 
+  const {
+    browserQueryParams: { location }
+  } = props;
+
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
     if (!activeGenomeId) {
@@ -118,16 +122,13 @@ export const Browser = (props: BrowserProps) => {
   }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
-    const {
-      browserQueryParams: { location }
-    } = props;
     const { genomeId } = params;
     const chrLocation = location ? getChrLocationFromStr(location) : null;
 
     if (props.browserActivated && genomeId && chrLocation) {
       props.changeBrowserLocation({ genomeId, chrLocation, ensObjectId: null });
     }
-  }, [props.browserActivated]);
+  }, [props.browserActivated, location]);
 
   const onSidebarToggle = () => {
     props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME

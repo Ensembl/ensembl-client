@@ -49,7 +49,8 @@ describe('<BrowserRegionEditor />', () => {
     isDisabled: false,
     changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
-    toggleRegionEditorActive: jest.fn()
+    toggleRegionEditorActive: jest.fn(),
+    replace: jest.fn()
   };
 
   let wrapper: any;

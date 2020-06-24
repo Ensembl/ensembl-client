@@ -17,7 +17,9 @@
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { replace } from 'connected-react-router';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
@@ -44,7 +46,11 @@ import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/formatters/numberFormatter';
-import { validateRegion, RegionValidationErrors } from '../browserHelper';
+import {
+  validateRegion,
+  RegionValidationErrors,
+  getChrLocationStr
+} from '../browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -66,6 +72,7 @@ export type BrowserRegionEditorProps = {
   }) => void;
   changeFocusObject: (objectId: string) => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
+  replace: (path: string) => void;
 };
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
@@ -133,12 +140,15 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     }
   };
 
-  const changeLocation = (newChrLocation: ChrLocation) =>
-    props.changeBrowserLocation({
-      genomeId: props.activeGenomeId as string,
-      ensObjectId: null,
-      chrLocation: newChrLocation
-    });
+  const changeLocation = (newChrLocation: ChrLocation) => {
+    props.replace(
+      urlFor.browser({
+        genomeId: props.activeGenomeId as string,
+        focus: null,
+        location: newChrLocation ? getChrLocationStr(newChrLocation) : null
+      })
+    );
+  };
 
   const resetForm = () => {
     updateErrorMessages(null, null);
@@ -308,7 +318,8 @@ const mapStateToProps = (state: RootState) => {
 const mpaDispatchToProps = {
   changeBrowserLocation,
   changeFocusObject,
-  toggleRegionEditorActive
+  toggleRegionEditorActive,
+  replace
 };
 
 export default connect(

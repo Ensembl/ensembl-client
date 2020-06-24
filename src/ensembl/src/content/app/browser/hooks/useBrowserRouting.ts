@@ -34,7 +34,6 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import {
   getChrLocation,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
   getAllChrLocations
 } from '../browserSelectors';
@@ -68,11 +67,12 @@ const useBrowserRouting = () => {
   const { focus = null, location = null } = getQueryParamsMap(search);
 
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
+
   const savedChrLocation = useSelector(getChrLocation);
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
+  const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
 
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
