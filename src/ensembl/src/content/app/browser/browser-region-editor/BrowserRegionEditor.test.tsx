@@ -47,7 +47,6 @@ describe('<BrowserRegionEditor />', () => {
     genomeKaryotype: createGenomeKaryotype(),
     isActive: true,
     isDisabled: false,
-    changeBrowserLocation: jest.fn(),
     changeFocusObject: jest.fn(),
     toggleRegionEditorActive: jest.fn(),
     replace: jest.fn()
@@ -252,7 +251,7 @@ describe('<BrowserRegionEditor />', () => {
           .simulate('change', { target: { value: locationEndInput } });
         wrapper.find('form').simulate('submit');
 
-        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalled();
+        expect(wrapper.props().replace).toHaveBeenCalled();
       });
     });
   });

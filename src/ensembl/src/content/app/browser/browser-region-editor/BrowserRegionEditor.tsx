@@ -34,11 +34,7 @@ import {
   getRegionFieldActive
 } from '../browserSelectors';
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  toggleRegionEditorActive
-} from '../browserActions';
+import { changeFocusObject, toggleRegionEditorActive } from '../browserActions';
 import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
@@ -65,11 +61,6 @@ export type BrowserRegionEditorProps = {
   genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
   isDisabled: boolean;
-  changeBrowserLocation: (locationData: {
-    genomeId: string;
-    ensObjectId: string | null;
-    chrLocation: ChrLocation;
-  }) => void;
   changeFocusObject: (objectId: string) => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
   replace: (path: string) => void;
@@ -316,7 +307,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mpaDispatchToProps = {
-  changeBrowserLocation,
   changeFocusObject,
   toggleRegionEditorActive,
   replace
