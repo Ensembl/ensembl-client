@@ -23,7 +23,7 @@ import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-f
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './ProteinsList.scss';
-import { getRefSplicedRNALength } from '../../../shared/helpers/entity-helpers';
+import { getRefCDSLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 type ProteinsListProps = {
   geneId: string;
@@ -58,7 +58,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
     (transcript) => !!transcript.cds
   );
 
-  const refSplicedRNALength = getRefSplicedRNALength(props.gene);
+  const refCDSLength = getRefCDSLength(props.gene);
 
   return (
     <div className={styles.proteinsList}>
@@ -66,7 +66,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
         <ProteinsListItem
           key={transcript.id}
           transcript={transcript}
-          refSplicedRNALength={refSplicedRNALength}
+          refCDSLength={refCDSLength}
         />
       ))}
     </div>

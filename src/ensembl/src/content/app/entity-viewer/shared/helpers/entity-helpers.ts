@@ -82,30 +82,23 @@ export const getSplicedRNALength = (transcript: Transcript) =>
     return length + (end - start + 1);
   }, 0);
 
-export const getRefSplicedRNALength = (gene: Gene) => {
-  let refSplicedRNALength = 0;
+export const getRefCDSLength = (gene: Gene) => {
+  let refCDSLength = 0;
 
   gene.transcripts.forEach((transcript) => {
-    const transcriptSplicedRNALength = transcript.exons.reduce(
-      (length, exon) => {
-        const { start, end } = getFeatureCoordinates(exon);
-        return length + (end - start + 1);
-      },
-      0
-    );
+    if (transcript.cds) {
+      const currentCDSLength = (transcript.cds?.protein_length as number) * 3;
 
-    if (transcriptSplicedRNALength > refSplicedRNALength) {
-      refSplicedRNALength = transcriptSplicedRNALength;
+      if (currentCDSLength > refCDSLength) {
+        refCDSLength = currentCDSLength;
+      }
     }
   });
 
-  return refSplicedRNALength;
+  return refCDSLength;
 };
 
-export const getCodingExonsForImage = (
-  transcript: Transcript,
-  nucleotidesPerPixel: number
-) => {
+export const getCodingExonsForImage = (transcript: Transcript) => {
   const { exons, cds } = transcript;
 
   if (!cds) {
@@ -146,7 +139,8 @@ export const getCodingExonsForImage = (
       exons[index]
     );
     const previousExonEnd = codingExons[codingExons.length - 1].end; // get the previous coding exon's end
-    const currentExonStart = previousExonEnd + 1 + nucleotidesPerPixel; // append this to leave gap between exons
+    const currentExonStart = previousExonEnd + 1;
+
     codingExons.push({
       start: currentExonStart,
       end: currentExonStart + (exonEnd - exonStart)

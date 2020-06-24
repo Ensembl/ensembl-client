@@ -29,7 +29,7 @@ import styles from './ProteinsListItem.scss';
 
 type Props = {
   transcript: Transcript;
-  refSplicedRNALength: number;
+  refCDSLength: number;
 };
 
 const ProteinsListItem = (props: Props) => {
@@ -69,7 +69,7 @@ const ProteinsListItem = (props: Props) => {
       {shouldShowInfo ? (
         <ProteinsListItemInfo
           transcript={props.transcript}
-          refSplicedRNALength={props.refSplicedRNALength}
+          refCDSLength={props.refCDSLength}
         />
       ) : null}
     </>

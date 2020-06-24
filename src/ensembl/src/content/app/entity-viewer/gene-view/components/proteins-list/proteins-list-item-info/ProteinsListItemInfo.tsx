@@ -27,11 +27,11 @@ import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
   transcript: Transcript;
-  refSplicedRNALength: number;
+  refCDSLength: number;
 };
 
 const ProteinsListItemInfo = (props: Props) => {
-  const { transcript, refSplicedRNALength } = props;
+  const { transcript, refCDSLength } = props;
 
   return (
     <div className={styles.proteinsListItemInfo}>
@@ -47,7 +47,7 @@ const ProteinsListItemInfo = (props: Props) => {
       {transcript.cds && (
         <CollapsedExonsImage
           transcriptId={transcript.id}
-          refSplicedRNALength={refSplicedRNALength}
+          refCDSLength={refCDSLength}
           width={695}
         />
       )}

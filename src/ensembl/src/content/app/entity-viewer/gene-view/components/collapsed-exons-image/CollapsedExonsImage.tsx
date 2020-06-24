@@ -31,7 +31,7 @@ const EXON_HEIGHT = 18;
 
 type ExonsImageProps = {
   transcriptId: string;
-  refSplicedRNALength: number;
+  refCDSLength: number;
   className?: string;
   width: number; // available width for drawing, in pixels
 };
@@ -62,7 +62,7 @@ export const ExonsImage = (props: ExonsImageProps) => {
   return data ? (
     <ExonsImageWithData
       transcript={data}
-      refSplicedRNALength={props.refSplicedRNALength}
+      refCDSLength={props.refCDSLength}
       className={props.className}
       width={props.width}
     />
@@ -76,14 +76,10 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
     return null;
   }
 
-  const nucleotidesPerPixel = props.refSplicedRNALength / props.width;
-  const codingExons = getCodingExonsForImage(transcript, nucleotidesPerPixel);
-
-  const shouldExonBlockHaveBorder = (index: number) =>
-    index !== codingExons.length - 1;
+  const codingExons = getCodingExonsForImage(transcript);
 
   const scale = scaleLinear()
-    .domain([1, props.refSplicedRNALength])
+    .domain([1, props.refCDSLength])
     .range([1, props.width])
     .clamp(true);
 
@@ -106,7 +102,6 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
               <ExonBlock
                 key={index}
                 exon={exon}
-                hasBorder={shouldExonBlockHaveBorder(index)}
                 className={props.className}
                 scale={scale}
               />
@@ -126,7 +121,6 @@ type ExonBlockProps = {
     start: number;
     end: number;
   };
-  hasBorder?: boolean;
   className?: string;
   scale: ScaleLinear<number, number>;
 };
@@ -146,16 +140,6 @@ const ExonBlock = (props: ExonBlockProps) => {
         x={scale(exon.start)}
         width={scale(exon.end - exon.start + 1)}
       />
-      {props.hasBorder && (
-        <rect
-          key={exon.end + 1}
-          className={styles.exonBorder}
-          y={y}
-          height={EXON_HEIGHT}
-          x={scale(exon.end + 1)}
-          width="1px"
-        />
-      )}
     </g>
   );
 };
