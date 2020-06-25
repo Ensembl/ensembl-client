@@ -127,8 +127,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
-  // const params: { [key: string]: string } = useParams();
-  // const { genomeId, entityId } = params;
   const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });

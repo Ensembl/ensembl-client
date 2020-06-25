@@ -99,17 +99,6 @@ const GeneFunction = (props: Props) => {
     tabsData[proteinTabIndex].isDisabled = true;
   }
 
-  // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
-  // const selectedTabIndex = tabsData.findIndex(
-  //   (tab) => tab.title === selectedTabName
-  // );
-
-  // if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
-  //   const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
-
-  //   selectedTabName = (nextAvailableTab?.title as GeneFunctionTabName) || null;
-  // }
-
   const TabWrapper = () => {
     return (
       <Tabs
