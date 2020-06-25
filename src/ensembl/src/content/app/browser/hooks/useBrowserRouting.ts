@@ -35,7 +35,8 @@ import {
   getChrLocation,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations
+  getAllChrLocations,
+  getBrowserActivated
 } from '../browserSelectors';
 
 import {
@@ -73,7 +74,7 @@ const useBrowserRouting = () => {
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
-
+  const browserActivated = useSelector(getBrowserActivated);
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
 
@@ -120,11 +121,10 @@ const useBrowserRouting = () => {
        */
       dispatch(changeFocusObject(newFocusId as string));
     } else if (focus && chrLocation) {
-      dispatch(changeFocusObject(newFocusId as string));
       dispatch(
         changeBrowserLocation({
           genomeId,
-          ensObjectId: focus,
+          ensObjectId: newFocusId,
           chrLocation
         })
       );
@@ -132,7 +132,7 @@ const useBrowserRouting = () => {
       dispatch(
         changeBrowserLocation({
           genomeId,
-          ensObjectId: focus,
+          ensObjectId: newFocusId,
           chrLocation
         })
       );
@@ -160,11 +160,22 @@ const useBrowserRouting = () => {
     [genomeId]
   );
 
+  const setBrowserLocation = () => {
+    if (browserActivated && genomeId && chrLocation) {
+      changeBrowserLocation({
+        genomeId,
+        chrLocation,
+        ensObjectId: null
+      });
+    }
+  };
+
   return {
     genomeId,
     focusId: newFocusId,
     chrLocation,
-    changeGenomeId
+    changeGenomeId,
+    setBrowserLocation
   };
 };
 

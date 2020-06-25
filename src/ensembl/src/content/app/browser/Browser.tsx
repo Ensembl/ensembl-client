@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import upperFirst from 'lodash/upperFirst';
@@ -32,12 +31,8 @@ import {
   parseEnsObjectId,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getChrLocationFromStr } from './browserHelper';
 
-import {
-  changeBrowserLocation,
-  restoreBrowserTrackStates
-} from './browserActions';
+import { restoreBrowserTrackStates } from './browserActions';
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
@@ -85,11 +80,6 @@ export type BrowserProps = {
   isTrackPanelOpened: boolean;
   exampleEnsObjects: EnsObject[];
   viewportWidth: BreakpointWidth;
-  changeBrowserLocation: (locationData: {
-    genomeId: string;
-    ensObjectId: string | null;
-    chrLocation: ChrLocation;
-  }) => void;
   restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleTrackPanel: (isOpen: boolean) => void;
@@ -98,14 +88,9 @@ export type BrowserProps = {
 
 export const Browser = (props: BrowserProps) => {
   const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
-  const { changeGenomeId } = useBrowserRouting();
+  const { changeGenomeId, setBrowserLocation } = useBrowserRouting();
 
   const { isDrawerOpened } = props;
-  const params: { [key: string]: string } = useParams();
-
-  const {
-    browserQueryParams: { location }
-  } = props;
 
   useEffect(() => {
     const { activeGenomeId, fetchGenomeData } = props;
@@ -122,13 +107,8 @@ export const Browser = (props: BrowserProps) => {
   }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   useEffect(() => {
-    const { genomeId } = params;
-    const chrLocation = location ? getChrLocationFromStr(location) : null;
-
-    if (props.browserActivated && genomeId && chrLocation) {
-      props.changeBrowserLocation({ genomeId, chrLocation, ensObjectId: null });
-    }
-  }, [props.browserActivated, location]);
+    setBrowserLocation();
+  }, [props.browserActivated]);
 
   const onSidebarToggle = () => {
     props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME
@@ -229,7 +209,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mapDispatchToProps = {
-  changeBrowserLocation,
   fetchGenomeData,
   toggleDrawer,
   restoreBrowserTrackStates,
