@@ -38,7 +38,10 @@ export const getGenomeInfoFetchFailed = (state: RootState) =>
 export const getGenomeTrackCategories = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesData;
 
-export const getGenomeExampleFocusObjects = (state: RootState, genomeId: string) => {
+export const getGenomeExampleFocusObjects = (
+  state: RootState,
+  genomeId: string
+) => {
   const emptyObjects: never[] = [];
   return (
     state.genome.genomeInfo.genomeInfoData[genomeId]?.example_objects ||

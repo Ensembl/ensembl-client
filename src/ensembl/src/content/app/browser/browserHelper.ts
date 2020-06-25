@@ -18,7 +18,10 @@ import noop from 'lodash/noop';
 import apiService from 'src/services/api-service';
 
 import { getNumberWithoutCommas } from 'src/shared/helpers/formatters/numberFormatter';
-import { parseEnsObjectId, buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import {
+  parseEnsObjectId,
+  buildEnsObjectId
+} from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { ChrLocation } from './browserState';
 
@@ -26,7 +29,7 @@ type GenomeBrowserFocusIdConstituents = {
   genomeId: string;
   type: string;
   objectId: string;
-}
+};
 
 export function getChrLocationFromStr(chrLocationStr: string): ChrLocation {
   const [chrCode, chrRegion] = chrLocationStr.split(':');
@@ -47,8 +50,9 @@ export function getChrLocationStr(
   return `${chrCode}:${startBp}-${endBp}`;
 }
 
-export const stringifyGenomeBrowserFocusId = (params: GenomeBrowserFocusIdConstituents) => 
-  buildEnsObjectId(params);
+export const stringifyGenomeBrowserFocusId = (
+  params: GenomeBrowserFocusIdConstituents
+) => buildEnsObjectId(params);
 
 // Genome browser sends focus feature id in the format <genome_id>:<feature_type>:<feature_id>.
 export const parseFeatureId = (id: string): GenomeBrowserFocusIdConstituents =>
@@ -174,7 +178,11 @@ export const validateRegion = async (params: {
     try {
       const url = `/api/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
       const response: RegionValidationResponse = await apiService.fetch(url);
-      const regionId = buildEnsObjectId({ genomeId, type: 'region', objectId: regionInput });
+      const regionId = buildEnsObjectId({
+        genomeId,
+        type: 'region',
+        objectId: regionInput
+      });
       response.region_id = regionId;
 
       processValidationMessages(

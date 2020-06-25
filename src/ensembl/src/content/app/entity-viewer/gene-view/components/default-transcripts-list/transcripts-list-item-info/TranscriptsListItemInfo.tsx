@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -26,8 +27,11 @@ import {
   getNumberOfCodingExons,
   getSplicedRNALength
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
@@ -45,6 +49,7 @@ type ItemInfoProps = {
 const ItemInfo = (props: ItemInfoProps) => {
   const [isDownloadShown, setIsDownloadShown] = useState(false);
   const { transcript } = props;
+  const params: { [key: string]: string } = useParams();
 
   const openDownload = () => setIsDownloadShown(true);
   const closeDownload = () => setIsDownloadShown(false);
@@ -111,6 +116,15 @@ const ItemInfo = (props: ItemInfoProps) => {
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
+  const focusIdForUrl = buildFocusIdForUrl({
+    type: 'gene',
+    objectId: props.gene.id
+  });
+
+  const getBrowserLink = () => {
+    const { genomeId } = params;
+    return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
+  };
   return (
     <div className={mainStyles}>
       <div className={transcriptsListStyles.left}>bottom left</div>
@@ -149,7 +163,12 @@ const ItemInfo = (props: ItemInfoProps) => {
         </div>
         {isDownloadShown && renderInstantDownload(props)}
       </div>
-      <div className={transcriptsListStyles.right}>{transcript.symbol}</div>
+      <div className={transcriptsListStyles.right}>
+        <div>{transcript.symbol}</div>
+        <div>
+          <ViewInApp links={{ genomeBrowser: getBrowserLink() }} />
+        </div>
+      </div>
     </div>
   );
 };

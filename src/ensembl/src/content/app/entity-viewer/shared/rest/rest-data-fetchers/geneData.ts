@@ -42,11 +42,11 @@ export const fetchGene = async (
   id: string,
   signal?: AbortSignal
 ): Promise<Gene> => {
-  const url = `http://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
+  const url = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
 
-  const data: GeneInResponse = (await fetch(url, { signal }).then((response) =>
+  const data: GeneInResponse = await fetch(url, { signal }).then((response) =>
     response.json()
-  )) as GeneInResponse;
+  );
 
   return restGeneAdaptor(data);
 };

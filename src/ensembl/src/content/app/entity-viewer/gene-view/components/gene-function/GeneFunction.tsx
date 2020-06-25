@@ -26,17 +26,20 @@ import Panel from 'src/shared/components/panel/Panel';
 import ProteinsList from '../proteins-list/ProteinsList';
 
 import { RootState } from 'src/store';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { GeneFunctionTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneFunction.scss';
 
+// TODO: the isDisabled flags are hardcoded here since we do not have any data available.
+// We need to update this logic once we have the data available
 const tabsData: Tab[] = [
-  { title: 'Proteins' },
-  { title: 'Variants' },
-  { title: 'Phenotypes' },
-  { title: 'Gene expression' },
-  { title: 'Gene ontology', isDisabled: true },
-  { title: 'Gene pathways' }
+  { title: GeneFunctionTabName.PROTEINS },
+  { title: GeneFunctionTabName.VARIANTS, isDisabled: true },
+  { title: GeneFunctionTabName.PHENOTYPES, isDisabled: true },
+  { title: GeneFunctionTabName.GENE_EXPRESSION, isDisabled: true },
+  { title: GeneFunctionTabName.GENE_ONTOLOGY, isDisabled: true },
+  { title: GeneFunctionTabName.GENE_PATHWAYS, isDisabled: true }
 ];
 
 const tabClassNames = {
@@ -45,13 +48,44 @@ const tabClassNames = {
 };
 
 type Props = {
-  geneId: string;
+  gene: Gene;
   isNarrow: boolean;
-  selectedTabName: GeneFunctionTabName;
+  selectedTabName: GeneFunctionTabName | null;
   setActiveGeneFunctionTab: (tab: string) => void;
 };
 
 const GeneFunction = (props: Props) => {
+  const {
+    gene: { transcripts }
+  } = props;
+  let { selectedTabName } = props;
+
+  // Check if we have at least one protein coding transcript
+  const proteinCodingTranscriptIndex = transcripts.findIndex(
+    (transcript) => transcript.biotype === 'protein_coding'
+  );
+
+  // Disable the Proteins tab if there are no transcripts data
+  // TODO: We need a better logic to disable tabs once we have the data available for other tabs
+  if (proteinCodingTranscriptIndex === -1) {
+    const proteinTabIndex = tabsData.findIndex(
+      (tab) => tab.title === GeneFunctionTabName.PROTEINS
+    );
+
+    tabsData[proteinTabIndex].isDisabled = true;
+  }
+
+  // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
+  const selectedTabIndex = tabsData.findIndex(
+    (tab) => tab.title === selectedTabName
+  );
+
+  if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
+    const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
+
+    selectedTabName = (nextAvailableTab?.title as GeneFunctionTabName) || null;
+  }
+
   const TabWrapper = () => {
     const onTabChange = (tab: string) => {
       props.setActiveGeneFunctionTab(tab);
@@ -60,7 +94,7 @@ const GeneFunction = (props: Props) => {
     return (
       <Tabs
         tabs={tabsData}
-        selectedTab={props.selectedTabName}
+        selectedTab={selectedTabName}
         classNames={tabClassNames}
         onTabChange={onTabChange}
       />
@@ -68,11 +102,11 @@ const GeneFunction = (props: Props) => {
   };
 
   const getCurrentTabContent = () => {
-    switch (props.selectedTabName) {
+    switch (selectedTabName) {
       case GeneFunctionTabName.PROTEINS:
-        return <ProteinsList geneId={props.geneId} />;
+        return <ProteinsList geneId={props.gene.id} />;
       default:
-        return <></>;
+        return <>Data for these views will be available soon...</>;
     }
   };
 
