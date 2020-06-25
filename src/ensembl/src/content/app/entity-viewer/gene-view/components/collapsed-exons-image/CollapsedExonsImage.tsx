@@ -31,7 +31,7 @@ import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/compo
 import styles from './CollapsedExonsImage.scss';
 
 const IMAGE_HEIGHT = 24;
-const EXON_HEIGHT = 18;
+const EXON_HEIGHT = 10;
 
 type ExonsImageProps = {
   transcriptId: string;
@@ -92,15 +92,14 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
   };
 
   const scale = scaleLinear()
-    .domain([1, props.refCDSLength])
-    .range([1, props.width])
+    .domain([0, props.refCDSLength])
+    .range([0, props.width])
     .clamp(true);
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
     <div className={transcriptsListStyles.row}>
-      <div className={transcriptsListStyles.left}>Protein sequence</div>
       <div className={midStyles}>
         <svg
           className={styles.containerSvg}
@@ -140,7 +139,7 @@ type ExonBlockProps = {
 
 const ExonBlock = (props: ExonBlockProps) => {
   const { exon, scale } = props;
-  const y = 3;
+  const y = 8;
   const exonClasses = classNames(styles.exon, props.className);
 
   return (

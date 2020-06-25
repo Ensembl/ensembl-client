@@ -42,7 +42,7 @@ const ProteinsListItem = (props: Props) => {
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{props.transcript.cds?.protein_length} aa</div>
           <div>Protein description from UniProt</div>
-          <div>{props.transcript.product?.stable_id}</div>
+          <div>{props.transcript.cds?.protein_id}</div>
         </div>
         <div
           className={transcriptsListStyles.right}
