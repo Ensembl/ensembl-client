@@ -61,7 +61,7 @@ export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
       const ensObjectId = buildEnsObjectId({
         genomeId: activeGenomeId,
         type,
-        objectId: id,
+        objectId: id
       });
       return state.ensObjects[ensObjectId]?.data;
     })
@@ -69,7 +69,5 @@ export const getExampleEnsObjects = (state: RootState): EnsObject[] => {
 };
 
 export const getExampleGenes = (state: RootState): EnsObject[] => {
-  return getExampleEnsObjects(state).filter(
-    (entity) => entity.type === 'gene'
-  );
+  return getExampleEnsObjects(state).filter((entity) => entity.type === 'gene');
 };

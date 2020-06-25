@@ -24,7 +24,7 @@ import {
   parseEnsObjectId,
   buildEnsObjectId,
   buildRegionObject,
-  EnsObjectIdConstituents,
+  EnsObjectIdConstituents
 } from './ensObjectHelpers';
 
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
@@ -61,7 +61,7 @@ export const fetchEnsObject = (
     dispatch(
       fetchEnsObjectAsyncActions.success({
         id: ensObjectId,
-        data: regionObject,
+        data: regionObject
       })
     );
     return;
@@ -86,7 +86,7 @@ export const fetchEnsObject = (
     dispatch(
       fetchEnsObjectAsyncActions.success({
         id: ensObjectId,
-        data: response,
+        data: response
       })
     );
   } catch (error) {
@@ -117,6 +117,6 @@ const builtTrackList = (ensObject: EnsObjectResponse) => {
     ensembl_object_id: ensObject.object_id, // we don't use this field
     label: ensObject.label,
     track_id: TrackId.GENE,
-    child_tracks: [],
+    child_tracks: []
   };
 };

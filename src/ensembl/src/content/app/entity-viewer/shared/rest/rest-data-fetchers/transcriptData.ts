@@ -76,7 +76,7 @@ export const fetchTranscript = async (
   id: string,
   signal?: AbortSignal
 ): Promise<Transcript> => {
-  const transcriptUrl = `http://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
+  const transcriptUrl = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
   const transcript: TranscriptInResponse = (await fetch(transcriptUrl, {
     signal
   }).then((response) => response.json())) as TranscriptInResponse;

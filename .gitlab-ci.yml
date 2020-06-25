@@ -100,11 +100,34 @@ variables:
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
   - git -C ensembl-client-caas-deploy/ checkout deployfeature
-  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s#<DEPLOYMNET_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+
+# Template to deploy review-app to WP k8s cluster
+.deploy-wp-review:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  script:
+  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
+  - git -C ensembl-client-caas-deploy/ checkout wp-review-apps
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+
+# Template for stopping review app - Do cleanup here 
+.stop-wp-review:
+  stage: deploy
+  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  variables:
+    GIT_STRATEGY: none
+  when: manual
+  script:
+  - kubectl delete ingress ensembl-client-${CI_COMMIT_REF_SLUG}-ingress
+  - kubectl delete svc ensembl-client-${CI_COMMIT_REF_SLUG}-svc
+  - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-deployment
 
 # Template to deploy to EHK k8s cluster
 .deploy-ehk:
@@ -135,11 +158,11 @@ Test:
   - npm run check-types
   - npm run test
 
+  only:
+  - /^nodeploy\/.*$/
   except:
   - dev
   - master
-  - /^feature\/.*$/
-  - /^migration\/.*$/
 
 # Job to build static asset for staging and live environment
 # dev branch -> Staging
@@ -178,14 +201,16 @@ Test_N_Build:internal:
   only:
   - dev
 
-Test_N_Build:feature:
+Test_N_Build:review:
   extends: .build-static
   variables:
     ENVIRONMENT: development
     API_HOST: ""
 
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
 
 # Job to build nginx docker image for staging environment (EHK k8s cluster)
 Nginx:Staging-EHK:
@@ -251,16 +276,18 @@ Nginx:Internal-WP:
   needs:
     - Test_N_Build:internal
 
-Nginx:feature:
+Nginx:review:
   extends: .build-nginx-ehk
   variables:
     DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
 
   needs:
-    - "Test_N_Build:feature"
+    - Test_N_Build:review
 
 # Job to deploy to staging environment (EHK k8s cluster)
 Staging:EHK-HH:
@@ -384,21 +411,41 @@ Feature:EHK-HH:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     KUBE_CONTEXT: ens-dev-ctx
 
-  only:
-  - /^feature\/.*$/
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
 
   needs:
-    - Test_N_Build:feature
-    - "Nginx:feature"
+    - Test_N_Build:review
+    - Nginx:review
 
-Feature:WP-HX:
-  extends: .deploy-wp-feature
+Review:WP-HX:
+  extends: .deploy-wp-review
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   environment:
-    name : wp-hx-dev
-  only:
-  - /^feature\/.*$/
+    name: review/$CI_COMMIT_REF_SLUG
+    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+    on_stop: stop_review
+    kubernetes:
+      namespace: ensembl-dev
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
   needs:
-    - Test_N_Build:feature
-    - Nginx:feature
+    - Test_N_Build:review
+    - Nginx:review
+
+stop_review:
+  extends: .stop-wp-review
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    action: stop
+    kubernetes:
+      namespace: ensembl-dev
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
