@@ -16,11 +16,17 @@
 
 import React from 'react';
 import { mount } from 'enzyme';
+import { MemoryRouter } from 'react-router';
 
 import TranscriptsListItemInfo from './TranscriptsListItemInfo';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+
+jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
+  <div>ViewInApp</div>
+));
 
 describe('<TranscriptsListItemInfo /', () => {
   let wrapper: any;
@@ -32,7 +38,11 @@ describe('<TranscriptsListItemInfo /', () => {
   };
 
   beforeEach(() => {
-    wrapper = mount(<TranscriptsListItemInfo {...props} />);
+    wrapper = mount(
+      <MemoryRouter>
+        <TranscriptsListItemInfo {...props} />
+      </MemoryRouter>
+    );
   });
 
   /*
@@ -52,5 +62,9 @@ describe('<TranscriptsListItemInfo /', () => {
 
   it('contains the download link', () => {
     expect(wrapper.find('.downloadLink')).toHaveLength(1);
+  });
+
+  it('renders ViewInApp component', () => {
+    expect(wrapper.find(ViewInApp)).toHaveLength(1);
   });
 });
