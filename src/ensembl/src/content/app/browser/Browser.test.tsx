@@ -29,7 +29,8 @@ import BrowserNavBar from './browser-nav/BrowserNavBar';
 import { createChrLocationValues } from 'tests/fixtures/browser';
 
 jest.mock('./hooks/useBrowserRouting', () => () => ({
-  changeGenomeId: jest.fn()
+  changeGenomeId: jest.fn(),
+  setBrowserLocation: jest.fn()
 }));
 jest.mock('./browser-bar/BrowserBar', () => () => <div>BrowserBar</div>);
 jest.mock('./browser-image/BrowserImage', () => () => <div>BrowserImage</div>);
