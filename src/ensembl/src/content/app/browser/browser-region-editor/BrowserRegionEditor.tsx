@@ -17,7 +17,6 @@
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
-import { replace } from 'connected-react-router';
 
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
@@ -67,7 +66,6 @@ export type BrowserRegionEditorProps = {
   }) => void;
   changeFocusObject: (objectId: string) => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
-  replace: (path: string) => void;
 };
 
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
@@ -314,8 +312,7 @@ const mapStateToProps = (state: RootState) => {
 const mpaDispatchToProps = {
   changeBrowserLocation,
   changeFocusObject,
-  toggleRegionEditorActive,
-  replace
+  toggleRegionEditorActive
 };
 
 export default connect(
