@@ -72,23 +72,25 @@ module.exports = () => {
       }),
 
       // copy static assets
-      new CopyWebpackPlugin([
-        {
-          from: path.join(paths.nodeModulesPath, 'ensembl-genome-browser/browser*.wasm'),
-          to: path.join(paths.buildStaticPath, 'browser'),
-          flatten: true
-        },
-        {
-          from: path.join(paths.staticPath, 'favicons/*'),
-          to: path.join(paths.buildStaticPath, 'favicons'),
-          flatten: true
-        },
-        {
-          from: path.join(paths.staticPath, 'manifest.json'),
-          to: paths.buildStaticPath,
-          flatten: true
-        }
-      ]),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.join(paths.nodeModulesPath, 'ensembl-genome-browser/browser*.wasm'),
+            to: path.join(paths.buildStaticPath, 'browser'),
+            flatten: true
+          },
+          {
+            from: path.join(paths.staticPath, 'favicons/*'),
+            to: path.join(paths.buildStaticPath, 'favicons'),
+            flatten: true
+          },
+          {
+            from: path.join(paths.staticPath, 'manifest.json'),
+            to: paths.buildStaticPath,
+            flatten: true
+          }
+        ]
+      }),
 
       // generate unique hashes for files based on the relative paths
       new webpack.HashedModuleIdsPlugin(),
