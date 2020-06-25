@@ -20,8 +20,6 @@ import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/componen
 import CollapsedExonsImage from 'src/content/app/entity-viewer/gene-view/components/collapsed-exons-image/CollapsedExonsImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 
-import { getNumberOfCodingExons } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './ProteinsListItemInfo.scss';
@@ -39,12 +37,6 @@ const ProteinsListItemInfo = (props: Props) => {
       {transcript.cds && (
         <ProteinDomainImage transcriptId={transcript.id} width={695} />
       )}
-      <div className={styles.bottomWrapper}>
-        <div className={styles.codingExonCount}>
-          Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong> of{' '}
-          {transcript.exons.length}
-        </div>
-      </div>
       {transcript.cds && (
         <>
           <CollapsedExonsImage

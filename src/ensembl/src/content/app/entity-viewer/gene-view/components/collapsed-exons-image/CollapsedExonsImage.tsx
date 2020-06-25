@@ -19,7 +19,11 @@ import { scaleLinear, ScaleLinear } from 'd3';
 import classNames from 'classnames';
 
 import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-import { getCodingExonsForImage } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import {
+  getCodingExonsForImage,
+  getFeatureCoordinates
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
@@ -78,6 +82,15 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
 
   const codingExons = getCodingExonsForImage(transcript);
 
+  const getSplicedRNALength = () => {
+    const rnaLength = transcript.exons.reduce((length, exon) => {
+      const { start, end } = getFeatureCoordinates(exon);
+      return length + (end - start + 1);
+    }, 0);
+
+    return getCommaSeparatedNumber(rnaLength);
+  };
+
   const scale = scaleLinear()
     .domain([1, props.refCDSLength])
     .range([1, props.width])
@@ -110,7 +123,7 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
         </svg>
       </div>
       <div className={transcriptsListStyles.right}>
-        {transcript.product?.stable_id}
+        Spliced RNA length <strong>{getSplicedRNALength()}</strong> bp
       </div>
     </div>
   );
