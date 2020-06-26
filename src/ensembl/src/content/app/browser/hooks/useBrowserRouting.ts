@@ -18,7 +18,6 @@ import { useEffect, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
@@ -32,11 +31,9 @@ import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
-  getChrLocation,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations,
-  getBrowserActivated
+  getAllChrLocations
 } from '../browserSelectors';
 
 import {
@@ -68,13 +65,10 @@ const useBrowserRouting = () => {
   const { focus = null, location = null } = getQueryParamsMap(search);
 
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-
-  const savedChrLocation = useSelector(getChrLocation);
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
-  const browserActivated = useSelector(getBrowserActivated);
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
 
@@ -92,15 +86,6 @@ const useBrowserRouting = () => {
       } else if (firstCommittedSpecies) {
         changeGenomeId(firstCommittedSpecies.genome_id);
       }
-      return;
-    }
-
-    const isSameUrl =
-      genomeId === activeGenomeId &&
-      newFocusId === activeEnsObjectId &&
-      isEqual(chrLocation, savedChrLocation);
-
-    if (isSameUrl) {
       return;
     }
 
@@ -160,22 +145,11 @@ const useBrowserRouting = () => {
     [genomeId]
   );
 
-  const setBrowserLocation = () => {
-    if (browserActivated && genomeId && chrLocation) {
-      changeBrowserLocation({
-        genomeId,
-        chrLocation,
-        ensObjectId: null
-      });
-    }
-  };
-
   return {
     genomeId,
     focusId: newFocusId,
     chrLocation,
-    changeGenomeId,
-    setBrowserLocation
+    changeGenomeId
   };
 };
 

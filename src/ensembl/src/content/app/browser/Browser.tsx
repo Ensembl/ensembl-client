@@ -88,7 +88,7 @@ export type BrowserProps = {
 
 export const Browser = (props: BrowserProps) => {
   const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
-  const { changeGenomeId, setBrowserLocation } = useBrowserRouting();
+  const { changeGenomeId } = useBrowserRouting();
 
   const { isDrawerOpened } = props;
 
@@ -105,10 +105,6 @@ export const Browser = (props: BrowserProps) => {
     setTrackStatesFromStorage(browserStorageService.getTrackStates());
     props.restoreBrowserTrackStates();
   }, [props.activeGenomeId, props.activeEnsObjectId]);
-
-  useEffect(() => {
-    setBrowserLocation();
-  }, [props.browserActivated]);
 
   const onSidebarToggle = () => {
     props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME
