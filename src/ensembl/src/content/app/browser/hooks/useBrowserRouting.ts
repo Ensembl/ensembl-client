@@ -18,7 +18,6 @@ import { useEffect, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
@@ -32,9 +31,7 @@ import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
-  getChrLocation,
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds,
   getAllChrLocations
 } from '../browserSelectors';
@@ -68,12 +65,10 @@ const useBrowserRouting = () => {
   const { focus = null, location = null } = getQueryParamsMap(search);
 
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
-  const savedChrLocation = useSelector(getChrLocation);
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
-
+  const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
 
@@ -94,15 +89,6 @@ const useBrowserRouting = () => {
       return;
     }
 
-    const isSameUrl =
-      genomeId === activeGenomeId &&
-      newFocusId === activeEnsObjectId &&
-      isEqual(chrLocation, savedChrLocation);
-
-    if (isSameUrl) {
-      return;
-    }
-
     const payload = {
       activeGenomeId: genomeId,
       activeEnsObjectId: newFocusId,
@@ -120,11 +106,10 @@ const useBrowserRouting = () => {
        */
       dispatch(changeFocusObject(newFocusId as string));
     } else if (focus && chrLocation) {
-      dispatch(changeFocusObject(newFocusId as string));
       dispatch(
         changeBrowserLocation({
           genomeId,
-          ensObjectId: focus,
+          ensObjectId: newFocusId,
           chrLocation
         })
       );
@@ -132,7 +117,7 @@ const useBrowserRouting = () => {
       dispatch(
         changeBrowserLocation({
           genomeId,
-          ensObjectId: focus,
+          ensObjectId: newFocusId,
           chrLocation
         })
       );
