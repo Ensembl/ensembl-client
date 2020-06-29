@@ -83,17 +83,12 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const [shouldShowSubmitButton, showSubmitButton] = useState(false);
 
   useEffect(() => {
-    if (
+    const shouldShowButton =
       stickInput !== stick ||
       getNumberWithoutCommas(locationStartInput) !== locationStart ||
-      getNumberWithoutCommas(locationEndInput) !== locationEnd
-    ) {
-      showSubmitButton(true);
-      return;
-    }
-
-    showSubmitButton(false);
-  }, [stickInput, locationStartInput, locationEndInput]);
+      getNumberWithoutCommas(locationEndInput) !== locationEnd;
+    showSubmitButton(shouldShowButton);
+  }, [stick, stickInput, locationStartInput, locationEndInput]);
 
   const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
     string | null
