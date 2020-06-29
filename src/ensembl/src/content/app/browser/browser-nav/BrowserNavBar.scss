@@ -26,21 +26,6 @@
   color: $red;
 }
 
-.browserNavBarButtons {
-  display: inline-block;
-  visibility: hidden;
-  margin-left: 10px;
-
-  img {
-    height: 18px;
-    width: 18px;
-  }
-}
-
-.browserNavBarButtonsVisible {
-  visibility: visible;
-}
-
 .semiOpaque {
   opacity: 0.4;
 }
