@@ -132,7 +132,7 @@ const buildProteinDomainsResources = (
   proteinFeatures: ProteinFeature[]
 ): ProteinDomainsResources => {
   const domainsResources: ProteinDomainsResources = {};
-  const proteinFeaturesToFilter = ['Pfam', 'PANTHER', 'hmmpanther'];
+  const proteinFeaturesToFilter = ['Pfam', 'PANTHER'];
   const filteredProteinFeatures = proteinFeatures.filter((entry) =>
     proteinFeaturesToFilter.includes(entry.type)
   );

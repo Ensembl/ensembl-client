@@ -110,14 +110,16 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
             <g className={styles.splicedRNABlock}>
               <rect height={IMAGE_HEIGHT} width={props.width} />
             </g>
-            {codingExons.map((exon, index) => (
-              <ExonBlock
-                key={index}
-                exon={exon}
-                className={props.className}
-                scale={scale}
-              />
-            ))}
+            <g>
+              {codingExons.map((exon, index) => (
+                <ExonBlock
+                  key={index}
+                  exon={exon}
+                  className={props.className}
+                  scale={scale}
+                />
+              ))}
+            </g>
           </g>
         </svg>
       </div>
@@ -143,16 +145,14 @@ const ExonBlock = (props: ExonBlockProps) => {
   const exonClasses = classNames(styles.exon, props.className);
 
   return (
-    <g>
-      <rect
-        key={exon.start}
-        className={exonClasses}
-        y={y}
-        height={EXON_HEIGHT}
-        x={scale(exon.start)}
-        width={scale(exon.end - exon.start + 1)}
-      />
-    </g>
+    <rect
+      key={exon.start}
+      className={exonClasses}
+      y={y}
+      height={EXON_HEIGHT}
+      x={scale(exon.start)}
+      width={scale(exon.end - exon.start + 1)}
+    />
   );
 };
 
