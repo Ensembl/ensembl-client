@@ -19,9 +19,15 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { defaultEntityViewerGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import {
+  defaultEntityViewerGeneViewUIState,
+  transcriptsTabData,
+  GeneViewTabMap,
+  GeneViewTabData,
+  SelectedTabViews
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
-export const getEntityViewerActiveGenomeConfiguration = (state: RootState) => {
+export const getGeneViewState = (state: RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
 
@@ -34,13 +40,16 @@ export const getEntityViewerActiveGenomeConfiguration = (state: RootState) => {
   );
 };
 
-export const getEntityViewerActiveGeneTab = (state: RootState) =>
-  getEntityViewerActiveGenomeConfiguration(state).selectedGeneTabName;
+export const getGeneViewName = (state: RootState) =>
+  getGeneViewState(state).view;
 
-export const getEntityViewerActiveGeneFunction = (state: RootState) =>
-  getEntityViewerActiveGenomeConfiguration(state).geneFunction ||
-  defaultEntityViewerGeneViewUIState.geneFunction;
+export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
+  const view = getGeneViewName(state);
+  return view
+    ? (GeneViewTabMap.get(view) as GeneViewTabData)
+    : transcriptsTabData;
+};
 
-export const getEntityViewerActiveGeneRelationships = (state: RootState) =>
-  getEntityViewerActiveGenomeConfiguration(state).geneRelationships ||
-  defaultEntityViewerGeneViewUIState.geneRelationships;
+export const getSelectedTabViews = (state: RootState): SelectedTabViews => {
+  return getGeneViewState(state).selectedTabViews;
+};

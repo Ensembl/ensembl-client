@@ -17,6 +17,7 @@
 import { RootState } from 'src/store';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
+import { getQueryParamsMap } from 'src/global/globalHelper';
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const getEntityViewerActiveGenomeId = (state: RootState) =>
@@ -40,3 +41,7 @@ export const getEntityViewerActiveEnsObject = (
   }
   return getEnsObjectById(state, activeObjectId) as EnsObjectGene;
 };
+
+export const getEntityViewerQueryParams = (
+  state: RootState
+): { [key: string]: string } => getQueryParamsMap(state.router.location.search);

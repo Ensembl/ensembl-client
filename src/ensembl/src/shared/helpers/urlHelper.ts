@@ -28,6 +28,7 @@ type BrowserUrlParams = {
 type EntityViewerUrlParams = {
   genomeId?: string | null;
   entityId?: string;
+  view?: string | null;
 };
 
 export const browser = (params?: BrowserUrlParams) => {
@@ -55,8 +56,18 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
     // this should never happen; this combination doesn't make sense
     throw 'Malformed Entity Viewer url';
   }
+
   const genomeId = params?.genomeId || '';
   const entityId = params?.entityId || '';
+  const path = `/app/entity-viewer/${genomeId}/${entityId}`;
+  const query = queryString.stringify(
+    {
+      view: params?.view || undefined
+    },
+    {
+      encode: false
+    }
+  );
 
-  return `/app/entity-viewer/${genomeId}/${entityId}`;
+  return query ? `${path}?${query}` : path;
 };

@@ -16,10 +16,14 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { push, Push } from 'connected-react-router';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { getEntityViewerActiveGeneFunction } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { setActiveGeneFunctionTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { setGeneViewName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
@@ -27,20 +31,22 @@ import ProteinsList from '../proteins-list/ProteinsList';
 
 import { RootState } from 'src/store';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { GeneFunctionTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+import {
+  GeneViewTabMap,
+  GeneViewTabName,
+  GeneFunctionTabName
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneFunction.scss';
 
 // TODO: the isDisabled flags are hardcoded here since we do not have any data available.
 // We need to update this logic once we have the data available
-const tabsData: Tab[] = [
-  { title: GeneFunctionTabName.PROTEINS },
-  { title: GeneFunctionTabName.VARIANTS, isDisabled: true },
-  { title: GeneFunctionTabName.PHENOTYPES, isDisabled: true },
-  { title: GeneFunctionTabName.GENE_EXPRESSION, isDisabled: true },
-  { title: GeneFunctionTabName.GENE_ONTOLOGY, isDisabled: true },
-  { title: GeneFunctionTabName.GENE_PATHWAYS, isDisabled: true }
-];
+const tabsData = [...GeneViewTabMap.values()]
+  .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_FUNCTION)
+  .map((item) => ({
+    title: item.secondaryTab,
+    isDisabled: false
+  })) as Tab[];
 
 const tabClassNames = {
   default: styles.defaultTabName,
@@ -51,23 +57,41 @@ type Props = {
   gene: Gene;
   isNarrow: boolean;
   selectedTabName: GeneFunctionTabName | null;
-  setActiveGeneFunctionTab: (tab: string) => void;
+  push: Push;
 };
 
 const GeneFunction = (props: Props) => {
+  const { genomeId, entityId } = useParams() as { [key: string]: string };
   const {
     gene: { transcripts }
   } = props;
-  let { selectedTabName } = props;
+  const { selectedTabName } = props;
+
+  const changeTab = (tab: string) => {
+    const match = [...GeneViewTabMap.entries()].find(
+      ([, { secondaryTab }]) => secondaryTab === tab
+    );
+    if (!match) {
+      return;
+    }
+    const [view] = match;
+    const url = urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view
+    });
+    props.push(url);
+  };
 
   // Check if we have at least one protein coding transcript
-  const proteinCodingTranscriptIndex = transcripts.findIndex(
+  // TODO: use a more reliable indicator than the biotype field
+  const isProteinCodingTranscript = transcripts.some(
     (transcript) => transcript.biotype === 'protein_coding'
   );
 
   // Disable the Proteins tab if there are no transcripts data
   // TODO: We need a better logic to disable tabs once we have the data available for other tabs
-  if (proteinCodingTranscriptIndex === -1) {
+  if (!isProteinCodingTranscript) {
     const proteinTabIndex = tabsData.findIndex(
       (tab) => tab.title === GeneFunctionTabName.PROTEINS
     );
@@ -75,28 +99,13 @@ const GeneFunction = (props: Props) => {
     tabsData[proteinTabIndex].isDisabled = true;
   }
 
-  // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
-  const selectedTabIndex = tabsData.findIndex(
-    (tab) => tab.title === selectedTabName
-  );
-
-  if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
-    const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
-
-    selectedTabName = (nextAvailableTab?.title as GeneFunctionTabName) || null;
-  }
-
   const TabWrapper = () => {
-    const onTabChange = (tab: string) => {
-      props.setActiveGeneFunctionTab(tab);
-    };
-
     return (
       <Tabs
         tabs={tabsData}
         selectedTab={selectedTabName}
         classNames={tabClassNames}
-        onTabChange={onTabChange}
+        onTabChange={changeTab}
       />
     );
   };
@@ -125,11 +134,13 @@ const GeneFunction = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   isNarrow: isEntityViewerSidebarOpen(state),
-  selectedTabName: getEntityViewerActiveGeneFunction(state).selectedTabName
+  selectedTabName: getSelectedGeneViewTabs(state)
+    .secondaryTab as GeneFunctionTabName
 });
 
 const mapDispatchToProps = {
-  setActiveGeneFunctionTab
+  push,
+  setGeneViewName
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GeneFunction);

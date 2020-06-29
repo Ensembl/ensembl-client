@@ -79,6 +79,17 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const [locationEndInput, setLocationEndInput] = useState(
     getCommaSeparatedNumber(locationEnd)
   );
+
+  const [shouldShowSubmitButton, showSubmitButton] = useState(false);
+
+  useEffect(() => {
+    const shouldShowButton =
+      stickInput !== stick ||
+      getNumberWithoutCommas(locationStartInput) !== locationStart ||
+      getNumberWithoutCommas(locationEndInput) !== locationEnd;
+    showSubmitButton(shouldShowButton);
+  }, [stick, stickInput, locationStartInput, locationEndInput]);
+
   const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
     string | null
   >(null);
@@ -104,17 +115,11 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
       setLocationEndInput(`${selectedKaryotypeItems[0].length}`);
     }
   };
-
   const updateAllInputs = () => {
-    const [
-      region,
-      locationStart,
-      locationEnd
-    ] = props.chrLocation as ChrLocation;
     const locationStartStr = getCommaSeparatedNumber(locationStart);
     const locationEndStr = getCommaSeparatedNumber(locationEnd);
 
-    setStickInput(region);
+    setStickInput(stick);
     setLocationStartInput(locationStartStr);
     setLocationEndInput(locationEndStr);
   };
@@ -140,7 +145,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
       chrLocation: newChrLocation
     });
 
-  const resetForm = () => {
+  const hideForm = () => {
     updateErrorMessages(null, null);
     props.toggleRegionEditorActive(false);
   };
@@ -151,7 +156,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   };
 
   const onValidationSuccess = (regionId: string) => {
-    resetForm();
+    hideForm();
 
     const newChrLocation: ChrLocation = [
       stickInput,
@@ -183,7 +188,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     }
 
     updateAllInputs();
-    resetForm();
+    hideForm();
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -203,12 +208,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const buttonRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    updateAllInputs();
     document.addEventListener('click', closeForm);
     return () => document.removeEventListener('click', closeForm);
-  }, []);
-
-  useEffect(() => {
-    updateAllInputs();
   }, [props.chrLocation]);
 
   const locationStartClassNames = classNames({
@@ -219,12 +221,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     [browserNavBarStyles.errorText]: locationEndErrorMessage
   });
 
-  const buttonsClassNames = classNames(
-    browserNavBarStyles.browserNavBarButtons,
-    {
-      [browserNavBarStyles.browserNavBarButtonsVisible]: props.isActive
-    }
-  );
+  const buttonsClassNames = classNames(styles.submitButton, {
+    [styles.submitButtonVisible]: shouldShowSubmitButton
+  });
 
   return (
     <div className={styles.browserRegionEditor}>

@@ -64,7 +64,6 @@ describe('<Browser />', () => {
     isDrawerOpened: false,
     isTrackPanelOpened: false,
     exampleEnsObjects: [],
-    changeBrowserLocation: jest.fn(),
     restoreBrowserTrackStates: jest.fn(),
     fetchGenomeData: jest.fn(),
     toggleTrackPanel: jest.fn(),
