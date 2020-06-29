@@ -22,13 +22,13 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import {
-  EntityViewerGeneViewUIState,
-  GeneViewTabName,
-  GeneFunctionTabName,
-  GeneRelationshipsTabName
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
+import {
+  View,
+  GeneViewTabMap,
+  GeneViewTabName,
+  EntityViewerGeneViewUIState
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { RootState } from 'src/store';
 
 export const updateActiveGeneViewUIState = createAction(
@@ -39,83 +39,44 @@ export const updateActiveGeneViewUIState = createAction(
   fragment: Partial<EntityViewerGeneViewUIState>;
 }>();
 
-export const setActiveGeneTab: ActionCreator<ThunkAction<
+export const setGeneViewName: ActionCreator<ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = (selectedTabName: GeneViewTabName) => (
-  dispatch,
-  getState: () => RootState
-) => {
+>> = (view: View | null) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
-
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
-
+  const primaryTabName = view ? GeneViewTabMap.get(view)?.primaryTab : null;
+  const primaryTab =
+    primaryTabName === GeneViewTabName.GENE_FUNCTION
+      ? 'geneFunctionTab'
+      : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
+      ? 'geneRelationshipsTab'
+      : null;
+  const tabView: {
+    selectedTabViews?: Record<
+      'geneFunctionTab' | 'geneRelationshipsTab',
+      View | null
+    >;
+  } = {};
+  if (primaryTab) {
+    tabView.selectedTabViews = { [primaryTab]: view } as Record<
+      'geneFunctionTab' | 'geneRelationshipsTab',
+      View | null
+    >;
+  }
   dispatch(
     updateActiveGeneViewUIState({
       activeGenomeId,
       activeObjectId,
       fragment: {
-        selectedGeneTabName: selectedTabName
+        view,
+        ...tabView
       }
     })
   );
-};
-
-export const setActiveGeneFunctionTab: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (selectedTabName: GeneFunctionTabName) => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
-  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
-
-  if (activeGenomeId && activeObjectId) {
-    dispatch(
-      updateActiveGeneViewUIState({
-        activeGenomeId,
-        activeObjectId,
-        fragment: {
-          geneFunction: {
-            selectedTabName
-          }
-        }
-      })
-    );
-  }
-};
-
-export const setActiveGeneRelationshipsTab: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (selectedTabName: GeneRelationshipsTabName) => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
-  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
-
-  if (activeGenomeId && activeObjectId) {
-    dispatch(
-      updateActiveGeneViewUIState({
-        activeGenomeId,
-        activeObjectId,
-        fragment: {
-          geneRelationships: {
-            selectedTabName
-          }
-        }
-      })
-    );
-  }
 };

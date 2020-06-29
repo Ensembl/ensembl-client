@@ -15,13 +15,24 @@
  */
 
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { push, Push } from 'connected-react-router';
 
-import { RootState } from 'src/store';
-import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { setActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import {
+  getSelectedGeneViewTabs,
+  getSelectedTabViews
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
+
+import { RootState } from 'src/store';
+import {
+  GeneViewTabName,
+  View,
+  SelectedTabViews
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneViewTabs.scss';
 
@@ -34,11 +45,13 @@ const tabsData: Tab[] = [
 const DEFAULT_TAB = tabsData[0].title;
 
 type Props = {
-  selectedGeneTabName: string | null;
-  setActiveGeneTab: (selectedTabName: string) => void;
+  selectedTab: string;
+  selectedTabViews: SelectedTabViews;
+  push: Push;
 };
 
 const GeneViewTabs = (props: Props) => {
+  const { genomeId, entityId } = useParams() as { [key: string]: string };
   const tabClassNames = {
     default: styles.geneTab,
     selected: styles.selectedGeneTab,
@@ -47,29 +60,37 @@ const GeneViewTabs = (props: Props) => {
   };
 
   const onTabChange = (selectedTabName: string) => {
-    if (selectedTabName === props.selectedGeneTabName) {
-      props.setActiveGeneTab(DEFAULT_TAB);
-    } else {
-      props.setActiveGeneTab(selectedTabName);
+    let view;
+    if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
+      view = props.selectedTabViews.geneFunctionTab || View.PROTEIN;
+    } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
+      view = props.selectedTabViews.geneRelationshipsTab || View.ORTHOLOGUES;
     }
+    const url = urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view
+    });
+    props.push(url);
   };
 
   return (
     <Tabs
       classNames={tabClassNames}
       tabs={tabsData}
-      selectedTab={props.selectedGeneTabName || DEFAULT_TAB}
+      selectedTab={props.selectedTab || DEFAULT_TAB}
       onTabChange={onTabChange}
     />
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
-  selectedGeneTabName: getEntityViewerActiveGeneTab(state)
+  selectedTab: getSelectedGeneViewTabs(state).primaryTab,
+  selectedTabViews: getSelectedTabViews(state)
 });
 
 const mapDispatchToProps = {
-  setActiveGeneTab
+  push
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GeneViewTabs);

@@ -16,30 +16,34 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { push, Push } from 'connected-react-router';
 
-import { GeneRelationshipsTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { getEntityViewerActiveGeneRelationships } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { setActiveGeneRelationshipsTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 
 import { RootState } from 'src/store';
+import {
+  GeneViewTabMap,
+  GeneViewTabName,
+  GeneRelationshipsTabName
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneRelationships.scss';
 
 // TODO: the isDisabled flags are hardcoded here since we do not have any data available.
 // We need to update this logic once we have the data available
-const tabsData: Tab[] = [
-  { title: GeneRelationshipsTabName.ORTHOLOGUES, isDisabled: true },
-  { title: GeneRelationshipsTabName.PARALOGUES, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_FAMILIES, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_CLUSTERS, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_PANELS, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_NEIGHBOUTHOOD, isDisabled: true },
-  { title: GeneRelationshipsTabName.GENE_SIMILARITY, isDisabled: true }
-];
+const tabsData = [...GeneViewTabMap.values()]
+  .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_RELATIONSHIPS)
+  .map((item) => ({
+    title: item.secondaryTab,
+    isDisabled: false
+  })) as Tab[];
 
 const tabClassNames = {
   selected: styles.selectedTabName
@@ -48,17 +52,35 @@ const tabClassNames = {
 type Props = {
   isSidebarOpen: boolean;
   selectedTabName: GeneRelationshipsTabName | null;
-  setActiveGeneRelationshipsTab: (tab: string) => void;
+  push: Push;
 };
 
 const GeneRelationships = (props: Props) => {
+  const { genomeId, entityId } = useParams() as { [key: string]: string };
   let { selectedTabName } = props;
+
+  const changeTab = (tab: string) => {
+    const match = [...GeneViewTabMap.entries()].find(
+      ([, { secondaryTab }]) => secondaryTab === tab
+    );
+    if (!match) {
+      return;
+    }
+    const [view] = match;
+    const url = urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view
+    });
+    props.push(url);
+  };
 
   // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
   const selectedTabIndex = tabsData.findIndex(
     (tab) => tab.title === selectedTabName
   );
-  if (!selectedTabIndex || tabsData[selectedTabIndex].isDisabled) {
+
+  if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
     const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
 
     selectedTabName =
@@ -66,16 +88,12 @@ const GeneRelationships = (props: Props) => {
   }
 
   const TabWrapper = () => {
-    const onTabChange = (tab: string) => {
-      props.setActiveGeneRelationshipsTab(tab);
-    };
-
     return (
       <Tabs
         tabs={tabsData}
         selectedTab={selectedTabName}
         classNames={tabClassNames}
-        onTabChange={onTabChange}
+        onTabChange={changeTab}
       />
     );
   };
@@ -104,11 +122,12 @@ const GeneRelationships = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   isSidebarOpen: isEntityViewerSidebarOpen(state),
-  selectedTabName: getEntityViewerActiveGeneRelationships(state).selectedTabName
+  selectedTabName: getSelectedGeneViewTabs(state)
+    .secondaryTab as GeneRelationshipsTabName
 });
 
 const mapDispatchToProps = {
-  setActiveGeneRelationshipsTab
+  push
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GeneRelationships);

@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { replace } from 'connected-react-router';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
+
+import usePrevious from 'src/shared/hooks/usePrevious';
+import {
+  getSelectedGeneViewTabs,
+  getGeneViewName
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { setGeneViewName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
-
-import { getEntityViewerActiveEnsObject } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { getEntityViewerActiveGeneTab } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
 import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
@@ -34,21 +41,13 @@ import GeneRelationships from 'src/content/app/entity-viewer/gene-view/component
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
-import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { RootState } from 'src/store';
 
 import styles from './GeneView.scss';
 
-type GeneViewProps = {
-  geneId: string | null;
-  selectedGeneTabName: GeneViewTabName;
-};
-
 type GeneViewWithDataProps = {
   gene: Gene;
-  selectedGeneTabName: GeneViewTabName;
 };
 
 const QUERY = gql`
@@ -99,7 +98,7 @@ const QUERY = gql`
   }
 `;
 
-const GeneView = (props: GeneViewProps) => {
+const GeneView = () => {
   const params: { [key: string]: string } = useParams();
   const { entityId } = params;
   const { objectId: geneId } = parseFocusIdFromUrl(entityId);
@@ -119,12 +118,7 @@ const GeneView = (props: GeneViewProps) => {
     return null;
   }
 
-  return (
-    <GeneViewWithData
-      gene={data.gene}
-      selectedGeneTabName={props.selectedGeneTabName}
-    />
-  );
+  return <GeneViewWithData gene={data.gene} />;
 };
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
@@ -133,9 +127,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
-  const params: { [key: string]: string } = useParams();
-  const { genomeId, entityId } = params;
-  const gbUrl = urlFor.browser({ genomeId, focus: entityId });
+  const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
+  const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
+  const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
   return (
     <div className={styles.geneView}>
@@ -153,7 +147,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         <GeneViewTabs />
       </div>
       <div className={styles.geneViewTabContent}>
-        {props.selectedGeneTabName === GeneViewTabName.TRANSCRIPTS &&
+        {selectedTabs.primaryTab === GeneViewTabName.TRANSCRIPTS &&
           basePairsRulerTicks && (
             <DefaultTranscriptslist
               gene={props.gene}
@@ -161,11 +155,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             />
           )}
 
-        {props.selectedGeneTabName === GeneViewTabName.GENE_FUNCTION && (
+        {selectedTabs.primaryTab === GeneViewTabName.GENE_FUNCTION && (
           <GeneFunction gene={props.gene} />
         )}
 
-        {props.selectedGeneTabName === GeneViewTabName.GENE_RELATIONSHIPS && (
+        {selectedTabs.primaryTab === GeneViewTabName.GENE_RELATIONSHIPS && (
           <GeneRelationships />
         )}
       </div>
@@ -173,10 +167,38 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  // FIXME: this will have to be superseded with a proper way we get ids
-  geneId: getEntityViewerActiveEnsObject(state)?.stable_id || null,
-  selectedGeneTabName: getEntityViewerActiveGeneTab(state)
-});
+const useGeneViewRouting = () => {
+  const dispatch = useDispatch();
+  const params: { [key: string]: string } = useParams();
+  const { genomeId, entityId } = params;
+  const { objectId: geneId } = parseFocusIdFromUrl(entityId);
+  const { search } = useLocation();
+  // TODO: discuss – is using URLSearchParams better than using the querystring package?
+  const view = new URLSearchParams(search).get('view');
+  const viewInRedux = useSelector(getGeneViewName);
+  const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
+  const selectedTabs = useSelector(getSelectedGeneViewTabs);
 
-export default connect(mapStateToProps)(GeneView);
+  useEffect(() => {
+    if (previousGenomeId !== genomeId) {
+      if (viewInRedux && viewInRedux !== view) {
+        const url = urlFor.entityViewer({
+          genomeId,
+          entityId,
+          view: viewInRedux
+        });
+        dispatch(replace(url));
+      }
+    } else if (viewInRedux !== view) {
+      dispatch(setGeneViewName(view));
+    }
+  }, [view, viewInRedux, genomeId, previousGenomeId]);
+
+  return {
+    genomeId,
+    geneId,
+    selectedTabs
+  };
+};
+
+export default GeneView;
