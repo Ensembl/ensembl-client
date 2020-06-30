@@ -39,6 +39,7 @@ import {
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 
 import styles from './GeneExternalReferences.scss';
+import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 const QUERY = gql`
   query Gene($stable_id: String!, $genome_id: String!) {
@@ -115,7 +116,7 @@ const GeneExternalReferences = () => {
 
   const { entityId, genomeId } = params;
 
-  const stableId = entityId?.split(':').pop();
+  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId) : null;
 
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
