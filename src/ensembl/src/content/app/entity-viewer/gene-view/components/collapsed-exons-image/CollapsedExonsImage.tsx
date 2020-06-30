@@ -75,6 +75,9 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
     return null;
   }
 
+  // If we consider the image's starting point as A and end point as B the scale can be sketched as:
+  // A--  longest protein's length  --B
+  // A--      width in pixels       --B
   const scale = scaleLinear()
     .domain([0, props.longestProteinLength])
     .range([0, props.width])
@@ -82,6 +85,8 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
+  // The scale/longest protein is displayed using the first <rect> from point A to point B
+  // The protein is displayed from point A (check comment above) using the second <rect>
   return (
     <div className={transcriptsListStyles.row}>
       <div className={midStyles}>

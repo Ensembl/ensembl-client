@@ -119,11 +119,16 @@ export const ProteinDomainImageWithData = (
     protein.protein_domains_resources
   );
 
+  // If we consider the image's starting point as A and end point as B the scale can be sketched as:
+  // A--  longest protein's length  --B
+  // A--      width in pixels       --B
   const scale = scaleLinear()
     .domain([0, longestProteinLength])
     .range([0, props.width])
     .clamp(true);
 
+  // The <Track> represents the longest protein length
+  // The <DomainBlock> is where the domain is position in relation to the protein
   return (
     <div className={styles.container}>
       {/* TODO: The sorting needs to be done based on the `score`? once it is available */}
