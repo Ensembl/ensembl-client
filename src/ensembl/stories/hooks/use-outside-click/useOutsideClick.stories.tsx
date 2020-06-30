@@ -21,7 +21,7 @@ import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import styles from './useOutsideClick.stories.scss';
 
-storiesOf('Components|Hooks/useOutsideclick', module).add('default', () => {
+storiesOf('Components|Hooks/useOutsideClick', module).add('default', () => {
   const [shouldShowChild, showChild] = useState(true);
 
   const parentRef = useRef<HTMLDivElement>(null);
