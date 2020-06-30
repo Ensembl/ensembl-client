@@ -116,7 +116,7 @@ const GeneExternalReferences = () => {
 
   const { entityId, genomeId } = params;
 
-  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId) : null;
+  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
 
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
