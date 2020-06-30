@@ -35,7 +35,11 @@ const ProteinsListItemInfo = (props: Props) => {
   return (
     <div className={styles.proteinsListItemInfo}>
       {transcript.cds && (
-        <ProteinDomainImage transcriptId={transcript.id} width={695} />
+        <ProteinDomainImage
+          transcriptId={transcript.id}
+          refCDSLength={refCDSLength}
+          width={695}
+        />
       )}
       {transcript.cds && (
         <>

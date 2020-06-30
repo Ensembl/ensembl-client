@@ -32,6 +32,7 @@ const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
   transcriptId: string;
+  refCDSLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
     track?: string;
@@ -108,7 +109,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
 export const ProteinDomainImageWithData = (
   props: ProteinDomainImageWithDataProps
 ) => {
-  const { protein } = props;
+  const { protein, refCDSLength } = props;
 
   if (!protein?.protein_domains_resources) {
     return null;
@@ -117,8 +118,11 @@ export const ProteinDomainImageWithData = (
   const proteinDomainsResources = getDomainsByResourceGroups(
     protein.protein_domains_resources
   );
+
+  const refProteinLength = refCDSLength / 3;
+
   const scale = scaleLinear()
-    .domain([1, protein.length])
+    .domain([0, refProteinLength])
     .range([0, props.width])
     .clamp(true);
 
