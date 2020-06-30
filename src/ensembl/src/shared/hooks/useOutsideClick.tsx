@@ -17,11 +17,23 @@
 import { useEffect } from 'react';
 
 export default function useOutsideClick<T extends HTMLElement>(
-  ref: React.RefObject<T>,
+  refs: React.RefObject<T>[],
   callback: () => void
 ) {
   const handleClickOutside = (event: Event) => {
-    if (ref.current && !ref.current.contains(event.target as HTMLElement)) {
+    let clickedOutside = true;
+
+    refs.forEach((ref) => {
+      if (
+        clickedOutside &&
+        ref.current &&
+        ref.current.contains(event.target as HTMLElement)
+      ) {
+        clickedOutside = false;
+      }
+    });
+
+    if (clickedOutside) {
       callback();
     }
   };

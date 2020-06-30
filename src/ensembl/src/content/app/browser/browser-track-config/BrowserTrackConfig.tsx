@@ -74,7 +74,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
 
   const ref = useRef(null);
-  useOutsideClick(ref, props.onClose);
+  useOutsideClick([ref], props.onClose);
 
   const toggleName = useCallback(() => {
     if (applyToAll) {

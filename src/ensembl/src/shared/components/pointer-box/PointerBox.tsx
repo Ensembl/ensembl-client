@@ -87,7 +87,7 @@ const PointerBox = (props: PointerBoxProps) => {
   });
   const pointerBoxRef = useRef<HTMLDivElement>(null);
 
-  useOutsideClick(pointerBoxRef, props.onOutsideClick);
+  useOutsideClick([pointerBoxRef], props.onOutsideClick);
 
   useEffect(() => {
     const pointerBoxElement = pointerBoxRef.current as HTMLDivElement;
