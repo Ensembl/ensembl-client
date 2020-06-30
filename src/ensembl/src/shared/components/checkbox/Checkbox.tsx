@@ -55,9 +55,15 @@ const Checkbox = (props: CheckboxProps) => {
     props.onChange(!props.checked);
   };
 
-  const styles = props.classNames
-    ? ({ ...defaultStyles, ...props.classNames } as { [key: string]: string })
-    : defaultStyles;
+  const styles = defaultStyles;
+  for (const className in props.classNames) {
+    const newClassName = classNames(
+      defaultStyles[className],
+      (props.classNames as any)[className]
+    )
+    styles[className] = newClassName;
+  }
+
   const className = classNames(
     styles.defaultCheckbox,
     { [styles.checked]: props.checked },

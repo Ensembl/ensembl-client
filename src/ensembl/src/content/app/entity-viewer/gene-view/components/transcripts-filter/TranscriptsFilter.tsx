@@ -75,8 +75,7 @@ const TranscriptsFilter = (props: Props) => {
             <div className={styles.filterColumn}>
             <Checkbox
               classNames={{
-                checkboxHolder: styles.buttonWrapper,
-                unchecked: styles.checkboxUnchecked,
+               unchecked: styles.checkboxUnchecked,
                 checked: styles.checkboxChecked
               }}
               labelClassName={styles.label}
@@ -86,7 +85,6 @@ const TranscriptsFilter = (props: Props) => {
             />
             <Checkbox
               classNames={{
-                checkboxHolder: styles.buttonWrapper,
                 unchecked: styles.checkboxUnchecked,
                 checked: styles.checkboxChecked
               }}
@@ -97,7 +95,6 @@ const TranscriptsFilter = (props: Props) => {
             />
             <Checkbox
               classNames={{
-                checkboxHolder: styles.buttonWrapper,
                 unchecked: styles.checkboxUnchecked,
                 checked: styles.checkboxChecked
               }}
@@ -110,7 +107,6 @@ const TranscriptsFilter = (props: Props) => {
             <div className={styles.filterColumn}>
               <Checkbox
                 classNames={{
-                  checkboxHolder: styles.buttonWrapper,
                   unchecked: styles.checkboxUnchecked,
                   checked: styles.checkboxChecked
                 }}
@@ -121,7 +117,6 @@ const TranscriptsFilter = (props: Props) => {
               />
               <Checkbox
                 classNames={{
-                  checkboxHolder: styles.buttonWrapper,
                   unchecked: styles.checkboxUnchecked,
                   checked: styles.checkboxChecked
                 }}
@@ -134,7 +129,6 @@ const TranscriptsFilter = (props: Props) => {
             <div className={styles.filterColumn}>
               <Checkbox
                 classNames={{
-                  checkboxHolder: styles.buttonWrapper,
                   unchecked: styles.checkboxUnchecked,
                   checked: styles.checkboxChecked
                 }}
@@ -145,7 +139,6 @@ const TranscriptsFilter = (props: Props) => {
               />
               <Checkbox
                 classNames={{
-                  checkboxHolder: styles.buttonWrapper,
                   unchecked: styles.checkboxUnchecked,
                   checked: styles.checkboxChecked
                 }}
