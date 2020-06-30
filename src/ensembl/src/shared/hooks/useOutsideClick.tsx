@@ -17,18 +17,24 @@
 import { useEffect } from 'react';
 
 export default function useOutsideClick<T extends HTMLElement>(
-  refs: React.RefObject<T>[],
+  refOrRefs: React.RefObject<T> | React.RefObject<T>[],
   callback: () => void
 ) {
+  const refs = Array.isArray(refOrRefs) ? refOrRefs : [refOrRefs];
+
+  let clickedInside = false;
+
   const handleClickOutside = (event: Event) => {
     let clickedOutside = true;
 
+    if (clickedInside) {
+      // Reset the clickedInside flag to false
+      clickedInside = false;
+      return;
+    }
+
     refs.forEach((ref) => {
-      if (
-        clickedOutside &&
-        ref.current &&
-        ref.current.contains(event.target as HTMLElement)
-      ) {
+      if (ref.current && ref.current.contains(event.target as HTMLElement)) {
         clickedOutside = false;
       }
     });
@@ -39,7 +45,19 @@ export default function useOutsideClick<T extends HTMLElement>(
   };
 
   useEffect(() => {
+    /*
+      When a child node of the reference node is clicked and is removed from the DOM
+      ref.current.contains(event.target) will return false.
+      To deal with this, we are adding a click event listener to the ref to capture
+      all the clicks to any element within the ref to update the clickedInside flag.
+    */
+    refs.forEach((ref) => {
+      ref?.current?.addEventListener('click', () => {
+        clickedInside = true;
+      });
+    });
+
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  });
+  }, []);
 }

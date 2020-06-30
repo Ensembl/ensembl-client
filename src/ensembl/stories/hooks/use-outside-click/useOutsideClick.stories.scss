@@ -1,0 +1,41 @@
+.wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parentElement {
+  background-color: #ccc;
+  height: 400px;
+  width: 400px;
+  padding: 100px;
+  position: relative;
+}
+
+.childElement {
+  background-color: green;
+  height: 200px;
+  width: 200px;
+  padding: 20px;
+}
+
+.halfInside {
+  background-color: blue;
+  color: white;
+  height: 200px;
+  width: 200px;
+  padding: 20px;
+  position: absolute;
+  bottom: -150px;
+  left: 100px;
+}
+
+.someOtherElement {
+  background-color: red;
+  height: 200px;
+  width: 200px;
+  margin-left: 20px;
+  margin-top: 40px;
+  padding: 20px;
+}
