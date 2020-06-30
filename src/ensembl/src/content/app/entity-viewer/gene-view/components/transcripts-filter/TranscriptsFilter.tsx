@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import noop from 'lodash/noop';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
@@ -75,7 +76,7 @@ const TranscriptsFilter = (props: Props) => {
             <div className={styles.filterColumn}>
             <Checkbox
               classNames={{
-               unchecked: styles.checkboxUnchecked,
+                unchecked: styles.checkboxUnchecked,
                 checked: styles.checkboxChecked
               }}
               labelClassName={styles.label}
@@ -89,9 +90,9 @@ const TranscriptsFilter = (props: Props) => {
                 checked: styles.checkboxChecked
               }}
               labelClassName={styles.label}
-              checked={isChecked}
+              checked={false}
               label="nonsense medicated decay"
-              onChange={checkboxChange}
+              onChange={noop}
             />
             <Checkbox
               classNames={{
@@ -99,9 +100,9 @@ const TranscriptsFilter = (props: Props) => {
                 checked: styles.checkboxChecked
               }}
               labelClassName={styles.label}
-              checked={isChecked}
+              checked={false}
               label="processed transcript"
-              onChange={checkboxChange}
+              onChange={noop}
             />
             </div>
             <div className={styles.filterColumn}>
@@ -111,9 +112,9 @@ const TranscriptsFilter = (props: Props) => {
                   checked: styles.checkboxChecked
                 }}
                 labelClassName={styles.label}
-                checked={isChecked}
+                checked={false}
                 label="APRISP1"
-                onChange={checkboxChange}
+                onChange={noop}
               />
               <Checkbox
                 classNames={{
@@ -121,9 +122,9 @@ const TranscriptsFilter = (props: Props) => {
                   checked: styles.checkboxChecked
                 }}
                 labelClassName={styles.label}
-                checked={isChecked}
+                checked={false}
                 label="no APRIS"
-                onChange={checkboxChange}
+                onChange={noop}
               />
             </div>
             <div className={styles.filterColumn}>
@@ -133,9 +134,9 @@ const TranscriptsFilter = (props: Props) => {
                   checked: styles.checkboxChecked
                 }}
                 labelClassName={styles.label}
-                checked={isChecked}
+                checked={false}
                 label="TSL:1"
-                onChange={checkboxChange}
+                onChange={noop}
               />
               <Checkbox
                 classNames={{
@@ -143,9 +144,9 @@ const TranscriptsFilter = (props: Props) => {
                   checked: styles.checkboxChecked
                 }}
                 labelClassName={styles.label}
-                checked={isChecked}
+                checked={false}
                 label="TSL:2"
-                onChange={checkboxChange}
+                onChange={noop}
               />
             </div>
           </div>
