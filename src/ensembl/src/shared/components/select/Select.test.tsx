@@ -127,13 +127,6 @@ describe('<Select />', () => {
       onSelect
     };
 
-    const mockedClickEvent = {
-      stopPropagation: jest.fn(),
-      nativeEvent: {
-        stopImmediatePropagation: jest.fn()
-      }
-    };
-
     test('calls onSelect and passes it the option value', () => {
       wrapper = mount(<Select {...defaultProps} />);
 
@@ -148,6 +141,14 @@ describe('<Select />', () => {
       const optionIndex = random(options.length - 1);
       const option = options.at(optionIndex);
       const optionText = option.text();
+
+      const mockedClickEvent = {
+        stopPropagation: jest.fn(),
+        nativeEvent: {
+          stopImmediatePropagation: jest.fn()
+        }
+      };
+
       option.simulate('click', mockedClickEvent);
 
       const expectedValue = get(

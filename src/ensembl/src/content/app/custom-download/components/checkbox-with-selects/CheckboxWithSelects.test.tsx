@@ -157,9 +157,22 @@ describe('<CheckboxWithSelects />', () => {
 
     wrapper.find('.addIconHolder').find(ImageButton).simulate('click');
 
+    const mockedClickEvent = {
+      stopPropagation: jest.fn(),
+      nativeEvent: {
+        stopImmediatePropagation: jest.fn()
+      }
+    };
+
     wrapper.find(Select).last().find('.selectControl').simulate('click');
+
     wrapper.update();
-    wrapper.find('.optionsPanel').last().find('li').first().simulate('click');
+    wrapper
+      .find('.optionsPanel')
+      .last()
+      .find('li')
+      .first()
+      .simulate('click', mockedClickEvent);
 
     expect(onChange).toHaveBeenCalledWith([
       defaultProps.options[0].value,
