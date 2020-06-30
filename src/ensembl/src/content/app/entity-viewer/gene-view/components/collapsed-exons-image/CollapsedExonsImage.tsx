@@ -15,15 +15,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { scaleLinear, ScaleLinear } from 'd3';
+import { scaleLinear } from 'd3';
 import classNames from 'classnames';
 
 import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-import {
-  getCodingExonsForImage,
-  getFeatureCoordinates
-} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
@@ -31,11 +26,11 @@ import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/compo
 import styles from './CollapsedExonsImage.scss';
 
 const IMAGE_HEIGHT = 24;
-const EXON_HEIGHT = 10;
+const PROTEIN_HEIGHT = 10;
 
 type ExonsImageProps = {
   transcriptId: string;
-  refCDSLength: number;
+  longestProteinLength: number;
   className?: string;
   width: number; // available width for drawing, in pixels
 };
@@ -66,7 +61,7 @@ export const ExonsImage = (props: ExonsImageProps) => {
   return data ? (
     <ExonsImageWithData
       transcript={data}
-      refCDSLength={props.refCDSLength}
+      longestProteinLength={props.longestProteinLength}
       className={props.className}
       width={props.width}
     />
@@ -76,23 +71,12 @@ export const ExonsImage = (props: ExonsImageProps) => {
 const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
   const { transcript } = props;
 
-  if (!transcript.cds) {
+  if (!transcript.product) {
     return null;
   }
 
-  const codingExons = getCodingExonsForImage(transcript);
-
-  const getSplicedRNALength = () => {
-    const rnaLength = transcript.exons.reduce((length, exon) => {
-      const { start, end } = getFeatureCoordinates(exon);
-      return length + (end - start + 1);
-    }, 0);
-
-    return getCommaSeparatedNumber(rnaLength);
-  };
-
   const scale = scaleLinear()
-    .domain([0, props.refCDSLength])
+    .domain([0, props.longestProteinLength])
     .range([0, props.width])
     .clamp(true);
 
@@ -107,52 +91,21 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
           height={IMAGE_HEIGHT}
         >
           <g>
-            <g className={styles.splicedRNABlock}>
+            <g className={styles.longestProtein}>
               <rect height={IMAGE_HEIGHT} width={props.width} />
             </g>
             <g>
-              {codingExons.map((exon, index) => (
-                <ExonBlock
-                  key={index}
-                  exon={exon}
-                  className={props.className}
-                  scale={scale}
-                />
-              ))}
+              <rect
+                className={styles.protein}
+                y="8"
+                height={PROTEIN_HEIGHT}
+                width={scale(transcript.product?.length)}
+              />
             </g>
           </g>
         </svg>
       </div>
-      <div className={transcriptsListStyles.right}>
-        Spliced RNA length <strong>{getSplicedRNALength()}</strong> bp
-      </div>
     </div>
-  );
-};
-
-type ExonBlockProps = {
-  exon: {
-    start: number;
-    end: number;
-  };
-  className?: string;
-  scale: ScaleLinear<number, number>;
-};
-
-const ExonBlock = (props: ExonBlockProps) => {
-  const { exon, scale } = props;
-  const y = 8;
-  const exonClasses = classNames(styles.exon, props.className);
-
-  return (
-    <rect
-      key={exon.start}
-      className={exonClasses}
-      y={y}
-      height={EXON_HEIGHT}
-      x={scale(exon.start)}
-      width={scale(exon.end - exon.start + 1)}
-    />
   );
 };
 

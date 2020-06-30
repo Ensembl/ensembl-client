@@ -26,7 +26,7 @@ import styles from './ProteinsListItem.scss';
 
 type Props = {
   transcript: Transcript;
-  refCDSLength: number;
+  longestProteinLength: number;
 };
 
 const ProteinsListItem = (props: Props) => {
@@ -54,7 +54,7 @@ const ProteinsListItem = (props: Props) => {
       {shouldShowInfo ? (
         <ProteinsListItemInfo
           transcript={props.transcript}
-          refCDSLength={props.refCDSLength}
+          longestProteinLength={props.longestProteinLength}
         />
       ) : null}
     </>

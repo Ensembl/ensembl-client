@@ -82,20 +82,20 @@ export const getSplicedRNALength = (transcript: Transcript) =>
     return length + (end - start + 1);
   }, 0);
 
-export const getRefCDSLength = (gene: Gene) => {
-  let refCDSLength = 0;
+export const getLongestProteinLength = (gene: Gene) => {
+  let longestProteinLength = 0;
 
   gene.transcripts.forEach((transcript) => {
     if (transcript.cds) {
-      const currentCDSLength = (transcript.cds?.protein_length as number) * 3;
+      const currentProteinLength = transcript.cds?.protein_length as number;
 
-      if (currentCDSLength > refCDSLength) {
-        refCDSLength = currentCDSLength;
+      if (currentProteinLength > longestProteinLength) {
+        longestProteinLength = currentProteinLength;
       }
     }
   });
 
-  return refCDSLength;
+  return longestProteinLength;
 };
 
 export const getCodingExonsForImage = (transcript: Transcript) => {

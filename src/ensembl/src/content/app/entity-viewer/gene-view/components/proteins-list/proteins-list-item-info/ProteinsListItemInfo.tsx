@@ -26,18 +26,18 @@ import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
   transcript: Transcript;
-  refCDSLength: number;
+  longestProteinLength: number;
 };
 
 const ProteinsListItemInfo = (props: Props) => {
-  const { transcript, refCDSLength } = props;
+  const { transcript, longestProteinLength } = props;
 
   return (
     <div className={styles.proteinsListItemInfo}>
       {transcript.cds && (
         <ProteinDomainImage
           transcriptId={transcript.id}
-          refCDSLength={refCDSLength}
+          longestProteinLength={longestProteinLength}
           width={695}
         />
       )}
@@ -45,7 +45,7 @@ const ProteinsListItemInfo = (props: Props) => {
         <>
           <CollapsedExonsImage
             transcriptId={transcript.id}
-            refCDSLength={refCDSLength}
+            longestProteinLength={longestProteinLength}
             width={695}
           />
           <ProteinFeaturesCount transcriptId={transcript.id} />
