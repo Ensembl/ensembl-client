@@ -74,3 +74,15 @@ export const getNumberOfCodingExons = (transcript: Transcript) => {
     lastCodingExonIndex - firstCodingExonIndex + 1
   );
 };
+
+export enum ExternalSource {
+  INTERPRO = 'Interpro',
+  UNIPROT = 'UniProt',
+  PDBE = 'PDBe-KB'
+}
+
+export const externalSourceLinks = {
+  [ExternalSource.INTERPRO]: 'https://www.ebi.ac.uk/interpro/protein/UniProt/',
+  [ExternalSource.UNIPROT]: 'https://www.uniprot.org/uniprot/',
+  [ExternalSource.PDBE]: 'https://www.ebi.ac.uk/pdbe/pdbe-kb/proteins/'
+};

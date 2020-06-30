@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 
-import { getNumberOfCodingExons } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import {
+  ExternalSource,
+  externalSourceLinks
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import {
+  fetchProteinSummaryStats,
+  ProteinSummary
+} from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
@@ -29,26 +36,67 @@ type Props = {
   transcript: Transcript;
 };
 
+// TODO:
+// the data fetching is temporary till the collapsed exons image PR is merged
+// once it is merged then the refactoring can begin and data fetching can be more streamlined
 const ProteinsListItemInfo = (props: Props) => {
   const { transcript } = props;
+  const [data, setData] = useState<ProteinSummary | null>(null);
+
+  useEffect(() => {
+    fetchProteinSummaryStats(props.transcript.id).then((result) => {
+      if (result) {
+        setData(result);
+      }
+    });
+  }, [props.transcript.id]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
       {transcript.cds && (
         <ProteinDomainImage transcriptId={transcript.id} width={695} />
       )}
-      <div className={styles.bottomWrapper}>
-        <div className={styles.codingExonCount}>
-          Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong> of{' '}
-          {transcript.exons.length}
+      {transcript.cds && (
+        <div className={styles.bottomWrapper}>
+          <div>
+            <ExternalLink
+              source={ExternalSource.INTERPRO}
+              externalId={data?.pdbeId}
+            />
+            <ExternalLink
+              source={ExternalSource.UNIPROT}
+              externalId={data?.pdbeId}
+            />
+            Download component
+          </div>
+          <div>
+            <ExternalLink
+              source={ExternalSource.PDBE}
+              externalId={data?.pdbeId}
+            />
+            {data?.proteinStats && (
+              <ProteinFeaturesCount proteinStats={data?.proteinStats} />
+            )}
+          </div>
         </div>
-        <div className={styles.sequenceDownload}>
-          Sequence download component
-        </div>
-      </div>
-      {transcript.cds && <ProteinFeaturesCount transcriptId={transcript.id} />}
+      )}
     </div>
   );
+};
+
+type ExternalLinkProps = {
+  source: ExternalSource;
+  externalId: string | undefined;
+};
+
+const ExternalLink = (props: ExternalLinkProps) => {
+  const externalUrl = `${externalSourceLinks[props.source]}${props.externalId}`;
+
+  return props.externalId ? (
+    <span>
+      {props.source} (image here) <a href={externalUrl}>{props.externalId}</a>
+    </span>
+  ) : null;
 };
 
 export default ProteinsListItemInfo;
