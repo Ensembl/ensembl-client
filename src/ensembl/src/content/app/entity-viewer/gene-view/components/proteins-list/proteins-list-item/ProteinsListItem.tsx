@@ -21,43 +21,31 @@ import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInf
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
 
 type Props = {
   transcript: Transcript;
+  trackLength: number;
 };
 
 const ProteinsListItem = (props: Props) => {
-  const { transcript } = props;
-
   const [shouldShowInfo, setShouldShowInfo] = useState(false);
+  const { transcript, trackLength } = props;
   const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
-  const getSplicedRNALength = () => {
-    const rnaLength = transcript.exons.reduce((length, exon) => {
-      const { start, end } = getFeatureCoordinates(exon);
-      return length + (end - start + 1);
-    }, 0);
-
-    return getCommaSeparatedNumber(rnaLength);
-  };
-
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
     <>
       <div className={transcriptsListStyles.row}>
-        <div className={transcriptsListStyles.left}>UniProt P51587</div>
-        <div onClick={toggleListItemInfo} className={midStyles}>
-          <div>Protein description from UniProt</div>
-          <div>{props.transcript.cds?.protein_length} aa</div>
-          <div className={styles.splicedLength}>
-            Spliced RNA length <strong>{getSplicedRNALength()}</strong> bp
+        <div className={transcriptsListStyles.left}></div>
+        {transcript.cds && (
+          <div onClick={toggleListItemInfo} className={midStyles}>
+            <div>{transcript.cds.protein_length} aa</div>
+            <div>Protein description from UniProt</div>
+            <div>{transcript.cds.protein_id}</div>
           </div>
-        </div>
+        )}
         <div
           className={transcriptsListStyles.right}
           onClick={toggleListItemInfo}
@@ -66,7 +54,10 @@ const ProteinsListItem = (props: Props) => {
         </div>
       </div>
       {shouldShowInfo ? (
-        <ProteinsListItemInfo transcript={props.transcript} />
+        <ProteinsListItemInfo
+          transcript={transcript}
+          trackLength={trackLength}
+        />
       ) : null}
     </>
   );

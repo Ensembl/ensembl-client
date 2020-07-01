@@ -1,0 +1,49 @@
+.wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parentElement {
+  background-color: #ccc;
+  height: 400px;
+  width: 400px;
+  padding: 80px 100px 100px;
+  position: relative;
+  user-select: none;
+}
+
+.childElement {
+  background-color: green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  height: 200px;
+  width: 200px;
+  padding: 20px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.halfInside {
+  background-color: blue;
+  color: white;
+  height: 200px;
+  width: 200px;
+  padding: 20px;
+  position: absolute;
+  bottom: -150px;
+  left: 100px;
+  user-select: none;
+}
+
+.someOtherElement {
+  background-color: red;
+  height: 200px;
+  width: 200px;
+  margin: 0px 20px;
+  padding: 20px;
+  user-select: none;
+}

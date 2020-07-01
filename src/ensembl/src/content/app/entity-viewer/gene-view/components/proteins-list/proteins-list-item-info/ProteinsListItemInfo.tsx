@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
+import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 
 import {
@@ -34,13 +35,14 @@ import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
   transcript: Transcript;
+  trackLength: number;
 };
 
 // TODO:
 // the data fetching is temporary till the collapsed exons image PR is merged
 // once it is merged then the refactoring can begin and data fetching can be more streamlined
 const ProteinsListItemInfo = (props: Props) => {
-  const { transcript } = props;
+  const { transcript, trackLength } = props;
   const [data, setData] = useState<ProteinSummary | null>(null);
 
   useEffect(() => {
@@ -53,32 +55,44 @@ const ProteinsListItemInfo = (props: Props) => {
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      {transcript.cds && (
-        <ProteinDomainImage transcriptId={transcript.id} width={695} />
-      )}
-      {transcript.cds && (
-        <div className={styles.bottomWrapper}>
-          <div>
-            <ExternalLink
-              source={ExternalSource.INTERPRO}
-              externalId={data?.pdbeId}
-            />
-            <ExternalLink
-              source={ExternalSource.UNIPROT}
-              externalId={data?.pdbeId}
-            />
-            Download component
+      {data && (
+        <>
+          <ProteinDomainImage
+            transcriptId={transcript.id}
+            trackLength={trackLength}
+            width={695}
+          />
+          <ProteinImage
+            transcriptId={transcript.id}
+            trackLength={trackLength}
+            width={695}
+          />
+          {data.proteinStats && (
+            <ProteinFeaturesCount proteinStats={data.proteinStats} />
+          )}
+          <div className={styles.bottomWrapper}>
+            <div>
+              <ExternalLink
+                source={ExternalSource.INTERPRO}
+                externalId={data.pdbeId}
+              />
+              <ExternalLink
+                source={ExternalSource.UNIPROT}
+                externalId={data.pdbeId}
+              />
+              Download component
+            </div>
+            <div>
+              <ExternalLink
+                source={ExternalSource.PDBE}
+                externalId={data.pdbeId}
+              />
+              {data?.proteinStats && (
+                <ProteinFeaturesCount proteinStats={data.proteinStats} />
+              )}
+            </div>
           </div>
-          <div>
-            <ExternalLink
-              source={ExternalSource.PDBE}
-              externalId={data?.pdbeId}
-            />
-            {data?.proteinStats && (
-              <ProteinFeaturesCount proteinStats={data?.proteinStats} />
-            )}
-          </div>
-        </div>
+        </>
       )}
     </div>
   );

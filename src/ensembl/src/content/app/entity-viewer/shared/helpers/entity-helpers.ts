@@ -20,7 +20,8 @@ import {
   Slice,
   SliceWithLocationOnly
 } from 'src/content/app/entity-viewer/types/slice';
-import { Transcript } from '../../types/transcript';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 export const getFeatureCoordinates = (feature: {
   slice: SliceWithLocationOnly;
@@ -73,6 +74,20 @@ export const getNumberOfCodingExons = (transcript: Transcript) => {
   return getCommaSeparatedNumber(
     lastCodingExonIndex - firstCodingExonIndex + 1
   );
+};
+
+export const getSplicedRNALength = (transcript: Transcript) =>
+  transcript.exons.reduce((length, exon) => {
+    const { start, end } = getFeatureCoordinates(exon);
+    return length + (end - start + 1);
+  }, 0);
+
+export const getLongestProteinLength = (gene: Gene) => {
+  const proteinLengths = gene.transcripts.map(
+    (transcript) => transcript.cds?.protein_length || 0
+  );
+
+  return Math.max(...proteinLengths);
 };
 
 export enum ExternalSource {
