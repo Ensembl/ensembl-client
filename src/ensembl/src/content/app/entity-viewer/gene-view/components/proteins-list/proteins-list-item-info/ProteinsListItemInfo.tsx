@@ -19,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
 import {
   ExternalSource,
@@ -86,25 +87,27 @@ const ProteinsListItemInfo = (props: Props) => {
       {proteinSummary && (
         <div className={styles.bottomWrapper}>
           <div>
-            <ExternalLink
+            <ProteinExternalReference
               source={ExternalSource.INTERPRO}
               externalId={proteinSummary.pdbeId}
             />
-            <ExternalLink
+            <ProteinExternalReference
               source={ExternalSource.UNIPROT}
               externalId={proteinSummary.pdbeId}
             />
             Download component
           </div>
           <div>
-            <ExternalLink
+            <ProteinExternalReference
               source={ExternalSource.PDBE}
               externalId={proteinSummary.pdbeId}
             />
             {proteinSummary?.proteinStats && (
-              <ProteinFeaturesCount
-                proteinStats={proteinSummary.proteinStats}
-              />
+              <div className={styles.proteinFeaturesCountWrapper}>
+                <ProteinFeaturesCount
+                  proteinStats={proteinSummary.proteinStats}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -113,18 +116,22 @@ const ProteinsListItemInfo = (props: Props) => {
   );
 };
 
-type ExternalLinkProps = {
+type ProteinExternalReferenceProps = {
   source: ExternalSource;
   externalId: string | undefined;
 };
 
-const ExternalLink = (props: ExternalLinkProps) => {
-  const externalUrl = `${externalSourceLinks[props.source]}${props.externalId}`;
+const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
+  const url = `${externalSourceLinks[props.source]}${props.externalId}`;
 
   return props.externalId ? (
-    <span>
-      {props.source} (image here) <a href={externalUrl}>{props.externalId}</a>
-    </span>
+    <div className={styles.geneExternalReference}>
+      <ExternalReference
+        label={props.source}
+        to={url}
+        linkText={props.externalId}
+      />
+    </div>
   ) : null;
 };
 
