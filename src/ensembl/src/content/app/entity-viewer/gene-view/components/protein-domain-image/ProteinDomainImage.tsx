@@ -118,16 +118,14 @@ export const ProteinDomainImageWithData = (
 
   const proteinDomainsResources = getDomainsByResourceGroups(proteinDomains);
 
-  // If we consider the image's starting point as A and end point as B the scale can be sketched as:
-  // A--  longest protein's length  --B
-  // A--      width in pixels       --B
+  // Create a scale where the domain is the total length of the track in amino acids.
+  // The track is as wide as the longest protein generated from the gene.
+  // Therefore, it is guaranteed that the length of the protein drawn by this component will fall within this domain.
   const scale = scaleLinear()
     .domain([0, trackLength])
     .range([0, props.width])
     .clamp(true);
 
-  // The <Track> represents the longest protein length
-  // The <DomainBlock> is where the domain is position in relation to the protein
   return (
     <div className={styles.container}>
       {/* TODO: The sorting needs to be done based on the `score`? once it is available */}
