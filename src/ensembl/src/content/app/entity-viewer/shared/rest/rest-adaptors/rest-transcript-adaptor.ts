@@ -94,6 +94,7 @@ const buildCDSFromLookup = (
 ): CDS => {
   return {
     protein_length: translation.length,
+    protein_id: translation.id, // this is temporary till we can get data from graphql
     start: translation.start,
     end: translation.end,
     relative_location: {
@@ -131,8 +132,12 @@ const buildProteinDomainsResources = (
   proteinFeatures: ProteinFeature[]
 ): ProteinDomainsResources => {
   const domainsResources: ProteinDomainsResources = {};
+  const proteinFeaturesToFilter = ['Pfam', 'PANTHER'];
+  const filteredProteinFeatures = proteinFeatures.filter((entry) =>
+    proteinFeaturesToFilter.includes(entry.type)
+  );
 
-  proteinFeatures.forEach((entry) => {
+  filteredProteinFeatures.forEach((entry) => {
     const resourceName = entry.type;
     const domainName = entry.description;
 

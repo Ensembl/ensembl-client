@@ -18,6 +18,7 @@ export type CDS = {
   start: number;
   end: number;
   protein_length?: number;
+  protein_id?: string; // this is temporary
   relative_location: {
     start: number;
     end: number;

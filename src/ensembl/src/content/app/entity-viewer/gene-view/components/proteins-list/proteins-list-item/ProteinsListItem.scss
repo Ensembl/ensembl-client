@@ -3,16 +3,8 @@
 .middle {
   cursor: pointer;
   display: grid;
-  grid-template-columns: 400px 75px 200px;
+  grid-template-columns: 75px 450px 150px;
   grid-column-gap: 10px;
-}
-
-.splicedLength {
-  font-weight: 300;
-
-  strong {
-    font-weight: 400;
-  }
 }
 
 .transcriptId {

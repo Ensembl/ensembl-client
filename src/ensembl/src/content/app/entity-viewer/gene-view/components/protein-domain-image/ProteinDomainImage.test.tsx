@@ -24,20 +24,24 @@ import {
   getDomainsByResourceGroups
 } from './ProteinDomainImage';
 
+const product = createProduct();
+
 const minimalProps = {
-  protein: createProduct(),
+  proteinDomains: product.protein_domains_resources,
   width: 600
 };
 
 const domainsByResourceGroups = getDomainsByResourceGroups(
-  minimalProps.protein.protein_domains_resources
+  minimalProps.proteinDomains
 );
 
 describe('<ProteinDomainImage />', () => {
   let wrapper: any;
 
   beforeEach(() => {
-    wrapper = mount(<ProteinDomainImage {...minimalProps} />);
+    wrapper = mount(
+      <ProteinDomainImage {...minimalProps} trackLength={product.length} />
+    );
   });
 
   afterEach(() => {
