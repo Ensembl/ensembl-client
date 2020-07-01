@@ -25,22 +25,17 @@ export default function useOutsideClick<T extends HTMLElement>(
   let clickedInside = false;
 
   const handleClickOutside = (event: Event) => {
-    let clickedOutside = true;
-
     if (clickedInside) {
       // Reset the clickedInside flag to false
       clickedInside = false;
       return;
     }
 
-    refs.forEach((ref) => {
+    for (const ref of refs) {
       if (ref.current && ref.current.contains(event.target as HTMLElement)) {
-        clickedOutside = false;
+        callback();
+        break;
       }
-    });
-
-    if (clickedOutside) {
-      callback();
     }
   };
 
@@ -58,6 +53,7 @@ export default function useOutsideClick<T extends HTMLElement>(
     });
 
     document.addEventListener('click', handleClickOutside);
+
     return () => {
       document.removeEventListener('click', handleClickOutside);
       refs.forEach((ref) => {
