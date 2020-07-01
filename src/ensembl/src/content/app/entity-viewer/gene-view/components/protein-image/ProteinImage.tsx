@@ -24,23 +24,23 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Product } from 'src/content/app/entity-viewer/types/product';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
-import styles from './CollapsedExonsImage.scss';
+import styles from './ProteinImage.scss';
 
 const TRACK_HEIGHT = 24;
 const PROTEIN_HEIGHT = 10;
 
-type ExonsImageProps = {
+type ProteinImageProps = {
   transcriptId: string;
   trackLength: number; // length in amino acids
   className?: string;
   width: number; // available width for drawing in pixels
 };
 
-type ExonsImageWithDataProps = Omit<ExonsImageProps, 'transcriptId'> & {
+type ProteinImageWithDataProps = Omit<ProteinImageProps, 'transcriptId'> & {
   product: Product;
 };
 
-export const ExonsImage = (props: ExonsImageProps) => {
+export const ProteinImage = (props: ProteinImageProps) => {
   const [transcript, setTranscript] = useState<Transcript | null>(null);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export const ExonsImage = (props: ExonsImageProps) => {
   }, [props.transcriptId]);
 
   return transcript?.product ? (
-    <ExonsImageWithData
+    <ProteinImageWithData
       product={transcript.product}
       trackLength={props.trackLength}
       className={props.className}
@@ -69,7 +69,7 @@ export const ExonsImage = (props: ExonsImageProps) => {
   ) : null;
 };
 
-const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
+const ProteinImageWithData = (props: ProteinImageWithDataProps) => {
   // Create a scale where the domain is the total length of the track in amino acids.
   // The track is as wide as the longest protein generated from the gene.
   // Therefore, it is guaranteed that the length of the protein drawn by this component will fall within this domain.
@@ -107,4 +107,4 @@ const ExonsImageWithData = (props: ExonsImageWithDataProps) => {
   );
 };
 
-export default ExonsImage;
+export default ProteinImage;

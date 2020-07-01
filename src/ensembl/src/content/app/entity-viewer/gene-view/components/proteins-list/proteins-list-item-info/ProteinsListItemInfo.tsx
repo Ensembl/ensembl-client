@@ -17,7 +17,7 @@
 import React from 'react';
 
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
-import CollapsedExonsImage from 'src/content/app/entity-viewer/gene-view/components/collapsed-exons-image/CollapsedExonsImage';
+import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -43,7 +43,7 @@ const ProteinsListItemInfo = (props: Props) => {
       )}
       {transcript.cds && (
         <>
-          <CollapsedExonsImage
+          <ProteinImage
             transcriptId={transcript.id}
             trackLength={trackLength}
             width={695}
