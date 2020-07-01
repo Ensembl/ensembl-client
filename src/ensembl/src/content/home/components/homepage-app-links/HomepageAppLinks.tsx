@@ -93,7 +93,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
     toggleExpand();
   };
 
-  useOutsideClick([elementRef], onOutsideClick);
+  useOutsideClick(elementRef, onOutsideClick);
 
   const rowClasses = classNames(styles.homepageAppLinksRow, {
     [styles.homepageAppLinksRowExpanded]: isExpanded

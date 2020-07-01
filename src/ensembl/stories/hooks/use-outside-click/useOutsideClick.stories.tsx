@@ -21,29 +21,55 @@ import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import styles from './useOutsideClick.stories.scss';
 
-storiesOf('Components|Hooks/useOutsideClick', module).add('default', () => {
-  const [shouldShowChild, showChild] = useState(true);
+storiesOf('Hooks|Shared Hooks/useOutsideClick', module)
+  .add('single ref', () => {
+    const [shouldShowChild, showChild] = useState(true);
 
-  const parentRef = useRef<HTMLDivElement>(null);
+    const elementRef1 = useRef<HTMLDivElement>(null);
 
-  const callback = () => {
-    action('clicked-outside')();
-  };
+    const callback = () => {
+      action('clicked-outside')();
+    };
 
-  useOutsideClick([parentRef], callback);
+    useOutsideClick(elementRef1, callback);
 
-  return (
-    <div className={styles.wrapper}>
-      <div className={styles.parentElement} ref={parentRef}>
-        Ref
-        {shouldShowChild && (
-          <div className={styles.childElement} onClick={() => showChild(false)}>
-            I'm inside Ref but I'll be gone when you click me
-          </div>
-        )}
-        <div className={styles.halfInside}> I'm also inside Ref </div>
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.parentElement} ref={elementRef1}>
+          Ref
+          {shouldShowChild && (
+            <div
+              className={styles.childElement}
+              onClick={() => showChild(false)}
+            >
+              I'm inside Ref but I'll be gone when you click me
+            </div>
+          )}
+          <div className={styles.halfInside}> I'm also inside Ref </div>
+        </div>
+        <div className={styles.someOtherElement}> I'm outside Ref </div>
       </div>
-      <div className={styles.someOtherElement}> I'm outside Ref </div>
-    </div>
-  );
-});
+    );
+  })
+  .add('multiple refs', () => {
+    const elementRef1 = useRef<HTMLDivElement>(null);
+    const elementRef2 = useRef<HTMLDivElement>(null);
+
+    const callback = () => {
+      action('clicked-outside')();
+    };
+
+    useOutsideClick([elementRef1, elementRef2], callback);
+
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.childElement} ref={elementRef1}>
+          Ref1
+        </div>
+        <div className={styles.someOtherElement}> I'm outside Ref1 & Ref2 </div>
+        <div className={styles.childElement} ref={elementRef2}>
+          Ref2
+        </div>
+      </div>
+    );
+  });

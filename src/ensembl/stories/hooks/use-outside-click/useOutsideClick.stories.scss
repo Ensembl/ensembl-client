@@ -9,19 +9,20 @@
   background-color: #ccc;
   height: 400px;
   width: 400px;
-  padding: 100px;
+  padding: 80px 100px 100px;
   position: relative;
 }
 
 .childElement {
   background-color: green;
+  color: white;
   height: 200px;
   width: 200px;
   padding: 20px;
 }
 
 .halfInside {
-  background-color: blue;
+  background-color: green;
   color: white;
   height: 200px;
   width: 200px;
@@ -35,7 +36,6 @@
   background-color: red;
   height: 200px;
   width: 200px;
-  margin-left: 20px;
-  margin-top: 40px;
+  margin: 0px 20px;
   padding: 20px;
 }
