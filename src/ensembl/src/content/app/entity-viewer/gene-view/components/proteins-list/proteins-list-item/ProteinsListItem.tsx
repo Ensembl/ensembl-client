@@ -26,24 +26,26 @@ import styles from './ProteinsListItem.scss';
 
 type Props = {
   transcript: Transcript;
-  longestProteinLength: number;
+  trackLength: number;
 };
 
 const ProteinsListItem = (props: Props) => {
   const [shouldShowInfo, setShouldShowInfo] = useState(false);
+  const { transcript, trackLength } = props;
   const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
-
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
     <>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
-        <div onClick={toggleListItemInfo} className={midStyles}>
-          <div>{props.transcript.cds?.protein_length} aa</div>
-          <div>Protein description from UniProt</div>
-          <div>{props.transcript.cds?.protein_id}</div>
-        </div>
+        {transcript.cds && (
+          <div onClick={toggleListItemInfo} className={midStyles}>
+            <div>{transcript.cds.protein_length} aa</div>
+            <div>Protein description from UniProt</div>
+            <div>{transcript.cds.protein_id}</div>
+          </div>
+        )}
         <div
           className={transcriptsListStyles.right}
           onClick={toggleListItemInfo}
@@ -53,8 +55,8 @@ const ProteinsListItem = (props: Props) => {
       </div>
       {shouldShowInfo ? (
         <ProteinsListItemInfo
-          transcript={props.transcript}
-          longestProteinLength={props.longestProteinLength}
+          transcript={transcript}
+          trackLength={trackLength}
         />
       ) : null}
     </>

@@ -46,8 +46,8 @@ const ProteinDomainImageStory = () => {
     content = (
       <ProteinDomainImage
         width={GRAPHIC_WIDTH}
-        protein={data.product}
-        longestProteinLength={data.product.length}
+        proteinDomains={data.product.protein_domains_resources}
+        trackLength={data.product.length}
       />
     );
   } else {

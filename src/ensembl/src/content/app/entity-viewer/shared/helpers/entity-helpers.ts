@@ -83,80 +83,9 @@ export const getSplicedRNALength = (transcript: Transcript) =>
   }, 0);
 
 export const getLongestProteinLength = (gene: Gene) => {
-  let longestProteinLength = 0;
-
-  gene.transcripts.forEach((transcript) => {
-    if (transcript.cds) {
-      const currentProteinLength = transcript.cds?.protein_length as number;
-
-      if (currentProteinLength > longestProteinLength) {
-        longestProteinLength = currentProteinLength;
-      }
-    }
-  });
-
-  return longestProteinLength;
-};
-
-export const getCodingExonsForImage = (transcript: Transcript) => {
-  const { exons, cds } = transcript;
-
-  if (!cds) {
-    return [];
-  }
-
-  const {
-    firstCodingExonIndex,
-    lastCodingExonIndex
-  } = getFirstAndLastCodingExonIndexes(transcript);
-  if (firstCodingExonIndex === lastCodingExonIndex) {
-    return [
-      {
-        start: 1,
-        end: cds.end - cds.start + 1
-      }
-    ];
-  }
-
-  const codingExons: { start: number; end: number }[] = [];
-
-  // add the first coding exon
-  const { end: firstCodingExonEnd } = getFeatureCoordinates(
-    exons[firstCodingExonIndex]
+  const proteinLengths = gene.transcripts.map(
+    (transcript) => transcript.cds?.protein_length || 0
   );
-  codingExons.push({
-    start: 1,
-    end: firstCodingExonEnd - cds.start + 1
-  });
 
-  // add coding length of exons between first and last coding exons
-  for (
-    let index = firstCodingExonIndex + 1;
-    index <= lastCodingExonIndex - 1;
-    index += 1
-  ) {
-    const { start: exonStart, end: exonEnd } = getFeatureCoordinates(
-      exons[index]
-    );
-    const previousExonEnd = codingExons[codingExons.length - 1].end; // get the previous coding exon's end
-    const currentExonStart = previousExonEnd + 1;
-
-    codingExons.push({
-      start: currentExonStart,
-      end: currentExonStart + (exonEnd - exonStart)
-    });
-  }
-
-  // add the last coding exon
-  const { start: lastCodingExonStart } = getFeatureCoordinates(
-    exons[lastCodingExonIndex]
-  );
-  const previousExonEnd = codingExons[codingExons.length - 1].end; // get the previous coding exon's end
-  const currentExonStart = previousExonEnd + 1;
-  codingExons.push({
-    start: currentExonStart,
-    end: currentExonStart + (cds.end - lastCodingExonStart)
-  });
-
-  return codingExons;
+  return Math.max(...proteinLengths);
 };

@@ -66,7 +66,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
         <ProteinsListItem
           key={transcript.id}
           transcript={transcript}
-          longestProteinLength={longestProteinLength}
+          trackLength={longestProteinLength}
         />
       ))}
     </div>

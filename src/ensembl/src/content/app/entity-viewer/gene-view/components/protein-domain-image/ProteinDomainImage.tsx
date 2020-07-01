@@ -32,7 +32,7 @@ const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
   transcriptId: string;
-  longestProteinLength: number;
+  trackLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
     track?: string;
@@ -44,7 +44,7 @@ type ProteinDomainImageWithDataProps = Omit<
   ProteinDomainImageProps,
   'transcriptId'
 > & {
-  protein: Product;
+  proteinDomains: ProteinDomainsResources;
 };
 
 type ProteinDomainImageData = {
@@ -85,7 +85,7 @@ export const getDomainsByResourceGroups = (
 };
 
 const ProteinDomainImage = (props: ProteinDomainImageProps) => {
-  const [data, setData] = useState<Product | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -93,7 +93,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
     fetchTranscript(props.transcriptId, abortController.signal).then(
       (result) => {
         if (result?.product) {
-          setData(result.product);
+          setProduct(result.product);
         }
       }
     );
@@ -103,27 +103,26 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
     };
   }, [props.transcriptId]);
 
-  return data ? <ProteinDomainImageWithData {...props} protein={data} /> : null;
+  return product?.protein_domains_resources ? (
+    <ProteinDomainImageWithData
+      {...props}
+      proteinDomains={product.protein_domains_resources}
+    />
+  ) : null;
 };
 
 export const ProteinDomainImageWithData = (
   props: ProteinDomainImageWithDataProps
 ) => {
-  const { protein, longestProteinLength } = props;
+  const { proteinDomains, trackLength } = props;
 
-  if (!protein?.protein_domains_resources) {
-    return null;
-  }
-
-  const proteinDomainsResources = getDomainsByResourceGroups(
-    protein.protein_domains_resources
-  );
+  const proteinDomainsResources = getDomainsByResourceGroups(proteinDomains);
 
   // If we consider the image's starting point as A and end point as B the scale can be sketched as:
   // A--  longest protein's length  --B
   // A--      width in pixels       --B
   const scale = scaleLinear()
-    .domain([0, longestProteinLength])
+    .domain([0, trackLength])
     .range([0, props.width])
     .clamp(true);
 
