@@ -53,7 +53,7 @@ export const BrowserNavBarRegionSwitcher = (props: Props) => {
       <div className={styles.regionFieldWrapper}>
         <BrowserRegionField />
       </div>
-      {props.viewportWidth >= BreakpointWidth.LAPTOP && (
+      {props.viewportWidth >= BreakpointWidth.BIG_DESKTOP && (
         <div className={styles.regionEditorWrapper}>
           <BrowserRegionEditor />
         </div>
