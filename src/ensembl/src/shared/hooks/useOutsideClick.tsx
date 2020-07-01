@@ -32,13 +32,17 @@ export default function useOutsideClick<T extends HTMLElement>(
     }
 
     for (const ref of refs) {
-      if (ref.current && ref.current.contains(event.target as HTMLElement)) {
+      if (ref.current && !ref.current.contains(event.target as HTMLElement)) {
         callback();
         break;
       }
     }
   };
 
+  // Notice that this useEffect does not take an empty array of dependencies.
+  // This is because we want the useEffect to resubscribe at every component's update,
+  // so that if the callback called in handleClickOutside function needs to access any changing values in the parent component,
+  // those values always are current (to prevent bugs caused by stale closures)
   useEffect(() => {
     /*
       When a child node of the reference node is clicked and is removed from the DOM
@@ -63,5 +67,5 @@ export default function useOutsideClick<T extends HTMLElement>(
         ref?.current?.removeEventListener('click', onClickInside)
       );
     };
-  }, []);
+  });
 }

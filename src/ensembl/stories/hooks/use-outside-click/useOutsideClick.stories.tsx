@@ -21,31 +21,54 @@ import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import styles from './useOutsideClick.stories.scss';
 
+// this function returns either a div or a span,
+// depending on the number of clicks on the element
+// thus guaranteeing that the actual DOM element that receives the click
+// will get removed from the DOM, which we are interested in testing in the story
+const buildChild = (option: number, onClick: () => void) => {
+  const content =
+    'I‘m inside Ref, and both me and my parent will re-render if you click me';
+
+  return option % 2 ? (
+    <div className={styles.childElement} onClick={onClick}>
+      {content}
+    </div>
+  ) : (
+    <span
+      className={styles.childElement}
+      style={{ borderRadius: '50%' }}
+      onClick={onClick}
+    >
+      {content}
+    </span>
+  );
+};
+
 storiesOf('Hooks|Shared Hooks/useOutsideClick', module)
   .add('single ref', () => {
-    const [shouldShowChild, showChild] = useState(true);
+    const [numberOfClicks, setNumberOfClicks] = useState(0);
 
-    const elementRef1 = useRef<HTMLDivElement>(null);
+    const parentRef = useRef<HTMLDivElement>(null);
 
-    const callback = () => {
-      action('clicked-outside')();
+    const updateComponent = () => {
+      setNumberOfClicks(numberOfClicks + 1);
     };
 
-    useOutsideClick(elementRef1, callback);
+    const callback = () => {
+      action('clicked-outside')(numberOfClicks);
+    };
+
+    useOutsideClick(parentRef, callback);
 
     return (
       <div className={styles.wrapper}>
-        <div className={styles.parentElement} ref={elementRef1}>
+        <div className={styles.parentElement} ref={parentRef}>
           Ref
-          {shouldShowChild && (
-            <div
-              className={styles.childElement}
-              onClick={() => showChild(false)}
-            >
-              I'm inside Ref but I'll be gone when you click me
-            </div>
-          )}
-          <div className={styles.halfInside}> I'm also inside Ref </div>
+          {buildChild(numberOfClicks % 2, updateComponent)}
+          <div className={styles.halfInside}>
+            {' '}
+            I'm also inside Ref and do not cause any updates
+          </div>
         </div>
         <div className={styles.someOtherElement}> I'm outside Ref </div>
       </div>
