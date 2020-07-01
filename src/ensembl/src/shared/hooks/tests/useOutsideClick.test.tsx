@@ -22,12 +22,20 @@ import useOutsideClick from '../useOutsideClick';
 const clickHandler = jest.fn();
 
 const TestComponent = () => {
-  const innerElementRef = useRef(null);
-  useOutsideClick(innerElementRef, clickHandler);
+  const innerElementRef1 = useRef(null);
+  const innerElementRef2 = useRef(null);
+  const innerElementRef3 = useRef(null);
+
+  useOutsideClick(
+    [innerElementRef1, innerElementRef2, innerElementRef3],
+    clickHandler
+  );
 
   return (
     <div className="wrapper">
-      <div className="test-element" ref={innerElementRef} />
+      <div className="test-element1" ref={innerElementRef1} />
+      <div className="test-element2" ref={innerElementRef2} />
+      <div className="test-element3" ref={innerElementRef3} />
     </div>
   );
 };
@@ -49,17 +57,21 @@ describe('useOutsideClick', () => {
     jest.resetAllMocks();
   });
 
-  it('fires click handler if click is outside the host component', async () => {
+  it('fires click handler if click is outside the host components', async () => {
     const outerElement = wrapper.find('.wrapper').getDOMNode();
     outerElement.dispatchEvent(clickEvent);
 
     expect(clickHandler).toHaveBeenCalled();
   });
 
-  it('does not fire click handler if click was inside the host component', async () => {
-    const innerElement = wrapper.find('.test-element').getDOMNode();
+  it('does not fire click handler if click was inside any of the host components', async () => {
+    const innerElement1 = wrapper.find('.test-element1').getDOMNode();
+    const innerElement2 = wrapper.find('.test-element2').getDOMNode();
+    const innerElement3 = wrapper.find('.test-element3').getDOMNode();
 
-    innerElement.dispatchEvent(clickEvent);
+    innerElement1.dispatchEvent(clickEvent);
+    innerElement2.dispatchEvent(clickEvent);
+    innerElement3.dispatchEvent(clickEvent);
 
     expect(clickHandler).not.toHaveBeenCalled();
   });

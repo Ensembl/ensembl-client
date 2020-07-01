@@ -308,7 +308,14 @@ const SelectOption = (props: OptionProps) => {
   const optionIndex = [props.groupIndex, props.itemIndex] as GroupedOptionIndex;
 
   const onHover = () => props.onHover(optionIndex);
-  const onClick = () => props.onClick(optionIndex);
+  const onClick = (event: React.SyntheticEvent<HTMLElement>) => {
+    // this is to stop click propagation in the react event system
+    event.stopPropagation();
+    // this is to stop click propagation to the native document
+    event.nativeEvent.stopImmediatePropagation();
+
+    props.onClick(optionIndex);
+  };
 
   return (
     <li className={className} onMouseEnter={onHover} onClick={onClick}>

@@ -52,6 +52,7 @@ import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 export type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
@@ -71,7 +72,6 @@ export type BrowserRegionEditorProps = {
 export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   const genomeKaryotype = props.genomeKaryotype as GenomeKaryotypeItem[];
   const [stick, locationStart, locationEnd] = props.chrLocation as ChrLocation;
-
   const [stickInput, setStickInput] = useState(stick);
   const [locationStartInput, setLocationStartInput] = useState(
     getCommaSeparatedNumber(locationStart)
@@ -89,6 +89,25 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
       getNumberWithoutCommas(locationEndInput) !== locationEnd;
     showSubmitButton(shouldShowButton);
   }, [stick, stickInput, locationStartInput, locationEndInput]);
+
+  const stickRef = useRef<HTMLDivElement>(null);
+  const locationStartRef = useRef<HTMLDivElement>(null);
+  const locationEndRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLSpanElement>(null);
+
+  const closeForm = () => {
+    updateAllInputs();
+    hideForm();
+  };
+
+  useOutsideClick(
+    [stickRef, locationStartRef, locationEndRef, buttonRef],
+    closeForm
+  );
+
+  useEffect(() => {
+    updateAllInputs();
+  }, [props.chrLocation]);
 
   const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
     string | null
@@ -150,6 +169,17 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     props.toggleRegionEditorActive(false);
   };
 
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    validateRegion({
+      regionInput: `${stickInput}:${locationStartInput}-${locationEndInput}`,
+      genomeId: props.activeGenomeId,
+      onSuccess: onValidationSuccess,
+      onError: onValidationError
+    });
+  };
+
   const onValidationError = (errorMessages: RegionValidationErrors) => {
     const { startError = null, endError = null } = errorMessages;
     updateErrorMessages(startError, endError);
@@ -176,42 +206,6 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
       action: 'change_region'
     });
   };
-
-  const closeForm = (event: Event) => {
-    if (
-      stickRef?.current?.contains(event.target as HTMLElement) ||
-      locationStartRef?.current?.contains(event.target as HTMLElement) ||
-      locationEndRef?.current?.contains(event.target as HTMLElement) ||
-      buttonRef?.current?.contains(event.target as HTMLElement)
-    ) {
-      return;
-    }
-
-    updateAllInputs();
-    hideForm();
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    validateRegion({
-      regionInput: `${stickInput}:${locationStartInput}-${locationEndInput}`,
-      genomeId: props.activeGenomeId,
-      onSuccess: onValidationSuccess,
-      onError: onValidationError
-    });
-  };
-
-  const stickRef = useRef<HTMLDivElement>(null);
-  const locationStartRef = useRef<HTMLDivElement>(null);
-  const locationEndRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    updateAllInputs();
-    document.addEventListener('click', closeForm);
-    return () => document.removeEventListener('click', closeForm);
-  }, [props.chrLocation]);
 
   const locationStartClassNames = classNames({
     [browserNavBarStyles.errorText]: locationStartErrorMessage
