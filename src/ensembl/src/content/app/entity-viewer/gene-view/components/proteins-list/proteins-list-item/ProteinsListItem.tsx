@@ -55,7 +55,7 @@ const ProteinsListItem = (props: Props) => {
       </div>
       {shouldShowInfo ? (
         <ProteinsListItemInfo
-          transcript={transcript}
+          transcriptId={transcript.id}
           trackLength={trackLength}
         />
       ) : null}

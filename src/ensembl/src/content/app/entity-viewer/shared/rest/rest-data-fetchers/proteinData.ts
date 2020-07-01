@@ -46,7 +46,7 @@ export type ProteinSummary = {
   pdbeId: string;
 };
 
-export const fetchProteinSummaryStats = async (
+export const fetchProteinSummary = async (
   transcriptId: string,
   signal?: AbortSignal
 ): Promise<ProteinSummary | null> => {

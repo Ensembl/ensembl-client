@@ -24,8 +24,9 @@ import {
   ExternalSource,
   externalSourceLinks
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
-  fetchProteinSummaryStats,
+  fetchProteinSummary,
   ProteinSummary
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
@@ -34,7 +35,7 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
-  transcript: Transcript;
+  transcriptId: string;
   trackLength: number;
 };
 
@@ -42,57 +43,71 @@ type Props = {
 // the data fetching is temporary till the collapsed exons image PR is merged
 // once it is merged then the refactoring can begin and data fetching can be more streamlined
 const ProteinsListItemInfo = (props: Props) => {
-  const { transcript, trackLength } = props;
-  const [data, setData] = useState<ProteinSummary | null>(null);
+  const { transcriptId, trackLength } = props;
+  const [transcript, setTranscript] = useState<Transcript | null>(null);
+  const [proteinSummary, setProteinSummary] = useState<ProteinSummary | null>(
+    null
+  );
 
   useEffect(() => {
-    fetchProteinSummaryStats(props.transcript.id).then((result) => {
+    const abortController = new AbortController();
+
+    fetchTranscript(props.transcriptId, abortController.signal).then(
+      (result) => {
+        if (result) {
+          setTranscript(result);
+        }
+      }
+    );
+
+    fetchProteinSummary(props.transcriptId).then((result) => {
       if (result) {
-        setData(result);
+        setProteinSummary(result);
       }
     });
-  }, [props.transcript.id]);
+  }, [transcriptId]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      {data && (
+      {transcript?.product && (
         <>
           <ProteinDomainImage
-            transcriptId={transcript.id}
+            proteinDomains={transcript.product?.protein_domains_resources}
             trackLength={trackLength}
             width={695}
           />
           <ProteinImage
-            transcriptId={transcript.id}
+            product={transcript.product}
             trackLength={trackLength}
             width={695}
           />
-          {data.proteinStats && (
-            <ProteinFeaturesCount proteinStats={data.proteinStats} />
-          )}
-          <div className={styles.bottomWrapper}>
-            <div>
-              <ExternalLink
-                source={ExternalSource.INTERPRO}
-                externalId={data.pdbeId}
-              />
-              <ExternalLink
-                source={ExternalSource.UNIPROT}
-                externalId={data.pdbeId}
-              />
-              Download component
-            </div>
-            <div>
-              <ExternalLink
-                source={ExternalSource.PDBE}
-                externalId={data.pdbeId}
-              />
-              {data?.proteinStats && (
-                <ProteinFeaturesCount proteinStats={data.proteinStats} />
-              )}
-            </div>
-          </div>
         </>
+      )}
+      {proteinSummary && (
+        <div className={styles.bottomWrapper}>
+          <div>
+            <ExternalLink
+              source={ExternalSource.INTERPRO}
+              externalId={proteinSummary.pdbeId}
+            />
+            <ExternalLink
+              source={ExternalSource.UNIPROT}
+              externalId={proteinSummary.pdbeId}
+            />
+            Download component
+          </div>
+          <div>
+            <ExternalLink
+              source={ExternalSource.PDBE}
+              externalId={proteinSummary.pdbeId}
+            />
+            {proteinSummary?.proteinStats && (
+              <ProteinFeaturesCount
+                proteinStats={proteinSummary.proteinStats}
+              />
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
