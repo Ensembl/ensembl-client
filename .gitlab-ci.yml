@@ -214,7 +214,7 @@ Test_N_Build:review:
 
 # Job to build nginx docker image for staging environment (EHK k8s cluster)
 Nginx:Staging-EHK:
-  extends: .build-nginx-wp
+  extends: .build-nginx-ehk
   variables:
     DEPLOYENV: staging
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-staging
@@ -277,7 +277,7 @@ Nginx:Internal-WP:
     - Test_N_Build:internal
 
 Nginx:review:
-  extends: .build-nginx-ehk
+  extends: .build-nginx-wp
   variables:
     DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
