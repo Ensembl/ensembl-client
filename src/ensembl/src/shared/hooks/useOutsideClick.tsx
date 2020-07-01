@@ -46,21 +46,22 @@ export default function useOutsideClick<T extends HTMLElement>(
       To deal with this, we are adding a click event listener to the ref to capture
       all the clicks to any element within the ref to update the clickedInside flag.
     */
-    refs.forEach((ref) => {
-      ref?.current?.addEventListener('click', () => {
-        clickedInside = true;
-      });
-    });
+
+    const onClickInside = () => {
+      clickedInside = true;
+    };
+
+    refs.forEach((ref) =>
+      ref?.current?.addEventListener('click', onClickInside)
+    );
 
     document.addEventListener('click', handleClickOutside);
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
-      refs.forEach((ref) => {
-        ref?.current?.removeEventListener('click', () => {
-          clickedInside = true;
-        });
-      });
+      refs.forEach((ref) =>
+        ref?.current?.removeEventListener('click', onClickInside)
+      );
     };
   }, []);
 }
