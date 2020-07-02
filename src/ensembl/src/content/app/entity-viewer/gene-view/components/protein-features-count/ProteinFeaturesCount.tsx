@@ -29,47 +29,56 @@ type ProteinFeaturesCountProps = {
   proteinStats: ProteinStats;
 };
 
+enum FeatureCountLabel {
+  ANNOTATIONS = 'Functional annotations',
+  INTERACTIONS = 'Interactions',
+  LIGANDS = 'Ligands',
+  STRUCTURES = 'Structures'
+}
+
 const ProteinFeaturesCount = (props: ProteinFeaturesCountProps) => {
   const { proteinStats } = props;
 
   return (
     <div>
-      <div className={styles.feature}>
-        <div className={styles.featureImg}>
-          <img src={structuresIcon} alt="" />
-        </div>
-        <div className={styles.featureCount}>
-          {proteinStats.structuresCount}
-        </div>
-        <div className={styles.featureText}>Structures</div>
-      </div>
-      <div className={styles.feature}>
-        <div className={styles.featureImg}>
-          <img src={ligandsIcon} alt="" />
-        </div>
-        <div className={styles.featureCount}>{proteinStats.ligandsCount}</div>
-        <div className={styles.featureText}>Ligands</div>
-      </div>
-      <div className={styles.feature}>
-        <div className={styles.featureImg}>
-          <img src={interactionsIcon} alt="" />
-        </div>
-        <div className={styles.featureCount}>
-          {proteinStats.interactionsCount}
-        </div>
-        <div className={styles.featureText}>Interactions</div>
-      </div>
-      <div className={styles.feature}>
-        <div className={styles.featureImg}>
-          <img src={annotationsIcon} alt="" />
-        </div>
-        <div className={styles.featureCount}>
-          {proteinStats.annotationsCount}
-        </div>
-        <div className={styles.featureText}>Functional annotations</div>
-      </div>
+      <FeatureCount
+        label={FeatureCountLabel.STRUCTURES}
+        count={proteinStats.structuresCount}
+        icon={structuresIcon}
+      />
+      <FeatureCount
+        label={FeatureCountLabel.LIGANDS}
+        count={proteinStats.ligandsCount}
+        icon={ligandsIcon}
+      />
+      <FeatureCount
+        label={FeatureCountLabel.INTERACTIONS}
+        count={proteinStats.interactionsCount}
+        icon={interactionsIcon}
+      />
+      <FeatureCount
+        label={FeatureCountLabel.ANNOTATIONS}
+        count={proteinStats.annotationsCount}
+        icon={annotationsIcon}
+      />
     </div>
   );
 };
+
+type FeatureCountProps = {
+  count: number;
+  icon: string;
+  label: string;
+};
+
+const FeatureCount = (props: FeatureCountProps) => (
+  <div className={styles.feature}>
+    <div className={styles.featureImg}>
+      <img src={props.icon} alt="" />
+    </div>
+    <div className={styles.featureCount}>{props.count}</div>
+    <div className={styles.featureText}>{props.label}</div>
+  </div>
+);
 
 export default ProteinFeaturesCount;
