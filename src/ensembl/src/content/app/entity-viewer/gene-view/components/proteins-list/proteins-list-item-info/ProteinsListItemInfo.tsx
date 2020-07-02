@@ -40,9 +40,6 @@ type Props = {
   trackLength: number;
 };
 
-// TODO:
-// the data fetching is temporary till the collapsed exons image PR is merged
-// once it is merged then the refactoring can begin and data fetching can be more streamlined
 const ProteinsListItemInfo = (props: Props) => {
   const { transcriptId, trackLength } = props;
   const [transcript, setTranscript] = useState<Transcript | null>(null);

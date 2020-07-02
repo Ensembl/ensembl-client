@@ -74,7 +74,7 @@ type FeatureCountProps = {
 const FeatureCount = (props: FeatureCountProps) => (
   <div className={styles.feature}>
     <div className={styles.featureImg}>
-      <img src={props.icon} alt="" />
+      <img src={props.icon} alt={props.label} />
     </div>
     <div className={styles.featureCount}>{props.count}</div>
     <div className={styles.featureText}>{props.label}</div>
