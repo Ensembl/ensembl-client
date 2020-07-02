@@ -17,11 +17,11 @@
 import { restProteinSummaryAdaptor } from '../rest-adaptors/rest-protein-adaptor';
 import { TranscriptInResponse } from './transcriptData';
 
-export type Xrefs = {
+export type Xref = {
   display_id: string;
 };
 
-export type XrefsInResponse = Xrefs[];
+export type XrefsInResponse = Xref[];
 
 export type ProteinStatsInResponse = {
   pdbs: number;

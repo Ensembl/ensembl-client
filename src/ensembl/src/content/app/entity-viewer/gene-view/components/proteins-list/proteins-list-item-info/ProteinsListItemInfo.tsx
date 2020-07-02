@@ -50,19 +50,17 @@ const ProteinsListItemInfo = (props: Props) => {
   useEffect(() => {
     const abortController = new AbortController();
 
-    fetchTranscript(props.transcriptId, abortController.signal).then(
-      (result) => {
-        if (result) {
-          setTranscript(result);
-        }
-      }
-    );
-
-    fetchProteinSummary(props.transcriptId).then((result) => {
-      if (result) {
-        setProteinSummary(result);
-      }
+    Promise.all([
+      fetchTranscript(props.transcriptId, abortController.signal),
+      fetchProteinSummary(props.transcriptId, abortController.signal)
+    ]).then(([transcriptData, proteinSummaryData]) => {
+      transcriptData && setTranscript(transcriptData);
+      proteinSummaryData && setProteinSummary(proteinSummaryData);
     });
+
+    return function cleanup() {
+      abortController.abort();
+    };
   }, [transcriptId]);
 
   return (
