@@ -39,6 +39,7 @@ import {
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 
 import styles from './GeneExternalReferences.scss';
+import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 const QUERY = gql`
   query Gene($stable_id: String!, $genome_id: String!) {
@@ -113,15 +114,16 @@ const buildCrossReferenceGroups = (crossReferences: CrossReference[]) => {
 const GeneExternalReferences = () => {
   const params: EntityViewerParams = useParams();
 
-  const entityId = params.entityId?.split(':').pop();
+  const { entityId, genomeId } = params;
 
-  // TODO: The genomeId is temporarily hardcoded here as Thoas does ot have date for homo_sapiens_GCA_000001405_27.
+  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
-      stable_id: entityId,
-      genome_id: 'homo_sapiens_GCA_000001405_28'
+      stable_id: stableId,
+      genome_id: genomeId
     },
-    skip: !entityId
+    skip: !stableId
   });
 
   if (loading) {

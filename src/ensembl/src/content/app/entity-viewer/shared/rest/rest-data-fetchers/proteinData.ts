@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { restProteinStatsAdaptor } from '../rest-adaptors/rest-protein-adaptor';
+import { restProteinSummaryAdaptor } from '../rest-adaptors/rest-protein-adaptor';
 import { TranscriptInResponse } from './transcriptData';
 
-export type XrefsInResponse = {
+export type Xref = {
   display_id: string;
-}[];
+};
+
+export type XrefsInResponse = Xref[];
 
 export type ProteinStatsInResponse = {
   pdbs: number;
@@ -39,10 +41,15 @@ export type ProteinStats = {
   annotationsCount: number;
 };
 
-export const fetchProteinSummaryStats = async (
+export type ProteinSummary = {
+  proteinStats: ProteinStats;
+  pdbeId: string;
+};
+
+export const fetchProteinSummary = async (
   transcriptId: string,
   signal?: AbortSignal
-): Promise<ProteinStats | null> => {
+): Promise<ProteinSummary | null> => {
   const transcriptUrl = `https://rest.ensembl.org/lookup/id/${transcriptId}?expand=1;content-type=application/json`;
   const transcript: TranscriptInResponse = await fetch(transcriptUrl, {
     signal
@@ -61,7 +68,7 @@ export const fetchProteinSummaryStats = async (
       signal
     }).then((response) => response.json());
 
-    return restProteinStatsAdaptor(proteinStatsData[pdbeId]);
+    return restProteinSummaryAdaptor(proteinStatsData[pdbeId], pdbeId);
   } else {
     return null;
   }

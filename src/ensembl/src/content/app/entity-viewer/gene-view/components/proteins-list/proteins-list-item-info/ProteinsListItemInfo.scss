@@ -1,15 +1,22 @@
 .bottomWrapper {
   display: grid;
-  grid-template-columns: 200px 20px 475px;
-  margin: 10px 0 10px 178px;
+  margin-left: 178px;
   width: 695px;
+
+  > div {
+    margin: 10px 0 10px 0;
+  }
 }
 
 .codingExonCount {
   grid-column: 1/2;
 }
 
-.sequenceDownload {
-  grid-column: 3/4;
-  text-align: right;
+.geneExternalReference {
+  display: inline-block;
+  margin-right: 40px;
+}
+
+.proteinFeaturesCountWrapper {
+  display: inline-block;
 }

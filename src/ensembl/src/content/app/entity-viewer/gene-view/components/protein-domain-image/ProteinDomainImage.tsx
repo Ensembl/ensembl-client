@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-
-import {
-  ProteinDomainsResources,
-  Product
-} from 'src/content/app/entity-viewer/types/product';
+import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -31,20 +26,13 @@ const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
-  transcriptId: string;
+  proteinDomains: ProteinDomainsResources;
   trackLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
     track?: string;
     domain?: string;
   };
-};
-
-type ProteinDomainImageWithDataProps = Omit<
-  ProteinDomainImageProps,
-  'transcriptId'
-> & {
-  proteinDomains: ProteinDomainsResources;
 };
 
 type ProteinDomainImageData = {
@@ -85,37 +73,7 @@ export const getDomainsByResourceGroups = (
 };
 
 const ProteinDomainImage = (props: ProteinDomainImageProps) => {
-  const [product, setProduct] = useState<Product | null>(null);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    fetchTranscript(props.transcriptId, abortController.signal).then(
-      (result) => {
-        if (result?.product) {
-          setProduct(result.product);
-        }
-      }
-    );
-
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [props.transcriptId]);
-
-  return product?.protein_domains_resources ? (
-    <ProteinDomainImageWithData
-      {...props}
-      proteinDomains={product.protein_domains_resources}
-    />
-  ) : null;
-};
-
-export const ProteinDomainImageWithData = (
-  props: ProteinDomainImageWithDataProps
-) => {
   const { proteinDomains, trackLength } = props;
-
   const proteinDomainsResources = getDomainsByResourceGroups(proteinDomains);
 
   // Create a scale where the domain is the total length of the track in amino acids.
