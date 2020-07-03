@@ -18,7 +18,8 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router';
 
-import TranscriptsListItemInfo from './TranscriptsListItemInfo';
+import { TranscriptsListItemInfo } from './TranscriptsListItemInfo';
+import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
@@ -37,7 +38,8 @@ describe('<TranscriptsListItemInfo /', () => {
   const props = {
     gene,
     transcript,
-    expandDownload
+    expandDownload,
+    toggleTranscriptDownload: jest.fn()
   };
 
   beforeEach(() => {
@@ -69,5 +71,19 @@ describe('<TranscriptsListItemInfo /', () => {
 
   it('renders ViewInApp component', () => {
     expect(wrapper.find(ViewInApp)).toHaveLength(1);
+  });
+
+  it('hides Download component by default', () => {
+    expect(wrapper.find(InstantDownloadTranscript)).toHaveLength(0);
+  });
+
+  it('shows Download component by default if expandDownload is true', () => {
+    wrapper = mount(
+      <MemoryRouter>
+        <TranscriptsListItemInfo {...props} expandDownload={true} />
+      </MemoryRouter>
+    );
+
+    expect(wrapper.find(InstantDownloadTranscript)).toHaveLength(1);
   });
 });

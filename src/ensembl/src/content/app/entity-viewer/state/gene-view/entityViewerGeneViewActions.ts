@@ -23,13 +23,13 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
+import { RootState } from 'src/store';
 import {
   View,
   GeneViewTabMap,
   GeneViewTabName,
   EntityViewerGeneViewUIState
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
-import { RootState } from 'src/store';
 
 export const updateActiveGeneViewUIState = createAction(
   'entity-viewer/update-active-gene-view-object-state'

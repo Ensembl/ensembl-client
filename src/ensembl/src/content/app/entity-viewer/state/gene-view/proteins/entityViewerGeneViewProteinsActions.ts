@@ -25,8 +25,8 @@ import {
 import { getProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsSelectors';
 import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
-import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { RootState } from 'src/store';
+import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { updateActiveGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
 
@@ -41,13 +41,14 @@ export const updateGeneViewProteinsUIState: ActionCreator<ThunkAction<
 ) => {
   const state = getState();
 
-  const contentUI = getGeneViewContentUI(state);
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
 
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
+
+  const contentUI = getGeneViewContentUI(state);
 
   dispatch(
     updateActiveGeneViewUIState({

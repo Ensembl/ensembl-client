@@ -17,7 +17,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import DefaultTranscriptListItem from './DefaultTranscriptListItem';
+import {
+  DefaultTranscriptListItem,
+  DefaultTranscriptListItemProps
+} from './DefaultTranscriptListItem';
 import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 
@@ -36,30 +39,41 @@ jest.mock(
   () => () => <div>UnsplicedTranscript</div>
 );
 
+const toggleTranscriptInfo = jest.fn();
+
 describe('<DefaultTranscriptListItem />', () => {
   let wrapper: any;
 
-  beforeEach(() => {
-    const props = {
-      gene: createGene(),
-      transcript: createTranscript(),
-      rulerTicks: createRulerTicks(),
-      expandTranscript: false,
-      expandDownload: false
-    };
+  const defaultProps = {
+    gene: createGene(),
+    transcript: createTranscript(),
+    rulerTicks: createRulerTicks(),
+    expandTranscript: false,
+    expandDownload: false,
+    toggleTranscriptInfo: toggleTranscriptInfo
+  };
 
-    wrapper = mount(<DefaultTranscriptListItem {...props} />);
-  });
+  const mountDefaultTranscriptListItem = (
+    props?: Partial<DefaultTranscriptListItemProps>
+  ) => mount(<DefaultTranscriptListItem {...defaultProps} {...props} />);
 
   it('displays unspliced transcript', () => {
+    wrapper = mountDefaultTranscriptListItem();
     expect(wrapper.exists(UnsplicedTranscript)).toBe(true);
   });
 
-  it('toggles transcript item info', () => {
+  it('toggles transcript item info onClick', () => {
+    wrapper = mountDefaultTranscriptListItem();
     wrapper.find('.middle').simulate('click');
-    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
+    expect(toggleTranscriptInfo).toBeCalled();
 
     wrapper.find('.right').simulate('click');
-    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(false);
+    expect(toggleTranscriptInfo).toBeCalled();
+  });
+
+  it('displays transcript info by default if expandTranscript is true', () => {
+    wrapper = mountDefaultTranscriptListItem({ expandTranscript: true });
+
+    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
   });
 });

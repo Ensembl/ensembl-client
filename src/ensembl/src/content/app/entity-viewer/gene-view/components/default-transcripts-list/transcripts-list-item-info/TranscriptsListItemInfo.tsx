@@ -50,7 +50,7 @@ type ItemInfoProps = {
   toggleTranscriptDownload: (id: string) => void;
 };
 
-const ItemInfo = (props: ItemInfoProps) => {
+export const TranscriptsListItemInfo = (props: ItemInfoProps) => {
   const { transcript } = props;
   const params: { [key: string]: string } = useParams();
 
@@ -190,4 +190,4 @@ const mapDispatchToProps = {
   toggleTranscriptDownload
 };
 
-export default connect(null, mapDispatchToProps)(ItemInfo);
+export default connect(null, mapDispatchToProps)(TranscriptsListItemInfo);

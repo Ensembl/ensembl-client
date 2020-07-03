@@ -31,7 +31,7 @@ import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 import { connect } from 'react-redux';
 
-type Props = {
+export type DefaultTranscriptListItemProps = {
   gene: Gene;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
@@ -42,7 +42,9 @@ type Props = {
 
 // NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px
 
-const DefaultTranscriptListItem = (props: Props) => {
+export const DefaultTranscriptListItem = (
+  props: DefaultTranscriptListItemProps
+) => {
   const { scale } = props.rulerTicks;
   const { start: geneStart } = getFeatureCoordinates(props.gene);
   const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(

@@ -16,9 +16,9 @@
 
 import { RootState } from 'src/store';
 
-import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
-
 import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+
+import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 export const getTranscriptsUI = (state: RootState) => {
   return getGeneViewContentUI(state)[View.TRANSCRIPTS];
