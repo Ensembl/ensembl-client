@@ -55,7 +55,7 @@ const Checkbox = (props: CheckboxProps) => {
     props.onChange(!props.checked);
   };
 
-  const styles = { ...defaultStyles };
+  const styles = props.classNames ? { ...defaultStyles } : defaultStyles; // this fix the test cases and also if there is no classNames passed as props
   for (const className in props.classNames) {
     const newClassName = classNames(
       defaultStyles[className],
