@@ -180,17 +180,16 @@ const useGeneViewRouting = () => {
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
-    if (previousGenomeId !== genomeId) {
-      if (viewInRedux && viewInRedux !== view) {
-        const url = urlFor.entityViewer({
-          genomeId,
-          entityId,
-          view: viewInRedux
-        });
-        dispatch(replace(url));
-      }
-    } else if (viewInRedux !== view) {
+    if (view && viewInRedux !== view) {
       dispatch(setGeneViewName(view));
+    } else {
+      const url = urlFor.entityViewer({
+        genomeId,
+        entityId,
+        view: viewInRedux
+      });
+
+      dispatch(replace(url));
     }
   }, [view, viewInRedux, genomeId, previousGenomeId]);
 

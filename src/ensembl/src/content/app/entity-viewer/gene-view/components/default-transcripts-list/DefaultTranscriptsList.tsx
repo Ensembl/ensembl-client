@@ -23,17 +23,27 @@ import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultT
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+
+import { getViewTranscriptsContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import styles from './DefaultTranscriptsList.scss';
+import { connect } from 'react-redux';
+import { RootState } from 'src/store';
 
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
+  transcriptscontentUI: EntityViewerGeneViewTranscriptsUI;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
+  const {
+    expadndedTranscriptIds,
+    expandedTranscriptDownloads
+  } = props.transcriptscontentUI;
 
   return (
     <div>
@@ -46,14 +56,23 @@ const DefaultTranscriptslist = (props: Props) => {
       </div>
       <div className={styles.content}>
         <StripedBackground {...props} />
-        {sortedTranscripts.map((transcript, index) => (
-          <DefaultTranscriptsListItem
-            key={index}
-            gene={gene}
-            transcript={transcript}
-            rulerTicks={props.rulerTicks}
-          />
-        ))}
+        {sortedTranscripts.map((transcript, index) => {
+          const expandTranscript =
+            expadndedTranscriptIds?.includes(transcript.id) || false;
+          const expandDownload =
+            expandedTranscriptDownloads?.includes(transcript.id) || false;
+
+          return (
+            <DefaultTranscriptsListItem
+              key={index}
+              gene={gene}
+              transcript={transcript}
+              rulerTicks={props.rulerTicks}
+              expandTranscript={expandTranscript}
+              expandDownload={expandDownload}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -74,4 +93,8 @@ const StripedBackground = (props: Props) => {
   return <div className={styles.stripedBackground}>{stripes}</div>;
 };
 
-export default DefaultTranscriptslist;
+const mapStateToProps = (state: RootState) => ({
+  transcriptscontentUI: getViewTranscriptsContentUI(state)
+});
+
+export default connect(mapStateToProps)(DefaultTranscriptslist);

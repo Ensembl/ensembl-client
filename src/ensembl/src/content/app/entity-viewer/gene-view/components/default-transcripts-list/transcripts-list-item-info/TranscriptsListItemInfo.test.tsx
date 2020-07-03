@@ -32,9 +32,12 @@ describe('<TranscriptsListItemInfo /', () => {
   let wrapper: any;
   const transcript = createTranscript();
   const gene = createGene({ transcripts: [transcript] });
+  const expandDownload = false;
+
   const props = {
     gene,
-    transcript
+    transcript,
+    expandDownload
   };
 
   beforeEach(() => {

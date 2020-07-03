@@ -23,7 +23,8 @@ import { ThunkAction } from 'redux-thunk';
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 import {
   buildEnsObjectId,
-  parseFocusIdFromUrl
+  parseFocusIdFromUrl,
+  buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -52,17 +53,35 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
   Action<string>
 >> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
   const state = getState();
-  let { genomeId } = params;
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEnsObjectId(state);
-  if (!genomeId) {
+  const { genomeId: genomeIdFromUrl } = params;
+
+  let activeGenomeId = getEntityViewerActiveGenomeId(state);
+  const activeEntityId = getEntityViewerActiveEnsObjectId(state) || undefined;
+
+  const entityIdForUrl = activeEntityId
+    ? buildFocusIdForUrl(activeEntityId)
+    : undefined;
+
+  if (!genomeIdFromUrl && !activeGenomeId) {
     dispatch(setDefaultActiveGenomeId());
-    genomeId = getEntityViewerActiveGenomeId(state) as string;
-  } else if (genomeId !== activeGenomeId) {
-    dispatch(setActiveGenomeId(genomeId));
-    dispatch(fetchGenomeData(genomeId));
+    activeGenomeId = getEntityViewerActiveGenomeId(state) as string;
+  } else if (!genomeIdFromUrl && activeGenomeId) {
+    const newUrl = urlHelper.entityViewer({
+      genomeId: activeGenomeId,
+      entityId: entityIdForUrl
+    });
+    dispatch(replace(newUrl));
+  } else if (genomeIdFromUrl && genomeIdFromUrl !== activeGenomeId) {
+    dispatch(setActiveGenomeId(genomeIdFromUrl));
+    dispatch(fetchGenomeData(genomeIdFromUrl));
     // TODO: when backend is ready, entity info may also need fetching
-  } else {
+  } else if (activeGenomeId && entityIdForUrl) {
+    const newUrl = urlHelper.entityViewer({
+      genomeId: activeGenomeId,
+      entityId: entityIdForUrl
+    });
+    dispatch(replace(newUrl));
+  } else if (activeGenomeId) {
     // TODO: when backend is ready, fetch entity info
     const genomeInfo = getGenomeInfoById(state, activeGenomeId);
     if (!genomeInfo) {
@@ -72,7 +91,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
 
   const entityId = params.entityId
     ? buildEnsObjectId({
-        genomeId: genomeId as string,
+        genomeId: genomeIdFromUrl as string,
         ...parseFocusIdFromUrl(params.entityId)
       })
     : null;

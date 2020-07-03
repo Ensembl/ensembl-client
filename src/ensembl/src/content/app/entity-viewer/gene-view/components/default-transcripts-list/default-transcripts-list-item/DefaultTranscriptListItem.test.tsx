@@ -43,7 +43,9 @@ describe('<DefaultTranscriptListItem />', () => {
     const props = {
       gene: createGene(),
       transcript: createTranscript(),
-      rulerTicks: createRulerTicks()
+      rulerTicks: createRulerTicks(),
+      expandTranscript: false,
+      expandDownload: false
     };
 
     wrapper = mount(<DefaultTranscriptListItem {...props} />);

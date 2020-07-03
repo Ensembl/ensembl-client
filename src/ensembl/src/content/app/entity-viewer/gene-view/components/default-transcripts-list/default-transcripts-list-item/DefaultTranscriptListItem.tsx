@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
+
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -27,11 +29,15 @@ import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/component
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
+import { connect } from 'react-redux';
 
 type Props = {
   gene: Gene;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
+  expandTranscript: boolean;
+  expandDownload: boolean;
+  toggleTranscriptInfo: (id: string) => void;
 };
 
 // NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px
@@ -49,16 +55,13 @@ const DefaultTranscriptListItem = (props: Props) => {
     cursor: 'pointer'
   };
 
-  const [shouldShowInfo, setShouldShowInfo] = useState(false);
-  const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
-
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>Left</div>
         <div
           className={transcriptsListStyles.middle}
-          onClick={toggleListItemInfo}
+          onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
         >
           <div style={style}>
             <UnsplicedTranscript
@@ -70,19 +73,24 @@ const DefaultTranscriptListItem = (props: Props) => {
         </div>
         <div
           className={transcriptsListStyles.right}
-          onClick={toggleListItemInfo}
+          onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
         >
           <span className={styles.transcriptId}>{props.transcript.id}</span>
         </div>
       </div>
-      {shouldShowInfo ? (
+      {props.expandTranscript ? (
         <TranscriptsListItemInfo
           gene={props.gene}
           transcript={props.transcript}
+          expandDownload={props.expandDownload}
         />
       ) : null}
     </div>
   );
 };
 
-export default DefaultTranscriptListItem;
+const mapDispatchToProps = {
+  toggleTranscriptInfo
+};
+
+export default connect(null, mapDispatchToProps)(DefaultTranscriptListItem);

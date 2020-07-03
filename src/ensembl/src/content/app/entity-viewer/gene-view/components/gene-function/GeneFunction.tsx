@@ -74,6 +74,7 @@ const GeneFunction = (props: Props) => {
     if (!match) {
       return;
     }
+
     const [view] = match;
     const url = urlFor.entityViewer({
       genomeId,

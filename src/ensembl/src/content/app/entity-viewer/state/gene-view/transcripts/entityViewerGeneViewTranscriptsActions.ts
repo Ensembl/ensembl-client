@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
@@ -28,63 +27,9 @@ import {
   getViewTranscriptsContentUI
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
-import {
-  View,
-  GeneViewTabMap,
-  GeneViewTabName,
-  EntityViewerGeneViewUIState
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { RootState } from 'src/store';
-
-export const updateActiveGeneViewUIState = createAction(
-  'entity-viewer/update-active-gene-view-object-state'
-)<{
-  activeGenomeId: string;
-  activeObjectId: string;
-  fragment: Partial<EntityViewerGeneViewUIState>;
-}>();
-
-export const setGeneViewName: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (view: View | null) => (dispatch, getState: () => RootState) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
-  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-  const primaryTabName = view ? GeneViewTabMap.get(view)?.primaryTab : null;
-  const primaryTab =
-    primaryTabName === GeneViewTabName.GENE_FUNCTION
-      ? 'geneFunctionTab'
-      : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
-      ? 'geneRelationshipsTab'
-      : null;
-  const tabView: {
-    selectedTabViews?: Record<
-      'geneFunctionTab' | 'geneRelationshipsTab',
-      View | null
-    >;
-  } = {};
-  if (primaryTab) {
-    tabView.selectedTabViews = { [primaryTab]: view } as Record<
-      'geneFunctionTab' | 'geneRelationshipsTab',
-      View | null
-    >;
-  }
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        view,
-        ...tabView
-      }
-    })
-  );
-};
+import { updateActiveGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 
 export const toggleTranscriptInfo: ActionCreator<ThunkAction<
   void,

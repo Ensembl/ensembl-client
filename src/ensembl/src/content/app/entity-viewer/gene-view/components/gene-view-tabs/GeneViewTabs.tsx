@@ -60,7 +60,7 @@ const GeneViewTabs = (props: Props) => {
   };
 
   const onTabChange = (selectedTabName: string) => {
-    let view;
+    let view = View.TRANSCRIPTS;
     if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
       view = props.selectedTabViews.geneFunctionTab || View.PROTEIN;
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
