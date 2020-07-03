@@ -32,7 +32,7 @@ type Props = {
 };
 
 const client = new ApolloClient({
-  uri: 'http://hx-rke-wp-webadmin-13-worker-1.caas.ebi.ac.uk:31497'
+  uri: '/thoas'
 });
 
 const GeneViewSidebar = (props: Props) => {
