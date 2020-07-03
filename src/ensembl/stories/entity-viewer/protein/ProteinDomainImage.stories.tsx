@@ -19,7 +19,7 @@ import { storiesOf } from '@storybook/react';
 
 import { getTranscriptData } from '../transcripts/transcriptData';
 
-import { ProteinDomainImageWithData as ProteinDomainImage } from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
+import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 

@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { scaleLinear } from 'd3';
 import classNames from 'classnames';
 
-import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
-
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Product } from 'src/content/app/entity-viewer/types/product';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
@@ -30,46 +27,13 @@ const TRACK_HEIGHT = 24;
 const PROTEIN_HEIGHT = 10;
 
 type ProteinImageProps = {
-  transcriptId: string;
+  product: Product;
   trackLength: number; // length in amino acids
   className?: string;
   width: number; // available width for drawing in pixels
 };
 
-type ProteinImageWithDataProps = Omit<ProteinImageProps, 'transcriptId'> & {
-  product: Product;
-};
-
-export const ProteinImage = (props: ProteinImageProps) => {
-  const [transcript, setTranscript] = useState<Transcript | null>(null);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    fetchTranscript(props.transcriptId, abortController.signal).then(
-      (result) => {
-        if (result) {
-          setTranscript(result);
-        }
-      }
-    );
-
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [props.transcriptId]);
-
-  return transcript?.product ? (
-    <ProteinImageWithData
-      product={transcript.product}
-      trackLength={props.trackLength}
-      className={props.className}
-      width={props.width}
-    />
-  ) : null;
-};
-
-const ProteinImageWithData = (props: ProteinImageWithDataProps) => {
+const ProteinImage = (props: ProteinImageProps) => {
   // Create a scale where the domain is the total length of the track in amino acids.
   // The track is as wide as the longest protein generated from the gene.
   // Therefore, it is guaranteed that the length of the protein drawn by this component will fall within this domain.
