@@ -32,7 +32,7 @@ type Props = {
 };
 
 const client = new ApolloClient({
-  uri: 'http://web-thoas.review.ensembl.org/'
+  uri: '/thoas'
 });
 
 const GeneViewSidebar = (props: Props) => {
