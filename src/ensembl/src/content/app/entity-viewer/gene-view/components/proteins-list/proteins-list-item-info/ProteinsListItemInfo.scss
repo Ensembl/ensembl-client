@@ -1,15 +1,19 @@
-.bottomWrapper {
-  display: grid;
+.proteinSummary {
   margin-left: 178px;
   width: 695px;
 
   > div {
-    margin: 10px 0 10px 0;
+    padding: 10px 0 10px 0;
   }
 }
 
-.codingExonCount {
-  grid-column: 1/2;
+.proteinSummaryTopWrapper {
+  display: grid;
+  grid-template-columns: 300px 395px;
+}
+
+.downloadWrapper {
+  text-align: right;
 }
 
 .geneExternalReference {

@@ -63,17 +63,19 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   const isDownloadDisabled = () => !isProteinSeqSelected && !isCdsSeqSelected;
 
   return (
-    <div className={styles.container}>
+    <div>
       <div className={styles.inputGroup}>
         <Checkbox
           label={proteinOptionLabels.proteinSequence}
+          labelClassName={styles.checkboxLabel}
           checked={isProteinSeqSelected}
           onChange={onProteinCheckboxChange}
         />
       </div>
       <div className={styles.inputGroup}>
         <Checkbox
-          label="CDS"
+          label={proteinOptionLabels.cds}
+          labelClassName={styles.checkboxLabel}
           checked={isCdsSeqSelected}
           onChange={onCdsCheckboxChange}
         />

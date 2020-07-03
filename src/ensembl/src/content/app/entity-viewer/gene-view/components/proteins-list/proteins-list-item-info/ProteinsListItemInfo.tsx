@@ -79,17 +79,21 @@ const ProteinsListItemInfo = (props: Props) => {
             width={695}
           />
           {proteinSummary && (
-            <div className={styles.bottomWrapper}>
-              <div>
-                <ProteinExternalReference
-                  source={ExternalSource.INTERPRO}
-                  externalId={proteinSummary.pdbeId}
-                />
-                <ProteinExternalReference
-                  source={ExternalSource.UNIPROT}
-                  externalId={proteinSummary.pdbeId}
-                />
-                <InstantDownloadProtein transcriptId={transcript.id} />
+            <div className={styles.proteinSummary}>
+              <div className={styles.proteinSummaryTopWrapper}>
+                <div className={styles.interproUniprotWrapper}>
+                  <ProteinExternalReference
+                    source={ExternalSource.INTERPRO}
+                    externalId={proteinSummary.pdbeId}
+                  />
+                  <ProteinExternalReference
+                    source={ExternalSource.UNIPROT}
+                    externalId={proteinSummary.pdbeId}
+                  />
+                </div>
+                <div className={styles.downloadWrapper}>
+                  <InstantDownloadProtein transcriptId={transcript.id} />
+                </div>
               </div>
               <div>
                 <ProteinExternalReference
