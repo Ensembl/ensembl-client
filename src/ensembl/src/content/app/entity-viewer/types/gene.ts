@@ -24,6 +24,7 @@ import { Metadata } from './metadata';
 export type Gene = {
   type: 'Gene';
   id: string;
+  version: number;
   symbol: string;
   source?: Source;
   so_term: string; // is there a better name for it?

@@ -5,20 +5,12 @@
 }
 
 .selectedNode {
-  border-radius: 12px;
-  height: 24px;
-  padding: 1px 20px 0 20px;
+  border-radius: 30px;
+  height: 21px;
+  padding: 1px 16px 0;
   margin-right: 24px;
   background-color: $black;
   color: $white;
   text-align: center;
   cursor: default;
-}
-
-.emptyNode {
-  border-radius: 100%;
-  background-color: $grey;
-  margin: 6px 24px 0 0;
-  width: 10px;
-  height: 10px;
 }

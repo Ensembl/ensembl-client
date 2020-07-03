@@ -54,6 +54,7 @@ const QUERY = gql`
   query Gene($id: String!) {
     gene(byId: { id: $id }) {
       id
+      version
       slice {
         location {
           start

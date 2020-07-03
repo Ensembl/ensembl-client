@@ -24,6 +24,8 @@ import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultT
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
+import { ReactComponent as Chevron } from 'static/img/shared/chevron-down.svg';
+
 import styles from './DefaultTranscriptsList.scss';
 
 type Props = {
@@ -39,7 +41,10 @@ const DefaultTranscriptslist = (props: Props) => {
     <div>
       <div className={styles.header}>
         <div className={styles.row}>
-          <div className={styles.left}>Filter & sort</div>
+          <div className={styles.left}>
+            Filter & sort
+            <Chevron className={styles.headerChevron} />
+          </div>
           <div className={styles.middle}></div>
           <div className={styles.right}>Transcript ID</div>
         </div>

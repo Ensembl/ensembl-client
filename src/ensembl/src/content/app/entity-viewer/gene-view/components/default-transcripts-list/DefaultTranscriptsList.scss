@@ -3,15 +3,26 @@
 
 .header {
   border-bottom: 1px solid $orange;
-  padding: 8px 0;
+  padding: 0;
   position: sticky;
   top: -15px;
   background-color: $black;
   z-index: 1;
+  font-size: 12px;
+}
+
+.headerChevron {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin-left: 0.5em;
+  top: 5px;
+  position: relative;
 }
 
 .content {
   position: relative;
+  padding-top: 36px;
 }
 
 .stripedBackground {
@@ -33,7 +44,8 @@
 .row {
   display: grid;
   grid-template-columns: $left_column $middle_column $middle_column_right_gap $right_column;
-  padding: 3px 0;
+  padding: 9px;
+  font-size: 12px;
 }
 
 .left {
