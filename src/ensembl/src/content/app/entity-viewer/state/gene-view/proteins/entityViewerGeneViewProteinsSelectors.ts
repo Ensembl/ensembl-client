@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-export type EntityViewerGeneViewTranscriptsUI = {
-  expandedTranscriptIds?: string[];
-  expandedTranscriptDownloads?: string[];
-};
+import { RootState } from 'src/store';
 
-export const defaultTranscriptsUIState: EntityViewerGeneViewTranscriptsUI = {
-  expandedTranscriptIds: [],
-  expandedTranscriptDownloads: []
+import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+
+import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+
+export const getProteinsUI = (state: RootState) => {
+  return getGeneViewContentUI(state)[View.PROTEIN];
 };

@@ -22,20 +22,20 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
+import { getProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsSelectors';
 import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
 
 import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { RootState } from 'src/store';
 import { updateActiveGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
-import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
+import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
 
-export const updateGeneViewTranscriptsUIState: ActionCreator<ThunkAction<
+export const updateGeneViewProteinsUIState: ActionCreator<ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = (transcriptsContentUI: Partial<EntityViewerGeneViewTranscriptsUI>) => (
+>> = (proteinsContentUI: Partial<EntityViewerGeneViewProteinsUI>) => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -56,14 +56,14 @@ export const updateGeneViewTranscriptsUIState: ActionCreator<ThunkAction<
       fragment: {
         contentUI: {
           ...contentUI,
-          [View.TRANSCRIPTS]: transcriptsContentUI
+          [View.PROTEIN]: proteinsContentUI
         }
       }
     })
   );
 };
 
-export const toggleTranscriptInfo: ActionCreator<ThunkAction<
+export const toggleProteinInfo: ActionCreator<ThunkAction<
   void,
   any,
   null,
@@ -78,60 +78,22 @@ export const toggleTranscriptInfo: ActionCreator<ThunkAction<
     return;
   }
 
-  const expandedTranscriptIds =
-    getTranscriptsUI(state)?.expandedTranscriptIds || [];
+  const expandedProteinIds = getProteinsUI(state)?.expandedProteinIds || [];
 
-  const index = expandedTranscriptIds.indexOf(transcriptId);
+  const index = expandedProteinIds.indexOf(transcriptId);
 
   if (index > -1) {
-    expandedTranscriptIds.splice(index, 1);
+    expandedProteinIds.splice(index, 1);
   } else {
-    expandedTranscriptIds.push(transcriptId);
+    expandedProteinIds.push(transcriptId);
   }
 
   dispatch(
-    updateGeneViewTranscriptsUIState({
+    updateGeneViewProteinsUIState({
       activeGenomeId,
       activeObjectId,
       fragment: {
-        expandedTranscriptIds
-      }
-    })
-  );
-};
-
-export const toggleTranscriptDownload: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptId: string) => (dispatch, getState: () => RootState) => {
-  const state = getState();
-
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-
-  const expandedTranscriptDownloads =
-    getTranscriptsUI(state)?.expandedTranscriptDownloads || [];
-
-  const index = expandedTranscriptDownloads.indexOf(transcriptId);
-
-  if (index > -1) {
-    expandedTranscriptDownloads.splice(index, 1);
-  } else {
-    expandedTranscriptDownloads.push(transcriptId);
-  }
-
-  dispatch(
-    updateGeneViewTranscriptsUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        expandedTranscriptDownloads
+        expandedProteinIds
       }
     })
   );

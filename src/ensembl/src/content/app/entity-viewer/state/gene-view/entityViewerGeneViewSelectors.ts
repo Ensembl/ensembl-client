@@ -24,8 +24,7 @@ import {
   transcriptsTabData,
   GeneViewTabMap,
   GeneViewTabData,
-  SelectedTabViews,
-  View
+  SelectedTabViews
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 export const getGeneViewState = (state: RootState) => {
@@ -55,10 +54,6 @@ export const getSelectedTabViews = (state: RootState): SelectedTabViews => {
   return getGeneViewState(state).selectedTabViews;
 };
 
-export const getContentUI = (state: RootState) => {
+export const getGeneViewContentUI = (state: RootState) => {
   return getGeneViewState(state).contentUI;
-};
-
-export const getViewTranscriptsContentUI = (state: RootState) => {
-  return getContentUI(state)[View.TRANSCRIPTS];
 };

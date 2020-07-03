@@ -23,9 +23,9 @@ import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultT
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
 
-import { getViewTranscriptsContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
 
 import styles from './DefaultTranscriptsList.scss';
 import { connect } from 'react-redux';
@@ -41,7 +41,7 @@ const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
   const {
-    expadndedTranscriptIds,
+    expandedTranscriptIds,
     expandedTranscriptDownloads
   } = props.transcriptscontentUI;
 
@@ -58,7 +58,7 @@ const DefaultTranscriptslist = (props: Props) => {
         <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => {
           const expandTranscript =
-            expadndedTranscriptIds?.includes(transcript.id) || false;
+            expandedTranscriptIds?.includes(transcript.id) || false;
           const expandDownload =
             expandedTranscriptDownloads?.includes(transcript.id) || false;
 
@@ -94,7 +94,7 @@ const StripedBackground = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  transcriptscontentUI: getViewTranscriptsContentUI(state)
+  transcriptscontentUI: getTranscriptsUI(state)
 });
 
 export default connect(mapStateToProps)(DefaultTranscriptslist);

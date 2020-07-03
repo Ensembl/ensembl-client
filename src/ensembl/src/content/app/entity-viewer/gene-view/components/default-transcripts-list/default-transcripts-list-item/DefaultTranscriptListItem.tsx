@@ -21,7 +21,7 @@ import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/help
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 
-import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsActions';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';

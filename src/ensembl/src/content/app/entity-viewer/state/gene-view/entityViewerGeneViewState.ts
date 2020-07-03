@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
+import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
+import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
+
 export type SelectedTabViews = Record<
   'geneFunctionTab' | 'geneRelationshipsTab',
   View | null
 >;
 
-export type EntityViewerGeneViewTranscriptsUI = {
-  expadndedTranscriptIds?: string[];
-  expandedTranscriptDownloads?: string[];
-};
-
 export type EntityViewerGeneViewContentUI = {
   [View.TRANSCRIPTS]: EntityViewerGeneViewTranscriptsUI;
+  [View.PROTEIN]: EntityViewerGeneViewProteinsUI;
 };
 
 export type EntityViewerGeneViewUIState = {
@@ -147,8 +146,11 @@ export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
   },
   contentUI: {
     [View.TRANSCRIPTS]: {
-      expadndedTranscriptIds: [],
+      expandedTranscriptIds: [],
       expandedTranscriptDownloads: []
+    },
+    [View.PROTEIN]: {
+      expandedProteinIds: []
     }
   }
 };

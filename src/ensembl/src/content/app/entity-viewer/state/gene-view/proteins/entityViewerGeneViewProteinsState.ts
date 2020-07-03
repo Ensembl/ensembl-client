@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-export type EntityViewerGeneViewTranscriptsUI = {
-  expandedTranscriptIds?: string[];
-  expandedTranscriptDownloads?: string[];
+export type EntityViewerGeneViewProteinsUI = {
+  expandedProteinIds?: string[];
 };
 
-export const defaultTranscriptsUIState: EntityViewerGeneViewTranscriptsUI = {
-  expandedTranscriptIds: [],
-  expandedTranscriptDownloads: []
+export const defaultProteinsUIState: EntityViewerGeneViewProteinsUI = {
+  expandedProteinIds: []
 };

@@ -24,11 +24,6 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import {
-  getGeneViewName,
-  getViewTranscriptsContentUI
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-
-import {
   View,
   GeneViewTabMap,
   GeneViewTabName,
@@ -81,90 +76,6 @@ export const setGeneViewName: ActionCreator<ThunkAction<
       fragment: {
         view,
         ...tabView
-      }
-    })
-  );
-};
-
-export const toggleTranscriptInfo: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptId: string) => (dispatch, getState: () => RootState) => {
-  const state = getState();
-
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  const view = getGeneViewName(state);
-
-  if (!activeGenomeId || !activeObjectId || !view) {
-    return;
-  }
-
-  const expadndedTranscriptIds =
-    getViewTranscriptsContentUI(state)?.expadndedTranscriptIds || [];
-
-  const index = expadndedTranscriptIds.indexOf(transcriptId);
-
-  if (index > -1) {
-    expadndedTranscriptIds.splice(index, 1);
-  } else {
-    expadndedTranscriptIds.push(transcriptId);
-  }
-
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        contentUI: {
-          [View.TRANSCRIPTS]: {
-            expadndedTranscriptIds
-          }
-        }
-      }
-    })
-  );
-};
-
-export const toggleTranscriptDownload: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptId: string) => (dispatch, getState: () => RootState) => {
-  const state = getState();
-
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  const view = getGeneViewName(state);
-
-  if (!activeGenomeId || !activeObjectId || !view) {
-    return;
-  }
-
-  const expandedTranscriptDownloads =
-    getViewTranscriptsContentUI(state)?.expandedTranscriptDownloads || [];
-
-  const index = expandedTranscriptDownloads.indexOf(transcriptId);
-
-  if (index > -1) {
-    expandedTranscriptDownloads.splice(index, 1);
-  } else {
-    expandedTranscriptDownloads.push(transcriptId);
-  }
-
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        contentUI: {
-          [View.TRANSCRIPTS]: {
-            expandedTranscriptDownloads
-          }
-        }
       }
     })
   );
