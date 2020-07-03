@@ -22,24 +22,22 @@ import {
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 
 type FetchPayload = {
-  proteinId: string;
+  transcriptId: string;
   options: ProteinOptions;
 };
 
 export const fetchForProtein = async (payload: FetchPayload) => {
-  const { proteinId, options } = payload;
-  const urls = buildUrlsForProtein(proteinId, options);
+  const { transcriptId, options } = payload;
+  const urls = buildUrlsForProtein(transcriptId, options);
 
   const sequencePromises = urls.map((url) =>
     fetch(url).then((response) => response.text())
   );
 
   const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join(
-    '\n=====================================\n'
-  );
+  const combinedFasta = sequences.join('\n');
 
-  downloadAsFile(combinedFasta, `${proteinId}.fasta`, {
+  downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
   });
 };

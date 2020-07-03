@@ -20,6 +20,7 @@ import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/componen
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import InstantDownloadProtein from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 
 import {
   ExternalSource,
@@ -77,35 +78,35 @@ const ProteinsListItemInfo = (props: Props) => {
             trackLength={trackLength}
             width={695}
           />
-        </>
-      )}
-      {proteinSummary && (
-        <div className={styles.bottomWrapper}>
-          <div>
-            <ProteinExternalReference
-              source={ExternalSource.INTERPRO}
-              externalId={proteinSummary.pdbeId}
-            />
-            <ProteinExternalReference
-              source={ExternalSource.UNIPROT}
-              externalId={proteinSummary.pdbeId}
-            />
-            Download component
-          </div>
-          <div>
-            <ProteinExternalReference
-              source={ExternalSource.PDBE}
-              externalId={proteinSummary.pdbeId}
-            />
-            {proteinSummary?.proteinStats && (
-              <div className={styles.proteinFeaturesCountWrapper}>
-                <ProteinFeaturesCount
-                  proteinStats={proteinSummary.proteinStats}
+          {proteinSummary && (
+            <div className={styles.bottomWrapper}>
+              <div>
+                <ProteinExternalReference
+                  source={ExternalSource.INTERPRO}
+                  externalId={proteinSummary.pdbeId}
                 />
+                <ProteinExternalReference
+                  source={ExternalSource.UNIPROT}
+                  externalId={proteinSummary.pdbeId}
+                />
+                <InstantDownloadProtein transcriptId={transcript.id} />
               </div>
-            )}
-          </div>
-        </div>
+              <div>
+                <ProteinExternalReference
+                  source={ExternalSource.PDBE}
+                  externalId={proteinSummary.pdbeId}
+                />
+                {proteinSummary?.proteinStats && (
+                  <div className={styles.proteinFeaturesCountWrapper}>
+                    <ProteinFeaturesCount
+                      proteinStats={proteinSummary.proteinStats}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

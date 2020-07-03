@@ -27,7 +27,6 @@ import styles from './InstantDownloadProtein.scss';
 
 type InstantDownloadProteinProps = {
   transcriptId: string;
-  proteinId: string;
 };
 
 export type ProteinOptions = Pick<TranscriptOptions, 'proteinSequence' | 'cds'>;
@@ -52,7 +51,6 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   const onSubmit = () => {
     const payload = {
       transcriptId: props.transcriptId,
-      proteinId: props.proteinId,
       options: {
         proteinSequence: isProteinSeqSelected,
         cds: isCdsSeqSelected
