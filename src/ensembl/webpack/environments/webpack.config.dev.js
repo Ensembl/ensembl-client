@@ -42,7 +42,7 @@ const devServerConfig = {
       secure: false
     },
     '/thoas': {
-      target: 'https://staging-2020.ensembl.org/thoas',
+      target: 'https://staging-2020.ensembl.org',
       changeOrigin: true,
       secure: false
     }
