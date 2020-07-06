@@ -49,7 +49,7 @@ const getQuery = (props: Props) => {
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
-  const helpApiHost = `http://localhost:3000`; // FIXME move to env and config
+  const helpApiHost = `http://193.62.55.158:30799`; // FIXME move to env and config
   const query = getQuery(props);
 
   const url = `${helpApiHost}/api/article?${query}`;
