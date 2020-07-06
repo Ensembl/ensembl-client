@@ -78,9 +78,9 @@ const ProteinsListItemInfo = (props: Props) => {
             trackLength={trackLength}
             width={695}
           />
-          {proteinSummary && (
-            <div className={styles.proteinSummary}>
-              <div className={styles.proteinSummaryTopWrapper}>
+          <div className={styles.proteinSummary}>
+            <div className={styles.proteinSummaryTop}>
+              {proteinSummary && (
                 <div className={styles.interproUniprotWrapper}>
                   <ProteinExternalReference
                     source={ExternalSource.INTERPRO}
@@ -91,10 +91,12 @@ const ProteinsListItemInfo = (props: Props) => {
                     externalId={proteinSummary.pdbeId}
                   />
                 </div>
-                <div className={styles.downloadWrapper}>
-                  <InstantDownloadProtein transcriptId={transcript.id} />
-                </div>
+              )}
+              <div className={styles.downloadWrapper}>
+                <InstantDownloadProtein transcriptId={transcript.id} />
               </div>
+            </div>
+            {proteinSummary && (
               <div>
                 <ProteinExternalReference
                   source={ExternalSource.PDBE}
@@ -108,8 +110,8 @@ const ProteinsListItemInfo = (props: Props) => {
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
     </div>
