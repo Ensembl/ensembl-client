@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
+
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -25,14 +28,12 @@ import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/component
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
-
 import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
+import { RootState } from 'src/store';
 
 import {ReactComponent as ChevronDown} from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
-import { connect } from 'react-redux';
-import { RootState } from 'src/store';
 
 type Props = {
   gene: Gene;
