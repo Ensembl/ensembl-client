@@ -51,6 +51,11 @@ const Checkbox = (props: CheckboxProps) => {
     }
   };
 
+  const wrapperClasses = classNames(
+    styles.checkboxHolder,
+    props.classNames?.checkboxHolder
+  );
+
   const checkboxClasses = classNames(
     styles.defaultCheckbox,
     props.checked
@@ -64,7 +69,7 @@ const Checkbox = (props: CheckboxProps) => {
   );
 
   return (
-    <div className={styles.checkboxHolder}>
+    <div className={wrapperClasses}>
       <input
         type="checkbox"
         className={styles.hiddenInput}
