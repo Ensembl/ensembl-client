@@ -8,12 +8,15 @@
 }
 
 .proteinSummaryTop {
+  align-items: center;
   display: grid;
-  grid-template-columns: 300px 395px;
+  grid-template-columns: [references] 300px [download] 395px;
 }
 
 .downloadWrapper {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  grid-column: download;
 }
 
 .geneExternalReference {
