@@ -37,7 +37,6 @@ import ExampleLinks from './components/example-links/ExampleLinks';
 import GeneView from './gene-view/GeneView';
 import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
-import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { RootState } from 'src/store';
 import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
@@ -48,7 +47,6 @@ import styles from './EntityViewer.scss';
 type Props = {
   isSidebarOpen: boolean;
   viewportWidth: BreakpointWidth;
-  activeGenomeId: string | null;
   setDataFromUrl: (params: EntityViewerParams) => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleSidebar: (status?: SidebarStatus) => void;
@@ -101,8 +99,7 @@ const EntityViewer = (props: Props) => {
 const mapStateToProps = (state: RootState) => {
   return {
     isSidebarOpen: isEntityViewerSidebarOpen(state),
-    viewportWidth: getBreakpointWidth(state),
-    activeGenomeId: getEntityViewerActiveGenomeId(state)
+    viewportWidth: getBreakpointWidth(state)
   };
 };
 
