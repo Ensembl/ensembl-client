@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
+import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
 
 import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
+
+import {ReactComponent as ChevronDown} from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
 import { connect } from 'react-redux';
@@ -44,13 +47,21 @@ const DefaultTranscriptslist = (props: Props) => {
     expandedTranscriptIds,
     expandedTranscriptDownloads
   } = props.transcriptscontentUI;
+  const [isFilterOpen, setFilterOpen] = useState(false);
+
+  const toggleFilter = () => {  setFilterOpen(!isFilterOpen); }
 
   return (
     <div>
       <div className={styles.header}>
+        {isFilterOpen && <TranscriptsFilter toggleFilter={toggleFilter} />}
         <div className={styles.row}>
-          <div className={styles.left}>Filter & sort</div>
-          <div className={styles.middle}></div>
+          { !isFilterOpen &&
+            <div className={styles.filterLabel} onClick={toggleFilter}>
+              Filter & sort
+              <ChevronDown className={styles.chevron}/>
+            </div>
+          }
           <div className={styles.right}>Transcript ID</div>
         </div>
       </div>

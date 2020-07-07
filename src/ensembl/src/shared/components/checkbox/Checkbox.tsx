@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import defaultStyles from './Checkbox.scss';
+import styles from './Checkbox.scss';
 
 type ClassNames = Partial<{
   checkboxHolder: string;
@@ -46,23 +46,22 @@ const isWithLabel = (props: CheckboxProps): props is WithLabelProps => {
 
 const Checkbox = (props: CheckboxProps) => {
   const handleOnChange = () => {
-    // Do nothing if it is disabled
-    if (props.disabled) {
-      return;
+    if (!props.disabled) {
+      props.onChange(!props.checked);
     }
-
-    // Call the onChange function
-    props.onChange(!props.checked);
   };
 
-  const styles = props.classNames
-    ? ({ ...defaultStyles, ...props.classNames } as { [key: string]: string })
-    : defaultStyles;
-  const className = classNames(
+  const wrapperClasses = classNames(
+    styles.checkboxHolder,
+    props.classNames?.checkboxHolder
+  );
+
+  const checkboxClasses = classNames(
     styles.defaultCheckbox,
-    { [styles.checked]: props.checked },
-    { [styles.unchecked]: !props.checked },
-    { [styles.disabled]: props.disabled }
+    props.checked
+      ? classNames(styles.checked, props.classNames?.checked)
+      : classNames(styles.unchecked, props.classNames?.unchecked),
+    props.disabled && classNames(styles.disabled, props.classNames?.disabled)
   );
   const labelClassName = classNames(
     styles.defaultLabel,
@@ -70,14 +69,14 @@ const Checkbox = (props: CheckboxProps) => {
   );
 
   return (
-    <div className={styles.checkboxHolder}>
+    <div className={wrapperClasses}>
       <input
         type="checkbox"
         className={styles.hiddenInput}
         onChange={handleOnChange}
         checked={props.checked}
       />
-      <div onClick={handleOnChange} className={className} />
+      <div onClick={handleOnChange} className={checkboxClasses} />
       {isWithLabel(props) && (
         <label onClick={handleOnChange} className={labelClassName}>
           {props.label}

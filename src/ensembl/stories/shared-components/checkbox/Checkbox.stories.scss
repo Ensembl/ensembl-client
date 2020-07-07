@@ -3,3 +3,9 @@
 .wrapper {
   padding: 20px;
 }
+
+
+.gridWrapper {
+  display: grid;
+  grid-template-columns: 210px 210px 210px;
+}
