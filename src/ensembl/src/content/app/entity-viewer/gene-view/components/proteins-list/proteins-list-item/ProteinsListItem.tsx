@@ -66,7 +66,7 @@ const ProteinsListItem = (props: Props) => {
       </div>
       {expandedProteinIds?.includes(transcript.id) ? (
         <ProteinsListItemInfo
-          transcript={transcript}
+          transcriptId={transcript.id}
           trackLength={trackLength}
         />
       ) : null}

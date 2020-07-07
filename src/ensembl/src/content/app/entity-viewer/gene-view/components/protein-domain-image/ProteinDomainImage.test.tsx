@@ -19,8 +19,7 @@ import { mount } from 'enzyme';
 
 import { createProduct } from 'tests/fixtures/entity-viewer/product';
 
-import {
-  ProteinDomainImageWithData as ProteinDomainImage,
+import ProteinDomainImage, {
   getDomainsByResourceGroups
 } from './ProteinDomainImage';
 
