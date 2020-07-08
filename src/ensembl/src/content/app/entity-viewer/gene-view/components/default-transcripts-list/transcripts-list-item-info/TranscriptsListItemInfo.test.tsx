@@ -18,7 +18,10 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router';
 
-import { TranscriptsListItemInfo } from './TranscriptsListItemInfo';
+import {
+  TranscriptsListItemInfo,
+  TranscriptsListItemInfoProps
+} from './TranscriptsListItemInfo';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
@@ -29,25 +32,35 @@ jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div>ViewInApp</div>
 ));
 
-describe('<TranscriptsListItemInfo /', () => {
-  let wrapper: any;
-  const transcript = createTranscript();
-  const gene = createGene({ transcripts: [transcript] });
-  const expandDownload = false;
+const transcript = createTranscript();
+const gene = createGene({ transcripts: [transcript] });
+const expandDownload = false;
 
-  const props = {
-    gene,
-    transcript,
-    expandDownload,
-    toggleTranscriptDownload: jest.fn()
+const defaultProps = {
+  gene,
+  transcript,
+  expandDownload,
+  toggleTranscriptDownload: jest.fn()
+};
+
+const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
+  const completeProps = {
+    ...defaultProps,
+    ...props
   };
 
+  return mount(
+    <MemoryRouter>
+      <TranscriptsListItemInfo {...completeProps} />
+    </MemoryRouter>
+  );
+};
+
+describe('<TranscriptsListItemInfo /', () => {
+  let wrapper: any;
+
   beforeEach(() => {
-    wrapper = mount(
-      <MemoryRouter>
-        <TranscriptsListItemInfo {...props} />
-      </MemoryRouter>
-    );
+    wrapper = renderComponent();
   });
 
   /*
@@ -56,9 +69,12 @@ describe('<TranscriptsListItemInfo /', () => {
    * 2) we will check that protein product is present on a transcript instead of looking at CDS
    */
   it('displays amino acid length when transcript has CDS', () => {
-    const totalExonsLength = props.transcript.exons.reduce((sum, exon) => {
-      return sum + exon.slice.location.end - exon.slice.location.start + 1;
-    }, 0);
+    const totalExonsLength = defaultProps.transcript.exons.reduce(
+      (sum, exon) => {
+        return sum + exon.slice.location.end - exon.slice.location.start + 1;
+      },
+      0
+    );
     const expectedProteinLength = Math.floor(totalExonsLength / 3);
     expect(wrapper.find('.topMiddle strong').text()).toMatch(
       `${expectedProteinLength}`
@@ -78,12 +94,9 @@ describe('<TranscriptsListItemInfo /', () => {
   });
 
   it('shows Download component by default if expandDownload is true', () => {
-    wrapper = mount(
-      <MemoryRouter>
-        <TranscriptsListItemInfo {...props} expandDownload={true} />
-      </MemoryRouter>
-    );
-
+    wrapper = renderComponent({
+      expandDownload: true
+    });
     expect(wrapper.find(InstantDownloadTranscript)).toHaveLength(1);
   });
 });

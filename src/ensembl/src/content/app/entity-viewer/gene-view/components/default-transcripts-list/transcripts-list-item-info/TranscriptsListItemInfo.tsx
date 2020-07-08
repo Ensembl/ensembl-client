@@ -17,6 +17,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -41,16 +42,17 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
-import { connect } from 'react-redux';
 
-type ItemInfoProps = {
+export type TranscriptsListItemInfoProps = {
   gene: Gene;
   transcript: Transcript;
   expandDownload: boolean;
   toggleTranscriptDownload: (id: string) => void;
 };
 
-export const TranscriptsListItemInfo = (props: ItemInfoProps) => {
+export const TranscriptsListItemInfo = (
+  props: TranscriptsListItemInfoProps
+) => {
   const { transcript } = props;
   const params: { [key: string]: string } = useParams();
 
@@ -178,7 +180,10 @@ export const TranscriptsListItemInfo = (props: ItemInfoProps) => {
   );
 };
 
-const renderInstantDownload = ({ gene, transcript }: ItemInfoProps) => {
+const renderInstantDownload = ({
+  gene,
+  transcript
+}: TranscriptsListItemInfoProps) => {
   return (
     <div className={styles.download}>
       <InstantDownloadTranscript transcript={transcript} gene={gene} />
