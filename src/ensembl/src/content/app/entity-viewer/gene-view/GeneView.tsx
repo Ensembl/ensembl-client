@@ -42,6 +42,11 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import {
+  View,
+  queryParamToReduxView,
+  reduxViewToQueryParam
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneView.scss';
@@ -168,6 +173,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 };
 
 const useGeneViewRouting = () => {
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const dispatch = useDispatch();
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
@@ -180,18 +186,27 @@ const useGeneViewRouting = () => {
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
-    if (view && viewInRedux !== view) {
-      dispatch(setGeneViewName(view));
-    } else {
+    const shouldObeyRedux =
+      (isFirstRender && !isDefaultView(viewInRedux as View)) || // FIXME types
+      (previousGenomeId && previousGenomeId !== genomeId);
+
+    if (shouldObeyRedux) {
+      const view = reduxViewToQueryParam(viewInRedux as View); // FIXME types
       const url = urlFor.entityViewer({
         genomeId,
         entityId,
-        view: viewInRedux
+        view
       });
-
       dispatch(replace(url));
+    } else if (viewInRedux !== view) {
+      const viewForRedux = queryParamToReduxView(view);
+      dispatch(setGeneViewName(viewForRedux));
     }
   }, [view, viewInRedux, genomeId, previousGenomeId]);
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
 
   return {
     genomeId,
@@ -199,5 +214,7 @@ const useGeneViewRouting = () => {
     selectedTabs
   };
 };
+
+const isDefaultView = (viewInRedux: View) => viewInRedux === View.TRANSCRIPTS;
 
 export default GeneView;

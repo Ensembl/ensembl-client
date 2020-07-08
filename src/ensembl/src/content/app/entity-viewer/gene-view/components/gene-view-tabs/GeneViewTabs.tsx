@@ -29,6 +29,7 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
 import { RootState } from 'src/store';
 import {
+  reduxViewToQueryParam,
   GeneViewTabName,
   View,
   SelectedTabViews
@@ -66,10 +67,11 @@ const GeneViewTabs = (props: Props) => {
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
       view = props.selectedTabViews.geneRelationshipsTab || View.ORTHOLOGUES;
     }
+
     const url = urlFor.entityViewer({
       genomeId,
       entityId,
-      view
+      view: reduxViewToQueryParam(view)
     });
     props.push(url);
   };

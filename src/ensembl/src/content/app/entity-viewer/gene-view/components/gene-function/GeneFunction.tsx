@@ -32,6 +32,7 @@ import ProteinsList from '../proteins-list/ProteinsList';
 import { RootState } from 'src/store';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import {
+  reduxViewToQueryParam,
   GeneViewTabMap,
   GeneViewTabName,
   GeneFunctionTabName
@@ -79,7 +80,7 @@ const GeneFunction = (props: Props) => {
     const url = urlFor.entityViewer({
       genomeId,
       entityId,
-      view
+      view: reduxViewToQueryParam(view)
     });
     props.push(url);
   };

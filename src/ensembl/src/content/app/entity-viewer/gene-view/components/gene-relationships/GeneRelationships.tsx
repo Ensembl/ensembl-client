@@ -29,6 +29,7 @@ import Panel from 'src/shared/components/panel/Panel';
 
 import { RootState } from 'src/store';
 import {
+  reduxViewToQueryParam,
   GeneViewTabMap,
   GeneViewTabName,
   GeneRelationshipsTabName
@@ -70,7 +71,7 @@ const GeneRelationships = (props: Props) => {
     const url = urlFor.entityViewer({
       genomeId,
       entityId,
-      view
+      view: reduxViewToQueryParam(view)
     });
     props.push(url);
   };

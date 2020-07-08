@@ -156,6 +156,12 @@ export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
   }
 };
 
+export const queryParamToReduxView = (viewFromUrl: string | null): string =>
+  viewFromUrl ? viewFromUrl : 'transcripts';
+
+export const reduxViewToQueryParam = (view: View): string | null =>
+  view === View.TRANSCRIPTS ? null : view;
+
 export const defaultEntityViewerGeneViewState: EntityViewerGeneViewState = {};
 
 // TODO: This will be loaded from storage services once it is setup
