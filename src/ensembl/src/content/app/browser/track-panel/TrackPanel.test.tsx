@@ -44,7 +44,8 @@ describe('<TrackPanel />', () => {
     activeGenomeId: null,
     browserActivated: false,
     activeEnsObject: null,
-    isTrackPanelModalOpened: false
+    isTrackPanelModalOpened: false,
+    restoreBrowserTrackStates: jest.fn()
   };
 
   const mountTrackPanel = (props?: Partial<TrackPanelProps>) =>

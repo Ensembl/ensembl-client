@@ -39,7 +39,8 @@ import {
 import {
   changeBrowserLocation,
   changeFocusObject,
-  setDataFromUrlAndSave
+  setDataFromUrlAndSave,
+  resetBrowserTrackStates
 } from '../browserActions';
 
 /*
@@ -139,6 +140,8 @@ const useBrowserRouting = () => {
         focus: focusIdForUrl,
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
+
+      dispatch(resetBrowserTrackStates());
 
       dispatch(replace(urlFor.browser(params)));
     },
