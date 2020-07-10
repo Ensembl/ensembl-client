@@ -62,3 +62,21 @@
 .right {
   grid-column: 4/5;
 }
+
+.filterLabel {
+  grid-column: 1/2;
+  text-align: right;
+  padding-right: 2px;
+  cursor: pointer;
+}
+
+.chevron {
+  margin-left: 10px;
+  margin-bottom: -3px;
+  height: 12px;
+  width: 12px;
+}
+
+.hidden {
+  display: none;
+}

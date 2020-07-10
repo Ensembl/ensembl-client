@@ -666,9 +666,14 @@ export const entityViewerSidebarSampleData: {
     entities: { [entityId: string]: EntityViewerSidebarPayload };
   };
 } = {
-  homo_sapiens_GCA_000001405_27: {
+  homo_sapiens_GCA_000001405_14: {
     entities: {
-      'homo_sapiens_GCA_000001405_27:gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
+      'homo_sapiens_GCA_000001405_14:gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
+    }
+  },
+  homo_sapiens_GCA_000001405_28: {
+    entities: {
+      'homo_sapiens_GCA_000001405_28:gene:ENSG00000139618': entityViewerHomoSapiensSampleResponse
     }
   },
 

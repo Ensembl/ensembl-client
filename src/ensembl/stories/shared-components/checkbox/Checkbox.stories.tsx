@@ -63,4 +63,35 @@ storiesOf('Components|Shared Components/Checkbox', module)
         />
       </div>
     );
+  })
+  .add('grid with long label', () => {
+    return (
+      <div className={styles.gridWrapper}>
+        <div>
+          <StatefulCheckbox label={'I am label'} />
+          <StatefulCheckbox
+            disabled={true}
+            label={'I am label of disabled checkbox'}
+          />
+          <StatefulCheckbox
+            label={'I am a very long long label that wraps to another line'}
+          />
+        </div>
+
+        <div>
+          <StatefulCheckbox label={'I am label'} />
+          <StatefulCheckbox
+            label={
+              'I am another very long long label that wraps to another line'
+            }
+          />
+          <StatefulCheckbox label={'I am label'} />
+        </div>
+
+        <div>
+          <StatefulCheckbox label={'I am label'} />
+          <StatefulCheckbox label={'I am label'} />
+        </div>
+      </div>
+    );
   });

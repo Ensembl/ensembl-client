@@ -1,15 +1,29 @@
-.bottomWrapper {
-  display: grid;
-  grid-template-columns: 200px 20px 475px;
-  margin: 10px 0 10px 178px;
+.proteinSummary {
+  margin-left: 178px;
   width: 695px;
+
+  > div {
+    padding: 10px 0 10px 0;
+  }
 }
 
-.codingExonCount {
-  grid-column: 1/2;
+.proteinSummaryTop {
+  align-items: center;
+  display: grid;
+  grid-template-columns: [references] 300px [download] 395px;
 }
 
-.sequenceDownload {
-  grid-column: 3/4;
-  text-align: right;
+.downloadWrapper {
+  display: flex;
+  justify-content: flex-end;
+  grid-column: download;
+}
+
+.geneExternalReference {
+  display: inline-block;
+  margin-right: 40px;
+}
+
+.proteinFeaturesCountWrapper {
+  display: inline-block;
 }

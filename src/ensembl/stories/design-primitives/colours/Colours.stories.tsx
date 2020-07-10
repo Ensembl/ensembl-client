@@ -27,6 +27,11 @@ const colours = [
     value: variables['black']
   },
   {
+    name: 'Soft black',
+    variableName: '$soft-black',
+    value: variables['soft-black']
+  },
+  {
     name: 'Blue',
     variableName: '$blue',
     value: variables['blue']

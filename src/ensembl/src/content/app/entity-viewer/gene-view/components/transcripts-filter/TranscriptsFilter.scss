@@ -1,0 +1,97 @@
+@import 'src/styles/common';
+@import '../default-transcripts-list/constants';
+
+.container {
+  display: grid;
+  grid-template-columns: $left_column auto;
+  padding: 3px 0;
+}
+
+.filterLabel {
+  grid-column: 1/2;
+  text-align: right;
+  padding-right: 2px;
+  cursor: pointer;
+}
+
+.chevron {
+  margin-left: 10px;
+  height: 12px;
+  width: 12px;
+  margin-bottom: -3px;
+}
+
+.filterBox {
+  display: grid;
+  grid-template-columns: 270px minmax(210px, auto) 20px;
+  background-color: $soft-black;
+  color: $white;
+  text-align: left;
+  padding: 15px 15px 45px 20px;
+  margin-top: 2px;
+  margin-left: 2px;
+  font-weight: 300;
+
+  @media screen and (min-width: 1600px) {
+    width: calc(100% - 320px);
+
+    &FullWidth {
+      width: 100%;
+    }
+  }
+}
+
+.closeIcon {
+  cursor: pointer;
+  height: 16px;
+}
+
+.filterContent {
+  display: grid;
+  grid-template-columns: 210px 210px 210px;
+  height: auto;
+}
+
+.header {
+  width: 200px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.item {
+  display: block;
+}
+
+.label {
+  color: white;
+  font-size: 12px;
+}
+
+.radio {
+  height: 12px;
+  width: 12px;
+  margin-top: 9px;
+
+  &Checked {
+    &:after {
+      width: 6px;
+      height: 6px;
+    }
+  }
+}
+
+.checkboxUnchecked {
+  background-color: transparent;
+  border-color: $dark-grey;
+  height: 12px;
+  width: 12px;
+  margin-top: 9px;
+}
+
+.checkboxChecked {
+  background-color: $green;
+  border-color: $dark-grey;
+  height: 12px;
+  width: 12px;
+  margin-top: 9px;
+}
