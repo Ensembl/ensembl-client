@@ -53,17 +53,16 @@ describe('<DefaultTranscriptListItem />', () => {
     toggleTranscriptInfo: toggleTranscriptInfo
   };
 
-  const mountDefaultTranscriptListItem = (
-    props?: Partial<DefaultTranscriptListItemProps>
-  ) => mount(<DefaultTranscriptListItem {...defaultProps} {...props} />);
+  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) =>
+    mount(<DefaultTranscriptListItem {...defaultProps} {...props} />);
 
   it('displays unspliced transcript', () => {
-    wrapper = mountDefaultTranscriptListItem();
+    wrapper = renderComponent();
     expect(wrapper.exists(UnsplicedTranscript)).toBe(true);
   });
 
   it('toggles transcript item info onClick', () => {
-    wrapper = mountDefaultTranscriptListItem();
+    wrapper = renderComponent();
     wrapper.find('.middle').simulate('click');
     expect(toggleTranscriptInfo).toBeCalled();
 
@@ -72,7 +71,7 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   it('displays transcript info by default if expandTranscript is true', () => {
-    wrapper = mountDefaultTranscriptListItem({ expandTranscript: true });
+    wrapper = renderComponent({ expandTranscript: true });
 
     expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
   });
