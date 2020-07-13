@@ -17,10 +17,14 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 
+import config from 'config';
+
 import useApiService from 'src/shared/hooks/useApiService';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import Modal from 'src/shared/components/modal/Modal';
 import HelpPopupBody, { HelpArticle } from './HelpPopupBody';
+import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
@@ -49,7 +53,7 @@ const getQuery = (props: Props) => {
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
-  const helpApiHost = `http://193.62.55.158:30799`; // FIXME move to env and config
+  const { helpApiHost } = config; // FIXME move to env and config
   const query = getQuery(props);
 
   const url = `${helpApiHost}/api/article?${query}`;
@@ -70,6 +74,10 @@ const HelpPopupButton = (props: Props) => {
   };
 
   const videoButtonClasses = classNames(styles.button, styles.button_video);
+
+  if (isEnvironment([Environment.PRODUCTION])) {
+    return <HelpAndDocumentation />;
+  }
 
   return (
     <>
