@@ -24,15 +24,23 @@ export type HelpVideo = {
   url: string;
 };
 
+type ArticleSummary = {
+  title: string;
+  slug: string;
+  path: string;
+};
+
 export type HelpArticle = {
   path: string;
   slug: string;
   body: string;
   videos: HelpVideo[];
+  related_articles: ArticleSummary[];
 };
 
 type Props = {
   article: HelpArticle;
+  onArticleChange: (slug: string) => void;
 };
 
 const HelpPopupBody = (props: Props) => {
@@ -44,12 +52,32 @@ const HelpPopupBody = (props: Props) => {
     </div>
   ));
 
+  const relatedArticles = article.related_articles.map((relatedArticle) => (
+    <span
+      key={relatedArticle.slug}
+      className={styles.relatedArticle}
+      onClick={() => props.onArticleChange(relatedArticle.slug)}
+    >
+      {relatedArticle.title}
+    </span>
+  ));
+
   return (
     <div className={styles.grid}>
       <div className={styles.text}>
         <div dangerouslySetInnerHTML={{ __html: article.body }} />
       </div>
       <div className={styles.video}>{videos}</div>
+      <div className={styles.aside}>
+        {Boolean(relatedArticles.length) && (
+          <>
+            <h2>Related...</h2>
+            <div className={styles.relatedArticlesContainer}>
+              {relatedArticles}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

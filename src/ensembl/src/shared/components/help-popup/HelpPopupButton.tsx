@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 import config from 'config';
@@ -43,18 +43,20 @@ type ArticleReference = SlugReference | PathReference;
 
 type Props = ArticleReference;
 
-const getQuery = (props: Props) => {
-  if ('slug' in props) {
-    return `slug=${props.slug}`;
+const getQuery = (params: SlugReference | PathReference) => {
+  if ('slug' in params) {
+    return `slug=${params.slug}`;
   } else {
-    return `path=${encodeURIComponent(props.path)}`;
+    return `path=${encodeURIComponent(params.path)}`;
   }
 };
 
 const HelpPopupButton = (props: Props) => {
+  const [slug, setSlug] = useState<string | null>(null);
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const { helpApiHost } = config; // FIXME move to env and config
-  const query = getQuery(props);
+
+  const query = slug ? getQuery({ slug }) : getQuery(props);
 
   const url = `${helpApiHost}/api/article?${query}`;
 
@@ -64,6 +66,16 @@ const HelpPopupButton = (props: Props) => {
     endpoint: url,
     skip: !shouldShowModal
   });
+
+  useEffect(() => {
+    if (!shouldShowModal) {
+      setSlug(null);
+    }
+  }, [shouldShowModal]);
+
+  const handleArticleChange = (slug: string) => {
+    setSlug(slug);
+  };
 
   const openModal = () => {
     setShouldShowModal(true);
@@ -92,7 +104,10 @@ const HelpPopupButton = (props: Props) => {
       </div>
       {shouldShowModal && article && (
         <Modal onClose={closeModal}>
-          <HelpPopupBody article={article} />
+          <HelpPopupBody
+            article={article}
+            onArticleChange={handleArticleChange}
+          />
         </Modal>
       )}
     </>
