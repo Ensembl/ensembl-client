@@ -216,43 +216,6 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
   });
 };
 
-export const resetBrowserTrackStates: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (_, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-
-  if (!activeGenomeId || !activeEnsObjectId) {
-    return;
-  }
-
-  const trackStates = getBrowserTrackStates(state)[activeGenomeId];
-  // const trackStatesFromStorage = browserStorageService.getTrackStates();
-  const mergedTrackStates = {
-    ...get(trackStates, `objectTracks`),
-    ...get(trackStates, `commonTracks`)
-  } as TrackStates;
-
-  const tracksToTurnOff: string[] = [];
-  const tracksToTurnOn: string[] = [];
-
-  Object.values(mergedTrackStates).forEach((trackStates) => {
-    Object.keys(trackStates).forEach((trackId) => {
-      trackStates[trackId] === Status.UNSELECTED &&
-        tracksToTurnOn.push(trackId);
-    });
-  });
-
-  browserMessagingService.send('bpane', {
-    off: tracksToTurnOff,
-    on: tracksToTurnOn
-  });
-};
-
 export const openBrowserNav = createAction(
   'browser/open-browser-navigation',
   () => {

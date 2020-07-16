@@ -17,7 +17,7 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { replace } from 'connected-react-router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, batch } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
@@ -39,8 +39,7 @@ import {
 import {
   changeBrowserLocation,
   changeFocusObject,
-  setDataFromUrlAndSave,
-  resetBrowserTrackStates
+  setDataFromUrlAndSave
 } from '../browserActions';
 
 /*
@@ -141,9 +140,9 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      dispatch(resetBrowserTrackStates());
-
-      dispatch(replace(urlFor.browser(params)));
+      batch(() => {
+        dispatch(replace(urlFor.browser(params)));
+      });
     },
     [genomeId]
   );

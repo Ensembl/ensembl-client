@@ -95,10 +95,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   } = props;
 
   useEffect(() => {
-    const { defaultTrackStatus } = props;
-    if (trackStatus !== defaultTrackStatus) {
-      updateGenomeBrowser(trackStatus);
-    }
+    updateGenomeBrowser(trackStatus);
   }, []);
 
   const updateDrawerView = (currentTrack: string) => {
