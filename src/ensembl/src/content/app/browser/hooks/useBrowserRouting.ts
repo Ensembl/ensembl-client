@@ -17,7 +17,7 @@
 import { useEffect, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { replace } from 'connected-react-router';
-import { useSelector, useDispatch, batch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
@@ -140,9 +140,7 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      batch(() => {
-        dispatch(replace(urlFor.browser(params)));
-      });
+      dispatch(replace(urlFor.browser(params)));
     },
     [genomeId]
   );
