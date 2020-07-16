@@ -17,12 +17,19 @@
 import React, { useEffect } from 'react';
 import ApolloClient from 'apollo-boost';
 import { connect } from 'react-redux';
+import { replace, Replace } from 'connected-react-router';
 import { useParams } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/react-hooks';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
+import {
+  getEntityViewerActiveGenomeId,
+  getEntityViewerActiveEnsObjectId
+} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
@@ -46,7 +53,10 @@ import styles from './EntityViewer.scss';
 
 type Props = {
   isSidebarOpen: boolean;
+  activeGenomeId: string | null;
+  activeEntityId: string | null;
   viewportWidth: BreakpointWidth;
+  replace: Replace;
   setDataFromUrl: (params: EntityViewerParams) => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleSidebar: (status?: SidebarStatus) => void;
@@ -64,8 +74,17 @@ const client = new ApolloClient({
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
   const { genomeId, entityId } = params;
+  const { activeGenomeId, activeEntityId } = props;
 
   useEffect(() => {
+    if (activeGenomeId && activeEntityId && !entityId) {
+      const entityIdForUrl = buildFocusIdForUrl(activeEntityId);
+      const replacementUrl = urlFor.entityViewer({
+        genomeId: activeGenomeId,
+        entityId: entityIdForUrl
+      });
+      props.replace(replacementUrl);
+    }
     props.setDataFromUrl(params);
   }, [params.genomeId, params.entityId]);
 
@@ -98,12 +117,15 @@ const EntityViewer = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
+    activeGenomeId: getEntityViewerActiveGenomeId(state),
+    activeEntityId: getEntityViewerActiveEnsObjectId(state),
     isSidebarOpen: isEntityViewerSidebarOpen(state),
     viewportWidth: getBreakpointWidth(state)
   };
 };
 
 const mapDispatchToProps = {
+  replace,
   setDataFromUrl,
   fetchGenomeData,
   toggleSidebar

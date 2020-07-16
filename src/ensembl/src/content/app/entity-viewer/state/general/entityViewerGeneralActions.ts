@@ -75,12 +75,6 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     dispatch(setActiveGenomeId(genomeIdFromUrl));
     dispatch(fetchGenomeData(genomeIdFromUrl));
     // TODO: when backend is ready, entity info may also need fetching
-  } else if (activeGenomeId && entityIdForUrl) {
-    const newUrl = urlHelper.entityViewer({
-      genomeId: activeGenomeId,
-      entityId: entityIdForUrl
-    });
-    dispatch(replace(newUrl));
   } else if (activeGenomeId) {
     // TODO: when backend is ready, fetch entity info
     const genomeInfo = getGenomeInfoById(state, activeGenomeId);
