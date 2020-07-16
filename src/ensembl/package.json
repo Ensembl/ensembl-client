@@ -60,7 +60,7 @@
     "graphql": "15.1.0",
     "graphql-tag": "2.10.3",
     "koa-proxy": "1.0.0-alpha.3",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "query-string": "6.13.1",
     "react": "16.13.1",
     "react-cookie": "4.0.3",
