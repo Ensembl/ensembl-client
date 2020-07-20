@@ -1,4 +1,4 @@
-const webpackMerge = require('webpack-merge');
+const { merge: webpackMerge } = require('webpack-merge');
 
 /* NOTE:
 - env may or may not be passed
