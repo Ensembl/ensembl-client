@@ -17,8 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { replace } from 'connected-react-router';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+import { useQuery, gql } from '@apollo/client';
 import { useParams, useLocation } from 'react-router-dom';
 
 import usePrevious from 'src/shared/hooks/usePrevious';

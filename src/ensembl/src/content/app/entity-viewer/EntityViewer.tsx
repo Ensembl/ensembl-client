@@ -15,10 +15,9 @@
  */
 
 import React, { useEffect } from 'react';
-import ApolloClient from 'apollo-boost';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { ApolloProvider } from '@apollo/react-hooks';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -58,7 +57,8 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  uri: '/toygraphql'
+  uri: '/toygraphql',
+  cache: new InMemoryCache()
 });
 
 const EntityViewer = (props: Props) => {

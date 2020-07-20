@@ -16,8 +16,7 @@
 
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 
 import {

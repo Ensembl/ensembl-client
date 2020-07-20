@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+import { useQuery, gql } from '@apollo/client';
 
 import ScaleSwitcher from './scale-switcher/ScaleSwitcher';
 import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
