@@ -33,14 +33,14 @@ import styles from './ProteinsListItem.scss';
 type Props = {
   transcript: Transcript;
   trackLength: number;
-  proteinsUI: EntityViewerGeneViewProteinsUI;
+  proteinsUI?: EntityViewerGeneViewProteinsUI;
   toggleProteinInfo: (id: string) => void;
 };
 
 const ProteinsListItem = (props: Props) => {
   const { transcript, trackLength } = props;
 
-  const expandedProteinIds = props.proteinsUI?.expandedProteinIds;
+  const expandedProteinIds = props.proteinsUI?.expandedProteinIds || [];
 
   const toggleListItemInfo = () => props.toggleProteinInfo(transcript.id);
 

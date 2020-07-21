@@ -36,16 +36,18 @@ import styles from './DefaultTranscriptsList.scss';
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
-  transcriptsUI: EntityViewerGeneViewTranscriptsUI;
+  transcriptsUI?: EntityViewerGeneViewTranscriptsUI;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
-  const {
-    expandedTranscriptIds,
-    expandedTranscriptDownloads
-  } = props.transcriptsUI;
+
+  const expandedTranscriptIds =
+    props.transcriptsUI?.expandedTranscriptIds || [];
+  const expandedTranscriptDownloads =
+    props.transcriptsUI?.expandedTranscriptDownloads || [];
+
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   const toggleFilter = () => {

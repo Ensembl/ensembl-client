@@ -21,5 +21,5 @@ import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-v
 import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 export const getTranscriptsUI = (state: RootState) => {
-  return getGeneViewContentUI(state)[View.TRANSCRIPTS];
+  return getGeneViewContentUI(state)?.[View.TRANSCRIPTS];
 };
