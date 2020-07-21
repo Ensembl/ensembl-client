@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import ApolloClient from 'apollo-boost';
 import { connect } from 'react-redux';
-import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
 import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
@@ -32,7 +31,8 @@ type Props = {
 };
 
 const client = new ApolloClient({
-  uri: '/thoas'
+  uri: '/thoas',
+  cache: new InMemoryCache()
 });
 
 const GeneViewSidebar = (props: Props) => {

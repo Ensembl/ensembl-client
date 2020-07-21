@@ -1,4 +1,4 @@
-const webpackMerge = require("webpack-merge");
+const { merge: webpackMerge } = require('webpack-merge');
 
 const loadPresets = require('./presets/loadPresets');
 
