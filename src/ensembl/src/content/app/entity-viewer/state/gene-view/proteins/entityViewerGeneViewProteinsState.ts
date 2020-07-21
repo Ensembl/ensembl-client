@@ -21,3 +21,8 @@ export type EntityViewerGeneViewProteinsUI = {
 export const defaultProteinsUIState: EntityViewerGeneViewProteinsUI = {
   expandedProteinIds: []
 };
+
+// TODO: This will be loaded from storage services once it is setup
+export const initialProteinsUIState: EntityViewerGeneViewProteinsUI = {
+  ...defaultProteinsUIState
+};

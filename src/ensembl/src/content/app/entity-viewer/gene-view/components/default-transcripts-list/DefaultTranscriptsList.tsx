@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -31,14 +29,14 @@ import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer
 import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
 import { RootState } from 'src/store';
 
-import {ReactComponent as ChevronDown} from 'static/img/shared/chevron-down.svg';
+import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
 
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
-  transcriptscontentUI: EntityViewerGeneViewTranscriptsUI;
+  transcriptsUI: EntityViewerGeneViewTranscriptsUI;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
@@ -47,22 +45,24 @@ const DefaultTranscriptslist = (props: Props) => {
   const {
     expandedTranscriptIds,
     expandedTranscriptDownloads
-  } = props.transcriptscontentUI;
+  } = props.transcriptsUI;
   const [isFilterOpen, setFilterOpen] = useState(false);
 
-  const toggleFilter = () => {  setFilterOpen(!isFilterOpen); }
+  const toggleFilter = () => {
+    setFilterOpen(!isFilterOpen);
+  };
 
   return (
     <div>
       <div className={styles.header}>
         {isFilterOpen && <TranscriptsFilter toggleFilter={toggleFilter} />}
         <div className={styles.row}>
-          { !isFilterOpen &&
+          {!isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
-              <ChevronDown className={styles.chevron}/>
+              <ChevronDown className={styles.chevron} />
             </div>
-          }
+          )}
           <div className={styles.right}>Transcript ID</div>
         </div>
       </div>
@@ -106,7 +106,7 @@ const StripedBackground = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  transcriptscontentUI: getTranscriptsUI(state)
+  transcriptsUI: getTranscriptsUI(state)
 });
 
 export default connect(mapStateToProps)(DefaultTranscriptslist);

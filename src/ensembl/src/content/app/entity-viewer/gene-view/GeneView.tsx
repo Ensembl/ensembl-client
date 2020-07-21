@@ -27,7 +27,10 @@ import {
   getGeneViewName
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setGeneViewName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
-import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import {
+  GeneViewTabName,
+  View
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -181,7 +184,7 @@ const useGeneViewRouting = () => {
 
   useEffect(() => {
     if (view && viewInRedux !== view) {
-      dispatch(setGeneViewName(view));
+      dispatch(setGeneViewName(view as View));
     } else {
       const url = urlFor.entityViewer({
         genomeId,

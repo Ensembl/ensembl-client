@@ -88,7 +88,7 @@ export const fetchTranscript = async (
 
   let proteinFeatures;
 
-  if (transcript.Translation) {
+  if (transcript?.Translation) {
     const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${transcript.Translation.id}?feature=protein_feature;content-type=application/json`;
 
     proteinFeatures = (await apiService.fetch(proteinFeaturesUrl, {

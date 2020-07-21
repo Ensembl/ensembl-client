@@ -15,7 +15,7 @@
  */
 
 import { createAction } from 'typesafe-actions';
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
 import {
@@ -39,12 +39,12 @@ export const updateActiveGeneViewUIState = createAction(
   fragment: Partial<EntityViewerGeneViewUIState>;
 }>();
 
-export const setGeneViewName: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (view: View | null) => (dispatch, getState: () => RootState) => {
+export const setGeneViewName = (
+  view: View | null
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(getState());
   const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
   if (!activeGenomeId || !activeObjectId) {

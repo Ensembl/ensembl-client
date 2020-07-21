@@ -23,3 +23,5 @@ export const defaultTranscriptsUIState: EntityViewerGeneViewTranscriptsUI = {
   expandedTranscriptIds: [],
   expandedTranscriptDownloads: []
 };
+
+export const initialTranscriptsUIState: EntityViewerGeneViewTranscriptsUI = defaultTranscriptsUIState;

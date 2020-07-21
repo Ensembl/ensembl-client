@@ -14,64 +14,35 @@
  * limitations under the License.
  */
 
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { createAction } from 'typesafe-actions';
 
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
 
 import { RootState } from 'src/store';
-import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
-import { updateActiveGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
 
-export const updateGeneViewTranscriptsUIState: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptsContentUI: Partial<EntityViewerGeneViewTranscriptsUI>) => (
+export const updateGeneViewTranscriptsUIState = createAction(
+  'entity-viewer/update-active-gene-view-transcripts-ui-state'
+)<{
+  activeGenomeId: string;
+  activeObjectId: string;
+  fragment: Partial<EntityViewerGeneViewTranscriptsUI>;
+}>();
+
+export const toggleTranscriptInfo = (
+  transcriptId: string
+): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
 ) => {
   const state = getState();
-
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-
-  const contentUI = getGeneViewContentUI(state);
-
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        contentUI: {
-          ...contentUI,
-          [View.TRANSCRIPTS]: transcriptsContentUI
-        }
-      }
-    })
-  );
-};
-
-export const toggleTranscriptInfo: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptId: string) => (dispatch, getState: () => RootState) => {
-  const state = getState();
-
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
 
@@ -101,12 +72,12 @@ export const toggleTranscriptInfo: ActionCreator<ThunkAction<
   );
 };
 
-export const toggleTranscriptDownload: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptId: string) => (dispatch, getState: () => RootState) => {
+export const toggleTranscriptDownload = (
+  transcriptId: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
 
   const activeGenomeId = getEntityViewerActiveGenomeId(state);

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { createAction } from 'typesafe-actions';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -23,53 +24,24 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { getProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsSelectors';
-import { getGeneViewContentUI } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 
 import { RootState } from 'src/store';
-import { View } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
-import { updateActiveGeneViewUIState } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
 import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
 
-export const updateGeneViewProteinsUIState: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (proteinsContentUI: Partial<EntityViewerGeneViewProteinsUI>) => (
+export const updateGeneViewProteinsUIState = createAction(
+  'entity-viewer/update-active-gene-view-proteins-ui-state'
+)<{
+  activeGenomeId: string;
+  activeObjectId: string;
+  fragment: Partial<EntityViewerGeneViewProteinsUI>;
+}>();
+
+export const toggleProteinInfo = (
+  transcriptId: string
+): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
 ) => {
-  const state = getState();
-
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-
-  if (!activeGenomeId || !activeObjectId) {
-    return;
-  }
-
-  const contentUI = getGeneViewContentUI(state);
-
-  dispatch(
-    updateActiveGeneViewUIState({
-      activeGenomeId,
-      activeObjectId,
-      fragment: {
-        contentUI: {
-          ...contentUI,
-          [View.PROTEIN]: proteinsContentUI
-        }
-      }
-    })
-  );
-};
-
-export const toggleProteinInfo: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (transcriptId: string) => (dispatch, getState: () => RootState) => {
   const state = getState();
 
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
