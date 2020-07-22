@@ -79,16 +79,13 @@ export const fetchTranscript = async (
   signal?: AbortSignal
 ): Promise<Transcript> => {
   const transcriptUrl = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
-  const transcript: TranscriptInResponse = (await apiService.fetch(
-    transcriptUrl,
-    {
-      signal
-    }
-  )) as TranscriptInResponse;
+  const transcript = (await apiService.fetch(transcriptUrl, {
+    signal
+  })) as TranscriptInResponse;
 
   let proteinFeatures;
 
-  if (transcript?.Translation) {
+  if (transcript.Translation) {
     const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${transcript.Translation.id}?feature=protein_feature;content-type=application/json`;
 
     proteinFeatures = (await apiService.fetch(proteinFeaturesUrl, {

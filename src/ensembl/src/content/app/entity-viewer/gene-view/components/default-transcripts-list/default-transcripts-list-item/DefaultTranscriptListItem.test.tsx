@@ -44,6 +44,10 @@ const toggleTranscriptInfo = jest.fn();
 describe('<DefaultTranscriptListItem />', () => {
   let wrapper: any;
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   const defaultProps = {
     gene: createGene(),
     transcript: createTranscript(),
@@ -70,7 +74,13 @@ describe('<DefaultTranscriptListItem />', () => {
     expect(toggleTranscriptInfo).toBeCalled();
   });
 
-  it('displays transcript info by default if expandTranscript is true', () => {
+  it('hides transcript info by default', () => {
+    wrapper = renderComponent();
+
+    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(false);
+  });
+
+  it('displays transcript info if expandTranscript is true', () => {
     wrapper = renderComponent({ expandTranscript: true });
 
     expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);

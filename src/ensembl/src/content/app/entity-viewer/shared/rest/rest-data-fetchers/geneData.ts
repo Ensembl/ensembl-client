@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import apiService from 'src/services/api-service';
 import { restGeneAdaptor } from '../rest-adaptors/rest-gene-adaptor';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -44,9 +44,7 @@ export const fetchGene = async (
 ): Promise<Gene> => {
   const url = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
 
-  const data: GeneInResponse = await fetch(url, { signal }).then((response) =>
-    response.json()
-  );
+  const data: GeneInResponse = await apiService.fetch(url, { signal });
 
   return restGeneAdaptor(data);
 };
