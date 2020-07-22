@@ -42,6 +42,7 @@ const QUERY = gql`
           end
         }
         region {
+          name
           strand {
             code
           }
