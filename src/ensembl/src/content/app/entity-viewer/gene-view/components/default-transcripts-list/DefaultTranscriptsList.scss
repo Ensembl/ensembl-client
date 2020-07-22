@@ -44,7 +44,7 @@
 .row {
   display: grid;
   grid-template-columns: $left_column $middle_column $middle_column_right_gap $right_column;
-  padding: 9px;
+  padding: 9px 0px;
   font-size: 12px;
 }
 
@@ -57,6 +57,7 @@
 .middle {
   grid-column: 2/3;
   position: relative;
+  top: 2px;
 }
 
 .right {
