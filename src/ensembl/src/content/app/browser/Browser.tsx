@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import upperFirst from 'lodash/upperFirst';
@@ -22,9 +22,7 @@ import upperFirst from 'lodash/upperFirst';
 import useBrowserRouting from './hooks/useBrowserRouting';
 
 import analyticsTracking from 'src/services/analytics-service';
-import browserStorageService from './browser-storage-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
 import {
@@ -32,7 +30,6 @@ import {
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { restoreBrowserTrackStates } from './browserActions';
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
@@ -46,6 +43,7 @@ import {
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds
 } from './browserSelectors';
+
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
@@ -80,14 +78,12 @@ export type BrowserProps = {
   isTrackPanelOpened: boolean;
   exampleEnsObjects: EnsObject[];
   viewportWidth: BreakpointWidth;
-  restoreBrowserTrackStates: () => void;
   fetchGenomeData: (genomeId: string) => void;
   toggleTrackPanel: (isOpen: boolean) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
 };
 
 export const Browser = (props: BrowserProps) => {
-  const [, setTrackStatesFromStorage] = useState<BrowserTrackStates>({});
   const { changeGenomeId } = useBrowserRouting();
 
   const { isDrawerOpened } = props;
@@ -100,11 +96,6 @@ export const Browser = (props: BrowserProps) => {
     fetchGenomeData(activeGenomeId);
     analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
-
-  useEffect(() => {
-    setTrackStatesFromStorage(browserStorageService.getTrackStates());
-    props.restoreBrowserTrackStates();
-  }, [props.activeGenomeId, props.activeEnsObjectId]);
 
   const onSidebarToggle = () => {
     props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME
@@ -207,7 +198,6 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = {
   fetchGenomeData,
   toggleDrawer,
-  restoreBrowserTrackStates,
   toggleTrackPanel
 };
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
@@ -29,6 +29,8 @@ import {
   getBrowserActiveEnsObject
 } from '../browserSelectors';
 
+import { restoreBrowserTrackStates } from '../browserActions';
+
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type TrackPanelProps = {
@@ -36,11 +38,16 @@ export type TrackPanelProps = {
   browserActivated: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
+  restoreBrowserTrackStates: () => void;
 };
 
 export const TrackPanel = (props: TrackPanelProps) => {
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
+
+  useEffect(() => {
+    props.restoreBrowserTrackStates();
+  }, [props.activeEnsObject]);
 
   return shouldRenderContent ? (
     props.isTrackPanelModalOpened ? (
@@ -62,4 +69,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-export default connect(mapStateToProps)(memo(TrackPanel, isEqual));
+const mapDispatchToProps = {
+  restoreBrowserTrackStates
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(memo(TrackPanel, isEqual));
