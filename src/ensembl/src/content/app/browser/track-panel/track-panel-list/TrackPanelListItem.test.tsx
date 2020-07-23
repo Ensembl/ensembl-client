@@ -24,7 +24,6 @@ import {
 } from './TrackPanelListItem';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import browserMessagingService from '../../browser-messaging-service';
 import { createMainTrackInfo } from 'tests/fixtures/track-panel';
 import { Status } from 'src/shared/types/status';
 
@@ -59,17 +58,6 @@ describe('<TrackPanelListItem />', () => {
   });
 
   describe('behaviour', () => {
-    test('updates genome browser on mount if track status and default track status do not match', () => {
-      jest.spyOn(browserMessagingService, 'send');
-
-      mount(
-        <TrackPanelListItem {...defaultProps} trackStatus={Status.UNSELECTED} />
-      );
-      expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
-
-      (browserMessagingService.send as any).mockRestore();
-    });
-
     describe('on track list item click', () => {
       test('updates drawer view if drawer already opened', () => {
         const wrapper = mount(
