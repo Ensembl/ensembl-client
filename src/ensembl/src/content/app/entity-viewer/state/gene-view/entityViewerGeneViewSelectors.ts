@@ -37,7 +37,7 @@ export const getGeneViewState = (
     return;
   }
 
-  return state.entityViewer.geneView?.[activeGenomeId]?.[activeObjectId];
+  return state.entityViewer.geneView[activeGenomeId]?.[activeObjectId];
 };
 
 export const getGeneViewName = (state: RootState) =>
