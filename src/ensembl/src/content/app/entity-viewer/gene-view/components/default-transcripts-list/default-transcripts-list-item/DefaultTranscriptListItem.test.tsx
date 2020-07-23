@@ -68,10 +68,9 @@ describe('<DefaultTranscriptListItem />', () => {
   it('toggles transcript item info onClick', () => {
     wrapper = renderComponent();
     wrapper.find('.middle').simulate('click');
-    expect(toggleTranscriptInfo).toBeCalled();
-
+    expect(toggleTranscriptInfo).toHaveBeenCalledTimes(1);
     wrapper.find('.right').simulate('click');
-    expect(toggleTranscriptInfo).toBeCalled();
+    expect(toggleTranscriptInfo).toHaveBeenCalledTimes(2);
   });
 
   it('hides transcript info by default', () => {
