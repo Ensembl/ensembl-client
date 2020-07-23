@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, ReactNode, useEffect, useCallback } from 'react';
+import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -93,10 +93,6 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     track,
     trackStatus
   } = props;
-
-  useEffect(() => {
-    updateGenomeBrowser(trackStatus);
-  }, []);
 
   const updateDrawerView = (currentTrack: string) => {
     const { isDrawerOpened, toggleDrawer, changeDrawerView } = props;
