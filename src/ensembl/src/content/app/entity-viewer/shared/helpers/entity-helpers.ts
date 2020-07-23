@@ -36,6 +36,9 @@ export const getRegionName = (feature: { slice: Slice }) =>
 export const getFeatureStrand = (feature: { slice: Slice }) =>
   feature.slice.region.strand.code;
 
+export const getBiotype = (feature: Gene | Transcript) =>
+  feature.so_term || feature.biotype;
+
 // FIXME: remove this when we can get the length from the API
 export const getFeatureLength = (feature: { slice: Slice }) => {
   const { start, end } = getFeatureCoordinates(feature);
