@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
+import {
+  EntityViewerGeneViewTranscriptsUI,
+  defaultTranscriptsUIState
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
+import {
+  EntityViewerGeneViewProteinsUI,
+  defaultProteinsUIState
+} from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
+
 export type SelectedTabViews = Record<
   'geneFunctionTab' | 'geneRelationshipsTab',
   View | null
 >;
 
+export type EntityViewerGeneViewContentUI = {
+  [View.TRANSCRIPTS]: EntityViewerGeneViewTranscriptsUI;
+  [View.PROTEIN]: EntityViewerGeneViewProteinsUI;
+};
+
 export type EntityViewerGeneViewUIState = {
   view: View | null;
   selectedTabViews: SelectedTabViews;
+  contentUI: EntityViewerGeneViewContentUI;
 };
 
 export type EntityViewerGeneViewState = Readonly<{
@@ -31,6 +46,7 @@ export type EntityViewerGeneViewState = Readonly<{
 }>;
 
 export enum View {
+  TRANSCRIPTS = 'transcripts',
   PROTEIN = 'protein',
   VARIANTS = 'variants',
   PHENOTYPES = 'phenotypes',
@@ -70,13 +86,18 @@ export type GeneViewTabData = {
 };
 
 export const transcriptsTabData: GeneViewTabData = {
-  view: '',
+  view: View.TRANSCRIPTS,
   primaryTab: GeneViewTabName.TRANSCRIPTS,
   secondaryTab: null
 };
 
 // using Map to guarantee the order of the inserted elements
 export const GeneViewTabMap: Map<View, GeneViewTabData> = new Map();
+GeneViewTabMap.set(View.TRANSCRIPTS, {
+  view: View.TRANSCRIPTS,
+  primaryTab: GeneViewTabName.TRANSCRIPTS,
+  secondaryTab: null
+});
 GeneViewTabMap.set(View.PROTEIN, {
   view: View.PROTEIN,
   primaryTab: GeneViewTabName.GENE_FUNCTION,
@@ -124,10 +145,14 @@ GeneViewTabMap.set(View.GENE_PANELS, {
 });
 
 export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
-  view: null,
+  view: View.TRANSCRIPTS,
   selectedTabViews: {
     geneFunctionTab: null,
     geneRelationshipsTab: null
+  },
+  contentUI: {
+    [View.TRANSCRIPTS]: defaultTranscriptsUIState,
+    [View.PROTEIN]: defaultProteinsUIState
   }
 };
 

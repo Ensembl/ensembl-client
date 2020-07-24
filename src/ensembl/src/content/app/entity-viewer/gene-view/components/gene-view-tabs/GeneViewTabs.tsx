@@ -46,7 +46,7 @@ const DEFAULT_TAB = tabsData[0].title;
 
 type Props = {
   selectedTab: string;
-  selectedTabViews: SelectedTabViews;
+  selectedTabViews?: SelectedTabViews;
   push: Push;
 };
 
@@ -60,11 +60,11 @@ const GeneViewTabs = (props: Props) => {
   };
 
   const onTabChange = (selectedTabName: string) => {
-    let view;
+    let view = View.TRANSCRIPTS;
     if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
-      view = props.selectedTabViews.geneFunctionTab || View.PROTEIN;
+      view = props.selectedTabViews?.geneFunctionTab || View.PROTEIN;
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
-      view = props.selectedTabViews.geneRelationshipsTab || View.ORTHOLOGUES;
+      view = props.selectedTabViews?.geneRelationshipsTab || View.ORTHOLOGUES;
     }
     const url = urlFor.entityViewer({
       genomeId,

@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -24,47 +25,68 @@ import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/component
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
+import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
+import { RootState } from 'src/store';
 
-import {ReactComponent as ChevronDown} from 'static/img/shared/chevron-down.svg';
+import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
 
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
+  transcriptsUI?: EntityViewerGeneViewTranscriptsUI;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
+
+  const expandedTranscriptIds =
+    props.transcriptsUI?.expandedTranscriptIds || [];
+  const expandedTranscriptDownloads =
+    props.transcriptsUI?.expandedTranscriptDownloads || [];
+
   const [isFilterOpen, setFilterOpen] = useState(false);
 
-  const toggleFilter = () => {  setFilterOpen(!isFilterOpen); }
+  const toggleFilter = () => {
+    setFilterOpen(!isFilterOpen);
+  };
 
   return (
     <div>
       <div className={styles.header}>
         {isFilterOpen && <TranscriptsFilter toggleFilter={toggleFilter} />}
         <div className={styles.row}>
-          { !isFilterOpen &&
+          {!isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
-              <ChevronDown className={styles.chevron}/>
+              <ChevronDown className={styles.chevron} />
             </div>
-          }
+          )}
           <div className={styles.right}>Transcript ID</div>
         </div>
       </div>
       <div className={styles.content}>
         <StripedBackground {...props} />
-        {sortedTranscripts.map((transcript, index) => (
-          <DefaultTranscriptsListItem
-            key={index}
-            gene={gene}
-            transcript={transcript}
-            rulerTicks={props.rulerTicks}
-          />
-        ))}
+        {sortedTranscripts.map((transcript, index) => {
+          const expandTranscript =
+            expandedTranscriptIds?.includes(transcript.id) || false;
+          const expandDownload =
+            expandedTranscriptDownloads?.includes(transcript.id) || false;
+
+          return (
+            <DefaultTranscriptsListItem
+              key={index}
+              gene={gene}
+              transcript={transcript}
+              rulerTicks={props.rulerTicks}
+              expandTranscript={expandTranscript}
+              expandDownload={expandDownload}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -85,4 +107,8 @@ const StripedBackground = (props: Props) => {
   return <div className={styles.stripedBackground}>{stripes}</div>;
 };
 
-export default DefaultTranscriptslist;
+const mapStateToProps = (state: RootState) => ({
+  transcriptsUI: getTranscriptsUI(state)
+});
+
+export default connect(mapStateToProps)(DefaultTranscriptslist);

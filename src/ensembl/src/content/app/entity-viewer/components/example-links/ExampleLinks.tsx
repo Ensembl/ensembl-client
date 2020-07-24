@@ -56,7 +56,7 @@ const ExampleLinks = (props: ExampleLinksProps) => {
   const exampleGeneId = props.exampleEntities.find(
     ({ type }) => type === 'gene'
   )?.id;
-  const { loading, data } = useQuery<{ gene: ExampleGene }>(QUERY, {
+  const { loading, data, error } = useQuery<{ gene: ExampleGene }>(QUERY, {
     variables: { id: exampleGeneId },
     skip: !exampleGeneId
   });
@@ -72,7 +72,8 @@ const ExampleLinks = (props: ExampleLinksProps) => {
     );
   }
 
-  if (!data) {
+  // TODO: Data doesn't get changed when there is an error?
+  if (!data || error) {
     return null;
   }
 

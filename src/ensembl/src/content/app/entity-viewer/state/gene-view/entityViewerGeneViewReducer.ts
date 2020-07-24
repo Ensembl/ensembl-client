@@ -24,10 +24,16 @@ import {
   EntityViewerGeneViewState
 } from './entityViewerGeneViewState';
 import * as actions from './entityViewerGeneViewActions';
+import proteinsReducer from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsReducer';
+import transcriptsReducer from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsReducer';
+import * as proteinsActions from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsActions';
+import * as transcriptsActions from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsActions';
 
-export default function entityViewerGeneViewReducer(
+export function entityViewerGeneViewReducer(
   state: EntityViewerGeneViewState = initialEntityViewerGeneViewState,
-  action: ActionType<typeof actions>
+  action: ActionType<
+    typeof actions | typeof proteinsActions | typeof transcriptsActions
+  >
 ) {
   switch (action.type) {
     case getType(actions.updateActiveGeneViewUIState):
@@ -45,7 +51,45 @@ export default function entityViewerGeneViewReducer(
           [activeObjectId]: updatedStateFragment
         }
       };
+    case getType(proteinsActions.updateGeneViewProteinsUIState):
+      return {
+        ...state,
+        [action.payload.activeGenomeId]: {
+          ...state[action.payload.activeGenomeId],
+          [action.payload.activeObjectId]: {
+            ...state[action.payload.activeGenomeId][
+              action.payload.activeObjectId
+            ],
+            contentUI: {
+              ...state[action.payload.activeGenomeId][
+                action.payload.activeObjectId
+              ].contentUI,
+              protein: proteinsReducer(state, action)
+            }
+          }
+        }
+      };
+    case getType(transcriptsActions.updateGeneViewTranscriptsUIState):
+      return {
+        ...state,
+        [action.payload.activeGenomeId]: {
+          ...state[action.payload.activeGenomeId],
+          [action.payload.activeObjectId]: {
+            ...state[action.payload.activeGenomeId][
+              action.payload.activeObjectId
+            ],
+            contentUI: {
+              ...state[action.payload.activeGenomeId][
+                action.payload.activeObjectId
+              ].contentUI,
+              transcripts: transcriptsReducer(state, action)
+            }
+          }
+        }
+      };
     default:
       return state;
   }
 }
+
+export default entityViewerGeneViewReducer;

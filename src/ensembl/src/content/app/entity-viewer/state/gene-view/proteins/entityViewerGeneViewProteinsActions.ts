@@ -14,68 +14,59 @@
  * limitations under the License.
  */
 
-import { createAction } from 'typesafe-actions';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import { createAction } from 'typesafe-actions';
 
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { RootState } from 'src/store';
-import {
-  View,
-  GeneViewTabMap,
-  GeneViewTabName,
-  EntityViewerGeneViewUIState
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import { getProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsSelectors';
 
-export const updateActiveGeneViewUIState = createAction(
-  'entity-viewer/update-active-gene-view-object-state'
+import { RootState } from 'src/store';
+import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
+
+export const updateGeneViewProteinsUIState = createAction(
+  'entity-viewer/update-active-gene-view-proteins-ui-state'
 )<{
   activeGenomeId: string;
   activeObjectId: string;
-  fragment: Partial<EntityViewerGeneViewUIState>;
+  fragment: Partial<EntityViewerGeneViewProteinsUI>;
 }>();
 
-export const setGeneViewName = (
-  view: View | null
+export const toggleProteinInfo = (
+  transcriptId: string
 ): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
 ) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
-  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
+  const state = getState();
+
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
+
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
-  const primaryTabName = view ? GeneViewTabMap.get(view)?.primaryTab : null;
-  const primaryTab =
-    primaryTabName === GeneViewTabName.GENE_FUNCTION
-      ? 'geneFunctionTab'
-      : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
-      ? 'geneRelationshipsTab'
-      : null;
-  const tabView: {
-    selectedTabViews?: Record<
-      'geneFunctionTab' | 'geneRelationshipsTab',
-      View | null
-    >;
-  } = {};
-  if (primaryTab) {
-    tabView.selectedTabViews = { [primaryTab]: view } as Record<
-      'geneFunctionTab' | 'geneRelationshipsTab',
-      View | null
-    >;
+
+  const expandedProteinIds = getProteinsUI(state)?.expandedProteinIds || [];
+
+  const index = expandedProteinIds.indexOf(transcriptId);
+
+  if (index > -1) {
+    expandedProteinIds.splice(index, 1);
+  } else {
+    expandedProteinIds.push(transcriptId);
   }
+
   dispatch(
-    updateActiveGeneViewUIState({
+    updateGeneViewProteinsUIState({
       activeGenomeId,
       activeObjectId,
       fragment: {
-        view,
-        ...tabView
+        expandedProteinIds
       }
     })
   );

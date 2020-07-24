@@ -26,7 +26,10 @@ import {
   getGeneViewName
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
 import { setGeneViewName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
-import { GeneViewTabName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
+import {
+  GeneViewTabName,
+  View
+} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -173,23 +176,22 @@ const useGeneViewRouting = () => {
   const { objectId: geneId } = parseFocusIdFromUrl(entityId);
   const { search } = useLocation();
   // TODO: discuss – is using URLSearchParams better than using the querystring package?
-  const view = new URLSearchParams(search).get('view');
+  const view = new URLSearchParams(search).get('view') || 'transcripts';
   const viewInRedux = useSelector(getGeneViewName);
   const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
-    if (previousGenomeId !== genomeId) {
-      if (viewInRedux && viewInRedux !== view) {
-        const url = urlFor.entityViewer({
-          genomeId,
-          entityId,
-          view: viewInRedux
-        });
-        dispatch(replace(url));
-      }
-    } else if (viewInRedux !== view) {
-      dispatch(setGeneViewName(view));
+    if (view && viewInRedux !== view) {
+      dispatch(setGeneViewName(view as View));
+    } else {
+      const url = urlFor.entityViewer({
+        genomeId,
+        entityId,
+        view: viewInRedux
+      });
+
+      dispatch(replace(url));
     }
   }, [view, viewInRedux, genomeId, previousGenomeId]);
 

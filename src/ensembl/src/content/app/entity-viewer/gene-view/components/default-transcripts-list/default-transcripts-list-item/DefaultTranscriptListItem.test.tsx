@@ -17,7 +17,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
 
-import DefaultTranscriptListItem from './DefaultTranscriptListItem';
+import {
+  DefaultTranscriptListItem,
+  DefaultTranscriptListItemProps
+} from './DefaultTranscriptListItem';
 import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 
@@ -36,28 +39,49 @@ jest.mock(
   () => () => <div>UnsplicedTranscript</div>
 );
 
+const toggleTranscriptInfo = jest.fn();
+
 describe('<DefaultTranscriptListItem />', () => {
   let wrapper: any;
 
-  beforeEach(() => {
-    const props = {
-      gene: createGene(),
-      transcript: createTranscript(),
-      rulerTicks: createRulerTicks()
-    };
-
-    wrapper = mount(<DefaultTranscriptListItem {...props} />);
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
+  const defaultProps = {
+    gene: createGene(),
+    transcript: createTranscript(),
+    rulerTicks: createRulerTicks(),
+    expandTranscript: false,
+    expandDownload: false,
+    toggleTranscriptInfo: toggleTranscriptInfo
+  };
+
+  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) =>
+    mount(<DefaultTranscriptListItem {...defaultProps} {...props} />);
+
   it('displays unspliced transcript', () => {
+    wrapper = renderComponent();
     expect(wrapper.exists(UnsplicedTranscript)).toBe(true);
   });
 
-  it('toggles transcript item info', () => {
+  it('toggles transcript item info onClick', () => {
+    wrapper = renderComponent();
     wrapper.find('.middle').simulate('click');
-    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
-
+    expect(toggleTranscriptInfo).toHaveBeenCalledTimes(1);
     wrapper.find('.right').simulate('click');
+    expect(toggleTranscriptInfo).toHaveBeenCalledTimes(2);
+  });
+
+  it('hides transcript info by default', () => {
+    wrapper = renderComponent();
+
     expect(wrapper.exists(TranscriptsListItemInfo)).toBe(false);
+  });
+
+  it('displays transcript info if expandTranscript is true', () => {
+    wrapper = renderComponent({ expandTranscript: true });
+
+    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
   });
 });

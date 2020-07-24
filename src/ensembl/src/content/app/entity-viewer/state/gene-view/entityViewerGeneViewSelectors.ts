@@ -20,28 +20,28 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
-  defaultEntityViewerGeneViewUIState,
+  EntityViewerGeneViewUIState,
   transcriptsTabData,
   GeneViewTabMap,
   GeneViewTabData,
   SelectedTabViews
 } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
-export const getGeneViewState = (state: RootState) => {
+export const getGeneViewState = (
+  state: RootState
+): EntityViewerGeneViewUIState | undefined => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
 
   if (!activeGenomeId || !activeObjectId) {
-    return defaultEntityViewerGeneViewUIState;
+    return;
   }
-  return (
-    state.entityViewer.geneView?.[activeGenomeId]?.[activeObjectId] ||
-    defaultEntityViewerGeneViewUIState
-  );
+
+  return state.entityViewer.geneView[activeGenomeId]?.[activeObjectId];
 };
 
 export const getGeneViewName = (state: RootState) =>
-  getGeneViewState(state).view;
+  getGeneViewState(state)?.view;
 
 export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
   const view = getGeneViewName(state);
@@ -50,6 +50,12 @@ export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
     : transcriptsTabData;
 };
 
-export const getSelectedTabViews = (state: RootState): SelectedTabViews => {
-  return getGeneViewState(state).selectedTabViews;
+export const getSelectedTabViews = (
+  state: RootState
+): SelectedTabViews | undefined => {
+  return getGeneViewState(state)?.selectedTabViews;
+};
+
+export const getGeneViewContentUI = (state: RootState) => {
+  return getGeneViewState(state)?.contentUI;
 };

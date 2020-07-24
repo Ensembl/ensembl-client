@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -32,6 +33,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsActions';
 
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
@@ -41,18 +43,18 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
 
-type ItemInfoProps = {
+export type TranscriptsListItemInfoProps = {
   gene: Gene;
   transcript: Transcript;
+  expandDownload: boolean;
+  toggleTranscriptDownload: (id: string) => void;
 };
 
-const ItemInfo = (props: ItemInfoProps) => {
-  const [isDownloadShown, setIsDownloadShown] = useState(false);
+export const TranscriptsListItemInfo = (
+  props: TranscriptsListItemInfoProps
+) => {
   const { transcript } = props;
   const params: { [key: string]: string } = useParams();
-
-  const openDownload = () => setIsDownloadShown(true);
-  const closeDownload = () => setIsDownloadShown(false);
 
   const getTranscriptLocation = () => {
     const { start, end } = getFeatureCoordinates(transcript);
@@ -155,13 +157,18 @@ const ItemInfo = (props: ItemInfoProps) => {
           </div>
         </div>
         <div className={styles.downloadLink}>
-          {isDownloadShown ? (
-            <CloseIcon className={styles.closeIcon} onClick={closeDownload} />
+          {props.expandDownload ? (
+            <CloseIcon
+              className={styles.closeIcon}
+              onClick={() => props.toggleTranscriptDownload(transcript.id)}
+            />
           ) : (
-            <span onClick={openDownload}>Download</span>
+            <span onClick={() => props.toggleTranscriptDownload(transcript.id)}>
+              Download
+            </span>
           )}
         </div>
-        {isDownloadShown && renderInstantDownload(props)}
+        {props.expandDownload && renderInstantDownload(props)}
       </div>
       <div className={transcriptsListStyles.right}>
         <div>{transcript.symbol}</div>
@@ -173,7 +180,10 @@ const ItemInfo = (props: ItemInfoProps) => {
   );
 };
 
-const renderInstantDownload = ({ gene, transcript }: ItemInfoProps) => {
+const renderInstantDownload = ({
+  gene,
+  transcript
+}: TranscriptsListItemInfoProps) => {
   return (
     <div className={styles.download}>
       <InstantDownloadTranscript transcript={transcript} gene={gene} />
@@ -181,4 +191,8 @@ const renderInstantDownload = ({ gene, transcript }: ItemInfoProps) => {
   );
 };
 
-export default ItemInfo;
+const mapDispatchToProps = {
+  toggleTranscriptDownload
+};
+
+export default connect(null, mapDispatchToProps)(TranscriptsListItemInfo);

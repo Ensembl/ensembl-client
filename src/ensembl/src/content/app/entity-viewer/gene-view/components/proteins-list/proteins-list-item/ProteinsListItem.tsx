@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 
+import { toggleProteinInfo } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsActions';
+import { getProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsSelectors';
+
+import { RootState } from 'src/store';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
@@ -27,12 +33,17 @@ import styles from './ProteinsListItem.scss';
 type Props = {
   transcript: Transcript;
   trackLength: number;
+  proteinsUI?: EntityViewerGeneViewProteinsUI;
+  toggleProteinInfo: (id: string) => void;
 };
 
 const ProteinsListItem = (props: Props) => {
-  const [shouldShowInfo, setShouldShowInfo] = useState(false);
   const { transcript, trackLength } = props;
-  const toggleListItemInfo = () => setShouldShowInfo(!shouldShowInfo);
+
+  const expandedProteinIds = props.proteinsUI?.expandedProteinIds || [];
+
+  const toggleListItemInfo = () => props.toggleProteinInfo(transcript.id);
+
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   return (
@@ -53,7 +64,7 @@ const ProteinsListItem = (props: Props) => {
           <span className={styles.transcriptId}>{props.transcript.id}</span>
         </div>
       </div>
-      {shouldShowInfo ? (
+      {expandedProteinIds?.includes(transcript.id) ? (
         <ProteinsListItemInfo
           transcriptId={transcript.id}
           trackLength={trackLength}
@@ -63,4 +74,12 @@ const ProteinsListItem = (props: Props) => {
   );
 };
 
-export default ProteinsListItem;
+const mapStateToProps = (state: RootState) => ({
+  proteinsUI: getProteinsUI(state)
+});
+
+const mapDispatchToProps = {
+  toggleProteinInfo
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProteinsListItem);

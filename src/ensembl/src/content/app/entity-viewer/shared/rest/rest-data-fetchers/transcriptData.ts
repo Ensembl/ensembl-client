@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import apiService from 'src/services/api-service';
+
 import { restTranscriptAdaptor } from 'src/content/app/entity-viewer/shared/rest/rest-adaptors/rest-transcript-adaptor';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -77,18 +79,18 @@ export const fetchTranscript = async (
   signal?: AbortSignal
 ): Promise<Transcript> => {
   const transcriptUrl = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
-  const transcript: TranscriptInResponse = (await fetch(transcriptUrl, {
+  const transcript = (await apiService.fetch(transcriptUrl, {
     signal
-  }).then((response) => response.json())) as TranscriptInResponse;
+  })) as TranscriptInResponse;
 
   let proteinFeatures;
 
   if (transcript.Translation) {
     const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${transcript.Translation.id}?feature=protein_feature;content-type=application/json`;
 
-    proteinFeatures = (await fetch(proteinFeaturesUrl, {
+    proteinFeatures = (await apiService.fetch(proteinFeaturesUrl, {
       signal
-    }).then((response) => response.json())) as ProteinFeature[];
+    })) as ProteinFeature[];
   }
 
   return restTranscriptAdaptor(transcript, proteinFeatures);
