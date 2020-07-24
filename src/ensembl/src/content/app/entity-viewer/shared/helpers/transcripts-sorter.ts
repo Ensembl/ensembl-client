@@ -16,9 +16,9 @@
 
 import sortBy from 'lodash/sortBy';
 
-import { getFeatureLength } from './entity-helpers';
+import { getFeatureLength, getBiotype } from './entity-helpers';
 
-import { Transcript } from '../../types/transcript';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 function compareTranscriptLengths(
   transcriptOne: Transcript,
@@ -40,11 +40,13 @@ function compareTranscriptLengths(
 
 export function defaultSort(transcripts: Transcript[]) {
   const proteinCodingTranscripts = transcripts
-    .filter((transcript) => transcript.biotype === 'protein_coding')
+    .filter((transcript) => getBiotype(transcript) === 'protein_coding')
     .sort(compareTranscriptLengths);
 
   const nonProteinCodingTranscripts = sortBy(
-    transcripts.filter((transcript) => transcript.biotype !== 'protein_coding'),
+    transcripts.filter(
+      (transcript) => getBiotype(transcript) !== 'protein_coding'
+    ),
     ['biotype']
   );
 

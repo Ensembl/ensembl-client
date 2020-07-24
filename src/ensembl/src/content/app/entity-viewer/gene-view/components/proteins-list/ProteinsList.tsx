@@ -19,11 +19,12 @@ import React, { useEffect, useState } from 'react';
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
 import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/geneData';
+import { getLongestProteinLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './ProteinsList.scss';
-import { getLongestProteinLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 type ProteinsListProps = {
   geneId: string;
@@ -54,7 +55,8 @@ const ProteinsList = (props: ProteinsListProps) => {
 };
 
 const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
-  const proteinCodingTranscripts = props.gene.transcripts.filter(
+  const sortedTranscripts = defaultSort(props.gene.transcripts);
+  const proteinCodingTranscripts = sortedTranscripts.filter(
     (transcript) => !!transcript.cds
   );
 
