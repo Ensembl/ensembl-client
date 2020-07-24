@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.0.2",
+    "@reduxjs/toolkit": "1.4.0",
     "@sentry/browser": "5.19.2",
     "classnames": "2.2.6",
     "connected-react-router": "6.8.0",
@@ -69,9 +70,7 @@
     "react-router-dom": "5.2.0",
     "react-spring": "8.0.27",
     "redux": "4.0.5",
-    "redux-devtools-extension": "2.13.8",
     "redux-observable": "1.2.0",
-    "redux-thunk": "2.3.0",
     "rxjs": "6.6.0",
     "typesafe-actions": "5.1.0",
     "what-input": "5.2.10"

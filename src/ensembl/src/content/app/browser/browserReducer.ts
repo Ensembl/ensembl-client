@@ -59,7 +59,10 @@ export function browserEntity(
         activeGenomeId
       };
       if (activeEnsObjectId) {
-        newState.activeEnsObjectIds[activeGenomeId] = activeEnsObjectId;
+        newState.activeEnsObjectIds = {
+          ...newState.activeEnsObjectIds,
+          [activeGenomeId]: activeEnsObjectId
+        };
       }
       return newState;
     }
