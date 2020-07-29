@@ -14,7 +14,7 @@ None
 
 One of the ways that the genome browser is intended to be fast is that the design includes extensive preprocessing at the server end. Much of the slowness from the current site comes from the immense amount of work required in some cases to determine the colour of even a single pixel. Such pixels are always the same colour and to merely record the colour saves an awful lot of time.
 
-On the other hand, our images are slightly more dynamid that map tiles, so some intermeidate form is required which records the pos-processed information. As illustrated by ADR 0006, there are additional benefits to recording information in a heavily denormalised format, as close to visual as practically possible.
+On the other hand, our images are slightly more dynamic than map tiles, so some intermediate form is required which records the post-processed information. As illustrated by ADR 0006, there are additional benefits to recording information in a heavily denormalised format, as close to visual as practically possible.
 
 Lookup of this data is primarily along discrete axes (track, chromosome, species etc), but also continuously in position and scale. Because of the way scale is modelled, this can be considered to be a small number of discrete steps.
 
@@ -27,7 +27,7 @@ The delivery for this data should:
 
 There are a number of solutions in this area. As well as desirables for the final product, we should take care not to expend more energy than necessary in this area, particularly while we are experimenting.
 
-There are a number of file common bioinformatics formats which handle this kind of access pattern reasonably cleanly. Major advantages include:
+There are a number of file common bioinformatics file formats which handle this kind of access pattern reasonably cleanly. Major advantages include:
 
 1. They are very quick to implement;
 2. At least initially, they are useful for experimentation as they are easily processed and inspected by standard tools in multiple environments;
@@ -44,9 +44,9 @@ However, problems include:
 
 The cheapness of the implementation makes files easy to start with even if we entertain the possibility of changing later. Filesystems are not a good way of organising the different discrete axes, so a database to manage these visible through a service would make a lot of sense. This would greatly reduce the need to rely on filenames and directory structure. This can be developed independently.
 
-As long as a technology can emulate a "big" file in providing random-access to a byte-array with indexing with efficient caching, there is no reason not to migrate to it in time, particularly if it helps solve the issue of the discrete axes. There are a lot of systems in this space. The API would remain the familiar file-like API.
+As long as a technology can emulate a "big" file in providing random-access to a byte-array with indexing and efficient caching, there is no reason not to migrate to it in time, particularly if it helps solve the issue of the discrete axes. There are a lot of systems in this space. The API would remain the familiar file-like API.
 
-To allow this to happen, we must be careful not to rely on ideosyncracies of the POSIX file API (permissions, locks, owners, etc), but restrict ourselves to a minimal easily-migratable subset. Essentially, anything that supports an HTTP GET with Byte-Range requests efficiently (and does so with effective caching) should be a plausible candidate.
+To allow this to happen, we must be careful not to rely on idiosyncracies of the POSIX file API (permissions, locks, owners, etc), but restrict ourselves to a minimal easily-migratable subset. Essentially, anything that supports an HTTP GET with Byte-Range requests efficiently (and does so with effective caching) should be a plausible candidate.
 
 
 ## Consequences
