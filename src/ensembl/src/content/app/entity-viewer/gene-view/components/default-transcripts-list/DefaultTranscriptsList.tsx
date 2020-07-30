@@ -20,13 +20,16 @@ import { connect } from 'react-redux';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
+import {
+  getExpandedTranscriptIds,
+  getExpandedTranscriptDownloadIds
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { EntityViewerGeneViewTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
-import { getTranscriptsUI } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsSelectors';
 import { RootState } from 'src/store';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
@@ -36,17 +39,13 @@ import styles from './DefaultTranscriptsList.scss';
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
-  transcriptsUI?: EntityViewerGeneViewTranscriptsUI;
+  expandedTranscriptIds: string[];
+  expandedTranscriptDownloadIds: string[];
 };
 
 const DefaultTranscriptslist = (props: Props) => {
   const { gene } = props;
   const sortedTranscripts = defaultSort(gene.transcripts);
-
-  const expandedTranscriptIds =
-    props.transcriptsUI?.expandedTranscriptIds || [];
-  const expandedTranscriptDownloads =
-    props.transcriptsUI?.expandedTranscriptDownloads || [];
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -71,10 +70,12 @@ const DefaultTranscriptslist = (props: Props) => {
       <div className={styles.content}>
         <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => {
-          const expandTranscript =
-            expandedTranscriptIds?.includes(transcript.id) || false;
-          const expandDownload =
-            expandedTranscriptDownloads?.includes(transcript.id) || false;
+          const expandTranscript = props.expandedTranscriptIds.includes(
+            transcript.id
+          );
+          const expandDownload = props.expandedTranscriptDownloadIds.includes(
+            transcript.id
+          );
 
           return (
             <DefaultTranscriptsListItem
@@ -108,7 +109,8 @@ const StripedBackground = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  transcriptsUI: getTranscriptsUI(state)
+  expandedTranscriptIds: getExpandedTranscriptIds(state),
+  expandedTranscriptDownloadIds: getExpandedTranscriptDownloadIds(state)
 });
 
 export default connect(mapStateToProps)(DefaultTranscriptslist);

@@ -14,82 +14,14 @@
  * limitations under the License.
  */
 
-import { ActionType, getType } from 'typesafe-actions';
-import merge from 'lodash/merge';
-import get from 'lodash/get';
+import { combineReducers } from 'redux';
 
-import {
-  defaultEntityViewerGeneViewUIState,
-  initialEntityViewerGeneViewState,
-  EntityViewerGeneViewState
-} from './entityViewerGeneViewState';
-import * as actions from './entityViewerGeneViewActions';
-import proteinsReducer from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsReducer';
-import transcriptsReducer from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsReducer';
-import * as proteinsActions from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsActions';
-import * as transcriptsActions from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsActions';
+import geneViewViewReducer from './view/geneViewViewSlice';
+import geneViewTranscriptsReducer from './transcripts/geneViewTranscriptsSlice';
+import geneViewProteinsReducer from './proteins/geneViewProteinsSlice';
 
-export function entityViewerGeneViewReducer(
-  state: EntityViewerGeneViewState = initialEntityViewerGeneViewState,
-  action: ActionType<
-    typeof actions | typeof proteinsActions | typeof transcriptsActions
-  >
-) {
-  switch (action.type) {
-    case getType(actions.updateActiveGeneViewUIState):
-      const { activeGenomeId, activeObjectId, fragment } = action.payload;
-      const oldStateFragment = get(
-        state,
-        `${activeGenomeId}.${activeObjectId}`,
-        defaultEntityViewerGeneViewUIState
-      );
-      const updatedStateFragment = merge({}, oldStateFragment, fragment);
-      return {
-        ...state,
-        [activeGenomeId]: {
-          ...state[activeGenomeId],
-          [activeObjectId]: updatedStateFragment
-        }
-      };
-    case getType(proteinsActions.updateGeneViewProteinsUIState):
-      return {
-        ...state,
-        [action.payload.activeGenomeId]: {
-          ...state[action.payload.activeGenomeId],
-          [action.payload.activeObjectId]: {
-            ...state[action.payload.activeGenomeId][
-              action.payload.activeObjectId
-            ],
-            contentUI: {
-              ...state[action.payload.activeGenomeId][
-                action.payload.activeObjectId
-              ].contentUI,
-              protein: proteinsReducer(state, action)
-            }
-          }
-        }
-      };
-    case getType(transcriptsActions.updateGeneViewTranscriptsUIState):
-      return {
-        ...state,
-        [action.payload.activeGenomeId]: {
-          ...state[action.payload.activeGenomeId],
-          [action.payload.activeObjectId]: {
-            ...state[action.payload.activeGenomeId][
-              action.payload.activeObjectId
-            ],
-            contentUI: {
-              ...state[action.payload.activeGenomeId][
-                action.payload.activeObjectId
-              ].contentUI,
-              transcripts: transcriptsReducer(state, action)
-            }
-          }
-        }
-      };
-    default:
-      return state;
-  }
-}
-
-export default entityViewerGeneViewReducer;
+export default combineReducers({
+  view: geneViewViewReducer,
+  transcripts: geneViewTranscriptsReducer,
+  proteins: geneViewProteinsReducer
+});

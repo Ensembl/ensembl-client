@@ -14,48 +14,35 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import {
-  EntityViewerGeneViewUIState,
-  transcriptsTabData,
-  GeneViewTabMap,
-  GeneViewTabData,
-  SelectedTabViews
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
-export const getGeneViewState = (
+import { RootState } from 'src/store';
+import { TranscriptsStatePerGene } from './geneViewTranscriptsSlice';
+
+const getSliceForGene = (
   state: RootState
-): EntityViewerGeneViewUIState | undefined => {
+): TranscriptsStatePerGene | undefined => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
-
-  return state.entityViewer.geneView[activeGenomeId]?.[activeObjectId];
+  return state.entityViewer.geneView.transcripts[activeGenomeId]?.[
+    activeObjectId
+  ];
 };
 
-export const getGeneViewName = (state: RootState) =>
-  getGeneViewState(state)?.view;
-
-export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
-  const view = getGeneViewName(state);
-  return view
-    ? (GeneViewTabMap.get(view) as GeneViewTabData)
-    : transcriptsTabData;
+export const getExpandedTranscriptIds = (state: RootState): string[] => {
+  const proteinsSlice = getSliceForGene(state);
+  return proteinsSlice?.expandedIds ?? [];
 };
 
-export const getSelectedTabViews = (
+export const getExpandedTranscriptDownloadIds = (
   state: RootState
-): SelectedTabViews | undefined => {
-  return getGeneViewState(state)?.selectedTabViews;
-};
-
-export const getGeneViewContentUI = (state: RootState) => {
-  return getGeneViewState(state)?.contentUI;
+): string[] => {
+  const proteinsSlice = getSliceForGene(state);
+  return proteinsSlice?.expandedDownloadIds ?? [];
 };

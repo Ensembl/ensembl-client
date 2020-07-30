@@ -14,36 +14,16 @@
  * limitations under the License.
  */
 
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+
 import {
-  EntityViewerGeneViewTranscriptsUI,
-  defaultTranscriptsUIState
-} from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsState';
-import {
-  EntityViewerGeneViewProteinsUI,
-  defaultProteinsUIState
-} from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
+  getEntityViewerActiveGenomeId,
+  getEntityViewerActiveEnsObjectId
+} from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-export type SelectedTabViews = Record<
-  'geneFunctionTab' | 'geneRelationshipsTab',
-  View | null
->;
-
-export type EntityViewerGeneViewContentUI = {
-  [View.TRANSCRIPTS]: EntityViewerGeneViewTranscriptsUI;
-  [View.PROTEIN]: EntityViewerGeneViewProteinsUI;
-};
-
-export type EntityViewerGeneViewUIState = {
-  view: View | null;
-  selectedTabViews: SelectedTabViews;
-  contentUI: EntityViewerGeneViewContentUI;
-};
-
-export type EntityViewerGeneViewState = Readonly<{
-  [genomeId: string]: {
-    [geneId: string]: EntityViewerGeneViewUIState;
-  };
-}>;
+import { RootState } from 'src/store';
 
 export enum View {
   TRANSCRIPTS = 'transcripts',
@@ -80,15 +60,9 @@ export enum GeneRelationshipsTabName {
 }
 
 export type GeneViewTabData = {
-  view: View | '';
+  view: View;
   primaryTab: GeneViewTabName;
   secondaryTab: GeneFunctionTabName | GeneRelationshipsTabName | null;
-};
-
-export const transcriptsTabData: GeneViewTabData = {
-  view: View.TRANSCRIPTS,
-  primaryTab: GeneViewTabName.TRANSCRIPTS,
-  secondaryTab: null
 };
 
 // using Map to guarantee the order of the inserted elements
@@ -144,19 +118,93 @@ GeneViewTabMap.set(View.GENE_PANELS, {
   secondaryTab: GeneRelationshipsTabName.GENE_PANELS
 });
 
-export const defaultEntityViewerGeneViewUIState: EntityViewerGeneViewUIState = {
-  view: View.TRANSCRIPTS,
+export type SelectedTabViews = Record<
+  'geneFunctionTab' | 'geneRelationshipsTab',
+  View | null
+>;
+
+export type ViewStatePerGene = {
+  current: View;
+  selectedTabViews: SelectedTabViews;
+};
+
+export type GeneViewViewState = Readonly<{
+  [genomeId: string]: {
+    [geneId: string]: ViewStatePerGene;
+  };
+}>;
+
+const initialStatePerGene: ViewStatePerGene = {
+  current: View.TRANSCRIPTS,
   selectedTabViews: {
     geneFunctionTab: null,
     geneRelationshipsTab: null
-  },
-  contentUI: {
-    [View.TRANSCRIPTS]: defaultTranscriptsUIState,
-    [View.PROTEIN]: defaultProteinsUIState
   }
 };
 
-export const defaultEntityViewerGeneViewState: EntityViewerGeneViewState = {};
+export const updateView = (
+  view: View
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const activeGenomeId = getEntityViewerActiveGenomeId(getState());
+  const activeObjectId = getEntityViewerActiveEnsObjectId(getState());
+  if (!activeGenomeId || !activeObjectId) {
+    return;
+  }
+  const primaryTabName = GeneViewTabMap.get(view)?.primaryTab;
+  const primaryTab =
+    primaryTabName === GeneViewTabName.GENE_FUNCTION
+      ? 'geneFunctionTab'
+      : primaryTabName === GeneViewTabName.GENE_RELATIONSHIPS
+      ? 'geneRelationshipsTab'
+      : null;
+  const tabView: {
+    selectedTabViews?: Record<
+      'geneFunctionTab' | 'geneRelationshipsTab',
+      View | null
+    >;
+  } = {};
+  if (primaryTab) {
+    tabView.selectedTabViews = { [primaryTab]: view } as Record<
+      'geneFunctionTab' | 'geneRelationshipsTab',
+      View | null
+    >;
+  }
+  dispatch(
+    viewSlice.actions.setView({
+      activeGenomeId,
+      activeObjectId,
+      fragment: {
+        current: view,
+        ...tabView
+      }
+    })
+  );
+};
 
-// TODO: This will be loaded from storage services once it is setup
-export const initialEntityViewerGeneViewState: EntityViewerGeneViewState = {};
+type SetViewPayload = {
+  activeGenomeId: string;
+  activeObjectId: string;
+  fragment: Partial<ViewStatePerGene>;
+};
+
+const viewSlice = createSlice({
+  name: 'entity-viewer-gene-view-view',
+  initialState: {} as GeneViewViewState,
+  reducers: {
+    setView(state, action: PayloadAction<SetViewPayload>) {
+      const { activeGenomeId, activeObjectId, fragment } = action.payload;
+      if (!state[activeGenomeId]) {
+        state[activeGenomeId] = { [activeObjectId]: initialStatePerGene };
+      }
+      state[activeGenomeId][activeObjectId] = {
+        ...state[activeGenomeId][activeObjectId],
+        ...fragment
+      };
+    }
+  }
+});
+
+export default viewSlice.reducer;

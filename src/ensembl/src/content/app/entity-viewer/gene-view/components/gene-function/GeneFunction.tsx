@@ -20,8 +20,12 @@ import { useParams } from 'react-router-dom';
 import { push, Push } from 'connected-react-router';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
-import { setGeneViewName } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewActions';
+import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
+import {
+  GeneViewTabMap,
+  GeneViewTabName,
+  GeneFunctionTabName
+} from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -31,11 +35,6 @@ import ProteinsList from '../proteins-list/ProteinsList';
 
 import { RootState } from 'src/store';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import {
-  GeneViewTabMap,
-  GeneViewTabName,
-  GeneFunctionTabName
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
 
 import styles from './GeneFunction.scss';
 
@@ -140,8 +139,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  push,
-  setGeneViewName
+  push
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GeneFunction);

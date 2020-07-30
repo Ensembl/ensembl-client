@@ -22,7 +22,7 @@ import { push, Push } from 'connected-react-router';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
@@ -32,7 +32,7 @@ import {
   GeneViewTabMap,
   GeneViewTabName,
   GeneRelationshipsTabName
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+} from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import styles from './GeneRelationships.scss';
 
