@@ -16,9 +16,9 @@
 
 import React from 'react';
 
-import styles from './ScaleSwitcher.scss';
+import styles from './EntityViewerIndicator.scss';
 
-const ScaleSwitcher = () => {
+const EntityViewerIndicator = () => {
   return (
     <div className={styles.container}>
       <div className={styles.selectedNode}>Gene</div>
@@ -26,4 +26,4 @@ const ScaleSwitcher = () => {
   );
 };
 
-export default ScaleSwitcher;
+export default EntityViewerIndicator;
