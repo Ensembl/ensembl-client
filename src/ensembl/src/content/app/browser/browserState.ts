@@ -53,14 +53,12 @@ export type BrowserEntityState = Readonly<{
   activeGenomeId: string | null;
   activeEnsObjectIds: { [genomeId: string]: string };
   trackStates: BrowserTrackStates;
-  messageCounter: number;
 }>;
 
 export const defaultBrowserEntityState: BrowserEntityState = {
   activeGenomeId,
   activeEnsObjectIds,
-  trackStates,
-  messageCounter: -1
+  trackStates
 };
 
 export type BrowserNavState = Readonly<{

@@ -104,9 +104,6 @@ export const getRegionEditorActive = (state: RootState) =>
 export const getRegionFieldActive = (state: RootState) =>
   state.browser.browserLocation.regionFieldActive;
 
-export const getBrowserMessageCount = (state: RootState) =>
-  state.browser.browserEntity.messageCounter;
-
 export const getBrowserCogList = (state: RootState) =>
   state.browser.trackConfig.browserCogList;
 

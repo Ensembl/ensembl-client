@@ -36,7 +36,6 @@ import {
   getBrowserActiveEnsObjectId,
   getBrowserTrackStates,
   getChrLocation,
-  getBrowserMessageCount,
   getBrowserActiveEnsObjectIds,
   getBrowserNavOpened
 } from './browserSelectors';
@@ -312,10 +311,6 @@ export const setChrLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const updateMessageCounter = createAction(
-  'browser/update-message-counter'
-)<number>();
-
 export const changeBrowserLocation: ActionCreator<ThunkAction<
   any,
   any,
@@ -333,7 +328,6 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
     const activeEnsObjectId =
       locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
 
-    const messageCount = getBrowserMessageCount(state);
     const focusInstruction: { focus?: string } = {};
     if (activeEnsObjectId) {
       focusInstruction.focus = activeEnsObjectId;
@@ -342,7 +336,6 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
     browserMessagingService.send('bpane', {
       stick: `${locationData.genomeId}:${chrCode}`,
       goto: `${startBp}-${endBp}`,
-      'message-counter': messageCount,
       ...focusInstruction
     });
   };
@@ -355,7 +348,6 @@ export const changeFocusObject = (
   getState: () => RootState
 ) => {
   const state = getState();
-  const messageCount = getBrowserMessageCount(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
@@ -365,8 +357,7 @@ export const changeFocusObject = (
   dispatch(updatePreviouslyViewedObjectsAndSave());
 
   browserMessagingService.send('bpane', {
-    focus: objectId,
-    'message-counter': messageCount
+    focus: objectId
   });
 };
 

@@ -40,7 +40,6 @@ import {
   updateBrowserNavStates,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter,
   updateBrowserActiveEnsObjectIdsAndSave,
   updateDefaultPositionFlag
 } from '../browserActions';
@@ -64,7 +63,6 @@ export type BrowserImageProps = {
   updateBrowserActiveEnsObject: (objectId: string) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
-  updateMessageCounter: (count: number) => void;
   updateDefaultPositionFlag: (isDefaultPosition: boolean) => void;
   changeHighlightedTrackId: (trackId: string) => void;
 };
@@ -92,7 +90,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
     const navIconStates = payload.bumper as BrowserNavStates;
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
-    const messageCount = payload['message-counter'];
     const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
     if (navIconStates) {
@@ -110,10 +107,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
     if (ensObjectId) {
       const parsedId = parseFeatureId(ensObjectId);
       props.updateBrowserActiveEnsObject(buildEnsObjectId(parsedId));
-    }
-
-    if (messageCount) {
-      props.updateMessageCounter(messageCount);
     }
 
     if (typeof isFocusObjectInDefaultPosition === 'boolean') {
@@ -179,7 +172,6 @@ const mapDispatchToProps = {
   updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter,
   updateDefaultPositionFlag,
   changeHighlightedTrackId
 };

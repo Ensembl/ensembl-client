@@ -55,7 +55,6 @@ describe('<BrowserImage />', () => {
     updateBrowserActiveEnsObject: jest.fn(),
     setChrLocation: jest.fn(),
     setActualChrLocation: jest.fn(),
-    updateMessageCounter: jest.fn(),
     updateDefaultPositionFlag: jest.fn(),
     changeHighlightedTrackId: jest.fn()
   };
