@@ -25,6 +25,8 @@ import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
+import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/browser-messaging-service';
+
 export type BrowserNavItem = {
   description: string;
   detail: {
@@ -32,6 +34,12 @@ export type BrowserNavItem = {
   };
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   name: string;
+  action:
+    | ChromeToBrowserMessagingActions.MOVE_UP
+    | ChromeToBrowserMessagingActions.MOVE_DOWN
+    | ChromeToBrowserMessagingActions.MOVE_LEFT
+    | ChromeToBrowserMessagingActions.MOVE_RIGHT
+    | ChromeToBrowserMessagingActions.ZOOM_BY;
 };
 
 export const browserNavConfig: BrowserNavItem[] = [
@@ -41,7 +49,8 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_up_px: 50
     },
     icon: navigateUpIcon,
-    name: 'navigate-up'
+    name: 'navigate-up',
+    action: ChromeToBrowserMessagingActions.MOVE_UP
   },
   {
     description: 'navigate down',
@@ -49,7 +58,8 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_down_px: 50
     },
     icon: navigateDownIcon,
-    name: 'navigate-down'
+    name: 'navigate-down',
+    action: ChromeToBrowserMessagingActions.MOVE_DOWN
   },
   {
     description: 'zoom out',
@@ -57,7 +67,8 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: -0.3
     },
     icon: zoomOutIcon,
-    name: 'zoom-out'
+    name: 'zoom-out',
+    action: ChromeToBrowserMessagingActions.ZOOM_BY
   },
   {
     description: 'zoom in',
@@ -65,7 +76,8 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: 0.3
     },
     icon: zoomInIcon,
-    name: 'zoom-in'
+    name: 'zoom-in',
+    action: ChromeToBrowserMessagingActions.ZOOM_BY
   },
   {
     description: 'navigate left',
@@ -73,7 +85,8 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_left_px: 50
     },
     icon: navigateLeftIcon,
-    name: 'navigate-left'
+    name: 'navigate-left',
+    action: ChromeToBrowserMessagingActions.MOVE_LEFT
   },
   {
     description: 'navigate right',
@@ -81,7 +94,8 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_right_px: 50
     },
     icon: navigateRightIcon,
-    name: 'navigate-right'
+    name: 'navigate-right',
+    action: ChromeToBrowserMessagingActions.MOVE_RIGHT
   }
 ];
 

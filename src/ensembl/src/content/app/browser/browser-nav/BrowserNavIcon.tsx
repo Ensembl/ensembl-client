@@ -34,11 +34,11 @@ export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
   props: BrowserNavIconProps
 ) => {
   const { browserNavItem, enabled } = props;
-  const { detail, icon } = browserNavItem;
+  const { detail, icon, action } = browserNavItem;
 
   const navigateBrowser = () => {
     if (enabled) {
-      browserMessagingService.send('bpane', detail);
+      browserMessagingService.send({ action, payload: { ...detail } });
     }
   };
 

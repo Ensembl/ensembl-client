@@ -21,6 +21,7 @@ impl ViewportReportItem {
             ViewportReportItem::DeltaY(dy) => {
                 let v = JSONValue::Number(JSONNumber::from_f64(*dy as f64).unwrap());
                 map.insert("delta_y".to_string(),v);
+                map.insert("action".to_string(), "update_scroll_position".to_string());
             },
             ViewportReportItem::TrackY(yy) => {
                 let mut json_y = JSONMap::<String,JSONValue>::new();
@@ -28,6 +29,7 @@ impl ViewportReportItem {
                     json_y.insert(y.0.clone(),JSONValue::Number(JSONNumber::from_f64(y.1 as f64).unwrap()));
                 }
                 map.insert("track_y".to_string(),JSONValue::Object(json_y));
+                map.insert("action".to_string(), "update_track_positions".to_string());
             }
         }
     }

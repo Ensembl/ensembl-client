@@ -17,7 +17,10 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService, {
+  ChromeToBrowserMessagingActions
+} from 'src/content/app/browser/browser-messaging-service';
+
 import BrowserCog from './BrowserCog';
 import {
   updateCogList,
@@ -97,9 +100,12 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
           offs.push(`${name}:names`); // by default, track label is not shown
         }
       });
-      browserMessagingService.send('bpane', {
-        off: offs,
-        on: ons
+      browserMessagingService.send({
+        action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
+        payload: {
+          off: offs,
+          on: ons
+        }
       });
     }
   }, [

@@ -26,7 +26,9 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService, {
+  ChromeToBrowserMessagingActions
+} from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
@@ -58,6 +60,7 @@ import {
 } from './browserState';
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
+
 import analyticsTracking from 'src/services/analytics-service';
 
 export type UpdateTrackStatesPayload = {
@@ -71,6 +74,24 @@ export type ParsedUrlPayload = {
   activeGenomeId: string;
   activeEnsObjectId: string | null;
   chrLocation: ChrLocation | null;
+};
+
+export type ActivateBrowserPayload = {
+  'config-url': string;
+  key: string;
+  selector: string;
+};
+
+export type BrowserSetFocusPayload = {
+  'message-counter': number;
+  focus?: string | undefined;
+};
+
+export type BrowserSetFocusLoationPayload = {
+  stick: string;
+  goto: string;
+  'message-counter': number;
+  focus?: string | undefined;
 };
 
 export const updateBrowserActivated = createAction(
@@ -87,7 +108,10 @@ export const activateBrowser = () => {
       key: 'main', // TODO: remove this field after we confirmed that it is redundant
       selector: `#${BROWSER_CONTAINER_ID}`
     };
-    browserMessagingService.send('bpane-activate', payload);
+    browserMessagingService.send({
+      action: ChromeToBrowserMessagingActions.ACTIVATE_BROWSER,
+      payload
+    });
 
     dispatch(updateBrowserActivated(true));
   };
@@ -210,9 +234,12 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
     });
   });
 
-  browserMessagingService.send('bpane', {
-    off: tracksToTurnOff,
-    on: tracksToTurnOn
+  browserMessagingService.send({
+    action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
+    payload: {
+      off: tracksToTurnOff,
+      on: tracksToTurnOn
+    }
   });
 };
 
@@ -339,11 +366,14 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
       focusInstruction.focus = activeEnsObjectId;
     }
 
-    browserMessagingService.send('bpane', {
-      stick: `${locationData.genomeId}:${chrCode}`,
-      goto: `${startBp}-${endBp}`,
-      'message-counter': messageCount,
-      ...focusInstruction
+    browserMessagingService.send({
+      action: ChromeToBrowserMessagingActions.SET_FOCUS_LOCATION,
+      payload: {
+        stick: `${locationData.genomeId}:${chrCode}`,
+        goto: `${startBp}-${endBp}`,
+        'message-counter': messageCount,
+        ...focusInstruction
+      }
     });
   };
 };
@@ -364,9 +394,12 @@ export const changeFocusObject = (
 
   dispatch(updatePreviouslyViewedObjectsAndSave());
 
-  browserMessagingService.send('bpane', {
-    focus: objectId,
-    'message-counter': messageCount
+  browserMessagingService.send({
+    action: ChromeToBrowserMessagingActions.SET_FOCUS,
+    payload: {
+      focus: objectId,
+      'message-counter': messageCount
+    }
   });
 };
 

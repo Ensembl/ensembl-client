@@ -19,12 +19,14 @@ import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService, {
+  BrowserToChromeMessagingActions,
+  ChromeToBrowserMessagingActions
+} from 'src/content/app/browser/browser-messaging-service';
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
   ZmenuData,
-  ZmenuAction,
   ZmenuIncomingPayload,
   ZmenuCreatePayload,
   ZmenuDestroyPayload,
@@ -56,11 +58,15 @@ const ZmenuController = (props: Props) => {
   }, []);
 
   const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
-    if (payload.action === ZmenuAction.CREATE) {
+    if (payload.action === BrowserToChromeMessagingActions.ZMENU_CREATE) {
       handleZmenuCreate(payload);
-    } else if (payload.action === ZmenuAction.DESTROY) {
+    } else if (
+      payload.action === BrowserToChromeMessagingActions.ZMENU_DESTROY
+    ) {
       handleZmenuDestroy(payload);
-    } else if (payload.action === ZmenuAction.REPOSITION) {
+    } else if (
+      payload.action === BrowserToChromeMessagingActions.ZMENU_REPOSITION
+    ) {
       handleZmenuReposition(payload);
     }
   };
@@ -96,19 +102,21 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuEnter = (id: string) => {
-    const payload = {
-      id,
-      action: ZmenuAction.ENTER
-    };
-    browserMessagingService.send('bpane', payload);
+    browserMessagingService.send({
+      action: ChromeToBrowserMessagingActions.ZMENU_ENTER,
+      payload: {
+        id
+      }
+    });
   };
 
   const handleZmenuLeave = (id: string) => {
-    const payload = {
-      id,
-      action: ZmenuAction.LEAVE
-    };
-    browserMessagingService.send('bpane', payload);
+    browserMessagingService.send({
+      action: ChromeToBrowserMessagingActions.ZMENU_LEAVE,
+      payload: {
+        id
+      }
+    });
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (

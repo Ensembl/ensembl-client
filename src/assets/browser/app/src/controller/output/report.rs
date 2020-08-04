@@ -258,8 +258,14 @@ impl Report {
         ar.add_timer("report",enclose! { (out) move |app,t,sr| {
             app.with_counter(|counter| {
                 if let Some(report) = out.new_report(t,counter) {
+                    let reportClone = report.clone();
+                    reportClone["action"] = "update_location".to_string();
+
                     vec!{
-                        OutputAction::SendCustomEvent("bpane-out".to_string(),report.clone())
+                        OutputAction::SendCustomEvent(
+                            "bpane-out".to_string(),
+                            reportClone
+                        )
                     }
                 } else { sr.unproductive(); vec!{} }
             })

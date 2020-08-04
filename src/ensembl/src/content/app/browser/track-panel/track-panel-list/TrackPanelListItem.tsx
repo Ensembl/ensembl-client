@@ -21,7 +21,9 @@ import classNames from 'classnames';
 import { RootState } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService, {
+  ChromeToBrowserMessagingActions
+} from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
@@ -182,11 +184,14 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const updateGenomeBrowser = (status: Status) => {
     const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
 
-    const payload = {
+    const payload: { on?: string; off?: string } = {
       [currentTrackStatus]: `${track.track_id}`
     };
 
-    browserMessagingService.send('bpane', payload);
+    browserMessagingService.send({
+      action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
+      payload
+    });
   };
 
   const trackClassNames = classNames(styles.track, {

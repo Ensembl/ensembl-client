@@ -16,7 +16,9 @@
 
 import React from 'react';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService, {
+  ChromeToBrowserMessagingActions
+} from 'src/content/app/browser/browser-messaging-service';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import {
@@ -27,7 +29,7 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuData, ZmenuAction } from './zmenu-types';
+import { ZmenuData } from './zmenu-types';
 
 import styles from './Zmenu.scss';
 
@@ -46,9 +48,9 @@ const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
 
   const onOutsideClick = () =>
-    browserMessagingService.send('bpane', {
-      id: props.id,
-      action: ZmenuAction.ACTIVITY_OUTSIDE
+    browserMessagingService.send({
+      payload: { id: props.id },
+      action: ChromeToBrowserMessagingActions.ZMENU_ACTIVITY_OUTSIDE
     });
 
   const direction = chooseDirection(props);
