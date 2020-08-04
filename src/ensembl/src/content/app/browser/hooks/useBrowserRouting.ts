@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
+import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
@@ -57,6 +58,7 @@ import {
  */
 
 const useBrowserRouting = () => {
+  const firstRenderRef = useRef(true);
   const params: { [key: string]: string } = useParams();
   const { search } = useLocation(); // from document.location provided by the router
   const dispatch = useDispatch();
@@ -105,22 +107,21 @@ const useBrowserRouting = () => {
        for the focus object that is viewed first.
        */
       dispatch(changeFocusObject(newFocusId as string));
-    } else if (focus && chrLocation) {
-      dispatch(
-        changeBrowserLocation({
-          genomeId,
-          ensObjectId: newFocusId,
-          chrLocation
-        })
-      );
     } else if (chrLocation) {
-      dispatch(
-        changeBrowserLocation({
-          genomeId,
-          ensObjectId: newFocusId,
-          chrLocation
-        })
-      );
+      const isSameLocationAsInRedux =
+        activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
+      const isFirstRender = firstRenderRef.current;
+
+      if (!isSameLocationAsInRedux || isFirstRender) {
+        dispatch(
+          changeBrowserLocation({
+            genomeId,
+            ensObjectId: newFocusId,
+            chrLocation
+          })
+        );
+      }
+      firstRenderRef.current = false;
     }
 
     dispatch(setDataFromUrlAndSave(payload));
