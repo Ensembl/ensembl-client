@@ -17,98 +17,18 @@
 import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
-
 import {
-  ZmenuLeavePayload,
-  ZmenuOutsideActivityPayload,
-  ZmenuEnterPayload
-} from 'src/content/app/browser/zmenu/zmenu-types';
-import {
-  ActivateBrowserPayload,
-  BrowserSetFocusLoationPayload,
-  BrowserSetFocusPayload
-} from 'src/content/app/browser/browserActions';
+  OutgoingPayload,
+  ChromeToBrowserMessagingActions
+} from './browser-message-creator';
 
-/*
-  This is a service for communicating between genome browser and React wrapper.
-*/
-
-export enum BrowserToChromeMessagingActions {
-  ZMENU_CREATE = 'create_zmenu',
-  ZMENU_DESTROY = 'destroy_zmenu',
-  ZMENU_REPOSITION = 'update_zmenu_position'
-}
-
-export enum ChromeToBrowserMessagingActions {
-  ACTIVATE_BROWSER = 'activate_browser',
-  TOGGLE_TRACKS = 'toggle_tracks',
-  SET_FOCUS_LOCATION = 'set_focus_location',
-  SET_FOCUS = 'set_focus',
-  MOVE_LEFT = 'move_left',
-  MOVE_RIGHT = 'move_right',
-  MOVE_DOWN = 'move_down',
-  MOVE_UP = 'move_up',
-  ZOOM_BY = 'zoom_by',
-  PING = 'ping',
-  ZMENU_ENTER = 'zmenu-enter',
-  ZMENU_LEAVE = 'zmenu-leave',
-  ZMENU_ACTIVITY_OUTSIDE = 'zmenu-activity-outside' // TODO: sometime later, unify underscores vs hyphens (together with Genome Browser)
-}
+import { ActivateBrowserPayload } from 'src/content/app/browser/browserActions';
 
 export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
   BPANE_ACTIVATE = 'bpane-activate',
   BPANE = 'bpane'
 }
-
-export type BrowserToggleTracksPayload = {
-  on?: string | string[];
-  off?: string | string[];
-};
-
-export type OutgoingPayload =
-  | {
-      action: ChromeToBrowserMessagingActions.PING;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS;
-      payload: BrowserToggleTracksPayload;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.ZMENU_ENTER;
-      payload: ZmenuEnterPayload;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.ZMENU_LEAVE;
-      payload: ZmenuLeavePayload;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.ZMENU_ACTIVITY_OUTSIDE;
-      payload: ZmenuOutsideActivityPayload;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.ACTIVATE_BROWSER;
-      payload: ActivateBrowserPayload;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.SET_FOCUS_LOCATION;
-      payload: BrowserSetFocusLoationPayload;
-    }
-  | {
-      action: ChromeToBrowserMessagingActions.SET_FOCUS;
-      payload: BrowserSetFocusPayload;
-    }
-  | {
-      action:
-        | ChromeToBrowserMessagingActions.MOVE_UP
-        | ChromeToBrowserMessagingActions.MOVE_DOWN
-        | ChromeToBrowserMessagingActions.MOVE_LEFT
-        | ChromeToBrowserMessagingActions.MOVE_RIGHT
-        | ChromeToBrowserMessagingActions.ZOOM_BY;
-      payload: {
-        [key: string]: number;
-      };
-    };
 
 export class BrowserMessagingService {
   private window: Window;
@@ -124,7 +44,20 @@ export class BrowserMessagingService {
   }
 
   private ping() {
-    this.sendPostMessage({ action: ChromeToBrowserMessagingActions.PING });
+    this.window.postMessage(
+      {
+        type: BrowserMessagingType.BPANE_READY_QUERY,
+        action: ChromeToBrowserMessagingActions.PING
+      },
+      '*'
+    );
+  }
+
+  public activate(payload: ActivateBrowserPayload) {
+    this.window.postMessage(
+      { ...payload, action: ChromeToBrowserMessagingActions.ACTIVATE_BROWSER },
+      '*'
+    );
   }
 
   private onRecipientReady = () => {
@@ -180,11 +113,6 @@ export class BrowserMessagingService {
   };
 
   public send = (payload: OutgoingPayload) => {
-    // const message = {
-    //   type: eventName,
-    //   payload
-    // };
-
     if (!this.isRecepientReady) {
       this.addMessageToQueue(payload);
     } else {

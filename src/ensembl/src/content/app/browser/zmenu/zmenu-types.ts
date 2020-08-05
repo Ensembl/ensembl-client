@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BrowserToChromeMessagingActions } from 'src/content/app/browser/browser-messaging-service';
+import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 // relation of the point of interest to the central point of the canvas;
 // a gentle hint by genome browser about where there is the most available space

@@ -17,9 +17,8 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import browserMessagingService, {
-  ChromeToBrowserMessagingActions
-} from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 import BrowserCog from './BrowserCog';
 import {

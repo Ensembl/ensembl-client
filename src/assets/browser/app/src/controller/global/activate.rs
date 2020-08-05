@@ -33,5 +33,7 @@ pub fn activate() {
     let pingpong = ReadyPingPongListener{};
     let mut ec = EventControl::new(Box::new(pingpong),());
     ec.add_event(EventType::MessageEvent);
-    domutil::send_post_message("bpane-ready",&json!{{}});
+    domutil::send_post_message("bpane-ready",&json!{{{
+        "action": "genome_browser_ready"
+    }}});
 }

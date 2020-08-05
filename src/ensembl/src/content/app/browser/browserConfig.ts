@@ -25,7 +25,7 @@ import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
-import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/browser-messaging-service';
+import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 export type BrowserNavItem = {
   description: string;

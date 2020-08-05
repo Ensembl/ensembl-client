@@ -18,7 +18,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import { BrowserNavIcon } from './BrowserNavIcon';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
 import { browserNavConfig } from '../browserConfig';
 
 describe('<BrowserNavIcon />', () => {

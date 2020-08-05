@@ -21,9 +21,8 @@ import classNames from 'classnames';
 import { RootState } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
-import browserMessagingService, {
-  ChromeToBrowserMessagingActions
-} from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';

@@ -16,9 +16,9 @@
 
 import React from 'react';
 
-import browserMessagingService, {
-  ChromeToBrowserMessagingActions
-} from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import {

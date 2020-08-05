@@ -19,10 +19,12 @@ import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
 
-import browserMessagingService, {
-  BrowserToChromeMessagingActions,
-  ChromeToBrowserMessagingActions
-} from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import {
+  ChromeToBrowserMessagingActions,
+  BrowserToChromeMessagingActions
+} from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {

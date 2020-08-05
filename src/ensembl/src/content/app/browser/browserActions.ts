@@ -26,9 +26,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import browserMessagingService, {
-  ChromeToBrowserMessagingActions
-} from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
@@ -108,10 +107,7 @@ export const activateBrowser = () => {
       key: 'main', // TODO: remove this field after we confirmed that it is redundant
       selector: `#${BROWSER_CONTAINER_ID}`
     };
-    browserMessagingService.send({
-      action: ChromeToBrowserMessagingActions.ACTIVATE_BROWSER,
-      payload
-    });
+    browserMessagingService.activate(payload);
 
     dispatch(updateBrowserActivated(true));
   };

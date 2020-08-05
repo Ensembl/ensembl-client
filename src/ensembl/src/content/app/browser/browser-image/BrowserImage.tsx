@@ -24,7 +24,7 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
