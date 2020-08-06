@@ -24,7 +24,8 @@ import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gen
 import {
   GeneViewTabMap,
   GeneViewTabName,
-  GeneFunctionTabName
+  GeneFunctionTabName,
+  View
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -44,7 +45,7 @@ const tabsData = [...GeneViewTabMap.values()]
   .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_FUNCTION)
   .map((item) => ({
     title: item.secondaryTab,
-    isDisabled: false
+    isDisabled: item.view !== View.PROTEIN
   })) as Tab[];
 
 const tabClassNames = {
