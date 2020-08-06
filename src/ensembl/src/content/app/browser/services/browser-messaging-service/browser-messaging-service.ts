@@ -24,7 +24,8 @@ import { ActivateBrowserPayload } from 'src/content/app/browser/browserActions';
 export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
   BPANE_ACTIVATE = 'bpane-activate',
-  BPANE = 'bpane'
+  BPANE = 'bpane',
+  BPANE_READY = 'bpane-ready'
 }
 
 export class BrowserMessagingService {

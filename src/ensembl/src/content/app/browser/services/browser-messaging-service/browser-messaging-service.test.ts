@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BrowserMessagingService } from './browser-messaging-service';
+import {
+  BrowserMessagingService,
+  BrowserMessagingType
+} from './browser-messaging-service';
 import { zmenuEnterMessage as dummyMessageCreator } from './browser-message-creator';
 import faker from 'faker';
 
@@ -108,10 +111,12 @@ describe('browserMessagingService', () => {
 
       expect(mockWindow.postMessage).toHaveBeenCalledTimes(2);
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
-        payload: messagePayload1
+        ...messagePayload1,
+        type: BrowserMessagingType.BPANE
       });
       expect(mockWindow.postMessage.mock.calls[1][0]).toEqual({
-        payload: messagePayload2
+        ...messagePayload2,
+        type: BrowserMessagingType.BPANE
       });
     });
 
@@ -121,14 +126,18 @@ describe('browserMessagingService', () => {
       );
       // clear recorded 'bpane-ready-query' message
       mockWindow.postMessage.mockClear();
-      mockWindow.sendMessage('message', { type: 'bpane-ready', payload: {} });
+      mockWindow.sendMessage('message', {
+        type: BrowserMessagingType.BPANE_READY,
+        payload: {}
+      });
 
       const message = faker.lorem.word();
       const messagePayload = dummyMessageCreator({ id: message });
       browserMessagingService.send(messagePayload);
 
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
-        payload: messagePayload
+        ...messagePayload,
+        type: BrowserMessagingType.BPANE
       });
     });
   });
