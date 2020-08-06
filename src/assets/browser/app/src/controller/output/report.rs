@@ -234,7 +234,6 @@ impl ReportImpl {
             if vital {
                 console!("send/A ({:?}) {}",force,JSONValue::Object(out.clone()));
             }
-            out.insert("_outgoing".to_string(),JSONValue::Bool(true));
             return Some(JSONValue::Object(out));
         }
         None

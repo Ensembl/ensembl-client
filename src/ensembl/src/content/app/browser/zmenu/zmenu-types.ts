@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
-
-// relation of the point of interest to the central point of the canvas;
-// a gentle hint by genome browser about where there is the most available space
-// e.g. if the reported side of a point is 'left', zmenu will position itself
-// to the right of this point
-// TODO: check if this type is required
-export enum Side {
-  LEFT = 'left',
-  RIGHT = 'right',
-  MIDDLE = 'middle'
-}
-
 // coordinates of the point at which zmenu should be pointing
 export type AnchorCoordinates = {
   x: number;
@@ -61,50 +48,3 @@ export type ZmenuData = {
   anchor_coordinates: AnchorCoordinates;
   content: ZmenuContentFeature[];
 };
-
-// Sent from Genome browser to React
-export type ZmenuCreatePayload = {
-  action: BrowserToChromeMessagingActions.ZMENU_CREATE;
-  id: string;
-  anchor_coordinates: AnchorCoordinates;
-  content: ZmenuContentFeature[];
-};
-
-// Sent from Genome browser to React
-export type ZmenuDestroyPayload = {
-  id: string;
-  action: BrowserToChromeMessagingActions.ZMENU_DESTROY;
-};
-
-// Sent from React to Genome browser
-// (on mouseover; perhaps tap?)
-export type ZmenuEnterPayload = {
-  id: string;
-};
-
-// Sent from React to Genome browser
-// (on mouseleave, or on click outside)
-export type ZmenuOutsideActivityPayload = {
-  id: string;
-};
-
-// Sent from React to Genome browser
-// (on mouseleave, or on click outside)
-export type ZmenuLeavePayload = {
-  id: string;
-};
-
-// Sent from Genome browser to React
-export type ZmenuRepositionPayload = {
-  id: string;
-  action: BrowserToChromeMessagingActions.ZMENU_REPOSITION;
-  anchor_coordinates: {
-    x: number;
-    y: number;
-  };
-};
-
-export type ZmenuIncomingPayload =
-  | ZmenuCreatePayload
-  | ZmenuDestroyPayload
-  | ZmenuRepositionPayload;

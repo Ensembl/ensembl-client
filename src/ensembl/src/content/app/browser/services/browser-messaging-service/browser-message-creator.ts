@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  ZmenuLeavePayload,
-  ZmenuOutsideActivityPayload,
-  ZmenuEnterPayload
-} from 'src/content/app/browser/zmenu/zmenu-types';
-
-/*
-This is a service for communicating between genome browser and React wrapper.
-*/
-
-export enum BrowserToChromeMessagingActions {
-  ZMENU_CREATE = 'create_zmenu',
-  ZMENU_DESTROY = 'destroy_zmenu',
-  ZMENU_REPOSITION = 'update_zmenu_position',
-  UPDATE_LOCATION = 'update_location',
-  UPDATE_SCROLL_POSITION = 'update_scroll_position',
-  UPDATE_TRACK_POSITION = 'upadte_track_position'
-}
-
 export enum ChromeToBrowserMessagingActions {
   TOGGLE_TRACKS = 'toggle_tracks',
   SET_FOCUS_LOCATION = 'set_focus_location',
@@ -53,15 +34,25 @@ export type BrowserToggleTracksPayload = {
 };
 
 export type BrowserSetFocusPayload = {
-  'message-counter': number;
   focus?: string | undefined;
 };
 
 export type BrowserSetFocusLocationPayload = {
   stick: string;
   goto: string;
-  'message-counter': number;
   focus?: string | undefined;
+};
+
+export type ZmenuEnterPayload = {
+  id: string;
+};
+
+export type ZmenuOutsideActivityPayload = {
+  id: string;
+};
+
+export type ZmenuLeavePayload = {
+  id: string;
 };
 
 export type OutgoingPayload =
@@ -115,7 +106,7 @@ export const toggleTracksMessage = (
 ): OutgoingPayload => {
   return {
     action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
-    payload: { ...payload }
+    payload: payload
   };
 };
 

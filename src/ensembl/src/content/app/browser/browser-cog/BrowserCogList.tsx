@@ -17,11 +17,12 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service';
+import { toggleTracksMessage } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 import {
-  toggleTracksMessage,
-  BrowserToChromeMessagingActions
-} from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+  BrowserToChromeMessagingActions,
+  BrowserScrollPayload
+} from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 import BrowserCog from './BrowserCog';
 import {
@@ -54,19 +55,9 @@ type BrowserCogListProps = {
   updateSelectedCog: (trackId: string | null) => void;
 };
 
-type BpaneScrollPayload =
-  | {
-      delta_y: number;
-      action: BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION;
-    }
-  | {
-      action: BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION;
-      track_y: CogList;
-    };
-
 export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
-  const listenBpaneScroll = (payload: BpaneScrollPayload) => {
+  const listenBpaneScroll = (payload: BrowserScrollPayload) => {
     if (
       payload.action === BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION
     ) {

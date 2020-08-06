@@ -19,22 +19,22 @@ import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
 
-import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service';
 import {
   zmenuEnterMessage,
-  zmenuLeaveMessage,
-  BrowserToChromeMessagingActions
+  zmenuLeaveMessage
 } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
+import { ZmenuData } from './zmenu-types';
 import {
-  ZmenuData,
+  BrowserToChromeMessagingActions,
   ZmenuIncomingPayload,
   ZmenuCreatePayload,
   ZmenuDestroyPayload,
   ZmenuRepositionPayload
-} from './zmenu-types';
+} from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;

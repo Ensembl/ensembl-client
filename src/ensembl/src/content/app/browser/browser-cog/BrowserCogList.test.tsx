@@ -21,7 +21,7 @@ import faker from 'faker';
 import { BrowserCogList } from './BrowserCogList';
 import BrowserCog from './BrowserCog';
 
-import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service';
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {

@@ -26,7 +26,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service';
 import {
   toggleTracksMessage,
   setFocusLocationMessage,
@@ -41,7 +41,6 @@ import {
   getBrowserActiveEnsObjectId,
   getBrowserTrackStates,
   getChrLocation,
-  getBrowserMessageCount,
   getBrowserActiveEnsObjectIds,
   getBrowserNavOpened
 } from './browserSelectors';
@@ -326,10 +325,6 @@ export const setChrLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const updateMessageCounter = createAction(
-  'browser/update-message-counter'
-)<number>();
-
 export const changeBrowserLocation: ActionCreator<ThunkAction<
   any,
   any,
@@ -347,7 +342,6 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
     const activeEnsObjectId =
       locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
 
-    const messageCount = getBrowserMessageCount(state);
     const focusInstruction: { focus?: string } = {};
     if (activeEnsObjectId) {
       focusInstruction.focus = activeEnsObjectId;
@@ -357,7 +351,6 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
       setFocusLocationMessage({
         stick: `${locationData.genomeId}:${chrCode}`,
         goto: `${startBp}-${endBp}`,
-        'message-counter': messageCount,
         ...focusInstruction
       })
     );
@@ -371,7 +364,6 @@ export const changeFocusObject = (
   getState: () => RootState
 ) => {
   const state = getState();
-  const messageCount = getBrowserMessageCount(state);
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
   if (!activeGenomeId) {
@@ -382,8 +374,7 @@ export const changeFocusObject = (
 
   browserMessagingService.send(
     setFocusMessage({
-      focus: objectId,
-      'message-counter': messageCount
+      focus: objectId
     })
   );
 };

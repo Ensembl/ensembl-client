@@ -24,7 +24,7 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
+import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service';
 import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
@@ -38,14 +38,13 @@ import {
   updateBrowserNavStates,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter,
   updateBrowserActiveEnsObjectIdsAndSave,
   updateDefaultPositionFlag
 } from '../browserActions';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+import { BrowserLocationUpdatePayload } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
@@ -63,18 +62,8 @@ export type BrowserImageProps = {
   updateBrowserActiveEnsObject: (objectId: string) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
   setActualChrLocation: (chrLocation: ChrLocation) => void;
-  updateMessageCounter: (count: number) => void;
   updateDefaultPositionFlag: (isDefaultPosition: boolean) => void;
   changeHighlightedTrackId: (trackId: string) => void;
-};
-
-type BpaneOutPayload = {
-  action: BrowserToChromeMessagingActions.UPDATE_LOCATION;
-  bumper?: BrowserNavStates;
-  _outgoing?: boolean;
-  'intended-location'?: ChrLocation;
-  'actual-location'?: ChrLocation;
-  'is-focus-position'?: boolean;
 };
 
 const parseLocation = (location: ChrLocation) => {
@@ -86,28 +75,31 @@ const parseLocation = (location: ChrLocation) => {
 
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
-  const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
-    const navIconStates = payload.bumper as BrowserNavStates;
-    const intendedLocation = payload['intended-location'];
-    const actualLocation = payload['actual-location'] || intendedLocation;
-    const isFocusObjectInDefaultPosition = payload['is-focus-position'];
+  const listenBpaneOut = useCallback(
+    (payload: BrowserLocationUpdatePayload) => {
+      const navIconStates = payload.bumper as BrowserNavStates;
+      const intendedLocation = payload['intended-location'];
+      const actualLocation = payload['actual-location'] || intendedLocation;
+      const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
-    if (navIconStates) {
-      props.updateBrowserNavStates(navIconStates);
-    }
+      if (navIconStates) {
+        props.updateBrowserNavStates(navIconStates);
+      }
 
-    if (intendedLocation) {
-      props.setChrLocation(parseLocation(intendedLocation));
-    }
+      if (intendedLocation) {
+        props.setChrLocation(parseLocation(intendedLocation));
+      }
 
-    if (actualLocation) {
-      props.setActualChrLocation(parseLocation(actualLocation));
-    }
+      if (actualLocation) {
+        props.setActualChrLocation(parseLocation(actualLocation));
+      }
 
-    if (typeof isFocusObjectInDefaultPosition === 'boolean') {
-      props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
-    }
-  }, []);
+      if (typeof isFocusObjectInDefaultPosition === 'boolean') {
+        props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     const subscription = browserMessagingService.subscribe(
@@ -167,7 +159,6 @@ const mapDispatchToProps = {
   updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
   setChrLocation,
   setActualChrLocation,
-  updateMessageCounter,
   updateDefaultPositionFlag,
   changeHighlightedTrackId
 };
