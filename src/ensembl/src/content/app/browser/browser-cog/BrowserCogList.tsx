@@ -67,12 +67,14 @@ type BpaneScrollPayload =
 export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
-    const { action } = payload;
-
-    if (action === BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION) {
+    if (
+      payload.action === BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION
+    ) {
       props.updateCogList(payload.delta_y);
     }
-    if (action === BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION) {
+    if (
+      payload.action === BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION
+    ) {
       props.updateCogTrackList(payload.track_y);
     }
   };

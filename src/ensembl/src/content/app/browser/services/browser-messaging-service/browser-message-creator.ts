@@ -34,7 +34,6 @@ export enum BrowserToChromeMessagingActions {
 }
 
 export enum ChromeToBrowserMessagingActions {
-  ACTIVATE_BROWSER = 'activate_browser',
   TOGGLE_TRACKS = 'toggle_tracks',
   SET_FOCUS_LOCATION = 'set_focus_location',
   SET_FOCUS = 'set_focus',

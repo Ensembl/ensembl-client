@@ -17,10 +17,7 @@
 import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
-import {
-  OutgoingPayload,
-  ChromeToBrowserMessagingActions
-} from './browser-message-creator';
+import { OutgoingPayload } from './browser-message-creator';
 
 import { ActivateBrowserPayload } from 'src/content/app/browser/browserActions';
 
@@ -46,8 +43,7 @@ export class BrowserMessagingService {
   private ping() {
     this.window.postMessage(
       {
-        type: BrowserMessagingType.BPANE_READY_QUERY,
-        action: ChromeToBrowserMessagingActions.PING
+        type: BrowserMessagingType.BPANE_READY_QUERY
       },
       '*'
     );
@@ -55,7 +51,7 @@ export class BrowserMessagingService {
 
   public activate(payload: ActivateBrowserPayload) {
     this.window.postMessage(
-      { ...payload, action: ChromeToBrowserMessagingActions.ACTIVATE_BROWSER },
+      { ...payload, type: BrowserMessagingType.BPANE_ACTIVATE },
       '*'
     );
   }
@@ -69,7 +65,10 @@ export class BrowserMessagingService {
   };
 
   private sendPostMessage(message: OutgoingPayload) {
-    this.window.postMessage({ type: 'bpane', ...message }, '*');
+    this.window.postMessage(
+      { type: BrowserMessagingType.BPANE, ...message },
+      '*'
+    );
   }
 
   private subscribeToMessages() {
