@@ -27,7 +27,11 @@ import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
-import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+import {
+  toggleTracksMessage,
+  setFocusLocationMessage,
+  setFocusMessage
+} from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
@@ -79,18 +83,6 @@ export type ActivateBrowserPayload = {
   'config-url': string;
   key: string;
   selector: string;
-};
-
-export type BrowserSetFocusPayload = {
-  'message-counter': number;
-  focus?: string | undefined;
-};
-
-export type BrowserSetFocusLoationPayload = {
-  stick: string;
-  goto: string;
-  'message-counter': number;
-  focus?: string | undefined;
 };
 
 export const updateBrowserActivated = createAction(
@@ -230,13 +222,12 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
     });
   });
 
-  browserMessagingService.send({
-    action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
-    payload: {
+  browserMessagingService.send(
+    toggleTracksMessage({
       off: tracksToTurnOff,
       on: tracksToTurnOn
-    }
-  });
+    })
+  );
 };
 
 export const openBrowserNav = createAction(
@@ -362,15 +353,14 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
       focusInstruction.focus = activeEnsObjectId;
     }
 
-    browserMessagingService.send({
-      action: ChromeToBrowserMessagingActions.SET_FOCUS_LOCATION,
-      payload: {
+    browserMessagingService.send(
+      setFocusLocationMessage({
         stick: `${locationData.genomeId}:${chrCode}`,
         goto: `${startBp}-${endBp}`,
         'message-counter': messageCount,
         ...focusInstruction
-      }
-    });
+      })
+    );
   };
 };
 
@@ -390,13 +380,12 @@ export const changeFocusObject = (
 
   dispatch(updatePreviouslyViewedObjectsAndSave());
 
-  browserMessagingService.send({
-    action: ChromeToBrowserMessagingActions.SET_FOCUS,
-    payload: {
+  browserMessagingService.send(
+    setFocusMessage({
       focus: objectId,
       'message-counter': messageCount
-    }
-  });
+    })
+  );
 };
 
 export const updateCogList = createAction('browser/update-cog-list')<number>();

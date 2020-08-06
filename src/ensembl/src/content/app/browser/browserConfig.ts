@@ -25,77 +25,70 @@ import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
-import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+import {
+  OutgoingPayload,
+  browserZoomByMessage,
+  browserMoveUpMessage,
+  browserMoveDownMessage,
+  browserMoveLeftMessage,
+  browserMoveRightMessage
+} from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 export type BrowserNavItem = {
   description: string;
-  detail: {
-    [key: string]: number;
-  };
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   name: string;
-  action:
-    | ChromeToBrowserMessagingActions.MOVE_UP
-    | ChromeToBrowserMessagingActions.MOVE_DOWN
-    | ChromeToBrowserMessagingActions.MOVE_LEFT
-    | ChromeToBrowserMessagingActions.MOVE_RIGHT
-    | ChromeToBrowserMessagingActions.ZOOM_BY;
+  message: OutgoingPayload;
 };
 
 export const browserNavConfig: BrowserNavItem[] = [
   {
     description: 'navigate up',
-    detail: {
-      move_up_px: 50
-    },
     icon: navigateUpIcon,
     name: 'navigate-up',
-    action: ChromeToBrowserMessagingActions.MOVE_UP
+    message: browserMoveUpMessage({
+      move_up_px: 50
+    })
   },
   {
     description: 'navigate down',
-    detail: {
-      move_down_px: 50
-    },
     icon: navigateDownIcon,
     name: 'navigate-down',
-    action: ChromeToBrowserMessagingActions.MOVE_DOWN
+    message: browserMoveDownMessage({
+      move_down_px: 50
+    })
   },
   {
     description: 'zoom out',
-    detail: {
-      zoom_by: -0.3
-    },
     icon: zoomOutIcon,
     name: 'zoom-out',
-    action: ChromeToBrowserMessagingActions.ZOOM_BY
+    message: browserZoomByMessage({
+      zoom_by: -0.3
+    })
   },
   {
     description: 'zoom in',
-    detail: {
-      zoom_by: 0.3
-    },
     icon: zoomInIcon,
     name: 'zoom-in',
-    action: ChromeToBrowserMessagingActions.ZOOM_BY
+    message: browserZoomByMessage({
+      zoom_by: 0.3
+    })
   },
   {
     description: 'navigate left',
-    detail: {
-      move_left_px: 50
-    },
     icon: navigateLeftIcon,
     name: 'navigate-left',
-    action: ChromeToBrowserMessagingActions.MOVE_LEFT
+    message: browserMoveLeftMessage({
+      move_left_px: 50
+    })
   },
   {
     description: 'navigate right',
-    detail: {
-      move_right_px: 50
-    },
     icon: navigateRightIcon,
     name: 'navigate-right',
-    action: ChromeToBrowserMessagingActions.MOVE_RIGHT
+    message: browserMoveRightMessage({
+      move_right_px: 50
+    })
   }
 ];
 

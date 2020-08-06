@@ -18,7 +18,10 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
-import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+import {
+  toggleTracksMessage,
+  BrowserToChromeMessagingActions
+} from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 import BrowserCog from './BrowserCog';
 import {
@@ -51,20 +54,26 @@ type BrowserCogListProps = {
   updateSelectedCog: (trackId: string | null) => void;
 };
 
-type BpaneScrollPayload = {
-  delta_y?: number;
-  track_y?: CogList;
-};
+type BpaneScrollPayload =
+  | {
+      delta_y: number;
+      action: BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION;
+    }
+  | {
+      action: BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION;
+      track_y: CogList;
+    };
 
 export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
-    const { delta_y, track_y } = payload;
-    if (delta_y !== undefined) {
-      props.updateCogList(delta_y);
+    const { action } = payload;
+
+    if (action === BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION) {
+      props.updateCogList(payload.delta_y);
     }
-    if (track_y) {
-      props.updateCogTrackList(track_y);
+    if (action === BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION) {
+      props.updateCogTrackList(payload.track_y);
     }
   };
 
@@ -99,13 +108,12 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
           offs.push(`${name}:names`); // by default, track label is not shown
         }
       });
-      browserMessagingService.send({
-        action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
-        payload: {
+      browserMessagingService.send(
+        toggleTracksMessage({
           off: offs,
           on: ons
-        }
-      });
+        })
+      );
     }
   }, [
     props.trackConfigNames,

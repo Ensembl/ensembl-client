@@ -17,7 +17,7 @@
 import React from 'react';
 
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
-import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+import { zmenuActivityOutsideMessage } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
@@ -48,10 +48,11 @@ const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
 
   const onOutsideClick = () =>
-    browserMessagingService.send({
-      payload: { id: props.id },
-      action: ChromeToBrowserMessagingActions.ZMENU_ACTIVITY_OUTSIDE
-    });
+    browserMessagingService.send(
+      zmenuActivityOutsideMessage({
+        id: props.id
+      })
+    );
 
   const direction = chooseDirection(props);
   const toolboxPosition =

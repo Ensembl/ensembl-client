@@ -19,10 +19,6 @@ import {
   ZmenuOutsideActivityPayload,
   ZmenuEnterPayload
 } from 'src/content/app/browser/zmenu/zmenu-types';
-import {
-  BrowserSetFocusLoationPayload,
-  BrowserSetFocusPayload
-} from 'src/content/app/browser/browserActions';
 
 /*
 This is a service for communicating between genome browser and React wrapper.
@@ -31,7 +27,10 @@ This is a service for communicating between genome browser and React wrapper.
 export enum BrowserToChromeMessagingActions {
   ZMENU_CREATE = 'create_zmenu',
   ZMENU_DESTROY = 'destroy_zmenu',
-  ZMENU_REPOSITION = 'update_zmenu_position'
+  ZMENU_REPOSITION = 'update_zmenu_position',
+  UPDATE_LOCATION = 'update_location',
+  UPDATE_SCROLL_POSITION = 'update_scroll_position',
+  UPDATE_TRACK_POSITION = 'upadte_track_position'
 }
 
 export enum ChromeToBrowserMessagingActions {
@@ -44,7 +43,6 @@ export enum ChromeToBrowserMessagingActions {
   MOVE_DOWN = 'move_down',
   MOVE_UP = 'move_up',
   ZOOM_BY = 'zoom_by',
-  PING = 'ping',
   ZMENU_ENTER = 'zmenu-enter',
   ZMENU_LEAVE = 'zmenu-leave',
   ZMENU_ACTIVITY_OUTSIDE = 'zmenu-activity-outside' // TODO: sometime later, unify underscores vs hyphens (together with Genome Browser)
@@ -55,10 +53,19 @@ export type BrowserToggleTracksPayload = {
   off?: string | string[];
 };
 
+export type BrowserSetFocusPayload = {
+  'message-counter': number;
+  focus?: string | undefined;
+};
+
+export type BrowserSetFocusLocationPayload = {
+  stick: string;
+  goto: string;
+  'message-counter': number;
+  focus?: string | undefined;
+};
+
 export type OutgoingPayload =
-  | {
-      action: ChromeToBrowserMessagingActions.PING;
-    }
   | {
       action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS;
       payload: BrowserToggleTracksPayload;
@@ -77,20 +84,128 @@ export type OutgoingPayload =
     }
   | {
       action: ChromeToBrowserMessagingActions.SET_FOCUS_LOCATION;
-      payload: BrowserSetFocusLoationPayload;
+      payload: BrowserSetFocusLocationPayload;
     }
   | {
       action: ChromeToBrowserMessagingActions.SET_FOCUS;
       payload: BrowserSetFocusPayload;
     }
   | {
-      action:
-        | ChromeToBrowserMessagingActions.MOVE_UP
-        | ChromeToBrowserMessagingActions.MOVE_DOWN
-        | ChromeToBrowserMessagingActions.MOVE_LEFT
-        | ChromeToBrowserMessagingActions.MOVE_RIGHT
-        | ChromeToBrowserMessagingActions.ZOOM_BY;
-      payload: {
-        [key: string]: number;
-      };
+      action: ChromeToBrowserMessagingActions.MOVE_UP;
+      payload: { move_up_px: number };
+    }
+  | {
+      action: ChromeToBrowserMessagingActions.MOVE_DOWN;
+      payload: { move_down_px: number };
+    }
+  | {
+      action: ChromeToBrowserMessagingActions.MOVE_LEFT;
+      payload: { move_left_px: number };
+    }
+  | {
+      action: ChromeToBrowserMessagingActions.MOVE_RIGHT;
+      payload: { move_right_px: number };
+    }
+  | {
+      action: ChromeToBrowserMessagingActions.ZOOM_BY;
+      payload: { zoom_by: number };
     };
+
+export const toggleTracksMessage = (
+  payload: BrowserToggleTracksPayload
+): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
+    payload: { ...payload }
+  };
+};
+
+export const zmenuEnterMessage = (
+  payload: ZmenuEnterPayload
+): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.ZMENU_ENTER,
+    payload
+  };
+};
+
+export const zmenuLeaveMessage = (
+  payload: ZmenuLeavePayload
+): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.ZMENU_LEAVE,
+    payload
+  };
+};
+
+export const zmenuActivityOutsideMessage = (
+  payload: ZmenuOutsideActivityPayload
+): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.ZMENU_ACTIVITY_OUTSIDE,
+    payload
+  };
+};
+
+export const setFocusLocationMessage = (
+  payload: BrowserSetFocusLocationPayload
+): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.SET_FOCUS_LOCATION,
+    payload
+  };
+};
+
+export const setFocusMessage = (
+  payload: BrowserSetFocusPayload
+): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.SET_FOCUS,
+    payload
+  };
+};
+
+export const browserZoomByMessage = (payload: {
+  zoom_by: number;
+}): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.ZOOM_BY,
+    payload
+  };
+};
+
+export const browserMoveUpMessage = (payload: {
+  move_up_px: number;
+}): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.MOVE_UP,
+    payload
+  };
+};
+
+export const browserMoveDownMessage = (payload: {
+  move_down_px: number;
+}): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.MOVE_DOWN,
+    payload
+  };
+};
+
+export const browserMoveLeftMessage = (payload: {
+  move_left_px: number;
+}): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.MOVE_LEFT,
+    payload
+  };
+};
+
+export const browserMoveRightMessage = (payload: {
+  move_right_px: number;
+}): OutgoingPayload => {
+  return {
+    action: ChromeToBrowserMessagingActions.MOVE_RIGHT,
+    payload
+  };
+};

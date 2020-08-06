@@ -25,8 +25,6 @@ import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
-import { parseFeatureId } from 'src/content/app/browser/browserHelper';
-import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getBrowserCogTrackList,
   getBrowserNavOpened,
@@ -47,6 +45,7 @@ import {
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
+import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
@@ -70,9 +69,9 @@ export type BrowserImageProps = {
 };
 
 type BpaneOutPayload = {
+  action: BrowserToChromeMessagingActions.UPDATE_LOCATION;
   bumper?: BrowserNavStates;
-  focus?: string;
-  'message-counter'?: number;
+  _outgoing?: boolean;
   'intended-location'?: ChrLocation;
   'actual-location'?: ChrLocation;
   'is-focus-position'?: boolean;
@@ -88,11 +87,9 @@ const parseLocation = (location: ChrLocation) => {
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
-    const ensObjectId = payload.focus;
     const navIconStates = payload.bumper as BrowserNavStates;
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
-    const messageCount = payload['message-counter'];
     const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
     if (navIconStates) {
@@ -105,15 +102,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
     if (actualLocation) {
       props.setActualChrLocation(parseLocation(actualLocation));
-    }
-
-    if (ensObjectId) {
-      const parsedId = parseFeatureId(ensObjectId);
-      props.updateBrowserActiveEnsObject(buildEnsObjectId(parsedId));
-    }
-
-    if (messageCount) {
-      props.updateMessageCounter(messageCount);
     }
 
     if (typeof isFocusObjectInDefaultPosition === 'boolean') {

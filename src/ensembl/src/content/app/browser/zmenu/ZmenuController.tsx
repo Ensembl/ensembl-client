@@ -21,7 +21,8 @@ import Zmenu from './Zmenu';
 
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
 import {
-  ChromeToBrowserMessagingActions,
+  zmenuEnterMessage,
+  zmenuLeaveMessage,
   BrowserToChromeMessagingActions
 } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
@@ -104,21 +105,19 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuEnter = (id: string) => {
-    browserMessagingService.send({
-      action: ChromeToBrowserMessagingActions.ZMENU_ENTER,
-      payload: {
+    browserMessagingService.send(
+      zmenuEnterMessage({
         id
-      }
-    });
+      })
+    );
   };
 
   const handleZmenuLeave = (id: string) => {
-    browserMessagingService.send({
-      action: ChromeToBrowserMessagingActions.ZMENU_LEAVE,
-      payload: {
+    browserMessagingService.send(
+      zmenuLeaveMessage({
         id
-      }
-    });
+      })
+    );
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (

@@ -22,7 +22,7 @@ import { RootState } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service/browser-messaging-service';
-import { ChromeToBrowserMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
+import { toggleTracksMessage } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
@@ -183,14 +183,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const updateGenomeBrowser = (status: Status) => {
     const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
 
-    const payload: { on?: string; off?: string } = {
-      [currentTrackStatus]: `${track.track_id}`
-    };
-
-    browserMessagingService.send({
-      action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
-      payload
-    });
+    browserMessagingService.send(
+      toggleTracksMessage({
+        [currentTrackStatus]: `${track.track_id}`
+      })
+    );
   };
 
   const trackClassNames = classNames(styles.track, {

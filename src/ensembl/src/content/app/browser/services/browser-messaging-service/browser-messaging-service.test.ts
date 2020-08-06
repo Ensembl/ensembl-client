@@ -15,6 +15,7 @@
  */
 
 import { BrowserMessagingService } from './browser-messaging-service';
+import { zmenuEnterMessage as dummyMessageCreator } from './browser-message-creator';
 import faker from 'faker';
 
 import windowService from 'src/services/window-service';
@@ -70,12 +71,17 @@ describe('browserMessagingService', () => {
       // clear recorded 'bpane-ready-query' message
       mockWindow.postMessage.mockClear();
 
-      browserMessagingService.send(faker.lorem.word(), {
-        [faker.lorem.word()]: faker.lorem.word()
-      });
-      browserMessagingService.send(faker.lorem.word(), {
-        [faker.lorem.word()]: faker.lorem.word()
-      });
+      browserMessagingService.send(
+        dummyMessageCreator({
+          id: faker.lorem.word()
+        })
+      );
+
+      browserMessagingService.send(
+        dummyMessageCreator({
+          id: faker.lorem.word()
+        })
+      );
 
       expect(mockWindow.postMessage).not.toHaveBeenCalled();
     });
@@ -87,12 +93,14 @@ describe('browserMessagingService', () => {
       // clear recorded 'bpane-ready-query' message
       mockWindow.postMessage.mockClear();
 
-      const messageName1 = faker.lorem.word();
-      const messagePayload1 = { [faker.lorem.word()]: faker.lorem.word() };
-      const messageName2 = faker.lorem.word();
-      const messagePayload2 = { [faker.lorem.word()]: faker.lorem.word() };
-      browserMessagingService.send(messageName1, messagePayload1);
-      browserMessagingService.send(messageName2, messagePayload2);
+      const message1 = faker.lorem.word();
+      const messagePayload1 = dummyMessageCreator({ id: message1 });
+
+      const message2 = faker.lorem.word();
+      const messagePayload2 = dummyMessageCreator({ id: message2 });
+
+      browserMessagingService.send(messagePayload1);
+      browserMessagingService.send(messagePayload2);
 
       expect(mockWindow.postMessage).not.toHaveBeenCalled();
 
@@ -100,11 +108,9 @@ describe('browserMessagingService', () => {
 
       expect(mockWindow.postMessage).toHaveBeenCalledTimes(2);
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
-        type: messageName1,
         payload: messagePayload1
       });
       expect(mockWindow.postMessage.mock.calls[1][0]).toEqual({
-        type: messageName2,
         payload: messagePayload2
       });
     });
@@ -117,12 +123,11 @@ describe('browserMessagingService', () => {
       mockWindow.postMessage.mockClear();
       mockWindow.sendMessage('message', { type: 'bpane-ready', payload: {} });
 
-      const messageName = faker.lorem.word();
-      const messagePayload = { [faker.lorem.word()]: faker.lorem.word() };
-      browserMessagingService.send(messageName, messagePayload);
+      const message = faker.lorem.word();
+      const messagePayload = dummyMessageCreator({ id: message });
+      browserMessagingService.send(messagePayload);
 
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
-        type: messageName,
         payload: messagePayload
       });
     });
