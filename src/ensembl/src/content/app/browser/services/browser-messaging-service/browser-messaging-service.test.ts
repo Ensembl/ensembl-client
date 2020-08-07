@@ -22,6 +22,7 @@ import {
 } from './browser-messaging-service';
 
 import windowService from 'src/services/window-service';
+import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 const dummyMessageCreator = (payload: any): any => {
   return {
@@ -114,7 +115,12 @@ describe('browserMessagingService', () => {
 
       expect(mockWindow.postMessage).not.toHaveBeenCalled();
 
-      mockWindow.sendMessage('message', { type: 'bpane-ready', payload: {} });
+      mockWindow.sendMessage('message', {
+        type: 'bpane-ready',
+        payload: {
+          action: BrowserToChromeMessagingActions.GENOME_BROWSER_READY
+        }
+      });
 
       expect(mockWindow.postMessage).toHaveBeenCalledTimes(2);
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
@@ -135,7 +141,9 @@ describe('browserMessagingService', () => {
       mockWindow.postMessage.mockClear();
       mockWindow.sendMessage('message', {
         type: BrowserMessagingType.BPANE_READY,
-        payload: {}
+        payload: {
+          action: BrowserToChromeMessagingActions.GENOME_BROWSER_READY
+        }
       });
 
       const message = faker.lorem.word();
@@ -154,15 +162,18 @@ describe('browserMessagingService', () => {
       const browserMessagingService = new BrowserMessagingService(
         windowService
       );
-      const messageType = faker.lorem.word();
+      const mockAction = faker.lorem.word();
       const callback = jest.fn();
-      const payload = { [faker.lorem.word()]: faker.lorem.word() };
+      const payload = {
+        [faker.lorem.word()]: faker.lorem.word(),
+        action: mockAction
+      };
       const subscription = browserMessagingService.subscribe(
-        messageType,
+        mockAction as any,
         callback
       );
 
-      mockWindow.sendMessage('message', { type: messageType, payload });
+      mockWindow.sendMessage('message', { payload });
 
       expect(callback).toHaveBeenCalledWith(payload);
       callback.mockClear();
@@ -170,7 +181,7 @@ describe('browserMessagingService', () => {
       // check that the callback stops being called after unsubscribing
       subscription.unsubscribe();
 
-      mockWindow.sendMessage('message', { type: messageType, payload });
+      mockWindow.sendMessage('message', { payload });
 
       expect(callback).not.toHaveBeenCalled();
     });

@@ -14,7 +14,9 @@ impl EventListener<()> for ReadyPingPongListener {
             EventData::MessageEvent(_,_,c) => {
                 let data = &c.data().unwrap();
                 if data["type"] == "bpane-ready-query" {
-                    domutil::send_post_message("bpane-ready",&json!{});
+                    domutil::send_post_message("bpane-ready",&json!{{
+                        "action": "genome_browser_ready"
+                    }});
                 }
             },
             _ => ()
@@ -31,5 +33,7 @@ pub fn activate() {
     let pingpong = ReadyPingPongListener{};
     let mut ec = EventControl::new(Box::new(pingpong),());
     ec.add_event(EventType::MessageEvent);
-    domutil::send_post_message("bpane-ready",&json!{{}});
+    domutil::send_post_message("bpane-ready",&json!{{
+        "action": "genome_browser_ready"
+    }});
 }

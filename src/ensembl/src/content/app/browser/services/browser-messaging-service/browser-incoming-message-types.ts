@@ -30,7 +30,8 @@ export enum BrowserToChromeMessagingActions {
   ZMENU_REPOSITION = 'update_zmenu_position',
   UPDATE_LOCATION = 'update_location',
   UPDATE_SCROLL_POSITION = 'update_scroll_position',
-  UPDATE_TRACK_POSITION = 'upadte_track_position'
+  UPDATE_TRACK_POSITION = 'upadte_track_position',
+  GENOME_BROWSER_READY = 'genome_browser_ready'
 }
 
 export type BrowserScrollPayload =

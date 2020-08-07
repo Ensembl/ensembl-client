@@ -25,6 +25,8 @@ import {
   OutgoingPayload,
   ActivateBrowserPayload
 } from './browser-message-creator';
+import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
+import { isArray } from 'lodash';
 
 export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
@@ -42,7 +44,10 @@ export class BrowserMessagingService {
   public constructor(windowService: WindowServiceInterface) {
     this.window = windowService.getWindow();
     this.subscribeToMessages();
-    this.subscribe('bpane-ready', this.onRecipientReady);
+    this.subscribe(
+      BrowserToChromeMessagingActions.GENOME_BROWSER_READY,
+      this.onRecipientReady
+    );
     this.ping();
   }
 
@@ -87,12 +92,12 @@ export class BrowserMessagingService {
 
   private handleMessage = (event: MessageEvent) => {
     const {
-      data: { type, payload }
+      data: { payload }
     } = event;
-    if (!(type && payload)) {
+    if (!(payload && payload.action)) {
       return;
     }
-    const subscribers = this.subscribers[type];
+    const subscribers = this.subscribers[payload.action];
     if (subscribers) {
       subscribers.forEach((subscriber: (payload: any) => void) =>
         subscriber(payload)
@@ -101,18 +106,36 @@ export class BrowserMessagingService {
   };
 
   public subscribe = (
-    eventName: string,
+    actions:
+      | BrowserToChromeMessagingActions
+      | BrowserToChromeMessagingActions[],
     callback: (...args: any[]) => void
   ) => {
-    if (!this.subscribers[eventName]) {
-      this.subscribers[eventName] = new Set();
-    }
+    if (typeof actions === 'string') {
+      if (!this.subscribers[actions]) {
+        this.subscribers[actions] = new Set();
+      }
 
-    this.subscribers[eventName].add(callback);
+      this.subscribers[actions].add(callback);
+    } else if (isArray(actions)) {
+      actions.forEach((action: BrowserToChromeMessagingActions) => {
+        if (!this.subscribers[action]) {
+          this.subscribers[action] = new Set();
+        }
+
+        this.subscribers[action].add(callback);
+      });
+    }
 
     return {
       unsubscribe: () => {
-        this.subscribers[eventName].delete(callback);
+        if (typeof actions === 'string') {
+          this.subscribers[actions].delete(callback);
+        } else if (isArray(actions)) {
+          actions.forEach((action: BrowserToChromeMessagingActions) => {
+            this.subscribers[action].delete(callback);
+          });
+        }
       }
     };
   };

@@ -53,7 +53,11 @@ const ZmenuController = (props: Props) => {
 
   useEffect(() => {
     const subscription = browserMessagingService.subscribe(
-      'bpane-zmenu',
+      [
+        BrowserToChromeMessagingActions.ZMENU_CREATE,
+        BrowserToChromeMessagingActions.ZMENU_DESTROY,
+        BrowserToChromeMessagingActions.ZMENU_REPOSITION
+      ],
       handleBpaneEvent
     );
 

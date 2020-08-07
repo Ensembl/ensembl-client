@@ -72,7 +72,10 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
 
   useEffect(() => {
     const subscription = browserMessagingService.subscribe(
-      'bpane-scroll',
+      [
+        BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION,
+        BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION
+      ],
       listenBpaneScroll
     );
 
