@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
+import faker from 'faker';
+
 import {
   BrowserMessagingService,
   BrowserMessagingType
 } from './browser-messaging-service';
-import { zmenuEnterMessage as dummyMessageCreator } from './browser-message-creator';
-import faker from 'faker';
 
 import windowService from 'src/services/window-service';
+
+const dummyMessageCreator = (payload: any): any => {
+  return {
+    action: 'test',
+    payload
+  };
+};
 
 class MockWindow {
   private subscribers: { [name: string]: ((...args: any[]) => void)[] } = {};

@@ -78,12 +78,6 @@ export type ParsedUrlPayload = {
   chrLocation: ChrLocation | null;
 };
 
-export type ActivateBrowserPayload = {
-  'config-url': string;
-  key: string;
-  selector: string;
-};
-
 export const updateBrowserActivated = createAction(
   'browser/update-browser-activated'
 )<boolean>();

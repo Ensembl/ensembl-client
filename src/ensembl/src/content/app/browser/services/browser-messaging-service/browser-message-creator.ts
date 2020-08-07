@@ -43,6 +43,12 @@ export type BrowserSetFocusLocationPayload = {
   focus?: string | undefined;
 };
 
+export type ActivateBrowserPayload = {
+  'config-url': string;
+  key: string;
+  selector: string;
+};
+
 export type ZmenuEnterPayload = {
   id: string;
 };

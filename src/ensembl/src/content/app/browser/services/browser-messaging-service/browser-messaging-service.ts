@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+/*
+  This is a service for communicating between genome browser and React wrapper.
+*/
+
 import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
-import { OutgoingPayload } from './browser-message-creator';
-
-import { ActivateBrowserPayload } from 'src/content/app/browser/browserActions';
+import {
+  OutgoingPayload,
+  ActivateBrowserPayload
+} from './browser-message-creator';
 
 export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
