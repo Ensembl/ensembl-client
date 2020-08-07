@@ -36,13 +36,13 @@ const getSliceForGene = (
 };
 
 export const getExpandedTranscriptIds = (state: RootState): string[] => {
-  const proteinsSlice = getSliceForGene(state);
-  return proteinsSlice?.expandedIds ?? [];
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.expandedIds ?? [];
 };
 
 export const getExpandedTranscriptDownloadIds = (
   state: RootState
 ): string[] => {
-  const proteinsSlice = getSliceForGene(state);
-  return proteinsSlice?.expandedDownloadIds ?? [];
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.expandedDownloadIds ?? [];
 };
