@@ -23,7 +23,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getSelectedGeneViewTabs,
   getSelectedTabViews
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewSelectors';
+} from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
@@ -32,7 +32,7 @@ import {
   GeneViewTabName,
   View,
   SelectedTabViews
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState.ts';
+} from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import styles from './GeneViewTabs.scss';
 

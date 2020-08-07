@@ -14,48 +14,42 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import {
-  EntityViewerGeneViewUIState,
-  transcriptsTabData,
-  GeneViewTabMap,
-  GeneViewTabData,
-  SelectedTabViews
-} from 'src/content/app/entity-viewer/state/gene-view/entityViewerGeneViewState';
 
-export const getGeneViewState = (
-  state: RootState
-): EntityViewerGeneViewUIState | undefined => {
+import { RootState } from 'src/store';
+import {
+  View,
+  ViewStatePerGene,
+  GeneViewTabData,
+  GeneViewTabMap,
+  SelectedTabViews
+} from './geneViewViewSlice';
+
+const getSliceForGene = (state: RootState): ViewStatePerGene | undefined => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
-
-  return state.entityViewer.geneView[activeGenomeId]?.[activeObjectId];
+  return state.entityViewer.geneView.view[activeGenomeId]?.[activeObjectId];
 };
 
-export const getGeneViewName = (state: RootState) =>
-  getGeneViewState(state)?.view;
+export const getCurrentView = (state: RootState) => {
+  return getSliceForGene(state)?.current;
+};
 
 export const getSelectedGeneViewTabs = (state: RootState): GeneViewTabData => {
-  const view = getGeneViewName(state);
+  const view = getCurrentView(state);
   return view
     ? (GeneViewTabMap.get(view) as GeneViewTabData)
-    : transcriptsTabData;
+    : (GeneViewTabMap.get(View.TRANSCRIPTS) as GeneViewTabData);
 };
 
 export const getSelectedTabViews = (
   state: RootState
 ): SelectedTabViews | undefined => {
-  return getGeneViewState(state)?.selectedTabViews;
-};
-
-export const getGeneViewContentUI = (state: RootState) => {
-  return getGeneViewState(state)?.contentUI;
+  return getSliceForGene(state)?.selectedTabViews;
 };

@@ -20,12 +20,11 @@ import { connect } from 'react-redux';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 
-import { toggleProteinInfo } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsActions';
-import { getProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsSelectors';
+import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
+import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
 
 import { RootState } from 'src/store';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { EntityViewerGeneViewProteinsUI } from 'src/content/app/entity-viewer/state/gene-view/proteins/entityViewerGeneViewProteinsState';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
@@ -33,16 +32,14 @@ import styles from './ProteinsListItem.scss';
 type Props = {
   transcript: Transcript;
   trackLength: number;
-  proteinsUI?: EntityViewerGeneViewProteinsUI;
-  toggleProteinInfo: (id: string) => void;
+  expandedTranscriptIds: string[];
+  toggleExpandedProtein: (id: string) => void;
 };
 
 const ProteinsListItem = (props: Props) => {
   const { transcript, trackLength } = props;
 
-  const expandedProteinIds = props.proteinsUI?.expandedProteinIds || [];
-
-  const toggleListItemInfo = () => props.toggleProteinInfo(transcript.id);
+  const toggleListItemInfo = () => props.toggleExpandedProtein(transcript.id);
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -64,7 +61,7 @@ const ProteinsListItem = (props: Props) => {
           <span className={styles.transcriptId}>{props.transcript.id}</span>
         </div>
       </div>
-      {expandedProteinIds?.includes(transcript.id) ? (
+      {props.expandedTranscriptIds.includes(transcript.id) ? (
         <ProteinsListItemInfo
           transcriptId={transcript.id}
           trackLength={trackLength}
@@ -75,11 +72,11 @@ const ProteinsListItem = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  proteinsUI: getProteinsUI(state)
+  expandedTranscriptIds: getExpandedTranscriptIds(state)
 });
 
 const mapDispatchToProps = {
-  toggleProteinInfo
+  toggleExpandedProtein
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProteinsListItem);

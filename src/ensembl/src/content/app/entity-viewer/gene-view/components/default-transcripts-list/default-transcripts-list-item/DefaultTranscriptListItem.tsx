@@ -15,13 +15,14 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 
-import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/entityViewerGeneViewTranscriptsActions';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -29,7 +30,6 @@ import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/component
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
-import { connect } from 'react-redux';
 
 export type DefaultTranscriptListItemProps = {
   gene: Gene;
