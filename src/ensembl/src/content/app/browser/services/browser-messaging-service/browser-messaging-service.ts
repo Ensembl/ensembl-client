@@ -18,6 +18,8 @@
   This is a service for communicating between genome browser and React wrapper.
 */
 
+import { isArray } from 'lodash';
+
 import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
@@ -26,7 +28,6 @@ import {
   ActivateBrowserPayload
 } from './browser-message-creator';
 import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
-import { isArray } from 'lodash';
 
 export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
