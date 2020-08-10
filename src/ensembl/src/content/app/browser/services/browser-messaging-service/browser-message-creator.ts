@@ -61,7 +61,7 @@ export type ZmenuLeavePayload = {
   id: string;
 };
 
-export type OutgoingPayload =
+export type OutgoingMessage =
   | {
       action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS;
       payload: BrowserToggleTracksPayload;
@@ -109,7 +109,7 @@ export type OutgoingPayload =
 
 export const toggleTracksMessage = (
   payload: BrowserToggleTracksPayload
-): OutgoingPayload => {
+): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
     payload: payload
@@ -118,7 +118,7 @@ export const toggleTracksMessage = (
 
 export const zmenuEnterMessage = (
   payload: ZmenuEnterPayload
-): OutgoingPayload => {
+): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.ZMENU_ENTER,
     payload
@@ -127,7 +127,7 @@ export const zmenuEnterMessage = (
 
 export const zmenuLeaveMessage = (
   payload: ZmenuLeavePayload
-): OutgoingPayload => {
+): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.ZMENU_LEAVE,
     payload
@@ -136,7 +136,7 @@ export const zmenuLeaveMessage = (
 
 export const zmenuActivityOutsideMessage = (
   payload: ZmenuOutsideActivityPayload
-): OutgoingPayload => {
+): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.ZMENU_ACTIVITY_OUTSIDE,
     payload
@@ -145,7 +145,7 @@ export const zmenuActivityOutsideMessage = (
 
 export const setFocusLocationMessage = (
   payload: BrowserSetFocusLocationPayload
-): OutgoingPayload => {
+): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.SET_FOCUS_LOCATION,
     payload
@@ -154,7 +154,7 @@ export const setFocusLocationMessage = (
 
 export const setFocusMessage = (
   payload: BrowserSetFocusPayload
-): OutgoingPayload => {
+): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.SET_FOCUS,
     payload
@@ -163,7 +163,7 @@ export const setFocusMessage = (
 
 export const browserZoomByMessage = (payload: {
   zoom_by: number;
-}): OutgoingPayload => {
+}): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.ZOOM_BY,
     payload
@@ -172,7 +172,7 @@ export const browserZoomByMessage = (payload: {
 
 export const browserMoveUpMessage = (payload: {
   move_up_px: number;
-}): OutgoingPayload => {
+}): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.MOVE_UP,
     payload
@@ -181,7 +181,7 @@ export const browserMoveUpMessage = (payload: {
 
 export const browserMoveDownMessage = (payload: {
   move_down_px: number;
-}): OutgoingPayload => {
+}): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.MOVE_DOWN,
     payload
@@ -190,7 +190,7 @@ export const browserMoveDownMessage = (payload: {
 
 export const browserMoveLeftMessage = (payload: {
   move_left_px: number;
-}): OutgoingPayload => {
+}): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.MOVE_LEFT,
     payload
@@ -199,7 +199,7 @@ export const browserMoveLeftMessage = (payload: {
 
 export const browserMoveRightMessage = (payload: {
   move_right_px: number;
-}): OutgoingPayload => {
+}): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.MOVE_RIGHT,
     payload

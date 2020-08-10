@@ -26,7 +26,7 @@ import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tr
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
 import {
-  OutgoingPayload,
+  OutgoingMessage,
   browserZoomByMessage,
   browserMoveUpMessage,
   browserMoveDownMessage,
@@ -38,7 +38,7 @@ export type BrowserNavItem = {
   description: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   name: string;
-  message: OutgoingPayload;
+  message: OutgoingMessage;
 };
 
 export const browserNavConfig: BrowserNavItem[] = [

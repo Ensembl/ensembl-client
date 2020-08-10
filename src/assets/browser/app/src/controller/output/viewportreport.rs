@@ -98,7 +98,13 @@ impl ViewportReport {
         ar.add_timer("viewport-report",enclose! { (out) move |app,_,sr| {
             if let Some(report) = out.clone().make_report(app) {
                 vec!{
-                    OutputAction::SendCustomEvent("bpane-scroll".to_string(),report)
+                    OutputAction::SendCustomEvent("bpane-scroll".to_string(),
+                    {
+                        "action":  report["action"],
+                        "payload": report
+                    } 
+                    
+                    )
                 }
             } else {
                 sr.unproductive();

@@ -18,13 +18,11 @@
   This is a service for communicating between genome browser and React wrapper.
 */
 
-import { isArray } from 'lodash';
-
 import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
 import {
-  OutgoingPayload,
+  OutgoingMessage,
   ActivateBrowserPayload
 } from './browser-message-creator';
 import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
@@ -40,7 +38,7 @@ export class BrowserMessagingService {
   private window: Window;
   private isRecepientReady = false;
   private subscribers: any = {};
-  private outgoingMessageQueue: OutgoingPayload[] = [];
+  private outgoingMessageQueue: OutgoingMessage[] = [];
 
   public constructor(windowService: WindowServiceInterface) {
     this.window = windowService.getWindow();
@@ -76,7 +74,7 @@ export class BrowserMessagingService {
     );
   };
 
-  private sendPostMessage(message: OutgoingPayload) {
+  private sendPostMessage(message: OutgoingMessage) {
     this.window.postMessage(
       { type: BrowserMessagingType.BPANE, ...message },
       '*'
@@ -87,7 +85,7 @@ export class BrowserMessagingService {
     this.window.addEventListener('message', this.handleMessage);
   }
 
-  private addMessageToQueue(message: OutgoingPayload) {
+  private addMessageToQueue(message: OutgoingMessage) {
     this.outgoingMessageQueue.push(message);
   }
 
@@ -118,7 +116,7 @@ export class BrowserMessagingService {
       }
 
       this.subscribers[actions].add(callback);
-    } else if (isArray(actions)) {
+    } else if (Array.isArray(actions)) {
       actions.forEach((action: BrowserToChromeMessagingActions) => {
         if (!this.subscribers[action]) {
           this.subscribers[action] = new Set();
@@ -132,7 +130,7 @@ export class BrowserMessagingService {
       unsubscribe: () => {
         if (typeof actions === 'string') {
           this.subscribers[actions].delete(callback);
-        } else if (isArray(actions)) {
+        } else if (Array.isArray(actions)) {
           actions.forEach((action: BrowserToChromeMessagingActions) => {
             this.subscribers[action].delete(callback);
           });
@@ -141,7 +139,7 @@ export class BrowserMessagingService {
     };
   };
 
-  public send = (payload: OutgoingPayload) => {
+  public send = (payload: OutgoingMessage) => {
     if (!this.isRecepientReady) {
       this.addMessageToQueue(payload);
     } else {

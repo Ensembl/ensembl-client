@@ -263,7 +263,10 @@ impl Report {
                     vec!{
                         OutputAction::SendCustomEvent(
                             "bpane-out".to_string(),
-                            reportClone
+                            {
+                                "action":  reportClone["action"],
+                                "payload": reportClone
+                            }
                         )
                     }
                 } else { sr.unproductive(); vec!{} }
