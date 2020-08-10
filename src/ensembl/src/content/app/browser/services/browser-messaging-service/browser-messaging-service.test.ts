@@ -173,7 +173,7 @@ describe('browserMessagingService', () => {
         callback
       );
 
-      mockWindow.sendMessage('message', { payload });
+      mockWindow.sendMessage('message', { action: mockAction, payload });
 
       expect(callback).toHaveBeenCalledWith(payload);
       callback.mockClear();
@@ -181,7 +181,7 @@ describe('browserMessagingService', () => {
       // check that the callback stops being called after unsubscribing
       subscription.unsubscribe();
 
-      mockWindow.sendMessage('message', { payload });
+      mockWindow.sendMessage('message', { action: mockAction, payload });
 
       expect(callback).not.toHaveBeenCalled();
     });

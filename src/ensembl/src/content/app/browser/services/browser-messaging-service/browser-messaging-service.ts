@@ -91,15 +91,16 @@ export class BrowserMessagingService {
 
   private handleMessage = (event: MessageEvent) => {
     const {
-      data: { payload: message }
+      data: { payload }
     } = event;
-    if (!(message && message.action)) {
+
+    if (!(payload && payload.action)) {
       return;
     }
-    const subscribers = this.subscribers[message.action];
+    const subscribers = this.subscribers[payload.action];
     if (subscribers) {
-      subscribers.forEach((subscriber: (message: any) => void) =>
-        subscriber(message.payload)
+      subscribers.forEach((subscriber: (payload: any) => void) =>
+        subscriber(payload)
       );
     }
   };
