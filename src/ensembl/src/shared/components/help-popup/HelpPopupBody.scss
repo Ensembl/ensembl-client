@@ -1,6 +1,14 @@
 @import 'src/styles/common';
 
 $heading-outdent: 16px;
+$aside-left-padding: 1.6rem;
+
+.spinnerContainer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .grid {
   display: grid;
@@ -43,6 +51,8 @@ $heading-outdent: 16px;
 }
 
 .aside {
+  padding-left: $aside-left-padding;
+
   h2 {
     font-size: 13px;
     font-weight: 300;
@@ -56,7 +66,30 @@ $heading-outdent: 16px;
   align-items: flex-start;
 }
 
-.relatedArticle {
+.relatedArticle,
+.relatedVideo {
   color: $blue;
   cursor: pointer;
+}
+
+.relatedVideo {
+  position: relative;
+}
+
+.relatedVideoIcon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: $blue;
+  height: 10px;
+  width: 16px;
+  margin-left: -#{$aside-left-padding};
+
+  svg {
+    height: 80%;
+    fill: white;
+  }
 }

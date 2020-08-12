@@ -53,8 +53,9 @@ const getQuery = (params: SlugReference | PathReference) => {
 
 const HelpPopupButton = (props: Props) => {
   const [slug, setSlug] = useState<string | null>(null);
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [shouldShowModal, setShouldShowModal] = useState(false);
-  const { helpApiHost } = config; // FIXME move to env and config
+  const { helpApiHost } = config;
 
   const query = slug ? getQuery({ slug }) : getQuery(props);
 
@@ -77,6 +78,12 @@ const HelpPopupButton = (props: Props) => {
     setSlug(slug);
   };
 
+  // this is a provisional implementation and is likely to change
+  // as the design and the behaviour of the popup get more refined
+  const handleVideoChange = (youtubeId: string) => {
+    setSelectedVideoId(youtubeId);
+  };
+
   const openModal = () => {
     setShouldShowModal(true);
   };
@@ -91,22 +98,46 @@ const HelpPopupButton = (props: Props) => {
     return <HelpAndDocumentation />;
   }
 
+  const sortedVideos = article?.videos.sort((a, b) => {
+    if (!selectedVideoId) {
+      return 0;
+    }
+    if (a.youtube_id === selectedVideoId) {
+      return -1;
+    } else if (b.youtube_id === selectedVideoId) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
+  const popupBodyProps = !article
+    ? {
+        loading: true as const,
+        article: null
+      }
+    : {
+        loading: false as const,
+        article: { ...article, videos: sortedVideos } as HelpArticle
+      };
+
   return (
     <>
-      <div className={styles.wrapper}>
+      <div className={styles.wrapper} onClick={openModal}>
         <span className={styles.label}>Help</span>
-        <div className={styles.button} onClick={openModal}>
+        <div className={styles.button}>
           <HelpIcon className={styles.icon} />
         </div>
-        <div className={videoButtonClasses} onClick={openModal}>
+        <div className={videoButtonClasses}>
           <VideoIcon className={styles.icon} />
         </div>
       </div>
-      {shouldShowModal && article && (
+      {shouldShowModal && (
         <Modal onClose={closeModal}>
           <HelpPopupBody
-            article={article}
+            {...popupBodyProps}
             onArticleChange={handleArticleChange}
+            onVideoChange={handleVideoChange}
           />
         </Modal>
       )}
