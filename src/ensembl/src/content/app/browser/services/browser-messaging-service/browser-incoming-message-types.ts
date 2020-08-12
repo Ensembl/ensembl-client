@@ -44,36 +44,42 @@ export type BrowserScrollPayload =
       track_y: CogList;
     };
 
-export type BrowserLocationUpdatePayload = {
+export type BrowserLocationUpdateMessage = {
   action: BrowserToChromeMessagingActions.UPDATE_LOCATION;
-  bumper?: BrowserNavStates;
-  'intended-location'?: ChrLocation;
-  'actual-location'?: ChrLocation;
-  'is-focus-position'?: boolean;
-};
-
-export type ZmenuCreatePayload = {
-  action: BrowserToChromeMessagingActions.ZMENU_CREATE;
-  id: string;
-  anchor_coordinates: AnchorCoordinates;
-  content: ZmenuContentFeature[];
-};
-
-export type ZmenuDestroyPayload = {
-  id: string;
-  action: BrowserToChromeMessagingActions.ZMENU_DESTROY;
-};
-
-export type ZmenuRepositionPayload = {
-  id: string;
-  action: BrowserToChromeMessagingActions.ZMENU_REPOSITION;
-  anchor_coordinates: {
-    x: number;
-    y: number;
+  payload: {
+    bumper?: BrowserNavStates;
+    'intended-location'?: ChrLocation;
+    'actual-location'?: ChrLocation;
+    'is-focus-position'?: boolean;
   };
 };
 
-export type ZmenuIncomingPayload =
-  | ZmenuCreatePayload
-  | ZmenuDestroyPayload
-  | ZmenuRepositionPayload;
+export type ZmenuCreateMessage = {
+  action: BrowserToChromeMessagingActions.ZMENU_CREATE;
+  payload: {
+    id: string;
+    anchor_coordinates: AnchorCoordinates;
+    content: ZmenuContentFeature[];
+  };
+};
+
+export type ZmenuDestroyMessage = {
+  payload: { id: string };
+  action: BrowserToChromeMessagingActions.ZMENU_DESTROY;
+};
+
+export type ZmenuRepositionMessage = {
+  action: BrowserToChromeMessagingActions.ZMENU_REPOSITION;
+  payload: {
+    id: string;
+    anchor_coordinates: {
+      x: number;
+      y: number;
+    };
+  };
+};
+
+export type ZmenuIncomingMessage =
+  | ZmenuCreateMessage
+  | ZmenuDestroyMessage
+  | ZmenuRepositionMessage;

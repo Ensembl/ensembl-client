@@ -30,10 +30,10 @@ import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/tr
 import { ZmenuData } from './zmenu-types';
 import {
   BrowserToChromeMessagingActions,
-  ZmenuIncomingPayload,
-  ZmenuCreatePayload,
-  ZmenuDestroyPayload,
-  ZmenuRepositionPayload
+  ZmenuIncomingMessage,
+  ZmenuCreateMessage,
+  ZmenuDestroyMessage,
+  ZmenuRepositionMessage
 } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 type Props = {
@@ -64,21 +64,21 @@ const ZmenuController = (props: Props) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
-    if (payload.action === BrowserToChromeMessagingActions.ZMENU_CREATE) {
-      handleZmenuCreate(payload);
+  const handleBpaneEvent = (message: ZmenuIncomingMessage) => {
+    if (message.action === BrowserToChromeMessagingActions.ZMENU_CREATE) {
+      handleZmenuCreate(message);
     } else if (
-      payload.action === BrowserToChromeMessagingActions.ZMENU_DESTROY
+      message.action === BrowserToChromeMessagingActions.ZMENU_DESTROY
     ) {
-      handleZmenuDestroy(payload);
+      handleZmenuDestroy(message);
     } else if (
-      payload.action === BrowserToChromeMessagingActions.ZMENU_REPOSITION
+      message.action === BrowserToChromeMessagingActions.ZMENU_REPOSITION
     ) {
-      handleZmenuReposition(payload);
+      handleZmenuReposition(message);
     }
   };
 
-  const handleZmenuCreate = (payload: ZmenuCreatePayload) => {
+  const handleZmenuCreate = ({ payload }: ZmenuCreateMessage) => {
     const newZmenu = {
       id: payload.id,
       anchor_coordinates: payload.anchor_coordinates,
@@ -93,12 +93,12 @@ const ZmenuController = (props: Props) => {
     });
   };
 
-  const handleZmenuDestroy = (payload: ZmenuDestroyPayload) => {
+  const handleZmenuDestroy = ({ payload }: ZmenuDestroyMessage) => {
     props.changeHighlightedTrackId('');
     setZmenus(pickBy(zmenus, (value, key) => key !== payload.id));
   };
 
-  const handleZmenuReposition = (payload: ZmenuRepositionPayload) => {
+  const handleZmenuReposition = ({ payload }: ZmenuRepositionMessage) => {
     setZmenus({
       ...zmenus,
       [payload.id]: {

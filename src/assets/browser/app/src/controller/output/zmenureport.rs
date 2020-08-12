@@ -69,9 +69,12 @@ impl ZMenuReports {
             let mut reports = ok!(queue.lock()).get_reports();
             if reports.len() != 0 {
                 reports.drain(..).map(|report| {
+                    let action = report["action"];
+                    report.remove("action");
+
                     OutputAction::SendCustomEvent("bpane-zmenu".to_string(),
                     {
-                        "action": report["action"],
+                        "action": action,
                         "payload": report
 
                 )

@@ -258,13 +258,11 @@ impl Report {
             app.with_counter(|counter| {
                 if let Some(report) = out.new_report(t,counter) {
                     let reportClone = report.clone();
-                    reportClone["action"] = "update_location".to_string();
-
                     vec!{
                         OutputAction::SendCustomEvent(
                             "bpane-out".to_string(),
                             {
-                                "action":  reportClone["action"],
+                                "action":  "update_location",
                                 "payload": reportClone
                             }
                         )

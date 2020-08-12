@@ -97,10 +97,13 @@ impl ViewportReport {
         let out = ViewportReport(Arc::new(Mutex::new(ViewportReportImpl::new())));
         ar.add_timer("viewport-report",enclose! { (out) move |app,_,sr| {
             if let Some(report) = out.clone().make_report(app) {
+                
+                let action = report["action"];
+                report.remove("action");
                 vec!{
                     OutputAction::SendCustomEvent("bpane-scroll".to_string(),
                     {
-                        "action":  report["action"],
+                        "action":  action,
                         "payload": report
                     } 
                     

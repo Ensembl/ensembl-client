@@ -45,7 +45,7 @@ import {
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
-  BrowserLocationUpdatePayload,
+  BrowserLocationUpdateMessage,
   BrowserToChromeMessagingActions
 } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
@@ -79,7 +79,7 @@ const parseLocation = (location: ChrLocation) => {
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback(
-    (payload: BrowserLocationUpdatePayload) => {
+    ({ payload }: BrowserLocationUpdateMessage) => {
       const navIconStates = payload.bumper as BrowserNavStates;
       const intendedLocation = payload['intended-location'];
       const actualLocation = payload['actual-location'] || intendedLocation;
