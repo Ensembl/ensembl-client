@@ -24,7 +24,7 @@ import {
   ZmenuContentFeature
 } from 'src/content/app/browser/zmenu/zmenu-types';
 
-export enum BrowserToChromeMessagingActions {
+export enum BrowserToChromeMessagingAction {
   ZMENU_CREATE = 'create_zmenu',
   ZMENU_DESTROY = 'destroy_zmenu',
   ZMENU_REPOSITION = 'update_zmenu_position',
@@ -37,15 +37,15 @@ export enum BrowserToChromeMessagingActions {
 export type BrowserScrollPayload =
   | {
       delta_y: number;
-      action: BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION;
+      action: BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION;
     }
   | {
-      action: BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION;
+      action: BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION;
       track_y: CogList;
     };
 
 export type BrowserLocationUpdateMessage = {
-  action: BrowserToChromeMessagingActions.UPDATE_LOCATION;
+  action: BrowserToChromeMessagingAction.UPDATE_LOCATION;
   payload: {
     bumper?: BrowserNavStates;
     'intended-location'?: ChrLocation;
@@ -55,7 +55,7 @@ export type BrowserLocationUpdateMessage = {
 };
 
 export type ZmenuCreateMessage = {
-  action: BrowserToChromeMessagingActions.ZMENU_CREATE;
+  action: BrowserToChromeMessagingAction.ZMENU_CREATE;
   payload: {
     id: string;
     anchor_coordinates: AnchorCoordinates;
@@ -65,11 +65,11 @@ export type ZmenuCreateMessage = {
 
 export type ZmenuDestroyMessage = {
   payload: { id: string };
-  action: BrowserToChromeMessagingActions.ZMENU_DESTROY;
+  action: BrowserToChromeMessagingAction.ZMENU_DESTROY;
 };
 
 export type ZmenuRepositionMessage = {
-  action: BrowserToChromeMessagingActions.ZMENU_REPOSITION;
+  action: BrowserToChromeMessagingAction.ZMENU_REPOSITION;
   payload: {
     id: string;
     anchor_coordinates: {
@@ -83,3 +83,7 @@ export type ZmenuIncomingMessage =
   | ZmenuCreateMessage
   | ZmenuDestroyMessage
   | ZmenuRepositionMessage;
+
+export type BrowserIncomingMessage =
+  | BrowserLocationUpdateMessage
+  | ZmenuIncomingMessage;

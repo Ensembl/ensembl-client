@@ -22,7 +22,7 @@ import {
 } from './browser-messaging-service';
 
 import windowService from 'src/services/window-service';
-import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
+import { BrowserToChromeMessagingAction } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 const dummyMessageCreator = (payload: any): any => {
   return {
@@ -118,7 +118,7 @@ describe('browserMessagingService', () => {
       mockWindow.sendMessage('message', {
         type: 'bpane-ready',
         payload: {
-          action: BrowserToChromeMessagingActions.GENOME_BROWSER_READY
+          action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY
         }
       });
 
@@ -142,7 +142,7 @@ describe('browserMessagingService', () => {
       mockWindow.sendMessage('message', {
         type: BrowserMessagingType.BPANE_READY,
         payload: {
-          action: BrowserToChromeMessagingActions.GENOME_BROWSER_READY
+          action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY
         }
       });
 

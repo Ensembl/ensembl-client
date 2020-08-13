@@ -29,7 +29,7 @@ import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/tr
 
 import { ZmenuData } from './zmenu-types';
 import {
-  BrowserToChromeMessagingActions,
+  BrowserToChromeMessagingAction,
   ZmenuIncomingMessage,
   ZmenuCreateMessage,
   ZmenuDestroyMessage,
@@ -54,9 +54,9 @@ const ZmenuController = (props: Props) => {
   useEffect(() => {
     const subscription = browserMessagingService.subscribe(
       [
-        BrowserToChromeMessagingActions.ZMENU_CREATE,
-        BrowserToChromeMessagingActions.ZMENU_DESTROY,
-        BrowserToChromeMessagingActions.ZMENU_REPOSITION
+        BrowserToChromeMessagingAction.ZMENU_CREATE,
+        BrowserToChromeMessagingAction.ZMENU_DESTROY,
+        BrowserToChromeMessagingAction.ZMENU_REPOSITION
       ],
       handleBpaneEvent
     );
@@ -65,14 +65,14 @@ const ZmenuController = (props: Props) => {
   }, []);
 
   const handleBpaneEvent = (message: ZmenuIncomingMessage) => {
-    if (message.action === BrowserToChromeMessagingActions.ZMENU_CREATE) {
+    if (message.action === BrowserToChromeMessagingAction.ZMENU_CREATE) {
       handleZmenuCreate(message);
     } else if (
-      message.action === BrowserToChromeMessagingActions.ZMENU_DESTROY
+      message.action === BrowserToChromeMessagingAction.ZMENU_DESTROY
     ) {
       handleZmenuDestroy(message);
     } else if (
-      message.action === BrowserToChromeMessagingActions.ZMENU_REPOSITION
+      message.action === BrowserToChromeMessagingAction.ZMENU_REPOSITION
     ) {
       handleZmenuReposition(message);
     }

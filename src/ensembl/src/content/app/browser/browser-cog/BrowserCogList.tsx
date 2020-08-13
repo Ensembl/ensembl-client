@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import browserMessagingService from 'src/content/app/browser/services/browser-messaging-service';
 import { toggleTracksMessage } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 import {
-  BrowserToChromeMessagingActions,
+  BrowserToChromeMessagingAction,
   BrowserScrollPayload
 } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
@@ -59,12 +59,12 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
   const listenBpaneScroll = (payload: BrowserScrollPayload) => {
     if (
-      payload.action === BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION
+      payload.action === BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION
     ) {
       props.updateCogList(payload.delta_y);
     }
     if (
-      payload.action === BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION
+      payload.action === BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION
     ) {
       props.updateCogTrackList(payload.track_y);
     }
@@ -73,8 +73,8 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
   useEffect(() => {
     const subscription = browserMessagingService.subscribe(
       [
-        BrowserToChromeMessagingActions.UPDATE_SCROLL_POSITION,
-        BrowserToChromeMessagingActions.UPDATE_TRACK_POSITION
+        BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION,
+        BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION
       ],
       listenBpaneScroll
     );

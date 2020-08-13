@@ -25,26 +25,39 @@ import {
   OutgoingMessage,
   ActivateBrowserPayload
 } from './browser-message-creator';
-import { BrowserToChromeMessagingActions } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
+import {
+  BrowserIncomingMessage,
+  BrowserToChromeMessagingAction
+} from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
   BPANE_ACTIVATE = 'bpane-activate',
   BPANE = 'bpane',
-  BPANE_READY = 'bpane-ready'
+  BPANE_READY = 'bpane-ready',
+  BPANE_OUT = 'bpane-out'
 }
+
+type IncomingMessageEventData = {
+  type: BrowserMessagingType.BPANE_OUT;
+} & BrowserIncomingMessage;
+
+type Callback = (...args: any[]) => void;
 
 export class BrowserMessagingService {
   private window: Window;
   private isRecepientReady = false;
-  private subscribers: any = {};
+  private subscribers = {} as Record<
+    BrowserToChromeMessagingAction,
+    Set<Callback>
+  >;
   private outgoingMessageQueue: OutgoingMessage[] = [];
 
   public constructor(windowService: WindowServiceInterface) {
     this.window = windowService.getWindow();
     this.subscribeToMessages();
     this.subscribe(
-      BrowserToChromeMessagingActions.GENOME_BROWSER_READY,
+      BrowserToChromeMessagingAction.GENOME_BROWSER_READY,
       this.onRecipientReady
     );
     this.ping();
@@ -90,52 +103,39 @@ export class BrowserMessagingService {
   }
 
   private handleMessage = (event: MessageEvent) => {
-    const {
-      data: { payload }
-    } = event;
-
-    if (!(payload && payload.action)) {
+    if (event.data.type !== BrowserMessagingType.BPANE_OUT) {
       return;
     }
-    const subscribers = this.subscribers[payload.action];
+    const { action, payload } = event.data as IncomingMessageEventData;
+
+    const subscribers = this.subscribers[action];
     if (subscribers) {
-      subscribers.forEach((subscriber: (payload: any) => void) =>
-        subscriber(payload)
-      );
+      subscribers.forEach((subscriber) => subscriber(payload));
     }
   };
 
   public subscribe = (
-    actions:
-      | BrowserToChromeMessagingActions
-      | BrowserToChromeMessagingActions[],
-    callback: (...args: any[]) => void
+    actionOrActions:
+      | BrowserToChromeMessagingAction
+      | BrowserToChromeMessagingAction[],
+    callback: Callback
   ) => {
-    if (typeof actions === 'string') {
-      if (!this.subscribers[actions]) {
-        this.subscribers[actions] = new Set();
+    const actions =
+      typeof actionOrActions === 'string' ? [actionOrActions] : actionOrActions;
+
+    actions.forEach((action) => {
+      if (!this.subscribers[action]) {
+        this.subscribers[action] = new Set();
       }
 
-      this.subscribers[actions].add(callback);
-    } else if (Array.isArray(actions)) {
-      actions.forEach((action: BrowserToChromeMessagingActions) => {
-        if (!this.subscribers[action]) {
-          this.subscribers[action] = new Set();
-        }
-
-        this.subscribers[action].add(callback);
-      });
-    }
+      this.subscribers[action].add(callback);
+    });
 
     return {
       unsubscribe: () => {
-        if (typeof actions === 'string') {
-          this.subscribers[actions].delete(callback);
-        } else if (Array.isArray(actions)) {
-          actions.forEach((action: BrowserToChromeMessagingActions) => {
-            this.subscribers[action].delete(callback);
-          });
-        }
+        actions.forEach((action) => {
+          this.subscribers[action].delete(callback);
+        });
       }
     };
   };

@@ -46,7 +46,7 @@ import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/tr
 
 import {
   BrowserLocationUpdateMessage,
-  BrowserToChromeMessagingActions
+  BrowserToChromeMessagingAction
 } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
@@ -106,7 +106,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
   useEffect(() => {
     const subscription = browserMessagingService.subscribe(
-      BrowserToChromeMessagingActions.UPDATE_LOCATION,
+      BrowserToChromeMessagingAction.UPDATE_LOCATION,
       listenBpaneOut
     );
 
