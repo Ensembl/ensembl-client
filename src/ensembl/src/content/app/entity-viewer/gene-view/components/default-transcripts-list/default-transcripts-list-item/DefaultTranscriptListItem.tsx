@@ -33,6 +33,7 @@ import styles from './DefaultTranscriptListItem.scss';
 
 export type DefaultTranscriptListItemProps = {
   gene: Gene;
+  label: string;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;
@@ -60,7 +61,7 @@ export const DefaultTranscriptListItem = (
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
-        <div className={transcriptsListStyles.left}>Left</div>
+        <div className={transcriptsListStyles.left}>{props.label}</div>
         <div
           className={transcriptsListStyles.middle}
           onClick={() => props.toggleTranscriptInfo(props.transcript.id)}

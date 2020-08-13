@@ -129,7 +129,7 @@ export const TranscriptsListItemInfo = (
   };
   return (
     <div className={mainStyles}>
-      <div className={transcriptsListStyles.left}>bottom left</div>
+      <div className={transcriptsListStyles.left}></div>
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
