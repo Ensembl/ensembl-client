@@ -26,7 +26,9 @@ import {
   ActivateBrowserPayload
 } from './browser-message-creator';
 import {
-  BrowserIncomingMessage,
+  IncomingMessage,
+  IncomingMessageAction,
+  ActionPayloadMap,
   BrowserToChromeMessagingAction
 } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
@@ -40,17 +42,19 @@ export enum BrowserMessagingType {
 
 type IncomingMessageEventData = {
   type: BrowserMessagingType.BPANE_OUT;
-} & BrowserIncomingMessage;
+} & IncomingMessage;
 
-type Callback = (...args: any[]) => void;
+type Callback<A extends IncomingMessageAction = IncomingMessageAction> = (
+  payload: ActionPayloadMap[A]
+) => void;
+type Subscribers = Partial<Record<IncomingMessageAction, Set<Callback>>>;
+
+// type Callback = (...args: any[]) => void;
 
 export class BrowserMessagingService {
   private window: Window;
   private isRecepientReady = false;
-  private subscribers = {} as Record<
-    BrowserToChromeMessagingAction,
-    Set<Callback>
-  >;
+  private subscribers: Subscribers = {};
   private outgoingMessageQueue: OutgoingMessage[] = [];
 
   public constructor(windowService: WindowServiceInterface) {
@@ -108,34 +112,21 @@ export class BrowserMessagingService {
     }
     const { action, payload } = event.data as IncomingMessageEventData;
 
-    const subscribers = this.subscribers[action];
-    if (subscribers) {
-      subscribers.forEach((subscriber) => subscriber(payload));
-    }
+    this.subscribers[action]?.forEach((subscriber) => subscriber(payload));
   };
 
-  public subscribe = (
-    actionOrActions:
-      | BrowserToChromeMessagingAction
-      | BrowserToChromeMessagingAction[],
-    callback: Callback
+  public subscribe = <A extends IncomingMessageAction>(
+    action: A,
+    callback: Callback<A>
   ) => {
-    const actions =
-      typeof actionOrActions === 'string' ? [actionOrActions] : actionOrActions;
-
-    actions.forEach((action) => {
-      if (!this.subscribers[action]) {
-        this.subscribers[action] = new Set();
-      }
-
-      this.subscribers[action].add(callback);
-    });
+    const subscribers = this.subscribers[action] ?? new Set();
+    // this is a type hack; typescript doesn't seem to offer a proper way
+    // to ensure that action in this.subscribers object will be associated with correct set of callbacks
+    subscribers.add(callback as any);
 
     return {
       unsubscribe: () => {
-        actions.forEach((action) => {
-          this.subscribers[action].delete(callback);
-        });
+        this.subscribers[action]?.delete(callback as any);
       }
     };
   };

@@ -34,15 +34,18 @@ export enum BrowserToChromeMessagingAction {
   GENOME_BROWSER_READY = 'genome_browser_ready'
 }
 
-export type BrowserScrollPayload =
-  | {
-      delta_y: number;
-      action: BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION;
-    }
-  | {
-      action: BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION;
-      track_y: CogList;
-    };
+export type GenomeBrowserReadyMessage = {
+  action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY;
+  payload: never;
+};
+
+export type CogScrollPayload = {
+  delta_y: number;
+};
+
+export type CogTrackScrollPayload = {
+  track_y: CogList;
+};
 
 export type BrowserLocationUpdateMessage = {
   action: BrowserToChromeMessagingAction.UPDATE_LOCATION;
@@ -52,6 +55,16 @@ export type BrowserLocationUpdateMessage = {
     'actual-location'?: ChrLocation;
     'is-focus-position'?: boolean;
   };
+};
+
+export type UpdateCogPositionMessage = {
+  action: BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION;
+  payload: CogScrollPayload;
+};
+
+export type UpdateCogTrackPositionMessage = {
+  action: BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION;
+  payload: CogTrackScrollPayload;
 };
 
 export type ZmenuCreateMessage = {
@@ -64,8 +77,8 @@ export type ZmenuCreateMessage = {
 };
 
 export type ZmenuDestroyMessage = {
-  payload: { id: string };
   action: BrowserToChromeMessagingAction.ZMENU_DESTROY;
+  payload: { id: string };
 };
 
 export type ZmenuRepositionMessage = {
@@ -79,11 +92,20 @@ export type ZmenuRepositionMessage = {
   };
 };
 
-export type ZmenuIncomingMessage =
+export type IncomingMessage =
+  | GenomeBrowserReadyMessage
+  | BrowserLocationUpdateMessage
+  | UpdateCogPositionMessage
+  | UpdateCogTrackPositionMessage
   | ZmenuCreateMessage
   | ZmenuDestroyMessage
   | ZmenuRepositionMessage;
 
-export type BrowserIncomingMessage =
-  | BrowserLocationUpdateMessage
-  | ZmenuIncomingMessage;
+export type IncomingMessageAction = IncomingMessage['action'];
+
+export type ActionPayloadMap = {
+  [A in IncomingMessageAction]: Extract<
+    IncomingMessage,
+    { action: A }
+  >['payload'];
+};
