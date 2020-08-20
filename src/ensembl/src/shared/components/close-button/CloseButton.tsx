@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-export default {
-  // Version numbers
-  app_version: '0.4.0',
+import React from 'react';
 
-  // Node environment
-  isDevelopment: process.env.NODE_ENV === 'development',
-  isProduction: process.env.NODE_ENV === 'production',
-  isTest: process.env.NODE_ENV === 'test',
+import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
-  // Deployment environment
-  environment: process.env.ENVIRONMENT,
+import styles from './CloseButton.scss';
 
-  apiHost: process.env.API_HOST,
-  helpApiHost: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:30853',
-
-  // Keys for services
-  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
-
-  // Genesearch endpoint
-  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT
+type Props = {
+  onClick: () => void;
 };
+
+const CloseButton = (props: Props) => {
+  return <CloseIcon className={styles.icon} onClick={props.onClick} />;
+};
+
+export default CloseButton;

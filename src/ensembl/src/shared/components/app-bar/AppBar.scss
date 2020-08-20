@@ -27,6 +27,8 @@
 
 .appBarAside {
   grid-area: right;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .helpLink {

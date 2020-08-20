@@ -28,6 +28,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -55,7 +56,13 @@ export const SpeciesSelectorAppBar = (props: Props) => {
       <PlaceholderMessage />
     );
 
-  return <AppBar appName="Species Selector" mainContent={mainContent} />;
+  return (
+    <AppBar
+      appName="Species Selector"
+      mainContent={mainContent}
+      aside={<HelpPopupButton slug="selecting-a-species" />}
+    />
+  );
 };
 
 const SelectedSpeciesList = (props: Props) => {
