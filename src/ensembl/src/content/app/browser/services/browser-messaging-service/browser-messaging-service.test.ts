@@ -24,10 +24,16 @@ import {
 import windowService from 'src/services/window-service';
 import { BrowserToChromeMessagingAction } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
-const dummyMessageCreator = (payload: any): any => {
+const createDummyMessage = (): any => {
+  const key = faker.lorem.word();
+  const value = faker.lorem.word();
+  const action = faker.lorem.word();
+
   return {
-    action: 'test',
-    payload
+    action,
+    payload: {
+      [key]: value
+    }
   };
 };
 
@@ -75,60 +81,46 @@ describe('browserMessagingService', () => {
   });
 
   describe('.send()', () => {
-    test('does not send messages until it receives "bpane-ready" event', () => {
+    test('does not send messages until notified that genome browser is ready', () => {
       const browserMessagingService = new BrowserMessagingService(
         windowService
       );
       // clear recorded 'bpane-ready-query' message
       mockWindow.postMessage.mockClear();
 
-      browserMessagingService.send(
-        dummyMessageCreator({
-          id: faker.lorem.word()
-        })
-      );
-
-      browserMessagingService.send(
-        dummyMessageCreator({
-          id: faker.lorem.word()
-        })
-      );
+      browserMessagingService.send(createDummyMessage());
+      browserMessagingService.send(createDummyMessage());
 
       expect(mockWindow.postMessage).not.toHaveBeenCalled();
     });
 
-    test('plays back messages sent before "bpane-ready" event was received', () => {
+    test('plays back messages queued while browser was not ready', () => {
       const browserMessagingService = new BrowserMessagingService(
         windowService
       );
       // clear recorded 'bpane-ready-query' message
       mockWindow.postMessage.mockClear();
 
-      const message1 = faker.lorem.word();
-      const messagePayload1 = dummyMessageCreator({ id: message1 });
+      const message1 = createDummyMessage();
+      const message2 = createDummyMessage();
 
-      const message2 = faker.lorem.word();
-      const messagePayload2 = dummyMessageCreator({ id: message2 });
-
-      browserMessagingService.send(messagePayload1);
-      browserMessagingService.send(messagePayload2);
+      browserMessagingService.send(message1);
+      browserMessagingService.send(message2);
 
       expect(mockWindow.postMessage).not.toHaveBeenCalled();
 
       mockWindow.sendMessage('message', {
-        type: 'bpane-ready',
-        payload: {
-          action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY
-        }
+        type: BrowserMessagingType.BPANE_OUT,
+        action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY
       });
 
       expect(mockWindow.postMessage).toHaveBeenCalledTimes(2);
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
-        ...messagePayload1,
+        ...message1,
         type: BrowserMessagingType.BPANE
       });
       expect(mockWindow.postMessage.mock.calls[1][0]).toEqual({
-        ...messagePayload2,
+        ...message2,
         type: BrowserMessagingType.BPANE
       });
     });
@@ -140,18 +132,15 @@ describe('browserMessagingService', () => {
       // clear recorded 'bpane-ready-query' message
       mockWindow.postMessage.mockClear();
       mockWindow.sendMessage('message', {
-        type: BrowserMessagingType.BPANE_READY,
-        payload: {
-          action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY
-        }
+        type: BrowserMessagingType.BPANE_OUT,
+        action: BrowserToChromeMessagingAction.GENOME_BROWSER_READY
       });
 
-      const message = faker.lorem.word();
-      const messagePayload = dummyMessageCreator({ id: message });
-      browserMessagingService.send(messagePayload);
+      const message = createDummyMessage();
+      browserMessagingService.send(message);
 
       expect(mockWindow.postMessage.mock.calls[0][0]).toEqual({
-        ...messagePayload,
+        ...message,
         type: BrowserMessagingType.BPANE
       });
     });
@@ -162,26 +151,25 @@ describe('browserMessagingService', () => {
       const browserMessagingService = new BrowserMessagingService(
         windowService
       );
-      const mockAction = faker.lorem.word();
-      const callback = jest.fn();
-      const payload = {
-        [faker.lorem.word()]: faker.lorem.word(),
-        action: mockAction
+      const message = {
+        ...createDummyMessage(),
+        type: BrowserMessagingType.BPANE_OUT
       };
+      const callback = jest.fn();
       const subscription = browserMessagingService.subscribe(
-        mockAction as any,
+        message.action,
         callback
       );
 
-      mockWindow.sendMessage('message', { action: mockAction, payload });
+      mockWindow.sendMessage('message', message);
 
-      expect(callback).toHaveBeenCalledWith(payload);
+      expect(callback).toHaveBeenCalledWith(message.payload);
       callback.mockClear();
 
       // check that the callback stops being called after unsubscribing
       subscription.unsubscribe();
 
-      mockWindow.sendMessage('message', { action: mockAction, payload });
+      mockWindow.sendMessage('message', message);
 
       expect(callback).not.toHaveBeenCalled();
     });

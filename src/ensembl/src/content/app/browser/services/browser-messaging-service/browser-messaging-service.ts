@@ -36,7 +36,6 @@ export enum BrowserMessagingType {
   BPANE_READY_QUERY = 'bpane-ready-query',
   BPANE_ACTIVATE = 'bpane-activate',
   BPANE = 'bpane',
-  BPANE_READY = 'bpane-ready',
   BPANE_OUT = 'bpane-out'
 }
 
@@ -48,8 +47,6 @@ type Callback<A extends IncomingMessageAction = IncomingMessageAction> = (
   payload: ActionPayloadMap[A]
 ) => void;
 type Subscribers = Partial<Record<IncomingMessageAction, Set<Callback>>>;
-
-// type Callback = (...args: any[]) => void;
 
 export class BrowserMessagingService {
   private window: Window;
@@ -119,10 +116,12 @@ export class BrowserMessagingService {
     action: A,
     callback: Callback<A>
   ) => {
-    const subscribers = this.subscribers[action] ?? new Set();
+    if (!this.subscribers[action]) {
+      this.subscribers[action] = new Set();
+    }
     // this is a type hack; typescript doesn't seem to offer a proper way
     // to ensure that action in this.subscribers object will be associated with correct set of callbacks
-    subscribers.add(callback as any);
+    this.subscribers[action]?.add(callback as any);
 
     return {
       unsubscribe: () => {
