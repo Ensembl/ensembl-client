@@ -21,7 +21,8 @@ import browserMessagingService from 'src/content/app/browser/services/browser-me
 import { toggleTracksMessage } from 'src/content/app/browser/services/browser-messaging-service/browser-message-creator';
 import {
   BrowserToChromeMessagingAction,
-  BrowserScrollPayload
+  CogScrollPayload,
+  CogTrackScrollPayload
 } from 'src/content/app/browser/services/browser-messaging-service/browser-incoming-message-types';
 
 import BrowserCog from './BrowserCog';
@@ -57,29 +58,29 @@ type BrowserCogListProps = {
 
 export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
-  const listenBpaneScroll = (payload: BrowserScrollPayload) => {
-    if (
-      payload.action === BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION
-    ) {
-      props.updateCogList(payload.delta_y);
-    }
-    if (
-      payload.action === BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION
-    ) {
-      props.updateCogTrackList(payload.track_y);
-    }
+
+  const updateCogsPosition = (payload: CogScrollPayload) => {
+    props.updateCogList(payload.delta_y);
+  };
+
+  const updateCogTracksPosition = (payload: CogTrackScrollPayload) => {
+    props.updateCogTrackList(payload.track_y);
   };
 
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
-      [
+    const subscriptions = [
+      browserMessagingService.subscribe(
         BrowserToChromeMessagingAction.UPDATE_SCROLL_POSITION,
-        BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION
-      ],
-      listenBpaneScroll
-    );
+        updateCogsPosition
+      ),
+      browserMessagingService.subscribe(
+        BrowserToChromeMessagingAction.UPDATE_TRACK_POSITION,
+        updateCogTracksPosition
+      )
+    ];
 
-    return () => subscription.unsubscribe();
+    return () =>
+      subscriptions.forEach((subscription) => subscription.unsubscribe());
   }, []);
 
   useEffect(() => {
