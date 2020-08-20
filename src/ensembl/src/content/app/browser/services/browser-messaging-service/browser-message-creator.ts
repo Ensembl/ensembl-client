@@ -112,7 +112,7 @@ export const toggleTracksMessage = (
 ): OutgoingMessage => {
   return {
     action: ChromeToBrowserMessagingActions.TOGGLE_TRACKS,
-    payload: payload
+    payload
   };
 };
 
