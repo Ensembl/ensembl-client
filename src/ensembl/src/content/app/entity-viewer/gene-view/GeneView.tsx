@@ -70,6 +70,7 @@ const QUERY = gql`
       transcripts {
         id
         symbol
+        so_term: biotype
         biotype
         slice {
           location {
