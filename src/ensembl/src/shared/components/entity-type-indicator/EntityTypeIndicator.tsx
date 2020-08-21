@@ -16,22 +16,13 @@
 
 import React from 'react';
 
-import styles from './ScaleSwitcher.scss';
+import styles from './EntityTypeIndicator.scss';
 
-const ScaleSwitcher = () => {
-  return (
-    <div className={styles.container}>
-      {renderEmptyDots(3)}
-      <div className={styles.selectedNode}>Gene</div>
-      {renderEmptyDots(3)}
-    </div>
-  );
+type EntityTypeIndicatorProps = {
+  entity: string;
 };
+const EntityTypeIndicator = (props: EntityTypeIndicatorProps) => (
+  <div className={styles.indicator}>{props.entity}</div>
+);
 
-const renderEmptyDots = (number: number) => {
-  return [...Array(number)].map((_, index) => (
-    <div key={index} className={styles.emptyNode} />
-  ));
-};
-
-export default ScaleSwitcher;
+export default EntityTypeIndicator;

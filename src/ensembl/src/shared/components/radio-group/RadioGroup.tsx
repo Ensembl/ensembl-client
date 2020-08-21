@@ -41,35 +41,27 @@ type Props = {
 };
 
 const RadioGroup = (props: Props) => {
-  const handleOnChange = (value: OptionValue) => {
+  const handleChange = (value: OptionValue) => {
     if (props.disabled || value === props.selectedOption) {
       return;
     }
     props.onChange(value);
   };
 
-  const labelClass = classNames (
-    styles.label,
-    props.classNames?.label,
-  )
+  const labelClass = classNames(styles.label, props.classNames?.label);
 
-  const wrapperClass = classNames (
-    styles.wrapper,
-    props.classNames?.wrapper,
-  )
+  const wrapperClass = classNames(styles.wrapper, props.classNames?.wrapper);
 
   const getRadioClass = (option: RadioOption) => {
-    const radioCheckedClass = classNames (
+    const radioCheckedClass = classNames(
       styles.radioChecked,
-      props.classNames?.radioChecked,
+      props.classNames?.radioChecked
     );
 
     const radioClass = classNames(
       styles.radio,
       props.classNames?.radio,
-      option.value === props.selectedOption
-        ? radioCheckedClass
-        : undefined
+      option.value === props.selectedOption ? radioCheckedClass : undefined
     );
 
     return radioClass;
@@ -79,12 +71,15 @@ const RadioGroup = (props: Props) => {
     <div>
       {props.options.map((option, index) => (
         <div key={index} className={wrapperClass}>
-          <div onClick={() => handleOnChange(option.value)} className={getRadioClass(option)} />
+          <div
+            onClick={() => handleChange(option.value)}
+            className={getRadioClass(option)}
+          />
           <label className={labelClass}>
             <input
               className={styles.input}
               type="radio"
-              onChange={() => handleOnChange(option.value)}
+              onChange={() => handleChange(option.value)}
               checked={option.value === props.selectedOption}
               disabled={props.disabled}
             />

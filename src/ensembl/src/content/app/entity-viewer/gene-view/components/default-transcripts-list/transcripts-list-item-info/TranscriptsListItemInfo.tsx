@@ -149,7 +149,7 @@ export const TranscriptsListItemInfo = (
         </div>
         <div className={styles.topRight}>
           <div>
-            Spliced RNA length <strong>{splicedRNALength} bp</strong>
+            Spliced RNA length <strong>{splicedRNALength} </strong> bp
           </div>
           <div>
             Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong>{' '}
@@ -171,8 +171,10 @@ export const TranscriptsListItemInfo = (
         {props.expandDownload && renderInstantDownload(props)}
       </div>
       <div className={transcriptsListStyles.right}>
-        <div>{transcript.symbol}</div>
         <div>
+          <strong>{transcript.symbol}</strong>
+        </div>
+        <div className={styles.viewInApp}>
           <ViewInApp links={{ genomeBrowser: getBrowserLink() }} />
         </div>
       </div>

@@ -4,7 +4,7 @@
 .container {
   display: grid;
   grid-template-columns: $left_column auto;
-  padding: 3px 0;
+  padding: 9px 0;
 }
 
 .filterLabel {
@@ -23,7 +23,7 @@
 
 .filterBox {
   display: grid;
-  grid-template-columns: 270px minmax(210px,auto) 20px;
+  grid-template-columns: 270px minmax(210px, auto) 20px;
   background-color: $soft-black;
   color: $white;
   text-align: left;

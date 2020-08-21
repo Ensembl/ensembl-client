@@ -17,7 +17,7 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 
-import ScaleSwitcher from './scale-switcher/ScaleSwitcher';
+import EntityTypeIndicator from 'src/shared/components/entity-type-indicator/EntityTypeIndicator';
 import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 
 import { Slice } from 'src/content/app/entity-viewer/types/slice';
@@ -72,8 +72,8 @@ export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
         <GeneSummaryStrip gene={geneToEnsObjectFields(data.gene)} />
       ) : null}
 
-      <div className={styles.scaleSwitcher}>
-        <ScaleSwitcher />
+      <div className={styles.entityTypeIndicatorWrapper}>
+        <EntityTypeIndicator entity={'Gene'} />
       </div>
     </div>
   );

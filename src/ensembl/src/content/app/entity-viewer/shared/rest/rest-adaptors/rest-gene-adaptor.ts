@@ -27,6 +27,7 @@ export const restGeneAdaptor = (gene: GeneInResponse): Gene => {
 
   return {
     id: gene.id,
+    version: gene.version,
     type: 'Gene',
     symbol: gene.display_name,
     so_term: gene.biotype,

@@ -81,18 +81,17 @@ storiesOf('Components|Shared Components/Checkbox', module)
         <div>
           <StatefulCheckbox label={'I am label'} />
           <StatefulCheckbox
-            label={'I am another very long long label that wraps to another line'}
+            label={
+              'I am another very long long label that wraps to another line'
+            }
           />
-          <StatefulCheckbox
-            label={'I am label'}
-          />
+          <StatefulCheckbox label={'I am label'} />
         </div>
 
         <div>
           <StatefulCheckbox label={'I am label'} />
           <StatefulCheckbox label={'I am label'} />
         </div>
-
       </div>
     );
   });

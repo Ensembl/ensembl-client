@@ -1,12 +1,14 @@
 @import 'src/styles/common';
 
 .geneTab {
-  background-color: #33adff;
+  background-color: $blue;
   color: #fff;
   font-weight: 700;
   border-radius: 3px;
   margin-right: 3px;
   height: 30px;
+  display: flex;
+  align-items: center;
   &::after {
     border: none;
   }
