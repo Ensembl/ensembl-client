@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useEffect, FunctionComponent, lazy, Suspense } from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import React, { useEffect, lazy, Suspense } from 'react';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
-import { getCurrentApp } from 'src/header/headerSelectors';
 
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { NewTechError } from 'src/shared/components/error-screen';
 
-import { RootState } from 'src/store';
-
+const HomePage = lazy(() => import('../home/Home'));
 const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
 const SpeciesSelector = lazy(() =>
   import('./species-selector/SpeciesSelector')
@@ -34,17 +32,9 @@ const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
 
-type StateProps = {
-  currentApp: string;
-};
-
-type DispatchProps = {
+type AppProps = {
   changeCurrentApp: (name: string) => void;
 };
-
-type OwnProps = {};
-
-type AppProps = RouteComponentProps & StateProps & DispatchProps & OwnProps;
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -55,45 +45,38 @@ export const AppShell = (props: AppShellProps) => {
 };
 
 const AppInner = (props: AppProps) => {
-  const { url } = props.match;
+  const location = useLocation();
 
   useEffect(() => {
-    // remove /app/ from url to get app name
-    let appName = props.location.pathname.replace('/app/', '');
-
-    // check if app name still has forward slash (/) to be sure the app name is extracted
-    // if it isn't then remove rest of the URL and extract the app name
-    if (appName.indexOf('/') > -1) {
-      const matches = appName.match(/^[^\/]*/);
-      appName = matches ? matches[0] : '';
-    }
+    const appName: string = location.pathname.split('/').filter(Boolean)[0];
 
     props.changeCurrentApp(appName);
 
     return function unsetApp() {
       props.changeCurrentApp('');
     };
-  }, [props.match.path]);
+  }, [location.pathname]);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Switch>
-        <Route path={`${url}/global-search`} component={GlobalSearch} />
-        <Route path={`${url}/species-selector`} component={SpeciesSelector} />
-        <Route path={`${url}/custom-download`} component={CustomDownload} />
+        <Route path={`/`} component={HomePage} exact />
+        <Route path={`/global-search`} component={GlobalSearch} />
+        <Route path={`/species-selector`} component={SpeciesSelector} />
+        <Route path={`/custom-download`} component={CustomDownload} />
         <Route
-          path={`${url}/entity-viewer/:genomeId?/:entityId?`}
+          path={`/entity-viewer/:genomeId?/:entityId?`}
           component={EntityViewer}
         />
         <ErrorBoundary fallbackComponent={NewTechError}>
-          <Route path={`${url}/browser/:genomeId?`} component={Browser} />
+          <Route path={`/browser/:genomeId?`} component={Browser} />
         </ErrorBoundary>
       </Switch>
     </Suspense>
   );
 };
 
-export const App: FunctionComponent<AppProps> = (props: AppProps) => {
+export const App = (props: AppProps) => {
   return (
     <AppShell>
       <AppInner {...props} />
@@ -101,12 +84,8 @@ export const App: FunctionComponent<AppProps> = (props: AppProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
-  currentApp: getCurrentApp(state)
-});
-
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   changeCurrentApp
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(App);

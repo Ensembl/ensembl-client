@@ -33,7 +33,7 @@ type EntityViewerUrlParams = {
 
 export const browser = (params?: BrowserUrlParams) => {
   if (params) {
-    const path = `/app/browser/${params.genomeId}`;
+    const path = `/browser/${params.genomeId}`;
     // NOTE: if a parameter passed to queryString is null, it will still get into query;
     // so assign it to undefined in order to omit it from the query
     const query = queryString.stringify(
@@ -47,7 +47,7 @@ export const browser = (params?: BrowserUrlParams) => {
     );
     return query ? `${path}?${query}` : path;
   } else {
-    return `/app/browser/`;
+    return `/browser/`;
   }
 };
 
@@ -59,7 +59,13 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
 
   const genomeId = params?.genomeId || '';
   const entityId = params?.entityId || '';
-  const path = `/app/entity-viewer/${genomeId}/${entityId}`;
+  let path = '/entity-viewer';
+  if (genomeId) {
+    path += `/${genomeId}`;
+  }
+  if (entityId) {
+    path += `/${entityId}`;
+  }
   const query = queryString.stringify(
     {
       view: params?.view || undefined

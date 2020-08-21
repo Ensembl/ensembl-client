@@ -36,7 +36,7 @@ type LaunchbarButtonProps = {
 const LaunchbarButton: FunctionComponent<LaunchbarButtonProps> = (
   props: LaunchbarButtonProps
 ) => {
-  const pathTo = `/app/${props.app}`;
+  const pathTo = `/${props.app}`;
   const isActive = new RegExp(`^${pathTo}`).test(props.location.pathname);
   const imageButtonStatus = getImageButtonStatus({
     isDisabled: !props.enabled,
