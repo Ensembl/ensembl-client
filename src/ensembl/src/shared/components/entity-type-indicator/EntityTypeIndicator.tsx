@@ -16,14 +16,13 @@
 
 import React from 'react';
 
-import styles from './EntityViewerIndicator.scss';
+import styles from './EntityTypeIndicator.scss';
 
-const EntityViewerIndicator = () => {
-  return (
-    <div className={styles.container}>
-      <div className={styles.selectedNode}>Gene</div>
-    </div>
-  );
+type EntityTypeIndicatorProps = {
+  entity: string;
 };
+const EntityTypeIndicator = (props: EntityTypeIndicatorProps) => (
+  <div className={styles.indicator}>{props.entity}</div>
+);
 
-export default EntityViewerIndicator;
+export default EntityTypeIndicator;
