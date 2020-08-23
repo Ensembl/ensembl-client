@@ -16,18 +16,17 @@
 
 import React from 'react';
 
-import SpeciesSearchPanel from 'src/content/app/species-selector/containers/species-search-panel/SpeciesSearchPanel';
-import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
-import PopularSpeciesPanel from 'src/content/app/species-selector/containers/popular-species-panel/PopularSpeciesPanel';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
-const SpeciesSelector = () => {
+const SpeciesAppBar = () => {
   return (
-    <>
-      <SpeciesSelectorAppBar />
-      <SpeciesSearchPanel />
-      <PopularSpeciesPanel />
-    </>
+    <AppBar
+      appName="Species"
+      mainContent="ADD SELECTED SPECIES HERE"
+      aside={<HelpPopupButton slug="selecting-a-species" />}
+    />
   );
 };
 
-export default SpeciesSelector;
+export default SpeciesAppBar;

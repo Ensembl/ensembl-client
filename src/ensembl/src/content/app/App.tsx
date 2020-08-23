@@ -28,6 +28,7 @@ const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
 const SpeciesSelector = lazy(() =>
   import('./species-selector/SpeciesSelector')
 );
+const SpeciesPage = lazy(() => import('./species/SpeciesPage'));
 const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
@@ -41,7 +42,7 @@ type AppShellProps = {
 };
 
 export const AppShell = (props: AppShellProps) => {
-  return <>{props.children}</>;
+  return <div>{props.children}</div>;
 };
 
 const AppInner = (props: AppProps) => {
@@ -63,6 +64,7 @@ const AppInner = (props: AppProps) => {
         <Route path={`/`} component={HomePage} exact />
         <Route path={`/global-search`} component={GlobalSearch} />
         <Route path={`/species-selector`} component={SpeciesSelector} />
+        <Route path={`/species/:genomeId`} component={SpeciesPage} />
         <Route path={`/custom-download`} component={CustomDownload} />
         <Route
           path={`/entity-viewer/:genomeId?/:entityId?`}
