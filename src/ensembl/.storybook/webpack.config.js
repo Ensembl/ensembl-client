@@ -14,15 +14,6 @@ module.exports = ({ config }) => {
   defaultSvgRule.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
 
   config.module.rules.push({
-    test: /\.tsx?$/,
-    loader: require.resolve('babel-loader'),
-    include: [
-      path.resolve(__dirname, '../src'),
-      path.resolve(__dirname, '../stories'),
-      path.resolve(__dirname, '../tests'),
-    ]
-  });
-  config.module.rules.push({
     test: /.scss$/,
     include: [
       path.resolve(__dirname, '../src'),

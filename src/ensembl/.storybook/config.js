@@ -1,4 +1,4 @@
-import { configure, addParameters, addDecorator } from '@storybook/react';
+import { configure, addParameters } from '@storybook/react';
 
 function loadStories() {
   require('../stories/index.tsx');
@@ -6,9 +6,7 @@ function loadStories() {
 
 addParameters({
   options: {
-    name: 'ENSEMBL',
-    hierarchyRootSeparator: /\|/,
-    hierarchySeparator: /\//
+    name: 'ENSEMBL'
   },
 });
 
