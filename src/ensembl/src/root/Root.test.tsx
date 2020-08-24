@@ -19,14 +19,14 @@ import { mount } from 'enzyme';
 
 import { Root } from './Root';
 import Header from '../header/Header';
-import Content from '../content/Content';
+import App from '../content/app/App';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
 jest.mock('../header/Header', () => () => 'Header');
-jest.mock('../content/Content', () => () => 'Content');
+jest.mock('../content/app/App', () => () => 'App');
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
@@ -53,19 +53,19 @@ describe('<Root />', () => {
     jest.resetAllMocks();
   });
 
-  test('contains Header', () => {
+  it('contains Header', () => {
     expect(wrapper.contains(<Header />)).toBe(true);
   });
 
-  test('contains Content', () => {
-    expect(wrapper.contains(<Content />)).toBe(true);
+  it('contains App', () => {
+    expect(wrapper.contains(<App />)).toBe(true);
   });
 
-  test('calls updateBreakpointWidth on mount', () => {
+  it('calls updateBreakpointWidth on mount', () => {
     expect(updateBreakpointWidth).toHaveBeenCalled();
   });
 
-  test('shows privacy banner if privacy policy version is not set or if version does not match', () => {
+  it('shows privacy banner if privacy policy version is not set or if version does not match', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => true);
@@ -74,7 +74,7 @@ describe('<Root />', () => {
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
-  test('does not show privacy banner if policy version is set', () => {
+  it('does not show privacy banner if policy version is set', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => false);
