@@ -43,7 +43,7 @@ const buildNonProteinCodingGene = () => {
 type Layout = 'horizontal' | 'vertical';
 type TranscriptType = 'coding' | 'non-coding';
 
-const InstantDownloadTranscriptStory = () => {
+export const InstantDownloadTranscriptStory = () => {
   const [layout, setLayout] = useState<Layout>('horizontal');
   const [transcriptType, setTranscriptType] = useState<TranscriptType>(
     'coding'
@@ -142,4 +142,10 @@ const StoryOptions = (props: StoryOptionsProps) => {
   );
 };
 
-export default InstantDownloadTranscriptStory;
+InstantDownloadTranscriptStory.story = {
+  name: 'default'
+};
+
+export default {
+  title: 'Components/Shared Components/InstantDownloadTranscript'
+};

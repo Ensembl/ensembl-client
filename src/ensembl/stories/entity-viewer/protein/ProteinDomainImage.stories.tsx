@@ -15,7 +15,6 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import { getTranscriptData } from '../transcripts/transcriptData';
 
@@ -28,7 +27,7 @@ import styles from './ProteinDomainImage.stories.scss';
 const GRAPHIC_WIDTH = 695;
 const TRANSCRIPT_ID = 'ENST00000380152';
 
-const ProteinDomainImageStory = () => {
+export const ProteinDomainImageStory = () => {
   const [id, setId] = useState(TRANSCRIPT_ID);
   const [data, setData] = useState<Transcript | null>(null);
 
@@ -67,6 +66,10 @@ const ProteinDomainImageStory = () => {
   );
 };
 
+ProteinDomainImageStory.story = {
+  name: 'default'
+};
+
 const FeatureIdForm = (props: {
   id: string;
   onChange: (id: string) => void;
@@ -93,7 +96,6 @@ const FeatureIdForm = (props: {
   );
 };
 
-storiesOf('Components|EntityViewer/Protein', module).add(
-  'ProteinDomainImage',
-  ProteinDomainImageStory
-);
+export default {
+  title: 'Components/Entity Viewer/ProteinDomains'
+};

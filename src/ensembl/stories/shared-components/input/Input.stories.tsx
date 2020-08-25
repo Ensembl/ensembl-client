@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 import Input from 'src/shared/components/input/Input';
@@ -33,23 +32,45 @@ const Wrapper = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/Input', module)
-  .add('default', () => <Wrapper input={Input} />)
-  .add('with placeholder', () => (
-    <Wrapper input={Input} placeholder="Enter something..." />
-  ))
-  .add('with onFocus and onBlur', () => (
-    <Wrapper
-      input={Input}
-      placeholder="Enter something..."
-      onFocus={action('input-focus')}
-      onBlur={action('input-blur')}
-    />
-  ))
-  .add('styled via received classname', () => (
-    <Wrapper
-      input={Input}
-      placeholder="Enter something..."
-      className={styles.customizedInput}
-    />
-  ));
+export const DefaultInputStory = () => <Wrapper input={Input} />;
+
+DefaultInputStory.story = {
+  name: 'default'
+};
+
+export const InputWithPlaceholderStory = () => (
+  <Wrapper input={Input} placeholder="Enter something..." />
+);
+
+InputWithPlaceholderStory.story = {
+  name: 'with placeholder'
+};
+
+export const FocusAndBlurStory = () => (
+  <Wrapper
+    input={Input}
+    placeholder="Enter something..."
+    onFocus={action('input-focus')}
+    onBlur={action('input-blur')}
+  />
+);
+
+FocusAndBlurStory.story = {
+  name: 'handling focus and blur'
+};
+
+export const CustomInputStory = () => (
+  <Wrapper
+    input={Input}
+    placeholder="Enter something..."
+    className={styles.customizedInput}
+  />
+);
+
+CustomInputStory.story = {
+  name: 'custom styling'
+};
+
+export default {
+  title: 'Components/Shared Components/Input'
+};

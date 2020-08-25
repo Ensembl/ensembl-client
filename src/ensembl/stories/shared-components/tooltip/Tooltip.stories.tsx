@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import classNames from 'classnames';
 
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
@@ -59,7 +58,7 @@ const ContentSwitch = (props: {
   );
 };
 
-const DefaultTooltipStory = () => {
+export const DefaultTooltipStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
   const [isLongContent, setIsLongContent] = useState(false);
   const elementRef = useRefWithRerender<HTMLDivElement>(null);
@@ -93,7 +92,11 @@ const DefaultTooltipStory = () => {
   );
 };
 
-const OnScrollTooltipStory = () => {
+DefaultTooltipStory.story = {
+  name: 'default'
+};
+
+export const OnScrollTooltipStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
   const elementRef = useRefWithRerender<HTMLDivElement>(null);
 
@@ -129,7 +132,11 @@ const OnScrollTooltipStory = () => {
   );
 };
 
-const OverflowHiddenStory = () => {
+OnScrollTooltipStory.story = {
+  name: 'scrolling'
+};
+
+export const OverflowHiddenStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
   const elementRef = useRefWithRerender<HTMLDivElement>(null);
 
@@ -158,13 +165,10 @@ const OverflowHiddenStory = () => {
   );
 };
 
-storiesOf('Components|Shared Components/Tooltip', module)
-  .add('default', () => {
-    return <DefaultTooltipStory />;
-  })
-  .add('scrolling', () => {
-    return <OnScrollTooltipStory />;
-  })
-  .add('in cropping container', () => {
-    return <OverflowHiddenStory />;
-  });
+OverflowHiddenStory.story = {
+  name: 'in cropping container'
+};
+
+export default {
+  title: 'Components/Shared Components/Tooltip'
+};

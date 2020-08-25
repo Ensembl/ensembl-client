@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
@@ -24,7 +23,7 @@ import styles from './Textarea.stories.scss';
 
 const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
-  const { Textarea: Textarea, ...otherProps } = props;
+  const { textarea: Textarea, ...otherProps } = props;
 
   return (
     <div className={styles.defaultWrapper}>
@@ -33,30 +32,57 @@ const Wrapper = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/Textarea', module)
-  .add('default', () => <Wrapper Textarea={Textarea} />)
-  .add('with placeholder', () => (
-    <Wrapper Textarea={Textarea} placeholder="Enter something..." />
-  ))
-  .add('resize disabled', () => (
-    <Wrapper
-      Textarea={Textarea}
-      placeholder="Enter something..."
-      resizable={false}
-    />
-  ))
-  .add('with onFocus and onBlur', () => (
-    <Wrapper
-      Textarea={Textarea}
-      placeholder="Enter something..."
-      onFocus={action('Textarea-focus')}
-      onBlur={action('Textarea-blur')}
-    />
-  ))
-  .add('styled via received classname', () => (
-    <Wrapper
-      Textarea={Textarea}
-      placeholder="Enter something..."
-      className={styles.customizedTextarea}
-    />
-  ));
+export const DefaultStory = () => <Wrapper textarea={Textarea} />;
+
+DefaultStory.story = {
+  name: 'default'
+};
+
+export const WithPlaceholderStory = () => (
+  <Wrapper textarea={Textarea} placeholder="Enter something..." />
+);
+
+WithPlaceholderStory.story = {
+  name: 'with placeholder'
+};
+
+export const NoResizeStory = () => (
+  <Wrapper
+    textarea={Textarea}
+    placeholder="Enter something..."
+    resizable={false}
+  />
+);
+
+NoResizeStory.story = {
+  name: 'resize disabled'
+};
+
+export const FocusBlurStory = () => (
+  <Wrapper
+    textarea={Textarea}
+    placeholder="Enter something..."
+    onFocus={action('Textarea-focus')}
+    onBlur={action('Textarea-blur')}
+  />
+);
+
+FocusBlurStory.story = {
+  name: 'with onFocus and onBlur'
+};
+
+export const CustomStyledStory = () => (
+  <Wrapper
+    textarea={Textarea}
+    placeholder="Enter something..."
+    className={styles.customizedTextarea}
+  />
+);
+
+CustomStyledStory.story = {
+  name: 'with custom styles'
+};
+
+export default {
+  title: 'Components/Shared Components/Textarea'
+};

@@ -15,25 +15,36 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
 import styles from './ExternalReference.stories.scss';
 
-storiesOf('Components|Shared Components/ExternalReference', module)
-  .add('default', () => (
-    <ExternalReference
-      label={'Source name'}
-      linkText={'LinkText'}
-      to={''}
-      classNames={{ container: styles.wrapper }}
-    />
-  ))
-  .add('without label', () => (
-    <ExternalReference
-      linkText={'LinkText'}
-      to={''}
-      classNames={{ container: styles.wrapper }}
-    />
-  ));
+export default {
+  title: 'Components/Shared Components/ExternalReference'
+};
+
+export const DefaultExternalReference = () => (
+  <ExternalReference
+    label={'Source name'}
+    linkText={'LinkText'}
+    to={''}
+    classNames={{ container: styles.wrapper }}
+  />
+);
+
+DefaultExternalReference.story = {
+  name: 'default'
+};
+
+export const WithoutLabel = () => (
+  <ExternalReference
+    linkText={'LinkText'}
+    to={''}
+    classNames={{ container: styles.wrapper }}
+  />
+);
+
+WithoutLabel.story = {
+  name: 'without label'
+};

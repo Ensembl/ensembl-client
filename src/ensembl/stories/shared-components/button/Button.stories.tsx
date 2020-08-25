@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 import {
@@ -30,43 +29,50 @@ import styles from './Button.stories.scss';
 
 const onClick = action('button-click');
 
-storiesOf('Components|Shared Components/Button/PrimaryButton', module)
-  .add(
-    'default',
-    () => (
-      <div className={styles.wrapper}>
-        <PrimaryButton onClick={onClick}>Primary button</PrimaryButton>
-      </div>
-    ),
-    { notes: primaryButtonNotes }
-  )
-  .add(
-    'disabled',
-    () => (
-      <>
-        <p>On white background</p>
-        <div className={styles.wrapper}>
-          <PrimaryButton onClick={onClick} isDisabled={true}>
-            Primary button
-          </PrimaryButton>
-        </div>
-        <p>On light-grey background</p>
-        <div className={`${styles.wrapper} ${styles.lightGreyWrapper}`}>
-          <PrimaryButton onClick={onClick} isDisabled={true}>
-            Primary button
-          </PrimaryButton>
-        </div>
-      </>
-    ),
-    { notes: primaryButtonNotes }
-  );
+export default {
+  title: 'Components/Shared Components/Button'
+};
 
-storiesOf('Components|Shared Components/Button/SecondaryButton', module).add(
-  'default',
-  () => (
-    <div className={styles.wrapper}>
-      <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
-    </div>
-  ),
-  { notes: secondaryButtonNotes }
+export const DefaultPrimaryButton = () => (
+  <div className={styles.wrapper}>
+    <PrimaryButton onClick={onClick}>Primary button</PrimaryButton>
+  </div>
 );
+
+DefaultPrimaryButton.story = {
+  name: 'PrimaryButton',
+  parameters: { notes: primaryButtonNotes }
+};
+
+export const DisabledPrimaryButton = () => (
+  <>
+    <p>On white background</p>
+    <div className={styles.wrapper}>
+      <PrimaryButton onClick={onClick} isDisabled={true}>
+        Primary button
+      </PrimaryButton>
+    </div>
+    <p>On light-grey background</p>
+    <div className={`${styles.wrapper} ${styles.lightGreyWrapper}`}>
+      <PrimaryButton onClick={onClick} isDisabled={true}>
+        Primary button
+      </PrimaryButton>
+    </div>
+  </>
+);
+
+DisabledPrimaryButton.story = {
+  name: 'PrimaryButton disabled',
+  parameters: { notes: primaryButtonNotes }
+};
+
+export const DefaultSecondaryButton = () => (
+  <div className={styles.wrapper}>
+    <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
+  </div>
+);
+
+DefaultSecondaryButton.story = {
+  name: 'SecondaryButton',
+  parameters: { notes: secondaryButtonNotes }
+};

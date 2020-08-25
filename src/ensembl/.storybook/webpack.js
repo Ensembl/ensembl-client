@@ -5,7 +5,7 @@
 const path = require('path');
 const postcssPresetEnv = require('postcss-preset-env');
 
-module.exports = ({ config }) => {
+module.exports = (config) => {
 
   // a bit of a hack to remove svg handling from Storybook's default webpack config:
   // find the rule that matches svg files and replace its regex with Storybook's default,

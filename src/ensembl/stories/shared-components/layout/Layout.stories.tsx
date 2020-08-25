@@ -15,7 +15,6 @@
  */
 
 import React, { useState, ReactNode } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -108,62 +107,79 @@ const Wrapper = (props: {
   );
 };
 
-storiesOf('Components|Shared Components/Layout/StandardAppLayout', module)
-  .add('without drawer', () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const toggleSidebar = () => {
-      setIsSidebarOpen(!isSidebarOpen);
-    };
+export const WithoutDrawerStory = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
-    return (
-      <Wrapper
-        isSidebarOpen={isSidebarOpen}
-        sidebarContent={<SidebarContentSimple />}
-        onSidebarToggle={toggleSidebar}
-      />
-    );
-  })
-  .add('with drawer', () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const toggleSidebar = () => {
-      isDrawerOpen ? setIsDrawerOpen(false) : setIsSidebarOpen(!isSidebarOpen);
-    };
-    const openDrawer = () => {
-      setIsDrawerOpen(true);
-    };
-    const closeDrawer = () => {
-      setIsDrawerOpen(false);
-    };
+  return (
+    <Wrapper
+      isSidebarOpen={isSidebarOpen}
+      sidebarContent={<SidebarContentSimple />}
+      onSidebarToggle={toggleSidebar}
+    />
+  );
+};
 
-    return (
-      <Wrapper
-        isSidebarOpen={isSidebarOpen}
-        sidebarContent={
-          <SidebarContentWithDrawerOpener
-            isDrawerOpen={isDrawerOpen}
-            openDrawer={openDrawer}
-          />
-        }
-        onSidebarToggle={toggleSidebar}
-        isDrawerOpen={isDrawerOpen}
-        drawerContent={<DrawerContent />}
-        onDrawerClose={closeDrawer}
-      />
-    );
-  })
-  .add('with slideover sidebar', () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const toggleSidebar = () => {
-      setIsSidebarOpen(!isSidebarOpen);
-    };
+WithoutDrawerStory.story = {
+  name: 'without drawer'
+};
 
-    return (
-      <Wrapper
-        isSidebarOpen={isSidebarOpen}
-        sidebarContent={<SidebarContentSimple />}
-        sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
-        onSidebarToggle={toggleSidebar}
-      />
-    );
-  });
+export const WithDrawerStory = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const toggleSidebar = () => {
+    isDrawerOpen ? setIsDrawerOpen(false) : setIsSidebarOpen(!isSidebarOpen);
+  };
+  const openDrawer = () => {
+    setIsDrawerOpen(true);
+  };
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
+
+  return (
+    <Wrapper
+      isSidebarOpen={isSidebarOpen}
+      sidebarContent={
+        <SidebarContentWithDrawerOpener
+          isDrawerOpen={isDrawerOpen}
+          openDrawer={openDrawer}
+        />
+      }
+      onSidebarToggle={toggleSidebar}
+      isDrawerOpen={isDrawerOpen}
+      drawerContent={<DrawerContent />}
+      onDrawerClose={closeDrawer}
+    />
+  );
+};
+
+WithDrawerStory.story = {
+  name: 'with drawer'
+};
+
+export const SlideoveSidebarStory = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  return (
+    <Wrapper
+      isSidebarOpen={isSidebarOpen}
+      sidebarContent={<SidebarContentSimple />}
+      sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
+      onSidebarToggle={toggleSidebar}
+    />
+  );
+};
+
+SlideoveSidebarStory.story = {
+  name: 'with slideover sidebar'
+};
+
+export default {
+  title: 'Components/Shared Components/Layout/StandardAppLayout'
+};

@@ -46,7 +46,7 @@ function importAllImages(fileType: string) {
   return images;
 }
 
-storiesOf('Static Images / All', module)
+storiesOf('Other/Static Images/All', module)
   .add('SVGs', () => {
     return (
       <div className={storyStyles.page}>

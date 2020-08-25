@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import classNames from 'classnames';
 
@@ -50,38 +49,55 @@ const Wrapper = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/Tabs', module)
-  .add('default', () => {
-    return <div className={styles.fullPageWrapper}>{<Wrapper />}</div>;
-  })
-  .add('panel-header-style', () => {
-    const tabClassNames = {
-      default: styles.defaultTabPanel,
-      selected: styles.selectedTabPanel,
-      disabled: styles.disabledTabPanel,
-      tabsContainer: styles.panelTabsContainer
-    };
+export const DefaultTabsStory = () => (
+  <div className={styles.fullPageWrapper}>{<Wrapper />}</div>
+);
 
-    return (
-      <div className={styles.fullPageWrapper}>
-        {<Wrapper classNames={tabClassNames} />}
-      </div>
-    );
-  })
-  .add('entity-viewer-style', () => {
-    const tabClassNames = {
-      default: styles.defaultTabDark,
-      selected: styles.selectedTabDark,
-      disabled: styles.disabledTabDark
-    };
+DefaultTabsStory.story = {
+  name: 'default'
+};
 
-    const wrapperClassNames = classNames(
-      styles.fullPageWrapper,
-      styles.fullPageWrapperDark
-    );
-    return (
-      <div className={wrapperClassNames}>
-        {<Wrapper classNames={tabClassNames} />}
-      </div>
-    );
-  });
+export const PanelHeaderTabsStory = () => {
+  const tabClassNames = {
+    default: styles.defaultTabPanel,
+    selected: styles.selectedTabPanel,
+    disabled: styles.disabledTabPanel,
+    tabsContainer: styles.panelTabsContainer
+  };
+
+  return (
+    <div className={styles.fullPageWrapper}>
+      {<Wrapper classNames={tabClassNames} />}
+    </div>
+  );
+};
+
+PanelHeaderTabsStory.story = {
+  name: 'panel-header style'
+};
+
+export const EntityViewerTabsStory = () => {
+  const tabClassNames = {
+    default: styles.defaultTabDark,
+    selected: styles.selectedTabDark,
+    disabled: styles.disabledTabDark
+  };
+
+  const wrapperClassNames = classNames(
+    styles.fullPageWrapper,
+    styles.fullPageWrapperDark
+  );
+  return (
+    <div className={wrapperClassNames}>
+      {<Wrapper classNames={tabClassNames} />}
+    </div>
+  );
+};
+
+EntityViewerTabsStory.story = {
+  name: 'entity-viewer style'
+};
+
+export default {
+  title: 'Components/Shared Components/Tabs'
+};

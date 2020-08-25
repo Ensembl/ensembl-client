@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import speciesData from './speciesData';
 
@@ -61,37 +60,54 @@ const StatefulStoryWrapper = (props: { species: CommittedItem[] }) => {
 
 const mockLink = <span className={styles.mockLink}>Change species</span>;
 
-storiesOf('Components|Shared Components/SpeciesTabsWrapper/wrappable', module)
-  .add('few species', () => {
-    const speciesTabs = speciesData
-      .slice(0, 3)
-      .map((species, index) => (
-        <SimpleSelectedSpecies key={index} species={species} />
-      ));
-    return (
-      <StatelessStoryWrapper>
-        <SpeciesTabsWrapper speciesTabs={speciesTabs} link={mockLink} />
-      </StatelessStoryWrapper>
-    );
-  })
-  .add('many species', () => {
-    const speciesTabs = speciesData.map((species, index) => (
+export const FewSpeciesWrappableStory = () => {
+  const speciesTabs = speciesData
+    .slice(0, 3)
+    .map((species, index) => (
       <SimpleSelectedSpecies key={index} species={species} />
     ));
-    return (
-      <StatelessStoryWrapper>
-        <SpeciesTabsWrapper speciesTabs={speciesTabs} link={mockLink} />
-      </StatelessStoryWrapper>
-    );
-  });
+  return (
+    <StatelessStoryWrapper>
+      <SpeciesTabsWrapper speciesTabs={speciesTabs} link={mockLink} />
+    </StatelessStoryWrapper>
+  );
+};
 
-storiesOf(
-  'Components|Shared Components/SpeciesTabsWrapper/non-wrappable',
-  module
-)
-  .add('few species', () => {
-    return <StatefulStoryWrapper species={speciesData.slice(0, 3)} />;
-  })
-  .add('many species', () => {
-    return <StatefulStoryWrapper species={speciesData} />;
-  });
+FewSpeciesWrappableStory.story = {
+  name: 'wrappable, few species'
+};
+
+export const ManySpeciesWrappableStory = () => {
+  const speciesTabs = speciesData.map((species, index) => (
+    <SimpleSelectedSpecies key={index} species={species} />
+  ));
+  return (
+    <StatelessStoryWrapper>
+      <SpeciesTabsWrapper speciesTabs={speciesTabs} link={mockLink} />
+    </StatelessStoryWrapper>
+  );
+};
+
+ManySpeciesWrappableStory.story = {
+  name: 'wrappable, many species'
+};
+
+export const FewSpeciesNonWrappableStory = () => (
+  <StatefulStoryWrapper species={speciesData.slice(0, 3)} />
+);
+
+FewSpeciesNonWrappableStory.story = {
+  name: 'non-wrappable, few species'
+};
+
+export const ManySpeciesNonWrappableStory = () => (
+  <StatefulStoryWrapper species={speciesData} />
+);
+
+ManySpeciesNonWrappableStory.story = {
+  name: 'non-wrappable, many species'
+};
+
+export default {
+  title: 'Components/Shared Components/SpeciesTabsWrapper'
+};

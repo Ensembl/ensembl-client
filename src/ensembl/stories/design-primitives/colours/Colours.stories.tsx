@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
 import ColourCard from './ColourCard';
 import variables from 'src/styles/_settings.scss';
@@ -93,16 +92,18 @@ const colours = [
   }
 ];
 
-storiesOf('Design Primitives|Colours', module).add(
-  'colour palette',
-  () => (
-    <>
-      {colours.map((colourData, index) => (
-        <ColourCard key={index} {...colourData} />
-      ))}
-    </>
-  ),
-  {
-    notes: "Basic palette as per Andrea's design mockups"
-  }
+export const ColoursStory = () => (
+  <>
+    {colours.map((colourData, index) => (
+      <ColourCard key={index} {...colourData} />
+    ))}
+  </>
 );
+
+ColoursStory.story = {
+  name: 'colour palette'
+};
+
+export default {
+  title: 'Design Primitives/Colours'
+};

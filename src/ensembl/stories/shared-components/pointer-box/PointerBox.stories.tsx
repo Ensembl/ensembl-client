@@ -15,19 +15,35 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
 import VariantsStory from './variantsStory';
 import PositioningStory from './positioningStory';
 import ScrollingStory from './scrollingStory';
 
-storiesOf('Components|Shared Components/PointerBox', module)
-  .add('variants', () => {
-    return <VariantsStory />;
-  })
-  .add('positioning', () => {
-    return <PositioningStory />;
-  })
-  .add('scrolling', () => {
-    return <ScrollingStory />;
-  });
+export default {
+  title: 'Components/Shared Components/PointerBox'
+};
+
+export const PointerBoxVariants = () => {
+  return <VariantsStory />;
+};
+
+PointerBoxVariants.story = {
+  name: 'variants'
+};
+
+export const PointerBoxPositioning = () => {
+  return <PositioningStory />;
+};
+
+PointerBoxPositioning.story = {
+  name: 'positioning'
+};
+
+export const PointerBoxScrolling = () => {
+  return <ScrollingStory />;
+};
+
+PointerBoxScrolling.story = {
+  name: 'scrolling'
+};

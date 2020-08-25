@@ -19,7 +19,6 @@ import React, { useState } from 'react';
 import RadioGroup, {
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
-import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 const radioData: RadioOptions = [
@@ -28,7 +27,7 @@ const radioData: RadioOptions = [
   { value: 'length_shortest', label: 'Spliced length: shortest - longest' }
 ];
 
-const Wrapper = (props: any) => {
+export const RadioGroupStory = (props: any) => {
   const [selectedRadio, setselectedRadio] = useState('default');
 
   const handleOnchange = (value: string) => {
@@ -48,9 +47,10 @@ const Wrapper = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/RadioGroup', module).add(
-  'default',
-  () => {
-    return <Wrapper />;
-  }
-);
+RadioGroupStory.story = {
+  name: 'default'
+};
+
+export default {
+  title: 'Components/Shared Components/RadioGroup'
+};

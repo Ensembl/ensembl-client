@@ -15,7 +15,6 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
@@ -45,23 +44,28 @@ const LengthInputForm = (props: ContainerProps) => {
   );
 };
 
-storiesOf('Components|EntityViewer/BasePairsRuler', module).add(
-  'default',
-  () => {
-    const initialLength = 80792;
-    const [length, setLength] = useState(initialLength);
+export const BasePairsRulerStory = () => {
+  const initialLength = 80792;
+  const [length, setLength] = useState(initialLength);
 
-    const handleLenghtChange = (length: number) => {
-      setLength(length);
-    };
+  const handleLenghtChange = (length: number) => {
+    setLength(length);
+  };
 
-    return (
-      <div className={styles.container}>
-        <BasePairsRuler length={length} width={800} standalone={true} />
-        <div>
-          <LengthInputForm value={length} onChange={handleLenghtChange} />
-        </div>
+  return (
+    <div className={styles.container}>
+      <BasePairsRuler length={length} width={800} standalone={true} />
+      <div>
+        <LengthInputForm value={length} onChange={handleLenghtChange} />
       </div>
-    );
-  }
-);
+    </div>
+  );
+};
+
+BasePairsRulerStory.story = {
+  name: 'default'
+};
+
+export default {
+  title: 'Components/Entity Viewer/BasePairsRuler'
+};

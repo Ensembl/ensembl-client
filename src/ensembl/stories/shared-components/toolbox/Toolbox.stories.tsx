@@ -15,7 +15,6 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import {
   Toolbox,
@@ -25,7 +24,7 @@ import {
 
 import styles from './Toolbox.stories.scss';
 
-const DefaultStory = () => {
+export const DefaultStory = () => {
   const [isShowing, setIsShowing] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -71,7 +70,10 @@ const DefaultStory = () => {
   );
 };
 
-storiesOf('Components|Shared Components/Toolbox', module).add(
-  'default',
-  DefaultStory
-);
+DefaultStory.story = {
+  name: 'default'
+};
+
+export default {
+  title: 'Components/Shared Components/Toolbox'
+};

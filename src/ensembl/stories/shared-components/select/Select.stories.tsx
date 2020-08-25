@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import times from 'lodash/times';
 import { action } from '@storybook/addon-actions';
 
@@ -82,32 +81,48 @@ const WrapperForOptionGroups = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/Select', module)
-  .add(
-    'default',
-    () => <WrapperForOptions options={createSimpleOptions(5)} />,
-    { notes: selectNotes }
-  )
-  .add('long list of options', () => {
-    const options = createSimpleOptions(50);
-    const longOption = {
-      value: 'long option value',
-      label: 'this is some ridiculously long text for an option',
-      isSelected: false
-    };
-    options.splice(10, 0, longOption);
+export const DefaultSelectStory = () => (
+  <WrapperForOptions options={createSimpleOptions(5)} />
+);
 
-    return <WrapperForOptions options={options} />;
-  })
-  .add('groups of options', () => {
-    const options1 = createSimpleOptions(2);
-    const options2 = createSimpleOptions(3);
-    const options3 = createSimpleOptions(4);
-    const optionGroups = [
-      { options: options1 },
-      { options: options2 },
-      { options: options3 }
-    ];
+DefaultSelectStory.story = {
+  name: 'default',
+  parameters: { notes: selectNotes }
+};
 
-    return <WrapperForOptionGroups optionGroups={optionGroups} />;
-  });
+export const ManyOptionsSelectStory = () => {
+  const options = createSimpleOptions(50);
+  const longOption = {
+    value: 'long option value',
+    label: 'this is some ridiculously long text for an option',
+    isSelected: false
+  };
+  options.splice(10, 0, longOption);
+
+  return <WrapperForOptions options={options} />;
+};
+
+ManyOptionsSelectStory.story = {
+  name: 'long list of options'
+};
+
+export const GroupedOptionsStory = () => {
+  const options1 = createSimpleOptions(2);
+  const options2 = createSimpleOptions(3);
+  const options3 = createSimpleOptions(4);
+  const optionGroups = [
+    { options: options1 },
+    { options: options2 },
+    { options: options3 }
+  ];
+
+  return <WrapperForOptionGroups optionGroups={optionGroups} />;
+};
+
+GroupedOptionsStory.story = {
+  name: 'groups of options'
+};
+
+export default {
+  title: 'Components/Shared Components/Select'
+};
