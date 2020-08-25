@@ -27,3 +27,11 @@
 .proteinFeaturesCountWrapper {
   display: inline-block;
 }
+
+.loadingContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

@@ -16,6 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
 import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/geneData';
@@ -51,7 +52,13 @@ const ProteinsList = (props: ProteinsListProps) => {
     };
   }, [props.geneId]);
 
-  return geneData ? <ProteinsListWithData gene={geneData} /> : null;
+  return geneData ? (
+    <ProteinsListWithData gene={geneData} />
+  ) : (
+    <div className={styles.proteinsListLoadingContainer}>
+      <CircleLoader />
+    </div>
+  );
 };
 
 const ProteinsListWithData = (props: ProteinsListWithDataProps) => {

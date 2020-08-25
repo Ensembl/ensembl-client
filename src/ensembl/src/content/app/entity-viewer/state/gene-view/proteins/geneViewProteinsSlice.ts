@@ -69,6 +69,36 @@ export const toggleExpandedProtein = (
   );
 };
 
+export const expandProtein = (
+  transcriptId: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
+  if (!activeGenomeId || !activeObjectId) {
+    return;
+  }
+
+  const expandedIds = new Set<string>(getExpandedTranscriptIds(state));
+  // If it is already expanded, just return
+  if (expandedIds.has(transcriptId)) {
+    return;
+  } else {
+    expandedIds.add(transcriptId);
+  }
+
+  dispatch(
+    proteinsSlice.actions.updateExpandedProteins({
+      activeGenomeId,
+      activeObjectId,
+      expandedIds: [...expandedIds.values()]
+    })
+  );
+};
+
 type ExpandedProteinsPayload = {
   activeGenomeId: string;
   activeObjectId: string;

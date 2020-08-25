@@ -16,6 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
@@ -66,7 +67,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      {transcript?.product && (
+      {transcript?.product ? (
         <>
           <ProteinDomainImage
             proteinDomains={transcript.product?.protein_domains_resources}
@@ -113,6 +114,10 @@ const ProteinsListItemInfo = (props: Props) => {
             )}
           </div>
         </>
+      ) : (
+        <div className={styles.loadingContainer}>
+          <CircleLoader />
+        </div>
       )}
     </div>
   );
