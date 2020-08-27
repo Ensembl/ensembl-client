@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
-import { push, Push } from 'connected-react-router';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -51,7 +50,6 @@ export type TranscriptsListItemInfoProps = {
   expandDownload: boolean;
   toggleTranscriptDownload: (id: string) => void;
   expandProtein: (id: string) => void;
-  push: Push;
 };
 
 export const TranscriptsListItemInfo = (
@@ -128,19 +126,11 @@ export const TranscriptsListItemInfo = (
     objectId: props.gene.id
   });
 
-  const showProtein = () => {
-    const transcriptId = transcript.id;
-
-    props.expandProtein(transcriptId);
-
-    const url = urlFor.entityViewer({
-      genomeId,
-      entityId,
-      view: View.PROTEIN
-    });
-
-    props.push(url);
-  };
+  const urlForProteinView = urlFor.entityViewer({
+    genomeId,
+    entityId,
+    view: View.PROTEIN
+  });
 
   const getBrowserLink = () => {
     const { genomeId } = params;
@@ -162,9 +152,12 @@ export const TranscriptsListItemInfo = (
               <div>
                 <strong>{getAminoAcidLength()} aa</strong>
               </div>
-              <div onClick={showProtein} className={styles.proteinId}>
+              <Link
+                onClick={() => props.expandProtein(transcript.id)}
+                to={urlForProteinView}
+              >
                 ENSP1000000000
-              </div>
+              </Link>
             </>
           )}
         </div>
@@ -216,8 +209,7 @@ const renderInstantDownload = ({
 
 const mapDispatchToProps = {
   toggleTranscriptDownload,
-  expandProtein,
-  push
+  expandProtein
 };
 
 export default connect(null, mapDispatchToProps)(TranscriptsListItemInfo);
