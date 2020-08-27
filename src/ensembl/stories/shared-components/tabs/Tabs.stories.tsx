@@ -15,12 +15,15 @@
  */
 
 import React, { useState } from 'react';
-import { action } from '@storybook/addon-actions';
 import classNames from 'classnames';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
 import styles from './Tabs.stories.scss';
+
+type DefaultArgs = {
+  onTabChange: (...args: any) => void;
+};
 
 const tabsData: Tab[] = [
   { title: 'Proteins' },
@@ -36,7 +39,7 @@ const Wrapper = (props: any) => {
 
   const onTabChange = (tab: string) => {
     setselectedTab(tab);
-    action('selected-tab')(tab);
+    props.onTabChange(tab);
   };
 
   return (
@@ -49,15 +52,15 @@ const Wrapper = (props: any) => {
   );
 };
 
-export const DefaultTabsStory = () => (
-  <div className={styles.fullPageWrapper}>{<Wrapper />}</div>
+export const DefaultTabsStory = (args: DefaultArgs) => (
+  <div className={styles.fullPageWrapper}>{<Wrapper {...args} />}</div>
 );
 
 DefaultTabsStory.story = {
   name: 'default'
 };
 
-export const PanelHeaderTabsStory = () => {
+export const PanelHeaderTabsStory = (args: DefaultArgs) => {
   const tabClassNames = {
     default: styles.defaultTabPanel,
     selected: styles.selectedTabPanel,
@@ -67,7 +70,7 @@ export const PanelHeaderTabsStory = () => {
 
   return (
     <div className={styles.fullPageWrapper}>
-      {<Wrapper classNames={tabClassNames} />}
+      {<Wrapper classNames={tabClassNames} {...args} />}
     </div>
   );
 };
@@ -76,7 +79,7 @@ PanelHeaderTabsStory.story = {
   name: 'panel-header style'
 };
 
-export const EntityViewerTabsStory = () => {
+export const EntityViewerTabsStory = (args: DefaultArgs) => {
   const tabClassNames = {
     default: styles.defaultTabDark,
     selected: styles.selectedTabDark,
@@ -89,7 +92,7 @@ export const EntityViewerTabsStory = () => {
   );
   return (
     <div className={wrapperClassNames}>
-      {<Wrapper classNames={tabClassNames} />}
+      {<Wrapper classNames={tabClassNames} {...args} />}
     </div>
   );
 };
@@ -99,5 +102,6 @@ EntityViewerTabsStory.story = {
 };
 
 export default {
-  title: 'Components/Shared Components/Tabs'
+  title: 'Components/Shared Components/Tabs',
+  argTypes: { onTabChange: { action: 'tab changed' } }
 };

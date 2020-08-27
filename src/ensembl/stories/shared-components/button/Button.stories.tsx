@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { action } from '@storybook/addon-actions';
 
 import {
   PrimaryButton,
@@ -27,15 +26,18 @@ import secondaryButtonNotes from './secondaryButtonNotes.md';
 
 import styles from './Button.stories.scss';
 
-const onClick = action('button-click');
-
 export default {
-  title: 'Components/Shared Components/Button'
+  title: 'Components/Shared Components/Button',
+  argTypes: { onClick: { action: 'button clicked' } }
 };
 
-export const DefaultPrimaryButton = () => (
+type DefaultArgs = {
+  onClick: (...args: any) => void;
+};
+
+export const DefaultPrimaryButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <PrimaryButton onClick={onClick}>Primary button</PrimaryButton>
+    <PrimaryButton onClick={args.onClick}>Primary button</PrimaryButton>
   </div>
 );
 
@@ -44,17 +46,17 @@ DefaultPrimaryButton.story = {
   parameters: { notes: primaryButtonNotes }
 };
 
-export const DisabledPrimaryButton = () => (
+export const DisabledPrimaryButton = (args: DefaultArgs) => (
   <>
     <p>On white background</p>
     <div className={styles.wrapper}>
-      <PrimaryButton onClick={onClick} isDisabled={true}>
+      <PrimaryButton onClick={args.onClick} isDisabled={true}>
         Primary button
       </PrimaryButton>
     </div>
     <p>On light-grey background</p>
     <div className={`${styles.wrapper} ${styles.lightGreyWrapper}`}>
-      <PrimaryButton onClick={onClick} isDisabled={true}>
+      <PrimaryButton onClick={args.onClick} isDisabled={true}>
         Primary button
       </PrimaryButton>
     </div>
@@ -66,9 +68,9 @@ DisabledPrimaryButton.story = {
   parameters: { notes: primaryButtonNotes }
 };
 
-export const DefaultSecondaryButton = () => (
+export const DefaultSecondaryButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <SecondaryButton onClick={onClick}>Secondary button</SecondaryButton>
+    <SecondaryButton onClick={args.onClick}>Secondary button</SecondaryButton>
   </div>
 );
 

@@ -15,7 +15,6 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { action } from '@storybook/addon-actions';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import styles from './useOutsideClick.stories.scss';
@@ -43,7 +42,11 @@ const buildChild = (option: number, onClick: () => void) => {
   );
 };
 
-export const SingleRefStory = () => {
+type DefaultArgs = {
+  onClickOutside: (...args: any) => void;
+};
+
+export const SingleRefStory = (args: DefaultArgs) => {
   const [numberOfClicks, setNumberOfClicks] = useState(0);
 
   const parentRef = useRef<HTMLDivElement>(null);
@@ -53,7 +56,7 @@ export const SingleRefStory = () => {
   };
 
   const callback = () => {
-    action('clicked-outside')(numberOfClicks);
+    args.onClickOutside(numberOfClicks);
   };
 
   useOutsideClick(parentRef, callback);
@@ -77,12 +80,12 @@ SingleRefStory.story = {
   name: 'single ref'
 };
 
-export const MultipleRefsStory = () => {
+export const MultipleRefsStory = (args: DefaultArgs) => {
   const elementRef1 = useRef<HTMLDivElement>(null);
   const elementRef2 = useRef<HTMLDivElement>(null);
 
   const callback = () => {
-    action('clicked-outside')();
+    args.onClickOutside();
   };
 
   useOutsideClick([elementRef1, elementRef2], callback);
@@ -105,5 +108,6 @@ MultipleRefsStory.story = {
 };
 
 export default {
-  title: 'Hooks/Shared Hooks/useOutsideClick'
+  title: 'Hooks/Shared Hooks/useOutsideClick',
+  argTypes: { onClickOutside: { action: 'clicked ouside' } }
 };

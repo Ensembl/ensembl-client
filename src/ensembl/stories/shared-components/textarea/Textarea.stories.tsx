@@ -15,11 +15,15 @@
  */
 
 import React, { useState } from 'react';
-import { action } from '@storybook/addon-actions';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 
 import styles from './Textarea.stories.scss';
+
+type DefaultArgs = {
+  onFocus: (...args: any) => void;
+  onBlur: (...args: any) => void;
+};
 
 const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
@@ -58,12 +62,12 @@ NoResizeStory.story = {
   name: 'resize disabled'
 };
 
-export const FocusBlurStory = () => (
+export const FocusBlurStory = (args: DefaultArgs) => (
   <Wrapper
     textarea={Textarea}
     placeholder="Enter something..."
-    onFocus={action('Textarea-focus')}
-    onBlur={action('Textarea-blur')}
+    onFocus={args.onFocus()}
+    onBlur={args.onBlur()}
   />
 );
 
@@ -84,5 +88,9 @@ CustomStyledStory.story = {
 };
 
 export default {
-  title: 'Components/Shared Components/Textarea'
+  title: 'Components/Shared Components/Textarea',
+  argTypes: {
+    onFocus: { action: 'focus' },
+    onBlur: { action: 'blur' }
+  }
 };

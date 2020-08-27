@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { action } from '@storybook/addon-actions';
+import noop from 'lodash/noop';
 
 import Roundbutton from 'src/shared/components/round-button/RoundButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
@@ -26,7 +26,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { Status } from 'src/shared/types/status';
 
-const onClick = action('button-click');
+const onClick = noop;
 
 export default {
   title: 'Components/Shared Components/BadgedButton'

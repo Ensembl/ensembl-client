@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import times from 'lodash/times';
-import { action } from '@storybook/addon-actions';
 
 import Select, {
   Option,
@@ -26,6 +25,10 @@ import Select, {
 import selectNotes from './select.md';
 
 import styles from './Select.stories.scss';
+
+type DefaultArgs = {
+  onSelect: (...args: any) => void;
+};
 
 const createSimpleOption = (number: number): Option => ({
   value: number,
@@ -41,7 +44,7 @@ const WrapperForOptions = (props: any) => {
   const [options, setOptions] = useState(props.options);
 
   const onSelect = (selectedValue: number) => {
-    action(`selected: ${selectedValue}`)();
+    props.onSelect(selectedValue);
 
     const updatedOptions = options.map((option: Option) => ({
       ...option,
@@ -61,7 +64,7 @@ const WrapperForOptionGroups = (props: any) => {
   const [optionGroups, setOptionGroups] = useState(props.optionGroups);
 
   const onSelect = (selectedValue: number) => {
-    action(`selected: ${selectedValue}`)();
+    props.onSelect(selectedValue);
 
     const updatedOptionGroups = optionGroups.map((group: OptionGroup) => ({
       ...group,
@@ -81,8 +84,8 @@ const WrapperForOptionGroups = (props: any) => {
   );
 };
 
-export const DefaultSelectStory = () => (
-  <WrapperForOptions options={createSimpleOptions(5)} />
+export const DefaultSelectStory = (args: DefaultArgs) => (
+  <WrapperForOptions options={createSimpleOptions(5)} {...args} />
 );
 
 DefaultSelectStory.story = {
@@ -90,7 +93,7 @@ DefaultSelectStory.story = {
   parameters: { notes: selectNotes }
 };
 
-export const ManyOptionsSelectStory = () => {
+export const ManyOptionsSelectStory = (args: DefaultArgs) => {
   const options = createSimpleOptions(50);
   const longOption = {
     value: 'long option value',
@@ -99,14 +102,14 @@ export const ManyOptionsSelectStory = () => {
   };
   options.splice(10, 0, longOption);
 
-  return <WrapperForOptions options={options} />;
+  return <WrapperForOptions options={options} {...args} />;
 };
 
 ManyOptionsSelectStory.story = {
   name: 'long list of options'
 };
 
-export const GroupedOptionsStory = () => {
+export const GroupedOptionsStory = (args: DefaultArgs) => {
   const options1 = createSimpleOptions(2);
   const options2 = createSimpleOptions(3);
   const options3 = createSimpleOptions(4);
@@ -116,7 +119,7 @@ export const GroupedOptionsStory = () => {
     { options: options3 }
   ];
 
-  return <WrapperForOptionGroups optionGroups={optionGroups} />;
+  return <WrapperForOptionGroups optionGroups={optionGroups} {...args} />;
 };
 
 GroupedOptionsStory.story = {
@@ -124,5 +127,6 @@ GroupedOptionsStory.story = {
 };
 
 export default {
-  title: 'Components/Shared Components/Select'
+  title: 'Components/Shared Components/Select',
+  argTypes: { onSelect: { action: 'selected' } }
 };

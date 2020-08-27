@@ -15,11 +15,14 @@
  */
 
 import React, { useState } from 'react';
-import { action } from '@storybook/addon-actions';
 
 import Input from 'src/shared/components/input/Input';
 
 import styles from './Input.stories.scss';
+
+type DefaultArgs = {
+  onChange: (...args: any) => void;
+};
 
 const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
@@ -32,26 +35,29 @@ const Wrapper = (props: any) => {
   );
 };
 
-export const DefaultInputStory = () => <Wrapper input={Input} />;
+export const DefaultInputStory = (args: DefaultArgs) => (
+  <Wrapper input={Input} {...args} />
+);
 
 DefaultInputStory.story = {
   name: 'default'
 };
 
-export const InputWithPlaceholderStory = () => (
-  <Wrapper input={Input} placeholder="Enter something..." />
+export const InputWithPlaceholderStory = (args: DefaultArgs) => (
+  <Wrapper input={Input} placeholder="Enter something..." {...args} />
 );
 
 InputWithPlaceholderStory.story = {
   name: 'with placeholder'
 };
 
-export const FocusAndBlurStory = () => (
+export const FocusAndBlurStory = (args: DefaultArgs) => (
   <Wrapper
     input={Input}
     placeholder="Enter something..."
     onFocus={action('input-focus')}
     onBlur={action('input-blur')}
+    {...args}
   />
 );
 
@@ -59,11 +65,12 @@ FocusAndBlurStory.story = {
   name: 'handling focus and blur'
 };
 
-export const CustomInputStory = () => (
+export const CustomInputStory = (args: DefaultArgs) => (
   <Wrapper
     input={Input}
     placeholder="Enter something..."
     className={styles.customizedInput}
+    {...args}
   />
 );
 
@@ -72,5 +79,6 @@ CustomInputStory.story = {
 };
 
 export default {
-  title: 'Components/Shared Components/Input'
+  title: 'Components/Shared Components/Input',
+  argTypes: { onChange: { action: 'changed' } }
 };

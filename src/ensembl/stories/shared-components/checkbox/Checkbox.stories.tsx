@@ -20,14 +20,17 @@ import Checkbox, {
   CheckboxProps
 } from 'src/shared/components/checkbox/Checkbox';
 import styles from './Checkbox.stories.scss';
-import { action } from '@storybook/addon-actions';
 
-const StatefulCheckbox = (props: Partial<CheckboxProps>) => {
+type DefaultArgs = {
+  onChange: (...args: any) => void;
+};
+
+const StatefulCheckbox = (props: Partial<CheckboxProps> & DefaultArgs) => {
   const [checked, setChecked] = useState(false);
 
   const handleChange = (isChecked: boolean) => {
     setChecked(isChecked);
-    action('checkbox-toggled')(isChecked);
+    props.onChange(isChecked);
   };
 
   return (
@@ -37,9 +40,9 @@ const StatefulCheckbox = (props: Partial<CheckboxProps>) => {
   );
 };
 
-export const DefaultCheckboxStory = () => (
+export const DefaultCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox />
+    <StatefulCheckbox {...args} />
   </div>
 );
 
@@ -47,9 +50,9 @@ DefaultCheckboxStory.story = {
   name: 'default'
 };
 
-export const DisabledCheckboxStory = () => (
+export const DisabledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox disabled={true} />
+    <StatefulCheckbox disabled={true} {...args} />
   </div>
 );
 
@@ -57,12 +60,13 @@ DisabledCheckboxStory.story = {
   name: 'disabled'
 };
 
-export const LabelledCheckboxStory = () => (
+export const LabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
-    <StatefulCheckbox label={'I am label'} />
+    <StatefulCheckbox label={'I am label'} {...args} />
     <StatefulCheckbox
       disabled={true}
       label={'I am label of disabled checkbox'}
+      {...args}
     />
   </div>
 );
@@ -71,30 +75,33 @@ LabelledCheckboxStory.story = {
   name: 'with label'
 };
 
-export const LongLabelledCheckboxStory = () => (
+export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.gridWrapper}>
     <div>
-      <StatefulCheckbox label={'I am label'} />
+      <StatefulCheckbox label={'I am label'} {...args} />
       <StatefulCheckbox
         disabled={true}
         label={'I am label of disabled checkbox'}
+        {...args}
       />
       <StatefulCheckbox
         label={'I am a very long long label that wraps to another line'}
+        {...args}
       />
     </div>
 
     <div>
-      <StatefulCheckbox label={'I am label'} />
+      <StatefulCheckbox label={'I am label'} {...args} />
       <StatefulCheckbox
         label={'I am another very long long label that wraps to another line'}
+        {...args}
       />
-      <StatefulCheckbox label={'I am label'} />
+      <StatefulCheckbox label={'I am label'} {...args} />
     </div>
 
     <div>
-      <StatefulCheckbox label={'I am label'} />
-      <StatefulCheckbox label={'I am label'} />
+      <StatefulCheckbox label={'I am label'} {...args} />
+      <StatefulCheckbox label={'I am label'} {...args} />
     </div>
   </div>
 );
@@ -104,5 +111,6 @@ LabelledCheckboxStory.story = {
 };
 
 export default {
-  title: 'Components/Shared Components/Checkbox'
+  title: 'Components/Shared Components/Checkbox',
+  argTypes: { onChange: { action: 'checkbox toggled' } }
 };

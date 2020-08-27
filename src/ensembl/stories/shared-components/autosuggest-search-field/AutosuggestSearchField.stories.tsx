@@ -15,7 +15,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { action } from '@storybook/addon-actions';
 
 import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
@@ -25,6 +24,11 @@ import notes from './autosuggestSearchField.md';
 import * as matches from 'tests/data/species-selector/species-search';
 
 import styles from './AutosuggestSearchField.stories.scss';
+
+type DefaultArgs = {
+  onSelected: (...args: any) => void;
+  onSubmitted: (...args: any) => void;
+};
 
 const ItemWrapper = (props: any) => <span>{props.description}</span>;
 
@@ -67,14 +71,14 @@ const Wrapper = (props: any) => {
         onChange={setValue}
         onSubmit={(value: string) => {
           setIsSelected(true);
-          action('autosuggest-search-field-submit')(value);
+          props.onSelected(value);
         }}
         onSelect={(match: any) => {
           const { description } = match;
           setValue(description);
           // allow time for the isSelected state value to get updated
           setTimeout(() => setIsSelected(true), 0);
-          action('autosuggest-search-field-select')(description);
+          props.onSubmitted(description);
         }}
         canShowSuggestions={!isSelected}
         className={styles.autosuggestSearchField}
@@ -87,7 +91,7 @@ const Wrapper = (props: any) => {
 
 const RightCorner = () => <QuestionButton helpText="this is a hint" />;
 
-export const MatchesSubmissionStory = () => (
+export const MatchesSubmissionStory = (args: DefaultArgs) => (
   <div className={styles.container}>
     <p>For description of the component's behaviour, see the Notes tab.</p>
     <div className={styles.example}>
@@ -109,6 +113,7 @@ export const MatchesSubmissionStory = () => (
       <Wrapper
         searchField={AutosuggestSearchField}
         rightCorner={<RightCorner />}
+        {...args}
       />
     </div>
   </div>
@@ -118,7 +123,7 @@ MatchesSubmissionStory.story = {
   name: 'allowing only submission of matches'
 };
 
-export const RawSearchSubmissionStory = () => (
+export const RawSearchSubmissionStory = (args: DefaultArgs) => (
   <div className={styles.container}>
     <div className={styles.example}>
       <p>
@@ -143,6 +148,7 @@ export const RawSearchSubmissionStory = () => (
         searchField={AutosuggestSearchField}
         allowRawInputSubmission={true}
         rightCorner={<RightCorner />}
+        {...args}
       />
     </div>
   </div>
@@ -156,5 +162,9 @@ export default {
   title: 'Components/Shared Components/AutosuggestSearchField',
   parameters: {
     notes
+  },
+  argTypes: {
+    onSelect: { action: 'selected' },
+    onSubmit: { action: 'submitted' }
   }
 };

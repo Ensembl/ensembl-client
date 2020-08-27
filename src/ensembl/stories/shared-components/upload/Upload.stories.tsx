@@ -15,86 +15,103 @@
  */
 
 import React from 'react';
-import { action } from '@storybook/addon-actions';
 
 import Upload, { FileReaderMethod } from 'src/shared/components/upload/Upload';
 
 import styles from './Upload.stories.scss';
 
+type DefaultArgs = {
+  onChange: (...args: any) => void;
+};
+
 const Wrapper = (props: any) => {
   const { upload: Upload, ...otherProps } = props;
 
-  const onchangeHandler = (filesOrContent: any) => {
-    if (props.callbackWithFiles) {
-      action(`Files: ${filesOrContent}`)();
-      return;
-    }
-
-    action(`Content: ${filesOrContent}`)();
+  const onChange = (filesOrContent: any) => {
+    props.onChange(filesOrContent);
   };
 
   return (
     <div className={styles.defaultWrapper}>
-      <Upload onChange={onchangeHandler} {...otherProps} />
+      <Upload onChange={onChange} {...otherProps} />
     </div>
   );
 };
 
-export const DefaultStory = () => <Wrapper upload={Upload} />;
+export const DefaultStory = (args: DefaultArgs) => (
+  <Wrapper upload={Upload} {...args} />
+);
 
 DefaultStory.story = {
   name: 'default'
 };
 
-export const CustomLabelStory = () => (
-  <Wrapper upload={Upload} label={'Upload'} />
+export const CustomLabelStory = (args: DefaultArgs) => (
+  <Wrapper upload={Upload} label={'Upload'} {...args} />
 );
 
 CustomLabelStory.story = {
   name: 'with custom label'
 };
 
-export const CallbackWithSingleFileStory = () => (
-  <Wrapper upload={Upload} callbackWithFiles={true} allowMultiple={false} />
+export const CallbackWithSingleFileStory = (args: DefaultArgs) => (
+  <Wrapper
+    upload={Upload}
+    callbackWithFiles={true}
+    allowMultiple={false}
+    {...args}
+  />
 );
 
 CallbackWithSingleFileStory.story = {
   name: 'callback with single file'
 };
 
-export const CallbackWithMultipleFilesStory = () => (
-  <Wrapper upload={Upload} callbackWithFiles={true} />
+export const CallbackWithMultipleFilesStory = (args: DefaultArgs) => (
+  <Wrapper upload={Upload} callbackWithFiles={true} {...args} />
 );
 
 CallbackWithMultipleFilesStory.story = {
   name: 'callback with multiple files'
 };
 
-export const CallbackWithDataUrlStory = () => (
-  <Wrapper upload={Upload} fileReaderMethod={FileReaderMethod.DATA_URL} />
+export const CallbackWithDataUrlStory = (args: DefaultArgs) => (
+  <Wrapper
+    upload={Upload}
+    fileReaderMethod={FileReaderMethod.DATA_URL}
+    {...args}
+  />
 );
 
 CallbackWithDataUrlStory.story = {
   name: 'callback with data urls'
 };
 
-export const CallbackWithBinaryStringStory = () => (
-  <Wrapper upload={Upload} fileReaderMethod={FileReaderMethod.BINARY_STRING} />
+export const CallbackWithBinaryStringStory = (args: DefaultArgs) => (
+  <Wrapper
+    upload={Upload}
+    fileReaderMethod={FileReaderMethod.BINARY_STRING}
+    {...args}
+  />
 );
 
 CallbackWithBinaryStringStory.story = {
   name: 'callback with binary string'
 };
 
-export const CallbackWithArrayBufferStory = () => (
-  <Wrapper upload={Upload} fileReaderMethod={FileReaderMethod.ARRAY_BUFFER} />
+export const CallbackWithArrayBufferStory = (args: DefaultArgs) => (
+  <Wrapper
+    upload={Upload}
+    fileReaderMethod={FileReaderMethod.ARRAY_BUFFER}
+    {...args}
+  />
 );
 
 CallbackWithArrayBufferStory.story = {
   name: 'callback with array buffer'
 };
 
-export const CustomStylingStory = () => (
+export const CustomStylingStory = (args: DefaultArgs) => (
   <Wrapper
     upload={Upload}
     label="Upload here"
@@ -102,6 +119,7 @@ export const CustomStylingStory = () => (
       default: styles.customizedUpload,
       active: styles.customizedUploadActive
     }}
+    {...args}
   />
 );
 
@@ -110,5 +128,6 @@ CustomStylingStory.story = {
 };
 
 export default {
-  title: 'Components/Shared Components/Upload'
+  title: 'Components/Shared Components/Upload',
+  argTypes: { onChange: { action: 'uploaded' } }
 };
