@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { RootState } from 'src/store';
 
-import speciesPageSidebarReducer from './sidebar/speciesSidebarSlice';
-
-export default combineReducers({
-  sidebar: speciesPageSidebarReducer
-});
+export const isSidebarOpen = (state: RootState) =>
+  state.speciesPage.sidebar.isOpen;

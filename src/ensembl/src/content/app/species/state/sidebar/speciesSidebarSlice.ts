@@ -16,8 +16,6 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { RootState } from 'src/store';
-
 type SpeciesPageSidebarState = {
   isOpen: boolean;
 };
@@ -37,8 +35,5 @@ const speciesPageSidebarSlice = createSlice({
 });
 
 export const { toggleSidebar } = speciesPageSidebarSlice.actions;
-
-export const isSidebarOpen = (state: RootState) =>
-  state.speciesPage.sidebar.isOpen;
 
 export default speciesPageSidebarSlice.reducer;

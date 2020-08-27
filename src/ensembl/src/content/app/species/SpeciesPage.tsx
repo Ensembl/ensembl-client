@@ -22,10 +22,9 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  toggleSidebar,
-  isSidebarOpen
-} from 'src/content/app/species/state/speciesSidebarSlice';
+import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
+
+import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import {
