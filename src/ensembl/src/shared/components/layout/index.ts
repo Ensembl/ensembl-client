@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { default as StandardAppLayout } from './StandardAppLayout';
+export {
+  default as StandardAppLayout,
+  SidebarBehaviourType
+} from './StandardAppLayout';

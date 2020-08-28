@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createSlice } from '@reduxjs/toolkit';
 
-import SpeciesSearchPanel from 'src/content/app/species-selector/containers/species-search-panel/SpeciesSearchPanel';
-import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
-import PopularSpeciesPanel from 'src/content/app/species-selector/containers/popular-species-panel/PopularSpeciesPanel';
-
-const SpeciesSelector = () => {
-  return (
-    <>
-      <SpeciesSelectorAppBar />
-      <SpeciesSearchPanel />
-      <PopularSpeciesPanel />
-    </>
-  );
+type SpeciesPageSidebarState = {
+  isOpen: boolean;
 };
 
-export default SpeciesSelector;
+const initialState: SpeciesPageSidebarState = {
+  isOpen: true
+};
+
+const speciesPageSidebarSlice = createSlice({
+  name: 'species-page-sidebar',
+  initialState,
+  reducers: {
+    toggleSidebar(state) {
+      state.isOpen = !state.isOpen;
+    }
+  }
+});
+
+export const { toggleSidebar } = speciesPageSidebarSlice.actions;
+
+export default speciesPageSidebarSlice.reducer;

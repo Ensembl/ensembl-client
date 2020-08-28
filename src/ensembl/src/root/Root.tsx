@@ -22,7 +22,7 @@ import { updateBreakpointWidth } from '../global/globalActions';
 import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 
 import Header from '../header/Header';
-import Content from '../content/Content';
+import App from '../content/app/App';
 import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
@@ -59,7 +59,7 @@ export const Root = (props: Props) => {
     <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
         <Header />
-        <Content />
+        <App />
         {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
       </ErrorBoundary>
     </div>

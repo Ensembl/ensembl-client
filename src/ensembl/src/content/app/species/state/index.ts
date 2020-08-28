@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { combineReducers } from 'redux';
 
-import SpeciesSearchPanel from 'src/content/app/species-selector/containers/species-search-panel/SpeciesSearchPanel';
-import SpeciesSelectorAppBar from './components/species-selector-app-bar/SpeciesSelectorAppBar';
-import PopularSpeciesPanel from 'src/content/app/species-selector/containers/popular-species-panel/PopularSpeciesPanel';
+import speciesPageSidebarReducer from './sidebar/speciesSidebarSlice';
 
-const SpeciesSelector = () => {
-  return (
-    <>
-      <SpeciesSelectorAppBar />
-      <SpeciesSearchPanel />
-      <PopularSpeciesPanel />
-    </>
-  );
-};
-
-export default SpeciesSelector;
+export default combineReducers({
+  sidebar: speciesPageSidebarReducer
+});
