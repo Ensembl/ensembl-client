@@ -4,7 +4,6 @@
   border: 1px solid $green;
   background-color: $green;
   color: $white;
-  padding: 8px 18px;
   font-weight: $bold;
 }
 
@@ -23,7 +22,7 @@
 }
 
 .button {
-  padding: 8px 18px;
+  padding: 7px 18px;
   border-radius: 3px;
   &:active,
   &:focus {

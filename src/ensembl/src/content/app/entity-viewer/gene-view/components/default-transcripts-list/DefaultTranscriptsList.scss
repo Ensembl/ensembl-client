@@ -1,14 +1,15 @@
 @import 'src/styles/common';
-@import 'constants';
+@import '../../constants';
 
 .header {
   border-bottom: 1px solid $orange;
   padding: 0;
   position: sticky;
-  top: -15px;
+  top: -5px;
   background-color: $black;
   z-index: 1;
   font-size: 12px;
+  font-weight: 300;
 }
 
 .headerChevron {
@@ -23,13 +24,14 @@
 .content {
   position: relative;
   padding-top: 36px;
+  padding-bottom: 120px;
 }
 
 .stripedBackground {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: $left_column;
+  left: $left_column + $middle_column_left_gap;
 
   .stripe {
     position: absolute;
@@ -43,7 +45,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: $left_column $middle_column $middle_column_right_gap $right_column;
+  grid-template-columns: $left_column $middle_column_left_gap $middle_column $middle_column_right_gap $right_column;
   padding: 9px 0px;
   font-size: 12px;
 }
@@ -52,16 +54,17 @@
   grid-column: 1/2;
   text-align: right;
   padding-right: 1em;
+  color: $dark-blue;
 }
 
 .middle {
-  grid-column: 2/3;
+  grid-column: 3/4;
   position: relative;
   top: 2px;
 }
 
 .right {
-  grid-column: 4/5;
+  grid-column: 5/6;
 }
 
 .filterLabel {

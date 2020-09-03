@@ -3,6 +3,7 @@
 .listItemInfo {
   color: $grey;
   line-height: 2;
+  padding-top: 0;
 }
 
 .middle {
@@ -19,6 +20,11 @@
     color: $white;
     font-weight: normal;
   }
+}
+
+.transcriptName {
+  top: -8px;
+  position: relative;
 }
 
 .topLeft {

@@ -14,11 +14,14 @@
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   background-color: $light-grey;
-  box-shadow: 0px 1px 3px $medium-light-grey;
+  box-shadow: 0 4px 3px -2px $medium-light-grey;
   height: 34px;
   padding: 4px 10px;
   width: 100%;
   line-height: 24px;
+  position: sticky;
+  top: -5px;
+  z-index: 1;
 }
 
 .body {

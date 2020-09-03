@@ -1,9 +1,9 @@
 @import 'src/styles/common';
-@import '../default-transcripts-list/constants';
+@import '../../constants';
 
 .container {
   display: grid;
-  grid-template-columns: $left_column auto;
+  grid-template-columns: $left_column $middle_column_left_gap auto;
   padding: 9px 0;
 }
 
@@ -23,6 +23,7 @@
 
 .filterBox {
   display: grid;
+  grid-column: 3;
   grid-template-columns: 270px minmax(210px, auto) 20px;
   background-color: $soft-black;
   color: $white;

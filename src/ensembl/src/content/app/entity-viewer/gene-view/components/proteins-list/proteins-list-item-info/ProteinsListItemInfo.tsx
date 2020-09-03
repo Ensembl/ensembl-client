@@ -111,6 +111,7 @@ const ProteinsListItemInfo = (props: Props) => {
                 )}
               </div>
             )}
+            <div className={styles.keyline}></div>
           </div>
         </>
       )}
