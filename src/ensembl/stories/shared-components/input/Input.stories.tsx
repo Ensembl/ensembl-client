@@ -28,9 +28,14 @@ const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
   const { input: Input, ...otherProps } = props;
 
+  const onChange = (value: string) => {
+    setValue(value);
+    props.onChange(value);
+  };
+
   return (
     <div>
-      <Input value={value} onChange={setValue} {...otherProps} />
+      <Input value={value} {...otherProps} onChange={onChange} />
     </div>
   );
 };
@@ -55,8 +60,8 @@ export const FocusAndBlurStory = (args: DefaultArgs) => (
   <Wrapper
     input={Input}
     placeholder="Enter something..."
-    onFocus={action('input-focus')}
-    onBlur={action('input-blur')}
+    onFocus={() => args.onChange('input-focus')}
+    onBlur={() => args.onChange('input-blur')}
     {...args}
   />
 );
