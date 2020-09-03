@@ -19,20 +19,26 @@ import classNames from 'classnames';
 
 import defaultStyles from './SpeciesStats.scss';
 
-export type SpeciesStatsProps = {
-  title?: string;
-  label: string;
-  labelHint?: string;
+type PrimaryDataProps = {
   primaryValue: string;
   primaryUnit?: string;
-  secondaryValue?: string;
+};
+
+type PropsWithSecondaryData = {
+  secondaryValue: string;
   secondaryUnit?: string;
-  link?: React.ReactElement;
+};
+
+type PropsWithoutSecondaryData = {
+  secondaryValue?: never;
+  secondaryUnit?: never;
+};
+
+type ClassNamesProps = {
   classNames?: {
     wrapper?: string;
-    title?: string;
+    preLabel?: string;
     label?: string;
-    labelHint?: string;
     primaryValue?: string;
     primaryUnit?: string;
     secondaryValue?: string;
@@ -41,12 +47,19 @@ export type SpeciesStatsProps = {
   };
 };
 
+export type SpeciesStatsProps = PrimaryDataProps &
+  (PropsWithSecondaryData | PropsWithoutSecondaryData) &
+  ClassNamesProps & {
+    preLabel?: string;
+    label: string;
+    link?: React.ReactElement;
+  };
+
 const SpeciesStats = (props: SpeciesStatsProps) => {
   const styles = {
     wrapper: classNames(defaultStyles.wrapper, props.classNames?.wrapper),
-    title: classNames(defaultStyles.title, props.classNames?.title),
+    preLabel: classNames(defaultStyles.preLabel, props.classNames?.preLabel),
     label: classNames(defaultStyles.label, props.classNames?.label),
-    labelHint: classNames(defaultStyles.labelHint, props.classNames?.labelHint),
     primaryValue: classNames(
       defaultStyles.primaryValue,
       props.classNames?.primaryValue
@@ -68,14 +81,9 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
 
   return (
     <div className={styles.wrapper}>
-      <span className={styles.title}>{props.title}</span>
+      <span className={styles.preLabel}>{props.preLabel}</span>
 
-      <div>
-        <span className={styles.label}>{props.label}</span>
-        {props.labelHint && (
-          <span className={styles.labelHint}>{props.labelHint}</span>
-        )}
-      </div>
+      <div className={styles.label}>{props.label}</div>
 
       <div>
         <span className={styles.primaryValue}>{props.primaryValue}</span>

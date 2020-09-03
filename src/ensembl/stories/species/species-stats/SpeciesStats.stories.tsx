@@ -36,7 +36,16 @@ storiesOf('Components|Species/SpeciesStats', module).add('default', () => (
       secondaryUnit: 'readthrough'
     })}
     {renderSpeciesStats({
-      title: 'No. genes in',
+      preLabel: 'preLabel',
+      label: 'label',
+      primaryValue: 'primaryValue',
+      primaryUnit: 'primaryUnit',
+      secondaryValue: 'secondaryValue',
+      secondaryUnit: 'secondaryUnit',
+      link: <a href="/">Link</a>
+    })}
+    {renderSpeciesStats({
+      preLabel: 'No. genes in',
       label: 'Biological process',
       primaryValue: '7,343',
       primaryUnit: 'xyz',
@@ -50,7 +59,6 @@ storiesOf('Components|Species/SpeciesStats', module).add('default', () => (
     })}
     {renderSpeciesStats({
       label: 'SNVs',
-      labelHint: 'single nucleotide variants',
       primaryValue: '91%'
     })}
   </div>
