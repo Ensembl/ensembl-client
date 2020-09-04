@@ -12,3 +12,13 @@
   color: $blue;
   cursor: pointer;
 }
+
+.defaultTranscriptLabel {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+}
+
+.helpText {
+  max-width: 300px;
+}
