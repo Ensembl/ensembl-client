@@ -92,7 +92,7 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
         )}
       </div>
 
-      {(props.secondaryValue || props.secondaryUnit) && (
+      {props.secondaryValue && (
         <div>
           <span className={styles.secondaryValue}>{props.secondaryValue}</span>
 
