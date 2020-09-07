@@ -14,6 +14,32 @@
  * limitations under the License.
  */
 
-export { default as NewTechError } from './NewTechError';
-export { default as GeneralErrorScreen } from './GeneralErrorScreen';
-export { default as NotFoundErrorScreen } from './NotFoundError';
+import React from 'react';
+
+const NotFoundErrorScreen = () => {
+  const containerStyles = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh'
+  } as const;
+
+  const firstLineStyles = {
+    fontSize: '72px',
+    margin: 0
+  };
+
+  const secondLineStyles = {
+    fontSize: '32px'
+  };
+
+  return (
+    <div style={containerStyles}>
+      <p style={firstLineStyles}>404</p>
+      <p style={secondLineStyles}>page not found</p>
+    </div>
+  );
+};
+
+export default NotFoundErrorScreen;

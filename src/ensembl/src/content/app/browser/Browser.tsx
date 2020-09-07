@@ -58,12 +58,12 @@ import TrackPanelTabs from './track-panel/track-panel-tabs/TrackPanelTabs';
 import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
+import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
+import { NewTechError } from 'src/shared/components/error-screen';
 
 import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-
-import 'ensembl-genome-browser';
 
 import styles from './Browser.scss';
 
@@ -201,4 +201,30 @@ const mapDispatchToProps = {
   toggleTrackPanel
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Browser);
+const ReduxConnectedBrowser = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Browser);
+
+const WasmLoadingBrowserContainer = () => {
+  useEffect(() => {
+    /* eslint-disable */
+    // @ts-ignore ensembl-genome-browser does not have typescript definitions
+    import('ensembl-genome-browser');
+    /* eslint-enable */
+  });
+
+  return <ReduxConnectedBrowser />;
+};
+
+const ErrorWrappedBrowser = () => {
+  // if an error happens during loading of the browser,
+  // we will be able to show custom error string
+  return (
+    <ErrorBoundary fallbackComponent={NewTechError}>
+      <WasmLoadingBrowserContainer />
+    </ErrorBoundary>
+  );
+};
+
+export default ErrorWrappedBrowser;

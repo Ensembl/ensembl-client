@@ -15,13 +15,12 @@
  */
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { Route, Switch, useLocation } from 'react-router-dom';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 
-import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
-import { NewTechError } from 'src/shared/components/error-screen';
+import Header from 'src//header/Header';
 
 const HomePage = lazy(() => import('../home/Home'));
 const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
@@ -59,22 +58,26 @@ const AppInner = (props: AppProps) => {
   }, [location.pathname]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Switch>
-        <Route path={`/`} component={HomePage} exact />
-        <Route path={`/global-search`} component={GlobalSearch} />
-        <Route path={`/species-selector`} component={SpeciesSelector} />
-        <Route path={`/species/:genomeId`} component={SpeciesPage} />
-        <Route path={`/custom-download`} component={CustomDownload} />
-        <Route
-          path={`/entity-viewer/:genomeId?/:entityId?`}
-          component={EntityViewer}
-        />
-        <ErrorBoundary fallbackComponent={NewTechError}>
+    <>
+      <Header />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route path={`/`} component={HomePage} exact />
+          <Route path={`/global-search`} component={GlobalSearch} />
+          <Route path={`/species-selector`} component={SpeciesSelector} />
+          <Route path={`/species/:genomeId`} component={SpeciesPage} />
+          <Route path={`/custom-download`} component={CustomDownload} />
+          <Route
+            path={`/entity-viewer/:genomeId?/:entityId?`}
+            component={EntityViewer}
+          />
           <Route path={`/genome-browser/:genomeId?`} component={Browser} />
-        </ErrorBoundary>
-      </Switch>
-    </Suspense>
+          <Route>
+            <Redirect to={{ ...location, state: { is404: true } }} />
+          </Route>
+        </Switch>
+      </Suspense>
+    </>
   );
 };
 
