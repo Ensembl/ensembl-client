@@ -18,7 +18,6 @@ import { useLayoutEffect, useRef } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-// import { ScrollPosition } from 'src/global/globalConfig';
 import { setScrollPosition } from 'src/global/globalActions';
 import { getScrollPosition } from 'src/global/globalSelectors';
 

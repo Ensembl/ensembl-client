@@ -92,7 +92,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
     if (!hasExpandedTranscripts) {
       props.toggleExpandedProtein(sortedTranscripts[0].id);
     }
-  }, [hasExpandedTranscripts]);
+  }, []);
 
   const longestProteinLength = getLongestProteinLength(props.gene);
 
