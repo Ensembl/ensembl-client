@@ -20,6 +20,7 @@ import { replace } from 'connected-react-router';
 import { useQuery, gql } from '@apollo/client';
 import { useParams, useLocation } from 'react-router-dom';
 
+import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import usePrevious from 'src/shared/hooks/usePrevious';
 import {
   getSelectedGeneViewTabs,
@@ -125,18 +126,22 @@ const GeneView = () => {
   return <GeneViewWithData gene={data.gene} />;
 };
 
+const COMPONENT_ID = 'entity_viewer_gene_view';
+
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [
     basePairsRulerTicks,
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
+  const { targetElementRef } = useRestoreScrollPosition(COMPONENT_ID);
+
   const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
   return (
-    <div className={styles.geneView}>
+    <div className={styles.geneView} ref={targetElementRef}>
       <div className={styles.featureImage}>
         <GeneOverviewImage
           gene={props.gene}

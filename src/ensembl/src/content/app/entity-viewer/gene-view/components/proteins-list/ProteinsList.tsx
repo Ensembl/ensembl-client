@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
+import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
@@ -31,6 +32,8 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { RootState } from 'src/store';
 
 import styles from './ProteinsList.scss';
+
+const COMPONENT_ID = 'entity_viewer_gene_view_protein_list';
 
 type ProteinsListProps = {
   geneId: string;
@@ -75,20 +78,26 @@ const ProteinsList = (props: ProteinsListProps) => {
 };
 
 const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
+  const { targetElementRef } = useRestoreScrollPosition(COMPONENT_ID);
+
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
     (transcript) => !!transcript.cds
   );
 
-  // Expand the first transcript by default
-  if (!props.expandedTranscriptIds.length) {
-    props.toggleExpandedProtein(sortedTranscripts[0].id);
-  }
+  const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+
+  useEffect(() => {
+    // Expand the first transcript by default
+    if (!hasExpandedTranscripts) {
+      props.toggleExpandedProtein(sortedTranscripts[0].id);
+    }
+  }, [hasExpandedTranscripts]);
 
   const longestProteinLength = getLongestProteinLength(props.gene);
 
   return (
-    <div className={styles.proteinsList}>
+    <div className={styles.proteinsList} ref={targetElementRef}>
       {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem
           key={transcript.id}

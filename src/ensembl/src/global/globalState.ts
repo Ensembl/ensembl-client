@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { BreakpointWidth, globalMediaQueries } from './globalConfig';
+import {
+  BreakpointWidth,
+  globalMediaQueries,
+  ScrollPosition
+} from './globalConfig';
 import { getCurrentMediaSize } from 'src/global/windowSizeHelpers';
 
 export type GlobalState = Readonly<{
   breakpointWidth: BreakpointWidth;
+  scrollPosition: ScrollPosition;
 }>;
 
 // NOTE: this will be incompatible with server-side rendering; we will need to run this only on the client
@@ -27,5 +32,6 @@ const viewport = getCurrentMediaSize(
 ) as keyof typeof BreakpointWidth;
 
 export const defaultState: GlobalState = {
-  breakpointWidth: BreakpointWidth[viewport] || BreakpointWidth.DESKTOP
+  breakpointWidth: BreakpointWidth[viewport] || BreakpointWidth.DESKTOP,
+  scrollPosition: {}
 };
