@@ -78,7 +78,11 @@ const ProteinsList = (props: ProteinsListProps) => {
 };
 
 const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
-  const { targetElementRef } = useRestoreScrollPosition(COMPONENT_ID);
+  const uniqueScrollReferenceId = COMPONENT_ID + props.gene.id;
+
+  const { targetElementRef } = useRestoreScrollPosition(
+    uniqueScrollReferenceId
+  );
 
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
