@@ -30,6 +30,4 @@ export const DefaultExternalLink = () => (
   </div>
 );
 
-DefaultExternalLink.story = {
-  name: 'default'
-};
+DefaultExternalLink.storyName = 'default';

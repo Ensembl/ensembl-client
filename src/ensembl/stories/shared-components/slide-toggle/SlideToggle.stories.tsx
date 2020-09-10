@@ -30,6 +30,4 @@ export const DefaultSlideToggle = () => {
   );
 };
 
-DefaultSlideToggle.story = {
-  name: 'default'
-};
+DefaultSlideToggle.storyName = 'default';

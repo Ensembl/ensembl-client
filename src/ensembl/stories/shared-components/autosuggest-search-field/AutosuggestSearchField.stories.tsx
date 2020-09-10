@@ -120,9 +120,7 @@ export const MatchesSubmissionStory = (args: DefaultArgs) => (
   </div>
 );
 
-MatchesSubmissionStory.story = {
-  name: 'allowing only submission of matches'
-};
+MatchesSubmissionStory.storyName = 'allowing only submission of matches';
 
 export const RawSearchSubmissionStory = (args: DefaultArgs) => (
   <div className={styles.container}>
@@ -156,9 +154,7 @@ export const RawSearchSubmissionStory = (args: DefaultArgs) => (
   </div>
 );
 
-RawSearchSubmissionStory.story = {
-  name: 'allowing raw search submission'
-};
+RawSearchSubmissionStory.storyName = 'allowing raw search submission';
 
 export default {
   title: 'Components/Shared Components/AutosuggestSearchField',

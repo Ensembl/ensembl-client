@@ -25,14 +25,10 @@ export default {
 
 export const DefaultClearButton = () => <ClearButton onClick={noop} />;
 
-DefaultClearButton.story = {
-  name: 'default'
-};
+DefaultClearButton.storyName = 'default';
 
 export const InvertedClearButton = () => (
   <ClearButton inverted onClick={noop} />
 );
 
-InvertedClearButton.story = {
-  name: 'inverted'
-};
+InvertedClearButton.storyName = 'inverted';

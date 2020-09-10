@@ -45,6 +45,4 @@ export const Fonts = () => {
   );
 };
 
-Fonts.story = {
-  name: 'fonts'
-};
+Fonts.storyName = 'fonts';

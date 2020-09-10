@@ -33,9 +33,7 @@ export const DefaultExternalReference = () => (
   />
 );
 
-DefaultExternalReference.story = {
-  name: 'default'
-};
+DefaultExternalReference.storyName = 'default';
 
 export const WithoutLabel = () => (
   <ExternalReference
@@ -45,6 +43,4 @@ export const WithoutLabel = () => (
   />
 );
 
-WithoutLabel.story = {
-  name: 'without label'
-};
+WithoutLabel.storyName = 'without label';

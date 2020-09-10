@@ -28,22 +28,16 @@ export const PointerBoxVariants = () => {
   return <VariantsStory />;
 };
 
-PointerBoxVariants.story = {
-  name: 'variants'
-};
+PointerBoxVariants.storyName = 'variants';
 
 export const PointerBoxPositioning = () => {
   return <PositioningStory />;
 };
 
-PointerBoxPositioning.story = {
-  name: 'positioning'
-};
+PointerBoxPositioning.storyName = 'positioning';
 
 export const PointerBoxScrolling = () => {
   return <ScrollingStory />;
 };
 
-PointerBoxScrolling.story = {
-  name: 'scrolling'
-};
+PointerBoxScrolling.storyName = 'scrolling';

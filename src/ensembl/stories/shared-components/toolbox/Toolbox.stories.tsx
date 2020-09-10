@@ -70,9 +70,7 @@ export const DefaultStory = () => {
   );
 };
 
-DefaultStory.story = {
-  name: 'default'
-};
+DefaultStory.storyName = 'default';
 
 export default {
   title: 'Components/Shared Components/Toolbox'

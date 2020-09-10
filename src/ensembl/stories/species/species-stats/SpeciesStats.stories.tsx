@@ -54,9 +54,7 @@ export const SpeciesStatsDefaultStory = () => (
   </div>
 );
 
-SpeciesStatsDefaultStory.story = {
-  name: 'default'
-};
+SpeciesStatsDefaultStory.storyName = 'default';
 
 export default {
   title: 'Components/Species/SpeciesStats'

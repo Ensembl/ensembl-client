@@ -100,9 +100,7 @@ export const ColoursStory = () => (
   </>
 );
 
-ColoursStory.story = {
-  name: 'colour palette'
-};
+ColoursStory.storyName = 'colour palette';
 
 export default {
   title: 'Design Primitives/Colours'

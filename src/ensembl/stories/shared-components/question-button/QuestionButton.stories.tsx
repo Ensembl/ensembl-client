@@ -28,9 +28,7 @@ export const DefaultQuestionButton = () => (
   <QuestionButton helpText="This is a hint" />
 );
 
-DefaultQuestionButton.story = {
-  name: 'default'
-};
+DefaultQuestionButton.storyName = 'default';
 
 export const InputQuestionButton = () => (
   <QuestionButton
@@ -39,6 +37,4 @@ export const InputQuestionButton = () => (
   />
 );
 
-InputQuestionButton.story = {
-  name: 'input'
-};
+InputQuestionButton.storyName = 'input';

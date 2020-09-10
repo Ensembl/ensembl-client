@@ -40,9 +40,7 @@ export const RegularBadgedButton = () => (
   </div>
 );
 
-RegularBadgedButton.story = {
-  name: 'badged Button'
-};
+RegularBadgedButton.storyName = 'badged Button';
 
 export const BadgedRoundButton = () => (
   <div className={styles.wrapper}>
@@ -52,9 +50,7 @@ export const BadgedRoundButton = () => (
   </div>
 );
 
-BadgedRoundButton.story = {
-  name: 'badged RoundButton'
-};
+BadgedRoundButton.storyName = 'badged RoundButton';
 
 export const BadgedImageButton = () => (
   <div className={styles.imageButtonWrapper}>
@@ -69,9 +65,7 @@ export const BadgedImageButton = () => (
   </div>
 );
 
-BadgedImageButton.story = {
-  name: 'badged ImageButton'
-};
+BadgedImageButton.storyName = 'badged ImageButton';
 
 export const CustomStyledBadgedButton = () => (
   <div className={styles.imageButtonWrapper}>
@@ -86,6 +80,4 @@ export const CustomStyledBadgedButton = () => (
   </div>
 );
 
-CustomStyledBadgedButton.story = {
-  name: 'custom styling'
-};
+CustomStyledBadgedButton.storyName = 'custom styling';

@@ -55,9 +55,7 @@ export const DefaultAccordion = () => {
   );
 };
 
-DefaultAccordion.story = {
-  name: 'default'
-};
+DefaultAccordion.storyName = 'default';
 
 export const MultipleItemsAccordion = () => {
   return (
@@ -84,9 +82,7 @@ export const MultipleItemsAccordion = () => {
   );
 };
 
-MultipleItemsAccordion.story = {
-  name: 'allow opening of multiple items'
-};
+MultipleItemsAccordion.storyName = 'allow opening of multiple items';
 
 export const AccordionWithPreExpandedItem = () => {
   return (
@@ -113,9 +109,7 @@ export const AccordionWithPreExpandedItem = () => {
   );
 };
 
-AccordionWithPreExpandedItem.story = {
-  name: 'pre-expanded item'
-};
+AccordionWithPreExpandedItem.storyName = 'pre-expanded item';
 
 export const AccordionWithPermanentBlock = () => {
   return (
@@ -147,9 +141,7 @@ export const AccordionWithPermanentBlock = () => {
   );
 };
 
-AccordionWithPermanentBlock.story = {
-  name: 'with permanent block'
-};
+AccordionWithPermanentBlock.storyName = 'with permanent block';
 
 export const AccordionBottomRight = () => {
   return (
@@ -200,9 +192,7 @@ export const AccordionBottomRight = () => {
   );
 };
 
-AccordionBottomRight.story = {
-  name: 'positioned to bottom right'
-};
+AccordionBottomRight.storyName = 'positioned to bottom right';
 
 export const AccordionWithDisabledItems = () => {
   return (
@@ -247,6 +237,4 @@ export const AccordionWithDisabledItems = () => {
   );
 };
 
-AccordionWithDisabledItems.story = {
-  name: 'with disabled items'
-};
+AccordionWithDisabledItems.storyName = 'with disabled items';

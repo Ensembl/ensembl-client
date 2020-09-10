@@ -30,6 +30,4 @@ export const FullPageLoader = () => (
   </div>
 );
 
-FullPageLoader.story = {
-  name: 'full-page'
-};
+FullPageLoader.storyName = 'full-page';
