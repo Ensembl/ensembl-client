@@ -43,6 +43,7 @@
 .resourceImage {
   display: grid;
   grid-template-columns: [image] min-content [description] max-content;
+  margin-bottom: 6px;
 
   & svg {
     grid-column: image;

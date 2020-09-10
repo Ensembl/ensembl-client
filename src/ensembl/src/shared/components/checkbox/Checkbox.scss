@@ -8,8 +8,8 @@
 .defaultCheckbox {
   cursor: pointer;
   justify-self: center;
-  height: 15px;
-  width: 15px;
+  height: 14px;
+  width: 14px;
   border: 1px solid $grey;
   background-color: $white;
   transition: background-color 0.1s ease-in-out;
@@ -40,7 +40,7 @@
 .defaultLabel {
   color: $black;
   line-height: 30px;
-  font-size: 14px;
+  font-size: 12px;
   padding-left: 8px;
   padding-right: 2px;
   max-width: calc(100% - 17px);

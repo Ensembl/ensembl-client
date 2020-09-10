@@ -171,7 +171,7 @@ export const TranscriptsListItemInfo = (
         {props.expandDownload && renderInstantDownload(props)}
       </div>
       <div className={transcriptsListStyles.right}>
-        <div>
+        <div className={styles.transcriptName}>
           <strong>{transcript.symbol}</strong>
         </div>
         <div className={styles.viewInApp}>

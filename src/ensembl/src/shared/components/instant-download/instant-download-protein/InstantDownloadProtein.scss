@@ -1,15 +1,14 @@
 @import 'src/styles/common';
 
 .inputGroup {
-  display: inline-block;
+  display: flex;
 }
 
 .checkboxLabel {
-  font-size: 13px;
   margin-right: 20px;
   max-width: inherit;
 }
 
 .downloadButtonDisabled {
-  color: $dark-grey;
+  color: $medium-dark-grey;
 }

@@ -63,32 +63,26 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   const isDownloadDisabled = () => !isProteinSeqSelected && !isCdsSeqSelected;
 
   return (
-    <div>
-      <div className={styles.inputGroup}>
-        <Checkbox
-          label={proteinOptionLabels.proteinSequence}
-          labelClassName={styles.checkboxLabel}
-          checked={isProteinSeqSelected}
-          onChange={onProteinCheckboxChange}
-        />
-      </div>
-      <div className={styles.inputGroup}>
-        <Checkbox
-          label={proteinOptionLabels.cds}
-          labelClassName={styles.checkboxLabel}
-          checked={isCdsSeqSelected}
-          onChange={onCdsCheckboxChange}
-        />
-      </div>
-      <div className={styles.inputGroup}>
-        <InstantDownloadButton
-          className={
-            isDownloadDisabled() ? styles.downloadButtonDisabled : undefined
-          }
-          isDisabled={isDownloadDisabled()}
-          onClick={onSubmit}
-        />
-      </div>
+    <div className={styles.inputGroup}>
+      <Checkbox
+        label={proteinOptionLabels.proteinSequence}
+        labelClassName={styles.checkboxLabel}
+        checked={isProteinSeqSelected}
+        onChange={onProteinCheckboxChange}
+      />
+      <Checkbox
+        label={proteinOptionLabels.cds}
+        labelClassName={styles.checkboxLabel}
+        checked={isCdsSeqSelected}
+        onChange={onCdsCheckboxChange}
+      />
+      <InstantDownloadButton
+        className={
+          isDownloadDisabled() ? styles.downloadButtonDisabled : undefined
+        }
+        isDisabled={isDownloadDisabled()}
+        onClick={onSubmit}
+      />
     </div>
   );
 };

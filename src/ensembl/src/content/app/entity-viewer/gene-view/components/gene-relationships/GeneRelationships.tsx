@@ -31,8 +31,7 @@ import { RootState } from 'src/store';
 import {
   GeneViewTabMap,
   GeneViewTabName,
-  GeneRelationshipsTabName,
-  View
+  GeneRelationshipsTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import styles from './GeneRelationships.scss';
@@ -43,7 +42,7 @@ const tabsData = [...GeneViewTabMap.values()]
   .filter(({ primaryTab }) => primaryTab === GeneViewTabName.GENE_RELATIONSHIPS)
   .map((item) => ({
     title: item.secondaryTab,
-    isDisabled: item.view !== View.ORTHOLOGUES
+    isDisabled: true // TODO FIXME (Use real data when available)
   })) as Tab[];
 
 const tabClassNames = {
