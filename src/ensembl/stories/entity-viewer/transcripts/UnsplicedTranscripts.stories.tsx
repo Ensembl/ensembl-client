@@ -28,8 +28,8 @@ import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/type
 
 import styles from './UnsplicedTranscripts.stories.scss';
 
-const GRAPHIC_WIDTH = 1200;
-const VERTICAL_SPACE = 50;
+const GRAPHIC_WIDTH = 700;
+const VERTICAL_SPACE = 20;
 const BRCA2Id = 'ENSG00000139618';
 // single transcript id example: 'ENST00000544455';
 
