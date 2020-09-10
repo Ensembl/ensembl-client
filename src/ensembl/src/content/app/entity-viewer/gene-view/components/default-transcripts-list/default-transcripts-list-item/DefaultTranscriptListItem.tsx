@@ -68,25 +68,19 @@ export const DefaultTranscriptListItem = (
   };
 
   const defaultTranscriptLabelMap = {
-    select: {
+    selected: {
       label: 'Selected',
-      helpText:
-        'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
-    },
-    plus: {
-      label: 'MANE Plus',
       helpText:
         'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
     }
   };
 
-  const isCanonical = props.isDefault || false;
-  const canonicalType = 'select'; // TODO Change this to transcript.mane/plus etc when available
+  const canonicalType = 'selected'; // TODO Change this to transcript.mane/plus etc when available
 
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
-        {isCanonical && (
+        {props.isDefault && (
           <div className={styles.defaultTranscriptLabel}>
             {defaultTranscriptLabelMap[canonicalType]?.label}
             <QuestionButton
