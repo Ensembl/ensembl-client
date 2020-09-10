@@ -26,8 +26,8 @@ import * as matches from 'tests/data/species-selector/species-search';
 import styles from './AutosuggestSearchField.stories.scss';
 
 type DefaultArgs = {
-  onSelected: (...args: any) => void;
-  onSubmitted: (...args: any) => void;
+  onSelect: (...args: any) => void;
+  onSubmit: (...args: any) => void;
 };
 
 const ItemWrapper = (props: any) => <span>{props.description}</span>;
@@ -71,14 +71,14 @@ const Wrapper = (props: any) => {
         onChange={setValue}
         onSubmit={(value: string) => {
           setIsSelected(true);
-          props.onSelected(value);
+          props.onSelect(value);
         }}
         onSelect={(match: any) => {
           const { description } = match;
           setValue(description);
           // allow time for the isSelected state value to get updated
           setTimeout(() => setIsSelected(true), 0);
-          props.onSubmitted(description);
+          props.onSubmit(description);
         }}
         canShowSuggestions={!isSelected}
         className={styles.autosuggestSearchField}
@@ -103,6 +103,7 @@ export const MatchesSubmissionStory = (args: DefaultArgs) => (
         searchField={AutosuggestSearchField}
         matchGroups={groupedMatches}
         rightCorner={<RightCorner />}
+        {...args}
       />
     </div>
     <div className={styles.example}>
@@ -137,6 +138,7 @@ export const RawSearchSubmissionStory = (args: DefaultArgs) => (
         matchGroups={groupedMatches}
         allowRawInputSubmission={true}
         rightCorner={<RightCorner />}
+        {...args}
       />
     </div>
     <div className={styles.example}>
