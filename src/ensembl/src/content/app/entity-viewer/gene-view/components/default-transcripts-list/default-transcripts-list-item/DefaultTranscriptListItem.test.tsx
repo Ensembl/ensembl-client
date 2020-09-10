@@ -84,4 +84,9 @@ describe('<DefaultTranscriptListItem />', () => {
 
     expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
   });
+
+  it('displays selected transcript', () => {
+    wrapper = renderComponent({ isDefault: true });
+    expect(wrapper.find('.defaultTranscriptLabel').text()).toBe('Selected');
+  });
 });

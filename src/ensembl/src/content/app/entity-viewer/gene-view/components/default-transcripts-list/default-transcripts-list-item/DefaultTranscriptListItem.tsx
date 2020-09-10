@@ -27,12 +27,22 @@ import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-v
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import QuestionButton, {
+  QuestionButtonOption
+} from 'src/shared/components/question-button/QuestionButton';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 
+type defaultTranscriptLabelType = {
+  label: string;
+  helpText: string;
+};
+
 export type DefaultTranscriptListItemProps = {
   gene: Gene;
+  isDefault?: boolean;
+  defaultTranscriptLabel?: defaultTranscriptLabelType;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;
@@ -57,10 +67,28 @@ export const DefaultTranscriptListItem = (
     cursor: 'pointer'
   };
 
+  const defaultTranscriptLabelMap = {
+    selected: {
+      label: 'Selected',
+      helpText:
+        'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
+    }
+  };
+
+  const canonicalType = 'selected'; // TODO Change this to transcript.mane/plus etc when available
+
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
-        <div className={transcriptsListStyles.left}>Left</div>
+        {props.isDefault && (
+          <div className={styles.defaultTranscriptLabel}>
+            {defaultTranscriptLabelMap[canonicalType]?.label}
+            <QuestionButton
+              helpText={defaultTranscriptLabelMap[canonicalType]?.helpText}
+              styleOption={QuestionButtonOption.INLINE}
+            />
+          </div>
+        )}
         <div
           className={transcriptsListStyles.middle}
           onClick={() => props.toggleTranscriptInfo(props.transcript.id)}

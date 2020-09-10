@@ -63,7 +63,11 @@ const QuestionButton = (props: Props) => {
     >
       <QuestionIcon />
       {isHovering && (
-        <Tooltip anchor={elementRef.current} autoAdjust={true}>
+        <Tooltip
+          anchor={elementRef.current}
+          autoAdjust={true}
+          onClose={handleMouseLeave}
+        >
           {props.helpText}
         </Tooltip>
       )}
