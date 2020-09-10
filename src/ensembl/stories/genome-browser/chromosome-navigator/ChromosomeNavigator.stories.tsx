@@ -128,9 +128,7 @@ export const ChromosomeNavigatorStory = () => {
   );
 };
 
-ChromosomeNavigatorStory.story = {
-  name: 'default'
-};
+ChromosomeNavigatorStory.storyName = 'default';
 
 export default {
   title: 'Components/Genome Browser/ChromosomeNavigator'

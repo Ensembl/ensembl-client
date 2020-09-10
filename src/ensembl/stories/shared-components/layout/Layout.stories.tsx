@@ -122,9 +122,7 @@ export const WithoutDrawerStory = () => {
   );
 };
 
-WithoutDrawerStory.story = {
-  name: 'without drawer'
-};
+WithoutDrawerStory.storyName = 'without drawer';
 
 export const WithDrawerStory = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -156,9 +154,7 @@ export const WithDrawerStory = () => {
   );
 };
 
-WithDrawerStory.story = {
-  name: 'with drawer'
-};
+WithDrawerStory.storyName = 'with drawer';
 
 export const SlideoveSidebarStory = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -176,9 +172,7 @@ export const SlideoveSidebarStory = () => {
   );
 };
 
-SlideoveSidebarStory.story = {
-  name: 'with slideover sidebar'
-};
+SlideoveSidebarStory.storyName = 'with slideover sidebar';
 
 export default {
   title: 'Components/Shared Components/Layout/StandardAppLayout'

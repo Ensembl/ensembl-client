@@ -41,10 +41,8 @@ export const DefaultPrimaryButton = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultPrimaryButton.story = {
-  name: 'PrimaryButton',
-  parameters: { notes: primaryButtonNotes }
-};
+DefaultPrimaryButton.storyName = 'PrimaryButton';
+DefaultPrimaryButton.parameters = { notes: primaryButtonNotes };
 
 export const DisabledPrimaryButton = (args: DefaultArgs) => (
   <>
@@ -63,10 +61,8 @@ export const DisabledPrimaryButton = (args: DefaultArgs) => (
   </>
 );
 
-DisabledPrimaryButton.story = {
-  name: 'PrimaryButton disabled',
-  parameters: { notes: primaryButtonNotes }
-};
+DisabledPrimaryButton.storyName = 'PrimaryButton disabled';
+DisabledPrimaryButton.parameters = { notes: primaryButtonNotes };
 
 export const DefaultSecondaryButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -74,7 +70,5 @@ export const DefaultSecondaryButton = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultSecondaryButton.story = {
-  name: 'SecondaryButton',
-  parameters: { notes: secondaryButtonNotes }
-};
+DefaultSecondaryButton.storyName = 'SecondaryButton';
+DefaultSecondaryButton.parameters = { notes: secondaryButtonNotes };

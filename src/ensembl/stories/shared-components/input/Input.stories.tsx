@@ -44,17 +44,13 @@ export const DefaultInputStory = (args: DefaultArgs) => (
   <Wrapper input={Input} {...args} />
 );
 
-DefaultInputStory.story = {
-  name: 'default'
-};
+DefaultInputStory.storyName = 'default';
 
 export const InputWithPlaceholderStory = (args: DefaultArgs) => (
   <Wrapper input={Input} placeholder="Enter something..." {...args} />
 );
 
-InputWithPlaceholderStory.story = {
-  name: 'with placeholder'
-};
+InputWithPlaceholderStory.storyName = 'with placeholder';
 
 export const FocusAndBlurStory = (args: DefaultArgs) => (
   <Wrapper
@@ -66,9 +62,7 @@ export const FocusAndBlurStory = (args: DefaultArgs) => (
   />
 );
 
-FocusAndBlurStory.story = {
-  name: 'handling focus and blur'
-};
+FocusAndBlurStory.storyName = 'handling focus and blur';
 
 export const CustomInputStory = (args: DefaultArgs) => (
   <Wrapper
@@ -79,9 +73,7 @@ export const CustomInputStory = (args: DefaultArgs) => (
   />
 );
 
-CustomInputStory.story = {
-  name: 'custom styling'
-};
+CustomInputStory.storyName = 'custom styling';
 
 export default {
   title: 'Components/Shared Components/Input',

@@ -42,17 +42,13 @@ export const DefaultStory = (args: DefaultArgs) => (
   <Wrapper upload={Upload} {...args} />
 );
 
-DefaultStory.story = {
-  name: 'default'
-};
+DefaultStory.storyName = 'default';
 
 export const CustomLabelStory = (args: DefaultArgs) => (
   <Wrapper upload={Upload} label={'Upload'} {...args} />
 );
 
-CustomLabelStory.story = {
-  name: 'with custom label'
-};
+CustomLabelStory.storyName = 'with custom label';
 
 export const CallbackWithSingleFileStory = (args: DefaultArgs) => (
   <Wrapper
@@ -63,17 +59,13 @@ export const CallbackWithSingleFileStory = (args: DefaultArgs) => (
   />
 );
 
-CallbackWithSingleFileStory.story = {
-  name: 'callback with single file'
-};
+CallbackWithSingleFileStory.storyName = 'callback with single file';
 
 export const CallbackWithMultipleFilesStory = (args: DefaultArgs) => (
   <Wrapper upload={Upload} callbackWithFiles={true} {...args} />
 );
 
-CallbackWithMultipleFilesStory.story = {
-  name: 'callback with multiple files'
-};
+CallbackWithMultipleFilesStory.storyName = 'callback with multiple files';
 
 export const CallbackWithDataUrlStory = (args: DefaultArgs) => (
   <Wrapper
@@ -83,9 +75,7 @@ export const CallbackWithDataUrlStory = (args: DefaultArgs) => (
   />
 );
 
-CallbackWithDataUrlStory.story = {
-  name: 'callback with data urls'
-};
+CallbackWithDataUrlStory.storyName = 'callback with data urls';
 
 export const CallbackWithBinaryStringStory = (args: DefaultArgs) => (
   <Wrapper
@@ -95,9 +85,7 @@ export const CallbackWithBinaryStringStory = (args: DefaultArgs) => (
   />
 );
 
-CallbackWithBinaryStringStory.story = {
-  name: 'callback with binary string'
-};
+CallbackWithBinaryStringStory.storyName = 'callback with binary string';
 
 export const CallbackWithArrayBufferStory = (args: DefaultArgs) => (
   <Wrapper
@@ -107,9 +95,7 @@ export const CallbackWithArrayBufferStory = (args: DefaultArgs) => (
   />
 );
 
-CallbackWithArrayBufferStory.story = {
-  name: 'callback with array buffer'
-};
+CallbackWithArrayBufferStory.storyName = 'callback with array buffer';
 
 export const CustomStylingStory = (args: DefaultArgs) => (
   <Wrapper
@@ -123,9 +109,7 @@ export const CustomStylingStory = (args: DefaultArgs) => (
   />
 );
 
-CustomStylingStory.story = {
-  name: 'customized upload'
-};
+CustomStylingStory.storyName = 'customized upload';
 
 export default {
   title: 'Components/Shared Components/Upload',

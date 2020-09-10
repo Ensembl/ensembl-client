@@ -73,9 +73,7 @@ export const FewSpeciesWrappableStory = () => {
   );
 };
 
-FewSpeciesWrappableStory.story = {
-  name: 'wrappable, few species'
-};
+FewSpeciesWrappableStory.storyName = 'wrappable, few species';
 
 export const ManySpeciesWrappableStory = () => {
   const speciesTabs = speciesData.map((species, index) => (
@@ -88,25 +86,19 @@ export const ManySpeciesWrappableStory = () => {
   );
 };
 
-ManySpeciesWrappableStory.story = {
-  name: 'wrappable, many species'
-};
+ManySpeciesWrappableStory.storyName = 'wrappable, many species';
 
 export const FewSpeciesNonWrappableStory = () => (
   <StatefulStoryWrapper species={speciesData.slice(0, 3)} />
 );
 
-FewSpeciesNonWrappableStory.story = {
-  name: 'non-wrappable, few species'
-};
+FewSpeciesNonWrappableStory.storyName = 'non-wrappable, few species';
 
 export const ManySpeciesNonWrappableStory = () => (
   <StatefulStoryWrapper species={speciesData} />
 );
 
-ManySpeciesNonWrappableStory.story = {
-  name: 'non-wrappable, many species'
-};
+ManySpeciesNonWrappableStory.storyName = 'non-wrappable, many species';
 
 export default {
   title: 'Components/Shared Components/SpeciesTabsWrapper'

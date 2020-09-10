@@ -38,9 +38,7 @@ export const DefaultRoundButton = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultRoundButton.story = {
-  name: 'default'
-};
+DefaultRoundButton.storyName = 'default';
 
 export const ActiveRoundButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -50,9 +48,7 @@ export const ActiveRoundButton = (args: DefaultArgs) => (
   </div>
 );
 
-ActiveRoundButton.story = {
-  name: 'active'
-};
+ActiveRoundButton.storyName = 'active';
 
 export const InactiveRoundButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -62,9 +58,7 @@ export const InactiveRoundButton = (args: DefaultArgs) => (
   </div>
 );
 
-InactiveRoundButton.story = {
-  name: 'inactive'
-};
+InactiveRoundButton.storyName = 'inactive';
 
 export const DisabledRoundButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -74,9 +68,7 @@ export const DisabledRoundButton = (args: DefaultArgs) => (
   </div>
 );
 
-DisabledRoundButton.story = {
-  name: 'disabled'
-};
+DisabledRoundButton.storyName = 'disabled';
 
 export const CustomRoundButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -90,9 +82,7 @@ export const CustomRoundButton = (args: DefaultArgs) => (
   </div>
 );
 
-CustomRoundButton.story = {
-  name: 'custom'
-};
+CustomRoundButton.storyName = 'custom';
 
 export const BadgedRoundButton = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -104,6 +94,4 @@ export const BadgedRoundButton = (args: DefaultArgs) => (
   </div>
 );
 
-BadgedRoundButton.story = {
-  name: 'badged'
-};
+BadgedRoundButton.storyName = 'badged';

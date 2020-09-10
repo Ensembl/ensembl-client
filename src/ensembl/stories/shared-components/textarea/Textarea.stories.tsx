@@ -38,17 +38,13 @@ const Wrapper = (props: any) => {
 
 export const DefaultStory = () => <Wrapper textarea={Textarea} />;
 
-DefaultStory.story = {
-  name: 'default'
-};
+DefaultStory.storyName = 'default';
 
 export const WithPlaceholderStory = () => (
   <Wrapper textarea={Textarea} placeholder="Enter something..." />
 );
 
-WithPlaceholderStory.story = {
-  name: 'with placeholder'
-};
+WithPlaceholderStory.storyName = 'with placeholder';
 
 export const NoResizeStory = () => (
   <Wrapper
@@ -58,9 +54,7 @@ export const NoResizeStory = () => (
   />
 );
 
-NoResizeStory.story = {
-  name: 'resize disabled'
-};
+NoResizeStory.storyName = 'resize disabled';
 
 export const FocusBlurStory = (args: DefaultArgs) => (
   <Wrapper
@@ -71,9 +65,7 @@ export const FocusBlurStory = (args: DefaultArgs) => (
   />
 );
 
-FocusBlurStory.story = {
-  name: 'with onFocus and onBlur'
-};
+FocusBlurStory.storyName = 'with onFocus and onBlur';
 
 export const CustomStyledStory = () => (
   <Wrapper
@@ -83,9 +75,7 @@ export const CustomStyledStory = () => (
   />
 );
 
-CustomStyledStory.story = {
-  name: 'with custom styles'
-};
+CustomStyledStory.storyName = 'with custom styles';
 
 export default {
   title: 'Components/Shared Components/Textarea',

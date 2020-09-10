@@ -76,9 +76,7 @@ export const SingleRefStory = (args: DefaultArgs) => {
   );
 };
 
-SingleRefStory.story = {
-  name: 'single ref'
-};
+SingleRefStory.storyName = 'single ref';
 
 export const MultipleRefsStory = (args: DefaultArgs) => {
   const elementRef1 = useRef<HTMLDivElement>(null);
@@ -103,9 +101,7 @@ export const MultipleRefsStory = (args: DefaultArgs) => {
   );
 };
 
-MultipleRefsStory.story = {
-  name: 'multiple refs'
-};
+MultipleRefsStory.storyName = 'multiple refs';
 
 export default {
   title: 'Hooks/Shared Hooks/useOutsideClick',

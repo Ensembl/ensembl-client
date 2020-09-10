@@ -88,10 +88,8 @@ export const DefaultSelectStory = (args: DefaultArgs) => (
   <WrapperForOptions options={createSimpleOptions(5)} {...args} />
 );
 
-DefaultSelectStory.story = {
-  name: 'default',
-  parameters: { notes: selectNotes }
-};
+DefaultSelectStory.storyName = 'default';
+DefaultSelectStory.parameters = { notes: selectNotes };
 
 export const ManyOptionsSelectStory = (args: DefaultArgs) => {
   const options = createSimpleOptions(50);
@@ -105,9 +103,7 @@ export const ManyOptionsSelectStory = (args: DefaultArgs) => {
   return <WrapperForOptions options={options} {...args} />;
 };
 
-ManyOptionsSelectStory.story = {
-  name: 'long list of options'
-};
+ManyOptionsSelectStory.storyName = 'long list of options';
 
 export const GroupedOptionsStory = (args: DefaultArgs) => {
   const options1 = createSimpleOptions(2);
@@ -122,9 +118,7 @@ export const GroupedOptionsStory = (args: DefaultArgs) => {
   return <WrapperForOptionGroups optionGroups={optionGroups} {...args} />;
 };
 
-GroupedOptionsStory.story = {
-  name: 'groups of options'
-};
+GroupedOptionsStory.storyName = 'groups of options';
 
 export default {
   title: 'Components/Shared Components/Select',

@@ -66,9 +66,7 @@ export const ProteinDomainImageStory = () => {
   );
 };
 
-ProteinDomainImageStory.story = {
-  name: 'default'
-};
+ProteinDomainImageStory.storyName = 'default';
 
 const FeatureIdForm = (props: {
   id: string;

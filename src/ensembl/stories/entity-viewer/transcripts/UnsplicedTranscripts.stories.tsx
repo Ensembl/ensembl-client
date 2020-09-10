@@ -71,9 +71,7 @@ export const UnsplicedTranscriptsStory = () => {
   );
 };
 
-UnsplicedTranscriptsStory.story = {
-  name: 'unspliced'
-};
+UnsplicedTranscriptsStory.storyName = 'unspliced';
 
 const MultipleTranscripts = (props: { gene: GeneType }) => {
   const [view, setView] = useState('expanded');

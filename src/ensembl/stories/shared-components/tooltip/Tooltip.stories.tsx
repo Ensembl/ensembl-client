@@ -92,9 +92,7 @@ export const DefaultTooltipStory = () => {
   );
 };
 
-DefaultTooltipStory.story = {
-  name: 'default'
-};
+DefaultTooltipStory.storyName = 'default';
 
 export const OnScrollTooltipStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
@@ -132,9 +130,7 @@ export const OnScrollTooltipStory = () => {
   );
 };
 
-OnScrollTooltipStory.story = {
-  name: 'scrolling'
-};
+OnScrollTooltipStory.storyName = 'scrolling';
 
 export const OverflowHiddenStory = () => {
   const [isMousedOver, setIsMousedOver] = useState(false);
@@ -165,9 +161,7 @@ export const OverflowHiddenStory = () => {
   );
 };
 
-OverflowHiddenStory.story = {
-  name: 'in cropping container'
-};
+OverflowHiddenStory.storyName = 'in cropping container';
 
 export default {
   title: 'Components/Shared Components/Tooltip'

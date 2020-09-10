@@ -41,9 +41,7 @@ export const DefaultSearchFieldStory = () => (
   />
 );
 
-DefaultSearchFieldStory.story = {
-  name: 'default'
-};
+DefaultSearchFieldStory.storyName = 'default';
 
 export const SearchFieldWithLoaderStory = () => (
   <Wrapper
@@ -53,9 +51,7 @@ export const SearchFieldWithLoaderStory = () => (
   />
 );
 
-SearchFieldWithLoaderStory.story = {
-  name: 'with loader'
-};
+SearchFieldWithLoaderStory.storyName = 'with loader';
 
 export default {
   title: 'Components/Shared Components/SearchField'

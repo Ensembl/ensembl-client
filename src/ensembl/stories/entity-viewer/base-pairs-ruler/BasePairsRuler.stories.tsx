@@ -62,9 +62,7 @@ export const BasePairsRulerStory = () => {
   );
 };
 
-BasePairsRulerStory.story = {
-  name: 'default'
-};
+BasePairsRulerStory.storyName = 'default';
 
 export default {
   title: 'Components/Entity Viewer/BasePairsRuler'

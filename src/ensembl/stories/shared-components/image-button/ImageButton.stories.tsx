@@ -121,9 +121,7 @@ export const ImageButtonStory = () => {
   );
 };
 
-ImageButtonStory.story = {
-  name: 'default'
-};
+ImageButtonStory.storyName = 'default';
 
 export default {
   title: 'Components/Shared Components/ImageButton'

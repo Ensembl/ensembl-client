@@ -56,9 +56,7 @@ export const DefaultTabsStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>{<Wrapper {...args} />}</div>
 );
 
-DefaultTabsStory.story = {
-  name: 'default'
-};
+DefaultTabsStory.storyName = 'default';
 
 export const PanelHeaderTabsStory = (args: DefaultArgs) => {
   const tabClassNames = {
@@ -75,9 +73,7 @@ export const PanelHeaderTabsStory = (args: DefaultArgs) => {
   );
 };
 
-PanelHeaderTabsStory.story = {
-  name: 'panel-header style'
-};
+PanelHeaderTabsStory.storyName = 'panel-header style';
 
 export const EntityViewerTabsStory = (args: DefaultArgs) => {
   const tabClassNames = {
@@ -97,9 +93,7 @@ export const EntityViewerTabsStory = (args: DefaultArgs) => {
   );
 };
 
-EntityViewerTabsStory.story = {
-  name: 'entity-viewer style'
-};
+EntityViewerTabsStory.storyName = 'entity-viewer style';
 
 export default {
   title: 'Components/Shared Components/Tabs',

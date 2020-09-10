@@ -142,9 +142,7 @@ const StoryOptions = (props: StoryOptionsProps) => {
   );
 };
 
-InstantDownloadTranscriptStory.story = {
-  name: 'default'
-};
+InstantDownloadTranscriptStory.storyName = 'default';
 
 export default {
   title: 'Components/Shared Components/InstantDownloadTranscript'

@@ -46,9 +46,7 @@ export const DefaultCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultCheckboxStory.story = {
-  name: 'default'
-};
+DefaultCheckboxStory.storyName = 'default';
 
 export const DisabledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -56,9 +54,7 @@ export const DisabledCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-DisabledCheckboxStory.story = {
-  name: 'disabled'
-};
+DisabledCheckboxStory.storyName = 'disabled';
 
 export const LabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.wrapper}>
@@ -71,9 +67,7 @@ export const LabelledCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-LabelledCheckboxStory.story = {
-  name: 'with label'
-};
+LabelledCheckboxStory.storyName = 'with label';
 
 export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   <div className={styles.gridWrapper}>
@@ -106,9 +100,7 @@ export const LongLabelledCheckboxStory = (args: DefaultArgs) => (
   </div>
 );
 
-LabelledCheckboxStory.story = {
-  name: 'grid with long label'
-};
+LabelledCheckboxStory.storyName = 'grid with long label';
 
 export default {
   title: 'Components/Shared Components/Checkbox',

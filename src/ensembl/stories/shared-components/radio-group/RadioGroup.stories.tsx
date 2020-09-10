@@ -50,9 +50,7 @@ export const RadioGroupStory = (args: DefaultArgs) => {
   );
 };
 
-RadioGroupStory.story = {
-  name: 'default'
-};
+RadioGroupStory.storyName = 'default';
 
 export default {
   title: 'Components/Shared Components/RadioGroup',

@@ -67,9 +67,7 @@ export const DefaultPanelStory = (args: DefaultArgs) => (
   </div>
 );
 
-DefaultPanelStory.story = {
-  name: 'default'
-};
+DefaultPanelStory.storyName = 'default';
 
 export const FullPagePanelStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>
@@ -85,9 +83,7 @@ export const FullPagePanelStory = (args: DefaultArgs) => (
   </div>
 );
 
-FullPagePanelStory.story = {
-  name: 'full-page'
-};
+FullPagePanelStory.storyName = 'full-page';
 
 export const PanelWithTabsStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>
@@ -103,9 +99,7 @@ export const PanelWithTabsStory = (args: DefaultArgs) => (
   </div>
 );
 
-PanelWithTabsStory.story = {
-  name: 'with tabs'
-};
+PanelWithTabsStory.storyName = 'with tabs';
 
 export const PanelWithLongHeaderStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>
@@ -115,9 +109,7 @@ export const PanelWithLongHeaderStory = (args: DefaultArgs) => (
   </div>
 );
 
-PanelWithLongHeaderStory.story = {
-  name: 'long header'
-};
+PanelWithLongHeaderStory.storyName = 'long header';
 
 export const PanelWithLongContentStory = (args: DefaultArgs) => (
   <div className={styles.fullPageWrapper}>
@@ -133,9 +125,7 @@ export const PanelWithLongContentStory = (args: DefaultArgs) => (
   </div>
 );
 
-PanelWithLongContentStory.story = {
-  name: 'long content'
-};
+PanelWithLongContentStory.storyName = 'long content';
 
 export default {
   title: 'Components/Shared Components/Panel',
