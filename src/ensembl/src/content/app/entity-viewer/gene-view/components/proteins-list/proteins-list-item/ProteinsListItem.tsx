@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import classNames from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { useLocation, useParams } from 'react-router';
+import { replace } from 'connected-react-router';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
 
 import { RootState } from 'src/store';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
@@ -39,12 +43,41 @@ type Props = {
 const ProteinsListItem = (props: Props) => {
   const { transcript, trackLength } = props;
 
-  const toggleListItemInfo = () => props.toggleExpandedProtein(transcript.id);
+  const dispatch = useDispatch();
+  const params: { [key: string]: string } = useParams();
+  const { genomeId, entityId } = params;
+  const { search } = useLocation();
+  const transcriptIdToFocus = new URLSearchParams(search).get('transcriptId');
+
+  const toggleListItemInfo = () => {
+    props.toggleExpandedProtein(transcript.id);
+    const url = urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view: View.PROTEIN,
+      transcriptId: transcript.id
+    });
+    dispatch(replace(url));
+  };
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
+  const itemRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (transcript.id === transcriptIdToFocus) {
+      if (!props.expandedTranscriptIds.includes(transcriptIdToFocus)) {
+        props.toggleExpandedProtein(transcript.id);
+      }
+      itemRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+      });
+    }
+  }, []);
+
   return (
-    <>
+    <div ref={itemRef}>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
         {transcript.cds && (
@@ -67,7 +100,7 @@ const ProteinsListItem = (props: Props) => {
           trackLength={trackLength}
         />
       ) : null}
-    </>
+    </div>
   );
 };
 

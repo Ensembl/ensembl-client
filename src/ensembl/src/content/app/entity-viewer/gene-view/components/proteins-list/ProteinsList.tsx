@@ -89,9 +89,9 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
     (transcript) => !!transcript.cds
   );
 
-  const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
-
   useEffect(() => {
+    const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+
     // Expand the first transcript by default
     if (!hasExpandedTranscripts) {
       props.toggleExpandedProtein(sortedTranscripts[0].id);

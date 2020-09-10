@@ -29,6 +29,7 @@ type EntityViewerUrlParams = {
   genomeId?: string | null;
   entityId?: string;
   view?: string | null;
+  transcriptId?: string | null;
 };
 
 export const browser = (params?: BrowserUrlParams) => {
@@ -62,7 +63,8 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   const path = `/app/entity-viewer/${genomeId}/${entityId}`;
   const query = queryString.stringify(
     {
-      view: params?.view || undefined
+      view: params?.view || undefined,
+      transcriptId: params?.transcriptId || undefined
     },
     {
       encode: false

@@ -126,11 +126,14 @@ export const TranscriptsListItemInfo = (
     objectId: props.gene.id
   });
 
-  const urlForProteinView = urlFor.entityViewer({
-    genomeId,
-    entityId,
-    view: View.PROTEIN
-  });
+  const buildUrlForProteinView = (transcriptId: string) => {
+    return urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view: View.PROTEIN,
+      transcriptId: transcriptId
+    });
+  };
 
   const getBrowserLink = () => {
     const { genomeId } = params;
@@ -154,7 +157,7 @@ export const TranscriptsListItemInfo = (
               </div>
               <Link
                 onClick={() => props.expandProtein(transcript.id)}
-                to={urlForProteinView}
+                to={buildUrlForProteinView(transcript.id)}
               >
                 ENSP1000000000
               </Link>

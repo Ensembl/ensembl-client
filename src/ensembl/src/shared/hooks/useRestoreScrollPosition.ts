@@ -36,8 +36,10 @@ export function useRestoreScrollPosition(componentId: string) {
 
     // TODO: Need to find out why it doesn't work without the setTimeout
     setTimeout(() => {
-      targetElement.scrollTop = scrollPosition.scrollTop;
-      targetElement.scrollLeft = scrollPosition.scrollLeft;
+      if (scrollPosition.scrollTop || scrollPosition.scrollLeft) {
+        targetElement.scrollTop = scrollPosition.scrollTop;
+        targetElement.scrollLeft = scrollPosition.scrollLeft;
+      }
     }, 1);
 
     return () => {
