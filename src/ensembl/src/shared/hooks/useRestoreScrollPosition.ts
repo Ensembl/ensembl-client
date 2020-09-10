@@ -21,10 +21,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setScrollPosition } from 'src/global/globalActions';
 import { getScrollPosition } from 'src/global/globalSelectors';
 
-export function useRestoreScrollPosition(componentId: string) {
+type RestoreScrollPositionProps = {
+  referenceId: string;
+  skip?: boolean;
+};
+export function useRestoreScrollPosition(props: RestoreScrollPositionProps) {
   const dispatch = useDispatch();
 
-  const scrollPosition = useSelector(getScrollPosition)[componentId] || {
+  const { referenceId, skip } = props;
+
+  const scrollPosition = useSelector(getScrollPosition)[referenceId] || {
     scrollTop: 0,
     scrollLeft: 0
   };
@@ -36,7 +42,7 @@ export function useRestoreScrollPosition(componentId: string) {
 
     // TODO: Need to find out why it doesn't work without the setTimeout
     setTimeout(() => {
-      if (scrollPosition.scrollTop || scrollPosition.scrollLeft) {
+      if (!skip && (scrollPosition.scrollTop || scrollPosition.scrollLeft)) {
         targetElement.scrollTop = scrollPosition.scrollTop;
         targetElement.scrollLeft = scrollPosition.scrollLeft;
       }
@@ -45,14 +51,14 @@ export function useRestoreScrollPosition(componentId: string) {
     return () => {
       dispatch(
         setScrollPosition({
-          [componentId]: {
+          [referenceId]: {
             scrollTop: targetElement.scrollTop,
             scrollLeft: targetElement.scrollLeft
           }
         })
       );
     };
-  }, []);
+  }, [scrollPosition, skip]);
 
   return {
     targetElementRef

@@ -16,6 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router';
 
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
@@ -80,9 +81,12 @@ const ProteinsList = (props: ProteinsListProps) => {
 const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
   const uniqueScrollReferenceId = COMPONENT_ID + props.gene.id;
 
-  const { targetElementRef } = useRestoreScrollPosition(
-    uniqueScrollReferenceId
-  );
+  const { search } = useLocation();
+  const transcriptIdToFocus = new URLSearchParams(search).get('transcriptId');
+
+  const { targetElementRef } = useRestoreScrollPosition({
+    referenceId: uniqueScrollReferenceId
+  });
 
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
@@ -93,7 +97,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
     const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
 
     // Expand the first transcript by default
-    if (!hasExpandedTranscripts) {
+    if (!hasExpandedTranscripts && !transcriptIdToFocus) {
       props.toggleExpandedProtein(sortedTranscripts[0].id);
     }
   }, []);

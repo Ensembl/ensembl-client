@@ -134,7 +134,10 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
-  const { targetElementRef } = useRestoreScrollPosition(COMPONENT_ID);
+  const uniqueScrollReferenceId = COMPONENT_ID + props.gene.id;
+  const { targetElementRef } = useRestoreScrollPosition({
+    referenceId: uniqueScrollReferenceId
+  });
 
   const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
