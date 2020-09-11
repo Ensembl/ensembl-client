@@ -15,13 +15,12 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import { ChromosomeNavigatorWrapper as ChromosomeNavigator } from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 
 import styles from './ChromosomeNavigator.stories.scss';
 
-const Wrapper = () => {
+export const ChromosomeNavigatorStory = () => {
   const length = 1000000;
   const [viewportStart, setViewportStart] = useState(200000);
   const [viewportEnd, setViewportEnd] = useState(500000);
@@ -30,7 +29,7 @@ const Wrapper = () => {
   const [centromereStart, setCentromereStart] = useState(150000);
   const [centromereEnd, setCentromereEnd] = useState(160000);
 
-  const updateValue = (updater: Function) => (
+  const updateValue = (updater: (...args: any) => void) => (
     e: React.FormEvent<HTMLInputElement>
   ) => {
     const value = parseInt(e.currentTarget.value);
@@ -129,7 +128,8 @@ const Wrapper = () => {
   );
 };
 
-storiesOf(
-  'Components|Genome Browser/ChromosomeNavigator',
-  module
-).add('default', () => <Wrapper />);
+ChromosomeNavigatorStory.storyName = 'default';
+
+export default {
+  title: 'Components/Genome Browser/ChromosomeNavigator'
+};

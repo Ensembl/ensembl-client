@@ -15,17 +15,26 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
 import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
 
-storiesOf('Components|Shared Components/Question button', module)
-  .add('default', () => <QuestionButton helpText="This is a hint" />)
-  .add('input', () => (
-    <QuestionButton
-      helpText="This is a hint"
-      styleOption={QuestionButtonOption.INPUT}
-    />
-  ));
+export default {
+  title: 'Components/Shared Components/Question button'
+};
+
+export const DefaultQuestionButton = () => (
+  <QuestionButton helpText="This is a hint" />
+);
+
+DefaultQuestionButton.storyName = 'default';
+
+export const InputQuestionButton = () => (
+  <QuestionButton
+    helpText="This is a hint"
+    styleOption={QuestionButtonOption.INPUT}
+  />
+);
+
+InputQuestionButton.storyName = 'input';

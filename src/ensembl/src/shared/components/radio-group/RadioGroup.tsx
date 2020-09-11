@@ -19,7 +19,7 @@ import classNames from 'classnames';
 
 import styles from './RadioGroup.scss';
 
-type OptionValue = string | number | boolean;
+export type OptionValue = string | number | boolean;
 export type RadioOption = {
   value: OptionValue;
   label: string;

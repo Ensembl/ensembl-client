@@ -5,7 +5,7 @@
 const path = require('path');
 const postcssPresetEnv = require('postcss-preset-env');
 
-module.exports = ({ config }) => {
+module.exports = (config) => {
 
   // a bit of a hack to remove svg handling from Storybook's default webpack config:
   // find the rule that matches svg files and replace its regex with Storybook's default,
@@ -13,15 +13,6 @@ module.exports = ({ config }) => {
   const defaultSvgRule = config.module.rules.find(rule => rule.test.test('.svg'));
   defaultSvgRule.test = /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|cur|ani)(\?.*)?$/;
 
-  config.module.rules.push({
-    test: /\.tsx?$/,
-    loader: require.resolve('babel-loader'),
-    include: [
-      path.resolve(__dirname, '../src'),
-      path.resolve(__dirname, '../stories'),
-      path.resolve(__dirname, '../tests'),
-    ]
-  });
   config.module.rules.push({
     test: /.scss$/,
     include: [
@@ -42,8 +33,11 @@ module.exports = ({ config }) => {
       {
         loader: 'postcss-loader',
         options: {
-          ident: 'postcss',
-          plugins: () => [postcssPresetEnv()]
+          postcssOptions: {
+            plugins: [
+              ['postcss-preset-env']
+            ]
+          }
         }
       },
       'sass-loader'

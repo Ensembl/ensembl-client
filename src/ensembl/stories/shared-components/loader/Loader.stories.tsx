@@ -15,17 +15,19 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import styles from './Loader.stories.scss';
 
-storiesOf('Components|Shared Components/Loader', module).add(
-  'full-page',
-  () => (
-    <div className={styles.fullPageWrapper}>
-      <CircleLoader />
-    </div>
-  )
+export default {
+  title: 'Components/Shared Components/Loader'
+};
+
+export const FullPageLoader = () => (
+  <div className={styles.fullPageWrapper}>
+    <CircleLoader />
+  </div>
 );
+
+FullPageLoader.storyName = 'full-page';

@@ -17,7 +17,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { scaleLinear } from 'd3';
 import classNames from 'classnames';
-import { storiesOf } from '@storybook/react';
 
 import { getTranscriptData } from './transcriptData';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -29,12 +28,12 @@ import { Transcript as TranscriptType } from 'src/content/app/entity-viewer/type
 
 import styles from './UnsplicedTranscripts.stories.scss';
 
-const GRAPHIC_WIDTH = 1200;
-const VERTICAL_SPACE = 50;
+const GRAPHIC_WIDTH = 700;
+const VERTICAL_SPACE = 20;
 const BRCA2Id = 'ENSG00000139618';
 // single transcript id example: 'ENST00000544455';
 
-const UnsplicedTranscriptsStory = () => {
+export const UnsplicedTranscriptsStory = () => {
   const [id, setId] = useState(BRCA2Id);
   const [data, setData] = useState<GeneType | TranscriptType | null>(null);
 
@@ -71,6 +70,8 @@ const UnsplicedTranscriptsStory = () => {
     </div>
   );
 };
+
+UnsplicedTranscriptsStory.storyName = 'unspliced';
 
 const MultipleTranscripts = (props: { gene: GeneType }) => {
   const [view, setView] = useState('expanded');
@@ -152,7 +153,6 @@ const FeatureIdForm = (props: {
   );
 };
 
-storiesOf('Components|EntityViewer/Transcripts', module).add(
-  'unspliced',
-  UnsplicedTranscriptsStory
-);
+export default {
+  title: 'Components/Entity Viewer/Transcripts'
+};

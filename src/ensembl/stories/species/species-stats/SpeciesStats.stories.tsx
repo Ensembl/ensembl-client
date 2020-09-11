@@ -15,51 +15,47 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
-import SpeciesStats, {
-  SpeciesStatsProps
-} from 'src/content/app/species/components/species-stats/SpeciesStats';
+import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 
 import styles from './SpeciesStats.stories.scss';
 
-const renderSpeciesStats = (props: SpeciesStatsProps) => {
-  return <SpeciesStats {...props} />;
-};
-
-storiesOf('Components|Species/SpeciesStats', module).add('default', () => (
+export const SpeciesStatsDefaultStory = () => (
   <div className={styles.wrapper}>
-    {renderSpeciesStats({
-      label: 'Coding genes',
-      primaryValue: '20,438',
-      secondaryValue: '671',
-      secondaryUnit: 'readthrough'
-    })}
-    {renderSpeciesStats({
-      preLabel: 'preLabel',
-      label: 'label',
-      primaryValue: 'primaryValue',
-      primaryUnit: 'primaryUnit',
-      secondaryValue: 'secondaryValue',
-      secondaryUnit: 'secondaryUnit',
-      link: <a href="/">Link</a>
-    })}
-    {renderSpeciesStats({
-      preLabel: 'No. genes in',
-      label: 'Biological process',
-      primaryValue: '7,343',
-      primaryUnit: 'xyz',
-      secondaryValue: '1892',
-      secondaryUnit: 'terms'
-    })}
-    {renderSpeciesStats({
-      label: 'Transcriptomic data',
-      primaryValue: '90%',
-      link: <a href="/">View</a>
-    })}
-    {renderSpeciesStats({
-      label: 'SNVs',
-      primaryValue: '91%'
-    })}
+    <SpeciesStats
+      label="Coding genes"
+      primaryValue="20,438"
+      secondaryValue="671"
+      secondaryUnit="readthrough"
+    />
+    <SpeciesStats
+      preLabel="preLabel"
+      label="label"
+      primaryValue="primaryValue"
+      primaryUnit="primaryUnit"
+      secondaryValue="secondaryValue"
+      secondaryUnit="secondaryUnit"
+      link={<a href="/">Link</a>}
+    />
+    <SpeciesStats
+      preLabel="No. genes in"
+      label="Biological process"
+      primaryValue="7,343"
+      primaryUnit="xyz"
+      secondaryValue="1892"
+      secondaryUnit="terms"
+    />
+    <SpeciesStats
+      label="Transcriptomic data"
+      primaryValue="90%"
+      link={<a href="/">View</a>}
+    />
+    <SpeciesStats label="SNVs" primaryValue="91%" />
   </div>
-));
+);
+
+SpeciesStatsDefaultStory.storyName = 'default';
+
+export default {
+  title: 'Components/Species/SpeciesStats'
+};

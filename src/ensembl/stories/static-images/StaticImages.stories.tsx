@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
 import storyStyles from '../common.scss';
 import ImageHolder from './ImageHolder';
@@ -46,37 +45,38 @@ function importAllImages(fileType: string) {
   return images;
 }
 
-storiesOf('Static Images / All', module)
-  .add('SVGs', () => {
-    return (
-      <div className={storyStyles.page}>
-        {importAllImages('svg').map((image: any, key: number) => {
-          return (
-            <ImageHolder
-              key={key}
-              image={image[1].default}
-              filePath={image[0]}
-            />
-          );
-        })}
-      </div>
-    );
-  })
-  .add('PNGs', () => {
-    return (
-      <div className={storyStyles.page}>
-        {importAllImages('png').map((image: any, key: number) => {
-          return <ImageHolder key={key} image={image[1]} filePath={image[0]} />;
-        })}
-      </div>
-    );
-  })
-  .add('JPEGs', () => {
-    return (
-      <div className={storyStyles.page}>
-        {importAllImages('jpeg').map((image: any, key: number) => {
-          return <ImageHolder key={key} image={image[1]} filePath={image[0]} />;
-        })}
-      </div>
-    );
-  });
+export const SvgImages = () => (
+  <div className={storyStyles.page}>
+    {importAllImages('svg').map((image: any, key: number) => {
+      return (
+        <ImageHolder key={key} image={image[1].default} filePath={image[0]} />
+      );
+    })}
+  </div>
+);
+
+SvgImages.storyName = 'SVGs';
+
+export const PngImages = () => (
+  <div className={storyStyles.page}>
+    {importAllImages('png').map((image: any, key: number) => {
+      return <ImageHolder key={key} image={image[1]} filePath={image[0]} />;
+    })}
+  </div>
+);
+
+PngImages.storyName = 'PNGs';
+
+export const JpegImages = () => (
+  <div className={storyStyles.page}>
+    {importAllImages('jpeg').map((image: any, key: number) => {
+      return <ImageHolder key={key} image={image[1]} filePath={image[0]} />;
+    })}
+  </div>
+);
+
+JpegImages.storyName = 'JPEGs';
+
+export default {
+  title: 'Other/Static Images'
+};
