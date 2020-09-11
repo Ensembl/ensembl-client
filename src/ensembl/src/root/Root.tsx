@@ -39,7 +39,7 @@ type Props = {
 
 export const Root = (props: Props) => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
-  const location = useLocation();
+  const location = useLocation<{ is404: boolean } | undefined>();
 
   useEffect(() => {
     const subscription = observeMediaQueries(globalMediaQueries, (match) => {
