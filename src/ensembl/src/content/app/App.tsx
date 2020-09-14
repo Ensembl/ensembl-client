@@ -71,7 +71,7 @@ const AppInner = (props: AppProps) => {
           component={EntityViewer}
         />
         <ErrorBoundary fallbackComponent={NewTechError}>
-          <Route path={`/browser/:genomeId?`} component={Browser} />
+          <Route path={`/genome-browser/:genomeId?`} component={Browser} />
         </ErrorBoundary>
       </Switch>
     </Suspense>

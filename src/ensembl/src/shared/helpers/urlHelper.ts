@@ -16,8 +16,8 @@
 
 import queryString from 'query-string';
 
-export const speciesSelector = () => '/app/species-selector';
-export const customDownload = () => '/app/custom-download';
+export const speciesSelector = () => '/species-selector';
+export const customDownload = () => '/custom-download';
 
 type BrowserUrlParams = {
   genomeId?: string | null;
@@ -32,8 +32,9 @@ type EntityViewerUrlParams = {
 };
 
 export const browser = (params?: BrowserUrlParams) => {
+  const browserRootPath = '/genome-browser';
   if (params) {
-    const path = `/browser/${params.genomeId}`;
+    const path = `${browserRootPath}/${params.genomeId}`;
     // NOTE: if a parameter passed to queryString is null, it will still get into query;
     // so assign it to undefined in order to omit it from the query
     const query = queryString.stringify(
@@ -47,7 +48,7 @@ export const browser = (params?: BrowserUrlParams) => {
     );
     return query ? `${path}?${query}` : path;
   } else {
-    return `/browser/`;
+    return browserRootPath;
   }
 };
 

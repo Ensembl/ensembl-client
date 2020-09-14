@@ -32,7 +32,7 @@ describe('<Launchbar />', () => {
   it('disables Genome Browser button when there are no committed species', () => {
     const wrapper = mount(<Launchbar {...defaultProps} />);
     const genomeBrowserButton = wrapper.findWhere(
-      (wrapper) => wrapper.prop('app') === 'browser'
+      (wrapper) => wrapper.prop('app') === 'genome-browser'
     );
 
     expect(genomeBrowserButton.prop('enabled')).toBe(false);
@@ -45,7 +45,7 @@ describe('<Launchbar />', () => {
     };
     const wrapper = mount(<Launchbar {...props} />);
     const genomeBrowserButton = wrapper.findWhere(
-      (wrapper) => wrapper.prop('app') === 'browser'
+      (wrapper) => wrapper.prop('app') === 'genome-browser'
     );
 
     expect(genomeBrowserButton.prop('enabled')).toBe(true);

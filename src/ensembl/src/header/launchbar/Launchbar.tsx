@@ -62,7 +62,7 @@ const Launchbar = (props: LaunchbarProps) => {
           </div>
           <div className={styles.category}>
             <LaunchbarButton
-              app="browser"
+              app="genome-browser"
               description="Genome browser"
               icon={BrowserIcon}
               enabled={props.committedSpecies.length > 0}
