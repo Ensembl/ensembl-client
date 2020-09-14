@@ -22,13 +22,9 @@ import { getAccountExpanded } from '../headerSelectors';
 
 import styles from './Account.scss';
 
-type StateProps = {
+type AccountProps = {
   accountExpanded: boolean;
 };
-
-type OwnProps = {};
-
-type AccountProps = StateProps & OwnProps;
 
 export const Account = (props: AccountProps) => {
   return props.accountExpanded ? (
@@ -38,7 +34,7 @@ export const Account = (props: AccountProps) => {
   ) : null;
 };
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   accountExpanded: getAccountExpanded(state)
 });
 
