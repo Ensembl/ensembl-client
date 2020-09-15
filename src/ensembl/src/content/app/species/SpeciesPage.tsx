@@ -21,6 +21,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
+
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 
@@ -31,6 +33,7 @@ import {
   StandardAppLayout,
   SidebarBehaviourType
 } from 'src/shared/components/layout';
+import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 
 import { RootState } from 'src/store';
 
@@ -47,12 +50,15 @@ const SpeciesPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(setActiveGenomeId(genomeId));
+  }, [genomeId]);
+
+  useEffect(() => {
     if (!currentSpecies) {
       dispatch(fetchGenomeData(genomeId));
     }
   }, [genomeId, currentSpecies]);
 
-  const mainContent = 'I am main content';
   const sidebarContent = 'I am sidebar';
   const sidebarNavigationContent = 'I am sidebar navigation';
   const topbarContent = 'I am topbar content';
@@ -61,7 +67,7 @@ const SpeciesPage = () => {
     <>
       <SpeciesAppBar />
       <StandardAppLayout
-        mainContent={mainContent}
+        mainContent={<SpeciesMainView />}
         sidebarContent={sidebarContent}
         sidebarNavigation={sidebarNavigationContent}
         topbarContent={topbarContent}

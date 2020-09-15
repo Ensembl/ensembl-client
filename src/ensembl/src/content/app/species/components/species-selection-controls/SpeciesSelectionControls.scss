@@ -1,0 +1,26 @@
+@import 'src/styles/common';
+
+.speciesSelectionControls {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.speciesUseToggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggle {
+  height: 12px;
+}
+
+.remove {
+  margin-left: 60px;
+}
+
+.clickable {
+  color: $blue;
+  cursor: pointer;
+}
