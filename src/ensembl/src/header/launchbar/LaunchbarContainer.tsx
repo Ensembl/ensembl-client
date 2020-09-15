@@ -26,21 +26,17 @@ import { getLaunchbarExpanded } from '../headerSelectors';
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
-type StateProps = {
+type LaunchbarContainerProps = {
   launchbarExpanded: boolean;
   committedSpecies: CommittedItem[];
 };
-
-type OwnProps = {};
-
-type LaunchbarContainerProps = StateProps & OwnProps;
 
 export const LaunchbarContainer = memo(
   (props: LaunchbarContainerProps) => <Launchbar {...props} />,
   isEqual
 );
 
-const mapStateToProps = (state: RootState): StateProps => ({
+const mapStateToProps = (state: RootState) => ({
   launchbarExpanded: getLaunchbarExpanded(state),
   committedSpecies: getEnabledCommittedSpecies(state)
 });

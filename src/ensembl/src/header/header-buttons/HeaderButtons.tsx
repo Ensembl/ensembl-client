@@ -28,16 +28,10 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './HeaderButtons.scss';
 
-type StateProps = {};
-
-type DispatchProps = {
+type HeaderButtonsProps = {
   toggleLaunchbar: () => void;
   toggleAccount: () => void;
 };
-
-type OwnProps = {};
-
-type HeaderButtonsProps = StateProps & DispatchProps & OwnProps;
 
 export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
   <div>
@@ -59,11 +53,9 @@ export const HeaderButtons: FunctionComponent<HeaderButtonsProps> = (props) => (
   </div>
 );
 
-const mapStateToProps = (): StateProps => ({});
-
-const mapDispatchToProps: DispatchProps = {
+const mapDispatchToProps = {
   toggleAccount,
   toggleLaunchbar
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(HeaderButtons);
+export default connect(null, mapDispatchToProps)(HeaderButtons);
