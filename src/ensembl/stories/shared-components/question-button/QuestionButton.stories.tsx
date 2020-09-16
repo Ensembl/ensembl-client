@@ -20,15 +20,20 @@ import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
 
+import styles from './QuestionButton.stories.scss';
+
 export default {
   title: 'Components/Shared Components/Question button'
 };
 
-export const DefaultQuestionButton = () => (
-  <QuestionButton helpText="This is a hint" />
+export const InlineQuestionButton = () => (
+  <div className={styles.inlineWrapper}>
+    <span className={styles.text}>Some text requiring an explanation</span>
+    <QuestionButton helpText="This is a hint" />
+  </div>
 );
 
-DefaultQuestionButton.storyName = 'default';
+InlineQuestionButton.storyName = 'inline';
 
 export const InputQuestionButton = () => (
   <QuestionButton

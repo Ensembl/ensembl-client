@@ -1,23 +1,13 @@
 @import 'src/styles/common';
 
-.default {
+.quesionButton {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 18px;
-  height: 18px;
-  border: 2px solid $blue;
-  border-radius: 50%;
+  display: inline-block;
 
   > svg {
-    width: 70%;
-    height: 70%;
+    width: 100%;
+    height: 100%;
     fill: $blue;
-  }
-
-  *[class*='tooltip'] {
-    max-width: 300px;
   }
 }
 
@@ -28,7 +18,6 @@
 }
 
 .inline {
-  width: 17px;
-  height: 17px;
-  margin-left:17px;
+  width: 12px;
+  height: 12px;
 }
