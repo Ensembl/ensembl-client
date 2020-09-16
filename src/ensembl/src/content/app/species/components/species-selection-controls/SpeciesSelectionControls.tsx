@@ -30,6 +30,7 @@ import {
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { RootState } from 'src/store';
 
@@ -98,6 +99,10 @@ const SpeciesUseToggle = (props: SpeciesUseToggle) => {
         onChange={props.onChange}
       />
       <span {...useLabelProps}>Use</span>
+      <QuestionButton
+        helpText={'help?'}
+        className={{ inline: styles.questionButton }}
+      />
     </div>
   );
 };
