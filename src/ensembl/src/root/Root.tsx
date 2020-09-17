@@ -16,17 +16,20 @@
 
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import { globalMediaQueries, BreakpointWidth } from '../global/globalConfig';
 import { updateBreakpointWidth } from '../global/globalActions';
 import { observeMediaQueries } from 'src/global/windowSizeHelpers';
 
-import Header from '../header/Header';
 import App from '../content/app/App';
 import PrivacyBanner from '../shared/components/privacy-banner/PrivacyBanner';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
-import { GeneralErrorScreen } from 'src/shared/components/error-screen';
+import {
+  GeneralErrorScreen,
+  NotFoundErrorScreen
+} from 'src/shared/components/error-screen';
 
 import styles from './Root.scss';
 
@@ -36,6 +39,7 @@ type Props = {
 
 export const Root = (props: Props) => {
   const [showPrivacyBanner, setShowPrivacyBanner] = useState(false);
+  const location = useLocation<{ is404: boolean } | undefined>();
 
   useEffect(() => {
     const subscription = observeMediaQueries(globalMediaQueries, (match) => {
@@ -55,10 +59,13 @@ export const Root = (props: Props) => {
     setShowPrivacyBanner(false);
   };
 
+  if (location.state?.is404) {
+    return <NotFoundErrorScreen />;
+  }
+
   return (
     <div className={styles.root}>
       <ErrorBoundary fallbackComponent={GeneralErrorScreen}>
-        <Header />
         <App />
         {showPrivacyBanner && <PrivacyBanner closeBanner={closeBanner} />}
       </ErrorBoundary>
