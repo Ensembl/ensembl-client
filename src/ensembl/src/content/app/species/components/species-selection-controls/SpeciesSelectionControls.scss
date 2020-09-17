@@ -10,6 +10,10 @@
 .speciesUseToggle {
   display: flex;
   align-items: center;
+
+  span:last-of-type {
+    margin-right: 15px;
+  }
 }
 
 .toggle {
@@ -23,9 +27,4 @@
 .clickable {
   color: $blue;
   cursor: pointer;
-}
-
-.questionButton {
-  height: 12px;
-  width: 12px;
 }

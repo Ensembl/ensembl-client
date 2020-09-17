@@ -99,10 +99,7 @@ const SpeciesUseToggle = (props: SpeciesUseToggle) => {
         onChange={props.onChange}
       />
       <span {...useLabelProps}>Use</span>
-      <QuestionButton
-        helpText={'help?'}
-        className={{ inline: styles.questionButton }}
-      />
+      <QuestionButton helpText={'help?'} />
     </div>
   );
 };
