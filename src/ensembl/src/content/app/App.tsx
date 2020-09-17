@@ -20,12 +20,12 @@ import { connect } from 'react-redux';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 
-import Header from 'src//header/Header';
+import Header from 'src/header/Header';
 
 const HomePage = lazy(() => import('../home/Home'));
 const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
-const SpeciesSelector = lazy(() =>
-  import('./species-selector/SpeciesSelector')
+const SpeciesSelector = lazy(
+  () => import('./species-selector/SpeciesSelector')
 );
 const SpeciesPage = lazy(() => import('./species/SpeciesPage'));
 const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
