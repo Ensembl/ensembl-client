@@ -82,7 +82,7 @@ describe('<Root />', () => {
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
-  it('displays 404 screen if no route patched', () => {
+  it('displays 404 screen if no route was matched', () => {
     const Redirect404 = () => {
       const location = useLocation();
 
