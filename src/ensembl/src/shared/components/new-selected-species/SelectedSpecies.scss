@@ -1,0 +1,45 @@
+@import 'src/styles/common';
+@import './selected-species-common';
+
+.species {
+  @include selected-species-common;
+  border: 1px solid $blue;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: $white;
+}
+
+.speciesActive {
+  background-color: $black;
+  border: none;
+  cursor: default;
+}
+
+.nameActive,
+.assemblyActive {
+  color: $white;
+}
+
+.inUseActive {
+  background-color: $black;
+  border: 1px solid $black;
+}
+
+.inUseInactive {
+  background-color: $blue;
+  border: 1px solid $blue;
+}
+
+.notInUseActive {
+  background-color: $grey;
+  border: 1px solid $grey;
+  cursor: auto;
+}
+
+.notInUseInactive {
+  background-color: $white;
+  border: 1px solid $blue;
+  color: $blue;
+}
