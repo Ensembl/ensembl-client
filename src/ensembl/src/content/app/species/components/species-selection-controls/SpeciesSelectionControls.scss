@@ -20,11 +20,21 @@
   height: 12px;
 }
 
-.remove {
+.removalContainer {
   margin-left: 60px;
 }
 
 .clickable {
   color: $blue;
   cursor: pointer;
+}
+
+.speciesRemovalConfirmation {
+  button {
+    margin: 0 25px 0 35px;
+  }
+}
+
+.speciesRemovalWarning {
+  color: $red;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import classNames from 'classnames';
@@ -30,6 +30,7 @@ import {
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { RootState } from 'src/store';
@@ -46,7 +47,13 @@ type LabelProps = {
   onClick?: () => void;
 };
 
+type SpeciesRemovalConfirmationProps = {
+  onConfirm: () => void;
+  onReject: () => void;
+};
+
 const SpeciesSelectionControls = () => {
+  const [isRemoving, setIsRemoving] = useState(false);
   const genomeId = useSelector(getActiveGenomeId);
   const species = useSelector((state: RootState) =>
     getCommittedSpeciesById(state, genomeId || '')
@@ -61,6 +68,10 @@ const SpeciesSelectionControls = () => {
     dispatch(toggleSpeciesUseAndSave(genomeId));
   };
 
+  const toggleRemovalDialog = () => {
+    setIsRemoving(!isRemoving);
+  };
+
   const onRemove = () => {
     dispatch(push(urlFor.speciesSelector()));
     dispatch(deleteSpeciesAndSave(genomeId));
@@ -71,9 +82,18 @@ const SpeciesSelectionControls = () => {
   return (
     <div className={styles.speciesSelectionControls}>
       <SpeciesUseToggle isUsed={species.isEnabled} onChange={onToggleUse} />
-      <span className={removeLabelStyles} onClick={onRemove}>
-        Remove
-      </span>
+      <div className={styles.removalContainer}>
+        {isRemoving ? (
+          <SpeciesRemovalConfirmation
+            onConfirm={onRemove}
+            onReject={toggleRemovalDialog}
+          />
+        ) : (
+          <span className={removeLabelStyles} onClick={toggleRemovalDialog}>
+            Remove
+          </span>
+        )}
+      </div>
     </div>
   );
 };
@@ -100,6 +120,23 @@ const SpeciesUseToggle = (props: SpeciesUseToggle) => {
       />
       <span {...useLabelProps}>Use</span>
       <QuestionButton helpText={'help?'} />
+    </div>
+  );
+};
+
+export const speciesRemovalConfirmationMessage =
+  'If you remove this species, any views you have configured will be lost — do you wish to continue?';
+
+const SpeciesRemovalConfirmation = (props: SpeciesRemovalConfirmationProps) => {
+  return (
+    <div className={styles.speciesRemovalConfirmation}>
+      <span className={styles.speciesRemovalWarning}>
+        {speciesRemovalConfirmationMessage}
+      </span>
+      <PrimaryButton onClick={props.onConfirm}>Remove</PrimaryButton>
+      <span className={styles.clickable} onClick={props.onReject}>
+        Do not remove
+      </span>
     </div>
   );
 };

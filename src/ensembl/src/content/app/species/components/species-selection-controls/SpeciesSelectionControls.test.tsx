@@ -30,7 +30,9 @@ import {
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import SpeciesSelectionControls from './SpeciesSelectionControls';
+import SpeciesSelectionControls, {
+  speciesRemovalConfirmationMessage
+} from './SpeciesSelectionControls';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
 jest.mock('connected-react-router', () => ({
@@ -165,13 +167,38 @@ describe('SpeciesSelectionControls', () => {
     );
   });
 
-  it('removes species and redirects to species selector after removal', () => {
+  it('correctly togglew removal dialog', () => {
     const wrapper = wrapInRedux();
-    const useLabel = wrapper
+    const removeLabel = wrapper
       .find('span')
       .filterWhere((wrapper) => wrapper.text() === 'Remove')
       .first();
-    useLabel.simulate('click');
+    removeLabel.simulate('click');
+
+    expect(wrapper.text()).toContain(speciesRemovalConfirmationMessage);
+
+    const doNotRemoveLabel = wrapper
+      .find('span')
+      .filterWhere((wrapper) => wrapper.text() === 'Do not remove')
+      .first();
+
+    doNotRemoveLabel.simulate('click');
+
+    expect(wrapper.text()).not.toContain(speciesRemovalConfirmationMessage);
+  });
+
+  it('removes species and redirects to species selector after removal', () => {
+    const wrapper = wrapInRedux();
+
+    // open removal confitmation dialog
+    const removeLabel = wrapper
+      .find('span')
+      .filterWhere((wrapper) => wrapper.text() === 'Remove')
+      .first();
+    removeLabel.simulate('click');
+
+    const removeButton = wrapper.find('button.primaryButton');
+    removeButton.simulate('click');
 
     expect(deleteSpeciesAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id
