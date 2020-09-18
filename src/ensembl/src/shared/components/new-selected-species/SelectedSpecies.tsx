@@ -30,7 +30,6 @@ export type Props = {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   className?: string;
-  collapsible?: boolean;
 };
 
 const chooseClassName = (props: Props) => {
