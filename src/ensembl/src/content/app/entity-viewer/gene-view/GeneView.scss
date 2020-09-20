@@ -20,8 +20,12 @@ $backgroundColor: $black;
   padding: 60px 20px 10px;
   height: 100%; // may need to change this later
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
+
+  &::-webkit-scrollbar-corner {
+    background: $backgroundColor;
+  }
+  // overflow-x: hidden;
 }
 
 .featureImage {

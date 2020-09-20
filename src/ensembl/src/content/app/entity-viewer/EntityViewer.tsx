@@ -46,7 +46,6 @@ import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/G
 
 import { RootState } from 'src/store';
 import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
-import { SidebarBehaviourType } from 'src/shared/components/layout/StandardAppLayout';
 
 import styles from './EntityViewer.scss';
 
@@ -101,7 +100,6 @@ const EntityViewer = (props: Props) => {
             sidebarContent={<GeneViewSideBar />}
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-            sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
             isSidebarOpen={props.isSidebarOpen}
             onSidebarToggle={props.toggleSidebar}
             isDrawerOpen={false}

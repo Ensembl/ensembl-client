@@ -124,7 +124,7 @@ const GeneFunction = (props: Props) => {
     <Panel
       header={<TabWrapper />}
       classNames={{
-        panel: props.isNarrow ? styles.narrowPanel : styles.fullWidthPanel,
+        panel: styles.panel,
         body: styles.panelBody
       }}
     >

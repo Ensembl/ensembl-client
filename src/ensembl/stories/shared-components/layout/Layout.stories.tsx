@@ -22,7 +22,6 @@ import { StandardAppLayout } from 'src/shared/components/layout';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 
 import styles from './Layout.stories.scss';
-import { SidebarBehaviourType } from 'src/shared/components/layout/StandardAppLayout';
 
 const TopbarContent = () => (
   <div className={styles.topbarContent}>This is top bar content</div>
@@ -86,9 +85,9 @@ const DrawerContent = () => (
 
 const Wrapper = (props: {
   isSidebarOpen: boolean;
-  isDrawerOpen?: boolean;
   sidebarContent: ReactNode;
-  sidebarBehaviour?: SidebarBehaviourType;
+  mainContent?: ReactNode;
+  isDrawerOpen?: boolean;
   drawerContent?: ReactNode;
   onSidebarToggle: () => void;
   onDrawerClose?: () => void;
@@ -96,7 +95,7 @@ const Wrapper = (props: {
   return (
     <div className={styles.wrapper}>
       <StandardAppLayout
-        mainContent={<MainContent />}
+        mainContent={props.mainContent || <MainContent />}
         topbarContent={<TopbarContent />}
         sidebarNavigation={<SidebarNavigation />}
         sidebarToolstripContent={<SidebarToolstripContent />}
@@ -156,23 +155,33 @@ export const WithDrawerStory = () => {
 
 WithDrawerStory.storyName = 'with drawer';
 
-export const SlideoveSidebarStory = () => {
+export const OverflowingContentStory = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const mainContent = (
+    <div className={styles.overflowingContentWrapper}>
+      <div className={styles.overflowingContentLabel}>
+        Both my width and height are 3000px;
+      </div>
+
+      <div className={styles.overflowingContentPlaceholder} />
+    </div>
+  );
+
   return (
     <Wrapper
+      mainContent={mainContent}
       isSidebarOpen={isSidebarOpen}
       sidebarContent={<SidebarContentSimple />}
-      sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
       onSidebarToggle={toggleSidebar}
     />
   );
 };
 
-SlideoveSidebarStory.storyName = 'with slideover sidebar';
+OverflowingContentStory.storyName = 'with overflowing content';
 
 export default {
   title: 'Components/Shared Components/Layout/StandardAppLayout'
