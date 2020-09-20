@@ -1,6 +1,7 @@
 .wrapper {
-  height: 100vh;
-  padding: 50px 0 0;
+  height: calc(100vh - 2rem);
+  border: 2px solid black;
+  padding-top: calc(155px - 2rem);
 }
 
 .mainContent {
@@ -39,4 +40,24 @@
 .drawerContent {
   background: rgba(255, 192, 203, 0.3);
   height: 100%;
+}
+
+.overflowingContentWrapper {
+  width: 3000px;
+  height: 3000px;
+}
+
+.overflowingContentLabel {
+  padding: 50px;
+}
+
+.overflowingContentPlaceholder {
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #606dbc,
+    #606dbc 10px,
+    #465298 10px,
+    #465298 20px
+  );
 }
