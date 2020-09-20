@@ -18,7 +18,7 @@ import React from 'react';
 import { mount, render } from 'enzyme';
 import faker from 'faker';
 
-import StandardAppLayout, { SidebarBehaviourType } from './StandardAppLayout';
+import StandardAppLayout from './StandardAppLayout';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -98,13 +98,20 @@ describe('StandardAppLayout', () => {
       ).toBe(1);
     });
 
-    it('does not change main area styles when sidebar slides over it', () => {
-      const props = {
-        ...minimalProps,
-        sidebarBehaviour: SidebarBehaviourType.SLIDEOVER
-      };
-      const wrapper = render(<StandardAppLayout {...props} />);
-      const mainContent = wrapper.find('.main');
+    it('applies correct classes to the main section depending on whether sidebar is open', () => {
+      // sidebar is open; main section is narrower
+      let wrapper, mainContent;
+      wrapper = render(<StandardAppLayout {...minimalProps} />);
+      mainContent = wrapper.find('.main');
+      expect(mainContent.hasClass('mainDefault')).toBe(true);
+      expect(mainContent.hasClass('mainFullWidth')).toBe(false);
+
+      // sidebar is closed; main section is wider
+      wrapper = render(
+        <StandardAppLayout {...minimalProps} isSidebarOpen={false} />
+      );
+      mainContent = wrapper.find('.main');
+      expect(mainContent.hasClass('mainDefault')).toBe(false);
       expect(mainContent.hasClass('mainFullWidth')).toBe(true);
     });
 
