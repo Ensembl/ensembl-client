@@ -21,11 +21,6 @@ $backgroundColor: $black;
   height: 100%; // may need to change this later
   width: 100%;
   overflow: auto;
-
-  &::-webkit-scrollbar-corner {
-    background: $backgroundColor;
-  }
-  // overflow-x: hidden;
 }
 
 .featureImage {
