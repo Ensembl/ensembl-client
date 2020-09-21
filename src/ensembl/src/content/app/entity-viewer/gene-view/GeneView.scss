@@ -32,6 +32,7 @@ $backgroundColor: $black;
   display: grid;
   grid-template-rows: 1fr 1fr;
   align-items: end;
+  padding-right: 30px;
 }
 
 .geneViewTabs {
