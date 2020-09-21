@@ -1,13 +1,7 @@
 @import 'src/styles/common';
 
-.fullWidthPanel {
-  width: 100%;
-  height: 100%;
-}
-
-.narrowPanel {
-  width: calc(100% - 320px);
-  height: 100%;
+.panel {
+  width: initial;
 }
 
 .panelBody {
