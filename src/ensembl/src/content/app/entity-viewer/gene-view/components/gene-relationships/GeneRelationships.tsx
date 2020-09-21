@@ -111,7 +111,7 @@ const GeneRelationships = (props: Props) => {
     <Panel
       header={<TabWrapper />}
       classNames={{
-        panel: props.isSidebarOpen ? styles.narrowPanel : styles.fullWidthPanel,
+        panel: styles.panel,
         body: styles.panelBody
       }}
     >
