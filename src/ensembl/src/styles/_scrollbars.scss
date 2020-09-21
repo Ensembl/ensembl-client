@@ -29,4 +29,8 @@ p {
   &::-webkit-scrollbar:horizontal {
     height: 11px;
   }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
 }
