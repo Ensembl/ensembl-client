@@ -22,15 +22,15 @@ p {
     background-color: rgba(0, 0, 0, 0.5);
   }
 
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
   &::-webkit-scrollbar:vertical {
     width: 11px;
   }
 
   &::-webkit-scrollbar:horizontal {
     height: 11px;
-  }
-
-  &::-webkit-scrollbar-corner {
-    background-color: transparent;
   }
 }
