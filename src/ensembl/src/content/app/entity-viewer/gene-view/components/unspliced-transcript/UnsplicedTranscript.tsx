@@ -91,7 +91,7 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   return props.standalone ? (
     <svg
       className={styles.containerSvg}
-      width={props.width}
+      width={scale(length)}
       height={BLOCK_HEIGHT}
     >
       {renderedTranscript}
