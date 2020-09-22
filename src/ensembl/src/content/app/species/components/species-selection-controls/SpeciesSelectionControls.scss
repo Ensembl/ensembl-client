@@ -11,6 +11,10 @@
   display: flex;
   align-items: center;
 
+  span {
+    white-space: nowrap;
+  }
+
   span:last-of-type {
     margin-right: 15px;
   }

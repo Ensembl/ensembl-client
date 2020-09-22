@@ -21,10 +21,24 @@ import SpeciesSelectionControls from 'src/content/app/species/components/species
 import styles from './SpeciesMainView.scss';
 
 const SpeciesMainViewTop = () => {
+  const mockSpeciesIcon = (
+    <div
+      style={{
+        height: '57px',
+        width: '57px',
+        background: '#d4d9de',
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        marginRight: '18px'
+      }}
+    />
+  );
+
   return (
     <div className={styles.speciesMainViewTop}>
       <div className={styles.speciesLabelBlock}>
-        Place for species icon and name
+        {mockSpeciesIcon}
+        Species name
       </div>
       <SpeciesSelectionControls />
     </div>
