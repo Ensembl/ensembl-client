@@ -2,8 +2,8 @@ $transitionTime: 0.15s;
 
 .slideToggle {
   cursor: pointer;
-  width: 40px;
   user-select: none;
+  height: 12px;
 
   .slideToggleTrack {
     transition: fill $transitionTime ease-in-out,
