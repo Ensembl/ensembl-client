@@ -22,7 +22,7 @@
 
   &:hover,
   &.trackHighlighted {
-    background: $light-blue;
+    background: $ice-blue;
   }
 
   &.main {
@@ -65,8 +65,8 @@
     width: 11px;
 
     &.blue {
-      background: $dark-blue;
-      border-color: $dark-blue;
+      background: $blue;
+      border-color: $blue;
     }
 
     &.darkGrey {
@@ -98,7 +98,7 @@
 
 .selected {
   svg {
-    fill: $dark-blue;
+    fill: $blue;
   }
 }
 

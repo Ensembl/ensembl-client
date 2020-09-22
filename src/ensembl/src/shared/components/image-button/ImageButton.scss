@@ -18,14 +18,14 @@
 
 .default {
   svg {
-    fill: $dark-blue;
+    fill: $blue;
   }
 }
 
 .selected {
   svg {
     fill: $white;
-    background: $dark-blue;
+    background: $blue;
   }
   &svg:hover {
     opacity: 0.8;
@@ -34,7 +34,7 @@
 
 .unselected {
   svg {
-    fill: $dark-blue;
+    fill: $blue;
   }
   &svg:hover {
     opacity: 0.8;
