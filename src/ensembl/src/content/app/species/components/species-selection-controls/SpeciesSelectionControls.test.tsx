@@ -167,7 +167,7 @@ describe('SpeciesSelectionControls', () => {
     );
   });
 
-  it('correctly togglew removal dialog', () => {
+  it('correctly toggles removal dialog', () => {
     const wrapper = wrapInRedux();
     const removeLabel = wrapper
       .find('span')
