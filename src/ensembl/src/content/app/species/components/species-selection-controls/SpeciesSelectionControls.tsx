@@ -98,6 +98,9 @@ const SpeciesSelectionControls = () => {
   );
 };
 
+const speciesUseToggleHelpMessage = `When 'Use' is selected, this species will appear in the species list in all apps.
+'Don't use' will disable this species in other apps, but will not remove it from your list in Species selector.`;
+
 const SpeciesUseToggle = (props: SpeciesUseToggle) => {
   const doNotUseLabelProps: Partial<LabelProps> = {};
   const useLabelProps: Partial<LabelProps> = {};
@@ -119,7 +122,7 @@ const SpeciesUseToggle = (props: SpeciesUseToggle) => {
         onChange={props.onChange}
       />
       <span {...useLabelProps}>Use</span>
-      <QuestionButton helpText={'help?'} />
+      <QuestionButton helpText={speciesUseToggleHelpMessage} />
     </div>
   );
 };

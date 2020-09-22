@@ -16,14 +16,19 @@
 
 import React from 'react';
 
-import SpeciesMainViewTop from './SpeciesMainViewTop';
+import SpeciesSelectionControls from 'src/content/app/species/components/species-selection-controls/SpeciesSelectionControls';
 
-const SpeciesMainView = () => {
+import styles from './SpeciesMainView.scss';
+
+const SpeciesMainViewTop = () => {
   return (
-    <div>
-      <SpeciesMainViewTop />
+    <div className={styles.speciesMainViewTop}>
+      <div className={styles.speciesLabelBlock}>
+        Place for species icon and name
+      </div>
+      <SpeciesSelectionControls />
     </div>
   );
 };
 
-export default SpeciesMainView;
+export default SpeciesMainViewTop;
