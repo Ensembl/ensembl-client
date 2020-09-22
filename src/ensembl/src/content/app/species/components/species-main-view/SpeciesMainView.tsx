@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React from 'react';
 
-import speciesPageSidebarReducer from './sidebar/speciesSidebarSlice';
-import speciesPageGeneralReducer from './general/speciesGeneralSlice';
+import SpeciesMainViewTop from './SpeciesMainViewTop';
 
-export default combineReducers({
-  general: speciesPageGeneralReducer,
-  sidebar: speciesPageSidebarReducer
-});
+const SpeciesMainView = () => {
+  return (
+    <div>
+      <SpeciesMainViewTop />
+    </div>
+  );
+};
+
+export default SpeciesMainView;

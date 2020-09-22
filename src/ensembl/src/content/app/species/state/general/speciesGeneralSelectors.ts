@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { RootState } from 'src/store';
 
-import speciesPageSidebarReducer from './sidebar/speciesSidebarSlice';
-import speciesPageGeneralReducer from './general/speciesGeneralSlice';
-
-export default combineReducers({
-  general: speciesPageGeneralReducer,
-  sidebar: speciesPageSidebarReducer
-});
+export const getActiveGenomeId = (state: RootState) =>
+  state.speciesPage.general.activeGenomeId;

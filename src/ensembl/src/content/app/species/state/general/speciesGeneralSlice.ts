@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import speciesPageSidebarReducer from './sidebar/speciesSidebarSlice';
-import speciesPageGeneralReducer from './general/speciesGeneralSlice';
+type SpeciesGeneralState = {
+  activeGenomeId: string | null;
+};
 
-export default combineReducers({
-  general: speciesPageGeneralReducer,
-  sidebar: speciesPageSidebarReducer
+const initialState: SpeciesGeneralState = {
+  activeGenomeId: null
+};
+
+const speciesGeneralSlice = createSlice({
+  name: 'species-page-general',
+  initialState,
+  reducers: {
+    setActiveGenomeId(state, action: PayloadAction<string>) {
+      state.activeGenomeId = action.payload;
+    }
+  }
 });
+
+export const { setActiveGenomeId } = speciesGeneralSlice.actions;
+
+export default speciesGeneralSlice.reducer;

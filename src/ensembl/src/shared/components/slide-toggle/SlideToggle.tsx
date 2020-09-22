@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 import styles from './SlideToggle.scss';
@@ -27,6 +27,12 @@ type Props = {
 
 const SlideToggle = (props: Props) => {
   const [isOn, setIsOn] = useState(props.isOn);
+
+  useEffect(() => {
+    if (isOn !== props.isOn) {
+      setIsOn(props.isOn);
+    }
+  }, [props.isOn]);
 
   const onToggle = () => {
     props.onChange(!isOn);
