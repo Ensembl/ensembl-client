@@ -43,7 +43,7 @@ type SpeciesUseToggle = {
 };
 
 type LabelProps = {
-  className: string;
+  className?: string;
   onClick?: () => void;
 };
 
@@ -102,8 +102,8 @@ const speciesUseToggleHelpMessage = `When 'Use' is selected, this species will a
 'Don't use' will disable this species in other apps, but will not remove it from your list in Species selector.`;
 
 const SpeciesUseToggle = (props: SpeciesUseToggle) => {
-  const doNotUseLabelProps: Partial<LabelProps> = {};
-  const useLabelProps: Partial<LabelProps> = {};
+  const doNotUseLabelProps: LabelProps = {};
+  const useLabelProps: LabelProps = {};
 
   if (props.isUsed) {
     doNotUseLabelProps.className = styles.clickable;
