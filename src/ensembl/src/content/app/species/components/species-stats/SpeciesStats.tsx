@@ -81,7 +81,9 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
 
   return (
     <div className={styles.wrapper}>
-      <span className={styles.preLabel}>{props.preLabel}</span>
+      {props.preLabel && (
+        <span className={styles.preLabel}>{props.preLabel}</span>
+      )}
 
       <div className={styles.label}>{props.label}</div>
 
