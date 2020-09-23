@@ -2,7 +2,7 @@
 
 .selected {
   svg {
-    fill: $dark-blue;
+    fill: $blue;
   }
   &svg:hover {
     opacity: 0.8;
@@ -20,7 +20,7 @@
 
 .partiallySelected {
   svg {
-    fill: $dark-blue;
+    fill: $blue;
     [class*='rightHalf'] {
       fill: $grey;
     }

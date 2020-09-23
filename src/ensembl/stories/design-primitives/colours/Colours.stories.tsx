@@ -36,14 +36,14 @@ const colours = [
     value: variables['blue']
   },
   {
-    name: 'Dark blue',
-    variableName: '$dark-blue',
-    value: variables['dark-blue']
-  },
-  {
     name: 'Light blue',
     variableName: '$light-blue',
     value: variables['light-blue']
+  },
+  {
+    name: 'Ice blue',
+    variableName: '$ice-blue',
+    value: variables['ice-blue']
   },
   {
     name: 'Red',

@@ -16,25 +16,33 @@
 
 import React from 'react';
 
-// import {sampleData} from '../../sample-data';
+import SpeciesSelectionControls from 'src/content/app/species/components/species-selection-controls/SpeciesSelectionControls';
 
-// const getCodingStats = (genome_id: string) => {
-//     const codingStats = sampleData["coding_stats"][genome_id] || {};
+import styles from './SpeciesMainView.scss';
 
-// }
+const SpeciesMainViewTop = () => {
+  const mockSpeciesIcon = (
+    <div
+      style={{
+        height: '57px',
+        width: '57px',
+        background: '#d4d9de',
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        marginRight: '18px'
+      }}
+    />
+  );
 
-// const getSpeciesStats = (genome_id: string) => {
-
-// }
-
-import SpeciesMainViewTop from './SpeciesMainViewTop';
-
-const SpeciesMainView = () => {
   return (
-    <div>
-      <SpeciesMainViewTop />
+    <div className={styles.speciesMainViewTop}>
+      <div className={styles.speciesLabelBlock}>
+        {mockSpeciesIcon}
+        Species name
+      </div>
+      <SpeciesSelectionControls />
     </div>
   );
 };
 
-export default SpeciesMainView;
+export default SpeciesMainViewTop;
