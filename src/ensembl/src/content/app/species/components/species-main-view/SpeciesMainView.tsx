@@ -16,23 +16,14 @@
 
 import React from 'react';
 
-// import {sampleData} from '../../sample-data';
-
-// const getCodingStats = (genome_id: string) => {
-//     const codingStats = sampleData["coding_stats"][genome_id] || {};
-
-// }
-
-// const getSpeciesStats = (genome_id: string) => {
-
-// }
-
 import SpeciesMainViewTop from './SpeciesMainViewTop';
+import SpeciesMainViewStats from './SpeciesMainViewStats';
 
 const SpeciesMainView = () => {
   return (
     <div>
       <SpeciesMainViewTop />
+      <SpeciesMainViewStats />
     </div>
   );
 };

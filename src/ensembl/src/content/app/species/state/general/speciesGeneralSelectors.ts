@@ -18,3 +18,13 @@ import { RootState } from 'src/store';
 
 export const getActiveGenomeId = (state: RootState) =>
   state.speciesPage.general.activeGenomeId;
+
+export const getActiveGenomeStats = (state: RootState) => {
+  const activeGeonmeId = getActiveGenomeId(state);
+
+  if (!activeGeonmeId) {
+    return;
+  }
+
+  return state.speciesPage.general.stats[activeGeonmeId];
+};

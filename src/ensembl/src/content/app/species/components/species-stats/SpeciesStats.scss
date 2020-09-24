@@ -3,7 +3,8 @@
 $secondary-text-color: $dark-grey;
 
 .wrapper {
-  width: 220px;
+  min-width: 220px;
+  margin-bottom:30px;
   display: inline-block;
   vertical-align: top;
 }
@@ -15,7 +16,6 @@ $secondary-text-color: $dark-grey;
 
 .label {
   font-size: 12px;
-  font-weight: $bold;
 }
 
 .preLabel + .label {
@@ -23,7 +23,7 @@ $secondary-text-color: $dark-grey;
 }
 
 .primaryValue {
-  font-size: 22px;
+  font-size: 20px;
   padding-left: 30px;
 }
 .primaryUnit {

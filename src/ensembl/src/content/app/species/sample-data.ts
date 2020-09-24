@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-export const sampleData = {
+type RawSpeciesStats = {
+  [key: string]: {
+    [genomeId: string]: {
+      [key: string]: string;
+    };
+  };
+};
+
+export const sampleData: RawSpeciesStats = {
   assembly_stats: {
     homo_sapiens_GCA_000001405_28: {
       'Scientific name': 'Homo sapiens',
