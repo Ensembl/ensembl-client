@@ -117,6 +117,8 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
   },
   [Sections.ASSEMBLY_STATS]: {
     title: 'Assembly',
+    hasExampleLink: true,
+    exampleLinkText: 'Example region',
     groups: [Groups.ASSEMBLY_STATS],
     primaryStatsKey: Stats.CHROMOSOMES
   },
@@ -317,6 +319,24 @@ const getExampleLink = (props: {
       ? buildFocusIdForUrl({
           type: 'gene',
           objectId: geneExample?.id
+        })
+      : undefined;
+
+    exampleLink = focusId
+      ? urlFor.browser({
+          genomeId: genome_id,
+          focus: focusId
+        })
+      : undefined;
+  } else if (section === Sections.ASSEMBLY_STATS) {
+    const regionExample = exampleFocusObjects.find(
+      (object) => object.type === 'region'
+    );
+
+    const focusId = regionExample?.id
+      ? buildFocusIdForUrl({
+          type: 'region',
+          objectId: regionExample?.id
         })
       : undefined;
 
