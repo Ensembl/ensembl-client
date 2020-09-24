@@ -60,9 +60,8 @@
   }
 
   .exampleLink{
-      cursor: pointer;
-      color: $blue;
       grid-column:  example-link;
+      font-size: 11px;
   }
 }
 
@@ -87,6 +86,7 @@
   }
   .exampleLink{
       grid-column:  example-link;
+      font-size: 11px;
   }
 }
 
