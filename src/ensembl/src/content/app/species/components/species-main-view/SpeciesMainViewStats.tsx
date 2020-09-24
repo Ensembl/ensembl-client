@@ -16,12 +16,15 @@
 
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames';
+
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 import {
   getActiveGenomeId,
   getActiveGenomeStats
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import {
   fetchStatsForActiveGenome,
   sectionGroupsMap
@@ -33,19 +36,32 @@ import {
   GenomeStats,
   StatsSection
 } from '../../state/general/speciesGeneralSlice';
+import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesMainView.scss';
 
 type Props = {
   activeGenomeId: string | null;
   genomeStats: GenomeStats | undefined;
+  exampleFocusObjects: ExampleFocusObject[];
   fetchStatsForActiveGenome: () => void;
 };
 
-const getCollapsedContent = (statsSection: StatsSection) => {
-  const { primaryStats, secondaryStats, section } = statsSection;
+const getExampleLink = (exampleLink?: string, exampleLinkText?: string) => {
+  if (!exampleLink) {
+    return null;
+  }
 
-  const { title, exampleLink } = sectionGroupsMap[section];
+  return (
+    <span className={styles.exampleLink}>
+      <Link to={exampleLink}>{exampleLinkText}</Link>
+    </span>
+  );
+};
+
+const getCollapsedContent = (statsSection: StatsSection) => {
+  const { primaryStats, secondaryStats, section, exampleLink } = statsSection;
+  const { title, exampleLinkText } = sectionGroupsMap[section];
 
   return (
     <div className={styles.collapsedContent}>
@@ -70,14 +86,14 @@ const getCollapsedContent = (statsSection: StatsSection) => {
         </div>
       )}
 
-      {exampleLink && <span className={styles.exampleLink}>{exampleLink}</span>}
+      {getExampleLink(exampleLink, exampleLinkText)}
     </div>
   );
 };
 
 const getExpandedContent = (statsSection: StatsSection) => {
-  const { groups, section } = statsSection;
-  const { exampleLink } = sectionGroupsMap[section];
+  const { groups, exampleLink, section } = statsSection;
+  const { exampleLinkText } = sectionGroupsMap[section];
 
   return groups.map((group, group_index) => {
     const { title, stats } = group;
@@ -96,9 +112,8 @@ const getExpandedContent = (statsSection: StatsSection) => {
             {stats.map((stat, stat_index) => {
               return <SpeciesStats key={stat_index} {...stat} />;
             })}
-            {exampleLink && (
-              <span className={styles.exampleLink}>{exampleLink}</span>
-            )}
+
+            {getExampleLink(exampleLink, exampleLinkText)}
           </div>
         </div>
       </div>
@@ -108,10 +123,10 @@ const getExpandedContent = (statsSection: StatsSection) => {
 
 const SpeciesMainViewStats = (props: Props) => {
   useEffect(() => {
-    if (!props.genomeStats) {
+    if (!props.genomeStats && props.exampleFocusObjects?.length) {
       props.fetchStatsForActiveGenome();
     }
-  }, [props.genomeStats, props.activeGenomeId]);
+  }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
   if (!props.genomeStats) {
     return null;
@@ -133,9 +148,14 @@ const SpeciesMainViewStats = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => {
+  const activeGenomeId = getActiveGenomeId(state);
+
   return {
-    activeGenomeId: getActiveGenomeId(state),
-    genomeStats: getActiveGenomeStats(state)
+    activeGenomeId,
+    genomeStats: getActiveGenomeStats(state),
+    exampleFocusObjects: activeGenomeId
+      ? getGenomeExampleFocusObjects(state, activeGenomeId)
+      : []
   };
 };
 

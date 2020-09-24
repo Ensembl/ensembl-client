@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReactElement } from 'react';
 import {
   Action,
   createSlice,
@@ -22,12 +21,16 @@ import {
 } from '@reduxjs/toolkit';
 
 import { getActiveGenomeId } from './speciesGeneralSelectors';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 
-import { SpeciesStatsProps } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import { RootState } from 'src/store';
+import { SpeciesStatsProps } from 'src/content/app/species/components/species-stats/SpeciesStats';
+import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import { sampleData } from '../../sample-data';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 enum Sections {
   CODING_STATS = 'coding_stats',
@@ -99,13 +102,16 @@ type SpeciesStatsSectionGroups = {
     groups: Groups[];
     primaryStatsKey?: Stats;
     secondaryStatsKey?: Stats;
-    exampleLink?: ReactElement;
+    hasExampleLink?: boolean;
+    exampleLinkText?: string;
   };
 };
 
 export const sectionGroupsMap: SpeciesStatsSectionGroups = {
   [Sections.CODING_STATS]: {
     title: Stats.CODING_GENES,
+    hasExampleLink: true,
+    exampleLinkText: 'Example gene',
     groups: [Groups.CODING_GENES, Groups.ANALYSIS],
     primaryStatsKey: Stats.CODING_GENES
   },
@@ -222,6 +228,7 @@ type StatsGroup = {
 
 export type StatsSection = {
   section: Sections;
+  exampleLink: string;
   primaryStats?: SpeciesStatsProps;
   secondaryStats?: SpeciesStatsProps;
   groups: StatsGroup[];
@@ -292,15 +299,53 @@ const buildHeaderStat = (
   };
 };
 
-const getSectionStats = (
-  genome_id: string,
-  section: Sections
-): StatsSection | undefined => {
+const getExampleLink = (props: {
+  section: Sections;
+  genome_id: string;
+  exampleFocusObjects: ExampleFocusObject[];
+}) => {
+  const { section, genome_id, exampleFocusObjects } = props;
+
+  let exampleLink;
+
+  if (section === Sections.CODING_STATS) {
+    const geneExample = exampleFocusObjects.find(
+      (object) => object.type === 'gene'
+    );
+
+    const focusId = geneExample?.id
+      ? buildFocusIdForUrl({
+          type: 'gene',
+          objectId: geneExample?.id
+        })
+      : undefined;
+
+    exampleLink = focusId
+      ? urlFor.browser({
+          genomeId: genome_id,
+          focus: focusId
+        })
+      : undefined;
+  }
+
+  return exampleLink;
+};
+
+const getSectionStats = (props: {
+  genome_id: string;
+  section: Sections;
+  exampleFocusObjects: ExampleFocusObject[];
+}): StatsSection | undefined => {
+  const { section, genome_id, exampleFocusObjects } = props;
+
   const data = sampleData[section][genome_id];
 
-  const { groups, primaryStatsKey, secondaryStatsKey } = sectionGroupsMap[
-    section
-  ];
+  const {
+    groups,
+    primaryStatsKey,
+    secondaryStatsKey,
+    hasExampleLink
+  } = sectionGroupsMap[section];
 
   if (!data || !groups) {
     return;
@@ -318,10 +363,19 @@ const getSectionStats = (
       })
     : undefined;
 
+  const exampleLink = hasExampleLink
+    ? getExampleLink({
+        section,
+        genome_id,
+        exampleFocusObjects
+      })
+    : undefined;
+
   return {
     section,
     primaryStats,
     secondaryStats,
+    exampleLink,
     groups: groups.map((group) => {
       const stats = groupsStatsMap[group];
       return {
@@ -348,9 +402,18 @@ export const fetchStatsForActiveGenome = (): ThunkAction<
     return;
   }
 
+  const exampleFocusObjects = getGenomeExampleFocusObjects(
+    state,
+    activeGenomeId
+  );
+
   const speciesStats = [
     ...Object.values(Sections).map((section) =>
-      getSectionStats(activeGenomeId, section)
+      getSectionStats({
+        genome_id: activeGenomeId,
+        section,
+        exampleFocusObjects
+      })
     )
   ].filter(Boolean) as GenomeStats;
 
