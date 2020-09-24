@@ -4,24 +4,24 @@
 Under review.
 
 ## Definitions
-- **Server-Side Rendering** means generating HTML string representation of a web page on the server. The HTML string is sent over to the web browser, where it is parsed into a DOM tree and displayed on user's screen.
+- **Server-Side Rendering** means generating an HTML string representation of a web page on the server. The HTML string is sent over to the web browser, where it is parsed into a DOM tree and displayed on user's screen. The HTML string can be generated on the server dynamically during every request, or once during the build time. The latter is known as pre-rendering, or static site generation.
 - **Client-Side Rendering** means building the DOM tree of a web page directly in the browser, by executing a script that the browser receives from the server.
 
 ## Context
-As of the time of writing this document, the new Ensembl site is rendered entirely client-side, which means that no matter which page is requested, the browser always receives the same minimal html payload with a link to the bootstrap javascript file. That file, in its turn, will trigger the download of the rest of javascript files, which will then fetch the necessary data and render the page.
+As of the time of writing this document, the new Ensembl site is rendered entirely client-side, which means that no matter which page is requested, the browser always receives the same minimal html payload with a link to the bootstrap javascript file. That file, in its turn, will trigger the download of the rest of the required javascript files, which will then fetch the necessary data, and render the page.
 
 ## Motivation
 ### Shortcomings of client-side rendering
 #### Loss of control over HTTP status codes
-With client-side rendering, the browser always gets the same html file that comes in a response with an HTTP status code `200: OK`. Thus, there is no way to signal, from the server, the intent to redirect the browser to a different page (300-range codes) or to message that the requested page does not exist (400-range errors).
+With client-side rendering, the browser always gets the same html file, in a response with an HTTP status code `200: OK`. Thus, there is no way to signal, from the server, the intent to redirect the browser to a different page (300-range codes) or to message that the requested page does not exist (400-range errors).
 
-_**Note:** Use of improper http status codes can negatively impact search engine ranking. Google’s recommended solution for avoiding what it calls "soft 404 errors" (404-error pages with status code 200) is either to use javascript to send the browser to an actual 404-error page, or to add a `<meta name="robots" content="noindex">` tag in order to prevent the bot from indexing such a page._
+_**Note:** Use of improper http status codes can negatively impact search engine ranking. Google’s recommended solution for avoiding what it calls "soft 404 errors" (404-error pages with status code 200) is either to use javascript to send the browser to a different url with an actual 404-error page, or to add a `<meta name="robots" content="noindex">` tag in order to prevent search engine's web crawler from indexing the page._
 
 #### Negative impact on search engine discoverability and ranking
-While Google is very open about the capabilities of the modern version of Googlebot (Google’s web crawler), which can execute client-side javascript, we do not know to what extent other web crawlers can do the same.
+While Google is very open about the capabilities of the modern version of its web crawler (Googlebot), which can execute client-side javascript, we do not know to what extent other web crawlers can do the same.
 
 ##### Experiment (conducted in September 2020)
-HGNC's site `genenames.org` is an Angular-based site, with its metadata tags filled in dynamically in the browser. The html layout returned from the server has the following metatags (note that they are empty and contain Angular bindings to be activated when Angular gets loaded in):
+HGNC's site `genenames.org` is an Angular-based site, with its metadata tags filled in dynamically in the browser. The html layout returned from the server has the following metatags (note that they are empty and contain Angular bindings to be activated after Angular is loaded in):
 
 ```html
 <title ng-bind="vm.headTitle"></title>
@@ -35,20 +35,34 @@ A sample query `brca2 site:https://www.genenames.org/` in different search engin
 This experiment confirms that Google is capable of indexing client-side-rendered web pages, but that other search engines struggle. With server-side-rendered pages, all search engines should be perfectly capable of indexing them.
 
 #### Lack of contextual information for 3rd-party bots
-When someone shares url to a web page on social media or in a messaging app such as Slack, this service will often send a web crawler to the shared url to get a preview of the page. These crawlers will scrape the most fundamental information about the page, such as its title, its description, and possibly an image. These crawlers do not execute javascript; so with client-side rendering, they will not be able re retrieve the title and the description of the shared page.
+When someone shares a url to a web page on social media or in a messaging app such as Slack, this service will often have a web crawler follow the shared url and scrape the data from the page, such as its title, its description, and possibly an image, to be used for a preview. These crawlers do not execute javascript; so with client-side rendering, they will not be able to retrieve the title and the description of the shared page.
 
 ### Additional benefits of server-side rendering
-The points below are expected to offer only a marginal benefit in the context of the new Ensembl website, and are mentioned only for the sake of exhaustiveness.
+The points below are expected to offer only a marginal benefit in the context of the new Ensembl website, and are mentioned only for the sake of completeness.
 
 #### Higher page reliability
-With client-side rendering, if anything happens to the javascript bundle, the page will not render. In contrast, with server-side rendering, the browser will display the contents of the page as it was rendered on the server.
+With client-side rendering, if anything happens to the javascript bundle, the page will not render. In contrast, with server-side rendering, the browser will display the contents of the page in the way it was rendered on the server.
 
 _**However**, we recognize that in the case of the Ensembl site, there is little value in being able to view the page, but not interact with it._
 
 #### Potentially perceptually faster page load
-While the time to first byte with server-side rendering will inevitably be slower than with client-sidee rendering, it is, in principle, possible that the server-rendered page will arrive to the browser earlier than the time it takes a client-rendered page to fetch the script and the data required for building page content.
+While the time to the first byte with server-side rendering will inevitably be slower than with client-sidee rendering, it is, in principle, possible that the time it takes to build a page on the server and deliver it to the browser is less than what it would take a client-rendered page to fetch the script, then fetch the data, and then finally display the page content.
 
-_**However**, we do recognize that in practice, these gains will be negligible, if at all attainable. We expect that Ensembl users are bioinformaticians or clinicians accessing Ensembl from office computers, which are sufficiently powerful and are on sufficiently fast networks that performance gains will not be meaningful._
+_**However**, we do recognize that in practice, these gains, if at all attainable, will be negligible. We expect that Ensembl users are bioinformaticians or clinicians accessing Ensembl from office computers, which are sufficiently powerful and are on sufficiently fast networks that performance gains will not be meaningful._
+
+## Dangers of server-side rendering
+
+### Slow pages
+While a previous section (Potentially perceptually faster page load) argues that server-side rendering may make the site feel faster, the inverse may also happen, especially if:
+- the data required to render a page is requested from a slow api;
+- a server-side-rendered page also contains a json with the fetched data to be reused when the page gets interactive on the client side (that may inflate the page size to hundreds of kilobytes). 
+
+Thus, when doing server-side rendering, careful monitoring of response times is advisable.
+
+### Deceptive non-interactive pages
+There is, inevitably, a time, between the moment that a server-rendered page is displayed in the browser (marked as Time to First Paint) and the moment that all the necessary javascript is fetched and parsed by the browser (marked as Time to Interactive). During this time window, the page cannot respond to user interactions. Sometimes, users start interacting with the page during this window of unresponsiveness, which results in a negative experience.
+
+We believe that this will not present a significant problem, because we expect Ensembl users to use powerful hardware and fast networks. To alleviate this problem further, we will be using caching with service workers.
 
 ## Implementation
 
