@@ -94,31 +94,29 @@ const getCollapsedContent = (statsSection: StatsSection) => {
 const getExpandedContent = (statsSection: StatsSection) => {
   const { groups, exampleLink, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
-
-  return groups.map((group, group_index) => {
-    const { title, stats } = group;
-
-    const primaryStatsClassName = classNames(styles.primaryStats, {
-      [styles.primaryStatsNoLink]: !exampleLink
-    });
-    const primaryOrSecondaryClassName =
-      group_index === 0 ? primaryStatsClassName : styles.secondaryStats;
-
-    return (
-      <div key={group_index} className={styles.expandedContent}>
-        <div className={primaryOrSecondaryClassName}>
-          <span className={styles.title}>{title}</span>
-          <div className={styles.stats}>
-            {stats.map((stat, stat_index) => {
-              return <SpeciesStats key={stat_index} {...stat} />;
-            })}
-
-            {getExampleLink(exampleLink, exampleLinkText)}
+  return (
+    <div className={styles.expandedContent}>
+      {groups.map((group, group_index) => {
+        const { title, stats } = group;
+        const primaryStatsClassName = classNames(styles.primaryStats, {
+          [styles.primaryStatsNoLink]: !exampleLink
+        });
+        const primaryOrSecondaryClassName =
+          group_index === 0 ? primaryStatsClassName : styles.secondaryStats;
+        return (
+          <div key={group_index} className={primaryOrSecondaryClassName}>
+            <span className={styles.title}>{title}</span>
+            <div className={styles.stats}>
+              {stats.map((stat, stat_index) => {
+                return <SpeciesStats key={stat_index} {...stat} />;
+              })}
+            </div>
+            {group_index === 0 && getExampleLink(exampleLink, exampleLinkText)}
           </div>
-        </div>
-      </div>
-    );
-  });
+        );
+      })}
+    </div>
+  );
 };
 
 const SpeciesMainViewStats = (props: Props) => {

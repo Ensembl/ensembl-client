@@ -15,7 +15,7 @@
 .statsWrapper { 
     padding-left:60px;
     padding-top:20px;
-    width: 1000px;
+    width: 1100px;
     overflow: auto;
     height:500px;
 }
@@ -67,7 +67,7 @@
 
 
 .primaryStats{
-  padding: 13px 20px;
+  padding: 13px 20px 0;
   display: grid;
   grid-template-columns: [title] 120px [stats] auto [example-link] 200px;
   align-items: flex-start;
@@ -87,12 +87,13 @@
   .exampleLink{
       grid-column:  example-link;
       font-size: 11px;
+      padding-top:2px;
   }
 }
 
 
 .secondaryStats{
-  padding: 13px 20px;
+  padding: 13px 20px 0;
   display: grid;
   grid-template-columns: [title] 120px [stats] auto;
   align-items: flex-start;
