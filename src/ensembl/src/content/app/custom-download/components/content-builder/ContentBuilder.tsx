@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import set from 'lodash/set';
+import set from 'lodash/fp/set';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
@@ -69,21 +69,14 @@ const ContentBuilder = (props: ContentBuilderProps) => {
     path: (string | number)[],
     payload: PrimitiveOrArrayValue
   ) => {
-    const newSelectedData = { ...props.selectedData };
-
-    set(newSelectedData, path, payload);
-
-    props.onChange(newSelectedData);
+    props.onChange(set(path, payload, props.selectedData));
   };
 
   const onUiChangeHandler = (
     path: (string | number)[],
     payload: PrimitiveOrArrayValue
   ) => {
-    const updatedUi = { ...props.uiState };
-    set(updatedUi, path, payload);
-
-    props.onUiChange(updatedUi);
+    props.onUiChange(set(path, payload, props.uiState));
   };
 
   const buildCheckboxWithSelect = (
@@ -166,13 +159,17 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       return null;
     }
 
-    const newSelectedData = { ...props.selectedData };
+    let newSelectedData = { ...props.selectedData };
     const gridOptions = [...entry.options] as CheckboxGridOption[];
     let shouldUpdateSelectedData = false;
 
     gridOptions.forEach((option) => {
       if (option.isChecked && selectedOptions[option.id] === undefined) {
-        set(newSelectedData, [...currentPath, option.id], true);
+        newSelectedData = set(
+          [...currentPath, option.id],
+          true,
+          newSelectedData
+        );
         shouldUpdateSelectedData = true;
       }
     });
