@@ -174,7 +174,10 @@ const ContentBuilder = (props: ContentBuilderProps) => {
       }
     });
     if (shouldUpdateSelectedData) {
-      props.onChange(newSelectedData);
+      // Rhe setTimeout below is a temporary hack.
+      // Running props.onChange(newSelectedData) synchronously causes the redux wrapper component
+      // to immediately try to re-render; which produces errors in the console in dev mode
+      setTimeout(() => props.onChange(newSelectedData), 0);
     }
 
     const gridClone = gridOptions.map((option) => {
