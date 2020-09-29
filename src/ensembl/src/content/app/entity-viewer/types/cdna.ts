@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-export type CDS = {
+export type CDNA = {
   start: number;
   end: number;
-  relative_start: number;
-  relative_end: number;
-  protein_length: number;
-  nucleotide_length: number;
+  length: number;
 };

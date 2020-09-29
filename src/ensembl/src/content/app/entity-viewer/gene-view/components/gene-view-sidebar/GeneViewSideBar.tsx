@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
 import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
@@ -30,19 +29,14 @@ type Props = {
   activeTabName: SidebarTabName | null;
 };
 
-const client = new ApolloClient({
-  uri: '/thoas',
-  cache: new InMemoryCache()
-});
-
 const GeneViewSidebar = (props: Props) => {
   return (
-    <ApolloProvider client={client}>
+    <>
       {props.activeTabName === SidebarTabName.OVERVIEW && <GeneOverview />}
       {props.activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
         <GeneExternalReferences />
       )}
-    </ApolloProvider>
+    </>
   );
 };
 

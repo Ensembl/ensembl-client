@@ -39,7 +39,10 @@ type Props = {
 const ProteinsListItem = (props: Props) => {
   const { transcript, trackLength } = props;
 
-  const toggleListItemInfo = () => props.toggleExpandedProtein(transcript.id);
+  const toggleListItemInfo = () =>
+    props.toggleExpandedProtein(transcript.stable_id);
+
+  const { cds, product } = transcript.product_generating_contexts[0];
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -47,23 +50,21 @@ const ProteinsListItem = (props: Props) => {
     <>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
-        {transcript.cds && (
-          <div onClick={toggleListItemInfo} className={midStyles}>
-            <div>{transcript.cds.protein_length} aa</div>
-            <div>Protein description from UniProt</div>
-            <div>{transcript.cds.protein_id}</div>
-          </div>
-        )}
+        <div onClick={toggleListItemInfo} className={midStyles}>
+          <div>{cds?.protein_length} aa</div>
+          <div>Protein description from UniProt</div>
+          <div>{product?.stable_id}</div>
+        </div>
         <div
           className={transcriptsListStyles.right}
           onClick={toggleListItemInfo}
         >
-          <span className={styles.transcriptId}>{props.transcript.id}</span>
+          <span className={styles.transcriptId}>{transcript.stable_id}</span>
         </div>
       </div>
-      {props.expandedTranscriptIds.includes(transcript.id) ? (
+      {props.expandedTranscriptIds.includes(transcript.stable_id) ? (
         <ProteinsListItemInfo
-          transcriptId={transcript.id}
+          transcript={transcript}
           trackLength={trackLength}
         />
       ) : null}

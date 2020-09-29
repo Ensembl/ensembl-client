@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
-
 import {
   Slice,
   SliceWithLocationOnly
 } from 'src/content/app/entity-viewer/types/slice';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { ProductType } from 'src/content/app/entity-viewer/types/product';
 
 export const getFeatureCoordinates = (feature: {
   slice: SliceWithLocationOnly;
@@ -36,58 +35,64 @@ export const getRegionName = (feature: { slice: Slice }) =>
 export const getFeatureStrand = (feature: { slice: Slice }) =>
   feature.slice.region.strand.code;
 
-export const getBiotype = (feature: Gene | Transcript) =>
-  feature.so_term || feature.biotype;
-
 // FIXME: remove this when we can get the length from the API
 export const getFeatureLength = (feature: { slice: Slice }) => {
-  const { start, end } = getFeatureCoordinates(feature);
-  const strandCode = getFeatureStrand(feature);
-  return strandCode === 'forward' ? end - start + 1 : start - end + 1;
+  return feature.slice.location.length;
 };
 
-export const getFirstAndLastCodingExonIndexes = (transcript: Transcript) => {
-  const { exons, cds } = transcript;
-  let firstCodingExonIndex = 0;
-  let lastCodingExonIndex = exons.length - 1;
+export const isProteinCodingTranscript = (transcript: Transcript) => {
+  const { product_generating_contexts } = transcript;
+  const firstProductGeneratingContext = product_generating_contexts[0];
 
-  if (cds) {
-    firstCodingExonIndex = exons.findIndex((exon) => {
-      const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-      return exonStart <= cds.start && exonEnd >= cds.start;
-    });
-
-    lastCodingExonIndex = exons.findIndex((exon) => {
-      const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
-      return exonStart <= cds.end && exonEnd >= cds.end;
-    });
-  }
-
-  return {
-    firstCodingExonIndex,
-    lastCodingExonIndex
-  };
-};
-
-export const getNumberOfCodingExons = (transcript: Transcript) => {
-  const {
-    firstCodingExonIndex,
-    lastCodingExonIndex
-  } = getFirstAndLastCodingExonIndexes(transcript);
-  return getCommaSeparatedNumber(
-    lastCodingExonIndex - firstCodingExonIndex + 1
+  return (
+    firstProductGeneratingContext &&
+    firstProductGeneratingContext.product_type === ProductType.PROTEIN
   );
 };
 
+export const getNumberOfCodingExons = (transcript: Transcript) => {
+  if (!isProteinCodingTranscript(transcript)) {
+    return 0;
+  }
+  const { product_generating_contexts, spliced_exons } = transcript;
+  const firstProductGeneratingContext = product_generating_contexts[0];
+
+  const { phased_exons } = firstProductGeneratingContext;
+  // coding exons will have a phase that is different from -1
+  return phased_exons
+    .filter(
+      ({ start_phase, end_phase }) => start_phase !== -1 || end_phase !== -1
+    )
+    .filter((phasedExon) => {
+      // to exclude the unlikely chance of trans-splicing,
+      // check that all phased exons actually belong to this transcript
+      return spliced_exons.find(
+        (splicedExon) =>
+          splicedExon.exon.stable_id === phasedExon.exon.stable_id
+      );
+    }).length;
+};
+
+export const getProductAminoAcidLength = (transcript: Transcript) => {
+  if (!isProteinCodingTranscript(transcript)) {
+    return 0;
+  }
+  const { product_generating_contexts } = transcript;
+  const firstProductGeneratingContext = product_generating_contexts[0];
+
+  // TODO: use product.length directly when api response becomes more reliable
+  return firstProductGeneratingContext.cds?.protein_length;
+};
+
 export const getSplicedRNALength = (transcript: Transcript) =>
-  transcript.exons.reduce((length, exon) => {
-    const { start, end } = getFeatureCoordinates(exon);
-    return length + (end - start + 1);
+  transcript.spliced_exons.reduce((length, { exon }) => {
+    return length + exon.slice.location.length;
   }, 0);
 
 export const getLongestProteinLength = (gene: Gene) => {
   const proteinLengths = gene.transcripts.map(
-    (transcript) => transcript.cds?.protein_length || 0
+    (transcript) =>
+      transcript.product_generating_contexts[0]?.cds?.protein_length || 0
   );
 
   return Math.max(...proteinLengths);

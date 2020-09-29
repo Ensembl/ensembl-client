@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-export type CDS = {
-  start: number;
-  end: number;
-  relative_start: number;
-  relative_end: number;
-  protein_length: number;
-  nucleotide_length: number;
+import { Product, ProductType } from './product';
+import { PhasedExon } from './exon';
+import { CDS } from './cds';
+import { UTR } from './utr';
+import { CDNA } from './cdna';
+
+// TODO: have at least two types of product-generating contexts:
+// one for when product is a protein, and another for when product is an RNA
+export type ProductGeneratingContext = {
+  product_type: ProductType;
+  default: boolean;
+  cds: CDS | null;
+  five_prime_utr: UTR | null;
+  three_prime_utr: UTR | null;
+  product: Product;
+  phased_exons: PhasedExon[];
+  cdna: CDNA;
 };

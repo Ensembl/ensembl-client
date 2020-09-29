@@ -42,7 +42,7 @@ describe('<UnsplicedTranscript />', () => {
   it('renders the correct number of exons', () => {
     const wrapper = render(<UnsplicedTranscript {...minimalProps} />);
     expect(wrapper.find('.exon').length).toBe(
-      minimalProps.transcript.exons.length
+      minimalProps.transcript.spliced_exons.length
     );
   });
 });

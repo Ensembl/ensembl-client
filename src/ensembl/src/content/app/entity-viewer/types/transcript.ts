@@ -15,20 +15,27 @@
  */
 
 import { Slice } from './slice';
-import { Exon } from './exon';
-import { CDS } from './cds';
-import { Source } from './source';
-import { Product } from './product';
+import { SplicedExon } from './exon';
+import { ProductGeneratingContext } from './productGeneratingContext';
+import { LocationWithinRegion } from './location';
+
+/**
+ * NOTE:
+ * - According to CDM, the Transcript type should have a `type` files with the value "Transcript"
+ *   (this should help with mixed responses, e.g. with search). But at the moment,
+ *   the backend is not including this field in the response.
+ * - There are ongoing conversations about the `so_term` and `biotype` field.
+ *   We want the biotype; but it's not currently available; so we are using so_term instead
+ */
 
 export type Transcript = {
-  type: 'Transcript';
-  id: string;
+  stable_id: string;
+  unversioned_stable_id: string;
+  version: number | null;
   symbol: string;
-  so_term: string; // is there a better name for it?
-  biotype?: string; // either this or so_term above need to be removed in the future
+  so_term: string;
   slice: Slice;
-  exons: Exon[];
-  cds: CDS | null;
-  product: Product | null;
-  xrefs?: Source[];
+  relative_location: LocationWithinRegion;
+  spliced_exons: SplicedExon[];
+  product_generating_contexts: ProductGeneratingContext[];
 };

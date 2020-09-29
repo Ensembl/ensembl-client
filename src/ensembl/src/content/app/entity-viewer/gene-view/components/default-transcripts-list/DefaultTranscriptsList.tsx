@@ -71,10 +71,10 @@ const DefaultTranscriptslist = (props: Props) => {
         <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => {
           const expandTranscript = props.expandedTranscriptIds.includes(
-            transcript.id
+            transcript.stable_id
           );
           const expandDownload = props.expandedTranscriptDownloadIds.includes(
-            transcript.id
+            transcript.stable_id
           );
 
           return (

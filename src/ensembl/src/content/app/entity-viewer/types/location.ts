@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-export type CDS = {
+// naming this type LocationWithinRegion rather than simply Location
+// to avoid clashes with the web api Location interface
+export type LocationWithinRegion = {
   start: number;
   end: number;
-  relative_start: number;
-  relative_end: number;
-  protein_length: number;
-  nucleotide_length: number;
+  length: number;
 };

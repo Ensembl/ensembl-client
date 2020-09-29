@@ -69,13 +69,9 @@ describe('<TranscriptsListItemInfo /', () => {
    * 2) we will check that protein product is present on a transcript instead of looking at CDS
    */
   it('displays amino acid length when transcript has CDS', () => {
-    const totalExonsLength = defaultProps.transcript.exons.reduce(
-      (sum, exon) => {
-        return sum + exon.slice.location.end - exon.slice.location.start + 1;
-      },
-      0
-    );
-    const expectedProteinLength = Math.floor(totalExonsLength / 3);
+    const expectedProteinLength =
+      defaultProps.transcript.product_generating_contexts[0].cds
+        ?.protein_length;
     expect(wrapper.find('.topMiddle strong').text()).toMatch(
       `${expectedProteinLength}`
     );

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { LocationWithinRegion } from './location';
+
 export type ProteinDomainsResources = {
   [name_of_resource: string]: {
     name: string;
@@ -36,12 +38,26 @@ export type ProteinDomainsResources = {
 };
 
 export enum ProductType {
-  PROTEIN = 'protein'
+  PROTEIN = 'Protein'
 }
 
+// TODO: have at least two types of products:
+// one for protein, the other for RNA
 export type Product = {
   type: ProductType;
   stable_id: string;
+  unversioned_stable_id: string;
+  version: number | null;
+  so_term: string;
   length: number;
-  protein_domains_resources: ProteinDomainsResources;
+  protein_domains: ProteinDomain[];
+  // protein_domains_resources: ProteinDomainsResources;
+};
+
+export type ProteinDomain = {
+  id: string;
+  name: string;
+  resource_name: string;
+  location: LocationWithinRegion;
+  // there will be a couple of other properties coming from the api that we aren't interested in ATM
 };
