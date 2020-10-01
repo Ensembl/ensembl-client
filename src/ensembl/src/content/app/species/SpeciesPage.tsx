@@ -30,6 +30,7 @@ import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSide
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import { StandardAppLayout } from 'src/shared/components/layout';
+import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 
 import { RootState } from 'src/store';
 
