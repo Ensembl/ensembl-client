@@ -70,4 +70,26 @@ describe('<SelectedSpecies />', () => {
       );
     });
   });
+
+  describe('prop onClick', () => {
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('calls the onClick prop when clicked if species is enabled but inactive', () => {
+      propsObj.isActive = false;
+      propsObj.species.isEnabled = true;
+      const wrapper = renderSelectedSpecies(propsObj);
+      wrapper.simulate('click');
+      expect(propsObj.onClick).toBeCalled();
+    });
+
+    it('does not call the onClick prop when clicked if species is enabled and active', () => {
+      propsObj.isActive = true;
+      propsObj.species.isEnabled = true;
+      const wrapper = renderSelectedSpecies(propsObj);
+      wrapper.simulate('click');
+      expect(propsObj.onClick).not.toBeCalled();
+    });
+  });
 });
