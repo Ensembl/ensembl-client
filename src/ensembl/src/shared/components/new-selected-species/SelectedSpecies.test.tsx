@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
+import faker from 'faker';
 import { mount } from 'enzyme';
+import set from 'lodash/fp/set';
+import merge from 'lodash/fp/merge';
 
 import SelectedSpecies, {
   Props as SelectedSpeciesProps
@@ -23,7 +26,7 @@ import SelectedSpecies, {
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 const speciesData = {
-  genome_id: 'homo_sapiens38',
+  genome_id: faker.random.uuid(),
   reference_genome_id: null,
   common_name: 'Human',
   scientific_name: 'Homo sapiens',
@@ -31,7 +34,7 @@ const speciesData = {
   isEnabled: true
 };
 
-const propsObj = {
+const minimalProps = {
   species: speciesData as CommittedItem,
   isActive: true,
   onClick: jest.fn()
@@ -42,54 +45,52 @@ describe('<SelectedSpecies />', () => {
     mount(<SelectedSpecies {...speciesData} {...props} />);
 
   it('renders without error', () => {
-    expect(() => renderSelectedSpecies(propsObj)).not.toThrow();
+    expect(() => renderSelectedSpecies(minimalProps)).not.toThrow();
   });
 
   describe('lozenge', () => {
-    it('is active and enabled', () => {
-      const wrapper = renderSelectedSpecies(propsObj);
+    it('has correct classes whenactive and enabled', () => {
+      const wrapper = renderSelectedSpecies(minimalProps);
       expect(wrapper.children('div').hasClass('inUseActive')).toEqual(true);
     });
-    it('is active and not enabled', () => {
-      propsObj.species.isEnabled = false;
-      const wrapper = renderSelectedSpecies(propsObj);
+    it('has correct classes when active and not enabled', () => {
+      const props = set('species.isEnabled', false, minimalProps);
+      const wrapper = renderSelectedSpecies(props);
       expect(wrapper.children('div').hasClass('notInUseActive')).toEqual(true);
     });
-    it('is inactive and enabled', () => {
-      propsObj.isActive = false;
-      propsObj.species.isEnabled = true;
-      const wrapper = renderSelectedSpecies(propsObj);
+    it('has correct classes when inactive and enabled', () => {
+      const props = set('isActive', false, minimalProps);
+      const wrapper = renderSelectedSpecies(props);
       expect(wrapper.children('div').hasClass('inUseInactive')).toEqual(true);
     });
-    it('is inactive and disabled', () => {
-      propsObj.species.isEnabled = false;
-      propsObj.isActive = false;
-      const wrapper = renderSelectedSpecies(propsObj);
+    it('has correct classes when inactive and disabled', () => {
+      const props = merge(minimalProps, {
+        isActive: false,
+        species: { isEnabled: false }
+      });
+      const wrapper = renderSelectedSpecies(props);
       expect(wrapper.children('div').hasClass('notInUseInactive')).toEqual(
         true
       );
     });
   });
 
-  describe('prop onClick', () => {
+  describe('behaviour', () => {
     afterEach(() => {
       jest.resetAllMocks();
     });
 
-    it('calls the onClick prop when clicked if species is enabled but inactive', () => {
-      propsObj.isActive = false;
-      propsObj.species.isEnabled = true;
-      const wrapper = renderSelectedSpecies(propsObj);
+    it('responds to clicks when inactive', () => {
+      const props = set('isActive', false, minimalProps);
+      const wrapper = renderSelectedSpecies(props);
       wrapper.simulate('click');
-      expect(propsObj.onClick).toBeCalled();
+      expect(props.onClick).toHaveBeenCalledWith(speciesData.genome_id);
     });
 
-    it('does not call the onClick prop when clicked if species is enabled and active', () => {
-      propsObj.isActive = true;
-      propsObj.species.isEnabled = true;
-      const wrapper = renderSelectedSpecies(propsObj);
+    it('does not respond to clicks when active', () => {
+      const wrapper = renderSelectedSpecies(minimalProps);
       wrapper.simulate('click');
-      expect(propsObj.onClick).not.toBeCalled();
+      expect(minimalProps.onClick).not.toHaveBeenCalled();
     });
   });
 });
