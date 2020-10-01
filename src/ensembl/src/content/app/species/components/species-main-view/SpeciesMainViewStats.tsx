@@ -25,17 +25,16 @@ import {
   getActiveGenomeStats
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
-import {
-  fetchStatsForActiveGenome,
-  sectionGroupsMap
-} from 'src/content/app/species/state/general/speciesGeneralSlice';
+import { fetchStatsForActiveGenome } from 'src/content/app/species/state/general/speciesGeneralSlice';
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
 
 import { RootState } from 'src/store';
+import { GenomeStats } from '../../state/general/speciesGeneralSlice';
+
 import {
-  GenomeStats,
-  StatsSection
-} from '../../state/general/speciesGeneralSlice';
+  StatsSection,
+  sectionGroupsMap
+} from '../../state/general/speciesGeneralHelper';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesMainView.scss';
@@ -96,7 +95,7 @@ const getExpandedContent = (statsSection: StatsSection) => {
   const { exampleLinkText } = sectionGroupsMap[section];
   return (
     <div className={styles.expandedContent}>
-      {groups.map((group, group_index) => {
+      {groups.map((group, group_index: number) => {
         const { title, stats } = group;
         const primaryStatsClassName = classNames(styles.primaryStats, {
           [styles.primaryStatsNoLink]: !exampleLink
@@ -107,7 +106,7 @@ const getExpandedContent = (statsSection: StatsSection) => {
           <div key={group_index} className={primaryOrSecondaryClassName}>
             <span className={styles.title}>{title}</span>
             <div className={styles.stats}>
-              {stats.map((stat, stat_index) => {
+              {stats.map((stat, stat_index: number) => {
                 return <SpeciesStats key={stat_index} {...stat} />;
               })}
             </div>

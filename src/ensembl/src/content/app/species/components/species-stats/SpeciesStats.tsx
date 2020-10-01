@@ -22,6 +22,7 @@ import defaultStyles from './SpeciesStats.scss';
 type PrimaryDataProps = {
   primaryValue: string;
   primaryUnit?: string;
+  primaryValuePostfix?: string;
 };
 
 type PropsWithSecondaryData = {
@@ -41,6 +42,7 @@ type ClassNamesProps = {
     label?: string;
     primaryValue?: string;
     primaryUnit?: string;
+    primaryValuePostfix?: string;
     secondaryValue?: string;
     secondaryUnit?: string;
     link?: string;
@@ -88,7 +90,10 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
       <div className={styles.label}>{props.label}</div>
 
       <div>
-        <span className={styles.primaryValue}>{props.primaryValue}</span>
+        <span className={styles.primaryValue}>
+          {props.primaryValue}
+          {props.primaryValuePostfix || null}
+        </span>
         {props.primaryUnit && (
           <span className={styles.primaryUnit}>{props.primaryUnit}</span>
         )}

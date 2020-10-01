@@ -56,7 +56,7 @@ const SpeciesPage = () => {
 
   // useEffect(() => {
   //   console.log(currentSpecies)
-  //   if (currentSpecies) {
+  //   if (!currentSpecies) {
   //     dispatch(fetchGenomeData(genomeId));
   //   }
   // }, [genomeId, currentSpecies]);

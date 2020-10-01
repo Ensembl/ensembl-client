@@ -23,7 +23,7 @@
 .collapsedContent{
   display: grid;
   padding:6px 20px;
-  grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 200px;
+  grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 150px;
   align-items: center;
 
   .title{
@@ -69,7 +69,7 @@
 .primaryStats{
   padding: 13px 20px 0;
   display: grid;
-  grid-template-columns: [title] 120px [stats] auto [example-link] 200px;
+  grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
   align-items: flex-start;
 
   &NoLink{
