@@ -34,8 +34,6 @@ import {
 } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 
-// import { RootState } from 'src/store';
-
 type SpeciesPageParams = {
   genomeId: string;
 };
