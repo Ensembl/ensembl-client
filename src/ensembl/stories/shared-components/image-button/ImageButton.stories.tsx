@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import classNames from 'classnames';
 
 import ImageButton, {
@@ -28,11 +27,6 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './ImageButton.stories.scss';
 
-const trackPanelButtonStories = storiesOf(
-  'Components|Shared Components',
-  module
-);
-
 const icon = {
   image: DownloadIcon,
   imageName: 'ImageButton',
@@ -40,7 +34,7 @@ const icon = {
   imageClass: ''
 };
 
-trackPanelButtonStories.add(icon.imageName, () => {
+export const ImageButtonStory = () => {
   const [status, setStatus] = useState(Status.DEFAULT);
 
   const toggleImage = () => {
@@ -125,4 +119,10 @@ trackPanelButtonStories.add(icon.imageName, () => {
       </div>
     </>
   );
-});
+};
+
+ImageButtonStory.storyName = 'default';
+
+export default {
+  title: 'Components/Shared Components/ImageButton'
+};

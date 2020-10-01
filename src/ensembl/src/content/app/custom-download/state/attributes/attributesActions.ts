@@ -20,15 +20,18 @@ import { ActionCreator, Action } from 'redux';
 import findIndex from 'lodash/findIndex';
 import set from 'lodash/set';
 
-import { RootState } from 'src/store';
 import { orthologueSpecies as sampleOrthologueSpecies } from 'src/content/app/custom-download/sample-data/orthologue';
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
-import { AttributeWithOptions } from 'src/content/app/custom-download/types/Attributes';
+import { updateActiveConfigurationForGenome } from 'src/content/app/custom-download/state/customDownloadActions';
+
+import {
+  Attributes,
+  AttributeWithOptions
+} from 'src/content/app/custom-download/types/Attributes';
 import JSONValue from 'src/shared/types/JSON';
 import { CheckboxGridOption } from 'src/content/app/custom-download/components/checkbox-grid/CheckboxGrid';
 import Species from 'src/content/app/custom-download/types/Species';
-
-import { updateActiveConfigurationForGenome } from 'src/content/app/custom-download/state/customDownloadActions';
+import { RootState } from 'src/store';
 
 import {
   getCustomDownloadActiveGenomeId,
@@ -39,7 +42,7 @@ export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-request',
   'custom-download/set-attributes-success',
   'custom-download/set-attributes-failure'
-)<undefined, {}, Error>();
+)<undefined, Attributes, Error>();
 
 export const fetchAttributes: ActionCreator<ThunkAction<
   void,

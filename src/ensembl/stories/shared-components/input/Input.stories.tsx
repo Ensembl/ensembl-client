@@ -15,41 +15,67 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 import Input from 'src/shared/components/input/Input';
 
 import styles from './Input.stories.scss';
 
+type DefaultArgs = {
+  onChange: (...args: any) => void;
+};
+
 const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
   const { input: Input, ...otherProps } = props;
 
+  const onChange = (value: string) => {
+    setValue(value);
+    props.onChange(value);
+  };
+
   return (
     <div>
-      <Input value={value} onChange={setValue} {...otherProps} />
+      <Input value={value} {...otherProps} onChange={onChange} />
     </div>
   );
 };
 
-storiesOf('Components|Shared Components/Input', module)
-  .add('default', () => <Wrapper input={Input} />)
-  .add('with placeholder', () => (
-    <Wrapper input={Input} placeholder="Enter something..." />
-  ))
-  .add('with onFocus and onBlur', () => (
-    <Wrapper
-      input={Input}
-      placeholder="Enter something..."
-      onFocus={action('input-focus')}
-      onBlur={action('input-blur')}
-    />
-  ))
-  .add('styled via received classname', () => (
-    <Wrapper
-      input={Input}
-      placeholder="Enter something..."
-      className={styles.customizedInput}
-    />
-  ));
+export const DefaultInputStory = (args: DefaultArgs) => (
+  <Wrapper input={Input} {...args} />
+);
+
+DefaultInputStory.storyName = 'default';
+
+export const InputWithPlaceholderStory = (args: DefaultArgs) => (
+  <Wrapper input={Input} placeholder="Enter something..." {...args} />
+);
+
+InputWithPlaceholderStory.storyName = 'with placeholder';
+
+export const FocusAndBlurStory = (args: DefaultArgs) => (
+  <Wrapper
+    input={Input}
+    placeholder="Enter something..."
+    onFocus={() => args.onChange('input-focus')}
+    onBlur={() => args.onChange('input-blur')}
+    {...args}
+  />
+);
+
+FocusAndBlurStory.storyName = 'handling focus and blur';
+
+export const CustomInputStory = (args: DefaultArgs) => (
+  <Wrapper
+    input={Input}
+    placeholder="Enter something..."
+    className={styles.customizedInput}
+    {...args}
+  />
+);
+
+CustomInputStory.storyName = 'custom styling';
+
+export default {
+  title: 'Components/Shared Components/Input',
+  argTypes: { onChange: { action: 'changed' } }
+};

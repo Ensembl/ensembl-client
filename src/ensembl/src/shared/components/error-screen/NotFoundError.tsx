@@ -15,13 +15,31 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
 
-import InstantDownloadTranscriptStory from './InstantDownloadTranscript.stories';
+const NotFoundErrorScreen = () => {
+  const containerStyles = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh'
+  } as const;
 
-storiesOf('Components|Shared Components/InstantDownload', module).add(
-  'transcript',
-  () => {
-    return <InstantDownloadTranscriptStory />;
-  }
-);
+  const firstLineStyles = {
+    fontSize: '72px',
+    margin: 0
+  };
+
+  const secondLineStyles = {
+    fontSize: '32px'
+  };
+
+  return (
+    <div style={containerStyles}>
+      <p style={firstLineStyles}>404</p>
+      <p style={secondLineStyles}>page not found</p>
+    </div>
+  );
+};
+
+export default NotFoundErrorScreen;

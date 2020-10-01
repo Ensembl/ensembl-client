@@ -15,8 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 import faker from 'faker';
 
 import Panel from 'src/shared/components/panel/Panel';
@@ -24,8 +22,9 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
 import styles from './Panel.stories.scss';
 
-const onClose = () => {
-  action('panel-closed')();
+type DefaultArgs = {
+  onClose: (...args: any) => void;
+  onTabChange: (...args: any) => void;
 };
 
 const tabsData: Tab[] = [
@@ -42,12 +41,12 @@ const tabClassNames = {
   default: styles.defaultTab
 };
 
-const TabWrapper = () => {
-  const [selectedTab, setselectedTab] = useState('Proteins');
+const TabWrapper = (args: DefaultArgs) => {
+  const [selectedTab, setSelectedTab] = useState('Proteins');
 
   const onTabChange = (tab: string) => {
-    setselectedTab(tab);
-    action('selected-tab')(tab);
+    setSelectedTab(tab);
+    args.onTabChange(tab);
   };
 
   return (
@@ -60,63 +59,78 @@ const TabWrapper = () => {
   );
 };
 
-storiesOf('Components|Shared Components/Panel', module)
-  .add('default', () => (
-    <div className={styles.fullPageWrapper}>
-      <Panel header={'Default Panel'} onClose={onClose}>
-        <div>Panel Content</div>
-      </Panel>
-    </div>
-  ))
-  .add('full-page', () => (
-    <div className={styles.fullPageWrapper}>
-      <Panel
-        header={'Full Page Panel'}
-        onClose={onClose}
-        classNames={{
-          panel: styles.fullPagePanel
-        }}
-      >
-        <div>Panel Content</div>
-      </Panel>
-    </div>
-  ))
-  .add('with-tabs', () => {
-    return (
-      <div className={styles.fullPageWrapper}>
-        <Panel
-          header={<TabWrapper />}
-          onClose={onClose}
-          classNames={{
-            panel: styles.fullPagePanel
-          }}
-        >
-          <div>Panel Content</div>
-        </Panel>
-      </div>
-    );
-  })
-  .add('long-header', () => {
-    return (
-      <div className={styles.fullPageWrapper}>
-        <Panel header={<TabWrapper />} onClose={onClose}>
-          <div>{faker.lorem.paragraphs(100)}</div>
-        </Panel>
-      </div>
-    );
-  })
-  .add('long-content', () => {
-    return (
-      <div className={styles.fullPageWrapper}>
-        <Panel
-          header={<TabWrapper />}
-          onClose={onClose}
-          classNames={{
-            panel: styles.fullPagePanel
-          }}
-        >
-          <div>{faker.lorem.paragraphs(100)}</div>
-        </Panel>
-      </div>
-    );
-  });
+export const DefaultPanelStory = (args: DefaultArgs) => (
+  <div className={styles.fullPageWrapper}>
+    <Panel header={'Default Panel'} onClose={args.onClose}>
+      <div>Panel Content</div>
+    </Panel>
+  </div>
+);
+
+DefaultPanelStory.storyName = 'default';
+
+export const FullPagePanelStory = (args: DefaultArgs) => (
+  <div className={styles.fullPageWrapper}>
+    <Panel
+      header={'Full Page Panel'}
+      onClose={args.onClose}
+      classNames={{
+        panel: styles.fullPagePanel
+      }}
+    >
+      <div>Panel Content</div>
+    </Panel>
+  </div>
+);
+
+FullPagePanelStory.storyName = 'full-page';
+
+export const PanelWithTabsStory = (args: DefaultArgs) => (
+  <div className={styles.fullPageWrapper}>
+    <Panel
+      header={<TabWrapper {...args} />}
+      onClose={args.onClose}
+      classNames={{
+        panel: styles.fullPagePanel
+      }}
+    >
+      <div>Panel Content</div>
+    </Panel>
+  </div>
+);
+
+PanelWithTabsStory.storyName = 'with tabs';
+
+export const PanelWithLongHeaderStory = (args: DefaultArgs) => (
+  <div className={styles.fullPageWrapper}>
+    <Panel header={<TabWrapper {...args} />} onClose={args.onClose}>
+      <div>{faker.lorem.paragraphs(100)}</div>
+    </Panel>
+  </div>
+);
+
+PanelWithLongHeaderStory.storyName = 'long header';
+
+export const PanelWithLongContentStory = (args: DefaultArgs) => (
+  <div className={styles.fullPageWrapper}>
+    <Panel
+      header={<TabWrapper {...args} />}
+      onClose={args.onClose}
+      classNames={{
+        panel: styles.fullPagePanel
+      }}
+    >
+      <div>{faker.lorem.paragraphs(100)}</div>
+    </Panel>
+  </div>
+);
+
+PanelWithLongContentStory.storyName = 'long content';
+
+export default {
+  title: 'Components/Shared Components/Panel',
+  argTypes: {
+    onClose: { action: 'closed' },
+    onTabChange: { action: 'tab changed' }
+  }
+};

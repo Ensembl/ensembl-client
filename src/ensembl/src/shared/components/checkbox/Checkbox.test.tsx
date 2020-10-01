@@ -73,10 +73,10 @@ describe('<Checkbox />', () => {
 
   it('correctly applies classes passed from the parent', () => {
     const classesFromParent = {
-      checkboxHolder: faker.lorem.word(),
-      checked: faker.lorem.word(),
-      unchecked: faker.lorem.word(),
-      disabled: faker.lorem.word()
+      checkboxHolder: faker.random.uuid(),
+      checked: faker.random.uuid(),
+      unchecked: faker.random.uuid(),
+      disabled: faker.random.uuid()
     };
     const label = faker.lorem.words();
     const labelClassFromParent = faker.lorem.word();

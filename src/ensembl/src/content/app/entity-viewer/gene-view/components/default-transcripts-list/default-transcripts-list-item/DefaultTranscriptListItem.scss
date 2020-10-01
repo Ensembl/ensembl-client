@@ -1,5 +1,4 @@
 @import 'src/styles/settings';
-@import '../constants';
 
 .defaultTranscriptListItem {
   svg rect {
@@ -11,4 +10,15 @@
 .transcriptId {
   color: $blue;
   cursor: pointer;
+}
+
+.defaultTranscriptLabel {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  line-height: 1;
+
+  > span {
+    margin-right: 10px;
+  }
 }

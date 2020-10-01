@@ -14,5 +14,26 @@
  * limitations under the License.
  */
 
-import './colours/Colours.stories';
-import './typography/Typography.stories';
+import { createSlice } from '@reduxjs/toolkit';
+
+type SpeciesPageSidebarState = {
+  isOpen: boolean;
+};
+
+const initialState: SpeciesPageSidebarState = {
+  isOpen: true
+};
+
+const speciesPageSidebarSlice = createSlice({
+  name: 'species-page-sidebar',
+  initialState,
+  reducers: {
+    toggleSidebar(state) {
+      state.isOpen = !state.isOpen;
+    }
+  }
+});
+
+export const { toggleSidebar } = speciesPageSidebarSlice.actions;
+
+export default speciesPageSidebarSlice.reducer;

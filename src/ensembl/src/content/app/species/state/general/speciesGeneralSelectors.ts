@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-import './use-outside-click/useOutsideClick.stories';
+import { RootState } from 'src/store';
+
+export const getActiveGenomeId = (state: RootState) =>
+  state.speciesPage.general.activeGenomeId;

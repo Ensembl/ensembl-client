@@ -15,9 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 import times from 'lodash/times';
-import { action } from '@storybook/addon-actions';
 
 import Select, {
   Option,
@@ -27,6 +25,10 @@ import Select, {
 import selectNotes from './select.md';
 
 import styles from './Select.stories.scss';
+
+type DefaultArgs = {
+  onSelect: (...args: any) => void;
+};
 
 const createSimpleOption = (number: number): Option => ({
   value: number,
@@ -42,7 +44,7 @@ const WrapperForOptions = (props: any) => {
   const [options, setOptions] = useState(props.options);
 
   const onSelect = (selectedValue: number) => {
-    action(`selected: ${selectedValue}`)();
+    props.onSelect(selectedValue);
 
     const updatedOptions = options.map((option: Option) => ({
       ...option,
@@ -62,7 +64,7 @@ const WrapperForOptionGroups = (props: any) => {
   const [optionGroups, setOptionGroups] = useState(props.optionGroups);
 
   const onSelect = (selectedValue: number) => {
-    action(`selected: ${selectedValue}`)();
+    props.onSelect(selectedValue);
 
     const updatedOptionGroups = optionGroups.map((group: OptionGroup) => ({
       ...group,
@@ -82,32 +84,43 @@ const WrapperForOptionGroups = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/Select', module)
-  .add(
-    'default',
-    () => <WrapperForOptions options={createSimpleOptions(5)} />,
-    { notes: selectNotes }
-  )
-  .add('long list of options', () => {
-    const options = createSimpleOptions(50);
-    const longOption = {
-      value: 'long option value',
-      label: 'this is some ridiculously long text for an option',
-      isSelected: false
-    };
-    options.splice(10, 0, longOption);
+export const DefaultSelectStory = (args: DefaultArgs) => (
+  <WrapperForOptions options={createSimpleOptions(5)} {...args} />
+);
 
-    return <WrapperForOptions options={options} />;
-  })
-  .add('groups of options', () => {
-    const options1 = createSimpleOptions(2);
-    const options2 = createSimpleOptions(3);
-    const options3 = createSimpleOptions(4);
-    const optionGroups = [
-      { options: options1 },
-      { options: options2 },
-      { options: options3 }
-    ];
+DefaultSelectStory.storyName = 'default';
+DefaultSelectStory.parameters = { notes: selectNotes };
 
-    return <WrapperForOptionGroups optionGroups={optionGroups} />;
-  });
+export const ManyOptionsSelectStory = (args: DefaultArgs) => {
+  const options = createSimpleOptions(50);
+  const longOption = {
+    value: 'long option value',
+    label: 'this is some ridiculously long text for an option',
+    isSelected: false
+  };
+  options.splice(10, 0, longOption);
+
+  return <WrapperForOptions options={options} {...args} />;
+};
+
+ManyOptionsSelectStory.storyName = 'long list of options';
+
+export const GroupedOptionsStory = (args: DefaultArgs) => {
+  const options1 = createSimpleOptions(2);
+  const options2 = createSimpleOptions(3);
+  const options3 = createSimpleOptions(4);
+  const optionGroups = [
+    { options: options1 },
+    { options: options2 },
+    { options: options3 }
+  ];
+
+  return <WrapperForOptionGroups optionGroups={optionGroups} {...args} />;
+};
+
+GroupedOptionsStory.storyName = 'groups of options';
+
+export default {
+  title: 'Components/Shared Components/Select',
+  argTypes: { onSelect: { action: 'selected' } }
+};

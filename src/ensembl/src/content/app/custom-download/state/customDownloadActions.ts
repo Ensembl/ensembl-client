@@ -129,7 +129,7 @@ export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-request',
   'custom-download/preview-results-success',
   'custom-download/preview-results-failure'
-)<{ endpointURL: string; headers: {} }, JSONValue, Error>();
+)<undefined, JSONValue, Error>();
 
 export const fetchPreviewResult: ActionCreator<ThunkAction<
   void,

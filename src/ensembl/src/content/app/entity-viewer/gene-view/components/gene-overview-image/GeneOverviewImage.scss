@@ -1,9 +1,10 @@
 @import 'src/styles/common';
+@import 'src/content/app/entity-viewer/gene-view/styles/constants';
 
 .container {
   color: white;
   display: grid;
-  grid-template-columns: 160px 18px 695px 27px 180px;
+  grid-template-columns: $left_column $middle_column_left_gap $middle_column $middle_column_right_gap $right_column;
 }
 
 .containerSVG {

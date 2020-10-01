@@ -130,79 +130,64 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     });
   }, [applyToAll, updateApplyToAll]);
 
-  const checkboxStyles = {
-    checkboxHolder: styles.allTracks
-  };
-
   return (
-    <section className={styles.trackConfig} ref={ref}>
-      <dl>
-        <dd>
-          <Checkbox
-            classNames={checkboxStyles}
-            label="All tracks"
-            checked={applyToAll}
-            onChange={applyToAllToggle}
-          />
-        </dd>
-      </dl>
-      <dl>
-        <dd>
+    <div className={styles.trackConfig} ref={ref}>
+      <div className={styles.section}>
+        <Checkbox
+          label="All tracks"
+          checked={applyToAll}
+          onChange={applyToAllToggle}
+        />
+      </div>
+      <div className={styles.section}>
+        <div className={styles.toggleWrapper}>
           <label>Track name</label>
           <SlideToggle
             isOn={shouldShowTrackName}
             onChange={toggleName}
             className={styles.slideToggle}
           />
-        </dd>
-        <dd>
+        </div>
+        <div className={styles.toggleWrapper}>
           <label>Feature labels</label>
           <SlideToggle
             isOn={shouldShowTrackLabels}
             onChange={toggleLabel}
             className={styles.slideToggle}
           />
-        </dd>
-        <dd className={styles.heightSwitcher}>
-          <div className={styles.trackHeightIcon}>
-            <ImageButton
-              status={Status.DISABLED}
-              image={browserTrackConfig.trackHeightIcon.icon}
-              description={browserTrackConfig.trackHeightIcon.description}
-            />
-          </div>
-        </dd>
-      </dl>
-      <dl>
-        <dd className={styles.trackLock}>
-          <div className={styles.trackLockIcon}>
-            <ImageButton
-              status={Status.DISABLED}
-              image={browserTrackConfig.trackLockIcon.icon}
-              description={browserTrackConfig.trackLockIcon.description}
-            />
-          </div>
-        </dd>
-        <dd>
-          <div className={styles.trackHighlightIcon}>
-            <ImageButton
-              status={Status.DISABLED}
-              image={browserTrackConfig.trackHighlightIcon.icon}
-              description={browserTrackConfig.trackHighlightIcon.description}
-            />
-          </div>
-        </dd>
-        <dd>
-          <div className={styles.trackMoveIcon}>
-            <ImageButton
-              status={Status.DISABLED}
-              image={browserTrackConfig.trackMoveIcon.icon}
-              description={browserTrackConfig.trackMoveIcon.description}
-            />
-          </div>
-        </dd>
-      </dl>
-    </section>
+        </div>
+        <div className={styles.trackHeightIcon}>
+          <ImageButton
+            status={Status.DISABLED}
+            image={browserTrackConfig.trackHeightIcon.icon}
+            description={browserTrackConfig.trackHeightIcon.description}
+          />
+        </div>
+      </div>
+      <div className={styles.section}>
+        <div className={styles.trackLockIcon}>
+          <ImageButton
+            status={Status.DISABLED}
+            image={browserTrackConfig.trackLockIcon.icon}
+            description={browserTrackConfig.trackLockIcon.description}
+          />
+        </div>
+        <div className={styles.trackHighlightIcon}>
+          <ImageButton
+            status={Status.DISABLED}
+            image={browserTrackConfig.trackHighlightIcon.icon}
+            description={browserTrackConfig.trackHighlightIcon.description}
+          />
+        </div>
+        <div className={styles.trackMoveIcon}>
+          <ImageButton
+            status={Status.DISABLED}
+            image={browserTrackConfig.trackMoveIcon.icon}
+            description={browserTrackConfig.trackMoveIcon.description}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

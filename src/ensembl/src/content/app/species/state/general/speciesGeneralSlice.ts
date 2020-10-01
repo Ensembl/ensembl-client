@@ -14,4 +14,26 @@
  * limitations under the License.
  */
 
-import './StaticImages.stories';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+type SpeciesGeneralState = {
+  activeGenomeId: string | null;
+};
+
+const initialState: SpeciesGeneralState = {
+  activeGenomeId: null
+};
+
+const speciesGeneralSlice = createSlice({
+  name: 'species-page-general',
+  initialState,
+  reducers: {
+    setActiveGenomeId(state, action: PayloadAction<string>) {
+      state.activeGenomeId = action.payload;
+    }
+  }
+});
+
+export const { setActiveGenomeId } = speciesGeneralSlice.actions;
+
+export default speciesGeneralSlice.reducer;

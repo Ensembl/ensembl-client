@@ -14,4 +14,30 @@
  * limitations under the License.
  */
 
-import './chromosome-navigator/ChromosomeNavigator.stories';
+export const human38stats = {
+  assembly_stats: {
+    chromosome_count: 23,
+    genome_size: 3096649726,
+    total_sequence_length: 4537931177
+  },
+  coding_gene_stats: {
+    total_count: 20440,
+    readthrough_gene_count: 633,
+    transcript_count: 127718
+  },
+  noncoding_gene_stats: {
+    total_count: 23995,
+    readthrough_gene_count: 306,
+    small_non_coding_gene_count: 4867,
+    long_non_coding_gene_count: 16907,
+    other_non_coding_gene_count: 2221
+  },
+  pseudogene_stats: {
+    total_count: 15222,
+    readthrough_gene_count: 6
+  },
+  variation_stats: {
+    short_variant_count: 677695965,
+    structural_variant_count: 6638628
+  }
+};

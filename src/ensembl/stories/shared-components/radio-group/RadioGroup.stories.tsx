@@ -17,10 +17,13 @@
 import React, { useState } from 'react';
 
 import RadioGroup, {
-  RadioOptions
+  RadioOptions,
+  OptionValue
 } from 'src/shared/components/radio-group/RadioGroup';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+
+type DefaultArgs = {
+  onChange: (...args: any) => void;
+};
 
 const radioData: RadioOptions = [
   { value: 'default', label: 'Default' },
@@ -28,29 +31,28 @@ const radioData: RadioOptions = [
   { value: 'length_shortest', label: 'Spliced length: shortest - longest' }
 ];
 
-const Wrapper = (props: any) => {
-  const [selectedRadio, setselectedRadio] = useState('default');
+export const RadioGroupStory = (args: DefaultArgs) => {
+  const [selectedRadio, setSelectedRadio] = useState<OptionValue>('default');
 
-  const handleOnchange = (value: string) => {
-    setselectedRadio(value);
-    action('radio-clicked')(value);
+  const handleChange = (value: OptionValue) => {
+    setSelectedRadio(value);
+    args.onChange(value);
   };
 
   return (
     <div>
       <RadioGroup
-        {...props}
         options={radioData}
-        onChange={handleOnchange}
+        onChange={handleChange}
         selectedOption={selectedRadio}
       ></RadioGroup>
     </div>
   );
 };
 
-storiesOf('Components|Shared Components/RadioGroup', module).add(
-  'default',
-  () => {
-    return <Wrapper />;
-  }
-);
+RadioGroupStory.storyName = 'default';
+
+export default {
+  title: 'Components/Shared Components/RadioGroup',
+  argTypes: { onChange: { action: 'changed' } }
+};

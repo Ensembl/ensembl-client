@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .proteinSummary {
   margin-left: 178px;
   width: 695px;
@@ -5,6 +7,14 @@
   > div {
     padding: 10px 0 10px 0;
   }
+}
+
+.keyline {
+  border-bottom: 1px solid $orange;
+  width: 695px;
+  padding: 0;
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
 .proteinSummaryTop {

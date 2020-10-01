@@ -16,17 +16,16 @@
 
 import React from 'react';
 import { mount } from 'enzyme';
+import { MemoryRouter, Redirect, useLocation } from 'react-router-dom';
 
 import { Root } from './Root';
-import Header from '../header/Header';
-import Content from '../content/Content';
+import App from '../content/app/App';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
-jest.mock('../header/Header', () => () => 'Header');
-jest.mock('../content/Content', () => () => 'Content');
+jest.mock('../content/app/App', () => () => 'App');
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
@@ -40,7 +39,11 @@ describe('<Root />', () => {
     breakpointWidth: 0,
     updateBreakpointWidth: updateBreakpointWidth
   };
-  const getRenderedRoot = (props: any) => <Root {...props} />;
+  const getRenderedRoot = (props: any) => (
+    <MemoryRouter>
+      <Root {...props} />
+    </MemoryRouter>
+  );
 
   beforeEach(() => {
     jest
@@ -53,19 +56,15 @@ describe('<Root />', () => {
     jest.resetAllMocks();
   });
 
-  test('contains Header', () => {
-    expect(wrapper.contains(<Header />)).toBe(true);
+  it('contains App', () => {
+    expect(wrapper.contains(<App />)).toBe(true);
   });
 
-  test('contains Content', () => {
-    expect(wrapper.contains(<Content />)).toBe(true);
-  });
-
-  test('calls updateBreakpointWidth on mount', () => {
+  it('calls updateBreakpointWidth on mount', () => {
     expect(updateBreakpointWidth).toHaveBeenCalled();
   });
 
-  test('shows privacy banner if privacy policy version is not set or if version does not match', () => {
+  it('shows privacy banner if privacy policy version is not set or if version does not match', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => true);
@@ -74,12 +73,30 @@ describe('<Root />', () => {
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
-  test('does not show privacy banner if policy version is set', () => {
+  it('does not show privacy banner if policy version is set', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => false);
     const wrapper = mount(getRenderedRoot(defaultProps));
     expect(wrapper.find('.privacyBanner').length).toBe(0);
     (privacyBannerService.shouldShowBanner as any).mockRestore();
+  });
+
+  it('displays 404 screen if no route was matched', () => {
+    const Redirect404 = () => {
+      const location = useLocation();
+
+      return <Redirect to={{ ...location, state: { is404: true } }} />;
+    };
+
+    const wrapper = mount(
+      <MemoryRouter>
+        <Root {...defaultProps} />
+        <Redirect404 />
+      </MemoryRouter>
+    );
+
+    expect(wrapper.contains(<App />)).toBe(false);
+    expect(wrapper.text()).toContain('page not found');
   });
 });

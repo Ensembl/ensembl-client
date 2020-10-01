@@ -15,8 +15,6 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import styles from './useOutsideClick.stories.scss';
@@ -44,55 +42,68 @@ const buildChild = (option: number, onClick: () => void) => {
   );
 };
 
-storiesOf('Hooks|Shared Hooks/useOutsideClick', module)
-  .add('single ref', () => {
-    const [numberOfClicks, setNumberOfClicks] = useState(0);
+type DefaultArgs = {
+  onClickOutside: (...args: any) => void;
+};
 
-    const parentRef = useRef<HTMLDivElement>(null);
+export const SingleRefStory = (args: DefaultArgs) => {
+  const [numberOfClicks, setNumberOfClicks] = useState(0);
 
-    const updateComponent = () => {
-      setNumberOfClicks(numberOfClicks + 1);
-    };
+  const parentRef = useRef<HTMLDivElement>(null);
 
-    const callback = () => {
-      action('clicked-outside')(numberOfClicks);
-    };
+  const updateComponent = () => {
+    setNumberOfClicks(numberOfClicks + 1);
+  };
 
-    useOutsideClick(parentRef, callback);
+  const callback = () => {
+    args.onClickOutside(numberOfClicks);
+  };
 
-    return (
-      <div className={styles.wrapper}>
-        <div className={styles.parentElement} ref={parentRef}>
-          Ref
-          {buildChild(numberOfClicks % 2, updateComponent)}
-          <div className={styles.halfInside}>
-            {' '}
-            I'm also inside Ref and do not cause any updates
-          </div>
-        </div>
-        <div className={styles.someOtherElement}> I'm outside Ref </div>
-      </div>
-    );
-  })
-  .add('multiple refs', () => {
-    const elementRef1 = useRef<HTMLDivElement>(null);
-    const elementRef2 = useRef<HTMLDivElement>(null);
+  useOutsideClick(parentRef, callback);
 
-    const callback = () => {
-      action('clicked-outside')();
-    };
-
-    useOutsideClick([elementRef1, elementRef2], callback);
-
-    return (
-      <div className={styles.wrapper}>
-        <div className={styles.childElement} ref={elementRef1}>
-          Ref1
-        </div>
-        <div className={styles.someOtherElement}> I'm outside Ref1 & Ref2 </div>
-        <div className={styles.childElement} ref={elementRef2}>
-          Ref2
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.parentElement} ref={parentRef}>
+        Ref
+        {buildChild(numberOfClicks % 2, updateComponent)}
+        <div className={styles.halfInside}>
+          {' '}
+          I'm also inside Ref and do not cause any updates
         </div>
       </div>
-    );
-  });
+      <div className={styles.someOtherElement}> I'm outside Ref </div>
+    </div>
+  );
+};
+
+SingleRefStory.storyName = 'single ref';
+
+export const MultipleRefsStory = (args: DefaultArgs) => {
+  const elementRef1 = useRef<HTMLDivElement>(null);
+  const elementRef2 = useRef<HTMLDivElement>(null);
+
+  const callback = () => {
+    args.onClickOutside();
+  };
+
+  useOutsideClick([elementRef1, elementRef2], callback);
+
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.childElement} ref={elementRef1}>
+        Ref1
+      </div>
+      <div className={styles.someOtherElement}> I'm outside Ref1 & Ref2 </div>
+      <div className={styles.childElement} ref={elementRef2}>
+        Ref2
+      </div>
+    </div>
+  );
+};
+
+MultipleRefsStory.storyName = 'multiple refs';
+
+export default {
+  title: 'Hooks/Shared Hooks/useOutsideClick',
+  argTypes: { onClickOutside: { action: 'clicked ouside' } }
+};

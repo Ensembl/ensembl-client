@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
+import useHover from 'src/shared/hooks/useHover';
+
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import { ReactComponent as QuestionIcon } from './icon_question.svg';
+import { ReactComponent as QuestionIcon } from './question_circle.svg';
 
 import defaultStyles from './QuestionButton.scss';
 
@@ -30,24 +32,26 @@ export enum QuestionButtonOption {
 
 type Props = {
   helpText: React.ReactNode;
-  styleOption?: QuestionButtonOption;
+  styleOption: QuestionButtonOption;
   className?: { [key in QuestionButtonOption]?: string };
 };
 
 const QuestionButton = (props: Props) => {
-  const [isHovering, setIsHovering] = useState(false);
-  const elementRef = useRef<HTMLDivElement>(null);
+  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
+  const [shouldShowTooltip, setShouldShowTooltip] = useState(isHovered);
 
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
+  useEffect(() => {
+    setShouldShowTooltip(isHovered);
+  }, [isHovered]);
 
-  const handleMouseLeave = () => {
-    setIsHovering(false);
+  const hideTooltip = () => {
+    // tooltip will detect when user starts scrolling
+    // and will send a signal to the parent component so that it can be removed
+    setShouldShowTooltip(false);
   };
 
   const className = classNames(
-    defaultStyles.default,
+    defaultStyles.quesionButton,
     {
       [defaultStyles[props.styleOption as string]]: props.styleOption
     },
@@ -55,20 +59,23 @@ const QuestionButton = (props: Props) => {
   );
 
   return (
-    <div
-      ref={elementRef}
-      className={className}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div ref={hoverRef} className={className}>
       <QuestionIcon />
-      {isHovering && (
-        <Tooltip anchor={elementRef.current} autoAdjust={true}>
+      {shouldShowTooltip && (
+        <Tooltip
+          anchor={hoverRef.current}
+          autoAdjust={true}
+          onClose={hideTooltip}
+        >
           {props.helpText}
         </Tooltip>
       )}
     </div>
   );
+};
+
+QuestionButton.defaultProps = {
+  styleOption: QuestionButtonOption.INLINE
 };
 
 export default QuestionButton;

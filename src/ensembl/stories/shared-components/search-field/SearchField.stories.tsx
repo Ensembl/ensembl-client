@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { storiesOf } from '@storybook/react';
 
 import SearchField from 'src/shared/components/search-field/SearchField';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
@@ -34,18 +33,26 @@ const Wrapper = (props: any) => {
   );
 };
 
-storiesOf('Components|Shared Components/SearchField', module)
-  .add('default', () => (
-    <Wrapper
-      searchField={SearchField}
-      className={styles.searchField}
-      rightCorner={<QuestionButton helpText="This is a hint" />}
-    />
-  ))
-  .add('with loader', () => (
-    <Wrapper
-      searchField={SearchField}
-      className={styles.searchField}
-      rightCorner={<CircleLoader className={styles.circleLoader} />}
-    />
-  ));
+export const DefaultSearchFieldStory = () => (
+  <Wrapper
+    searchField={SearchField}
+    className={styles.searchField}
+    rightCorner={<QuestionButton helpText="This is a hint" />}
+  />
+);
+
+DefaultSearchFieldStory.storyName = 'default';
+
+export const SearchFieldWithLoaderStory = () => (
+  <Wrapper
+    searchField={SearchField}
+    className={styles.searchField}
+    rightCorner={<CircleLoader className={styles.circleLoader} />}
+  />
+);
+
+SearchFieldWithLoaderStory.storyName = 'with loader';
+
+export default {
+  title: 'Components/Shared Components/SearchField'
+};

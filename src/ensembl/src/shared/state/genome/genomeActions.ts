@@ -41,12 +41,9 @@ export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_failure'
 )<undefined, GenomeInfoData, Error>();
 
-export const fetchGenomeData: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch) => {
+export const fetchGenomeData = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => async (dispatch) => {
   await Promise.all([
     dispatch(fetchGenomeInfo(genomeId)),
     dispatch(fetchGenomeTrackCategories(genomeId)),

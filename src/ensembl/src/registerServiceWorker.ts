@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-declare global {
-  interface Window {
-    nodeEnv: string | undefined;
-  }
-}
-
 export function registerSW() {
-  window.nodeEnv = process.env.NODE_ENV;
-
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker

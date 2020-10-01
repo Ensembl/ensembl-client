@@ -279,12 +279,9 @@ export const commitSelectedSpeciesAndSave: ActionCreator<ThunkAction<
   speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
 };
 
-export const toggleSpeciesUseAndSave: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => (dispatch, getState) => {
+export const toggleSpeciesUseAndSave = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => (dispatch, getState) => {
   const state = getState();
   const committedSpecies = getCommittedSpecies(state);
   const currentSpecies = getCommittedSpeciesById(state, genomeId);
@@ -313,12 +310,9 @@ export const toggleSpeciesUseAndSave: ActionCreator<ThunkAction<
   speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
 
-export const deleteSpeciesAndSave: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => (dispatch, getState) => {
+export const deleteSpeciesAndSave = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => (dispatch, getState) => {
   const committedSpecies = getCommittedSpecies(getState());
   const deletedSpecies = find(
     committedSpecies,

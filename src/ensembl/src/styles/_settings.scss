@@ -22,9 +22,9 @@ $soft-black: #374148;
 
 $shadow-color: rgba(0, 0, 0, 0.4);
 
-$light-blue: #e5f5ff; // text highlight
-$blue: #33adff; // blue on black
-$dark-blue: #0099ff; // blue on white
+$blue: #0099ff; // blue on white
+$light-blue: #33adff; // blue on black
+$ice-blue: #e5f5ff; // text highlight
 
 $light-grey: #f1f2f4;
 $medium-light-grey: #d4d9de;
@@ -45,7 +45,7 @@ $global-box-shadow: $medium-light-grey;
   soft-black: $soft-black;
   blue: $blue;
   light-blue: $light-blue;
-  dark-blue: $dark-blue;
+  ice-blue: $ice-blue;
   red: $red;
   orange: $orange;
   dark-grey: $dark-grey;

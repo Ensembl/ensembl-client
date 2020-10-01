@@ -1,0 +1,44 @@
+@import 'src/styles/common';
+
+.speciesSelectionControls {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.speciesUseToggle {
+  display: flex;
+  align-items: center;
+
+  span {
+    white-space: nowrap;
+  }
+
+  span:last-of-type {
+    margin-right: 15px;
+  }
+}
+
+.toggle {
+  margin: 0 12px;
+}
+
+.removalContainer {
+  margin-left: 60px;
+}
+
+.clickable {
+  color: $blue;
+  cursor: pointer;
+}
+
+.speciesRemovalConfirmation {
+  button {
+    margin: 0 25px 0 35px;
+  }
+}
+
+.speciesRemovalWarning {
+  color: $red;
+}

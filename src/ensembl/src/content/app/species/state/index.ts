@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-import './base-pairs-ruler/BasePairsRuler.stories';
-import './transcripts/UnsplicedTranscripts.stories';
-import './protein/ProteinDomainImage.stories';
+import { combineReducers } from 'redux';
+
+import speciesPageSidebarReducer from './sidebar/speciesSidebarSlice';
+import speciesPageGeneralReducer from './general/speciesGeneralSlice';
+
+export default combineReducers({
+  general: speciesPageGeneralReducer,
+  sidebar: speciesPageSidebarReducer
+});

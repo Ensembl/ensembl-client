@@ -21,4 +21,5 @@ import './shared-components/index.ts';
 import './static-images/index.ts';
 import './genome-browser/index.ts';
 import './entity-viewer/index.ts';
+import './species/index.ts';
 import './hooks/index.ts';

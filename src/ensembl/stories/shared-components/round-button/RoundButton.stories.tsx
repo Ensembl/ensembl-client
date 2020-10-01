@@ -15,62 +15,83 @@
  */
 
 import React from 'react';
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
-import Roundbutton, {
+import RoundButton, {
   RoundButtonStatus
 } from 'src/shared/components/round-button/RoundButton';
 import BadgedButton from 'src/shared/components/badged-button/BadgedButton';
 
 import styles from './RoundButton.stories.scss';
 
-const onClick = action('button-click');
+export default {
+  title: 'Components/Shared Components/RoundButton',
+  argTypes: { onClick: { action: 'clicked' } }
+};
 
-storiesOf('Components|Shared Components/RoundButton', module)
-  .add('default', () => (
-    <div className={styles.wrapper}>
-      <Roundbutton onClick={onClick}>I am default</Roundbutton>
-    </div>
-  ))
-  .add('active', () => (
-    <div className={styles.wrapper}>
-      <Roundbutton status={RoundButtonStatus.ACTIVE} onClick={onClick}>
-        I am active
-      </Roundbutton>
-    </div>
-  ))
-  .add('inactive', () => (
-    <div className={styles.wrapper}>
-      <Roundbutton status={RoundButtonStatus.INACTIVE} onClick={onClick}>
-        I am inactive
-      </Roundbutton>
-    </div>
-  ))
-  .add('disabled', () => (
-    <div className={styles.wrapper}>
-      <Roundbutton status={RoundButtonStatus.DISABLED} onClick={onClick}>
-        I am disabled
-      </Roundbutton>
-    </div>
-  ))
-  .add('custom', () => (
-    <div className={styles.wrapper}>
-      <Roundbutton
-        classNames={styles}
-        status={RoundButtonStatus.ACTIVE}
-        onClick={onClick}
-      >
-        Custom Active
-      </Roundbutton>
-    </div>
-  ))
-  .add('badged', () => (
-    <div className={styles.wrapper}>
-      <BadgedButton badgeContent={'10'}>
-        <Roundbutton status={RoundButtonStatus.ACTIVE} onClick={onClick}>
-          I have a badge
-        </Roundbutton>
-      </BadgedButton>
-    </div>
-  ));
+type DefaultArgs = {
+  onClick: (...args: any) => void;
+};
+
+export const DefaultRoundButton = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <RoundButton onClick={args.onClick}>I am default</RoundButton>
+  </div>
+);
+
+DefaultRoundButton.storyName = 'default';
+
+export const ActiveRoundButton = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <RoundButton status={RoundButtonStatus.ACTIVE} onClick={args.onClick}>
+      I am active
+    </RoundButton>
+  </div>
+);
+
+ActiveRoundButton.storyName = 'active';
+
+export const InactiveRoundButton = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <RoundButton status={RoundButtonStatus.INACTIVE} onClick={args.onClick}>
+      I am inactive
+    </RoundButton>
+  </div>
+);
+
+InactiveRoundButton.storyName = 'inactive';
+
+export const DisabledRoundButton = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <RoundButton status={RoundButtonStatus.DISABLED} onClick={args.onClick}>
+      I am disabled
+    </RoundButton>
+  </div>
+);
+
+DisabledRoundButton.storyName = 'disabled';
+
+export const CustomRoundButton = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <RoundButton
+      classNames={styles}
+      status={RoundButtonStatus.ACTIVE}
+      onClick={args.onClick}
+    >
+      Custom Active
+    </RoundButton>
+  </div>
+);
+
+CustomRoundButton.storyName = 'custom';
+
+export const BadgedRoundButton = (args: DefaultArgs) => (
+  <div className={styles.wrapper}>
+    <BadgedButton badgeContent={'10'}>
+      <RoundButton status={RoundButtonStatus.ACTIVE} onClick={args.onClick}>
+        I have a badge
+      </RoundButton>
+    </BadgedButton>
+  </div>
+);
+
+BadgedRoundButton.storyName = 'badged';
