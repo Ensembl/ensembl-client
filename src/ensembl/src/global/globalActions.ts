@@ -27,7 +27,7 @@ export const setBreakpointWidth = createAction(
   'browser/update-breakpoint-width'
 )<BreakpointWidth>();
 
-export const setScrollPosition = createAction('update-scroll-position')<
+export const saveScrollPosition = createAction('update-scroll-position')<
   ScrollPosition
 >();
 

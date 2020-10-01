@@ -134,7 +134,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
-  const uniqueScrollReferenceId = COMPONENT_ID + props.gene.id;
+  const { search } = useLocation();
+  const view = new URLSearchParams(search).get('view');
+
+  const uniqueScrollReferenceId = `${COMPONENT_ID}_${props.gene.id}_${view}`;
+
   const { targetElementRef } = useRestoreScrollPosition({
     referenceId: uniqueScrollReferenceId
   });

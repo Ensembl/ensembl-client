@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { setScrollPosition } from 'src/global/globalActions';
+import { saveScrollPosition } from 'src/global/globalActions';
 import { getScrollPosition } from 'src/global/globalSelectors';
 
 type RestoreScrollPositionProps = {
@@ -37,20 +37,20 @@ export function useRestoreScrollPosition(props: RestoreScrollPositionProps) {
 
   const targetElementRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const targetElement = targetElementRef.current as HTMLDivElement;
-
     // TODO: Need to find out why it doesn't work without the setTimeout
     setTimeout(() => {
       if (!skip && (scrollPosition.scrollTop || scrollPosition.scrollLeft)) {
         targetElement.scrollTop = scrollPosition.scrollTop;
         targetElement.scrollLeft = scrollPosition.scrollLeft;
       }
-    }, 1);
+    }, 100);
 
     return () => {
+      const targetElement = targetElementRef.current as HTMLDivElement;
       dispatch(
-        setScrollPosition({
+        saveScrollPosition({
           [referenceId]: {
             scrollTop: targetElement.scrollTop,
             scrollLeft: targetElement.scrollLeft
@@ -58,7 +58,7 @@ export function useRestoreScrollPosition(props: RestoreScrollPositionProps) {
         })
       );
     };
-  }, [scrollPosition, skip]);
+  }, [referenceId]);
 
   return {
     targetElementRef

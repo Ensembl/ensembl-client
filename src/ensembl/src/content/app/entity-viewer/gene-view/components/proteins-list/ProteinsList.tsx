@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
 
-import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
@@ -33,8 +32,6 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { RootState } from 'src/store';
 
 import styles from './ProteinsList.scss';
-
-const COMPONENT_ID = 'entity_viewer_gene_view_protein_list';
 
 type ProteinsListProps = {
   geneId: string;
@@ -79,15 +76,8 @@ const ProteinsList = (props: ProteinsListProps) => {
 };
 
 const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
-  const uniqueScrollReferenceId = COMPONENT_ID + props.gene.id;
-
   const { search } = useLocation();
   const transcriptIdToFocus = new URLSearchParams(search).get('transcriptId');
-
-  const { targetElementRef } = useRestoreScrollPosition({
-    referenceId: uniqueScrollReferenceId
-  });
-
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
     (transcript) => !!transcript.cds
@@ -105,7 +95,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
   const longestProteinLength = getLongestProteinLength(props.gene);
 
   return (
-    <div className={styles.proteinsList} ref={targetElementRef}>
+    <div className={styles.proteinsList}>
       {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem
           key={transcript.id}

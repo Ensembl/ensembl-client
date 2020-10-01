@@ -26,7 +26,7 @@ export default function globalReducer(
   switch (action.type) {
     case getType(global.setBreakpointWidth):
       return { ...state, breakpointWidth: action.payload };
-    case getType(global.setScrollPosition):
+    case getType(global.saveScrollPosition):
       return {
         ...state,
         scrollPosition: { ...state.scrollPosition, ...action.payload }
