@@ -127,12 +127,24 @@ export const TranscriptsListItemInfo = (
   });
 
   const buildUrlForProteinView = (transcriptId: string) => {
-    return urlFor.entityViewer({
+    if (transcript.so_term !== 'protein_coding') {
+      return transcriptId;
+    }
+    const proteinViewUrl = urlFor.entityViewer({
       genomeId,
       entityId,
       view: View.PROTEIN,
-      transcriptId: transcriptId
+      transcriptId
     });
+
+    return (
+      <Link
+        onClick={() => props.expandProtein(transcript.id)}
+        to={proteinViewUrl}
+      >
+        {transcriptId}
+      </Link>
+    );
   };
 
   const getBrowserLink = () => {
@@ -155,12 +167,7 @@ export const TranscriptsListItemInfo = (
               <div>
                 <strong>{getAminoAcidLength()} aa</strong>
               </div>
-              <Link
-                onClick={() => props.expandProtein(transcript.id)}
-                to={buildUrlForProteinView(transcript.id)}
-              >
-                ENSP1000000000
-              </Link>
+              {buildUrlForProteinView(transcript.id)}
             </>
           )}
         </div>

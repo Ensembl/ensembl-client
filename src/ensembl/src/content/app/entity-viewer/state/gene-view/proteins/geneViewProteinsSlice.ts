@@ -82,19 +82,11 @@ export const expandProtein = (
     return;
   }
 
-  const expandedIds = new Set<string>(getExpandedTranscriptIds(state));
-  // If it is already expanded, just return
-  if (expandedIds.has(transcriptId)) {
-    return;
-  } else {
-    expandedIds.add(transcriptId);
-  }
-
   dispatch(
     proteinsSlice.actions.updateExpandedProteins({
       activeGenomeId,
       activeObjectId,
-      expandedIds: [...expandedIds.values()]
+      expandedIds: [transcriptId]
     })
   );
 };
