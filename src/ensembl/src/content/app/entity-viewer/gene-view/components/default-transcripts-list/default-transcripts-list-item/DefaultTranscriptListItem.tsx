@@ -82,19 +82,21 @@ export const DefaultTranscriptListItem = (
             />
           </div>
         )}
-        <div
-          className={transcriptsListStyles.middle}
-          onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
-        >
+        <div className={transcriptsListStyles.middle}>
           <div
-            className={styles.transcriptWrapper}
-            style={{ transform: `translateX(${transcriptStartX}px)` }}
+            className={styles.clickableTranscriptArea}
+            onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
           >
-            <UnsplicedTranscript
-              transcript={props.transcript}
-              width={transcriptWidth}
-              standalone={true}
-            />
+            <div
+              className={styles.transcriptWrapper}
+              style={{ transform: `translateX(${transcriptStartX}px)` }}
+            >
+              <UnsplicedTranscript
+                transcript={props.transcript}
+                width={transcriptWidth}
+                standalone={true}
+              />
+            </div>
           </div>
         </div>
         <div
