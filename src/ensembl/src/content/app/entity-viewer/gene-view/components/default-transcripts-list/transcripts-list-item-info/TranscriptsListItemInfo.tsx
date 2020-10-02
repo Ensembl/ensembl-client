@@ -128,6 +128,7 @@ export const TranscriptsListItemInfo = (
 
   const buildUrlForProteinView = (transcriptId: string) => {
     if (transcript.so_term !== 'protein_coding') {
+      // TODO: Use Protein ID
       return transcriptId;
     }
     const proteinViewUrl = urlFor.entityViewer({
@@ -142,6 +143,7 @@ export const TranscriptsListItemInfo = (
         onClick={() => props.expandProtein(transcript.id)}
         to={proteinViewUrl}
       >
+        {/* TODO: Use Protein ID */}
         {transcriptId}
       </Link>
     );
