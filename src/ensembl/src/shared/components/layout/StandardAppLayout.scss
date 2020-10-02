@@ -1,12 +1,15 @@
 @import 'src/styles/common';
 
+$headerHeight: 79px; // launchbar height + topbar height
+$appbarHeight: 80px;
+$availableScreenHeight: calc(100vh - #{$headerHeight} - #{$appbarHeight});
 $sidebarContentWidth: 320px;
 $sidebarToolstripWidth: 46px;
 $topbarHeight: 38px;
 $drawerWindowWidth: 45px;
 
 .standardAppLayout {
-  height: calc(100vh - 159px);
+  height: $availableScreenHeight;
   min-height: 550px; // based on the current interface of genome browser
   overflow: hidden;
 }
@@ -44,6 +47,7 @@ $drawerWindowWidth: 45px;
 
 .main {
   height: 100%;
+  overflow: auto;
 
   &Default {
     margin-right: calc(#{$sidebarContentWidth} + #{$sidebarToolstripWidth});

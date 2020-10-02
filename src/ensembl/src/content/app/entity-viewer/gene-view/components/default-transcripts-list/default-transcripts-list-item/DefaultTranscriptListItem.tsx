@@ -60,10 +60,6 @@ export const DefaultTranscriptListItem = (
   );
   const transcriptStartX = scale(transcriptStart - geneStart); // FIXME In future, this should be done using relative position of transcript in gene
   const transcriptWidth = scale(transcriptEnd - transcriptStart); // FIXME  this too should be based on relative coordinates of transcript
-  const style = {
-    transform: `translateX(${transcriptStartX}px)`,
-    cursor: 'pointer'
-  };
 
   const defaultTranscriptLabelMap = {
     selected: {
@@ -90,7 +86,10 @@ export const DefaultTranscriptListItem = (
           className={transcriptsListStyles.middle}
           onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
         >
-          <div style={style}>
+          <div
+            className={styles.transcriptWrapper}
+            style={{ transform: `translateX(${transcriptStartX}px)` }}
+          >
             <UnsplicedTranscript
               transcript={props.transcript}
               width={transcriptWidth}

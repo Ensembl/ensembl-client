@@ -28,10 +28,7 @@ import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSide
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
-import {
-  StandardAppLayout,
-  SidebarBehaviourType
-} from 'src/shared/components/layout';
+import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 
 type SpeciesPageParams = {
@@ -61,7 +58,6 @@ const SpeciesPage = () => {
         sidebarContent={sidebarContent}
         sidebarNavigation={sidebarNavigationContent}
         topbarContent={topbarContent}
-        sidebarBehaviour={SidebarBehaviourType.SLIDEOVER}
         isSidebarOpen={sidebarStatus}
         onSidebarToggle={() => {
           dispatch(toggleSidebar());
