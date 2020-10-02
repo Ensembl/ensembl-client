@@ -56,7 +56,8 @@ const ExampleLinks = (props: {
   const { exampleLinks, exampleLinkText } = props;
 
   const [showPointerBox, setShowPointerBox] = useState(false);
-  const anchorRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLSpanElement>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
   if (!exampleLinks) {
     return null;
@@ -64,28 +65,29 @@ const ExampleLinks = (props: {
 
   return (
     <div className={styles.exampleLink}>
-      <span
-        className={styles.exampleLinkText}
-        ref={anchorRef}
-        onClick={() => setShowPointerBox(!showPointerBox)}
-      >
-        {exampleLinkText}
-        {showPointerBox && (
-          <PointerBox
-            anchor={anchorRef.current as HTMLDivElement}
-            onOutsideClick={() => setShowPointerBox(false)}
-            position={Position.BOTTOM_RIGHT}
-            // container={props.container.current}
-            autoAdjust={true}
-            classNames={{
-              box: styles.pointerBox,
-              pointer: styles.pointerBoxPointer
-            }}
-            // pointerOffset={5}
-          >
-            <ViewInApp links={exampleLinks} />
-          </PointerBox>
-        )}
+      <span ref={containerRef}>
+        <span
+          className={styles.exampleLinkText}
+          ref={anchorRef}
+          onClick={() => setShowPointerBox(!showPointerBox)}
+        >
+          {exampleLinkText}
+          {showPointerBox && (
+            <PointerBox
+              anchor={anchorRef.current as HTMLDivElement}
+              onOutsideClick={() => setShowPointerBox(false)}
+              position={Position.BOTTOM_RIGHT}
+              container={containerRef.current}
+              autoAdjust={true}
+              classNames={{
+                box: styles.pointerBox,
+                pointer: styles.pointerBoxPointer
+              }}
+            >
+              <ViewInApp links={exampleLinks} />
+            </PointerBox>
+          )}
+        </span>
       </span>
     </div>
   );
