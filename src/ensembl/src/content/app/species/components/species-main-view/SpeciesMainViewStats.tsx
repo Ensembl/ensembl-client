@@ -136,7 +136,9 @@ const getExpandedContent = (statsSection: StatsSection) => {
       {groups.map((group, group_index: number) => {
         const { title, stats } = group;
         const primaryStatsClassName = classNames(styles.primaryStats, {
-          [styles.primaryStatsNoLink]: !Object.keys(exampleLinks || {}).length
+          [styles.primaryStatsNoLink]: exampleLinks
+            ? !Object.keys(exampleLinks).length
+            : true
         });
         const primaryOrSecondaryClassName =
           group_index === 0 ? primaryStatsClassName : styles.secondaryStats;
