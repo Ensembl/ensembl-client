@@ -20,8 +20,7 @@ $backgroundColor: $black;
   padding: 60px 20px 10px;
   height: 100%; // may need to change this later
   width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
 }
 
 .featureImage {
@@ -33,6 +32,7 @@ $backgroundColor: $black;
   display: grid;
   grid-template-rows: 1fr 1fr;
   align-items: end;
+  padding-right: 30px;
 }
 
 .geneViewTabs {
