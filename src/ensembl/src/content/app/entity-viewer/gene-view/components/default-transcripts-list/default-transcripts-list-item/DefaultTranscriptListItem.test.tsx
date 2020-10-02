@@ -67,7 +67,7 @@ describe('<DefaultTranscriptListItem />', () => {
 
   it('toggles transcript item info onClick', () => {
     wrapper = renderComponent();
-    wrapper.find('.middle').simulate('click');
+    wrapper.find('.clickableTranscriptArea').simulate('click');
     expect(toggleTranscriptInfo).toHaveBeenCalledTimes(1);
     wrapper.find('.right').simulate('click');
     expect(toggleTranscriptInfo).toHaveBeenCalledTimes(2);

@@ -12,6 +12,14 @@
   cursor: pointer;
 }
 
+.clickableTranscriptArea {
+  cursor: pointer;
+}
+
+.transcriptWrapper {
+  display: inline-block;
+}
+
 .defaultTranscriptLabel {
   display: flex;
   justify-content: flex-end;
