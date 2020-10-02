@@ -22,6 +22,7 @@ import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import { sampleData } from '../../sample-data';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 export enum SpeciesStatsSections {
   CODING_STATS = 'coding_stats',
@@ -236,7 +237,7 @@ type StatsGroup = {
 
 export type StatsSection = {
   section: SpeciesStatsSections;
-  exampleLink: string;
+  exampleLinks?: Partial<urlObj>;
   primaryStats?: SpeciesStatsProps;
   secondaryStats?: SpeciesStatsProps;
   groups: StatsGroup[];
@@ -292,14 +293,14 @@ const buildHeaderStat = (
   };
 };
 
-const getExampleLink = (props: {
+const getExampleLinks = (props: {
   section: SpeciesStatsSections;
   genome_id: string;
   exampleFocusObjects: ExampleFocusObject[];
 }) => {
   const { section, genome_id, exampleFocusObjects } = props;
 
-  let exampleLink;
+  const exampleLinks: Partial<urlObj> = {};
 
   if (section === SpeciesStatsSections.CODING_STATS) {
     const geneExample = exampleFocusObjects.find(
@@ -313,10 +314,17 @@ const getExampleLink = (props: {
         })
       : undefined;
 
-    exampleLink = focusId
+    exampleLinks.genomeBrowser = focusId
       ? urlFor.browser({
           genomeId: genome_id,
           focus: focusId
+        })
+      : undefined;
+
+    exampleLinks.entityViewer = focusId
+      ? urlFor.entityViewer({
+          genomeId: genome_id,
+          entityId: focusId
         })
       : undefined;
   } else if (section === SpeciesStatsSections.ASSEMBLY_STATS) {
@@ -331,7 +339,7 @@ const getExampleLink = (props: {
         })
       : undefined;
 
-    exampleLink = focusId
+    exampleLinks.genomeBrowser = focusId
       ? urlFor.browser({
           genomeId: genome_id,
           focus: focusId
@@ -339,7 +347,7 @@ const getExampleLink = (props: {
       : undefined;
   }
 
-  return exampleLink;
+  return exampleLinks;
 };
 
 export const getStatsForSection = (props: {
@@ -374,8 +382,8 @@ export const getStatsForSection = (props: {
       })
     : undefined;
 
-  const exampleLink = hasExampleLink
-    ? getExampleLink({
+  const exampleLinks = hasExampleLink
+    ? getExampleLinks({
         section,
         genome_id,
         exampleFocusObjects
@@ -386,7 +394,7 @@ export const getStatsForSection = (props: {
     section,
     primaryStats,
     secondaryStats,
-    exampleLink,
+    exampleLinks,
     groups: groups.map((group) => {
       const stats = groupsStatsMap[group];
       return {

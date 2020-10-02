@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
+import PointerBox, {
+  Position
+} from 'src/shared/components/pointer-box/PointerBox';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
+import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
+
 import {
   getActiveGenomeId,
   getActiveGenomeStats
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { fetchStatsForActiveGenome } from 'src/content/app/species/state/general/speciesGeneralSlice';
-import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
 
 import { RootState } from 'src/store';
 import { GenomeStats } from '../../state/general/speciesGeneralSlice';
-
+import ViewInApp, { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import {
   StatsSection,
   sectionGroupsMap
@@ -46,20 +49,50 @@ type Props = {
   fetchStatsForActiveGenome: () => void;
 };
 
-const getExampleLink = (exampleLink?: string, exampleLinkText?: string) => {
-  if (!exampleLink) {
+const ExampleLinks = (props: {
+  exampleLinks?: Partial<urlObj>;
+  exampleLinkText?: string;
+}) => {
+  const { exampleLinks, exampleLinkText } = props;
+
+  const [showPointerBox, setShowPointerBox] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
+
+  if (!exampleLinks) {
     return null;
   }
 
   return (
-    <span className={styles.exampleLink}>
-      <Link to={exampleLink}>{exampleLinkText}</Link>
-    </span>
+    <div className={styles.exampleLink}>
+      <span
+        className={styles.exampleLinkText}
+        ref={anchorRef}
+        onClick={() => setShowPointerBox(!showPointerBox)}
+      >
+        {exampleLinkText}
+        {showPointerBox && (
+          <PointerBox
+            anchor={anchorRef.current as HTMLDivElement}
+            onOutsideClick={() => setShowPointerBox(false)}
+            position={Position.BOTTOM_RIGHT}
+            // container={props.container.current}
+            autoAdjust={true}
+            classNames={{
+              box: styles.pointerBox,
+              pointer: styles.pointerBoxPointer
+            }}
+            // pointerOffset={5}
+          >
+            <ViewInApp links={exampleLinks} />
+          </PointerBox>
+        )}
+      </span>
+    </div>
   );
 };
 
 const getCollapsedContent = (statsSection: StatsSection) => {
-  const { primaryStats, secondaryStats, section, exampleLink } = statsSection;
+  const { primaryStats, secondaryStats, section, exampleLinks } = statsSection;
   const { title, exampleLinkText } = sectionGroupsMap[section];
 
   return (
@@ -85,20 +118,23 @@ const getCollapsedContent = (statsSection: StatsSection) => {
         </div>
       )}
 
-      {getExampleLink(exampleLink, exampleLinkText)}
+      <ExampleLinks
+        exampleLinks={exampleLinks}
+        exampleLinkText={exampleLinkText}
+      />
     </div>
   );
 };
 
 const getExpandedContent = (statsSection: StatsSection) => {
-  const { groups, exampleLink, section } = statsSection;
+  const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
   return (
     <div className={styles.expandedContent}>
       {groups.map((group, group_index: number) => {
         const { title, stats } = group;
         const primaryStatsClassName = classNames(styles.primaryStats, {
-          [styles.primaryStatsNoLink]: !exampleLink
+          [styles.primaryStatsNoLink]: !!exampleLinks
         });
         const primaryOrSecondaryClassName =
           group_index === 0 ? primaryStatsClassName : styles.secondaryStats;
@@ -110,7 +146,12 @@ const getExpandedContent = (statsSection: StatsSection) => {
                 return <SpeciesStats key={stat_index} {...stat} />;
               })}
             </div>
-            {group_index === 0 && getExampleLink(exampleLink, exampleLinkText)}
+            {group_index === 0 && (
+              <ExampleLinks
+                exampleLinks={exampleLinks}
+                exampleLinkText={exampleLinkText}
+              />
+            )}
           </div>
         );
       })}

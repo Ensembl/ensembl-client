@@ -8,17 +8,38 @@
 }
 
 .speciesLabelBlock {
-  padding: 0 75px 0 60px;
+  padding: 0 75px 0 45px;
 }
 
 // TODO: Remove Me
 .statsWrapper { 
-    padding-left:60px;
-    padding-top:20px;
+    padding-left:120px;
+    padding-top:5px;
     width: 1100px;
     overflow: auto;
     height:500px;
 }
+
+.exampleLinkText{
+    cursor: pointer;
+    color:$blue;
+}
+
+
+.pointerBox {
+    padding: 6px 12px;
+    background: $black;
+    color: white;
+  
+    p {
+      max-width: 200px;
+    }
+  }
+  
+  .pointerBoxPointer {
+    fill: $black;
+  }
+  
 
 .collapsedContent{
   display: grid;
