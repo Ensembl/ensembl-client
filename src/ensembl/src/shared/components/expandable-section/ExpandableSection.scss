@@ -30,10 +30,10 @@
     top: 12px;
     position: absolute;
     left: 35px;
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
     transition: transform linear .2s;
     &Down {
-      transform: rotate(90deg);
+      transform: rotate(-90deg);
       
     }
   }
