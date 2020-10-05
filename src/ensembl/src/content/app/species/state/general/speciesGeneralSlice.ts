@@ -21,15 +21,15 @@ import {
 } from '@reduxjs/toolkit';
 
 import { getActiveGenomeId } from './speciesGeneralSelectors';
-
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 
-import { RootState } from 'src/store';
 import {
   getStatsForSection,
   StatsSection,
-  SpeciesStatsSections
+  SpeciesStatsSection
 } from 'src/content/app/species/state/general/speciesGeneralHelper';
+
+import { RootState } from 'src/store';
 
 export type GenomeStats = StatsSection[];
 
@@ -62,15 +62,15 @@ export const fetchStatsForActiveGenome = (): ThunkAction<
     activeGenomeId
   );
 
-  const speciesStats = [
-    ...Object.values(SpeciesStatsSections).map((section) =>
+  const speciesStats = Object.values(SpeciesStatsSection)
+    .map((section) =>
       getStatsForSection({
         genome_id: activeGenomeId,
         section,
         exampleFocusObjects
       })
     )
-  ].filter(Boolean) as GenomeStats;
+    .filter(Boolean) as GenomeStats;
 
   dispatch(
     speciesGeneralSlice.actions.setStatsForGenomeId({

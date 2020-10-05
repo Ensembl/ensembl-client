@@ -20,11 +20,11 @@ export const getActiveGenomeId = (state: RootState) =>
   state.speciesPage.general.activeGenomeId;
 
 export const getActiveGenomeStats = (state: RootState) => {
-  const activeGeonmeId = getActiveGenomeId(state);
+  const activeGenomeId = getActiveGenomeId(state);
 
-  if (!activeGeonmeId) {
+  if (!activeGenomeId) {
     return;
   }
 
-  return state.speciesPage.general.stats[activeGeonmeId];
+  return state.speciesPage.general.stats[activeGenomeId];
 };

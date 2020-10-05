@@ -52,7 +52,7 @@ describe('<ExpandableSection />', () => {
     expect(() => wrapper).not.toThrow();
   });
 
-  it('hides expandedContent when isExpanded is false', () => {
+  it('hides the expanded content when isExpanded is false', () => {
     wrapper = renderExpandableSection({
       isExpanded: false
     });
@@ -60,14 +60,21 @@ describe('<ExpandableSection />', () => {
     expect(wrapper.find('.collapsedContent')).toHaveLength(1);
   });
 
-  it('shows expandedContent when isExpanded is true', () => {
+  it('shows the expanded content when isExpanded is true', () => {
     expect(wrapper.find('.expandedContent')).toHaveLength(1);
     expect(wrapper.find('.collapsedContent')).toHaveLength(0);
   });
 
-  it('calls onToggle with expanded status when the chevron wrapper is clicked', () => {
+  it('calls onToggle prop when collapsing or expanding', () => {
     wrapper.find('.toggle').simulate('click');
     expect(mockOnToggle).toBeCalledWith(false);
+
+    wrapper = renderExpandableSection({
+      isExpanded: false
+    });
+
+    wrapper.find('.toggle').simulate('click');
+    expect(mockOnToggle).toBeCalledWith(true);
   });
 
   it('applies the passed in classNames', () => {

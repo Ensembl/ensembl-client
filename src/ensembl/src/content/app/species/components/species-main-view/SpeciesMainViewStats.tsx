@@ -23,6 +23,7 @@ import PointerBox, {
 } from 'src/shared/components/pointer-box/PointerBox';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
+import ViewInApp, { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import {
   getActiveGenomeId,
@@ -32,13 +33,12 @@ import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSele
 import { fetchStatsForActiveGenome } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import { RootState } from 'src/store';
+import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 import { GenomeStats } from '../../state/general/speciesGeneralSlice';
-import ViewInApp, { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import {
   StatsSection,
   sectionGroupsMap
 } from '../../state/general/speciesGeneralHelper';
-import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './SpeciesMainView.scss';
 
@@ -49,45 +49,34 @@ type Props = {
   fetchStatsForActiveGenome: () => void;
 };
 
-const ExampleLinks = (props: {
-  exampleLinks?: Partial<urlObj>;
-  exampleLinkText?: string;
-}) => {
-  const { exampleLinks, exampleLinkText } = props;
+const ExampleLinks = (props: { links: Partial<urlObj>; children?: string }) => {
+  const { links, children } = props;
 
   const [showPointerBox, setShowPointerBox] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
-  const containerRef = useRef<HTMLSpanElement>(null);
-
-  if (!exampleLinks) {
-    return null;
-  }
 
   return (
     <div className={styles.exampleLink}>
-      <span ref={containerRef}>
-        <span
-          className={styles.exampleLinkText}
-          ref={anchorRef}
-          onClick={() => setShowPointerBox(!showPointerBox)}
-        >
-          {exampleLinkText}
-          {showPointerBox && (
-            <PointerBox
-              anchor={anchorRef.current as HTMLDivElement}
-              onOutsideClick={() => setShowPointerBox(false)}
-              position={Position.BOTTOM_RIGHT}
-              container={containerRef.current}
-              autoAdjust={true}
-              classNames={{
-                box: styles.pointerBox,
-                pointer: styles.pointerBoxPointer
-              }}
-            >
-              <ViewInApp links={exampleLinks} />
-            </PointerBox>
-          )}
-        </span>
+      <span
+        className={styles.exampleLinkText}
+        ref={anchorRef}
+        onClick={() => setShowPointerBox(!showPointerBox)}
+      >
+        {children}
+        {showPointerBox && anchorRef.current && (
+          <PointerBox
+            anchor={anchorRef.current}
+            onOutsideClick={() => setShowPointerBox(false)}
+            position={Position.BOTTOM_RIGHT}
+            autoAdjust={true}
+            classNames={{
+              box: styles.pointerBox,
+              pointer: styles.pointerBoxPointer
+            }}
+          >
+            <ViewInApp links={links} />
+          </PointerBox>
+        )}
       </span>
     </div>
   );
@@ -120,10 +109,9 @@ const getCollapsedContent = (statsSection: StatsSection) => {
         </div>
       )}
 
-      <ExampleLinks
-        exampleLinks={exampleLinks}
-        exampleLinkText={exampleLinkText}
-      />
+      {exampleLinks && (
+        <ExampleLinks links={exampleLinks}>{exampleLinkText}</ExampleLinks>
+      )}
     </div>
   );
 };
@@ -131,36 +119,32 @@ const getCollapsedContent = (statsSection: StatsSection) => {
 const getExpandedContent = (statsSection: StatsSection) => {
   const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
+  const statsGroupClassName = classNames(styles.statsGroup, {
+    [styles.noLink]: exampleLinks ? !Object.keys(exampleLinks).length : true
+  });
+
   return (
     <div className={styles.expandedContent}>
-      {groups.map((group, group_index: number) => {
+      {groups.map((group, group_index) => {
         const { title, stats } = group;
-        const primaryStatsClassName = classNames(styles.primaryStats, {
-          [styles.primaryStatsNoLink]: exampleLinks
-            ? !Object.keys(exampleLinks).length
-            : true
-        });
-        const primaryOrSecondaryClassName =
-          group_index === 0 ? primaryStatsClassName : styles.secondaryStats;
         return (
-          <div key={group_index} className={primaryOrSecondaryClassName}>
+          <div key={group_index} className={statsGroupClassName}>
             <span className={styles.title}>{title}</span>
             <div className={styles.stats}>
-              {stats.map((groupStats, group_index: number) => {
+              {stats.map((groupStats, group_index) => {
                 return (
                   <div key={group_index}>
-                    {groupStats.map((stat, stat_index: number) => {
+                    {groupStats.map((stat, stat_index) => {
                       return <SpeciesStats key={stat_index} {...stat} />;
                     })}
                   </div>
                 );
               })}
             </div>
-            {group_index === 0 && (
-              <ExampleLinks
-                exampleLinks={exampleLinks}
-                exampleLinkText={exampleLinkText}
-              />
+            {group_index === 0 && exampleLinks && (
+              <ExampleLinks links={exampleLinks}>
+                {exampleLinkText}
+              </ExampleLinks>
             )}
           </div>
         );
@@ -171,12 +155,12 @@ const getExpandedContent = (statsSection: StatsSection) => {
 
 const SpeciesMainViewStats = (props: Props) => {
   useEffect(() => {
-    if (!props.genomeStats && props.exampleFocusObjects?.length) {
+    if (!props.genomeStats) {
       props.fetchStatsForActiveGenome();
     }
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
-  if (!props.genomeStats) {
+  if (!props.genomeStats || !props.exampleFocusObjects?.length) {
     return null;
   }
 

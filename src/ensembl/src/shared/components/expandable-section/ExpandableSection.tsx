@@ -72,11 +72,9 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
         <Chevron className={chevronClasses} />
       </div>
 
-      {isExpanded && (
+      {isExpanded ? (
         <div className={expandedContentClassNames}>{props.expandedContent}</div>
-      )}
-
-      {!isExpanded && (
+      ) : (
         <div className={collapsedContentClassNames}>
           {props.collapsedContent}
         </div>

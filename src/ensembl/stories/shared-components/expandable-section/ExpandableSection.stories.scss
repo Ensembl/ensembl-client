@@ -1,87 +1,85 @@
 @import 'src/styles/common';
 
-.collapsedContent{
-    display: grid;
-    padding:6px 20px;
-    grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 200px;
-    align-items: center;
+.collapsedContent {
+  display: grid;
+  padding: 6px 20px;
+  grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 200px;
+  align-items: center;
 
-    .title{
-        grid-column: title;
-        color: $medium-dark-grey;
+  .title {
+    grid-column: title;
+    color: $medium-dark-grey;
+  }
+
+  .primary {
+    grid-column: primary;
+
+    .primaryValue {
+      font-size: 22px;
     }
 
-    .primary{
-        grid-column: primary;
+    .primaryUnit {
+      color: #6f8190;
+      font-size: 13px;
+      padding-left: 5px;
+    }
+  }
 
-        .primaryValue{
-            font-size: 22px;
-        }
+  .secondary {
+    grid-column: secondary;
 
-        .primaryUnit{
-            color: #6f8190;
-            font-size: 13px;
-            padding-left: 5px;
-        }
+    .secondaryValue {
+      font-size: 22px;
     }
 
-    .secondary{
-        grid-column: secondary;
-
-        .secondaryValue{
-            font-size: 22px;
-        }
-
-        .secondaryUnit{
-            color: #6f8190;
-            font-size: 13px;
-            padding-left: 5px;
-        }
+    .secondaryUnit {
+      color: #6f8190;
+      font-size: 13px;
+      padding-left: 5px;
     }
+  }
 
-    .exampleLink{
-        cursor: pointer;
-        color: $blue;
-        grid-column:  example-link;
-    }
+  .exampleLink {
+    cursor: pointer;
+    color: $blue;
+    grid-column: example-link;
+  }
 }
 
+.primaryStats {
+  padding: 13px 20px;
+  display: grid;
+  grid-template-columns: [title] 120px [stats] auto [example-link] 200px;
+  align-items: flex-start;
 
-.primaryStats{
-    padding: 13px 20px;
-    display: grid;
-    grid-template-columns: [title] 120px [stats] auto [example-link] 200px;
-    align-items: flex-start;
+  .title {
+    grid-column: title;
+    color: $medium-dark-grey;
+  }
 
-    .title{
-        grid-column: title;
-        color: $medium-dark-grey;
-    }
-
-    .stats{
-        grid-column: stats;
-    }
-    .exampleLink{
-        cursor: pointer;
-        color: $blue;
-        grid-column:  example-link;
-    }
+  .stats {
+    grid-column: stats;
+  }
+  .exampleLink {
+    cursor: pointer;
+    color: $blue;
+    grid-column: example-link;
+  }
 }
 
+.secondaryStats {
+  padding: 13px 20px;
+  display: grid;
+  grid-template-columns: [title] 120px [stats] auto;
+  align-items: flex-start;
 
-.secondaryStats{
-    padding: 13px 20px;
-    display: grid;
-    grid-template-columns: [title] 120px [stats] auto;
-    align-items: flex-start;
+  .title {
+    font-size: 12px;
+    grid-column: title;
+    color: $medium-dark-grey;
+  }
 
-    .title{
-        font-size: 12px ;
-        grid-column: title;
-        color: $medium-dark-grey;
-    }
-
-    .stats{
-        grid-column: stats;
-    }
+  .stats {
+    grid-column: stats;
+  }
 }

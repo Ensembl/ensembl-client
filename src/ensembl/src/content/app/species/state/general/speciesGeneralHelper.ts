@@ -24,14 +24,14 @@ import { sampleData } from '../../sample-data';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
-export enum SpeciesStatsSections {
+export enum SpeciesStatsSection {
   CODING_STATS = 'coding_stats',
   NON_CODING_STATS = 'non_coding_stats',
   PSEUDOGENES = 'pseudogene_stats',
   ASSEMBLY_STATS = 'assembly_stats'
 }
 
-// SpeciesStatsSections -> Groups
+// SpeciesStatsSection -> Groups
 enum Groups {
   CODING_GENES = 'Coding genes',
   NON_CODING_GENES = 'Non-coding genes',
@@ -40,7 +40,7 @@ enum Groups {
   ASSEMBLY_STATS = 'Assembly'
 }
 
-// SpeciesStatsSections -> Groups -> Stats
+// SpeciesStatsSection -> Groups -> Stats
 enum Stats {
   // Coding stats
   CODING_GENES = 'Coding genes',
@@ -91,7 +91,7 @@ enum Stats {
 }
 
 type SpeciesStatsSectionGroups = {
-  [key in SpeciesStatsSections]: {
+  [key in SpeciesStatsSection]: {
     title: Stats | string;
     groups: Groups[];
     primaryStatsKey?: Stats;
@@ -103,26 +103,26 @@ type SpeciesStatsSectionGroups = {
 
 // Maps the groups to it's respective section
 export const sectionGroupsMap: SpeciesStatsSectionGroups = {
-  [SpeciesStatsSections.CODING_STATS]: {
+  [SpeciesStatsSection.CODING_STATS]: {
     title: Stats.CODING_GENES,
     hasExampleLink: true,
     exampleLinkText: 'Example gene',
     groups: [Groups.CODING_GENES, Groups.ANALYSIS],
     primaryStatsKey: Stats.CODING_GENES
   },
-  [SpeciesStatsSections.ASSEMBLY_STATS]: {
+  [SpeciesStatsSection.ASSEMBLY_STATS]: {
     title: 'Assembly',
     hasExampleLink: true,
     exampleLinkText: 'Example region',
     groups: [Groups.ASSEMBLY_STATS],
     primaryStatsKey: Stats.CHROMOSOMES
   },
-  [SpeciesStatsSections.PSEUDOGENES]: {
+  [SpeciesStatsSection.PSEUDOGENES]: {
     title: Stats.PSEUDOGENES,
     groups: [Groups.PSEUDOGENES],
     primaryStatsKey: Stats.PSEUDOGENES
   },
-  [SpeciesStatsSections.NON_CODING_STATS]: {
+  [SpeciesStatsSection.NON_CODING_STATS]: {
     title: Stats.NON_CODING_GENES,
     groups: [Groups.NON_CODING_GENES],
     primaryStatsKey: Stats.NON_CODING_GENES
@@ -239,7 +239,7 @@ type StatsGroup = {
 };
 
 export type StatsSection = {
-  section: SpeciesStatsSections;
+  section: SpeciesStatsSection;
   exampleLinks?: Partial<urlObj>;
   primaryStats?: SpeciesStatsProps;
   secondaryStats?: SpeciesStatsProps;
@@ -297,7 +297,7 @@ const buildHeaderStat = (
 };
 
 const getExampleLinks = (props: {
-  section: SpeciesStatsSections;
+  section: SpeciesStatsSection;
   genome_id: string;
   exampleFocusObjects: ExampleFocusObject[];
 }) => {
@@ -305,7 +305,7 @@ const getExampleLinks = (props: {
 
   const exampleLinks: Partial<urlObj> = {};
 
-  if (section === SpeciesStatsSections.CODING_STATS) {
+  if (section === SpeciesStatsSection.CODING_STATS) {
     const geneExample = exampleFocusObjects.find(
       (object) => object.type === 'gene'
     );
@@ -317,20 +317,18 @@ const getExampleLinks = (props: {
         })
       : undefined;
 
-    exampleLinks.genomeBrowser = focusId
-      ? urlFor.browser({
-          genomeId: genome_id,
-          focus: focusId
-        })
-      : undefined;
+    if (focusId) {
+      exampleLinks.genomeBrowser = urlFor.browser({
+        genomeId: genome_id,
+        focus: focusId
+      });
 
-    exampleLinks.entityViewer = focusId
-      ? urlFor.entityViewer({
-          genomeId: genome_id,
-          entityId: focusId
-        })
-      : undefined;
-  } else if (section === SpeciesStatsSections.ASSEMBLY_STATS) {
+      exampleLinks.entityViewer = urlFor.entityViewer({
+        genomeId: genome_id,
+        entityId: focusId
+      });
+    }
+  } else if (section === SpeciesStatsSection.ASSEMBLY_STATS) {
     const regionExample = exampleFocusObjects.find(
       (object) => object.type === 'region'
     );
@@ -342,12 +340,12 @@ const getExampleLinks = (props: {
         })
       : undefined;
 
-    exampleLinks.genomeBrowser = focusId
-      ? urlFor.browser({
-          genomeId: genome_id,
-          focus: focusId
-        })
-      : undefined;
+    if (focusId) {
+      exampleLinks.genomeBrowser = urlFor.browser({
+        genomeId: genome_id,
+        focus: focusId
+      });
+    }
   }
 
   return exampleLinks;
@@ -355,7 +353,7 @@ const getExampleLinks = (props: {
 
 export const getStatsForSection = (props: {
   genome_id: string;
-  section: SpeciesStatsSections;
+  section: SpeciesStatsSection;
   exampleFocusObjects: ExampleFocusObject[];
 }): StatsSection | undefined => {
   const { section, genome_id, exampleFocusObjects } = props;
