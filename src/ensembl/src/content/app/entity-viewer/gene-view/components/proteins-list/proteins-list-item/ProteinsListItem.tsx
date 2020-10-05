@@ -19,6 +19,11 @@ import classNames from 'classnames';
 import { connect } from 'react-redux';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
+import {
+  defaultTranscriptLabelMap,
+  canonicalType
+} from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/default-transcripts-list-item/DefaultTranscriptListItem';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
@@ -27,10 +32,12 @@ import { RootState } from 'src/store';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
+import transcriptsListItemStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/default-transcripts-list-item/DefaultTranscriptListItem.scss';
 import styles from './ProteinsListItem.scss';
 
 type Props = {
   transcript: Transcript;
+  isDefault?: boolean;
   trackLength: number;
   expandedTranscriptIds: string[];
   toggleExpandedProtein: (id: string) => void;
@@ -46,7 +53,16 @@ const ProteinsListItem = (props: Props) => {
   return (
     <>
       <div className={transcriptsListStyles.row}>
-        <div className={transcriptsListStyles.left}></div>
+        <div className={transcriptsListStyles.left}>
+          {props.isDefault && (
+            <div className={transcriptsListItemStyles.defaultTranscriptLabel}>
+              <span>{defaultTranscriptLabelMap[canonicalType]?.label}</span>
+              <QuestionButton
+                helpText={defaultTranscriptLabelMap[canonicalType]?.helpText}
+              />
+            </div>
+          )}
+        </div>
         {transcript.cds && (
           <div onClick={toggleListItemInfo} className={midStyles}>
             <div>{transcript.cds.protein_length} aa</div>

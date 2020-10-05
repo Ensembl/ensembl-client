@@ -50,6 +50,16 @@ export type DefaultTranscriptListItemProps = {
 
 // NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px
 
+export const defaultTranscriptLabelMap = {
+  selected: {
+    label: 'Selected',
+    helpText:
+      'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
+  }
+};
+
+export const canonicalType = 'selected'; // TODO Change this to transcript.mane/plus etc when available
+
 export const DefaultTranscriptListItem = (
   props: DefaultTranscriptListItemProps
 ) => {
@@ -60,16 +70,6 @@ export const DefaultTranscriptListItem = (
   );
   const transcriptStartX = scale(transcriptStart - geneStart); // FIXME In future, this should be done using relative position of transcript in gene
   const transcriptWidth = scale(transcriptEnd - transcriptStart); // FIXME  this too should be based on relative coordinates of transcript
-
-  const defaultTranscriptLabelMap = {
-    selected: {
-      label: 'Selected',
-      helpText:
-        'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
-    }
-  };
-
-  const canonicalType = 'selected'; // TODO Change this to transcript.mane/plus etc when available
 
   return (
     <div className={styles.defaultTranscriptListItem}>

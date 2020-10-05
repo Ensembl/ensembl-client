@@ -64,9 +64,10 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
 
   return (
     <div className={styles.proteinsList}>
-      {proteinCodingTranscripts.map((transcript) => (
+      {proteinCodingTranscripts.map((transcript, index) => (
         <ProteinsListItem
           key={transcript.id}
+          isDefault={index == 0}
           transcript={transcript}
           trackLength={longestProteinLength}
         />
