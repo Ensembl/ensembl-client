@@ -146,8 +146,14 @@ const getExpandedContent = (statsSection: StatsSection) => {
           <div key={group_index} className={primaryOrSecondaryClassName}>
             <span className={styles.title}>{title}</span>
             <div className={styles.stats}>
-              {stats.map((stat, stat_index: number) => {
-                return <SpeciesStats key={stat_index} {...stat} />;
+              {stats.map((groupStats, group_index: number) => {
+                return (
+                  <div key={group_index}>
+                    {groupStats.map((stat, stat_index: number) => {
+                      return <SpeciesStats key={stat_index} {...stat} />;
+                    })}
+                  </div>
+                );
               })}
             </div>
             {group_index === 0 && (

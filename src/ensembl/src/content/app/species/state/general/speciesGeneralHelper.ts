@@ -132,51 +132,54 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
 // Maps the individual stats to it's respective groups
 const groupsStatsMap = {
   [Groups.CODING_GENES]: [
-    Stats.CODING_GENES,
-    Stats.SHORTEST_GENE,
-    Stats.LONGEST_GENE
+    [Stats.CODING_GENES, Stats.SHORTEST_GENE, Stats.LONGEST_GENE]
   ],
   [Groups.ANALYSIS]: [
-    Stats.AVERAGE_GENOMIC_SPAN,
-    Stats.AVERAGE_SEQUENCE_LENGTH,
-    Stats.AVERAGE_CDS_LENGTH,
-    Stats.TOTAL_TRANSCRIPTS,
-    Stats.CODING_TRANSCRIPTS,
-    Stats.TRANSCRIPTS_PER_GENE,
-    Stats.CODING_TRANSCRIPTS_PER_GENE,
-    Stats.TOTAL_EXONS,
-    Stats.TOTAL_CODING_EXONS,
-    Stats.AVERAGE_EXON_LENGTH,
-    Stats.AVERAGE_CODING_EXON_LENGTH,
-    Stats.AVERAGE_EXONS_PER_TRANSCRIPT,
-    Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT,
-    Stats.TOTAL_INTRONS,
-    Stats.AVERAGE_INTRON_LENGTH
+    [Stats.AVERAGE_GENOMIC_SPAN, Stats.AVERAGE_SEQUENCE_LENGTH],
+    [
+      Stats.AVERAGE_CDS_LENGTH,
+      Stats.TOTAL_TRANSCRIPTS,
+      Stats.CODING_TRANSCRIPTS,
+      Stats.TRANSCRIPTS_PER_GENE,
+      Stats.CODING_TRANSCRIPTS_PER_GENE,
+      Stats.TOTAL_EXONS,
+      Stats.TOTAL_CODING_EXONS,
+      Stats.AVERAGE_EXON_LENGTH,
+      Stats.AVERAGE_CODING_EXON_LENGTH,
+      Stats.AVERAGE_EXONS_PER_TRANSCRIPT,
+      Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT,
+      Stats.TOTAL_INTRONS,
+      Stats.AVERAGE_INTRON_LENGTH
+    ]
   ],
   [Groups.ASSEMBLY_STATS]: [
-    Stats.CHROMOSOMES,
-    Stats.TOTAL_GENOME_LENGTH,
-    Stats.TOTAL_CODING_SEQUENCE_LENGTH,
-    Stats.AVERAGE_GC_CONTENT,
-    Stats.TOTAL_GAP_LENGTH,
-    Stats.SPANNED_GAP,
-    Stats.TOPLEVEL_SEQUENCES,
-    Stats.COMPONENT_SEQUENCES,
-    Stats.ASSEMBLY_NAME,
-    Stats.ASSEMBLY_DATE,
-    Stats.ASSEMBLY_ACCESSION,
-    Stats.CONTIG_N50,
-    Stats.TAXONOMY_ID,
-    Stats.BREED_CULTIVAR_STRAIN,
-    Stats.SEX,
-    Stats.SCIENTIFIC_NAME
+    [
+      Stats.CHROMOSOMES,
+      Stats.TOTAL_GENOME_LENGTH,
+      Stats.TOTAL_CODING_SEQUENCE_LENGTH,
+      Stats.AVERAGE_GC_CONTENT,
+      Stats.TOTAL_GAP_LENGTH,
+      Stats.SPANNED_GAP,
+      Stats.TOPLEVEL_SEQUENCES,
+      Stats.COMPONENT_SEQUENCES,
+      Stats.ASSEMBLY_NAME,
+      Stats.ASSEMBLY_DATE,
+      Stats.ASSEMBLY_ACCESSION,
+      Stats.CONTIG_N50,
+      Stats.TAXONOMY_ID,
+      Stats.BREED_CULTIVAR_STRAIN,
+      Stats.SEX,
+      Stats.SCIENTIFIC_NAME
+    ]
   ],
-  [Groups.PSEUDOGENES]: [Stats.PSEUDOGENES],
+  [Groups.PSEUDOGENES]: [[Stats.PSEUDOGENES]],
   [Groups.NON_CODING_GENES]: [
-    Stats.NON_CODING_GENES,
-    Stats.SMALL_NON_CODING_GENES,
-    Stats.LONG_NON_CODING_GENES,
-    Stats.MISC_NON_CODING_GENES
+    [
+      Stats.NON_CODING_GENES,
+      Stats.SMALL_NON_CODING_GENES,
+      Stats.LONG_NON_CODING_GENES,
+      Stats.MISC_NON_CODING_GENES
+    ]
   ]
 };
 
@@ -232,7 +235,7 @@ const statsFormattingOptions: StatsFormattingOptions = {
 
 type StatsGroup = {
   title: string;
-  stats: SpeciesStatsProps[];
+  stats: [SpeciesStatsProps[]];
 };
 
 export type StatsSection = {
@@ -396,13 +399,19 @@ export const getStatsForSection = (props: {
     secondaryStats,
     exampleLinks,
     groups: groups.map((group) => {
-      const stats = groupsStatsMap[group];
+      const groupStats = groupsStatsMap[group];
       return {
         title: group,
-        stats: stats
-          .map((stat) =>
-            buildIndividualStat({ primaryKey: stat, primaryValue: data[stat] })
-          )
+        stats: groupStats
+          .map((subGroupStats) => {
+            return subGroupStats.map((stat) =>
+              buildIndividualStat({
+                primaryKey: stat,
+                primaryValue: data[stat]
+              })
+            );
+          })
+
           .filter(Boolean)
       };
     })
