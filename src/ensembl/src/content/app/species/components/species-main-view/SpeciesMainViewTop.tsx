@@ -16,29 +16,16 @@
 
 import React from 'react';
 
+import SpeciesPageTitle from 'src/content/app/species/components/species-page-title/SpeciesPageTitle';
 import SpeciesSelectionControls from 'src/content/app/species/components/species-selection-controls/SpeciesSelectionControls';
 
 import styles from './SpeciesMainView.scss';
 
 const SpeciesMainViewTop = () => {
-  const mockSpeciesIcon = (
-    <div
-      style={{
-        height: '57px',
-        width: '57px',
-        background: '#d4d9de',
-        display: 'inline-block',
-        verticalAlign: 'middle',
-        marginRight: '18px'
-      }}
-    />
-  );
-
   return (
     <div className={styles.speciesMainViewTop}>
       <div className={styles.speciesLabelBlock}>
-        {mockSpeciesIcon}
-        Species name
+        <SpeciesPageTitle />
       </div>
       <SpeciesSelectionControls />
     </div>
