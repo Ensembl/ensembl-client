@@ -66,7 +66,6 @@ const ProteinsListItem = (props: Props) => {
   const itemRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (transcript.id === transcriptIdToFocus) {
-      // give it some time for other expanded proteins to load
       itemRef.current?.scrollIntoView({
         behavior: 'smooth'
       });
