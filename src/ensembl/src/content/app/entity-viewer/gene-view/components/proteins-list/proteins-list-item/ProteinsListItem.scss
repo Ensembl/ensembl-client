@@ -1,5 +1,10 @@
 @import 'src/styles/settings';
 
+.proteinListItem{
+  scroll-margin-top: 55px
+}
+
+
 .middle {
   cursor: pointer;
   display: grid;
@@ -22,3 +27,4 @@
   position: absolute;
   top: -55px;
 }
+

@@ -126,7 +126,7 @@ export const TranscriptsListItemInfo = (
     objectId: props.gene.id
   });
 
-  const buildUrlForProteinView = (transcriptId: string) => {
+  const getLinkToProteinView = (transcriptId: string) => {
     if (transcript.so_term !== 'protein_coding') {
       // TODO: Use Protein ID
       return transcriptId;
@@ -169,7 +169,7 @@ export const TranscriptsListItemInfo = (
               <div>
                 <strong>{getAminoAcidLength()} aa</strong>
               </div>
-              {buildUrlForProteinView(transcript.id)}
+              {getLinkToProteinView(transcript.id)}
             </>
           )}
         </div>

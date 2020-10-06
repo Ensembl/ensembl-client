@@ -1,13 +1,10 @@
 .proteinsList {
   font-size: 13px;
   font-weight: 300;
-  overflow: auto;
 }
 
 .proteinsListLoadingContainer {
-  height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }

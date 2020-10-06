@@ -66,13 +66,10 @@ const ProteinsListItem = (props: Props) => {
   const itemRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (transcript.id === transcriptIdToFocus) {
-      // give it some time for other expanded proteiens to load
-      setTimeout(() => {
-        itemRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }, 100);
+      // give it some time for other expanded proteins to load
+      itemRef.current?.scrollIntoView({
+        behavior: 'smooth'
+      });
 
       if (!props.expandedTranscriptIds.includes(transcriptIdToFocus)) {
         props.toggleExpandedProtein(transcript.id);
@@ -81,9 +78,8 @@ const ProteinsListItem = (props: Props) => {
   }, [transcriptIdToFocus]);
 
   return (
-    <div>
+    <div className={styles.proteinListItem} ref={itemRef}>
       <div className={transcriptsListStyles.row}>
-        <span className={styles.scrollRef} ref={itemRef}></span>
         <div className={transcriptsListStyles.left}></div>
         {transcript.cds && (
           <div onClick={toggleListItemInfo} className={midStyles}>
