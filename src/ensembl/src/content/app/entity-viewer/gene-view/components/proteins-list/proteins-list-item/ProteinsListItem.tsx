@@ -47,7 +47,7 @@ const ProteinsListItem = (props: Props) => {
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const { search } = useLocation();
-  const transcriptIdToFocus = new URLSearchParams(search).get('transcriptId');
+  const transcriptIdToFocus = new URLSearchParams(search).get('transcript_id');
 
   const toggleListItemInfo = () => {
     if (transcriptIdToFocus) {
@@ -66,9 +66,11 @@ const ProteinsListItem = (props: Props) => {
   const itemRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (transcript.id === transcriptIdToFocus) {
-      itemRef.current?.scrollIntoView({
-        behavior: 'smooth'
-      });
+      setTimeout(() => {
+        itemRef.current?.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }, 100);
 
       if (!props.expandedTranscriptIds.includes(transcriptIdToFocus)) {
         props.toggleExpandedProtein(transcript.id);

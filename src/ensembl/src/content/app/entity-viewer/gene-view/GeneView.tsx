@@ -191,7 +191,7 @@ const useGeneViewRouting = () => {
   const { search } = useLocation();
   // TODO: discuss – is using URLSearchParams better than using the querystring package?
   const view = new URLSearchParams(search).get('view');
-  const transcriptId = new URLSearchParams(search).get('transcriptId');
+  const transcriptId = new URLSearchParams(search).get('transcript_id');
   const viewInRedux = useSelector(getCurrentView) || View.TRANSCRIPTS;
   const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
   const selectedTabs = useSelector(getSelectedGeneViewTabs);

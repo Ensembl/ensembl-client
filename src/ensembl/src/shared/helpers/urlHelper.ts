@@ -71,7 +71,7 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   const query = queryString.stringify(
     {
       view: params?.view || undefined,
-      transcriptId: params?.transcriptId || undefined
+      transcript_id: params?.transcriptId || undefined
     },
     {
       encode: false
