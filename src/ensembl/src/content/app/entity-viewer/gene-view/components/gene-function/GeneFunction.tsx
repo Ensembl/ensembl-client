@@ -125,6 +125,7 @@ const GeneFunction = (props: Props) => {
       header={<TabWrapper />}
       classNames={{
         panel: styles.panel,
+        header: styles.header,
         body: styles.panelBody
       }}
     >

@@ -9,6 +9,12 @@
   color: $black;
 }
 
+.header {
+  position: sticky;
+  top: -5px;
+  z-index: 1;
+}
+
 .defaultTabName {
   padding: 3px 30px;
 }
