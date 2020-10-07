@@ -2,7 +2,8 @@
 
 .checkboxHolder {
   display: grid;
-  grid-template-columns: 27px 100%;
+  width: 100%;
+  grid-template-columns: 27px 1fr;
 }
 
 .defaultCheckbox {
