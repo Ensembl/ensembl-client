@@ -47,7 +47,7 @@ const getCollapsedContent = () => {
 const getExpandedContent = () => {
   return (
     <div className={styles.expandedContent}>
-      <div className={styles.primaryStats}>
+      <div className={styles.statsGroup}>
         <span className={styles.title}>Coding Genes</span>
         <div className={styles.stats}>
           <SpeciesStats
@@ -71,7 +71,7 @@ const getExpandedContent = () => {
         <span className={styles.exampleLink}>Example Gene</span>
       </div>
 
-      <div className={styles.secondaryStats}>
+      <div className={styles.statsGroup}>
         <span className={styles.title}>Analysis</span>
         <div className={styles.stats}>
           <SpeciesStats

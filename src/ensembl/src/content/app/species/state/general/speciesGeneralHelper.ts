@@ -49,7 +49,7 @@ enum Stats {
   LONGEST_GENE = 'longest_gene',
   AVERAGE_GENOMIC_SPAN = 'average_genomic_span',
   AVERAGE_SEQUENCE_LENGTH = 'average_sequence_length',
-  AVERAGE_CDS_LENGTH = 'average_CDS_length',
+  AVERAGE_CDS_LENGTH = 'average_cds_length',
   TOTAL_TRANSCRIPTS = 'total_transcripts',
   CODING_TRANSCRIPTS = 'coding_transcripts',
   TRANSCRIPTS_PER_GENE = 'transcripts_per_gene',
@@ -77,7 +77,7 @@ enum Stats {
   ASSEMBLY_ACCESSION = 'assembly_accession',
   CONTIG_N50 = 'contig_n50',
   TAXONOMY_ID = 'taxonomy_id',
-  BREED_CULTIVAR_STRAIN = 'breed_cultivar_strain',
+  STRAIN = 'strain',
   SEX = 'sex',
   SCIENTIFIC_NAME = 'scientific_name',
 
@@ -104,7 +104,7 @@ type SpeciesStatsSectionGroups = {
 // Maps the groups to it's respective section
 export const sectionGroupsMap: SpeciesStatsSectionGroups = {
   [SpeciesStatsSection.CODING_STATS]: {
-    title: Stats.CODING_GENES,
+    title: 'Coding genes',
     exampleLinkText: 'Example gene',
     groups: [Groups.CODING_GENES, Groups.ANALYSIS],
     primaryStatsKey: Stats.CODING_GENES
@@ -116,12 +116,12 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
     primaryStatsKey: Stats.CHROMOSOMES
   },
   [SpeciesStatsSection.PSEUDOGENES]: {
-    title: Stats.PSEUDOGENES,
+    title: 'Pseudogenes',
     groups: [Groups.PSEUDOGENES],
     primaryStatsKey: Stats.PSEUDOGENES
   },
   [SpeciesStatsSection.NON_CODING_STATS]: {
-    title: Stats.NON_CODING_GENES,
+    title: 'Non-coding genes',
     groups: [Groups.NON_CODING_GENES],
     primaryStatsKey: Stats.NON_CODING_GENES
   }
@@ -165,7 +165,7 @@ const groupsStatsMap = {
       Stats.ASSEMBLY_ACCESSION,
       Stats.CONTIG_N50,
       Stats.TAXONOMY_ID,
-      Stats.BREED_CULTIVAR_STRAIN,
+      Stats.STRAIN,
       Stats.SEX,
       Stats.SCIENTIFIC_NAME
     ]
@@ -265,33 +265,41 @@ const statsFormattingOptions: StatsFormattingOptions = {
   [Stats.ASSEMBLY_ACCESSION]: { label: 'Assembly accession' },
   [Stats.CONTIG_N50]: { label: 'Contig N50' },
   [Stats.TAXONOMY_ID]: { label: 'Taxonomy id' },
-  [Stats.BREED_CULTIVAR_STRAIN]: { label: 'Breed/Cultivar/Strain' },
+  [Stats.STRAIN]: { label: 'Breed/Cultivar/Strain' },
   [Stats.SEX]: { label: 'Sex' },
   [Stats.SCIENTIFIC_NAME]: { label: 'Scientific name' },
   [Stats.PSEUDOGENES]: { label: 'Pseudogenes' }
 };
 
+type IndividualStat = Omit<
+  SpeciesStatsProps,
+  'primaryValue' | 'secondaryValue'
+> & {
+  primaryValue: string | number | null;
+  secondaryValue?: string | number | null;
+};
+
 type StatsGroup = {
   title: string;
-  stats: [SpeciesStatsProps[]];
+  stats: [IndividualStat[]];
 };
 
 export type StatsSection = {
   section: SpeciesStatsSection;
   exampleLinks?: Partial<urlObj>;
-  primaryStats?: SpeciesStatsProps;
-  secondaryStats?: SpeciesStatsProps;
+  primaryStats?: IndividualStat;
+  secondaryStats?: IndividualStat;
   groups: StatsGroup[];
 };
 
-type BuildStatProps = Partial<SpeciesStatsProps> & {
+type BuildStatProps = Partial<IndividualStat> & {
   primaryKey: Stats;
   secondaryKey?: Stats;
 };
 
 const buildIndividualStat = (
   props: BuildStatProps
-): SpeciesStatsProps | undefined => {
+): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
   if (!primaryValue) {
@@ -312,9 +320,7 @@ const buildIndividualStat = (
   };
 };
 
-const buildHeaderStat = (
-  props: BuildStatProps
-): SpeciesStatsProps | undefined => {
+const buildHeaderStat = (props: BuildStatProps): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
   if (!primaryValue) {
@@ -440,14 +446,15 @@ export const getStatsForSection = (props: {
         title: group,
         stats: groupStats
           .map((subGroupStats) => {
-            return subGroupStats.map((stat) =>
-              buildIndividualStat({
-                primaryKey: stat,
-                primaryValue: data[stat]
-              })
-            );
+            return subGroupStats
+              .map((stat) =>
+                buildIndividualStat({
+                  primaryKey: stat,
+                  primaryValue: data[stat]
+                })
+              )
+              .filter(Boolean);
           })
-
           .filter(Boolean)
       };
     })

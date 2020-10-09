@@ -43,6 +43,7 @@
   align-items: center;
 
   .title {
+    font-size: 12px;
     grid-column: title;
     color: $medium-dark-grey;
   }
@@ -92,6 +93,7 @@
     font-size: 12px;
     grid-column: title;
     color: $medium-dark-grey;
+    padding-top: 1px;
   }
 
   .stats {

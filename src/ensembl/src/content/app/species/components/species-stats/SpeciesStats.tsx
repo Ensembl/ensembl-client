@@ -40,10 +40,10 @@ type ClassNamesProps = {
     wrapper?: string;
     preLabel?: string;
     label?: string;
-    primaryValue?: string;
+    primaryValue?: string | number;
     primaryUnit?: string;
     primaryValuePostfix?: string;
-    secondaryValue?: string;
+    secondaryValue?: string | number;
     secondaryUnit?: string;
     link?: string;
   };

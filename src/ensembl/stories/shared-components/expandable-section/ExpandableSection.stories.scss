@@ -3,11 +3,12 @@
 .collapsedContent {
   display: grid;
   padding: 6px 20px;
-  grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 200px;
+  grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 150px;
   align-items: center;
 
   .title {
     grid-column: title;
+    font-size: 12px;
     color: $medium-dark-grey;
   }
 
@@ -19,7 +20,7 @@
     }
 
     .primaryUnit {
-      color: #6f8190;
+      color: $dark-grey;
       font-size: 13px;
       padding-left: 5px;
     }
@@ -33,45 +34,24 @@
     }
 
     .secondaryUnit {
-      color: #6f8190;
+      color: $dark-grey;
       font-size: 13px;
       padding-left: 5px;
     }
   }
 
   .exampleLink {
-    cursor: pointer;
-    color: $blue;
     grid-column: example-link;
+    font-size: 11px;
   }
 }
 
-.primaryStats {
-  padding: 13px 20px;
-  display: grid;
-  grid-template-columns: [title] 120px [stats] auto [example-link] 200px;
-  align-items: flex-start;
 
-  .title {
-    grid-column: title;
-    color: $medium-dark-grey;
-  }
 
-  .stats {
-    grid-column: stats;
-  }
-  .exampleLink {
-    cursor: pointer;
-    color: $blue;
-    grid-column: example-link;
-  }
-}
-
-.secondaryStats {
-  padding: 13px 20px;
+.statsGroup {
+  padding: 13px 20px 0;
   display: grid;
   grid-template-columns: [title] 120px [stats] auto;
-  align-items: flex-start;
 
   .title {
     font-size: 12px;
@@ -81,5 +61,20 @@
 
   .stats {
     grid-column: stats;
+  }
+
+  &:first-of-type {
+
+    grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
+  
+    .title {
+      grid-column: title;
+      color: $medium-dark-grey;
+    }
+    .exampleLink {
+      grid-column: example-link;
+      font-size: 11px;
+      padding-top: 2px;
+    }
   }
 }
