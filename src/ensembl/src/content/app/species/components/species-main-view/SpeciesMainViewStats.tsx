@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import PointerBox, {
-  Position
-} from 'src/shared/components/pointer-box/PointerBox';
+import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
-import ViewInApp, { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import {
   getActiveGenomeId,
@@ -47,39 +44,6 @@ type Props = {
   genomeStats: GenomeStats | undefined;
   exampleFocusObjects: ExampleFocusObject[];
   fetchStatsForActiveGenome: () => void;
-};
-
-const ExampleLinks = (props: { links: Partial<urlObj>; children?: string }) => {
-  const { links, children } = props;
-
-  const [showPointerBox, setShowPointerBox] = useState(false);
-  const anchorRef = useRef<HTMLSpanElement>(null);
-
-  return (
-    <div className={styles.exampleLink}>
-      <span
-        className={styles.exampleLinkText}
-        ref={anchorRef}
-        onClick={() => setShowPointerBox(!showPointerBox)}
-      >
-        {children}
-        {showPointerBox && anchorRef.current && (
-          <PointerBox
-            anchor={anchorRef.current}
-            onOutsideClick={() => setShowPointerBox(false)}
-            position={Position.BOTTOM_RIGHT}
-            autoAdjust={true}
-            classNames={{
-              box: styles.pointerBox,
-              pointer: styles.pointerBoxPointer
-            }}
-          >
-            <ViewInApp links={links} />
-          </PointerBox>
-        )}
-      </span>
-    </div>
-  );
 };
 
 const getCollapsedContent = (statsSection: StatsSection) => {
@@ -110,7 +74,11 @@ const getCollapsedContent = (statsSection: StatsSection) => {
       )}
 
       {exampleLinks && (
-        <ExampleLinks links={exampleLinks}>{exampleLinkText}</ExampleLinks>
+        <div className={styles.exampleLink}>
+          <ViewInAppPopup links={exampleLinks}>
+            <span className={styles.exampleLinkText}>{exampleLinkText}</span>
+          </ViewInAppPopup>
+        </div>
       )}
     </div>
   );
@@ -142,9 +110,13 @@ const getExpandedContent = (statsSection: StatsSection) => {
               })}
             </div>
             {group_index === 0 && exampleLinks && (
-              <ExampleLinks links={exampleLinks}>
-                {exampleLinkText}
-              </ExampleLinks>
+              <div className={styles.exampleLink}>
+                <ViewInAppPopup links={exampleLinks}>
+                  <span className={styles.exampleLinkText}>
+                    {exampleLinkText}
+                  </span>
+                </ViewInAppPopup>
+              </div>
             )}
           </div>
         );

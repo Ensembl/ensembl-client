@@ -41,53 +41,54 @@ enum Groups {
 }
 
 // SpeciesStatsSection -> Groups -> Stats
+
 enum Stats {
   // Coding stats
-  CODING_GENES = 'Coding genes',
-  SHORTEST_GENE = 'Shortest gene',
-  LONGEST_GENE = 'Longest gene',
-  AVERAGE_GENOMIC_SPAN = 'Average genomic span',
-  AVERAGE_SEQUENCE_LENGTH = 'Average sequence length',
-  AVERAGE_CDS_LENGTH = 'Average CDS length',
-  TOTAL_TRANSCRIPTS = 'Total transcripts',
-  CODING_TRANSCRIPTS = 'Coding transcripts',
-  TRANSCRIPTS_PER_GENE = 'Transcripts per gene',
-  CODING_TRANSCRIPTS_PER_GENE = 'Coding transcripts per gene',
-  TOTAL_EXONS = 'Total exons',
-  TOTAL_CODING_EXONS = 'Total coding exons',
-  AVERAGE_EXON_LENGTH = 'Average exon length',
-  AVERAGE_CODING_EXON_LENGTH = 'Average coding exon length',
-  AVERAGE_EXONS_PER_TRANSCRIPT = 'Average exons per transcript',
-  AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT = 'Average coding exons per coding transcript',
-  TOTAL_INTRONS = 'Total introns',
-  AVERAGE_INTRON_LENGTH = 'Average intron length',
+  CODING_GENES = 'coding_genes',
+  SHORTEST_GENE = 'shortest_gene',
+  LONGEST_GENE = 'longest_gene',
+  AVERAGE_GENOMIC_SPAN = 'average_genomic_span',
+  AVERAGE_SEQUENCE_LENGTH = 'average_sequence_length',
+  AVERAGE_CDS_LENGTH = 'average_CDS_length',
+  TOTAL_TRANSCRIPTS = 'total_transcripts',
+  CODING_TRANSCRIPTS = 'coding_transcripts',
+  TRANSCRIPTS_PER_GENE = 'transcripts_per_gene',
+  CODING_TRANSCRIPTS_PER_GENE = 'coding_transcripts_per_gene',
+  TOTAL_EXONS = 'total_exons',
+  TOTAL_CODING_EXONS = 'total_coding_exons',
+  AVERAGE_EXON_LENGTH = 'average_exon_length',
+  AVERAGE_CODING_EXON_LENGTH = 'average_coding_exon_length',
+  AVERAGE_EXONS_PER_TRANSCRIPT = 'average_exons_per_transcript',
+  AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT = 'average_coding_exons_per_coding_transcript',
+  TOTAL_INTRONS = 'total_introns',
+  AVERAGE_INTRON_LENGTH = 'average_intron_length',
 
-  // Assembly Stats
-  CHROMOSOMES = 'Chromosomes',
-  TOTAL_GENOME_LENGTH = 'Total genome length',
-  TOTAL_CODING_SEQUENCE_LENGTH = 'Total coding sequence length',
-  TOTAL_GAP_LENGTH = 'Total gap length',
-  SPANNED_GAP = 'Spanned gaps',
-  TOPLEVEL_SEQUENCES = 'Toplevel sequences',
-  COMPONENT_SEQUENCES = 'Component sequences',
-  AVERAGE_GC_CONTENT = '% GC',
-  ASSEMBLY_NAME = 'Assembly name',
-  ASSEMBLY_DATE = 'Assembly date',
-  ASSEMBLY_ACCESSION = 'Assembly accession',
-  CONTIG_N50 = 'Contig N50',
-  TAXONOMY_ID = 'Taxonomy id',
-  BREED_CULTIVAR_STRAIN = 'Breed/Cultivar/Strain',
-  SEX = 'Sex',
-  SCIENTIFIC_NAME = 'Scientific name',
+  // assembly_Stats
+  CHROMOSOMES = 'chromosomes',
+  TOTAL_GENOME_LENGTH = 'total_genome_length',
+  TOTAL_CODING_SEQUENCE_LENGTH = 'total_coding_sequence_length',
+  TOTAL_GAP_LENGTH = 'total_gap_length',
+  SPANNED_GAP = 'spanned_gaps',
+  TOPLEVEL_SEQUENCES = 'toplevel_sequences',
+  COMPONENT_SEQUENCES = 'component_sequences',
+  AVERAGE_GC_CONTENT = 'gc_percentage',
+  ASSEMBLY_NAME = 'assembly_name',
+  ASSEMBLY_DATE = 'assembly_date',
+  ASSEMBLY_ACCESSION = 'assembly_accession',
+  CONTIG_N50 = 'contig_n50',
+  TAXONOMY_ID = 'taxonomy_id',
+  BREED_CULTIVAR_STRAIN = 'breed_cultivar_strain',
+  SEX = 'sex',
+  SCIENTIFIC_NAME = 'scientific_name',
 
   // Non coding stats
-  NON_CODING_GENES = 'Non-coding genes',
-  SMALL_NON_CODING_GENES = 'Small non-coding genes',
-  LONG_NON_CODING_GENES = 'Long non-coding genes',
-  MISC_NON_CODING_GENES = 'Misc non-coding genes',
+  NON_CODING_GENES = 'non_coding_genes',
+  SMALL_NON_CODING_GENES = 'small_non_coding_genes',
+  LONG_NON_CODING_GENES = 'long_non_coding_genes',
+  MISC_NON_CODING_GENES = 'misc_non_coding_genes',
 
   // Psuedogene stats
-  PSEUDOGENES = 'Pseudogenes'
+  PSEUDOGENES = 'pseudogenes'
 }
 
 type SpeciesStatsSectionGroups = {
@@ -96,7 +97,6 @@ type SpeciesStatsSectionGroups = {
     groups: Groups[];
     primaryStatsKey?: Stats;
     secondaryStatsKey?: Stats;
-    hasExampleLink?: boolean;
     exampleLinkText?: string;
   };
 };
@@ -105,14 +105,12 @@ type SpeciesStatsSectionGroups = {
 export const sectionGroupsMap: SpeciesStatsSectionGroups = {
   [SpeciesStatsSection.CODING_STATS]: {
     title: Stats.CODING_GENES,
-    hasExampleLink: true,
     exampleLinkText: 'Example gene',
     groups: [Groups.CODING_GENES, Groups.ANALYSIS],
     primaryStatsKey: Stats.CODING_GENES
   },
   [SpeciesStatsSection.ASSEMBLY_STATS]: {
     title: 'Assembly',
-    hasExampleLink: true,
     exampleLinkText: 'Example region',
     groups: [Groups.ASSEMBLY_STATS],
     primaryStatsKey: Stats.CHROMOSOMES
@@ -185,8 +183,8 @@ const groupsStatsMap = {
 
 // Individual stat formatting options.
 type StatsFormattingOptions = {
-  [key in Stats]?: {
-    label?: string;
+  [key in Stats]: {
+    label: string;
     headerUnit?: string;
     primaryUnit?: string;
     secondaryUnit?: string;
@@ -211,26 +209,66 @@ const statsFormattingOptions: StatsFormattingOptions = {
     headerUnit: 'chromosomes or plasmids'
   },
   [Stats.TOTAL_GENOME_LENGTH]: {
-    primaryUnit: 'bp'
+    primaryUnit: 'bp',
+    label: 'Total genome length'
   },
   [Stats.TOTAL_CODING_SEQUENCE_LENGTH]: {
-    primaryUnit: 'bp'
+    primaryUnit: 'bp',
+    label: 'Total coding sequence length'
   },
   [Stats.AVERAGE_GC_CONTENT]: {
-    primaryValuePostfix: '%'
+    primaryValuePostfix: '%',
+    label: '% GC'
   },
   [Stats.NON_CODING_GENES]: {
-    primaryUnit: 'bp'
+    primaryUnit: 'bp',
+    label: 'Non-coding genes'
   },
   [Stats.SMALL_NON_CODING_GENES]: {
-    primaryUnit: 'bp'
+    primaryUnit: 'bp',
+    label: 'Small non-coding genes'
   },
   [Stats.LONG_NON_CODING_GENES]: {
-    primaryUnit: 'bp'
+    primaryUnit: 'bp',
+    label: 'Long non-coding genes'
   },
   [Stats.MISC_NON_CODING_GENES]: {
-    primaryUnit: 'bp'
-  }
+    primaryUnit: 'bp',
+    label: 'Misc non-coding genes'
+  },
+  [Stats.AVERAGE_GENOMIC_SPAN]: { label: 'Average genomic span' },
+  [Stats.AVERAGE_SEQUENCE_LENGTH]: { label: 'Average sequence length' },
+  [Stats.AVERAGE_CDS_LENGTH]: { label: 'Average CDS length' },
+  [Stats.TOTAL_TRANSCRIPTS]: { label: 'Total transcripts' },
+  [Stats.CODING_TRANSCRIPTS]: { label: 'Coding transcripts' },
+  [Stats.TRANSCRIPTS_PER_GENE]: { label: 'Transcripts per gene' },
+  [Stats.CODING_TRANSCRIPTS_PER_GENE]: { label: 'Coding transcripts per gene' },
+  [Stats.TOTAL_EXONS]: { label: 'Total exons' },
+  [Stats.TOTAL_CODING_EXONS]: { label: 'Total coding exons' },
+  [Stats.AVERAGE_EXON_LENGTH]: { label: 'Average exon length' },
+  [Stats.AVERAGE_CODING_EXON_LENGTH]: { label: 'Average coding exon length' },
+  [Stats.AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    label: 'Average exons per transcript'
+  },
+  [Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT]: {
+    label: 'Average coding exons per coding transcript'
+  },
+  [Stats.TOTAL_INTRONS]: { label: 'Total introns' },
+  [Stats.AVERAGE_INTRON_LENGTH]: { label: 'Average intron length' },
+  [Stats.CHROMOSOMES]: { label: 'Chromosomes' },
+  [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length' },
+  [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
+  [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
+  [Stats.COMPONENT_SEQUENCES]: { label: 'Component sequences' },
+  [Stats.ASSEMBLY_NAME]: { label: 'Assembly name' },
+  [Stats.ASSEMBLY_DATE]: { label: 'Assembly date' },
+  [Stats.ASSEMBLY_ACCESSION]: { label: 'Assembly accession' },
+  [Stats.CONTIG_N50]: { label: 'Contig N50' },
+  [Stats.TAXONOMY_ID]: { label: 'Taxonomy id' },
+  [Stats.BREED_CULTIVAR_STRAIN]: { label: 'Breed/Cultivar/Strain' },
+  [Stats.SEX]: { label: 'Sex' },
+  [Stats.SCIENTIFIC_NAME]: { label: 'Scientific name' },
+  [Stats.PSEUDOGENES]: { label: 'Pseudogenes' }
 };
 
 type StatsGroup = {
@@ -358,13 +396,13 @@ export const getStatsForSection = (props: {
 }): StatsSection | undefined => {
   const { section, genome_id, exampleFocusObjects } = props;
 
-  const data = sampleData[section][genome_id];
+  const data = sampleData[genome_id][section];
 
   const {
     groups,
     primaryStatsKey,
     secondaryStatsKey,
-    hasExampleLink
+    exampleLinkText
   } = sectionGroupsMap[section];
 
   if (!data || !groups) {
@@ -383,7 +421,7 @@ export const getStatsForSection = (props: {
       })
     : undefined;
 
-  const exampleLinks = hasExampleLink
+  const exampleLinks = exampleLinkText
     ? getExampleLinks({
         section,
         genome_id,
