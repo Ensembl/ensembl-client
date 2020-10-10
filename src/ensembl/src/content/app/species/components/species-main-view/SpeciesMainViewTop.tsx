@@ -15,6 +15,10 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
+import classNames from 'classnames';
+
+import { isSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 
 import SpeciesPageTitle from 'src/content/app/species/components/species-page-title/SpeciesPageTitle';
 import SpeciesSelectionControls from 'src/content/app/species/components/species-selection-controls/SpeciesSelectionControls';
@@ -22,8 +26,14 @@ import SpeciesSelectionControls from 'src/content/app/species/components/species
 import styles from './SpeciesMainView.scss';
 
 const SpeciesMainViewTop = () => {
+  const isSidebarOpen = useSelector(getSidebarStatus);
+
+  const blockClass = classNames(styles.speciesMainViewTop, {
+    [styles.speciesMainViewTopNarrow]: isSidebarOpen
+  });
+
   return (
-    <div className={styles.speciesMainViewTop}>
+    <div className={blockClass}>
       <div className={styles.speciesLabelBlock}>
         <SpeciesPageTitle />
       </div>

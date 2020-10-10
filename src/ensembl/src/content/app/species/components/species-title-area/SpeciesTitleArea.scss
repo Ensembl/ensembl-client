@@ -1,0 +1,109 @@
+@import 'src/styles/common';
+
+@mixin narrow-grid {
+  grid-template-areas:
+  'icon species-name species-name'
+  'icon use-dont-use remove';
+  grid-template-columns: 60px 150px 1fr;
+  padding-top: 20px;
+  height: auto;
+
+  .speciesIcon {
+    align-self: start;
+  }
+
+  .speciesNameWrapper {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+  }
+
+  .speciesToggle {
+    align-self: start;
+  }
+
+  .remove {
+    align-self: start;
+  }
+}
+
+.speciesTitleArea {
+  display: grid;
+  grid-template-areas:
+    'icon species-name usage-toggle remove';
+  grid-template-columns: 60px fit-content(50%) 170px minmax(280px, 1fr);
+  grid-column-gap: 20px;
+  align-items: center;
+  height: 86px;
+  margin-left: 60px;
+  // FIXME: check and delete the line below?
+  // padding: 20px 1rem 0 0;
+  padding-right: 20px 1rem 0 0;
+  border: 1px solid black;
+
+  @media (max-width: 999px) {
+    @include narrow-grid;
+  }
+
+  &Narrow {
+    @media (max-width: 1199px) {
+      @include narrow-grid;
+    }
+  }
+
+  // @media (max-width: 999px) {
+  //   grid-template-areas:
+  //   'icon species-name species-name'
+  //   'icon use-dont-use remove';
+  //   grid-template-columns: 60px 150px 1fr;
+  //   height: auto;
+
+  //   .speciesIcon {
+  //     align-self: start;
+  //   }
+
+  //   .speciesName {
+  //     min-height: 60px;
+  //     display: flex;
+  //     align-items: center;
+  //   }
+
+  //   .speciesToggle {
+  //     align-self: start;
+  //   }
+
+  //   .remove {
+  //     align-self: start;
+  //   }
+  // }
+
+}
+
+.speciesIcon {
+  grid-area: icon;
+  width: 60px;
+  height: 60px;
+  border: 1px solid $blue;
+  padding: 6px;
+
+  [class*='text'] {
+    fill: white;
+  }
+}
+
+.speciesNameWrapper {
+  grid-area: species-name;
+}
+
+.speciesName {
+  display: inline;
+  font-size: 16px;
+  font-weight: $bold;
+  line-height: 1;
+  margin: 0 8px 0 0;
+}
+
+.assemblyName {
+  font-size: 11px;
+  line-height: 1;
+}

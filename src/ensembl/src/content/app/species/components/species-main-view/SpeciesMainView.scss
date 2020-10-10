@@ -1,8 +1,29 @@
+@mixin narrow-top-grid {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+}
+
 .speciesMainViewTop {
   display: grid;
   grid-template-columns: max-content auto;
   align-items: center;
   padding-top: 20px;
+
+  &Narrow {
+    @media (max-width: 1200px) {
+      @include narrow-top-grid;
+
+
+    }
+
+    // [class*='speciesPageTitle'] {
+    //   grid-area: species;
+    // }
+
+    // [class*='speciesSelectionControls'] {
+    //   grid-area: use-dont-use;
+    // }
+  }
 }
 
 .speciesLabelBlock {

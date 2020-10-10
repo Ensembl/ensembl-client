@@ -16,34 +16,26 @@
 
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames';
 
 import { getDisplayName } from 'src/shared/components/new-selected-species/selectedSpeciesHelpers';
 
+import { isSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
+import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
+import SpeciesRemove from './species-remove/SpeciesRemove';
 import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { RootState } from 'src/store';
 
-import styles from './SpeciesPageTitle.scss';
+import styles from './SpeciesTitleArea.scss';
 
-type DisplayProps = {
-  species: CommittedItem;
-  iconUrl: string; // should be url of an svg
-};
-
-/**
- * TODO: this component will need updating when we get an api endpoint
- * that can include url of species icon in its response. The current use of
- * the popular species endpoint for this purpose is hopefully temporary.
- */
-
-const SpeciesPageTitle = () => {
+const useSpecies = () => {
   const activeGenomeId = useSelector(getActiveGenomeId) || '';
   const popularSpecies = useSelector(getPopularSpecies);
   const committedSpecies = useSelector((state: RootState) =>
@@ -61,25 +53,41 @@ const SpeciesPageTitle = () => {
     (species) => species.genome_id === activeGenomeId
   )?.image;
 
-  return committedSpecies && iconUrl ? (
-    <SpeciesPageTitleDisplay species={committedSpecies} iconUrl={iconUrl} />
-  ) : null;
+  return committedSpecies && iconUrl
+    ? {
+        species: committedSpecies,
+        iconUrl
+      }
+    : null;
 };
 
-const SpeciesPageTitleDisplay = (props: DisplayProps) => {
-  return (
-    <div className={styles.speciesPageTitle}>
+const SpeciesTitleArea = () => {
+  const isSidebarOpen = useSelector(getSidebarStatus);
+  const { species, iconUrl } = useSpecies() || {};
+
+  const blockClasses = classNames(styles.speciesTitleArea, {
+    [styles.speciesTitleAreaNarrow]: isSidebarOpen
+  });
+
+  return species && iconUrl ? (
+    <div className={blockClasses}>
       <div className={styles.speciesIcon}>
-        <InlineSVG src={props.iconUrl} />
+        <InlineSVG src={iconUrl} />
       </div>
-      <div className={styles.speciesLabel}>
-        <h1 className={styles.speciesName}>{getDisplayName(props.species)}</h1>
-        <span className={styles.assemblyName}>
-          {props.species.assembly_name}
-        </span>
+      <div className={styles.speciesNameWrapper}>
+        <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>
+        <span className={styles.assemblyName}>{species.assembly_name}</span>
+      </div>
+      <div className={styles.speciesToggle}>
+        <SpeciesUsageToggle />
+      </div>
+      <div className={styles.speciesRemove}>
+        <SpeciesRemove />
       </div>
     </div>
+  ) : (
+    <div className={blockClasses} />
   );
 };
 
-export default SpeciesPageTitle;
+export default SpeciesTitleArea;
