@@ -1,7 +1,8 @@
 @import 'src/styles/common';
 
-$fake-top-margin: 12px;
-$fake-left-margin: 25px;
+// these two variables are used to emulate the unavailable flexbox-gap property
+$fake-top-margin: 6px;
+$fake-left-margin: 60px;
 
 .speciesRemovalConfirmation {
   /*
@@ -23,10 +24,11 @@ $fake-left-margin: 25px;
 .speciesRemovalWarning {
   display: inline-block;
   color: $red;
+  line-height: 1.2;
 }
 
 .speciesRemovalConfirmationControls {
-  margin-left: 25px;
+  margin-left: $fake-left-margin;
   display: inline-block;
 
   button {
