@@ -14,14 +14,76 @@
  * limitations under the License.
  */
 
-import { createSlice } from '@reduxjs/toolkit';
+import {
+  Action,
+  createSlice,
+  PayloadAction,
+  ThunkAction
+} from '@reduxjs/toolkit';
+import { Source } from 'src/content/app/entity-viewer/types/source';
+
+import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+import { RootState } from 'src/store';
+
+import { sidebarData } from 'src/content/app/species/sample-data.ts';
+
+export type SpeciesSidebarPayload = {
+  species: {
+    display_name: string;
+    scientific_name: string;
+  };
+  assembly: {
+    name: string;
+    source: Source;
+    level: string;
+  };
+  annotation: {
+    provider?: string;
+    method?: string;
+    last_updated_date?: string;
+    gencode_version?: string;
+    database_version?: string;
+    taxonomy_id?: string;
+  };
+  psuedoautosomal_regions: {
+    description: string;
+  };
+};
 
 type SpeciesPageSidebarState = {
   isOpen: boolean;
+  species: {
+    [genomeId: string]: {
+      payload: SpeciesSidebarPayload | null;
+    };
+  };
 };
 
 const initialState: SpeciesPageSidebarState = {
-  isOpen: true
+  isOpen: true,
+  species: {}
+};
+
+export const fetchSidebarPayload = (): ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+> => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const activeGenomeId = getActiveGenomeId(state);
+  if (!activeGenomeId) {
+    return;
+  }
+
+  const sidebarPayload = sidebarData[activeGenomeId];
+
+  dispatch(
+    speciesPageSidebarSlice.actions.setSidebarPayloadForGenomeId({
+      genomeId: activeGenomeId,
+      sidebarPayload
+    })
+  );
 };
 
 const speciesPageSidebarSlice = createSlice({
@@ -30,6 +92,20 @@ const speciesPageSidebarSlice = createSlice({
   reducers: {
     toggleSidebar(state) {
       state.isOpen = !state.isOpen;
+    },
+
+    setSidebarPayloadForGenomeId(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        sidebarPayload: SpeciesSidebarPayload;
+      }>
+    ) {
+      if (!state.species[action.payload.genomeId]) {
+        state.species[action.payload.genomeId] = { payload: null };
+      }
+      state.species[action.payload.genomeId].payload =
+        action.payload.sidebarPayload;
     }
   }
 });

@@ -29,6 +29,7 @@ import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSide
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
+import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 
@@ -56,7 +57,6 @@ const SpeciesPage = () => {
     }
   }, [genomeId, currentSpecies]);
 
-  const sidebarContent = 'I am sidebar';
   const sidebarNavigationContent = 'I am sidebar navigation';
   const topbarContent = 'I am topbar content';
 
@@ -65,7 +65,7 @@ const SpeciesPage = () => {
       <SpeciesAppBar />
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
-        sidebarContent={sidebarContent}
+        sidebarContent={<SpeciesSidebar />}
         sidebarNavigation={sidebarNavigationContent}
         topbarContent={topbarContent}
         isSidebarOpen={sidebarStatus}

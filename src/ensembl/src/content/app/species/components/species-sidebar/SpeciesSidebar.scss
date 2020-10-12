@@ -1,0 +1,49 @@
+@import 'src/styles/common';
+
+.overviewContainer {
+  font-size: 13px;
+}
+.sectionHead {
+  color: $dark-grey;
+  font-size: 12px;
+  font-weight: $light;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.geneDetails {
+  .geneSymbol {
+    font-weight: $bold;
+    margin-right: 10px;
+  }
+}
+
+.assemblyDetails {
+
+  padding-left: 15px;
+  .assemblyName {
+    padding-bottom: 20px;
+  }
+
+}
+
+.annotationDetails{
+  padding-left: 15px;
+}
+
+.standardLabelValue {
+  display: grid;
+  grid-template-columns: [label] max-content 10px [value] auto;
+  .label {
+    grid-column: label;
+    color: $dark-grey;
+    font-size: 13px;
+    font-weight: $light;
+  }
+
+  .value {
+    grid-column: value;
+  }
+}
