@@ -12,17 +12,8 @@
   &Narrow {
     @media (max-width: 1200px) {
       @include narrow-top-grid;
-
-
     }
 
-    // [class*='speciesPageTitle'] {
-    //   grid-area: species;
-    // }
-
-    // [class*='speciesSelectionControls'] {
-    //   grid-area: use-dont-use;
-    // }
   }
 }
 

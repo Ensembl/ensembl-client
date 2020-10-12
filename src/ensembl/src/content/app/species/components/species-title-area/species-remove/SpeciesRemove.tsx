@@ -17,7 +17,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
-import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -53,8 +52,6 @@ const SpeciesRemove = () => {
     dispatch(deleteSpeciesAndSave(genomeId));
   };
 
-  const removeLabelStyles = classNames(styles.remove, styles.clickable);
-
   return (
     <div>
       {isRemoving ? (
@@ -70,7 +67,7 @@ const SpeciesRemove = () => {
           </div>
         </div>
       ) : (
-        <span className={removeLabelStyles} onClick={toggleRemovalDialog}>
+        <span className={styles.clickable} onClick={toggleRemovalDialog}>
           Remove
         </span>
       )}
