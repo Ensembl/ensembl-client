@@ -1,17 +1,14 @@
 const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
-const BrotliPlugin = require('brotli-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
-const RobotstxtPlugin = require('robotstxt-webpack-plugin');
 
 const { getPaths } = require('../paths');
 const paths = getPaths('production');
-
 
 // copy from the environment the same variables that are declared in .env.example
 // NOTE: if no environment variable with corresponding key is present, the value from .env.example will be used
@@ -76,36 +73,35 @@ module.exports = () => {
         patterns: [
           {
             from: path.join(paths.nodeModulesPath, 'ensembl-genome-browser/browser*.wasm'),
-            to: path.join(paths.buildStaticPath, 'browser'),
-            flatten: true
+            to: path.join(paths.buildStaticPath, 'browser', '[name][ext]')
           },
           {
             from: path.join(paths.staticPath, 'favicons/*'),
-            to: path.join(paths.buildStaticPath, 'favicons'),
-            flatten: true
+            to: path.join(paths.buildStaticPath, 'favicons', '[name][ext]')
           },
           {
             from: path.join(paths.staticPath, 'manifest.json'),
-            to: paths.buildStaticPath,
-            flatten: true
+            to: path.join(paths.buildStaticPath, '[name][ext]')
+          },
+          {
+            from: path.join(paths.staticPath, 'robots.txt'),
+            to: paths.buildPath
           }
         ]
       }),
 
-      // generate unique hashes for files based on the relative paths
-      new webpack.HashedModuleIdsPlugin(),
-
+      // compress static files 5kB and larger
       new CompressionPlugin({
         test: /.(js|css|html|wasm)$/,
         threshold: 5120,
         minRatio: 0.7
       }),
 
-      // brotli compression for static files
-      // only files above 5kB will be compressed
-      new BrotliPlugin({
+      new CompressionPlugin({
         test: /.(js|css|html|wasm)$/,
-        threshold: 5120, // 5kB
+        filename: "[path][base].br",
+        algorithm: "brotliCompress",
+        threshold: 5120,
         minRatio: 0.7
       }),
 
@@ -114,23 +110,23 @@ module.exports = () => {
         swDest: '../service-worker.js', // save service worker in the root folder (/dist) instead of /dist/static
         clientsClaim: true,
         skipWaiting: true,
-        exclude: [/index.html$/, /\.gz$/, /\.br$/, /\.js\.map$/]
+        exclude: [
+          /index.html$/,
+          /robots.txt$/,
+          /\.gz$/,
+          /\.br$/,
+          /\.js\.map$/,
+          /\.css\.map$/,
+          /^.*favicons\/.*$/  // this is a roundabout way to exclude all files in the favicons folder; simple `/\/favicons\//` regex won't work
+        ]
       }),
-
-      new RobotstxtPlugin({
-        filePath: '../robots.txt'
-      })
     ],
     optimization: {
       // use terser plugin instead of uglify js to support minimisation for modern React.js features
-      // optimize css assets plugin to minimise css as it is not yet supported in webpack by default
+      // also, optimise/minimise CSS files
       minimizer: [
-        new TerserPlugin({
-          cache: true,
-          parallel: true,
-          sourceMap: true
-        }),
-        new OptimizeCSSAssetsPlugin({})
+        new TerserPlugin(),
+        new CssMinimizerPlugin()
       ],
 
       // create a separate webpack runtime chunk that will be used for all bundles
@@ -146,7 +142,10 @@ module.exports = () => {
             chunks: 'all'
           }
         }
-      }
+      },
+
+      // module names are hashed into small numeric values
+      moduleIds: 'deterministic'
     }
   }
 
