@@ -101,7 +101,7 @@ const StripedBackground = (props: Props) => {
   const extendedTicks = [1, ...ticks, geneLength];
 
   const stripes = extendedTicks.map((tick) => {
-    const x = Math.floor(scale(tick));
+    const x = Math.floor(scale(tick) as number);
     const style = { left: `${x}px` };
     return <span key={x} className={styles.stripe} style={style} />;
   });

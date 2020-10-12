@@ -97,8 +97,8 @@ const MultipleTranscripts = (props: { gene: GeneType }) => {
       start: transcriptStart,
       end: transcriptEnd
     } = getFeatureCoordinates(transcript);
-    const startX = scale(transcriptStart);
-    const endX = scale(transcriptEnd);
+    const startX = scale(transcriptStart) as number;
+    const endX = scale(transcriptEnd) as number;
     const y = view === 'expanded' ? index * VERTICAL_SPACE : 10;
     const width = Math.floor(endX - startX);
     return (
