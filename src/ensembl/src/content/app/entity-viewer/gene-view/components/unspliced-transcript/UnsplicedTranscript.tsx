@@ -163,8 +163,8 @@ const Backbone = (
           className={backboneClasses}
           y={0}
           height={1}
-          x={scale(start - transcriptStart) + 1}
-          width={Math.max(0, scale(end - start) - 2)}
+          x={(scale(start - transcriptStart) as number) + 1}
+          width={Math.max(0, (scale(end - start) as number) - 2)}
         />
       ))}
     </g>

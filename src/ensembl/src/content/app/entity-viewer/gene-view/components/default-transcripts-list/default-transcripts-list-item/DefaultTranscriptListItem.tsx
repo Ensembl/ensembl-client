@@ -59,7 +59,7 @@ export const DefaultTranscriptListItem = (
     props.transcript
   );
   const transcriptStartX = scale(transcriptStart - geneStart); // FIXME In future, this should be done using relative position of transcript in gene
-  const transcriptWidth = scale(transcriptEnd - transcriptStart); // FIXME  this too should be based on relative coordinates of transcript
+  const transcriptWidth = scale(transcriptEnd - transcriptStart) as number; // FIXME  this too should be based on relative coordinates of transcript
 
   const defaultTranscriptLabelMap = {
     selected: {
