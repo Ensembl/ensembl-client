@@ -45,8 +45,8 @@ enum Groups {
 enum Stats {
   // Coding stats
   CODING_GENES = 'coding_genes',
-  SHORTEST_GENE = 'shortest_gene',
-  LONGEST_GENE = 'longest_gene',
+  SHORTEST_GENE_LENGTH = 'shortest_gene_length',
+  LONGEST_GENE_LENGTH = 'longest_gene_length',
   AVERAGE_GENOMIC_SPAN = 'average_genomic_span',
   AVERAGE_SEQUENCE_LENGTH = 'average_sequence_length',
   AVERAGE_CDS_LENGTH = 'average_cds_length',
@@ -130,7 +130,7 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
 // Maps the individual stats to it's respective groups
 const groupsStatsMap = {
   [Groups.CODING_GENES]: [
-    [Stats.CODING_GENES, Stats.SHORTEST_GENE, Stats.LONGEST_GENE]
+    [Stats.CODING_GENES, Stats.SHORTEST_GENE_LENGTH, Stats.LONGEST_GENE_LENGTH]
   ],
   [Groups.ANALYSIS]: [
     [Stats.AVERAGE_GENOMIC_SPAN, Stats.AVERAGE_SEQUENCE_LENGTH],
@@ -196,11 +196,11 @@ const statsFormattingOptions: StatsFormattingOptions = {
   [Stats.CODING_GENES]: {
     label: 'Coding genes'
   },
-  [Stats.SHORTEST_GENE]: {
+  [Stats.SHORTEST_GENE_LENGTH]: {
     label: 'Shortest coding gene',
     primaryUnit: 'bp'
   },
-  [Stats.LONGEST_GENE]: {
+  [Stats.LONGEST_GENE_LENGTH]: {
     label: 'Longest coding gene',
     primaryUnit: 'bp'
   },
