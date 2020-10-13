@@ -18,6 +18,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 
+import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
+
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -51,7 +53,7 @@ const ProteinsListItem = (props: Props) => {
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
         <div onClick={toggleListItemInfo} className={midStyles}>
-          <div>{product?.length} aa</div>
+          <div>{getProductAminoAcidLength(transcript)} aa</div>
           <div>Protein description from UniProt</div>
           <div>{product?.stable_id}</div>
         </div>
