@@ -32,17 +32,7 @@ type ProteinsListProps = {
   gene: Gene;
 };
 
-type ProteinsListWithDataProps = {
-  gene: Gene;
-};
-
 const ProteinsList = (props: ProteinsListProps) => {
-  // TODO: either consider making the graphql request directly from here,
-  // or merge ProteinsList with ProteinsListWithData into a single component
-  return <ProteinsListWithData gene={props.gene} />;
-};
-
-const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript

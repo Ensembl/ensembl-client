@@ -42,7 +42,7 @@ const ProteinsListItem = (props: Props) => {
   const toggleListItemInfo = () =>
     props.toggleExpandedProtein(transcript.stable_id);
 
-  const { cds, product } = transcript.product_generating_contexts[0];
+  const { product } = transcript.product_generating_contexts[0];
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -51,7 +51,7 @@ const ProteinsListItem = (props: Props) => {
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
         <div onClick={toggleListItemInfo} className={midStyles}>
-          <div>{cds?.protein_length} aa</div>
+          <div>{product?.length} aa</div>
           <div>Protein description from UniProt</div>
           <div>{product?.stable_id}</div>
         </div>

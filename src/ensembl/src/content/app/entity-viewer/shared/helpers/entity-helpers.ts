@@ -35,7 +35,6 @@ export const getRegionName = (feature: { slice: Slice }) =>
 export const getFeatureStrand = (feature: { slice: Slice }) =>
   feature.slice.region.strand.code;
 
-// FIXME: remove this when we can get the length from the API
 export const getFeatureLength = (feature: { slice: Slice }) => {
   return feature.slice.location.length;
 };
@@ -80,8 +79,7 @@ export const getProductAminoAcidLength = (transcript: Transcript) => {
   const { product_generating_contexts } = transcript;
   const firstProductGeneratingContext = product_generating_contexts[0];
 
-  // TODO: use product.length directly when api response becomes more reliable
-  return firstProductGeneratingContext.cds?.protein_length;
+  return firstProductGeneratingContext.product?.length;
 };
 
 export const getSplicedRNALength = (transcript: Transcript) =>
@@ -90,11 +88,7 @@ export const getSplicedRNALength = (transcript: Transcript) =>
   }, 0);
 
 export const getLongestProteinLength = (gene: Gene) => {
-  const proteinLengths = gene.transcripts.map(
-    (transcript) =>
-      transcript.product_generating_contexts[0]?.cds?.protein_length || 0
-  );
-
+  const proteinLengths = gene.transcripts.map(getProductAminoAcidLength);
   return Math.max(...proteinLengths);
 };
 

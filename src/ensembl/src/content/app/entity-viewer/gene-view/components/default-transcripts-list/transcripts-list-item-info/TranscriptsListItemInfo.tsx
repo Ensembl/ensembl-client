@@ -100,7 +100,9 @@ export const TranscriptsListItemInfo = (
               <div>
                 <strong>{getProductAminoAcidLength(transcript)} aa</strong>
               </div>
-              <div>ENSP1000000000</div>
+              <div>
+                {transcript.product_generating_contexts[0]?.product.stable_id}
+              </div>
             </>
           )}
         </div>

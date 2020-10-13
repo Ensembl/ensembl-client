@@ -34,7 +34,7 @@ export const createSlice = (): Slice => {
     region: {
       name: faker.lorem.word(),
       strand: {
-        code: faker.random.boolean() ? Strand.FORWARD : Strand.REFVERSE
+        code: faker.random.boolean() ? Strand.FORWARD : Strand.REVERSE
       },
       assembly: faker.random.uuid()
     }

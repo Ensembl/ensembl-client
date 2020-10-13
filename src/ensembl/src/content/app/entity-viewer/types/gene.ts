@@ -22,7 +22,7 @@ import { Source } from './source';
 
 /**
  * NOTE:
- * - According to CDM, the Gene type should have a `type` files with the value "Gene"
+ * - According to CDM, the Gene type should have a `type` field with the value "Gene"
  *   (this should help with mixed responses, e.g. with search). But at the moment,
  *   the backend is not including this field in the response.
  * - There are ongoing conversations about the `so_term` and `biotype` field.

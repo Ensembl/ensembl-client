@@ -51,7 +51,6 @@ export type Product = {
   so_term: string;
   length: number;
   protein_domains: ProteinDomain[];
-  // protein_domains_resources: ProteinDomainsResources;
 };
 
 export type ProteinDomain = {

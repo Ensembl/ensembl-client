@@ -70,8 +70,7 @@ describe('<TranscriptsListItemInfo /', () => {
    */
   it('displays amino acid length when transcript has CDS', () => {
     const expectedProteinLength =
-      defaultProps.transcript.product_generating_contexts[0].cds
-        ?.protein_length;
+      defaultProps.transcript.product_generating_contexts[0].product?.length;
     expect(wrapper.find('.topMiddle strong').text()).toMatch(
       `${expectedProteinLength}`
     );
