@@ -20,7 +20,7 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFor
 import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
-import { sampleData } from '../../sample-data';
+import { sampleData, AllStatsSections } from '../../sample-data';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
@@ -41,7 +41,6 @@ enum Groups {
 }
 
 // SpeciesStatsSection -> Groups -> Stats
-
 enum Stats {
   // Coding stats
   CODING_GENES = 'coding_genes',
@@ -255,7 +254,6 @@ const statsFormattingOptions: StatsFormattingOptions = {
   },
   [Stats.TOTAL_INTRONS]: { label: 'Total introns' },
   [Stats.AVERAGE_INTRON_LENGTH]: { label: 'Average intron length' },
-  [Stats.CHROMOSOMES]: { label: 'Chromosomes' },
   [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length' },
   [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
   [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
@@ -295,19 +293,20 @@ const buildIndividualStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  const formattingOptions = statsFormattingOptions[props.primaryKey];
+  const { primaryValuePostfix, label, primaryUnit } = statsFormattingOptions[
+    props.primaryKey
+  ];
 
   if (typeof primaryValue === 'number') {
-    primaryValue = [
-      getCommaSeparatedNumber(primaryValue),
-      formattingOptions?.primaryValuePostfix
-    ].join();
+    primaryValue =
+      getCommaSeparatedNumber(primaryValue) +
+      (primaryValuePostfix ? primaryValuePostfix : '');
   }
 
   return {
-    label: formattingOptions?.label || props.primaryKey,
+    label: label || props.primaryKey,
     primaryValue,
-    primaryUnit: formattingOptions?.primaryUnit
+    primaryUnit: primaryUnit
   };
 };
 
@@ -321,19 +320,20 @@ const buildHeaderStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  const formattingOptions = statsFormattingOptions[props.primaryKey];
+  const { primaryValuePostfix, headerUnit } = statsFormattingOptions[
+    props.primaryKey
+  ];
 
   if (typeof primaryValue === 'number') {
-    primaryValue = [
-      getCommaSeparatedNumber(primaryValue),
-      formattingOptions?.primaryValuePostfix
-    ].join();
+    primaryValue =
+      getCommaSeparatedNumber(primaryValue) +
+      (primaryValuePostfix ? primaryValuePostfix : '');
   }
 
   return {
     label: props.primaryKey,
     primaryValue: primaryValue,
-    primaryUnit: formattingOptions?.headerUnit
+    primaryUnit: headerUnit
   };
 };
 
@@ -399,7 +399,13 @@ export const getStatsForSection = (props: {
 }): StatsSection | undefined => {
   const { section, genome_id, exampleFocusObjects } = props;
 
-  const data = sampleData[genome_id][section];
+  const data =
+    section === SpeciesStatsSection.ASSEMBLY_STATS
+      ? {
+          ...sampleData[genome_id][section],
+          ...sampleData[genome_id][AllStatsSections.ASSEMBLY_SUMMARY]
+        }
+      : sampleData[genome_id][section];
 
   const filteredData: {
     [key: string]: string | number;

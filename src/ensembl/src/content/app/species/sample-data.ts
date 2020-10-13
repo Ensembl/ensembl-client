@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import { SpeciesStatsSection } from 'src/content/app/species/state/general/speciesGeneralHelper';
+export enum AllStatsSections {
+  CODING_STATS = 'coding_stats',
+  NON_CODING_STATS = 'non_coding_stats',
+  PSEUDOGENES = 'pseudogene_stats',
+  ASSEMBLY_STATS = 'assembly_stats',
+  ASSEMBLY_SUMMARY = 'assembly_summary'
+}
 
 type RawSpeciesStats = {
   [genomeId: string]: {
-    [key in SpeciesStatsSection]: {
+    [key in AllStatsSections]: {
       [key: string]: string | number | null;
     };
   };
@@ -26,14 +32,16 @@ type RawSpeciesStats = {
 
 export const sampleData: RawSpeciesStats = {
   homo_sapiens_GCA_000001405_28: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name: 'Homo sapiens',
       sex: null,
       strain: null,
       taxonomy_id: 9606,
       assembly_name: 'GRCh38.p13',
       assembly_accession: 'GCA_000001405.28',
-      assembly_date: '2019-02-28',
+      assembly_date: '2019-02-28'
+    },
+    assembly_stats: {
       contig_n50: 56413054,
       total_genome_length: 3272116950,
       total_coding_sequence_length: 34317174,
@@ -100,14 +108,16 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   homo_sapiens_GCA_000001405_14: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name: 'Homo sapiens',
       sex: null,
       strain: null,
       taxonomy_id: 9606,
       assembly_name: 'GRCh37.p13',
       assembly_accession: 'GCA_000001405.14',
-      assembly_date: '2013-6-28',
+      assembly_date: '2013-6-28'
+    },
+    assembly_stats: {
       contig_n50: 38440852,
       total_genome_length: 3234834689,
       total_coding_sequence_length: 33914472,
@@ -174,7 +184,7 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name:
         'Escherichia coli str. K-12 substr. MG1655 str. K12 (GCA_000005845)',
       sex: null,
@@ -182,7 +192,9 @@ export const sampleData: RawSpeciesStats = {
       taxonomy_id: 511145,
       assembly_name: 'ASM584v2',
       assembly_accession: 'GCA_000005845.2',
-      assembly_date: '2013-09-26',
+      assembly_date: '2013-09-26'
+    },
+    assembly_stats: {
       contig_n50: null,
       total_genome_length: 4641652,
       total_coding_sequence_length: 3977025,
@@ -252,14 +264,16 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   caenorhabditis_elegans_GCA_000002985_3: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name: 'Caenorhabditis elegans',
       sex: null,
       strain: 'N2',
       taxonomy_id: 6239,
       assembly_name: 'WBcel235',
       assembly_accession: 'GCA_000002985.3',
-      assembly_date: '2013-02-07',
+      assembly_date: '2013-02-07'
+    },
+    assembly_stats: {
       contig_n50: null,
       total_genome_length: 100272607,
       total_coding_sequence_length: 24880113,
@@ -326,14 +340,16 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   plasmodium_falciparum_GCA_000002765_2: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name: 'Plasmodium falciparum 3D7',
       sex: null,
       strain: null,
       taxonomy_id: 36329,
       assembly_name: 'ASM276v2',
       assembly_accession: 'GCA_000002765.2',
-      assembly_date: '2016-04-07',
+      assembly_date: '2016-04-07'
+    },
+    assembly_stats: {
       contig_n50: null,
       total_genome_length: 23292622,
       total_coding_sequence_length: 12309897,
@@ -400,14 +416,16 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   saccharomyces_cerevisiae_GCA_000146045_2: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name: 'Saccharomyces cerevisiae',
       sex: null,
       strain: 'S288C',
       taxonomy_id: 4932,
       assembly_name: 'R64',
       assembly_accession: 'GCA_000146045.2',
-      assembly_date: '2014-12-17',
+      assembly_date: '2014-12-17'
+    },
+    assembly_stats: {
       contig_n50: null,
       total_genome_length: 12071326,
       total_coding_sequence_length: 8762001,
@@ -474,14 +492,16 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   triticum_aestivum_GCA_900519105_1: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name: 'Triticum aestivum',
       sex: null,
       strain: 'reference (Chinese spring)',
       taxonomy_id: 4565,
       assembly_name: 'iwgsc_refseqv1.0',
       assembly_accession: 'GCA_900519105.1',
-      assembly_date: '2018-08-20',
+      assembly_date: '2018-08-20'
+    },
+    assembly_stats: {
       contig_n50: 51842,
       total_genome_length: 14547261565,
       total_coding_sequence_length: 133312441,
@@ -548,7 +568,7 @@ export const sampleData: RawSpeciesStats = {
     }
   },
   actinobacillus: {
-    assembly_stats: {
+    assembly_summary: {
       scientific_name:
         'Actinobacillus pleuropneumoniae serovar 5b str. L20 (GCA_000015885)',
       sex: null,
@@ -556,7 +576,9 @@ export const sampleData: RawSpeciesStats = {
       taxonomy_id: 416269,
       assembly_name: 'ASM1588v1',
       assembly_accession: 'GCA_000015885.1',
-      assembly_date: '2007-02-23',
+      assembly_date: '2007-02-23'
+    },
+    assembly_stats: {
       contig_n50: null,
       total_genome_length: 2274482,
       total_coding_sequence_length: 1964559,
