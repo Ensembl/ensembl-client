@@ -26,7 +26,7 @@ import ProteinDomainImage, {
 const product = createProduct();
 
 const minimalProps = {
-  proteinDomains: product.protein_domains_resources,
+  proteinDomains: product.protein_domains,
   width: 600
 };
 

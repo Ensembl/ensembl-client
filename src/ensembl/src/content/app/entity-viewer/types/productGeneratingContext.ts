@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { getStrandDisplayName } from './strandFormatter';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { Product, ProductType } from './product';
+import { PhasedExon } from './exon';
+import { CDS } from './cds';
+import { UTR } from './utr';
+import { CDNA } from './cdna';
 
-describe('getStrandDisplayName', () => {
-  it('returns the correct strand display name', () => {
-    expect(getStrandDisplayName(Strand.FORWARD)).toBe('forward strand');
-    expect(getStrandDisplayName(Strand.REVERSE)).toBe('reverse strand');
-  });
-});
+// TODO: have at least two types of product-generating contexts:
+// one for when product is a protein, and another for when product is an RNA
+export type ProductGeneratingContext = {
+  product_type: ProductType;
+  default: boolean;
+  cds: CDS | null;
+  five_prime_utr: UTR | null;
+  three_prime_utr: UTR | null;
+  product: Product;
+  phased_exons: PhasedExon[];
+  cdna: CDNA;
+};

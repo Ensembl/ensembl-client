@@ -17,8 +17,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 
@@ -54,12 +52,14 @@ export const DefaultTranscriptListItem = (
   props: DefaultTranscriptListItemProps
 ) => {
   const { scale } = props.rulerTicks;
-  const { start: geneStart } = getFeatureCoordinates(props.gene);
-  const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
-    props.transcript
-  );
-  const transcriptStartX = scale(transcriptStart - geneStart); // FIXME In future, this should be done using relative position of transcript in gene
-  const transcriptWidth = scale(transcriptEnd - transcriptStart); // FIXME  this too should be based on relative coordinates of transcript
+  const {
+    relative_location: { start: relativeTranscriptStart },
+    slice: {
+      location: { length: transcriptLength }
+    }
+  } = props.transcript;
+  const transcriptStartX = scale(relativeTranscriptStart) as number;
+  const transcriptWidth = scale(transcriptLength) as number;
 
   const defaultTranscriptLabelMap = {
     selected: {
@@ -85,7 +85,9 @@ export const DefaultTranscriptListItem = (
         <div className={transcriptsListStyles.middle}>
           <div
             className={styles.clickableTranscriptArea}
-            onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
+            onClick={() =>
+              props.toggleTranscriptInfo(props.transcript.stable_id)
+            }
           >
             <div
               className={styles.transcriptWrapper}
@@ -101,9 +103,11 @@ export const DefaultTranscriptListItem = (
         </div>
         <div
           className={transcriptsListStyles.right}
-          onClick={() => props.toggleTranscriptInfo(props.transcript.id)}
+          onClick={() => props.toggleTranscriptInfo(props.transcript.stable_id)}
         >
-          <span className={styles.transcriptId}>{props.transcript.id}</span>
+          <span className={styles.transcriptId}>
+            {props.transcript.stable_id}
+          </span>
         </div>
       </div>
       {props.expandTranscript ? (

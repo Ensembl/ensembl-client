@@ -56,7 +56,7 @@ const DefaultTranscriptslist = (props: Props) => {
 
     // Expand the first transcript by default
     if (!hasExpandedTranscripts) {
-      props.toggleTranscriptInfo(sortedTranscripts[0].id);
+      props.toggleTranscriptInfo(sortedTranscripts[0].stable_id);
     }
   }, []);
 
@@ -82,10 +82,10 @@ const DefaultTranscriptslist = (props: Props) => {
         <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => {
           const expandTranscript = props.expandedTranscriptIds.includes(
-            transcript.id
+            transcript.stable_id
           );
           const expandDownload = props.expandedTranscriptDownloadIds.includes(
-            transcript.id
+            transcript.stable_id
           );
 
           return (
@@ -112,7 +112,7 @@ const StripedBackground = (props: Props) => {
   const extendedTicks = [1, ...ticks, geneLength];
 
   const stripes = extendedTicks.map((tick) => {
-    const x = Math.floor(scale(tick));
+    const x = Math.floor(scale(tick) as number);
     const style = { left: `${x}px` };
     return <span key={x} className={styles.stripe} style={style} />;
   });

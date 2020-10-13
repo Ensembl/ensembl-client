@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
-import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/geneData';
-import { getLongestProteinLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import {
+  getLongestProteinLength,
+  isProteinCodingTranscript
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -34,61 +36,29 @@ import { RootState } from 'src/store';
 import styles from './ProteinsList.scss';
 
 type ProteinsListProps = {
-  geneId: string;
-  expandedTranscriptIds: string[];
-  toggleExpandedProtein: (id: string) => void;
-};
-
-type ProteinsListWithDataProps = {
   gene: Gene;
   expandedTranscriptIds: string[];
   toggleExpandedProtein: (id: string) => void;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
-  const [geneData, setGeneData] = useState<Gene | null>(null);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    fetchGene(props.geneId, abortController.signal).then((result) => {
-      if (result) {
-        setGeneData(result);
-      }
-    });
-
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [props.geneId]);
-
-  return geneData ? (
-    <ProteinsListWithData
-      gene={geneData}
-      expandedTranscriptIds={props.expandedTranscriptIds}
-      toggleExpandedProtein={props.toggleExpandedProtein}
-    />
-  ) : (
-    <div className={styles.proteinsListLoadingContainer}>
-      <CircleLoader />
-    </div>
-  );
-};
-
-const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
   const { search } = useLocation();
-  const transcriptIdToFocus = new URLSearchParams(search).get('transcriptId');
+  const transcriptIdToFocus = new URLSearchParams(search).get('transcript_id');
+
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
-    (transcript) => !!transcript.cds
+    isProteinCodingTranscript
   );
 
   useEffect(() => {
     const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
-
     // Expand the first transcript by default
-    if (!hasExpandedTranscripts && !transcriptIdToFocus) {
-      props.toggleExpandedProtein(sortedTranscripts[0].id);
+    if (
+      !hasExpandedTranscripts &&
+      !transcriptIdToFocus &&
+      sortedTranscripts[0].product
+    ) {
+      props.toggleExpandedProtein(sortedTranscripts[0].product.stable_id);
     }
   }, []);
 
@@ -96,13 +66,19 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
 
   return (
     <div className={styles.proteinsList}>
-      {proteinCodingTranscripts.map((transcript) => (
-        <ProteinsListItem
-          key={transcript.id}
-          transcript={transcript}
-          trackLength={longestProteinLength}
-        />
-      ))}
+      {proteinCodingTranscripts ? (
+        proteinCodingTranscripts.map((transcript) => (
+          <ProteinsListItem
+            key={transcript.stable_id}
+            transcript={transcript}
+            trackLength={longestProteinLength}
+          />
+        ))
+      ) : (
+        <div className={styles.proteinsListLoadingContainer}>
+          <CircleLoader />
+        </div>
+      )}
     </div>
   );
 };

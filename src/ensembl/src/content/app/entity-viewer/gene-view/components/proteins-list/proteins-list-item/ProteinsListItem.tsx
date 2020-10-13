@@ -20,6 +20,8 @@ import { connect, useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { replace } from 'connected-react-router';
 
+import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
+
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -49,6 +51,7 @@ const ProteinsListItem = (props: Props) => {
   const { search } = useLocation();
   const transcriptIdToFocus = new URLSearchParams(search).get('transcript_id');
 
+  const { product } = transcript.product_generating_contexts[0];
   const toggleListItemInfo = () => {
     if (transcriptIdToFocus) {
       const url = urlFor.entityViewer({
@@ -58,22 +61,21 @@ const ProteinsListItem = (props: Props) => {
       });
       dispatch(replace(url));
     }
-    props.toggleExpandedProtein(transcript.id);
+    props.toggleExpandedProtein(product.stable_id);
   };
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
   const itemRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (transcript.id === transcriptIdToFocus) {
+    if (product.stable_id === transcriptIdToFocus) {
       setTimeout(() => {
         itemRef.current?.scrollIntoView({
           behavior: 'smooth'
         });
       }, 100);
-
       if (!props.expandedTranscriptIds.includes(transcriptIdToFocus)) {
-        props.toggleExpandedProtein(transcript.id);
+        props.toggleExpandedProtein(product.stable_id);
       }
     }
   }, [transcriptIdToFocus]);
@@ -82,23 +84,21 @@ const ProteinsListItem = (props: Props) => {
     <div className={styles.proteinListItem} ref={itemRef}>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
-        {transcript.cds && (
-          <div onClick={toggleListItemInfo} className={midStyles}>
-            <div>{transcript.cds.protein_length} aa</div>
-            <div>Protein description from UniProt</div>
-            <div>{transcript.cds.protein_id}</div>
-          </div>
-        )}
+        <div onClick={toggleListItemInfo} className={midStyles}>
+          <div>{getProductAminoAcidLength(transcript)} aa</div>
+          <div>Protein description from UniProt</div>
+          <div>{product?.stable_id}</div>
+        </div>
         <div
           className={transcriptsListStyles.right}
           onClick={toggleListItemInfo}
         >
-          <span className={styles.transcriptId}>{props.transcript.id}</span>
+          <span className={styles.transcriptId}>{transcript.stable_id}</span>
         </div>
       </div>
-      {props.expandedTranscriptIds.includes(transcript.id) ? (
+      {props.expandedTranscriptIds.includes(product.stable_id) ? (
         <ProteinsListItemInfo
-          transcriptId={transcript.id}
+          transcript={transcript}
           trackLength={trackLength}
         />
       ) : null}

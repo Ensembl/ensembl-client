@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import set from 'lodash/fp/set';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
@@ -27,99 +28,127 @@ import {
   ExternalSource,
   externalSourceLinks
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
+import { fetchProteinDomains } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
   fetchProteinSummary,
   ProteinSummary
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
-  transcriptId: string;
+  transcript: Transcript;
   trackLength: number;
 };
 
+const addProteinDomains = (
+  transcript: Transcript,
+  proteinDomains: ProteinDomain[]
+) => {
+  return set(
+    ['product_generating_contexts', '0', 'product', 'protein_domains'],
+    proteinDomains,
+    transcript
+  );
+};
+
 const ProteinsListItemInfo = (props: Props) => {
-  const { transcriptId, trackLength } = props;
-  const [transcript, setTranscript] = useState<Transcript | null>(null);
+  const { transcript, trackLength } = props;
+  const [
+    transcriptWithProteinDomains,
+    setTranscriptWithProteinDomains
+  ] = useState<Transcript | null>(null);
   const [proteinSummary, setProteinSummary] = useState<ProteinSummary | null>(
     null
   );
 
   useEffect(() => {
     const abortController = new AbortController();
+    const proteinId =
+      transcript.product_generating_contexts[0].product.unversioned_stable_id;
 
     Promise.all([
-      fetchTranscript(props.transcriptId, abortController.signal),
-      fetchProteinSummary(props.transcriptId, abortController.signal)
-    ]).then(([transcriptData, proteinSummaryData]) => {
-      transcriptData && setTranscript(transcriptData);
-      proteinSummaryData && setProteinSummary(proteinSummaryData);
+      fetchProteinDomains(proteinId, abortController.signal),
+      fetchProteinSummary(
+        transcript.unversioned_stable_id,
+        abortController.signal
+      )
+    ]).then(([proteinDomains, proteinSummaryData]) => {
+      if (!abortController.signal.aborted) {
+        setTranscriptWithProteinDomains(
+          addProteinDomains(transcript, proteinDomains)
+        );
+        proteinSummaryData && setProteinSummary(proteinSummaryData);
+      }
     });
 
     return function cleanup() {
       abortController.abort();
     };
-  }, [transcriptId]);
+  }, [transcript.stable_id]);
 
+  if (!transcriptWithProteinDomains) {
+    return (
+      <div className={styles.loadingContainer}>
+        <CircleLoader />
+      </div>
+    );
+  }
+
+  const {
+    product
+  } = transcriptWithProteinDomains.product_generating_contexts[0];
+
+  // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
+  // we need to move it to a constant
   return (
     <div className={styles.proteinsListItemInfo}>
-      {transcript?.product ? (
-        <>
-          <ProteinDomainImage
-            proteinDomains={transcript.product?.protein_domains_resources}
-            trackLength={trackLength}
-            width={695}
-          />
-          <ProteinImage
-            product={transcript.product}
-            trackLength={trackLength}
-            width={695}
-          />
-          <div className={styles.proteinSummary}>
-            <div className={styles.proteinSummaryTop}>
-              {proteinSummary && (
-                <div className={styles.interproUniprotWrapper}>
-                  <ProteinExternalReference
-                    source={ExternalSource.INTERPRO}
-                    externalId={proteinSummary.pdbeId}
-                  />
-                  <ProteinExternalReference
-                    source={ExternalSource.UNIPROT}
-                    externalId={proteinSummary.pdbeId}
-                  />
-                </div>
-              )}
-              <div className={styles.downloadWrapper}>
-                <InstantDownloadProtein transcriptId={transcript.id} />
-              </div>
+      <ProteinDomainImage
+        proteinDomains={product.protein_domains}
+        trackLength={trackLength}
+        width={695}
+      />
+      <ProteinImage product={product} trackLength={trackLength} width={695} />
+      <div className={styles.proteinSummary}>
+        <div className={styles.proteinSummaryTop}>
+          {proteinSummary && (
+            <div className={styles.interproUniprotWrapper}>
+              <ProteinExternalReference
+                source={ExternalSource.INTERPRO}
+                externalId={proteinSummary.pdbeId}
+              />
+              <ProteinExternalReference
+                source={ExternalSource.UNIPROT}
+                externalId={proteinSummary.pdbeId}
+              />
             </div>
-            {proteinSummary && (
-              <div>
-                <ProteinExternalReference
-                  source={ExternalSource.PDBE}
-                  externalId={proteinSummary.pdbeId}
+          )}
+          <div className={styles.downloadWrapper}>
+            <InstantDownloadProtein
+              transcriptId={transcript.unversioned_stable_id}
+            />
+          </div>
+        </div>
+        {proteinSummary && (
+          <div>
+            <ProteinExternalReference
+              source={ExternalSource.PDBE}
+              externalId={proteinSummary.pdbeId}
+            />
+            {proteinSummary?.proteinStats && (
+              <div className={styles.proteinFeaturesCountWrapper}>
+                <ProteinFeaturesCount
+                  proteinStats={proteinSummary.proteinStats}
                 />
-                {proteinSummary?.proteinStats && (
-                  <div className={styles.proteinFeaturesCountWrapper}>
-                    <ProteinFeaturesCount
-                      proteinStats={proteinSummary.proteinStats}
-                    />
-                  </div>
-                )}
               </div>
             )}
-            <div className={styles.keyline}></div>
           </div>
-        </>
-      ) : (
-        <div className={styles.loadingContainer}>
-          <CircleLoader />
-        </div>
-      )}
+        )}
+        <div className={styles.keyline}></div>
+      </div>
     </div>
   );
 };
