@@ -285,6 +285,7 @@ export type StatsSection = {
 };
 
 type BuildStatProps = Partial<IndividualStat> & {
+  primaryValue: string | number;
   primaryKey: Stats;
   secondaryKey?: Stats;
 };
@@ -294,26 +295,24 @@ const buildIndividualStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  if (!primaryValue) {
-    return;
-  }
-
   const formattingOptions = statsFormattingOptions[props.primaryKey];
 
-  if (!isNaN(Number(primaryValue))) {
-    primaryValue = getCommaSeparatedNumber(Number(primaryValue));
+  if (typeof primaryValue === 'number') {
+    primaryValue = [
+      getCommaSeparatedNumber(primaryValue),
+      formattingOptions?.primaryValuePostfix
+    ].join();
   }
 
   return {
     label: formattingOptions?.label || props.primaryKey,
     primaryValue,
-    primaryUnit: formattingOptions?.primaryUnit,
-    primaryValuePostfix: formattingOptions?.primaryValuePostfix
+    primaryUnit: formattingOptions?.primaryUnit
   };
 };
 
 type BuildHeaderStatProps = {
-  primaryValue: string;
+  primaryValue: string | number;
   primaryKey: Stats;
 };
 
@@ -322,14 +321,13 @@ const buildHeaderStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  if (!primaryValue) {
-    return;
-  }
-
   const formattingOptions = statsFormattingOptions[props.primaryKey];
 
-  if (!isNaN(Number(primaryValue))) {
-    primaryValue = getCommaSeparatedNumber(Number(primaryValue));
+  if (typeof primaryValue === 'number') {
+    primaryValue = [
+      getCommaSeparatedNumber(primaryValue),
+      formattingOptions?.primaryValuePostfix
+    ].join();
   }
 
   return {
@@ -356,7 +354,7 @@ const getExampleLinks = (props: {
     const focusId = geneExample?.id
       ? buildFocusIdForUrl({
           type: 'gene',
-          objectId: geneExample?.id
+          objectId: geneExample.id
         })
       : undefined;
 
@@ -379,7 +377,7 @@ const getExampleLinks = (props: {
     const focusId = regionExample?.id
       ? buildFocusIdForUrl({
           type: 'region',
-          objectId: regionExample?.id
+          objectId: regionExample.id
         })
       : undefined;
 
@@ -404,12 +402,12 @@ export const getStatsForSection = (props: {
   const data = sampleData[genome_id][section];
 
   const filteredData: {
-    [key: string]: string;
+    [key: string]: string | number;
   } = {};
 
   Object.keys(data).forEach((key) => {
     if (data[key] !== null) {
-      filteredData[key] = (data[key] as string | number).toString();
+      filteredData[key] = data[key] as string | number;
     }
   });
 
