@@ -17,7 +17,7 @@
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
-import { SpeciesStatsProps } from 'src/content/app/species/components/species-stats/SpeciesStats';
+import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import { sampleData } from '../../sample-data';
@@ -271,14 +271,6 @@ const statsFormattingOptions: StatsFormattingOptions = {
   [Stats.PSEUDOGENES]: { label: 'Pseudogenes' }
 };
 
-type IndividualStat = Omit<
-  SpeciesStatsProps,
-  'primaryValue' | 'secondaryValue'
-> & {
-  primaryValue: string | number | null;
-  secondaryValue?: string | number | null;
-};
-
 type StatsGroup = {
   title: string;
   stats: [IndividualStat[]];
@@ -320,7 +312,14 @@ const buildIndividualStat = (
   };
 };
 
-const buildHeaderStat = (props: BuildStatProps): IndividualStat | undefined => {
+type BuildHeaderStatProps = {
+  primaryValue: string;
+  primaryKey: Stats;
+};
+
+const buildHeaderStat = (
+  props: BuildHeaderStatProps
+): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
   if (!primaryValue) {
@@ -335,7 +334,7 @@ const buildHeaderStat = (props: BuildStatProps): IndividualStat | undefined => {
 
   return {
     label: props.primaryKey,
-    primaryValue,
+    primaryValue: primaryValue,
     primaryUnit: formattingOptions?.headerUnit
   };
 };
@@ -404,6 +403,16 @@ export const getStatsForSection = (props: {
 
   const data = sampleData[genome_id][section];
 
+  const filteredData: {
+    [key: string]: string;
+  } = {};
+
+  Object.keys(data).forEach((key) => {
+    if (data[key] !== null) {
+      filteredData[key] = (data[key] as string | number).toString();
+    }
+  });
+
   const {
     groups,
     primaryStatsKey,
@@ -411,19 +420,19 @@ export const getStatsForSection = (props: {
     exampleLinkText
   } = sectionGroupsMap[section];
 
-  if (!data || !groups) {
+  if (!filteredData || !groups) {
     return;
   }
   const primaryStats = primaryStatsKey
     ? buildHeaderStat({
         primaryKey: primaryStatsKey,
-        primaryValue: data[primaryStatsKey]
+        primaryValue: filteredData[primaryStatsKey]
       })
     : undefined;
   const secondaryStats = secondaryStatsKey
     ? buildHeaderStat({
         primaryKey: secondaryStatsKey,
-        primaryValue: data[secondaryStatsKey]
+        primaryValue: filteredData[secondaryStatsKey]
       })
     : undefined;
 
@@ -447,12 +456,14 @@ export const getStatsForSection = (props: {
         stats: groupStats
           .map((subGroupStats) => {
             return subGroupStats
-              .map((stat) =>
-                buildIndividualStat({
-                  primaryKey: stat,
-                  primaryValue: data[stat]
-                })
-              )
+              .map((stat) => {
+                return filteredData[stat]
+                  ? buildIndividualStat({
+                      primaryKey: stat,
+                      primaryValue: filteredData[stat]
+                    })
+                  : undefined;
+              })
               .filter(Boolean);
           })
           .filter(Boolean)
