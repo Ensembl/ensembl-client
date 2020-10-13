@@ -78,22 +78,25 @@ export const fetchProteinDomains = async (
 ): Promise<ProteinDomain[]> => {
   const url = `https://rest.ensembl.org/overlap/translation/${proteinId}?feature=protein_feature;content-type=application/json`;
 
-  const response: ProteinFeature[] = await apiService.fetch(url, {
+  // if the fetch is aborted, apiService.fetch will return undefined
+  const response: ProteinFeature[] | undefined = await apiService.fetch(url, {
     signal
   });
 
   return response
-    .filter((item) => ['Pfam', 'PANTHER'].includes(item.type))
-    .map((item) => {
-      return {
-        id: item.id,
-        name: item.description,
-        resource_name: item.type,
-        location: {
-          start: item.start,
-          end: item.end,
-          length: item.end - item.start + 1
-        }
-      };
-    });
+    ? response
+        .filter((item) => ['Pfam', 'PANTHER'].includes(item.type))
+        .map((item) => {
+          return {
+            id: item.id,
+            name: item.description,
+            resource_name: item.type,
+            location: {
+              start: item.start,
+              end: item.end,
+              length: item.end - item.start + 1
+            }
+          };
+        })
+    : [];
 };

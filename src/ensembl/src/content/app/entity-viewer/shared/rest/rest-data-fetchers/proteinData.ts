@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import apiService from 'src/services/api-service';
 
 import { restProteinSummaryAdaptor } from '../rest-adaptors/rest-protein-adaptor';
@@ -55,28 +54,44 @@ export const fetchProteinSummary = async (
   signal?: AbortSignal
 ): Promise<ProteinSummary | null> => {
   const transcriptUrl = `https://rest.ensembl.org/lookup/id/${transcriptId}?expand=1;content-type=application/json`;
-  const transcript: TranscriptInResponse = await apiService.fetch(
+
+  // if the fetch is aborted, apiService.fetch will return undefined
+  const transcript: TranscriptInResponse | undefined = await apiService.fetch(
     transcriptUrl,
     {
       signal
     }
   );
 
+  if (!transcript) {
+    return null;
+  }
+
   const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${transcript.Translation?.id}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
-  const xrefsData: XrefsInResponse = await apiService.fetch(xrefsUrl, {
-    signal
-  });
+  const xrefsData: XrefsInResponse | undefined = await apiService.fetch(
+    xrefsUrl,
+    {
+      signal
+    }
+  );
+
+  if (!xrefsData) {
+    return null;
+  }
 
   if (xrefsData[0]) {
     const pdbeId = xrefsData[0].display_id;
 
     const proteinStatsUrl = `https://www.ebi.ac.uk/pdbe/graph-api/uniprot/summary_stats/${pdbeId}`;
-    const proteinStatsData: UniProtSummaryStats = await apiService.fetch(
-      proteinStatsUrl,
-      {
-        signal
-      }
-    );
+    const proteinStatsData:
+      | UniProtSummaryStats
+      | undefined = await apiService.fetch(proteinStatsUrl, {
+      signal
+    });
+
+    if (!proteinStatsData) {
+      return null;
+    }
 
     return restProteinSummaryAdaptor(proteinStatsData[pdbeId], pdbeId);
   } else {

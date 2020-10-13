@@ -76,10 +76,12 @@ const ProteinsListItemInfo = (props: Props) => {
         abortController.signal
       )
     ]).then(([proteinDomains, proteinSummaryData]) => {
-      setTranscriptWithProteinDomains(
-        addProteinDomains(transcript, proteinDomains)
-      );
-      proteinSummaryData && setProteinSummary(proteinSummaryData);
+      if (!abortController.signal.aborted) {
+        setTranscriptWithProteinDomains(
+          addProteinDomains(transcript, proteinDomains)
+        );
+        proteinSummaryData && setProteinSummary(proteinSummaryData);
+      }
     });
 
     return function cleanup() {
