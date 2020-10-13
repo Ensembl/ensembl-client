@@ -28,11 +28,16 @@ export const createGene = (fragment: Partial<Gene> = {}): Gene => {
   const geneSlice = createSlice();
   const transcript = createTranscript();
 
+  const unversionedStableId = faker.random.uuid();
+  const version = 1;
+  const stableId = `${unversionedStableId}.${version}`;
+
   return {
-    type: 'Gene',
-    id: faker.random.uuid(),
-    version: 1,
+    stable_id: stableId,
+    unversioned_stable_id: unversionedStableId,
+    version,
     symbol: faker.lorem.word(),
+    name: faker.lorem.words(),
     so_term: faker.lorem.word(),
     slice: geneSlice,
     transcripts: [transcript],

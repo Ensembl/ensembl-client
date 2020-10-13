@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-import JSONValue from 'src/shared/types/JSON';
 import { Slice } from './slice';
 import { Transcript } from './transcript';
-import { CrossReference } from './crossReference';
 import { Source } from './source';
-import { Metadata } from './metadata';
+// import { CrossReference } from './crossReference';
+// import { Metadata } from './metadata';
 
+/**
+ * NOTE:
+ * - According to CDM, the Gene type should have a `type` field with the value "Gene"
+ *   (this should help with mixed responses, e.g. with search). But at the moment,
+ *   the backend is not including this field in the response.
+ * - There are ongoing conversations about the `so_term` and `biotype` field.
+ *   We want the biotype; but it's not currently available; so we are using so_term instead
+ */
 export type Gene = {
-  type: 'Gene';
-  id: string;
-  version: number;
+  stable_id: string;
+  unversioned_stable_id: string;
+  version: number | null;
   symbol: string;
+  name: string | null;
   source?: Source;
-  so_term: string; // is there a better name for it?
-  biotype?: string; // either this or so_term above need to be removed in the future
+  so_term: string;
   slice: Slice;
   transcripts: Transcript[];
-  synonyms?: string[];
-  attributes?: string[];
-  metadata?: Metadata;
-  function?: {
-    description: string;
-    source: Source;
-  };
-  cross_references?: CrossReference[];
-  filters?: {
-    [key: string]: JSONValue;
-  };
+  // external_references
 };

@@ -18,10 +18,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { Exon } from 'src/content/app/entity-viewer/types/exon';
+import { SplicedExon } from 'src/content/app/entity-viewer/types/exon';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
 
 import styles from './UnsplicedTranscript.scss';
@@ -40,30 +38,24 @@ export type UnsplicedTranscriptProps = {
 };
 
 /*
-NOTE: here are the ways the current diagram's implementation may be different from
-what we do when the api becomes mature:
-
-1) The diagram relies on the actual start and end positions of features.
-This works for forward strand of linear DNA, but does not take into account
-adjustments required for drawing a feature from reverse strand or from a circular DNA.
-When the backend api matures, it will likely send us relative positions of features
-nested in a larger feature (e.g. relative positions of exons to the start of the transcript).
-This will work both for reverse strand and for circular DNA.
-
-2) The diagram currently uses the CDS property of the transcript
+NOTE:
+The diagram currently uses the CDS property of the transcript
 for drawing filled/empty boxes representing the exons.
 It's possible that later we will switch to using UTRs for this purpose
-
 */
 
 const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
-  const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
-    props.transcript
-  );
-  const { exons, cds } = props.transcript;
-  const length = getLength(transcriptStart, transcriptEnd);
+  const {
+    spliced_exons,
+    product_generating_contexts,
+    slice
+  } = props.transcript;
+  const cds = product_generating_contexts[0]?.cds;
+  const {
+    location: { length: transcriptLength }
+  } = slice;
   const scale = scaleLinear()
-    .domain([1, length])
+    .domain([1, transcriptLength])
     .range([1, props.width])
     .clamp(true);
 
@@ -75,12 +67,11 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   const renderedTranscript = (
     <g className={transcriptClasses}>
       <Backbone {...props} scale={scale} />
-      {exons.map((exon, index) => (
+      {spliced_exons.map((spliced_exon, index) => (
         <ExonBlock
           key={index}
-          exon={exon}
+          spliced_exon={spliced_exon}
           cds={cds}
-          transcriptStart={transcriptStart}
           className={props.classNames?.exon}
           scale={scale}
         />
@@ -110,18 +101,20 @@ const Backbone = (
 ) => {
   let intervals: [number, number][] = [];
   const {
-    transcript: { exons },
+    transcript: {
+      spliced_exons,
+      slice: {
+        location: { length: transcriptLength }
+      }
+    },
     scale
   } = props;
-  const { start: transcriptStart, end: transcriptEnd } = getFeatureCoordinates(
-    props.transcript
-  );
   const backboneClasses = classNames(
     styles.backbone,
     props.classNames?.backbone
   );
 
-  if (!exons.length) {
+  if (!spliced_exons.length) {
     return (
       <rect
         className={backboneClasses}
@@ -133,19 +126,22 @@ const Backbone = (
     );
   }
 
-  for (let i = 0; i < exons.length; i++) {
-    const exon = exons[i];
-    const { start: exonStart, end: exonEnd } = getFeatureCoordinates(exon);
+  for (let i = 0; i < spliced_exons.length; i++) {
+    const {
+      relative_location: { start: exonStart, end: exonEnd }
+    } = spliced_exons[i];
     if (i === 0) {
-      intervals.push([transcriptStart, exonStart]);
+      intervals.push([1, exonStart]);
     } else {
-      const previousExon = exons[i - 1];
-      const { end: previousExonEnd } = getFeatureCoordinates(previousExon);
+      const previousExon = spliced_exons[i - 1];
+      const {
+        relative_location: { end: previousExonEnd }
+      } = previousExon;
       intervals.push([previousExonEnd, exonStart]);
     }
 
-    if (i === exons.length - 1) {
-      intervals.push([exonEnd, transcriptEnd]);
+    if (i === spliced_exons.length - 1) {
+      intervals.push([exonEnd, transcriptLength]);
     }
   }
 
@@ -163,7 +159,7 @@ const Backbone = (
           className={backboneClasses}
           y={0}
           height={1}
-          x={(scale(start - transcriptStart) as number) + 1}
+          x={scale(start)}
           width={Math.max(0, (scale(end - start) as number) - 2)}
         />
       ))}
@@ -172,21 +168,22 @@ const Backbone = (
 };
 
 type ExonBlockProps = {
-  exon: Exon;
+  spliced_exon: SplicedExon;
   cds?: CDS | null;
-  transcriptStart: number;
   className?: string;
   scale: ScaleLinear<number, number>;
 };
 
 const ExonBlock = (props: ExonBlockProps) => {
-  const { cds, transcriptStart } = props;
-  const { start: exonStart, end: exonEnd } = getFeatureCoordinates(props.exon);
+  const { spliced_exon, cds } = props;
+  const { start: exonStart, end: exonEnd } = spliced_exon.relative_location;
 
   const isCompletelyNonCoding =
-    cds && (exonEnd < cds.start || exonStart > cds.end);
-  const isNonCodingLeft = cds && exonStart < cds.start && exonEnd > cds.start;
-  const isNonCodingRight = cds && exonStart < cds.end && exonEnd > cds.end;
+    cds && (exonEnd < cds.relative_start || exonStart > cds.relative_end);
+  const isNonCodingLeft =
+    cds && exonStart < cds.relative_start && exonEnd > cds.relative_start;
+  const isNonCodingRight =
+    cds && exonStart < cds.relative_end && exonEnd > cds.relative_end;
   const y = -3;
   const height = BLOCK_HEIGHT;
 
@@ -198,8 +195,8 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={classNames(exonClasses, styles.emptyBlock)}
         y={y}
         height={height}
-        x={props.scale(exonStart - transcriptStart)}
-        width={props.scale(getLength(exonStart, cds.start))}
+        x={props.scale(exonStart)}
+        width={props.scale(getLength(exonStart, cds.relative_start))}
       />
     );
     const codingPart = (
@@ -207,8 +204,8 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={exonClasses}
         y={y}
         height={height}
-        x={props.scale(cds.start - transcriptStart)}
-        width={props.scale(getLength(cds.start, exonEnd))}
+        x={props.scale(cds.relative_start)}
+        width={props.scale(getLength(cds.relative_start, exonEnd))}
       />
     );
     return (
@@ -223,8 +220,8 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={exonClasses}
         y={y}
         height={height}
-        x={props.scale(exonStart - transcriptStart)}
-        width={props.scale(getLength(exonStart, cds.end))}
+        x={props.scale(exonStart)}
+        width={props.scale(getLength(exonStart, cds.relative_end))}
       />
     );
     const nonCodingPart = (
@@ -232,8 +229,8 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={classNames(exonClasses, styles.emptyBlock)}
         y={y}
         height={height}
-        x={props.scale(cds.end - props.transcriptStart)}
-        width={props.scale(getLength(cds.end, exonEnd))}
+        x={props.scale(cds.relative_end)}
+        width={props.scale(getLength(cds.relative_end, exonEnd))}
       />
     );
 
@@ -253,14 +250,13 @@ const ExonBlock = (props: ExonBlockProps) => {
         className={classes}
         y={y}
         height={height}
-        x={props.scale(exonStart - transcriptStart)}
+        x={props.scale(exonStart)}
         width={props.scale(getLength(exonStart, exonEnd))}
       />
     );
   }
 };
 
-// NOTE: provisional method; this is going to break on circular DNA and on reverse strand
-const getLength = (start: number, end: number) => end - start;
+const getLength = (start: number, end: number) => end - start + 1;
 
 export default UnsplicedTranscript;

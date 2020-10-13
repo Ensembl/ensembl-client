@@ -97,9 +97,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
 };
 
 const GeneId = (props: GeneOverviewImageProps) => (
-  <div className={styles.geneId}>
-    {props.gene.id}.{props.gene.version}
-  </div>
+  <div className={styles.geneId}>{props.gene.stable_id}</div>
 );
 
 const DirectionIndicator = () => {

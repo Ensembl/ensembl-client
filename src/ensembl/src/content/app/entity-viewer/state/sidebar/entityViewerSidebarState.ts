@@ -15,12 +15,13 @@
  */
 
 import { Status } from 'src/shared/types/status';
-import { Gene } from '../../types/gene';
-import { Transcript } from '../../types/transcript';
 import { Assembly } from '../../types/assembly';
 import { DataSet } from '../../types/dataSet';
 import { Homeologue } from '../../types/homeologue';
 import { Publication } from '../../types/publication';
+import { Source } from '../../types/source';
+import { Metadata } from '../../types/metadata';
+import { CrossReference } from '../../types/crossReference';
 import JSONValue from 'src/shared/types/JSON';
 
 export enum SidebarTabName {
@@ -30,23 +31,40 @@ export enum SidebarTabName {
 
 export type SidebarStatus = Status.OPEN | Status.CLOSED;
 
-type GeneViewTranscriptSidebarPayload = Pick<Transcript, 'id' | 'xrefs'>;
+/* TYPES FOR THE OVERVIEW SECTION OF GENE VIEW SIDEBAR */
 
-// TODO: Not sure if this is the best approach as the sidebar doesn't need any other data other than the ones picked below.
-type GeneViewGeneSidebarPayload = Pick<
-  Gene,
-  | 'attributes'
-  | 'filters'
-  | 'function'
-  | 'id'
-  | 'symbol'
-  | 'metadata'
-  | 'synonyms'
-  | 'cross_references'
-> & { transcripts: GeneViewTranscriptSidebarPayload[] };
+/**
+ * NOTE: The types defined within this section are temporary.
+ * They deviate from the api response-based types used generally within the Entity Viewer,
+ * and are currently supporting the code used only for demo purposes.
+ */
+
+type SidebarOverviewTranscript = {
+  id: string;
+  xrefs?: Source[];
+};
+
+type SidebarOverviewGene = {
+  id: string;
+  symbol: string;
+  synonyms?: string[];
+  attributes?: string[];
+  filters?: {
+    [key: string]: JSONValue;
+  };
+  function?: {
+    description: string;
+    source: Source;
+  };
+  metadata?: Metadata;
+  cross_references?: CrossReference[];
+  transcripts: SidebarOverviewTranscript[];
+};
+
+/* END OF TYPES FOR THE OVERVIEW SECTION OF GENE VIEW SIDEBAR */
 
 export type EntityViewerSidebarPayload = {
-  gene: GeneViewGeneSidebarPayload;
+  gene: SidebarOverviewGene;
   other_assemblies?: Assembly[];
   other_data_sets?: DataSet[];
   homeologues?: Homeologue[];

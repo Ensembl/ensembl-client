@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
+import { Slice } from './slice';
+import { LocationWithinRegion } from './location';
+
 export type Exon = {
-  id: string;
-  slice: {
-    location: {
-      start: number;
-      end: number;
-    };
-  };
-  relative_location: {
-    start: number;
-    end: number;
-  };
+  stable_id: string;
+  slice: Slice;
+};
+
+// exon viewed from the perspective of how it is located in the transcript
+export type SplicedExon = {
+  index: number; // position of current exon in the array of exons
+  relative_location: LocationWithinRegion;
+  exon: Exon;
+};
+
+type ExonPhase =
+  | -1 // for non-coding genes
+  | 0
+  | 1
+  | 2;
+
+// exon viewed from the perspective of how it corresponds to the product
+export type PhasedExon = {
+  index: number; // position of current exon in the array of exons
+  start_phase: ExonPhase;
+  end_phase: ExonPhase;
+  exon: Exon;
 };

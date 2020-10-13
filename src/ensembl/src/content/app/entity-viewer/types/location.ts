@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { getStrandDisplayName } from './strandFormatter';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
-
-describe('getStrandDisplayName', () => {
-  it('returns the correct strand display name', () => {
-    expect(getStrandDisplayName(Strand.FORWARD)).toBe('forward strand');
-    expect(getStrandDisplayName(Strand.REVERSE)).toBe('reverse strand');
-  });
-});
+// naming this type LocationWithinRegion rather than simply Location
+// to avoid clashes with the web api Location interface
+export type LocationWithinRegion = {
+  start: number;
+  end: number;
+  length: number;
+};

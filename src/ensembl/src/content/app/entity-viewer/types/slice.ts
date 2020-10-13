@@ -15,17 +15,17 @@
  */
 
 import { Strand } from './strand';
+import { LocationWithinRegion } from './location';
 
 export type Slice = {
-  location: {
-    start: number;
-    end: number;
-  };
+  location: LocationWithinRegion;
   region: {
     name: string;
     strand: {
       code: Strand;
+      value?: 1 | -1; // adding this field for documentation purposes; we shouldn't need to use it
     };
+    assembly: string;
   };
 };
 
