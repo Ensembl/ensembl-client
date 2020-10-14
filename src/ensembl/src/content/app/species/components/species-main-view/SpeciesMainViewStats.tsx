@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
@@ -32,6 +32,7 @@ import { fetchStatsForActiveGenome } from 'src/content/app/species/state/general
 import { RootState } from 'src/store';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 import { GenomeStats } from '../../state/general/speciesGeneralSlice';
+import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import {
   StatsSection,
   sectionGroupsMap
@@ -44,6 +45,21 @@ type Props = {
   genomeStats: GenomeStats | undefined;
   exampleFocusObjects: ExampleFocusObject[];
   fetchStatsForActiveGenome: () => void;
+};
+
+type ExampleLinkPopupProps = {
+  links: Partial<urlObj>;
+  children: ReactNode;
+};
+
+const ExampleLinkWithPopup = (props: ExampleLinkPopupProps) => {
+  return (
+    <div className={styles.exampleLink}>
+      <ViewInAppPopup links={props.links}>
+        <span className={styles.exampleLinkText}>{props.children}</span>
+      </ViewInAppPopup>
+    </div>
+  );
 };
 
 const getCollapsedContent = (statsSection: StatsSection) => {
@@ -65,11 +81,9 @@ const getCollapsedContent = (statsSection: StatsSection) => {
         })}
 
       {exampleLinks && (
-        <div className={styles.exampleLink}>
-          <ViewInAppPopup links={exampleLinks}>
-            <span className={styles.exampleLinkText}>{exampleLinkText}</span>
-          </ViewInAppPopup>
-        </div>
+        <ExampleLinkWithPopup links={exampleLinks}>
+          {exampleLinkText}
+        </ExampleLinkWithPopup>
       )}
     </div>
   );
@@ -78,39 +92,33 @@ const getCollapsedContent = (statsSection: StatsSection) => {
 const getExpandedContent = (statsSection: StatsSection) => {
   const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
-  const statsGroupClassName = classNames(styles.statsGroup, {
-    [styles.noLink]: exampleLinks ? !Object.keys(exampleLinks).length : true
-  });
+
+  const hasExampleLinks = exampleLinks && Object.keys(exampleLinks).length;
 
   return (
     <div className={styles.expandedContent}>
       {groups.map((group, group_index) => {
         const { title, stats } = group;
-        return (
-          <div key={group_index} className={statsGroupClassName}>
-            <span className={styles.title}>{title}</span>
-            <div className={styles.stats}>
-              {stats.map((groupStats, group_index) => {
-                return (
-                  <div key={group_index}>
-                    {groupStats.map((stat, stat_index) => {
-                      return <SpeciesStats key={stat_index} {...stat} />;
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-            {group_index === 0 && exampleLinks && (
-              <div className={styles.exampleLink}>
-                <ViewInAppPopup links={exampleLinks}>
-                  <span className={styles.exampleLinkText}>
-                    {exampleLinkText}
-                  </span>
-                </ViewInAppPopup>
+        return stats.map((groupStats, row_index) => {
+          const statsGroupClassName = classNames(styles.statsGroup, {
+            [styles.noLink]: group_index === 0 && hasExampleLinks
+          });
+          return (
+            <div key={row_index} className={statsGroupClassName}>
+              {row_index === 0 && <span className={styles.title}>{title}</span>}
+              <div className={styles.stats}>
+                {groupStats.map((stat, stat_index) => {
+                  return <SpeciesStats key={stat_index} {...stat} />;
+                })}
               </div>
-            )}
-          </div>
-        );
+              {group_index === 0 && row_index === 0 && exampleLinks && (
+                <ExampleLinkWithPopup links={exampleLinks}>
+                  {exampleLinkText}
+                </ExampleLinkWithPopup>
+              )}
+            </div>
+          );
+        });
       })}
     </div>
   );
@@ -118,7 +126,7 @@ const getExpandedContent = (statsSection: StatsSection) => {
 
 const SpeciesMainViewStats = (props: Props) => {
   useEffect(() => {
-    if (!props.genomeStats) {
+    if (!props.genomeStats && props.exampleFocusObjects?.length) {
       props.fetchStatsForActiveGenome();
     }
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);

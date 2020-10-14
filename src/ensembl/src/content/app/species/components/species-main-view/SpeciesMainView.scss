@@ -13,7 +13,7 @@
 
 .statsWrapper {
   padding: 5px 20px 40px 120px;
-  max-width: 1310px;
+  max-width: 1360px;
 }
 
 .exampleLinkText {
@@ -46,6 +46,7 @@
     font-size: 12px;
     grid-column: title;
     color: $medium-dark-grey;
+    padding-top: 1px;
   }
 
   .summaryStat {
