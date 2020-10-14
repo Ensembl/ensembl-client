@@ -94,8 +94,7 @@ type SpeciesStatsSectionGroups = {
   [key in SpeciesStatsSection]: {
     title: Stats | string;
     groups: Groups[];
-    primaryStatsKey?: Stats;
-    secondaryStatsKey?: Stats;
+    summaryStatsKeys?: [Stats?, Stats?];
     exampleLinkText?: string;
   };
 };
@@ -106,23 +105,23 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
     title: 'Coding genes',
     exampleLinkText: 'Example gene',
     groups: [Groups.CODING_GENES, Groups.ANALYSIS],
-    primaryStatsKey: Stats.CODING_GENES
+    summaryStatsKeys: [Stats.CODING_GENES]
   },
   [SpeciesStatsSection.ASSEMBLY_STATS]: {
     title: 'Assembly',
     exampleLinkText: 'Example region',
     groups: [Groups.ASSEMBLY_STATS],
-    primaryStatsKey: Stats.CHROMOSOMES
+    summaryStatsKeys: [Stats.CHROMOSOMES]
   },
   [SpeciesStatsSection.PSEUDOGENES]: {
     title: 'Pseudogenes',
     groups: [Groups.PSEUDOGENES],
-    primaryStatsKey: Stats.PSEUDOGENES
+    summaryStatsKeys: [Stats.PSEUDOGENES]
   },
   [SpeciesStatsSection.NON_CODING_STATS]: {
     title: 'Non-coding genes',
     groups: [Groups.NON_CODING_GENES],
-    primaryStatsKey: Stats.NON_CODING_GENES
+    summaryStatsKeys: [Stats.NON_CODING_GENES]
   }
 };
 
@@ -277,8 +276,7 @@ type StatsGroup = {
 export type StatsSection = {
   section: SpeciesStatsSection;
   exampleLinks?: Partial<urlObj>;
-  primaryStats?: IndividualStat;
-  secondaryStats?: IndividualStat;
+  summaryStats?: IndividualStat[];
   groups: StatsGroup[];
 };
 
@@ -293,14 +291,14 @@ const buildIndividualStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  const { primaryValuePostfix, label, primaryUnit } = statsFormattingOptions[
-    props.primaryKey
-  ];
+  const {
+    primaryValuePostfix = '',
+    label,
+    primaryUnit
+  } = statsFormattingOptions[props.primaryKey];
 
   if (typeof primaryValue === 'number') {
-    primaryValue =
-      getCommaSeparatedNumber(primaryValue) +
-      (primaryValuePostfix ? primaryValuePostfix : '');
+    primaryValue = getCommaSeparatedNumber(primaryValue) + primaryValuePostfix;
   }
 
   return {
@@ -320,14 +318,12 @@ const buildHeaderStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
-  const { primaryValuePostfix, headerUnit } = statsFormattingOptions[
+  const { primaryValuePostfix = '', headerUnit } = statsFormattingOptions[
     props.primaryKey
   ];
 
   if (typeof primaryValue === 'number') {
-    primaryValue =
-      getCommaSeparatedNumber(primaryValue) +
-      (primaryValuePostfix ? primaryValuePostfix : '');
+    primaryValue = getCommaSeparatedNumber(primaryValue) + primaryValuePostfix;
   }
 
   return {
@@ -417,28 +413,24 @@ export const getStatsForSection = (props: {
     }
   });
 
-  const {
-    groups,
-    primaryStatsKey,
-    secondaryStatsKey,
-    exampleLinkText
-  } = sectionGroupsMap[section];
+  const { groups, summaryStatsKeys, exampleLinkText } = sectionGroupsMap[
+    section
+  ];
 
   if (!filteredData || !groups) {
     return;
   }
-  const primaryStats = primaryStatsKey
-    ? buildHeaderStat({
-        primaryKey: primaryStatsKey,
-        primaryValue: filteredData[primaryStatsKey]
-      })
-    : undefined;
-  const secondaryStats = secondaryStatsKey
-    ? buildHeaderStat({
-        primaryKey: secondaryStatsKey,
-        primaryValue: filteredData[secondaryStatsKey]
-      })
-    : undefined;
+
+  const summaryStats = summaryStatsKeys
+    ?.map((key) => {
+      return key
+        ? buildHeaderStat({
+            primaryKey: key,
+            primaryValue: filteredData[key]
+          })
+        : undefined;
+    })
+    .filter(Boolean);
 
   const exampleLinks = exampleLinkText
     ? getExampleLinks({
@@ -450,8 +442,7 @@ export const getStatsForSection = (props: {
 
   return {
     section,
-    primaryStats,
-    secondaryStats,
+    summaryStats,
     exampleLinks,
     groups: groups.map((group) => {
       const groupStats = groupsStatsMap[group];

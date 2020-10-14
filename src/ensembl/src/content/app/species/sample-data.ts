@@ -53,7 +53,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 38.87
     },
     coding_stats: {
-      scientific_name: 'Homo sapiens',
       coding_genes: 20420,
       average_genomic_span: 66885.16,
       average_sequence_length: 3443.15,
@@ -74,7 +73,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 6367.19
     },
     non_coding_stats: {
-      scientific_name: 'Homo sapiens',
       non_coding_genes: 23985,
       small_non_coding_genes: 4870,
       long_non_coding_genes: 16895,
@@ -92,7 +90,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 15929.64
     },
     pseudogene_stats: {
-      scientific_name: 'Homo sapiens',
       pseudogenes: 15217,
       average_genomic_span: 4124.33,
       average_sequence_length: 802.62,
@@ -129,7 +126,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 37.81
     },
     coding_stats: {
-      scientific_name: 'Homo sapiens',
       coding_genes: 20787,
       average_genomic_span: 63989.1,
       average_sequence_length: 3136.38,
@@ -150,7 +146,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 6220.21
     },
     non_coding_stats: {
-      scientific_name: 'Homo sapiens',
       non_coding_genes: 22948,
       small_non_coding_genes: 7050,
       long_non_coding_genes: 13860,
@@ -168,7 +163,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 12156.05
     },
     pseudogene_stats: {
-      scientific_name: 'Homo sapiens',
       pseudogenes: 14170,
       average_genomic_span: 3525.3,
       average_sequence_length: 809.46,
@@ -206,8 +200,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 50.79
     },
     coding_stats: {
-      scientific_name:
-        'Escherichia coli str. K-12 substr. MG1655 str. K12 (GCA_000005845)',
       coding_genes: 4240,
       average_genomic_span: 939.92,
       average_sequence_length: 939.92,
@@ -228,8 +220,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 1.67
     },
     non_coding_stats: {
-      scientific_name:
-        'Escherichia coli str. K-12 substr. MG1655 str. K12 (GCA_000005845)',
       non_coding_genes: 179,
       small_non_coding_genes: 179,
       long_non_coding_genes: 0,
@@ -247,8 +237,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     pseudogene_stats: {
-      scientific_name:
-        'Escherichia coli str. K-12 substr. MG1655 str. K12 (GCA_000005845)',
       pseudogenes: 115,
       average_genomic_span: 1103.18,
       average_sequence_length: 913.03,
@@ -285,7 +273,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 35.44
     },
     coding_stats: {
-      scientific_name: 'Caenorhabditis elegans',
       coding_genes: 20191,
       average_genomic_span: 3149.75,
       average_sequence_length: 1402.22,
@@ -306,7 +293,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 398.96
     },
     non_coding_stats: {
-      scientific_name: 'Caenorhabditis elegans',
       non_coding_genes: 24791,
       small_non_coding_genes: 24515,
       long_non_coding_genes: 276,
@@ -324,7 +310,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 401.85
     },
     pseudogene_stats: {
-      scientific_name: 'Caenorhabditis elegans',
       pseudogenes: 1922,
       average_genomic_span: 1474.68,
       average_sequence_length: 899.83,
@@ -361,7 +346,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 19.34
     },
     coding_stats: {
-      scientific_name: 'Plasmodium falciparum 3D7',
       coding_genes: 5362,
       average_genomic_span: 2569.88,
       average_sequence_length: 2296.23,
@@ -382,7 +366,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 167.04
     },
     non_coding_stats: {
-      scientific_name: 'Plasmodium falciparum 3D7',
       non_coding_genes: 252,
       small_non_coding_genes: 252,
       long_non_coding_genes: 0,
@@ -400,7 +383,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     pseudogene_stats: {
-      scientific_name: 'Plasmodium falciparum 3D7',
       pseudogenes: 153,
       average_genomic_span: 1665.66,
       average_sequence_length: 1568.01,
@@ -437,7 +419,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 38.15
     },
     coding_stats: {
-      scientific_name: 'Saccharomyces cerevisiae',
       coding_genes: 6600,
       average_genomic_span: 1344.37,
       average_sequence_length: 1327.58,
@@ -458,7 +439,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 354.08
     },
     non_coding_stats: {
-      scientific_name: 'Saccharomyces cerevisiae',
       non_coding_genes: 424,
       small_non_coding_genes: 424,
       long_non_coding_genes: 0,
@@ -476,7 +456,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 62.18
     },
     pseudogene_stats: {
-      scientific_name: 'Saccharomyces cerevisiae',
       pseudogenes: 12,
       average_genomic_span: 863.25,
       average_sequence_length: 863.25,
@@ -513,7 +492,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 45.18
     },
     coding_stats: {
-      scientific_name: 'Triticum aestivum',
       coding_genes: 107891,
       average_genomic_span: 3488.91,
       average_sequence_length: 1570.98,
@@ -534,7 +512,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 491.21
     },
     non_coding_stats: {
-      scientific_name: 'Triticum aestivum',
       non_coding_genes: 12853,
       small_non_coding_genes: 12491,
       long_non_coding_genes: 362,
@@ -552,7 +529,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     pseudogene_stats: {
-      scientific_name: 'Triticum aestivum',
       pseudogenes: 0,
       average_genomic_span: null,
       average_sequence_length: null,
@@ -590,8 +566,6 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 41.3
     },
     coding_stats: {
-      scientific_name:
-        'Actinobacillus pleuropneumoniae serovar 5b str. L20 (GCA_000015885)',
       coding_genes: 2012,
       average_genomic_span: 976.42,
       average_sequence_length: 976.42,
@@ -612,8 +586,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     non_coding_stats: {
-      scientific_name:
-        'Actinobacillus pleuropneumoniae serovar 5b str. L20 (GCA_000015885)',
       non_coding_genes: 80,
       small_non_coding_genes: 80,
       long_non_coding_genes: 0,
@@ -631,8 +603,6 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: null
     },
     pseudogene_stats: {
-      scientific_name:
-        'Actinobacillus pleuropneumoniae serovar 5b str. L20 (GCA_000015885)',
       pseudogenes: 0,
       average_genomic_span: null,
       average_sequence_length: null,

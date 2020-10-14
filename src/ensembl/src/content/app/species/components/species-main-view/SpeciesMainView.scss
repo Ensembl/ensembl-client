@@ -39,7 +39,7 @@
 .collapsedContent {
   display: grid;
   padding: 6px 20px;
-  grid-template-columns: [title] 120px [primary] 250px [secondary] auto [example-link] 150px;
+  grid-template-columns: [title] 120px [first_summary_stat] 250px [second_summary_stat] auto [example-link] 150px;
   align-items: center;
 
   .title {
@@ -48,28 +48,28 @@
     color: $medium-dark-grey;
   }
 
-  .primary {
-    grid-column: primary;
+  .summaryStat {
+    grid-column: first_summary_stat;
 
-    .primaryValue {
+    .value {
       font-size: 22px;
     }
 
-    .primaryUnit {
+    .unit {
       color: $dark-grey;
       font-size: 13px;
       padding-left: 5px;
     }
   }
 
-  .secondary {
-    grid-column: secondary;
+  .summaryStat + .summaryStat {
+    grid-column: second_summary_stat;
 
-    .secondaryValue {
+    .value {
       font-size: 22px;
     }
 
-    .secondaryUnit {
+    .unit {
       color: $dark-grey;
       font-size: 13px;
       padding-left: 5px;

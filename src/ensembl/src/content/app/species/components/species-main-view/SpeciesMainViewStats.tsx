@@ -47,31 +47,22 @@ type Props = {
 };
 
 const getCollapsedContent = (statsSection: StatsSection) => {
-  const { primaryStats, secondaryStats, section, exampleLinks } = statsSection;
+  const { summaryStats, section, exampleLinks } = statsSection;
   const { title, exampleLinkText } = sectionGroupsMap[section];
 
   return (
     <div className={styles.collapsedContent}>
       <span className={styles.title}>{title}</span>
-      {primaryStats && (
-        <div className={styles.primary}>
-          <span className={styles.primaryValue}>
-            {primaryStats.primaryValue}
-          </span>
-          <span className={styles.primaryUnit}>{primaryStats.primaryUnit}</span>
-        </div>
-      )}
 
-      {secondaryStats && (
-        <div className={styles.secondary}>
-          <span className={styles.secondaryValue}>
-            {secondaryStats.secondaryValue}
-          </span>
-          <span className={styles.secondaryUnit}>
-            {secondaryStats.secondaryUnit}
-          </span>
-        </div>
-      )}
+      {summaryStats?.length &&
+        summaryStats.map((summaryStat, index) => {
+          return (
+            <div className={styles.summaryStat} key={index}>
+              <span className={styles.value}>{summaryStat.primaryValue}</span>
+              <span className={styles.unit}>{summaryStat.primaryUnit}</span>
+            </div>
+          );
+        })}
 
       {exampleLinks && (
         <div className={styles.exampleLink}>
