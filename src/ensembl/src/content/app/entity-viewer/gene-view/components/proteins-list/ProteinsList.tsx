@@ -43,7 +43,7 @@ type ProteinsListProps = {
 
 const ProteinsList = (props: ProteinsListProps) => {
   const { search } = useLocation();
-  const transcriptIdToFocus = new URLSearchParams(search).get('transcript_id');
+  const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
 
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
@@ -55,7 +55,7 @@ const ProteinsList = (props: ProteinsListProps) => {
     // Expand the first transcript by default
     if (
       !hasExpandedTranscripts &&
-      !transcriptIdToFocus &&
+      !proteinIdToFocus &&
       sortedTranscripts[0].product
     ) {
       props.toggleExpandedProtein(sortedTranscripts[0].product.stable_id);

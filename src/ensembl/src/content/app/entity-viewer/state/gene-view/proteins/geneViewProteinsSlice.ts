@@ -69,12 +69,12 @@ export const toggleExpandedProtein = (
   );
 };
 
-export const expandProtein = (
-  transcriptId: string
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
+export const clearExpandedProteins = (): ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+> => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   const activeObjectId = getEntityViewerActiveEnsObjectId(state);
@@ -86,7 +86,7 @@ export const expandProtein = (
     proteinsSlice.actions.updateExpandedProteins({
       activeGenomeId,
       activeObjectId,
-      expandedIds: [transcriptId]
+      expandedIds: []
     })
   );
 };

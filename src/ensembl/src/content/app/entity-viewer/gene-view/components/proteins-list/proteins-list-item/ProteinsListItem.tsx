@@ -49,11 +49,11 @@ const ProteinsListItem = (props: Props) => {
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const { search } = useLocation();
-  const transcriptIdToFocus = new URLSearchParams(search).get('transcript_id');
+  const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
 
   const { product } = transcript.product_generating_contexts[0];
   const toggleListItemInfo = () => {
-    if (transcriptIdToFocus) {
+    if (proteinIdToFocus) {
       const url = urlFor.entityViewer({
         genomeId,
         entityId,
@@ -68,17 +68,17 @@ const ProteinsListItem = (props: Props) => {
 
   const itemRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (product.stable_id === transcriptIdToFocus) {
+    if (product.stable_id === proteinIdToFocus) {
       setTimeout(() => {
         itemRef.current?.scrollIntoView({
           behavior: 'smooth'
         });
       }, 100);
-      if (!props.expandedTranscriptIds.includes(transcriptIdToFocus)) {
+      if (!props.expandedTranscriptIds.includes(proteinIdToFocus)) {
         props.toggleExpandedProtein(product.stable_id);
       }
     }
-  }, [transcriptIdToFocus]);
+  }, [proteinIdToFocus]);
 
   return (
     <div className={styles.proteinListItem} ref={itemRef}>

@@ -29,7 +29,7 @@ type EntityViewerUrlParams = {
   genomeId?: string | null;
   entityId?: string;
   view?: string | null;
-  transcriptId?: string | null;
+  proteinId?: string | null;
 };
 
 export const browser = (params?: BrowserUrlParams) => {
@@ -71,7 +71,7 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   const query = queryString.stringify(
     {
       view: params?.view || undefined,
-      transcript_id: params?.transcriptId || undefined
+      protein_id: params?.proteinId || undefined
     },
     {
       encode: false
