@@ -223,7 +223,7 @@ const useGeneViewRouting = () => {
 
   const urlSearchParams = new URLSearchParams(search);
   const view = urlSearchParams.get('view');
-  const transcriptId = urlSearchParams.get('transcript_id');
+  const proteinId = urlSearchParams.get('protein_id');
   const viewInRedux = useSelector(getCurrentView) || View.TRANSCRIPTS;
   const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
@@ -236,7 +236,7 @@ const useGeneViewRouting = () => {
         genomeId,
         entityId,
         view: viewInRedux,
-        transcriptId
+        proteinId
       });
       dispatch(replace(url));
     }

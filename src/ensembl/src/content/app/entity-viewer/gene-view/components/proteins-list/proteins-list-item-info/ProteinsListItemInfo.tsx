@@ -65,22 +65,27 @@ const ProteinsListItemInfo = (props: Props) => {
     null
   );
 
+  const proteinId =
+    transcript.product_generating_contexts[0].product.unversioned_stable_id;
+
   useEffect(() => {
     const abortController = new AbortController();
-    const proteinId =
-      transcript.product_generating_contexts[0].product.unversioned_stable_id;
 
-    Promise.all([
-      fetchProteinDomains(proteinId, abortController.signal),
-      fetchProteinSummary(
-        transcript.unversioned_stable_id,
-        abortController.signal
-      )
-    ]).then(([proteinDomains, proteinSummaryData]) => {
+    fetchProteinDomains(proteinId, abortController.signal).then(
+      (proteinDomains) => {
+        if (!abortController.signal.aborted) {
+          setTranscriptWithProteinDomains(
+            addProteinDomains(transcript, proteinDomains)
+          );
+        }
+      }
+    );
+
+    fetchProteinSummary(
+      transcript.unversioned_stable_id,
+      abortController.signal
+    ).then((proteinSummaryData) => {
       if (!abortController.signal.aborted) {
-        setTranscriptWithProteinDomains(
-          addProteinDomains(transcript, proteinDomains)
-        );
         proteinSummaryData && setProteinSummary(proteinSummaryData);
       }
     });
@@ -90,61 +95,69 @@ const ProteinsListItemInfo = (props: Props) => {
     };
   }, [transcript.stable_id]);
 
-  if (!transcriptWithProteinDomains) {
-    return (
-      <div className={styles.loadingContainer}>
-        <CircleLoader />
-      </div>
-    );
-  }
-
-  const {
-    product
-  } = transcriptWithProteinDomains.product_generating_contexts[0];
+  const { product } =
+    transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
   // we need to move it to a constant
   return (
     <div className={styles.proteinsListItemInfo}>
-      <ProteinDomainImage
-        proteinDomains={product.protein_domains}
-        trackLength={trackLength}
-        width={695}
-      />
-      <ProteinImage product={product} trackLength={trackLength} width={695} />
-      <div className={styles.proteinSummary}>
-        <div className={styles.proteinSummaryTop}>
-          {proteinSummary && (
-            <div className={styles.interproUniprotWrapper}>
-              <ProteinExternalReference
-                source={ExternalSource.INTERPRO}
-                externalId={proteinSummary.pdbeId}
-              />
-              <ProteinExternalReference
-                source={ExternalSource.UNIPROT}
-                externalId={proteinSummary.pdbeId}
-              />
-            </div>
-          )}
-          <div className={styles.downloadWrapper}>
-            <InstantDownloadProtein
-              transcriptId={transcript.unversioned_stable_id}
-            />
-          </div>
+      {product ? (
+        <>
+          <ProteinDomainImage
+            proteinDomains={product.protein_domains}
+            trackLength={trackLength}
+            width={695}
+          />
+          <ProteinImage
+            product={product}
+            trackLength={trackLength}
+            width={695}
+          />
+        </>
+      ) : (
+        <div className={styles.imageLoadingContainer}>
+          <CircleLoader />
         </div>
-        {proteinSummary && (
-          <div>
-            <ProteinExternalReference
-              source={ExternalSource.PDBE}
-              externalId={proteinSummary.pdbeId}
-            />
-            {proteinSummary?.proteinStats && (
-              <div className={styles.proteinFeaturesCountWrapper}>
-                <ProteinFeaturesCount
-                  proteinStats={proteinSummary.proteinStats}
+      )}
+
+      <div className={styles.proteinSummary}>
+        {proteinSummary ? (
+          <>
+            <div className={styles.proteinSummaryTop}>
+              <div className={styles.interproUniprotWrapper}>
+                <ProteinExternalReference
+                  source={ExternalSource.INTERPRO}
+                  externalId={proteinSummary.pdbeId}
+                />
+                <ProteinExternalReference
+                  source={ExternalSource.UNIPROT}
+                  externalId={proteinSummary.pdbeId}
                 />
               </div>
-            )}
+              <div className={styles.downloadWrapper}>
+                <InstantDownloadProtein
+                  transcriptId={transcript.unversioned_stable_id}
+                />
+              </div>
+            </div>
+            <div>
+              <ProteinExternalReference
+                source={ExternalSource.PDBE}
+                externalId={proteinSummary.pdbeId}
+              />
+              {proteinSummary?.proteinStats && (
+                <div className={styles.proteinFeaturesCountWrapper}>
+                  <ProteinFeaturesCount
+                    proteinStats={proteinSummary.proteinStats}
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className={styles.statsLoadingContainer}>
+            <CircleLoader />
           </div>
         )}
         <div className={styles.keyline}></div>
