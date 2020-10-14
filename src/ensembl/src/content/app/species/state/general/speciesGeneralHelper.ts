@@ -252,183 +252,194 @@ const groupsStatsMap = {
 };
 
 // Individual stat formatting options.
+type StatsFormattingOption = {
+  label: string;
+  headerUnit?: string;
+  primaryUnit?: string;
+  secondaryUnit?: string;
+  primaryValuePostfix?: string;
+};
+
 type StatsFormattingOptions = {
-  [key in Stats]: {
-    label: string;
-    headerUnit?: string;
-    primaryUnit?: string;
-    secondaryUnit?: string;
-    primaryValuePostfix?: string;
+  [key in string]: {
+    [key in Stats]?: StatsFormattingOption;
   };
 };
 
 const statsFormattingOptions: StatsFormattingOptions = {
-  [Stats.CODING_GENES]: { label: 'Coding genes' },
-  [Stats.SHORTEST_GENE_LENGTH]: {
-    label: 'Shortest coding genes',
-    primaryUnit: 'bp'
-  },
-  [Stats.LONGEST_GENE_LENGTH]: {
-    label: 'Longest coding genes',
-    primaryUnit: 'bp'
-  },
-  [Stats.TOTAL_TRANSCRIPTS]: { label: 'Transcripts in coding genes' },
-  [Stats.TOTAL_EXONS]: { label: 'Exons in coding genes' },
-  [Stats.TOTAL_INTRONS]: { label: 'Introns in coding genes' },
+  [SpeciesStatsSection.CODING_STATS]: {
+    [Stats.CODING_GENES]: { label: 'Coding genes' },
+    [Stats.SHORTEST_GENE_LENGTH]: {
+      label: 'Shortest coding genes',
+      primaryUnit: 'bp'
+    },
+    [Stats.LONGEST_GENE_LENGTH]: {
+      label: 'Longest coding genes',
+      primaryUnit: 'bp'
+    },
+    [Stats.TOTAL_TRANSCRIPTS]: { label: 'Transcripts in coding genes' },
+    [Stats.TOTAL_EXONS]: { label: 'Exons in coding genes' },
+    [Stats.TOTAL_INTRONS]: { label: 'Introns in coding genes' },
 
-  [Stats.AVERAGE_GENOMIC_SPAN]: {
-    label: 'Average coding genomic span',
-    primaryUnit: 'bp'
-  },
-  [Stats.AVERAGE_SEQUENCE_LENGTH]: {
-    label: 'Average coding sequence length',
-    primaryUnit: 'bp'
-  },
-  [Stats.AVERAGE_CDS_LENGTH]: {
-    label: 'Average CDS length',
-    primaryUnit: 'bp'
-  },
+    [Stats.AVERAGE_GENOMIC_SPAN]: {
+      label: 'Average coding genomic span',
+      primaryUnit: 'bp'
+    },
+    [Stats.AVERAGE_SEQUENCE_LENGTH]: {
+      label: 'Average coding sequence length',
+      primaryUnit: 'bp'
+    },
+    [Stats.AVERAGE_CDS_LENGTH]: {
+      label: 'Average CDS length',
+      primaryUnit: 'bp'
+    },
 
-  [Stats.TRANSCRIPTS_PER_GENE]: {
-    label: 'Average transcripts per coding gene'
-  },
+    [Stats.TRANSCRIPTS_PER_GENE]: {
+      label: 'Average transcripts per coding gene'
+    },
 
-  [Stats.AVERAGE_EXON_LENGTH]: {
-    label: 'Average exon length per coding gene',
-    primaryUnit: 'bp'
-  },
-  [Stats.AVERAGE_INTRON_LENGTH]: {
-    label: 'Average intron length per coding gene',
-    primaryUnit: 'bp'
-  },
+    [Stats.AVERAGE_EXON_LENGTH]: {
+      label: 'Average exon length per coding gene',
+      primaryUnit: 'bp'
+    },
+    [Stats.AVERAGE_INTRON_LENGTH]: {
+      label: 'Average intron length per coding gene',
+      primaryUnit: 'bp'
+    },
 
-  [Stats.CODING_TRANSCRIPTS]: { label: 'Coding transcripts' },
-  [Stats.CODING_TRANSCRIPTS_PER_GENE]: {
-    label: 'Average coding transcripts per gene'
-  },
-  [Stats.AVERAGE_EXONS_PER_TRANSCRIPT]: {
-    label: 'Average exons per coding transcript'
-  },
+    [Stats.CODING_TRANSCRIPTS]: { label: 'Coding transcripts' },
+    [Stats.CODING_TRANSCRIPTS_PER_GENE]: {
+      label: 'Average coding transcripts per gene'
+    },
+    [Stats.AVERAGE_EXONS_PER_TRANSCRIPT]: {
+      label: 'Average exons per coding transcript'
+    },
 
-  [Stats.TOTAL_CODING_EXONS]: { label: 'Coding exons' },
-  [Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT]: {
-    label: 'Average coding exons per transcript'
+    [Stats.TOTAL_CODING_EXONS]: { label: 'Coding exons' },
+    [Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT]: {
+      label: 'Average coding exons per transcript'
+    },
+    [Stats.AVERAGE_CODING_EXON_LENGTH]: {
+      label: 'Average coding exon length',
+      primaryUnit: 'bp'
+    }
   },
-  [Stats.AVERAGE_CODING_EXON_LENGTH]: {
-    label: 'Average coding exon length',
-    primaryUnit: 'bp'
-  },
+  [SpeciesStatsSection.NON_CODING_STATS]: {
+    [Stats.NON_CODING_GENES]: { label: 'Non-coding genes', primaryUnit: 'bp' },
+    [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
+      label: 'Shortest non-coding gene'
+    },
+    [Stats.NON_CODING_LONGEST_GENE_LENGTH]: {
+      label: 'Longest non-coding gene'
+    },
 
-  [Stats.NON_CODING_GENES]: { label: 'Non-coding genes', primaryUnit: 'bp' },
-  [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
-    label: 'Shortest non-coding gene'
-  },
-  [Stats.NON_CODING_LONGEST_GENE_LENGTH]: { label: 'Longest non-coding gene' },
+    [Stats.NON_CODING_SMALL_GENES]: {
+      label: 'Small non-coding genes',
+      primaryUnit: 'bp'
+    },
+    [Stats.NON_CODING_LONG_GENES]: {
+      label: 'Long non-coding genes',
+      primaryUnit: 'bp'
+    },
+    [Stats.NON_CODING_MISC_GENES]: {
+      label: 'Misc. non-coding genes',
+      primaryUnit: 'bp'
+    },
 
-  [Stats.NON_CODING_SMALL_GENES]: {
-    label: 'Small non-coding genes',
-    primaryUnit: 'bp'
-  },
-  [Stats.NON_CODING_LONG_GENES]: {
-    label: 'Long non-coding genes',
-    primaryUnit: 'bp'
-  },
-  [Stats.NON_CODING_MISC_GENES]: {
-    label: 'Misc. non-coding genes',
-    primaryUnit: 'bp'
-  },
+    [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: {
+      label: ' Transcripts in non-coding genes'
+    },
+    [Stats.NON_CODING_TOTAL_EXONS]: { label: 'Exons in non-coding genes' },
+    [Stats.NON_CODING_TOTAL_INTRONS]: { label: 'Introns in non-coding genes' },
 
-  [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: {
-    label: ' Transcripts in non-coding genes'
-  },
-  [Stats.NON_CODING_TOTAL_EXONS]: { label: 'Exons in non-coding genes' },
-  [Stats.NON_CODING_TOTAL_INTRONS]: { label: 'Introns in non-coding genes' },
+    [Stats.NON_CODING_AVERAGE_GENOMIC_SPAN]: {
+      label: 'Average non-coding genomic span',
+      primaryUnit: 'bp'
+    },
+    [Stats.NON_CODING_AVERAGE_SEQUENCE_LENGTH]: {
+      label: 'Average non-coding sequence length',
+      primaryUnit: 'bp'
+    },
 
-  [Stats.NON_CODING_AVERAGE_GENOMIC_SPAN]: {
-    label: 'Average non-coding genomic span',
-    primaryUnit: 'bp'
+    [Stats.NON_CODING_TRANSCRIPTS_PER_GENE]: {
+      label: 'Average transcripts per non-coding gene'
+    },
+    [Stats.NON_CODING_AVERAGE_EXON_LENGTH]: {
+      label: 'Average exon length per non-coding transcript'
+    },
+    [Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT]: {
+      label: 'Average exons per non-coding transcript'
+    },
+    [Stats.NON_CODING_AVERAGE_INTRON_LENGTH]: {
+      label: 'Average intron length per non-coding transcript'
+    }
   },
-  [Stats.NON_CODING_AVERAGE_SEQUENCE_LENGTH]: {
-    label: 'Average non-coding sequence length',
-    primaryUnit: 'bp'
-  },
+  [SpeciesStatsSection.PSEUDOGENES]: {
+    [Stats.PSEUDOGENES]: { label: 'Pseudogenes' },
+    [Stats.PSEUDOGENES_SHORTEST_GENE_LENGTH]: {
+      label: 'Shortest pseudogene',
+      primaryUnit: 'bp'
+    },
+    [Stats.PSEUDOGENES_LONGEST_GENE_LENGTH]: {
+      label: 'Longest pseudogene',
+      primaryUnit: 'bp'
+    },
 
-  [Stats.NON_CODING_TRANSCRIPTS_PER_GENE]: {
-    label: 'Average transcripts per non-coding gene'
-  },
-  [Stats.NON_CODING_AVERAGE_EXON_LENGTH]: {
-    label: 'Average exon length per non-coding transcript'
-  },
-  [Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT]: {
-    label: 'Average exons per non-coding transcript'
-  },
-  [Stats.NON_CODING_AVERAGE_INTRON_LENGTH]: {
-    label: 'Average intron length per non-coding transcript'
-  },
+    [Stats.PSEUDOGENES_TOTAL_TRANSCRIPTS]: {
+      label: 'Transcripts in pseudogenes'
+    },
+    [Stats.PSEUDOGENES_TOTAL_EXONS]: { label: 'Exons in pseudogenes' },
+    [Stats.PSEUDOGENES_TOTAL_INTRONS]: { label: 'Introns in pseudogenes' },
 
-  [Stats.PSEUDOGENES]: { label: 'Pseudogenes' },
-  [Stats.PSEUDOGENES_SHORTEST_GENE_LENGTH]: {
-    label: 'Shortest pseudogene',
-    primaryUnit: 'bp'
-  },
-  [Stats.PSEUDOGENES_LONGEST_GENE_LENGTH]: {
-    label: 'Longest pseudogene',
-    primaryUnit: 'bp'
-  },
+    [Stats.PSEUDOGENES_AVERAGE_GENOMIC_SPAN]: {
+      label: 'Average pseudogene genomic span',
+      primaryUnit: 'bp'
+    },
+    [Stats.PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH]: {
+      label: 'Average pseudogene sequence length',
+      primaryUnit: 'bp'
+    },
 
-  [Stats.PSEUDOGENES_TOTAL_TRANSCRIPTS]: {
-    label: 'Transcripts in pseudogenes'
+    [Stats.PSEUDOGENES_TRANSCRIPTS_PER_GENE]: {
+      label: 'Average transcripts per pseudogene'
+    },
+    [Stats.PSEUDOGENES_AVERAGE_EXON_LENGTH]: {
+      label: 'Average exon length per pseudogene',
+      primaryUnit: 'bp'
+    },
+    [Stats.PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT]: {
+      label: 'Average exons per pseudogene transcript'
+    },
+    [Stats.PSEUDOGENES_AVERAGE_INTRON_LENGTH]: {
+      label: 'Average intron length per pseudogene',
+      primaryUnit: 'bp'
+    }
   },
-  [Stats.PSEUDOGENES_TOTAL_EXONS]: { label: 'Exons in pseudogenes' },
-  [Stats.PSEUDOGENES_TOTAL_INTRONS]: { label: 'Introns in pseudogenes' },
+  [SpeciesStatsSection.ASSEMBLY]: {
+    [Stats.CHROMOSOMES]: {
+      label: 'Chromosomes or plasmids',
+      headerUnit: 'chromosomes or plasmids'
+    },
+    [Stats.TOTAL_GENOME_LENGTH]: {
+      primaryUnit: 'bp',
+      label: 'Total genome length'
+    },
+    [Stats.TOTAL_CODING_SEQUENCE_LENGTH]: {
+      primaryUnit: 'bp',
+      label: 'Total coding sequence length'
+    },
 
-  [Stats.PSEUDOGENES_AVERAGE_GENOMIC_SPAN]: {
-    label: 'Average pseudogene genomic span',
-    primaryUnit: 'bp'
-  },
-  [Stats.PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH]: {
-    label: 'Average pseudogene sequence length',
-    primaryUnit: 'bp'
-  },
+    [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
+    [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length', primaryUnit: 'bp' },
+    [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
 
-  [Stats.PSEUDOGENES_TRANSCRIPTS_PER_GENE]: {
-    label: 'Average transcripts per pseudogene'
-  },
-  [Stats.PSEUDOGENES_AVERAGE_EXON_LENGTH]: {
-    label: 'Average exon length per pseudogene',
-    primaryUnit: 'bp'
-  },
-  [Stats.PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT]: {
-    label: 'Average exons per pseudogene transcript'
-  },
-  [Stats.PSEUDOGENES_AVERAGE_INTRON_LENGTH]: {
-    label: 'Average intron length per pseudogene',
-    primaryUnit: 'bp'
-  },
+    [Stats.COMPONENT_SEQUENCES]: { label: 'Component sequences' },
+    [Stats.CONTIG_N50]: { label: 'Contig N50', primaryUnit: 'bp' },
 
-  [Stats.CHROMOSOMES]: {
-    label: 'Chromosomes or plasmids',
-    headerUnit: 'chromosomes or plasmids'
-  },
-  [Stats.TOTAL_GENOME_LENGTH]: {
-    primaryUnit: 'bp',
-    label: 'Total genome length'
-  },
-  [Stats.TOTAL_CODING_SEQUENCE_LENGTH]: {
-    primaryUnit: 'bp',
-    label: 'Total coding sequence length'
-  },
-
-  [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
-  [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length', primaryUnit: 'bp' },
-  [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
-
-  [Stats.COMPONENT_SEQUENCES]: { label: 'Component sequences' },
-  [Stats.CONTIG_N50]: { label: 'Contig N50', primaryUnit: 'bp' },
-
-  [Stats.AVERAGE_GC_CONTENT]: {
-    primaryValuePostfix: '%',
-    label: 'Average GC content'
+    [Stats.AVERAGE_GC_CONTENT]: {
+      primaryValuePostfix: '%',
+      label: 'Average GC content'
+    }
   }
 };
 
@@ -448,6 +459,7 @@ type BuildStatProps = Partial<IndividualStat> & {
   primaryValue: string | number;
   primaryKey: Stats;
   secondaryKey?: Stats;
+  section: SpeciesStatsSection;
 };
 
 const buildIndividualStat = (
@@ -455,18 +467,23 @@ const buildIndividualStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
+  const { section, primaryKey } = props;
+
+  if (!statsFormattingOptions[section][primaryKey]) {
+    return;
+  }
   const {
     primaryValuePostfix = '',
     label,
     primaryUnit
-  } = statsFormattingOptions[props.primaryKey];
+  } = statsFormattingOptions[section][primaryKey] as StatsFormattingOption;
 
   if (typeof primaryValue === 'number') {
     primaryValue = getCommaSeparatedNumber(primaryValue) + primaryValuePostfix;
   }
 
   return {
-    label: label || props.primaryKey,
+    label: label || primaryKey,
     primaryValue,
     primaryUnit: primaryUnit
   };
@@ -475,6 +492,7 @@ const buildIndividualStat = (
 type BuildHeaderStatProps = {
   primaryValue: string | number;
   primaryKey: Stats;
+  section: SpeciesStatsSection;
 };
 
 const buildHeaderStat = (
@@ -482,16 +500,18 @@ const buildHeaderStat = (
 ): IndividualStat | undefined => {
   let primaryValue = props.primaryValue;
 
+  const { section, primaryKey } = props;
+
   const { primaryValuePostfix = '', headerUnit } = statsFormattingOptions[
-    props.primaryKey
-  ];
+    section
+  ][primaryKey] as StatsFormattingOption;
 
   if (typeof primaryValue === 'number') {
     primaryValue = getCommaSeparatedNumber(primaryValue) + primaryValuePostfix;
   }
 
   return {
-    label: props.primaryKey,
+    label: primaryKey,
     primaryValue: primaryValue,
     primaryUnit: headerUnit
   };
@@ -584,7 +604,8 @@ export const getStatsForSection = (props: {
       return key
         ? buildHeaderStat({
             primaryKey: key,
-            primaryValue: filteredData[key]
+            primaryValue: filteredData[key],
+            section
           })
         : undefined;
     })
@@ -613,7 +634,8 @@ export const getStatsForSection = (props: {
                 return filteredData[stat]
                   ? buildIndividualStat({
                       primaryKey: stat,
-                      primaryValue: filteredData[stat]
+                      primaryValue: filteredData[stat],
+                      section
                     })
                   : undefined;
               })
