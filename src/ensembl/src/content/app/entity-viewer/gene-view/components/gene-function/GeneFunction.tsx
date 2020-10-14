@@ -29,6 +29,7 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
@@ -85,14 +86,13 @@ const GeneFunction = (props: Props) => {
   };
 
   // Check if we have at least one protein coding transcript
-  // TODO: use a more reliable indicator than the biotype field
-  const isProteinCodingTranscript = transcripts.some(
-    (transcript) => transcript.biotype === 'protein_coding'
+  const hasProteinCodingTranscripts = transcripts.some(
+    isProteinCodingTranscript
   );
 
   // Disable the Proteins tab if there are no transcripts data
   // TODO: We need a better logic to disable tabs once we have the data available for other tabs
-  if (!isProteinCodingTranscript) {
+  if (!hasProteinCodingTranscripts) {
     const proteinTabIndex = tabsData.findIndex(
       (tab) => tab.title === GeneFunctionTabName.PROTEINS
     );
@@ -114,7 +114,7 @@ const GeneFunction = (props: Props) => {
   const getCurrentTabContent = () => {
     switch (selectedTabName) {
       case GeneFunctionTabName.PROTEINS:
-        return <ProteinsList geneId={props.gene.id} />;
+        return <ProteinsList gene={props.gene} />;
       default:
         return <>Data for these views will be available soon...</>;
     }
@@ -125,6 +125,7 @@ const GeneFunction = (props: Props) => {
       header={<TabWrapper />}
       classNames={{
         panel: styles.panel,
+        header: styles.header,
         body: styles.panelBody
       }}
     >

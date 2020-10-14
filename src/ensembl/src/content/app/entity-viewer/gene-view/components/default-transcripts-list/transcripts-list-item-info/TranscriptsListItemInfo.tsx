@@ -22,11 +22,12 @@ import { connect } from 'react-redux';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import {
+  isProteinCodingTranscript,
   getFeatureCoordinates,
   getRegionName,
-  getFirstAndLastCodingExonIndexes,
   getNumberOfCodingExons,
-  getSplicedRNALength
+  getSplicedRNALength,
+  getProductAminoAcidLength
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -67,50 +68,6 @@ export const TranscriptsListItemInfo = (
     });
   };
 
-  // FIXME: remove this when the amino acid length can be retrieved via the API
-  const getAminoAcidLength = () => {
-    const { exons, cds } = transcript;
-
-    if (cds) {
-      const {
-        firstCodingExonIndex,
-        lastCodingExonIndex
-      } = getFirstAndLastCodingExonIndexes(transcript);
-      if (firstCodingExonIndex === lastCodingExonIndex) {
-        return Math.floor((cds.end - cds.start + 1) / 3);
-      }
-
-      let cdsLength = 0;
-
-      // add coding length of the first coding exon
-      const { end: firstCodingExonEnd } = getFeatureCoordinates(
-        exons[firstCodingExonIndex]
-      );
-      cdsLength += firstCodingExonEnd - cds.start + 1;
-
-      // add coding length of the last coding exon
-      const { start: lastCodingExonStart } = getFeatureCoordinates(
-        exons[lastCodingExonIndex]
-      );
-      cdsLength += cds.end - lastCodingExonStart + 1;
-
-      // add coding length of exons between first and last coding exons
-      for (
-        let index = firstCodingExonIndex + 1;
-        index <= lastCodingExonIndex - 1;
-        index += 1
-      ) {
-        const { start, end } = getFeatureCoordinates(exons[index]);
-        cdsLength += end - start + 1;
-      }
-
-      const aminoAcidLength = Math.floor(cdsLength / 3);
-      return aminoAcidLength;
-    } else {
-      return 0;
-    }
-  };
-
   const splicedRNALength = getCommaSeparatedNumber(
     getSplicedRNALength(transcript)
   );
@@ -120,7 +77,7 @@ export const TranscriptsListItemInfo = (
 
   const focusIdForUrl = buildFocusIdForUrl({
     type: 'gene',
-    objectId: props.gene.id
+    objectId: props.gene.unversioned_stable_id
   });
 
   const getBrowserLink = () => {
@@ -133,37 +90,45 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
-            <strong>{transcript.biotype}</strong>
+            <strong>{transcript.so_term}</strong>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
         <div className={styles.topMiddle}>
-          {transcript.cds && (
+          {isProteinCodingTranscript(transcript) && (
             <>
               <div>
-                <strong>{getAminoAcidLength()} aa</strong>
+                <strong>{getProductAminoAcidLength(transcript)} aa</strong>
               </div>
-              <div>ENSP1000000000</div>
+              <div>
+                {transcript.product_generating_contexts[0]?.product.stable_id}
+              </div>
             </>
           )}
         </div>
         <div className={styles.topRight}>
           <div>
-            Spliced RNA length <strong>{splicedRNALength} </strong> bp
+            Combined exon length <strong>{splicedRNALength}</strong> bp
           </div>
           <div>
             Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong>{' '}
-            of {transcript.exons.length}
+            of {transcript.spliced_exons.length}
           </div>
         </div>
         <div className={styles.downloadLink}>
           {props.expandDownload ? (
             <CloseIcon
               className={styles.closeIcon}
-              onClick={() => props.toggleTranscriptDownload(transcript.id)}
+              onClick={() =>
+                props.toggleTranscriptDownload(transcript.stable_id)
+              }
             />
           ) : (
-            <span onClick={() => props.toggleTranscriptDownload(transcript.id)}>
+            <span
+              onClick={() =>
+                props.toggleTranscriptDownload(transcript.stable_id)
+              }
+            >
               Download
             </span>
           )}
@@ -188,7 +153,13 @@ const renderInstantDownload = ({
 }: TranscriptsListItemInfoProps) => {
   return (
     <div className={styles.download}>
-      <InstantDownloadTranscript transcript={transcript} gene={gene} />
+      <InstantDownloadTranscript
+        transcript={{
+          id: transcript.unversioned_stable_id,
+          so_term: transcript.so_term
+        }}
+        gene={{ id: gene.unversioned_stable_id }}
+      />
     </div>
   );
 };

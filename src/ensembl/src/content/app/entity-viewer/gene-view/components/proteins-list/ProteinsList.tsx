@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
-import { fetchGene } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/geneData';
-import { getLongestProteinLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import {
+  getLongestProteinLength,
+  isProteinCodingTranscript
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -27,37 +29,13 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import styles from './ProteinsList.scss';
 
 type ProteinsListProps = {
-  geneId: string;
-};
-
-type ProteinsListWithDataProps = {
   gene: Gene;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
-  const [geneData, setGeneData] = useState<Gene | null>(null);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    fetchGene(props.geneId, abortController.signal).then((result) => {
-      if (result) {
-        setGeneData(result);
-      }
-    });
-
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [props.geneId]);
-
-  return geneData ? <ProteinsListWithData gene={geneData} /> : null;
-};
-
-const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
-    (transcript) => !!transcript.cds
+    isProteinCodingTranscript
   );
 
   const longestProteinLength = getLongestProteinLength(props.gene);
@@ -66,7 +44,7 @@ const ProteinsListWithData = (props: ProteinsListWithDataProps) => {
     <div className={styles.proteinsList}>
       {proteinCodingTranscripts.map((transcript, index) => (
         <ProteinsListItem
-          key={transcript.id}
+          key={transcript.stable_id}
           isDefault={index == 0}
           transcript={transcript}
           trackLength={longestProteinLength}

@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-import styles from './EntityTypeIndicator.scss';
-
-type EntityTypeIndicatorProps = {
-  entity: string;
+export type CDNA = {
+  start: number;
+  end: number;
+  length: number;
 };
-const EntityTypeIndicator = (props: EntityTypeIndicatorProps) => (
-  <div className={styles.indicator}>{props.entity}</div>
-);
-
-export default EntityTypeIndicator;
