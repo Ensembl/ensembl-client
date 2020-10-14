@@ -87,14 +87,7 @@ enum Stats {
   TOPLEVEL_SEQUENCES = 'toplevel_sequences',
   COMPONENT_SEQUENCES = 'component_sequences',
   AVERAGE_GC_CONTENT = 'gc_percentage',
-  ASSEMBLY_NAME = 'assembly_name',
-  ASSEMBLY_DATE = 'assembly_date',
-  ASSEMBLY_ACCESSION = 'assembly_accession',
   CONTIG_N50 = 'contig_n50',
-  TAXONOMY_ID = 'taxonomy_id',
-  STRAIN = 'strain',
-  SEX = 'sex',
-  SCIENTIFIC_NAME = 'scientific_name',
 
   // Non coding stats
   NON_CODING_GENES = 'non_coding_genes',
@@ -177,7 +170,6 @@ const groupsStatsMap = {
     ],
     [
       Stats.TRANSCRIPTS_PER_GENE,
-      Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT,
       Stats.AVERAGE_EXON_LENGTH,
       Stats.AVERAGE_INTRON_LENGTH
     ]
@@ -205,7 +197,11 @@ const groupsStatsMap = {
       Stats.NON_CODING_LONG_GENES,
       Stats.NON_CODING_MISC_GENES
     ],
-    [Stats.TOTAL_TRANSCRIPTS, Stats.TOTAL_EXONS, Stats.TOTAL_INTRONS]
+    [
+      Stats.NON_CODING_TOTAL_TRANSCRIPTS,
+      Stats.NON_CODING_TOTAL_EXONS,
+      Stats.NON_CODING_TOTAL_INTRONS
+    ]
   ],
   [Groups.NON_CODING_ANALYSIS]: [
     [
@@ -267,17 +263,149 @@ type StatsFormattingOptions = {
 };
 
 const statsFormattingOptions: StatsFormattingOptions = {
-  [Stats.CODING_GENES]: {
-    label: 'Coding genes'
-  },
+  [Stats.CODING_GENES]: { label: 'Coding genes' },
   [Stats.SHORTEST_GENE_LENGTH]: {
-    label: 'Shortest coding gene',
+    label: 'Shortest coding genes',
     primaryUnit: 'bp'
   },
   [Stats.LONGEST_GENE_LENGTH]: {
-    label: 'Longest coding gene',
+    label: 'Longest coding genes',
     primaryUnit: 'bp'
   },
+  [Stats.TOTAL_TRANSCRIPTS]: { label: 'Transcripts in coding genes' },
+  [Stats.TOTAL_EXONS]: { label: 'Exons in coding genes' },
+  [Stats.TOTAL_INTRONS]: { label: 'Introns in coding genes' },
+
+  [Stats.AVERAGE_GENOMIC_SPAN]: {
+    label: 'Average coding genomic span',
+    primaryUnit: 'bp'
+  },
+  [Stats.AVERAGE_SEQUENCE_LENGTH]: {
+    label: 'Average coding sequence length',
+    primaryUnit: 'bp'
+  },
+  [Stats.AVERAGE_CDS_LENGTH]: {
+    label: 'Average CDS length',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.TRANSCRIPTS_PER_GENE]: {
+    label: 'Average transcripts per coding gene'
+  },
+
+  [Stats.AVERAGE_EXON_LENGTH]: {
+    label: 'Average exon length per coding gene',
+    primaryUnit: 'bp'
+  },
+  [Stats.AVERAGE_INTRON_LENGTH]: {
+    label: 'Average intron length per coding gene',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.CODING_TRANSCRIPTS]: { label: 'Coding transcripts' },
+  [Stats.CODING_TRANSCRIPTS_PER_GENE]: {
+    label: 'Average coding transcripts per gene'
+  },
+  [Stats.AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    label: 'Average exons per coding transcript'
+  },
+
+  [Stats.TOTAL_CODING_EXONS]: { label: 'Coding exons' },
+  [Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT]: {
+    label: 'Average coding exons per transcript'
+  },
+  [Stats.AVERAGE_CODING_EXON_LENGTH]: {
+    label: 'Average coding exon length',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.NON_CODING_GENES]: { label: 'Non-coding genes', primaryUnit: 'bp' },
+  [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
+    label: 'Shortest non-coding gene'
+  },
+  [Stats.NON_CODING_LONGEST_GENE_LENGTH]: { label: 'Longest non-coding gene' },
+
+  [Stats.NON_CODING_SMALL_GENES]: {
+    label: 'Small non-coding genes',
+    primaryUnit: 'bp'
+  },
+  [Stats.NON_CODING_LONG_GENES]: {
+    label: 'Long non-coding genes',
+    primaryUnit: 'bp'
+  },
+  [Stats.NON_CODING_MISC_GENES]: {
+    label: 'Misc. non-coding genes',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: {
+    label: ' Transcripts in non-coding genes'
+  },
+  [Stats.NON_CODING_TOTAL_EXONS]: { label: 'Exons in non-coding genes' },
+  [Stats.NON_CODING_TOTAL_INTRONS]: { label: 'Introns in non-coding genes' },
+
+  [Stats.NON_CODING_AVERAGE_GENOMIC_SPAN]: {
+    label: 'Average non-coding genomic span',
+    primaryUnit: 'bp'
+  },
+  [Stats.NON_CODING_AVERAGE_SEQUENCE_LENGTH]: {
+    label: 'Average non-coding sequence length',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.NON_CODING_TRANSCRIPTS_PER_GENE]: {
+    label: 'Average transcripts per non-coding gene'
+  },
+  [Stats.NON_CODING_AVERAGE_EXON_LENGTH]: {
+    label: 'Average exon length per non-coding transcript'
+  },
+  [Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    label: 'Average exons per non-coding transcript'
+  },
+  [Stats.NON_CODING_AVERAGE_INTRON_LENGTH]: {
+    label: 'Average intron length per non-coding transcript'
+  },
+
+  [Stats.PSEUDOGENES]: { label: 'Pseudogenes' },
+  [Stats.PSEUDOGENES_SHORTEST_GENE_LENGTH]: {
+    label: 'Shortest pseudogene',
+    primaryUnit: 'bp'
+  },
+  [Stats.PSEUDOGENES_LONGEST_GENE_LENGTH]: {
+    label: 'Longest pseudogene',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.PSEUDOGENES_TOTAL_TRANSCRIPTS]: {
+    label: 'Transcripts in pseudogenes'
+  },
+  [Stats.PSEUDOGENES_TOTAL_EXONS]: { label: 'Exons in pseudogenes' },
+  [Stats.PSEUDOGENES_TOTAL_INTRONS]: { label: 'Introns in pseudogenes' },
+
+  [Stats.PSEUDOGENES_AVERAGE_GENOMIC_SPAN]: {
+    label: 'Average pseudogene genomic span',
+    primaryUnit: 'bp'
+  },
+  [Stats.PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH]: {
+    label: 'Average pseudogene sequence length',
+    primaryUnit: 'bp'
+  },
+
+  [Stats.PSEUDOGENES_TRANSCRIPTS_PER_GENE]: {
+    label: 'Average transcripts per pseudogene'
+  },
+  [Stats.PSEUDOGENES_AVERAGE_EXON_LENGTH]: {
+    label: 'Average exon length per pseudogene',
+    primaryUnit: 'bp'
+  },
+  [Stats.PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT]: {
+    label: 'Average exons per pseudogene transcript'
+  },
+  [Stats.PSEUDOGENES_AVERAGE_INTRON_LENGTH]: {
+    label: 'Average intron length per pseudogene',
+    primaryUnit: 'bp'
+  },
+
   [Stats.CHROMOSOMES]: {
     label: 'Chromosomes or plasmids',
     headerUnit: 'chromosomes or plasmids'
@@ -290,98 +418,18 @@ const statsFormattingOptions: StatsFormattingOptions = {
     primaryUnit: 'bp',
     label: 'Total coding sequence length'
   },
+
+  [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
+  [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length', primaryUnit: 'bp' },
+  [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
+
+  [Stats.COMPONENT_SEQUENCES]: { label: 'Component sequences' },
+  [Stats.CONTIG_N50]: { label: 'Contig N50', primaryUnit: 'bp' },
+
   [Stats.AVERAGE_GC_CONTENT]: {
     primaryValuePostfix: '%',
-    label: '% GC'
-  },
-  [Stats.NON_CODING_GENES]: {
-    primaryUnit: 'bp',
-    label: 'Non-coding genes'
-  },
-  [Stats.NON_CODING_SMALL_GENES]: {
-    primaryUnit: 'bp',
-    label: 'Small non-coding genes'
-  },
-  [Stats.NON_CODING_LONG_GENES]: {
-    primaryUnit: 'bp',
-    label: 'Long non-coding genes'
-  },
-  [Stats.NON_CODING_MISC_GENES]: {
-    primaryUnit: 'bp',
-    label: 'Misc non-coding genes'
-  },
-  [Stats.AVERAGE_GENOMIC_SPAN]: { label: 'Average genomic span' },
-  [Stats.AVERAGE_SEQUENCE_LENGTH]: { label: 'Average sequence length' },
-  [Stats.AVERAGE_CDS_LENGTH]: { label: 'Average CDS length' },
-  [Stats.TOTAL_TRANSCRIPTS]: { label: 'Transcripts in coding gene' },
-  [Stats.CODING_TRANSCRIPTS]: { label: 'Coding transcripts' },
-  [Stats.TRANSCRIPTS_PER_GENE]: { label: 'Transcripts per gene' },
-  [Stats.CODING_TRANSCRIPTS_PER_GENE]: { label: 'Coding transcripts per gene' },
-  [Stats.TOTAL_EXONS]: { label: 'Exons in coding genes' },
-  [Stats.TOTAL_CODING_EXONS]: { label: 'Total coding exons' },
-  [Stats.AVERAGE_EXON_LENGTH]: { label: 'Average exon length' },
-  [Stats.AVERAGE_CODING_EXON_LENGTH]: { label: 'Average coding exon length' },
-  [Stats.AVERAGE_EXONS_PER_TRANSCRIPT]: {
-    label: 'Average exons per transcript'
-  },
-  [Stats.AVERAGE_CODING_EXONS_PER_CODING_TRANSCRIPT]: {
-    label: 'Average coding exons per coding transcript'
-  },
-  [Stats.TOTAL_INTRONS]: { label: 'Introns in coding genes' },
-  [Stats.AVERAGE_INTRON_LENGTH]: { label: 'Average intron length' },
-  [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length' },
-  [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
-  [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
-  [Stats.COMPONENT_SEQUENCES]: { label: 'Component sequences' },
-  [Stats.ASSEMBLY_NAME]: { label: 'Assembly name' },
-  [Stats.ASSEMBLY_DATE]: { label: 'Assembly date' },
-  [Stats.ASSEMBLY_ACCESSION]: { label: 'Assembly accession' },
-  [Stats.CONTIG_N50]: { label: 'Contig N50' },
-  [Stats.TAXONOMY_ID]: { label: 'Taxonomy id' },
-  [Stats.STRAIN]: { label: 'Breed/Cultivar/Strain' },
-  [Stats.SEX]: { label: 'Sex' },
-  [Stats.SCIENTIFIC_NAME]: { label: 'Scientific name' },
-
-  [Stats.NON_CODING_GENES]: { label: 'Non-coding Genes' },
-  [Stats.NON_CODING_SMALL_GENES]: { label: 'Small non-coding genes' },
-  [Stats.NON_CODING_LONG_GENES]: { label: 'Long non-coding genes' },
-  [Stats.NON_CODING_MISC_GENES]: { label: 'Misc non-coding genes' },
-  [Stats.NON_CODING_AVERAGE_GENOMIC_SPAN]: { label: 'Average genomic span' },
-  [Stats.NON_CODING_AVERAGE_SEQUENCE_LENGTH]: {
-    label: 'Average sequence length'
-  },
-  [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
-    label: 'Shortest non-coding gene length'
-  },
-  [Stats.NON_CODING_LONGEST_GENE_LENGTH]: {
-    label: 'Longest non-coding gene length'
-  },
-  [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: { label: 'Total transcripts' },
-  [Stats.NON_CODING_TRANSCRIPTS_PER_GENE]: { label: 'Transcripts per gene' },
-  [Stats.NON_CODING_TOTAL_EXONS]: { label: 'Total exons' },
-  [Stats.NON_CODING_AVERAGE_EXON_LENGTH]: { label: 'Average exon length' },
-  [Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT]: {
-    label: 'Average exons per transcript'
-  },
-  [Stats.NON_CODING_TOTAL_INTRONS]: { label: 'Total introns' },
-  [Stats.NON_CODING_AVERAGE_INTRON_LENGTH]: { label: 'Average intron length' },
-
-  [Stats.PSEUDOGENES]: { label: 'Pseudogenes' },
-  [Stats.PSEUDOGENES_AVERAGE_GENOMIC_SPAN]: { label: 'Average genomic span' },
-  [Stats.PSEUDOGENES_AVERAGE_SEQUENCE_LENGTH]: {
-    label: 'Average sequence length'
-  },
-  [Stats.PSEUDOGENES_SHORTEST_GENE_LENGTH]: { label: 'Shortest gene length' },
-  [Stats.PSEUDOGENES_LONGEST_GENE_LENGTH]: { label: 'Longest gene length' },
-  [Stats.PSEUDOGENES_TOTAL_TRANSCRIPTS]: { label: 'Total transcripts' },
-  [Stats.PSEUDOGENES_TRANSCRIPTS_PER_GENE]: { label: 'Transcripts per gene' },
-  [Stats.PSEUDOGENES_TOTAL_EXONS]: { label: 'Total exons' },
-  [Stats.PSEUDOGENES_AVERAGE_EXON_LENGTH]: { label: 'Average exon length' },
-  [Stats.PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT]: {
-    label: 'Average exons per transcript'
-  },
-  [Stats.PSEUDOGENES_TOTAL_INTRONS]: { label: 'Total introns' },
-  [Stats.PSEUDOGENES_AVERAGE_INTRON_LENGTH]: { label: 'Average intron length' }
+    label: 'Average GC content'
+  }
 };
 
 type StatsGroup = {
