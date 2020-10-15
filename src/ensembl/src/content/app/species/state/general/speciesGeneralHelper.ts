@@ -327,23 +327,22 @@ const statsFormattingOptions: StatsFormattingOptions = {
   [SpeciesStatsSection.NON_CODING_STATS]: {
     [Stats.NON_CODING_GENES]: { label: 'Non-coding genes', primaryUnit: 'bp' },
     [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
-      label: 'Shortest non-coding gene'
+      label: 'Shortest non-coding gene',
+      primaryUnit: 'bp'
     },
     [Stats.NON_CODING_LONGEST_GENE_LENGTH]: {
-      label: 'Longest non-coding gene'
+      label: 'Longest non-coding gene',
+      primaryUnit: 'bp'
     },
 
     [Stats.NON_CODING_SMALL_GENES]: {
-      label: 'Small non-coding genes',
-      primaryUnit: 'bp'
+      label: 'Small non-coding genes'
     },
     [Stats.NON_CODING_LONG_GENES]: {
-      label: 'Long non-coding genes',
-      primaryUnit: 'bp'
+      label: 'Long non-coding genes'
     },
     [Stats.NON_CODING_MISC_GENES]: {
-      label: 'Misc. non-coding genes',
-      primaryUnit: 'bp'
+      label: 'Misc. non-coding genes'
     },
 
     [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: {
@@ -365,13 +364,15 @@ const statsFormattingOptions: StatsFormattingOptions = {
       label: 'Average transcripts per non-coding gene'
     },
     [Stats.NON_CODING_AVERAGE_EXON_LENGTH]: {
-      label: 'Average exon length per non-coding transcript'
+      label: 'Average exon length per non-coding transcript',
+      primaryUnit: 'bp'
     },
     [Stats.NON_CODING_AVERAGE_EXONS_PER_TRANSCRIPT]: {
       label: 'Average exons per non-coding transcript'
     },
     [Stats.NON_CODING_AVERAGE_INTRON_LENGTH]: {
-      label: 'Average intron length per non-coding transcript'
+      label: 'Average intron length per non-coding transcript',
+      primaryUnit: 'bp'
     }
   },
   [SpeciesStatsSection.PSEUDOGENES]: {
@@ -429,7 +430,7 @@ const statsFormattingOptions: StatsFormattingOptions = {
       label: 'Total coding sequence length'
     },
 
-    [Stats.TOPLEVEL_SEQUENCES]: { label: 'Toplevel sequences' },
+    [Stats.TOPLEVEL_SEQUENCES]: { label: 'Top level sequences' },
     [Stats.TOTAL_GAP_LENGTH]: { label: 'Total gap length', primaryUnit: 'bp' },
     [Stats.SPANNED_GAP]: { label: 'Spanned gaps' },
 
