@@ -15,7 +15,7 @@
  */
 
 import { createAction, createAsyncAction } from 'typesafe-actions';
-import set from 'lodash/set';
+import set from 'lodash/fp/set';
 import cloneDeep from 'lodash/cloneDeep';
 
 import * as allFilterAccordionActions from './filters/filtersActions';
@@ -90,9 +90,9 @@ export const updateSelectedPreFilter: ActionCreator<ThunkAction<
     updateActiveConfigurationForGenome({
       activeGenomeId,
       data: set(
-        getCustomDownloadActiveGenomeConfiguration(getState()),
         'preFilter.selectedPreFilter',
-        selectedPreFilter
+        selectedPreFilter,
+        getCustomDownloadActiveGenomeConfiguration(getState())
       )
     })
   );
@@ -117,9 +117,9 @@ export const togglePreFiltersPanel: ActionCreator<ThunkAction<
     updateActiveConfigurationForGenome({
       activeGenomeId,
       data: set(
-        getCustomDownloadActiveGenomeConfiguration(getState()),
         'preFilter.showPreFiltersPanel',
-        showPreFiltersPanel
+        showPreFiltersPanel,
+        getCustomDownloadActiveGenomeConfiguration(getState())
       )
     })
   );
@@ -173,9 +173,9 @@ export const setShowPreview: ActionCreator<ThunkAction<
     updateActiveConfigurationForGenome({
       activeGenomeId,
       data: set(
-        getCustomDownloadActiveGenomeConfiguration(getState()),
         'previewDownload.showSummary',
-        showSummary
+        showSummary,
+        getCustomDownloadActiveGenomeConfiguration(getState())
       )
     })
   );
@@ -197,9 +197,9 @@ export const setShowExampleData: ActionCreator<ThunkAction<
     updateActiveConfigurationForGenome({
       activeGenomeId,
       data: set(
-        getCustomDownloadActiveGenomeConfiguration(getState()),
         'previewDownload.showExampleData',
-        showExampleData
+        showExampleData,
+        getCustomDownloadActiveGenomeConfiguration(getState())
       )
     })
   );
@@ -221,9 +221,9 @@ export const setDownloadType: ActionCreator<ThunkAction<
     updateActiveConfigurationForGenome({
       activeGenomeId,
       data: set(
-        getCustomDownloadActiveGenomeConfiguration(getState()),
         'previewDownload.downloadType',
-        downloadType
+        downloadType,
+        getCustomDownloadActiveGenomeConfiguration(getState())
       )
     })
   );
