@@ -36,7 +36,7 @@ enum Groups {
   CODING_GENES = 'coding_genes',
   ANALYSIS = 'analysis',
   NON_CODING_GENES = 'non_coding_genes',
-  NON_CODING_ANALYSIS = 'analysis',
+  NON_CODING_ANALYSIS = 'non_coding_analysis',
   PSEUDOGENES = 'pseudogenes',
   PSEUDOGENES_ANALYSIS = 'pseudogenes_analysis',
   ASSEMBLY = 'assembly',

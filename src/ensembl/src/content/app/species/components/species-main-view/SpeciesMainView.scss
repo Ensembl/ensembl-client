@@ -101,22 +101,14 @@
     grid-column: stats;
   }
 
-  &:first-of-type {
-
+  &WithExampleLink {
     grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
-  
-    .noLink {
-      grid-template-columns: [title] 120px [stats] auto;
-    }
-  
-    .title {
-      grid-column: title;
-      color: $medium-dark-grey;
-    }
-    .exampleLink {
-      grid-column: example-link;
-      font-size: 11px;
-      padding-top: 2px;
-    }
   }
+
+  .exampleLink {
+    grid-column: example-link;
+    font-size: 11px;
+    padding-top: 2px;
+  }
+
 }

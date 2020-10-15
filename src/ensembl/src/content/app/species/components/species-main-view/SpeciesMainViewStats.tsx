@@ -93,15 +93,14 @@ const getExpandedContent = (statsSection: StatsSection) => {
   const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
 
-  const hasExampleLinks = exampleLinks && Object.keys(exampleLinks).length;
-
   return (
     <div className={styles.expandedContent}>
       {groups.map((group, group_index) => {
         const { title, stats } = group;
         return stats.map((groupStats, row_index) => {
           const statsGroupClassName = classNames(styles.statsGroup, {
-            [styles.noLink]: group_index === 0 && hasExampleLinks
+            [styles.statsGroupWithExampleLink]:
+              !group_index && !row_index && exampleLinkText
           });
           return (
             <div key={row_index} className={statsGroupClassName}>
