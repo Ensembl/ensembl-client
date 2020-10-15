@@ -1,0 +1,16 @@
+$selectedSpeciesBorderRadius: 20px;
+$selectedSpeciesPadding: 6px 20px;
+$deleteButtonPadding: 8px 20px 8px 28px;
+
+@mixin selected-species-common {
+  display: inline-block;
+  padding: $selectedSpeciesPadding;
+  border-radius: $selectedSpeciesBorderRadius;
+  line-height: 1;
+  user-select: none;
+  margin-bottom: 4px;
+
+  &:not(:last-child) {
+    margin-right: 12px;
+  }
+}
