@@ -71,8 +71,8 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
         start: transcriptStart,
         end: transcriptEnd
       } = getFeatureCoordinates(transcript);
-      const startX = scale(transcriptStart);
-      const endX = scale(transcriptEnd);
+      const startX = scale(transcriptStart) as number;
+      const endX = scale(transcriptEnd) as number;
       const y = 10;
       const width = Math.floor(endX - startX);
       return (
@@ -97,9 +97,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
 };
 
 const GeneId = (props: GeneOverviewImageProps) => (
-  <div className={styles.geneId}>
-    {props.gene.id}.{props.gene.version}
-  </div>
+  <div className={styles.geneId}>{props.gene.stable_id}</div>
 );
 
 const DirectionIndicator = () => {

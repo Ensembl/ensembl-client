@@ -16,13 +16,13 @@
 
 import React from 'react';
 
-import SpeciesMainViewTop from './SpeciesMainViewTop';
 import SpeciesMainViewStats from './SpeciesMainViewStats';
+import SpeciesTitleArea from 'src/content/app/species/components/species-title-area/SpeciesTitleArea';
 
 const SpeciesMainView = () => {
   return (
     <div>
-      <SpeciesMainViewTop />
+      <SpeciesTitleArea />
       <SpeciesMainViewStats />
     </div>
   );

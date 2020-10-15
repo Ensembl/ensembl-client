@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { getStrandDisplayName } from './strandFormatter';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
-
-describe('getStrandDisplayName', () => {
-  it('returns the correct strand display name', () => {
-    expect(getStrandDisplayName(Strand.FORWARD)).toBe('forward strand');
-    expect(getStrandDisplayName(Strand.REVERSE)).toBe('reverse strand');
-  });
-});
+export type UTR = {
+  start: number;
+  end: number;
+  relative_start: number;
+  relative_end: number;
+  length: number;
+};

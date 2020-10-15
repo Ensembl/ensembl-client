@@ -33,7 +33,7 @@ import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 import styles from './ExampleLinks.scss';
 
 type ExampleGene = {
-  id: string;
+  unversioned_stable_id: string;
   symbol: string;
 };
 
@@ -43,9 +43,10 @@ type ExampleLinksProps = {
 };
 
 const QUERY = gql`
-  query Gene($id: String!) {
-    gene(byId: { id: $id }) {
-      id
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      unversioned_stable_id
       symbol
     }
   }
@@ -56,9 +57,10 @@ const ExampleLinks = (props: ExampleLinksProps) => {
   const exampleGeneId = props.exampleEntities.find(
     ({ type }) => type === 'gene'
   )?.id;
+  const { activeGenomeId } = props;
   const { loading, data, error } = useQuery<{ gene: ExampleGene }>(QUERY, {
-    variables: { id: exampleGeneId },
-    skip: !exampleGeneId
+    variables: { geneId: exampleGeneId, genomeId: activeGenomeId },
+    skip: !exampleGeneId || !activeGenomeId
   });
 
   if (loading) {
@@ -79,7 +81,7 @@ const ExampleLinks = (props: ExampleLinksProps) => {
 
   const featureIdInUrl = buildFocusIdForUrl({
     type: 'gene',
-    objectId: data.gene.id
+    objectId: data.gene.unversioned_stable_id
   });
   const path = urlHelper.entityViewer({
     genomeId: props.activeGenomeId,

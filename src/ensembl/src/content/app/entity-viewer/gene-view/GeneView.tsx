@@ -53,9 +53,10 @@ type GeneViewWithDataProps = {
 };
 
 const QUERY = gql`
-  query Gene($id: String!) {
-    gene(byId: { id: $id }) {
-      id
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      unversioned_stable_id
       version
       slice {
         location {
@@ -69,14 +70,15 @@ const QUERY = gql`
         }
       }
       transcripts {
-        id
+        stable_id
+        unversioned_stable_id
         symbol
-        so_term: biotype
-        biotype
+        so_term
         slice {
           location {
             start
             end
+            length
           }
           region {
             name
@@ -85,17 +87,45 @@ const QUERY = gql`
             }
           }
         }
-        exons {
-          slice {
-            location {
-              start
-              end
+        relative_location {
+          start
+          end
+        }
+        spliced_exons {
+          relative_location {
+            start
+            end
+          }
+          exon {
+            stable_id
+            slice {
+              location {
+                length
+              }
             }
           }
         }
-        cds {
-          start
-          end
+        product_generating_contexts {
+          product_type
+          cds {
+            relative_start
+            relative_end
+            protein_length
+          }
+          cdna {
+            length
+          }
+          phased_exons {
+            start_phase
+            end_phase
+            exon {
+              stable_id
+            }
+          }
+          product {
+            stable_id
+            unversioned_stable_id
+          }
         }
       }
     }
@@ -104,11 +134,11 @@ const QUERY = gql`
 
 const GeneView = () => {
   const params: { [key: string]: string } = useParams();
-  const { entityId } = params;
+  const { genomeId, entityId } = params;
   const { objectId: geneId } = parseFocusIdFromUrl(entityId);
 
   const { loading, data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { id: geneId }
+    variables: { geneId, genomeId }
   });
 
   // TODO decide about error handling
