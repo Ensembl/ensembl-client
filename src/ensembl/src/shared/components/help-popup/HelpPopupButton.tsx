@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
-import config from 'config';
-
-import useApiService from 'src/shared/hooks/useApiService';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import Modal from 'src/shared/components/modal/Modal';
-import HelpPopupBody, { HelpArticle } from './HelpPopupBody';
+import HelpPopupBody from './HelpPopupBody';
 import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
@@ -43,46 +40,8 @@ type ArticleReference = SlugReference | PathReference;
 
 type Props = ArticleReference;
 
-const getQuery = (params: SlugReference | PathReference) => {
-  if ('slug' in params) {
-    return `slug=${params.slug}`;
-  } else {
-    return `path=${encodeURIComponent(params.path)}`;
-  }
-};
-
 const HelpPopupButton = (props: Props) => {
-  const [slug, setSlug] = useState<string | null>(null);
-  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [shouldShowModal, setShouldShowModal] = useState(false);
-  const { helpApiHost } = config;
-
-  const query = slug ? getQuery({ slug }) : getQuery(props);
-
-  const url = `${helpApiHost}/api/article?${query}`;
-
-  // TODO: decide whether we want to show spinner while article content is loaded
-  // (it's gonna be fast, but we still might)
-  const { data: article } = useApiService<HelpArticle>({
-    endpoint: url,
-    skip: !shouldShowModal
-  });
-
-  useEffect(() => {
-    if (!shouldShowModal) {
-      setSlug(null);
-    }
-  }, [shouldShowModal]);
-
-  const handleArticleChange = (slug: string) => {
-    setSlug(slug);
-  };
-
-  // this is a provisional implementation and is likely to change
-  // as the design and the behaviour of the popup get more refined
-  const handleVideoChange = (youtubeId: string) => {
-    setSelectedVideoId(youtubeId);
-  };
 
   const openModal = () => {
     setShouldShowModal(true);
@@ -98,29 +57,6 @@ const HelpPopupButton = (props: Props) => {
     return <HelpAndDocumentation />;
   }
 
-  const sortedVideos = article?.videos.sort((a, b) => {
-    if (!selectedVideoId) {
-      return 0;
-    }
-    if (a.youtube_id === selectedVideoId) {
-      return -1;
-    } else if (b.youtube_id === selectedVideoId) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-
-  const popupBodyProps = !article
-    ? {
-        loading: true as const,
-        article: null
-      }
-    : {
-        loading: false as const,
-        article: { ...article, videos: sortedVideos } as HelpArticle
-      };
-
   return (
     <>
       <div className={styles.wrapper} onClick={openModal}>
@@ -134,11 +70,7 @@ const HelpPopupButton = (props: Props) => {
       </div>
       {shouldShowModal && (
         <Modal onClose={closeModal}>
-          <HelpPopupBody
-            {...popupBodyProps}
-            onArticleChange={handleArticleChange}
-            onVideoChange={handleVideoChange}
-          />
+          <HelpPopupBody {...props} />
         </Modal>
       )}
     </>
