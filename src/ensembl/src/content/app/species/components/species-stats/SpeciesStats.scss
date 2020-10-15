@@ -23,22 +23,24 @@ $secondary-text-color: $dark-grey;
 }
 
 .primaryValue {
-  font-size: 20px;
+  font-size: 25px;
   padding-left: 30px;
 }
 .primaryUnit {
-  color: $secondary-text-color;
+  color: $black;
   font-size: 13px;
   padding-left: 5px;
+  font-weight: $light;
 }
 .secondaryValue {
   font-size: 12px;
   padding-left: 30px;
 }
 .secondaryUnit {
-  color: $secondary-text-color;
+  color: $black;
   font-size: 11px;
   padding-left: 3px;
+  font-weight: $light;
 }
 .link {
   text-align: center;
