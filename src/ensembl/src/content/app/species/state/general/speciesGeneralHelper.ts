@@ -270,11 +270,11 @@ const statsFormattingOptions: StatsFormattingOptions = {
   [SpeciesStatsSection.CODING_STATS]: {
     [Stats.CODING_GENES]: { label: 'Coding genes' },
     [Stats.SHORTEST_GENE_LENGTH]: {
-      label: 'Shortest coding genes',
+      label: 'Shortest coding gene',
       primaryUnit: 'bp'
     },
     [Stats.LONGEST_GENE_LENGTH]: {
-      label: 'Longest coding genes',
+      label: 'Longest coding gene',
       primaryUnit: 'bp'
     },
     [Stats.TOTAL_TRANSCRIPTS]: { label: 'Transcripts in coding genes' },
@@ -325,7 +325,7 @@ const statsFormattingOptions: StatsFormattingOptions = {
     }
   },
   [SpeciesStatsSection.NON_CODING_STATS]: {
-    [Stats.NON_CODING_GENES]: { label: 'Non-coding genes', primaryUnit: 'bp' },
+    [Stats.NON_CODING_GENES]: { label: 'Non-coding genes' },
     [Stats.NON_CODING_SHORTEST_GENE_LENGTH]: {
       label: 'Shortest non-coding gene',
       primaryUnit: 'bp'
@@ -346,7 +346,7 @@ const statsFormattingOptions: StatsFormattingOptions = {
     },
 
     [Stats.NON_CODING_TOTAL_TRANSCRIPTS]: {
-      label: ' Transcripts in non-coding genes'
+      label: 'Transcripts in non-coding genes'
     },
     [Stats.NON_CODING_TOTAL_EXONS]: { label: 'Exons in non-coding genes' },
     [Stats.NON_CODING_TOTAL_INTRONS]: { label: 'Introns in non-coding genes' },
