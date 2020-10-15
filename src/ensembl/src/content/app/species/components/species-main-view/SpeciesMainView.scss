@@ -13,7 +13,8 @@
 
 .statsWrapper {
   padding: 5px 20px 40px 120px;
-  max-width: 1360px;
+  max-width: 1381px;
+  font-size: 13px;
 }
 
 .exampleLinkText {
@@ -43,22 +44,19 @@
   align-items: center;
 
   .title {
-    font-size: 12px;
     grid-column: title;
     color: $medium-dark-grey;
-    padding-top: 1px;
   }
 
   .summaryStat {
     grid-column: first_summary_stat;
 
     .value {
-      font-size: 22px;
+      font-size: 26px;
     }
 
     .unit {
       color: $dark-grey;
-      font-size: 13px;
       padding-left: 5px;
     }
   }
@@ -72,29 +70,25 @@
 
     .unit {
       color: $dark-grey;
-      font-size: 13px;
       padding-left: 5px;
     }
   }
 
   .exampleLink {
     grid-column: example-link;
-    font-size: 11px;
   }
 }
 
 
 
 .statsGroup {
-  padding: 13px 20px 0;
+  padding: 16px 20px 0;
   display: grid;
   grid-template-columns: [title] 120px [stats] auto;
-
+  
   .title {
-    font-size: 12px;
     grid-column: title;
     color: $medium-dark-grey;
-    padding-top: 1px;
   }
 
   .stats {
@@ -107,8 +101,6 @@
 
   .exampleLink {
     grid-column: example-link;
-    font-size: 11px;
-    padding-top: 2px;
   }
 
 }
