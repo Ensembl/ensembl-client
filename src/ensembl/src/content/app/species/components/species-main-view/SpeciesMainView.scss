@@ -1,3 +1,6 @@
+
+@import 'src/styles/common';
+
 @mixin narrow-top-grid {
   grid-template-columns: 1fr;
   grid-template-rows: auto;
@@ -18,5 +21,98 @@
 }
 
 .speciesLabelBlock {
-  padding: 0 75px 0 60px;
+  padding: 0 75px 0 45px;
+}
+
+.statsWrapper {
+  padding: 5px 20px 40px 120px;
+  max-width: 1381px;
+}
+
+.exampleLinkText {
+  cursor: pointer;
+  color: $blue;
+  position: relative;
+}
+
+.pointerBox {
+  padding: 6px 12px;
+  background: $black;
+  color: white;
+
+  p {
+    max-width: 200px;
+  }
+}
+
+.pointerBoxPointer {
+  fill: $black;
+}
+
+.collapsedContent {
+  display: grid;
+  padding: 6px 20px;
+  grid-template-columns: [title] 120px [first_summary_stat] 250px [second_summary_stat] auto [example-link] 150px;
+  align-items: center;
+
+  .title {
+    grid-column: title;
+    color: $medium-dark-grey;
+  }
+
+  .summaryStat {
+    grid-column: first_summary_stat;
+
+    .value {
+      font-size: 26px;
+    }
+
+    .unit {
+      color: $dark-grey;
+      padding-left: 5px;
+    }
+  }
+
+  .summaryStat + .summaryStat {
+    grid-column: second_summary_stat;
+
+    .value {
+      font-size: 22px;
+    }
+
+    .unit {
+      color: $dark-grey;
+      padding-left: 5px;
+    }
+  }
+
+  .exampleLink {
+    grid-column: example-link;
+  }
+}
+
+
+
+.statsGroup {
+  padding: 16px 20px 0;
+  display: grid;
+  grid-template-columns: [title] 120px [stats] auto;
+  
+  .title {
+    grid-column: title;
+    color: $medium-dark-grey;
+  }
+
+  .stats {
+    grid-column: stats;
+  }
+
+  &WithExampleLink {
+    grid-template-columns: [title] 120px [stats] auto [example-link] 150px;
+  }
+
+  .exampleLink {
+    grid-column: example-link;
+  }
+
 }

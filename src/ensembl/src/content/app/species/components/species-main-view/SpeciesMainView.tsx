@@ -16,12 +16,14 @@
 
 import React from 'react';
 
+import SpeciesMainViewStats from './SpeciesMainViewStats';
 import SpeciesTitleArea from 'src/content/app/species/components/species-title-area/SpeciesTitleArea';
 
 const SpeciesMainView = () => {
   return (
     <div>
       <SpeciesTitleArea />
+      <SpeciesMainViewStats />
     </div>
   );
 };
