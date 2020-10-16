@@ -24,7 +24,7 @@ export const getActiveGenomeSidebarPayload = (state: RootState) => {
   const activeGenomeId = getActiveGenomeId(state);
 
   if (!activeGenomeId) {
-    return;
+    return null;
   }
 
   return state.speciesPage.sidebar.species[activeGenomeId]?.payload || null;
