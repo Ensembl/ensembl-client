@@ -16,9 +16,7 @@
 
 import apiService from 'src/services/api-service';
 
-import { restTranscriptAdaptor } from 'src/content/app/entity-viewer/shared/rest/rest-adaptors/rest-transcript-adaptor';
-
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 export type TranscriptInResponse = {
   object_type: 'Transcript';
@@ -74,24 +72,31 @@ export type ProteinFeature = {
   end: number;
 };
 
-export const fetchTranscript = async (
-  id: string,
+export const fetchProteinDomains = async (
+  proteinId: string,
   signal?: AbortSignal
-): Promise<Transcript> => {
-  const transcriptUrl = `https://rest.ensembl.org/lookup/id/${id}?expand=1;content-type=application/json`;
-  const transcript = (await apiService.fetch(transcriptUrl, {
+): Promise<ProteinDomain[]> => {
+  const url = `https://rest.ensembl.org/overlap/translation/${proteinId}?feature=protein_feature;content-type=application/json`;
+
+  // if the fetch is aborted, apiService.fetch will return undefined
+  const response: ProteinFeature[] | undefined = await apiService.fetch(url, {
     signal
-  })) as TranscriptInResponse;
+  });
 
-  let proteinFeatures;
-
-  if (transcript.Translation) {
-    const proteinFeaturesUrl = `https://rest.ensembl.org/overlap/translation/${transcript.Translation.id}?feature=protein_feature;content-type=application/json`;
-
-    proteinFeatures = (await apiService.fetch(proteinFeaturesUrl, {
-      signal
-    })) as ProteinFeature[];
-  }
-
-  return restTranscriptAdaptor(transcript, proteinFeatures);
+  return response
+    ? response
+        .filter((item) => ['Pfam', 'PANTHER'].includes(item.type))
+        .map((item) => {
+          return {
+            id: item.id,
+            name: item.description,
+            resource_name: item.type,
+            location: {
+              start: item.start,
+              end: item.end,
+              length: item.end - item.start + 1
+            }
+          };
+        })
+    : [];
 };

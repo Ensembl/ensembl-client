@@ -17,31 +17,19 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import { push } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import {
-  toggleSpeciesUseAndSave,
-  deleteSpeciesAndSave
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-import SpeciesSelectionControls, {
-  speciesRemovalConfirmationMessage
-} from './SpeciesSelectionControls';
+import SpeciesUsageToggle from './SpeciesUsageToggle';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
-jest.mock('connected-react-router', () => ({
-  push: jest.fn(() => ({ type: 'push' }))
-}));
 jest.mock(
   'src/content/app/species-selector/state/speciesSelectorActions',
   () => ({
-    deleteSpeciesAndSave: jest.fn(() => ({ type: 'deleteSpeciesAndSave' })),
     toggleSpeciesUseAndSave: jest.fn(() => ({
       type: 'toggleSpeciesUseAndSave'
     }))
@@ -79,7 +67,7 @@ const wrapInRedux = (
 ) => {
   return mount(
     <Provider store={mockStore(state)}>
-      <SpeciesSelectionControls />
+      <SpeciesUsageToggle />
     </Provider>
   );
 };
@@ -165,44 +153,5 @@ describe('SpeciesSelectionControls', () => {
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id
     );
-  });
-
-  it('correctly toggles removal dialog', () => {
-    const wrapper = wrapInRedux();
-    const removeLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Remove')
-      .first();
-    removeLabel.simulate('click');
-
-    expect(wrapper.text()).toContain(speciesRemovalConfirmationMessage);
-
-    const doNotRemoveLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Do not remove')
-      .first();
-
-    doNotRemoveLabel.simulate('click');
-
-    expect(wrapper.text()).not.toContain(speciesRemovalConfirmationMessage);
-  });
-
-  it('removes species and redirects to species selector after removal', () => {
-    const wrapper = wrapInRedux();
-
-    // open removal confitmation dialog
-    const removeLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Remove')
-      .first();
-    removeLabel.simulate('click');
-
-    const removeButton = wrapper.find('button.primaryButton');
-    removeButton.simulate('click');
-
-    expect(deleteSpeciesAndSave).toHaveBeenCalledWith(
-      selectedSpecies.genome_id
-    );
-    expect(push).toHaveBeenCalledWith(urlFor.speciesSelector());
   });
 });
