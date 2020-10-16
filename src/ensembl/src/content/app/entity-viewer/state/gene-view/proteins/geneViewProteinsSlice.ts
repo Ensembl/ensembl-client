@@ -69,7 +69,7 @@ export const toggleExpandedProtein = (
   );
 };
 
-export const clearExpandedProteins = (): ThunkAction<
+export const onProteinLinkClick = (): ThunkAction<
   void,
   any,
   null,

@@ -18,7 +18,6 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useLocation } from 'react-router';
 
-import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
 import {
@@ -66,19 +65,13 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   return (
     <div className={styles.proteinsList}>
-      {proteinCodingTranscripts ? (
-        proteinCodingTranscripts.map((transcript) => (
-          <ProteinsListItem
-            key={transcript.stable_id}
-            transcript={transcript}
-            trackLength={longestProteinLength}
-          />
-        ))
-      ) : (
-        <div className={styles.proteinsListLoadingContainer}>
-          <CircleLoader />
-        </div>
-      )}
+      {proteinCodingTranscripts.map((transcript) => (
+        <ProteinsListItem
+          key={transcript.stable_id}
+          transcript={transcript}
+          trackLength={longestProteinLength}
+        />
+      ))}
     </div>
   );
 };
