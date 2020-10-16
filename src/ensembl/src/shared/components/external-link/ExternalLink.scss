@@ -1,24 +1,21 @@
 @import 'src/styles/common';
 
-
-
-.linkContainer {
+.container {
   display: inline-grid;
   grid-template-columns:  [icon] 12px 5px [link] auto;
+}
 
-  .defaultIcon {
-    display: inline-block;
-    fill: $orange;
-    grid-column: icon;
-    top: 1px;
-    position: relative;
-  }
+.icon {
+  display: inline-block;
+  fill: $orange;
+  grid-column: icon;
+  top: 1px;
+  position: relative;
+}
 
-  .defaultLink {
-    display: inline-block;
-    grid-column: link;
-    position: relative;
-    top: -2px;
-  }
-
+.link {
+  display: inline-block;
+  grid-column: link;
+  position: relative;
+  top: -2px;
 }

@@ -24,7 +24,6 @@ const defaultProps: ExternalLinkProps = {
   linkText: faker.random.words(),
   to: faker.internet.url(),
   classNames: {
-    label: faker.random.words(),
     icon: faker.random.words(),
     link: faker.random.words()
   }
@@ -47,10 +46,10 @@ describe('<ExternalLink />', () => {
 
   it('applies the passed in classNames', () => {
     expect(
-      wrapper.find('.defaultIcon').hasClass(defaultProps.classNames?.icon)
+      wrapper.find('.icon').hasClass(defaultProps.classNames?.icon)
     ).toBeTruthy();
     expect(
-      wrapper.find('.defaultLink').hasClass(defaultProps.classNames?.link)
+      wrapper.find('.link').hasClass(defaultProps.classNames?.link)
     ).toBeTruthy();
   });
 });

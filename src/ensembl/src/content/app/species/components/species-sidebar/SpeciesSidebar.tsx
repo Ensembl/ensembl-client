@@ -54,6 +54,11 @@ const SpeciesSidebar = (props: Props) => {
     value?: string | null;
     url?: string;
   };
+  const assemblyDate = new Date(payload.assembly_date);
+  const formattedAssemblyDate = Intl.DateTimeFormat('en-GB', {
+    month: 'short',
+    year: 'numeric'
+  }).format(assemblyDate);
   const annotationEntriesMap: AnnotationEntry[][] = [
     [
       {
@@ -64,7 +69,7 @@ const SpeciesSidebar = (props: Props) => {
       { label: 'Method', value: payload.annotation_method }
     ],
     [
-      { label: 'Assembly date', value: payload.assembly_date },
+      { label: 'Assembly date', value: formattedAssemblyDate },
       { label: 'Gencode version', value: payload.gencode_version }
     ],
     [
