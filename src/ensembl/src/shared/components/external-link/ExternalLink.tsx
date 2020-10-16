@@ -25,7 +25,6 @@ export type ExternalLinkProps = {
   to: string;
   linkText: string;
   classNames?: {
-    label?: string;
     icon?: string;
     link?: string;
   };

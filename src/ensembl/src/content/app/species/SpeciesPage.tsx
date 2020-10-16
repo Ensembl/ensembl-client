@@ -47,12 +47,6 @@ const SpeciesPage = () => {
     dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
 
-  useEffect(() => {
-    if (!currentSpecies) {
-      dispatch(fetchGenomeData(genomeId));
-    }
-  }, [genomeId, currentSpecies]);
-
   const sidebarNavigationContent = 'I am sidebar navigation';
   const topbarContent = 'I am topbar content';
 

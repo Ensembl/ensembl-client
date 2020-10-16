@@ -46,61 +46,105 @@ const SpeciesSidebar = (props: Props) => {
   if (!props.sidebarPayload) {
     return <div>No data to display</div>;
   }
-  const {
-    species,
-    assembly,
-    annotation,
-    psuedoautosomal_regions
-  } = props.sidebarPayload;
+  const payload = props.sidebarPayload;
+
+  type AnnotationEntry = {
+    label: string;
+    value?: string | null;
+    url?: string;
+  };
+  const annotationEntriesMap: AnnotationEntry[][] = [
+    [
+      {
+        label: 'Provider',
+        value: payload.annotation_provider.name,
+        url: payload.annotation_provider.url
+      },
+      { label: 'Method', value: payload.annotation_method }
+    ],
+    [
+      { label: 'Assembly date', value: payload.assembly_date },
+      { label: 'Gencode version', value: payload.gencode_version }
+    ],
+    [
+      { label: 'Database version', value: payload.database_version },
+      { label: 'Taxonomy ID', value: payload.taxonomy_id }
+    ]
+  ];
 
   return (
     <div className={styles.overviewContainer}>
-      <div className={styles.geneDetails}>
-        <span className={styles.geneSymbol}>{species.display_name}</span>
-        <span className={styles.stableId}>{species.scientific_name}</span>
+      <div className={styles.speciesDetails}>
+        <span className={styles.display_name}>{payload.display_name}</span>
+        <span className={styles.scientific_name}>
+          {payload.scientific_name}
+        </span>
       </div>
+
+      {payload.strain && (
+        <div className={styles.strainDetails}>
+          <span className={styles.strain_type}>{payload.strain.type}</span>
+          <span className={styles.strain_value}>{payload.strain.value}</span>
+        </div>
+      )}
 
       <div className={styles.sectionHead}>Assembly</div>
       <div className={styles.assemblyDetails}>
-        <div className={styles.assemblyName}>{assembly.name}</div>
+        <div className={styles.assemblyName}>{payload.assembly_name}</div>
 
         <div className={styles.assemblySource}>
           <ExternalReference
-            label={assembly.source.name}
-            linkText={assembly.source.id}
-            to={assembly.source.url}
+            label={payload.assembly_provider.name}
+            linkText={payload.id}
+            to={payload.assembly_provider.url}
           />
         </div>
         <div className={styles.standardLabelValue}>
           <div className={styles.label}>Assembly level</div>
-          <div className={styles.value}>{assembly.level}</div>
+          <div className={styles.boldValue}>{payload.assembly_level}</div>
         </div>
       </div>
 
       <div className={styles.sectionHead}>Annotation</div>
       <div className={styles.annotationDetails}>
-        <div className={styles.standardLabelValue}>
-          <div className={styles.label}>Provider</div>
-          <div className={styles.value}>{annotation.provider}</div>
-          <div className={styles.label}>Method</div>
-          <div className={styles.value}>{annotation.method}</div>
-          <br />
-
-          <div className={styles.label}>Last updated/patched</div>
-          <div className={styles.value}>{annotation.last_updated_date}</div>
-          <div className={styles.label}>Gencode version</div>
-          <div className={styles.value}>{annotation.gencode_version}</div>
-          <br />
-
-          <div className={styles.label}>Database version</div>
-          <div className={styles.value}>{annotation.database_version}</div>
-          <div className={styles.label}>Taxonomy ID</div>
-          <div className={styles.value}>{annotation.taxonomy_id}</div>
-        </div>
+        {annotationEntriesMap.map((entries, group_index) => {
+          return (
+            <div key={group_index}>
+              {entries.map((entry, entry_index) => {
+                return entry.value ? (
+                  <div key={entry_index} className={styles.standardLabelValue}>
+                    <div className={styles.label}>{entry.label}</div>
+                    <div className={styles.value}>
+                      {entry.url ? (
+                        <ExternalReference
+                          to={entry.url}
+                          linkText={entry.value}
+                        ></ExternalReference>
+                      ) : (
+                        entry.value
+                      )}
+                    </div>
+                  </div>
+                ) : null;
+              })}
+              <br />
+            </div>
+          );
+        })}
       </div>
 
-      <div className={styles.sectionHead}>Psuedoautosomal regions</div>
-      <div>{psuedoautosomal_regions.description}</div>
+      {payload.notes.map((note, index) => {
+        return (
+          <div key={index}>
+            <div className={styles.sectionHead}>{note.heading}</div>
+            <div className={styles.notesContent}>
+              {note.body.split('\n').map((content, key) => {
+                return <p key={key}>{content}</p>;
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -20,34 +20,42 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
-import { Source } from 'src/content/app/entity-viewer/types/source';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { RootState } from 'src/store';
 
 import { sidebarData } from 'src/content/app/species/sample-data.ts';
 
+type Notes = {
+  heading: string;
+  body: string;
+}[];
+
+type Provider = {
+  name: string;
+  url: string;
+};
+
+type Strain = {
+  type: string;
+  value: string;
+};
+
 export type SpeciesSidebarPayload = {
-  species: {
-    display_name: string;
-    scientific_name: string;
-  };
-  assembly: {
-    name: string;
-    source: Source;
-    level: string;
-  };
-  annotation: {
-    provider?: string;
-    method?: string;
-    last_updated_date?: string;
-    gencode_version?: string;
-    database_version?: string;
-    taxonomy_id?: string;
-  };
-  psuedoautosomal_regions: {
-    description: string;
-  };
+  id: string;
+  taxonomy_id: string;
+  database_version: string;
+  display_name: string;
+  scientific_name: string | null;
+  gencode_version: string | null;
+  assembly_name: string;
+  assembly_provider: Provider;
+  annotation_provider: Provider;
+  assembly_level: string;
+  annotation_method: string;
+  assembly_date: string;
+  notes: Notes;
+  strain: Strain | null;
 };
 
 type SpeciesPageSidebarState = {

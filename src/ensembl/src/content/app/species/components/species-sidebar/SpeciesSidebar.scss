@@ -1,5 +1,8 @@
 @import 'src/styles/common';
 
+$left-padding: 15px;
+
+
 .overviewContainer {
   font-size: 13px;
 }
@@ -13,24 +16,43 @@
   margin-top: 20px;
 }
 
-.geneDetails {
-  .geneSymbol {
+.speciesDetails {
+  .display_name {
+    padding-left: $left-padding;
     font-weight: $bold;
     margin-right: 10px;
+  }
+
+  .scientific_name{
+    font-style: italic;
+    font-weight: $light;
+  }
+}
+
+.strainDetails {
+  margin-top:10px;
+  .strain_type {
+    padding-left: $left-padding;
+    font-weight: $light;
+  }
+
+  .strain_value{
+    margin-left: 10px;
   }
 }
 
 .assemblyDetails {
 
-  padding-left: 15px;
+  padding-left: $left-padding;
   .assemblyName {
     padding-bottom: 20px;
+    font-weight: $bold;
   }
-
 }
 
+
 .annotationDetails{
-  padding-left: 15px;
+  padding-left: $left-padding;
 }
 
 .standardLabelValue {
@@ -38,7 +60,6 @@
   grid-template-columns: [label] max-content 10px [value] auto;
   .label {
     grid-column: label;
-    color: $dark-grey;
     font-size: 13px;
     font-weight: $light;
   }
@@ -46,4 +67,13 @@
   .value {
     grid-column: value;
   }
+
+  .boldValue {
+    grid-column: value;
+    font-weight: $bold;
+  }
+}
+
+.notesContent{
+  padding-left: $left-padding;
 }

@@ -547,31 +547,172 @@ type SpeciesSidebarData = {
 
 export const sidebarData: SpeciesSidebarData = {
   homo_sapiens_GCA_000001405_28: {
-    species: {
-      display_name: 'Human',
-      scientific_name: 'Homo sapiens'
+    id: 'GCA_000001405.28',
+    taxonomy_id: '9606',
+    strain: null,
+    database_version: '100.38',
+    display_name: 'Human',
+    scientific_name: 'Homo sapiens',
+    gencode_version: 'GENCODE 34',
+    assembly_name: 'GRCh38.p13',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
     },
-    assembly: {
-      name: 'GRCh38.p13',
-      source: {
-        name: 'INSDC Assembly',
-        id: 'GCA_000001405.28',
-        url: ''
-      },
-      level: 'complete genome'
+    annotation_provider: {
+      name: 'Ensembl',
+      url: 'www.ensembl.org'
     },
-    annotation: {
-      provider: 'Ensembl',
-      method: 'Full genebuild',
-      last_updated_date: 'Feb 2019',
-      gencode_version: 'GENCODE 34',
-      database_version: '100.38',
-      taxonomy_id: '9606'
+    assembly_level: 'complete genome',
+    annotation_method: 'full genebuild',
+    assembly_date: '2019-02-01',
+    notes: [
+      {
+        heading: 'Pseudoautosomal regions',
+        body:
+          'The Y chromosome in this assembly contains two psuedoautosomal regions (PARs) that were taken from the corresponding X chromosoles and are exact duplicates:\nchrX:10,000-2,781,479 = chrY:10,000-2,781,479\nchrX:155,701,382-156,030,895 = chrY:56,887,02-57,217,415'
+      }
+    ]
+  },
+  homo_sapiens_GCA_000001405_14: {
+    id: 'GCA_000001405.14',
+    taxonomy_id: '9606',
+    strain: null,
+    database_version: '101.37',
+    display_name: 'Human',
+    scientific_name: 'Homo sapiens',
+    gencode_version: 'GENCODE 19',
+    assembly_name: 'GRCh37.p13',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
     },
-    psuedoautosomal_regions: {
-      description: `The Y chromosome in this assembly contains two psuedoautosomal regions (PARs) that were taken from the corresponding X chromosoles and are exact duplicates:
-        chrX:10,000-2,781,479 = chrY:10,000-2,781,479
-        chrX:155,701,382-156,030,895 = chrY:56,887,02-57,217,415 `
-    }
+    annotation_provider: {
+      name: 'Ensembl',
+      url: ''
+    },
+    assembly_level: 'complete genome',
+    annotation_method: 'full genebuild',
+    assembly_date: 'June 2013',
+    notes: []
+  },
+  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
+    id: 'GCA_000005845.2',
+    taxonomy_id: '511145',
+    strain: null,
+    database_version: '101.1',
+    display_name: 'Escherichia coli str. K-12 substr. MG1655',
+    scientific_name: null,
+    gencode_version: null,
+    assembly_name: 'ASM584v2',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
+    },
+    annotation_provider: {
+      name: 'European Nucleotide Archive',
+      url: 'www.ensembl.org'
+    },
+    assembly_level: 'complete genome',
+    annotation_method: 'Generated from ENA annotation',
+    assembly_date: 'Sep 2013',
+    notes: []
+  },
+  caenorhabditis_elegans_GCA_000002985_3: {
+    id: 'GCA_000002985.3',
+    taxonomy_id: '6239',
+    strain: {
+      type: 'Strain',
+      value: 'N2'
+    },
+    database_version: '101.269',
+    display_name: 'Caenorhabditis elegans',
+    scientific_name: null,
+    gencode_version: null,
+    assembly_name: 'WBcel235',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
+    },
+    annotation_provider: {
+      name: 'WormBase',
+      url: 'www.ensembl.org'
+    },
+    assembly_level: 'complete genome',
+    annotation_method: 'Import',
+    assembly_date: 'Feb 2013',
+    notes: []
+  },
+  plasmodium_falciparum_GCA_000002765_2: {
+    id: 'GCA_000002765.2',
+    taxonomy_id: '36329',
+    strain: null,
+    database_version: '101.1',
+    display_name: 'Plasmodium falciparum 3D7',
+    scientific_name: null,
+    gencode_version: null,
+    assembly_name: 'ASM276v2',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
+    },
+    annotation_provider: {
+      name: 'Naval Medical Research Institute',
+      url: 'www.ensembl.org'
+    },
+    assembly_level: 'complete genome',
+    annotation_method: 'Import',
+    assembly_date: 'Apr 2016',
+    notes: []
+  },
+  saccharomyces_cerevisiae_GCA_000146045_2: {
+    id: 'GCA_000146045.2',
+    taxonomy_id: '4932',
+    strain: {
+      type: 'Strain',
+      value: 'S288C'
+    },
+    database_version: '101.4',
+    display_name: 'Brewers yeast',
+    scientific_name: 'Saccharomyces cerevisiae',
+    gencode_version: null,
+    assembly_name: 'R64',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
+    },
+    annotation_provider: {
+      name: 'Saccharomyces Genome Database',
+      url: 'www.ensembl.org'
+    },
+    assembly_level: 'complete genome',
+    annotation_method: 'Import',
+    assembly_date: 'Dec 2014',
+    notes: []
+  },
+  triticum_aestivum_GCA_900519105_1: {
+    id: 'GCA_900519105.1',
+    taxonomy_id: '4565',
+    strain: {
+      type: 'Cultivar',
+      value: 'Chinese spring'
+    },
+    database_version: '101.4',
+    display_name: 'Wheat',
+    scientific_name: 'Triticum aestivum',
+    gencode_version: null,
+    assembly_name: 'IWGSC',
+    assembly_provider: {
+      name: 'INSDC assembly',
+      url: ''
+    },
+    annotation_provider: {
+      name: 'International Wheat Genome Sequencing Consortium',
+      url: 'www.ensembl.org'
+    },
+    assembly_level: 'complete genome',
+    annotation_method: 'Import',
+    assembly_date: 'Aug 2018',
+    notes: []
   }
 };
