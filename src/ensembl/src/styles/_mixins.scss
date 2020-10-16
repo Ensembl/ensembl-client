@@ -1,12 +1,16 @@
-$selectedSpeciesBorderRadius: 20px;
-$selectedSpeciesPadding: 6px 20px;
-$deleteButtonPadding: 8px 20px 8px 28px;
+@use "sass:map";
 
-@mixin selected-species-common {
+$lozengeDefaults: (
+  "border-radius": 20px,
+  "padding": 6px 20px,
+  "line-height": 1
+);
+
+@mixin selected-species-common($lineHeight: map-get($lozengeDefaults, "line-height"), $borderRadius: map-get($lozengeDefaults, "border-radius")) {
   display: inline-block;
-  padding: $selectedSpeciesPadding;
-  border-radius: $selectedSpeciesBorderRadius;
-  line-height: 1;
+  padding: map-get($lozengeDefaults, "padding");
+  border-radius: $borderRadius;
+  line-height: $lineHeight;
   user-select: none;
   margin-bottom: 4px;
 
