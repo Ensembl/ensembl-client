@@ -17,7 +17,7 @@
 import { Source } from './source';
 
 export type CrossReference = {
-  id: string;
+  accession_id: string;
   name: string;
   description: string;
   url: string;

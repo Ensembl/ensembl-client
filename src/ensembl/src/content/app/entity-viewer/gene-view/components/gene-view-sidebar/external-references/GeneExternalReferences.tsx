@@ -45,8 +45,8 @@ const QUERY = gql`
     gene(byId: { stable_id: $stable_id, genome_id: $genome_id }) {
       name
       stable_id
-      cross_references {
-        id
+      external_references {
+        accession_id
         name
         description
         url
@@ -58,8 +58,8 @@ const QUERY = gql`
       }
       transcripts {
         stable_id
-        cross_references {
-          id
+        external_references {
+          accession_id
           name
           description
           url
@@ -83,7 +83,7 @@ type Gene = {
   name: string;
   stable_id: string;
   transcripts: Transcript[];
-  cross_references: CrossReference[];
+  external_references: CrossReference[];
 };
 
 const buildCrossReferenceGroups = (crossReferences: CrossReference[]) => {
@@ -100,7 +100,7 @@ const buildCrossReferenceGroups = (crossReferences: CrossReference[]) => {
     }
 
     crossReferenceGroups[sourceId].references.push({
-      id: crossReference.id,
+      accession_id: crossReference.accession_id,
       url: crossReference.url,
       name: crossReference.name,
       description: crossReference.description
@@ -134,7 +134,7 @@ const GeneExternalReferences = () => {
   }
 
   const crossReferenceGroups = buildCrossReferenceGroups(
-    data.gene.cross_references
+    data.gene.external_references
   );
   const { transcripts } = data.gene;
 
@@ -146,7 +146,7 @@ const GeneExternalReferences = () => {
       </div>
 
       <div className={styles.sectionHead}>Gene</div>
-      {data.gene.cross_references &&
+      {data.gene.external_references &&
         Object.values(crossReferenceGroups).map((crossReferenceGroup, key) => {
           if (crossReferenceGroup.references.length === 1) {
             return (
@@ -154,7 +154,7 @@ const GeneExternalReferences = () => {
                 <ExternalReference
                   label={crossReferenceGroup.source.name}
                   to={crossReferenceGroup.references[0].url}
-                  linkText={crossReferenceGroup.references[0].id}
+                  linkText={crossReferenceGroup.references[0].accession_id}
                 />
               </div>
             );
@@ -201,7 +201,7 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
             <ExternalReference
               label={xref.source.name}
               to={xref.url}
-              linkText={xref.id}
+              linkText={xref.accession_id}
               key={key}
             />
           ))}
@@ -225,7 +225,7 @@ const renderXrefGroupWithSameLabels = (
           <ExternalReference
             label={''}
             to={entry.url}
-            linkText={entry.id}
+            linkText={entry.accession_id}
             key={key}
           />
         ))}
@@ -253,7 +253,7 @@ const renderXrefGroupWithDifferentLabels = (
                 <ExternalReference
                   label={entry.description}
                   to={entry.url}
-                  linkText={entry.id}
+                  linkText={entry.accession_id}
                   key={key}
                 />
               ))}
