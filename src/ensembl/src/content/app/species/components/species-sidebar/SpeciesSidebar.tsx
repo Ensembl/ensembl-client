@@ -16,6 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
@@ -111,9 +112,13 @@ const SpeciesSidebar = (props: Props) => {
           return (
             <div key={group_index}>
               {entries.map((entry, entry_index) => {
+                const labelClassNames = classNames(styles.label, {
+                  [styles.labelShort]: group_index === 0
+                });
+
                 return entry.value ? (
                   <div key={entry_index} className={styles.standardLabelValue}>
-                    <div className={styles.label}>{entry.label}</div>
+                    <div className={labelClassNames}>{entry.label}</div>
                     <div className={styles.value}>
                       {entry.url ? (
                         <ExternalReference

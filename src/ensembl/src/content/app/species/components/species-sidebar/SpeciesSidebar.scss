@@ -62,6 +62,11 @@ $left-padding: 15px;
     grid-column: label;
     font-size: 13px;
     font-weight: $light;
+    width: 100px;
+
+    &Short{
+      width:50px;
+    }
   }
 
   .value {
