@@ -75,7 +75,7 @@ const SpeciesSidebar = (props: Props) => {
   return (
     <div className={styles.overviewContainer}>
       <div className={styles.speciesDetails}>
-        <span className={styles.display_name}>{payload.display_name}</span>
+        <span className={styles.common_name}>{payload.common_name}</span>
         <span className={styles.scientific_name}>
           {payload.scientific_name}
         </span>
