@@ -40,7 +40,8 @@ const defaultProps = {
   gene,
   transcript,
   expandDownload,
-  toggleTranscriptDownload: jest.fn()
+  toggleTranscriptDownload: jest.fn(),
+  onProteinLinkClick: jest.fn()
 };
 
 const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
@@ -93,5 +94,17 @@ describe('<TranscriptsListItemInfo /', () => {
       expandDownload: true
     });
     expect(wrapper.find(InstantDownloadTranscript)).toHaveLength(1);
+  });
+
+  it('calls correct callback when protein link is clicked', () => {
+    const proteinId =
+      defaultProps.transcript.product_generating_contexts[0].product.stable_id;
+    const proteinLink = wrapper
+      .find('a')
+      .findWhere((element: any) => element.text() === proteinId)
+      .first();
+
+    proteinLink.simulate('click');
+    expect(defaultProps.onProteinLinkClick).toHaveBeenCalled();
   });
 });

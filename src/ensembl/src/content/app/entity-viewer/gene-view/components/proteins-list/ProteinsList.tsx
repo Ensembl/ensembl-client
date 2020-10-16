@@ -51,13 +51,12 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   useEffect(() => {
     const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+    const firstProteinId =
+      proteinCodingTranscripts[0].product_generating_contexts[0].product
+        .unversioned_stable_id;
     // Expand the first transcript by default
-    if (
-      !hasExpandedTranscripts &&
-      !proteinIdToFocus &&
-      sortedTranscripts[0].product
-    ) {
-      props.toggleExpandedProtein(sortedTranscripts[0].product.stable_id);
+    if (!hasExpandedTranscripts && !proteinIdToFocus) {
+      props.toggleExpandedProtein(firstProteinId);
     }
   }, []);
 

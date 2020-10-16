@@ -35,7 +35,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-import { onProteinLinkClick } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
+import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -50,7 +50,7 @@ export type TranscriptsListItemInfoProps = {
   transcript: Transcript;
   expandDownload: boolean;
   toggleTranscriptDownload: (id: string) => void;
-  onProteinLinkClick: (id: string) => void;
+  onProteinLinkClick: () => void;
 };
 
 export const TranscriptsListItemInfo = (
@@ -92,10 +92,7 @@ export const TranscriptsListItemInfo = (
     });
 
     return (
-      <Link
-        onClick={() => props.onProteinLinkClick(proteinStableId)}
-        to={proteinViewUrl}
-      >
+      <Link onClick={() => props.onProteinLinkClick()} to={proteinViewUrl}>
         {proteinStableId}
       </Link>
     );
@@ -187,7 +184,7 @@ const renderInstantDownload = ({
 
 const mapDispatchToProps = {
   toggleTranscriptDownload,
-  onProteinLinkClick
+  onProteinLinkClick: clearExpandedProteins
 };
 
 export default connect(null, mapDispatchToProps)(TranscriptsListItemInfo);
