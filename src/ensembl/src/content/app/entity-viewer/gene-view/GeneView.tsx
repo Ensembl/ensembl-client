@@ -125,6 +125,13 @@ const QUERY = gql`
           product {
             stable_id
             unversioned_stable_id
+            external_references {
+              accession_id
+              description
+              source {
+                id
+              }
+            }
           }
         }
       }

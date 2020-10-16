@@ -71,10 +71,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
     Promise.all([
       fetchProteinDomains(proteinId, abortController.signal),
-      fetchProteinSummary(
-        transcript.unversioned_stable_id,
-        abortController.signal
-      )
+      fetchProteinSummary(proteinId, abortController.signal)
     ]).then(([proteinDomains, proteinSummaryData]) => {
       if (!abortController.signal.aborted) {
         setTranscriptWithProteinDomains(

@@ -31,6 +31,8 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
 
+const UNIPROT_SOURCE = 'Uniprot';
+
 type Props = {
   transcript: Transcript;
   trackLength: number;
@@ -48,13 +50,20 @@ const ProteinsListItem = (props: Props) => {
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
+  const getProteinDescription = () => {
+    const uniprotReference = product.external_references.find((reference) =>
+      reference.source.id.includes(UNIPROT_SOURCE)
+    );
+    return uniprotReference?.description;
+  };
+
   return (
     <>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{getProductAminoAcidLength(transcript)} aa</div>
-          <div>Protein description from UniProt</div>
+          <div>{getProteinDescription()}</div>
           <div>{product?.stable_id}</div>
         </div>
         <div

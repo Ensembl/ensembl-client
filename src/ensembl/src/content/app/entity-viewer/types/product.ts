@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ExternalReference } from './externalReference';
 import { LocationWithinRegion } from './location';
 
 export type ProteinDomainsResources = {
@@ -51,6 +52,7 @@ export type Product = {
   so_term: string;
   length: number;
   protein_domains: ProteinDomain[];
+  external_references: ExternalReference[];
 };
 
 export type ProteinDomain = {
