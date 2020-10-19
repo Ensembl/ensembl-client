@@ -102,7 +102,7 @@ const ProteinsListItemInfo = (props: Props) => {
   // we need to move it to a constant
   return (
     <div className={styles.proteinsListItemInfo}>
-      {product ? (
+      {product && (
         <>
           <ProteinDomainImage
             proteinDomains={product.protein_domains}
@@ -115,14 +115,10 @@ const ProteinsListItemInfo = (props: Props) => {
             width={695}
           />
         </>
-      ) : (
-        <div className={styles.imageLoadingContainer}>
-          <CircleLoader />
-        </div>
       )}
 
       <div className={styles.proteinSummary}>
-        {proteinSummary ? (
+        {proteinSummary && (
           <>
             <div className={styles.proteinSummaryTop}>
               <div className={styles.interproUniprotWrapper}>
@@ -155,7 +151,9 @@ const ProteinsListItemInfo = (props: Props) => {
               )}
             </div>
           </>
-        ) : (
+        )}
+
+        {(!product || !proteinSummary) && (
           <div className={styles.statsLoadingContainer}>
             <CircleLoader />
           </div>
