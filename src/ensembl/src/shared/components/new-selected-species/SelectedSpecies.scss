@@ -2,7 +2,7 @@
 @import './selected-species-common';
 
 .species {
-  @include selected-species-common;
+  @include lozenge;
   border: 1px solid $blue;
   cursor: pointer;
   overflow: hidden;

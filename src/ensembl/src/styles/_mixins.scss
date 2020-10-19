@@ -6,7 +6,7 @@ $lozengeDefaults: (
   "line-height": 1
 );
 
-@mixin selected-species-common($lineHeight: map-get($lozengeDefaults, "line-height"), $borderRadius: map-get($lozengeDefaults, "border-radius")) {
+@mixin lozenge($lineHeight: map-get($lozengeDefaults, "line-height"), $borderRadius: map-get($lozengeDefaults, "border-radius")) {
   display: inline-block;
   padding: map-get($lozengeDefaults, "padding");
   border-radius: $borderRadius;
