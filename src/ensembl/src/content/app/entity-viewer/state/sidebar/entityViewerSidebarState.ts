@@ -21,7 +21,7 @@ import { Homeologue } from '../../types/homeologue';
 import { Publication } from '../../types/publication';
 import { Source } from '../../types/source';
 import { Metadata } from '../../types/metadata';
-import { CrossReference } from '../../types/crossReference';
+import { ExternalReference } from '../../types/externalReference';
 import JSONValue from 'src/shared/types/JSON';
 
 export enum SidebarTabName {
@@ -57,7 +57,7 @@ type SidebarOverviewGene = {
     source: Source;
   };
   metadata?: Metadata;
-  cross_references?: CrossReference[];
+  external_references?: ExternalReference[];
   transcripts: SidebarOverviewTranscript[];
 };
 

@@ -37,6 +37,7 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
     so_term: faker.lorem.word(),
     length: length,
     protein_domains: createProteinDomains(length),
+    external_references: [],
     ...fragment
   };
 };

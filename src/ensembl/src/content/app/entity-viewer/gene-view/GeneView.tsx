@@ -111,7 +111,6 @@ const QUERY = gql`
           cds {
             relative_start
             relative_end
-            protein_length
           }
           cdna {
             length
@@ -126,6 +125,7 @@ const QUERY = gql`
           product {
             stable_id
             unversioned_stable_id
+            length
             external_references {
               accession_id
               description
