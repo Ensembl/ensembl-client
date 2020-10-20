@@ -20,8 +20,6 @@ import classNames from 'classnames';
 import find from 'lodash/find';
 import { push } from 'connected-react-router';
 
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 import analyticsTracking from 'src/services/analytics-service';
 import useHover from 'src/shared/hooks/useHover';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -35,6 +33,9 @@ import {
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
+
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
 import { RootState } from 'src/store';
 import {
@@ -82,7 +83,7 @@ export const PopularSpeciesButton = (props: Props) => {
       });
     } else if (isCommitted) {
       props.push(
-        urlFor.speciesHomepage({
+        urlFor.speciesPage({
           genomeId: species.genome_id
         })
       );

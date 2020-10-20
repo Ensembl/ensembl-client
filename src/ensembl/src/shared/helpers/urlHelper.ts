@@ -31,14 +31,14 @@ type EntityViewerUrlParams = {
   view?: string | null;
 };
 
-type SpeciesHomepage = {
+type SpeciesPageUrlParams = {
   genomeId: string;
 };
 
-export const speciesHomepage = (params: SpeciesHomepage) => {
-  const speciesHomepageRootPath = '/species';
+export const speciesPage = (params: SpeciesPageUrlParams) => {
+  const speciesPageRootPath = '/species';
 
-  return `${speciesHomepageRootPath}/${params.genomeId}`;
+  return `${speciesPageRootPath}/${params.genomeId}`;
 };
 
 export const browser = (params?: BrowserUrlParams) => {
