@@ -17,7 +17,6 @@
 import { Slice } from './slice';
 import { Transcript } from './transcript';
 import { Source } from './source';
-// import { CrossReference } from './crossReference';
 // import { Metadata } from './metadata';
 
 /**
