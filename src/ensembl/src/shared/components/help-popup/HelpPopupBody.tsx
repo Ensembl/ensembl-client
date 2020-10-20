@@ -105,14 +105,16 @@ type VideoProps = {
 };
 const Video = (props: VideoProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+  const { width: containerWidth, height: containerHeight } = useResizeObserver({
+    ref: containerRef
+  });
 
   // ensure that the video has a 16:9 aspect ratio
   // TODO: switch to pure CSS when the aspect-ratio rule gets better support (see https://caniuse.com/?search=aspect-ratio)
-  const videoWidth = containerWidth;
-  const videoHeight = containerWidth
-    ? Math.round((containerWidth / 16) * 9)
-    : 0;
+  const { width: videoWidth, height: videoHeight } = calculateVideoDimensions(
+    containerWidth,
+    containerHeight
+  );
 
   const videoStyle = {
     width: `${videoWidth}px`,
@@ -196,6 +198,32 @@ const createVideoReference = (youtubeId: string) => {
     type: 'video' as const,
     youtube_id: youtubeId
   };
+};
+
+const calculateVideoDimensions = (
+  containerWidth: number,
+  containerHeight: number
+) => {
+  if (!containerWidth || !containerHeight) {
+    return {
+      width: 0,
+      height: 0
+    };
+  }
+
+  const referenceSide =
+    containerWidth / containerHeight <= 16 / 9 ? 'width' : 'height';
+  if (referenceSide === 'width') {
+    return {
+      width: containerWidth,
+      height: Math.round((containerWidth * 9) / 16)
+    };
+  } else {
+    return {
+      width: Math.round((containerHeight * 16) / 9),
+      height: containerHeight
+    };
+  }
 };
 
 export default HelpPopupBody;

@@ -47,9 +47,10 @@ $aside-left-padding: 1.6rem;
 }
 
 .videoWrapper {
-  // the wrapper needs to be able to change its width when its parent does
-  // (so that the wrapper's width can be observed with ResizeObserver, and the iframe dimensions set based on it)
-  // TODO: change to aspect-ratio rule when it gets better browser support
+  // the position of the wrapper is set to relative and the position of the iframe to absolute
+  // because the wrapper needs to change its dimensions when its parent does
+  // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
+  // TODO: change this to aspect-ratio CSS rule when it gets better browser support
   position: relative;
 
   iframe {
