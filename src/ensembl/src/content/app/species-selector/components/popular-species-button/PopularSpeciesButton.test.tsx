@@ -123,7 +123,7 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('opens species homepage when it is clicked', () => {
+    it('opens species page when it is clicked', () => {
       const wrapper = mount(
         <PopularSpeciesButton {...commonProps} isCommitted={true} />
       ).find('.popularSpeciesButton');
@@ -131,7 +131,7 @@ describe('<PopularSpeciesButton />', () => {
       wrapper.simulate('click');
 
       expect(push).toHaveBeenCalledWith(
-        urlFor.speciesHomepage({
+        urlFor.speciesPage({
           genomeId: commonProps.species.genome_id
         })
       );
