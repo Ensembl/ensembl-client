@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { default as SelectedSpecies } from './SelectedSpecies';
+export { default as SimpleSelectedSpecies } from './SimpleSelectedSpecies';
+export { default as FocusableSelectedSpecies } from './FocusableSelectedSpecies';

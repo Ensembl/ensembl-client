@@ -16,7 +16,7 @@
 
 import { getFullSpeciesItemWidth } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
-import { Props as FocusableSelectedSpeciesProps } from 'src/shared/components/selected-species/FocusableSelectedSpecies';
+import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
 
 const SPACE_BETWEEN_SPECIES = 7;
 
@@ -24,7 +24,7 @@ export const getSpeciesItemWidths = ({
   items,
   containerWidth
 }: {
-  items: Array<FocusableSelectedSpeciesProps & { isHovered: boolean }>;
+  items: Array<SelectedSpeciesProps & { isHovered: boolean }>;
   containerWidth: number;
 }) => {
   const naturalItemWidths = items.map((item) =>

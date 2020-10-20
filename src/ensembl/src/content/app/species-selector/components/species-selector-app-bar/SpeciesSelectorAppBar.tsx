@@ -26,7 +26,7 @@ import {
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
-import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
@@ -37,7 +37,6 @@ import styles from './SpeciesSelectorAppBar.scss';
 
 type Props = {
   selectedSpecies: CommittedItem[];
-  toggleSpeciesUse: (genomeId: string) => void;
   onSpeciesDelete: (genomeId: string) => void;
 };
 
@@ -65,6 +64,10 @@ export const SpeciesSelectorAppBar = (props: Props) => {
   );
 };
 
+const showSpeciesHomepage = () => {
+  return;
+};
+
 const SelectedSpeciesList = (props: Props) => {
   const shouldLinkToGenomeBrowser =
     props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
@@ -73,8 +76,9 @@ const SelectedSpeciesList = (props: Props) => {
     <SelectedSpecies
       key={species.genome_id}
       species={species}
-      onToggleUse={props.toggleSpeciesUse}
-      onRemove={props.onSpeciesDelete}
+      onClick={showSpeciesHomepage}
+      // onToggleUse={props.toggleSpeciesUse}
+      // onRemove={props.onSpeciesDelete}
     />
   ));
 
@@ -90,6 +94,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
+  showSpeciesHomepage: showSpeciesHomepage,
   toggleSpeciesUse: toggleSpeciesUseAndSave,
   onSpeciesDelete: deleteSpeciesAndSave
 };

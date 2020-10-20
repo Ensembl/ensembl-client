@@ -20,11 +20,11 @@ import { nonBreakingSpace } from 'src/shared/constants/strings';
 
 import styles from './MultiLineSpeciesWrapper.scss';
 
-import { Props as SimpleSelectedSpeciesProps } from 'src/shared/components/selected-species/SimpleSelectedSpecies';
+import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
 import { Props as SpeciesSelectorSelectedSpeciesProps } from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
 type MultiLineSelectedSpeciesProps =
-  | SimpleSelectedSpeciesProps
+  | SelectedSpeciesProps
   | SpeciesSelectorSelectedSpeciesProps;
 
 export type Props = {

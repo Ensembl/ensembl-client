@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
-import { getDisplayName } from 'src/shared/components/new-selected-species/selectedSpeciesHelpers';
+import { getDisplayName } from 'src/shared/components/selected-species/selectedSpeciesHelpers';
 
 import { isSidebarOpen as getSidebarStatus } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';

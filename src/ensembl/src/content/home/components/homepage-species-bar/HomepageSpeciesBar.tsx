@@ -23,12 +23,13 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
-import { SimpleSelectedSpecies } from 'src/shared/components/selected-species';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './HomepageSpeciesBar.scss';
+import { handleSelectedSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 type Props = {
   species: CommittedItem[];
@@ -52,7 +53,11 @@ const HomepageSpeciesBar = (props: Props) => {
     );
   } else {
     const speciesItems = props.species.map((species, index) => (
-      <SimpleSelectedSpecies key={index} species={species} />
+      <SelectedSpecies
+        key={index}
+        species={species}
+        onClick={handleSelectedSpecies}
+      />
     ));
     barContent = <SpeciesTabsWrapper speciesTabs={speciesItems} />;
   }

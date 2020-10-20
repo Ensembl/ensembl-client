@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import SelectedSpecies from 'src/shared/components/new-selected-species/SelectedSpecies';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 
 import speciesData from '../species-tabs-wrapper/speciesData';
 
