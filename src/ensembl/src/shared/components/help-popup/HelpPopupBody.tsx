@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, ReactNode } from 'react';
+import React, { useState, useRef, ReactNode } from 'react';
 import classNames from 'classnames';
 
 import useHelpArticle, {
@@ -26,6 +26,7 @@ import useHelpArticle, {
   ArticleReference,
   VideoReference
 } from './useHelpArticle';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver.ts';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
@@ -103,15 +104,33 @@ type VideoProps = {
   video: CurrentVideo;
 };
 const Video = (props: VideoProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  // ensure that the video has a 16:9 aspect ratio
+  // TODO: switch to pure CSS when the aspect-ratio rule gets better support (see https://caniuse.com/?search=aspect-ratio)
+  const videoWidth = containerWidth;
+  const videoHeight = containerWidth
+    ? Math.round((containerWidth / 16) * 9)
+    : 0;
+
+  const videoStyle = {
+    width: `${videoWidth}px`,
+    height: `${videoHeight}px`
+  };
+
   return (
-    <div>
-      <div className={styles.videoWrapper}>
-        <iframe
-          src={`https://www.youtube.com/embed/${props.video.youtube_id}`}
-          allowFullScreen
-          frameBorder="0"
-        />
-      </div>
+    <div ref={containerRef} className={styles.video}>
+      {videoWidth && videoHeight && (
+        <div className={styles.videoWrapper}>
+          <iframe
+            style={videoStyle}
+            src={`https://www.youtube.com/embed/${props.video.youtube_id}`}
+            allowFullScreen
+            frameBorder="0"
+          />
+        </div>
+      )}
     </div>
   );
 };
