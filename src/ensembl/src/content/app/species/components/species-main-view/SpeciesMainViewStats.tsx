@@ -17,6 +17,7 @@
 import React, { useEffect, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
@@ -40,7 +41,6 @@ import {
 } from '../../state/general/speciesGeneralHelper';
 
 import styles from './SpeciesMainView.scss';
-import { Link } from 'react-router-dom';
 
 type Props = {
   activeGenomeId: string | null;
