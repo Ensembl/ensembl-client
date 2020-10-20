@@ -18,33 +18,32 @@ import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import find from 'lodash/find';
+import { push } from 'connected-react-router';
 
+import analyticsTracking from 'src/services/analytics-service';
 import useHover from 'src/shared/hooks/useHover';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
   handleSelectedSpecies,
-  clearSelectedSearchResult,
-  deleteSpeciesAndSave
+  clearSelectedSearchResult
 } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
+import { RootState } from 'src/store';
 import {
   CommittedItem,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
 
-import analyticsTracking from 'src/services/analytics-service';
-import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-
 import styles from './PopularSpeciesButton.scss';
-
-import { RootState } from 'src/store';
 
 type OwnProps = {
   species: PopularSpecies;
@@ -56,7 +55,7 @@ type Props = {
   isCommitted: boolean;
   handleSelectedSpecies: (species: PopularSpecies) => void;
   clearSelectedSpecies: () => void;
-  deleteCommittedSpecies: (genome_id: string) => void;
+  push: (url: string) => void;
 };
 
 // named export is for testing purposes
@@ -83,7 +82,11 @@ export const PopularSpeciesButton = (props: Props) => {
         label: speciesName
       });
     } else if (isCommitted) {
-      props.deleteCommittedSpecies(genome_id);
+      props.push(
+        urlFor.speciesPage({
+          genomeId: species.genome_id
+        })
+      );
     } else {
       // the species is available, not selected and not committed;
       // go ahead and select it
@@ -133,7 +136,7 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
 const mapDispatchToProps = {
   handleSelectedSpecies,
   clearSelectedSpecies: clearSelectedSearchResult,
-  deleteCommittedSpecies: deleteSpeciesAndSave
+  push
 };
 
 export default connect(
