@@ -83,7 +83,6 @@ export const getProductAminoAcidLength = (transcript: Transcript) => {
   const firstProductGeneratingContext = product_generating_contexts[0];
   const product = firstProductGeneratingContext.product as Product; // a protein-coding transcript will have a CDS
 
-  // TODO: use product.length directly when api response becomes more reliable
   return product.length;
 };
 
