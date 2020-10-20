@@ -1,7 +1,7 @@
 @import 'src/styles/settings';
 
-.proteinListItem{
-  scroll-margin-top: 55px
+.scrollRef{
+  scroll-margin-top: 90px;
 }
 
 
@@ -21,10 +21,3 @@
 .transcriptId {
   font-weight: 400;
 }
-
-
-.scrollRef{
-  position: absolute;
-  top: -55px;
-}
-

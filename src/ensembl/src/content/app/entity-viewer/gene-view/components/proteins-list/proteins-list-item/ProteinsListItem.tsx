@@ -90,7 +90,8 @@ const ProteinsListItem = (props: Props) => {
   };
 
   return (
-    <div className={styles.proteinListItem} ref={itemRef}>
+    <div className={styles.proteinListItem}>
+      <span className={styles.scrollRef} ref={itemRef}></span>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}></div>
         <div onClick={toggleListItemInfo} className={midStyles}>

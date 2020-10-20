@@ -61,9 +61,9 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains,
     setTranscriptWithProteinDomains
   ] = useState<Transcript | null>(null);
-  const [proteinSummary, setProteinSummary] = useState<ProteinSummary | null>(
-    null
-  );
+  const [proteinSummary, setProteinSummary] = useState<
+    ProteinSummary | null | undefined
+  >();
 
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
@@ -80,14 +80,15 @@ const ProteinsListItemInfo = (props: Props) => {
       }
     );
 
-    fetchProteinSummary(
-      transcript.unversioned_stable_id,
-      abortController.signal
-    ).then((proteinSummaryData) => {
-      if (!abortController.signal.aborted) {
-        proteinSummaryData && setProteinSummary(proteinSummaryData);
+    fetchProteinSummary(proteinId, abortController.signal).then(
+      (proteinSummaryData) => {
+        if (!abortController.signal.aborted) {
+          proteinSummaryData
+            ? setProteinSummary(proteinSummaryData)
+            : setProteinSummary(null);
+        }
       }
-    });
+    );
 
     return function cleanup() {
       abortController.abort();
@@ -152,7 +153,7 @@ const ProteinsListItemInfo = (props: Props) => {
           </>
         )}
 
-        {(!product || !proteinSummary) && (
+        {(!product || proteinSummary === undefined) && (
           <div className={styles.statsLoadingContainer}>
             <CircleLoader />
           </div>
