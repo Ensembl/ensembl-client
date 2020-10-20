@@ -23,7 +23,6 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
@@ -32,29 +31,20 @@ import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 
-import { RootState } from 'src/store';
-
 type SpeciesPageParams = {
   genomeId: string;
 };
 
 const SpeciesPage = () => {
   const { genomeId } = useParams() as SpeciesPageParams;
-  const currentSpecies = useSelector((state: RootState) =>
-    getCommittedSpeciesById(state, genomeId)
-  );
+
   const sidebarStatus = useSelector(isSidebarOpen);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setActiveGenomeId(genomeId));
+    dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
-
-  useEffect(() => {
-    if (!currentSpecies) {
-      dispatch(fetchGenomeData(genomeId));
-    }
-  }, [genomeId, currentSpecies]);
 
   const sidebarContent = 'I am sidebar';
   const sidebarNavigationContent = 'I am sidebar navigation';

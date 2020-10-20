@@ -70,7 +70,6 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-
     fetchProteinDomains(proteinId, abortController.signal).then(
       (proteinDomains) => {
         if (!abortController.signal.aborted) {

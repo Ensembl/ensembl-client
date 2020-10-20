@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import { Source } from './source';
 
-export const getActiveGenomeId = (state: RootState) =>
-  state.speciesPage.general.activeGenomeId;
-
-export const getActiveGenomeStats = (state: RootState) => {
-  const activeGenomeId = getActiveGenomeId(state);
-
-  if (!activeGenomeId) {
-    return;
-  }
-
-  return state.speciesPage.general.stats[activeGenomeId];
+export type ExternalReference = {
+  accession_id: string;
+  description: string;
+  source: Source;
 };

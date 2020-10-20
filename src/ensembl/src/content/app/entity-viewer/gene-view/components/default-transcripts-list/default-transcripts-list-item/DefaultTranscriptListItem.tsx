@@ -82,6 +82,7 @@ export const DefaultTranscriptListItem = (
             />
           </div>
         )}
+
         <div className={transcriptsListStyles.middle}>
           <div
             className={styles.clickableTranscriptArea}

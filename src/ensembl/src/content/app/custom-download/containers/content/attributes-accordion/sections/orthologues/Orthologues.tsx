@@ -16,7 +16,7 @@
 
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import set from 'lodash/set';
+import set from 'lodash/fp/set';
 import findIndex from 'lodash/findIndex';
 
 import { RootState } from 'src/store';
@@ -81,8 +81,7 @@ const Orthologue = (props: Props) => {
 
     const path = ['orthologues', `${attributeId}(${species})`];
 
-    const updatedAttributes = { ...props.selectedAttributes };
-    set(updatedAttributes, path, status);
+    const updatedAttributes = set(path, status, props.selectedAttributes);
     props.updateSelectedAttributes(updatedAttributes);
 
     props.setOrthologueAttributes(
