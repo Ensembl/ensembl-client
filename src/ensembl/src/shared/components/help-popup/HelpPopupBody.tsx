@@ -176,7 +176,7 @@ const RelatedItems = (props: RelatedItemsProps) => {
   return (
     <aside className={styles.aside}>
       <>
-        <h2>Related...</h2>
+        <h2>Help with...</h2>
         <div className={styles.relatedArticlesContainer}>
           {relatedArticles}
           {relatedVideoElements}

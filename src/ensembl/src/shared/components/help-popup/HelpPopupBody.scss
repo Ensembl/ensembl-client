@@ -12,16 +12,16 @@ $aside-left-padding: 1.6rem;
 
 .grid {
   display: grid;
-  grid-column-gap: 55px;
+  grid-column-gap: 15px;
   height: 100%;
-  padding-left: 52px;
 
   &_article {
-    grid-template-columns: [article] 440px [empty] 1fr [aside] minmax(200px, 350px);
+    grid-template-columns: [article] 440px [empty] 1fr [aside] minmax(200px, 300px);
   }
 
   &_video {
-    grid-template-columns: [video] 1fr [aside] minmax(200px, 350px);
+    grid-column-gap: 30px;
+    grid-template-columns: [video] minmax(450px, 1fr) [aside] minmax(200px, 300px);
   }
 }
 
@@ -80,6 +80,7 @@ $aside-left-padding: 1.6rem;
 .relatedVideo {
   color: $blue;
   cursor: pointer;
+  margin-bottom: 0.4rem;
 }
 
 .relatedVideo {
