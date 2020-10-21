@@ -14,19 +14,67 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { memo, useMemo } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import isEqual from 'lodash/isEqual';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { AppName } from 'src/global/globalConfig';
+
+import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { HelpPopupButton } from 'src/shared/components/help-popup';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
+import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
-const SpeciesAppBar = () => {
+import { RootState } from 'src/store';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
+type SpeciesAppBarProps = {
+  species: CommittedItem[];
+  activeGenomeId: string | null;
+  onSpeciesSelect: (genomeId: string) => void;
+};
+
+const SpeciesAppBar = (props: SpeciesAppBarProps) => {
+  const speciesTabs = useMemo(() => {
+    return props.species.map((species, index) => (
+      <SelectedSpecies
+        key={index}
+        species={species}
+        isActive={species.genome_id === props.activeGenomeId}
+        onClick={() => props.onSpeciesSelect(species.genome_id)}
+      />
+    ));
+  }, [props.species]);
+  const speciesSelectorLink = useMemo(() => {
+    return <Link to={urlFor.speciesSelector()}>Change</Link>;
+  }, []);
+
+  const wrappedSpecies = (
+    <SpeciesTabsWrapper
+      isWrappable={true}
+      speciesTabs={speciesTabs}
+      link={speciesSelectorLink}
+    />
+  );
+
   return (
     <AppBar
-      appName="Species"
-      mainContent="ADD SELECTED SPECIES HERE"
-      aside={<HelpPopupButton slug="selecting-a-species" />}
+      appName={AppName.GENOME_BROWSER}
+      mainContent={wrappedSpecies}
+      aside={<HelpPopupButton path={''} />}
     />
   );
 };
 
-export default SpeciesAppBar;
+const mapStateToProps = (state: RootState) => ({
+  species: getEnabledCommittedSpecies(state),
+  activeGenomeId: getActiveGenomeId(state)
+});
+
+export default connect(mapStateToProps)(memo(SpeciesAppBar, isEqual));

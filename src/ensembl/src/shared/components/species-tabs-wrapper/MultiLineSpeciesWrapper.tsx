@@ -38,7 +38,7 @@ const MultiLineWrapper = (props: Props) => {
     <div>
       {props.speciesTabs}
       {nonBreakingSpace}
-      {props.link && <span className={styles.linkWrapper}>{props.link}</span>}
+      {props.link && <div className={styles.linkWrapper}>{props.link}</div>}
     </div>
   );
 };

@@ -17,18 +17,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { push } from 'connected-react-router';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  toggleSpeciesUseAndSave,
-  deleteSpeciesAndSave
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBar, {
+  HelpAndDocumentation
+} from 'src/shared/components/app-bar/AppBar';
 import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
-import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -37,7 +36,7 @@ import styles from './SpeciesSelectorAppBar.scss';
 
 type Props = {
   selectedSpecies: CommittedItem[];
-  onSpeciesDelete: (genomeId: string) => void;
+  push: (url: string) => void;
 };
 
 export const PlaceholderMessage = () => (
@@ -59,16 +58,20 @@ export const SpeciesSelectorAppBar = (props: Props) => {
     <AppBar
       appName="Species Selector"
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="selecting-a-species" />}
+      aside={<HelpAndDocumentation />}
     />
   );
 };
 
-const showSpeciesHomepage = () => {
-  return;
-};
-
 const SelectedSpeciesList = (props: Props) => {
+  const showSpeciesHomepage = (species: CommittedItem) => {
+    const speciesPageUrl = urlFor.speciesPage({
+      genomeId: species.genome_id
+    });
+
+    props.push(speciesPageUrl);
+  };
+
   const shouldLinkToGenomeBrowser =
     props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
 
@@ -76,9 +79,7 @@ const SelectedSpeciesList = (props: Props) => {
     <SelectedSpecies
       key={species.genome_id}
       species={species}
-      onClick={showSpeciesHomepage}
-      // onToggleUse={props.toggleSpeciesUse}
-      // onRemove={props.onSpeciesDelete}
+      onClick={() => showSpeciesHomepage(species)}
     />
   ));
 
@@ -94,9 +95,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  showSpeciesHomepage: showSpeciesHomepage,
-  toggleSpeciesUse: toggleSpeciesUseAndSave,
-  onSpeciesDelete: deleteSpeciesAndSave
+  push
 };
 
 export default connect(
