@@ -17,6 +17,9 @@
 import React from 'react';
 import { mount, render } from 'enzyme';
 import set from 'lodash/fp/set';
+import { push } from 'connected-react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { PopularSpeciesButton } from './PopularSpeciesButton';
 
@@ -25,10 +28,12 @@ import { createPopularSpecies } from 'tests/fixtures/popular-species';
 import styles from './PopularSpeciesButton.scss';
 
 jest.mock('src/shared/components/inline-svg/InlineSvg', () => () => <div />);
+jest.mock('connected-react-router', () => ({
+  push: jest.fn(() => ({ type: 'push' }))
+}));
 
 const handleSelectedSpecies = jest.fn();
 const clearSelectedSpecies = jest.fn();
-const deleteCommittedSpecies = jest.fn();
 
 const commonProps = {
   species: createPopularSpecies(),
@@ -36,7 +41,7 @@ const commonProps = {
   isCommitted: false,
   handleSelectedSpecies,
   clearSelectedSpecies,
-  deleteCommittedSpecies
+  push
 };
 
 describe('<PopularSpeciesButton />', () => {
@@ -104,7 +109,7 @@ describe('<PopularSpeciesButton />', () => {
 
       expect(clearSelectedSpecies).toHaveBeenCalled();
       expect(handleSelectedSpecies).not.toHaveBeenCalled();
-      expect(deleteCommittedSpecies).not.toHaveBeenCalled();
+      expect(push).not.toHaveBeenCalled();
     });
   });
 
@@ -118,13 +123,19 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('deletes committed species when clicked', () => {
+    it('opens species page when it is clicked', () => {
       const wrapper = mount(
         <PopularSpeciesButton {...commonProps} isCommitted={true} />
       ).find('.popularSpeciesButton');
+
       wrapper.simulate('click');
 
-      expect(deleteCommittedSpecies).toHaveBeenCalled();
+      expect(push).toHaveBeenCalledWith(
+        urlFor.speciesPage({
+          genomeId: commonProps.species.genome_id
+        })
+      );
+
       expect(clearSelectedSpecies).not.toHaveBeenCalled();
       expect(handleSelectedSpecies).not.toHaveBeenCalled();
     });
