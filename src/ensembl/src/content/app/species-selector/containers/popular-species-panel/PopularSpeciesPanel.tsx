@@ -17,16 +17,15 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
-
-import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
-import styles from './PopularSpeciesPanel.scss';
+import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { RootState } from 'src/store';
 import { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
+
+import styles from './PopularSpeciesPanel.scss';
 
 type Props = {
   fetchPopularSpecies: () => void;

@@ -16,17 +16,17 @@
 
 import { Source } from './source';
 
-export type CrossReference = {
-  id: string;
+export type ExternalReference = {
+  accession_id: string;
   name: string;
   description: string;
   url: string;
   source: Source;
 };
 
-export type CrossReferenceWithoutSource = Omit<CrossReference, 'source'>;
+export type ExternalReferenceWithoutSource = Omit<ExternalReference, 'source'>;
 
-export type CrossReferenceGroup = {
+export type ExternalReferencesGroup = {
   source: Source;
-  references: CrossReferenceWithoutSource[];
+  references: ExternalReferenceWithoutSource[];
 };

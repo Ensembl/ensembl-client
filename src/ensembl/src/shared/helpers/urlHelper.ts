@@ -31,6 +31,16 @@ type EntityViewerUrlParams = {
   view?: string | null;
 };
 
+type SpeciesPageUrlParams = {
+  genomeId: string;
+};
+
+export const speciesPage = (params: SpeciesPageUrlParams) => {
+  const speciesPageRootPath = '/species';
+
+  return `${speciesPageRootPath}/${params.genomeId}`;
+};
+
 export const browser = (params?: BrowserUrlParams) => {
   const browserRootPath = '/genome-browser';
   if (params) {

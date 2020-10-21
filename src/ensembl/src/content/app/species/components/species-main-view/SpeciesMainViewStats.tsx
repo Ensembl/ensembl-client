@@ -17,10 +17,12 @@
 import React, { useEffect, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import {
   getActiveGenomeId,
@@ -53,6 +55,18 @@ type ExampleLinkPopupProps = {
 };
 
 const ExampleLinkWithPopup = (props: ExampleLinkPopupProps) => {
+  const isProduction = isEnvironment([Environment.PRODUCTION]);
+
+  if (isProduction) {
+    const linkToGenomeBrowser = props.links?.genomeBrowser;
+
+    return linkToGenomeBrowser ? (
+      <div className={styles.exampleLink}>
+        <Link to={linkToGenomeBrowser}>{props.children}</Link>
+      </div>
+    ) : null;
+  }
+
   return (
     <div className={styles.exampleLink}>
       <ViewInAppPopup links={props.links}>
