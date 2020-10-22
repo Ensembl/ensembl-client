@@ -90,8 +90,8 @@ const useHelpArticle = (reference: ArticleReference | VideoReference) => {
         ...article,
         type: 'article'
       });
-    } else if (article && reference.type === 'video') {
-      const video = article.videos.find(
+    } else if (relatedItems && reference.type === 'video') {
+      const video = relatedItems.videos.find(
         (video) => video.youtube_id === reference.youtube_id
       ) as HelpVideo;
       setCurrentHelpItem({ ...video, type: 'video' });

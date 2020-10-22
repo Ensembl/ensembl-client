@@ -58,6 +58,7 @@ const HelpPopupBody = (props: Props) => {
       <Grid type="article">
         <Article article={currentHelpItem} />
         <RelatedItems
+          currentItem={currentHelpItem}
           items={relatedItems || emptyRelatedItems}
           onItemClick={onRelatedItemClick}
         />
@@ -68,13 +69,18 @@ const HelpPopupBody = (props: Props) => {
       <Grid type="video">
         <Video video={currentHelpItem} />
         <RelatedItems
+          currentItem={currentHelpItem}
           items={relatedItems || emptyRelatedItems}
           onItemClick={onRelatedItemClick}
         />
       </Grid>
     );
   } else {
-    return <CircleLoader />;
+    return (
+      <div className={styles.spinnerContainer}>
+        <CircleLoader />
+      </div>
+    );
   }
 };
 
@@ -139,6 +145,7 @@ const Video = (props: VideoProps) => {
 
 type RelatedItemsProps = {
   items: RelatedItemsType;
+  currentItem: CurrentItem;
   onItemClick: (reference: ArticleReference | VideoReference) => void;
 };
 const RelatedItems = (props: RelatedItemsProps) => {
@@ -150,28 +157,43 @@ const RelatedItems = (props: RelatedItemsProps) => {
     props.onItemClick(createVideoReference(video.youtube_id));
   };
 
-  const relatedArticles = props.items.articles.map((relatedArticle) => (
-    <span
-      key={relatedArticle.slug}
-      className={styles.relatedArticle}
-      onClick={() => onArticleClick(relatedArticle)}
-    >
-      {relatedArticle.title}
-    </span>
-  ));
-
-  const relatedVideoElements = props.items.videos.map((video) => (
-    <span
-      key={video.youtube_id}
-      className={styles.relatedVideo}
-      onClick={() => onVideoClick(video)}
-    >
-      <span className={styles.relatedVideoIcon}>
-        <VideoIcon />
+  const relatedArticles = props.items.articles.map((relatedArticle) => {
+    const elementClasses = classNames(styles.relatedArticle, {
+      [styles.relatedCurrent]:
+        props.currentItem.type === 'article' &&
+        props.currentItem.path === relatedArticle.path
+    });
+    return (
+      <span
+        key={relatedArticle.slug}
+        className={elementClasses}
+        onClick={() => onArticleClick(relatedArticle)}
+      >
+        {relatedArticle.title}
       </span>
-      {video.title}
-    </span>
-  ));
+    );
+  });
+
+  const relatedVideoElements = props.items.videos.map((video) => {
+    const elementClasses = classNames(styles.relatedVideo, {
+      [styles.relatedCurrent]:
+        props.currentItem.type === 'video' &&
+        props.currentItem.youtube_id === video.youtube_id
+    });
+
+    return (
+      <span
+        key={video.youtube_id}
+        className={elementClasses}
+        onClick={() => onVideoClick(video)}
+      >
+        <span className={styles.relatedVideoIcon}>
+          <VideoIcon />
+        </span>
+        {video.title}
+      </span>
+    );
+  });
 
   return (
     <aside className={styles.aside}>
