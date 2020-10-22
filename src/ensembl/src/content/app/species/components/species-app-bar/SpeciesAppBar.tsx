@@ -26,8 +26,9 @@ import { getActiveGenomeId } from 'src/content/app/species/state/general/species
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { HelpPopupButton } from 'src/shared/components/help-popup';
-import AppBar from 'src/shared/components/app-bar/AppBar';
+import AppBar, {
+  HelpAndDocumentation
+} from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
@@ -51,6 +52,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
       />
     ));
   }, [props.species]);
+
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);
@@ -65,9 +67,9 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
 
   return (
     <AppBar
-      appName={AppName.GENOME_BROWSER}
+      appName={AppName.SPECIES_PAGE}
       mainContent={wrappedSpecies}
-      aside={<HelpPopupButton path={''} />}
+      aside={<HelpAndDocumentation />}
     />
   );
 };

@@ -29,7 +29,8 @@ export enum AppName {
   GENOME_BROWSER = 'Genome browser',
   SPECIES_SELECTOR = 'Species selector',
   CUSTOM_DOWNLOADS = 'Custom downloads',
-  ENTITY_VIEWER = 'Entity viewer'
+  ENTITY_VIEWER = 'Entity viewer',
+  SPECIES_PAGE = 'Species Page'
 }
 
 export const globalMediaQueries: Record<

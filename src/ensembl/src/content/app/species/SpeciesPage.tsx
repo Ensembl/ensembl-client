@@ -45,7 +45,6 @@ const SpeciesPage = () => {
   }, [genomeId]);
 
   const sidebarContent = 'I am sidebar';
-  const sidebarNavigationContent = 'I am sidebar navigation';
   const topbarContent = 'I am topbar content';
 
   return (
@@ -55,7 +54,7 @@ const SpeciesPage = () => {
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
         sidebarContent={sidebarContent}
-        sidebarNavigation={sidebarNavigationContent}
+        sidebarNavigation={''}
         topbarContent={topbarContent}
         isSidebarOpen={sidebarStatus}
         onSidebarToggle={() => {
