@@ -20,12 +20,10 @@ import { Link } from 'react-router-dom';
 import { push } from 'connected-react-router';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import AppBar, {
-  HelpAndDocumentation
-} from 'src/shared/components/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
@@ -58,7 +56,7 @@ export const SpeciesSelectorAppBar = (props: Props) => {
     <AppBar
       appName="Species Selector"
       mainContent={mainContent}
-      aside={<HelpAndDocumentation />}
+      aside={<HelpPopupButton slug="selecting-a-species" />}
     />
   );
 };
