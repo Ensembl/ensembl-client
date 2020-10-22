@@ -34,10 +34,13 @@ import {
   ProteinSummary
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
+import { LoadingState } from 'src/shared/types/loading-state';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinsListItemInfo.scss';
+import { PrimaryButton } from 'src/shared/components/button/Button';
+import { APIError } from 'src/services/api-service';
 
 type Props = {
   transcript: Transcript;
@@ -65,38 +68,50 @@ const ProteinsListItemInfo = (props: Props) => {
     ProteinSummary | null | undefined
   >();
 
+  const [proteinSummaryLoadingState, setProteinSummaryLoadingState] = useState<
+    LoadingState
+  >(LoadingState.NOT_REQUESTED);
+
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
 
+  const { product } =
+    transcriptWithProteinDomains?.product_generating_contexts[0] || {};
+
   useEffect(() => {
     const abortController = new AbortController();
-    fetchProteinDomains(proteinId, abortController.signal).then(
-      (proteinDomains) => {
-        if (!abortController.signal.aborted) {
-          setTranscriptWithProteinDomains(
-            addProteinDomains(transcript, proteinDomains)
-          );
-        }
-      }
-    );
 
-    fetchProteinSummary(proteinId, abortController.signal).then(
-      (proteinSummaryData) => {
-        if (!abortController.signal.aborted) {
-          proteinSummaryData
-            ? setProteinSummary(proteinSummaryData)
-            : setProteinSummary(null);
-        }
+    fetchProteinDomains(proteinId, abortController.signal).then((response) => {
+      if (!abortController.signal.aborted) {
+        setTranscriptWithProteinDomains(
+          addProteinDomains(transcript, response)
+        );
       }
-    );
+    });
+
+    if (proteinSummaryLoadingState === LoadingState.NOT_REQUESTED) {
+      fetchProteinSummary(proteinId, abortController.signal).then(
+        (response) => {
+          if ((response as APIError)?.error) {
+            setProteinSummaryLoadingState(LoadingState.ERROR);
+            return;
+          }
+
+          if (!abortController.signal.aborted) {
+            response
+              ? setProteinSummary(response as ProteinSummary)
+              : setProteinSummary(null);
+
+            setProteinSummaryLoadingState(LoadingState.SUCCESS);
+          }
+        }
+      );
+    }
 
     return function cleanup() {
       abortController.abort();
     };
-  }, [transcript.stable_id]);
-
-  const { product } =
-    transcriptWithProteinDomains?.product_generating_contexts[0] || {};
+  }, [transcript.stable_id, proteinSummaryLoadingState]);
 
   // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
   // we need to move it to a constant
@@ -153,11 +168,26 @@ const ProteinsListItemInfo = (props: Props) => {
           </>
         )}
 
-        {(!product || proteinSummary === undefined) && (
-          <div className={styles.statsLoadingContainer}>
+        {(proteinSummaryLoadingState === LoadingState.NOT_REQUESTED ||
+          !product) && (
+          <div className={styles.statusContainer}>
             <CircleLoader />
           </div>
         )}
+
+        {proteinSummaryLoadingState === LoadingState.ERROR && (
+          <div className={styles.statusContainer}>
+            <span className={styles.errorMessage}>Failed to get data</span>
+            <PrimaryButton
+              onClick={() =>
+                setProteinSummaryLoadingState(LoadingState.NOT_REQUESTED)
+              }
+            >
+              Try again
+            </PrimaryButton>
+          </div>
+        )}
+
         <div className={styles.keyline}></div>
       </div>
     </div>
