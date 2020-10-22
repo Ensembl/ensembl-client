@@ -175,7 +175,7 @@ const ProteinsListItemInfo = (props: Props) => {
           </div>
         )}
 
-        {proteinSummaryLoadingState === LoadingState.ERROR && (
+        {proteinSummaryLoadingState === LoadingState.ERROR && product && (
           <div className={styles.statusContainer}>
             <span className={styles.errorMessage}>Failed to get data</span>
             <PrimaryButton

@@ -59,7 +59,7 @@ export const fetchProteinSummary = async (
   proteinId: string,
   signal?: AbortSignal
 ): Promise<ProteinSummary | null | APIError> => {
-  const xrefsUrl = `https://res1t.ensembl.org/xrefs/id1/${proteinId}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
+  const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${proteinId}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
 
   let xrefsData: XrefsInResponse | undefined;
   try {
