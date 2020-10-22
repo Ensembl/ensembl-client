@@ -48,6 +48,7 @@
   grid-template-columns: $left_column $middle_column_left_gap $middle_column $middle_column_right_gap $right_column;
   padding: 9px 0px;
   font-size: 12px;
+  position: relative;
 }
 
 .left {

@@ -29,6 +29,7 @@ type EntityViewerUrlParams = {
   genomeId?: string | null;
   entityId?: string;
   view?: string | null;
+  proteinId?: string | null;
 };
 
 type SpeciesPageUrlParams = {
@@ -79,7 +80,8 @@ export const entityViewer = (params?: EntityViewerUrlParams) => {
   }
   const query = queryString.stringify(
     {
-      view: params?.view || undefined
+      view: params?.view || undefined,
+      protein_id: params?.proteinId || undefined
     },
     {
       encode: false
