@@ -17,6 +17,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import noop from 'lodash/noop';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -29,7 +30,6 @@ import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './HomepageSpeciesBar.scss';
-import { handleSelectedSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 type Props = {
   species: CommittedItem[];
@@ -53,11 +53,7 @@ const HomepageSpeciesBar = (props: Props) => {
     );
   } else {
     const speciesItems = props.species.map((species, index) => (
-      <SelectedSpecies
-        key={index}
-        species={species}
-        onClick={handleSelectedSpecies}
-      />
+      <SelectedSpecies key={index} species={species} onClick={noop} />
     ));
     barContent = <SpeciesTabsWrapper speciesTabs={speciesItems} />;
   }

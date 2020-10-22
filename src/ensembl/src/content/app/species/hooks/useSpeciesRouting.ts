@@ -22,10 +22,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-
-import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
-
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 const useSpeciesRouting = () => {
   const params: { [key: string]: string } = useParams();
