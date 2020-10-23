@@ -25,14 +25,13 @@ import { AppName } from 'src/global/globalConfig';
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import AppBar, {
-  HelpAndDocumentation
-} from 'src/shared/components/app-bar/AppBar';
+import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 type SpeciesAppBarProps = {
   species: CommittedItem[];
@@ -68,7 +67,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
     <AppBar
       appName={AppName.SPECIES_SELECTOR}
       mainContent={wrappedSpecies}
-      aside={<HelpAndDocumentation />}
+      aside={<HelpPopupButton slug="selecting-a-species" />}
     />
   );
 };

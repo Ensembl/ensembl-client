@@ -53,7 +53,12 @@ const HomepageSpeciesBar = (props: Props) => {
     );
   } else {
     const speciesItems = props.species.map((species, index) => (
-      <SelectedSpecies key={index} species={species} onClick={noop} />
+      <SelectedSpecies
+        key={index}
+        species={species}
+        onClick={noop}
+        isActive={true}
+      />
     ));
     barContent = <SpeciesTabsWrapper speciesTabs={speciesItems} />;
   }

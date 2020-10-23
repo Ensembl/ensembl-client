@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import useSpeciesRouting from './hooks/useSpeciesRouting';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import { StandardAppLayout } from 'src/shared/components/layout';
@@ -39,14 +39,28 @@ type SpeciesPageParams = {
 };
 
 const SpeciesPage = () => {
-  const { changeGenomeId } = useSpeciesRouting();
-
   const { genomeId } = useParams() as SpeciesPageParams;
-
-  const sidebarStatus = useSelector(isSidebarOpen);
   const dispatch = useDispatch();
 
+  const changeGenomeId = useCallback(
+    (genomeId: string) => {
+      const params = {
+        genomeId
+      };
+
+      dispatch(replace(urlFor.speciesPage(params)));
+    },
+    [genomeId]
+  );
+
+  const sidebarStatus = useSelector(isSidebarOpen);
+
   useEffect(() => {
+    if (!genomeId) {
+      dispatch(replace(urlFor.speciesSelector()));
+      return;
+    }
+    dispatch(setActiveGenomeId(genomeId));
     dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
 
