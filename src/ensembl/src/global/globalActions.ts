@@ -18,7 +18,7 @@ import { createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
-import { BreakpointWidth } from './globalConfig';
+import { BreakpointWidth, ScrollPosition } from './globalConfig';
 import { getBreakpointWidth } from './globalSelectors';
 
 import { RootState } from 'src/store';
@@ -26,6 +26,10 @@ import { RootState } from 'src/store';
 export const setBreakpointWidth = createAction(
   'browser/update-breakpoint-width'
 )<BreakpointWidth>();
+
+export const saveScrollPosition = createAction('update-scroll-position')<
+  ScrollPosition
+>();
 
 export const updateBreakpointWidth: ActionCreator<ThunkAction<
   void,

@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import set from 'lodash/fp/set';
 
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
@@ -60,54 +61,66 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains,
     setTranscriptWithProteinDomains
   ] = useState<Transcript | null>(null);
-  const [proteinSummary, setProteinSummary] = useState<ProteinSummary | null>(
-    null
-  );
+  const [proteinSummary, setProteinSummary] = useState<
+    ProteinSummary | null | undefined
+  >();
+
+  const proteinId =
+    transcript.product_generating_contexts[0].product.unversioned_stable_id;
 
   useEffect(() => {
     const abortController = new AbortController();
-    const proteinId =
-      transcript.product_generating_contexts[0].product.unversioned_stable_id;
-
-    Promise.all([
-      fetchProteinDomains(proteinId, abortController.signal),
-      fetchProteinSummary(proteinId, abortController.signal)
-    ]).then(([proteinDomains, proteinSummaryData]) => {
-      if (!abortController.signal.aborted) {
-        setTranscriptWithProteinDomains(
-          addProteinDomains(transcript, proteinDomains)
-        );
-        proteinSummaryData && setProteinSummary(proteinSummaryData);
+    fetchProteinDomains(proteinId, abortController.signal).then(
+      (proteinDomains) => {
+        if (!abortController.signal.aborted) {
+          setTranscriptWithProteinDomains(
+            addProteinDomains(transcript, proteinDomains)
+          );
+        }
       }
-    });
+    );
+
+    fetchProteinSummary(proteinId, abortController.signal).then(
+      (proteinSummaryData) => {
+        if (!abortController.signal.aborted) {
+          proteinSummaryData
+            ? setProteinSummary(proteinSummaryData)
+            : setProteinSummary(null);
+        }
+      }
+    );
 
     return function cleanup() {
       abortController.abort();
     };
   }, [transcript.stable_id]);
 
-  if (!transcriptWithProteinDomains) {
-    return null;
-  }
-
-  const {
-    product
-  } = transcriptWithProteinDomains.product_generating_contexts[0];
+  const { product } =
+    transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
   // we need to move it to a constant
   return (
     <div className={styles.proteinsListItemInfo}>
-      <>
-        <ProteinDomainImage
-          proteinDomains={product.protein_domains}
-          trackLength={trackLength}
-          width={695}
-        />
-        <ProteinImage product={product} trackLength={trackLength} width={695} />
-        <div className={styles.proteinSummary}>
-          <div className={styles.proteinSummaryTop}>
-            {proteinSummary && (
+      {product && (
+        <>
+          <ProteinDomainImage
+            proteinDomains={product.protein_domains}
+            trackLength={trackLength}
+            width={695}
+          />
+          <ProteinImage
+            product={product}
+            trackLength={trackLength}
+            width={695}
+          />
+        </>
+      )}
+
+      <div className={styles.proteinSummary}>
+        {proteinSummary && (
+          <>
+            <div className={styles.proteinSummaryTop}>
               <div className={styles.interproUniprotWrapper}>
                 <ProteinExternalReference
                   source={ExternalSource.INTERPRO}
@@ -118,14 +131,12 @@ const ProteinsListItemInfo = (props: Props) => {
                   externalId={proteinSummary.pdbeId}
                 />
               </div>
-            )}
-            <div className={styles.downloadWrapper}>
-              <InstantDownloadProtein
-                transcriptId={transcript.unversioned_stable_id}
-              />
+              <div className={styles.downloadWrapper}>
+                <InstantDownloadProtein
+                  transcriptId={transcript.unversioned_stable_id}
+                />
+              </div>
             </div>
-          </div>
-          {proteinSummary && (
             <div>
               <ProteinExternalReference
                 source={ExternalSource.PDBE}
@@ -139,10 +150,16 @@ const ProteinsListItemInfo = (props: Props) => {
                 </div>
               )}
             </div>
-          )}
-          <div className={styles.keyline}></div>
-        </div>
-      </>
+          </>
+        )}
+
+        {(!product || proteinSummary === undefined) && (
+          <div className={styles.statsLoadingContainer}>
+            <CircleLoader />
+          </div>
+        )}
+        <div className={styles.keyline}></div>
+      </div>
     </div>
   );
 };
