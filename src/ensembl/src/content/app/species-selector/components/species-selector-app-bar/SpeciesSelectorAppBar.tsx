@@ -62,9 +62,9 @@ export const SpeciesSelectorAppBar = (props: Props) => {
 };
 
 const SelectedSpeciesList = (props: Props) => {
-  const showSpeciesHomepage = (species: CommittedItem) => {
+  const showSpeciesPage = (genome_id: string) => {
     const speciesPageUrl = urlFor.speciesPage({
-      genomeId: species.genome_id
+      genomeId: genome_id
     });
 
     props.push(speciesPageUrl);
@@ -77,7 +77,7 @@ const SelectedSpeciesList = (props: Props) => {
     <SelectedSpecies
       key={species.genome_id}
       species={species}
-      onClick={() => showSpeciesHomepage(species)}
+      onClick={showSpeciesPage}
     />
   ));
 

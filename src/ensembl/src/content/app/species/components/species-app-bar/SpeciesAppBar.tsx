@@ -66,7 +66,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
 
   return (
     <AppBar
-      appName={AppName.SPECIES_PAGE}
+      appName={AppName.SPECIES_SELECTOR}
       mainContent={wrappedSpecies}
       aside={<HelpAndDocumentation />}
     />

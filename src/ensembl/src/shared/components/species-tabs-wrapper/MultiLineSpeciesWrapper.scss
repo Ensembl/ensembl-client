@@ -1,6 +1,10 @@
+.multiLineSpeciesWrapper{
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .linkWrapper {
   margin-left: 7px;
   margin-top: 6px;
   white-space: nowrap;
-  float: left;
 }
