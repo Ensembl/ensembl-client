@@ -67,7 +67,7 @@ const AppInner = (props: AppProps) => {
           <Route path={`/`} component={HomePage} exact />
           <Route path={`/global-search`} component={GlobalSearch} />
           <Route path={`/species-selector`} component={SpeciesSelector} />
-          <Route path={`/species/:genomeId?`} component={SpeciesPage} />
+          <Route path={`/species/:genomeId`} component={SpeciesPage} />
           <Redirect exact from="/species" to={urlFor.speciesSelector()} />
           <Route path={`/custom-download`} component={CustomDownload} />
           <Route

@@ -16,10 +16,8 @@
 
 import React, { memo, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import { AppName } from 'src/global/globalConfig';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
@@ -51,16 +49,8 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
     ));
   }, [props.species]);
 
-  const speciesSelectorLink = useMemo(() => {
-    return <Link to={urlFor.speciesSelector()}>Change</Link>;
-  }, []);
-
   const wrappedSpecies = (
-    <SpeciesTabsWrapper
-      isWrappable={true}
-      speciesTabs={speciesTabs}
-      link={speciesSelectorLink}
-    />
+    <SpeciesTabsWrapper isWrappable={true} speciesTabs={speciesTabs} />
   );
 
   return (
