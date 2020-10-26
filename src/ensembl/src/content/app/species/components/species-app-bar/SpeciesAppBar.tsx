@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { memo, useMemo } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import isEqual from 'lodash/isEqual';
 
 import { AppName } from 'src/global/globalConfig';
 
@@ -38,16 +37,14 @@ type SpeciesAppBarProps = {
 };
 
 const SpeciesAppBar = (props: SpeciesAppBarProps) => {
-  const speciesTabs = useMemo(() => {
-    return props.species.map((species, index) => (
-      <SelectedSpecies
-        key={index}
-        species={species}
-        isActive={species.genome_id === props.activeGenomeId}
-        onClick={() => props.onSpeciesSelect(species.genome_id)}
-      />
-    ));
-  }, [props.species]);
+  const speciesTabs = props.species.map((species, index) => (
+    <SelectedSpecies
+      key={index}
+      species={species}
+      isActive={species.genome_id === props.activeGenomeId}
+      onClick={() => props.onSpeciesSelect(species.genome_id)}
+    />
+  ));
 
   const wrappedSpecies = (
     <SpeciesTabsWrapper isWrappable={true} speciesTabs={speciesTabs} />
@@ -67,4 +64,4 @@ const mapStateToProps = (state: RootState) => ({
   activeGenomeId: getActiveGenomeId(state)
 });
 
-export default connect(mapStateToProps)(memo(SpeciesAppBar, isEqual));
+export default connect(mapStateToProps)(SpeciesAppBar);
