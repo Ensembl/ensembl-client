@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 
@@ -35,7 +35,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-
+import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
@@ -43,12 +43,14 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
+import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 export type TranscriptsListItemInfoProps = {
   gene: Gene;
   transcript: Transcript;
   expandDownload: boolean;
   toggleTranscriptDownload: (id: string) => void;
+  onProteinLinkClick: () => void;
 };
 
 export const TranscriptsListItemInfo = (
@@ -56,6 +58,7 @@ export const TranscriptsListItemInfo = (
 ) => {
   const { transcript } = props;
   const params: { [key: string]: string } = useParams();
+  const { genomeId, entityId } = params;
 
   const getTranscriptLocation = () => {
     const { start, end } = getFeatureCoordinates(transcript);
@@ -80,6 +83,21 @@ export const TranscriptsListItemInfo = (
     objectId: props.gene.unversioned_stable_id
   });
 
+  const getLinkToProteinView = (proteinStableId: string) => {
+    const proteinViewUrl = urlFor.entityViewer({
+      genomeId,
+      entityId,
+      view: View.PROTEIN,
+      proteinId: proteinStableId
+    });
+
+    return (
+      <Link onClick={() => props.onProteinLinkClick()} to={proteinViewUrl}>
+        {proteinStableId}
+      </Link>
+    );
+  };
+
   const getBrowserLink = () => {
     const { genomeId } = params;
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
@@ -100,9 +118,9 @@ export const TranscriptsListItemInfo = (
               <div>
                 <strong>{getProductAminoAcidLength(transcript)} aa</strong>
               </div>
-              <div>
-                {transcript.product_generating_contexts[0]?.product.stable_id}
-              </div>
+              {getLinkToProteinView(
+                transcript.product_generating_contexts[0]?.product.stable_id
+              )}
             </>
           )}
         </div>
@@ -165,7 +183,8 @@ const renderInstantDownload = ({
 };
 
 const mapDispatchToProps = {
-  toggleTranscriptDownload
+  toggleTranscriptDownload,
+  onProteinLinkClick: clearExpandedProteins
 };
 
 export default connect(null, mapDispatchToProps)(TranscriptsListItemInfo);

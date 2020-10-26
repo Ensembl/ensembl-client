@@ -1,8 +1,10 @@
 @import 'src/styles/common';
 
+$content-width: 695px;
+
 .proteinSummary {
   margin-left: 178px;
-  width: 695px;
+  width: $content-width;
 
   > div {
     padding: 10px 0 10px 0;
@@ -11,7 +13,7 @@
 
 .keyline {
   border-bottom: 1px solid $orange;
-  width: 695px;
+  width: $content-width;
   padding: 0;
   margin-top: 40px;
   margin-bottom: 20px;
@@ -36,4 +38,19 @@
 
 .proteinFeaturesCountWrapper {
   display: inline-block;
+}
+
+
+.imageLoadingContainer {
+  width: $content-width;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 177px;
+}
+
+.statsLoadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

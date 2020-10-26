@@ -1,0 +1,21 @@
+@import 'src/styles/common';
+
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  line-height: 1;
+}
+
+.topbarLeft {
+  display: flex;
+  align-items: center;
+}
+
+.pageTitle {
+  margin-right: 1rem;
+}
+
+.dataForSpecies {
+  color: $medium-dark-grey;
+}
