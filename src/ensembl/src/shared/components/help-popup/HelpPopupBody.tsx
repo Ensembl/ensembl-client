@@ -32,14 +32,14 @@ import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
 
-import styles from './HelpPopupBody.scss';
-
 import {
   RelatedArticle,
   HelpVideo,
   SlugReference,
   PathReference
 } from './types';
+
+import styles from './HelpPopupBody.scss';
 
 type Props = SlugReference | PathReference;
 
