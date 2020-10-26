@@ -173,7 +173,7 @@ const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
   const url = `${externalSourceLinks[props.source]}${props.externalId}`;
 
   return props.externalId ? (
-    <div className={styles.geneExternalReference}>
+    <div className={styles.proteinExternalReference}>
       <ExternalReference
         label={props.source}
         to={url}
