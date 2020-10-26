@@ -39,7 +39,6 @@ export function useRestoreScrollPosition(props: RestoreScrollPositionProps) {
 
   useEffect(() => {
     const targetElement = targetElementRef.current as HTMLDivElement;
-
     // Give it some time for the component to mount before restoring the scroll position
     setTimeout(() => {
       if (!skip && (scrollPosition.scrollTop || scrollPosition.scrollLeft)) {
