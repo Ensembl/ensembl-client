@@ -30,7 +30,7 @@ import { changeActiveGenomeId } from 'src/content/app/entity-viewer/state/genera
 import AppBar, {
   HelpAndDocumentation
 } from 'src/shared/components/app-bar/AppBar';
-import { FocusableSelectedSpecies } from 'src/shared/components/selected-species';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import { RootState } from 'src/store';
@@ -45,7 +45,7 @@ type EntityViewerAppBarProps = {
 const EntityViewerAppBar = (props: EntityViewerAppBarProps) => {
   const speciesTabs = useMemo(() => {
     return props.species.map((species, index) => (
-      <FocusableSelectedSpecies
+      <SelectedSpecies
         key={index}
         species={species}
         isActive={species.genome_id === props.activeGenomeId}
