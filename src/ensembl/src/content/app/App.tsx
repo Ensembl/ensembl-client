@@ -18,6 +18,8 @@ import React, { useEffect, lazy, Suspense } from 'react';
 import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { changeCurrentApp } from 'src/header/headerActions';
 
 import Header from 'src/header/Header';
@@ -66,6 +68,7 @@ const AppInner = (props: AppProps) => {
           <Route path={`/global-search`} component={GlobalSearch} />
           <Route path={`/species-selector`} component={SpeciesSelector} />
           <Route path={`/species/:genomeId?`} component={SpeciesPage} />
+          <Redirect exact from="/species" to={urlFor.speciesSelector()} />
           <Route path={`/custom-download`} component={CustomDownload} />
           <Route
             path={`/entity-viewer/:genomeId?/:entityId?`}

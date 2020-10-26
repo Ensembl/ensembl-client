@@ -56,10 +56,6 @@ const SpeciesPage = () => {
   const sidebarStatus = useSelector(isSidebarOpen);
 
   useEffect(() => {
-    if (!genomeId) {
-      dispatch(replace(urlFor.speciesSelector()));
-      return;
-    }
     dispatch(setActiveGenomeId(genomeId));
     dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
