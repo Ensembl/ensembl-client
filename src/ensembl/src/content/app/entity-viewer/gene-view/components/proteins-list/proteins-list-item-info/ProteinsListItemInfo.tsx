@@ -80,14 +80,23 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-
-    fetchProteinDomains(proteinId, abortController.signal).then((response) => {
-      if (!abortController.signal.aborted) {
-        setTranscriptWithProteinDomains(
-          addProteinDomains(transcript, response)
-        );
+    fetchProteinDomains(proteinId, abortController.signal).then(
+      (proteinDomains) => {
+        if (!abortController.signal.aborted) {
+          setTranscriptWithProteinDomains(
+            addProteinDomains(transcript, proteinDomains)
+          );
+        }
       }
-    });
+    );
+
+    return function cleanup() {
+      abortController.abort();
+    };
+  });
+
+  useEffect(() => {
+    const abortController = new AbortController();
 
     if (proteinSummaryLoadingState === LoadingState.NOT_REQUESTED) {
       fetchProteinSummary(proteinId, abortController.signal).then(
