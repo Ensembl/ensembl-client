@@ -561,7 +561,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     annotation_provider: {
       name: 'Ensembl',
-      url: 'www.ensembl.org'
+      url: 'http://www.ensembl.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
@@ -601,8 +601,8 @@ export const sidebarData: SpeciesSidebarData = {
     taxonomy_id: '511145',
     strain: null,
     database_version: '101.1',
-    common_name: 'Escherichia coli str. K-12 substr. MG1655',
-    scientific_name: null,
+    common_name: null,
+    scientific_name: 'Escherichia coli str. K-12 substr. MG1655',
     gencode_version: null,
     assembly_name: 'ASM584v2',
     assembly_provider: {
@@ -611,7 +611,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     annotation_provider: {
       name: 'European Nucleotide Archive',
-      url: 'www.ensembl.org'
+      url: 'http://www.ensembl.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'Generated from ENA annotation',
@@ -626,17 +626,17 @@ export const sidebarData: SpeciesSidebarData = {
       value: 'N2'
     },
     database_version: '101.269',
-    common_name: 'Caenorhabditis elegans',
-    scientific_name: null,
+    common_name: null,
+    scientific_name: 'Caenorhabditis elegans',
     gencode_version: null,
     assembly_name: 'WBcel235',
     assembly_provider: {
-      name: 'INSDC assembly',
-      url: ''
+      name: 'WormBase',
+      url: 'http://www.wormbase.org'
     },
     annotation_provider: {
       name: 'WormBase',
-      url: 'www.ensembl.org'
+      url: 'http://www.wormbase.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
@@ -648,17 +648,17 @@ export const sidebarData: SpeciesSidebarData = {
     taxonomy_id: '36329',
     strain: null,
     database_version: '101.1',
-    common_name: 'Plasmodium falciparum 3D7',
-    scientific_name: null,
+    common_name: null,
+    scientific_name: 'Plasmodium falciparum 3D7',
     gencode_version: null,
     assembly_name: 'ASM276v2',
     assembly_provider: {
-      name: 'INSDC assembly',
-      url: ''
+      name: 'Naval Medical Research Institute',
+      url: 'http://www.ensembl.org'
     },
     annotation_provider: {
-      name: 'Naval Medical Research Institute',
-      url: 'www.ensembl.org'
+      name: '',
+      url: ''
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
@@ -678,12 +678,12 @@ export const sidebarData: SpeciesSidebarData = {
     gencode_version: null,
     assembly_name: 'R64',
     assembly_provider: {
-      name: 'INSDC assembly',
+      name: 'Saccharomyces Genome Database',
       url: ''
     },
     annotation_provider: {
       name: 'Saccharomyces Genome Database',
-      url: 'www.ensembl.org'
+      url: 'http://www.yeastgenome.org'
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
@@ -703,12 +703,12 @@ export const sidebarData: SpeciesSidebarData = {
     gencode_version: null,
     assembly_name: 'IWGSC',
     assembly_provider: {
-      name: 'INSDC assembly',
-      url: ''
+      name: 'International Wheat Genome Sequencing Consortium',
+      url: 'https://www.ebi.ac.uk/ena/data/view/GCA_900519105.1'
     },
     annotation_provider: {
       name: 'International Wheat Genome Sequencing Consortium',
-      url: 'www.ensembl.org'
+      url: 'https://www.ebi.ac.uk/ena/data/view/GCA_900519105.1'
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',

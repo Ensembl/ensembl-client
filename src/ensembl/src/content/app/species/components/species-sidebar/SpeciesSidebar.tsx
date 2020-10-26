@@ -59,7 +59,7 @@ const SpeciesSidebar = (props: Props) => {
     month: 'short',
     year: 'numeric'
   }).format(assemblyDate);
-  const annotationEntriesMap: AnnotationEntry[][] = [
+  const annotationEntries: AnnotationEntry[][] = [
     [
       {
         label: 'Provider',
@@ -113,7 +113,7 @@ const SpeciesSidebar = (props: Props) => {
 
       <div className={styles.sectionHead}>Annotation</div>
       <div className={styles.annotationDetails}>
-        {annotationEntriesMap.map((entries, group_index) => {
+        {annotationEntries.map((entries, group_index) => {
           return (
             <div key={group_index}>
               {entries.map((entry, entry_index) => {
@@ -125,7 +125,7 @@ const SpeciesSidebar = (props: Props) => {
                   <div key={entry_index} className={styles.standardLabelValue}>
                     <div className={labelClassNames}>{entry.label}</div>
                     <div className={styles.value}>
-                      {entry.url ? (
+                      {entry.url && entry.value !== 'Ensembl' ? (
                         <ExternalReference
                           to={entry.url}
                           linkText={entry.value}

@@ -45,7 +45,7 @@ export type SpeciesSidebarPayload = {
   id: string;
   taxonomy_id: string;
   database_version: string;
-  common_name: string;
+  common_name: string | null;
   scientific_name: string | null;
   gencode_version: string | null;
   assembly_name: string;
