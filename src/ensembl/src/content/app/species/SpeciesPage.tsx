@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { push, replace } from 'connected-react-router';
@@ -42,16 +42,13 @@ const SpeciesPage = () => {
   const { genomeId } = useParams() as SpeciesPageParams;
   const dispatch = useDispatch();
 
-  const changeGenomeId = useCallback(
-    (genomeId: string) => {
-      const params = {
-        genomeId
-      };
+  const changeGenomeId = (genomeId: string) => {
+    const params = {
+      genomeId
+    };
 
-      dispatch(replace(urlFor.speciesPage(params)));
-    },
-    [genomeId]
-  );
+    dispatch(replace(urlFor.speciesPage(params)));
+  };
 
   const sidebarStatus = useSelector(isSidebarOpen);
 
