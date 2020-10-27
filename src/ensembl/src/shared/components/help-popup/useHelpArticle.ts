@@ -66,7 +66,9 @@ const useHelpArticle = (reference: ArticleReference | VideoReference) => {
   const [currentHelpItem, setCurrentHelpItem] = useState<CurrentItem | null>(
     null
   );
-  const [relatedItems, setRelatedItems] = useState<RelatedItems | null>(null);
+  const [relatedHelpItems, setRelatedHelpItems] = useState<RelatedItems | null>(
+    null
+  );
 
   const query = reference.type === 'article' ? getQuery(reference) : null;
   const { helpApiHost } = config;
@@ -90,8 +92,8 @@ const useHelpArticle = (reference: ArticleReference | VideoReference) => {
         ...article,
         type: 'article'
       });
-    } else if (relatedItems && reference.type === 'video') {
-      const video = relatedItems.videos.find(
+    } else if (relatedHelpItems && reference.type === 'video') {
+      const video = relatedHelpItems.videos.find(
         (video) => video.youtube_id === reference.youtube_id
       ) as HelpVideo;
       setCurrentHelpItem({ ...video, type: 'video' });
@@ -99,16 +101,16 @@ const useHelpArticle = (reference: ArticleReference | VideoReference) => {
   }, [article?.path, reference.type]);
 
   useEffect(() => {
-    if (!article || relatedItems) {
+    if (!article || relatedHelpItems) {
       return;
     }
     // keep track only for the article that was fetched initially
-    setRelatedItems(prepareRelatedItems(article));
+    setRelatedHelpItems(prepareRelatedItems(article));
   });
 
   return {
     loadingState,
-    relatedItems,
+    relatedHelpItems,
     currentHelpItem
   };
 };

@@ -47,7 +47,9 @@ const HelpPopupBody = (props: Props) => {
   const [currentReference, setCurrentReference] = useState<
     ArticleReference | VideoReference
   >(createArticleReference(props));
-  const { currentHelpItem, relatedItems } = useHelpArticle(currentReference);
+  const { currentHelpItem, relatedHelpItems } = useHelpArticle(
+    currentReference
+  );
 
   const onRelatedItemClick = (reference: ArticleReference | VideoReference) => {
     setCurrentReference(reference);
@@ -59,7 +61,7 @@ const HelpPopupBody = (props: Props) => {
         <Article article={currentHelpItem} />
         <RelatedItems
           currentItem={currentHelpItem}
-          items={relatedItems || emptyRelatedItems}
+          items={relatedHelpItems || emptyRelatedItems}
           onItemClick={onRelatedItemClick}
         />
       </Grid>
@@ -70,7 +72,7 @@ const HelpPopupBody = (props: Props) => {
         <Video video={currentHelpItem} />
         <RelatedItems
           currentItem={currentHelpItem}
-          items={relatedItems || emptyRelatedItems}
+          items={relatedHelpItems || emptyRelatedItems}
           onItemClick={onRelatedItemClick}
         />
       </Grid>
