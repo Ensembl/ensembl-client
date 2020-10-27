@@ -632,7 +632,7 @@ export const getStatsForSection = (props: {
           const processedSubGroupStats: IndividualStat[] = [];
 
           subGroupStats.forEach((stat) => {
-            if (filteredData[stat] !== undefined) {
+            if (filteredData[stat]) {
               const individualStat = buildIndividualStat({
                 primaryKey: stat,
                 primaryValue: filteredData[stat],
