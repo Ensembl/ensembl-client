@@ -111,27 +111,31 @@ const getExpandedContent = (statsSection: StatsSection) => {
     <div className={styles.expandedContent}>
       {groups.map((group, group_index) => {
         const { title, stats } = group;
-        return stats.map((groupStats, row_index) => {
-          const statsGroupClassName = classNames(styles.statsGroup, {
-            [styles.statsGroupWithExampleLink]:
-              !group_index && !row_index && exampleLinkText
-          });
-          return (
-            <div key={row_index} className={statsGroupClassName}>
-              {row_index === 0 && <span className={styles.title}>{title}</span>}
-              <div className={styles.stats}>
-                {groupStats.map((stat, stat_index) => {
-                  return <SpeciesStats key={stat_index} {...stat} />;
-                })}
-              </div>
-              {group_index === 0 && row_index === 0 && exampleLinks && (
-                <ExampleLinkWithPopup links={exampleLinks}>
-                  {exampleLinkText}
-                </ExampleLinkWithPopup>
-              )}
-            </div>
-          );
-        });
+        return stats
+          ? stats.map((groupStats, row_index) => {
+              const statsGroupClassName = classNames(styles.statsGroup, {
+                [styles.statsGroupWithExampleLink]:
+                  !group_index && !row_index && exampleLinkText
+              });
+              return (
+                <div key={row_index} className={statsGroupClassName}>
+                  {row_index === 0 && (
+                    <span className={styles.title}>{title}</span>
+                  )}
+                  <div className={styles.stats}>
+                    {groupStats.map((stat, stat_index) => {
+                      return <SpeciesStats key={stat_index} {...stat} />;
+                    })}
+                  </div>
+                  {group_index === 0 && row_index === 0 && exampleLinks && (
+                    <ExampleLinkWithPopup links={exampleLinks}>
+                      {exampleLinkText}
+                    </ExampleLinkWithPopup>
+                  )}
+                </div>
+              );
+            })
+          : null;
       })}
     </div>
   );

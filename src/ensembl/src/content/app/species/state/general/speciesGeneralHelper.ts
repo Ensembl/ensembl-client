@@ -626,23 +626,31 @@ export const getStatsForSection = (props: {
     exampleLinks,
     groups: groups.map((group) => {
       const groupStats = groupsStatsMap[group];
+
+      const processedStats = groupStats
+        .map((subGroupStats) => {
+          const processedSubGroupStats: IndividualStat[] = [];
+
+          subGroupStats.forEach((stat) => {
+            if (filteredData[stat] !== undefined) {
+              const individualStat = buildIndividualStat({
+                primaryKey: stat,
+                primaryValue: filteredData[stat],
+                section
+              });
+              individualStat && processedSubGroupStats.push(individualStat);
+            }
+          });
+
+          return processedSubGroupStats.length
+            ? processedSubGroupStats
+            : undefined;
+        })
+        .filter(Boolean);
+
       return {
         title: groupTitles[group],
-        stats: groupStats
-          .map((subGroupStats) => {
-            return subGroupStats
-              .map((stat) => {
-                return filteredData[stat]
-                  ? buildIndividualStat({
-                      primaryKey: stat,
-                      primaryValue: filteredData[stat],
-                      section
-                    })
-                  : undefined;
-              })
-              .filter(Boolean);
-          })
-          .filter(Boolean)
+        stats: processedStats.length ? processedStats : undefined
       };
     })
   } as StatsSection;
