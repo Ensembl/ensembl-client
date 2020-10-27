@@ -28,6 +28,7 @@ import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSide
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
+import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -57,7 +58,6 @@ const SpeciesPage = () => {
     dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
 
-  const sidebarContent = 'I am sidebar';
   const sidebarNavigationContent = 'I am sidebar navigation';
 
   return (
@@ -66,7 +66,7 @@ const SpeciesPage = () => {
 
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
-        sidebarContent={sidebarContent}
+        sidebarContent={<SpeciesSidebar />}
         sidebarNavigation={sidebarNavigationContent}
         topbarContent={<TopBar />}
         isSidebarOpen={sidebarStatus}

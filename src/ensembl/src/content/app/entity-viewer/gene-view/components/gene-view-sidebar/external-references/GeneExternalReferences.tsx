@@ -162,6 +162,9 @@ const GeneExternalReferences = () => {
                     linkText={
                       externalReferencesGroup.references[0].accession_id
                     }
+                    classNames={{
+                      container: styles.externalReferenceContainer
+                    }}
                   />
                 </div>
               );
@@ -214,6 +217,9 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
               to={xref.url}
               linkText={xref.accession_id}
               key={key}
+              classNames={{
+                container: styles.externalReferenceContainer
+              }}
             />
           ))}
         </div>
@@ -238,6 +244,9 @@ const renderXrefGroupWithSameLabels = (
             to={entry.url}
             linkText={entry.accession_id}
             key={key}
+            classNames={{
+              container: styles.externalReferenceContainer
+            }}
           />
         ))}
       </div>
@@ -266,6 +275,9 @@ const renderXrefGroupWithDifferentLabels = (
                   to={entry.url}
                   linkText={entry.accession_id}
                   key={key}
+                  classNames={{
+                    container: styles.externalReferenceContainer
+                  }}
                 />
               ))}
             </div>

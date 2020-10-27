@@ -31,9 +31,12 @@ $content-width: 695px;
   grid-column: download;
 }
 
-.geneExternalReference {
+.proteinExternalReference {
   display: inline-block;
-  margin-right: 40px;
+
+  &:first-child {
+    margin-right: 40px;
+  }
 }
 
 .proteinFeaturesCountWrapper {
