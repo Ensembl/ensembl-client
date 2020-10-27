@@ -16,8 +16,6 @@
 
 import React from 'react';
 
-import ensemblIcon from 'static/img/launchbar/ensembl-logo.png'; // <-- note it's a png
-
 import { ReactComponent as SearchIcon } from 'static/img/launchbar/search.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
@@ -105,13 +103,7 @@ const Launchbar = (props: LaunchbarProps) => {
         </div>
       </div>
       <div className={styles.about}>
-        <span className={styles.aboutText}>Genome research database</span>
-        <LaunchbarButton
-          app="about"
-          description="About Ensembl"
-          icon={ensemblIcon}
-          enabled={false}
-        />
+        <span className={styles.aboutText}>Genome data & annotation</span>
       </div>
     </div>
   ) : null;

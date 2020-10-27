@@ -83,16 +83,9 @@
   margin-left: 20px;
 
   .aboutText {
-    font-size: 12px;
-    margin-right: 3px;
+    font-size: 14px;
+    font-weight: $light;
+    margin-right: 26px;
     margin-top: 2px;
-  }
-
-  .launchbarButton {
-    border: none;
-
-    &:last-child {
-      margin-right: 18px;
-    }
   }
 }
