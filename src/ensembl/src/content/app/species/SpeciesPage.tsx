@@ -17,17 +17,15 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
-
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
-
 import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
 import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
@@ -43,9 +41,17 @@ type SpeciesPageParams = {
 
 const SpeciesPage = () => {
   const { genomeId } = useParams() as SpeciesPageParams;
+  const dispatch = useDispatch();
+
+  const changeGenomeId = (genomeId: string) => {
+    const params = {
+      genomeId
+    };
+
+    dispatch(replace(urlFor.speciesPage(params)));
+  };
 
   const sidebarStatus = useSelector(isSidebarOpen);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setActiveGenomeId(genomeId));
@@ -56,7 +62,8 @@ const SpeciesPage = () => {
 
   return (
     <>
-      <SpeciesAppBar />
+      <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
+
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
         sidebarContent={<SpeciesSidebar />}

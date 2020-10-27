@@ -17,6 +17,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import times from 'lodash/times';
+import { push } from 'connected-react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
@@ -24,19 +27,18 @@ import {
   SpeciesSelectorAppBar,
   PlaceholderMessage
 } from './SpeciesSelectorAppBar';
-import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => <div>{props.children}</div>
 }));
 
-const toggleSpeciesUse = jest.fn();
-const onSpeciesDelete = jest.fn();
+jest.mock('connected-react-router', () => ({
+  push: jest.fn(() => ({ type: 'push' }))
+}));
 
 const defaultProps = {
   selectedSpecies: times(5, () => createSelectedSpecies()),
-  toggleSpeciesUse,
-  onSpeciesDelete
+  push
 };
 
 describe('<SpeciesSelectorAppBar />', () => {
@@ -57,8 +59,25 @@ describe('<SpeciesSelectorAppBar />', () => {
 
   it('renders the list of selected species if there are some', () => {
     const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
-    expect(wrapper.find(SelectedSpecies).length).toBe(
+
+    expect(wrapper.find('.species').length).toBe(
       defaultProps.selectedSpecies.length
     );
+  });
+
+  it('opens the species page when a SelectedSpecies tab button is clicked', () => {
+    const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
+
+    const firstSelectedSpecies = wrapper.find('.species').first();
+
+    firstSelectedSpecies.simulate('click');
+
+    const firstSpeciesGenomeId = defaultProps.selectedSpecies[0].genome_id;
+
+    const speciesPageUrl = urlFor.speciesPage({
+      genomeId: firstSpeciesGenomeId
+    });
+
+    expect(push).toBeCalledWith(speciesPageUrl);
   });
 });
