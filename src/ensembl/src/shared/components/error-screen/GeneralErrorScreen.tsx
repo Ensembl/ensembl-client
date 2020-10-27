@@ -16,7 +16,10 @@
 
 import React from 'react';
 
-import { HomeLink, ReleaseVersion, Copyright } from 'src/header/Header';
+import { ReleaseVersion, Copyright } from 'src/header/Header';
+// import { HomeLink } from 'src/header/header-buttons/HeaderButtons';
+
+import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 
 import styles from './ErrorScreen.scss';
 import headerStyles from 'src/header/Header.scss';
@@ -25,10 +28,12 @@ import generalErrorImage1 from './images/general-error-1.jpg';
 import generalErrorImage2 from './images/general-error-2.jpg';
 import generalErrorImage3 from './images/general-error-3.jpg';
 
+//       <HomeLink />
+
 const GeneralErrorScreen = () => (
   <section className={styles.generalErrorScreen}>
     <header className={`${headerStyles.topbar} ${styles.generalErrorHeader}`}>
-      <HomeLink />
+      <Logotype className={headerStyles.logotype} />
       <ReleaseVersion />
       <Copyright />
     </header>
