@@ -13,13 +13,13 @@ $left-padding: 15px;
 }
 
 .speciesDetails {
-  .common_name {
-    padding-left: $left-padding;
+  padding-left: $left-padding;
+  span {
     font-weight: $bold;
     margin-right: 10px;
   }
 
-  .scientific_name{
+  span + span{
     font-style: italic;
     font-weight: $light;
   }
