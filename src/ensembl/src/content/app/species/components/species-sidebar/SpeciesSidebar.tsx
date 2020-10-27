@@ -82,10 +82,10 @@ const SpeciesSidebar = (props: Props) => {
     <div>
       <div className={styles.speciesDetails}>
         {payload.common_name && (
-          <span className={styles.common_name}>{payload.common_name}</span>
+          <span className={styles.commonName}>{payload.common_name}</span>
         )}
         {payload.scientific_name && (
-          <span className={styles.scientific_name}>
+          <span className={styles.scientificName}>
             {payload.scientific_name}
           </span>
         )}
@@ -93,8 +93,8 @@ const SpeciesSidebar = (props: Props) => {
 
       {payload.strain && (
         <div className={styles.strainDetails}>
-          <span className={styles.strain_type}>{payload.strain.type}</span>
-          <span className={styles.strain_value}>{payload.strain.value}</span>
+          <span className={styles.strainType}>{payload.strain.type}</span>
+          <span className={styles.strainValue}>{payload.strain.value}</span>
         </div>
       )}
 

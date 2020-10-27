@@ -14,12 +14,12 @@ $left-padding: 15px;
 
 .speciesDetails {
   padding-left: $left-padding;
-  span {
+  .commonName {
     font-weight: $bold;
     margin-right: 10px;
   }
 
-  span + span{
+  .scientificName{
     font-style: italic;
     font-weight: $light;
   }
@@ -27,12 +27,12 @@ $left-padding: 15px;
 
 .strainDetails {
   margin-top:10px;
-  .strain_type {
+  .strainType {
     padding-left: $left-padding;
     font-weight: $light;
   }
 
-  .strain_value{
+  .strainValue{
     margin-left: 10px;
   }
 }
@@ -40,9 +40,14 @@ $left-padding: 15px;
 .assemblyDetails {
 
   padding-left: $left-padding;
+  
   .assemblyName {
-    padding-bottom: 20px;
+    padding-bottom: 15px;
     font-weight: $bold;
+  }
+
+  .assemblySource{
+    padding-bottom: 15px;
   }
 }
 
