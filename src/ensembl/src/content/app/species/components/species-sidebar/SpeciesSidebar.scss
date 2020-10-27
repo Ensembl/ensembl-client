@@ -21,6 +21,10 @@ $left-padding: 15px;
 
   .scientificName{
     font-style: italic;
+    font-weight: $bold;
+  }
+
+  .commonName + .scientificName{
     font-weight: $light;
   }
 }
