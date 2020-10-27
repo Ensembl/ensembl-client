@@ -20,7 +20,7 @@ import { connect } from 'react-redux';
 import { AppName } from 'src/global/globalConfig';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
@@ -60,7 +60,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  species: getEnabledCommittedSpecies(state),
+  species: getCommittedSpecies(state),
   activeGenomeId: getActiveGenomeId(state)
 });
 
