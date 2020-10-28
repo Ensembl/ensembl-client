@@ -18,11 +18,11 @@ import React from 'react';
 
 import { Topbar } from 'src/header/Header';
 
-import styles from './ErrorScreen.scss';
-
 import generalErrorImage1 from './images/general-error-1.jpg';
 import generalErrorImage2 from './images/general-error-2.jpg';
 import generalErrorImage3 from './images/general-error-3.jpg';
+
+import styles from './ErrorScreen.scss';
 
 const GeneralErrorScreen = () => (
   <section className={styles.generalErrorScreen}>
