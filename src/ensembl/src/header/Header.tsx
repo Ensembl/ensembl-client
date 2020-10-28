@@ -15,12 +15,13 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-import HeaderButtons from './header-buttons/HeaderButtons';
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Account from './account/Account';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
+import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
 
 import styles from './Header.scss';
 
@@ -36,16 +37,38 @@ export const Copyright = () => (
   </div>
 );
 
+export const HomeLink = () => (
+  <div className={styles.homeLink}>
+    <Link to="/">
+      <HomeIcon />
+    </Link>
+  </div>
+);
+
+export const Topbar = () => (
+  <div className={styles.topbar}>
+    <div className={styles.topbarLeft}>
+      <HomeIcon className={styles.homeLink} />
+      <div className={styles.topbarLeftTextBlock}>
+        <div className={styles.logotypeWrapper}>
+          <Logotype className={styles.logotype} />
+        </div>
+        <div className={styles.logotypeAssociatedText}>
+          <ReleaseVersion />
+          <Copyright />
+        </div>
+      </div>
+    </div>
+    <div className={styles.aboutEnsembl}>
+      About
+      <Logotype className={styles.logotypeAbout} />
+    </div>
+  </div>
+);
+
 export const Header = () => (
   <header>
-    <div className={styles.topbar}>
-      <div className={styles.topbarLeft}>
-        <Logotype className={styles.logotype} />
-        <ReleaseVersion />
-        <Copyright />
-      </div>
-      <HeaderButtons />
-    </div>
+    <Topbar />
     <Account />
     <LaunchbarContainer />
   </header>

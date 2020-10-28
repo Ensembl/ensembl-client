@@ -20,7 +20,6 @@ import { shallow } from 'enzyme';
 import { Header } from './Header';
 import Account from './account/Account';
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
-import HeaderButtons from './header-buttons/HeaderButtons';
 
 describe('<Header />', () => {
   let wrapper: any;
@@ -36,10 +35,6 @@ describe('<Header />', () => {
 
     test('Launchbar', () => {
       expect(wrapper.contains(<LaunchbarContainer />)).toBe(true);
-    });
-
-    test('HeaderButtons', () => {
-      expect(wrapper.contains(<HeaderButtons />)).toBe(true);
     });
   });
 });
