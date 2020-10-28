@@ -107,7 +107,7 @@ const getExpandedContent = (statsSection: StatsSection) => {
   const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
 
-  const expandedcontent = groups
+  const expandedContent = groups
     .map((group, group_index) => {
       const { title, stats } = group;
       return stats
@@ -138,8 +138,8 @@ const getExpandedContent = (statsSection: StatsSection) => {
     })
     .filter(Boolean);
 
-  return expandedcontent.length ? (
-    <div className={styles.expandedContent}>{expandedcontent}</div>
+  return expandedContent.length ? (
+    <div className={styles.expandedContent}>{expandedContent}</div>
   ) : null;
 };
 
