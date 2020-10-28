@@ -48,7 +48,7 @@ export const HomeLink = () => (
 export const Topbar = () => (
   <div className={styles.topbar}>
     <div className={styles.topbarLeft}>
-      <HomeIcon className={styles.homeLink} />
+      <HomeLink />
       <div className={styles.topbarLeftTextBlock}>
         <div className={styles.logotypeWrapper}>
           <Logotype className={styles.logotype} />

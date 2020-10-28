@@ -26,9 +26,12 @@
 .homeLink {
   font-size: 0;
   margin-right: 16px;
-  fill: $blue;
-  height: 19px;
-  width: 19px;
+
+  svg {
+    fill: $blue;
+    height: 19px;
+    width: 19px;
+  }
 }
 
 .logotypeWrapper {
