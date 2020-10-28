@@ -68,9 +68,11 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
 
   return (
     <div className={wrapperClassNames}>
-      <div className={styles.toggle} onClick={toggleExpanded}>
-        <Chevron className={chevronClasses} />
-      </div>
+      {props.expandedContent && (
+        <div className={styles.toggle} onClick={toggleExpanded}>
+          <Chevron className={chevronClasses} />
+        </div>
+      )}
 
       {isExpanded ? (
         <div className={expandedContentClassNames}>{props.expandedContent}</div>
