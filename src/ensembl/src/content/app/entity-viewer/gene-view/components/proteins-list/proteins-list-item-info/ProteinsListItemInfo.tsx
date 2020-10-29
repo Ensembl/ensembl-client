@@ -89,7 +89,7 @@ const ProteinsListItemInfo = (props: Props) => {
         .then((proteinDomains) => {
           if (!abortController.signal.aborted) {
             // TODO: REVERT BEFORE MERGING
-            if (proteinId === 'ENSP00000369497.3') {
+            if (proteinId === 'ENSP00000369497') {
               setDomainsLoadingState(LoadingState.ERROR);
               return;
             }
