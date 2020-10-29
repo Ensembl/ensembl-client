@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import classNames from 'classnames';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -24,7 +23,6 @@ import HelpPopupBody from './HelpPopupBody';
 import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
-import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
 
 import styles from './HelpPopupButton.scss';
 
@@ -51,8 +49,6 @@ const HelpPopupButton = (props: Props) => {
     setShouldShowModal(false);
   };
 
-  const videoButtonClasses = classNames(styles.button, styles.button_video);
-
   if (isEnvironment([Environment.PRODUCTION])) {
     return <HelpAndDocumentation />;
   }
@@ -63,9 +59,6 @@ const HelpPopupButton = (props: Props) => {
         <span className={styles.label}>Help</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />
-        </div>
-        <div className={videoButtonClasses}>
-          <VideoIcon className={styles.icon} />
         </div>
       </div>
       {shouldShowModal && (

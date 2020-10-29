@@ -32,8 +32,8 @@ $generalErrorImagesTotalWidth: calc(
 }
 
 .generalErrorHeader {
+  justify-content: flex-start;
   flex: 0 0 auto;
-  display: block;
 }
 
 .generalErrorBody {

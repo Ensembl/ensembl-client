@@ -41,8 +41,8 @@
 
 .launchbarButton {
   display: inline-block;
-  height: 30px;
-  width: 30px;
+  height: 32px;
+  width: 32px;
   margin: 0 12px;
 
   img {
@@ -53,8 +53,8 @@
 
 .launchbarButtonImage {
   svg {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     fill: $white;
     background-color: $blue;
   }
@@ -83,16 +83,8 @@
   margin-left: 20px;
 
   .aboutText {
-    font-size: 12px;
-    margin-right: 3px;
+    font-weight: $light;
+    margin-right: 25px;
     margin-top: 2px;
-  }
-
-  .launchbarButton {
-    border: none;
-
-    &:last-child {
-      margin-right: 18px;
-    }
   }
 }

@@ -17,28 +17,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import config from 'config';
-
-import HeaderButtons from './header-buttons/HeaderButtons';
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Account from './account/Account';
 
-import homeIcon from 'static/img/header/home.svg';
+import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
+import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
 
 import styles from './Header.scss';
 
-export const HomeLink = () => (
-  <div className={styles.homeLink}>
-    <Link to="/">
-      <img src={homeIcon} alt="" /> Ensembl
-    </Link>
-  </div>
-);
-
 export const ReleaseVersion = () => (
-  <div className={styles.strapline}>
-    Pre-release — version {config.app_version}
-  </div>
+  <div className={styles.release}>Pre-release</div>
 );
 
 export const Copyright = () => (
@@ -49,16 +37,38 @@ export const Copyright = () => (
   </div>
 );
 
+export const HomeLink = () => (
+  <div className={styles.homeLink}>
+    <Link to="/">
+      <HomeIcon />
+    </Link>
+  </div>
+);
+
+export const Topbar = () => (
+  <div className={styles.topbar}>
+    <div className={styles.topbarLeft}>
+      <HomeLink />
+      <div className={styles.topbarLeftTextBlock}>
+        <div className={styles.logotypeWrapper}>
+          <Logotype className={styles.logotype} />
+        </div>
+        <div className={styles.logotypeAssociatedText}>
+          <ReleaseVersion />
+          <Copyright />
+        </div>
+      </div>
+    </div>
+    <div className={styles.aboutEnsembl}>
+      About
+      <Logotype className={styles.logotypeAbout} />
+    </div>
+  </div>
+);
+
 export const Header = () => (
   <header>
-    <div className={styles.topbar}>
-      <div>
-        <HomeLink />
-        <ReleaseVersion />
-        <Copyright />
-      </div>
-      <HeaderButtons />
-    </div>
+    <Topbar />
     <Account />
     <LaunchbarContainer />
   </header>
