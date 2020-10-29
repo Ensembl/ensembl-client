@@ -28,8 +28,8 @@ type Props = {
 
 const CloseButton = (props: Props) => {
   return (
-    <div className={styles.closeButton}>
-      <CloseIcon className={styles.icon} onClick={props.onClick} />
+    <div className={styles.closeButton} onClick={props.onClick}>
+      <CloseIcon className={styles.icon} />
     </div>
   );
 };

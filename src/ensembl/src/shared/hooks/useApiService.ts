@@ -81,7 +81,10 @@ const initialState: StateBeforeRequest = {
 const reducer = <T>(state: State<T>, action: Action<T>): State<T> => {
   switch (action.type) {
     case 'loading':
-      return initialState;
+      return {
+        ...initialState,
+        loadingState: LoadingState.LOADING
+      };
     case 'success':
       return {
         loadingState: LoadingState.SUCCESS,

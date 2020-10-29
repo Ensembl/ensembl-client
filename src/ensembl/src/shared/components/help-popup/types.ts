@@ -14,4 +14,31 @@
  * limitations under the License.
  */
 
-export { default as SelectedSpecies } from './SelectedSpecies';
+export type HelpVideo = {
+  title: string;
+  description: string;
+  youtube_id: string;
+};
+
+export type RelatedArticle = {
+  title: string;
+  slug: string;
+  path: string;
+};
+
+export type HelpArticle = {
+  path: string;
+  slug: string;
+  title: string;
+  body: string;
+  videos: HelpVideo[];
+  related_articles: RelatedArticle[];
+};
+
+export type SlugReference = {
+  slug: string; // slug of the help article, e.g. "selecting-a-species"
+};
+
+export type PathReference = {
+  path: string; // path to the article in the help&docs repo starting from the docs root folder, e.g. "ensembl-help/getting-started/about-the-site"
+};

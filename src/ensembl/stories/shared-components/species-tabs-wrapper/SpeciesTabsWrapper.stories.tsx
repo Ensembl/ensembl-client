@@ -15,18 +15,16 @@
  */
 
 import React, { useState } from 'react';
+import noop from 'lodash/noop';
 
 import speciesData from './speciesData';
 
-import {
-  SimpleSelectedSpecies,
-  FocusableSelectedSpecies
-} from 'src/shared/components/selected-species';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
-import styles from './SpeciesTabsWrapper.stories.scss';
-
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+
+import styles from './SpeciesTabsWrapper.stories.scss';
 
 type StatelessStoryWrapperProps = {
   children: React.ReactNode;
@@ -40,7 +38,7 @@ const StatefulStoryWrapper = (props: { species: CommittedItem[] }) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const speciesTabs = props.species.map((species, index) => (
-    <FocusableSelectedSpecies
+    <SelectedSpecies
       key={index}
       species={species}
       isActive={index === activeIndex}
@@ -64,7 +62,7 @@ export const FewSpeciesWrappableStory = () => {
   const speciesTabs = speciesData
     .slice(0, 3)
     .map((species, index) => (
-      <SimpleSelectedSpecies key={index} species={species} />
+      <SelectedSpecies key={index} species={species} onClick={noop} />
     ));
   return (
     <StatelessStoryWrapper>
@@ -77,7 +75,7 @@ FewSpeciesWrappableStory.storyName = 'wrappable, few species';
 
 export const ManySpeciesWrappableStory = () => {
   const speciesTabs = speciesData.map((species, index) => (
-    <SimpleSelectedSpecies key={index} species={species} />
+    <SelectedSpecies key={index} species={species} onClick={noop} />
   ));
   return (
     <StatelessStoryWrapper>

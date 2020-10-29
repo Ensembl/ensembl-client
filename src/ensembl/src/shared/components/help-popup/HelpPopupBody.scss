@@ -12,16 +12,23 @@ $aside-left-padding: 1.6rem;
 
 .grid {
   display: grid;
-  grid-template-columns: [article-text] 2fr [article-video] 2fr [aside] 1fr;
-  grid-column-gap: 1rem;
+  grid-column-gap: 15px;
   height: 100%;
-  padding-left: 52px;
-  overflow-y: auto;
+
+  &_article {
+    grid-template-columns: [article] 440px [empty] 1fr [aside] minmax(200px, 300px);
+  }
+
+  &_video {
+    grid-column-gap: 30px;
+    grid-template-columns: [video] minmax(450px, 1fr) [aside] minmax(200px, 300px);
+  }
 }
 
-.text {
-  grid-column: article-text;
+.article {
+  grid-column: article;
   padding-left: $heading-outdent;
+  overflow-y: auto;
 
   h1 {
     margin-left: -$heading-outdent;
@@ -35,22 +42,25 @@ $aside-left-padding: 1.6rem;
 }
 
 .video {
-  grid-column: article-video;
+  grid-column: video;
+  height: 90%;
 }
 
 .videoWrapper {
+  // the position of the wrapper is set to relative and the position of the iframe to absolute
+  // because the wrapper needs to change its dimensions when its parent does
+  // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
+  // TODO: change this to aspect-ratio CSS rule when it gets better browser support
   position: relative;
-  padding-top: 56.25%; // trick for enforcing the 16:9 aspect ratio in the container
 
   iframe {
     position: absolute;
     top: 0;
-    width: 100%;
-    height: 100%;
   }
 }
 
 .aside {
+  grid-column: aside;
   padding-left: $aside-left-padding;
 
   h2 {
@@ -70,6 +80,12 @@ $aside-left-padding: 1.6rem;
 .relatedVideo {
   color: $blue;
   cursor: pointer;
+  margin-bottom: 0.4rem;
+}
+
+.relatedCurrent {
+  cursor: inherit;
+  color: inherit;
 }
 
 .relatedVideo {

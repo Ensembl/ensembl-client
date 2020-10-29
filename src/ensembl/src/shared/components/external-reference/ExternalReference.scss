@@ -1,26 +1,6 @@
 @import 'src/styles/common';
 
-.defaultContainer {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.defaultLabel {
-  grid-column: label;
+.label {
+  grid-column: label; // FIXME: what grid is this?
   margin-right: 5px;
-}
-
-.defaultIcon {
-  display: inline-block;
-  margin-right: 5px;
-  width: 12px;
-  fill: $orange;
-}
-
-.defaultLink {
-  display: inline-block;
-}
-
-.linkHolder {
-  display: inline-block;
 }

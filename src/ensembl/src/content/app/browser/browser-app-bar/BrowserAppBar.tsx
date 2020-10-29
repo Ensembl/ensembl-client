@@ -25,11 +25,10 @@ import { AppName } from 'src/global/globalConfig';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import AppBar, {
-  HelpAndDocumentation
-} from 'src/shared/components/app-bar/AppBar';
-import { FocusableSelectedSpecies } from 'src/shared/components/selected-species';
+import AppBar from 'src/shared/components/app-bar/AppBar';
+import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -43,7 +42,7 @@ type BrowserAppBarProps = {
 const BrowserAppBar = (props: BrowserAppBarProps) => {
   const speciesTabs = useMemo(() => {
     return props.species.map((species, index) => (
-      <FocusableSelectedSpecies
+      <SelectedSpecies
         key={index}
         species={species}
         isActive={species.genome_id === props.activeGenomeId}
@@ -67,7 +66,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     <AppBar
       appName={AppName.GENOME_BROWSER}
       mainContent={wrappedSpecies}
-      aside={<HelpAndDocumentation />}
+      aside={<HelpPopupButton slug="using-the-genome-browser" />}
     />
   );
 };
