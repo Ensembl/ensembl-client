@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import set from 'lodash/fp/set';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
@@ -39,8 +40,6 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinsListItemInfo.scss';
-import { PrimaryButton } from 'src/shared/components/button/Button';
-import { APIError } from 'src/services/api-service';
 
 type Props = {
   transcript: Transcript;
@@ -68,9 +67,13 @@ const ProteinsListItemInfo = (props: Props) => {
     ProteinSummary | null | undefined
   >();
 
-  const [proteinSummaryLoadingState, setProteinSummaryLoadingState] = useState<
-    LoadingState
-  >(LoadingState.NOT_REQUESTED);
+  const [domainsLoadingState, setDomainsLoadingState] = useState<LoadingState>(
+    LoadingState.LOADING
+  );
+
+  const [summaryLoadingState, setSummaryLoadingState] = useState<LoadingState>(
+    LoadingState.LOADING
+  );
 
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
@@ -80,47 +83,50 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchProteinDomains(proteinId, abortController.signal).then(
-      (proteinDomains) => {
-        if (!abortController.signal.aborted) {
-          setTranscriptWithProteinDomains(
-            addProteinDomains(transcript, proteinDomains)
-          );
-        }
-      }
-    );
 
-    return function cleanup() {
-      abortController.abort();
-    };
-  });
-
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    if (proteinSummaryLoadingState === LoadingState.NOT_REQUESTED) {
-      fetchProteinSummary(proteinId, abortController.signal).then(
-        (response) => {
-          if ((response as APIError)?.error) {
-            setProteinSummaryLoadingState(LoadingState.ERROR);
-            return;
-          }
-
+    if (domainsLoadingState === LoadingState.LOADING) {
+      fetchProteinDomains(proteinId, abortController.signal)
+        .then((proteinDomains) => {
           if (!abortController.signal.aborted) {
-            response
-              ? setProteinSummary(response as ProteinSummary)
-              : setProteinSummary(null);
-
-            setProteinSummaryLoadingState(LoadingState.SUCCESS);
+            setTranscriptWithProteinDomains(
+              addProteinDomains(transcript, proteinDomains)
+            );
+            setDomainsLoadingState(LoadingState.SUCCESS);
           }
-        }
-      );
+        })
+        .catch(() => {
+          setDomainsLoadingState(LoadingState.ERROR);
+        });
     }
 
     return function cleanup() {
       abortController.abort();
     };
-  }, [transcript.stable_id, proteinSummaryLoadingState]);
+  }, [domainsLoadingState]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    if (summaryLoadingState === LoadingState.LOADING) {
+      fetchProteinSummary(proteinId, abortController.signal)
+        .then((response) => {
+          if (!abortController.signal.aborted) {
+            response
+              ? setProteinSummary(response as ProteinSummary)
+              : setProteinSummary(null);
+
+            setSummaryLoadingState(LoadingState.SUCCESS);
+          }
+        })
+        .catch(() => {
+          setSummaryLoadingState(LoadingState.ERROR);
+        });
+    }
+
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [transcript.stable_id, summaryLoadingState]);
 
   // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
   // we need to move it to a constant
@@ -177,30 +183,64 @@ const ProteinsListItemInfo = (props: Props) => {
           </>
         )}
 
-        {(proteinSummaryLoadingState === LoadingState.NOT_REQUESTED ||
-          !product) && (
-          <div className={styles.statusContainer}>
-            <CircleLoader />
-          </div>
-        )}
-
-        {proteinSummaryLoadingState === LoadingState.ERROR && product && (
-          <div className={styles.statusContainer}>
-            <span className={styles.errorMessage}>Failed to get data</span>
-            <PrimaryButton
-              onClick={() =>
-                setProteinSummaryLoadingState(LoadingState.NOT_REQUESTED)
-              }
-            >
-              Try again
-            </PrimaryButton>
-          </div>
-        )}
+        <StatusContent
+          summaryLoadingState={summaryLoadingState}
+          domainsLoadingState={domainsLoadingState}
+          setSummaryLoadingState={setSummaryLoadingState}
+          setDomainsLoadingState={setDomainsLoadingState}
+        />
 
         <div className={styles.keyline}></div>
       </div>
     </div>
   );
+};
+
+type StatusContentProps = {
+  summaryLoadingState: LoadingState;
+  domainsLoadingState: LoadingState;
+  setSummaryLoadingState: (loadingState: LoadingState) => void;
+  setDomainsLoadingState: (loadingState: LoadingState) => void;
+};
+
+const StatusContent = (props: StatusContentProps) => {
+  if (
+    props.domainsLoadingState === LoadingState.LOADING ||
+    props.summaryLoadingState === LoadingState.LOADING
+  ) {
+    return (
+      <div className={styles.statusContainer}>
+        <CircleLoader />
+      </div>
+    );
+  }
+
+  let retryHandler;
+
+  if (
+    props.domainsLoadingState === LoadingState.ERROR &&
+    props.summaryLoadingState === LoadingState.ERROR
+  ) {
+    retryHandler = () => {
+      props.setSummaryLoadingState(LoadingState.LOADING);
+      props.setDomainsLoadingState(LoadingState.LOADING);
+    };
+  } else if (props.domainsLoadingState === LoadingState.ERROR) {
+    retryHandler = () => {
+      props.setDomainsLoadingState(LoadingState.LOADING);
+    };
+  } else if (props.summaryLoadingState === LoadingState.ERROR) {
+    retryHandler = () => {
+      props.setSummaryLoadingState(LoadingState.LOADING);
+    };
+  }
+
+  return retryHandler ? (
+    <div className={styles.statusContainer}>
+      <span className={styles.errorMessage}>Failed to get data</span>
+      <PrimaryButton onClick={retryHandler}>Try again</PrimaryButton>
+    </div>
+  ) : null;
 };
 
 type ProteinExternalReferenceProps = {

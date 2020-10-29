@@ -53,10 +53,11 @@ $content-width: 695px;
 }
 
 .statusContainer {
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height:70px;
+  margin-top: 40px;
 }
 .errorMessage{
   color: $red;

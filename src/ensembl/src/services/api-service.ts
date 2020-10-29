@@ -32,8 +32,7 @@ export enum HTTPMethod {
 
 // Note: Currently does not conform to Core Data Modelling definition of an API error
 export type APIError = {
-  error: true;
-  status?: number;
+  status: number;
   message: string | JSONValue;
 };
 
