@@ -16,8 +16,6 @@
 
 import { useState, useEffect } from 'react';
 
-import config from 'config';
-
 import useApiService from 'src/shared/hooks/useApiService';
 
 import {
