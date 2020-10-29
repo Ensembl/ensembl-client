@@ -72,7 +72,7 @@ const useHelpArticle = (reference: ArticleReference | VideoReference) => {
 
   const query = reference.type === 'article' ? getQuery(reference) : null;
   const { helpApiHost } = config;
-  const url = query ? `${helpApiHost}/api/article?${query}` : '';
+  const url = query ? /help-api/article?${query}` : '';
 
   const { data: article, loadingState } = useApiService<HelpArticle>({
     endpoint: url,
