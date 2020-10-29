@@ -126,7 +126,7 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [transcript.stable_id, summaryLoadingState]);
+  }, [summaryLoadingState]);
 
   // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
   // we need to move it to a constant
