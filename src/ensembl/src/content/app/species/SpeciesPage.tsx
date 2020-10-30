@@ -58,8 +58,6 @@ const SpeciesPage = () => {
     dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
 
-  const sidebarNavigationContent = 'I am sidebar navigation';
-
   return (
     <>
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
@@ -67,7 +65,7 @@ const SpeciesPage = () => {
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
         sidebarContent={<SpeciesSidebar />}
-        sidebarNavigation={sidebarNavigationContent}
+        sidebarNavigation={null}
         topbarContent={<TopBar />}
         isSidebarOpen={sidebarStatus}
         onSidebarToggle={() => {
