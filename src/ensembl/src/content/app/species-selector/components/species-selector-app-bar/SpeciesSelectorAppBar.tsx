@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { push } from 'connected-react-router';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -70,9 +69,6 @@ const SelectedSpeciesList = (props: Props) => {
     props.push(speciesPageUrl);
   };
 
-  const shouldLinkToGenomeBrowser =
-    props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
-
   const selectedSpecies = props.selectedSpecies.map((species) => (
     <SelectedSpecies
       key={species.genome_id}
@@ -81,11 +77,7 @@ const SelectedSpeciesList = (props: Props) => {
     />
   ));
 
-  const link = shouldLinkToGenomeBrowser ? (
-    <Link to={urlFor.browser()}>View in Genome Browser</Link>
-  ) : null;
-
-  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} link={link} />;
+  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} />;
 };
 
 const mapStateToProps = (state: RootState) => ({
