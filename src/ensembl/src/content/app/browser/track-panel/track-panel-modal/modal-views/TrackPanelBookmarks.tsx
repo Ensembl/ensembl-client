@@ -19,15 +19,12 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
-import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
-import analyticsTracking from 'src/services/analytics-service';
-
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
-
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
@@ -36,9 +33,10 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 
 import { RootState } from 'src/store';
-import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
+import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelBookmarks.scss';
 
@@ -67,11 +65,8 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         return (
           <div key={exampleObject.object_id} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
-              {exampleObject.label}
+              {`Example ` + exampleObject.type}
             </Link>
-            <span className={styles.previouslyViewedType}>
-              {upperFirst(exampleObject.type)}
-            </span>
           </div>
         );
       })}
@@ -158,7 +153,6 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       <h3>Bookmarks</h3>
       {exampleEnsObjects.length ? (
         <>
-          <div className={styles.title}>Example links</div>
           <ExampleLinks
             exampleEnsObjects={exampleEnsObjects}
             activeGenomeId={activeGenomeId}
