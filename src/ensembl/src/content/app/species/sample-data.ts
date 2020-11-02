@@ -593,7 +593,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
-    assembly_date: 'June 2013',
+    assembly_date: '2013-06-01',
     notes: []
   },
   escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
@@ -615,7 +615,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Generated from ENA annotation',
-    assembly_date: 'Sep 2013',
+    assembly_date: '2013-09-01',
     notes: []
   },
   caenorhabditis_elegans_GCA_000002985_3: {
@@ -640,7 +640,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: 'Feb 2013',
+    assembly_date: '2013-02-01',
     notes: []
   },
   plasmodium_falciparum_GCA_000002765_2: {
@@ -662,7 +662,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: 'Apr 2016',
+    assembly_date: '2016-04-01',
     notes: []
   },
   saccharomyces_cerevisiae_GCA_000146045_2: {
@@ -687,7 +687,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: 'Dec 2014',
+    assembly_date: '2014-12-01',
     notes: []
   },
   triticum_aestivum_GCA_900519105_1: {
@@ -712,7 +712,7 @@ export const sidebarData: SpeciesSidebarData = {
     },
     assembly_level: 'complete genome',
     annotation_method: 'Import',
-    assembly_date: 'Aug 2018',
+    assembly_date: '2018-08-01',
     notes: []
   }
 };
