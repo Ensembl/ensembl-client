@@ -17,6 +17,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import set from 'lodash/fp/set';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -110,9 +111,19 @@ const ensureGenePresence = (
 ) => {
   const { activeGenomeId, activeObjectId } = ids;
   if (!state[activeGenomeId]) {
-    state[activeGenomeId] = { [activeObjectId]: defaultStatePerGene };
+    return set(
+      activeGenomeId,
+      { [activeObjectId]: defaultStatePerGene },
+      state
+    );
   } else if (!state[activeGenomeId][activeObjectId]) {
-    state[activeGenomeId][activeObjectId] = defaultStatePerGene;
+    return set(
+      `${activeGenomeId}.${activeObjectId}`,
+      defaultStatePerGene,
+      state
+    );
+  } else {
+    return state;
   }
 };
 
@@ -131,13 +142,21 @@ const transcriptsSlice = createSlice({
       action: PayloadAction<ExpandedIdsPayload>
     ) {
       const { activeGenomeId, activeObjectId, expandedIds } = action.payload;
-      ensureGenePresence(state, action.payload);
-      state[activeGenomeId][activeObjectId].expandedIds = expandedIds;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeObjectId}.expandedIds`,
+        expandedIds,
+        updatedState
+      );
     },
     updateExpandedDownloads(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeObjectId, expandedIds } = action.payload;
-      ensureGenePresence(state, action.payload);
-      state[activeGenomeId][activeObjectId].expandedDownloadIds = expandedIds;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeObjectId}.expandedDownloadIds`,
+        expandedIds,
+        updatedState
+      );
     }
   }
 });
