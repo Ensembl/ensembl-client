@@ -111,6 +111,8 @@ const ensureGenePresence = (
   const { activeGenomeId, activeObjectId } = ids;
   if (!state[activeGenomeId]) {
     state[activeGenomeId] = { [activeObjectId]: defaultStatePerGene };
+  } else if (!state[activeGenomeId][activeObjectId]) {
+    state[activeGenomeId][activeObjectId] = defaultStatePerGene;
   }
 };
 
