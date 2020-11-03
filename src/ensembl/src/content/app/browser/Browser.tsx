@@ -17,7 +17,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import upperFirst from 'lodash/upperFirst';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
@@ -160,12 +159,7 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
 
     return (
       <div key={exampleObject.object_id} className={styles.exampleLink}>
-        <Link to={path}>
-          <span className={styles.objectType}>
-            {upperFirst(exampleObject.type)}
-          </span>
-          <span className={styles.objectLabel}>{exampleObject.label}</span>
-        </Link>
+        <Link to={path}>{`Example ` + exampleObject.type}</Link>
       </div>
     );
   });
