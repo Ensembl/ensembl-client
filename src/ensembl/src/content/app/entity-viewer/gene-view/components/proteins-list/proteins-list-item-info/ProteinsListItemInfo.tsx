@@ -221,27 +221,17 @@ const StatusContent = (props: StatusContentProps) => {
     );
   }
 
-  let retryHandler;
-
-  if (
-    props.domainsLoadingState === LoadingState.ERROR &&
-    props.summaryLoadingState === LoadingState.ERROR
-  ) {
-    retryHandler = () => {
-      props.setSummaryLoadingState(LoadingState.LOADING);
+  const retryHandler = () => {
+    if (props.domainsLoadingState === LoadingState.ERROR) {
       props.setDomainsLoadingState(LoadingState.LOADING);
-    };
-  } else if (props.domainsLoadingState === LoadingState.ERROR) {
-    retryHandler = () => {
-      props.setDomainsLoadingState(LoadingState.LOADING);
-    };
-  } else if (props.summaryLoadingState === LoadingState.ERROR) {
-    retryHandler = () => {
+    }
+    if (props.summaryLoadingState === LoadingState.ERROR) {
       props.setSummaryLoadingState(LoadingState.LOADING);
-    };
-  }
+    }
+  };
 
-  return retryHandler ? (
+  return props.domainsLoadingState === LoadingState.ERROR ||
+    props.summaryLoadingState === LoadingState.ERROR ? (
     <div className={styles.statusContainer}>
       <span className={styles.errorMessage}>Failed to get data</span>
       <PrimaryButton onClick={retryHandler}>Try again</PrimaryButton>
