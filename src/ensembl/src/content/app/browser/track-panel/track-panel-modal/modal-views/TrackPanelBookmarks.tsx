@@ -56,6 +56,7 @@ type ExampleLinksProps = Pick<
 export const ExampleLinks = (props: ExampleLinksProps) => {
   return (
     <div>
+      <div className={styles.sectionTitle}>Example links</div>
       {props.exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({
           genomeId: props.activeGenomeId,
@@ -150,7 +151,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
   return (
     <section className="trackPanelBookmarks">
-      <h3>Bookmarks</h3>
+      <div className={styles.title}>Bookmarks</div>
       {exampleEnsObjects.length ? (
         <>
           <ExampleLinks
@@ -162,7 +163,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       ) : null}
       {limitedPreviouslyViewedObjects.length ? (
         <>
-          <div className={styles.title}>
+          <div className={styles.sectionTitle}>
             Previously viewed
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>

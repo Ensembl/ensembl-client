@@ -1,7 +1,7 @@
 @import 'src/styles/common';
 
 .linkHolder {
-  margin: 5px 0 0 15px;
+  margin: 5px 0 0 20px;
   text-overflow: ellipsis;
   overflow: hidden;
   a {
@@ -20,7 +20,13 @@
   font-weight: 300;
 }
 
-.title {
+.title{
+  font-size: 14px;
+  margin: 5px 0 10px 10px;
+  font-weight: $bold;
+}
+
+.sectionTitle {
   color: $dark-grey;
   font-size: 12px;
   border-bottom: 1px solid $grey;
