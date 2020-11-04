@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-export { default as SelectedSpecies } from './SelectedSpecies';
+import { Source } from './source';
+
+export type ExternalReference = {
+  accession_id: string;
+  name: string;
+  description: string;
+  url: string;
+  source: Source;
+};
+
+export type ExternalReferenceWithoutSource = Omit<ExternalReference, 'source'>;
+
+export type ExternalReferencesGroup = {
+  source: Source;
+  references: ExternalReferenceWithoutSource[];
+};

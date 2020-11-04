@@ -18,7 +18,7 @@ import { createAsyncAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
 import findIndex from 'lodash/findIndex';
-import set from 'lodash/set';
+import set from 'lodash/fp/set';
 
 import { orthologueSpecies as sampleOrthologueSpecies } from 'src/content/app/custom-download/sample-data/orthologue';
 import attributes from 'src/content/app/custom-download/sample-data/attributes';
@@ -64,13 +64,11 @@ export const fetchAttributes: ActionCreator<ThunkAction<
     dispatch(
       updateActiveConfigurationForGenome({
         activeGenomeId,
-        data: {
-          ...set(
-            getCustomDownloadActiveGenomeConfiguration(getState()),
-            'attributes.content',
-            attributes
-          )
-        }
+        data: set(
+          'attributes.content',
+          attributes,
+          getCustomDownloadActiveGenomeConfiguration(getState())
+        )
       })
     );
   } catch (error) {
@@ -96,13 +94,11 @@ export const updateSelectedAttributes: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.selectedAttributes',
-          selectedAttributes
-        )
-      }
+      data: set(
+        'attributes.selectedAttributes',
+        selectedAttributes,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -122,13 +118,11 @@ export const resetSelectedAttributes: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.selectedAttributes',
-          {}
-        )
-      }
+      data: set(
+        'attributes.selectedAttributes',
+        {},
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -148,13 +142,11 @@ export const updateUi: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.ui',
-          attributesUi
-        )
-      }
+      data: set(
+        'attributes.ui',
+        attributesUi,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -177,13 +169,11 @@ export const setOrthologueAttributes: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.content.orthologueAttributes.orthologues',
-          orthologues
-        )
-      }
+      data: set(
+        'attributes.content.orthologueAttributes.orthologues',
+        orthologues,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -203,13 +193,11 @@ export const setOrthologueShowBestMatches: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.content.orthologue.showBestMatches',
-          showBestMatches
-        )
-      }
+      data: set(
+        'attributes.content.orthologue.showBestMatches',
+        showBestMatches,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -229,13 +217,11 @@ export const setOrthologueShowAll: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.content.orthologue.showAll',
-          showAll
-        )
-      }
+      data: set(
+        'attributes.content.orthologue.showAll',
+        showAll,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -255,13 +241,11 @@ export const setOrthologueApplyToAllSpecies: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.content.orthologue.applyToAllSpecies',
-          applyToAllSpecies
-        )
-      }
+      data: set(
+        'attributes.content.orthologue.applyToAllSpecies',
+        applyToAllSpecies,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -281,13 +265,11 @@ export const setOrthologueSearchTerm: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.content.orthologue.searchTerm',
-          searchTerm
-        )
-      }
+      data: set(
+        'attributes.content.orthologue.searchTerm',
+        searchTerm,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -316,13 +298,11 @@ export const updateOrthologueSpecies: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.content.orthologue.species',
-          orthologueSpecies
-        )
-      }
+      data: set(
+        'attributes.content.orthologue.species',
+        orthologueSpecies,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -380,13 +360,11 @@ export const fetchOrthologueSpecies: ActionCreator<ThunkAction<
     dispatch(
       updateActiveConfigurationForGenome({
         activeGenomeId,
-        data: {
-          ...set(
-            getCustomDownloadActiveGenomeConfiguration(getState()),
-            'attributes.content.orthologue.species',
-            filteredSpecies
-          )
-        }
+        data: set(
+          'attributes.content.orthologue.species',
+          filteredSpecies,
+          getCustomDownloadActiveGenomeConfiguration(getState())
+        )
       })
     );
   } catch (error) {
@@ -409,13 +387,11 @@ export const setAttributesAccordionExpandedPanel: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'attributes.expandedPanels',
-          expandedPanels
-        )
-      }
+      data: set(
+        'attributes.expandedPanels',
+        expandedPanels,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };

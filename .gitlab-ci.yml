@@ -86,7 +86,7 @@ variables:
 # Template to deploy to WP k8s cluster
 .deploy-wp:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
   - git -C ensembl-client-caas-deploy/ checkout migration/wp-hx
@@ -96,7 +96,7 @@ variables:
 # Template to deploy to WP k8s cluster
 .deploy-wp-feature:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
   - git -C ensembl-client-caas-deploy/ checkout deployfeature
@@ -109,7 +109,7 @@ variables:
 # Template to deploy review-app to WP k8s cluster
 .deploy-wp-review:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
   - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
   - git -C ensembl-client-caas-deploy/ checkout wp-review-apps
@@ -120,7 +120,7 @@ variables:
 # Template for stopping review app - Do cleanup here 
 .stop-wp-review:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   variables:
     GIT_STRATEGY: none
   when: manual
@@ -132,7 +132,7 @@ variables:
 # Template to deploy to EHK k8s cluster
 .deploy-ehk:
   stage: deploy
-  image: dockerhub.ebi.ac.uk/kamal/deploy-tools:0.1
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   before_script:
   - export KUBECONFIG=/etc/deploy/config
   - mkdir -p /etc/deploy

@@ -20,6 +20,7 @@ import { mount } from 'enzyme';
 import { TrackPanelModal, TrackPanelModalProps } from './TrackPanelModal';
 import TrackPanelSearch from './modal-views/TrackPanelSearch';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 describe('<TrackPanelModal />', () => {
   afterEach(() => {
@@ -49,7 +50,7 @@ describe('<TrackPanelModal />', () => {
   describe('behaviour', () => {
     test('closes modal when close button is clicked', () => {
       const wrapper = mount(<TrackPanelModal {...defaultProps} />);
-      wrapper.find('button').simulate('click');
+      wrapper.find(CloseButton).simulate('click');
       expect(wrapper.props().closeTrackPanelModal).toHaveBeenCalledTimes(1);
     });
   });

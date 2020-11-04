@@ -1,8 +1,0 @@
-@import 'src/styles/common';
-@import './selected-species-common';
-
-.simpleSelectedSpecies {
-  @include selected-species-common;
-  background-color: $black;
-  color: white;
-}

@@ -16,19 +16,15 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { push } from 'connected-react-router';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  toggleSpeciesUseAndSave,
-  deleteSpeciesAndSave
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import AppBar from 'src/shared/components/app-bar/AppBar';
-import SelectedSpecies from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
-import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
+import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
@@ -37,8 +33,7 @@ import styles from './SpeciesSelectorAppBar.scss';
 
 type Props = {
   selectedSpecies: CommittedItem[];
-  toggleSpeciesUse: (genomeId: string) => void;
-  onSpeciesDelete: (genomeId: string) => void;
+  push: (url: string) => void;
 };
 
 export const PlaceholderMessage = () => (
@@ -60,29 +55,29 @@ export const SpeciesSelectorAppBar = (props: Props) => {
     <AppBar
       appName="Species Selector"
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="selecting-a-species" />}
+      aside={<HelpPopupButton slug="species-selector" />}
     />
   );
 };
 
 const SelectedSpeciesList = (props: Props) => {
-  const shouldLinkToGenomeBrowser =
-    props.selectedSpecies.filter(({ isEnabled }) => isEnabled).length > 0;
+  const showSpeciesPage = (genome_id: string) => {
+    const speciesPageUrl = urlFor.speciesPage({
+      genomeId: genome_id
+    });
+
+    props.push(speciesPageUrl);
+  };
 
   const selectedSpecies = props.selectedSpecies.map((species) => (
     <SelectedSpecies
       key={species.genome_id}
       species={species}
-      onToggleUse={props.toggleSpeciesUse}
-      onRemove={props.onSpeciesDelete}
+      onClick={showSpeciesPage}
     />
   ));
 
-  const link = shouldLinkToGenomeBrowser ? (
-    <Link to={urlFor.browser()}>View in Genome Browser</Link>
-  ) : null;
-
-  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} link={link} />;
+  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} />;
 };
 
 const mapStateToProps = (state: RootState) => ({
@@ -90,8 +85,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  toggleSpeciesUse: toggleSpeciesUseAndSave,
-  onSpeciesDelete: deleteSpeciesAndSave
+  push
 };
 
 export default connect(

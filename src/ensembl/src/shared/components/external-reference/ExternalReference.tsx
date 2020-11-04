@@ -34,20 +34,25 @@ export type ExternalReferenceProps = {
 };
 
 const ExternalReference = (props: ExternalReferenceProps) => {
-  const containerClass = classNames(
-    styles.defaultContainer,
-    props.classNames?.container
-  );
+  const containerClass = classNames(props.classNames?.container);
+  const containerProps = containerClass
+    ? {
+        className: containerClass
+      }
+    : {};
 
-  const labelClass = classNames(styles.defaultLabel, props.classNames?.label);
+  const labelClass = classNames(styles.label, props.classNames?.label);
 
   return (
-    <div className={containerClass}>
+    <div {...containerProps}>
       {!!props.label && <span className={labelClass}>{props.label}</span>}
       <ExternalLink
         to={props.to}
         linkText={props.linkText}
-        classNames={props.classNames}
+        classNames={{
+          icon: props.classNames?.icon,
+          link: props.classNames?.link
+        }}
       />
     </div>
   );

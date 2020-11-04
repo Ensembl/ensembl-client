@@ -19,6 +19,7 @@
 .inUseActive {
   background-color: $black;
   border: 1px solid $black;
+  cursor: default;
 }
 
 .inUseInactive {
@@ -33,7 +34,8 @@
 }
 
 .notInUseInactive {
-  background-color: $white;
-  border: 1px solid $blue;
+  background-color: $ice-blue;
+  border: 1px solid $ice-blue;
   color: $blue;
 }
+

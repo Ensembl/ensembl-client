@@ -19,6 +19,7 @@ import { mount } from 'enzyme';
 import faker from 'faker';
 
 import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
+import ExternalLink from '../external-link/ExternalLink';
 
 const defaultProps: ExternalReferenceProps = {
   label: faker.random.words(),
@@ -50,23 +51,19 @@ describe('<ExternalReference />', () => {
 
   it('hides label container div when there is no label', () => {
     wrapper = renderExternalReference({ label: undefined });
-    expect(wrapper.find('.defaultLabel')).toHaveLength(0);
+    expect(wrapper.find('.label')).toHaveLength(0);
   });
 
   it('applies the passed in classNames', () => {
     expect(
-      wrapper
-        .find('.defaultContainer')
-        .hasClass(defaultProps.classNames?.container)
+      wrapper.render().hasClass(defaultProps.classNames?.container)
     ).toBeTruthy();
     expect(
-      wrapper.find('.defaultLabel').hasClass(defaultProps.classNames?.label)
+      wrapper.find('.label').hasClass(defaultProps.classNames?.label)
     ).toBeTruthy();
-    expect(
-      wrapper.find('.defaultIcon').hasClass(defaultProps.classNames?.icon)
-    ).toBeTruthy();
-    expect(
-      wrapper.find('.defaultLink').hasClass(defaultProps.classNames?.link)
-    ).toBeTruthy();
+    expect(wrapper.find(ExternalLink).prop('classNames')).toEqual({
+      icon: defaultProps.classNames?.icon,
+      link: defaultProps.classNames?.link
+    });
   });
 });

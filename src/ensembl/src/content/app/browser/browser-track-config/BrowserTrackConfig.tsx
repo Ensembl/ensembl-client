@@ -137,6 +137,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
           label="All tracks"
           checked={applyToAll}
           onChange={applyToAllToggle}
+          classNames={{ checkboxHolder: styles.checkboxHolder }}
         />
       </div>
       <div className={styles.section}>

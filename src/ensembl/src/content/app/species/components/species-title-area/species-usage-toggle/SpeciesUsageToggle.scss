@@ -1,0 +1,24 @@
+@import 'src/styles/common';
+
+.speciesUsageToggle {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+
+  span {
+    white-space: nowrap;
+  }
+
+  span:last-of-type {
+    margin-right: 15px;
+  }
+}
+
+.toggle {
+  margin: 0 12px;
+}
+
+.clickable {
+  color: $blue;
+  cursor: pointer;
+}

@@ -1,29 +1,21 @@
 @import 'src/styles/common';
 
-.defaultContainer {
-  width: 100%;
-  margin-bottom: 10px;
+.container {
+  display: inline-grid;
+  grid-template-columns:  [icon] 12px 5px [link] auto;
 }
 
-.defaultLabel {
-  grid-column: label;
+.icon {
   display: inline-block;
-  margin-right: 5px;
-}
-
-.defaultIcon {
-  display: inline-block;
-  margin-right: 5px;
-  width: 12px;
   fill: $orange;
-  margin-bottom: -1px;
+  grid-column: icon;
+  top: 1px;
+  position: relative;
 }
 
-.defaultLink {
+.link {
   display: inline-block;
-  font-size: 12px;
-}
-
-.linkContainer {
-  display: inline-block;
+  grid-column: link;
+  position: relative;
+  top: -2px;
 }

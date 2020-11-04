@@ -17,22 +17,23 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
+import { push, replace } from 'connected-react-router';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
+import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
-import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
-
-import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
-
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
+import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { RootState } from 'src/store';
+import styles from './SpeciesPage.scss';
 
 type SpeciesPageParams = {
   genomeId: string;
@@ -40,34 +41,32 @@ type SpeciesPageParams = {
 
 const SpeciesPage = () => {
   const { genomeId } = useParams() as SpeciesPageParams;
-  const currentSpecies = useSelector((state: RootState) =>
-    getCommittedSpeciesById(state, genomeId)
-  );
-  const sidebarStatus = useSelector(isSidebarOpen);
   const dispatch = useDispatch();
+
+  const changeGenomeId = (genomeId: string) => {
+    const params = {
+      genomeId
+    };
+
+    dispatch(replace(urlFor.speciesPage(params)));
+  };
+
+  const sidebarStatus = useSelector(isSidebarOpen);
 
   useEffect(() => {
     dispatch(setActiveGenomeId(genomeId));
+    dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
-
-  useEffect(() => {
-    if (!currentSpecies) {
-      dispatch(fetchGenomeData(genomeId));
-    }
-  }, [genomeId, currentSpecies]);
-
-  const sidebarContent = 'I am sidebar';
-  const sidebarNavigationContent = 'I am sidebar navigation';
-  const topbarContent = 'I am topbar content';
 
   return (
     <>
-      <SpeciesAppBar />
+      <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
+
       <StandardAppLayout
         mainContent={<SpeciesMainView />}
-        sidebarContent={sidebarContent}
-        sidebarNavigation={sidebarNavigationContent}
-        topbarContent={topbarContent}
+        sidebarContent={<SpeciesSidebar />}
+        sidebarNavigation={null}
+        topbarContent={<TopBar />}
         isSidebarOpen={sidebarStatus}
         onSidebarToggle={() => {
           dispatch(toggleSidebar());
@@ -75,6 +74,24 @@ const SpeciesPage = () => {
         viewportWidth={BreakpointWidth.DESKTOP}
       />
     </>
+  );
+};
+
+const TopBar = () => {
+  const dispatch = useDispatch();
+
+  const returnToSpeciesSelector = () => {
+    dispatch(push(urlFor.speciesSelector()));
+  };
+
+  return (
+    <div className={styles.topbar}>
+      <div className={styles.topbarLeft}>
+        <span className={styles.pageTitle}>Species Home page</span>
+        <CloseButton onClick={returnToSpeciesSelector} />
+      </div>
+      <div className={styles.dataForSpecies}>Data for this species</div>
+    </div>
   );
 };
 

@@ -16,7 +16,7 @@
 
 import { ThunkAction } from 'redux-thunk';
 import { ActionCreator, Action } from 'redux';
-import set from 'lodash/set';
+import set from 'lodash/fp/set';
 
 import { RootState } from 'src/store';
 import JSONValue from 'src/shared/types/JSON';
@@ -41,13 +41,11 @@ export const setFiltersAccordionExpandedPanel: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'filters.expandedPanels',
-          expandedPanels
-        )
-      }
+      data: set(
+        'filters.expandedPanels',
+        expandedPanels,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -67,13 +65,11 @@ export const updateSelectedFilters: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'filters.selectedFilters',
-          selectedFilters
-        )
-      }
+      data: set(
+        'filters.selectedFilters',
+        selectedFilters,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -93,13 +89,11 @@ export const updateUi: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'filters.ui',
-          filtersUi
-        )
-      }
+      data: set(
+        'filters.ui',
+        filtersUi,
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
@@ -119,13 +113,11 @@ export const resetSelectedFilters: ActionCreator<ThunkAction<
   dispatch(
     updateActiveConfigurationForGenome({
       activeGenomeId,
-      data: {
-        ...set(
-          getCustomDownloadActiveGenomeConfiguration(getState()),
-          'filters.selectedFilters',
-          {}
-        )
-      }
+      data: set(
+        'filters.selectedFilters',
+        {},
+        getCustomDownloadActiveGenomeConfiguration(getState())
+      )
     })
   );
 };
