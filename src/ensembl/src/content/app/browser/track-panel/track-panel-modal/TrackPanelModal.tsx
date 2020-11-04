@@ -59,14 +59,14 @@ export const TrackPanelModal = (props: TrackPanelModalProps) => {
     }
   };
 
-  const onClickHandler = () => {
+  const onClose = () => {
     props.closeDrawer();
     props.closeTrackPanelModal();
   };
   return (
     <section className={styles.trackPanelModal}>
       <div className={styles.closeButton}>
-        <CloseButton onClick={onClickHandler} />
+        <CloseButton onClick={onClose} />
       </div>
       <div className={styles.trackPanelModalView}>{getModalView()}</div>
     </section>

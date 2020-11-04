@@ -159,7 +159,7 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
 
     return (
       <div key={exampleObject.object_id} className={styles.exampleLink}>
-        <Link to={path}>{`Example ` + exampleObject.type}</Link>
+        <Link to={path}>Example {exampleObject.type}</Link>
       </div>
     );
   });

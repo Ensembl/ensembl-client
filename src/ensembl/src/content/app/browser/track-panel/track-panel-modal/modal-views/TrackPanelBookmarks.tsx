@@ -66,7 +66,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         return (
           <div key={exampleObject.object_id} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
-              {`Example ` + exampleObject.type}
+              Example {exampleObject.type}
             </Link>
           </div>
         );
