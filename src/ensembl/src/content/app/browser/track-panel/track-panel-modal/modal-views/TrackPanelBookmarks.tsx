@@ -19,15 +19,12 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
-import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
-import analyticsTracking from 'src/services/analytics-service';
-
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
-
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
@@ -36,9 +33,10 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 
 import { RootState } from 'src/store';
-import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
+import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelBookmarks.scss';
 
@@ -58,6 +56,7 @@ type ExampleLinksProps = Pick<
 export const ExampleLinks = (props: ExampleLinksProps) => {
   return (
     <div>
+      <div className={styles.sectionTitle}>Example links</div>
       {props.exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({
           genomeId: props.activeGenomeId,
@@ -67,11 +66,8 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
         return (
           <div key={exampleObject.object_id} className={styles.linkHolder}>
             <Link to={path} onClick={props.closeTrackPanelModal}>
-              {exampleObject.label}
+              Example {exampleObject.type}
             </Link>
-            <span className={styles.previouslyViewedType}>
-              {upperFirst(exampleObject.type)}
-            </span>
           </div>
         );
       })}
@@ -155,10 +151,9 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
 
   return (
     <section className="trackPanelBookmarks">
-      <h3>Bookmarks</h3>
+      <div className={styles.title}>Bookmarks</div>
       {exampleEnsObjects.length ? (
         <>
-          <div className={styles.title}>Example links</div>
           <ExampleLinks
             exampleEnsObjects={exampleEnsObjects}
             activeGenomeId={activeGenomeId}
@@ -168,7 +163,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       ) : null}
       {limitedPreviouslyViewedObjects.length ? (
         <>
-          <div className={styles.title}>
+          <div className={styles.sectionTitle}>
             Previously viewed
             {props.previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
