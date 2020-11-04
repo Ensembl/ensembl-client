@@ -26,6 +26,10 @@ import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import {
+  DefaultTranscriptLabelMap,
+  CanonicalType
+} from 'src/content/app/entity-viewer/shared/components/default-transcript/DefaultTranscript';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
@@ -48,16 +52,6 @@ export type DefaultTranscriptListItemProps = {
 
 // NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px
 
-export const defaultTranscriptLabelMap = {
-  selected: {
-    label: 'Selected',
-    helpText:
-      'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
-  }
-};
-
-export const canonicalType = 'selected'; // TODO Change this to transcript.mane/plus etc when available
-
 export const DefaultTranscriptListItem = (
   props: DefaultTranscriptListItemProps
 ) => {
@@ -76,9 +70,9 @@ export const DefaultTranscriptListItem = (
       <div className={transcriptsListStyles.row}>
         {props.isDefault && (
           <div className={styles.defaultTranscriptLabel}>
-            <span>{defaultTranscriptLabelMap[canonicalType]?.label}</span>
+            <span>{DefaultTranscriptLabelMap[CanonicalType]?.label}</span>
             <QuestionButton
-              helpText={defaultTranscriptLabelMap[canonicalType]?.helpText}
+              helpText={DefaultTranscriptLabelMap[CanonicalType]?.helpText}
             />
           </div>
         )}

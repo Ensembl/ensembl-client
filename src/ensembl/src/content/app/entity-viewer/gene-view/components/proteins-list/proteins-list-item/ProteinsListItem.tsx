@@ -22,9 +22,9 @@ import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 import {
-  defaultTranscriptLabelMap,
-  canonicalType
-} from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/default-transcripts-list-item/DefaultTranscriptListItem';
+  DefaultTranscriptLabelMap,
+  CanonicalType
+} from 'src/content/app/entity-viewer/shared/components/default-transcript/DefaultTranscript';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -61,9 +61,9 @@ const ProteinsListItem = (props: Props) => {
         <div className={transcriptsListStyles.left}>
           {props.isDefault && (
             <div className={transcriptsListItemStyles.defaultTranscriptLabel}>
-              <span>{defaultTranscriptLabelMap[canonicalType]?.label}</span>
+              <span>{DefaultTranscriptLabelMap[CanonicalType]?.label}</span>
               <QuestionButton
-                helpText={defaultTranscriptLabelMap[canonicalType]?.helpText}
+                helpText={DefaultTranscriptLabelMap[CanonicalType]?.helpText}
               />
             </div>
           )}
