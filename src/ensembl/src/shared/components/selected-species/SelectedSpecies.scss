@@ -1,5 +1,5 @@
 @import 'src/styles/common';
-@import './selected-species-common';
+@import 'src/styles/mixins';
 
 .species {
   @include lozenge;
@@ -9,6 +9,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: $white;
+
+  &:not(:last-child) {
+    margin-right: 12px;
+  }
 }
 
 .nameActive,

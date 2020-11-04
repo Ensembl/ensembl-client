@@ -1,8 +1,8 @@
 @import 'src/styles/common';
+@import 'src/styles/mixins';
 
 .default {
-  border-radius: 15px;
-  padding: 6px 15px;
+  @include lozenge(1, 15px);
   min-width: 170px;
   position: relative;
   border: 1px solid $blue;

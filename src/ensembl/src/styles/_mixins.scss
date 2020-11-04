@@ -13,8 +13,4 @@ $lozengeDefaults: (
   line-height: $lineHeight;
   user-select: none;
   margin-bottom: 4px;
-
-  &:not(:last-child) {
-    margin-right: 12px;
-  }
 }
