@@ -88,12 +88,6 @@ const ProteinsListItemInfo = (props: Props) => {
       fetchProteinDomains(proteinId, abortController.signal)
         .then((proteinDomains) => {
           if (!abortController.signal.aborted) {
-            // TODO: REVERT BEFORE MERGING
-            if (proteinId === 'ENSP00000369497') {
-              setDomainsLoadingState(LoadingState.ERROR);
-              return;
-            }
-
             setTranscriptWithProteinDomains(
               addProteinDomains(transcript, proteinDomains)
             );
