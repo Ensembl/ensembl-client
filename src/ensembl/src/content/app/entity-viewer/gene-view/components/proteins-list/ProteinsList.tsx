@@ -58,7 +58,7 @@ const ProteinsList = (props: ProteinsListProps) => {
     if (!hasExpandedTranscripts && !proteinIdToFocus) {
       props.toggleExpandedProtein(firstProteinId);
     }
-  }, [props.expandedTranscriptIds]);
+  }, []);
 
   const longestProteinLength = getLongestProteinLength(props.gene);
 
