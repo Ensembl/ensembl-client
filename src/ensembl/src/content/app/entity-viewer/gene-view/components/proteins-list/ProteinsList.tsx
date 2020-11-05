@@ -53,7 +53,7 @@ const ProteinsList = (props: ProteinsListProps) => {
     const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
     const firstProteinId =
       proteinCodingTranscripts[0].product_generating_contexts[0].product
-        .unversioned_stable_id;
+        .stable_id;
     // Expand the first transcript by default
     if (!hasExpandedTranscripts && !proteinIdToFocus) {
       props.toggleExpandedProtein(firstProteinId);

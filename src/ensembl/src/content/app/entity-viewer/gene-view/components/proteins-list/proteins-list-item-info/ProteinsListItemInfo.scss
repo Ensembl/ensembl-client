@@ -52,8 +52,15 @@ $content-width: 695px;
   margin-left: 177px;
 }
 
-.statsLoadingContainer {
+.statusContainer {
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 40px;
+}
+.errorMessage{
+  color: $red;
+  margin-right:20px;
+  font-weight: $normal;
 }
