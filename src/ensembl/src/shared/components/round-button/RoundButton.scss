@@ -2,7 +2,7 @@
 @import 'src/styles/mixins';
 
 .default {
-  @include lozenge(1, 15px);
+  @include lozenge($borderRadius: 15px);
   min-width: 170px;
   position: relative;
   border: 1px solid $blue;
