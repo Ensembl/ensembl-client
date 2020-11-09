@@ -92,10 +92,7 @@ const ExampleLinks = (props: ExampleLinksProps) => {
     <div>
       <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>
-        <Link to={path}>
-          <span className={styles.exampleLinks__label}>Gene</span>
-          <span>{data.gene.symbol}</span>
-        </Link>
+        <Link to={path}>Example gene</Link>
       </div>
     </div>
   );
