@@ -38,7 +38,12 @@ const ExternalLink = (props: ExternalLinkProps) => {
   return (
     <span className={styles.container}>
       <LinkIcon className={iconClass} />
-      <a className={linkClass} href={props.to}>
+      <a
+        className={linkClass}
+        href={props.to}
+        target="_blank"
+        rel="nofollow noreferrer"
+      >
         {props.linkText}
       </a>
     </span>
