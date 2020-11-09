@@ -36,7 +36,7 @@ export const getRegionName = (feature: { slice: Slice }) =>
   feature.slice.region.name;
 
 export const getFeatureStrand = (feature: { slice: Slice }) =>
-  feature.slice.region.strand.code;
+  feature.slice.strand.code;
 
 export const getFeatureLength = (feature: { slice: Slice }) => {
   return feature.slice.location.length;

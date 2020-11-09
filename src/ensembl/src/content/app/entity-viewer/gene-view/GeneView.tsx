@@ -64,10 +64,8 @@ const QUERY = gql`
           start
           end
         }
-        region {
-          strand {
-            code
-          }
+        strand {
+          code
         }
       }
       transcripts {
@@ -81,11 +79,8 @@ const QUERY = gql`
             end
             length
           }
-          region {
-            name
-            strand {
-              code
-            }
+          strand {
+            code
           }
         }
         relative_location {

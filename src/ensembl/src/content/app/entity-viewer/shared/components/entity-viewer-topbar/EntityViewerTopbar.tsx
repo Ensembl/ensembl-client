@@ -40,11 +40,11 @@ const QUERY = gql`
           start
           end
         }
+        strand {
+          code
+        }
         region {
           name
-          strand {
-            code
-          }
         }
       }
     }
@@ -82,7 +82,7 @@ const geneToEnsObjectFields = (gene: Gene) => {
     versioned_stable_id: gene.stable_id,
     label: gene.symbol,
     bio_type: gene.so_term,
-    strand: gene.slice.region.strand.code,
+    strand: gene.slice.strand.code,
     location: {
       chromosome: gene.slice.region.name,
       start: gene.slice.location.start,
