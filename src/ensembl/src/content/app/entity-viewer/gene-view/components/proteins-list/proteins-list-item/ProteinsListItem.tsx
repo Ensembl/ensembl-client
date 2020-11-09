@@ -21,11 +21,7 @@ import { connect } from 'react-redux';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
-import {
-  DefaultTranscriptLabelMap,
-  CanonicalType
-} from 'src/content/app/entity-viewer/shared/components/default-transcript/DefaultTranscript';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import { DefaultTranscriptLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/DefaultTranscriptLabel';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
@@ -34,7 +30,6 @@ import { RootState } from 'src/store';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
-import transcriptsListItemStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/default-transcripts-list-item/DefaultTranscriptListItem.scss';
 import styles from './ProteinsListItem.scss';
 
 type Props = {
@@ -60,12 +55,7 @@ const ProteinsListItem = (props: Props) => {
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>
           {props.isDefault && (
-            <div className={transcriptsListItemStyles.defaultTranscriptLabel}>
-              <span>{DefaultTranscriptLabelMap[CanonicalType]?.label}</span>
-              <QuestionButton
-                helpText={DefaultTranscriptLabelMap[CanonicalType]?.helpText}
-              />
-            </div>
+            <DefaultTranscriptLabel transcript={props.transcript} />
           )}
         </div>
         <div onClick={toggleListItemInfo} className={midStyles}>

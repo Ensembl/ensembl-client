@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-export const DefaultTranscriptLabelMap = {
+import React from 'react';
+
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+
+import styles from './DefaultTranscriptLabel.scss';
+
+type DefaultTranscriptLabelProps = {
+  transcript: Transcript;
+};
+
+const transcriptLabel = {
   selected: {
     label: 'Selected',
     helpText:
@@ -22,4 +33,13 @@ export const DefaultTranscriptLabelMap = {
   }
 };
 
-export const CanonicalType = 'selected'; // TODO Change this to transcript.mane/plus etc when available
+export const DefaultTranscriptLabel = (props: DefaultTranscriptLabelProps) => {
+  const CanonicalType = props.transcript && 'selected'; // TODO Change this to props.transcript.mane/plus etc when available
+
+  return (
+    <div className={styles.defaultTranscriptLabel}>
+      <span>{transcriptLabel[CanonicalType]?.label}</span>
+      <QuestionButton helpText={transcriptLabel[CanonicalType]?.helpText} />
+    </div>
+  );
+};

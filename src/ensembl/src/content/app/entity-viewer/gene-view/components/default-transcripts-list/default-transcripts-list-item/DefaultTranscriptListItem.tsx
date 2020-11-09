@@ -25,11 +25,7 @@ import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-v
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import {
-  DefaultTranscriptLabelMap,
-  CanonicalType
-} from 'src/content/app/entity-viewer/shared/components/default-transcript/DefaultTranscript';
+import { DefaultTranscriptLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/DefaultTranscriptLabel';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
@@ -69,12 +65,7 @@ export const DefaultTranscriptListItem = (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
         {props.isDefault && (
-          <div className={styles.defaultTranscriptLabel}>
-            <span>{DefaultTranscriptLabelMap[CanonicalType]?.label}</span>
-            <QuestionButton
-              helpText={DefaultTranscriptLabelMap[CanonicalType]?.helpText}
-            />
-          </div>
+          <DefaultTranscriptLabel transcript={props.transcript} />
         )}
         <div className={transcriptsListStyles.middle}>
           <div
