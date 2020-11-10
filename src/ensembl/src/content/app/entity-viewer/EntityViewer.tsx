@@ -70,7 +70,12 @@ const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
       Gene: {
-        keyFields: ['stable_id']
+        keyFields: ['stable_id'],
+        fields: {
+          slice: {
+            merge: false
+          }
+        }
       }
     }
   })
