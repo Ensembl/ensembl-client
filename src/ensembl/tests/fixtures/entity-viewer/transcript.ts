@@ -132,6 +132,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
         end: index < numberOfExons - 1 ? exonEnd : transcriptEnd,
         length
       },
+      strand: transcriptSlice.strand,
       region: transcriptSlice.region
     };
 
