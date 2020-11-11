@@ -29,12 +29,14 @@ import {
   getActiveGenomeStats
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
+import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { fetchStatsForActiveGenome } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import { RootState } from 'src/store';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 import { GenomeStats } from '../../state/general/speciesGeneralSlice';
 import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
+import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   StatsSection,
   sectionGroupsMap
@@ -46,6 +48,7 @@ type Props = {
   activeGenomeId: string | null;
   genomeStats: GenomeStats | undefined;
   exampleFocusObjects: ExampleFocusObject[];
+  species: CommittedItem | null;
   fetchStatsForActiveGenome: () => void;
 };
 
@@ -76,7 +79,13 @@ const ExampleLinkWithPopup = (props: ExampleLinkPopupProps) => {
   );
 };
 
-const getCollapsedContent = (statsSection: StatsSection) => {
+type ContentProps = {
+  statsSection: StatsSection;
+  species: CommittedItem;
+};
+
+const getCollapsedContent = (props: ContentProps) => {
+  const { species, statsSection } = props;
   const { summaryStats, section, exampleLinks } = statsSection;
   const { title, exampleLinkText } = sectionGroupsMap[section];
 
@@ -94,7 +103,7 @@ const getCollapsedContent = (statsSection: StatsSection) => {
           );
         })}
 
-      {exampleLinks && (
+      {exampleLinks && species.isEnabled && (
         <ExampleLinkWithPopup links={exampleLinks}>
           {exampleLinkText}
         </ExampleLinkWithPopup>
@@ -103,7 +112,8 @@ const getCollapsedContent = (statsSection: StatsSection) => {
   );
 };
 
-const getExpandedContent = (statsSection: StatsSection) => {
+const getExpandedContent = (props: ContentProps) => {
+  const { species, statsSection } = props;
   const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
 
@@ -126,11 +136,14 @@ const getExpandedContent = (statsSection: StatsSection) => {
                     return <SpeciesStats key={stat_index} {...stat} />;
                   })}
                 </div>
-                {group_index === 0 && row_index === 0 && exampleLinks && (
-                  <ExampleLinkWithPopup links={exampleLinks}>
-                    {exampleLinkText}
-                  </ExampleLinkWithPopup>
-                )}
+                {group_index === 0 &&
+                  row_index === 0 &&
+                  exampleLinks &&
+                  species.isEnabled && (
+                    <ExampleLinkWithPopup links={exampleLinks}>
+                      {exampleLinkText}
+                    </ExampleLinkWithPopup>
+                  )}
               </div>
             );
           })
@@ -150,18 +163,26 @@ const SpeciesMainViewStats = (props: Props) => {
     }
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
-  if (!props.genomeStats || !props.exampleFocusObjects?.length) {
+  if (
+    !props.genomeStats ||
+    !props.exampleFocusObjects?.length ||
+    !props.species
+  ) {
     return null;
   }
 
   return (
     <div className={styles.statsWrapper}>
-      {props.genomeStats.map((section, key) => {
+      {props.genomeStats.map((statsSection, key) => {
+        const contentProps = {
+          statsSection,
+          species: props.species as CommittedItem
+        };
         return (
           <ExpandableSection
             key={key}
-            collapsedContent={getCollapsedContent(section)}
-            expandedContent={getExpandedContent(section)}
+            collapsedContent={getCollapsedContent(contentProps)}
+            expandedContent={getExpandedContent(contentProps)}
           />
         );
       })}
@@ -177,7 +198,10 @@ const mapStateToProps = (state: RootState) => {
     genomeStats: getActiveGenomeStats(state),
     exampleFocusObjects: activeGenomeId
       ? getGenomeExampleFocusObjects(state, activeGenomeId)
-      : []
+      : [],
+    species: activeGenomeId
+      ? getCommittedSpeciesById(state, activeGenomeId)
+      : null
   };
 };
 
