@@ -38,15 +38,7 @@ type AppProps = {
   changeCurrentApp: (name: string) => void;
 };
 
-type AppShellProps = {
-  children: React.ReactNode;
-};
-
-export const AppShell = (props: AppShellProps) => {
-  return <div>{props.children}</div>;
-};
-
-const AppInner = (props: AppProps) => {
+const App = (props: AppProps) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -81,14 +73,6 @@ const AppInner = (props: AppProps) => {
         </Switch>
       </Suspense>
     </>
-  );
-};
-
-export const App = (props: AppProps) => {
-  return (
-    <AppShell>
-      <AppInner {...props} />
-    </AppShell>
   );
 };
 

@@ -22,11 +22,11 @@ import PopularSpeciesPanel from 'src/content/app/species-selector/containers/pop
 
 const SpeciesSelector = () => {
   return (
-    <>
+    <div>
       <SpeciesSelectorAppBar />
       <SpeciesSearchPanel />
       <PopularSpeciesPanel />
-    </>
+    </div>
   );
 };
 
