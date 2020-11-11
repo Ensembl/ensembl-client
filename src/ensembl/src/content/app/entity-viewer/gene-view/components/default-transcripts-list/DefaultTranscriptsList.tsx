@@ -56,9 +56,14 @@ const DefaultTranscriptslist = (props: Props) => {
   return (
     <div>
       <div className={styles.header}>
-        {isFilterOpen && <TranscriptsFilter toggleFilter={toggleFilter} sortedTranscripts={sortedTranscripts} />}
+        {isFilterOpen && (
+          <TranscriptsFilter
+            toggleFilter={toggleFilter}
+            transcripts={sortedTranscripts}
+          />
+        )}
         <div className={styles.row}>
-          { gene.transcripts.length > 3 && !isFilterOpen &&
+          {gene.transcripts.length > 3 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
               <ChevronDown className={styles.chevron} />

@@ -20,7 +20,11 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { RootState } from 'src/store';
-import { TranscriptsStatePerGene } from './geneViewTranscriptsSlice';
+import {
+  TranscriptsStatePerGene,
+  Filters,
+  SortingRule
+} from './geneViewTranscriptsSlice';
 
 const getSliceForGene = (
   state: RootState
@@ -45,4 +49,14 @@ export const getExpandedTranscriptDownloadIds = (
 ): string[] => {
   const transcriptsSlice = getSliceForGene(state);
   return transcriptsSlice?.expandedDownloadIds ?? [];
+};
+
+export const getFilters = (state: RootState): Filters => {
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.filters ?? {};
+};
+
+export const getSortingRule = (state: RootState): SortingRule => {
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.sortingRule ?? SortingRule.DEFAULT;
 };
