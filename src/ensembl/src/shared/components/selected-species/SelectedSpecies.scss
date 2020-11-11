@@ -9,10 +9,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: $white;
+  margin-bottom: 12px;
 
   &:not(:last-child) {
     margin-right: 15px;
-    margin-bottom: 12px;
   }
 }
 
