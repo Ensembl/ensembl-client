@@ -1,14 +1,19 @@
 @import 'src/styles/common';
-@import './selected-species-common';
+@import 'src/styles/mixins';
 
 .species {
-  @include selected-species-common;
+  @include lozenge;
   border: 1px solid $blue;
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: $white;
+
+  &:not(:last-child) {
+    margin-right: 15px;
+    margin-bottom: 12px;
+  }
 }
 
 .nameActive,
