@@ -32,20 +32,23 @@ export type ExternalLinkProps = {
 
 const ExternalLink = (props: ExternalLinkProps) => {
   const iconClass = classNames(styles.icon, props.classNames?.icon);
-
-  const linkClass = classNames(styles.link, props.classNames?.link);
+  const linkClass = classNames(styles.text, props.classNames?.link);
 
   return (
     <span className={styles.container}>
       <LinkIcon className={iconClass} />
-      <a
-        className={linkClass}
-        href={props.to}
-        target="_blank"
-        rel="nofollow noreferrer"
-      >
-        {props.linkText}
-      </a>
+      {props.to ? (
+        <a
+          className={linkClass}
+          href={props.to}
+          target="_blank"
+          rel="nofollow noreferrer"
+        >
+          {props.linkText}
+        </a>
+      ) : (
+        <span className={styles.text}>{props.linkText}</span>
+      )}
     </span>
   );
 };
