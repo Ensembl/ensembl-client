@@ -16,6 +16,9 @@ $global-radius: 0;
 $global-padding-left: 100px;
 $global-button-cursor: auto;
 
+// Image configurations
+$image_width: 695;
+
 // Colour Palette
 // ---------
 $soft-black: #374148;
@@ -56,6 +59,7 @@ $global-box-shadow: $medium-light-grey;
   green: $green;
   white: $white;
   shadow-color: $shadow-color;
+  image_width: $image_width;
 }
 /* stylelint-enable */
 
@@ -72,3 +76,4 @@ $dark: 900;
 // ------------------
 
 $font-family-monospace: 'IBM Plex Mono', 'Liberation Mono', Courier, monospace;
+

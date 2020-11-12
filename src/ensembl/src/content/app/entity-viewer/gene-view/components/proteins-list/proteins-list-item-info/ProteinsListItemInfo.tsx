@@ -40,11 +40,14 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinsListItemInfo.scss';
+import settings from 'src/styles/_settings.scss';
 
 type Props = {
   transcript: Transcript;
   trackLength: number;
 };
+
+const image_width = Number(settings.image_width);
 
 const addProteinDomains = (
   transcript: Transcript,
@@ -128,8 +131,6 @@ const ProteinsListItemInfo = (props: Props) => {
     };
   }, [summaryLoadingState]);
 
-  // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
-  // we need to move it to a constant
   return (
     <div className={styles.proteinsListItemInfo}>
       {product && (
@@ -137,12 +138,12 @@ const ProteinsListItemInfo = (props: Props) => {
           <ProteinDomainImage
             proteinDomains={product.protein_domains}
             trackLength={trackLength}
-            width={695}
+            width={image_width}
           />
           <ProteinImage
             product={product}
             trackLength={trackLength}
-            width={695}
+            width={image_width}
           />
         </>
       )}

@@ -28,11 +28,14 @@ import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/component
 
 import styles from './GeneOverviewImage.scss';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import settings from 'src/styles/_settings.scss';
 
 type GeneOverviewImageProps = {
   gene: Gene;
   onTicksCalculated: (payload: TicksAndScale) => void;
 };
+
+const image_width = Number(settings.image_width);
 
 const GeneOverviewImage = (props: GeneOverviewImageProps) => {
   const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene); // FIXME: use gene length further on
@@ -48,7 +51,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
       <div className={styles.ruler}>
         <BasePairsRuler
           length={length}
-          width={695}
+          width={image_width}
           onTicksCalculated={props.onTicksCalculated}
           standalone={true}
         />
@@ -58,12 +61,13 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
 };
 
 export const GeneImage = (props: GeneOverviewImageProps) => {
-  const width = 695;
   const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene);
 
   // FIXME: use the "length" property of the gene when it is added to payload;
   // (it will help with drawing genes of circular chromosomes)
-  const scale = scaleLinear().domain([geneStart, geneEnd]).range([0, width]);
+  const scale = scaleLinear()
+    .domain([geneStart, geneEnd])
+    .range([0, image_width]);
 
   const renderedTranscripts = props.gene.transcripts.map(
     (transcript, index) => {
@@ -90,7 +94,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   );
 
   return (
-    <svg className={styles.containerSVG} width={width}>
+    <svg className={styles.containerSVG} width={image_width}>
       {renderedTranscripts}
     </svg>
   );

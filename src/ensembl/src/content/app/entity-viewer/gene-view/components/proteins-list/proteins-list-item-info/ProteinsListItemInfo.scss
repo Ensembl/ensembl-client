@@ -1,6 +1,7 @@
 @import 'src/styles/common';
+@import 'src/styles/settings';
 
-$content-width: 695px;
+$content-width: #{$image_width}px;
 
 .proteinSummary {
   margin-left: 178px;
