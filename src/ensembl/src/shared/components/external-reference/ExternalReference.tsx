@@ -56,7 +56,7 @@ const ExternalReference = (props: ExternalReferenceProps) => {
           }}
         />
       ) : (
-        props.linkText
+        <span className={styles.xrefText}>{props.linkText}</span>
       )}
     </div>
   );
