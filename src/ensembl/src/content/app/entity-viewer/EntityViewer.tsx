@@ -66,8 +66,19 @@ export type EntityViewerParams = {
 };
 
 const client = new ApolloClient({
-  uri: '/toygraphql',
-  cache: new InMemoryCache()
+  uri: '/thoas',
+  cache: new InMemoryCache({
+    typePolicies: {
+      Gene: {
+        keyFields: ['stable_id'],
+        fields: {
+          slice: {
+            merge: false
+          }
+        }
+      }
+    }
+  })
 });
 
 const EntityViewer = (props: Props) => {

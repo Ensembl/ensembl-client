@@ -1,6 +1,6 @@
 @import 'src/styles/common';
 
-$headerHeight: 79px; // launchbar height + topbar height
+$headerHeight: 84px; // launchbar height + topbar height
 $appbarHeight: 80px;
 $availableScreenHeight: calc(100vh - #{$headerHeight} - #{$appbarHeight});
 $sidebarContentWidth: 320px;

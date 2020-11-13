@@ -25,11 +25,11 @@ import styles from './InstantDownload.stories.scss';
 
 const buildProteinCodingGene = () => {
   const transcript = createTranscript({
-    id: 'ENST00000496384',
+    unversioned_stable_id: 'ENST00000496384',
     so_term: 'protein_coding'
   });
   const gene = createGene({
-    id: 'ENSG00000157764',
+    unversioned_stable_id: 'ENSG00000157764',
     so_term: 'protein_coding',
     transcripts: [transcript]
   });
@@ -53,6 +53,7 @@ export const InstantDownloadTranscriptStory = () => {
     transcriptType === 'coding'
       ? buildProteinCodingGene()
       : buildNonProteinCodingGene();
+  const transcript = gene.transcripts[0];
 
   const horizontalContainerProps = {
     className: styles.containerBlack,
@@ -76,8 +77,11 @@ export const InstantDownloadTranscriptStory = () => {
       <div {...containerProps}>
         <InstantDownloadTranscript
           layout={layout}
-          gene={gene}
-          transcript={gene.transcripts[0]}
+          gene={{ id: gene.unversioned_stable_id }}
+          transcript={{
+            id: transcript.unversioned_stable_id,
+            so_term: transcript.so_term
+          }}
         />
       </div>
       <StoryOptions

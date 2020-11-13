@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { ProteinDomainsResources } from 'src/content/app/entity-viewer/types/product';
+import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinDomainImage.scss';
 
@@ -26,7 +26,7 @@ const BLOCK_HEIGHT = 18;
 const TRACK_HEIGHT = 24;
 
 export type ProteinDomainImageProps = {
-  proteinDomains: ProteinDomainsResources;
+  proteinDomains: ProteinDomain[];
   trackLength: number;
   width: number; // available width for drawing, in pixels
   classNames?: {
@@ -44,32 +44,31 @@ type ProteinDomainImageData = {
   };
 };
 
-export const getDomainsByResourceGroups = (
-  proteinDomainsResources: ProteinDomainsResources
-) => {
-  const proteinDomains: ProteinDomainImageData = {};
+export const getDomainsByResourceGroups = (proteinDomains: ProteinDomain[]) => {
+  const groupedDomains: ProteinDomainImageData = {};
 
-  Object.keys(proteinDomainsResources).forEach((resourceName) => {
-    if (!proteinDomains[resourceName]) {
-      proteinDomains[resourceName] = {};
+  proteinDomains.forEach((domain) => {
+    const {
+      resource_name,
+      name: domainName,
+      location: { start, end }
+    } = domain;
+
+    if (!groupedDomains[resource_name]) {
+      groupedDomains[resource_name] = {};
     }
 
-    proteinDomainsResources[resourceName].domains.forEach((domain) => {
-      const domainName = domain.name;
-      const { start, end } = domain.location;
+    if (!groupedDomains[resource_name][domainName]) {
+      groupedDomains[resource_name][domainName] = [];
+    }
 
-      if (!proteinDomains[resourceName][domainName]) {
-        proteinDomains[resourceName][domainName] = [];
-      }
-
-      proteinDomains[resourceName][domainName].push({
-        start: start,
-        end: end
-      });
+    groupedDomains[resource_name][domainName].push({
+      start,
+      end
     });
   });
 
-  return proteinDomains;
+  return groupedDomains;
 };
 
 const ProteinDomainImage = (props: ProteinDomainImageProps) => {

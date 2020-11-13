@@ -15,7 +15,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import set from 'lodash/fp/set';
 
+import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
@@ -26,97 +29,208 @@ import {
   ExternalSource,
   externalSourceLinks
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { fetchTranscript } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
+import { fetchProteinDomains } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
   fetchProteinSummary,
   ProteinSummary
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
+import { LoadingState } from 'src/shared/types/loading-state';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinsListItemInfo.scss';
 
 type Props = {
-  transcriptId: string;
+  transcript: Transcript;
   trackLength: number;
 };
 
-const ProteinsListItemInfo = (props: Props) => {
-  const { transcriptId, trackLength } = props;
-  const [transcript, setTranscript] = useState<Transcript | null>(null);
-  const [proteinSummary, setProteinSummary] = useState<ProteinSummary | null>(
-    null
+const addProteinDomains = (
+  transcript: Transcript,
+  proteinDomains: ProteinDomain[]
+) => {
+  return set(
+    ['product_generating_contexts', '0', 'product', 'protein_domains'],
+    proteinDomains,
+    transcript
   );
+};
+
+const ProteinsListItemInfo = (props: Props) => {
+  const { transcript, trackLength } = props;
+  const [
+    transcriptWithProteinDomains,
+    setTranscriptWithProteinDomains
+  ] = useState<Transcript | null>(null);
+  const [proteinSummary, setProteinSummary] = useState<
+    ProteinSummary | null | undefined
+  >();
+
+  const [domainsLoadingState, setDomainsLoadingState] = useState<LoadingState>(
+    LoadingState.LOADING
+  );
+
+  const [summaryLoadingState, setSummaryLoadingState] = useState<LoadingState>(
+    LoadingState.LOADING
+  );
+
+  const proteinId =
+    transcript.product_generating_contexts[0].product.unversioned_stable_id;
+
+  const { product } =
+    transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    Promise.all([
-      fetchTranscript(props.transcriptId, abortController.signal),
-      fetchProteinSummary(props.transcriptId, abortController.signal)
-    ]).then(([transcriptData, proteinSummaryData]) => {
-      transcriptData && setTranscript(transcriptData);
-      proteinSummaryData && setProteinSummary(proteinSummaryData);
-    });
+    if (domainsLoadingState === LoadingState.LOADING) {
+      fetchProteinDomains(proteinId, abortController.signal)
+        .then((proteinDomains) => {
+          if (!abortController.signal.aborted) {
+            setTranscriptWithProteinDomains(
+              addProteinDomains(transcript, proteinDomains)
+            );
+            setDomainsLoadingState(LoadingState.SUCCESS);
+          }
+        })
+        .catch(() => {
+          setDomainsLoadingState(LoadingState.ERROR);
+        });
+    }
 
     return function cleanup() {
       abortController.abort();
     };
-  }, [transcriptId]);
+  }, [domainsLoadingState]);
 
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    if (summaryLoadingState === LoadingState.LOADING) {
+      fetchProteinSummary(proteinId, abortController.signal)
+        .then((response) => {
+          if (!abortController.signal.aborted) {
+            response
+              ? setProteinSummary(response as ProteinSummary)
+              : setProteinSummary(null);
+
+            setSummaryLoadingState(LoadingState.SUCCESS);
+          }
+        })
+        .catch(() => {
+          setSummaryLoadingState(LoadingState.ERROR);
+        });
+    }
+
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [summaryLoadingState]);
+
+  // FIXME: the 695 below is by now a very magic number (also exists in transcript images);
+  // we need to move it to a constant
   return (
     <div className={styles.proteinsListItemInfo}>
-      {transcript?.product && (
+      {product && (
         <>
           <ProteinDomainImage
-            proteinDomains={transcript.product?.protein_domains_resources}
+            proteinDomains={product.protein_domains}
             trackLength={trackLength}
             width={695}
           />
           <ProteinImage
-            product={transcript.product}
+            product={product}
             trackLength={trackLength}
             width={695}
           />
-          <div className={styles.proteinSummary}>
+        </>
+      )}
+
+      <div className={styles.proteinSummary}>
+        {proteinSummary && (
+          <>
             <div className={styles.proteinSummaryTop}>
-              {proteinSummary && (
-                <div className={styles.interproUniprotWrapper}>
-                  <ProteinExternalReference
-                    source={ExternalSource.INTERPRO}
-                    externalId={proteinSummary.pdbeId}
-                  />
-                  <ProteinExternalReference
-                    source={ExternalSource.UNIPROT}
-                    externalId={proteinSummary.pdbeId}
+              <div className={styles.interproUniprotWrapper}>
+                <ProteinExternalReference
+                  source={ExternalSource.INTERPRO}
+                  externalId={proteinSummary.pdbeId}
+                />
+                <ProteinExternalReference
+                  source={ExternalSource.UNIPROT}
+                  externalId={proteinSummary.pdbeId}
+                />
+              </div>
+              <div className={styles.downloadWrapper}>
+                <InstantDownloadProtein
+                  transcriptId={transcript.unversioned_stable_id}
+                />
+              </div>
+            </div>
+            <div>
+              <ProteinExternalReference
+                source={ExternalSource.PDBE}
+                externalId={proteinSummary.pdbeId}
+              />
+              {proteinSummary?.proteinStats && (
+                <div className={styles.proteinFeaturesCountWrapper}>
+                  <ProteinFeaturesCount
+                    proteinStats={proteinSummary.proteinStats}
                   />
                 </div>
               )}
-              <div className={styles.downloadWrapper}>
-                <InstantDownloadProtein transcriptId={transcript.id} />
-              </div>
             </div>
-            {proteinSummary && (
-              <div>
-                <ProteinExternalReference
-                  source={ExternalSource.PDBE}
-                  externalId={proteinSummary.pdbeId}
-                />
-                {proteinSummary?.proteinStats && (
-                  <div className={styles.proteinFeaturesCountWrapper}>
-                    <ProteinFeaturesCount
-                      proteinStats={proteinSummary.proteinStats}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-            <div className={styles.keyline}></div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+
+        <StatusContent
+          summaryLoadingState={summaryLoadingState}
+          domainsLoadingState={domainsLoadingState}
+          setSummaryLoadingState={setSummaryLoadingState}
+          setDomainsLoadingState={setDomainsLoadingState}
+        />
+
+        <div className={styles.keyline}></div>
+      </div>
     </div>
   );
+};
+
+type StatusContentProps = {
+  summaryLoadingState: LoadingState;
+  domainsLoadingState: LoadingState;
+  setSummaryLoadingState: (loadingState: LoadingState) => void;
+  setDomainsLoadingState: (loadingState: LoadingState) => void;
+};
+
+const StatusContent = (props: StatusContentProps) => {
+  if (
+    props.domainsLoadingState === LoadingState.LOADING ||
+    props.summaryLoadingState === LoadingState.LOADING
+  ) {
+    return (
+      <div className={styles.statusContainer}>
+        <CircleLoader />
+      </div>
+    );
+  }
+
+  const retryHandler = () => {
+    if (props.domainsLoadingState === LoadingState.ERROR) {
+      props.setDomainsLoadingState(LoadingState.LOADING);
+    }
+    if (props.summaryLoadingState === LoadingState.ERROR) {
+      props.setSummaryLoadingState(LoadingState.LOADING);
+    }
+  };
+
+  return props.domainsLoadingState === LoadingState.ERROR ||
+    props.summaryLoadingState === LoadingState.ERROR ? (
+    <div className={styles.statusContainer}>
+      <span className={styles.errorMessage}>Failed to get data</span>
+      <PrimaryButton onClick={retryHandler}>Try again</PrimaryButton>
+    </div>
+  ) : null;
 };
 
 type ProteinExternalReferenceProps = {
@@ -128,7 +242,7 @@ const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
   const url = `${externalSourceLinks[props.source]}${props.externalId}`;
 
   return props.externalId ? (
-    <div className={styles.geneExternalReference}>
+    <div className={styles.proteinExternalReference}>
       <ExternalReference
         label={props.source}
         to={url}

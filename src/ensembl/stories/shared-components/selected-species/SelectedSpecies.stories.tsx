@@ -16,14 +16,14 @@
 
 import React from 'react';
 
-import SelectedSpecies from 'src/shared/components/new-selected-species/SelectedSpecies';
+import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 
 import speciesData from '../species-tabs-wrapper/speciesData';
 
 import styles from './SelectedSpecies.stories.scss';
 
 export default {
-  title: 'Components/Shared Components/New Selected Species',
+  title: 'Components/Shared Components/Selected Species',
   argTypes: { onClick: { action: 'Clicked' } }
 };
 

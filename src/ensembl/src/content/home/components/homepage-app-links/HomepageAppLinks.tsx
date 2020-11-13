@@ -16,7 +16,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 import classNames from 'classnames';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
@@ -34,7 +35,7 @@ import {
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
-import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
+import { ReactComponent as InfoIcon } from 'static/img/shared/info_circle.svg';
 
 import { RootState } from 'src/store';
 import { Status } from 'src/shared/types/status';
@@ -88,6 +89,7 @@ const HomepageAppLinks = (props: Props) => {
 const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
   const { species, isExpanded, toggleExpand } = props;
   const elementRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
   const onOutsideClick = () => {
     toggleExpand();
@@ -115,12 +117,13 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
       {speciesName}
       <div>
         <ImageButton
-          statusClasses={{
-            [Status.DEFAULT]: styles.speciesHomeButton
-          }}
           status={Status.DEFAULT}
           description="Species home page"
-          image={HomeIcon}
+          image={InfoIcon}
+          className={styles.speciesInfoButton}
+          onClick={() =>
+            dispatch(push(urlFor.speciesPage({ genomeId: species.genome_id })))
+          }
         />
       </div>
       <div className={styles.homepageAppLinkButtons}>

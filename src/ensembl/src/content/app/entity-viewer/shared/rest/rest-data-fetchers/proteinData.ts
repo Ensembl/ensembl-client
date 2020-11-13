@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-
 import apiService from 'src/services/api-service';
 
 import { restProteinSummaryAdaptor } from '../rest-adaptors/rest-protein-adaptor';
-
-import { TranscriptInResponse } from './transcriptData';
 
 export type Xref = {
   display_id: string;
@@ -32,6 +29,14 @@ export type ProteinStatsInResponse = {
   ligands: number;
   interaction_partners: number;
   annotations: number;
+};
+
+export type ProteinAcessionInResponse = {
+  protein: {
+    recommendedName: {
+      fullName: string;
+    };
+  };
 };
 
 export type UniProtSummaryStats = {
@@ -51,32 +56,34 @@ export type ProteinSummary = {
 };
 
 export const fetchProteinSummary = async (
-  transcriptId: string,
+  proteinId: string,
   signal?: AbortSignal
 ): Promise<ProteinSummary | null> => {
-  const transcriptUrl = `https://rest.ensembl.org/lookup/id/${transcriptId}?expand=1;content-type=application/json`;
-  const transcript: TranscriptInResponse = await apiService.fetch(
-    transcriptUrl,
+  const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${proteinId}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
+  const xrefsData: XrefsInResponse | undefined = await apiService.fetch(
+    xrefsUrl,
     {
       signal
     }
   );
 
-  const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${transcript.Translation?.id}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
-  const xrefsData: XrefsInResponse = await apiService.fetch(xrefsUrl, {
-    signal
-  });
+  if (!xrefsData) {
+    return null;
+  }
 
   if (xrefsData[0]) {
     const pdbeId = xrefsData[0].display_id;
-
     const proteinStatsUrl = `https://www.ebi.ac.uk/pdbe/graph-api/uniprot/summary_stats/${pdbeId}`;
-    const proteinStatsData: UniProtSummaryStats = await apiService.fetch(
-      proteinStatsUrl,
-      {
-        signal
-      }
-    );
+
+    const proteinStatsData:
+      | UniProtSummaryStats
+      | undefined = await apiService.fetch(proteinStatsUrl, {
+      signal
+    });
+
+    if (!proteinStatsData) {
+      return null;
+    }
 
     return restProteinSummaryAdaptor(proteinStatsData[pdbeId], pdbeId);
   } else {

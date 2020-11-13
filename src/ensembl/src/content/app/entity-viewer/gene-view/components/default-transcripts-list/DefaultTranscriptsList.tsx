@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -24,6 +24,7 @@ import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
@@ -41,6 +42,7 @@ type Props = {
   rulerTicks: TicksAndScale;
   expandedTranscriptIds: string[];
   expandedTranscriptDownloadIds: string[];
+  toggleTranscriptInfo: (id: string) => void;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
@@ -48,6 +50,15 @@ const DefaultTranscriptslist = (props: Props) => {
   const sortedTranscripts = defaultSort(gene.transcripts);
 
   const [isFilterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+
+    // Expand the first transcript by default
+    if (!hasExpandedTranscripts) {
+      props.toggleTranscriptInfo(sortedTranscripts[0].stable_id);
+    }
+  }, []);
 
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
@@ -76,10 +87,10 @@ const DefaultTranscriptslist = (props: Props) => {
         <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => {
           const expandTranscript = props.expandedTranscriptIds.includes(
-            transcript.id
+            transcript.stable_id
           );
           const expandDownload = props.expandedTranscriptDownloadIds.includes(
-            transcript.id
+            transcript.stable_id
           );
 
           return (
@@ -106,7 +117,7 @@ const StripedBackground = (props: Props) => {
   const extendedTicks = [1, ...ticks, geneLength];
 
   const stripes = extendedTicks.map((tick) => {
-    const x = Math.floor(scale(tick));
+    const x = Math.floor(scale(tick) as number);
     const style = { left: `${x}px` };
     return <span key={x} className={styles.stripe} style={style} />;
   });
@@ -119,4 +130,11 @@ const mapStateToProps = (state: RootState) => ({
   expandedTranscriptDownloadIds: getExpandedTranscriptDownloadIds(state)
 });
 
-export default connect(mapStateToProps)(DefaultTranscriptslist);
+const mapDispatchToProps = {
+  toggleTranscriptInfo
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DefaultTranscriptslist);

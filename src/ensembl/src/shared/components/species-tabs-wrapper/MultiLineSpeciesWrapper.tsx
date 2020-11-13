@@ -18,13 +18,13 @@ import React, { ReactElement } from 'react';
 
 import { nonBreakingSpace } from 'src/shared/constants/strings';
 
-import styles from './MultiLineSpeciesWrapper.scss';
-
-import { Props as SimpleSelectedSpeciesProps } from 'src/shared/components/selected-species/SimpleSelectedSpecies';
+import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
 import { Props as SpeciesSelectorSelectedSpeciesProps } from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
+import styles from './MultiLineSpeciesWrapper.scss';
+
 type MultiLineSelectedSpeciesProps =
-  | SimpleSelectedSpeciesProps
+  | SelectedSpeciesProps
   | SpeciesSelectorSelectedSpeciesProps;
 
 export type Props = {
@@ -35,10 +35,10 @@ export type Props = {
 
 const MultiLineWrapper = (props: Props) => {
   return (
-    <div>
+    <div className={styles.multiLineSpeciesWrapper}>
       {props.speciesTabs}
       {nonBreakingSpace}
-      {props.link && <span className={styles.linkWrapper}>{props.link}</span>}
+      {props.link && <div className={styles.linkWrapper}>{props.link}</div>}
     </div>
   );
 };

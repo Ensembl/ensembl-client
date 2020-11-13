@@ -24,27 +24,27 @@ import { Slice } from 'src/content/app/entity-viewer/types/slice';
 import styles from './EntityViewerTopbar.scss';
 
 export type EntityViewerTopbarProps = {
-  genomeId: string; // We'll need it when we start getting data from Thoas
+  genomeId: string;
   entityId: string;
 };
 
 const QUERY = gql`
-  query Gene($id: String!) {
-    gene(byId: { id: $id }) {
-      id
-      version
+  query Gene($genomeId: String!, $entityId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
+      stable_id
+      unversioned_stable_id
       symbol
-      biotype
+      so_term
       slice {
         location {
           start
           end
         }
+        strand {
+          code
+        }
         region {
           name
-          strand {
-            code
-          }
         }
       }
     }
@@ -52,17 +52,18 @@ const QUERY = gql`
 `;
 
 type Gene = {
-  id: string;
-  version: string;
+  stable_id: string;
+  unversioned_stable_id: string;
   symbol: string;
-  biotype: string;
+  so_term: string;
   slice: Slice;
 };
 
 export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
+  const { genomeId } = props;
   const entityId = props.entityId.split(':').pop();
   const { data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { id: entityId }
+    variables: { entityId, genomeId }
   });
 
   return (
@@ -77,11 +78,11 @@ export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
 // NOTE: temporary adaptor
 const geneToEnsObjectFields = (gene: Gene) => {
   return {
-    stable_id: gene.id,
-    versioned_stable_id: `${gene.id}.${gene.version}`,
+    stable_id: gene.unversioned_stable_id,
+    versioned_stable_id: gene.stable_id,
     label: gene.symbol,
-    bio_type: gene.biotype,
-    strand: gene.slice.region.strand.code,
+    bio_type: gene.so_term,
+    strand: gene.slice.strand.code,
     location: {
       chromosome: gene.slice.region.name,
       start: gene.slice.location.start,

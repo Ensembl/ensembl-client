@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import faker from 'faker';
 import times from 'lodash/times';
 
@@ -6,26 +22,83 @@ import { createProduct } from './product';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { Exon } from 'src/content/app/entity-viewer/types/exon';
+import {
+  Exon,
+  SplicedExon,
+  PhasedExon
+} from 'src/content/app/entity-viewer/types/exon';
 import { Slice } from 'src/content/app/entity-viewer/types/slice';
 import { CDS } from 'src/content/app/entity-viewer/types/cds';
+import { CDNA } from 'src/content/app/entity-viewer/types/cdna';
+import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
+import { ProductType } from 'src/content/app/entity-viewer/types/product';
 
 export const createTranscript = (
   fragment: Partial<Transcript> = {}
 ): Transcript => {
   const transcriptSlice = createSlice();
 
+  const unversionedStableId = faker.random.uuid();
+  const version = 1;
+  const stableId = `${unversionedStableId}.${version}`;
+
+  const exons = createExons(transcriptSlice);
+
   return {
-    type: 'Transcript',
-    id: faker.random.uuid(),
+    stable_id: stableId,
+    unversioned_stable_id: unversionedStableId,
+    version,
     symbol: faker.lorem.word(),
     so_term: faker.lorem.word(),
     slice: transcriptSlice,
-    exons: createExons(transcriptSlice),
-    cds: createCDS(transcriptSlice),
-    product: createProduct(),
+    relative_location: {
+      start: 1,
+      end: transcriptSlice.location.end,
+      length: transcriptSlice.location.length
+    },
+    spliced_exons: createSplicedExons(transcriptSlice, exons),
+    product_generating_contexts: [
+      createProductGeneratingContext(transcriptSlice, exons)
+    ],
     ...fragment
   };
+};
+
+const createSplicedExons = (
+  transcriptSlice: Slice,
+  exons: Exon[]
+): SplicedExon[] => {
+  // exons passed into this function are expected to already be sorted by their location
+
+  const { start: transcriptStart } = getFeatureCoordinates({
+    slice: transcriptSlice
+  });
+  return exons.map((exon, index) => {
+    const { start: exonStart, end: exonEnd } = getFeatureCoordinates({
+      slice: exon.slice
+    });
+    const relativeStart = exonStart - transcriptStart + 1;
+    const relativeEnd = exonEnd - transcriptStart + 1;
+
+    return {
+      index: index + 1,
+      relative_location: {
+        start: relativeStart,
+        end: relativeEnd,
+        length: relativeEnd - relativeStart + 1
+      },
+      exon
+    };
+  });
+};
+
+const createPhasedExons = (exons: Exon[]): PhasedExon[] => {
+  return exons.map((exon, index) => ({
+    index: index + 1,
+    start_phase: -1,
+    end_phase: -1,
+    exon
+  }));
 };
 
 const createExons = (transcriptSlice: Slice): Exon[] => {
@@ -50,36 +123,65 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
+    const startPosition = index > 0 ? exonStart : transcriptStart;
+    const endPosition = index < numberOfExons - 1 ? exonEnd : transcriptEnd;
+    const length = endPosition - startPosition + 1;
     const slice = {
       location: {
         start: index > 0 ? exonStart : transcriptStart,
-        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd
+        end: index < numberOfExons - 1 ? exonEnd : transcriptEnd,
+        length
       },
+      strand: transcriptSlice.strand,
       region: transcriptSlice.region
     };
 
     return {
-      id: faker.random.uuid(),
-      slice,
-      relative_location: {
-        // <-- we are still not sure about this relative location thing
-        start: 0,
-        end: 0
-      }
+      stable_id: faker.random.uuid(),
+      slice
     };
   });
 };
 
 const createCDS = (transcriptSlice: Slice): CDS => {
   const { start, end } = getFeatureCoordinates({ slice: transcriptSlice });
+  const nucleotideLength = end - start + 1;
+  const proteinLength = Math.floor(nucleotideLength / 3);
 
   return {
     start: start,
     end: end,
-    relative_location: {
-      // <-- we are still not sure about this relative location thing
-      start: 0,
-      end: 0
-    }
+    relative_start: 1,
+    relative_end: nucleotideLength,
+    nucleotide_length: nucleotideLength,
+    protein_length: proteinLength
+  };
+};
+
+const createCDNA = (transcriptSlice: Slice): CDNA => {
+  const { start, end } = getFeatureCoordinates({ slice: transcriptSlice });
+
+  return {
+    start,
+    end,
+    length: end - start + 1
+  };
+};
+
+const createProductGeneratingContext = (
+  transcriptSlice: Slice,
+  exons: Exon[]
+): ProductGeneratingContext => {
+  return {
+    product_type: ProductType.PROTEIN,
+    default: true,
+    cds: createCDS(transcriptSlice),
+    five_prime_utr: null,
+    three_prime_utr: null,
+    cdna: createCDNA(transcriptSlice),
+    phased_exons: createPhasedExons(exons),
+    product: createProduct({
+      length: Math.floor(transcriptSlice.location.length / 3)
+    })
   };
 };

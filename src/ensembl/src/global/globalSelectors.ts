@@ -15,7 +15,10 @@
  */
 
 import { RootState } from '../store';
-import { BreakpointWidth } from './globalConfig';
+import { BreakpointWidth, ScrollPosition } from './globalConfig';
 
 export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
   state.global.breakpointWidth;
+
+export const getScrollPosition = (state: RootState): ScrollPosition =>
+  state.global.scrollPosition;

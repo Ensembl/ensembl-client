@@ -16,22 +16,17 @@
 
 import React from 'react';
 
-import { HomeLink, ReleaseVersion, Copyright } from 'src/header/Header';
-
-import styles from './ErrorScreen.scss';
-import headerStyles from 'src/header/Header.scss';
+import { Topbar } from 'src/header/Header';
 
 import generalErrorImage1 from './images/general-error-1.jpg';
 import generalErrorImage2 from './images/general-error-2.jpg';
 import generalErrorImage3 from './images/general-error-3.jpg';
 
+import styles from './ErrorScreen.scss';
+
 const GeneralErrorScreen = () => (
   <section className={styles.generalErrorScreen}>
-    <header className={`${headerStyles.topbar} ${styles.generalErrorHeader}`}>
-      <HomeLink />
-      <ReleaseVersion />
-      <Copyright />
-    </header>
+    <Topbar />
     <div className={styles.generalErrorBody}>
       <p className={styles.generalErrorTopMessage}>
         Sorry, something seems to have gone wrong

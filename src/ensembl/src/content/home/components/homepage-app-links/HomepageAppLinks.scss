@@ -35,10 +35,6 @@
   }
 }
 
-.speciesHomeButton {
-  width: 22px;
-}
-
 .homepageAppLinkButtons {
   grid-column: 3/4;
   display: flex;
@@ -90,4 +86,14 @@
   color: $medium-dark-grey;
   font-size: 11px;
   margin-left: 0.2em;
+}
+
+.speciesInfoButton {
+  width: 18px;
+  height: 18px;
+
+  svg {
+    fill: $blue;
+    height: 100%;
+  }
 }

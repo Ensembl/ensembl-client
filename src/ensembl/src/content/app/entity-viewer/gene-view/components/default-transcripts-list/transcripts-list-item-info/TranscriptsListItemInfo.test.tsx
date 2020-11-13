@@ -40,7 +40,8 @@ const defaultProps = {
   gene,
   transcript,
   expandDownload,
-  toggleTranscriptDownload: jest.fn()
+  toggleTranscriptDownload: jest.fn(),
+  onProteinLinkClick: jest.fn()
 };
 
 const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
@@ -69,13 +70,8 @@ describe('<TranscriptsListItemInfo /', () => {
    * 2) we will check that protein product is present on a transcript instead of looking at CDS
    */
   it('displays amino acid length when transcript has CDS', () => {
-    const totalExonsLength = defaultProps.transcript.exons.reduce(
-      (sum, exon) => {
-        return sum + exon.slice.location.end - exon.slice.location.start + 1;
-      },
-      0
-    );
-    const expectedProteinLength = Math.floor(totalExonsLength / 3);
+    const expectedProteinLength =
+      defaultProps.transcript.product_generating_contexts[0].product?.length;
     expect(wrapper.find('.topMiddle strong').text()).toMatch(
       `${expectedProteinLength}`
     );
@@ -98,5 +94,17 @@ describe('<TranscriptsListItemInfo /', () => {
       expandDownload: true
     });
     expect(wrapper.find(InstantDownloadTranscript)).toHaveLength(1);
+  });
+
+  it('calls correct callback when protein link is clicked', () => {
+    const proteinId =
+      defaultProps.transcript.product_generating_contexts[0].product.stable_id;
+    const proteinLink = wrapper
+      .find('a')
+      .findWhere((element: any) => element.text() === proteinId)
+      .first();
+
+    proteinLink.simulate('click');
+    expect(defaultProps.onProteinLinkClick).toHaveBeenCalled();
   });
 });
