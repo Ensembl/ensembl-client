@@ -75,11 +75,12 @@ const radioData: RadioOptions = sortingOrderToLabel.map(([key, value]) => ({
 
 const TranscriptsFilter = (props: Props) => {
   const biotypes = props.transcripts
-    .map((a) => a.biotype)
+    .map((a) => a.so_term)
     .filter(Boolean) as string[];
+
   const uniqueBiotypes = Array.from(new Set(biotypes));
+
   // TODO: Add protein coding options in RadioOptions if there are protein coding biotype
-  // Initial filters as object,  pass to redux store (dispatch action passing initial filters)
   const initialFilters = uniqueBiotypes.reduce((accumulator, biotype): {
     [filter: string]: boolean;
   } => {
@@ -99,11 +100,11 @@ const TranscriptsFilter = (props: Props) => {
     [styles.filterBoxFullWidth]: !props.isSidebarOpen
   });
 
-  const onRadioChange = (value: OptionValue) => {
+  const onSortingRuleChange = (value: OptionValue) => {
     props.setSortingRule(value as SortingRule);
   };
 
-  const onCheckboxChange = (filterName: string, isChecked: boolean) => {
+  const onFilterChange = (filterName: string, isChecked: boolean) => {
     const updatedFilters = {
       ...props.filters,
       [filterName]: isChecked
@@ -122,7 +123,7 @@ const TranscriptsFilter = (props: Props) => {
       labelClassName={styles.label}
       checked={value}
       label={key}
-      onChange={(isChecked) => onCheckboxChange(key, isChecked)}
+      onChange={(isChecked) => onFilterChange(key, isChecked)}
     />
   ));
 
@@ -144,7 +145,7 @@ const TranscriptsFilter = (props: Props) => {
                 wrapper: styles.buttonWrapper
               }}
               options={radioData}
-              onChange={(selectedRadio) => onRadioChange(selectedRadio)}
+              onChange={onSortingRuleChange}
               selectedOption={props.sortingRule}
             />
           </div>
