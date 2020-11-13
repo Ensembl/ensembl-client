@@ -46,14 +46,18 @@ const ExternalReference = (props: ExternalReferenceProps) => {
   return (
     <div {...containerProps}>
       {!!props.label && <span className={labelClass}>{props.label}</span>}
-      <ExternalLink
-        to={props.to}
-        linkText={props.linkText}
-        classNames={{
-          icon: props.classNames?.icon,
-          link: props.classNames?.link
-        }}
-      />
+      {props.to ? (
+        <ExternalLink
+          to={props.to}
+          linkText={props.linkText}
+          classNames={{
+            icon: props.classNames?.icon,
+            link: props.classNames?.link
+          }}
+        />
+      ) : (
+        props.linkText
+      )}
     </div>
   );
 };
