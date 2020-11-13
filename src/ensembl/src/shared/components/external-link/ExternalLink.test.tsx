@@ -49,7 +49,7 @@ describe('<ExternalLink />', () => {
       wrapper.find('.icon').hasClass(defaultProps.classNames?.icon)
     ).toBeTruthy();
     expect(
-      wrapper.find('.text').hasClass(defaultProps.classNames?.link)
+      wrapper.find('.link').hasClass(defaultProps.classNames?.link)
     ).toBeTruthy();
   });
 });
