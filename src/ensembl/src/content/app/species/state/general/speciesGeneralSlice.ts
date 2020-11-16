@@ -19,9 +19,11 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
+import set from 'lodash/fp/set';
 
 import { getActiveGenomeId } from './speciesGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
+import speciesStorageService from '../../services/species-storage-service';
 
 import {
   getStatsForSection,
@@ -33,16 +35,26 @@ import { RootState } from 'src/store';
 
 export type GenomeStats = StatsSection[];
 
+export type GenomeUIState = {
+  expandedSections: string[];
+};
+
+export type UIState = {
+  [genomeId: string]: GenomeUIState;
+};
+
 type SpeciesGeneralState = {
   activeGenomeId: string | null;
   stats: {
     [genomeId: string]: GenomeStats | undefined;
   };
+  uiState: UIState;
 };
 
 const initialState: SpeciesGeneralState = {
   activeGenomeId: null,
-  stats: {}
+  stats: {},
+  uiState: speciesStorageService.getUIState() || {}
 };
 
 export const fetchStatsForActiveGenome = (): ThunkAction<
@@ -80,6 +92,34 @@ export const fetchStatsForActiveGenome = (): ThunkAction<
   );
 };
 
+export const setActiveGenomeExpandedSections = (
+  expandedSections: string[]
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const activeGenomeId = getActiveGenomeId(state);
+  if (!activeGenomeId) {
+    return;
+  }
+
+  speciesStorageService.updateUIState(
+    set(
+      `${activeGenomeId}.expandedSections`,
+      expandedSections,
+      state.speciesPage.general.uiState
+    )
+  );
+
+  dispatch(
+    speciesGeneralSlice.actions.setExpandedSections({
+      genomeId: activeGenomeId,
+      expandedSections
+    })
+  );
+};
+
 const speciesGeneralSlice = createSlice({
   name: 'species-page-general',
   initialState,
@@ -93,13 +133,29 @@ const speciesGeneralSlice = createSlice({
       action: PayloadAction<{ genomeId: string; stats: GenomeStats }>
     ) {
       state.stats[action.payload.genomeId] = action.payload.stats;
+    },
+
+    setExpandedSections(
+      state,
+      action: PayloadAction<{ genomeId: string; expandedSections: string[] }>
+    ) {
+      const stateToUpdate = state.uiState[action.payload.genomeId]
+        ? state
+        : set(action.payload.genomeId, { expandedSections: [] }, state);
+
+      return set(
+        `uiState.${action.payload.genomeId}.expandedSections`,
+        action.payload.expandedSections,
+        stateToUpdate
+      );
     }
   }
 });
 
 export const {
   setActiveGenomeId,
-  setStatsForGenomeId
+  setStatsForGenomeId,
+  setExpandedSections
 } = speciesGeneralSlice.actions;
 
 export default speciesGeneralSlice.reducer;
