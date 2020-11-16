@@ -53,3 +53,15 @@ export function defaultSort(transcripts: Transcript[]) {
 
   return [...proteinCodingTranscripts, ...sortedNonProteinCodingTranscripts];
 }
+
+export function sortBySplicedLength(transcripts: Transcript[], sortByValue: string) {
+  const sortedTranscripts = transcripts.sort(function(a, b){
+    if(sortByValue === "shortest") {
+      return a.slice.location.length - b.slice.location.length;
+    } else {
+      return b.slice.location.length - a.slice.location.length;
+    }
+  });
+
+  return sortedTranscripts;
+}

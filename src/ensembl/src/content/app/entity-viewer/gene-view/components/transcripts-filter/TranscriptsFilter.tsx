@@ -29,6 +29,7 @@ import {
   setSortingRule,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { sortBySplicedLength } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import RadioGroup, {
   RadioOptions
@@ -100,8 +101,14 @@ const TranscriptsFilter = (props: Props) => {
     [styles.filterBoxFullWidth]: !props.isSidebarOpen
   });
 
+  let sortedTranscripts: Transcript[];
   const onSortingRuleChange = (value: OptionValue) => {
     props.setSortingRule(value as SortingRule);
+    if(value === "spliced_length_longest_to_shortest") {
+      sortedTranscripts = sortBySplicedLength(props.transcripts, "longest");
+    } else if (value === "spliced_length_shortest_to_longest") {
+      sortedTranscripts = sortBySplicedLength(props.transcripts, "shortest");
+    }
   };
 
   const onFilterChange = (filterName: string, isChecked: boolean) => {
