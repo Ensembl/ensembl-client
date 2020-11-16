@@ -31,9 +31,17 @@ import {
 
 import { RootState } from 'src/store';
 
+export enum SortingRule {
+  DEFAULT = 'default',
+  SPLICED_LENGTH_LONGEST_TO_SHORTEST = 'spliced_length_longest_to_shortest',
+  SPLICED_LENGTH_SHORTEST_TO_LONGEST = 'spliced_length_shortest_to_longest'
+}
+
 export type TranscriptsStatePerGene = {
   expandedIds: string[];
   expandedDownloadIds: string[];
+  filters: Filters;
+  sortingRule: SortingRule;
 };
 
 export type GeneViewTranscriptsState = {
@@ -42,9 +50,56 @@ export type GeneViewTranscriptsState = {
   };
 };
 
-const defaultStatePerGene = {
+export type Filters = { [filter: string]: boolean };
+
+const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedIds: [],
-  expandedDownloadIds: []
+  expandedDownloadIds: [],
+  filters: {},
+  sortingRule: SortingRule.DEFAULT
+};
+
+export const setFilters = (
+  filters: Filters
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
+  if (!activeGenomeId || !activeObjectId) {
+    return;
+  }
+  dispatch(
+    transcriptsSlice.actions.updateFilters({
+      activeGenomeId,
+      activeObjectId,
+      filters
+    })
+  );
+};
+
+export const setSortingRule = (
+  sortingRule: SortingRule
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
+  if (!activeGenomeId || !activeObjectId) {
+    return;
+  }
+
+  dispatch(
+    transcriptsSlice.actions.updateSortingRule({
+      activeGenomeId,
+      activeObjectId,
+      sortingRule
+    })
+  );
 };
 
 export const toggleTranscriptInfo = (
@@ -133,6 +188,20 @@ type ExpandedIdsPayload = {
   expandedIds: string[];
 };
 
+type UpdateFiltersPayload = {
+  activeGenomeId: string;
+  activeObjectId: string;
+  filters: {
+    [filter: string]: boolean;
+  };
+};
+
+type UpdateSortingRulePayload = {
+  activeGenomeId: string;
+  activeObjectId: string;
+  sortingRule: SortingRule;
+};
+
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
   initialState: {} as GeneViewTranscriptsState,
@@ -155,6 +224,24 @@ const transcriptsSlice = createSlice({
       return set(
         `${activeGenomeId}.${activeObjectId}.expandedDownloadIds`,
         expandedIds,
+        updatedState
+      );
+    },
+    updateFilters(state, action: PayloadAction<UpdateFiltersPayload>) {
+      const { activeGenomeId, activeObjectId, filters } = action.payload;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeObjectId}.filters`,
+        filters,
+        updatedState
+      );
+    },
+    updateSortingRule(state, action: PayloadAction<UpdateSortingRulePayload>) {
+      const { activeGenomeId, activeObjectId, sortingRule } = action.payload;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeObjectId}.sortingRule`,
+        sortingRule,
         updatedState
       );
     }
