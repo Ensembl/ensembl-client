@@ -30,8 +30,6 @@ const options = {
   storage: StorageType.SESSION_STORAGE
 };
 
-// named export is for testing purposes
-// for development, use default export
 export class SpeciesStorageService {
   private storageService: StorageServiceInterface;
 

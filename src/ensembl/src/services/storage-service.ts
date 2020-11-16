@@ -44,10 +44,11 @@ const defaultOptions: options = {
 };
 
 // We need to overwrite the arrays instead of merging them so that it is easier to remove entries
-const overwriteArray = (objValue: JSONValue, srcValue: JSONValue) => {
-  if (Array.isArray(objValue)) {
-    return srcValue;
+const overwriteArray = (currentValue: JSONValue, newValue: JSONValue) => {
+  if (Array.isArray(currentValue)) {
+    return newValue;
   }
+  return currentValue;
 };
 
 // named export is for testing;
