@@ -40,14 +40,14 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
 import styles from './ProteinsListItemInfo.scss';
-import settings from 'src/styles/_settings.scss';
+import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
 type Props = {
   transcript: Transcript;
   trackLength: number;
 };
 
-const image_width = Number(settings.image_width);
+const gene_image_width = Number(settings.gene_image_width);
 
 const addProteinDomains = (
   transcript: Transcript,
@@ -138,12 +138,12 @@ const ProteinsListItemInfo = (props: Props) => {
           <ProteinDomainImage
             proteinDomains={product.protein_domains}
             trackLength={trackLength}
-            width={image_width}
+            width={gene_image_width}
           />
           <ProteinImage
             product={product}
             trackLength={trackLength}
-            width={image_width}
+            width={gene_image_width}
           />
         </>
       )}

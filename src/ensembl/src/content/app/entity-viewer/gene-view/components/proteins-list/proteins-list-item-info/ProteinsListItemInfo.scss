@@ -1,7 +1,7 @@
 @import 'src/styles/common';
-@import 'src/styles/settings';
+@import 'src/content/app/entity-viewer/gene-view/styles/constants';
 
-$content-width: $image_width * 1px;
+$content-width: $gene_image_width * 1px;
 
 .proteinSummary {
   margin-left: 178px;

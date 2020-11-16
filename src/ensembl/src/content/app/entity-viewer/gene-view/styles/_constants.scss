@@ -1,7 +1,13 @@
-@import 'src/styles/settings';
+$gene_image_width: 695;
 
 $left_column: 160px;
 $middle_column_left_gap: 18px;
-$middle_column: $image_width * 1px;
+$middle_column: $gene_image_width * 1px;
 $middle_column_right_gap: 27px;
 $right_column: 180px;
+
+/* stylelint-disable */
+:export {
+  gene_image_width: $gene_image_width;
+}
+/* stylelint-enable */
