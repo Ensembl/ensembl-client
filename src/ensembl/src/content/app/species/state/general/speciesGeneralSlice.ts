@@ -36,7 +36,7 @@ import { RootState } from 'src/store';
 export type GenomeStats = StatsSection[];
 
 export type GenomeUIState = {
-  expandedSections: string[];
+  expandedSections: SpeciesStatsSection[];
 };
 
 export type UIState = {
@@ -93,7 +93,7 @@ export const fetchStatsForActiveGenome = (): ThunkAction<
 };
 
 export const setActiveGenomeExpandedSections = (
-  expandedSections: string[]
+  expandedSections: SpeciesStatsSection[]
 ): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
@@ -137,7 +137,10 @@ const speciesGeneralSlice = createSlice({
 
     setExpandedSections(
       state,
-      action: PayloadAction<{ genomeId: string; expandedSections: string[] }>
+      action: PayloadAction<{
+        genomeId: string;
+        expandedSections: SpeciesStatsSection[];
+      }>
     ) {
       const stateToUpdate = state.uiState[action.payload.genomeId]
         ? state

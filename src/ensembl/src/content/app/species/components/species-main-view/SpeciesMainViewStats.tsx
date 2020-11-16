@@ -57,7 +57,7 @@ type Props = {
   exampleFocusObjects: ExampleFocusObject[];
   species: CommittedItem | null;
   fetchStatsForActiveGenome: () => void;
-  setExpandedSections: (expandedSections: string[]) => void;
+  setExpandedSections: (expandedSections: SpeciesStatsSection[]) => void;
 };
 
 type ExampleLinkPopupProps = {
