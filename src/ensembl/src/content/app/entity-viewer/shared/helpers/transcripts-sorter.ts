@@ -17,7 +17,11 @@
 import sortBy from 'lodash/sortBy';
 import partition from 'lodash/partition';
 
-import { getFeatureLength, isProteinCodingTranscript } from './entity-helpers';
+import {
+  getFeatureLength,
+  isProteinCodingTranscript,
+  getSplicedRNALength
+} from './entity-helpers';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
@@ -54,14 +58,24 @@ export function defaultSort(transcripts: Transcript[]) {
   return [...proteinCodingTranscripts, ...sortedNonProteinCodingTranscripts];
 }
 
-export function sortBySplicedLength(transcripts: Transcript[], sortByValue: string) {
-  const sortedTranscripts = transcripts.sort(function(a, b){
-    if(sortByValue === "shortest") {
-      return a.slice.location.length - b.slice.location.length;
-    } else {
-      return b.slice.location.length - a.slice.location.length;
-    }
+export function sortBySplicedLengthLongestToShortest(
+  transcripts: Transcript[]
+) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return getSplicedRNALength(transcriptB) - getSplicedRNALength(transcriptA);
   });
-
-  return sortedTranscripts;
 }
+
+export function sortBySplicedLengthShortestToLongest(
+  transcripts: Transcript[]
+) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return getSplicedRNALength(transcriptA) - getSplicedRNALength(transcriptB);
+  });
+}
+
+export const transcriptSortingFunctions = {
+  default: defaultSort,
+  spliced_length_longest_to_shortest: sortBySplicedLengthLongestToShortest,
+  spliced_length_shortest_to_longest: sortBySplicedLengthShortestToLongest
+};
