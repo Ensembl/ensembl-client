@@ -29,7 +29,6 @@ import buildAnalyticsObject from 'src/analyticsHelper';
 import {
   getCommittedSpecies,
   getCommittedSpeciesById,
-  getEnabledCommittedSpecies,
   getSelectedItem,
   getSearchText
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -163,7 +162,7 @@ export const ensureSpeciesIsCommitted: ActionCreator<ThunkAction<
   Action<string>
 >> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   const state = getState();
-  const committedSpecies = getEnabledCommittedSpecies(state);
+  const committedSpecies = getCommittedSpecies(state);
   const genomeInfo = getGenomeInfoById(state, genomeId);
   if (getCommittedSpeciesById(state, genomeId) || !genomeInfo) {
     return;
@@ -242,7 +241,7 @@ export const handleSelectedSpecies: ActionCreator<ThunkAction<
 };
 
 export const updateCommittedSpecies = createAction(
-  'species_selector/toggle_species_use'
+  'species_selector/update_committed_species'
 )<CommittedItem[]>();
 
 export const commitSelectedSpeciesAndSave: ActionCreator<ThunkAction<
