@@ -22,8 +22,7 @@ import storageService, {
 import { UIState } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 export enum StorageKeys {
-  GENOME_UI_STATE = 'species.genomeUIState',
-  SIDEBAR_UI_STATE = 'species.sidebarUIState'
+  GENOME_UI_STATE = 'species.genomeUIState'
 }
 
 const options = {
