@@ -32,7 +32,6 @@ import {
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
-import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import {
   getBrowserNavOpened,
@@ -79,7 +78,6 @@ export type BrowserProps = {
   exampleEnsObjects: EnsObject[];
   viewportWidth: BreakpointWidth;
   fetchGenomeData: (genomeId: string) => void;
-  ensureSpeciesIsEnabled: (genomeId: string) => void;
   toggleTrackPanel: (isOpen: boolean) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
 };
@@ -96,7 +94,6 @@ export const Browser = (props: BrowserProps) => {
     }
 
     fetchGenomeData(activeGenomeId);
-    props.ensureSpeciesIsEnabled(activeGenomeId);
     analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
 
@@ -196,7 +193,6 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = {
   fetchGenomeData,
   toggleDrawer,
-  ensureSpeciesIsEnabled,
   toggleTrackPanel
 };
 
