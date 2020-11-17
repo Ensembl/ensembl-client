@@ -183,6 +183,22 @@ export const ensureSpeciesIsCommitted: ActionCreator<ThunkAction<
   speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
 };
 
+export const ensureSpeciesIsEnabled: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+>> = (genomeId: string) => (dispatch, getState: () => RootState) => {
+  const state = getState();
+
+  const currentSpecies = getCommittedSpeciesById(state, genomeId);
+  if (!currentSpecies || currentSpecies.isEnabled) {
+    return;
+  }
+
+  dispatch(toggleSpeciesUseAndSave(genomeId));
+};
+
 export const fetchAssemblies: ActionCreator<ThunkAction<
   void,
   any,
