@@ -48,7 +48,6 @@ const overwriteArray = (currentValue: JSONValue, newValue: JSONValue) => {
   if (Array.isArray(currentValue)) {
     return newValue;
   }
-  return currentValue;
 };
 
 // named export is for testing;
