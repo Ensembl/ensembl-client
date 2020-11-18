@@ -172,7 +172,7 @@ const SpeciesMainViewStats = (props: Props) => {
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
   const expandedSections = props.genomeUIState
-    ? [...props.genomeUIState.expandedSections]
+    ? props.genomeUIState.expandedSections
     : [];
 
   if (
@@ -188,8 +188,7 @@ const SpeciesMainViewStats = (props: Props) => {
     isExpanded: boolean
   ) => {
     if (isExpanded) {
-      expandedSections.push(section);
-      props.setExpandedSections(expandedSections);
+      props.setExpandedSections([...expandedSections, section]);
     } else {
       props.setExpandedSections(expandedSections.filter((s) => s != section));
     }
