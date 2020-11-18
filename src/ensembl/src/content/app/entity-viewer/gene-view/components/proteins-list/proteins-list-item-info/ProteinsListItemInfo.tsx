@@ -47,7 +47,7 @@ type Props = {
   trackLength: number;
 };
 
-const gene_image_width = Number(settings.gene_image_width);
+const gene_image_width_value = Number(settings.gene_image_width_value);
 
 const addProteinDomains = (
   transcript: Transcript,
@@ -138,12 +138,12 @@ const ProteinsListItemInfo = (props: Props) => {
           <ProteinDomainImage
             proteinDomains={product.protein_domains}
             trackLength={trackLength}
-            width={gene_image_width}
+            width={gene_image_width_value}
           />
           <ProteinImage
             product={product}
             trackLength={trackLength}
-            width={gene_image_width}
+            width={gene_image_width_value}
           />
         </>
       )}
