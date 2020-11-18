@@ -61,6 +61,7 @@ export const DefaultTranscriptListItem = (
         {props.isDefault && (
           <TranscriptQualityLabel transcript={props.transcript} />
         )}
+
         <div className={transcriptsListStyles.middle}>
           <div
             className={styles.clickableTranscriptArea}

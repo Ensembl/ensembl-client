@@ -22,11 +22,11 @@ import { getSpeciesItemWidths } from './speciesTabsWrapperHelpers';
 
 import styles from './SingleLineSpeciesWrapper.scss';
 
-import { Props as FocusableSelectedSpeciesProps } from 'src/shared/components/selected-species/FocusableSelectedSpecies';
+import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
 
 export type Props = {
   isWrappable: false;
-  speciesTabs: ReactElement<FocusableSelectedSpeciesProps>[];
+  speciesTabs: ReactElement<SelectedSpeciesProps>[];
   link?: React.ReactNode | null;
 };
 
@@ -36,7 +36,7 @@ const animationCalculator = ({
   containerRef,
   containerWidth
 }: {
-  items: FocusableSelectedSpeciesProps[];
+  items: SelectedSpeciesProps[];
   hoveredItemIndex: number | null;
   containerRef: React.RefObject<HTMLElement>;
   containerWidth: number;

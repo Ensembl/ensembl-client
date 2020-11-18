@@ -20,8 +20,10 @@ import {
 } from 'src/content/app/entity-viewer/types/slice';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { ProductType } from 'src/content/app/entity-viewer/types/product';
-import { CDS } from 'src/content/app/entity-viewer/types/cds.ts';
+import {
+  Product,
+  ProductType
+} from 'src/content/app/entity-viewer/types/product';
 
 export const getFeatureCoordinates = (feature: {
   slice: SliceWithLocationOnly;
@@ -34,7 +36,7 @@ export const getRegionName = (feature: { slice: Slice }) =>
   feature.slice.region.name;
 
 export const getFeatureStrand = (feature: { slice: Slice }) =>
-  feature.slice.region.strand.code;
+  feature.slice.strand.code;
 
 export const getFeatureLength = (feature: { slice: Slice }) => {
   return feature.slice.location.length;
@@ -79,10 +81,9 @@ export const getProductAminoAcidLength = (transcript: Transcript) => {
   }
   const { product_generating_contexts } = transcript;
   const firstProductGeneratingContext = product_generating_contexts[0];
-  const cds = firstProductGeneratingContext.cds as CDS; // a protein-coding transcript will have a CDS
+  const product = firstProductGeneratingContext.product as Product; // a protein-coding transcript will have a CDS
 
-  // TODO: use product.length directly when api response becomes more reliable
-  return cds.protein_length;
+  return product.length;
 };
 
 export const getSplicedRNALength = (transcript: Transcript) =>

@@ -31,11 +31,11 @@ export const createSlice = (): Slice => {
       end,
       length
     },
+    strand: {
+      code: faker.random.boolean() ? Strand.FORWARD : Strand.REVERSE
+    },
     region: {
       name: faker.lorem.word(),
-      strand: {
-        code: faker.random.boolean() ? Strand.FORWARD : Strand.REVERSE
-      },
       assembly: faker.random.uuid()
     }
   };

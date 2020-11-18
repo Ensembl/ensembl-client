@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -24,6 +24,7 @@ import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
@@ -41,6 +42,7 @@ type Props = {
   rulerTicks: TicksAndScale;
   expandedTranscriptIds: string[];
   expandedTranscriptDownloadIds: string[];
+  toggleTranscriptInfo: (id: string) => void;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
@@ -49,6 +51,15 @@ const DefaultTranscriptslist = (props: Props) => {
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
+  useEffect(() => {
+    const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+
+    // Expand the first transcript by default
+    if (!hasExpandedTranscripts) {
+      props.toggleTranscriptInfo(sortedTranscripts[0].stable_id);
+    }
+  }, []);
+
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
   };
@@ -56,9 +67,14 @@ const DefaultTranscriptslist = (props: Props) => {
   return (
     <div>
       <div className={styles.header}>
-        {isFilterOpen && <TranscriptsFilter toggleFilter={toggleFilter} />}
+        {isFilterOpen && (
+          <TranscriptsFilter
+            toggleFilter={toggleFilter}
+            transcripts={sortedTranscripts}
+          />
+        )}
         <div className={styles.row}>
-          {!isFilterOpen && (
+          {gene.transcripts.length > 3 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
               <ChevronDown className={styles.chevron} />
@@ -114,4 +130,11 @@ const mapStateToProps = (state: RootState) => ({
   expandedTranscriptDownloadIds: getExpandedTranscriptDownloadIds(state)
 });
 
-export default connect(mapStateToProps)(DefaultTranscriptslist);
+const mapDispatchToProps = {
+  toggleTranscriptInfo
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DefaultTranscriptslist);

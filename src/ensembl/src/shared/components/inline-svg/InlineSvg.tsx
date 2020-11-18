@@ -38,8 +38,7 @@ type Props = {
 };
 
 const InlineSVG = (props: Props) => {
-  const [svg, setSvg] = useState<string | null>(null);
-  const [isSvgSet, setIsSvgSet] = useState(false);
+  const [svg, setSvg] = useState<string>('');
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,17 +50,15 @@ const InlineSVG = (props: Props) => {
         preserveEndpoint: true
       })
       .then((svg) => setSvg(svg));
-  }, []);
+  }, [props.src]);
 
-  useEffect(() => {
-    if (!isSvgSet && svg && containerRef.current) {
-      const container = containerRef.current;
-      container.insertAdjacentHTML('afterbegin', svg);
-      setIsSvgSet(true);
-    }
-  });
-
-  return <div className={styles.inlineSvgContainer} ref={containerRef} />;
+  return (
+    <div
+      className={styles.inlineSvgContainer}
+      ref={containerRef}
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
 };
 
 export default InlineSVG;

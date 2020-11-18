@@ -1,14 +1,19 @@
 @import 'src/styles/common';
-@import './selected-species-common';
+@import 'src/styles/mixins';
 
 .species {
-  @include selected-species-common;
+  @include lozenge;
   border: 1px solid $blue;
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: $white;
+  margin-bottom: 12px;
+
+  &:not(:last-child) {
+    margin-right: 15px;
+  }
 }
 
 .nameActive,
@@ -19,6 +24,7 @@
 .inUseActive {
   background-color: $black;
   border: 1px solid $black;
+  cursor: default;
 }
 
 .inUseInactive {
@@ -33,7 +39,8 @@
 }
 
 .notInUseInactive {
-  background-color: $white;
-  border: 1px solid $blue;
+  background-color: $ice-blue;
+  border: 1px solid $ice-blue;
   color: $blue;
 }
+

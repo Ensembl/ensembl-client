@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-import { Source } from './source';
-
-export type CrossReference = {
-  id: string;
-  name: string;
+export type HelpVideo = {
+  title: string;
   description: string;
-  url: string;
-  source: Source;
+  youtube_id: string;
 };
 
-export type CrossReferenceWithoutSource = Omit<CrossReference, 'source'>;
+export type RelatedArticle = {
+  title: string;
+  slug: string;
+  path: string;
+};
 
-export type CrossReferenceGroup = {
-  source: Source;
-  references: CrossReferenceWithoutSource[];
+export type HelpArticle = {
+  path: string;
+  slug: string;
+  title: string;
+  body: string;
+  videos: HelpVideo[];
+  related_articles: RelatedArticle[];
+};
+
+export type SlugReference = {
+  slug: string; // slug of the help article, e.g. "selecting-a-species"
+};
+
+export type PathReference = {
+  path: string; // path to the article in the help&docs repo starting from the docs root folder, e.g. "ensembl-help/getting-started/about-the-site"
 };

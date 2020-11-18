@@ -20,12 +20,12 @@ import classNames from 'classnames';
 import defaultStyles from './SpeciesStats.scss';
 
 type PrimaryDataProps = {
-  primaryValue: string;
+  primaryValue: string | number;
   primaryUnit?: string;
 };
 
 type PropsWithSecondaryData = {
-  secondaryValue: string;
+  secondaryValue: string | number;
   secondaryUnit?: string;
 };
 
@@ -39,9 +39,9 @@ type ClassNamesProps = {
     wrapper?: string;
     preLabel?: string;
     label?: string;
-    primaryValue?: string;
+    primaryValue?: string | number;
     primaryUnit?: string;
-    secondaryValue?: string;
+    secondaryValue?: string | number;
     secondaryUnit?: string;
     link?: string;
   };
@@ -81,7 +81,9 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
 
   return (
     <div className={styles.wrapper}>
-      <span className={styles.preLabel}>{props.preLabel}</span>
+      {props.preLabel && (
+        <span className={styles.preLabel}>{props.preLabel}</span>
+      )}
 
       <div className={styles.label}>{props.label}</div>
 

@@ -20,6 +20,7 @@ import { replace } from 'connected-react-router';
 import { useQuery, gql } from '@apollo/client';
 import { useParams, useLocation } from 'react-router-dom';
 
+import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import usePrevious from 'src/shared/hooks/usePrevious';
 import {
   getSelectedGeneViewTabs,
@@ -63,10 +64,8 @@ const QUERY = gql`
           start
           end
         }
-        region {
-          strand {
-            code
-          }
+        strand {
+          code
         }
       }
       transcripts {
@@ -82,9 +81,9 @@ const QUERY = gql`
           }
           region {
             name
-            strand {
-              code
-            }
+          }
+          strand {
+            code
           }
         }
         relative_location {
@@ -110,7 +109,6 @@ const QUERY = gql`
           cds {
             relative_start
             relative_end
-            protein_length
           }
           cdna {
             length
@@ -125,6 +123,14 @@ const QUERY = gql`
           product {
             stable_id
             unversioned_stable_id
+            length
+            external_references {
+              accession_id
+              description
+              source {
+                id
+              }
+            }
           }
         }
       }
@@ -155,18 +161,29 @@ const GeneView = () => {
   return <GeneViewWithData gene={data.gene} />;
 };
 
+const COMPONENT_ID = 'entity_viewer_gene_view';
+
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [
     basePairsRulerTicks,
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
+  const { search } = useLocation();
+  const view = new URLSearchParams(search).get('view');
+
+  const uniqueScrollReferenceId = `${COMPONENT_ID}_${props.gene.stable_id}_${view}`;
+
+  const { targetElementRef } = useRestoreScrollPosition({
+    referenceId: uniqueScrollReferenceId
+  });
+
   const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
   return (
-    <div className={styles.geneView}>
+    <div className={styles.geneView} ref={targetElementRef}>
       <div className={styles.featureImage}>
         <GeneOverviewImage
           gene={props.gene}
@@ -208,7 +225,10 @@ const useGeneViewRouting = () => {
   const { objectId: geneId } = parseFocusIdFromUrl(entityId);
   const { search } = useLocation();
   // TODO: discuss – is using URLSearchParams better than using the querystring package?
-  const view = new URLSearchParams(search).get('view');
+
+  const urlSearchParams = new URLSearchParams(search);
+  const view = urlSearchParams.get('view');
+  const proteinId = urlSearchParams.get('protein_id');
   const viewInRedux = useSelector(getCurrentView) || View.TRANSCRIPTS;
   const previousGenomeId = usePrevious(genomeId); // genomeId during previous render
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
@@ -220,9 +240,9 @@ const useGeneViewRouting = () => {
       const url = urlFor.entityViewer({
         genomeId,
         entityId,
-        view: viewInRedux
+        view: viewInRedux,
+        proteinId
       });
-
       dispatch(replace(url));
     }
   }, [view, viewInRedux, genomeId, previousGenomeId]);

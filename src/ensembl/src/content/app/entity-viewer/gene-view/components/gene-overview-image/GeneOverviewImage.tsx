@@ -114,9 +114,7 @@ const StrandIndicator = (props: GeneOverviewImageProps) => {
   const {
     gene: {
       slice: {
-        region: {
-          strand: { code: strandCode }
-        }
+        strand: { code: strandCode }
       }
     }
   } = props;

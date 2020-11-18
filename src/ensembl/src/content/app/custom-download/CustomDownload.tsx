@@ -52,7 +52,7 @@ const CustomDownload = (props: CustomDownloadProps) => {
     return null;
   }
   return (
-    <>
+    <div>
       <CustomDownloadAppBar onSpeciesSelect={props.setActiveGenomeId} />
       {props.shouldShowPreFilterPanel && <PreFilterPanel />}
       {!props.shouldShowPreFilterPanel && (
@@ -61,7 +61,7 @@ const CustomDownload = (props: CustomDownloadProps) => {
           <CustomDownloadContent />
         </>
       )}
-    </>
+    </div>
   );
 };
 

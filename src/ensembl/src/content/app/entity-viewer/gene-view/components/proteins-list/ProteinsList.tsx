@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { useLocation } from 'react-router';
 
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
@@ -24,19 +26,39 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
+import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
+import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
+
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { RootState } from 'src/store';
 
 import styles from './ProteinsList.scss';
 
 type ProteinsListProps = {
   gene: Gene;
+  expandedTranscriptIds: string[];
+  toggleExpandedProtein: (id: string) => void;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
+  const { search } = useLocation();
+  const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
+
   const sortedTranscripts = defaultSort(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
   );
+
+  useEffect(() => {
+    const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+    const firstProteinId =
+      proteinCodingTranscripts[0].product_generating_contexts[0].product
+        .stable_id;
+    // Expand the first transcript by default
+    if (!hasExpandedTranscripts && !proteinIdToFocus) {
+      props.toggleExpandedProtein(firstProteinId);
+    }
+  }, []);
 
   const longestProteinLength = getLongestProteinLength(props.gene);
 
@@ -54,4 +76,12 @@ const ProteinsList = (props: ProteinsListProps) => {
   );
 };
 
-export default ProteinsList;
+const mapStateToProps = (state: RootState) => ({
+  expandedTranscriptIds: getExpandedTranscriptIds(state)
+});
+
+const mapDispatchToProps = {
+  toggleExpandedProtein
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProteinsList);

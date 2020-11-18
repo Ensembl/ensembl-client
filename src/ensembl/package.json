@@ -34,7 +34,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --max-warnings=0",
-      "npx manage-licence-header add",
+      "manage-licence-header add",
       "prettier --write"
     ],
     "*.{scss}": [

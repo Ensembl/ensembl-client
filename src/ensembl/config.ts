@@ -27,7 +27,6 @@ export default {
   environment: process.env.ENVIRONMENT,
 
   apiHost: process.env.API_HOST,
-  helpApiHost: 'http://hx-rke-wp-webadmin-14-worker-1.caas.ebi.ac.uk:30853',
 
   // Keys for services
   googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,

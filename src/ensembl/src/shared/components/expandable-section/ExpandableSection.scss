@@ -1,0 +1,37 @@
+@import 'src/styles/common';
+
+.expandableSection {
+  border: 1px solid $medium-light-grey;
+  position: relative;
+  min-height: 45px;
+  padding-right: 55px;
+}
+
+.expandableSection + .expandableSection {
+  border-top: none;
+}
+
+.toggle {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 85px;
+  height: 45px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.chevron {
+  cursor: pointer;
+  fill: $blue;
+  height: 20px;
+  width: 20px;
+  top: 12px;
+  position: absolute;
+  left: 35px;
+  transform: rotate(90deg);
+  transition: transform linear 0.2s;
+  &Down {
+    transform: rotate(-90deg);
+  }
+}

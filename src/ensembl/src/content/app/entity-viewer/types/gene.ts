@@ -17,7 +17,6 @@
 import { Slice } from './slice';
 import { Transcript } from './transcript';
 import { Source } from './source';
-// import { CrossReference } from './crossReference';
 // import { Metadata } from './metadata';
 
 /**
@@ -32,7 +31,7 @@ export type Gene = {
   stable_id: string;
   unversioned_stable_id: string;
   version: number | null;
-  symbol: string;
+  symbol: string | null;
   name: string | null;
   source?: Source;
   so_term: string;

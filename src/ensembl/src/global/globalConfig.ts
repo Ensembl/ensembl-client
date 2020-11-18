@@ -25,6 +25,13 @@ export enum BreakpointWidth {
   BIG_DESKTOP = 1800
 }
 
+export type ScrollPosition = {
+  [key: string]: {
+    scrollLeft: number;
+    scrollTop: number;
+  };
+};
+
 export enum AppName {
   GENOME_BROWSER = 'Genome browser',
   SPECIES_SELECTOR = 'Species selector',
