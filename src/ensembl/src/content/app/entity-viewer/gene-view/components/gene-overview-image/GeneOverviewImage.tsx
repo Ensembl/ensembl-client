@@ -35,7 +35,7 @@ type GeneOverviewImageProps = {
   onTicksCalculated: (payload: TicksAndScale) => void;
 };
 
-const gene_image_width_value = Number(settings.gene_image_width_value);
+const gene_image_width = Number(settings.gene_image_width);
 
 const GeneOverviewImage = (props: GeneOverviewImageProps) => {
   const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene); // FIXME: use gene length further on
@@ -51,7 +51,7 @@ const GeneOverviewImage = (props: GeneOverviewImageProps) => {
       <div className={styles.ruler}>
         <BasePairsRuler
           length={length}
-          width={gene_image_width_value}
+          width={gene_image_width}
           onTicksCalculated={props.onTicksCalculated}
           standalone={true}
         />
@@ -67,7 +67,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   // (it will help with drawing genes of circular chromosomes)
   const scale = scaleLinear()
     .domain([geneStart, geneEnd])
-    .range([0, gene_image_width_value]);
+    .range([0, gene_image_width]);
 
   const renderedTranscripts = props.gene.transcripts.map(
     (transcript, index) => {
@@ -94,7 +94,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   );
 
   return (
-    <svg className={styles.containerSVG} width={gene_image_width_value}>
+    <svg className={styles.containerSVG} width={gene_image_width}>
       {renderedTranscripts}
     </svg>
   );
