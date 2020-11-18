@@ -23,6 +23,8 @@ import {
   getSplicedRNALength
 } from './entity-helpers';
 
+import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 function compareTranscriptLengths(
@@ -74,8 +76,26 @@ export function sortBySplicedLengthShortestToLongest(
   });
 }
 
-export const transcriptSortingFunctions = {
+export function sortByExonCountHightToLow(transcripts: Transcript[]) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return transcriptB.spliced_exons.length - transcriptA.spliced_exons.length;
+  });
+}
+
+export function sortByExonCountLowToHigh(transcripts: Transcript[]) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return transcriptA.spliced_exons.length - transcriptB.spliced_exons.length;
+  });
+}
+
+type SortingFunction = (transcripts: Transcript[]) => Transcript[];
+export const transcriptSortingFunctions: Record<
+  SortingRule,
+  SortingFunction
+> = {
   default: defaultSort,
   spliced_length_longest_to_shortest: sortBySplicedLengthLongestToShortest,
-  spliced_length_shortest_to_longest: sortBySplicedLengthShortestToLongest
+  spliced_length_shortest_to_longest: sortBySplicedLengthShortestToLongest,
+  exon_count_high_to_low: sortByExonCountHightToLow,
+  exon_count_low_to_high: sortByExonCountLowToHigh
 };

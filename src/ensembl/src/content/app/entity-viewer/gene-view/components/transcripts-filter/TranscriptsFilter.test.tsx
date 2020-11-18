@@ -119,11 +119,11 @@ describe('<TranscriptsFilter />', () => {
   });
 
   it.skip('shows sort by protein for protein-coding transcripts', () => {
-    // not an empty function
+    //todo once we get confirmation
   });
 
   it.skip('does not show sort by protein for non-coding transcripts', () => {
-    // not an empty function
+    //todo once we get confirmation
   });
 
   it('correctly handles sorting order change', () => {

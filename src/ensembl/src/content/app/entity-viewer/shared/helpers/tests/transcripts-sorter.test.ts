@@ -17,11 +17,14 @@
 import {
   defaultSort,
   sortBySplicedLengthLongestToShortest,
-  sortBySplicedLengthShortestToLongest
+  sortBySplicedLengthShortestToLongest,
+  sortByExonCountHightToLow,
+  sortByExonCountLowToHigh
 } from '../transcripts-sorter';
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
+/* Creating dummy transcritps with different protein coding and non coding length  to test default sort*/
 const createLongProteinCodingTranscript = () => {
   const transcript = createTranscript();
   transcript.slice.location.length = 100_000;
@@ -46,6 +49,8 @@ const createShortNonCodingTranscript = () => {
   transcript.product_generating_contexts = [];
   return transcript;
 };
+
+/* Creating dummy transcritps with different spliced length */
 const createTranscriptWithGreatestSplicedLength = () => {
   const transcript = createTranscript();
   const splicedExon = transcript.spliced_exons[0];
@@ -71,6 +76,35 @@ const createTranscriptWithSmallestSplicedLength = () => {
   return transcript;
 };
 
+/* Creating dummy transcritps with different numbers of Exons */
+const createTranscriptWithGreatestExons = () => {
+  const transcript = createTranscript();
+  const splicedExon = transcript.spliced_exons[0];
+  transcript.stable_id = 'transcript_with_greatest_exons';
+  transcript.spliced_exons = [
+    splicedExon,
+    splicedExon,
+    splicedExon,
+    splicedExon
+  ];
+  return transcript;
+};
+const createTranscriptWithMediumExons = () => {
+  const transcript = createTranscript();
+  transcript.stable_id = 'transcript_with_medium_exons';
+  const splicedExon = transcript.spliced_exons[0];
+  splicedExon.exon.slice.location.length = 10_000;
+  transcript.spliced_exons = [splicedExon, splicedExon, splicedExon];
+  return transcript;
+};
+const createTranscriptWithSmallestExons = () => {
+  const transcript = createTranscript();
+  transcript.stable_id = 'transcript_with_smallest_exons';
+  const splicedExon = transcript.spliced_exons[0];
+  transcript.spliced_exons = [splicedExon, splicedExon];
+  return transcript;
+};
+
 const longProteinCodingTranscript = createLongProteinCodingTranscript();
 const shortProteinCodingTranscript = createShortProteinCodingTranscript();
 const longNonCodingTranscript = createLongNonCodingTranscript();
@@ -78,6 +112,9 @@ const shortNonCodingTranscript = createShortNonCodingTranscript();
 const transcriptWithGreatestSplicedLength = createTranscriptWithGreatestSplicedLength();
 const transcriptWithMediumSplicedLength = createTranscriptWithMediumSplicedLength();
 const transcriptWithSmallestSplicedLength = createTranscriptWithSmallestSplicedLength();
+const transcriptWithGreatestExons = createTranscriptWithGreatestExons();
+const transcriptWithMediumExons = createTranscriptWithMediumExons();
+const transcriptWithSmallestExons = createTranscriptWithSmallestExons();
 
 describe('default sort', () => {
   it('sorts transcripts correctly', () => {
@@ -143,6 +180,48 @@ describe('sortBySplicedLengthShortestToLongest', () => {
 
     expect(
       sortBySplicedLengthShortestToLongest(unsortedTranscripts).map(
+        ({ stable_id }) => stable_id
+      )
+    ).toEqual(expectedTranscriptIds);
+  });
+});
+
+describe('sortByExonCountHighToLow', () => {
+  it('sorts transcripts correctly(Exon count high to low)', () => {
+    const unsortedTranscripts = [
+      transcriptWithMediumExons,
+      transcriptWithSmallestExons,
+      transcriptWithGreatestExons
+    ];
+    const expectedTranscriptIds = [
+      'transcript_with_greatest_exons',
+      'transcript_with_medium_exons',
+      'transcript_with_smallest_exons'
+    ];
+
+    expect(
+      sortByExonCountHightToLow(unsortedTranscripts).map(
+        ({ stable_id }) => stable_id
+      )
+    ).toEqual(expectedTranscriptIds);
+  });
+});
+
+describe('sortByExonCountLowToHigh', () => {
+  it('sorts transcripts correctly(Exon count low to high)', () => {
+    const unsortedTranscripts = [
+      transcriptWithMediumExons,
+      transcriptWithGreatestExons,
+      transcriptWithSmallestExons
+    ];
+    const expectedTranscriptIds = [
+      'transcript_with_smallest_exons',
+      'transcript_with_medium_exons',
+      'transcript_with_greatest_exons'
+    ];
+
+    expect(
+      sortByExonCountLowToHigh(unsortedTranscripts).map(
         ({ stable_id }) => stable_id
       )
     ).toEqual(expectedTranscriptIds);

@@ -17,7 +17,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-// import { connect } from 'react-redux';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import {
@@ -59,7 +58,9 @@ const sortingOrderToLabel = [
   [
     SortingRule.SPLICED_LENGTH_SHORTEST_TO_LONGEST,
     'Spliced length: shortest – longest'
-  ]
+  ],
+  [SortingRule.EXON_COUNT_HIGH_TO_LOW, 'Exon count: high - low'],
+  [SortingRule.EXON_COUNT_LOW_TO_HIGH, 'Exon count: low - high']
 ];
 
 const radioData: RadioOptions = sortingOrderToLabel.map(([key, value]) => ({
