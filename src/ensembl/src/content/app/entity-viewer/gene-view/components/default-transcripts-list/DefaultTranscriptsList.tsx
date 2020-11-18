@@ -81,7 +81,7 @@ const DefaultTranscriptslist = (props: Props) => {
           />
         )}
         <div className={styles.row}>
-          {gene.transcripts.length > 3 && !isFilterOpen && (
+          {gene.transcripts.length > 5 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
               <ChevronDown className={styles.chevron} />
