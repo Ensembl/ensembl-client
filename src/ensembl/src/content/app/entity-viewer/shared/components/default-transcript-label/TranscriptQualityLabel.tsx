@@ -19,13 +19,13 @@ import React from 'react';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import styles from './DefaultTranscriptLabel.scss';
+import styles from './TranscriptQualityLabel.scss';
 
-type DefaultTranscriptLabelProps = {
+type TranscriptQualityLabelProps = {
   transcript: Transcript;
 };
 
-const transcriptLabel = {
+const transcriptLabelMap = {
   selected: {
     label: 'Selected',
     helpText:
@@ -33,13 +33,15 @@ const transcriptLabel = {
   }
 };
 
-export const DefaultTranscriptLabel = (props: DefaultTranscriptLabelProps) => {
-  const CanonicalType = props.transcript && 'selected'; // TODO Change this to props.transcript.mane/plus etc when available
+export const TranscriptQualityLabel = (props: TranscriptQualityLabelProps) => {
+  const transcriptQuality = props.transcript && 'selected'; // TODO Change this to props.transcript.mane/plus etc when available
 
   return (
-    <div className={styles.defaultTranscriptLabel}>
-      <span>{transcriptLabel[CanonicalType]?.label}</span>
-      <QuestionButton helpText={transcriptLabel[CanonicalType]?.helpText} />
+    <div className={styles.transcriptQualityLabel}>
+      <span>{transcriptLabelMap[transcriptQuality]?.label}</span>
+      <QuestionButton
+        helpText={transcriptLabelMap[transcriptQuality]?.helpText}
+      />
     </div>
   );
 };

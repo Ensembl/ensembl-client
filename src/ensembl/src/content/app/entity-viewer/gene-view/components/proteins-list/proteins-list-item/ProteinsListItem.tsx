@@ -21,7 +21,7 @@ import { connect } from 'react-redux';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
-import { DefaultTranscriptLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/DefaultTranscriptLabel';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
@@ -55,7 +55,7 @@ const ProteinsListItem = (props: Props) => {
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>
           {props.isDefault && (
-            <DefaultTranscriptLabel transcript={props.transcript} />
+            <TranscriptQualityLabel transcript={props.transcript} />
           )}
         </div>
         <div onClick={toggleListItemInfo} className={midStyles}>

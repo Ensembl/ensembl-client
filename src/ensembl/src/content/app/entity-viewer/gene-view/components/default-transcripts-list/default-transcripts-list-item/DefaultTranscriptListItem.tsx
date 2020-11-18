@@ -25,20 +25,14 @@ import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-v
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { DefaultTranscriptLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/DefaultTranscriptLabel';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 
-type defaultTranscriptLabelType = {
-  label: string;
-  helpText: string;
-};
-
 export type DefaultTranscriptListItemProps = {
   gene: Gene;
   isDefault?: boolean;
-  defaultTranscriptLabel?: defaultTranscriptLabelType;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;
@@ -65,7 +59,7 @@ export const DefaultTranscriptListItem = (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
         {props.isDefault && (
-          <DefaultTranscriptLabel transcript={props.transcript} />
+          <TranscriptQualityLabel transcript={props.transcript} />
         )}
         <div className={transcriptsListStyles.middle}>
           <div
