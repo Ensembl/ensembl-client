@@ -36,9 +36,14 @@ const transcriptLabelMap = {
 export const TranscriptQualityLabel = (props: TranscriptQualityLabelProps) => {
   const transcriptQuality = props.transcript && 'selected'; // TODO Change this to props.transcript.mane/plus etc when available
 
+  const labelText = transcriptLabelMap[transcriptQuality]?.label;
+  if (!labelText) {
+    return null;
+  }
+
   return (
     <div className={styles.transcriptQualityLabel}>
-      <span>{transcriptLabelMap[transcriptQuality]?.label}</span>
+      <span>{labelText}</span>
       <QuestionButton
         helpText={transcriptLabelMap[transcriptQuality]?.helpText}
       />
