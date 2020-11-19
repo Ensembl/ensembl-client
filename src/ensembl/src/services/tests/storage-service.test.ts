@@ -102,11 +102,27 @@ describe('storageService', () => {
         const key = faker.lorem.word();
         const key1 = faker.lorem.word();
         const key2 = faker.lorem.word();
+        const arrayKey1 = faker.lorem.word();
+        const arrayKey2 = faker.lorem.word();
+
         const value1 = faker.lorem.words();
         const value2 = faker.lorem.words();
         const value3 = faker.lorem.words();
-        const obj = { [key1]: value1 };
-        const updateObj = { [key1]: value3, [key2]: value2 };
+        const arrayValue1 = [faker.lorem.words()];
+        const arrayValue2 = [faker.lorem.words()];
+        const arrayValue3 = [faker.lorem.words()];
+
+        const obj = {
+          [key1]: value1,
+          [arrayKey1]: arrayValue1,
+          [arrayKey2]: arrayValue2
+        };
+        const updateObj = {
+          [key1]: value3,
+          [arrayKey1]: [],
+          [arrayKey2]: arrayValue3,
+          [key2]: value2
+        };
 
         jest
           .spyOn(mockLocalStorage, 'getItem')
