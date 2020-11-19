@@ -32,10 +32,7 @@ import {
   getGenomeTrackCategories,
   getGenomeKaryotype
 } from 'src/shared/state/genome/genomeSelectors';
-import {
-  ensureSpeciesIsCommitted,
-  ensureSpeciesIsEnabled
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(
@@ -54,7 +51,6 @@ export const fetchGenomeData = (
   ]);
 
   dispatch(ensureSpeciesIsCommitted(genomeId));
-  dispatch(ensureSpeciesIsEnabled(genomeId));
 
   dispatch(fetchExampleEnsObjects(genomeId));
 };
