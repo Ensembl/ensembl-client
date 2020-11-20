@@ -23,6 +23,7 @@ import { replace } from 'connected-react-router';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -39,6 +40,7 @@ const UNIPROT_SOURCE = 'Uniprot';
 
 type Props = {
   transcript: Transcript;
+  isDefault?: boolean;
   trackLength: number;
   expandedTranscriptIds: string[];
   toggleExpandedProtein: (id: string) => void;
@@ -93,7 +95,11 @@ const ProteinsListItem = (props: Props) => {
     <div className={styles.proteinListItem}>
       <span className={styles.scrollRef} ref={itemRef}></span>
       <div className={transcriptsListStyles.row}>
-        <div className={transcriptsListStyles.left}></div>
+        <div className={transcriptsListStyles.left}>
+          {props.isDefault && (
+            <TranscriptQualityLabel transcript={props.transcript} />
+          )}
+        </div>
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{getProductAminoAcidLength(transcript)} aa</div>
           <div>{getProteinDescription()}</div>

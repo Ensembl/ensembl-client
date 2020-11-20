@@ -87,6 +87,6 @@ describe('<DefaultTranscriptListItem />', () => {
 
   it('displays selected transcript', () => {
     wrapper = renderComponent({ isDefault: true });
-    expect(wrapper.find('.defaultTranscriptLabel').text()).toBe('Selected');
+    expect(wrapper.find('.transcriptQualityLabel').text()).toBe('Selected');
   });
 });
