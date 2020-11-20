@@ -31,8 +31,10 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { fetchProteinDomains } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
-  fetchProteinSummary,
-  ProteinSummary
+  fetchXrefId,
+  fetchProteinSummaryStats,
+  Xref,
+  ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { LoadingState } from 'src/shared/types/loading-state';
@@ -66,17 +68,24 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains,
     setTranscriptWithProteinDomains
   ] = useState<Transcript | null>(null);
-  const [proteinSummary, setProteinSummary] = useState<
-    ProteinSummary | null | undefined
+
+  const [xref, setXref] = useState<Xref | null | undefined>();
+
+  const [proteinSummaryStats, setProteinSummaryStats] = useState<
+    ProteinStats | null | undefined
   >();
 
   const [domainsLoadingState, setDomainsLoadingState] = useState<LoadingState>(
     LoadingState.LOADING
   );
 
-  const [summaryLoadingState, setSummaryLoadingState] = useState<LoadingState>(
+  const [xrefLoadingState, setXrefLoadingState] = useState<LoadingState>(
     LoadingState.LOADING
   );
+
+  const [summaryStatsLoadingState, setSummaryStatsLoadingState] = useState<
+    LoadingState
+  >(LoadingState.LOADING);
 
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
@@ -110,26 +119,49 @@ const ProteinsListItemInfo = (props: Props) => {
   useEffect(() => {
     const abortController = new AbortController();
 
-    if (summaryLoadingState === LoadingState.LOADING) {
-      fetchProteinSummary(proteinId, abortController.signal)
+    if (xrefLoadingState === LoadingState.LOADING) {
+      fetchXrefId(proteinId, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
-            response
-              ? setProteinSummary(response as ProteinSummary)
-              : setProteinSummary(null);
-
-            setSummaryLoadingState(LoadingState.SUCCESS);
+            response ? setXref(response) : setXref(null);
+            setXrefLoadingState(LoadingState.SUCCESS);
           }
         })
         .catch(() => {
-          setSummaryLoadingState(LoadingState.ERROR);
+          setXrefLoadingState(LoadingState.ERROR);
+        });
+    }
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [xrefLoadingState]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    if (xrefLoadingState === LoadingState.SUCCESS && xref === null) {
+      setSummaryStatsLoadingState(LoadingState.SUCCESS);
+      return;
+    }
+
+    if (summaryStatsLoadingState === LoadingState.LOADING && xref) {
+      fetchProteinSummaryStats(xref?.display_id, abortController.signal)
+        .then((response) => {
+          if (!abortController.signal.aborted) {
+            response
+              ? setProteinSummaryStats(response as ProteinStats)
+              : setProteinSummaryStats(null);
+            setSummaryStatsLoadingState(LoadingState.SUCCESS);
+          }
+        })
+        .catch(() => {
+          setSummaryStatsLoadingState(LoadingState.ERROR);
         });
     }
 
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryLoadingState]);
+  }, [summaryStatsLoadingState, xrefLoadingState, xref]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
@@ -149,17 +181,17 @@ const ProteinsListItemInfo = (props: Props) => {
       )}
 
       <div className={styles.proteinSummary}>
-        {proteinSummary && (
-          <>
+        <>
+          {xref?.display_id && (
             <div className={styles.proteinSummaryTop}>
               <div className={styles.interproUniprotWrapper}>
                 <ProteinExternalReference
                   source={ExternalSource.INTERPRO}
-                  externalId={proteinSummary.pdbeId}
+                  externalId={xref.display_id}
                 />
                 <ProteinExternalReference
                   source={ExternalSource.UNIPROT}
-                  externalId={proteinSummary.pdbeId}
+                  externalId={xref.display_id}
                 />
               </div>
               <div className={styles.downloadWrapper}>
@@ -168,27 +200,28 @@ const ProteinsListItemInfo = (props: Props) => {
                 />
               </div>
             </div>
+          )}
+          {proteinSummaryStats && (
             <div>
               <ProteinExternalReference
                 source={ExternalSource.PDBE}
-                externalId={proteinSummary.pdbeId}
+                externalId={xref?.display_id}
               />
-              {proteinSummary?.proteinStats && (
+              {proteinSummaryStats && (
                 <div className={styles.proteinFeaturesCountWrapper}>
-                  <ProteinFeaturesCount
-                    proteinStats={proteinSummary.proteinStats}
-                  />
+                  <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
                 </div>
               )}
             </div>
-          </>
-        )}
-
+          )}
+        </>
         <StatusContent
-          summaryLoadingState={summaryLoadingState}
+          summaryLoadingState={summaryStatsLoadingState}
           domainsLoadingState={domainsLoadingState}
-          setSummaryLoadingState={setSummaryLoadingState}
+          xrefLoadingState={xrefLoadingState}
+          setSummaryStatsLoadingState={setSummaryStatsLoadingState}
           setDomainsLoadingState={setDomainsLoadingState}
+          setXrefLoadingState={setXrefLoadingState}
         />
 
         <div className={styles.keyline}></div>
@@ -200,8 +233,10 @@ const ProteinsListItemInfo = (props: Props) => {
 type StatusContentProps = {
   summaryLoadingState: LoadingState;
   domainsLoadingState: LoadingState;
-  setSummaryLoadingState: (loadingState: LoadingState) => void;
+  xrefLoadingState: LoadingState;
+  setSummaryStatsLoadingState: (loadingState: LoadingState) => void;
   setDomainsLoadingState: (loadingState: LoadingState) => void;
+  setXrefLoadingState: (loadingState: LoadingState) => void;
 };
 
 const StatusContent = (props: StatusContentProps) => {
@@ -221,7 +256,7 @@ const StatusContent = (props: StatusContentProps) => {
       props.setDomainsLoadingState(LoadingState.LOADING);
     }
     if (props.summaryLoadingState === LoadingState.ERROR) {
-      props.setSummaryLoadingState(LoadingState.LOADING);
+      props.setSummaryStatsLoadingState(LoadingState.LOADING);
     }
   };
 

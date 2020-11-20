@@ -50,15 +50,10 @@ export type ProteinStats = {
   annotationsCount: number;
 };
 
-export type ProteinSummary = {
-  proteinStats: ProteinStats;
-  pdbeId: string;
-};
-
-export const fetchProteinSummary = async (
+export const fetchXrefId = async (
   proteinId: string,
   signal?: AbortSignal
-): Promise<ProteinSummary | null> => {
+): Promise<Xref | null> => {
   const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${proteinId}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
   const xrefsData: XrefsInResponse | undefined = await apiService.fetch(
     xrefsUrl,
@@ -71,22 +66,23 @@ export const fetchProteinSummary = async (
     return null;
   }
 
-  if (xrefsData[0]) {
-    const pdbeId = xrefsData[0].display_id;
-    const proteinStatsUrl = `https://www.ebi.ac.uk/pdbe/graph-api/uniprot/summary_stats/${pdbeId}`;
+  return xrefsData[0];
+};
 
-    const proteinStatsData:
-      | UniProtSummaryStats
-      | undefined = await apiService.fetch(proteinStatsUrl, {
-      signal
-    });
+export const fetchProteinSummaryStats = async (
+  xrefId: string,
+  signal?: AbortSignal
+): Promise<ProteinStats | null> => {
+  const proteinStatsUrl = `https://www.ebi.ac.uk/pdbe/graph-api/uniprot/summary_stats/${xrefId}`;
 
-    if (!proteinStatsData) {
-      return null;
-    }
-
-    return restProteinSummaryAdaptor(proteinStatsData[pdbeId], pdbeId);
-  } else {
+  const proteinStatsData:
+    | UniProtSummaryStats
+    | undefined = await apiService.fetch(proteinStatsUrl, {
+    signal
+  });
+  if (!proteinStatsData) {
     return null;
   }
+
+  return restProteinSummaryAdaptor(proteinStatsData[xrefId]);
 };
