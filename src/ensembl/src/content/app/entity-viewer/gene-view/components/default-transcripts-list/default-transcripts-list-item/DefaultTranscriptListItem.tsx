@@ -46,8 +46,6 @@ export type DefaultTranscriptListItemProps = {
   toggleTranscriptInfo: (id: string) => void;
 };
 
-// NOTE: the width of the middle column is the same as the width of GeneOverviewImage, i.e. 695px
-
 export const DefaultTranscriptListItem = (
   props: DefaultTranscriptListItemProps
 ) => {
