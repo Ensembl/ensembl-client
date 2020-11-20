@@ -28,3 +28,13 @@ export const getActiveGenomeStats = (state: RootState) => {
 
   return state.speciesPage.general.stats[activeGenomeId];
 };
+
+export const getActiveGenomeUIState = (state: RootState) => {
+  const activeGenomeId = getActiveGenomeId(state);
+
+  if (!activeGenomeId) {
+    return;
+  }
+
+  return state.speciesPage.general.uiState[activeGenomeId];
+};

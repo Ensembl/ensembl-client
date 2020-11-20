@@ -17,7 +17,7 @@
 import windowService, {
   WindowServiceInterface
 } from 'src/services/window-service';
-import merge from 'lodash/merge';
+import mergeWith from 'lodash/mergeWith';
 import JSONValue, { PrimitiveValue, ArrayValue } from 'src/shared/types/JSON';
 
 export enum StorageType {
@@ -41,6 +41,13 @@ export interface StorageServiceInterface {
 
 const defaultOptions: options = {
   storage: StorageType.LOCAL_STORAGE
+};
+
+// We need to overwrite the arrays instead of merging them so that it is easier to remove entries
+const overwriteArray = (currentValue: JSONValue, newValue: JSONValue) => {
+  if (Array.isArray(currentValue)) {
+    return newValue;
+  }
 };
 
 // named export is for testing;
@@ -75,7 +82,7 @@ export class StorageService implements StorageServiceInterface {
   public update(key: string, fragment: JSONValue, options = defaultOptions) {
     const storedData = this.get(key, options);
     if (storedData) {
-      this.save(key, merge(storedData, fragment), options);
+      this.save(key, mergeWith(storedData, fragment, overwriteArray), options);
     } else {
       this.save(key, fragment, options);
     }

@@ -26,11 +26,16 @@ import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import {
   getActiveGenomeId,
-  getActiveGenomeStats
+  getActiveGenomeStats,
+  getActiveGenomeUIState
 } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { fetchStatsForActiveGenome } from 'src/content/app/species/state/general/speciesGeneralSlice';
+import {
+  fetchStatsForActiveGenome,
+  setActiveGenomeExpandedSections,
+  GenomeUIState
+} from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import { RootState } from 'src/store';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
@@ -39,7 +44,8 @@ import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   StatsSection,
-  sectionGroupsMap
+  sectionGroupsMap,
+  SpeciesStatsSection
 } from '../../state/general/speciesGeneralHelper';
 
 import styles from './SpeciesMainView.scss';
@@ -47,9 +53,11 @@ import styles from './SpeciesMainView.scss';
 type Props = {
   activeGenomeId: string | null;
   genomeStats: GenomeStats | undefined;
+  genomeUIState: GenomeUIState | undefined;
   exampleFocusObjects: ExampleFocusObject[];
   species: CommittedItem | null;
   fetchStatsForActiveGenome: () => void;
+  setExpandedSections: (expandedSections: SpeciesStatsSection[]) => void;
 };
 
 type ExampleLinkPopupProps = {
@@ -163,6 +171,10 @@ const SpeciesMainViewStats = (props: Props) => {
     }
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
+  const expandedSections = props.genomeUIState
+    ? props.genomeUIState.expandedSections
+    : [];
+
   if (
     !props.genomeStats ||
     !props.exampleFocusObjects?.length ||
@@ -170,6 +182,17 @@ const SpeciesMainViewStats = (props: Props) => {
   ) {
     return null;
   }
+
+  const onSectionToggle = (
+    section: SpeciesStatsSection,
+    isExpanded: boolean
+  ) => {
+    if (isExpanded) {
+      props.setExpandedSections([...expandedSections, section]);
+    } else {
+      props.setExpandedSections(expandedSections.filter((s) => s != section));
+    }
+  };
 
   return (
     <div className={styles.statsWrapper}>
@@ -183,6 +206,10 @@ const SpeciesMainViewStats = (props: Props) => {
             key={key}
             collapsedContent={getCollapsedContent(contentProps)}
             expandedContent={getExpandedContent(contentProps)}
+            isExpanded={expandedSections.includes(statsSection.section)}
+            onToggle={(isEnabled) =>
+              onSectionToggle(statsSection.section, isEnabled)
+            }
           />
         );
       })}
@@ -196,6 +223,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     genomeStats: getActiveGenomeStats(state),
+    genomeUIState: getActiveGenomeUIState(state),
     exampleFocusObjects: activeGenomeId
       ? getGenomeExampleFocusObjects(state, activeGenomeId)
       : [],
@@ -206,7 +234,8 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mapDispatchToProps = {
-  fetchStatsForActiveGenome
+  fetchStatsForActiveGenome,
+  setExpandedSections: setActiveGenomeExpandedSections
 };
 
 export default connect(
