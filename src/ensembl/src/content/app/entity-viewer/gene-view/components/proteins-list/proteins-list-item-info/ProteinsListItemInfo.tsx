@@ -182,8 +182,8 @@ const ProteinsListItemInfo = (props: Props) => {
 
       <div className={styles.proteinSummary}>
         <>
-          {xref?.display_id && (
-            <div className={styles.proteinSummaryTop}>
+          <div className={styles.proteinSummaryTop}>
+            {xref?.display_id && (
               <div className={styles.interproUniprotWrapper}>
                 <ProteinExternalReference
                   source={ExternalSource.INTERPRO}
@@ -194,13 +194,13 @@ const ProteinsListItemInfo = (props: Props) => {
                   externalId={xref.display_id}
                 />
               </div>
-              <div className={styles.downloadWrapper}>
-                <InstantDownloadProtein
-                  transcriptId={transcript.unversioned_stable_id}
-                />
-              </div>
+            )}
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadProtein
+                transcriptId={transcript.unversioned_stable_id}
+              />
             </div>
-          )}
+          </div>
           {proteinSummaryStats && (
             <div>
               <ProteinExternalReference
