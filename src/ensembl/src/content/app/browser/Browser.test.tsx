@@ -65,6 +65,7 @@ describe('<Browser />', () => {
     isTrackPanelOpened: false,
     exampleEnsObjects: [],
     fetchGenomeData: jest.fn(),
+    ensureSpeciesIsEnabled: jest.fn(),
     toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
     viewportWidth: BreakpointWidth.DESKTOP
