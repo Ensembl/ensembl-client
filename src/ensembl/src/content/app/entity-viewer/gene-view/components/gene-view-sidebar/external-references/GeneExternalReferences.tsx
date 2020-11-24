@@ -45,6 +45,7 @@ const QUERY = gql`
     gene(byId: { stable_id: $stable_id, genome_id: $genome_id }) {
       name
       stable_id
+      symbol
       external_references {
         accession_id
         name
@@ -80,7 +81,7 @@ type Transcript = {
 };
 
 type Gene = {
-  name: string;
+  symbol: string;
   stable_id: string;
   transcripts: Transcript[];
   external_references: ExternalReferenceType[];
@@ -145,7 +146,7 @@ const GeneExternalReferences = () => {
   return (
     <div className={styles.xrefsContainer}>
       <div className={styles.geneDetails}>
-        <div className={styles.geneSymbol}>{data.gene.name}</div>
+        <div className={styles.geneSymbol}>{data.gene.symbol}</div>
         <div className={styles.stableId}>{data.gene.stable_id}</div>
       </div>
 
