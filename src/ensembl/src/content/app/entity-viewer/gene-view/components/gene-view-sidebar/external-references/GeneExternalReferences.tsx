@@ -180,7 +180,6 @@ const GeneExternalReferences = () => {
           {transcripts.map((transcript, key) => {
             return (
               <div key={key}>
-                {' '}
                 <RenderTranscriptXrefGroup transcript={transcript} />
               </div>
             );
@@ -240,7 +239,8 @@ const renderXrefGroup = (
               {externalReferencesGroup.references.map((entry, key) => (
                 <ExternalReference
                   label={
-                    entry.description === entry.accession_id
+                    entry.description === entry.accession_id ||
+                    externalReferencesGroup.source.name === entry.description
                       ? ''
                       : entry.description
                   }
