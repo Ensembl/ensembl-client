@@ -169,13 +169,7 @@ const GeneExternalReferences = () => {
                 </div>
               );
             } else {
-              return externalReferencesGroup.references[0].name ===
-                externalReferencesGroup.source.name
-                ? renderXrefGroupWithSameLabels(externalReferencesGroup, key)
-                : renderXrefGroupWithDifferentLabels(
-                    externalReferencesGroup,
-                    key
-                  );
+              return renderXrefGroup(externalReferencesGroup, key);
             }
           }
         )}
@@ -228,33 +222,7 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
   );
 };
 
-const renderXrefGroupWithSameLabels = (
-  externalReferencesGroup: ExternalReferencesGroup,
-  key: number
-) => {
-  return (
-    <div key={key} className={styles.xrefGroupWithSameLabel}>
-      <div className={styles.xrefGroupSourceName}>
-        {externalReferencesGroup.source.name}
-      </div>
-      <div className={styles.xrefGroupLinks}>
-        {externalReferencesGroup.references.map((entry, key) => (
-          <ExternalReference
-            label={''}
-            to={entry.url}
-            linkText={entry.accession_id}
-            key={key}
-            classNames={{
-              container: styles.externalReferenceContainer
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const renderXrefGroupWithDifferentLabels = (
+const renderXrefGroup = (
   externalReferencesGroup: ExternalReferencesGroup,
   key: number
 ) => {
@@ -271,7 +239,11 @@ const renderXrefGroupWithDifferentLabels = (
             <div>
               {externalReferencesGroup.references.map((entry, key) => (
                 <ExternalReference
-                  label={entry.description}
+                  label={
+                    entry.description === entry.accession_id
+                      ? ''
+                      : entry.description
+                  }
                   to={entry.url}
                   linkText={entry.accession_id}
                   key={key}

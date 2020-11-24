@@ -14,7 +14,7 @@
 
 .geneDetails {
   display: grid;
-  grid-template-columns: [gene-symbol] min-content 10px [stable-id] auto;
+  grid-template-columns: [gene-symbol] minmax(min-content, max-content) 10px [stable-id] auto;
 
   .geneSymbol {
     grid-column: gene-symbol;
@@ -74,19 +74,6 @@
 }
 .transcriptXrefs {
   margin: 10px 0 20px 20px;
-}
-
-.xrefGroupSourceName {
-  margin-right: 5px;
-  display: inline-block;
-}
-
-.xrefGroupWithSameLabel {
-  display: inline-block;
-}
-
-.xrefGroupLinks {
-  display: inline-grid;
 }
 
 .externalReferenceContainer{
