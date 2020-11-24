@@ -43,7 +43,6 @@ import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHe
 const QUERY = gql`
   query Gene($stable_id: String!, $genome_id: String!) {
     gene(byId: { stable_id: $stable_id, genome_id: $genome_id }) {
-      name
       stable_id
       symbol
       external_references {
