@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
@@ -36,7 +36,7 @@ type PropsForRespondingWithData = {
 
 type OnChangeProps = PropsForRespondingWithEvents | PropsForRespondingWithData;
 
-type Props = {
+export type Props = {
   value: string | number;
   id?: string;
   name?: string;
@@ -50,13 +50,17 @@ type Props = {
 } & OnChangeProps;
 
 const Input = (props: Props) => {
+  const [inputValue, setInputValue] = useState(props.value);
+
   const eventHandler = (eventName: string) => (
     e: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
   ) => {
+    e.persist();
     const value = e.target.value;
 
     if (eventName === 'change') {
       props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
+      setInputValue(value);
     } else if (eventName === 'focus') {
       props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
     } else if (eventName === 'blur') {
@@ -74,7 +78,7 @@ const Input = (props: Props) => {
       autoFocus={props.autoFocus}
       placeholder={props.placeholder}
       className={className}
-      value={props.value}
+      value={inputValue}
       onChange={eventHandler('change')}
       onFocus={eventHandler('focus')}
       onBlur={eventHandler('blur')}
