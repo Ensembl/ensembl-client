@@ -30,7 +30,7 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-
+import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
@@ -106,6 +106,7 @@ export const setDataFromUrlAndSave: ActionCreator<ThunkAction<
 
   const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
 
+  dispatch(ensureSpeciesIsEnabled(payload.activeGenomeId));
   browserStorageService.saveActiveGenomeId(payload.activeGenomeId);
   chrLocation &&
     browserStorageService.updateChrLocation({ [activeGenomeId]: chrLocation });

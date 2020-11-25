@@ -30,7 +30,6 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
@@ -79,7 +78,6 @@ export type BrowserProps = {
   exampleEnsObjects: EnsObject[];
   viewportWidth: BreakpointWidth;
   fetchGenomeData: (genomeId: string) => void;
-  ensureSpeciesIsEnabled: (genomeId: string) => void;
   toggleTrackPanel: (isOpen: boolean) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
 };
@@ -90,13 +88,12 @@ export const Browser = (props: BrowserProps) => {
   const { isDrawerOpened } = props;
 
   useEffect(() => {
-    const { activeGenomeId, fetchGenomeData, ensureSpeciesIsEnabled } = props;
+    const { activeGenomeId, fetchGenomeData } = props;
     if (!activeGenomeId) {
       return;
     }
 
     fetchGenomeData(activeGenomeId);
-    ensureSpeciesIsEnabled(activeGenomeId);
 
     analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
@@ -197,8 +194,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = {
   fetchGenomeData,
   toggleDrawer,
-  toggleTrackPanel,
-  ensureSpeciesIsEnabled
+  toggleTrackPanel
 };
 
 const ReduxConnectedBrowser = connect(
