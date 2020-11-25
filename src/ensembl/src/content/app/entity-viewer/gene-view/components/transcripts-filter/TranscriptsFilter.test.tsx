@@ -112,7 +112,9 @@ describe('<TranscriptsFilter />', () => {
 
     const secondSortingLabel = wrapper
       .find('label')
-      .findWhere((el) => el.text() === 'Spliced length: longest – shortest');
+      .findWhere(
+        (el) => el.text() === 'Combined exon length: longest – shortest'
+      );
     const secondSortingRadioButton = secondSortingLabel.find('input');
 
     expect(secondSortingRadioButton.prop('checked')).toBe(true);
