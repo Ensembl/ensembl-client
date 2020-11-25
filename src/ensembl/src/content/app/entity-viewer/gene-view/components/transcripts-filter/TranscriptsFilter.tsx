@@ -53,11 +53,11 @@ const sortingOrderToLabel = [
   [SortingRule.DEFAULT, 'Default'],
   [
     SortingRule.SPLICED_LENGTH_LONGEST_TO_SHORTEST,
-    'Spliced length: longest – shortest'
+    'Combined exon length: longest – shortest'
   ],
   [
     SortingRule.SPLICED_LENGTH_SHORTEST_TO_LONGEST,
-    'Spliced length: shortest – longest'
+    'Combined exon length: shortest – longest'
   ],
   [SortingRule.EXON_COUNT_HIGH_TO_LOW, 'Exon count: high - low'],
   [SortingRule.EXON_COUNT_LOW_TO_HIGH, 'Exon count: low - high']
