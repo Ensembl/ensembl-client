@@ -69,7 +69,7 @@ const ProteinsListItemInfo = (props: Props) => {
     setTranscriptWithProteinDomains
   ] = useState<Transcript | null>(null);
 
-  const [xref, setXref] = useState<Xref | null | undefined>();
+  const [xref, setXref] = useState<Xref | undefined>();
 
   const [proteinSummaryStats, setProteinSummaryStats] = useState<
     ProteinStats | null | undefined
@@ -123,7 +123,7 @@ const ProteinsListItemInfo = (props: Props) => {
       fetchXrefId(proteinId, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
-            response ? setXref(response) : setXref(null);
+            response ? setXref(response) : setXref(undefined);
             setXrefLoadingState(LoadingState.SUCCESS);
           }
         })
@@ -138,7 +138,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (xrefLoadingState === LoadingState.SUCCESS && xref === null) {
+    if (xrefLoadingState === LoadingState.SUCCESS && xref === undefined) {
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }

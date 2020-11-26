@@ -53,7 +53,7 @@ export type ProteinStats = {
 export const fetchXrefId = async (
   proteinId: string,
   signal?: AbortSignal
-): Promise<Xref | null> => {
+): Promise<Xref | undefined> => {
   const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${proteinId}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
   const xrefsData: XrefsInResponse | undefined = await apiService.fetch(
     xrefsUrl,
@@ -63,7 +63,7 @@ export const fetchXrefId = async (
   );
 
   if (!xrefsData) {
-    return null;
+    return undefined;
   }
 
   return xrefsData[0];
