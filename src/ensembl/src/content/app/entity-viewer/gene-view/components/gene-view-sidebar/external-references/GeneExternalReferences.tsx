@@ -43,8 +43,8 @@ import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHe
 const QUERY = gql`
   query Gene($stable_id: String!, $genome_id: String!) {
     gene(byId: { stable_id: $stable_id, genome_id: $genome_id }) {
-      name
       stable_id
+      symbol
       external_references {
         accession_id
         name
@@ -80,7 +80,7 @@ type Transcript = {
 };
 
 type Gene = {
-  name: string;
+  symbol: string;
   stable_id: string;
   transcripts: Transcript[];
   external_references: ExternalReferenceType[];
@@ -145,8 +145,8 @@ const GeneExternalReferences = () => {
   return (
     <div className={styles.xrefsContainer}>
       <div className={styles.geneDetails}>
-        <div className={styles.geneSymbol}>{data.gene.name}</div>
-        <div className={styles.stableId}>{data.gene.stable_id}</div>
+        <span className={styles.geneSymbol}>{data.gene.symbol}</span>
+        <span>{data.gene.stable_id}</span>
       </div>
 
       <div className={styles.sectionHead}>Gene</div>
@@ -169,13 +169,7 @@ const GeneExternalReferences = () => {
                 </div>
               );
             } else {
-              return externalReferencesGroup.references[0].name ===
-                externalReferencesGroup.source.name
-                ? renderXrefGroupWithSameLabels(externalReferencesGroup, key)
-                : renderXrefGroupWithDifferentLabels(
-                    externalReferencesGroup,
-                    key
-                  );
+              return renderXrefGroup(externalReferencesGroup, key);
             }
           }
         )}
@@ -186,7 +180,6 @@ const GeneExternalReferences = () => {
           {transcripts.map((transcript, key) => {
             return (
               <div key={key}>
-                {' '}
                 <RenderTranscriptXrefGroup transcript={transcript} />
               </div>
             );
@@ -228,33 +221,7 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
   );
 };
 
-const renderXrefGroupWithSameLabels = (
-  externalReferencesGroup: ExternalReferencesGroup,
-  key: number
-) => {
-  return (
-    <div key={key} className={styles.xrefGroupWithSameLabel}>
-      <div className={styles.xrefGroupSourceName}>
-        {externalReferencesGroup.source.name}
-      </div>
-      <div className={styles.xrefGroupLinks}>
-        {externalReferencesGroup.references.map((entry, key) => (
-          <ExternalReference
-            label={''}
-            to={entry.url}
-            linkText={entry.accession_id}
-            key={key}
-            classNames={{
-              container: styles.externalReferenceContainer
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const renderXrefGroupWithDifferentLabels = (
+const renderXrefGroup = (
   externalReferencesGroup: ExternalReferencesGroup,
   key: number
 ) => {
@@ -271,7 +238,12 @@ const renderXrefGroupWithDifferentLabels = (
             <div>
               {externalReferencesGroup.references.map((entry, key) => (
                 <ExternalReference
-                  label={entry.description}
+                  label={
+                    entry.description === entry.accession_id ||
+                    externalReferencesGroup.source.name === entry.description
+                      ? ''
+                      : entry.description
+                  }
                   to={entry.url}
                   linkText={entry.accession_id}
                   key={key}

@@ -13,16 +13,9 @@
 }
 
 .geneDetails {
-  display: grid;
-  grid-template-columns: [gene-symbol] min-content 10px [stable-id] auto;
-
   .geneSymbol {
-    grid-column: gene-symbol;
     font-weight: $bold;
-  }
-
-  .stableId {
-    grid-column: stable-id;
+    margin-right: 10px;
   }
 }
 
@@ -74,19 +67,6 @@
 }
 .transcriptXrefs {
   margin: 10px 0 20px 20px;
-}
-
-.xrefGroupSourceName {
-  margin-right: 5px;
-  display: inline-block;
-}
-
-.xrefGroupWithSameLabel {
-  display: inline-block;
-}
-
-.xrefGroupLinks {
-  display: inline-grid;
 }
 
 .externalReferenceContainer{
