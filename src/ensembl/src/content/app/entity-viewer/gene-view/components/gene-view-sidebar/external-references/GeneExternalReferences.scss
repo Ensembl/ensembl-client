@@ -14,7 +14,8 @@
 
 .geneDetails {
   display: grid;
-  grid-template-columns: [gene-symbol] minmax(min-content, max-content) 10px [stable-id] auto;
+  grid-template-columns: [gene-symbol] auto [stable-id] 1fr;
+  grid-column-gap: 10px;
 
   .geneSymbol {
     grid-column: gene-symbol;
