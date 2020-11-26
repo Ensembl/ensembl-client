@@ -37,6 +37,7 @@ import {
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
@@ -74,6 +75,8 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
   } else if (genomeIdFromUrl && genomeIdFromUrl !== activeGenomeId) {
     dispatch(setActiveGenomeId(genomeIdFromUrl));
     dispatch(fetchGenomeData(genomeIdFromUrl));
+    dispatch(ensureSpeciesIsEnabled(genomeIdFromUrl));
+
     // TODO: when backend is ready, entity info may also need fetching
   } else if (activeGenomeId) {
     // TODO: when backend is ready, fetch entity info
@@ -81,6 +84,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     if (!genomeInfo) {
       dispatch(fetchGenomeData(activeGenomeId));
     }
+    dispatch(ensureSpeciesIsEnabled(activeGenomeId));
   }
 
   const entityId = params.entityId
