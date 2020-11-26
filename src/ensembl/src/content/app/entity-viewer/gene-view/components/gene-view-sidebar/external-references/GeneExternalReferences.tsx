@@ -93,7 +93,17 @@ const buildExternalReferencesGroups = (
     [key: string]: ExternalReferencesGroup;
   } = {};
 
-  externalReferences.forEach((externalReference) => {
+  const sortedExternalReferences = [...externalReferences].sort((a, b) => {
+    if (a.source.name > b.source.name) {
+      return 1;
+    }
+    if (b.source.name > a.source.name) {
+      return -1;
+    }
+    return 0;
+  });
+
+  sortedExternalReferences.forEach((externalReference) => {
     const sourceId = externalReference.source.id;
 
     if (!externalReferencesGroups[sourceId]) {
