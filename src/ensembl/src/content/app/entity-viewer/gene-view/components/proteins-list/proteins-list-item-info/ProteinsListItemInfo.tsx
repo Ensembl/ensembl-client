@@ -138,7 +138,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (xrefLoadingState === LoadingState.SUCCESS && xref === undefined) {
+    if (xrefLoadingState === LoadingState.SUCCESS && !xref) {
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
