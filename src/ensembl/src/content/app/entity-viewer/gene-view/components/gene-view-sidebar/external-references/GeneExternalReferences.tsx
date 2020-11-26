@@ -145,8 +145,8 @@ const GeneExternalReferences = () => {
   return (
     <div className={styles.xrefsContainer}>
       <div className={styles.geneDetails}>
-        <div className={styles.geneSymbol}>{data.gene.symbol}</div>
-        <div className={styles.stableId}>{data.gene.stable_id}</div>
+        <span className={styles.geneSymbol}>{data.gene.symbol}</span>
+        <span>{data.gene.stable_id}</span>
       </div>
 
       <div className={styles.sectionHead}>Gene</div>
