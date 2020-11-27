@@ -17,7 +17,13 @@
 import sortBy from 'lodash/sortBy';
 import partition from 'lodash/partition';
 
-import { getFeatureLength, isProteinCodingTranscript } from './entity-helpers';
+import {
+  getFeatureLength,
+  isProteinCodingTranscript,
+  getSplicedRNALength
+} from './entity-helpers';
+
+import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
@@ -53,3 +59,40 @@ export function defaultSort(transcripts: Transcript[]) {
 
   return [...proteinCodingTranscripts, ...sortedNonProteinCodingTranscripts];
 }
+
+export function sortBySplicedLengthDesc(transcripts: Transcript[]) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return getSplicedRNALength(transcriptB) - getSplicedRNALength(transcriptA);
+  });
+}
+
+export function sortBySplicedLengthAsc(transcripts: Transcript[]) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return getSplicedRNALength(transcriptA) - getSplicedRNALength(transcriptB);
+  });
+}
+
+export function sortByExonCountDesc(transcripts: Transcript[]) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return transcriptB.spliced_exons.length - transcriptA.spliced_exons.length;
+  });
+}
+
+export function sortByExonCountAsc(transcripts: Transcript[]) {
+  return [...transcripts].sort((transcriptA, transcriptB) => {
+    return transcriptA.spliced_exons.length - transcriptB.spliced_exons.length;
+  });
+}
+
+type SortingFunction = (transcripts: Transcript[]) => Transcript[];
+
+export const transcriptSortingFunctions: Record<
+  SortingRule,
+  SortingFunction
+> = {
+  default: defaultSort,
+  spliced_length_desc: sortBySplicedLengthDesc,
+  spliced_length_asc: sortBySplicedLengthAsc,
+  exon_count_desc: sortByExonCountDesc,
+  exon_count_asc: sortByExonCountAsc
+};

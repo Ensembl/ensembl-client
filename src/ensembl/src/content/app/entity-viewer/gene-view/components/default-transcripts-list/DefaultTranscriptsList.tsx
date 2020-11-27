@@ -18,13 +18,17 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { transcriptSortingFunctions } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import {
   getExpandedTranscriptIds,
-  getExpandedTranscriptDownloadIds
+  getExpandedTranscriptDownloadIds,
+  getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
-import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import {
+  toggleTranscriptInfo,
+  SortingRule
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
@@ -43,11 +47,14 @@ type Props = {
   expandedTranscriptIds: string[];
   expandedTranscriptDownloadIds: string[];
   toggleTranscriptInfo: (id: string) => void;
+  sortingRule: SortingRule;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
-  const { gene } = props;
-  const sortedTranscripts = defaultSort(gene.transcripts);
+  const { gene, sortingRule } = props;
+
+  const sortingFunction = transcriptSortingFunctions[sortingRule];
+  const sortedTranscripts = sortingFunction(gene.transcripts);
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -74,7 +81,7 @@ const DefaultTranscriptslist = (props: Props) => {
           />
         )}
         <div className={styles.row}>
-          {gene.transcripts.length > 3 && !isFilterOpen && (
+          {gene.transcripts.length > 5 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
               <ChevronDown className={styles.chevron} />
@@ -127,7 +134,8 @@ const StripedBackground = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   expandedTranscriptIds: getExpandedTranscriptIds(state),
-  expandedTranscriptDownloadIds: getExpandedTranscriptDownloadIds(state)
+  expandedTranscriptDownloadIds: getExpandedTranscriptDownloadIds(state),
+  sortingRule: getSortingRule(state)
 });
 
 const mapDispatchToProps = {
