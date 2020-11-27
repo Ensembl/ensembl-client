@@ -120,14 +120,6 @@ describe('<TranscriptsFilter />', () => {
     expect(secondSortingRadioButton.prop('checked')).toBe(true);
   });
 
-  it.skip('shows sort by protein for protein-coding transcripts', () => {
-    //todo once we get confirmation
-  });
-
-  it.skip('does not show sort by protein for non-coding transcripts', () => {
-    //todo once we get confirmation
-  });
-
   it('correctly handles sorting order change', () => {
     const store = mockStore(mockState);
     const wrapper = mount(
