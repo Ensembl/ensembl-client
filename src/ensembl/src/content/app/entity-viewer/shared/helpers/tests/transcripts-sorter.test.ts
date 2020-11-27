@@ -16,10 +16,10 @@
 
 import {
   defaultSort,
-  sortBySplicedLengthLongestToShortest,
-  sortBySplicedLengthShortestToLongest,
-  sortByExonCountHightToLow,
-  sortByExonCountLowToHigh
+  sortBySplicedLengthDesc,
+  sortBySplicedLengthAsc,
+  sortByExonCountDesc,
+  sortByExonCountAsc
 } from '../transcripts-sorter';
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
@@ -144,7 +144,7 @@ describe('default sort', () => {
   });
 });
 
-describe('sortBySplicedLengthLongestToShortest', () => {
+describe('sortBySplicedLengthDesc', () => {
   it('sorts transcripts correctly', () => {
     const unsortedTranscripts = [
       transcriptWithMediumSplicedLength,
@@ -158,14 +158,14 @@ describe('sortBySplicedLengthLongestToShortest', () => {
     ];
 
     expect(
-      sortBySplicedLengthLongestToShortest(unsortedTranscripts).map(
+      sortBySplicedLengthDesc(unsortedTranscripts).map(
         ({ stable_id }) => stable_id
       )
     ).toEqual(expectedTranscriptIds);
   });
 });
 
-describe('sortBySplicedLengthShortestToLongest', () => {
+describe('sortBySplicedLengthAsc', () => {
   it('sorts transcripts correctly', () => {
     const unsortedTranscripts = [
       transcriptWithMediumSplicedLength,
@@ -179,14 +179,14 @@ describe('sortBySplicedLengthShortestToLongest', () => {
     ];
 
     expect(
-      sortBySplicedLengthShortestToLongest(unsortedTranscripts).map(
+      sortBySplicedLengthAsc(unsortedTranscripts).map(
         ({ stable_id }) => stable_id
       )
     ).toEqual(expectedTranscriptIds);
   });
 });
 
-describe('sortByExonCountHighToLow', () => {
+describe('sortByExonCountDesc', () => {
   it('sorts transcripts correctly(Exon count high to low)', () => {
     const unsortedTranscripts = [
       transcriptWithMediumExons,
@@ -200,14 +200,12 @@ describe('sortByExonCountHighToLow', () => {
     ];
 
     expect(
-      sortByExonCountHightToLow(unsortedTranscripts).map(
-        ({ stable_id }) => stable_id
-      )
+      sortByExonCountDesc(unsortedTranscripts).map(({ stable_id }) => stable_id)
     ).toEqual(expectedTranscriptIds);
   });
 });
 
-describe('sortByExonCountLowToHigh', () => {
+describe('sortByExonCountAsc', () => {
   it('sorts transcripts correctly(Exon count low to high)', () => {
     const unsortedTranscripts = [
       transcriptWithMediumExons,
@@ -221,9 +219,7 @@ describe('sortByExonCountLowToHigh', () => {
     ];
 
     expect(
-      sortByExonCountLowToHigh(unsortedTranscripts).map(
-        ({ stable_id }) => stable_id
-      )
+      sortByExonCountAsc(unsortedTranscripts).map(({ stable_id }) => stable_id)
     ).toEqual(expectedTranscriptIds);
   });
 });
