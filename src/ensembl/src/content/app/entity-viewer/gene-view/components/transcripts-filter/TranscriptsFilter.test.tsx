@@ -105,7 +105,7 @@ describe('<TranscriptsFilter />', () => {
     // after we change sorting option
     const updatedState = set(
       'entityViewer.geneView.transcripts.human.gene:brca2.sortingRule',
-      'spliced_length_longest_to_shortest',
+      'spliced_length_desc',
       mockState
     );
     wrapper = wrapInRedux(updatedState);
@@ -133,7 +133,7 @@ describe('<TranscriptsFilter />', () => {
     const radioGroup = wrapper.find(RadioGroup);
 
     const onRadioChange = radioGroup.prop('onChange');
-    const newSortingRule = 'spliced_length_longest_to_shortest';
+    const newSortingRule = 'spliced_length_desc';
     onRadioChange(newSortingRule);
 
     const sortingActions = store

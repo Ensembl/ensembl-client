@@ -60,42 +60,39 @@ export function defaultSort(transcripts: Transcript[]) {
   return [...proteinCodingTranscripts, ...sortedNonProteinCodingTranscripts];
 }
 
-export function sortBySplicedLengthLongestToShortest(
-  transcripts: Transcript[]
-) {
+export function sortBySplicedLengthDesc(transcripts: Transcript[]) {
   return [...transcripts].sort((transcriptA, transcriptB) => {
     return getSplicedRNALength(transcriptB) - getSplicedRNALength(transcriptA);
   });
 }
 
-export function sortBySplicedLengthShortestToLongest(
-  transcripts: Transcript[]
-) {
+export function sortBySplicedLengthAsc(transcripts: Transcript[]) {
   return [...transcripts].sort((transcriptA, transcriptB) => {
     return getSplicedRNALength(transcriptA) - getSplicedRNALength(transcriptB);
   });
 }
 
-export function sortByExonCountHightToLow(transcripts: Transcript[]) {
+export function sortByExonCountDesc(transcripts: Transcript[]) {
   return [...transcripts].sort((transcriptA, transcriptB) => {
     return transcriptB.spliced_exons.length - transcriptA.spliced_exons.length;
   });
 }
 
-export function sortByExonCountLowToHigh(transcripts: Transcript[]) {
+export function sortByExonCountAsc(transcripts: Transcript[]) {
   return [...transcripts].sort((transcriptA, transcriptB) => {
     return transcriptA.spliced_exons.length - transcriptB.spliced_exons.length;
   });
 }
 
 type SortingFunction = (transcripts: Transcript[]) => Transcript[];
+
 export const transcriptSortingFunctions: Record<
   SortingRule,
   SortingFunction
 > = {
   default: defaultSort,
-  spliced_length_longest_to_shortest: sortBySplicedLengthLongestToShortest,
-  spliced_length_shortest_to_longest: sortBySplicedLengthShortestToLongest,
-  exon_count_high_to_low: sortByExonCountHightToLow,
-  exon_count_low_to_high: sortByExonCountLowToHigh
+  spliced_length_desc: sortBySplicedLengthDesc,
+  spliced_length_asc: sortBySplicedLengthAsc,
+  exon_count_desc: sortByExonCountDesc,
+  exon_count_asc: sortByExonCountAsc
 };

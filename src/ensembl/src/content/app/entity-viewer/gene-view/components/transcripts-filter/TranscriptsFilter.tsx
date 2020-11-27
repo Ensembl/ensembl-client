@@ -51,16 +51,10 @@ type OptionValue = string | number | boolean;
 
 const sortingOrderToLabel = [
   [SortingRule.DEFAULT, 'Default'],
-  [
-    SortingRule.SPLICED_LENGTH_LONGEST_TO_SHORTEST,
-    'Combined exon length: longest – shortest'
-  ],
-  [
-    SortingRule.SPLICED_LENGTH_SHORTEST_TO_LONGEST,
-    'Combined exon length: shortest – longest'
-  ],
-  [SortingRule.EXON_COUNT_HIGH_TO_LOW, 'Exon count: high - low'],
-  [SortingRule.EXON_COUNT_LOW_TO_HIGH, 'Exon count: low - high']
+  [SortingRule.SPLICED_LENGTH_DESC, 'Combined exon length: longest – shortest'],
+  [SortingRule.SPLICED_LENGTH_ASC, 'Combined exon length: shortest – longest'],
+  [SortingRule.EXON_COUNT_DESC, 'Exon count: high - low'],
+  [SortingRule.EXON_COUNT_ASC, 'Exon count: low - high']
 ];
 
 const radioData: RadioOptions = sortingOrderToLabel.map(([key, value]) => ({
