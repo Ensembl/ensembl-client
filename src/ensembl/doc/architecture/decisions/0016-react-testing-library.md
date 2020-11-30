@@ -24,7 +24,7 @@ Several developments have made us reconsider our choice:
 
 3. There seem to be problems with the development of the `enzyme` library:
   - The project lacks clarity of vision. The maintainer is involved in numerous other projects and is [overworked](https://github.com/enzymejs/enzyme/issues/2429#issuecomment-733995565).
-  - An intention has been expressed to rely less on React internals in future versions [see this issue](https://github.com/enzymejs/enzyme/issues/1648) and the discussion in [this issue](https://github.com/enzymejs/enzyme/issues/2358); but there has been no concrete progress in this direction over the last years.
+  - An intention has been expressed to rely less on React internals in future versions ([see this issue](https://github.com/enzymejs/enzyme/issues/1648) and the discussion in [this issue](https://github.com/enzymejs/enzyme/issues/2358)); but there has been no concrete progress in this direction over the last years.
   - Some parts of `enzyme`'s api no longer even work properly since the release of React fiber and React hooks; while other parts are about to be deprecated. For example, the maintainer feels strongly that the `simulate` method is an unfortunate misnomer, because it does not really simulate DOM events, and plans to remove it from the future major version — if one ever comes out. This makes the api unstable and unreliable.
 
 There are also some additional signals from the community suggesting that it is strongly favouring `react-testing-library`:
