@@ -16,18 +16,14 @@
 
 import {
   ProteinStatsInResponse,
-  ProteinSummary
+  ProteinStats
 } from '../rest-data-fetchers/proteinData';
 
 export const restProteinSummaryAdaptor = (
-  proteinStats: ProteinStatsInResponse,
-  pdbeId: string
-): ProteinSummary => ({
-  proteinStats: {
-    structuresCount: proteinStats.pdbs,
-    ligandsCount: proteinStats.ligands,
-    interactionsCount: proteinStats.interaction_partners,
-    annotationsCount: proteinStats.annotations
-  },
-  pdbeId
+  proteinStats: ProteinStatsInResponse
+): ProteinStats => ({
+  structuresCount: proteinStats.pdbs,
+  ligandsCount: proteinStats.ligands,
+  interactionsCount: proteinStats.interaction_partners,
+  annotationsCount: proteinStats.annotations
 });

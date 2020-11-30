@@ -15,8 +15,8 @@
  */
 
 import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
-import { connect } from 'react-redux';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import {
@@ -25,7 +25,6 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import {
   setFilters,
-  Filters,
   setSortingRule,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
@@ -40,32 +39,22 @@ import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { RootState } from 'src/store';
 
 import styles from './TranscriptsFilter.scss';
 
 type Props = {
-  filters: Filters;
-  sortingRule: SortingRule;
-  toggleFilter: () => void;
-  isSidebarOpen: boolean;
   transcripts: Transcript[];
-  setFilters: (filters: Filters) => void;
-  setSortingRule: (sortingRule: SortingRule) => void;
+  toggleFilter: () => void;
 };
 
 type OptionValue = string | number | boolean;
 
 const sortingOrderToLabel = [
   [SortingRule.DEFAULT, 'Default'],
-  [
-    SortingRule.SPLICED_LENGTH_LONGEST_TO_SHORTEST,
-    'Spliced length: longest – shortest'
-  ],
-  [
-    SortingRule.SPLICED_LENGTH_SHORTEST_TO_LONGEST,
-    'Spliced length: shortest – longest'
-  ]
+  [SortingRule.SPLICED_LENGTH_DESC, 'Combined exon length: longest – shortest'],
+  [SortingRule.SPLICED_LENGTH_ASC, 'Combined exon length: shortest – longest'],
+  [SortingRule.EXON_COUNT_DESC, 'Exon count: high - low'],
+  [SortingRule.EXON_COUNT_ASC, 'Exon count: low - high']
 ];
 
 const radioData: RadioOptions = sortingOrderToLabel.map(([key, value]) => ({
@@ -74,6 +63,11 @@ const radioData: RadioOptions = sortingOrderToLabel.map(([key, value]) => ({
 }));
 
 const TranscriptsFilter = (props: Props) => {
+  const filters = useSelector(getFilters);
+  const sortingRule = useSelector(getSortingRule);
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const dispatch = useDispatch();
+
   const biotypes = props.transcripts
     .map((a) => a.so_term)
     .filter(Boolean) as string[];
@@ -91,29 +85,29 @@ const TranscriptsFilter = (props: Props) => {
   }, {});
 
   useEffect(() => {
-    if (Object.keys(props.filters).length === 0) {
-      props.setFilters(initialFilters);
+    if (Object.keys(filters).length === 0) {
+      dispatch(setFilters(initialFilters));
     }
   }, []);
 
   const filterBoxClassnames = classNames(styles.filterBox, {
-    [styles.filterBoxFullWidth]: !props.isSidebarOpen
+    [styles.filterBoxFullWidth]: !isSidebarOpen
   });
 
   const onSortingRuleChange = (value: OptionValue) => {
-    props.setSortingRule(value as SortingRule);
+    dispatch(setSortingRule(value as SortingRule));
   };
 
   const onFilterChange = (filterName: string, isChecked: boolean) => {
     const updatedFilters = {
-      ...props.filters,
+      ...filters,
       [filterName]: isChecked
     };
 
-    props.setFilters(updatedFilters);
+    dispatch(setFilters(updatedFilters));
   };
 
-  const checkboxes = Object.entries(props.filters).map(([key, value]) => (
+  const checkboxes = Object.entries(filters).map(([key, value]) => (
     <Checkbox
       key={key}
       classNames={{
@@ -146,7 +140,7 @@ const TranscriptsFilter = (props: Props) => {
               }}
               options={radioData}
               onChange={onSortingRuleChange}
-              selectedOption={props.sortingRule}
+              selectedOption={sortingRule}
             />
           </div>
         </div>
@@ -162,15 +156,4 @@ const TranscriptsFilter = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  filters: getFilters(state),
-  sortingRule: getSortingRule(state),
-  isSidebarOpen: isEntityViewerSidebarOpen(state)
-});
-
-const mapDispatchToProps = {
-  setFilters,
-  setSortingRule
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TranscriptsFilter);
+export default TranscriptsFilter;

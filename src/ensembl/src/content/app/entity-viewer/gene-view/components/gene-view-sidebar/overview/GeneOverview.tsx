@@ -48,7 +48,7 @@ const GeneOverview = (props: Props) => {
     <div className={styles.overviewContainer}>
       <div className={styles.geneDetails}>
         <span className={styles.geneSymbol}>{gene.symbol}</span>
-        <span className={styles.stableId}>{gene.id}</span>
+        <span>{gene.id}</span>
       </div>
 
       <div className={styles.sectionHead}>Gene name</div>

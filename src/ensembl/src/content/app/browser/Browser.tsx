@@ -92,7 +92,9 @@ export const Browser = (props: BrowserProps) => {
     if (!activeGenomeId) {
       return;
     }
+
     fetchGenomeData(activeGenomeId);
+
     analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
 
