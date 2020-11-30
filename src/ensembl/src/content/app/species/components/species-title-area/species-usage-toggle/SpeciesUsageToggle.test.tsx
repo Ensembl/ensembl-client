@@ -76,7 +76,7 @@ const wrapInRedux = (
   );
 };
 
-describe.only('SpeciesSelectionControls', () => {
+describe('SpeciesSelectionControls', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
