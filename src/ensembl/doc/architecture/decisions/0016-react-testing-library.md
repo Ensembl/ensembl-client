@@ -33,7 +33,7 @@ There are also some additional signals from the community suggesting that it is 
 
   > We recommend using React Testing Library which is designed to enable and encourage writing tests that use your components as the end users do.
 
-  - An influential consultancy _Thoughtworks_, in the Nov 2019 edition of their _Technology Radar_ periodical, removed `enzyme` from the list of their recommended technologies in favour of `react-testing-library` [link](https://www.thoughtworks.com/radar/languages-and-frameworks/enzyme).
+  - An influential consultancy _Thoughtworks_, in the Nov 2019 edition of their _Technology Radar_ periodical, [removed](https://www.thoughtworks.com/radar/languages-and-frameworks/enzyme) `enzyme` from the list of their recommended technologies in favour of `react-testing-library`.
 
   - In September 2020, `react-testing-library` has overtaken `enzyme` in popularity, according to the number of NPM downloads.
 
