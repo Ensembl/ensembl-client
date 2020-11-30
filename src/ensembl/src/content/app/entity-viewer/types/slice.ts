@@ -33,5 +33,6 @@ export type SliceWithLocationOnly = {
   location: {
     start: number;
     end: number;
+    length: number;
   };
 };
