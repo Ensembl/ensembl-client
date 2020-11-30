@@ -4,7 +4,9 @@ Date: 2018-08-30; Last update date: 2019-04-09
 
 ## Status
 
-Accepted
+Accepted.
+
+See [0016-react-testing-library](0016-react-testing-library.md) for updated discussion of choosing a library for unit-testing React components.
 
 ## Context
 
