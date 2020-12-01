@@ -19,7 +19,7 @@ import { DataSetType } from '../../types/dataSet';
 
 export const entityViewerWheatSampleResponse: EntityViewerSidebarPayload = {
   gene: {
-    symbol: 'TraesCS3D02G273600.1 ',
+    symbol: 'TraesCS3D02G273600.1',
     id: 'ENSG00000139618.15',
     metadata: {
       name: {
@@ -380,7 +380,7 @@ export const entityViewerHomoSapiensSampleResponse: EntityViewerSidebarPayload =
 
 export const entityViewerBacteriaSampleResponse: EntityViewerSidebarPayload = {
   gene: {
-    symbol: 'grpE ',
+    symbol: 'grpE',
     id: 'b2614',
     synonyms: ['b2614', 'ECK2610', 'JW2594'],
     metadata: {

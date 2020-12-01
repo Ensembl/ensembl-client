@@ -33,8 +33,10 @@ import { RootState } from 'src/store';
 
 export enum SortingRule {
   DEFAULT = 'default',
-  SPLICED_LENGTH_LONGEST_TO_SHORTEST = 'spliced_length_longest_to_shortest',
-  SPLICED_LENGTH_SHORTEST_TO_LONGEST = 'spliced_length_shortest_to_longest'
+  SPLICED_LENGTH_DESC = 'spliced_length_desc',
+  SPLICED_LENGTH_ASC = 'spliced_length_asc',
+  EXON_COUNT_DESC = 'exon_count_desc',
+  EXON_COUNT_ASC = 'exon_count_asc'
 }
 
 export type TranscriptsStatePerGene = {
