@@ -70,14 +70,40 @@ const QUERY = gql`
             url
           }
         }
+        product_generating_contexts {
+          product {
+            stable_id
+            external_references {
+              accession_id
+              name
+              description
+              url
+              source {
+                id
+                name
+                url
+              }
+            }
+          }
+        }
       }
     }
   }
 `;
 
+type Product = {
+  stable_id: string;
+  external_references: ExternalReferenceType[];
+};
+
+type ProductGeneratingContext = {
+  product: Product;
+};
+
 type Transcript = {
   stable_id: string;
   external_references: ExternalReferenceType[];
+  product_generating_contexts: ProductGeneratingContext[];
 };
 
 type Gene = {
@@ -171,7 +197,30 @@ const GeneExternalReferences = () => {
           {transcripts.map((transcript, key) => {
             return (
               <div key={key}>
-                <RenderTranscriptXrefGroup transcript={transcript} />
+                <RenderTranscriptOrProductXrefs
+                  transcriptOrProduct={transcript}
+                />
+              </div>
+            );
+          })}
+
+          <div className={styles.sectionHead}>Proteins</div>
+          {transcripts.map((transcript, key1) => {
+            return (
+              <div key={key1}>
+                {transcript.product_generating_contexts.map(
+                  (product_generating_context, key2) => {
+                    return (
+                      <div key={key2}>
+                        <RenderTranscriptOrProductXrefs
+                          transcriptOrProduct={
+                            product_generating_context.product
+                          }
+                        />
+                      </div>
+                    );
+                  }
+                )}
               </div>
             );
           })}
@@ -181,11 +230,13 @@ const GeneExternalReferences = () => {
   );
 };
 
-const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
-  const { transcript } = props;
+const RenderTranscriptOrProductXrefs = (props: {
+  transcriptOrProduct: Transcript | Product;
+}) => {
+  const { transcriptOrProduct } = props;
   const [isExpanded, setIsExpanded] = useState(false);
-  const transcriptsXrefGroups = buildExternalReferencesGroups(
-    transcript.external_references
+  const xrefGroups = buildExternalReferencesGroups(
+    transcriptOrProduct.external_references
   );
   return (
     <div className={styles.transcriptWrapper}>
@@ -193,12 +244,10 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
         onClick={() => setIsExpanded(!isExpanded)}
         className={styles.transcriptId}
       >
-        {transcript.stable_id}
+        {transcriptOrProduct.stable_id}
       </div>
-      {transcript.external_references && isExpanded && (
-        <div className={styles.transcriptXrefs}>
-          {renderXrefs(transcriptsXrefGroups)}
-        </div>
+      {transcriptOrProduct.external_references && isExpanded && (
+        <div className={styles.transcriptXrefs}>{renderXrefs(xrefGroups)}</div>
       )}
     </div>
   );
