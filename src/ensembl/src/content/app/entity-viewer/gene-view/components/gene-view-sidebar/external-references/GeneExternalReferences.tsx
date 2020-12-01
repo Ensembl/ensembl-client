@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
+import sortBy from 'lodash/sortBy';
 
 import {
   Accordion,
@@ -93,7 +94,12 @@ const buildExternalReferencesGroups = (
     [key: string]: ExternalReferencesGroup;
   } = {};
 
-  externalReferences.forEach((externalReference) => {
+  const sortedExternalReferences = sortBy(
+    externalReferences,
+    (reference) => reference.source.name
+  );
+
+  sortedExternalReferences.forEach((externalReference) => {
     const sourceId = externalReference.source.id;
 
     if (!externalReferencesGroups[sourceId]) {
@@ -109,6 +115,14 @@ const buildExternalReferencesGroups = (
       name: externalReference.name,
       description: externalReference.description
     });
+  });
+
+  // Sort the xrefs within each group based on description (or accession_id when description is empty)
+  Object.keys(externalReferencesGroups).forEach((sourceId) => {
+    externalReferencesGroups[sourceId].references = sortBy(
+      externalReferencesGroups[sourceId].references,
+      (reference) => reference.description || reference.accession_id
+    );
   });
 
   return externalReferencesGroups;
