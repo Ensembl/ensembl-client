@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -76,6 +76,10 @@ type RightCornerProps = {
 
 export const SpeciesSearchField = (props: Props) => {
   const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    return () => clear();
+  }, []);
 
   const onMatchSelected = (match: SearchMatch) => {
     props.onMatchSelected(match);
