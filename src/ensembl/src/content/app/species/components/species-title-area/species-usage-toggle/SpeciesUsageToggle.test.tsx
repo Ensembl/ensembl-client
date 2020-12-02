@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
@@ -34,6 +35,9 @@ jest.mock(
       type: 'toggleSpeciesUseAndSave'
     }))
   })
+);
+jest.mock('src/shared/components/slide-toggle/SlideToggle', () =>
+  jest.fn(() => null)
 );
 
 const selectedSpecies = createSelectedSpecies();
@@ -65,7 +69,7 @@ const mockStore = configureMockStore([thunk]);
 const wrapInRedux = (
   state: typeof stateWithEnabledSpecies = stateWithEnabledSpecies
 ) => {
-  return mount(
+  return render(
     <Provider store={mockStore(state)}>
       <SpeciesUsageToggle />
     </Provider>
@@ -78,44 +82,40 @@ describe('SpeciesSelectionControls', () => {
   });
 
   it('shows correct controls for enabled species', () => {
-    const wrapper = wrapInRedux();
-    const slideToggle = wrapper.find(SlideToggle);
-    const useLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Use')
-      .first();
-    const doNotUseLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === "Don't use")
-      .first();
+    const { container } = wrapInRedux();
+    const useLabel = [...container.querySelectorAll('span')].find(
+      (element) => element.textContent === 'Use'
+    );
+    const doNotUseLabel = [...container.querySelectorAll('span')].find(
+      (element) => element.textContent === "Don't use"
+    );
 
-    expect(slideToggle.prop('isOn')).toBe(true);
-    expect(useLabel.hasClass('clickable')).toBe(false);
-    expect(doNotUseLabel.hasClass('clickable')).toBe(true);
+    expect((SlideToggle as any).mock.calls[0][0]).toMatchObject({ isOn: true });
+    expect(useLabel?.classList.contains('clickable')).toBe(false);
+    expect(doNotUseLabel?.classList.contains('clickable')).toBe(true);
   });
 
   it('shows correct controls for disabled species', () => {
-    const wrapper = wrapInRedux(stateWithDisabledSpecies);
+    const { container } = wrapInRedux(stateWithDisabledSpecies);
 
-    const slideToggle = wrapper.find(SlideToggle);
-    const useLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Use')
-      .first();
-    const doNotUseLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === "Don't use")
-      .first();
+    const useLabel = [...container.querySelectorAll('span')].find(
+      (element) => element.textContent === 'Use'
+    );
+    const doNotUseLabel = [...container.querySelectorAll('span')].find(
+      (element) => element.textContent === "Don't use"
+    );
 
-    expect(slideToggle.prop('isOn')).toBe(false);
-    expect(useLabel.hasClass('clickable')).toBe(true);
-    expect(doNotUseLabel.hasClass('clickable')).toBe(false);
+    expect((SlideToggle as any).mock.calls[0][0]).toMatchObject({
+      isOn: false
+    });
+    expect(useLabel?.classList.contains('clickable')).toBe(true);
+    expect(doNotUseLabel?.classList.contains('clickable')).toBe(false);
   });
 
   it('changes species status via the toggle', () => {
-    const wrapper = wrapInRedux(stateWithDisabledSpecies);
-    const slideToggle = wrapper.find(SlideToggle);
-    slideToggle.prop('onChange')(true);
+    wrapInRedux(stateWithDisabledSpecies);
+    const { onChange } = (SlideToggle as any).mock.calls[0][0];
+    onChange(true);
 
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       disabledSpecies.genome_id
@@ -123,19 +123,19 @@ describe('SpeciesSelectionControls', () => {
 
     jest.clearAllMocks();
 
-    slideToggle.prop('onChange')(false);
+    onChange(true);
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       disabledSpecies.genome_id
     );
   });
 
   it('disables species by clicking on label', () => {
-    const wrapper = wrapInRedux();
-    const doNotUseLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === "Don't use")
-      .first();
-    doNotUseLabel.simulate('click');
+    const { container } = wrapInRedux();
+    const doNotUseLabel = [...container.querySelectorAll('span')].find(
+      (element) => element.textContent === "Don't use"
+    );
+
+    userEvent.click(doNotUseLabel as HTMLSpanElement);
 
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id
@@ -143,12 +143,12 @@ describe('SpeciesSelectionControls', () => {
   });
 
   it('enables species by clicking on label', () => {
-    const wrapper = wrapInRedux(stateWithDisabledSpecies);
-    const useLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Use')
-      .first();
-    useLabel.simulate('click');
+    const { container } = wrapInRedux(stateWithDisabledSpecies);
+    const useLabel = [...container.querySelectorAll('span')].find(
+      (element) => element.textContent === 'Use'
+    );
+
+    userEvent.click(useLabel as HTMLSpanElement);
 
     expect(toggleSpeciesUseAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id
