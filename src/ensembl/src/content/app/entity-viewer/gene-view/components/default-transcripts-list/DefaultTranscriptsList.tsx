@@ -35,6 +35,7 @@ import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/component
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { RootState } from 'src/store';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
@@ -54,7 +55,7 @@ const DefaultTranscriptslist = (props: Props) => {
   const { gene, sortingRule } = props;
 
   const sortingFunction = transcriptSortingFunctions[sortingRule];
-  const sortedTranscripts = sortingFunction(gene.transcripts);
+  const sortedTranscripts = sortingFunction(gene.transcripts) as Transcript[];
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
