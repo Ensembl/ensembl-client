@@ -24,10 +24,39 @@ import {
   ProductType
 } from 'src/content/app/entity-viewer/types/product';
 
+export const getFeatureCoordinates = (feature: {
+  slice: SliceWithLocationOnly;
+}) => {
+  const { start, end } = feature.slice.location;
+  return { start, end };
+};
+
+export const getRegionName = (feature: { slice: Slice }) =>
+  feature.slice.region.name;
+
+export const getFeatureStrand = (feature: { slice: Slice }) =>
+  feature.slice.strand.code;
+
+export const getFeatureLength = (feature: { slice: SliceWithLocationOnly }) => {
+  return feature.slice.location.length;
+};
+
 export type IsProteinCodingTranscriptParam = {
   product_generating_contexts: Array<{
     product_type: ProductType;
   }>;
+};
+
+export const isProteinCodingTranscript = (
+  transcript: IsProteinCodingTranscriptParam
+) => {
+  const { product_generating_contexts } = transcript;
+  const firstProductGeneratingContext = product_generating_contexts[0];
+
+  return (
+    firstProductGeneratingContext &&
+    firstProductGeneratingContext.product_type === ProductType.PROTEIN
+  );
 };
 
 export type GetNumberOfCodingExonsParam = {
@@ -46,56 +75,6 @@ export type GetNumberOfCodingExonsParam = {
       stable_id: string;
     };
   }>;
-};
-
-export type GetProductAminoAcidLengthParam = {
-  product_generating_contexts: Array<{
-    product_type: ProductType.PROTEIN;
-    product: {
-      length: number;
-    };
-  }>;
-};
-
-export type GetSplicedRNALengthParam = {
-  spliced_exons: Array<{
-    exon: {
-      slice: SliceWithLocationOnly;
-    };
-  }>;
-};
-
-export type GetLongestProteinLengthParam = {
-  transcripts: GetProductAminoAcidLengthParam[];
-};
-
-export const getFeatureCoordinates = (feature: {
-  slice: SliceWithLocationOnly;
-}) => {
-  const { start, end } = feature.slice.location;
-  return { start, end };
-};
-
-export const getRegionName = (feature: { slice: Slice }) =>
-  feature.slice.region.name;
-
-export const getFeatureStrand = (feature: { slice: Slice }) =>
-  feature.slice.strand.code;
-
-export const getFeatureLength = (feature: { slice: SliceWithLocationOnly }) => {
-  return feature.slice.location.length;
-};
-
-export const isProteinCodingTranscript = (
-  transcript: IsProteinCodingTranscriptParam
-) => {
-  const { product_generating_contexts } = transcript;
-  const firstProductGeneratingContext = product_generating_contexts[0];
-
-  return (
-    firstProductGeneratingContext &&
-    firstProductGeneratingContext.product_type === ProductType.PROTEIN
-  );
 };
 
 export const getNumberOfCodingExons = (
@@ -123,6 +102,15 @@ export const getNumberOfCodingExons = (
     }).length;
 };
 
+export type GetProductAminoAcidLengthParam = {
+  product_generating_contexts: Array<{
+    product_type: ProductType.PROTEIN;
+    product: {
+      length: number;
+    };
+  }>;
+};
+
 export const getProductAminoAcidLength = (
   transcript: GetProductAminoAcidLengthParam
 ) => {
@@ -136,10 +124,22 @@ export const getProductAminoAcidLength = (
   return product.length;
 };
 
+export type GetSplicedRNALengthParam = {
+  spliced_exons: Array<{
+    exon: {
+      slice: SliceWithLocationOnly;
+    };
+  }>;
+};
+
 export const getSplicedRNALength = (transcript: GetSplicedRNALengthParam) =>
   transcript.spliced_exons.reduce((length, { exon }) => {
     return length + exon.slice.location.length;
   }, 0);
+
+export type GetLongestProteinLengthParam = {
+  transcripts: GetProductAminoAcidLengthParam[];
+};
 
 export const getLongestProteinLength = (gene: GetLongestProteinLengthParam) => {
   const proteinLengths = gene.transcripts.map(getProductAminoAcidLength);
