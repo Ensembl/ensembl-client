@@ -40,6 +40,7 @@ import {
 import {
   changeBrowserLocation,
   changeFocusObject,
+  setActiveGenomeId,
   setDataFromUrlAndSave
 } from '../browserActions';
 
@@ -101,11 +102,14 @@ const useBrowserRouting = () => {
       const newFocus = buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId));
       dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
     } else if (focus && !chrLocation) {
+      if (!activeGenomeId) {
+        dispatch(setActiveGenomeId(genomeId));
+      }
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
-       in order to prevent creating a previouslyViewedObject entry
-       for the focus object that is viewed first.
-       */
+       because it will also try to bookmark the Ensembl object that is stored in redux state
+       before it gets changed by setDataFromUrlAndSave
+      */
       dispatch(changeFocusObject(newFocusId as string));
     } else if (chrLocation) {
       const isSameLocationAsInRedux =
