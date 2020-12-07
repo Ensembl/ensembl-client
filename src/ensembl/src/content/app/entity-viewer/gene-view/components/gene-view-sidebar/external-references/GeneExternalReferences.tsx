@@ -54,7 +54,6 @@ const QUERY = gql`
         source {
           id
           name
-          url
         }
       }
       transcripts {
@@ -67,7 +66,6 @@ const QUERY = gql`
           source {
             id
             name
-            url
           }
         }
         product_generating_contexts {
@@ -80,7 +78,6 @@ const QUERY = gql`
               source {
                 id
                 name
-                url
               }
             }
           }
