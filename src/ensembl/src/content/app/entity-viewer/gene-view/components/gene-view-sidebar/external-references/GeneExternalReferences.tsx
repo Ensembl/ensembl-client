@@ -212,7 +212,7 @@ const RenderTranscriptXrefs = (props: { transcript: Transcript }) => {
   // Add protein level xrefs
   transcript.product_generating_contexts.forEach(
     (product_generating_context) => {
-      return unsortedXrefs.push(
+      unsortedXrefs.push(
         ...product_generating_context.product.external_references
       );
     }
