@@ -32,7 +32,7 @@ import {
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
-import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { toggleSidebarAndSave } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/EntityViewerAppBar';
@@ -55,7 +55,7 @@ type Props = {
   viewportWidth: BreakpointWidth;
   replace: Replace;
   setDataFromUrl: (params: EntityViewerParams) => void;
-  toggleSidebar: (status?: SidebarStatus) => void;
+  toggleSidebarAndSave: (status?: SidebarStatus) => void;
 };
 
 export type EntityViewerParams = {
@@ -110,7 +110,7 @@ const EntityViewer = (props: Props) => {
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
             isSidebarOpen={props.isSidebarOpen}
-            onSidebarToggle={props.toggleSidebar}
+            onSidebarToggle={props.toggleSidebarAndSave}
             isDrawerOpen={false}
             viewportWidth={props.viewportWidth}
           />
@@ -134,7 +134,7 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = {
   replace,
   setDataFromUrl,
-  toggleSidebar
+  toggleSidebarAndSave
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);

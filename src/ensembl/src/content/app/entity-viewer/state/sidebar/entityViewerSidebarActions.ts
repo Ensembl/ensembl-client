@@ -17,12 +17,14 @@
 import { createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import set from 'lodash/fp/set';
 
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from '../general/entityViewerGeneralSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import {
   EntityViewerSidebarGenomeState,
@@ -60,7 +62,7 @@ export const setSidebarTabName: ActionCreator<ThunkAction<
   );
 };
 
-export const toggleSidebar: ActionCreator<ThunkAction<
+export const toggleSidebarAndSave: ActionCreator<ThunkAction<
   void,
   any,
   null,
@@ -74,16 +76,23 @@ export const toggleSidebar: ActionCreator<ThunkAction<
     return;
   }
 
+  const isCurrentlyOpen = isEntityViewerSidebarOpen(state);
   if (status === undefined) {
-    const isCurrentlyOpen = isEntityViewerSidebarOpen(state);
     status = isCurrentlyOpen ? Status.CLOSED : Status.OPEN;
   }
+
+  const storedState = entityViewerStorageService.getSidebarState();
+
+  entityViewerStorageService.updateSidebarState(
+    set(`${genomeId}.status`, status, storedState)
+  );
+
   dispatch(updateGenomeState({ genomeId, fragment: { status } }));
 };
 
-export const openSidebar = () => toggleSidebar(Status.OPEN);
+export const openSidebar = () => toggleSidebarAndSave(Status.OPEN);
 
-export const closeSidebar = () => toggleSidebar(Status.CLOSED);
+export const closeSidebar = () => toggleSidebarAndSave(Status.CLOSED);
 
 export const updateEntityState = createAction(
   'entity-viewer-sidebar/update-entity-state'
