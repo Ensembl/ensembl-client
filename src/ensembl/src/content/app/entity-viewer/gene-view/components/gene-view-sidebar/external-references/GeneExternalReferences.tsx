@@ -194,7 +194,7 @@ const GeneExternalReferences = () => {
           {transcripts.map((transcript, key) => {
             return (
               <div key={key}>
-                <RenderTranscriptXrefs transcript={transcript} />
+                <TranscriptXrefs transcript={transcript} />
               </div>
             );
           })}
@@ -204,7 +204,7 @@ const GeneExternalReferences = () => {
   );
 };
 
-const RenderTranscriptXrefs = (props: { transcript: Transcript }) => {
+const TranscriptXrefs = (props: { transcript: Transcript }) => {
   const { transcript } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   const unsortedXrefs = [...transcript.external_references];
