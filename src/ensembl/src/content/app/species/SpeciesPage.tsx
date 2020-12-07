@@ -24,7 +24,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
-import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+import { toggleSidebarAndSave } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
@@ -69,7 +69,7 @@ const SpeciesPage = () => {
         topbarContent={<TopBar />}
         isSidebarOpen={sidebarStatus}
         onSidebarToggle={() => {
-          dispatch(toggleSidebar());
+          dispatch(toggleSidebarAndSave());
         }}
         viewportWidth={BreakpointWidth.DESKTOP}
       />
