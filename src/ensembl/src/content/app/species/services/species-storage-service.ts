@@ -46,11 +46,11 @@ export class SpeciesStorageService {
     this.storageService.update(StorageKeys.GENOME_UI_STATE, uiState, options);
   }
 
-  public getSidebarState(): SpeciesPageSidebarState {
+  public getSidebarState(): Partial<SpeciesPageSidebarState> {
     return this.storageService.get(StorageKeys.SIDEBAR_STATE, options);
   }
 
-  public updateSidebarState(sidebarState: SpeciesPageSidebarState) {
+  public updateSidebarState(sidebarState: Partial<SpeciesPageSidebarState>) {
     this.storageService.update(
       StorageKeys.SIDEBAR_STATE,
       sidebarState,

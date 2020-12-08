@@ -72,8 +72,7 @@ export type SpeciesPageSidebarState = {
 };
 
 const initialState: SpeciesPageSidebarState = {
-  isOpen:
-    speciesStorageService.getSidebarState()?.isOpen === false ? false : true,
+  isOpen: speciesStorageService.getSidebarState()?.isOpen ?? true,
   species: {}
 };
 
