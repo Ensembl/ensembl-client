@@ -144,7 +144,7 @@ const ProteinsListItemInfo = (props: Props) => {
     }
 
     if (summaryStatsLoadingState === LoadingState.LOADING && xref) {
-      fetchProteinSummaryStats(xref?.display_id, abortController.signal)
+      fetchProteinSummaryStats(xref.primary_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
             response
