@@ -20,7 +20,6 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
-import set from 'lodash/fp/set';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
@@ -111,9 +110,7 @@ export const toggleSidebarAndSave = (): ThunkAction<
   }
   const isSidebarCurrentlyOpen = isSidebarOpen(state);
 
-  speciesStorageService.updateSidebarState(
-    set(`isOpen`, !isSidebarCurrentlyOpen, state.speciesPage.sidebar)
-  );
+  speciesStorageService.updateSidebarState({ isOpen: !isSidebarCurrentlyOpen });
 
   dispatch(speciesPageSidebarSlice.actions.toggleSidebar());
 };
