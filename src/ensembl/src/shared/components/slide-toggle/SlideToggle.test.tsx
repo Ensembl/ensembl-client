@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount, render } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import SlideToggle from './SlideToggle';
@@ -32,8 +33,9 @@ describe('SlideToggle', () => {
 
   describe('rendering', () => {
     it('has proper class when off', () => {
-      const renderedComponent = render(<SlideToggle {...defaultProps} />);
-      expect(renderedComponent.hasClass('slideToggleOff')).toBe(true);
+      const { container } = render(<SlideToggle {...defaultProps} />);
+      const element = container.firstChild as HTMLElement;
+      expect(element.getAttribute('class')).toMatch('slideToggleOff');
     });
 
     it('has proper class when on', () => {
@@ -41,8 +43,9 @@ describe('SlideToggle', () => {
         ...defaultProps,
         isOn: true
       };
-      const renderedComponent = render(<SlideToggle {...props} />);
-      expect(renderedComponent.hasClass('slideToggleOn')).toBe(true);
+      const { container } = render(<SlideToggle {...props} />);
+      const element = container.firstChild as HTMLElement;
+      expect(element.getAttribute('class')).toMatch('slideToggleOn');
     });
 
     it('adds class received from parent', () => {
@@ -51,27 +54,32 @@ describe('SlideToggle', () => {
         ...defaultProps,
         className: externalClassName
       };
-      const renderedComponent = render(<SlideToggle {...props} />);
-      expect(renderedComponent.hasClass(externalClassName)).toBe(true);
+      const { container } = render(<SlideToggle {...props} />);
+      const element = container.firstChild as HTMLElement;
+      expect(element.getAttribute('class')).toMatch(externalClassName);
     });
   });
 
   describe('behaviour', () => {
-    test('correctly calls callback when switched on', () => {
-      const wrapper = mount(<SlideToggle {...defaultProps} />);
-      wrapper.simulate('click');
+    it('correctly calls callback when switched on', () => {
+      const { container } = render(<SlideToggle {...defaultProps} />);
+      const element = container.firstChild as HTMLElement;
+
+      userEvent.click(element);
 
       expect(defaultProps.onChange).toHaveBeenCalledTimes(1);
       expect(defaultProps.onChange).toHaveBeenCalledWith(true);
     });
 
-    test('correctly calls callback when switched off', () => {
+    it('correctly calls callback when switched off', () => {
       const props = {
         ...defaultProps,
         isOn: true
       };
-      const wrapper = mount(<SlideToggle {...props} />);
-      wrapper.simulate('click');
+      const { container } = render(<SlideToggle {...props} />);
+      const element = container.firstChild as HTMLElement;
+
+      userEvent.click(element);
 
       expect(defaultProps.onChange).toHaveBeenCalledTimes(1);
       expect(defaultProps.onChange).toHaveBeenCalledWith(false);

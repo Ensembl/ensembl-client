@@ -15,24 +15,28 @@
  */
 
 import React from 'react';
-import { mount, render } from 'enzyme';
+import { fireEvent, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import Input from './Input';
+import Input, { Props as InputProps } from './Input';
 
 describe('<Input />', () => {
   const commonInputProps = {
+    value: '',
     id: 'testId',
     name: 'testInputName',
     className: 'testInputClass',
     onChange: jest.fn(),
     onFocus: jest.fn(),
-    onBlur: jest.fn()
+    onBlur: jest.fn(),
+    onKeyUp: jest.fn(),
+    onKeyDown: jest.fn(),
+    onKeyPress: jest.fn()
   };
 
-  const getWrappedInput = (props: any) => mount(<Input {...props} />);
-
-  const getStaticallyWrappedInput = (props: any) =>
-    render(<Input {...props} />);
+  const getRenderedInputContainer = (props: InputProps) => {
+    return render(<Input {...props} />);
+  };
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -42,93 +46,108 @@ describe('<Input />', () => {
     const inputValue = 'foo';
     const props = {
       ...commonInputProps,
-      value: inputValue
+      value: inputValue,
+      callbackWithEvent: false
     };
 
-    test('passes relevant props to the input element', () => {
-      const wrappedInput = getStaticallyWrappedInput(props);
+    it('passes relevant props to the input element', () => {
+      const { container } = getRenderedInputContainer(props);
 
-      expect(wrappedInput.attr('id')).toBe(commonInputProps.id);
-      expect(wrappedInput.attr('name')).toBe(commonInputProps.name);
-      expect(wrappedInput.attr('class')).toMatch(commonInputProps.className);
+      const inputElement = container.querySelector('input') as HTMLInputElement;
+
+      expect(inputElement.getAttribute('id')).toBe(commonInputProps.id);
+      expect(inputElement.getAttribute('name')).toBe(commonInputProps.name);
+      expect(inputElement.getAttribute('class')).toMatch(
+        commonInputProps.className
+      );
     });
   });
 
   describe('responding with data', () => {
-    test('passes string value to onChange', () => {
+    it('passes string value to onChange', () => {
       const inputValue = 'foo';
-      const changedValue = inputValue + '1';
-      const wrappedInput = getWrappedInput({
+      const { container } = getRenderedInputContainer({
         ...commonInputProps,
-        value: inputValue
+        value: inputValue,
+        callbackWithEvent: false
       });
+      const inputNode = container.querySelector('input') as HTMLInputElement;
 
-      wrappedInput.simulate('change', { target: { value: changedValue } });
-      expect(commonInputProps.onChange).toHaveBeenLastCalledWith(changedValue);
+      userEvent.type(inputNode, '1');
+      expect(commonInputProps.onChange).toHaveBeenLastCalledWith('foo1');
     });
 
-    test('passes string value to onFocus', () => {
+    it('passes string value to onFocus', () => {
       const inputValue = 'foo';
-      const wrappedInput = getWrappedInput({
+      const { container } = getRenderedInputContainer({
         ...commonInputProps,
-        value: inputValue
+        value: inputValue,
+        callbackWithEvent: false
       });
+      const inputNode = container.querySelector('input') as HTMLInputElement;
 
-      wrappedInput.simulate('focus');
+      fireEvent.focus(inputNode);
       expect(commonInputProps.onFocus).toHaveBeenLastCalledWith(inputValue);
     });
 
-    test('passes string value to onBlur', () => {
+    it('passes string value to onBlur', () => {
       const inputValue = 'foo';
-      const wrappedInput = getWrappedInput({
+      const { container } = getRenderedInputContainer({
         ...commonInputProps,
-        value: inputValue
+        value: inputValue,
+        callbackWithEvent: false
       });
+      const inputNode = container.querySelector('input') as HTMLInputElement;
 
-      wrappedInput.simulate('blur');
+      fireEvent.blur(inputNode);
+
       expect(commonInputProps.onBlur).toHaveBeenLastCalledWith(inputValue);
     });
   });
 
   describe('responding with events', () => {
-    test('passes event to onChange', () => {
+    it('passes event to onChange', () => {
       const inputValue = 'foo';
-      const changedValue = inputValue + '1';
-      const wrappedInput = getWrappedInput({
+      const { container } = getRenderedInputContainer({
         ...commonInputProps,
         value: inputValue,
         callbackWithEvent: true
       });
 
-      wrappedInput.simulate('change', { target: { value: changedValue } });
-      expect(commonInputProps.onChange.mock.calls[0][0].target.value).toBe(
-        changedValue
-      );
+      const inputNode = container.querySelector('input') as HTMLInputElement;
+
+      userEvent.type(inputNode, '1');
+      const lastCallArg = commonInputProps.onChange.mock.calls[0].pop();
+      expect(lastCallArg.target.value).toBe('foo1');
     });
 
-    test('passes event to onFocus', () => {
+    it('passes event to onFocus', () => {
       const inputValue = 'foo';
-      const wrappedInput = getWrappedInput({
+      const { container } = getRenderedInputContainer({
         ...commonInputProps,
         value: inputValue,
         callbackWithEvent: true
       });
 
-      wrappedInput.simulate('focus');
+      const inputNode = container.querySelector('input') as HTMLInputElement;
+
+      fireEvent.focus(inputNode);
       expect(commonInputProps.onFocus.mock.calls[0][0].target.value).toBe(
         inputValue
       );
     });
 
-    test('passes event to onBlur', () => {
+    it('passes event to onBlur', () => {
       const inputValue = 'foo';
-      const wrappedInput = getWrappedInput({
+      const { container } = getRenderedInputContainer({
         ...commonInputProps,
         value: inputValue,
         callbackWithEvent: true
       });
 
-      wrappedInput.simulate('blur');
+      const inputNode = container.querySelector('input') as HTMLInputElement;
+
+      fireEvent.blur(inputNode);
       expect(commonInputProps.onBlur.mock.calls[0][0].target.value).toBe(
         inputValue
       );

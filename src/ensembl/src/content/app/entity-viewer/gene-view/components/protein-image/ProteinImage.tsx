@@ -42,11 +42,12 @@ const ProteinImage = (props: ProteinImageProps) => {
     .range([0, props.width])
     .clamp(true);
 
-  const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
+  const trackContainerStyles = transcriptsListStyles.middle;
+  const labelStyles = classNames(transcriptsListStyles.right, styles.label);
 
   return (
     <div className={transcriptsListStyles.row}>
-      <div className={midStyles}>
+      <div className={trackContainerStyles}>
         <svg
           className={styles.containerSvg}
           width={props.width}
@@ -67,6 +68,7 @@ const ProteinImage = (props: ProteinImageProps) => {
           </g>
         </svg>
       </div>
+      <div className={labelStyles}>Amino acid length</div>
     </div>
   );
 };
