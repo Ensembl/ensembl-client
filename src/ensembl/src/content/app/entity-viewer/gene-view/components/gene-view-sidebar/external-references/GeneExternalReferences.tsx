@@ -67,9 +67,6 @@ const QUERY = gql`
             length
           }
         }
-        product_generating_contexts {
-          product_type
-        }
         external_references {
           accession_id
           name
@@ -81,6 +78,7 @@ const QUERY = gql`
           }
         }
         product_generating_contexts {
+          product_type
           product {
             external_references {
               accession_id
@@ -99,14 +97,6 @@ const QUERY = gql`
   }
 `;
 
-type Product = {
-  external_references: ExternalReferenceType[];
-};
-
-type ProductGeneratingContext = {
-  product: Product;
-};
-
 type Transcript = {
   stable_id: string;
   so_term: string;
@@ -116,7 +106,6 @@ type Transcript = {
     'product_type' | 'product'
   >[];
   external_references: ExternalReferenceType[];
-  product_generating_contexts: ProductGeneratingContext[];
 };
 
 type Gene = {
