@@ -57,7 +57,6 @@ const QUERY = gql`
         source {
           id
           name
-          url
         }
       }
       transcripts {
@@ -68,9 +67,6 @@ const QUERY = gql`
             length
           }
         }
-        product_generating_contexts {
-          product_type
-        }
         external_references {
           accession_id
           name
@@ -79,7 +75,21 @@ const QUERY = gql`
           source {
             id
             name
-            url
+          }
+        }
+        product_generating_contexts {
+          product_type
+          product {
+            external_references {
+              accession_id
+              name
+              description
+              url
+              source {
+                id
+                name
+              }
+            }
           }
         }
       }
@@ -181,7 +191,6 @@ const GeneExternalReferences = () => {
         <span className={styles.geneSymbol}>{data.gene.symbol}</span>
         <span>{data.gene.stable_id}</span>
       </div>
-
       <div className={styles.sectionHead}>Gene</div>
       {data.gene.external_references && renderXrefs(externalReferencesGroups)}
       {sortedTranscripts.length && (
@@ -190,7 +199,7 @@ const GeneExternalReferences = () => {
           {sortedTranscripts.map((transcript, key) => {
             return (
               <div key={key}>
-                <RenderTranscriptXrefGroup transcript={transcript} />
+                <TranscriptXrefs transcript={transcript} />
               </div>
             );
           })}
@@ -200,12 +209,22 @@ const GeneExternalReferences = () => {
   );
 };
 
-const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
+const TranscriptXrefs = (props: { transcript: Transcript }) => {
   const { transcript } = props;
   const [isExpanded, setIsExpanded] = useState(false);
-  const transcriptsXrefGroups = buildExternalReferencesGroups(
-    transcript.external_references
+  const unsortedXrefs = [...transcript.external_references];
+
+  // Add protein level xrefs
+  transcript.product_generating_contexts.forEach(
+    (product_generating_context) => {
+      unsortedXrefs.push(
+        ...product_generating_context.product.external_references
+      );
+    }
   );
+
+  const xrefGroups = buildExternalReferencesGroups(unsortedXrefs);
+
   return (
     <div className={styles.transcriptWrapper}>
       <div
@@ -215,9 +234,7 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
         {transcript.stable_id}
       </div>
       {transcript.external_references && isExpanded && (
-        <div className={styles.transcriptXrefs}>
-          {renderXrefs(transcriptsXrefGroups)}
-        </div>
+        <div className={styles.transcriptXrefs}>{renderXrefs(xrefGroups)}</div>
       )}
     </div>
   );
