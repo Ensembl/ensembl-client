@@ -22,6 +22,7 @@ import sortBy from 'lodash/sortBy';
 
 import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import {
   Accordion,
@@ -31,7 +32,6 @@ import {
   AccordionItemButton
 } from 'src/shared/components/accordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { RootState } from 'src/store';
 import {
@@ -91,10 +91,10 @@ type Transcript = {
   stable_id: string;
   so_term: string;
   slice: SliceWithLocationOnly;
-  product_generating_contexts: Array<{
-    product_type: ProductGeneratingContext['product_type'];
-    product: ProductGeneratingContext['product'];
-  }>
+  product_generating_contexts: Pick<
+    ProductGeneratingContext,
+    'product_type' | 'product'
+  >[];
   external_references: ExternalReferenceType[];
 };
 
@@ -200,9 +200,7 @@ const GeneExternalReferences = () => {
   );
 };
 
-const RenderTranscriptXrefGroup = (props: {
-  transcript: Transcript;
-}) => {
+const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
   const { transcript } = props;
   const [isExpanded, setIsExpanded] = useState(false);
   const transcriptsXrefGroups = buildExternalReferencesGroups(
