@@ -17,13 +17,13 @@
 import { ActionType, getType } from 'typesafe-actions';
 
 import {
-  initialState,
+  buildInitialState,
   EntityViewerGeneralState
 } from './entityViewerGeneralState';
 import * as actions from './entityViewerGeneralActions';
 
 export default function entityViewerReducer(
-  state: EntityViewerGeneralState = initialState,
+  state: EntityViewerGeneralState = buildInitialState(),
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {

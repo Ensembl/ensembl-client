@@ -35,7 +35,7 @@ export const getEntityViewerGenomeState = (state: RootState) => {
 export const getEntityViewerSidebarPayload = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   return activeEntityId
-    ? getEntityViewerGenomeState(state)?.entities[activeEntityId].payload ||
+    ? getEntityViewerGenomeState(state)?.entities[activeEntityId]?.payload ||
         null
     : null;
 };
@@ -43,7 +43,7 @@ export const getEntityViewerSidebarPayload = (state: RootState) => {
 export const getEntityViewerSidebarUIState = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEnsObjectId(state);
   return activeEntityId
-    ? getEntityViewerGenomeState(state)?.entities[activeEntityId].uIState ||
+    ? getEntityViewerGenomeState(state)?.entities[activeEntityId]?.uIState ||
         null
     : null;
 };

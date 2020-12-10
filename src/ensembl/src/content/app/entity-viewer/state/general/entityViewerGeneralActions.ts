@@ -19,6 +19,7 @@ import { ActionCreator, Action } from 'redux';
 import { batch } from 'react-redux';
 import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
+import set from 'lodash/fp/set';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 import {
@@ -26,6 +27,7 @@ import {
   parseFocusIdFromUrl,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
@@ -42,7 +44,8 @@ import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/s
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-import { fetchSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { loadSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+
 export const setActiveGenomeId = createAction(
   'entity-viewer/set-active-genome-id'
 )<string>();
@@ -94,9 +97,19 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
       })
     : null;
 
-  if (entityId && entityId !== activeEntityId) {
-    dispatch(updateEnsObject(entityId));
-    dispatch(fetchSidebarPayload());
+  if (entityId) {
+    if (entityId !== activeEntityId) {
+      dispatch(updateEnsObject(entityId));
+    }
+    dispatch(loadSidebar());
+    const storedState = entityViewerStorageService.getGeneralState();
+    entityViewerStorageService.updateGeneralState(
+      set(
+        'activeGenomeId',
+        genomeIdFromUrl,
+        set(`activeEnsObjectIds.${genomeIdFromUrl}`, entityId, storedState)
+      )
+    );
   }
 };
 

@@ -15,7 +15,6 @@
  */
 
 import { EntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralState';
-import { EntityViewerSidebarState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 import storageService, {
   StorageServiceInterface,
   StorageType
@@ -29,10 +28,6 @@ export enum StorageKeys {
 
 const localStorageOptions = {
   storage: StorageType.LOCAL_STORAGE
-};
-
-const sessionStorageOptions = {
-  storage: StorageType.SESSION_STORAGE
 };
 
 export class EntityViewerStorageService {
@@ -54,36 +49,6 @@ export class EntityViewerStorageService {
       StorageKeys.GENERAL_STATE,
       updatedState,
       localStorageOptions
-    );
-  }
-
-  public getSidebarState(): Partial<EntityViewerSidebarState> {
-    return this.storageService.get(
-      StorageKeys.SIDEBAR_STATE,
-      sessionStorageOptions
-    );
-  }
-
-  public updateSidebarState(updatedState: Partial<EntityViewerSidebarState>) {
-    this.storageService.update(
-      StorageKeys.SIDEBAR_STATE,
-      updatedState,
-      sessionStorageOptions
-    );
-  }
-
-  public getGeneViewState(): any {
-    return this.storageService.get(
-      StorageKeys.GENE_VIEW_STATE,
-      sessionStorageOptions
-    );
-  }
-
-  public updateGeneViewState(updatedState: any) {
-    this.storageService.update(
-      StorageKeys.GENE_VIEW_STATE,
-      updatedState,
-      sessionStorageOptions
     );
   }
 }

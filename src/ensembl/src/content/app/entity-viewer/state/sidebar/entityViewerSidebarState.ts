@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import { Status } from 'src/shared/types/status';
 import { Assembly } from '../../types/assembly';
@@ -90,14 +89,9 @@ export type EntityViewerSidebarGenomeState = Readonly<{
 export const buildInitialStateForGenome = (
   genomeId: string
 ): EntityViewerSidebarState => {
-  const storedState = entityViewerStorageService.getSidebarState() || {};
-
   return {
     [genomeId]: {
-      status:
-        storedState[genomeId]?.status === Status.CLOSED
-          ? Status.CLOSED
-          : Status.OPEN,
+      status: Status.OPEN,
       selectedTabName: SidebarTabName.OVERVIEW,
       entities: {}
     }
