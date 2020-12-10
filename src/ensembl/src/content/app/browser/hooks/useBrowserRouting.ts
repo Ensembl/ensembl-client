@@ -98,13 +98,19 @@ const useBrowserRouting = () => {
       chrLocation
     };
 
+    if (!activeGenomeId) {
+      /*
+        Means that this is the first time user visits genome browser.
+        We need to make sure that active genome id is set properly in redux
+        for the actions below (e.g. changeFocusObject) to work
+      */
+      dispatch(setActiveGenomeId(genomeId));
+    }
+
     if (!focus && activeEnsObjectId) {
       const newFocus = buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId));
       dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
     } else if (focus && !chrLocation) {
-      if (!activeGenomeId) {
-        dispatch(setActiveGenomeId(genomeId));
-      }
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
