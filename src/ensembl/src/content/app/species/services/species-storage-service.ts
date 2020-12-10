@@ -20,11 +20,9 @@ import storageService, {
 } from 'src/services/storage-service';
 
 import { UIState } from 'src/content/app/species/state/general/speciesGeneralSlice';
-import { SpeciesPageSidebarState } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 export enum StorageKeys {
-  GENOME_UI_STATE = 'species.genomeUIState',
-  SIDEBAR_STATE = 'species.sidebar'
+  GENOME_UI_STATE = 'species.genomeUIState'
 }
 
 const options = {
@@ -44,18 +42,6 @@ export class SpeciesStorageService {
 
   public updateUIState(uiState: UIState) {
     this.storageService.update(StorageKeys.GENOME_UI_STATE, uiState, options);
-  }
-
-  public getSidebarState(): Partial<SpeciesPageSidebarState> {
-    return this.storageService.get(StorageKeys.SIDEBAR_STATE, options);
-  }
-
-  public updateSidebarState(sidebarState: Partial<SpeciesPageSidebarState>) {
-    this.storageService.update(
-      StorageKeys.SIDEBAR_STATE,
-      sidebarState,
-      options
-    );
   }
 }
 

@@ -22,9 +22,6 @@ import {
 } from '@reduxjs/toolkit';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
-import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
-import speciesStorageService from '../../services/species-storage-service';
-
 import { RootState } from 'src/store';
 
 import { sidebarData } from 'src/content/app/species/sample-data.ts';
@@ -61,7 +58,7 @@ export type SpeciesSidebarPayload = {
   strain: Strain | null;
 };
 
-export type SpeciesPageSidebarState = {
+type SpeciesPageSidebarState = {
   isOpen: boolean;
   species: {
     [genomeId: string]: {
@@ -71,7 +68,7 @@ export type SpeciesPageSidebarState = {
 };
 
 const initialState: SpeciesPageSidebarState = {
-  isOpen: speciesStorageService.getSidebarState()?.isOpen ?? true,
+  isOpen: true,
   species: {}
 };
 
@@ -95,24 +92,6 @@ export const fetchSidebarPayload = (): ThunkAction<
       sidebarPayload
     })
   );
-};
-
-export const toggleSidebarAndSave = (): ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
-> => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getActiveGenomeId(state);
-  if (!activeGenomeId) {
-    return;
-  }
-  const isSidebarCurrentlyOpen = isSidebarOpen(state);
-
-  speciesStorageService.updateSidebarState({ isOpen: !isSidebarCurrentlyOpen });
-
-  dispatch(speciesPageSidebarSlice.actions.toggleSidebar());
 };
 
 const speciesPageSidebarSlice = createSlice({
