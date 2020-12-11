@@ -16,6 +16,7 @@
 
 import React from 'react';
 import noop from 'lodash/noop';
+import classNames from 'classnames';
 
 import {
   Accordion,
@@ -42,16 +43,28 @@ type Props = {
   updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
 };
 
+enum AccordionSectionID {
+  FUNCTION = 'function',
+  SEQUENCE = 'sequence',
+  OTHER_DATA_SETS = 'other_data_sets'
+}
+
 // TODO: Remove me once instant download component is available
 const mockOnClick = noop;
 
 const MainAccordion = (props: Props) => {
-  if (!props.sidebarPayload) {
+  const { sidebarPayload, sidebarUIState } = props;
+
+  if (!sidebarPayload) {
     return null;
   }
-  const { gene } = props.sidebarPayload;
-  const expandedPanels = props.sidebarUIState?.mainAccordion
-    ?.expandedPanels as string[];
+
+  const { gene } = sidebarPayload;
+  const hasFunctionDescription = Boolean(gene.function?.description);
+
+  const expandedPanels =
+    (sidebarUIState?.mainAccordion?.expandedPanels as string[]) ||
+    (hasFunctionDescription ? [AccordionSectionID.FUNCTION] : []);
 
   const onChange = (expandedPanels: (string | number)[] = []) => {
     props.updateEntityUI({
@@ -60,6 +73,13 @@ const MainAccordion = (props: Props) => {
       }
     });
   };
+
+  const functionAccordionButtonClass = classNames(
+    styles.entityViewerAccordionButton,
+    {
+      [styles.entityViewerAccordionButtonDisabled]: !hasFunctionDescription
+    }
+  );
 
   return (
     <div className={styles.accordionContainer}>
@@ -71,12 +91,12 @@ const MainAccordion = (props: Props) => {
       >
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'function'}
+          uuid={AccordionSectionID.FUNCTION}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
-              className={styles.entityViewerAccordionButton}
-              disabled={!gene.function}
+              className={functionAccordionButtonClass}
+              disabled={!hasFunctionDescription}
             >
               Function
             </AccordionItemButton>
@@ -106,7 +126,7 @@ const MainAccordion = (props: Props) => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'sequence'}
+          uuid={AccordionSectionID.SEQUENCE}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton className={styles.entityViewerAccordionButton}>
@@ -177,12 +197,12 @@ const MainAccordion = (props: Props) => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'other_data_sets'}
+          uuid={AccordionSectionID.OTHER_DATA_SETS}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
               className={styles.entityViewerAccordionButton}
-              disabled={props.sidebarPayload.other_data_sets ? false : true}
+              disabled={sidebarPayload.other_data_sets ? false : true}
             >
               Other data sets
             </AccordionItemButton>
@@ -191,7 +211,7 @@ const MainAccordion = (props: Props) => {
             className={styles.entityViewerAccordionItemContent}
           >
             <div>
-              {props.sidebarPayload.other_data_sets?.map((entry, key) =>
+              {sidebarPayload.other_data_sets?.map((entry, key) =>
                 renderStandardLabelValue({
                   label: entry.type,
                   value: entry.value,
