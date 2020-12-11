@@ -266,7 +266,9 @@ const StatusContent = (props: StatusContentProps) => {
   return props.domainsLoadingState === LoadingState.ERROR ||
     props.summaryLoadingState === LoadingState.ERROR ? (
     <div className={styles.statusContainer}>
-      <span className={styles.errorMessage}>Failed to get data</span>
+      <span className={styles.errorMessage}>
+        Failed to get data from PDBe Knowledge Base.
+      </span>
       <PrimaryButton onClick={retryHandler}>Try again</PrimaryButton>
     </div>
   ) : null;
