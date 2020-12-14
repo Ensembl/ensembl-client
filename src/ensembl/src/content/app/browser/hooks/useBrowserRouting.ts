@@ -28,20 +28,19 @@ import {
   buildEnsObjectId,
   parseEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
-
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectIds,
-  getAllChrLocations
-} from '../browserSelectors';
-
+import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 import {
   changeBrowserLocation,
   changeFocusObject,
   setDataFromUrlAndSave
 } from '../browserActions';
+import {
+  getBrowserActiveGenomeId,
+  getBrowserActiveEnsObjectIds,
+  getAllChrLocations
+} from '../browserSelectors';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
@@ -123,9 +122,16 @@ const useBrowserRouting = () => {
       }
       firstRenderRef.current = false;
     }
-
     dispatch(setDataFromUrlAndSave(payload));
   }, [genomeId, focus, location]);
+
+  useEffect(() => {
+    const { genomeId } = params;
+    if (!genomeId) {
+      return;
+    }
+    dispatch(fetchGenomeData(genomeId));
+  }, [genomeId]);
 
   const changeGenomeId = useCallback(
     (genomeId: string) => {
