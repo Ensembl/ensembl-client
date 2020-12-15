@@ -188,7 +188,7 @@ InstantDownloadTranscriptVisualisation.defaultProps = {
   isCDNAEnabled: false,
   isCDSEnabled: false,
   isProteinSequenceEnabled: false,
-  width: 240
+  width: 210
 } as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;
