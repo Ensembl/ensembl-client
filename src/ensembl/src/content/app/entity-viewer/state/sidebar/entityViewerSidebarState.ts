@@ -97,5 +97,3 @@ export const buildInitialStateForGenome = (
     }
   };
 };
-
-export const initialState: EntityViewerSidebarState = {};

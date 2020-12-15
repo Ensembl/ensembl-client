@@ -94,8 +94,8 @@ export const updateEntityState = createAction(
   fragment: Partial<EntityViewerSidebarPayload>;
 }>();
 
-export const setSidebarInitialState = createAction(
-  'entity-viewer-sidebar/set-initial-state'
+export const setSidebarInitialStateForGenome = createAction(
+  'entity-viewer-sidebar/set-initial-state-for-genome'
 )<string>();
 
 export const loadSidebar: ActionCreator<ThunkAction<
@@ -112,7 +112,7 @@ export const loadSidebar: ActionCreator<ThunkAction<
     return;
   }
 
-  dispatch(setSidebarInitialState(genomeId));
+  dispatch(setSidebarInitialStateForGenome(genomeId));
 
   const sidebarPayload =
     entityViewerSidebarSampleData[genomeId]?.entities[entityId] || null;
