@@ -32,18 +32,20 @@ import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-do
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import { Status } from 'src/shared/types/status';
-import JSONValue from 'src/shared/types/JSON';
-import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import {
+  EntityViewerSidebarPayload,
+  EntityViewerSidebarUIState
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
-  sidebarUIState: { [key: string]: JSONValue } | null;
-  updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
+  sidebarUIState: EntityViewerSidebarUIState | null;
+  updateEntityUI: (uIstate: Partial<EntityViewerSidebarUIState>) => void;
 };
 
-type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
+export type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
 
 // TODO: Remove me once instant download component is available
 const mockOnClick = noop;

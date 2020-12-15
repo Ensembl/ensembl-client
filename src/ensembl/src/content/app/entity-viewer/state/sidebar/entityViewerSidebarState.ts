@@ -23,6 +23,7 @@ import { Source } from '../../types/source';
 import { Metadata } from '../../types/metadata';
 import { ExternalReference } from '../../types/externalReference';
 import JSONValue from 'src/shared/types/JSON';
+import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 
 export enum SidebarTabName {
   OVERVIEW = 'Overview',
@@ -75,13 +76,22 @@ export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
 }>;
 
+export type EntityViewerSidebarUIState = {
+  mainAccordion?: {
+    expandedPanels?: OverviewMainAccordionSectionID[];
+  };
+  publicationsAccordion?: {
+    expandedPanels?: string[];
+  };
+};
+
 export type EntityViewerSidebarGenomeState = Readonly<{
   status: SidebarStatus;
   selectedTabName: SidebarTabName;
   entities: {
     [entityId: string]: {
       payload: EntityViewerSidebarPayload | null;
-      uIState: { [key: string]: JSONValue };
+      uIState: EntityViewerSidebarUIState;
     };
   };
 }>;

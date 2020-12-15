@@ -25,15 +25,17 @@ import {
   AccordionItemButton
 } from 'src/shared/components/accordion';
 
-import JSONValue from 'src/shared/types/JSON';
-import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import {
+  EntityViewerSidebarPayload,
+  EntityViewerSidebarUIState
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
-  sidebarUIState: { [key: string]: JSONValue } | null;
-  updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
+  sidebarUIState: EntityViewerSidebarUIState | null;
+  updateEntityUI: (uIstate: EntityViewerSidebarUIState) => void;
 };
 
 const PublicationsAccordion = (props: Props) => {
@@ -46,7 +48,7 @@ const PublicationsAccordion = (props: Props) => {
     styles.entityViewerAccordionButtonDisabled
   );
 
-  const onChange = (expandedPanels: (string | number)[]) => {
+  const onChange = (expandedPanels: string[]) => {
     props.updateEntityUI({
       publicationsAccordion: {
         expandedPanels
@@ -59,7 +61,7 @@ const PublicationsAccordion = (props: Props) => {
       <Accordion
         className={styles.entityViewerAccordion}
         preExpanded={['publications']}
-        onChange={onChange}
+        onChange={(expandedIds) => onChange(expandedIds as string[])}
       >
         <AccordionItem
           className={styles.entityViewerAccordionItem}
