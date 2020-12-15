@@ -15,6 +15,8 @@
  */
 
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery, gql } from '@apollo/client';
 import { connect } from 'react-redux';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
@@ -32,38 +34,82 @@ import JSONValue from 'src/shared/types/JSON';
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
+import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
+import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-type Props = {
+const QUERY = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      alternative_symbols
+      external_references {
+        accession_id
+        description
+        name
+        source {
+          name
+          id
+        }
+        url
+      }
+      name
+      so_term
+      stable_id
+      symbol
+    }
+  }
+`;
+
+type GeneOverviewProps = {
   sidebarPayload: EntityViewerSidebarPayload | null;
   sidebarUIState: { [key: string]: JSONValue } | null;
   updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
 };
 
-const GeneOverview = (props: Props) => {
-  if (!props.sidebarPayload) {
+const GeneOverview = (props: GeneOverviewProps) => {
+  const params: EntityViewerParams = useParams();
+  const { entityId, genomeId } = params;
+  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+  const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
+    variables: {
+      stable_id: stableId,
+      genome_id: genomeId
+    },
+    skip: !stableId
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data || !data.gene) {
     return <div>No data to display</div>;
   }
-  const { gene } = props.sidebarPayload;
+
+  const { gene } = data;
+
   return (
     <div className={styles.overviewContainer}>
       <div className={styles.geneDetails}>
         <span className={styles.geneSymbol}>{gene.symbol}</span>
-        <span>{gene.id}</span>
+        <span>{gene.stable_id}</span>
       </div>
 
       <div className={styles.sectionHead}>Gene name</div>
 
       <div className={styles.geneName}>
         <ExternalReference
-          label={gene.metadata?.name?.description}
-          linkText={gene.metadata?.name?.source?.id || ''}
+          label={gene.name as string}
+          linkText={gene.name || ''}
           to={''}
         />
       </div>
-      {gene.synonyms && (
+      {gene.alternative_symbols && (
         <div>
           <div className={styles.sectionHead}>Synonyms</div>
-          <div className={styles.synonyms}>{gene.synonyms.join(', ')}</div>
+          <div className={styles.synonyms}>
+            {gene.alternative_symbols.join(', ')}
+          </div>
         </div>
       )}
       {gene.attributes && (
@@ -78,10 +124,10 @@ const GeneOverview = (props: Props) => {
       )}
 
       <div>
-        <MainAccordion {...props} />
+        <MainAccordion {...props} gene={gene} />
       </div>
 
-      {props.sidebarPayload.homeologues && (
+      {props.sidebarPayload?.homeologues && (
         <div className={styles.homeologues}>
           <div className={styles.sectionHead}>Homeologues</div>
           <div>
@@ -96,7 +142,7 @@ const GeneOverview = (props: Props) => {
           </div>
         </div>
       )}
-      {props.sidebarPayload.other_assemblies && (
+      {props.sidebarPayload?.other_assemblies && (
         <div>
           <div className={styles.sectionHead}>
             Other assemblies with this gene
@@ -118,7 +164,7 @@ const GeneOverview = (props: Props) => {
       )}
 
       <div>
-        {props.sidebarPayload.publications && (
+        {props.sidebarPayload?.publications && (
           <PublicationsAccordion {...props} />
         )}
       </div>

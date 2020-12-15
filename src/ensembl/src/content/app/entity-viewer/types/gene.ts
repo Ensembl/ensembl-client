@@ -17,7 +17,9 @@
 import { Slice } from './slice';
 import { Transcript } from './transcript';
 import { Source } from './source';
-// import { Metadata } from './metadata';
+import { ExternalReference } from './externalReference';
+import { Metadata } from './metadata';
+import JSONValue from 'src/shared/types/JSON';
 
 /**
  * NOTE:
@@ -37,5 +39,15 @@ export type Gene = {
   so_term: string;
   slice: Slice;
   transcripts: Transcript[];
-  // external_references
+  alternative_symbols: string[];
+  attributes: string[];
+  function?: {
+    description: string;
+    source: Source;
+  };
+  filters?: {
+    [key: string]: JSONValue;
+  };
+  metadata?: Metadata;
+  external_references?: ExternalReference[];
 };
