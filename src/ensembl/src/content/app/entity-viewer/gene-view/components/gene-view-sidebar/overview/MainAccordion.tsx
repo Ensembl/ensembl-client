@@ -61,13 +61,13 @@ const MainAccordion = (props: Props) => {
   const hasFunctionDescription = Boolean(gene.function?.description);
 
   const expandedPanels =
-    (sidebarUIState?.mainAccordion?.expandedPanels as AccordionSectionID[]) ||
+    sidebarUIState?.mainAccordion?.expandedPanels ||
     (hasFunctionDescription ? ['function'] : []);
 
-  const onChange = (expandedPanels: AccordionSectionID[] = []) => {
+  const onChange = (newExpandedPanels: (string | number)[] = []) => {
     props.updateEntityUI({
       mainAccordion: {
-        expandedPanels
+        expandedPanels: newExpandedPanels as AccordionSectionID[]
       }
     });
   };
@@ -83,9 +83,7 @@ const MainAccordion = (props: Props) => {
     <div className={styles.accordionContainer}>
       <Accordion
         className={styles.entityViewerAccordion}
-        onChange={(expandedPanels) =>
-          onChange(expandedPanels as AccordionSectionID[])
-        }
+        onChange={onChange}
         preExpanded={expandedPanels}
         allowMultipleExpanded={true}
       >
