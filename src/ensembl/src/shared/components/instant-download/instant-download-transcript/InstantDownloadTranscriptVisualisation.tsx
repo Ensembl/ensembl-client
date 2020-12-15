@@ -47,16 +47,17 @@ export type Props = {
 const InstantDownloadTranscriptVisualisation = (props: Props) => {
   const exonsCount = 5;
   const exonHeight = 5;
-  const proteinHeight = 4.3;
-  const verticalGap = 5;
-  const totalHeight = exonHeight + proteinHeight + verticalGap;
   const exonWidth = Math.floor(props.width / 7);
-  const halfExonWidth = Math.floor(exonWidth / 2);
-  const intronsCount = exonsCount - 1;
-  const proteinExonBlockWidth = 4.3;
-  const proteinExonBlockSpacing = 1;
   const outerProteinExonBlocksCount = 3;
   const innerProteinExonBlocksCount = outerProteinExonBlocksCount * 2;
+  const proteinExonBlockSpacing = 1;
+  const proteinHeight =
+    (exonWidth - proteinExonBlockSpacing * 5) / innerProteinExonBlocksCount;
+  const proteinExonBlockWidth = proteinHeight;
+  const verticalGap = 5;
+  const totalHeight = exonHeight + proteinHeight + verticalGap;
+  const halfExonWidth = Math.floor(exonWidth / 2);
+  const intronsCount = exonsCount - 1;
 
   const getExonClasses = (exonIndex: number, exonsCount: number) => {
     const isOuterExon = exonIndex === 0 || exonIndex === exonsCount - 1;
