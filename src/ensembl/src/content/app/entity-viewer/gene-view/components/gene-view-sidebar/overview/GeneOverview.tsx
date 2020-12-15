@@ -19,7 +19,6 @@ import { connect } from 'react-redux';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import MainAccordion from './MainAccordion';
-import PublicationsAccordion from './PublicationsAccordion';
 
 import {
   getEntityViewerSidebarPayload,
@@ -118,12 +117,6 @@ const GeneOverview = (props: Props) => {
           </div>
         </div>
       )}
-
-      <div>
-        {props.sidebarPayload.publications && (
-          <PublicationsAccordion {...props} />
-        )}
-      </div>
     </div>
   );
 };

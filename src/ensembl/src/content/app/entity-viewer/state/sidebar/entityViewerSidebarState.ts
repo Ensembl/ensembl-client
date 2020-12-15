@@ -18,7 +18,6 @@ import { Status } from 'src/shared/types/status';
 import { Assembly } from '../../types/assembly';
 import { DataSet } from '../../types/dataSet';
 import { Homeologue } from '../../types/homeologue';
-import { Publication } from '../../types/publication';
 import { Source } from '../../types/source';
 import { Metadata } from '../../types/metadata';
 import { ExternalReference } from '../../types/externalReference';
@@ -69,7 +68,6 @@ export type EntityViewerSidebarPayload = {
   other_assemblies?: Assembly[];
   other_data_sets?: DataSet[];
   homeologues?: Homeologue[];
-  publications?: Publication[];
 };
 
 export type EntityViewerSidebarState = Readonly<{
@@ -79,9 +77,6 @@ export type EntityViewerSidebarState = Readonly<{
 export type EntityViewerSidebarUIState = {
   mainAccordion?: {
     expandedPanels?: OverviewMainAccordionSectionID[];
-  };
-  publicationsAccordion?: {
-    expandedPanels?: string[];
   };
 };
 

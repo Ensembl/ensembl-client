@@ -146,23 +146,6 @@
   }
 }
 
-.publication {
-  margin-bottom: 20px;
-  & .title {
-    font-weight: $bold;
-  }
-
-  & .authors {
-    color: $dark-grey;
-    font-size: 12px;
-    font-weight: $light;
-  }
-
-  & .sourceDescription {
-    color: $dark-grey;
-  }
-}
-
 .tark {
   & .description {
     margin: 20px 0 10px;
