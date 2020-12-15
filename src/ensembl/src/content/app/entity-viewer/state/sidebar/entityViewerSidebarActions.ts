@@ -113,26 +113,9 @@ export const loadSidebar: ActionCreator<ThunkAction<
   }
 
   dispatch(setSidebarInitialState(genomeId));
-  dispatch(fetchSidebarPayload());
-};
-
-export const fetchSidebarPayload: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const genomeId = getEntityViewerActiveGenomeId(state);
-  const entityId = getEntityViewerActiveEnsObjectId(state);
-
-  if (!genomeId || !entityId) {
-    return;
-  }
 
   const sidebarPayload =
     entityViewerSidebarSampleData[genomeId]?.entities[entityId] || null;
-
   dispatch(updateEntityState({ genomeId, entityId, fragment: sidebarPayload }));
 };
 

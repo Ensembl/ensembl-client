@@ -21,9 +21,7 @@ import storageService, {
 } from 'src/services/storage-service';
 
 export enum StorageKeys {
-  GENERAL_STATE = 'entityViewer.generalState',
-  SIDEBAR_STATE = 'entityViewer.sidebarState',
-  GENE_VIEW_STATE = 'entityViewer.geneViewState'
+  GENERAL_STATE = 'entityViewer.generalState'
 }
 
 const localStorageOptions = {
@@ -37,14 +35,14 @@ export class EntityViewerStorageService {
     this.storageService = storageService;
   }
 
-  public getGeneralState(): EntityViewerGeneralState {
+  public getGeneralState(): Partial<EntityViewerGeneralState> {
     return this.storageService.get(
       StorageKeys.GENERAL_STATE,
       localStorageOptions
     );
   }
 
-  public updateGeneralState(updatedState: EntityViewerGeneralState) {
+  public updateGeneralState(updatedState: Partial<EntityViewerGeneralState>) {
     this.storageService.update(
       StorageKeys.GENERAL_STATE,
       updatedState,

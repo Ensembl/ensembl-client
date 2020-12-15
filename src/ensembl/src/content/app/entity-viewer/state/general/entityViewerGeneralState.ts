@@ -26,5 +26,6 @@ export const initialState: EntityViewerGeneralState = {
   activeEnsObjectIds: {}
 };
 
-export const buildInitialState = () =>
-  entityViewerStorageService.getGeneralState() || initialState;
+export const buildInitialState = () => {
+  return { ...initialState, ...entityViewerStorageService.getGeneralState() };
+};

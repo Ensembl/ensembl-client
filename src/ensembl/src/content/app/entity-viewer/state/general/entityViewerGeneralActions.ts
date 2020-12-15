@@ -19,7 +19,6 @@ import { ActionCreator, Action } from 'redux';
 import { batch } from 'react-redux';
 import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
-import set from 'lodash/fp/set';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 import {
@@ -97,19 +96,18 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
       })
     : null;
 
-  if (entityId) {
+  if (entityId && genomeIdFromUrl) {
     if (entityId !== activeEntityId) {
       dispatch(updateEnsObject(entityId));
     }
     dispatch(loadSidebar());
-    const storedState = entityViewerStorageService.getGeneralState();
-    entityViewerStorageService.updateGeneralState(
-      set(
-        'activeGenomeId',
-        genomeIdFromUrl,
-        set(`activeEnsObjectIds.${genomeIdFromUrl}`, entityId, storedState)
-      )
-    );
+
+    entityViewerStorageService.updateGeneralState({
+      activeGenomeId: genomeIdFromUrl
+    });
+    entityViewerStorageService.updateGeneralState({
+      activeEnsObjectIds: { [genomeIdFromUrl]: entityId }
+    });
   }
 };
 
