@@ -48,12 +48,20 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
   const exonsCount = 5;
   const exonHeight = 5;
   const exonWidth = Math.floor(props.width / 7);
-  const outerProteinExonBlocksCount = 3;
-  const innerProteinExonBlocksCount = outerProteinExonBlocksCount * 2;
-  const proteinExonBlockSpacing = 1;
-  const proteinHeight =
-    (exonWidth - proteinExonBlockSpacing * 5) / innerProteinExonBlocksCount;
+  const proteinHeight = 4;
   const proteinExonBlockWidth = proteinHeight;
+  const proteinExonBlockSpacing = 1;
+  let innerProteinExonBlocksCount =
+    exonWidth / (proteinExonBlockWidth + proteinExonBlockSpacing);
+  innerProteinExonBlocksCount =
+    innerProteinExonBlocksCount % 1 >= 0.5
+      ? Math.ceil(innerProteinExonBlocksCount)
+      : Math.floor(innerProteinExonBlocksCount);
+  let outerProteinExonBlocksCount = innerProteinExonBlocksCount / 2;
+  outerProteinExonBlocksCount =
+    outerProteinExonBlocksCount % 1 >= 0.5
+      ? Math.ceil(outerProteinExonBlocksCount)
+      : Math.floor(outerProteinExonBlocksCount);
   const verticalGap = 5;
   const totalHeight = exonHeight + proteinHeight + verticalGap;
   const halfExonWidth = Math.floor(exonWidth / 2);
@@ -185,7 +193,7 @@ InstantDownloadTranscriptVisualisation.defaultProps = {
   isCDNAEnabled: false,
   isCDSEnabled: false,
   isProteinSequenceEnabled: false,
-  width: 210
+  width: 240
 } as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;
