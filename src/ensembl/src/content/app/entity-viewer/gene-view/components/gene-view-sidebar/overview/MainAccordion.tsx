@@ -43,11 +43,7 @@ type Props = {
   updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
 };
 
-enum AccordionSectionID {
-  FUNCTION = 'function',
-  SEQUENCE = 'sequence',
-  OTHER_DATA_SETS = 'other_data_sets'
-}
+type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
 
 // TODO: Remove me once instant download component is available
 const mockOnClick = noop;
@@ -63,10 +59,10 @@ const MainAccordion = (props: Props) => {
   const hasFunctionDescription = Boolean(gene.function?.description);
 
   const expandedPanels =
-    (sidebarUIState?.mainAccordion?.expandedPanels as string[]) ||
-    (hasFunctionDescription ? [AccordionSectionID.FUNCTION] : []);
+    (sidebarUIState?.mainAccordion?.expandedPanels as AccordionSectionID[]) ||
+    (hasFunctionDescription ? ['function'] : []);
 
-  const onChange = (expandedPanels: (string | number)[] = []) => {
+  const onChange = (expandedPanels: AccordionSectionID[] = []) => {
     props.updateEntityUI({
       mainAccordion: {
         expandedPanels
@@ -85,13 +81,15 @@ const MainAccordion = (props: Props) => {
     <div className={styles.accordionContainer}>
       <Accordion
         className={styles.entityViewerAccordion}
-        onChange={onChange}
+        onChange={(expandedPanels) =>
+          onChange(expandedPanels as AccordionSectionID[])
+        }
         preExpanded={expandedPanels}
         allowMultipleExpanded={true}
       >
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={AccordionSectionID.FUNCTION}
+          uuid={'function'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
@@ -126,7 +124,7 @@ const MainAccordion = (props: Props) => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={AccordionSectionID.SEQUENCE}
+          uuid={'sequence'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton className={styles.entityViewerAccordionButton}>
@@ -197,7 +195,7 @@ const MainAccordion = (props: Props) => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={AccordionSectionID.OTHER_DATA_SETS}
+          uuid={'other_data_sets'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
