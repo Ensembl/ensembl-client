@@ -47,12 +47,16 @@ export type Props = {
 const InstantDownloadTranscriptVisualisation = (props: Props) => {
   const exonsCount = 5;
   const exonHeight = 5;
-  const proteinHeight = 3;
+  const proteinHeight = 4.3;
   const verticalGap = 5;
   const totalHeight = exonHeight + proteinHeight + verticalGap;
   const exonWidth = Math.floor(props.width / 7);
   const halfExonWidth = Math.floor(exonWidth / 2);
   const intronsCount = exonsCount - 1;
+  const proteinExonBlockWidth = 4.3;
+  const proteinExonBlockSpacing = 1;
+  const outerProteinExonBlocksCount = 3;
+  const innerProteinExonBlocksCount = outerProteinExonBlocksCount * 2;
 
   const getExonClasses = (exonIndex: number, exonsCount: number) => {
     const isOuterExon = exonIndex === 0 || exonIndex === exonsCount - 1;
@@ -128,17 +132,36 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     );
   });
 
-  const proteinSegments = times(exonsCount, (index) => {
-    const isOuterSegment = index === 0 || index === exonsCount - 1;
-    return (
-      <rect
-        key={index}
-        className={styles.protein}
-        x={index === 0 ? halfExonWidth : index * (exonWidth + halfExonWidth)}
-        y={exonHeight + verticalGap}
-        width={isOuterSegment ? halfExonWidth : exonWidth}
-        height={proteinHeight}
-      />
+  const proteinSegments = times(exonsCount, (si) => {
+    const isOuterSegment = si === 0 || si === exonsCount - 1;
+
+    const calculateXPosition = (segmentIndex: number, blockIndex: number) => {
+      if (segmentIndex === 0) {
+        return (
+          halfExonWidth +
+          blockIndex * (proteinExonBlockWidth + proteinExonBlockSpacing)
+        );
+      }
+      return (
+        segmentIndex * (exonWidth + halfExonWidth) +
+        blockIndex * (proteinExonBlockWidth + proteinExonBlockSpacing)
+      );
+    };
+
+    return times(
+      isOuterSegment
+        ? outerProteinExonBlocksCount
+        : innerProteinExonBlocksCount,
+      (bi) => (
+        <rect
+          key={bi}
+          className={styles.protein}
+          x={calculateXPosition(si, bi)}
+          y={exonHeight + verticalGap}
+          width={proteinExonBlockWidth}
+          height={proteinHeight}
+        />
+      )
     );
   });
 
