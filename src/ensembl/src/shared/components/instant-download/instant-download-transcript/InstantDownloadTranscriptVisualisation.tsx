@@ -51,12 +51,10 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
   const proteinHeight = 4;
   const proteinBlockWidth = proteinHeight;
   const proteinBlockSpacing = 1;
-  const innerProteinExonBlocksCount = Math.round(
+  const innerProteinBlocksCount = Math.round(
     exonWidth / (proteinBlockWidth + proteinBlockSpacing)
   );
-  const outerProteinExonBlocksCount = Math.round(
-    innerProteinExonBlocksCount / 2
-  );
+  const outerProteinBlocksCount = Math.round(innerProteinBlocksCount / 2);
   const verticalGap = 5;
   const totalHeight = exonHeight + proteinHeight + verticalGap;
   const halfExonWidth = Math.floor(exonWidth / 2);
@@ -155,9 +153,7 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     const isOuterSegment =
       segmentIndex === 0 || segmentIndex === exonsCount - 1;
     return times(
-      isOuterSegment
-        ? outerProteinExonBlocksCount
-        : innerProteinExonBlocksCount,
+      isOuterSegment ? outerProteinBlocksCount : innerProteinBlocksCount,
       (blockIndex) => (
         <rect
           key={blockIndex}
