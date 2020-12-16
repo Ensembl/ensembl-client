@@ -51,13 +51,13 @@ export const observeMediaQueries = (
         callback(key);
       }
     };
-    mediaQueryList.addListener(onChange);
+    mediaQueryList.addEventListener('change', onChange);
     return { mediaQueryList, onChange };
   });
 
   const unsubscribe = () => {
     observableQueries.forEach(({ mediaQueryList, onChange }) => {
-      mediaQueryList.removeListener(onChange);
+      mediaQueryList.removeEventListener('change', onChange);
     });
   };
   return { unsubscribe };
