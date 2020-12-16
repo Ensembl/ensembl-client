@@ -126,11 +126,9 @@ const useBrowserRouting = () => {
   }, [genomeId, focus, location]);
 
   useEffect(() => {
-    const { genomeId } = params;
-    if (!genomeId) {
-      return;
+    if (genomeId) {
+      dispatch(fetchGenomeData(genomeId));
     }
-    dispatch(fetchGenomeData(genomeId));
   }, [genomeId]);
 
   const changeGenomeId = useCallback(
