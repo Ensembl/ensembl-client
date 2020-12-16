@@ -405,13 +405,12 @@ export const clearActiveEnsObjectIdsForGenome = createAction(
 )<string>();
 
 export const deleteSpeciesAndSaveBrowser = (
-  genomeId: string
+  genomeIdToRemove: string
 ): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (activeGenomeId === genomeId) {
+    if (activeGenomeId === genomeIdToRemove) {
       dispatch(clearActiveGenomeId);
       browserStorageService.clearActiveGenomeId();
     }
@@ -420,8 +419,12 @@ export const deleteSpeciesAndSaveBrowser = (
     const updatedActiveEnsObjectIds = {
       ...currentActiveEnsObjectIds
     };
-    delete updatedActiveEnsObjectIds[genomeId];
+    delete updatedActiveEnsObjectIds[genomeIdToRemove];
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
-    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectIds);
+
+    browserStorageService.updateActiveEnsObjectIds({
+      ...currentActiveEnsObjectIds,
+      [genomeIdToRemove]: undefined
+    });
   };
 };

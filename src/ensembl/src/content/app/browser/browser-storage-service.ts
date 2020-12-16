@@ -58,7 +58,7 @@ export class BrowserStorageService {
   }
 
   public updateActiveEnsObjectIds(activeEnsObjectIds: {
-    [genomeId: string]: string;
+    [genomeId: string]: string | undefined;
   }) {
     this.storageService.update(
       StorageKeys.ACTIVE_ENS_OBJECT_ID,

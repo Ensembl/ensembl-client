@@ -52,9 +52,6 @@ export function browserEntity(
   action: ActionType<typeof browserActions>
 ): BrowserEntityState {
   switch (action.type) {
-    case getType(browserActions.clearActiveGenomeId): {
-      return { ...state, activeGenomeId: null };
-    }
     case getType(browserActions.setDataFromUrl): {
       const { activeGenomeId, activeEnsObjectId } = action.payload;
       const newState = {
@@ -144,6 +141,8 @@ export function browserLocation(
       return { ...state, regionFieldActive: action.payload };
     case getType(browserActions.updateDefaultPositionFlag):
       return { ...state, isObjectInDefaultPosition: action.payload };
+    case getType(browserActions.clearActiveGenomeId):
+      return { ...state, activeGenomeId: null };
     default:
       return state;
   }
