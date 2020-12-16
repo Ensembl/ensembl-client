@@ -15,28 +15,24 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import { BrowserImage, BrowserImageProps } from './BrowserImage';
-import BrowserCogList from '../browser-cog/BrowserCogList';
-import { ZmenuController } from 'src/content/app/browser/zmenu';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
-import Overlay from 'src/shared/components/overlay/Overlay';
 
 jest.mock('../browser-cog/BrowserCogList', () => () => (
-  <div>BrowserCogList</div>
+  <div id="browserCogList" />
 ));
 
 jest.mock('src/content/app/browser/zmenu', () => ({
-  ZmenuController: () => <div>ZmenuController</div>
+  ZmenuController: () => <div id="zmenuController" />
 }));
 
 jest.mock('src/shared/components/loader/Loader', () => ({
-  CircleLoader: () => <div>CircleLoader</div>
+  CircleLoader: () => <div id="circleLoader" />
 }));
 
 jest.mock('src/shared/components/overlay/Overlay', () => () => (
-  <div>Overlay</div>
+  <div id="overlay" />
 ));
 
 describe('<BrowserImage />', () => {
@@ -59,35 +55,35 @@ describe('<BrowserImage />', () => {
     changeHighlightedTrackId: jest.fn()
   };
 
-  const mountBrowserImageComponent = (props?: Partial<BrowserImageProps>) =>
-    mount(<BrowserImage {...defaultProps} {...props} />);
+  const renderBrowserImage = (props?: Partial<BrowserImageProps>) =>
+    render(<BrowserImage {...defaultProps} {...props} />);
 
   describe('rendering', () => {
-    test('renders loader if browser is not activated', () => {
-      const wrapper = mountBrowserImageComponent();
-      expect(wrapper.find(CircleLoader)).toHaveLength(1);
+    it('renders loader if browser is not activated', () => {
+      const { container } = renderBrowserImage();
+      expect(container.querySelector('#circleLoader')).toBeTruthy();
     });
 
-    test('renders browser cog list', () => {
-      const wrapper = mountBrowserImageComponent();
-      expect(wrapper.find(BrowserCogList).length).toBe(1);
+    it('renders browser cog list', () => {
+      const { container } = renderBrowserImage();
+      expect(container.querySelector('#browserCogList')).toBeTruthy();
     });
 
-    test('renders zmenu controller', () => {
-      const wrapper = mountBrowserImageComponent();
-      expect(wrapper.find(ZmenuController).length).toBe(1);
+    it('renders zmenu controller', () => {
+      const { container } = renderBrowserImage();
+      expect(container.querySelector('#zmenuController')).toBeTruthy();
     });
 
-    test('has an overlay on top when disabled', () => {
-      const wrapper = mountBrowserImageComponent({ isDisabled: true });
-      expect(wrapper.find(Overlay).length).toBe(1);
+    it('has an overlay on top when disabled', () => {
+      const { container } = renderBrowserImage({ isDisabled: true });
+      expect(container.querySelector('#overlay')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    test('activates browser on mount', () => {
-      const wrapper = mountBrowserImageComponent();
-      expect(wrapper.props().activateBrowser).toHaveBeenCalled();
+    it('activates browser on mount', () => {
+      renderBrowserImage();
+      expect(defaultProps.activateBrowser).toHaveBeenCalled();
     });
   });
 });
