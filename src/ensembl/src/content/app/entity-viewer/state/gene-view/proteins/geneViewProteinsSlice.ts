@@ -107,7 +107,11 @@ const proteinsSlice = createSlice({
     ) {
       const { activeGenomeId, activeObjectId, expandedIds } = action.payload;
       if (!state[activeGenomeId]) {
-        state[activeGenomeId] = { [activeObjectId]: defaultStatePerGene };
+        state[activeGenomeId] = {
+          [activeObjectId]: { ...defaultStatePerGene }
+        };
+      } else if (!state[activeGenomeId][activeObjectId]) {
+        state[activeGenomeId][activeObjectId] = { ...defaultStatePerGene };
       }
       state[activeGenomeId][activeObjectId].expandedTranscriptIds = expandedIds;
     }
