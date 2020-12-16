@@ -156,7 +156,7 @@ describe('storageService', () => {
     });
 
     describe('.removeAt()', () => {
-      it('removes a  particulat', () => {
+      it('removes a particular entry from the value object for the given path', () => {
         const key = faker.lorem.word();
         const key1 = faker.lorem.word();
         const key2 = faker.lorem.word();
@@ -318,7 +318,7 @@ describe('storageService', () => {
     });
 
     describe('.removeAt()', () => {
-      it('removes a  particulat', () => {
+      it('removes a particular entry from the value object for the given path', () => {
         const key = faker.lorem.word();
         const key1 = faker.lorem.word();
         const key2 = faker.lorem.word();
