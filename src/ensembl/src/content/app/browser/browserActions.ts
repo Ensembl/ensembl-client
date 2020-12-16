@@ -395,3 +395,33 @@ export const toggleRegionEditorActive = createAction(
 export const toggleRegionFieldActive = createAction(
   'browser/toggle-region-field-active'
 )<boolean>();
+
+export const clearActiveGenomeId = createAction(
+  'browser/clear-active-genome-id'
+)();
+
+export const clearActiveEnsObjectIdsForGenome = createAction(
+  'browser/clear-active-ens-object-ids-for-genome'
+)<string>();
+
+export const deleteSpeciesAndSaveBrowser = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
+
+    if (activeGenomeId === genomeId) {
+      dispatch(clearActiveGenomeId);
+      browserStorageService.clearActiveGenomeId();
+    }
+
+    const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
+    const updatedActiveEnsObjectIds = {
+      ...currentActiveEnsObjectIds
+    };
+    delete updatedActiveEnsObjectIds[genomeId];
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectIds);
+  };
+};

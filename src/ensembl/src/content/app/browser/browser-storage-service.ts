@@ -49,6 +49,10 @@ export class BrowserStorageService {
     this.storageService.save(StorageKeys.ACTIVE_GENOME_ID, activeGenomeId);
   }
 
+  public clearActiveGenomeId() {
+    this.storageService.remove(StorageKeys.ACTIVE_GENOME_ID);
+  }
+
   public getActiveEnsObjectIds() {
     return this.storageService.get(StorageKeys.ACTIVE_ENS_OBJECT_ID) || {};
   }
