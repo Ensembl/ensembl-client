@@ -16,6 +16,7 @@
 
 import React from 'react';
 import noop from 'lodash/noop';
+import classNames from 'classnames';
 
 import {
   Accordion,
@@ -31,35 +32,52 @@ import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-do
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import { Status } from 'src/shared/types/status';
-import JSONValue from 'src/shared/types/JSON';
-import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import {
+  EntityViewerSidebarPayload,
+  EntityViewerSidebarUIState
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
-  sidebarUIState: { [key: string]: JSONValue } | null;
-  updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
+  sidebarUIState: EntityViewerSidebarUIState | null;
+  updateEntityUI: (uIstate: Partial<EntityViewerSidebarUIState>) => void;
 };
+
+export type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
 
 // TODO: Remove me once instant download component is available
 const mockOnClick = noop;
 
 const MainAccordion = (props: Props) => {
-  if (!props.sidebarPayload) {
+  const { sidebarPayload, sidebarUIState } = props;
+
+  if (!sidebarPayload) {
     return null;
   }
-  const { gene } = props.sidebarPayload;
-  const expandedPanels = props.sidebarUIState?.mainAccordion
-    ?.expandedPanels as string[];
 
-  const onChange = (expandedPanels: (string | number)[] = []) => {
+  const { gene } = sidebarPayload;
+  const hasFunctionDescription = Boolean(gene.function?.description);
+
+  const expandedPanels =
+    sidebarUIState?.mainAccordion?.expandedPanels ||
+    (hasFunctionDescription ? ['function'] : []);
+
+  const onChange = (newExpandedPanels: (string | number)[] = []) => {
     props.updateEntityUI({
       mainAccordion: {
-        expandedPanels
+        expandedPanels: newExpandedPanels as AccordionSectionID[]
       }
     });
   };
+
+  const functionAccordionButtonClass = classNames(
+    styles.entityViewerAccordionButton,
+    {
+      [styles.entityViewerAccordionButtonDisabled]: !hasFunctionDescription
+    }
+  );
 
   return (
     <div className={styles.accordionContainer}>
@@ -75,8 +93,8 @@ const MainAccordion = (props: Props) => {
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
-              className={styles.entityViewerAccordionButton}
-              disabled={!gene.function}
+              className={functionAccordionButtonClass}
+              disabled={!hasFunctionDescription}
             >
               Function
             </AccordionItemButton>
@@ -182,7 +200,7 @@ const MainAccordion = (props: Props) => {
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
               className={styles.entityViewerAccordionButton}
-              disabled={props.sidebarPayload.other_data_sets ? false : true}
+              disabled={sidebarPayload.other_data_sets ? false : true}
             >
               Other data sets
             </AccordionItemButton>
@@ -191,7 +209,7 @@ const MainAccordion = (props: Props) => {
             className={styles.entityViewerAccordionItemContent}
           >
             <div>
-              {props.sidebarPayload.other_data_sets?.map((entry, key) =>
+              {sidebarPayload.other_data_sets?.map((entry, key) =>
                 renderStandardLabelValue({
                   label: entry.type,
                   value: entry.value,

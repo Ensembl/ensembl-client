@@ -18,11 +18,11 @@ import { Status } from 'src/shared/types/status';
 import { Assembly } from '../../types/assembly';
 import { DataSet } from '../../types/dataSet';
 import { Homeologue } from '../../types/homeologue';
-import { Publication } from '../../types/publication';
 import { Source } from '../../types/source';
 import { Metadata } from '../../types/metadata';
 import { ExternalReference } from '../../types/externalReference';
 import JSONValue from 'src/shared/types/JSON';
+import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 
 export enum SidebarTabName {
   OVERVIEW = 'Overview',
@@ -68,12 +68,17 @@ export type EntityViewerSidebarPayload = {
   other_assemblies?: Assembly[];
   other_data_sets?: DataSet[];
   homeologues?: Homeologue[];
-  publications?: Publication[];
 };
 
 export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
 }>;
+
+export type EntityViewerSidebarUIState = {
+  mainAccordion?: {
+    expandedPanels?: OverviewMainAccordionSectionID[];
+  };
+};
 
 export type EntityViewerSidebarGenomeState = Readonly<{
   status: SidebarStatus;
@@ -81,7 +86,7 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   entities: {
     [entityId: string]: {
       payload: EntityViewerSidebarPayload | null;
-      uIState: { [key: string]: JSONValue };
+      uIState: EntityViewerSidebarUIState;
     };
   };
 }>;

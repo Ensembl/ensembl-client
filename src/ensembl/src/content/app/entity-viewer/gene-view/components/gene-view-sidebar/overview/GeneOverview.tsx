@@ -19,7 +19,6 @@ import { connect } from 'react-redux';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import MainAccordion from './MainAccordion';
-import PublicationsAccordion from './PublicationsAccordion';
 
 import {
   getEntityViewerSidebarPayload,
@@ -28,15 +27,17 @@ import {
 import { updateEntityUI } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { RootState } from 'src/store';
-import JSONValue from 'src/shared/types/JSON';
-import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import {
+  EntityViewerSidebarPayload,
+  EntityViewerSidebarUIState
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
 
 type Props = {
   sidebarPayload: EntityViewerSidebarPayload | null;
-  sidebarUIState: { [key: string]: JSONValue } | null;
-  updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
+  sidebarUIState: EntityViewerSidebarUIState | null;
+  updateEntityUI: (uIstate: Partial<EntityViewerSidebarUIState>) => void;
 };
 
 const GeneOverview = (props: Props) => {
@@ -116,12 +117,6 @@ const GeneOverview = (props: Props) => {
           </div>
         </div>
       )}
-
-      <div>
-        {props.sidebarPayload.publications && (
-          <PublicationsAccordion {...props} />
-        )}
-      </div>
     </div>
   );
 };
