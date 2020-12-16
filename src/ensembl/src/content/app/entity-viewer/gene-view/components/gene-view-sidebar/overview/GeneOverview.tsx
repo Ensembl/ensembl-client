@@ -20,6 +20,8 @@ import { useQuery, gql } from '@apollo/client';
 
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
+import GenePublications from '../publications/GenePublications';
+
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
 
@@ -85,6 +87,8 @@ const GeneOverview = () => {
           ? gene.alternative_symbols.join(', ')
           : 'No synonyms'}
       </div>
+
+      <GenePublications gene={gene} />
     </div>
   );
 };
