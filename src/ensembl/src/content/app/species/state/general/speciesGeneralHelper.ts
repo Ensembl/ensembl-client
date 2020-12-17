@@ -165,7 +165,7 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
   [SpeciesStatsSection.REGULATION]: {
     title: 'Regulation',
     groups: [Groups.REGULATION],
-    summaryStatsKeys: [Stats.REGULATION]
+    summaryStatsKeys: [Stats.REGULATION_ENHANCERS, Stats.REGULATION_PROMOTERS]
   }
 };
 
@@ -463,9 +463,11 @@ const statsFormattingOptions: StatsFormattingOptions = {
       label: 'Regulation'
     },
     [Stats.REGULATION_ENHANCERS]: {
+      headerUnit: 'enhancers',
       label: 'Enhancers'
     },
     [Stats.REGULATION_PROMOTERS]: {
+      headerUnit: 'promoters',
       label: 'Promoters'
     }
   }
