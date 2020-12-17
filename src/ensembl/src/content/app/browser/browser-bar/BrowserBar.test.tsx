@@ -15,27 +15,25 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { BrowserBar, BrowserBarProps } from './BrowserBar';
-
-import BrowserReset from 'src/content/app/browser/browser-reset/BrowserReset';
-import BrowserLocationIndicator from 'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator';
-import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 
 import { ChrLocation } from '../browserState';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
 jest.mock('src/content/app/browser/browser-reset/BrowserReset', () => () => (
-  <div>BrowserReset</div>
+  <div id="browserReset">BrowserReset</div>
 ));
 jest.mock(
   'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator',
-  () => () => <div>Browser Location Indicator</div>
+  () => () => (
+    <div id="browserLocationIndicator">Browser Location Indicator</div>
+  )
 );
 jest.mock(
   'src/shared/components/feature-summary-strip/FeatureSummaryStrip',
-  () => () => <div>Feature Summary Strip</div>
+  () => () => <div id="featureSummaryStrip">Feature Summary Strip</div>
 );
 
 describe('<BrowserBar />', () => {
@@ -46,39 +44,28 @@ describe('<BrowserBar />', () => {
     isDrawerOpened: false
   };
 
-  const renderBrowserBar = (props?: Partial<BrowserBarProps>) => (
-    <BrowserBar {...defaultProps} {...props} />
-  );
+  const renderBrowserBar = (props?: Partial<BrowserBarProps>) =>
+    render(<BrowserBar {...defaultProps} {...props} />);
 
-  describe('general', () => {
-    let renderedBrowserBar: any;
-
-    beforeEach(() => {
-      renderedBrowserBar = mount(renderBrowserBar());
+  describe('rendering', () => {
+    it('contains BrowserReset button', () => {
+      const { container } = renderBrowserBar();
+      expect(container.querySelector('#browserReset')).toBeTruthy();
     });
 
-    test('contains BrowserReset button', () => {
-      expect(renderedBrowserBar.find(BrowserReset).length).toBe(1);
+    it('contains BrowserLocationIndicator', () => {
+      const { container } = renderBrowserBar();
+      expect(container.querySelector('#browserLocationIndicator')).toBeTruthy();
     });
 
-    test('contains BrowserLocationIndicator', () => {
-      expect(renderedBrowserBar.find(BrowserLocationIndicator).length).toBe(1);
+    it('contains FeatureSummaryStrip when ensObject is not null', () => {
+      const { container } = renderBrowserBar();
+      expect(container.querySelector('#featureSummaryStrip')).toBeTruthy();
     });
 
-    test('contains FeatureSummaryStrip', () => {
-      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
-    });
-  });
-
-  describe('behaviour', () => {
-    let renderedBrowserBar: any;
-
-    test('shows FeatureSummaryStrip when ensObject is not null', () => {
-      renderedBrowserBar = mount(renderBrowserBar());
-      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(1);
-
-      renderedBrowserBar = mount(renderBrowserBar({ ensObject: null }));
-      expect(renderedBrowserBar.find(FeatureSummaryStrip).length).toBe(0);
+    it('does not contain FeatureSummaryStrip when ensObject is null', () => {
+      const { container } = renderBrowserBar({ ensObject: null });
+      expect(container.querySelector('#featureSummaryStrip')).toBeFalsy();
     });
   });
 });
