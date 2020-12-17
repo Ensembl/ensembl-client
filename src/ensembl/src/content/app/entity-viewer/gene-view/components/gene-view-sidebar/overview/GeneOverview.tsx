@@ -17,59 +17,32 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
-import { connect } from 'react-redux';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import MainAccordion from './MainAccordion';
-import PublicationsAccordion from './PublicationsAccordion';
 
-import {
-  getEntityViewerSidebarPayload,
-  getEntityViewerSidebarUIState
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { updateEntityUI } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { RootState } from 'src/store';
-import JSONValue from 'src/shared/types/JSON';
-import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
-
-import styles from './GeneOverview.scss';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import styles from './GeneOverview.scss';
 
 const QUERY = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       alternative_symbols
-      external_references {
-        accession_id
-        description
-        name
-        source {
-          name
-          id
-        }
-        url
-      }
       name
-      so_term
       stable_id
       symbol
     }
   }
 `;
 
-type GeneOverviewProps = {
-  sidebarPayload: EntityViewerSidebarPayload | null;
-  sidebarUIState: { [key: string]: JSONValue } | null;
-  updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
-};
-
-const GeneOverview = (props: GeneOverviewProps) => {
+const GeneOverview = () => {
   const params: EntityViewerParams = useParams();
   const { entityId, genomeId } = params;
   const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
       stable_id: stableId,
@@ -112,73 +85,8 @@ const GeneOverview = (props: GeneOverviewProps) => {
           </div>
         </div>
       )}
-      {gene.attributes && (
-        <div>
-          <div className={styles.sectionHead}>Additional attributes</div>
-          <div>
-            {gene.attributes.map((attribute, key) => (
-              <div key={key}> {attribute} </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div>
-        <MainAccordion {...props} gene={gene} />
-      </div>
-
-      {props.sidebarPayload?.homeologues && (
-        <div className={styles.homeologues}>
-          <div className={styles.sectionHead}>Homeologues</div>
-          <div>
-            {props.sidebarPayload.homeologues.map((homeologue, key) => (
-              <div className={styles.standardLabelValue} key={key}>
-                <div className={styles.label}>{homeologue.type}</div>
-                <div className={styles.value}>
-                  <a href={''}>{homeologue.stable_id}</a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {props.sidebarPayload?.other_assemblies && (
-        <div>
-          <div className={styles.sectionHead}>
-            Other assemblies with this gene
-          </div>
-          <div>
-            {props.sidebarPayload.other_assemblies.map((otherAssembly, key) => (
-              <div className={styles.otherAssembly} key={key}>
-                <div className={styles.speciesName}>
-                  {otherAssembly.species_name}
-                </div>
-                <div className={styles.geneName}>
-                  {otherAssembly.assembly_name}
-                </div>
-                <div className={styles.stableId}>{otherAssembly.stable_id}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div>
-        {props.sidebarPayload?.publications && (
-          <PublicationsAccordion {...props} />
-        )}
-      </div>
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  sidebarPayload: getEntityViewerSidebarPayload(state),
-  sidebarUIState: getEntityViewerSidebarUIState(state)
-});
-
-const mapDispatchToProps = {
-  updateEntityUI
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(GeneOverview);
+export default GeneOverview;

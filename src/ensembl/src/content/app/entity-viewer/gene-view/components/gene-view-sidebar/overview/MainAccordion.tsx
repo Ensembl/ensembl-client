@@ -31,7 +31,6 @@ import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-do
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import { Status } from 'src/shared/types/status';
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import JSONValue from 'src/shared/types/JSON';
 
 import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
@@ -39,7 +38,6 @@ import { EntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/
 import styles from './GeneOverview.scss';
 
 type Props = {
-  gene: Gene | null;
   sidebarPayload: EntityViewerSidebarPayload | null;
   sidebarUIState: { [key: string]: JSONValue } | null;
   updateEntityUI: (uIstate: { [key: string]: JSONValue }) => void;
@@ -49,10 +47,10 @@ type Props = {
 const mockOnClick = noop;
 
 const MainAccordion = (props: Props) => {
-  if (!props.gene || !props.sidebarPayload) {
+  if (!props.sidebarPayload) {
     return null;
   }
-  const { gene } = props;
+  const { gene } = props.sidebarPayload;
   const expandedPanels = props.sidebarUIState?.mainAccordion
     ?.expandedPanels as string[];
 
@@ -122,7 +120,7 @@ const MainAccordion = (props: Props) => {
             <div className={styles.sequenceAccordion}>
               <div className={styles.geneDetails}>
                 <span className={styles.geneTitle}>Gene</span>
-                <span className={styles.stableId}>{gene.stable_id}</span>
+                <span className={styles.stableId}>{gene.id}</span>
               </div>
               <div className={styles.geneCheckboxList}>
                 {renderCheckbox({ label: 'Genomic sequence', checked: false })}
