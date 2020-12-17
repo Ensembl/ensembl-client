@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { transcriptSortingFunctions } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -23,6 +23,7 @@ import { transcriptSortingFunctions } from 'src/content/app/entity-viewer/shared
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds,
+  getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import {
@@ -36,7 +37,6 @@ import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/component
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { RootState } from 'src/store';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
@@ -45,14 +45,18 @@ import styles from './DefaultTranscriptsList.scss';
 type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
-  expandedTranscriptIds: string[];
-  expandedTranscriptDownloadIds: string[];
-  toggleTranscriptInfo: (id: string) => void;
-  sortingRule: SortingRule;
 };
 
 const DefaultTranscriptslist = (props: Props) => {
-  const { gene, sortingRule } = props;
+  const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
+  const expandedTranscriptDownloadIds = useSelector(
+    getExpandedTranscriptDownloadIds
+  );
+  const sortingRule = useSelector(getSortingRule);
+  const filters = useSelector(getFilters);
+  const dispatch = useDispatch();
+
+  const { gene } = props;
 
   const sortingFunction = transcriptSortingFunctions[sortingRule];
   const sortedTranscripts = sortingFunction(gene.transcripts) as Transcript[];
@@ -60,13 +64,25 @@ const DefaultTranscriptslist = (props: Props) => {
   const [isFilterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
-    const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+    const hasExpandedTranscripts = !!expandedTranscriptIds.length;
 
     // Expand the first transcript by default
     if (!hasExpandedTranscripts) {
-      props.toggleTranscriptInfo(sortedTranscripts[0].stable_id);
+      dispatch(toggleTranscriptInfo(sortedTranscripts[0].stable_id));
     }
   }, []);
+
+  const shouldShowIndicator = () => {
+    if (sortingRule !== SortingRule.DEFAULT) {
+      return true;
+    }
+
+    if (Object.values(filters).some((filterValue) => filterValue)) {
+      return true;
+    }
+
+    return false;
+  };
 
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
@@ -84,7 +100,10 @@ const DefaultTranscriptslist = (props: Props) => {
         <div className={styles.row}>
           {gene.transcripts.length > 5 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
-              Filter & sort
+              Filter & sort{' '}
+              {shouldShowIndicator() && (
+                <span className={styles.filterSortIndicator}></span>
+              )}
               <ChevronDown className={styles.chevron} />
             </div>
           )}
@@ -94,10 +113,10 @@ const DefaultTranscriptslist = (props: Props) => {
       <div className={styles.content}>
         <StripedBackground {...props} />
         {sortedTranscripts.map((transcript, index) => {
-          const expandTranscript = props.expandedTranscriptIds.includes(
+          const expandTranscript = expandedTranscriptIds.includes(
             transcript.stable_id
           );
-          const expandDownload = props.expandedTranscriptDownloadIds.includes(
+          const expandDownload = expandedTranscriptDownloadIds.includes(
             transcript.stable_id
           );
 
@@ -133,17 +152,4 @@ const StripedBackground = (props: Props) => {
   return <div className={styles.stripedBackground}>{stripes}</div>;
 };
 
-const mapStateToProps = (state: RootState) => ({
-  expandedTranscriptIds: getExpandedTranscriptIds(state),
-  expandedTranscriptDownloadIds: getExpandedTranscriptDownloadIds(state),
-  sortingRule: getSortingRule(state)
-});
-
-const mapDispatchToProps = {
-  toggleTranscriptInfo
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DefaultTranscriptslist);
+export default DefaultTranscriptslist;
