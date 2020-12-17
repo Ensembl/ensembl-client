@@ -28,7 +28,8 @@ export enum SpeciesStatsSection {
   CODING_STATS = 'coding_stats',
   NON_CODING_STATS = 'non_coding_stats',
   PSEUDOGENES = 'pseudogene_stats',
-  ASSEMBLY = 'assembly_stats'
+  ASSEMBLY = 'assembly_stats',
+  REGULATION = 'regulation_stats'
 }
 
 // SpeciesStatsSection -> Groups
@@ -41,7 +42,8 @@ enum Groups {
   PSEUDOGENES_ANALYSIS = 'pseudogenes_analysis',
   ASSEMBLY = 'assembly',
   ASSEMBLY_ANALYSIS = 'assembly_analysis',
-  TRANSCRIPTS = 'transcripts'
+  TRANSCRIPTS = 'transcripts',
+  REGULATION = 'regulation'
 }
 
 const groupTitles = {
@@ -53,7 +55,8 @@ const groupTitles = {
   [Groups.PSEUDOGENES_ANALYSIS]: 'Analysis',
   [Groups.ASSEMBLY]: 'Assembly',
   [Groups.ASSEMBLY_ANALYSIS]: 'Analysis',
-  [Groups.TRANSCRIPTS]: 'Transcripts'
+  [Groups.TRANSCRIPTS]: 'Transcripts',
+  [Groups.REGULATION]: 'Regulation'
 };
 
 // SpeciesStatsSection -> Groups -> Stats
@@ -118,7 +121,12 @@ enum Stats {
   PSEUDOGENES_AVERAGE_EXON_LENGTH = 'average_exon_length',
   PSEUDOGENES_AVERAGE_EXONS_PER_TRANSCRIPT = 'average_exons_per_transcript',
   PSEUDOGENES_TOTAL_INTRONS = 'total_introns',
-  PSEUDOGENES_AVERAGE_INTRON_LENGTH = 'average_intron_length'
+  PSEUDOGENES_AVERAGE_INTRON_LENGTH = 'average_intron_length',
+
+  // Regulation stats
+  REGULATION = 'regulation',
+  REGULATION_ENHANCERS = 'enhancers',
+  REGULATION_PROMOTERS = 'promoters'
 }
 
 type SpeciesStatsSectionGroups = {
@@ -153,6 +161,11 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
     title: 'Non-coding genes',
     groups: [Groups.NON_CODING_GENES, Groups.NON_CODING_ANALYSIS],
     summaryStatsKeys: [Stats.NON_CODING_GENES]
+  },
+  [SpeciesStatsSection.REGULATION]: {
+    title: 'Regulation',
+    groups: [Groups.REGULATION],
+    summaryStatsKeys: [Stats.REGULATION]
   }
 };
 
@@ -248,7 +261,10 @@ const groupsStatsMap = {
     [Stats.TOPLEVEL_SEQUENCES, Stats.TOTAL_GAP_LENGTH, Stats.SPANNED_GAP],
     [Stats.COMPONENT_SEQUENCES, Stats.CONTIG_N50]
   ],
-  [Groups.ASSEMBLY_ANALYSIS]: [[Stats.AVERAGE_GC_CONTENT]]
+  [Groups.ASSEMBLY_ANALYSIS]: [[Stats.AVERAGE_GC_CONTENT]],
+  [Groups.REGULATION]: [
+    [Stats.REGULATION_ENHANCERS, Stats.REGULATION_PROMOTERS]
+  ]
 };
 
 // Individual stat formatting options.
@@ -441,6 +457,17 @@ const statsFormattingOptions: StatsFormattingOptions = {
       primaryValuePostfix: '%',
       label: 'Average GC content'
     }
+  },
+  [SpeciesStatsSection.REGULATION]: {
+    [Stats.REGULATION]: {
+      label: 'Regulation'
+    },
+    [Stats.REGULATION_ENHANCERS]: {
+      label: 'Enhancers'
+    },
+    [Stats.REGULATION_PROMOTERS]: {
+      label: 'Promoters'
+    }
   }
 };
 
@@ -581,6 +608,8 @@ export const getStatsForSection = (props: {
   const { section, genome_id, exampleFocusObjects } = props;
 
   const data = sampleData[genome_id][section];
+
+  if (!data) return;
 
   const filteredData: {
     [key: string]: string | number;
