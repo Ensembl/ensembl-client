@@ -118,6 +118,10 @@ export const setDataFromUrlAndSave: ActionCreator<ThunkAction<
   }
 };
 
+export const setActiveGenomeId = createAction('browser/set-active-genome-id')<
+  string
+>();
+
 export const fetchDataForLastVisitedObjects: ActionCreator<ThunkAction<
   void,
   any,
