@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -107,18 +107,35 @@ describe('<Input />', () => {
 
   describe('responding with events', () => {
     it('passes event to onChange', () => {
-      const inputValue = 'foo';
-      const { container } = getRenderedInputContainer({
-        ...commonInputProps,
-        value: inputValue,
-        callbackWithEvent: true
-      });
+      const initialInputValue = 'foo';
+
+      const StatefulWrapper = () => {
+        const [inputValue, setInputValue] = useState(initialInputValue);
+
+        const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const value = e.target.value;
+          commonInputProps.onChange(value);
+          setInputValue(value);
+        };
+
+        return (
+          <Input
+            {...commonInputProps}
+            onChange={onChange}
+            value={inputValue}
+            callbackWithEvent={true}
+          />
+        );
+      };
+
+      const { container } = render(<StatefulWrapper />);
 
       const inputNode = container.querySelector('input') as HTMLInputElement;
 
       userEvent.type(inputNode, '1');
+
       const lastCallArg = commonInputProps.onChange.mock.calls[0].pop();
-      expect(lastCallArg.target.value).toBe('foo1');
+      expect(lastCallArg).toBe('foo1');
     });
 
     it('passes event to onFocus', () => {
