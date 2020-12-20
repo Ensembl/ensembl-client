@@ -26,7 +26,6 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 
 import {
   EntityViewerSidebarGenomeState,
-  EntityViewerSidebarPayload,
   SidebarTabName,
   SidebarStatus,
   EntityViewerSidebarUIState
@@ -82,14 +81,6 @@ export const toggleSidebar: ActionCreator<ThunkAction<
 export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
-
-export const updateEntityState = createAction(
-  'entity-viewer-sidebar/update-entity-state'
-)<{
-  genomeId: string;
-  entityId: string;
-  fragment: Partial<EntityViewerSidebarPayload>;
-}>();
 
 export const updateEntityUIState = createAction(
   'entity-viewer-sidebar/update-entity-ui-state'
