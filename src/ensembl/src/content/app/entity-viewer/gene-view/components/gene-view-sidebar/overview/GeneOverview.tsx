@@ -21,7 +21,7 @@ import { useQuery, gql } from '@apollo/client';
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './GeneOverview.scss';
 
@@ -35,6 +35,10 @@ const QUERY = gql`
     }
   }
 `;
+
+type Gene = Required<
+  Pick<GeneFromGraphql, 'stable_id' | 'symbol' | 'name' | 'alternative_symbols'>
+>;
 
 const GeneOverview = () => {
   const params: EntityViewerParams = useParams();
@@ -62,25 +66,23 @@ const GeneOverview = () => {
   return (
     <div className={styles.overviewContainer}>
       <div className={styles.geneDetails}>
-        <span className={styles.geneSymbol}>{gene.symbol}</span>
+        {!!gene.symbol && (
+          <span className={styles.geneSymbol}>{gene.symbol}</span>
+        )}
         <span>{gene.stable_id}</span>
       </div>
 
-      {gene.name && (
-        <div>
-          <div className={styles.sectionHead}>Gene name</div>
-          <div className={styles.geneName}>{gene.name}</div>
-        </div>
-      )}
+      <div className={styles.sectionHead}>Gene name</div>
+      <div className={styles.geneName}>
+        {gene.name || 'This gene does not have a name'}
+      </div>
 
-      {gene.alternative_symbols && (
-        <div>
-          <div className={styles.sectionHead}>Synonyms</div>
-          <div className={styles.synonyms}>
-            {gene.alternative_symbols.join(', ')}
-          </div>
-        </div>
-      )}
+      <div className={styles.sectionHead}>Synonyms</div>
+      <div className={styles.synonyms}>
+        {gene.alternative_symbols.length
+          ? gene.alternative_symbols.join(', ')
+          : 'No synonyms'}
+      </div>
     </div>
   );
 };
