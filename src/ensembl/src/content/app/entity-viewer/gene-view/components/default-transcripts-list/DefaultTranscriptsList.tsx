@@ -77,7 +77,7 @@ const DefaultTranscriptslist = (props: Props) => {
       return true;
     }
 
-    if (Object.values(filters).some((filterValue) => filterValue)) {
+    if (Object.values(filters).some(Boolean)) {
       return true;
     }
 
@@ -100,9 +100,9 @@ const DefaultTranscriptslist = (props: Props) => {
         <div className={styles.row}>
           {gene.transcripts.length > 5 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
-              Filter & sort{' '}
+              Filter & sort
               {shouldShowIndicator() && (
-                <span className={styles.filterSortIndicator}></span>
+                <span className={styles.activeIndicator}></span>
               )}
               <ChevronDown className={styles.chevron} />
             </div>
