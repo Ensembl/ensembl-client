@@ -18,8 +18,6 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 
-import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
@@ -41,14 +39,14 @@ const QUERY = gql`
 const GeneOverview = () => {
   const params: EntityViewerParams = useParams();
   const { entityId, genomeId } = params;
-  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+  const geneId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
 
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
-      stable_id: stableId,
-      genome_id: genomeId
+      geneId,
+      genomeId
     },
-    skip: !stableId
+    skip: !geneId
   });
 
   if (loading) {
@@ -68,15 +66,13 @@ const GeneOverview = () => {
         <span>{gene.stable_id}</span>
       </div>
 
-      <div className={styles.sectionHead}>Gene name</div>
+      {gene.name && (
+        <div>
+          <div className={styles.sectionHead}>Gene name</div>
+          <div className={styles.geneName}>{gene.name}</div>
+        </div>
+      )}
 
-      <div className={styles.geneName}>
-        <ExternalReference
-          label={gene.name as string}
-          linkText={gene.name || ''}
-          to={''}
-        />
-      </div>
       {gene.alternative_symbols && (
         <div>
           <div className={styles.sectionHead}>Synonyms</div>
