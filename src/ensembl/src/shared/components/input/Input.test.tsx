@@ -17,6 +17,7 @@
 import React, { useState } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import faker from 'faker';
 
 import Input, { Props as InputProps } from './Input';
 
@@ -60,6 +61,23 @@ describe('<Input />', () => {
       expect(inputElement.getAttribute('class')).toMatch(
         commonInputProps.className
       );
+    });
+
+    it('updates the input value when the props change', () => {
+      const inputValue = 'foo';
+      const { container, rerender } = getRenderedInputContainer({
+        ...props,
+        value: inputValue
+      });
+
+      const inputElement = container.querySelector('input') as HTMLInputElement;
+
+      expect(inputElement.value).toBe(inputValue);
+
+      const newValue = faker.lorem.words();
+      rerender(<Input {...props} value={newValue} />);
+
+      expect(inputElement.value).toBe(newValue);
     });
   });
 
