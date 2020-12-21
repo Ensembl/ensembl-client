@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { BrowserNavIcon } from './BrowserNavIcon';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
@@ -27,12 +28,17 @@ describe('<BrowserNavIcon />', () => {
   test('sends navigation message when clicked', () => {
     jest.spyOn(browserMessagingService, 'send');
 
-    const renderedNavIcon = mount(
+    const { container } = render(
       <BrowserNavIcon browserNavItem={browserNavItem} enabled={true} />
     );
+    const button = container.querySelector('button') as HTMLButtonElement;
 
-    renderedNavIcon.find('button').simulate('click');
+    userEvent.click(button);
     expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
+    expect(browserMessagingService.send).toHaveBeenCalledWith(
+      'bpane',
+      browserNavItem.detail
+    );
 
     (browserMessagingService.send as any).mockRestore();
   });
