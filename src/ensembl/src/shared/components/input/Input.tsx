@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import styles from './Input.scss';
 
 type PropsForRespondingWithEvents = {
-  onChange: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFocus: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   onBlur: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   callbackWithEvent: true;
@@ -50,8 +50,6 @@ export type Props = {
 } & OnChangeProps;
 
 const Input = (props: Props) => {
-  const [inputValue, setInputValue] = useState(props.value);
-
   const eventHandler = (eventName: string) => (
     e: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
   ) => {
@@ -60,7 +58,6 @@ const Input = (props: Props) => {
 
     if (eventName === 'change') {
       props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
-      setInputValue(value);
     } else if (eventName === 'focus') {
       props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
     } else if (eventName === 'blur') {
@@ -78,7 +75,7 @@ const Input = (props: Props) => {
       autoFocus={props.autoFocus}
       placeholder={props.placeholder}
       className={className}
-      value={inputValue}
+      value={props.value}
       onChange={eventHandler('change')}
       onFocus={eventHandler('focus')}
       onBlur={eventHandler('blur')}
