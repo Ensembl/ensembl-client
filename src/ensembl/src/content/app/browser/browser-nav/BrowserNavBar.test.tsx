@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from 'enzyme';
+import { render } from '@testing-library/react';
 
 jest.mock('./BrowserNavBarControls', () => () => (
   <div>BrowserNavBarControls</div>
@@ -27,11 +27,18 @@ import { BrowserNavBar } from './BrowserNavBar';
 describe('<BrowserNavBar />', () => {
   describe('rendering', () => {
     it('correctly interprets the "expanded" prop', () => {
-      const contractedBar = render(<BrowserNavBar expanded={false} />);
-      expect(contractedBar.hasClass('browserNavBarExpanded')).toBe(false);
+      const { container, rerender } = render(
+        <BrowserNavBar expanded={false} />
+      );
+      const browserNavBar = container.firstChild as HTMLDivElement;
+      expect(browserNavBar.classList.contains('browserNavBarExpanded')).toBe(
+        false
+      );
 
-      const expandedBar = render(<BrowserNavBar expanded={true} />);
-      expect(expandedBar.hasClass('browserNavBarExpanded')).toBe(true);
+      rerender(<BrowserNavBar expanded={true} />);
+      expect(browserNavBar.classList.contains('browserNavBarExpanded')).toBe(
+        true
+      );
     });
   });
 });

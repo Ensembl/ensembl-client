@@ -15,20 +15,19 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { BrowserNavBarMain, BrowserNavBarMainProps } from './BrowserNavBarMain';
 
-import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
-import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
 jest.mock(
   'src/content/app/browser/chromosome-navigator/ChromosomeNavigator',
-  () => () => <div>ChromosomeNavigator</div>
+  () => () => <div className="chromosomeNavigator" />
 );
 jest.mock('./BrowserNavBarRegionSwitcher', () => () => (
-  <div>BrowserNavBarRegionSwitcher</div>
+  <div className="browserNavBarRegionSwitcher" />
 ));
 
 const props: BrowserNavBarMainProps = {
@@ -36,46 +35,56 @@ const props: BrowserNavBarMainProps = {
 };
 
 describe('BrowserNavBarMain', () => {
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(<BrowserNavBarMain {...props} />);
-  });
-
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it('does not render chromosome visualization by default for screens smaller than laptops', () => {
-    expect(wrapper.find(ChromosomeNavigator).length).toBe(0);
+    const { container } = render(<BrowserNavBarMain {...props} />);
+    expect(container.querySelector('.chromosomeNavigator')).toBeFalsy();
   });
 
   it('renders chromosome visualization by default for laptops or bigger screens', () => {
-    wrapper.setProps({ viewportWidth: BreakpointWidth.LAPTOP });
+    const { container } = render(
+      <BrowserNavBarMain {...props} viewportWidth={BreakpointWidth.LAPTOP} />
+    );
 
-    expect(wrapper.find(ChromosomeNavigator).length).toBe(1);
-    expect(wrapper.find(BrowserNavBarRegionSwitcher).length).toBe(0);
+    expect(container.querySelector('.chromosomeNavigator')).toBeTruthy();
+    expect(container.querySelector('.browserNavBarRegionSwitcher')).toBeFalsy();
   });
 
   it('renders RegionSwitcher when user clicks on Change', () => {
-    wrapper.setProps({ viewportWidth: BreakpointWidth.LAPTOP });
+    const { container } = render(
+      <BrowserNavBarMain {...props} viewportWidth={BreakpointWidth.LAPTOP} />
+    );
 
-    const changeButton = wrapper.find('.contentSwitcher');
-    changeButton.simulate('click');
-    expect(wrapper.find(ChromosomeNavigator).length).toBe(0);
-    expect(wrapper.find(BrowserNavBarRegionSwitcher).length).toBe(1);
+    const changeButton = container.querySelector(
+      '.contentSwitcher'
+    ) as HTMLSpanElement;
+    userEvent.click(changeButton);
+
+    expect(container.querySelector('.chromosomeNavigator')).toBeFalsy();
+    expect(
+      container.querySelector('.browserNavBarRegionSwitcher')
+    ).toBeTruthy();
   });
 
   it('renders chromosome visualization when user closes RegionSwitcher', () => {
-    wrapper.setProps({ viewportWidth: BreakpointWidth.LAPTOP });
+    const { container } = render(
+      <BrowserNavBarMain {...props} viewportWidth={BreakpointWidth.LAPTOP} />
+    );
 
-    const changeButton = wrapper.find('.contentSwitcher');
-    changeButton.simulate('click');
+    const changeButton = container.querySelector(
+      '.contentSwitcher'
+    ) as HTMLSpanElement;
+    userEvent.click(changeButton);
 
-    const closeButton = wrapper.find('.contentSwitcherClose');
-    closeButton.simulate('click');
+    const closeButton = container.querySelector(
+      '.contentSwitcherClose'
+    ) as HTMLSpanElement;
+    userEvent.click(closeButton);
 
-    expect(wrapper.find(ChromosomeNavigator).length).toBe(1);
-    expect(wrapper.find(BrowserNavBarRegionSwitcher).length).toBe(0);
+    expect(container.querySelector('.chromosomeNavigator')).toBeTruthy();
+    expect(container.querySelector('.browserNavBarRegionSwitcher')).toBeFalsy();
   });
 });
