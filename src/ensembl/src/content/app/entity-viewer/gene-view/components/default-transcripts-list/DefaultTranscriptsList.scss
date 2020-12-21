@@ -72,6 +72,18 @@
   cursor: pointer;
 }
 
+.filterActivityIndicator {
+  &::after {
+    border-radius: 100%;
+    background: $red;
+    display: inline-block;
+    height: 5px;
+    width: 5px;
+    position: relative;
+    bottom: 10px;
+  }
+}
+
 .chevron {
   margin-left: 10px;
   margin-bottom: -3px;
@@ -81,14 +93,4 @@
 
 .hidden {
   display: none;
-}
-
-.activeIndicator {
-  border-radius: 100%;
-  background: $red;
-  display: inline-block;
-  height: 5px;
-  width: 5px;
-  position: relative;
-  bottom: 10px;
 }
