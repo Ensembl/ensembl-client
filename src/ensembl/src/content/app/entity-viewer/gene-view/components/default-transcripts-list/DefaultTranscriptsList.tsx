@@ -16,7 +16,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import classNames from 'classnames';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { transcriptSortingFunctions } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -73,10 +72,8 @@ const DefaultTranscriptslist = (props: Props) => {
     }
   }, []);
 
-  const filterLabelClassNames = classNames(styles.filterLabel, {
-    [styles.filterActivityIndicator]:
-      sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean)
-  });
+  const shouldShowFilterIndicator =
+    sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
 
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
@@ -93,8 +90,11 @@ const DefaultTranscriptslist = (props: Props) => {
         )}
         <div className={styles.row}>
           {gene.transcripts.length > 5 && !isFilterOpen && (
-            <div className={filterLabelClassNames} onClick={toggleFilter}>
+            <div className={styles.filterLabel} onClick={toggleFilter}>
               Filter & sort
+              {shouldShowFilterIndicator && (
+                <span className={styles.filterActivityIndicator} />
+              )}
               <ChevronDown className={styles.chevron} />
             </div>
           )}
