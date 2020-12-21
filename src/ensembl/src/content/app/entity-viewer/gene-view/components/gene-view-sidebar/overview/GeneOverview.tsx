@@ -72,10 +72,12 @@ const GeneOverview = () => {
         <span>{gene.stable_id}</span>
       </div>
 
-      <div className={styles.sectionHead}>Gene name</div>
-      <div className={styles.geneName}>
-        {gene.name || 'This gene does not have a name'}
-      </div>
+      {!!gene.name && (
+        <>
+          <div className={styles.sectionHead}>Gene name</div>
+          <div className={styles.geneName}>{gene.name}</div>
+        </>
+      )}
 
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>
