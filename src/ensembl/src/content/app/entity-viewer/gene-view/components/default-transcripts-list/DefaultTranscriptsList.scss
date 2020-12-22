@@ -72,14 +72,19 @@
   cursor: pointer;
 }
 
-.filterActivityIndicator {
-  border-radius: 100%;
-  background: $red;
-  display: inline-block;
-  height: 5px;
-  width: 5px;
+.labelWithActivityIndicator {
   position: relative;
-  bottom: 10px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 100%;
+    height: 5px;
+    width: 5px;
+    background: $red;
+    right: -6px;
+    top: -2px;
+  }
 }
 
 .chevron {

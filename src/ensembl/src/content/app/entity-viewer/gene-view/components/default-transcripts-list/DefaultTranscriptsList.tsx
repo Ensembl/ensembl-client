@@ -91,10 +91,15 @@ const DefaultTranscriptslist = (props: Props) => {
         <div className={styles.row}>
           {gene.transcripts.length > 5 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
-              Filter & sort
-              {shouldShowFilterIndicator && (
-                <span className={styles.filterActivityIndicator} />
-              )}
+              <span
+                className={
+                  shouldShowFilterIndicator
+                    ? styles.labelWithActivityIndicator
+                    : undefined
+                }
+              >
+                Filter & sort
+              </span>
               <ChevronDown className={styles.chevron} />
             </div>
           )}
