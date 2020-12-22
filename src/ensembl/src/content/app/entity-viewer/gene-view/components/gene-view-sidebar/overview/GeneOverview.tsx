@@ -25,7 +25,7 @@ import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gen
 
 import styles from './GeneOverview.scss';
 
-const QUERY = gql`
+export const GENE_OVERVIEW_QUERY = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       alternative_symbols
@@ -45,7 +45,7 @@ const GeneOverview = () => {
   const { entityId, genomeId } = params;
   const geneId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
 
-  const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
+  const { data, loading } = useQuery<{ gene: Gene }>(GENE_OVERVIEW_QUERY, {
     variables: {
       geneId,
       genomeId
