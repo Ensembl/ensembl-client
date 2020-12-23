@@ -26,15 +26,12 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 
 import {
   EntityViewerSidebarGenomeState,
-  EntityViewerSidebarPayload,
   SidebarTabName,
   SidebarStatus,
   EntityViewerSidebarUIState
 } from './entityViewerSidebarState';
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
-
-import { entityViewerSidebarSampleData } from './sampleData';
 
 export const updateGenomeState = createAction(
   'entity-viewer-sidebar/update-genome-ui-state'
@@ -84,34 +81,6 @@ export const toggleSidebar: ActionCreator<ThunkAction<
 export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
-
-export const updateEntityState = createAction(
-  'entity-viewer-sidebar/update-entity-state'
-)<{
-  genomeId: string;
-  entityId: string;
-  fragment: Partial<EntityViewerSidebarPayload>;
-}>();
-
-export const fetchSidebarPayload: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const genomeId = getEntityViewerActiveGenomeId(state);
-  const entityId = getEntityViewerActiveEnsObjectId(state);
-
-  if (!genomeId || !entityId) {
-    return;
-  }
-
-  const sidebarPayload =
-    entityViewerSidebarSampleData[genomeId]?.entities[entityId] || null;
-
-  dispatch(updateEntityState({ genomeId, entityId, fragment: sidebarPayload }));
-};
 
 export const updateEntityUIState = createAction(
   'entity-viewer-sidebar/update-entity-ui-state'

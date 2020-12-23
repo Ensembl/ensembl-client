@@ -54,19 +54,6 @@ export default function entityViewerSidebarReducer(
         [action.payload.genomeId]: updatedStateFragment
       };
     }
-    case getType(actions.updateEntityState): {
-      const oldStateFragment = get(state, `${action.payload.genomeId}`);
-      const updatedStateFragment = merge({}, oldStateFragment, {
-        entities: {
-          [action.payload.entityId]: { payload: action.payload.fragment }
-        }
-      });
-
-      return {
-        ...state,
-        [action.payload.genomeId]: updatedStateFragment
-      };
-    }
     case getType(actions.updateEntityUIState): {
       const oldStateFragment = get(state, `${action.payload.genomeId}`);
 

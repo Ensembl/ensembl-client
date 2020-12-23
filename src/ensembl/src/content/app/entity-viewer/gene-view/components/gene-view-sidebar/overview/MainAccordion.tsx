@@ -32,6 +32,7 @@ import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-do
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import { Status } from 'src/shared/types/status';
+
 import {
   EntityViewerSidebarPayload,
   EntityViewerSidebarUIState

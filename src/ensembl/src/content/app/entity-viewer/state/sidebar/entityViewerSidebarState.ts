@@ -15,13 +15,6 @@
  */
 
 import { Status } from 'src/shared/types/status';
-import { Assembly } from '../../types/assembly';
-import { DataSet } from '../../types/dataSet';
-import { Homeologue } from '../../types/homeologue';
-import { Source } from '../../types/source';
-import { Metadata } from '../../types/metadata';
-import { ExternalReference } from '../../types/externalReference';
-import JSONValue from 'src/shared/types/JSON';
 import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 
 export enum SidebarTabName {
@@ -30,45 +23,6 @@ export enum SidebarTabName {
 }
 
 export type SidebarStatus = Status.OPEN | Status.CLOSED;
-
-/* TYPES FOR THE OVERVIEW SECTION OF GENE VIEW SIDEBAR */
-
-/**
- * NOTE: The types defined within this section are temporary.
- * They deviate from the api response-based types used generally within the Entity Viewer,
- * and are currently supporting the code used only for demo purposes.
- */
-
-type SidebarOverviewTranscript = {
-  id: string;
-  xrefs?: Source[];
-};
-
-type SidebarOverviewGene = {
-  id: string;
-  symbol: string;
-  synonyms?: string[];
-  attributes?: string[];
-  filters?: {
-    [key: string]: JSONValue;
-  };
-  function?: {
-    description: string;
-    source: Source;
-  };
-  metadata?: Metadata;
-  external_references?: ExternalReference[];
-  transcripts: SidebarOverviewTranscript[];
-};
-
-/* END OF TYPES FOR THE OVERVIEW SECTION OF GENE VIEW SIDEBAR */
-
-export type EntityViewerSidebarPayload = {
-  gene: SidebarOverviewGene;
-  other_assemblies?: Assembly[];
-  other_data_sets?: DataSet[];
-  homeologues?: Homeologue[];
-};
 
 export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
@@ -85,7 +39,6 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   selectedTabName: SidebarTabName;
   entities: {
     [entityId: string]: {
-      payload: EntityViewerSidebarPayload | null;
       uIState: EntityViewerSidebarUIState;
     };
   };

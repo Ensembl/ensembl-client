@@ -17,7 +17,6 @@
 import { Slice } from './slice';
 import { Transcript } from './transcript';
 import { Source } from './source';
-// import { Metadata } from './metadata';
 
 /**
  * NOTE:
@@ -37,5 +36,5 @@ export type Gene = {
   so_term: string;
   slice: Slice;
   transcripts: Transcript[];
-  // external_references
+  alternative_symbols?: string[];
 };
