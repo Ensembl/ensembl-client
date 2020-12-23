@@ -30,6 +30,10 @@ jest.mock('@apollo/client', () => ({
   useQuery: jest.fn()
 }));
 
+jest.mock('../publications/GenePublications', () => () => (
+  <div className="genePublications" />
+));
+
 const genomeId = 'genome_id';
 const geneId = 'unversioned_gene_id';
 const geneName = 'gene_name';
@@ -107,12 +111,16 @@ describe('<GeneOverview />', () => {
       const geneNameElement = container.querySelector('.geneName');
       const synonymsElement = container.querySelector('.synonyms');
 
+      // child components
+      const genePublications = container.querySelector('.genePublications');
+
       expect(geneDetailsElement?.textContent).toMatch(geneSymbol);
       expect(geneDetailsElement?.textContent).toMatch(stableId);
       expect(geneNameElement?.textContent).toMatch(geneName);
       expect(synonymsElement?.textContent).toMatch(
         alternativeSymbols.join(', ')
       );
+      expect(genePublications).toBeTruthy();
     });
   });
 
