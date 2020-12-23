@@ -33,15 +33,15 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import { Status } from 'src/shared/types/status';
 
-import {
-  EntityViewerSidebarPayload,
-  EntityViewerSidebarUIState
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { EntityViewerSidebarUIState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
 
+// FIXME:
+// We started using real data from Thoas, and are not yet getting anything that can be rendered
+// in this accordion. When we get back to using this accordion, the type of its props will need updating
 type Props = {
-  sidebarPayload: EntityViewerSidebarPayload | null;
+  sidebarPayload: any | null; // FIXME: update the type with appropriate shape of data
   sidebarUIState: EntityViewerSidebarUIState | null;
   updateEntityUI: (uIstate: Partial<EntityViewerSidebarUIState>) => void;
 };
@@ -210,7 +210,10 @@ const MainAccordion = (props: Props) => {
             className={styles.entityViewerAccordionItemContent}
           >
             <div>
-              {sidebarPayload.other_data_sets?.map((entry, key) =>
+              {sidebarPayload.other_data_sets?.map((
+                entry: any /* FIXME! */,
+                key: number
+              ) =>
                 renderStandardLabelValue({
                   label: entry.type,
                   value: entry.value,
