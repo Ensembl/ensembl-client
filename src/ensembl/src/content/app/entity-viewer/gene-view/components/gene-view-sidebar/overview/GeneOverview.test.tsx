@@ -15,73 +15,145 @@
  */
 
 import React from 'react';
-import { render, findByText } from '@testing-library/react';
-import { MockedProvider } from '@apollo/react-testing';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import times from 'lodash/times';
-import faker from 'faker';
+import { render } from '@testing-library/react';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
 
-import GeneOverview, { GENE_OVERVIEW_QUERY } from './GeneOverview';
+import GeneOverview from './GeneOverview';
 
-const genomeId = faker.random.words();
-const geneId = faker.random.words();
-const geneName = faker.random.words();
-const geneSymbol = faker.random.words();
-const stableId = faker.random.words();
-const alternativeSymbols = times(6, () => faker.random.word());
+jest.mock('react-router-dom', () => ({
+  useParams: jest.fn()
+}));
 
-const dataMocks = [
-  {
-    request: {
-      query: GENE_OVERVIEW_QUERY,
-      variables: {
-        genomeId,
-        geneId
-      }
-    },
-    result: {
-      data: {
-        post: {
-          name: geneName,
-          stableId,
-          symbol: geneSymbol,
-          alternative_symbols: alternativeSymbols
-        }
-      }
-    }
-  }
+jest.mock('@apollo/client', () => ({
+  gql: jest.fn(),
+  useQuery: jest.fn()
+}));
+
+const genomeId = 'genome_id';
+const geneId = 'unversioned_gene_id';
+const geneName = 'gene_name';
+const geneSymbol = 'gene_symbol';
+const stableId = 'gene_stable_id';
+const alternativeSymbols = [
+  'gene_synonym_1',
+  'gene_synonym_2',
+  'gene_synonym_3'
 ];
 
+const completeGeneData = {
+  name: geneName,
+  stable_id: stableId,
+  symbol: geneSymbol,
+  alternative_symbols: alternativeSymbols
+};
+
 describe('<GeneOverview />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
+
+    (useParams as any).mockImplementation(() => ({
+      params: {
+        entityId: geneId,
+        genomeId
+      }
+    }));
   });
 
-  const history = createMemoryHistory();
-  const router = { ...jest.requireActual('react-router-dom') };
+  describe('loading', () => {
+    beforeEach(() => {
+      (useQuery as any).mockImplementation(() => ({
+        data: null,
+        loading: true
+      }));
+    });
 
-  jest.mock('react-router-dom', () => ({
-    router,
-    useParams: () => ({
-      genomeId,
-      geneId
-    })
-  }));
+    it('shows the loading indicator', () => {
+      const { container } = render(<GeneOverview />);
+      const geneOverviewElement = container.firstChild;
 
-  it('should render post title', async () => {
-    const { container } = render(
-      <Router history={history}>
-        <MockedProvider mocks={dataMocks} addTypename={false}>
-          <GeneOverview />
-        </MockedProvider>
-      </Router>
-    );
+      expect(geneOverviewElement?.textContent).toBe('Loading...');
+    });
+  });
 
-    const geneSymbolNode = await findByText(container, geneSymbol);
-    const geneNameNode = await findByText(container, geneName);
+  describe('empty data', () => {
+    beforeEach(() => {
+      (useQuery as any).mockImplementation(() => ({
+        data: null,
+        loading: false
+      }));
+    });
 
-    expect(geneSymbolNode).toHaveTextContent(geneSymbol);
-    expect(geneNameNode).toHaveTextContent(geneName);
+    it('shows the no data message', () => {
+      const { container } = render(<GeneOverview />);
+      const geneOverviewElement = container.firstChild;
+
+      expect(geneOverviewElement?.textContent).toBe('No data to display');
+    });
+  });
+
+  describe('full data', () => {
+    beforeEach(() => {
+      (useQuery as any).mockImplementation(() => ({
+        data: { gene: completeGeneData },
+        loading: false
+      }));
+    });
+
+    it('renders all data correctly', () => {
+      const { container } = render(<GeneOverview />);
+
+      const geneDetailsElement = container.querySelector('.geneDetails');
+      const geneNameElement = container.querySelector('.geneName');
+      const synonymsElement = container.querySelector('.synonyms');
+
+      expect(geneDetailsElement?.textContent).toMatch(geneSymbol);
+      expect(geneDetailsElement?.textContent).toMatch(stableId);
+      expect(geneNameElement?.textContent).toMatch(geneName);
+      expect(synonymsElement?.textContent).toMatch(
+        alternativeSymbols.join(', ')
+      );
+    });
+  });
+
+  describe('partial data', () => {
+    it('renders only stable id if gene symbol is not available', () => {
+      const geneData = { ...completeGeneData, symbol: null };
+      (useQuery as any).mockImplementation(() => ({
+        data: { gene: geneData },
+        loading: false
+      }));
+
+      const { container } = render(<GeneOverview />);
+
+      const geneDetailsElement = container.querySelector('.geneDetails');
+      expect(geneDetailsElement?.textContent).toBe(stableId);
+    });
+
+    it('does not render gene name section if gene name is not available', () => {
+      const geneData = { ...completeGeneData, name: null };
+      (useQuery as any).mockImplementation(() => ({
+        data: { gene: geneData },
+        loading: false
+      }));
+
+      const { container } = render(<GeneOverview />);
+
+      const geneNameElement = container.querySelector('.geneName');
+      expect(geneNameElement).toBeFalsy();
+    });
+
+    it('shows "no synonyms" message for gene without synonyms', () => {
+      const geneData = { ...completeGeneData, alternative_symbols: [] };
+      (useQuery as any).mockImplementation(() => ({
+        data: { gene: geneData },
+        loading: false
+      }));
+
+      const { container } = render(<GeneOverview />);
+
+      const synonymsElement = container.querySelector('.synonyms');
+      expect(synonymsElement?.textContent).toBe('No synonyms');
+    });
   });
 });
