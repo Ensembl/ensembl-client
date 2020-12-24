@@ -15,15 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { screen, render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import {
   BrowserRegionField,
   BrowserRegionFieldProps
 } from './BrowserRegionField';
-import Input from 'src/shared/components/input/Input';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import {
   createChrLocationValues,
@@ -32,8 +31,19 @@ import {
 
 import * as browserHelper from '../browserHelper';
 
+import { ChrLocation } from '../browserState';
+
+jest.mock('../browserHelper', () => {
+  const originalModule = jest.requireActual('../browserHelper');
+
+  return {
+    ...originalModule,
+    validateRegion: jest.fn()
+  };
+});
+
 describe('<BrowserRegionField />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -47,69 +57,50 @@ describe('<BrowserRegionField />', () => {
     toggleRegionFieldActive: jest.fn()
   };
 
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(<BrowserRegionField {...defaultProps} />);
-  });
-
   describe('rendering', () => {
-    test('contains Input', () => {
-      expect(wrapper.find(Input).length).toBe(1);
+    it('contains an input', () => {
+      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      expect(container.querySelectorAll('input').length).toBe(1);
     });
 
-    test('contains submit button', () => {
-      expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
+    it('contains submit button', () => {
+      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      expect(container.querySelector('button[type="submit"]')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    test('region field is set to active when focussed', () => {
-      wrapper.find(Input).simulate('focus');
+    it('is set to active when focussed', () => {
+      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const input = container.querySelector('input') as HTMLInputElement;
+
+      fireEvent.focus(input);
 
       // the activateForm function which fires on focus should call toggleRegionFieldActive
-      expect(wrapper.props().toggleRegionFieldActive).toHaveBeenCalledWith(
-        true
-      );
+      expect(defaultProps.toggleRegionFieldActive).toHaveBeenCalledWith(true);
     });
 
-    test('applies correct value on change', () => {
-      const regionInput = createChrLocationValues().stringValue;
-      wrapper
-        .find(Input)
-        .simulate('change', { target: { value: regionInput } });
+    it('validates region input on submit', () => {
+      const locationString = createChrLocationValues().stringValue;
+      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const input = container.querySelector('input') as HTMLInputElement;
 
-      expect(wrapper.find(Input).props().value).toBe(regionInput);
-    });
+      userEvent.clear(input);
+      userEvent.type(input, locationString);
+      userEvent.type(input, `{enter}`); // to submit the form
 
-    test('validates region input on submit', () => {
-      const regionInput = createChrLocationValues().stringValue;
-      const validateRegion = jest.fn();
-
-      jest
-        .spyOn(browserHelper, 'validateRegion')
-        .mockImplementation(validateRegion);
-
-      wrapper
-        .find(Input)
-        .simulate('change', { target: { value: regionInput } });
-      wrapper.find('form').simulate('submit');
-
-      expect(validateRegion).toHaveBeenCalledWith({
-        regionInput,
-        genomeId: wrapper.props().activeGenomeId,
+      expect(browserHelper.validateRegion).toHaveBeenCalledWith({
+        regionInput: locationString,
+        genomeId: defaultProps.activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
       });
-
-      jest.restoreAllMocks();
     });
 
     // TODO: Test if the form is reset when clicked outside the form. Need to be able to mock useOutsideClick for this.
 
-    test('displays error message when validation fails', () => {
-      const regionInput = faker.lorem.words();
-      const startError = faker.lorem.words();
+    it('displays error message when validation fails', async () => {
+      const startError = 'your start position is wrong';
       const mockErrorMessages = {
         ...createRegionValidationMessages().errorMessages,
         startError
@@ -118,79 +109,75 @@ describe('<BrowserRegionField />', () => {
       jest
         .spyOn(browserHelper, 'validateRegion')
         .mockImplementation(
-          async (params: {
-            regionInput: string;
-            genomeId: string | null;
-            onSuccess: (regionId: string) => void;
-            onError: (
-              errorMessages: browserHelper.RegionValidationErrors
-            ) => void;
-          }) => {
-            params.onError(mockErrorMessages);
-          }
+          async ({
+            onError
+          }: {
+            onError: (arg: typeof mockErrorMessages) => void;
+          }): Promise<void> => onError(mockErrorMessages)
         );
 
-      wrapper
-        .find(Input)
-        .simulate('change', { target: { value: regionInput } });
-      wrapper.find('form').simulate('submit');
+      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const input = container.querySelector('input') as HTMLInputElement;
 
-      expect(wrapper.find(Tooltip).props().children).toBe(startError);
+      userEvent.clear(input);
+      userEvent.type(input, 'foo{enter}');
 
-      jest.restoreAllMocks();
+      const errorMessageElement = await screen.findByText(startError);
+      expect(errorMessageElement).toBeTruthy();
+      expect(errorMessageElement.classList.contains('tooltip')).toBe(true);
     });
 
     describe('on validation success', () => {
-      const regionId = faker.lorem.words();
+      const regionId = 'new_chromosome';
 
       beforeEach(() => {
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
-            async (params: {
-              regionInput: string;
-              genomeId: string | null;
-              onSuccess: (regionId: string) => void;
-              onError: (
-                errorMessages: browserHelper.RegionValidationErrors
-              ) => void;
-            }) => {
-              params.onSuccess(regionId);
-            }
+            async ({
+              onSuccess
+            }: {
+              onSuccess: (arg: string) => void;
+            }): Promise<void> => onSuccess(regionId)
           );
       });
 
-      afterEach(() => {
-        jest.restoreAllMocks();
-      });
-
-      test('changes the focus object if regionInput has a stick/chromosome', () => {
-        const stick = faker.random.number();
-        const start = faker.random.number();
-        const end = faker.random.number();
-        const regionInput = `${stick}:${start}-${end}`;
-
-        wrapper
-          .find(Input)
-          .simulate('change', { target: { value: regionInput } });
-        wrapper.find('form').simulate('submit');
-
-        expect(wrapper.props().changeFocusObject).toHaveBeenCalledWith(
-          regionId
+      it('switches to a different chromosome if it exists in the input', () => {
+        const oldChrLocation = ['13', 1, 1000] as ChrLocation;
+        const newChrLocation = ['12', 1, 1000];
+        const { container } = render(
+          <BrowserRegionField {...defaultProps} chrLocation={oldChrLocation} />
         );
+        const input = container.querySelector('input') as HTMLInputElement;
+
+        userEvent.type(
+          input,
+          `${newChrLocation[0]}:${newChrLocation[1]}-${newChrLocation[2]}{enter}`
+        );
+
+        expect(defaultProps.changeFocusObject).toHaveBeenCalledWith(regionId);
       });
 
-      test('changes the browser location in same region if regionInput has only start and end (no stick/chromosome)', () => {
-        const start = faker.random.number();
-        const end = faker.random.number();
-        const regionInput = `${start}-${end}`;
+      it('preserves the same chromosome if input contains only new start and end coordinates', () => {
+        const oldChrLocation = ['13', 1, 1000] as ChrLocation;
+        const newChrLocation = ['13', 500, 1000];
 
-        wrapper
-          .find(Input)
-          .simulate('change', { target: { value: regionInput } });
-        wrapper.find('form').simulate('submit');
+        const { container } = render(
+          <BrowserRegionField {...defaultProps} chrLocation={oldChrLocation} />
+        );
+        const input = container.querySelector('input') as HTMLInputElement;
 
-        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalled();
+        userEvent.clear(input);
+        userEvent.type(
+          input,
+          `${newChrLocation[1]}-${newChrLocation[2]}{enter}`
+        );
+
+        expect(defaultProps.changeBrowserLocation).toHaveBeenCalledWith({
+          genomeId: defaultProps.activeGenomeId,
+          ensObjectId: null,
+          chrLocation: newChrLocation
+        });
       });
     });
   });
