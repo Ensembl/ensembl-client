@@ -67,7 +67,7 @@ describe('<BrowserRegionEditor />', () => {
       expect(container.querySelector('.select')).toBeTruthy();
     });
 
-    it('contains two Input elements', () => {
+    it('contains two input elements', () => {
       const { container } = render(<BrowserRegionEditor {...defaultProps} />);
       expect(container.querySelectorAll('input').length).toBe(2);
     });
