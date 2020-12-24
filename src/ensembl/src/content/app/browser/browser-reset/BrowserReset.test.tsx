@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import { BrowserReset, BrowserResetProps } from './BrowserReset';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 describe('<BrowserReset />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -33,24 +33,29 @@ describe('<BrowserReset />', () => {
   };
 
   describe('rendering', () => {
-    test('renders image button when focus feature exists', () => {
-      const wrapper = mount(<BrowserReset {...defaultProps} />);
-      expect(wrapper.find(ImageButton)).toHaveLength(1);
+    it('renders image button when focus feature exists', () => {
+      const { container } = render(<BrowserReset {...defaultProps} />);
+      expect(container.querySelector('button')).toBeTruthy();
     });
 
-    test('renders nothing when focus feature does not exist', () => {
-      const wrapper = mount(
+    it('renders nothing when focus feature does not exist', () => {
+      const { container } = render(
         <BrowserReset {...defaultProps} focusObjectId={null} />
       );
-      expect(wrapper.html()).toBe(null);
+      expect(container.firstChild).toBeFalsy();
     });
   });
 
   describe('behaviour', () => {
-    test('changes focus object when clicked', () => {
-      const wrapper = mount(<BrowserReset {...defaultProps} />);
-      wrapper.find(ImageButton).simulate('click');
-      expect(wrapper.props().changeFocusObject).toHaveBeenCalledTimes(1);
+    it('changes focus object when clicked', () => {
+      const { container } = render(<BrowserReset {...defaultProps} />);
+      const button = container.querySelector('button') as HTMLButtonElement;
+
+      userEvent.click(button);
+
+      expect(defaultProps.changeFocusObject).toHaveBeenCalledWith(
+        defaultProps.focusObjectId
+      );
     });
   });
 });

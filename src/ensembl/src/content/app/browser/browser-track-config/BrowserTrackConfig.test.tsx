@@ -15,14 +15,13 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   BrowserTrackConfig,
   BrowserTrackConfigProps
 } from './BrowserTrackConfig';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
 import {
   createTrackConfigLabel,
@@ -31,7 +30,7 @@ import {
 } from 'tests/fixtures/browser';
 
 describe('<BrowserTrackConfig />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -47,26 +46,26 @@ describe('<BrowserTrackConfig />', () => {
     onClose: jest.fn()
   };
 
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(<BrowserTrackConfig {...defaultProps} />);
-  });
-
   describe('behaviour', () => {
-    test('sets all tracks to be updated when the all tracks checkbox is selected', () => {
-      wrapper.find(Checkbox).props().onChange(true);
-      expect(wrapper.props().updateApplyToAll).toHaveBeenCalledTimes(1);
+    it('sets all tracks to be updated when the all tracks checkbox is selected', () => {
+      const { container } = render(<BrowserTrackConfig {...defaultProps} />);
+      const checkbox = container.querySelector(
+        'input[type="checkbox"]'
+      ) as HTMLInputElement;
+
+      userEvent.click(checkbox);
+
+      expect(defaultProps.updateApplyToAll).toHaveBeenCalledTimes(1);
     });
 
-    test('passes updateTrackConfigNames to track name toggler', () => {
-      const toggle = wrapper
-        .find('label')
-        .filterWhere((wrapper: any) => wrapper.text() === 'Track name')
-        .parents()
-        .first() // <- enzyme's .parent method doesnt seem to be reliably working for mount
-        .find(SlideToggle);
-      toggle.prop('onChange')(true);
+    it('toggles track name', () => {
+      const { container } = render(<BrowserTrackConfig {...defaultProps} />);
+      const toggle = [...container.querySelectorAll('label')]
+        .find((element) => element.textContent === 'Track name')
+        ?.parentElement?.querySelector('svg') as SVGElement;
+
+      userEvent.click(toggle);
+
       expect(defaultProps.updateTrackConfigNames).toHaveBeenCalledTimes(1);
       expect(defaultProps.updateTrackConfigNames).toHaveBeenCalledWith(
         defaultProps.selectedCog,
@@ -74,14 +73,14 @@ describe('<BrowserTrackConfig />', () => {
       );
     });
 
-    test('toggles track label when the toggle name slider is clicked', () => {
-      const toggle = wrapper
-        .find('label')
-        .filterWhere((wrapper: any) => wrapper.text() === 'Feature labels')
-        .parents()
-        .first() // <- enzyme's .parent method doesnt seem to be reliably working for mount
-        .find(SlideToggle);
-      toggle.prop('onChange')(true);
+    it('toggles feature labels on the track', () => {
+      const { container } = render(<BrowserTrackConfig {...defaultProps} />);
+      const toggle = [...container.querySelectorAll('label')]
+        .find((element) => element.textContent === 'Feature labels')
+        ?.parentElement?.querySelector('svg') as SVGElement;
+
+      userEvent.click(toggle);
+
       expect(defaultProps.updateTrackConfigLabel).toHaveBeenCalledTimes(1);
       expect(defaultProps.updateTrackConfigLabel).toHaveBeenCalledWith(
         defaultProps.selectedCog,
