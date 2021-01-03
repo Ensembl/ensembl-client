@@ -15,18 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
-import {
-  TrackPanelBookmarks,
-  PreviouslyViewedLinks,
-  ExampleLinks
-} from './TrackPanelBookmarks';
+import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
-import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { PreviouslyViewedObject } from '../../trackPanelState';
 
 jest.mock('react-router-dom', () => ({
@@ -68,30 +64,33 @@ describe('<TrackPanelBookmarks />', () => {
     changeDrawerViewAndOpen
   };
 
-  let wrapper: any;
-
   beforeEach(() => {
-    wrapper = mount(<TrackPanelBookmarks {...props} />);
     jest.resetAllMocks();
   });
 
-  it('renders without any error', () => {
-    expect(wrapper).toHaveLength(1);
+  it('renders previously viewed links', () => {
+    const { container } = render(<TrackPanelBookmarks {...props} />);
+    const links = [...container.querySelectorAll('.link')] as HTMLElement[];
+    const linkTexts = props.previouslyViewedObjects.map(({ label }) => label);
+
+    expect(
+      linkTexts.every((text) =>
+        links.find((link) => {
+          return link.innerHTML === text;
+        })
+      )
+    ).toBe(true);
   });
 
-  it('renders correct number of previously viewed links', () => {
-    const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
-
-    expect(previouslyViewedLinksWrapper.find('.link').length).toBe(
-      numberOfPreviouslyViewedObjects
+  it('closes the bookmarks modal when a bookmark link is clicked', () => {
+    render(<TrackPanelBookmarks {...props} />);
+    const previouslyViewedLinksContainer = screen.getByText('Previously viewed')
+      .nextSibling;
+    const firstLink = (previouslyViewedLinksContainer as HTMLElement).querySelector(
+      '.link'
     );
-  });
 
-  it('calls closeTrackPanelModal when a previously viewed object link is clicked', () => {
-    const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
-
-    previouslyViewedLinksWrapper.find('.link').first().simulate('click');
-
+    userEvent.click(firstLink as HTMLElement);
     expect(closeTrackPanelModal).toBeCalled();
   });
 
@@ -99,54 +98,63 @@ describe('<TrackPanelBookmarks />', () => {
     const previouslyViewedObjects = times(20, () =>
       createPreviouslyViewedLink()
     );
-    wrapper = mount(
+    const { rerender } = render(
       <TrackPanelBookmarks
         {...props}
         previouslyViewedObjects={previouslyViewedObjects}
       />
     );
+    const previouslyViewedSection = screen.getByText('Previously viewed');
 
-    expect(wrapper.find(ImageButton)).toHaveLength(0);
+    expect(previouslyViewedSection.querySelector('button')).toBeFalsy();
 
     // Add another link to make it 21 links
     previouslyViewedObjects.push(createPreviouslyViewedLink());
-    wrapper = mount(
+    rerender(
       <TrackPanelBookmarks
         {...props}
         previouslyViewedObjects={previouslyViewedObjects}
       />
     );
 
-    expect(wrapper.find(ImageButton)).toHaveLength(1);
+    expect(previouslyViewedSection.querySelector('button')).toBeTruthy();
   });
 
   it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
     const previouslyViewedObjects = times(21, () =>
       createPreviouslyViewedLink()
     );
-    wrapper = mount(
+    render(
       <TrackPanelBookmarks
         {...props}
         previouslyViewedObjects={previouslyViewedObjects}
       />
     );
+    const previouslyViewedSection = screen.getByText('Previously viewed');
+    const ellipsisButton = previouslyViewedSection.querySelector(
+      'button'
+    ) as HTMLElement;
 
-    wrapper.find(ImageButton).simulate('click');
+    userEvent.click(ellipsisButton);
 
     expect(changeDrawerViewAndOpen).toBeCalled();
   });
 
   it('renders correct number of links to example objects', () => {
-    const exampleLinksWrapper = wrapper.find(ExampleLinks);
+    render(<TrackPanelBookmarks {...props} />);
+    const exampleLinksWrapper = screen.getByText('Example links').parentElement;
 
-    expect(exampleLinksWrapper.find('div.link').length).toBe(
+    expect(exampleLinksWrapper?.querySelectorAll('.link').length).toBe(
       numberOfExampleObjects
     );
   });
 
   it('calls closeTrackPanelModal when an example object link is clicked', () => {
-    const exampleLinksWrapper = wrapper.find(ExampleLinks);
-    exampleLinksWrapper.find('.link').first().simulate('click');
+    render(<TrackPanelBookmarks {...props} />);
+    const exampleLinksWrapper = screen.getByText('Example links').parentElement;
+    const exampleLink = exampleLinksWrapper?.querySelector('.link');
+
+    userEvent.click(exampleLink as HTMLElement);
 
     expect(closeTrackPanelModal).toBeCalled();
   });
