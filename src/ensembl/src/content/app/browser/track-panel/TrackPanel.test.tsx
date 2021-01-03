@@ -15,25 +15,23 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import { TrackPanel, TrackPanelProps } from './TrackPanel';
-import TrackPanelList from './track-panel-list/TrackPanelList';
-import TrackPanelModal from './track-panel-modal/TrackPanelModal';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
-  <div>Track Panel</div>
+  <div className="trackPanel" />
 ));
 jest.mock('./track-panel-list/TrackPanelList', () => () => (
-  <div>Track Panel List</div>
+  <div className="trackPanelList" />
 ));
 jest.mock('./track-panel-modal/TrackPanelModal', () => () => (
-  <div>Track Panel Modal</div>
+  <div className="trackPanelModal" />
 ));
-jest.mock('../drawer/Drawer', () => () => <div>Drawer</div>);
+jest.mock('../drawer/Drawer', () => () => <div className="drawer" />);
 
 describe('<TrackPanel />', () => {
   afterEach(() => {
@@ -48,34 +46,34 @@ describe('<TrackPanel />', () => {
     restoreBrowserTrackStates: jest.fn()
   };
 
-  const mountTrackPanel = (props?: Partial<TrackPanelProps>) =>
-    mount(<TrackPanel {...defaultProps} {...props} />);
+  const renderTrackPanel = (props?: Partial<TrackPanelProps>) =>
+    render(<TrackPanel {...defaultProps} {...props} />);
 
   describe('rendering', () => {
-    test('does not render anything when not all rendering requirements are satisfied', () => {
+    it('does not render anything when not all rendering requirements are satisfied', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
-      const wrapper = mountTrackPanel();
-      expect(wrapper.html()).toBe(null);
+      const { container } = renderTrackPanel();
+      expect(container.firstChild).toBeFalsy();
     });
 
-    test('renders TrackPanelList when necessary requirements are satisfied', () => {
-      const wrapper = mountTrackPanel({
+    it('renders TrackPanelList when necessary requirements are satisfied', () => {
+      const { container } = renderTrackPanel({
         browserActivated: true,
         activeEnsObject: createEnsObject(),
         activeGenomeId: faker.lorem.words()
       });
-      expect(wrapper.find(TrackPanelList).length).toBe(1);
+      expect(container.querySelector('.trackPanelList')).toBeTruthy();
     });
 
-    test('renders track panel modal when necessary requirements are satisfied', () => {
-      const wrapper = mountTrackPanel({
+    it('renders track panel modal when necessary requirements are satisfied', () => {
+      const { container } = renderTrackPanel({
         activeGenomeId: faker.lorem.words(),
         browserActivated: true,
         activeEnsObject: createEnsObject(),
         isTrackPanelModalOpened: true
       });
-      expect(wrapper.find(TrackPanelModal)).toHaveLength(1);
+      expect(container.querySelector('.trackPanelModal')).toBeTruthy();
     });
   });
 });
