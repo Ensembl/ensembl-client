@@ -19,22 +19,20 @@ import merge from 'lodash/merge';
 import mergeWith from 'lodash/mergeWith';
 import get from 'lodash/get';
 
-import * as generalActions from '../general/entityViewerGeneralActions';
 import * as actions from './entityViewerSidebarActions';
 
 import {
-  initialState,
   buildInitialStateForGenome,
   EntityViewerSidebarState
 } from './entityViewerSidebarState';
 import JSONValue from 'src/shared/types/JSON';
 
 export default function entityViewerSidebarReducer(
-  state: EntityViewerSidebarState = initialState,
-  action: ActionType<typeof actions | typeof generalActions>
+  state: EntityViewerSidebarState = {},
+  action: ActionType<typeof actions>
 ) {
   switch (action.type) {
-    case getType(generalActions.setActiveGenomeId):
+    case getType(actions.setSidebarInitialStateForGenome):
       return state[action.payload]
         ? state
         : {

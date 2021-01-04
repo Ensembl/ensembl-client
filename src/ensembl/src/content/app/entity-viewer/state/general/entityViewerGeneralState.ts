@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
   activeEnsObjectIds: { [genomeId: string]: string };
@@ -22,4 +24,8 @@ export type EntityViewerGeneralState = Readonly<{
 export const initialState: EntityViewerGeneralState = {
   activeGenomeId: null, // FIXME add entity viewer storage service
   activeEnsObjectIds: {}
+};
+
+export const buildInitialState = () => {
+  return { ...initialState, ...entityViewerStorageService.getGeneralState() };
 };

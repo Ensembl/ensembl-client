@@ -26,7 +26,7 @@ import {
   parseFocusIdFromUrl,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getEntityViewerActiveGenomeId,
@@ -35,13 +35,14 @@ import {
   getEntityViewerActiveEnsObjectId
 } from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
+import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
+import { setSidebarInitialStateForGenome } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { RootState } from 'src/store';
-import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 
 export const setActiveGenomeId = createAction(
   'entity-viewer/set-active-genome-id'
@@ -94,8 +95,18 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
       })
     : null;
 
-  if (entityId && entityId !== activeEntityId) {
-    dispatch(updateEnsObject(entityId));
+  if (entityId && genomeIdFromUrl) {
+    if (entityId !== activeEntityId) {
+      dispatch(updateEnsObject(entityId));
+    }
+    dispatch(setSidebarInitialStateForGenome(genomeIdFromUrl));
+
+    entityViewerStorageService.updateGeneralState({
+      activeGenomeId: genomeIdFromUrl
+    });
+    entityViewerStorageService.updateGeneralState({
+      activeEnsObjectIds: { [genomeIdFromUrl]: entityId }
+    });
   }
 };
 
