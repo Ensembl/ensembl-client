@@ -20,6 +20,7 @@ import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
+import omit from 'lodash/omit';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -421,28 +422,17 @@ export const deleteSpeciesAndSave = (
     delete updatedActiveEnsObjectIds[genomeIdToRemove];
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
 
-    browserStorageService.updateActiveEnsObjectIds({
-      ...currentActiveEnsObjectIds,
-      [genomeIdToRemove]: undefined
-    });
-
-    browserStorageService.updateChrLocation({
-      ...browserStorageService.getChrLocation(),
-      [genomeIdToRemove]: undefined
-    });
-
-    browserStorageService.updateTrackPanels({
-      trackPanels: {
-        ...browserStorageService.getTrackPanels(),
-        [genomeIdToRemove]: undefined
-      }
-    });
-
-    browserStorageService.saveTrackStates({
-      trackStates: {
-        ...browserStorageService.getTrackStates(),
-        [genomeIdToRemove]: undefined
-      }
-    });
+    browserStorageService.updateActiveEnsObjectIds(
+      omit(currentActiveEnsObjectIds, genomeIdToRemove)
+    );
+    browserStorageService.updateChrLocation(
+      omit(browserStorageService.getChrLocation(), genomeIdToRemove)
+    );
+    browserStorageService.updateTrackPanels(
+      omit(browserStorageService.getTrackPanels(), genomeIdToRemove)
+    );
+    browserStorageService.saveTrackStates(
+      omit(browserStorageService.getTrackStates(), genomeIdToRemove)
+    );
   };
 };
