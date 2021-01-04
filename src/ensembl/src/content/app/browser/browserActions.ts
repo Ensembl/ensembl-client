@@ -415,16 +415,14 @@ export const deleteSpeciesAndSave = (
 
     dispatch(deleteGenome(genomeIdToRemove));
 
-    const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
-    const updatedActiveEnsObjectIds = {
-      ...currentActiveEnsObjectIds
-    };
-    delete updatedActiveEnsObjectIds[genomeIdToRemove];
+    const updatedActiveEnsObjectIds = omit(
+      getBrowserActiveEnsObjectIds(state),
+      genomeIdToRemove
+    );
+
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
 
-    browserStorageService.updateActiveEnsObjectIds(
-      omit(currentActiveEnsObjectIds, genomeIdToRemove)
-    );
+    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectIds);
     browserStorageService.updateChrLocation(
       omit(browserStorageService.getChrLocation(), genomeIdToRemove)
     );
