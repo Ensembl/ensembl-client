@@ -20,6 +20,10 @@ import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
 
+import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+
 import {
   Accordion,
   AccordionItem,
@@ -29,17 +33,16 @@ import {
 } from 'src/shared/components/accordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-
 import { RootState } from 'src/store';
 import {
   ExternalReference as ExternalReferenceType,
   ExternalReferencesGroup
 } from 'src/content/app/entity-viewer/types/externalReference';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
+import { SliceWithLocationOnly } from 'src/content/app/entity-viewer/types/slice';
+import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
 
 import styles from './GeneExternalReferences.scss';
-import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 const QUERY = gql`
   query Gene($stable_id: String!, $genome_id: String!) {
@@ -54,11 +57,16 @@ const QUERY = gql`
         source {
           id
           name
-          url
         }
       }
       transcripts {
         stable_id
+        so_term
+        slice {
+          location {
+            length
+          }
+        }
         external_references {
           accession_id
           name
@@ -67,7 +75,21 @@ const QUERY = gql`
           source {
             id
             name
-            url
+          }
+        }
+        product_generating_contexts {
+          product_type
+          product {
+            external_references {
+              accession_id
+              name
+              description
+              url
+              source {
+                id
+                name
+              }
+            }
           }
         }
       }
@@ -77,6 +99,12 @@ const QUERY = gql`
 
 type Transcript = {
   stable_id: string;
+  so_term: string;
+  slice: SliceWithLocationOnly;
+  product_generating_contexts: Pick<
+    ProductGeneratingContext,
+    'product_type' | 'product'
+  >[];
   external_references: ExternalReferenceType[];
 };
 
@@ -155,6 +183,7 @@ const GeneExternalReferences = () => {
     data.gene.external_references
   );
   const { transcripts } = data.gene;
+  const sortedTranscripts = defaultSort(transcripts);
 
   return (
     <div className={styles.xrefsContainer}>
@@ -162,16 +191,15 @@ const GeneExternalReferences = () => {
         <span className={styles.geneSymbol}>{data.gene.symbol}</span>
         <span>{data.gene.stable_id}</span>
       </div>
-
       <div className={styles.sectionHead}>Gene</div>
       {data.gene.external_references && renderXrefs(externalReferencesGroups)}
-      {transcripts && (
+      {sortedTranscripts.length && (
         <div>
           <div className={styles.sectionHead}>Transcripts</div>
-          {transcripts.map((transcript, key) => {
+          {sortedTranscripts.map((transcript, key) => {
             return (
               <div key={key}>
-                <RenderTranscriptXrefGroup transcript={transcript} />
+                <TranscriptXrefs transcript={transcript} />
               </div>
             );
           })}
@@ -181,12 +209,22 @@ const GeneExternalReferences = () => {
   );
 };
 
-const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
+const TranscriptXrefs = (props: { transcript: Transcript }) => {
   const { transcript } = props;
   const [isExpanded, setIsExpanded] = useState(false);
-  const transcriptsXrefGroups = buildExternalReferencesGroups(
-    transcript.external_references
+  const unsortedXrefs = [...transcript.external_references];
+
+  // Add protein level xrefs
+  transcript.product_generating_contexts.forEach(
+    (product_generating_context) => {
+      unsortedXrefs.push(
+        ...product_generating_context.product.external_references
+      );
+    }
   );
+
+  const xrefGroups = buildExternalReferencesGroups(unsortedXrefs);
+
   return (
     <div className={styles.transcriptWrapper}>
       <div
@@ -196,9 +234,7 @@ const RenderTranscriptXrefGroup = (props: { transcript: Transcript }) => {
         {transcript.stable_id}
       </div>
       {transcript.external_references && isExpanded && (
-        <div className={styles.transcriptXrefs}>
-          {renderXrefs(transcriptsXrefGroups)}
-        </div>
+        <div className={styles.transcriptXrefs}>{renderXrefs(xrefGroups)}</div>
       )}
     </div>
   );

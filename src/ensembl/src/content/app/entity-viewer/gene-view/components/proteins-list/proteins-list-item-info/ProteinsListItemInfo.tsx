@@ -144,7 +144,7 @@ const ProteinsListItemInfo = (props: Props) => {
     }
 
     if (summaryStatsLoadingState === LoadingState.LOADING && xref) {
-      fetchProteinSummaryStats(xref?.display_id, abortController.signal)
+      fetchProteinSummaryStats(xref.primary_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
             response
@@ -183,15 +183,17 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {xref?.display_id && (
+            {xref && (
               <div className={styles.interproUniprotWrapper}>
                 <ProteinExternalReference
                   source={ExternalSource.INTERPRO}
-                  externalId={xref.display_id}
+                  unversionedId={xref.primary_id}
+                  versionedId={xref.display_id}
                 />
                 <ProteinExternalReference
                   source={ExternalSource.UNIPROT}
-                  externalId={xref.display_id}
+                  unversionedId={xref.primary_id}
+                  versionedId={xref.display_id}
                 />
               </div>
             )}
@@ -201,11 +203,12 @@ const ProteinsListItemInfo = (props: Props) => {
               />
             </div>
           </div>
-          {proteinSummaryStats && (
+          {proteinSummaryStats && xref && (
             <div>
               <ProteinExternalReference
                 source={ExternalSource.PDBE}
-                externalId={xref?.display_id}
+                unversionedId={xref.primary_id}
+                versionedId={xref.display_id}
               />
               {proteinSummaryStats && (
                 <div className={styles.proteinFeaturesCountWrapper}>
@@ -263,7 +266,9 @@ const StatusContent = (props: StatusContentProps) => {
   return props.domainsLoadingState === LoadingState.ERROR ||
     props.summaryLoadingState === LoadingState.ERROR ? (
     <div className={styles.statusContainer}>
-      <span className={styles.errorMessage}>Failed to get data</span>
+      <span className={styles.errorMessage}>
+        Failed to get data from PDBe Knowledge Base.
+      </span>
       <PrimaryButton onClick={retryHandler}>Try again</PrimaryButton>
     </div>
   ) : null;
@@ -271,21 +276,22 @@ const StatusContent = (props: StatusContentProps) => {
 
 type ProteinExternalReferenceProps = {
   source: ExternalSource;
-  externalId: string | undefined;
+  unversionedId: string;
+  versionedId: string;
 };
 
 const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
-  const url = `${externalSourceLinks[props.source]}${props.externalId}`;
+  const url = `${externalSourceLinks[props.source]}${props.unversionedId}`;
 
-  return props.externalId ? (
+  return (
     <div className={styles.proteinExternalReference}>
       <ExternalReference
         label={props.source}
         to={url}
-        linkText={props.externalId}
+        linkText={props.versionedId}
       />
     </div>
-  ) : null;
+  );
 };
 
 export default ProteinsListItemInfo;

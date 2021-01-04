@@ -19,6 +19,7 @@ import apiService from 'src/services/api-service';
 import { restProteinSummaryAdaptor } from '../rest-adaptors/rest-protein-adaptor';
 
 export type Xref = {
+  primary_id: string;
   display_id: string;
 };
 
