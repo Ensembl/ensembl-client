@@ -52,6 +52,9 @@ export function browserEntity(
   action: ActionType<typeof browserActions>
 ): BrowserEntityState {
   switch (action.type) {
+    case getType(browserActions.setActiveGenomeId): {
+      return { ...state, activeGenomeId: action.payload };
+    }
     case getType(browserActions.setDataFromUrl): {
       const { activeGenomeId, activeEnsObjectId } = action.payload;
       const newState = {

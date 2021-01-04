@@ -15,13 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import { BrowserCogList } from './BrowserCogList';
-import BrowserCog from './BrowserCog';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
+jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {
@@ -41,38 +42,82 @@ describe('<BrowserCogList />', () => {
   };
 
   describe('rendering', () => {
-    test('contains <BrowserCog /> when browser is activated', () => {
-      const wrapper = mount(<BrowserCogList {...defaultProps} />);
-      expect(wrapper.find(BrowserCog)).toHaveLength(1);
+    it('contains <BrowserCog /> when browser is activated', () => {
+      const { container } = render(<BrowserCogList {...defaultProps} />);
+      expect(container.querySelector('#browserCog')).toBeTruthy();
     });
 
-    test('does not contain <BrowserCog /> when browser is not activated', () => {
-      const wrapper = mount(
+    it('does not contain <BrowserCog /> when browser is not activated', () => {
+      const { container } = render(
         <BrowserCogList {...defaultProps} browserActivated={false} />
       );
-      expect(wrapper.find(BrowserCog)).toHaveLength(0);
+      expect(container.querySelector('#browserCog')).toBeFalsy();
     });
   });
 
   describe('behaviour', () => {
-    test('sends navigation message when track name setting in browser cog is updated', () => {
+    it('sends navigation message when track name setting in browser cog is updated', () => {
       jest.spyOn(browserMessagingService, 'send');
 
-      const wrapper = mount(<BrowserCogList {...defaultProps} />);
+      const { rerender } = render(<BrowserCogList {...defaultProps} />);
       (browserMessagingService.send as any).mockReset();
 
-      wrapper.setProps({ trackConfigNames: { 'track:other-gene-fwd': true } });
-      expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
+      rerender(
+        <BrowserCogList
+          {...defaultProps}
+          trackConfigNames={{ 'track:gc': true }}
+        />
+      );
+      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
+        off: [],
+        on: ['track:gc:label', 'track:gc:names']
+      });
+
+      // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
+      // See a comment in BrowserCogList for explanation
+      // We expect this to be fixed later on.
+      rerender(
+        <BrowserCogList
+          {...defaultProps}
+          trackConfigNames={{ 'track:gc': false }}
+        />
+      );
+      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
+        off: ['track:gc:label'],
+        on: ['track:gc:names']
+      });
     });
 
-    test('sends navigation message when track label setting in browser cog is updated', () => {
+    it('sends navigation message when track label setting in browser cog is updated', () => {
       jest.spyOn(browserMessagingService, 'send');
 
-      const wrapper = mount(<BrowserCogList {...defaultProps} />);
+      const { rerender } = render(<BrowserCogList {...defaultProps} />);
       (browserMessagingService.send as any).mockReset();
 
-      wrapper.setProps({ trackConfigLabel: { 'track:other-gene-fwd': true } });
-      expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
+      rerender(
+        <BrowserCogList
+          {...defaultProps}
+          trackConfigLabel={{ 'track:gc': true }}
+        />
+      );
+      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
+        off: ['track:gc:label'],
+        on: ['track:gc:names']
+      });
+
+      // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
+      // See a comment in BrowserCogList for explanation
+      // We expect this to be fixed later on.
+      rerender(
+        <BrowserCogList
+          {...defaultProps}
+          trackConfigLabel={{ 'track:gc': false }}
+        />
+      );
+      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
+        off: ['track:gc:label', 'track:gc:names'],
+        on: []
+      });
     });
   });
 });

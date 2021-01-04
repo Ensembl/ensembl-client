@@ -33,7 +33,7 @@ import {
 
 import styles from './Root.scss';
 
-type Props = {
+export type Props = {
   updateBreakpointWidth: (breakpointWidth: BreakpointWidth) => void;
 };
 

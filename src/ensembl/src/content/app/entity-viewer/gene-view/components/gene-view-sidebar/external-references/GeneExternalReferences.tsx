@@ -15,12 +15,10 @@
  */
 
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
 
-import { getEntityViewerSidebarPayload } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
@@ -33,7 +31,6 @@ import {
 } from 'src/shared/components/accordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { RootState } from 'src/store';
 import {
   ExternalReference as ExternalReferenceType,
   ExternalReferencesGroup
@@ -302,8 +299,4 @@ const renderXrefGroup = (
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  sidebarPayload: getEntityViewerSidebarPayload(state)
-});
-
-export default connect(mapStateToProps)(GeneExternalReferences);
+export default GeneExternalReferences;

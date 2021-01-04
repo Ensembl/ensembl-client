@@ -1,12 +1,5 @@
 @import 'src/styles/settings';
 
-.defaultTranscriptListItem {
-  svg rect {
-    stroke: white;
-    fill: white;
-  }
-}
-
 .transcriptId {
   color: $blue;
   cursor: pointer;
@@ -20,5 +13,9 @@
 
 .transcriptWrapper {
   display: inline-block;
+  svg rect {
+    stroke: white;
+    fill: white;
+  }
 }
 

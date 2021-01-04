@@ -16,7 +16,8 @@
 
 import React from 'react';
 import faker from 'faker';
-import { render, mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
@@ -42,15 +43,15 @@ describe('BrowserLocationIndicator', () => {
 
   describe('rendering', () => {
     it('displays chromosome name', () => {
-      const wrapper = render(<BrowserLocationIndicator {...props} />);
-      const renderedName = wrapper.find('.chrCode');
-      expect(renderedName.text()).toBe(chrName);
+      const { container } = render(<BrowserLocationIndicator {...props} />);
+      const renderedName = container.querySelector('.chrCode');
+      expect(renderedName?.textContent).toBe(chrName);
     });
 
     it('displays location', () => {
-      const wrapper = render(<BrowserLocationIndicator {...props} />);
-      const renderedLocation = wrapper.find('.chrRegion');
-      expect(renderedLocation.text()).toBe(
+      const { container } = render(<BrowserLocationIndicator {...props} />);
+      const renderedLocation = container.querySelector('.chrRegion');
+      expect(renderedLocation?.textContent).toBe(
         `${getCommaSeparatedNumber(startPosition)}-${getCommaSeparatedNumber(
           endPosition
         )}`
@@ -58,29 +59,37 @@ describe('BrowserLocationIndicator', () => {
     });
 
     it('adds disabled class when component is disabled', () => {
-      const wrapper = mount(<BrowserLocationIndicator {...props} />);
+      const { container, rerender } = render(
+        <BrowserLocationIndicator {...props} />
+      );
+      const element = container.firstChild as HTMLDivElement;
       expect(
-        wrapper.childAt(0).hasClass('browserLocationIndicatorDisabled')
-      ).not.toBe(true);
+        element.classList.contains('browserLocationIndicatorDisabled')
+      ).toBe(false);
 
-      wrapper.setProps({ disabled: true });
+      rerender(<BrowserLocationIndicator {...props} disabled={true} />);
       expect(
-        wrapper.childAt(0).hasClass('browserLocationIndicatorDisabled')
+        element.classList.contains('browserLocationIndicatorDisabled')
       ).toBe(true);
     });
   });
 
   describe('behaviour', () => {
     it('calls the onClick prop when clicked', () => {
-      const wrapper = mount(<BrowserLocationIndicator {...props} />);
-      wrapper.find('.chrLocationView').simulate('click');
+      const { container } = render(<BrowserLocationIndicator {...props} />);
+      const indicator = container.querySelector('.chrLocationView');
+
+      userEvent.click(indicator as HTMLDivElement);
       expect(props.onClick).toHaveBeenCalled();
     });
 
     it('does not call the onClick prop if disabled', () => {
-      const wrapper = mount(<BrowserLocationIndicator {...props} />);
-      wrapper.setProps({ disabled: true });
-      wrapper.find('.chrLocationView').simulate('click');
+      const { container } = render(
+        <BrowserLocationIndicator {...props} disabled={true} />
+      );
+      const indicator = container.querySelector('.chrLocationView');
+
+      userEvent.click(indicator as HTMLDivElement);
       expect(props.onClick).not.toHaveBeenCalled();
     });
   });
