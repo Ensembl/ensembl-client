@@ -48,7 +48,7 @@ export class TrackPanelStorageService {
   }
 
   public updatePreviouslyViewedObjects(activeGenomePreviouslyViewedObjects: {
-    [genomeId: string]: PreviouslyViewedObject[];
+    [genomeId: string]: PreviouslyViewedObject[] | undefined;
   }) {
     this.storageService.update(
       StorageKeys.PREVIOUSLY_VIEWED,

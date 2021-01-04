@@ -17,8 +17,11 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { BrowserTrackStates } from './track-panel/trackPanelConfig';
-import { ChrLocations } from './browserState';
+import {
+  BrowserTrackStates,
+  GenomeTrackStates
+} from './track-panel/trackPanelConfig';
+import { ChrLocation } from './browserState';
 import {
   TrackPanelState,
   TrackPanelStateForGenome
@@ -70,7 +73,9 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.CHR_LOCATION) || {};
   }
 
-  public updateChrLocation(chrLocation: ChrLocations) {
+  public updateChrLocation(chrLocation: {
+    [genomeId: string]: ChrLocation | undefined;
+  }) {
     this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
   }
 
@@ -78,7 +83,9 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }
 
-  public saveTrackStates(trackStates: BrowserTrackStates) {
+  public saveTrackStates(trackStates: {
+    [genomeId: string]: GenomeTrackStates | undefined;
+  }) {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }
 
@@ -87,7 +94,7 @@ export class BrowserStorageService {
   }
 
   public updateTrackPanels(trackPanels: {
-    [genomeId: string]: Partial<TrackPanelStateForGenome>;
+    [genomeId: string]: Partial<TrackPanelStateForGenome> | undefined;
   }): void {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }

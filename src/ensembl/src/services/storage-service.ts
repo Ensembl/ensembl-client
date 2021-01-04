@@ -19,7 +19,8 @@ import windowService, {
 } from 'src/services/window-service';
 import mergeWith from 'lodash/mergeWith';
 import JSONValue, { PrimitiveValue, ArrayValue } from 'src/shared/types/JSON';
-import { isArray, unset } from 'lodash';
+import isArray from 'lodash/isArray';
+import unset from 'lodash/unset';
 
 export enum StorageType {
   LOCAL_STORAGE = 'localstorage',
@@ -50,19 +51,19 @@ const defaultOptions: options = {
 };
 
 // We need to overwrite the arrays instead of merging them so that it is easier to remove entries
-const overwriteArray = (
+const mergeStrategy = (
   currentValue: JSONValue,
   newValue: JSONValue,
   key: string,
   object: JSONValue
 ) => {
-  if (Array.isArray(currentValue)) {
-    return newValue;
+  // Unset the property if the source value is undefined
+  if (newValue === undefined) {
+    unset(object, key);
   }
 
-  // Unset the property if the source value is undefined
-  if (newValue == undefined) {
-    unset(object, key);
+  if (Array.isArray(currentValue)) {
+    return newValue;
   }
 };
 
@@ -98,7 +99,7 @@ export class StorageService implements StorageServiceInterface {
   public update(key: string, fragment: JSONValue, options = defaultOptions) {
     const storedData = this.get(key, options);
     if (storedData) {
-      this.save(key, mergeWith(storedData, fragment, overwriteArray), options);
+      this.save(key, mergeWith(storedData, fragment, mergeStrategy), options);
     } else {
       this.save(key, fragment, options);
     }
@@ -114,9 +115,9 @@ export class StorageService implements StorageServiceInterface {
     pathOrPaths: string | string[],
     options = defaultOptions
   ) {
-    const path = isArray(pathOrPaths) ? pathOrPaths : [pathOrPaths];
+    const paths = isArray(pathOrPaths) ? pathOrPaths : [pathOrPaths];
     const storedData = this.get(key, options);
-    unset(storedData, path);
+    unset(storedData, paths);
     this.save(key, storedData, options);
   }
 

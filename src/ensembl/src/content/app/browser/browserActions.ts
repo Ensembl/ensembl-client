@@ -59,6 +59,7 @@ import {
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 import analyticsTracking from 'src/services/analytics-service';
+import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -422,15 +423,21 @@ export const deleteSpeciesAndSave = (
 
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
 
-    browserStorageService.updateActiveEnsObjectIds(updatedActiveEnsObjectIds);
-    browserStorageService.updateChrLocation(
-      omit(browserStorageService.getChrLocation(), genomeIdToRemove)
-    );
-    browserStorageService.updateTrackPanels(
-      omit(browserStorageService.getTrackPanels(), genomeIdToRemove)
-    );
-    browserStorageService.saveTrackStates(
-      omit(browserStorageService.getTrackStates(), genomeIdToRemove)
-    );
+    browserStorageService.updateActiveEnsObjectIds({
+      [genomeIdToRemove]: undefined
+    });
+    browserStorageService.updateChrLocation({
+      [genomeIdToRemove]: undefined
+    });
+    browserStorageService.updateTrackPanels({
+      [genomeIdToRemove]: undefined
+    });
+    browserStorageService.saveTrackStates({
+      [genomeIdToRemove]: undefined
+    });
+
+    trackPanelStorageService.updatePreviouslyViewedObjects({
+      [genomeIdToRemove]: undefined
+    });
   };
 };

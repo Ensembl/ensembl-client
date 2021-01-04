@@ -159,14 +159,8 @@ export function browserLocation(
     case getType(browserActions.deleteGenome):
       return {
         ...state,
-        chrLocations: {
-          ...state.chrLocations,
-          [action.payload]: undefined
-        },
-        actualChrLocations: {
-          ...state.actualChrLocations,
-          [action.payload]: undefined
-        }
+        chrLocations: omit(state.chrLocations, action.payload),
+        actualChrLocations: omit(state.actualChrLocations, action.payload)
       };
     default:
       return state;
