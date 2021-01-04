@@ -400,24 +400,19 @@ export const toggleRegionFieldActive = createAction(
   'browser/toggle-region-field-active'
 )<boolean>();
 
-export const clearActiveGenomeId = createAction(
-  'browser/clear-active-genome-id'
-)();
+export const deleteGenome = createAction('browser/delete-genome')<string>();
 
-export const clearActiveEnsObjectIdsForGenome = createAction(
-  'browser/clear-active-ens-object-ids-for-genome'
-)<string>();
-
-export const deleteSpeciesAndSaveBrowser = (
+export const deleteSpeciesAndSave = (
   genomeIdToRemove: string
 ): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     if (activeGenomeId === genomeIdToRemove) {
-      dispatch(clearActiveGenomeId);
       browserStorageService.clearActiveGenomeId();
     }
+
+    dispatch(deleteGenome(genomeIdToRemove));
 
     const currentActiveEnsObjectIds = getBrowserActiveEnsObjectIds(state);
     const updatedActiveEnsObjectIds = {
@@ -429,6 +424,25 @@ export const deleteSpeciesAndSaveBrowser = (
     browserStorageService.updateActiveEnsObjectIds({
       ...currentActiveEnsObjectIds,
       [genomeIdToRemove]: undefined
+    });
+
+    browserStorageService.updateChrLocation({
+      ...browserStorageService.getChrLocation(),
+      [genomeIdToRemove]: undefined
+    });
+
+    browserStorageService.updateTrackPanels({
+      trackPanels: {
+        ...browserStorageService.getTrackPanels(),
+        [genomeIdToRemove]: undefined
+      }
+    });
+
+    browserStorageService.saveTrackStates({
+      trackStates: {
+        ...browserStorageService.getTrackStates(),
+        [genomeIdToRemove]: undefined
+      }
     });
   };
 };

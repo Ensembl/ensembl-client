@@ -15,7 +15,7 @@
  */
 
 import { ActionType, getType } from 'typesafe-actions';
-
+import omit from 'lodash/omit';
 import {
   getInitialTrackPanelState,
   getTrackPanelStateForGenome,
@@ -45,6 +45,8 @@ export default function trackPanel(
           ...action.payload.data
         }
       };
+    case getType(browserActions.deleteGenome):
+      return omit(state, action.payload);
     default:
       return state;
   }

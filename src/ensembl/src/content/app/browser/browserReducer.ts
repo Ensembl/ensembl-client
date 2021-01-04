@@ -76,6 +76,13 @@ export function browserEntity(
         ...state,
         trackStates: merge({}, state.trackStates, action.payload)
       };
+    case getType(browserActions.deleteGenome): {
+      const genomeIdToRemove = action.payload;
+      const activeGenomeId = state.activeGenomeId;
+      if (activeGenomeId === genomeIdToRemove) {
+        return { ...state, activeGenomeId: null };
+      }
+    }
     default:
       return state;
   }
@@ -144,8 +151,18 @@ export function browserLocation(
       return { ...state, regionFieldActive: action.payload };
     case getType(browserActions.updateDefaultPositionFlag):
       return { ...state, isObjectInDefaultPosition: action.payload };
-    case getType(browserActions.clearActiveGenomeId):
-      return { ...state, activeGenomeId: null };
+    case getType(browserActions.deleteGenome):
+      return {
+        ...state,
+        chrLocations: {
+          ...state.chrLocations,
+          [action.payload]: undefined
+        },
+        actualChrLocations: {
+          ...state.actualChrLocations,
+          [action.payload]: undefined
+        }
+      };
     default:
       return state;
   }
