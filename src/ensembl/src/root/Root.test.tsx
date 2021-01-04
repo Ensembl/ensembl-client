@@ -15,17 +15,16 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { MemoryRouter, Redirect, useLocation } from 'react-router-dom';
 
-import { Root } from './Root';
-import App from '../content/app/App';
+import { Root, Props as RootProps } from './Root';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
-jest.mock('../content/app/App', () => () => 'App');
+jest.mock('../content/app/App', () => () => <div id="app" />);
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
@@ -33,23 +32,21 @@ jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
 const updateBreakpointWidth = jest.fn();
 
 describe('<Root />', () => {
-  let wrapper: any;
-
   const defaultProps = {
-    breakpointWidth: 0,
     updateBreakpointWidth: updateBreakpointWidth
   };
-  const getRenderedRoot = (props: any) => (
-    <MemoryRouter>
-      <Root {...props} />
-    </MemoryRouter>
-  );
+
+  const getRenderedRoot = (props: Partial<RootProps> = {}) =>
+    render(
+      <MemoryRouter>
+        <Root {...defaultProps} {...props} />
+      </MemoryRouter>
+    );
 
   beforeEach(() => {
     jest
       .spyOn(windowService, 'getMatchMedia')
       .mockImplementation(mockMatchMedia as any);
-    wrapper = mount(getRenderedRoot(defaultProps));
   });
 
   afterEach(() => {
@@ -57,10 +54,12 @@ describe('<Root />', () => {
   });
 
   it('contains App', () => {
-    expect(wrapper.contains(<App />)).toBe(true);
+    const { container } = getRenderedRoot();
+    expect(container.querySelector('#app')).toBeTruthy();
   });
 
   it('calls updateBreakpointWidth on mount', () => {
+    getRenderedRoot();
     expect(updateBreakpointWidth).toHaveBeenCalled();
   });
 
@@ -68,8 +67,8 @@ describe('<Root />', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => true);
-    const wrapper = mount(getRenderedRoot(defaultProps));
-    expect(wrapper.find('.privacyBanner').length).toBe(1);
+    const { container } = getRenderedRoot();
+    expect(container.querySelector('.privacyBanner')).toBeTruthy();
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
@@ -77,8 +76,8 @@ describe('<Root />', () => {
     jest
       .spyOn(privacyBannerService, 'shouldShowBanner')
       .mockImplementation(() => false);
-    const wrapper = mount(getRenderedRoot(defaultProps));
-    expect(wrapper.find('.privacyBanner').length).toBe(0);
+    const { container } = getRenderedRoot();
+    expect(container.querySelector('.privacyBanner')).toBeFalsy();
     (privacyBannerService.shouldShowBanner as any).mockRestore();
   });
 
@@ -89,14 +88,14 @@ describe('<Root />', () => {
       return <Redirect to={{ ...location, state: { is404: true } }} />;
     };
 
-    const wrapper = mount(
+    const { container } = render(
       <MemoryRouter>
         <Root {...defaultProps} />
         <Redirect404 />
       </MemoryRouter>
     );
 
-    expect(wrapper.contains(<App />)).toBe(false);
-    expect(wrapper.text()).toContain('page not found');
+    expect(container.querySelector('#app')).toBeFalsy();
+    expect(container.textContent).toContain('page not found');
   });
 });

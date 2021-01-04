@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import BrowserCog, { BrowserCogProps } from './BrowserCog';
-import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 
 jest.mock('../browser-track-config/BrowserTrackConfig', () => () => (
-  <div>BrowserTrackConfig</div>
+  <div id="browserTrackConfig">BrowserTrackConfig</div>
 ));
 
 describe('<BrowserCog />', () => {
@@ -38,16 +38,17 @@ describe('<BrowserCog />', () => {
 
   describe('rendering', () => {
     test('renders browser track config', () => {
-      const wrapper = mount(<BrowserCog {...defaultProps} />);
-      expect(wrapper.find(BrowserTrackConfig).length).toBeGreaterThan(0);
+      const { container } = render(<BrowserCog {...defaultProps} />);
+      expect(container.querySelector('#browserTrackConfig')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
     test('toggles cog on click', () => {
-      const wrapper = mount(<BrowserCog {...defaultProps} />);
-      wrapper.find('button').first().simulate('click');
-      expect(wrapper.props().updateSelectedCog).toHaveBeenCalledTimes(1);
+      const { container } = render(<BrowserCog {...defaultProps} />);
+      const cogButton = container.querySelector('button');
+      userEvent.click(cogButton as HTMLButtonElement);
+      expect(defaultProps.updateSelectedCog).toHaveBeenCalledTimes(1);
     });
   });
 });

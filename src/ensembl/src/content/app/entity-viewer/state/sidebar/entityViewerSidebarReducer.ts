@@ -21,10 +21,7 @@ import get from 'lodash/get';
 
 import * as actions from './entityViewerSidebarActions';
 
-import {
-  buildInitialStateForGenome,
-  EntityViewerSidebarState
-} from './entityViewerSidebarState';
+import { EntityViewerSidebarState } from './entityViewerSidebarState';
 import JSONValue from 'src/shared/types/JSON';
 
 export default function entityViewerSidebarReducer(
@@ -32,13 +29,6 @@ export default function entityViewerSidebarReducer(
   action: ActionType<typeof actions>
 ) {
   switch (action.type) {
-    case getType(actions.setSidebarInitialStateForGenome):
-      return state[action.payload]
-        ? state
-        : {
-            ...state,
-            ...buildInitialStateForGenome(action.payload)
-          };
     case getType(actions.updateGenomeState): {
       const oldStateFragment = get(state, `${action.payload.genomeId}`);
       const updatedStateFragment = merge(
@@ -46,21 +36,6 @@ export default function entityViewerSidebarReducer(
         oldStateFragment,
         action.payload.fragment
       );
-
-      return {
-        ...state,
-        [action.payload.genomeId]: updatedStateFragment
-      };
-    }
-    case getType(actions.updateEntityState): {
-      const { genomeId } = action.payload;
-      const oldStateFragment =
-        get(state, `${genomeId}`) || buildInitialStateForGenome(genomeId);
-      const updatedStateFragment = merge({}, oldStateFragment, {
-        entities: {
-          [action.payload.entityId]: { payload: action.payload.fragment }
-        }
-      });
 
       return {
         ...state,

@@ -47,10 +47,16 @@ export type Props = {
 const InstantDownloadTranscriptVisualisation = (props: Props) => {
   const exonsCount = 5;
   const exonHeight = 5;
-  const proteinHeight = 3;
+  const exonWidth = Math.floor(props.width / 7);
+  const proteinHeight = 4;
+  const proteinBlockWidth = proteinHeight;
+  const proteinBlockSpacing = 1;
+  const innerProteinBlocksCount = Math.round(
+    exonWidth / (proteinBlockWidth + proteinBlockSpacing)
+  );
+  const outerProteinBlocksCount = Math.round(innerProteinBlocksCount / 2);
   const verticalGap = 5;
   const totalHeight = exonHeight + proteinHeight + verticalGap;
-  const exonWidth = Math.floor(props.width / 7);
   const halfExonWidth = Math.floor(exonWidth / 2);
   const intronsCount = exonsCount - 1;
 
@@ -128,17 +134,36 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     );
   });
 
-  const proteinSegments = times(exonsCount, (index) => {
-    const isOuterSegment = index === 0 || index === exonsCount - 1;
+  const calculateProteinBlockXPosition = (
+    segmentIndex: number,
+    blockIndex: number
+  ) => {
+    if (segmentIndex === 0) {
+      return (
+        halfExonWidth + blockIndex * (proteinBlockWidth + proteinBlockSpacing)
+      );
+    }
     return (
-      <rect
-        key={index}
-        className={styles.protein}
-        x={index === 0 ? halfExonWidth : index * (exonWidth + halfExonWidth)}
-        y={exonHeight + verticalGap}
-        width={isOuterSegment ? halfExonWidth : exonWidth}
-        height={proteinHeight}
-      />
+      segmentIndex * (exonWidth + halfExonWidth) +
+      blockIndex * (proteinBlockWidth + proteinBlockSpacing)
+    );
+  };
+
+  const proteinSegments = times(exonsCount, (segmentIndex) => {
+    const isOuterSegment =
+      segmentIndex === 0 || segmentIndex === exonsCount - 1;
+    return times(
+      isOuterSegment ? outerProteinBlocksCount : innerProteinBlocksCount,
+      (blockIndex) => (
+        <rect
+          key={blockIndex}
+          className={styles.protein}
+          x={calculateProteinBlockXPosition(segmentIndex, blockIndex)}
+          y={exonHeight + verticalGap}
+          width={proteinBlockWidth}
+          height={proteinHeight}
+        />
+      )
     );
   });
 
