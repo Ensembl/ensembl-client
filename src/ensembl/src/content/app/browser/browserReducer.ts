@@ -18,6 +18,7 @@ import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 import merge from 'lodash/merge';
 import pickBy from 'lodash/pickBy';
+import omit from 'lodash/omit';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
@@ -80,7 +81,11 @@ export function browserEntity(
       const genomeIdToRemove = action.payload;
       const activeGenomeId = state.activeGenomeId;
       if (activeGenomeId === genomeIdToRemove) {
-        return { ...state, activeGenomeId: null };
+        return {
+          ...state,
+          activeGenomeId: null,
+          activeEnsObjectIds: omit(state.activeEnsObjectIds, activeGenomeId)
+        };
       }
     }
     default:
