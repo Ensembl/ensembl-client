@@ -22,7 +22,7 @@ import flatten from 'lodash/flatten';
 
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
-import ClearButton from 'src/shared/components/clear-button/ClearButton';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
 
 import {
@@ -88,7 +88,7 @@ describe('<SpeciesSearchField />', () => {
     test('does not show clear button for empty field', () => {
       const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
 
-      expect(wrapper.find(ClearButton).length).toBe(0);
+      expect(wrapper.find(CloseButton).length).toBe(0);
     });
 
     test('displays suggested matches', () => {
@@ -130,7 +130,7 @@ describe('<SpeciesSearchField />', () => {
     });
 
     test('shows a button for clearing field contents in a non-empty field', () => {
-      const clearButton = wrapper.find(ClearButton);
+      const clearButton = wrapper.find(CloseButton);
 
       clearButton.simulate('click');
 

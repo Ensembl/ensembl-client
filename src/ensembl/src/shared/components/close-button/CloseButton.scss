@@ -1,19 +1,20 @@
 @import 'src/styles/common';
 
 .closeButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 16px;
   height: 16px;
   border-radius: 100%;
-  background: $blue;
   cursor: pointer;
 }
 
 .icon {
   font-size: 0; // to make the height of the svg independent on font-size settings
-  height: 10px;
-  width: 10px;
-  fill: white;
+
+  circle {
+    fill: $blue;
+  }
+
+  path: {
+    fill: white;
+  }
 }

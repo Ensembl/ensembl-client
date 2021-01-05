@@ -33,7 +33,8 @@ import {
 import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
 
 import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
-import ClearButton from 'src/shared/components/clear-button/ClearButton';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+// import ClearButton from 'src/shared/components/clear-button/ClearButton';
 import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
@@ -152,7 +153,7 @@ const RightCorner = (props: RightCornerProps) => {
         />
       );
     case RightCornerStatus.CLEAR:
-      return <ClearButton onClick={props.clear} />;
+      return <CloseButton onClick={props.clear} />;
     default:
       return null;
   }

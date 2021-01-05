@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 // the shared close.svg file in static/img/shared folder has inline style with fill
 // TODO: consider moving the close.svg imported below back to shared folder when all our components use the CloseButton consistently
@@ -24,11 +25,13 @@ import styles from './CloseButton.scss';
 
 type Props = {
   onClick: () => void;
+  className?: string;
 };
 
 const CloseButton = (props: Props) => {
+  const className = classNames(styles.closeButton, props.className);
   return (
-    <div className={styles.closeButton} onClick={props.onClick}>
+    <div className={className} onClick={props.onClick}>
       <CloseIcon className={styles.icon} />
     </div>
   );
