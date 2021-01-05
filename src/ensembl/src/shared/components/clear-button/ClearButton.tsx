@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as CrossIcon } from './cross.svg';
+import { ReactComponent as CrossInCircleIcon } from 'static/img/shared/clear.svg';
 
 import styles from './ClearButton.scss';
 
@@ -38,7 +38,7 @@ const ClearButton = (props: Props) => {
 
   return (
     <div className={className} onClick={handleClick}>
-      <CrossIcon />
+      <CrossInCircleIcon />
     </div>
   );
 };
