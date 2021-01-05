@@ -19,17 +19,12 @@ import React, { ReactElement } from 'react';
 import { nonBreakingSpace } from 'src/shared/constants/strings';
 
 import { Props as SelectedSpeciesProps } from 'src/shared/components/selected-species/SelectedSpecies';
-import { Props as SpeciesSelectorSelectedSpeciesProps } from 'src/content/app/species-selector/components/selected-species/SelectedSpecies';
 
 import styles from './MultiLineSpeciesWrapper.scss';
 
-type MultiLineSelectedSpeciesProps =
-  | SelectedSpeciesProps
-  | SpeciesSelectorSelectedSpeciesProps;
-
 export type Props = {
   isWrappable: true;
-  speciesTabs: ReactElement<MultiLineSelectedSpeciesProps>[];
+  speciesTabs: ReactElement<SelectedSpeciesProps>[];
   link?: React.ReactNode;
 };
 
