@@ -15,7 +15,7 @@
  */
 
 import { ActionType, getType } from 'typesafe-actions';
-import omit from 'lodash/omit';
+import { omit } from 'src/shared/helpers/utils';
 import {
   getInitialTrackPanelState,
   getTrackPanelStateForGenome,

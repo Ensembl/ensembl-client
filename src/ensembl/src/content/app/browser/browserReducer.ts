@@ -18,7 +18,7 @@ import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 import merge from 'lodash/merge';
 import pickBy from 'lodash/pickBy';
-import omit from 'lodash/omit';
+import { omit } from 'src/shared/helpers/utils';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';

@@ -25,7 +25,7 @@ import apiService from 'src/services/api-service';
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
 import buildAnalyticsObject from 'src/analyticsHelper';
-import { deleteSpeciesAndSave as deleteSpeciesAndSaveBrowser } from 'src/content/app/browser/browserActions';
+import { deleteSpeciesInGenomeBrowser } from 'src/content/app/browser/browserActions';
 
 import {
   getCommittedSpecies,
@@ -351,7 +351,7 @@ export const deleteSpeciesAndSave = (
   );
 
   dispatch(updateCommittedSpecies(updatedCommittedSpecies));
-  dispatch(deleteSpeciesAndSaveBrowser(genomeId));
+  dispatch(deleteSpeciesInGenomeBrowser(genomeId));
   speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
 

@@ -20,7 +20,7 @@ import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
-import omit from 'lodash/omit';
+import { omit } from 'src/shared/helpers/utils';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -404,7 +404,7 @@ export const toggleRegionFieldActive = createAction(
 
 export const deleteGenome = createAction('browser/delete-genome')<string>();
 
-export const deleteSpeciesAndSave = (
+export const deleteSpeciesInGenomeBrowser = (
   genomeIdToRemove: string
 ): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
