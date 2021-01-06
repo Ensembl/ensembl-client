@@ -84,7 +84,7 @@ export function browserEntity(
         return {
           ...state,
           activeGenomeId: null,
-          activeEnsObjectIds: omit(state.activeEnsObjectIds, activeGenomeId)
+          activeEnsObjectIds: omit(state.activeEnsObjectIds, [activeGenomeId])
         };
       }
     }
@@ -159,8 +159,8 @@ export function browserLocation(
     case getType(browserActions.deleteGenome):
       return {
         ...state,
-        chrLocations: omit(state.chrLocations, action.payload),
-        actualChrLocations: omit(state.actualChrLocations, action.payload)
+        chrLocations: omit(state.chrLocations, [action.payload]),
+        actualChrLocations: omit(state.actualChrLocations, [action.payload])
       };
     default:
       return state;

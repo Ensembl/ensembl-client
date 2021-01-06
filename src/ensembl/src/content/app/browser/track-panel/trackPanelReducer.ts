@@ -46,7 +46,7 @@ export default function trackPanel(
         }
       };
     case getType(browserActions.deleteGenome):
-      return omit(state, action.payload);
+      return omit(state, [action.payload]);
     default:
       return state;
   }

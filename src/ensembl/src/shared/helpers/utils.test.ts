@@ -23,6 +23,7 @@ describe('omit', () => {
     const key = faker.lorem.word();
     const key1 = faker.lorem.word();
     const key2 = faker.lorem.word();
+    const key4 = faker.lorem.word();
 
     const obj = {
       [key]: {
@@ -32,7 +33,8 @@ describe('omit', () => {
             bar: 1
           }
         }
-      }
+      },
+      [key4]: 'foo'
     };
 
     const updateObj = {
@@ -45,6 +47,8 @@ describe('omit', () => {
       }
     };
 
-    expect(omit(obj, [key, key1, key2, 'foo'])).toEqual(updateObj);
+    const keysToRemove = [[key, key1, key2, 'foo'].join('.'), key4];
+
+    expect(omit(obj, keysToRemove)).toEqual(updateObj);
   });
 });

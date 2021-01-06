@@ -15,14 +15,16 @@
  */
 
 import unset from 'lodash/unset';
-import JSONValue from 'src/shared/types/JSON';
 
 export const omit = (
-  originalObject: JSONValue,
-  pathOrPaths: string | string[]
+  originalObject: Record<string, any>,
+  keysToOmit: Array<string | number | symbol>
 ) => {
   const clonedObject = { ...originalObject };
-  unset(clonedObject, pathOrPaths);
+
+  for (const path of keysToOmit) {
+    unset(clonedObject, path);
+  }
 
   return clonedObject;
 };

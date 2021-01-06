@@ -418,7 +418,7 @@ export const deleteSpeciesInGenomeBrowser = (
 
     const updatedActiveEnsObjectIds = omit(
       getBrowserActiveEnsObjectIds(state),
-      genomeIdToRemove
+      [genomeIdToRemove]
     );
 
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
