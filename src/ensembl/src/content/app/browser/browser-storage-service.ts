@@ -98,6 +98,26 @@ export class BrowserStorageService {
   }): void {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
   }
+
+  public deleteGenome(genomeIdToDelete: string): void {
+    const activeGenomeId = this.getActiveGenomeId();
+    if (activeGenomeId === genomeIdToDelete) {
+      this.clearActiveGenomeId();
+    }
+
+    this.updateActiveEnsObjectIds({
+      [genomeIdToDelete]: undefined
+    });
+    this.updateChrLocation({
+      [genomeIdToDelete]: undefined
+    });
+    this.updateTrackPanels({
+      [genomeIdToDelete]: undefined
+    });
+    this.saveTrackStates({
+      [genomeIdToDelete]: undefined
+    });
+  }
 }
 
 export default new BrowserStorageService(storageService);

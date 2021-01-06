@@ -55,6 +55,12 @@ export class TrackPanelStorageService {
       activeGenomePreviouslyViewedObjects
     );
   }
+
+  public deleteGenome(genomeIdToDelete: string): void {
+    this.updatePreviouslyViewedObjects({
+      [genomeIdToDelete]: undefined
+    });
+  }
 }
 
 export default new TrackPanelStorageService(storageService);

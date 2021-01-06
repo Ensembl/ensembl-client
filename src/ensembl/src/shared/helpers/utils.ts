@@ -18,7 +18,7 @@ import unset from 'lodash/unset';
 
 export const omit = (
   originalObject: Record<string, any>,
-  keysToOmit: Array<string | number | symbol>
+  keysToOmit: Array<string>
 ) => {
   const clonedObject = { ...originalObject };
 

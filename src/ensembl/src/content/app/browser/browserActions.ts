@@ -409,10 +409,6 @@ export const deleteSpeciesInGenomeBrowser = (
 ): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-    if (activeGenomeId === genomeIdToRemove) {
-      browserStorageService.clearActiveGenomeId();
-    }
 
     dispatch(deleteGenome(genomeIdToRemove));
 
@@ -423,21 +419,7 @@ export const deleteSpeciesInGenomeBrowser = (
 
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
 
-    browserStorageService.updateActiveEnsObjectIds({
-      [genomeIdToRemove]: undefined
-    });
-    browserStorageService.updateChrLocation({
-      [genomeIdToRemove]: undefined
-    });
-    browserStorageService.updateTrackPanels({
-      [genomeIdToRemove]: undefined
-    });
-    browserStorageService.saveTrackStates({
-      [genomeIdToRemove]: undefined
-    });
-
-    trackPanelStorageService.updatePreviouslyViewedObjects({
-      [genomeIdToRemove]: undefined
-    });
+    browserStorageService.deleteGenome(genomeIdToRemove);
+    trackPanelStorageService.deleteGenome(genomeIdToRemove);
   };
 };
