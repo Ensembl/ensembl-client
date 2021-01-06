@@ -53,8 +53,6 @@ describe('<TrackPanelTabs />', () => {
 
   describe('behaviour', () => {
     describe('on track panel tab click', () => {
-      // wrapper.find('.trackPanelTab').first().simulate('click');
-
       it('selects track panel tab', () => {
         const { container } = render(<TrackPanelTabs {...defaultProps} />);
         const tab = container.querySelector('.trackPanelTab') as HTMLElement;
