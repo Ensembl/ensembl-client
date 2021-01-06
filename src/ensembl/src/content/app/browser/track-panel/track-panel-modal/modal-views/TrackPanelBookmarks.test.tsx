@@ -84,8 +84,9 @@ describe('<TrackPanelBookmarks />', () => {
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {
     render(<TrackPanelBookmarks {...props} />);
-    const previouslyViewedLinksContainer = screen.getByText('Previously viewed')
-      .nextSibling;
+    const previouslyViewedLinksContainer = screen.getByTestId(
+      'previously viewed links'
+    );
     const firstLink = (previouslyViewedLinksContainer as HTMLElement).querySelector(
       '.link'
     );
@@ -142,7 +143,7 @@ describe('<TrackPanelBookmarks />', () => {
 
   it('renders correct number of links to example objects', () => {
     render(<TrackPanelBookmarks {...props} />);
-    const exampleLinksWrapper = screen.getByText('Example links').parentElement;
+    const exampleLinksWrapper = screen.getByTestId('example links');
 
     expect(exampleLinksWrapper?.querySelectorAll('.link').length).toBe(
       numberOfExampleObjects
@@ -151,7 +152,7 @@ describe('<TrackPanelBookmarks />', () => {
 
   it('calls closeTrackPanelModal when an example object link is clicked', () => {
     render(<TrackPanelBookmarks {...props} />);
-    const exampleLinksWrapper = screen.getByText('Example links').parentElement;
+    const exampleLinksWrapper = screen.getByTestId('example links');
     const exampleLink = exampleLinksWrapper?.querySelector('.link');
 
     userEvent.click(exampleLink as HTMLElement);

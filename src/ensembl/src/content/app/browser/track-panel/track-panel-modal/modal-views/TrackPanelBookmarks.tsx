@@ -55,7 +55,7 @@ type ExampleLinksProps = Pick<
 >;
 export const ExampleLinks = (props: ExampleLinksProps) => {
   return (
-    <div>
+    <div data-test-id="example links">
       <div className={styles.sectionTitle}>Example links</div>
       {props.exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({
@@ -95,7 +95,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   };
 
   return (
-    <div>
+    <div data-test-id="previously viewed links">
       {[...props.previouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
