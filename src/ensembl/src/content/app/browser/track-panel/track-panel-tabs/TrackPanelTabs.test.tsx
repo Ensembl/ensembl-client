@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { TrackPanelTabs, TrackPanelTabsProps } from './TrackPanelTabs';
 
@@ -39,46 +40,57 @@ describe('<TrackPanelTabs />', () => {
   };
 
   describe('rendering', () => {
-    test('contains all track panel tabs', () => {
-      const wrapper = mount(<TrackPanelTabs {...defaultProps} />);
-      const tabValues = Object.values(TrackSet).reduce(
-        (acc, currValue) => `${acc} ${currValue}`,
-        ''
-      );
-      const tabs = wrapper.getDOMNode().querySelectorAll('dd');
+    it('contains all track panel tabs', () => {
+      const { container } = render(<TrackPanelTabs {...defaultProps} />);
+      const tabValues = Object.values(TrackSet);
+      const tabs = [...container.querySelectorAll('.trackPanelTab')];
 
-      tabs.forEach((tabNode: HTMLElement) => {
-        expect(tabValues).toContain(tabNode.textContent);
+      tabValues.forEach((text) => {
+        expect(tabs.some((tab) => tab.innerHTML === text));
       });
     });
   });
 
   describe('behaviour', () => {
     describe('on track panel tab click', () => {
-      let wrapper: any;
+      it('selects track panel tab', () => {
+        const { container } = render(<TrackPanelTabs {...defaultProps} />);
+        const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-      beforeEach(() => {
-        wrapper = mount(
-          <TrackPanelTabs
-            {...defaultProps}
-            isTrackPanelOpened={false}
-            isDrawerOpened={true}
-          />
+        userEvent.click(tab);
+        expect(defaultProps.selectTrackPanelTab).toHaveBeenCalledWith(
+          Object.values(TrackSet)[0]
         );
-
-        wrapper.find('.trackPanelTab').first().simulate('click');
       });
 
-      test('selects track panel tab', () => {
-        expect(wrapper.props().selectTrackPanelTab).toHaveBeenCalledTimes(1);
+      it('opens track panel if it is closed', () => {
+        const { container, rerender } = render(
+          <TrackPanelTabs {...defaultProps} isTrackPanelOpened={true} />
+        );
+        const tab = container.querySelector('.trackPanelTab') as HTMLElement;
+
+        userEvent.click(tab);
+        expect(defaultProps.toggleTrackPanel).not.toHaveBeenCalled();
+
+        rerender(
+          <TrackPanelTabs {...defaultProps} isTrackPanelOpened={false} />
+        );
+        userEvent.click(tab);
+        expect(defaultProps.toggleTrackPanel).toHaveBeenCalledWith(true);
       });
 
-      test('opens track panel if it is already closed', () => {
-        expect(wrapper.props().toggleTrackPanel).toHaveBeenCalledTimes(1);
-      });
+      it('closes drawer if it is opened', () => {
+        const { container, rerender } = render(
+          <TrackPanelTabs {...defaultProps} isDrawerOpened={false} />
+        );
+        const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
-      test('closes drawer if it is already opened', () => {
-        expect(wrapper.props().closeDrawer).toHaveBeenCalledTimes(1);
+        userEvent.click(tab);
+        expect(defaultProps.closeDrawer).not.toHaveBeenCalled();
+
+        rerender(<TrackPanelTabs {...defaultProps} isDrawerOpened={true} />);
+        userEvent.click(tab);
+        expect(defaultProps.closeDrawer).toHaveBeenCalledTimes(1);
       });
     });
   });

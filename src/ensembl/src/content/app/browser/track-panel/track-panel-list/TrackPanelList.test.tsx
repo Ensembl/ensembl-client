@@ -15,21 +15,22 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import { TrackPanelList, TrackPanelListProps } from './TrackPanelList';
-import TrackPanelListItem from './TrackPanelListItem';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 import { TrackSet } from '../trackPanelConfig';
 import { createGenomeCategories } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
-jest.mock('./TrackPanelListItem', () => () => <div>TrackPanelListItem</div>);
+jest.mock('./TrackPanelListItem', () => () => (
+  <div className="trackPanelListItem" />
+));
 
 describe('<TrackPanelList />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -46,19 +47,21 @@ describe('<TrackPanelList />', () => {
   };
 
   const mountTrackPanelList = (props?: Partial<TrackPanelListProps>) =>
-    mount(<TrackPanelList {...defaultProps} {...props} />);
+    render(<TrackPanelList {...defaultProps} {...props} />);
 
   describe('rendering', () => {
-    test('renders track panel items', () => {
-      const wrapper = mountTrackPanelList();
-      expect(wrapper.find(TrackPanelListItem).length).toBeGreaterThan(0);
+    it('renders track panel items', () => {
+      const { container } = mountTrackPanelList();
+      expect(
+        container.querySelectorAll('.trackPanelListItem').length
+      ).toBeGreaterThan(0);
     });
 
-    test('does not render main track if the focus feature is a region', () => {
-      const wrapper = mountTrackPanelList({
+    it('does not render main track if the focus feature is a region', () => {
+      const { container } = mountTrackPanelList({
         activeEnsObject: createEnsObject('region')
       });
-      expect(wrapper.find('.mainTrackItem')).toHaveLength(0);
+      expect(container.querySelector('.mainTrackItem')).toBeFalsy();
     });
   });
 });

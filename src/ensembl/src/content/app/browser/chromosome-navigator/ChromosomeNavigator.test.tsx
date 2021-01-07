@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import random from 'lodash/random';
 
 import * as textHelpers from 'src/shared/helpers/textHelpers';
@@ -47,89 +47,98 @@ const isApproximatelyEqual = (num1: number, num2: number) => {
 
 describe('Chromosome Navigator', () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
     const mockMeasure: any = () => ({ width: 40 });
     jest.spyOn(textHelpers, 'measureText').mockImplementation(mockMeasure);
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe('basic rendering', () => {
     it('renders without focusRegion or centromere', () => {
-      const wrapper = mount(<ChromosomeNavigator {...minimalProps} />);
-      expect(wrapper.find('svg').length).toBe(1);
-      expect(wrapper.find('.viewport').length).toBe(1);
-      expect(wrapper.find('.viewportBorder').length).toBe(2);
-      expect(wrapper.find('.focusPointer').length).toBe(0); // no focus pointer
-      expect(wrapper.find('.centromere').length).toBe(0); // no centromere region
+      const { container } = render(<ChromosomeNavigator {...minimalProps} />);
+      expect(container.querySelector('svg')).toBeTruthy();
+      expect(container.querySelector('.viewport')).toBeTruthy();
+      expect(container.querySelectorAll('.viewportBorder').length).toBe(2);
+      expect(container.querySelector('.focusPointer')).toBeFalsy(); // no focus pointer
+      expect(container.querySelector('.centromere')).toBeFalsy(); // no centromere region
     });
 
     it('renders focus pointer', () => {
       const focusStart = random(minimalProps.length / 2);
       const focusEnd = random(focusStart, minimalProps.length - 1);
-      const wrapper = mount(
+      const { container } = render(
         <ChromosomeNavigator
           {...minimalProps}
           focusRegion={{ start: focusStart, end: focusEnd }}
         />
       );
-      expect(wrapper.find('svg').length).toBe(1);
-      expect(wrapper.find('.viewport').length).toBe(1);
-      expect(wrapper.find('.viewportBorder').length).toBe(2);
-      expect(wrapper.find('.focusPointer').length).toBeGreaterThanOrEqual(1);
+
+      expect(container.querySelector('svg')).toBeTruthy();
+      expect(container.querySelector('.viewport')).toBeTruthy();
+      expect(container.querySelectorAll('.viewportBorder').length).toBe(2);
+      expect(
+        container.querySelectorAll('.focusPointer').length
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it('renders centromere region', () => {
       const centromereStart = random(minimalProps.length / 2);
       const centromereEnd = centromereStart + random(10000);
-      const wrapper = mount(
+      const { container } = render(
         <ChromosomeNavigator
           {...minimalProps}
           centromere={{ start: centromereStart, end: centromereEnd }}
         />
       );
-      expect(wrapper.find('svg').length).toBe(1);
-      expect(wrapper.find('.viewport').length).toBe(1);
-      expect(wrapper.find('.centromere').length).toBe(1);
+
+      expect(container.querySelector('svg')).toBeTruthy();
+      expect(container.querySelector('.viewport')).toBeTruthy();
+      expect(container.querySelector('.centromere')).toBeTruthy();
     });
   });
 
   describe('viewport position', () => {
     const getRenderedViewport = (props: ChromosomeNavigatorProps) => {
-      const wrapper = mount(<ChromosomeNavigator {...props} />);
-      const openingBracket = wrapper.find('.viewportBorder').at(0);
-      const closingBracket = wrapper.find('.viewportBorder').at(1);
-      const viewportAreas = wrapper.find('.viewport');
+      const { container } = render(<ChromosomeNavigator {...props} />);
+      const [
+        openingBracket,
+        closingBracket
+      ]: NodeListOf<SVGPolylineElement> = container.querySelectorAll(
+        '.viewportBorder'
+      );
+      const [...viewportAreas] = container.querySelectorAll(
+        '.viewport'
+      ) as NodeListOf<SVGRectElement>;
       return {
-        wrapper,
+        container,
         openingBracket,
         closingBracket,
         viewportAreas
       };
     };
 
-    const assertBracketX = (bracket: any, position: number) => {
+    const assertBracketX = (bracket: SVGPolylineElement, position: number) => {
       /*
         A bracket is shaped like so: [ or like so: ]
         To check the x-coordinate of the bracket, we want to check
         the x-coordinate of the vertical bar of [
         which is the second tuple of coordinates in the points prop
       */
-      const bracketX = bracket.prop('points').split(' ')[1].split(',')[0];
+      const bracketX = (bracket.getAttribute('points') as string)
+        .split(' ')[1]
+        .split(',')[0];
       expect(parseInt(bracketX, 10)).toBe(position);
     };
 
-    const assertViewportAreas = (areas: any, assertions: any) => {
+    const assertViewportAreas = (areas: SVGRectElement[], assertions: any) => {
       expect(areas.length).toBe(assertions.length);
       assertions.forEach((assertion: any, index: number) => {
         const { x, width } = assertion;
         if (x !== undefined) {
-          expect(areas.at(index).prop('x')).toBe(x);
+          expect(areas[index].getAttribute('x')).toBe(`${x}`);
         }
         if (width !== undefined) {
           const widthDifference = Math.abs(
-            areas.at(index).prop('width') - width
+            parseInt(areas[index].getAttribute('width') as string) - width
           );
           expect(widthDifference).toBeLessThanOrEqual(1);
         }
@@ -230,22 +239,29 @@ describe('Chromosome Navigator', () => {
 
   describe('pointer position', () => {
     const getRenderedPointers = (props: ChromosomeNavigatorProps) => {
-      const wrapper = mount(<ChromosomeNavigator {...props} />);
-      const pointers = wrapper.find('.focusPointer');
+      const { container } = render(<ChromosomeNavigator {...props} />);
+      const [...pointers] = container.querySelectorAll(
+        '.focusPointer'
+      ) as NodeListOf<SVGElement>;
       return {
-        wrapper,
+        container,
         pointers
       };
     };
 
-    const assertPointerPositions = (pointers: any, positions: number[]) => {
+    const assertPointerPositions = (
+      pointers: SVGElement[],
+      positions: number[]
+    ) => {
       expect(pointers.length).toBe(positions.length);
       positions.forEach((position: number, index: number) => {
-        const transform = pointers
-          .at(index)
-          .prop('transform')
-          .match(/translate\((-?\d+)\)/)[1];
-        const actualPosition = parseInt(transform, 10);
+        const transformAttribute = pointers[index].getAttribute(
+          'transform'
+        ) as string;
+        const transformValue = (transformAttribute.match(
+          /translate\((-?\d+)\)/
+        ) as RegExpMatchArray)[1];
+        const actualPosition = parseInt(transformValue, 10);
         expect(isApproximatelyEqual(position, actualPosition)).toBe(true);
       });
     };
@@ -310,23 +326,25 @@ describe('Chromosome Navigator', () => {
 
   describe('labels', () => {
     const getRenderedLabels = (props: ChromosomeNavigatorProps) => {
-      const wrapper = mount(<ChromosomeNavigator {...props} />);
-      const labels = wrapper.find('.label');
+      const { container } = render(<ChromosomeNavigator {...props} />);
+      const [...labels] = container.querySelectorAll('.label') as NodeListOf<
+        SVGTextElement
+      >;
       return {
-        wrapper,
+        container,
         labels
       };
     };
 
-    const assertLabels = (labels: any, assertions: any) => {
+    const assertLabels = (labels: SVGTextElement[], assertions: any) => {
       expect(labels.length).toBe(assertions.length);
       assertions.forEach((assertion: any, index: number) => {
         const { x, text } = assertion;
         if (x !== undefined) {
-          expect(labels.at(index).prop('x')).toBe(x);
+          expect(labels[index].getAttribute('x')).toBe(`${x}`);
         }
         if (text !== undefined) {
-          const actualText = labels.at(index).text();
+          const actualText = labels[index].textContent;
           expect(actualText).toEqual(text);
         }
       });

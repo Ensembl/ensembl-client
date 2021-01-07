@@ -15,31 +15,36 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { screen, render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import {
   BrowserRegionEditor,
   BrowserRegionEditorProps
 } from './BrowserRegionEditor';
-import Input from 'src/shared/components/input/Input';
-import Select from 'src/shared/components/select/Select';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import {
+  getCommaSeparatedNumber,
+  getNumberWithoutCommas
+} from 'src/shared/helpers/formatters/numberFormatter';
 import {
   createChrLocationValues,
   createRegionValidationMessages
 } from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
 
-describe('<BrowserRegionEditor />', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+jest.mock('src/shared/components/select/Select', () => () => (
+  <div className="select" />
+));
+jest.mock('src/shared/components/overlay/Overlay', () => () => (
+  <div className="overlay" />
+));
 
+jest.mock('../browserHelper');
+
+describe('<BrowserRegionEditor />', () => {
   const initialChrLocation = createChrLocationValues().tupleValue;
   const defaultProps: BrowserRegionEditorProps = {
     activeGenomeId: faker.lorem.words(),
@@ -52,64 +57,66 @@ describe('<BrowserRegionEditor />', () => {
     toggleRegionEditorActive: jest.fn()
   };
 
-  let wrapper: any;
-
   beforeEach(() => {
-    wrapper = mount(<BrowserRegionEditor {...defaultProps} />);
+    jest.resetAllMocks();
   });
 
   describe('rendering', () => {
-    test('contains Select', () => {
-      expect(wrapper.find(Select).length).toBe(1);
+    it('contains Select', () => {
+      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      expect(container.querySelector('.select')).toBeTruthy();
     });
 
-    test('contains two Input elements', () => {
-      expect(wrapper.find(Input).length).toBe(2);
+    it('contains two input elements', () => {
+      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      expect(container.querySelectorAll('input').length).toBe(2);
     });
 
-    test('contains submit and close buttons', () => {
-      expect(wrapper.find('button[type="submit"]')).toHaveLength(1);
+    it('contains submit and close buttons', () => {
+      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      expect(container.querySelector('button[type="submit"]')).toBeTruthy();
     });
 
-    test('has an overlay on top when disabled', () => {
-      wrapper.setProps({ isDisabled: true });
-      expect(wrapper.find(Overlay).length).toBe(1);
+    it('has an overlay on top when disabled', () => {
+      const { container } = render(
+        <BrowserRegionEditor {...defaultProps} isDisabled={true} />
+      );
+      expect(container.querySelector('.overlay')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    test('shows form buttons when focussed', () => {
-      wrapper.find('form').simulate('focus');
-      expect(wrapper.props().toggleRegionEditorActive).toHaveBeenCalledTimes(1);
+    it('shows form buttons when focussed', () => {
+      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const form = container.querySelector('form') as HTMLFormElement;
+
+      fireEvent.focus(form);
+
+      expect(defaultProps.toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
-    test('validates region input on submit', () => {
+    it('validates region input on submit', () => {
       const [stick] = initialChrLocation;
       const locationStartInput = getCommaSeparatedNumber(faker.random.number());
       const locationEndInput = getCommaSeparatedNumber(faker.random.number());
-      const validateRegion = jest.fn();
 
-      jest
-        .spyOn(browserHelper, 'validateRegion')
-        .mockImplementation(validateRegion);
+      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const [firstInput, secondInput] = container.querySelectorAll('input');
+      const submitButton = container.querySelector(
+        'button[type="submit"]'
+      ) as HTMLButtonElement;
 
-      wrapper
-        .find(Input)
-        .first()
-        .simulate('change', {
-          target: { value: locationStartInput }
-        });
+      userEvent.clear(firstInput);
+      userEvent.type(firstInput, locationStartInput);
 
-      wrapper
-        .find(Input)
-        .last()
-        .simulate('change', { target: { value: locationEndInput } });
+      userEvent.clear(secondInput);
+      userEvent.type(secondInput, locationEndInput);
 
-      wrapper.find('form').simulate('submit');
+      userEvent.click(submitButton);
 
-      expect(validateRegion).toHaveBeenCalledWith({
+      expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: `${stick}:${locationStartInput}-${locationEndInput}`,
-        genomeId: wrapper.props().activeGenomeId,
+        genomeId: defaultProps.activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
       });
@@ -124,11 +131,11 @@ describe('<BrowserRegionEditor />', () => {
 
       const locationStartInput = getCommaSeparatedNumber(faker.random.number());
       const locationEndInput = getCommaSeparatedNumber(faker.random.number());
-      const startError = faker.lorem.words();
-      const endError = faker.lorem.words();
+      const startError = 'start error message';
+      const endError = 'end error message';
       const mockValidationMessages = createRegionValidationMessages();
 
-      test('displays the start error message', () => {
+      it('displays the start error message', async () => {
         const mockErrorMessages = {
           ...mockValidationMessages.errorMessages,
           startError,
@@ -138,39 +145,33 @@ describe('<BrowserRegionEditor />', () => {
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
-            async (params: {
-              regionInput: string;
-              genomeId: string | null;
-              onSuccess: (regionId: string) => void;
-              onError: (
-                errorMessages: browserHelper.RegionValidationErrors
-              ) => void;
-            }) => {
-              params.onError(mockErrorMessages);
-            }
+            async ({
+              onError
+            }: {
+              onError: (arg: typeof mockErrorMessages) => void;
+            }): Promise<void> => onError(mockErrorMessages)
           );
 
-        wrapper
-          .find(Input)
-          .first()
-          .simulate('change', { target: { value: locationStartInput } });
+        const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+        const [firstInput, secondInput] = container.querySelectorAll('input');
+        const submitButton = container.querySelector(
+          'button[type="submit"]'
+        ) as HTMLButtonElement;
 
-        wrapper
-          .find(Input)
-          .last()
-          .simulate('change', {
-            target: { value: locationEndInput }
-          });
+        userEvent.clear(firstInput);
+        userEvent.type(firstInput, locationStartInput);
 
-        wrapper.find('form').simulate('submit');
+        userEvent.clear(secondInput);
+        userEvent.type(secondInput, locationEndInput);
 
-        expect(
-          wrapper.find('[role="startInputGroup"]').find(Tooltip).props()
-            .children
-        ).toBe(startError);
+        userEvent.click(submitButton);
+
+        const errorMessageElement = await screen.findByText(startError);
+        expect(errorMessageElement).toBeTruthy();
+        expect(errorMessageElement.classList.contains('tooltip')).toBe(true);
       });
 
-      test('displays the end error message', () => {
+      it('displays the end error message', async () => {
         const mockErrorMessages = {
           ...mockValidationMessages.errorMessages,
           endError
@@ -179,35 +180,30 @@ describe('<BrowserRegionEditor />', () => {
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
-            async (params: {
-              regionInput: string;
-              genomeId: string | null;
-              onSuccess: (regionId: string) => void;
-              onError: (
-                errorMessages: browserHelper.RegionValidationErrors
-              ) => void;
-            }) => {
-              params.onError(mockErrorMessages);
-            }
+            async ({
+              onError
+            }: {
+              onError: (arg: typeof mockErrorMessages) => void;
+            }): Promise<void> => onError(mockErrorMessages)
           );
 
-        wrapper
-          .find(Input)
-          .first()
-          .simulate('change', { target: { value: locationStartInput } });
+        const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+        const [firstInput, secondInput] = container.querySelectorAll('input');
+        const submitButton = container.querySelector(
+          'button[type="submit"]'
+        ) as HTMLButtonElement;
 
-        wrapper
-          .find(Input)
-          .last()
-          .simulate('change', {
-            target: { value: locationEndInput }
-          });
+        userEvent.clear(firstInput);
+        userEvent.type(firstInput, locationStartInput);
 
-        wrapper.find('form').simulate('submit');
+        userEvent.clear(secondInput);
+        userEvent.type(secondInput, locationEndInput);
 
-        expect(
-          wrapper.find('[role="endInputGroup"]').find(Tooltip).props().children
-        ).toBe(endError);
+        userEvent.click(submitButton);
+
+        const errorMessageElement = await screen.findByText(endError);
+        expect(errorMessageElement).toBeTruthy();
+        expect(errorMessageElement.classList.contains('tooltip')).toBe(true);
       });
     });
 
@@ -217,41 +213,46 @@ describe('<BrowserRegionEditor />', () => {
       const regionId = faker.lorem.words();
 
       beforeEach(() => {
+        jest.resetAllMocks();
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
-            async (params: {
-              regionInput: string;
-              genomeId: string | null;
-              onSuccess: (regionId: string) => void;
-              onError: (
-                errorMessages: browserHelper.RegionValidationErrors
-              ) => void;
-            }) => {
-              params.onSuccess(regionId);
-            }
+            async ({
+              onSuccess
+            }: {
+              onSuccess: (arg: string) => void;
+            }): Promise<void> => onSuccess(regionId)
           );
-      });
-
-      afterEach(() => {
-        jest.restoreAllMocks();
       });
 
       // TODO:
       // Test focus object change on submission. This can be done if <Select /> value can be changed.
 
-      test('changes the browser location in same region if stick is the same', () => {
-        wrapper
-          .find(Input)
-          .first()
-          .simulate('change', { target: { value: locationStartInput } });
-        wrapper
-          .find(Input)
-          .last()
-          .simulate('change', { target: { value: locationEndInput } });
-        wrapper.find('form').simulate('submit');
+      it('changes the browser location in same region if stick is the same', () => {
+        const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+        const [firstInput, secondInput] = container.querySelectorAll('input');
+        const submitButton = container.querySelector(
+          'button[type="submit"]'
+        ) as HTMLButtonElement;
 
-        expect(wrapper.props().changeBrowserLocation).toHaveBeenCalled();
+        userEvent.clear(firstInput);
+        userEvent.type(firstInput, locationStartInput);
+
+        userEvent.clear(secondInput);
+        userEvent.type(secondInput, locationEndInput);
+
+        userEvent.click(submitButton);
+
+        expect(defaultProps.changeBrowserLocation).toHaveBeenCalled();
+
+        const {
+          ensObjectId,
+          chrLocation
+        } = (defaultProps.changeBrowserLocation as any).mock.calls[0][0];
+        const [, start, end] = chrLocation;
+        expect(ensObjectId).toBe(null);
+        expect(start).toBe(getNumberWithoutCommas(locationStartInput));
+        expect(end).toBe(getNumberWithoutCommas(locationEndInput));
       });
     });
   });

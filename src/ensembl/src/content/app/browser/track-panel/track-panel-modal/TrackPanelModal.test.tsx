@@ -15,15 +15,28 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { TrackPanelModal, TrackPanelModalProps } from './TrackPanelModal';
-import TrackPanelSearch from './modal-views/TrackPanelSearch';
-import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
+
+jest.mock('./modal-views/TrackPanelSearch', () => () => (
+  <div className="trackPanelSearch" />
+));
+
+jest.mock('./modal-views/TrackPanelDownloads', () => () => (
+  <div className="trackPanelDownloads" />
+));
+
+jest.mock(
+  'src/shared/components/close-button/CloseButton',
+  () => (props: { onClick: () => void }) => (
+    <button className="closeButton" onClick={props.onClick}></button>
+  )
+);
 
 describe('<TrackPanelModal />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -34,24 +47,26 @@ describe('<TrackPanelModal />', () => {
   };
 
   describe('rendering', () => {
-    test('displays track pane modal view for search', () => {
-      const wrapper = mount(<TrackPanelModal {...defaultProps} />);
-      expect(wrapper.find(TrackPanelSearch)).toHaveLength(1);
+    it('displays track pane modal view for search', () => {
+      const { container } = render(<TrackPanelModal {...defaultProps} />);
+      expect(container.querySelector('.trackPanelSearch')).toBeTruthy();
     });
 
-    test('displays track pane modal view for downloads', () => {
-      const wrapper = mount(
+    it('displays track pane modal view for downloads', () => {
+      const { container } = render(
         <TrackPanelModal {...defaultProps} trackPanelModalView="downloads" />
       );
-      expect(wrapper.find(TrackPanelDownloads)).toHaveLength(1);
+      expect(container.querySelector('.trackPanelDownloads')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    test('closes modal when close button is clicked', () => {
-      const wrapper = mount(<TrackPanelModal {...defaultProps} />);
-      wrapper.find(CloseButton).simulate('click');
-      expect(wrapper.props().closeTrackPanelModal).toHaveBeenCalledTimes(1);
+    it('closes modal when close button is clicked', () => {
+      const { container } = render(<TrackPanelModal {...defaultProps} />);
+      const closeButton = container.querySelector('button.closeButton');
+
+      userEvent.click(closeButton as HTMLElement);
+      expect(defaultProps.closeTrackPanelModal).toHaveBeenCalledTimes(1);
     });
   });
 });

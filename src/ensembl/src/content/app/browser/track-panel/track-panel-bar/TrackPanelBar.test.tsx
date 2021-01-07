@@ -15,29 +15,70 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { TrackPanelBar, TrackPanelBarProps } from './TrackPanelBar';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+jest.mock(
+  'src/shared/components/image-button/ImageButton',
+  () => (props: { description: string; onClick: () => void }) => (
+    <button onClick={props.onClick}>{props.description}</button>
+  )
+);
 
 describe('<TrackPanelBar />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
   const defaultProps: TrackPanelBarProps = {
     isTrackPanelModalOpened: true,
     isTrackPanelOpened: true,
-    trackPanelModalView: 'bookmarks',
+    trackPanelModalView: 'foo',
     closeTrackPanelModal: jest.fn(),
     openTrackPanelModal: jest.fn(),
     toggleTrackPanel: jest.fn()
   };
 
   describe('rendering', () => {
-    test('displays all track panel bar icons', () => {
-      const wrapper = mount(<TrackPanelBar {...defaultProps} />);
-      expect(wrapper.find(ImageButton).length).toBe(6);
+    it('displays correct number of buttons', () => {
+      const { container } = render(<TrackPanelBar {...defaultProps} />);
+      expect(container.querySelectorAll('button').length).toBe(6);
+    });
+
+    it('passes correct data to callbacks when buttons are clicked', () => {
+      const { container } = render(<TrackPanelBar {...defaultProps} />);
+      const bookmarksButton = [...container.querySelectorAll('button')].find(
+        (button) => button.innerHTML === 'Bookmarks'
+      ) as HTMLButtonElement;
+
+      userEvent.click(bookmarksButton);
+      expect(defaultProps.openTrackPanelModal).toHaveBeenCalledWith(
+        'bookmarks'
+      );
+    });
+
+    it('opens the track panel if it is closed when a button is clicked', () => {
+      const props = { ...defaultProps, isTrackPanelOpened: false };
+      const { container } = render(<TrackPanelBar {...props} />);
+      const bookmarksButton = [...container.querySelectorAll('button')].find(
+        (button) => button.innerHTML === 'Bookmarks'
+      ) as HTMLButtonElement;
+
+      userEvent.click(bookmarksButton);
+      expect(defaultProps.toggleTrackPanel).toHaveBeenCalledWith(true);
+    });
+
+    it('causes track panel modal to close if a pressed button is clicked again', () => {
+      const props = { ...defaultProps, trackPanelModalView: 'bookmarks' }; // the modal is open and is showing bookmarks
+      const { container } = render(<TrackPanelBar {...props} />);
+      const bookmarksButton = [...container.querySelectorAll('button')].find(
+        (button) => button.innerHTML === 'Bookmarks'
+      ) as HTMLButtonElement;
+
+      userEvent.click(bookmarksButton);
+      expect(defaultProps.closeTrackPanelModal).toHaveBeenCalled();
     });
   });
 });

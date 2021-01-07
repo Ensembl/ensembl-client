@@ -29,6 +29,11 @@ module.exports = {
           }
         ]
       ]
+    },
+    production: {
+      plugins: [
+        ['react-remove-properties', { 'properties': [ 'data-test-id' ] }]
+      ]
     }
   }
 };

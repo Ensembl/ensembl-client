@@ -99,7 +99,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
       ? regionFieldInput.split(':')[0]
       : stick;
 
-    if (stickInput === stick) {
+    if (stickInput === `${stick}`) {
       const newChrLocation = getChrLocationFromStr(
         getRegionInputWithStick(regionFieldInput)
       );

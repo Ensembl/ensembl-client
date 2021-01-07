@@ -15,20 +15,20 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import {
   TrackPanelListItem,
   TrackPanelListItemProps
 } from './TrackPanelListItem';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { createMainTrackInfo } from 'tests/fixtures/track-panel';
 import { Status } from 'src/shared/types/status';
 
 describe('<TrackPanelListItem />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -50,46 +50,75 @@ describe('<TrackPanelListItem />', () => {
   };
 
   describe('rendering', () => {
-    test('renders the track buttons', () => {
-      const wrapper = mount(<TrackPanelListItem {...defaultProps} />);
-      expect(wrapper.find('.ellipsisHolder')).toHaveLength(1);
-      expect(wrapper.find('.eyeHolder')).toHaveLength(1);
+    it('renders the track buttons', () => {
+      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      expect(container.querySelector('.ellipsisHolder')).toBeTruthy();
+      expect(container.querySelector('.eyeHolder')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    describe('on track list item click', () => {
-      test('updates drawer view if drawer already opened', () => {
-        const wrapper = mount(
+    describe('when clicked', () => {
+      it('updates drawer view if drawer already opened', () => {
+        const { container } = render(
           <TrackPanelListItem {...defaultProps} isDrawerOpened={true} />
         );
-        wrapper.find('.track').simulate('click');
-        expect(wrapper.props().changeDrawerView).toHaveBeenCalledTimes(1);
+        const track = container.querySelector('.track') as HTMLElement;
+
+        userEvent.click(track);
+        expect(defaultProps.changeDrawerView).toHaveBeenCalledWith(
+          defaultProps.track.track_id
+        );
       });
 
-      test('does not update drawer view if drawer is closed', () => {
-        const wrapper = mount(<TrackPanelListItem {...defaultProps} />);
-        wrapper.find('.track').simulate('click');
-        expect(wrapper.props().changeDrawerView).toHaveBeenCalledTimes(0);
+      it('does not update drawer view if drawer is closed', () => {
+        const { container } = render(<TrackPanelListItem {...defaultProps} />);
+        const track = container.querySelector('.track') as HTMLElement;
+
+        userEvent.click(track);
+        expect(defaultProps.changeDrawerView).not.toHaveBeenCalled();
       });
     });
 
-    test('expands the main track when clicked on the expand button', () => {
-      const wrapper = mount(<TrackPanelListItem {...defaultProps} />);
-      wrapper.find('.expandBtn').simulate('click');
-      expect(wrapper.props().updateCollapsedTrackIds).toHaveBeenCalledTimes(1);
+    it('toggles the expanded/collapsed state of the track when clicked on the expand button', () => {
+      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const expandButton = container.querySelector('.expandBtn') as HTMLElement;
+
+      userEvent.click(expandButton);
+      expect(defaultProps.updateCollapsedTrackIds).toHaveBeenCalledWith({
+        trackId: defaultProps.track.track_id,
+        isCollapsed: !defaultProps.isCollapsed
+      });
     });
 
-    test('opens/updates drawer view when clicked on the open track button', () => {
-      const wrapper = mount(<TrackPanelListItem {...defaultProps} />);
-      wrapper.find('.ellipsisHolder').find(ImageButton).simulate('click');
-      expect(wrapper.props().changeDrawerView).toHaveBeenCalledTimes(1);
+    it('opens/updates drawer view when clicked on the open track button', () => {
+      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const ellipsisButton = container.querySelector(
+        '.ellipsisHolder button'
+      ) as HTMLElement;
+
+      userEvent.click(ellipsisButton);
+      expect(defaultProps.changeDrawerView).toHaveBeenCalledWith(
+        defaultProps.track.track_id
+      );
     });
 
-    test('toggles the track when clicked on the toggle track button', () => {
-      const wrapper = mount(<TrackPanelListItem {...defaultProps} />);
-      wrapper.find('.eyeHolder').find(ImageButton).simulate('click');
-      expect(wrapper.props().updateTrackStatesAndSave).toHaveBeenCalledTimes(1);
+    it('toggles the track when clicked on the toggle track button', () => {
+      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const eyeButton = container.querySelector(
+        '.eyeHolder button'
+      ) as HTMLElement;
+
+      userEvent.click(eyeButton);
+      expect(defaultProps.updateTrackStatesAndSave).toHaveBeenCalledWith({
+        [defaultProps.activeGenomeId as string]: {
+          commonTracks: {
+            [defaultProps.categoryName]: {
+              [defaultProps.track.track_id]: Status.UNSELECTED
+            }
+          }
+        }
+      });
     });
   });
 });
