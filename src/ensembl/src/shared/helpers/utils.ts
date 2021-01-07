@@ -16,13 +16,13 @@
 
 import unset from 'lodash/unset';
 
-export const omit = (
-  originalObject: Record<string, any>,
-  keysToOmit: Array<string>
-) => {
+export const omit: <T extends Record<string, unknown>, K extends keyof T>(
+  object: T,
+  keys: Array<K>
+) => Omit<T, K> = (originalObject, keys) => {
   const clonedObject = { ...originalObject };
 
-  for (const path of keysToOmit) {
+  for (const path of keys) {
     unset(clonedObject, path);
   }
 
