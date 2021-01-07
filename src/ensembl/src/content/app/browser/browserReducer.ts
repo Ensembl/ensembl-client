@@ -18,7 +18,6 @@ import { combineReducers } from 'redux';
 import { ActionType, getType } from 'typesafe-actions';
 import merge from 'lodash/merge';
 import pickBy from 'lodash/pickBy';
-import { omit } from 'src/shared/helpers/utils';
 
 import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
@@ -81,11 +80,9 @@ export function browserEntity(
       const genomeIdToRemove = action.payload;
       const activeGenomeId = state.activeGenomeId;
       if (activeGenomeId === genomeIdToRemove) {
-        return {
-          ...state,
-          activeGenomeId: null,
-          activeEnsObjectIds: omit(state.activeEnsObjectIds, [activeGenomeId])
-        };
+        const newState = { ...state, activeGenomeId: null };
+        delete newState.activeEnsObjectIds[activeGenomeId];
+        return newState;
       }
     }
     default:
@@ -157,11 +154,10 @@ export function browserLocation(
     case getType(browserActions.updateDefaultPositionFlag):
       return { ...state, isObjectInDefaultPosition: action.payload };
     case getType(browserActions.deleteGenome):
-      return {
-        ...state,
-        chrLocations: omit(state.chrLocations, [action.payload]),
-        actualChrLocations: omit(state.actualChrLocations, [action.payload])
-      };
+      const newState = { ...state };
+      delete newState.chrLocations[action.payload];
+      delete newState.actualChrLocations[action.payload];
+      return newState;
     default:
       return state;
   }

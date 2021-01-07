@@ -15,7 +15,6 @@
  */
 
 import { ActionType, getType } from 'typesafe-actions';
-import { omit } from 'src/shared/helpers/utils';
 import {
   getInitialTrackPanelState,
   getTrackPanelStateForGenome,
@@ -46,7 +45,9 @@ export default function trackPanel(
         }
       };
     case getType(browserActions.deleteGenome):
-      return omit(state, [action.payload]);
+      const newState = { ...state };
+      delete newState[action.payload];
+      return newState;
     default:
       return state;
   }
