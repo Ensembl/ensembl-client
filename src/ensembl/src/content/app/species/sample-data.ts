@@ -20,7 +20,7 @@ import { SpeciesStatsSection } from 'src/content/app/species/state/general/speci
 
 type RawSpeciesStats = {
   [genomeId: string]: {
-    [key in SpeciesStatsSection]: {
+    [key in SpeciesStatsSection]?: {
       [key: string]: string | number | null;
     };
   };
@@ -89,6 +89,10 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 2.36,
       total_introns: 25165,
       average_intron_length: 4336.85
+    },
+    regulation_stats: {
+      enhancers: 132592,
+      promoters: 35191
     }
   },
   homo_sapiens_GCA_000001405_14: {
@@ -153,6 +157,10 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 2.31,
       total_introns: 22805,
       average_intron_length: 3049.46
+    },
+    regulation_stats: {
+      enhancers: 92264,
+      promoters: 21822
     }
   },
   escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
