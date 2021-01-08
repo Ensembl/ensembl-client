@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { push, Push } from 'connected-react-router';
+import { push } from 'connected-react-router';
 
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 import {
   GeneViewTabMap,
@@ -35,7 +34,6 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 import ProteinsList from '../proteins-list/ProteinsList';
 
-import { RootState } from 'src/store';
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './GeneFunction.scss';
@@ -56,22 +54,23 @@ const tabClassNames = {
 
 type Props = {
   gene: Gene;
-  isNarrow: boolean;
-  selectedTabName: GeneFunctionTabName | null;
-  push: Push;
 };
 
 const GeneFunction = (props: Props) => {
+  const dispatch = useDispatch();
+  const selectedTabName = useSelector(getSelectedGeneViewTabs)
+    .secondaryTab as GeneFunctionTabName;
+
   const { genomeId, entityId } = useParams() as { [key: string]: string };
   const {
     gene: { transcripts }
   } = props;
-  const { selectedTabName } = props;
 
   const changeTab = (tab: string) => {
     const match = [...GeneViewTabMap.entries()].find(
       ([, { secondaryTab }]) => secondaryTab === tab
     );
+
     if (!match) {
       return;
     }
@@ -82,7 +81,8 @@ const GeneFunction = (props: Props) => {
       entityId,
       view
     });
-    props.push(url);
+
+    dispatch(push(url));
   };
 
   // Check if we have at least one protein coding transcript
@@ -134,14 +134,4 @@ const GeneFunction = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  isNarrow: isEntityViewerSidebarOpen(state),
-  selectedTabName: getSelectedGeneViewTabs(state)
-    .secondaryTab as GeneFunctionTabName
-});
-
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(GeneFunction);
+export default GeneFunction;

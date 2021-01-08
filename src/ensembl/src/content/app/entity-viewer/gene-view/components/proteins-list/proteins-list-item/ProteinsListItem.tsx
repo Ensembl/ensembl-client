@@ -15,47 +15,45 @@
  */
 
 import React, { useRef, useEffect } from 'react';
-import classNames from 'classnames';
-import { connect, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { replace } from 'connected-react-router';
-
-import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
-
-import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
-import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
+
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
 
-import { RootState } from 'src/store';
+import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
 
-const UNIPROT_SOURCE = 'Uniprot';
+const SWISSPROT_SOURCE = 'SWISSPROT';
 
 type Props = {
   transcript: Transcript;
   isDefault?: boolean;
   trackLength: number;
-  expandedTranscriptIds: string[];
-  toggleExpandedProtein: (id: string) => void;
 };
 
 const ProteinsListItem = (props: Props) => {
-  const { transcript, trackLength } = props;
-
+  const { isDefault, transcript, trackLength } = props;
+  const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
   const dispatch = useDispatch();
+
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
 
   const { product } = transcript.product_generating_contexts[0];
+
   const toggleListItemInfo = () => {
     if (proteinIdToFocus) {
       const url = urlFor.entityViewer({
@@ -63,14 +61,16 @@ const ProteinsListItem = (props: Props) => {
         entityId,
         view: View.PROTEIN
       });
+
       dispatch(replace(url));
     }
-    props.toggleExpandedProtein(product.stable_id);
+
+    dispatch(toggleExpandedProtein(product.stable_id));
   };
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
-
   const itemRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (product.stable_id === proteinIdToFocus) {
       setTimeout(() => {
@@ -78,17 +78,19 @@ const ProteinsListItem = (props: Props) => {
           behavior: 'smooth'
         });
       }, 100);
-      if (!props.expandedTranscriptIds.includes(proteinIdToFocus)) {
-        props.toggleExpandedProtein(product.stable_id);
+
+      if (!expandedTranscriptIds.includes(proteinIdToFocus)) {
+        dispatch(toggleExpandedProtein(product.stable_id));
       }
     }
   }, [proteinIdToFocus]);
 
   const getProteinDescription = () => {
-    const uniprotReference = product.external_references.find((reference) =>
-      reference.source.id.includes(UNIPROT_SOURCE)
+    const swissprotReference = product.external_references.find((reference) =>
+      reference.source.id.includes(SWISSPROT_SOURCE)
     );
-    return uniprotReference?.description;
+
+    return swissprotReference?.description;
   };
 
   return (
@@ -96,9 +98,7 @@ const ProteinsListItem = (props: Props) => {
       <span className={styles.scrollRef} ref={itemRef}></span>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>
-          {props.isDefault && (
-            <TranscriptQualityLabel transcript={props.transcript} />
-          )}
+          {isDefault && <TranscriptQualityLabel transcript={transcript} />}
         </div>
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{getProductAminoAcidLength(transcript)} aa</div>
@@ -112,7 +112,7 @@ const ProteinsListItem = (props: Props) => {
           <span className={styles.transcriptId}>{transcript.stable_id}</span>
         </div>
       </div>
-      {props.expandedTranscriptIds.includes(product.stable_id) ? (
+      {expandedTranscriptIds.includes(product.stable_id) ? (
         <ProteinsListItemInfo
           transcript={transcript}
           trackLength={trackLength}
@@ -122,12 +122,4 @@ const ProteinsListItem = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  expandedTranscriptIds: getExpandedTranscriptIds(state)
-});
-
-const mapDispatchToProps = {
-  toggleExpandedProtein
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProteinsListItem);
+export default ProteinsListItem;
