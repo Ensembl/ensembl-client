@@ -34,7 +34,7 @@ import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneVie
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
 
-const SWISSPROT_SOURCE = 'SWISSPROT';
+const SWISSPROT_SOURCE = 'Uniprot/SWISSPROT';
 
 type Props = {
   transcript: Transcript;
