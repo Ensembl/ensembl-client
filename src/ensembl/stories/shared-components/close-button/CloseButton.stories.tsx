@@ -17,18 +17,12 @@
 import React from 'react';
 import noop from 'lodash/noop';
 
-import ClearButton from 'src/shared/components/clear-button/ClearButton';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 export default {
-  title: 'Components/Shared Components/Clear button'
+  title: 'Components/Shared Components/Close button'
 };
 
-export const DefaultClearButton = () => <ClearButton onClick={noop} />;
+export const DefaultCloseButton = () => <CloseButton onClick={noop} />;
 
-DefaultClearButton.storyName = 'default';
-
-export const InvertedClearButton = () => (
-  <ClearButton inverted onClick={noop} />
-);
-
-InvertedClearButton.storyName = 'inverted';
+DefaultCloseButton.storyName = 'default';

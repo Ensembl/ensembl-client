@@ -88,7 +88,10 @@ const TopBar = () => {
     <div className={styles.topbar}>
       <div className={styles.topbarLeft}>
         <span className={styles.pageTitle}>Species Home page</span>
-        <CloseButton onClick={returnToSpeciesSelector} />
+        <CloseButton
+          className={styles.close}
+          onClick={returnToSpeciesSelector}
+        />
       </div>
       <div className={styles.dataForSpecies}>Data for this species</div>
     </div>
