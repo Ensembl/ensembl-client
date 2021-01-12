@@ -15,6 +15,8 @@
  */
 
 import { ActionType, getType } from 'typesafe-actions';
+import pickBy from 'lodash/pickBy';
+
 import {
   getInitialTrackPanelState,
   getTrackPanelStateForGenome,
@@ -45,8 +47,7 @@ export default function trackPanel(
         }
       };
     case getType(browserActions.deleteGenome):
-      const newState = { ...state };
-      delete newState[action.payload];
+      const newState = pickBy(state, (value, key) => key !== action.payload);
       return newState;
     default:
       return state;

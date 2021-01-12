@@ -80,8 +80,15 @@ export function browserEntity(
       const genomeIdToRemove = action.payload;
       const activeGenomeId = state.activeGenomeId;
       if (activeGenomeId === genomeIdToRemove) {
-        const newState = { ...state, activeGenomeId: null };
-        delete newState.activeEnsObjectIds[activeGenomeId];
+        const newState = {
+          ...state,
+          activeGenomeId: null,
+          activeEnsObjectIds: pickBy(
+            state.activeEnsObjectIds,
+            (value, key) => key !== activeGenomeId
+          )
+        };
+
         return newState;
       }
     }
@@ -154,10 +161,21 @@ export function browserLocation(
     case getType(browserActions.updateDefaultPositionFlag):
       return { ...state, isObjectInDefaultPosition: action.payload };
     case getType(browserActions.deleteGenome):
-      const newState = { ...state };
-      delete newState.chrLocations[action.payload];
-      delete newState.actualChrLocations[action.payload];
+      const genomeId = action.payload;
+
+      const newState = {
+        ...state,
+        chrLocations: pickBy(
+          state.chrLocations,
+          (value, key) => key !== genomeId
+        ),
+        actualChrLocations: pickBy(
+          state.chrLocations,
+          (value, key) => key !== genomeId
+        )
+      };
       return newState;
+
     default:
       return state;
   }

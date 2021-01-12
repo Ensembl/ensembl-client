@@ -20,6 +20,7 @@ import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
+import pickBy from 'lodash/pickBy';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -411,10 +412,10 @@ export const deleteSpeciesInGenomeBrowser = (
 
     dispatch(deleteGenome(genomeIdToRemove));
 
-    const updatedActiveEnsObjectIds = {
-      ...getBrowserActiveEnsObjectIds(state)
-    };
-    delete updatedActiveEnsObjectIds[genomeIdToRemove];
+    const updatedActiveEnsObjectIds = pickBy(
+      getBrowserActiveEnsObjectIds(state),
+      (value, key) => key !== genomeIdToRemove
+    );
 
     dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
 
