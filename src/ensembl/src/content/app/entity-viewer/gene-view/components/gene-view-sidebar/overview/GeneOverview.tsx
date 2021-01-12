@@ -21,12 +21,14 @@ import { useQuery, gql } from '@apollo/client';
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import GenePublications from '../publications/GenePublications';
+import MainAccordion from './MainAccordion';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './GeneOverview.scss';
 
+// TODO: Refer PR #422 when more data becomes available.
 export const GENE_OVERVIEW_QUERY = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
@@ -80,6 +82,7 @@ const GeneOverview = () => {
           <div className={styles.geneName}>{gene.name}</div>
         </>
       )}
+      <MainAccordion />
 
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>
