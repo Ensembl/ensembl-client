@@ -86,8 +86,8 @@ const ProteinsListItem = (props: Props) => {
   }, [proteinIdToFocus]);
 
   const getProteinDescription = () => {
-    const swissprotReference = product.external_references.find((reference) =>
-      reference.source.id.includes(SWISSPROT_SOURCE)
+    const swissprotReference = product.external_references.find(
+      (reference) => reference.source.id === SWISSPROT_SOURCE
     );
 
     return swissprotReference?.description;
