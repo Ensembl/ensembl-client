@@ -2,7 +2,7 @@
 
 .overviewContainer {
   font-size: 13px;
-}
+
 .sectionHead {
   color: $dark-grey;
   font-size: 12px;
@@ -53,7 +53,7 @@
   border-radius: 5px;
 }
 
-.entityViewerAccordionButton {
+  .entityViewerAccordionButton {
   color: $blue;
   padding: 5px 0 5px 20px;
 
@@ -66,6 +66,7 @@
     color: $grey;
   }
 }
+
 
 .entityViewerAccordionItem:not(:first-child) {
   border-color: transparent;
@@ -155,4 +156,5 @@
 
 .tarkLabel {
   color: $dark-grey;
+}
 }
