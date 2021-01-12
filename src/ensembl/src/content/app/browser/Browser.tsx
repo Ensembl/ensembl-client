@@ -29,7 +29,6 @@ import {
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
 
@@ -77,7 +76,6 @@ export type BrowserProps = {
   isTrackPanelOpened: boolean;
   exampleEnsObjects: EnsObject[];
   viewportWidth: BreakpointWidth;
-  fetchGenomeData: (genomeId: string) => void;
   toggleTrackPanel: (isOpen: boolean) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
 };
@@ -88,12 +86,10 @@ export const Browser = (props: BrowserProps) => {
   const { isDrawerOpened } = props;
 
   useEffect(() => {
-    const { activeGenomeId, fetchGenomeData } = props;
+    const { activeGenomeId } = props;
     if (!activeGenomeId) {
       return;
     }
-
-    fetchGenomeData(activeGenomeId);
 
     analyticsTracking.setSpeciesDimension(activeGenomeId);
   }, [props.activeGenomeId]);
@@ -192,7 +188,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mapDispatchToProps = {
-  fetchGenomeData,
   toggleDrawer,
   toggleTrackPanel
 };

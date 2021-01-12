@@ -17,8 +17,11 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-import { BrowserTrackStates } from './track-panel/trackPanelConfig';
-import { ChrLocations } from './browserState';
+import {
+  BrowserTrackStates,
+  GenomeTrackStates
+} from './track-panel/trackPanelConfig';
+import { ChrLocation } from './browserState';
 import {
   TrackPanelState,
   TrackPanelStateForGenome
@@ -49,12 +52,16 @@ export class BrowserStorageService {
     this.storageService.save(StorageKeys.ACTIVE_GENOME_ID, activeGenomeId);
   }
 
+  public clearActiveGenomeId() {
+    this.storageService.remove(StorageKeys.ACTIVE_GENOME_ID);
+  }
+
   public getActiveEnsObjectIds() {
     return this.storageService.get(StorageKeys.ACTIVE_ENS_OBJECT_ID) || {};
   }
 
   public updateActiveEnsObjectIds(activeEnsObjectIds: {
-    [genomeId: string]: string;
+    [genomeId: string]: string | undefined;
   }) {
     this.storageService.update(
       StorageKeys.ACTIVE_ENS_OBJECT_ID,
@@ -66,7 +73,9 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.CHR_LOCATION) || {};
   }
 
-  public updateChrLocation(chrLocation: ChrLocations) {
+  public updateChrLocation(chrLocation: {
+    [genomeId: string]: ChrLocation | undefined;
+  }) {
     this.storageService.update(StorageKeys.CHR_LOCATION, chrLocation);
   }
 
@@ -74,7 +83,9 @@ export class BrowserStorageService {
     return this.storageService.get(StorageKeys.TRACK_STATES) || {};
   }
 
-  public saveTrackStates(trackStates: BrowserTrackStates) {
+  public saveTrackStates(trackStates: {
+    [genomeId: string]: GenomeTrackStates | undefined;
+  }) {
     this.storageService.save(StorageKeys.TRACK_STATES, trackStates);
   }
 
@@ -83,9 +94,29 @@ export class BrowserStorageService {
   }
 
   public updateTrackPanels(trackPanels: {
-    [genomeId: string]: Partial<TrackPanelStateForGenome>;
+    [genomeId: string]: Partial<TrackPanelStateForGenome> | undefined;
   }): void {
     this.storageService.update(StorageKeys.TRACK_PANELS, trackPanels);
+  }
+
+  public deleteGenome(genomeIdToDelete: string): void {
+    const activeGenomeId = this.getActiveGenomeId();
+    if (activeGenomeId === genomeIdToDelete) {
+      this.clearActiveGenomeId();
+    }
+
+    this.updateActiveEnsObjectIds({
+      [genomeIdToDelete]: undefined
+    });
+    this.updateChrLocation({
+      [genomeIdToDelete]: undefined
+    });
+    this.updateTrackPanels({
+      [genomeIdToDelete]: undefined
+    });
+    this.saveTrackStates({
+      [genomeIdToDelete]: undefined
+    });
   }
 }
 
