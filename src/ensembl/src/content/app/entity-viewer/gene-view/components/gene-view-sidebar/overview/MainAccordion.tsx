@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-// import noop from 'lodash/noop';
 import classNames from 'classnames';
 
 import {
@@ -28,20 +27,20 @@ import {
 
 import styles from './GeneOverview.scss';
 
-// FIXME:
-// We started using real data from Thoas, and are not yet getting anything that can be rendered
-// in this accordion. When we get back to using this accordion, the type of its props will need updating
+/*  
+  FIXME: 
+  We started using real data from Thoas, and are not yet getting anything that can be rendered in this accordion. 
+  When more data becomes available, please refer to the PR https://github.com/Ensembl/ensembl-client/pull/433
+  and check if some of the deleted code segments can be reused to display the new data.
+*/
+
 export type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
 
 const MainAccordion = () => {
-  const hasFunctionDescription = false;
-
-  const sidebarPayload = {} as any;
-
-  const functionAccordionButtonClass = classNames(
+  const disabledAccordionButtonClass = classNames(
     styles.entityViewerAccordionButton,
     {
-      [styles.entityViewerAccordionButtonDisabled]: !hasFunctionDescription
+      [styles.entityViewerAccordionButtonDisabled]: true
     }
   );
 
@@ -57,8 +56,8 @@ const MainAccordion = () => {
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
-              className={functionAccordionButtonClass}
-              disabled={!hasFunctionDescription}
+              className={disabledAccordionButtonClass}
+              disabled={true}
             >
               Function
             </AccordionItemButton>
@@ -75,7 +74,10 @@ const MainAccordion = () => {
           uuid={'sequence'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton className={styles.entityViewerAccordionButton}>
+            <AccordionItemButton
+              className={disabledAccordionButtonClass}
+              disabled={true}
+            >
               Sequence
             </AccordionItemButton>
           </AccordionItemHeading>
@@ -92,8 +94,8 @@ const MainAccordion = () => {
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
-              className={styles.entityViewerAccordionButton}
-              disabled={sidebarPayload?.other_data_sets ? false : true}
+              className={disabledAccordionButtonClass}
+              disabled={true}
             >
               Other data sets
             </AccordionItemButton>
