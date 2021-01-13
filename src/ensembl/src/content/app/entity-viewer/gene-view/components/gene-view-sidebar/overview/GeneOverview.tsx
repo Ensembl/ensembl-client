@@ -85,7 +85,6 @@ const GeneOverview = () => {
           <div className={styles.geneName}>{gene.name}</div>
         </>
       )}
-      <MainAccordion />
 
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>
@@ -93,6 +92,8 @@ const GeneOverview = () => {
           ? gene.alternative_symbols.join(', ')
           : 'No synonyms'}
       </div>
+
+      <MainAccordion />
 
       <GenePublications gene={gene} />
     </div>
