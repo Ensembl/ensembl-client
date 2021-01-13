@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React from 'react';
 
-import entityViewerGeneralReducer from './general/entityViewerGeneralReducer';
-import entityViewerSidebarReducer from './sidebar/entityViewerSidebarReducer';
-import entityViewerGeneViewReducer from './gene-view/entityViewerGeneViewReducer';
-import entityViewerBookmarksReducer from './bookmarks/entityViewerBookmarksSlice';
+const PersonalData = () => {
+  return (
+    <section className="personaData">
+      <h3>Personal Data</h3>
+      <p>Upload your own data to be displayed in the browser</p>
+      <p>Not ready yet &hellip;</p>
+    </section>
+  );
+};
 
-export default combineReducers({
-  general: entityViewerGeneralReducer,
-  sidebar: entityViewerSidebarReducer,
-  geneView: entityViewerGeneViewReducer,
-  bookmarks: entityViewerBookmarksReducer
-});
+export default PersonalData;

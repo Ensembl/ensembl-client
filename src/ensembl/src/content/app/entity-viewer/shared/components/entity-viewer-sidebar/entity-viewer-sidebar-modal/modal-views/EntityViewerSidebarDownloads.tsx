@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React from 'react';
 
-import entityViewerGeneralReducer from './general/entityViewerGeneralReducer';
-import entityViewerSidebarReducer from './sidebar/entityViewerSidebarReducer';
-import entityViewerGeneViewReducer from './gene-view/entityViewerGeneViewReducer';
-import entityViewerBookmarksReducer from './bookmarks/entityViewerBookmarksSlice';
+const EntityViewerSidebarDownloads = () => {
+  return (
+    <section className="entityViewerSidebarDownloads">
+      <h3>Downloads</h3>
+      <p>Export your browser configurations as images or data</p>
+      <p>Not ready yet &hellip;</p>
+    </section>
+  );
+};
 
-export default combineReducers({
-  general: entityViewerGeneralReducer,
-  sidebar: entityViewerSidebarReducer,
-  geneView: entityViewerGeneViewReducer,
-  bookmarks: entityViewerBookmarksReducer
-});
+export default EntityViewerSidebarDownloads;

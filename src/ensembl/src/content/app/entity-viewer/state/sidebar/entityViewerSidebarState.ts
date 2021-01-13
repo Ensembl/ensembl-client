@@ -32,6 +32,17 @@ export type EntityViewerSidebarUIState = {
   mainAccordion?: {
     expandedPanels?: OverviewMainAccordionSectionID[];
   };
+}
+
+export type PreviouslyViewedObject = {
+  genome_id: string;
+  object_id: string;
+  object_type: string;
+  label: string;
+};
+
+export type PreviouslyViewedObjects = {
+  [genomeId: string]: PreviouslyViewedObject[];
 };
 
 export type EntityViewerSidebarGenomeState = Readonly<{
@@ -42,16 +53,24 @@ export type EntityViewerSidebarGenomeState = Readonly<{
       uIState: EntityViewerSidebarUIState;
     };
   };
+  isSidebarModalOpened: boolean;
+  sidebarModalView: string;
+  bookmarks: PreviouslyViewedObject[];
+  previouslyViewedObjects: PreviouslyViewedObject[];
 }>;
 
 export const buildInitialStateForGenome = (
   genomeId: string
-): EntityViewerSidebarState => {
-  return {
+): EntityViewerSidebarState => ({
     [genomeId]: {
       status: Status.OPEN,
       selectedTabName: SidebarTabName.OVERVIEW,
-      entities: {}
+      entities: {},
+      isSidebarModalOpened: false,
+      sidebarModalView: '',
+      bookmarks: [],
+      previouslyViewedObjects: [],
     }
-  };
-};
+});
+
+export const initialState: EntityViewerSidebarState = {};

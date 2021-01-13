@@ -31,6 +31,7 @@ import {
   View,
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
+import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -57,6 +58,7 @@ const QUERY = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
+      symbol
       unversioned_stable_id
       version
       slice {
@@ -169,6 +171,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
+  const dispatch = useDispatch();
   const { search } = useLocation();
   const view = new URLSearchParams(search).get('view');
 
@@ -181,6 +184,18 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
+
+
+  useEffect(() => {
+    if (!genomeId || !props.gene) {
+      return;
+    }
+
+    dispatch(updatePreviouslyViewedEntities({
+      genomeId,
+      gene: props.gene
+    }));
+  }, [genomeId, geneId]);
 
   return (
     <div className={styles.geneView} ref={targetElementRef}>

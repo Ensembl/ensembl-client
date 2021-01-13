@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React from 'react';
 
-import entityViewerGeneralReducer from './general/entityViewerGeneralReducer';
-import entityViewerSidebarReducer from './sidebar/entityViewerSidebarReducer';
-import entityViewerGeneViewReducer from './gene-view/entityViewerGeneViewReducer';
-import entityViewerBookmarksReducer from './bookmarks/entityViewerBookmarksSlice';
+const EntityViewerSidebarSearch = () => {
+  return (
+    <section className="trackPanelSearch">
+      <h3>Search</h3>
+      <p>Quickly search in entity viewer</p>
+      <p>Not ready yet &hellip;</p>
+    </section>
+  );
+};
 
-export default combineReducers({
-  general: entityViewerGeneralReducer,
-  sidebar: entityViewerSidebarReducer,
-  geneView: entityViewerGeneViewReducer,
-  bookmarks: entityViewerBookmarksReducer
-});
+export default EntityViewerSidebarSearch;
