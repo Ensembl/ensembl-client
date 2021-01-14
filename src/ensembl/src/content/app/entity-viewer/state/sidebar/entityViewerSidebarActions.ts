@@ -83,10 +83,6 @@ export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 
-export const setSidebarInitialStateForGenome = createAction(
-  'entity-viewer-sidebar/set-initial-state-for-genome'
-)<string>();
-
 export const updateEntityUIState = createAction(
   'entity-viewer-sidebar/update-entity-ui-state'
 )<{

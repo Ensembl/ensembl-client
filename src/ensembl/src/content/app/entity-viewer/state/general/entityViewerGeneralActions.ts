@@ -36,7 +36,6 @@ import {
 } from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-import { setSidebarInitialStateForGenome } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
@@ -99,7 +98,6 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     if (entityId !== activeEntityId) {
       dispatch(updateEnsObject(entityId));
     }
-    dispatch(setSidebarInitialStateForGenome(genomeIdFromUrl));
 
     entityViewerStorageService.updateGeneralState({
       activeGenomeId: genomeIdFromUrl
