@@ -20,7 +20,7 @@ import mergeWith from 'lodash/mergeWith';
 import get from 'lodash/get';
 
 import * as actions from './entityViewerSidebarActions';
-import * as generalActions from '../general/entityViewerGeneralActions';
+// import * as generalActions from '../general/entityViewerGeneralActions';
 
 import {
   buildInitialStateForGenome,
@@ -30,19 +30,16 @@ import JSONValue from 'src/shared/types/JSON';
 
 export default function entityViewerSidebarReducer(
   state: EntityViewerSidebarState = {},
-  action: ActionType<typeof actions | typeof generalActions>
+  action: ActionType<typeof actions>
 ) {
   switch (action.type) {
-    case getType(generalActions.setActiveGenomeId):
-      const genomeId = action.payload;
-      return state[genomeId]
-        ? state
-        : {
-            ...state,
-            ...buildInitialStateForGenome(action.payload)
-          };
     case getType(actions.updateGenomeState): {
-      const oldStateFragment = get(state, `${action.payload.genomeId}`);
+      const { genomeId } = action.payload;
+      const oldStateFragment = get(
+        state,
+        `${genomeId}`,
+        buildInitialStateForGenome()
+      );
       const updatedStateFragment = merge(
         {},
         oldStateFragment,
