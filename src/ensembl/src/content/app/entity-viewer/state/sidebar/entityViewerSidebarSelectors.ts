@@ -16,7 +16,7 @@
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from '../general/entityViewerGeneralSelectors';
 
 import { Status } from 'src/shared/types/status';
@@ -33,7 +33,7 @@ export const getEntityViewerGenomeState = (state: RootState) => {
 };
 
 export const getEntityViewerSidebarUIState = (state: RootState) => {
-  const activeEntityId = getEntityViewerActiveEnsObjectId(state);
+  const activeEntityId = getEntityViewerActiveEntityId(state);
   return activeEntityId
     ? getEntityViewerGenomeState(state)?.entities[activeEntityId]?.uIState ||
         null
@@ -41,14 +41,14 @@ export const getEntityViewerSidebarUIState = (state: RootState) => {
 };
 
 export const getEntityViewerSidebarTabName = (state: RootState) => {
-  const activeEntityId = getEntityViewerActiveEnsObjectId(state);
+  const activeEntityId = getEntityViewerActiveEntityId(state);
   return activeEntityId
     ? getEntityViewerGenomeState(state)?.selectedTabName || null
     : null;
 };
 
 export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
-  const activeEntityId = getEntityViewerActiveEnsObjectId(state);
+  const activeEntityId = getEntityViewerActiveEntityId(state);
   return activeEntityId
     ? getEntityViewerGenomeState(state)?.status === Status.OPEN
     : false;

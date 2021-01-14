@@ -23,19 +23,19 @@ import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 export const getEntityViewerActiveGenomeId = (state: RootState) =>
   state.entityViewer.general.activeGenomeId;
 
-export const getEntityViewerActiveEnsObjectIds = (state: RootState) =>
-  state.entityViewer.general.activeEnsObjectIds;
+export const getEntityViewerActiveEntityIds = (state: RootState) =>
+  state.entityViewer.general.activeEntityIds;
 
-export const getEntityViewerActiveEnsObjectId = (state: RootState) => {
-  const activeEnsObjectIds = getEntityViewerActiveEnsObjectIds(state);
+export const getEntityViewerActiveEntityId = (state: RootState) => {
+  const activeEntityIds = getEntityViewerActiveEntityIds(state);
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
+  return activeGenomeId ? activeEntityIds[activeGenomeId] : null;
 };
 
-export const getEntityViewerActiveEnsObject = (
+export const getEntityViewerActiveEntity = (
   state: RootState
 ): EnsObjectGene | null => {
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
+  const activeObjectId = getEntityViewerActiveEntityId(state);
   if (!activeObjectId) {
     return null;
   }

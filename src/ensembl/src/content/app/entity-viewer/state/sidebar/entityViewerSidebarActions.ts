@@ -20,7 +20,7 @@ import { ThunkAction } from 'redux-thunk';
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from '../general/entityViewerGeneralSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
@@ -106,7 +106,7 @@ export const updateEntityUI: ActionCreator<ThunkAction<
 ) => {
   const state = getState();
   const genomeId = getEntityViewerActiveGenomeId(state);
-  const entityId = getEntityViewerActiveEnsObjectId(state);
+  const entityId = getEntityViewerActiveEntityId(state);
 
   if (!genomeId || !entityId) {
     return;

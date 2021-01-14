@@ -21,7 +21,7 @@ import set from 'lodash/fp/set';
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import {
@@ -69,14 +69,14 @@ export const setFilters = (
 ) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
   dispatch(
     transcriptsSlice.actions.updateFilters({
       activeGenomeId,
-      activeObjectId,
+      activeEntityId,
       filters
     })
   );
@@ -90,15 +90,15 @@ export const setSortingRule = (
 ) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
 
   dispatch(
     transcriptsSlice.actions.updateSortingRule({
       activeGenomeId,
-      activeObjectId,
+      activeEntityId,
       sortingRule
     })
   );
@@ -112,8 +112,8 @@ export const toggleTranscriptInfo = (
 ) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
 
@@ -127,7 +127,7 @@ export const toggleTranscriptInfo = (
   dispatch(
     transcriptsSlice.actions.updateExpandedTranscripts({
       activeGenomeId,
-      activeObjectId,
+      activeEntityId,
       expandedIds: [...expandedIds.values()]
     })
   );
@@ -141,8 +141,8 @@ export const toggleTranscriptDownload = (
 ) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
 
@@ -156,7 +156,7 @@ export const toggleTranscriptDownload = (
   dispatch(
     transcriptsSlice.actions.updateExpandedDownloads({
       activeGenomeId,
-      activeObjectId,
+      activeEntityId,
       expandedIds: [...expandedIds.values()]
     })
   );
@@ -164,18 +164,18 @@ export const toggleTranscriptDownload = (
 
 const ensureGenePresence = (
   state: GeneViewTranscriptsState,
-  ids: { activeGenomeId: string; activeObjectId: string }
+  ids: { activeGenomeId: string; activeEntityId: string }
 ) => {
-  const { activeGenomeId, activeObjectId } = ids;
+  const { activeGenomeId, activeEntityId } = ids;
   if (!state[activeGenomeId]) {
     return set(
       activeGenomeId,
-      { [activeObjectId]: defaultStatePerGene },
+      { [activeEntityId]: defaultStatePerGene },
       state
     );
-  } else if (!state[activeGenomeId][activeObjectId]) {
+  } else if (!state[activeGenomeId][activeEntityId]) {
     return set(
-      `${activeGenomeId}.${activeObjectId}`,
+      `${activeGenomeId}.${activeEntityId}`,
       defaultStatePerGene,
       state
     );
@@ -186,13 +186,13 @@ const ensureGenePresence = (
 
 type ExpandedIdsPayload = {
   activeGenomeId: string;
-  activeObjectId: string;
+  activeEntityId: string;
   expandedIds: string[];
 };
 
 type UpdateFiltersPayload = {
   activeGenomeId: string;
-  activeObjectId: string;
+  activeEntityId: string;
   filters: {
     [filter: string]: boolean;
   };
@@ -200,7 +200,7 @@ type UpdateFiltersPayload = {
 
 type UpdateSortingRulePayload = {
   activeGenomeId: string;
-  activeObjectId: string;
+  activeEntityId: string;
   sortingRule: SortingRule;
 };
 
@@ -212,37 +212,37 @@ const transcriptsSlice = createSlice({
       state,
       action: PayloadAction<ExpandedIdsPayload>
     ) {
-      const { activeGenomeId, activeObjectId, expandedIds } = action.payload;
+      const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
       const updatedState = ensureGenePresence(state, action.payload);
       return set(
-        `${activeGenomeId}.${activeObjectId}.expandedIds`,
+        `${activeGenomeId}.${activeEntityId}.expandedIds`,
         expandedIds,
         updatedState
       );
     },
     updateExpandedDownloads(state, action: PayloadAction<ExpandedIdsPayload>) {
-      const { activeGenomeId, activeObjectId, expandedIds } = action.payload;
+      const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
       const updatedState = ensureGenePresence(state, action.payload);
       return set(
-        `${activeGenomeId}.${activeObjectId}.expandedDownloadIds`,
+        `${activeGenomeId}.${activeEntityId}.expandedDownloadIds`,
         expandedIds,
         updatedState
       );
     },
     updateFilters(state, action: PayloadAction<UpdateFiltersPayload>) {
-      const { activeGenomeId, activeObjectId, filters } = action.payload;
+      const { activeGenomeId, activeEntityId, filters } = action.payload;
       const updatedState = ensureGenePresence(state, action.payload);
       return set(
-        `${activeGenomeId}.${activeObjectId}.filters`,
+        `${activeGenomeId}.${activeEntityId}.filters`,
         filters,
         updatedState
       );
     },
     updateSortingRule(state, action: PayloadAction<UpdateSortingRulePayload>) {
-      const { activeGenomeId, activeObjectId, sortingRule } = action.payload;
+      const { activeGenomeId, activeEntityId, sortingRule } = action.payload;
       const updatedState = ensureGenePresence(state, action.payload);
       return set(
-        `${activeGenomeId}.${activeObjectId}.sortingRule`,
+        `${activeGenomeId}.${activeEntityId}.sortingRule`,
         sortingRule,
         updatedState
       );
