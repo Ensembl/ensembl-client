@@ -44,7 +44,7 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   };
 }>;
 
-export const buildInitialStateForGenome = (): EntityViewerSidebarGenomeState => {
+export const buildInitialSidebarStateForGenome = (): EntityViewerSidebarGenomeState => {
   return {
     status: Status.OPEN,
     selectedTabName: SidebarTabName.OVERVIEW,

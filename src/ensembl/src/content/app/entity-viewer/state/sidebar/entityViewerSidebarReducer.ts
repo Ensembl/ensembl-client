@@ -22,7 +22,7 @@ import get from 'lodash/get';
 import * as actions from './entityViewerSidebarActions';
 
 import {
-  buildInitialStateForGenome,
+  buildInitialSidebarStateForGenome,
   EntityViewerSidebarState
 } from './entityViewerSidebarState';
 import JSONValue from 'src/shared/types/JSON';
@@ -37,7 +37,7 @@ export default function entityViewerSidebarReducer(
       const oldStateFragment = get(
         state,
         `${genomeId}`,
-        buildInitialStateForGenome()
+        buildInitialSidebarStateForGenome()
       );
       const updatedStateFragment = merge(
         {},
