@@ -18,13 +18,15 @@
 import { Source } from 'src/content/app/entity-viewer/types/source';
 
 export type TrackDetails = {
-  [genomeId: string]: {
-    track_id: string;
-    track_name: string;
-    shared_description: string;
-    specific_description: string;
-    source: Source;
-  };
+  track_id: string;
+  track_name: string;
+  shared_description: string;
+  specific_description: string;
+  source: Source;
+};
+
+export type GenomeTrackDetails = {
+  [genomeId: string]: TrackDetails;
 };
 
 export const trascDetailsSampleData = {
