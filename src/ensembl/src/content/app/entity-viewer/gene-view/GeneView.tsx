@@ -126,6 +126,7 @@ const QUERY = gql`
             length
             external_references {
               accession_id
+              name
               description
               source {
                 id
