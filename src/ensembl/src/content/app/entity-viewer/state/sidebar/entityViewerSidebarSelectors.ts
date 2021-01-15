@@ -54,17 +54,7 @@ export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
     : false;
 };
 
-export const getActiveGenomeBookmarks = (state: RootState) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  return (activeGenomeId && getEntityViewerGenomeState(state)?.bookmarks) || [];
-};
-
-export const getActiveGenomePreviouslyViewedObjects = (state: RootState) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  return (
-    (activeGenomeId && getEntityViewerGenomeState(state)?.previouslyViewedObjects) || []
-  );
-};
-
-export const isEntityViewerSidebarModalOpen = (state: RootState) => getEntityViewerGenomeState(state)?.isSidebarModalOpened || false;
-export const getEntityViewerSidebarModalView = (state: RootState) => getEntityViewerGenomeState(state)?.sidebarModalView || '';
+export const isEntityViewerSidebarModalOpen = (state: RootState) =>
+  getEntityViewerGenomeState(state)?.isSidebarModalOpened || false;
+export const getEntityViewerSidebarModalView = (state: RootState) =>
+  getEntityViewerGenomeState(state)?.sidebarModalView || '';
