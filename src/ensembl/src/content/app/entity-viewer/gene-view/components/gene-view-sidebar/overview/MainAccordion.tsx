@@ -84,7 +84,7 @@ const MainAccordion = () => {
           <AccordionItemPanel
             className={styles.entityViewerAccordionItemContent}
           >
-            <div className={styles.sequenceAccordion}>No data available</div>
+            <div>No data available</div>
           </AccordionItemPanel>
         </AccordionItem>
 

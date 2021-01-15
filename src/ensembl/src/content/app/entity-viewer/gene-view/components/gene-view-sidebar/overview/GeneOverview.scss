@@ -22,24 +22,6 @@
   }
 }
 
-.otherAssembly {
-  display: grid;
-  grid-template-columns: [species] max-content 10px [assembly] auto 5px [stable-id] auto;
-
-  .speciesName {
-    grid-column: species;
-  }
-
-  .geneName {
-    grid-column: assembly;
-    color: $dark-grey;
-    font-weight: $light;
-  }
-
-  .stableId {
-    grid-column: stable-id;
-  }
-}
 
 .accordionContainer {
   width: 100%;
@@ -54,9 +36,10 @@
     border-radius: 5px;
   }
   
-    .entityViewerAccordionButton {
+  .entityViewerAccordionButton {
     color: $blue;
     padding: 5px 0 5px 20px;
+    border-radius: 5px;
   
     &:before,
     &:after {
@@ -68,7 +51,6 @@
     }
   }
   
-  
   .entityViewerAccordionItem:not(:first-child) {
     border-color: transparent;
   }
@@ -79,88 +61,4 @@
     padding: 20px;
   }
 
-
-.sequenceAccordion {
-  & .geneDetails {
-    margin-bottom: 10px;
-    & .geneTitle {
-      color: $dark-grey;
-      margin-right: 10px;
-      font-size: 12px;
-      font-weight: $light;
-    }
-
-    & .stableId {
-      font-weight: $bold;
-    }
-  }
-}
-
-.accordionContentTitle {
-  color: $dark-grey;
-  margin-bottom: 15px;
-  margin-top: 20px;
-}
-
-}
-
-
-
-.geneFunction {
-  margin-bottom: 15px;
-}
-
-.geneFunctionLabel {
-  font-size: 12px;
-  color: $grey;
-}
-
-.providedBy {
-  color: $dark-grey;
-  font-size: 12px;
-  font-weight: $light;
-}
-
-
-.sequenceDownload {
-  text-align: right;
-  margin: 30px 0;
-}
-
-.customDownload {
-  display: grid;
-  grid-template-columns: [label] max-content 20px [icon] 30px;
-  & .label {
-    grid-column: label;
-  }
-
-  & .icon {
-    grid-column: icon;
-  }
-}
-
-.standardLabelValue {
-  display: grid;
-  grid-template-columns: [label] max-content 10px [value] auto;
-
-  .label {
-    grid-column: label;
-    color: $dark-grey;
-  }
-
-  .value {
-    grid-column: value;
-    font-weight: $bold;
-  }
-}
-
-.tark {
-  & .description {
-    margin: 20px 0 10px;
-    font-weight: $bold;
-  }
-}
-
-.tarkLabel {
-  color: $dark-grey;
 }
