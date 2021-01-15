@@ -21,4 +21,5 @@ export type CDS = {
   relative_end: number;
   protein_length: number;
   nucleotide_length: number;
+  sequence_checksum: string;
 };

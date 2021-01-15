@@ -15,11 +15,13 @@
  */
 
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
+
 import {
   TranscriptOptions,
   TranscriptOption,
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
+import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -34,21 +36,34 @@ type FetchPayload = {
   options: Options;
 };
 
-export const fetchForTranscript = async (payload: FetchPayload) => {
+type ProductGeneratingContextFragment = Pick<
+  ProductGeneratingContext,
+  'product' | 'cdna' | 'cds'
+>;
+
+export const fetchForTranscript = async (
+  productGeneratingContext: ProductGeneratingContextFragment,
+  payload: FetchPayload
+) => {
   const {
     geneId,
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const urls = buildUrlsForTranscript(transcriptId, transcriptOptions);
+  const urls = buildUrlsForTranscript(
+    { geneId, productGeneratingContext },
+    transcriptOptions
+  );
+
   if (geneOptions.genomicSequence) {
-    urls.push(buildFetchUrl(geneId, 'genomicSequence'));
+    urls.push(buildFetchUrl({ geneId }, 'genomicSequence'));
   }
+
   const sequencePromises = urls.map((url) =>
-    fetch(url).then((response) => response.text())
+    fetch(url as string).then((response) => response.text())
   );
   const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n');
+  const combinedFasta = sequences.join('\n\n');
 
   downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
@@ -56,24 +71,45 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 };
 
 const buildUrlsForTranscript = (
-  id: string,
+  data: {
+    geneId: string;
+    productGeneratingContext: ProductGeneratingContextFragment;
+  },
   options: Partial<TranscriptOptions>
 ) => {
   return options
     ? transcriptOptionsOrder
         .filter((option) => options[option])
-        .map((option) => buildFetchUrl(id, option))
+        .map((option) => buildFetchUrl(data, option))
     : [];
 };
 
-const buildFetchUrl = (id: string, sequenceType: TranscriptOption) => {
-  const sequenceTypeToTypeParam: Record<TranscriptOption, string> = {
+const buildFetchUrl = (
+  data: {
+    geneId: string;
+    productGeneratingContext?: ProductGeneratingContextFragment;
+  },
+  sequenceType: TranscriptOption
+) => {
+  const sequenceTypeToContextType: Record<TranscriptOption, string> = {
     genomicSequence: 'genomic',
-    proteinSequence: 'protein',
+    proteinSequence: 'product',
     cdna: 'cdna',
     cds: 'cds'
   };
-  const typeParam = sequenceTypeToTypeParam[sequenceType];
 
-  return `https://rest.ensembl.org/sequence/id/${id}?content-type=text/x-fasta&type=${typeParam}`;
+  if (sequenceType === 'genomicSequence') {
+    return `https://rest.ensembl.org/sequence/id/${data.geneId}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
+  }
+
+  if (data.productGeneratingContext) {
+    const contextType = sequenceTypeToContextType[
+      sequenceType
+    ] as keyof ProductGeneratingContextFragment;
+    const sequenceChecksum =
+      data.productGeneratingContext &&
+      data.productGeneratingContext[contextType]?.sequence_checksum;
+
+    return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/plain`;
+  }
 };

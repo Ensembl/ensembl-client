@@ -18,4 +18,5 @@ export type CDNA = {
   start: number;
   end: number;
   length: number;
+  sequence_checksum: string;
 };

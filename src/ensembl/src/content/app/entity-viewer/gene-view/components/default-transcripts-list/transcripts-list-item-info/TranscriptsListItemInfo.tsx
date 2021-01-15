@@ -151,7 +151,7 @@ export const TranscriptsListItemInfo = (
             </span>
           )}
         </div>
-        {props.expandDownload && renderInstantDownload(props)}
+        {props.expandDownload && renderInstantDownload(genomeId, props)}
       </div>
       <div className={transcriptsListStyles.right}>
         <div className={styles.transcriptName}>
@@ -165,13 +165,14 @@ export const TranscriptsListItemInfo = (
   );
 };
 
-const renderInstantDownload = ({
-  gene,
-  transcript
-}: TranscriptsListItemInfoProps) => {
+const renderInstantDownload = (
+  genomeId: string,
+  { gene, transcript }: TranscriptsListItemInfoProps
+) => {
   return (
     <div className={styles.download}>
       <InstantDownloadTranscript
+        genomeId={genomeId}
         transcript={{
           id: transcript.unversioned_stable_id,
           so_term: transcript.so_term

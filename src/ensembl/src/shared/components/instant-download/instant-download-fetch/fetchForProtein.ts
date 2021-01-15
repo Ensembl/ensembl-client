@@ -20,42 +20,61 @@ import {
   ProteinOption,
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
+import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
 
 type FetchPayload = {
   transcriptId: string;
   options: ProteinOptions;
 };
 
-export const fetchForProtein = async (payload: FetchPayload) => {
+type ProductGeneratingContextFragment = Pick<
+  ProductGeneratingContext,
+  'product' | 'cds'
+>;
+
+export const fetchForProtein = async (
+  productGeneratingContext: ProductGeneratingContextFragment,
+  payload: FetchPayload
+) => {
   const { transcriptId, options } = payload;
-  const urls = buildUrlsForProtein(transcriptId, options);
+  const urls = buildUrlsForProtein(productGeneratingContext, options);
 
   const sequencePromises = urls.map((url) =>
     fetch(url).then((response) => response.text())
   );
 
   const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n');
+  const combinedFasta = sequences.join('\n\n');
 
   downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
   });
 };
 
-const buildUrlsForProtein = (id: string, options: ProteinOptions) => {
+const buildUrlsForProtein = (
+  productGeneratingContext: ProductGeneratingContextFragment,
+  options: ProteinOptions
+) => {
   return options
     ? proteinOptionsOrder
         .filter((option) => options[option])
-        .map((option) => buildFetchUrl(id, option))
+        .map((option) => buildFetchUrl(productGeneratingContext, option))
     : [];
 };
 
-const buildFetchUrl = (id: string, sequenceType: ProteinOption) => {
-  const sequenceTypeToTypeParam: Record<ProteinOption, string> = {
-    proteinSequence: 'protein',
+const buildFetchUrl = (
+  productGeneratingContext: ProductGeneratingContextFragment,
+  sequenceType: ProteinOption
+) => {
+  const sequenceTypeToContextType: Record<ProteinOption, string> = {
+    proteinSequence: 'product',
     cds: 'cds'
   };
-  const typeParam = sequenceTypeToTypeParam[sequenceType];
+  const contextType = sequenceTypeToContextType[
+    sequenceType
+  ] as keyof ProductGeneratingContextFragment;
+  const sequenceChecksum =
+    productGeneratingContext[contextType]?.sequence_checksum;
 
-  return `https://rest.ensembl.org/sequence/id/${id}?content-type=text/x-fasta&type=${typeParam}`;
+  return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/plain`;
 };

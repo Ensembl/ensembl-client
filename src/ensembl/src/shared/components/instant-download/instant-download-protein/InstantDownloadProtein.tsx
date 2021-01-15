@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { gql, useQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
@@ -26,6 +28,7 @@ import { TranscriptOptions } from '../instant-download-transcript/InstantDownloa
 import styles from './InstantDownloadProtein.scss';
 
 type InstantDownloadProteinProps = {
+  genomeId: string;
   transcriptId: string;
 };
 
@@ -40,24 +43,61 @@ const proteinOptionLabels: Record<keyof ProteinOptions, string> = {
   cds: 'CDS'
 };
 
+const QUERY = gql`
+  query Transcript($genomeId: String!, $transcriptId: String!) {
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      product_generating_contexts {
+        cds {
+          sequence_checksum
+        }
+        product {
+          sequence_checksum
+        }
+      }
+    }
+  }
+`;
+
 const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   const [isProteinSeqSelected, setProteinSeqSelected] = useState(false);
   const [isCdsSeqSelected, setCdsSeqSelected] = useState(false);
+  const [shouldFetchForProtein, setShouldFetchForProtein] = useState(false);
+
+  const { genomeId, transcriptId } = props;
+
+  const { data, loading } = useQuery<{
+    transcript: Partial<Transcript>;
+  }>(QUERY, {
+    variables: { genomeId, transcriptId }
+  });
 
   const onProteinCheckboxChange = () =>
     setProteinSeqSelected(!isProteinSeqSelected);
   const onCdsCheckboxChange = () => setCdsSeqSelected(!isCdsSeqSelected);
 
-  const onSubmit = () => {
-    const payload = {
-      transcriptId: props.transcriptId,
-      options: {
-        proteinSequence: isProteinSeqSelected,
-        cds: isCdsSeqSelected
-      }
-    };
+  useEffect(() => {
+    if (shouldFetchForProtein && !loading) {
+      const productGeneratingContexts =
+        data?.transcript.product_generating_contexts;
 
-    fetchForProtein(payload);
+      if (productGeneratingContexts?.length) {
+        const payload = {
+          transcriptId: props.transcriptId,
+          options: {
+            proteinSequence: isProteinSeqSelected,
+            cds: isCdsSeqSelected
+          }
+        };
+
+        fetchForProtein(productGeneratingContexts[0], payload);
+      }
+    }
+
+    setShouldFetchForProtein(false);
+  }, [shouldFetchForProtein]);
+
+  const onSubmit = async () => {
+    setShouldFetchForProtein(true);
   };
 
   const isDownloadDisabled = () => !isProteinSeqSelected && !isCdsSeqSelected;

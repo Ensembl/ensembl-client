@@ -15,6 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useQuery, gql } from '@apollo/client';
 import classNames from 'classnames';
 import pick from 'lodash/pick';
 import intersection from 'lodash/intersection';
@@ -24,6 +25,7 @@ import { fetchForTranscript } from '../instant-download-fetch/fetchForTranscript
 import InstantDownloadTranscriptVisualisation from './InstantDownloadTranscriptVisualisation';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './InstantDownloadTranscript.scss';
 
@@ -39,6 +41,7 @@ type GeneFields = {
 };
 
 export type InstantDownloadTranscriptEntityProps = {
+  genomeId: string;
   transcript: TranscriptFields;
   gene: GeneFields;
 };
@@ -97,18 +100,72 @@ const filterTranscriptOptions = (
     : pick(defaultTranscriptOptions, ['genomicSequence', 'cdna']);
 };
 
+const QUERY = gql`
+  query Transcript($genomeId: String!, $transcriptId: String!) {
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      product_generating_contexts {
+        cds {
+          sequence_checksum
+        }
+        cdna {
+          sequence_checksum
+        }
+        product {
+          sequence_checksum
+        }
+      }
+    }
+  }
+`;
+
 const InstantDownloadTranscript = (props: Props) => {
   const {
-    transcript: { so_term }
+    genomeId,
+    transcript: { id: transcriptId, so_term }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(so_term)
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
+  const [shouldFetchForTranscript, setShouldFetchForTranscript] = useState(
+    false
+  );
+
+  const { data, loading } = useQuery<{
+    transcript: Partial<Transcript>;
+  }>(QUERY, {
+    variables: { genomeId, transcriptId }
+  });
 
   useEffect(() => {
     setTranscriptOptions(filterTranscriptOptions(so_term));
   }, [so_term]);
+
+  useEffect(() => {
+    if (shouldFetchForTranscript && !loading) {
+      const productGeneratingContexts =
+        data?.transcript.product_generating_contexts;
+
+      if (productGeneratingContexts?.length) {
+        const payload = {
+          transcriptId: props.transcript.id,
+          geneId: props.gene.id,
+          options: {
+            transcript: transcriptOptions,
+            gene: { genomicSequence: isGeneSequenceSelected }
+          }
+        };
+
+        fetchForTranscript(productGeneratingContexts[0], payload);
+      }
+    }
+
+    setShouldFetchForTranscript(false);
+  }, [shouldFetchForTranscript]);
+
+  const onSubmit = async () => {
+    setShouldFetchForTranscript(true);
+  };
 
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
     const updatedOptions = {
@@ -119,17 +176,6 @@ const InstantDownloadTranscript = (props: Props) => {
   };
   const onGeneOptionChange = () => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
-  };
-  const onSubmit = () => {
-    const payload = {
-      transcriptId: props.transcript.id,
-      geneId: props.gene.id,
-      options: {
-        transcript: transcriptOptions,
-        gene: { genomicSequence: isGeneSequenceSelected }
-      }
-    };
-    fetchForTranscript(payload);
   };
 
   const layoutClass =
