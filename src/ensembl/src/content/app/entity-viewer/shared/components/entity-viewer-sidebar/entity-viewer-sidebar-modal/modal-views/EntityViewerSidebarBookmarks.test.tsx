@@ -47,6 +47,44 @@ const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
 const closeSidebarModal = jest.fn();
 const fetchExampleEnsObjects = jest.fn();
 
+
+const mockState = {
+  genome: {
+    genomeInfoData: {
+      'human': {
+        example_objects: [
+          {
+            id: 'human-brca2',
+            type: 'gene'
+          }
+        ]
+      }
+    },
+  },
+  entityViewer: {
+    general: {
+      activeGenomeId: 'human',
+      activeEnsObjectIds: { 
+        human: 'human-braf'
+      }
+    },
+    bookmarks: {
+      previouslyViewed: [
+        {
+          stable_id: 'human-fry',
+          label: 'FRY',
+          type: 'gene'
+        },
+        {
+          stable_id: 'human-another',
+          label: 'FRY',
+          type: 'gene'
+        }
+      ]
+    }
+  }
+};
+
 describe('<EntityViewerSidebarBookmarks />', () => {
   const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
   const numberOfPreviouslyViewedObjects = faker.random.number({
