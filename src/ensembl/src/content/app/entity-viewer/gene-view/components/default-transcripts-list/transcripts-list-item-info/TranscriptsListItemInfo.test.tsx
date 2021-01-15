@@ -17,6 +17,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router';
+import { useQuery } from '@apollo/client';
 
 import {
   TranscriptsListItemInfo,
@@ -27,6 +28,11 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+
+jest.mock('@apollo/client', () => ({
+  gql: jest.fn(),
+  useQuery: jest.fn()
+}));
 
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div>ViewInApp</div>
@@ -62,6 +68,11 @@ describe('<TranscriptsListItemInfo /', () => {
 
   beforeEach(() => {
     wrapper = renderComponent();
+
+    (useQuery as any).mockImplementation(() => ({
+      data: null,
+      loading: true
+    }));
   });
 
   /*
