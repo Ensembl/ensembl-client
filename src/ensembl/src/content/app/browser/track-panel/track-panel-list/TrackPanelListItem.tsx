@@ -120,9 +120,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       return;
     }
 
-    const viewName = track.track_id;
-
-    updateDrawerView(viewName);
+    updateDrawerView();
   };
 
   const drawerViewButtonHandler = useCallback(() => {
@@ -136,7 +134,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       });
     }
 
-    updateDrawerView(viewName);
+    updateDrawerView();
   }, [track.track_id, drawerView, props.isDrawerOpened]);
 
   const toggleExpand = () => {
