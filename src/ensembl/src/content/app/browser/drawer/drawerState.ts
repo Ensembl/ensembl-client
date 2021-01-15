@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
+import { TrackDetails } from 'src/content/app/browser/drawer/sampleData';
+
+export enum DrawerView {
+  BOOKMARKS = 'bookmarks',
+  TRACK_DETAILS = 'track_details'
+}
+
 export type DrawerState = Readonly<{
   isDrawerOpened: { [genomeId: string]: boolean };
-  drawerView: { [genomeId: string]: string };
+  drawerView: { [genomeId: string]: DrawerView | null };
+  trackDetails: TrackDetails;
 }>;
 
 export const defaultDrawerState = {
   isDrawerOpened: {},
-  drawerView: {}
+  drawerView: {},
+  trackDetails: {}
 };

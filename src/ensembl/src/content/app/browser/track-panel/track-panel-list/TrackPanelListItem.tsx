@@ -53,6 +53,7 @@ import {
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 import styles from './TrackPanelListItem.scss';
 
@@ -69,10 +70,10 @@ type PropsFromRedux = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   isDrawerOpened: boolean;
-  drawerView: string;
+  drawerView: DrawerView | null;
   highlightedTrackId: string;
   isCollapsed: boolean;
-  changeDrawerView: (drawerView: string) => void;
+  changeDrawerView: (drawerView: DrawerView) => void;
   toggleDrawer: (isDrawerOpened: boolean) => void;
   updateTrackStatesAndSave: (payload: BrowserTrackStates) => void;
   updateCollapsedTrackIds: (payload: {
@@ -94,10 +95,10 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     trackStatus
   } = props;
 
-  const updateDrawerView = (currentTrack: string) => {
+  const updateDrawerView = () => {
     const { isDrawerOpened, toggleDrawer, changeDrawerView } = props;
 
-    changeDrawerView(currentTrack);
+    changeDrawerView(DrawerView.TRACK_DETAILS);
 
     if (!isDrawerOpened) {
       toggleDrawer(true);

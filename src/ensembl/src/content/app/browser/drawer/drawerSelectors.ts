@@ -19,7 +19,7 @@ import { getBrowserActiveGenomeId } from '../browserSelectors';
 
 export const getDrawerView = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return (activeGenomeId && state.drawer.drawerView[activeGenomeId]) || '';
+  return (activeGenomeId && state.drawer.drawerView[activeGenomeId]) || null;
 };
 
 export const getIsDrawerOpened = (state: RootState) => {
