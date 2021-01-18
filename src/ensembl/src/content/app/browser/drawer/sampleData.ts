@@ -20,20 +20,24 @@ import { Source } from 'src/content/app/entity-viewer/types/source';
 export type TrackDetails = {
   track_id: string;
   track_name: string;
-  shared_description: string;
-  specific_description: string;
-  source: Source;
+  strand: 'forward' | 'reverse' | null;
+  shared_description?: string;
+  specific_description?: string;
+  source?: Source;
 };
 
 export type GenomeTrackDetails = {
-  [genomeId: string]: TrackDetails;
+  [genomeId: string]: {
+    [trackId: string]: TrackDetails;
+  };
 };
 
-export const trascDetailsSampleData = {
-  homo_sapiens_GCA_000001405_28: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+export const trackDetailsSampleData: GenomeTrackDetails = {
+  homo_sapiens_GCA_000001405_28: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -43,9 +47,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Other genes Forward strand',
+      track_name: 'Other genes',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -55,9 +60,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -67,9 +73,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Other genes Reverse strand',
+      track_name: 'Other genes',
+      strand: 'reverse',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -79,27 +86,31 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     },
-    {
+    'track:variant': {
       track_id: 'variant',
       track_name: '1000 Genomes all SNPs and indels',
+      strand: null,
       specific_description:
         'Shows the Variants genotyped by the 1000 Genomes project (phase 3)'
     }
-  ],
-  homo_sapiens_GCA_000001405_14: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+  },
+  homo_sapiens_GCA_000001405_14: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -109,9 +120,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Other genes Forward strand',
+      track_name: 'Other genes',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -121,9 +133,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -133,9 +146,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Other genes Reverse strand',
+      track_name: 'Other genes',
+      strand: 'reverse',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Part of the GENCODE Comprehensive gene set',
@@ -145,27 +159,31 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     },
-    {
+    'track:variant': {
       track_id: 'variant',
       track_name: '1000 Genomes all SNPs and indels',
+      strand: null,
       specific_description:
         'Shows the Variants genotyped by the 1000 Genomes project (phase 3)'
     }
-  ],
-  triticum_aestivum_GCA_900519105_1: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+  },
+  triticum_aestivum_GCA_900519105_1: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Genes annotated with high confidence by IWGSC',
@@ -175,9 +193,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Other genes Forward strand',
+      track_name: 'Other genes',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Genes annotated with high confidence by IWGSC',
@@ -187,9 +206,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Genes annotated with high confidence by IWGSC',
@@ -199,9 +219,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Other genes Reverse strand',
+      track_name: 'Other genes',
+      strand: 'reverse',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Genes annotated with high confidence by IWGSC',
@@ -211,26 +232,30 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     },
-    {
+    'track:variant': {
       track_id: 'variant',
       track_name: 'Sequence variants',
+      strand: null,
       specific_description: 'Sequence variants from all sources'
     }
-  ],
-  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+  },
+  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -240,9 +265,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Other genes Forward strand',
+      track_name: 'Other genes',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -252,9 +278,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -264,9 +291,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Other genes Reverse strand',
+      track_name: 'Other genes',
+      strand: 'reverse',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -276,21 +304,24 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     }
-  ],
-  saccharomyces_cerevisiae_GCA_000146045_2: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+  },
+  saccharomyces_cerevisiae_GCA_000146045_2: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Annotation imported from SGD',
@@ -300,9 +331,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Other genes Forward strand',
+      track_name: 'Other genes',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Annotation imported from SGD',
@@ -312,9 +344,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Annotation imported from SGD',
@@ -324,9 +357,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Other genes Reverse strand',
+      track_name: 'Other genes',
+      strand: 'reverse',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Annotation imported from SGD',
@@ -336,21 +370,24 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     }
-  ],
-  plasmodium_falciparum_GCA_000002765_2: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+  },
+  plasmodium_falciparum_GCA_000002765_2: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -360,9 +397,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Other genes Forward strand',
+      track_name: 'Other genes',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -372,9 +410,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -384,9 +423,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Other genes Reverse strand',
+      track_name: 'Other genes',
+      strand: 'reverse',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Protein genes annotated in ENA',
@@ -396,21 +436,24 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     }
-  ],
-  caenorhabditis_elegans_GCA_000002985_3: [
-    {
-      track_id: 'gene-pc-fwd',
-      track_name: 'Protein coding genes Forward strand',
+  },
+  caenorhabditis_elegans_GCA_000002985_3: {
+    'track:gene-pc-fwd': {
+      track_id: 'track:gene-pc-fwd',
+      track_name: 'Protein coding genes',
+      strand: 'forward',
       shared_description:
         'Shows all protein coding genes on the forward strand of this chromosome',
       specific_description: 'Protein coding model imported from Wormbase',
@@ -420,9 +463,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-fwd': {
       track_id: 'gene-other-fwd',
-      track_name: 'Non coding RNA Forward strand',
+      track_name: 'Non coding RNA',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the forward strand of this chromosome',
       specific_description: 'Non coding RNA imported from Wormbase',
@@ -432,9 +476,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-pc-rev': {
       track_id: 'gene-pc-rev',
-      track_name: 'Protein coding genes Reverse strand',
+      track_name: 'Protein coding genes',
+      strand: 'reverse',
       shared_description:
         'Shows all protein coding genes on the reverse strand of this chromosome',
       specific_description: 'Protein coding model imported from Wormbase',
@@ -444,9 +489,10 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:gene-other-rev': {
       track_id: 'gene-other-rev',
-      track_name: 'Non coding RNA Forward strand',
+      track_name: 'Non coding RNA',
+      strand: 'forward',
       shared_description:
         'Shows all non-coding genes on the reverse strand of this chromosome',
       specific_description: 'Non coding RNA imported from Wormbase',
@@ -456,15 +502,17 @@ export const trascDetailsSampleData = {
         id: ''
       }
     },
-    {
+    'track:contig': {
       track_id: 'contig',
       track_name: 'Reference assembly',
+      strand: null,
       shared_description: 'Shows the contigs underlying the reference assembly.'
     },
-    {
+    'track:gc': {
       track_id: 'gc',
       track_name: '%GC',
+      strand: null,
       shared_description: 'Shows the percentage of Gs and Cs in a region'
     }
-  ]
+  }
 };

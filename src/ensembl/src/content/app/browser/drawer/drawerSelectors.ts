@@ -28,3 +28,23 @@ export const getIsDrawerOpened = (state: RootState) => {
     (activeGenomeId && state.drawer.isDrawerOpened[activeGenomeId]) || false
   );
 };
+
+export const getActiveDrawerTrackId = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? state.drawer.activeDrawerTrackIds[activeGenomeId]
+    : null;
+};
+
+export const getActiveTrackDetails = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeDrawerTrackId = getActiveDrawerTrackId(state);
+
+  if (!activeGenomeId || !activeDrawerTrackId) {
+    return null;
+  }
+
+  return state.drawer.trackDetails[activeGenomeId]
+    ? state.drawer.trackDetails[activeGenomeId][activeDrawerTrackId]
+    : null;
+};

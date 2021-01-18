@@ -30,7 +30,7 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 // import DrawerContigs from './drawer-views/DrawerContigs';
 // import DrawerGC from './drawer-views/DrawerGC';
 // import SnpIndels from './drawer-views/SnpIndels';
-import TrackDetails from 'src/content/app/browser/drawer/drawer-views/TrackDetails';
+import TrackDetails from 'src/content/app/browser/drawer/drawer-views/track-details/TrackDetails';
 import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 
 import {

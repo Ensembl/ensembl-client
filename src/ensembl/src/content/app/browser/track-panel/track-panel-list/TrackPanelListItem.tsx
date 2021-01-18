@@ -15,8 +15,8 @@
  */
 
 import React, { MouseEvent, ReactNode, useCallback } from 'react';
-import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { RootState } from 'src/store';
 
@@ -30,21 +30,28 @@ import {
   TrackItemColour,
   TrackItemColourKey,
   TrackId,
-  BrowserTrackStates,
   TrackActivityStatus
 } from '../trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { changeDrawerView, toggleDrawer } from '../../drawer/drawerActions';
+import {
+  changeDrawerView,
+  setActiveDrawerTrackId,
+  toggleDrawer
+} from '../../drawer/drawerActions';
 
 import {
   getHighlightedTrackId,
   isTrackCollapsed
 } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
-import { getIsDrawerOpened, getDrawerView } from '../../drawer/drawerSelectors';
+import {
+  getIsDrawerOpened,
+  getDrawerView,
+  getActiveDrawerTrackId
+} from '../../drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId
@@ -58,7 +65,7 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import styles from './TrackPanelListItem.scss';
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
-type OwnProps = {
+type TrackPanelListItemProps = {
   categoryName: string;
   children?: ReactNode[];
   trackStatus: TrackActivityStatus;
@@ -66,42 +73,26 @@ type OwnProps = {
   track: EnsObjectTrack;
 };
 
-type PropsFromRedux = {
-  activeGenomeId: string | null;
-  activeEnsObjectId: string | null;
-  isDrawerOpened: boolean;
-  drawerView: DrawerView | null;
-  highlightedTrackId: string;
-  isCollapsed: boolean;
-  changeDrawerView: (drawerView: DrawerView) => void;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
-  updateTrackStatesAndSave: (payload: BrowserTrackStates) => void;
-  updateCollapsedTrackIds: (payload: {
-    trackId: string;
-    isCollapsed: boolean;
-  }) => void;
-};
-
-export type TrackPanelListItemProps = OwnProps & PropsFromRedux;
-
 export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
-  const {
-    activeGenomeId,
-    activeEnsObjectId,
-    categoryName,
-    isDrawerOpened,
-    drawerView,
-    track,
-    trackStatus
-  } = props;
+  const { track, trackStatus, categoryName } = props;
+  const trackId = track.track_id;
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
+  const isDrawerOpened = useSelector(getIsDrawerOpened);
+  const drawerView = useSelector(getDrawerView);
+  const highlightedTrackId = useSelector(getHighlightedTrackId);
+  const isCollapsed = useSelector((state: RootState) =>
+    isTrackCollapsed(state, trackId)
+  );
+  const activeDrawerTrackId = useSelector(getActiveDrawerTrackId);
+
+  const dispatch = useDispatch();
 
   const updateDrawerView = () => {
-    const { isDrawerOpened, toggleDrawer, changeDrawerView } = props;
-
-    changeDrawerView(DrawerView.TRACK_DETAILS);
+    dispatch(changeDrawerView(DrawerView.TRACK_DETAILS));
 
     if (!isDrawerOpened) {
-      toggleDrawer(true);
+      dispatch(toggleDrawer(true));
     }
   };
 
@@ -124,23 +115,28 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   };
 
   const drawerViewButtonHandler = useCallback(() => {
-    const viewName = track.track_id;
-
-    if (drawerView !== viewName) {
+    if (activeDrawerTrackId !== trackId) {
       analyticsTracking.trackEvent({
         category: 'track_drawer',
-        label: viewName,
+        label: trackId,
         action: 'opened'
       });
     }
 
+    if (activeGenomeId) {
+      dispatch(
+        setActiveDrawerTrackId({
+          [activeGenomeId]: trackId
+        })
+      );
+    }
+
     updateDrawerView();
-  }, [track.track_id, drawerView, props.isDrawerOpened]);
+  }, [track.track_id, drawerView, isDrawerOpened, activeGenomeId]);
 
   const toggleExpand = () => {
     const { track_id: trackId } = props.track;
-    const { isCollapsed } = props;
-    props.updateCollapsedTrackIds({ trackId, isCollapsed: !isCollapsed });
+    dispatch(updateCollapsedTrackIds({ trackId, isCollapsed: !isCollapsed }));
   };
 
   const toggleTrack = useCallback(() => {
@@ -154,27 +150,31 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     }
     // FIXME: Temporary hack until we have a set of proper track names
     if (track.track_id.startsWith('track:gene')) {
-      props.updateTrackStatesAndSave({
-        [activeGenomeId]: {
-          objectTracks: {
-            [activeEnsObjectId]: {
+      dispatch(
+        updateTrackStatesAndSave({
+          [activeGenomeId]: {
+            objectTracks: {
+              [activeEnsObjectId]: {
+                [categoryName]: {
+                  [track.track_id]: newStatus
+                }
+              }
+            }
+          }
+        })
+      );
+    } else {
+      dispatch(
+        updateTrackStatesAndSave({
+          [activeGenomeId]: {
+            commonTracks: {
               [categoryName]: {
                 [track.track_id]: newStatus
               }
             }
           }
-        }
-      });
-    } else {
-      props.updateTrackStatesAndSave({
-        [activeGenomeId]: {
-          commonTracks: {
-            [categoryName]: {
-              [track.track_id]: newStatus
-            }
-          }
-        }
-      });
+        })
+      );
     }
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
@@ -191,8 +191,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const trackClassNames = classNames(styles.track, {
     [styles.main]: track.track_id === TrackId.GENE,
     [styles.trackHighlighted]:
-      track.track_id === drawerView ||
-      track.track_id === props.highlightedTrackId
+      track.track_id === drawerView || track.track_id === highlightedTrackId
   });
 
   return (
@@ -216,8 +215,8 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
           {track.child_tracks && (
             <button onClick={toggleExpand} className={styles.expandBtn}>
               <img
-                src={props.isCollapsed ? chevronDownIcon : chevronUpIcon}
-                alt={props.isCollapsed ? 'expand' : 'collapse'}
+                src={isCollapsed ? chevronDownIcon : chevronUpIcon}
+                alt={isCollapsed ? 'expand' : 'collapse'}
               />
             </button>
           )}
@@ -238,25 +237,9 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
           />
         </div>
       </dd>
-      {!props.isCollapsed && props.children}
+      {!isCollapsed && props.children}
     </>
   );
 };
 
-const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  activeEnsObjectId: getBrowserActiveEnsObjectId(state),
-  isDrawerOpened: getIsDrawerOpened(state),
-  drawerView: getDrawerView(state),
-  highlightedTrackId: getHighlightedTrackId(state),
-  isCollapsed: isTrackCollapsed(state, ownProps.track.track_id)
-});
-
-const mapDispatchToProps = {
-  updateCollapsedTrackIds,
-  changeDrawerView,
-  toggleDrawer,
-  updateTrackStatesAndSave
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelListItem);
+export default TrackPanelListItem;
