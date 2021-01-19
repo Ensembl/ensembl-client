@@ -75,30 +75,18 @@ const mockState = {
   drawer: {
     isDrawerOpened: { [fakeGenomeId]: true },
     drawerView: { [fakeGenomeId]: DrawerView.BOOKMARKS },
-    trackDetails: {},
     activeDrawerTrackIds: {}
   },
   browser: {
-    browserInfo: {
-      browserActivated: true
-    },
     browserEntity: {
       activeGenomeId: fakeGenomeId,
       activeEnsObjectIds: {
         [fakeGenomeId]: faker.lorem.words()
-      },
-      trackStates: {}
+      }
     },
-
     trackPanel: {
-      foo: {
-        isTrackPanelModalOpened: false,
-        bookmarks: [],
-        previouslyViewedObjects: [],
-        selectedTrackPanelTab: 'Genomic',
-        trackPanelModalView: '',
+      [fakeGenomeId]: {
         highlightedTrackId: faker.lorem.words(),
-        isTrackPanelOpened: true,
         collapsedTrackIds: []
       }
     }
