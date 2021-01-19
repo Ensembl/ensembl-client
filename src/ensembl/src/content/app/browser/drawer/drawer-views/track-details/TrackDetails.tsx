@@ -47,11 +47,7 @@ const TrackDetails = () => {
           <span className={styles.trackName}>{trackDetails.track_name}</span>
 
           {trackDetails.strand && (
-            <span className={styles.strand}>
-              {trackDetails.strand === 'forward'
-                ? 'Forward strand'
-                : 'Reverse strand'}
-            </span>
+            <span className={styles.strand}>{trackDetails.strand} strand</span>
           )}
         </div>
       </div>

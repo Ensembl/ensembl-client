@@ -43,7 +43,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -56,7 +56,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -69,7 +69,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -82,7 +82,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -116,7 +116,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -129,7 +129,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -142,7 +142,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -155,7 +155,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Part of the GENCODE Comprehensive gene set',
       source: {
         url: 'www.gencodegenes.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -189,7 +189,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Genes annotated with high confidence by IWGSC',
       source: {
         url: 'www.wheatgenome.org',
-        name: 'Gencode',
+        name: 'IWGSC',
         id: ''
       }
     },
@@ -202,7 +202,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Genes annotated with high confidence by IWGSC',
       source: {
         url: 'www.wheatgenome.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -215,7 +215,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Genes annotated with high confidence by IWGSC',
       source: {
         url: 'www.wheatgenome.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -228,7 +228,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Genes annotated with high confidence by IWGSC',
       source: {
         url: 'www.wheatgenome.org',
-        name: 'Gencode',
+        name: 'GENCODE',
         id: ''
       }
     },
@@ -261,7 +261,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -274,7 +274,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -287,7 +287,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -300,7 +300,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -327,7 +327,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Annotation imported from SGD',
       source: {
         url: 'www.yeastgenome.org',
-        name: 'Gencode',
+        name: 'SGD',
         id: ''
       }
     },
@@ -340,7 +340,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Annotation imported from SGD',
       source: {
         url: 'www.yeastgenome.org',
-        name: 'Gencode',
+        name: 'SGD',
         id: ''
       }
     },
@@ -353,7 +353,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Annotation imported from SGD',
       source: {
         url: 'www.yeastgenome.org',
-        name: 'Gencode',
+        name: 'SGD',
         id: ''
       }
     },
@@ -366,7 +366,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Annotation imported from SGD',
       source: {
         url: 'www.yeastgenome.org',
-        name: 'Gencode',
+        name: 'SGD',
         id: ''
       }
     },
@@ -393,7 +393,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -406,7 +406,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -419,7 +419,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -432,7 +432,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein genes annotated in ENA',
       source: {
         url: 'www.ebi.ac.uk/ena',
-        name: 'Gencode',
+        name: 'ENA',
         id: ''
       }
     },
@@ -459,7 +459,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein coding model imported from Wormbase',
       source: {
         url: 'www.wormbase.org',
-        name: 'Gencode',
+        name: 'Wormbase',
         id: ''
       }
     },
@@ -472,7 +472,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Non coding RNA imported from Wormbase',
       source: {
         url: 'www.wormbase.org',
-        name: 'Gencode',
+        name: 'Wormbase',
         id: ''
       }
     },
@@ -485,7 +485,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Protein coding model imported from Wormbase',
       source: {
         url: 'www.wormbase.org',
-        name: 'Gencode',
+        name: 'Wormbase',
         id: ''
       }
     },
@@ -498,7 +498,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       specific_description: 'Non coding RNA imported from Wormbase',
       source: {
         url: 'www.wormbase.org',
-        name: 'Gencode',
+        name: 'Wormbase',
         id: ''
       }
     },
