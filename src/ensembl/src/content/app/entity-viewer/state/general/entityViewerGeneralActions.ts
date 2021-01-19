@@ -137,7 +137,7 @@ export const changeActiveGenomeId: ActionCreator<ThunkAction<
   });
 };
 
-export const updateEntityViewerActiveEntityIds = createAction(
+export const updateActiveEntityForGenome = createAction(
   'entity-viewer/update-active-entity-ids'
 )<{ [objectId: string]: string }>();
 
@@ -161,7 +161,7 @@ export const updateEntityId: ActionCreator<ThunkAction<
 
     const currentEntity = getEntityViewerActiveEntity(state);
 
-    dispatch(updateEntityViewerActiveEntityIds(updatedActiveEntityIds));
+    dispatch(updateActiveEntityForGenome(updatedActiveEntityIds));
     if (!currentEntity) {
       dispatch(fetchEnsObject(activeEntityId));
     }

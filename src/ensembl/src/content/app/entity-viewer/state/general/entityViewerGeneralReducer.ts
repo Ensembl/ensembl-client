@@ -33,7 +33,7 @@ export default function entityViewerReducer(
         activeGenomeId: action.payload
       };
     }
-    case getType(actions.updateEntityViewerActiveEntityIds):
+    case getType(actions.updateActiveEntityForGenome):
       return { ...state, activeEntityIds: action.payload };
     default:
       return state;
