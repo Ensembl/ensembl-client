@@ -97,7 +97,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   );
 
   return (
-    <div>
+    <div data-test-id="previously viewed links">
       {[...previouslyViewedObjectsWithoutActiveObject]
         // .reverse()
         .map((previouslyViewedObject, index) => {

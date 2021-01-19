@@ -38,6 +38,19 @@ const exampleObjects = [
   }
 ];
 
+const previouslyViewedObjects = [
+  {
+    stable_id: 'human-fry',
+    label: 'FRY',
+    type: 'gene'
+  },
+  {
+    stable_id: 'human-tp53',
+    label: 'TP53',
+    type: 'gene'
+  }
+];
+
 const mockState = {
   genome: {
     genomeInfo: {
@@ -52,22 +65,13 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEnsObjectIds: {
-        human: 'human-braf'
+        human: 'human:gene:braf'
       }
     },
     bookmarks: {
-      previouslyViewed: [
-        {
-          stable_id: 'human-fry',
-          label: 'FRY',
-          type: 'gene'
-        },
-        {
-          stable_id: 'human-tp53',
-          label: 'TP53',
-          type: 'gene'
-        }
-      ]
+      previouslyViewed: {
+        human: previouslyViewedObjects
+      }
     }
   }
 };
@@ -92,58 +96,14 @@ describe('<EntityViewerSidebarBookmarks />', () => {
 
     expect(links.length).toBe(exampleObjects.length);
   });
+
+  it('shows previously viewed objects if present', () => {
+    wrapInRedux();
+    const previouslyViewedSection = screen.getByTestId(
+      'previously viewed links'
+    );
+    const links = previouslyViewedSection.querySelectorAll('a');
+
+    expect(links.length).toBe(previouslyViewedObjects.length);
+  });
 });
-
-/*
-
-  it('renders correct number of previously viewed links', () => {
-    const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
-
-    expect(previouslyViewedLinksWrapper.find('.link').length).toBe(
-      numberOfPreviouslyViewedObjects
-    );
-  });
-
-  it('calls closeSidebarModal when a previously viewed object link is clicked', () => {
-    const previouslyViewedLinksWrapper = wrapper.find(PreviouslyViewedLinks);
-
-    previouslyViewedLinksWrapper.find('.link').first().simulate('click');
-
-    expect(closeSidebarModal).toBeCalled();
-  });
-
-  it('shows the ellipsis only when the total objects is more than 20', () => {
-    const previouslyViewedObjects = times(20, () =>
-      createPreviouslyViewedLink()
-    );
-    wrapper = mount(
-      <EntityViewerSidebarBookmarks/>
-    );
-
-    expect(wrapper.find(ImageButton)).toHaveLength(0);
-
-    // Add another link to make it 21 links
-    previouslyViewedObjects.push(createPreviouslyViewedLink());
-    wrapper = mount(
-      <EntityViewerSidebarBookmarks />
-    );
-
-    expect(wrapper.find(ImageButton)).toHaveLength(1);
-  });
-
-  it('renders correct number of links to example objects', () => {
-    const exampleLinksWrapper = wrapper.find(ExampleLinks);
-
-    expect(exampleLinksWrapper.find('div.link').length).toBe(
-      numberOfExampleObjects
-    );
-  });
-
-  it('calls closeSidebarModal when an example object link is clicked', () => {
-    const exampleLinksWrapper = wrapper.find(ExampleLinks);
-    exampleLinksWrapper.find('.link').first().simulate('click');
-
-    expect(closeSidebarModal).toBeCalled();
-  });
-
-*/
