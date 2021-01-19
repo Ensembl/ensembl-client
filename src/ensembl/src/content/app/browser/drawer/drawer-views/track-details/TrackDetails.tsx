@@ -36,7 +36,6 @@ const TrackDetails = () => {
   }, [trackDetails]);
 
   if (!trackDetails) {
-    // TODO: Do we need to show spinner here?
     return null;
   }
 
