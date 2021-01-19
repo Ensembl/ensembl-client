@@ -15,9 +15,13 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
 import {
   TrackPanelListItem,
@@ -26,32 +30,121 @@ import {
 
 import { createMainTrackInfo } from 'tests/fixtures/track-panel';
 import { Status } from 'src/shared/types/status';
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+
+import * as drawerActions from '../../drawer/drawerActions';
+import * as browserActions from 'src/content/app/browser/browserActions';
+import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+import { isTrackCollapsed } from 'src/content/app/browser/track-panel/trackPanelSelectors';
+
+jest.mock('../../drawer/drawerActions', () => {
+  const originalModule = jest.requireActual('../../drawer/drawerActions');
+
+  return {
+    ...originalModule,
+    changeDrawerView: jest.fn(),
+    setActiveDrawerTrackId: jest.fn()
+  };
+});
+
+jest.mock('src/content/app/browser/browserActions', () => {
+  const originalModule = jest.requireActual(
+    'src/content/app/browser/browserActions'
+  );
+
+  return {
+    ...originalModule,
+    updateTrackStatesAndSave: jest.fn()
+  };
+});
+
+jest.mock('src/content/app/browser/track-panel/trackPanelActions', () => {
+  const originalModule = jest.requireActual(
+    'src/content/app/browser/track-panel/trackPanelActions'
+  );
+
+  return {
+    ...originalModule,
+    updateCollapsedTrackIds: jest.fn()
+  };
+});
+
+const fakeGenomeId = faker.lorem.words();
+
+const mockState = {
+  drawer: {
+    isDrawerOpened: { [fakeGenomeId]: true },
+    drawerView: { [fakeGenomeId]: DrawerView.BOOKMARKS },
+    trackDetails: {},
+    activeDrawerTrackIds: {}
+  },
+  browser: {
+    browserInfo: {
+      browserActivated: true
+    },
+    browserEntity: {
+      activeGenomeId: fakeGenomeId,
+      activeEnsObjectIds: {
+        [fakeGenomeId]: faker.lorem.words()
+      },
+      trackStates: {}
+    },
+
+    trackPanel: {
+      foo: {
+        isTrackPanelModalOpened: false,
+        bookmarks: [],
+        previouslyViewedObjects: [],
+        selectedTrackPanelTab: 'Genomic',
+        trackPanelModalView: '',
+        highlightedTrackId: faker.lorem.words(),
+        isTrackPanelOpened: true,
+        collapsedTrackIds: []
+      }
+    }
+  }
+};
+
+jest.mock('react-redux', () => {
+  const originalModule = jest.requireActual('react-redux');
+  return {
+    ...originalModule,
+    useDispatch: () => jest.fn(),
+    useSelector: (selector: any) => {
+      return selector(mockState);
+    }
+  };
+});
+
+const mockStore = configureMockStore([thunk]);
+
+const defaultProps: TrackPanelListItemProps = {
+  categoryName: faker.lorem.words(),
+  trackStatus: Status.SELECTED,
+  defaultTrackStatus: Status.SELECTED,
+  track: createMainTrackInfo()
+};
+
+const wrapInRedux = (
+  props?: Partial<TrackPanelListItemProps>,
+  state: typeof mockState = mockState
+) => {
+  return render(
+    <Provider store={mockStore(state)}>
+      <TrackPanelListItem {...defaultProps} {...props} />
+    </Provider>
+  );
+};
 
 describe('<TrackPanelListItem />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: TrackPanelListItemProps = {
-    categoryName: faker.lorem.words(),
-    trackStatus: Status.SELECTED,
-    defaultTrackStatus: Status.SELECTED,
-    track: createMainTrackInfo(),
-    activeGenomeId: faker.lorem.words(),
-    activeEnsObjectId: faker.lorem.words(),
-    isDrawerOpened: false,
-    drawerView: 'bookmarks',
-    highlightedTrackId: faker.lorem.words(),
-    isCollapsed: false,
-    changeDrawerView: jest.fn(),
-    toggleDrawer: jest.fn(),
-    updateTrackStatesAndSave: jest.fn(),
-    updateCollapsedTrackIds: jest.fn()
-  };
-
   describe('rendering', () => {
     it('renders the track buttons', () => {
-      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const { container } = wrapInRedux();
+
       expect(container.querySelector('.ellipsisHolder')).toBeTruthy();
       expect(container.querySelector('.eyeHolder')).toBeTruthy();
     });
@@ -59,24 +152,27 @@ describe('<TrackPanelListItem />', () => {
 
   describe('behaviour', () => {
     describe('when clicked', () => {
-      it('updates drawer view if drawer already opened', () => {
-        const { container } = render(
-          <TrackPanelListItem {...defaultProps} isDrawerOpened={true} />
+      it('updates the active track id if the drawer is opened', () => {
+        const { container } = wrapInRedux(
+          undefined,
+          set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
         );
+
         const track = container.querySelector('.track') as HTMLElement;
 
         userEvent.click(track);
-        expect(defaultProps.changeDrawerView).toHaveBeenCalledWith(
-          defaultProps.track.track_id
-        );
+
+        expect(drawerActions.setActiveDrawerTrackId).toHaveBeenCalledWith({
+          [fakeGenomeId]: defaultProps.track.track_id
+        });
       });
 
-      it('does not update drawer view if drawer is closed', () => {
+      it('does not update the active track id if the drawer is closed', () => {
         const { container } = render(<TrackPanelListItem {...defaultProps} />);
         const track = container.querySelector('.track') as HTMLElement;
 
         userEvent.click(track);
-        expect(defaultProps.changeDrawerView).not.toHaveBeenCalled();
+        expect(drawerActions.changeDrawerView).not.toHaveBeenCalled();
       });
     });
 
@@ -84,34 +180,39 @@ describe('<TrackPanelListItem />', () => {
       const { container } = render(<TrackPanelListItem {...defaultProps} />);
       const expandButton = container.querySelector('.expandBtn') as HTMLElement;
 
+      const isCollapsed = isTrackCollapsed(
+        mockState as any,
+        defaultProps.track.track_id
+      );
+
       userEvent.click(expandButton);
-      expect(defaultProps.updateCollapsedTrackIds).toHaveBeenCalledWith({
+      expect(trackPanelActions.updateCollapsedTrackIds).toHaveBeenCalledWith({
         trackId: defaultProps.track.track_id,
-        isCollapsed: !defaultProps.isCollapsed
+        isCollapsed: !isCollapsed
       });
     });
 
     it('opens/updates drawer view when clicked on the open track button', () => {
-      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const { container } = wrapInRedux();
       const ellipsisButton = container.querySelector(
         '.ellipsisHolder button'
       ) as HTMLElement;
 
       userEvent.click(ellipsisButton);
-      expect(defaultProps.changeDrawerView).toHaveBeenCalledWith(
-        defaultProps.track.track_id
+      expect(drawerActions.changeDrawerView).toHaveBeenCalledWith(
+        DrawerView.TRACK_DETAILS
       );
     });
 
     it('toggles the track when clicked on the toggle track button', () => {
-      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const { container } = wrapInRedux();
       const eyeButton = container.querySelector(
         '.eyeHolder button'
       ) as HTMLElement;
 
       userEvent.click(eyeButton);
-      expect(defaultProps.updateTrackStatesAndSave).toHaveBeenCalledWith({
-        [defaultProps.activeGenomeId as string]: {
+      expect(browserActions.updateTrackStatesAndSave).toHaveBeenCalledWith({
+        [fakeGenomeId as string]: {
           commonTracks: {
             [defaultProps.categoryName]: {
               [defaultProps.track.track_id]: Status.UNSELECTED

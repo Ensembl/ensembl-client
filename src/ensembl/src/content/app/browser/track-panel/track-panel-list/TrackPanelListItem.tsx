@@ -65,7 +65,7 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import styles from './TrackPanelListItem.scss';
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
-type TrackPanelListItemProps = {
+export type TrackPanelListItemProps = {
   categoryName: string;
   children?: ReactNode[];
   trackStatus: TrackActivityStatus;
@@ -111,7 +111,13 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       return;
     }
 
-    updateDrawerView();
+    if (activeGenomeId) {
+      dispatch(
+        setActiveDrawerTrackId({
+          [activeGenomeId]: trackId
+        })
+      );
+    }
   };
 
   const drawerViewButtonHandler = useCallback(() => {
