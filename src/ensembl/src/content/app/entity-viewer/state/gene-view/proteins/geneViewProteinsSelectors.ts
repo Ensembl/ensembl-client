@@ -26,11 +26,11 @@ const getSliceForGene = (
   state: RootState
 ): ProteinsStatePerGene | undefined => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEntityId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
-  return state.entityViewer.geneView.proteins[activeGenomeId]?.[activeObjectId];
+  return state.entityViewer.geneView.proteins[activeGenomeId]?.[activeEntityId];
 };
 
 export const getExpandedTranscriptIds = (state: RootState): string[] => {

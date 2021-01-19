@@ -96,7 +96,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
 
   if (entityId && genomeIdFromUrl) {
     if (entityId !== activeEntityId) {
-      dispatch(updateEnsObject(entityId));
+      dispatch(updateEntityId(entityId));
     }
 
     entityViewerStorageService.updateGeneralState({
@@ -138,10 +138,10 @@ export const changeActiveGenomeId: ActionCreator<ThunkAction<
 };
 
 export const updateEntityViewerActiveEntityIds = createAction(
-  'entity-viewer/update-active-ens-object-ids'
+  'entity-viewer/update-active-entity-ids'
 )<{ [objectId: string]: string }>();
 
-export const updateEnsObject: ActionCreator<ThunkAction<
+export const updateEntityId: ActionCreator<ThunkAction<
   void,
   any,
   null,
