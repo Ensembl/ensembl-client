@@ -18,7 +18,9 @@ import { GenomeTrackDetails } from 'src/content/app/browser/drawer/sampleData.ts
 
 export enum DrawerView {
   BOOKMARKS = 'bookmarks',
-  TRACK_DETAILS = 'track_details'
+  TRACK_DETAILS = 'track_details',
+  GENE_SUMMARY = 'gene_summary',
+  TRANSCRIPT_SUMMARY = 'transcript_summary'
 }
 
 export type DrawerState = Readonly<{

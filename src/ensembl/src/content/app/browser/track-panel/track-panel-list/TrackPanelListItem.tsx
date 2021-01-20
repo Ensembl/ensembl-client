@@ -89,7 +89,13 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const dispatch = useDispatch();
 
   const updateDrawerView = () => {
-    dispatch(changeDrawerView(DrawerView.TRACK_DETAILS));
+    let drawerViewToSet = DrawerView.TRACK_DETAILS;
+    if (trackId === 'track:gene-feat') {
+      drawerViewToSet = DrawerView.GENE_SUMMARY;
+    } else if (trackId === 'track:gene-feat-1') {
+      drawerViewToSet = DrawerView.TRANSCRIPT_SUMMARY;
+    }
+    dispatch(changeDrawerView(drawerViewToSet));
 
     if (!isDrawerOpened) {
       dispatch(toggleDrawer(true));

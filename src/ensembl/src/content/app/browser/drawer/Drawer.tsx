@@ -17,8 +17,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import TrackDetails from 'src/content/app/browser/drawer/drawer-views/track-details/TrackDetails';
+import TrackDetails from './drawer-views/track-details/TrackDetails';
 import DrawerBookmarks from './drawer-views/DrawerBookmarks';
+import GeneSummary from './drawer-views/gene-summary/GeneSummary';
+import TranscriptSummary from './drawer-views/transcript-summary/TranscriptSummary';
 
 import { getDrawerView } from './drawerSelectors';
 import { getBrowserActiveEnsObject } from '../browserSelectors';
@@ -39,6 +41,10 @@ export const Drawer = () => {
     switch (drawerView) {
       case DrawerView.TRACK_DETAILS:
         return <TrackDetails />;
+      case DrawerView.GENE_SUMMARY:
+        return <GeneSummary />;
+      case DrawerView.TRANSCRIPT_SUMMARY:
+        return <TranscriptSummary />;
       case DrawerView.BOOKMARKS:
         return <DrawerBookmarks />;
     }
