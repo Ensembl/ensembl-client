@@ -16,18 +16,19 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-service';
+
 type PreviouslyViewedEntity = {
   stable_id: string;
   label: string;
   type: 'gene';
 };
 
-type PreviouslyViewedEntites = {
+export type PreviouslyViewedEntities = {
   [genomeId: string]: PreviouslyViewedEntity[];
 };
 
 type EntityViewerBookmarksState = {
-  previouslyViewed: PreviouslyViewedEntites;
+  previouslyViewed: PreviouslyViewedEntities;
 };
 
 type UpdatePreviouslyViewedPayload = {
@@ -39,8 +40,10 @@ type UpdatePreviouslyViewedPayload = {
   };
 };
 
+const storedPreviouslyViewedEntities = entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
+
 const initialState: EntityViewerBookmarksState = {
-  previouslyViewed: {}
+  previouslyViewed: storedPreviouslyViewedEntities
 };
 
 const bookmarksSlice = createSlice({
@@ -67,7 +70,7 @@ const bookmarksSlice = createSlice({
       ].slice(0, 20);
       state.previouslyViewed[genomeId] = updatedEntites;
 
-      entityViewerBookmarksStorageService.updatePreviouslyViewedObjects({
+      entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
         [genomeId]: updatedEntites
       });
     }

@@ -17,20 +17,11 @@
 import storageService, {
   StorageServiceInterface
 } from 'src/services/storage-service';
-
-export type PreviouslyViewedObject = {
-  stable_id: string;
-  label: string;
-  type: string;
-};
-
-export type PreviouslyViewedObjects = {
-  [genomeId: string]: PreviouslyViewedObject[];
-};
+import { PreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 export enum StorageKeys {
   BOOKMARKS = 'entityviewer.bookmarks',
-  PREVIOUSLY_VIEWED = 'entityviewer.previouslyViewedObjects'
+  PREVIOUSLY_VIEWED = 'entityviewer.previouslyViewedEntities'
 }
 
 export class EntityViewerBookmarksStorageService {
@@ -40,28 +31,16 @@ export class EntityViewerBookmarksStorageService {
     this.storageService = storageService;
   }
 
-  public getBookmarks(): { [genomeId: string]: PreviouslyViewedObject[] } {
-    return this.storageService.get(StorageKeys.BOOKMARKS) || {};
-  }
-
-  public updateActiveGeneBookmarks(activeGenomeBookmarks: {
-    [genomeId: string]: PreviouslyViewedObject[];
-  }) {
-    this.storageService.update(StorageKeys.BOOKMARKS, activeGenomeBookmarks);
-  }
-
-  public getPreviouslyViewedObjects(): {
-    [genomeId: string]: PreviouslyViewedObject[];
-  } {
+  public getPreviouslyViewedEntities(): PreviouslyViewedEntities {
     return this.storageService.get(StorageKeys.PREVIOUSLY_VIEWED) || {};
   }
 
-  public updatePreviouslyViewedObjects(activeGenomePreviouslyViewedObjects: {
-    [genomeId: string]: PreviouslyViewedObject[];
-  }) {
+  public updatePreviouslyViewedEntities(
+    activeGenomePreviouslyViewedEntities: PreviouslyViewedEntities
+  ) {
     this.storageService.update(
       StorageKeys.PREVIOUSLY_VIEWED,
-      activeGenomePreviouslyViewedObjects
+      activeGenomePreviouslyViewedEntities
     );
   }
 }
