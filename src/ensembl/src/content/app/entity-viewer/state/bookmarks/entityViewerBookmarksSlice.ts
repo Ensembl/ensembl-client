@@ -15,7 +15,7 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-service';
 type PreviouslyViewedEntity = {
   stable_id: string;
   label: string;
@@ -67,12 +67,9 @@ const bookmarksSlice = createSlice({
       ].slice(0, 20);
       state.previouslyViewed[genomeId] = updatedEntites;
 
-      // TODO:
-      // state here is an Immer object (WritableDraft)
-      // entityViewerBookmarksService.savePreviouslyViewedEntites(state); // possibly we'll have to do something to state to make it serializable
-      // entityViewerSidebarStorageService.updatePreviouslyViewedObjects({
-      //   [activeGenomeId]: limitedPreviouslyViewedObjects
-      // });
+      entityViewerBookmarksStorageService.updatePreviouslyViewedObjects({
+        [genomeId]: updatedEntites
+      });
     }
   }
 });
