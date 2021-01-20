@@ -17,7 +17,7 @@
 import React from 'react';
 import classNamesMerger from 'classnames';
 
-import closeIcon from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import styles from './CustomDownloadInfoCard.scss';
 
@@ -51,8 +51,8 @@ const CustomDownloadInfoCard = (props: Props) => {
       <div className={bodyClassNames}>
         <div>{props.children}</div>
         {onClose && (
-          <span className={styles.closeButton} onClick={onClose}>
-            <img src={closeIcon}></img>
+          <span className={styles.closeButton}>
+            <CloseButton onClick={onClose} />
           </span>
         )}
       </div>

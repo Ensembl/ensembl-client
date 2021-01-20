@@ -21,8 +21,8 @@ import noop from 'lodash/noop';
 import { BreakpointWidth } from 'src/global/globalConfig';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import styles from './StandardAppLayout.scss';
 
@@ -104,7 +104,7 @@ const StandardAppLayout = (props: StandardAppLayoutProps) => {
           </div>
           <div className={styles.sidebar}>{props.sidebarContent}</div>
           <div className={styles.drawer}>
-            <CloseIcon
+            <CloseButton
               className={styles.drawerClose}
               onClick={props.onDrawerClose}
             />

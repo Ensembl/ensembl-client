@@ -17,7 +17,7 @@
 import React from 'react';
 import classNamesMerger from 'classnames';
 
-import closeIcon from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import styles from './Panel.scss';
 
@@ -53,9 +53,7 @@ const Panel = (props: PanelProps) => {
   return (
     <div className={panelClassNames}>
       {onClose && (
-        <span className={closeButtonClassNames} onClick={onClose}>
-          <img src={closeIcon}></img>
-        </span>
+        <CloseButton className={closeButtonClassNames} onClick={onClose} />
       )}
       <div className={headerClassNames}>{header}</div>
       <div className={bodyClassNames}>

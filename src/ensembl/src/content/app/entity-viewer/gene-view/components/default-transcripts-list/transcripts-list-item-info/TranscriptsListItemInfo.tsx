@@ -36,14 +36,14 @@ import { InstantDownloadTranscript } from 'src/shared/components/instant-downloa
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
-import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 export type TranscriptsListItemInfoProps = {
   gene: Gene;
@@ -135,8 +135,8 @@ export const TranscriptsListItemInfo = (
         </div>
         <div className={styles.downloadLink}>
           {props.expandDownload ? (
-            <CloseIcon
-              className={styles.closeIcon}
+            <CloseButton
+              className={styles.closeButton}
               onClick={() =>
                 props.toggleTranscriptDownload(transcript.stable_id)
               }
