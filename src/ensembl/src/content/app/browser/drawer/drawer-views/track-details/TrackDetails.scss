@@ -12,7 +12,7 @@
 
 .standardLabelValue {
     display: grid;
-    grid-template-columns: [label] 150px 10px [value] auto;
+    grid-template-columns: [label] 120px 10px [value] auto;
     margin-bottom:15px;
     .label {
       grid-column: label;
@@ -24,4 +24,28 @@
       grid-column: value;
     }
   }
-  
+
+
+.featureDetails {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
+
+  & > div:not(:first-child) {
+    margin-left: 30px;
+  }
+}
+
+.featureSymbol {
+  font-weight: $bold;
+}
+.stableId{
+  font-weight: $bold;
+}
+.featureSymbol + .stableId{
+  margin-left: 12px;
+  color: $dark-grey;
+  font-weight: $light;
+}
