@@ -20,25 +20,25 @@ import {
   ProteinOption,
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
-import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
+import {
+  fetchSequenceChecksums,
+  ProductGeneratingContextFragment
+} from './fetchSequenceChecksums';
 
 type FetchPayload = {
+  genomeId: string;
   transcriptId: string;
   options: ProteinOptions;
 };
 
-type ProductGeneratingContextFragment = Pick<
-  ProductGeneratingContext,
-  'product' | 'cds'
->;
+export const fetchForProtein = async (payload: FetchPayload) => {
+  const { genomeId, transcriptId, options } = payload;
+  const productGeneratingContext = await fetchSequenceChecksums({
+    genomeId,
+    transcriptId
+  });
 
-export const fetchForProtein = async (
-  productGeneratingContext: ProductGeneratingContextFragment,
-  payload: FetchPayload
-) => {
-  const { transcriptId, options } = payload;
   const urls = buildUrlsForProtein(productGeneratingContext, options);
-
   const sequencePromises = urls.map((url) =>
     fetch(url).then((response) => response.text())
   );

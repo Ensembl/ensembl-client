@@ -22,6 +22,7 @@ import {
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
+import { fetchSequenceChecksums } from './fetchSequenceChecksums';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -31,8 +32,9 @@ type Options = {
 };
 
 type FetchPayload = {
-  transcriptId: string;
+  genomeId: string;
   geneId: string;
+  transcriptId: string;
   options: Options;
 };
 
@@ -41,15 +43,17 @@ type ProductGeneratingContextFragment = Pick<
   'product' | 'cdna' | 'cds'
 >;
 
-export const fetchForTranscript = async (
-  productGeneratingContext: ProductGeneratingContextFragment,
-  payload: FetchPayload
-) => {
+export const fetchForTranscript = async (payload: FetchPayload) => {
   const {
+    genomeId,
     geneId,
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
+  const productGeneratingContext = await fetchSequenceChecksums({
+    genomeId,
+    transcriptId
+  });
   const urls = buildUrlsForTranscript(
     { geneId, productGeneratingContext },
     transcriptOptions

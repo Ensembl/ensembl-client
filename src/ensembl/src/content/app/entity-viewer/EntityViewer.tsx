@@ -15,12 +15,12 @@
  */
 
 import React, { useEffect } from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { replace, Replace } from 'connected-react-router';
 import { useParams } from 'react-router-dom';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
+import { client } from 'src/gql-client';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
@@ -43,6 +43,7 @@ import GeneView from './gene-view/GeneView';
 import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
 import { RootState } from 'src/store';
 import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
@@ -62,22 +63,6 @@ export type EntityViewerParams = {
   genomeId?: string;
   entityId?: string;
 };
-
-const client = new ApolloClient({
-  uri: '/thoas',
-  cache: new InMemoryCache({
-    typePolicies: {
-      Gene: {
-        keyFields: ['stable_id'],
-        fields: {
-          slice: {
-            merge: false
-          }
-        }
-      }
-    }
-  })
-});
 
 const EntityViewer = (props: Props) => {
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
