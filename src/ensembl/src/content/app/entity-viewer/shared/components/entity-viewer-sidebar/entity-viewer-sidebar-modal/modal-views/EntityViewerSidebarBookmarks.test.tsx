@@ -38,7 +38,7 @@ const exampleObjects = [
   }
 ];
 
-const previouslyViewedObjects = [
+const previouslyViewedEntities = [
   {
     stable_id: 'human-fry',
     label: 'FRY',
@@ -70,7 +70,7 @@ const mockState = {
     },
     bookmarks: {
       previouslyViewed: {
-        human: previouslyViewedObjects
+        human: previouslyViewedEntities
       }
     }
   }
@@ -104,6 +104,6 @@ describe('<EntityViewerSidebarBookmarks />', () => {
     );
     const links = previouslyViewedSection.querySelectorAll('a');
 
-    expect(links.length).toBe(previouslyViewedObjects.length);
+    expect(links.length).toBe(previouslyViewedEntities.length);
   });
 });

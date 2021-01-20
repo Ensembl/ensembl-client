@@ -34,17 +34,6 @@ export type EntityViewerSidebarUIState = {
   };
 };
 
-export type PreviouslyViewedObject = {
-  genome_id: string;
-  object_id: string;
-  object_type: string;
-  label: string;
-};
-
-export type PreviouslyViewedObjects = {
-  [genomeId: string]: PreviouslyViewedObject[];
-};
-
 export type EntityViewerSidebarGenomeState = Readonly<{
   status: SidebarStatus;
   selectedTabName: SidebarTabName;

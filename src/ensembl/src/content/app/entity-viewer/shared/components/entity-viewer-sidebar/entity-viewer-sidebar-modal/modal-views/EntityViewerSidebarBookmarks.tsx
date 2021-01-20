@@ -75,7 +75,7 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
 type PreviouslyViewedLinksProps = {
   genomeId: string;
   entityId: string;
-  previouslyViewedObjects: ReturnType<typeof getPreviouslyViewedEntities>;
+  previouslyViewedEntities: ReturnType<typeof getPreviouslyViewedEntities>;
   closeSidebarModal: () => void;
 };
 
@@ -92,36 +92,36 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   };
 
   const activeObjectId = parseEnsObjectId(props.entityId);
-  const previouslyViewedObjectsWithoutActiveObject = props.previouslyViewedObjects.filter(
+  const previouslyViewedEntitiesWithoutActiveObject = props.previouslyViewedEntities.filter(
     (entity) => entity.stable_id !== activeObjectId.objectId
   );
 
   return (
     <div data-test-id="previously viewed links">
-      {[...previouslyViewedObjectsWithoutActiveObject]
+      {[...previouslyViewedEntitiesWithoutActiveObject]
         // .reverse()
-        .map((previouslyViewedObject, index) => {
+        .map((previouslyViewedEntity, index) => {
           const path = urlFor.entityViewer({
             genomeId: props.genomeId,
             entityId: buildFocusIdForUrl({
               type: 'gene',
-              objectId: previouslyViewedObject.stable_id
+              objectId: previouslyViewedEntity.stable_id
             })
           });
 
           return (
             <div
-              key={previouslyViewedObject.label}
+              key={previouslyViewedEntity.label}
               className={styles.linkHolder}
             >
               <Link
                 to={path}
-                onClick={() => onLinkClick(previouslyViewedObject.label, index)}
+                onClick={() => onLinkClick(previouslyViewedEntity.label, index)}
               >
-                {previouslyViewedObject.label}
+                {previouslyViewedEntity.label}
               </Link>
               <span className={styles.previouslyViewedType}>
-                {upperFirst(previouslyViewedObject.type)}
+                {upperFirst(previouslyViewedEntity.type)}
               </span>
             </div>
           );
@@ -137,7 +137,7 @@ export const EntityViewerSidebarBookmarks = () => {
   const exampleEntities = useSelector((state: RootState) =>
     getGenomeExampleFocusObjects(state, activeGenomeId)
   );
-  const previouslyViewedObjects = useSelector((state: RootState) =>
+  const previouslyViewedEntities = useSelector((state: RootState) =>
     getPreviouslyViewedEntities(state, activeGenomeId)
   );
 
@@ -153,13 +153,13 @@ export const EntityViewerSidebarBookmarks = () => {
           closeSidebarModal={() => dispatch(closeSidebarModal)}
         />
       ) : null}
-      {previouslyViewedObjects.length ? (
+      {previouslyViewedEntities.length ? (
         <>
           <div className={styles.sectionTitle}>Previously viewed</div>
           <PreviouslyViewedLinks
             genomeId={activeGenomeId}
             entityId={activeEntityId}
-            previouslyViewedObjects={previouslyViewedObjects}
+            previouslyViewedEntities={previouslyViewedEntities}
             closeSidebarModal={() => dispatch(closeSidebarModal)}
           />
         </>
