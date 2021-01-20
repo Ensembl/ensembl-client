@@ -233,7 +233,7 @@ const TranscriptTrackDetails = () => {
   return (
     <div className={styles.container}>
       <div className={styles.standardLabelValue}>
-        <div className={styles.label}>Gene</div>
+        <div className={styles.label}>Transcript</div>
         <div className={styles.value}>
           <div className={styles.featureDetails}>
             <span className={styles.featureSymbol}>{stableId}</span>
@@ -243,7 +243,13 @@ const TranscriptTrackDetails = () => {
             {transcript.slice.strand.code && (
               <div>{getStrandDisplayName(transcript.slice.strand.code)}</div>
             )}
-            <div>{getFormattedLocation(ensObjectGene.location)}</div>
+            <div>
+              {getFormattedLocation({
+                chromosome: ensObjectGene.location.chromosome,
+                start: transcript.slice.location.start,
+                end: transcript.slice.location.end
+              })}
+            </div>
           </div>
         </div>
       </div>
