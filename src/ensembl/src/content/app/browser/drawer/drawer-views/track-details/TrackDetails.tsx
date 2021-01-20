@@ -17,13 +17,30 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getActiveTrackDetails } from 'src/content/app/browser/drawer/drawerSelectors';
+import {
+  getActiveDrawerTrackId,
+  getActiveTrackDetails
+} from 'src/content/app/browser/drawer/drawerSelectors';
 import { fetchTrackDetails } from 'src/content/app/browser/drawer/drawerActions';
 
+import GeneSummary from 'src/content/app/browser/drawer/drawer-views/gene-summary/GeneSummary';
+import TranscriptSummary from 'src/content/app/browser/drawer/drawer-views/transcript-summary/TranscriptSummary';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+
 import styles from './TrackDetails.scss';
 
 const TrackDetails = () => {
+  const activeTrackId = useSelector(getActiveDrawerTrackId);
+
+  if (activeTrackId === 'track:gene-feat') {
+    return <GeneSummary />;
+  } else if (activeTrackId === 'track:gene-feat-1') {
+    return <TranscriptSummary />;
+  }
+  return <OtherTrackDetails />;
+};
+
+const OtherTrackDetails = () => {
   const trackDetails = useSelector(getActiveTrackDetails);
 
   const dispatch = useDispatch();

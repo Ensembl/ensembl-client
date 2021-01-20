@@ -1,0 +1,59 @@
+@import 'src/styles/common';
+
+.standardLabelValue {
+  display: grid;
+  grid-template-columns: [label] 130px 10px [value] auto;
+  margin-bottom:15px;
+  .label {
+    grid-column: label;
+    color: $dark-grey;
+    text-align: right;
+  }
+
+  .value {
+    grid-column: value;
+
+    span + span {
+      margin-left: 10px;
+    }
+
+    div + div{
+      margin-top: 10px;
+    }
+  }
+}
+
+.greyedText{
+  color: $dark-grey;
+}
+
+.unit{
+  color: $dark-grey;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+
+.value .featureDetails {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
+
+  & > span:not(:first-child) {
+    margin-left: 30px;
+  }
+}
+
+.featureSymbol {
+  font-weight: $bold;
+}
+.stableId{
+  font-weight: $bold;
+}
+.featureSymbol + .stableId{
+  margin-left: 12px;
+  color: $dark-grey;
+  font-weight: $light;
+}

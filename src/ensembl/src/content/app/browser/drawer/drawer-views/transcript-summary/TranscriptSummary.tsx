@@ -15,70 +15,259 @@
  */
 
 import React from 'react';
-import get from 'lodash/get';
-import find from 'lodash/find';
 import { useSelector } from 'react-redux';
+import { gql, useQuery } from '@apollo/client';
 
-import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import {
+  getDisplayStableId,
+  buildFocusIdForUrl
+} from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
+// TODO: check if this can be moved to a common place
+import {
+  getNumberOfCodingExons,
+  getProductAminoAcidLength,
+  getSplicedRNALength
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
+import { Transcript as TranscriptFromGraphql } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
 
-import styles from 'src/content/app/browser/drawer/Drawer.scss';
+import styles from './TranscriptSummary.scss';
 
-// TODO: Once we start supporting multiple transcripts, we need to either remove this constant or move it to trackConfig
-const TRANSCRIPT_GENE_NAME = 'track:gene-feat-1';
+type Transcript = Required<
+  Pick<
+    TranscriptFromGraphql,
+    | 'stable_id'
+    | 'symbol'
+    | 'so_term'
+    | 'slice'
+    | 'spliced_exons'
+    | 'product_generating_contexts'
+  >
+>;
+
+type Gene = Required<Pick<GeneFromGraphql, 'stable_id' | 'symbol' | 'name'>>;
+
+const GENE_AND_TRANSCRIPT_QUERY = gql`
+  query Gene($genomeId: String!, $geneId: String!, $transcriptId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      name
+      stable_id
+      symbol
+    }
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      stable_id
+      so_term
+      symbol
+      spliced_exons {
+        relative_location {
+          start
+          end
+        }
+        exon {
+          stable_id
+          slice {
+            location {
+              length
+            }
+          }
+        }
+      }
+      product_generating_contexts {
+        product_type
+        cds {
+          relative_start
+          relative_end
+        }
+        cdna {
+          length
+        }
+        phased_exons {
+          start_phase
+          end_phase
+          exon {
+            stable_id
+          }
+        }
+        product {
+          stable_id
+          unversioned_stable_id
+          length
+          external_references {
+            accession_id
+            url
+            source {
+              id
+            }
+          }
+        }
+      }
+      slice {
+        strand {
+          code
+          value
+        }
+        location {
+          start
+          end
+          length
+        }
+      }
+    }
+  }
+`;
 
 const TranscriptSummary = () => {
-  const ensObject = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
+  const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
 
-  if (!ensObject.track) {
+  const transcriptTrack = ensObjectGene?.track?.child_tracks?.[0];
+
+  const { data, loading } = useQuery<{
+    gene: Gene;
+    transcript: Transcript;
+  }>(GENE_AND_TRANSCRIPT_QUERY, {
+    variables: {
+      geneId: ensObjectGene.stable_id,
+      transcriptId: transcriptTrack?.stable_id,
+      genomeId: ensObjectGene.genome_id
+    },
+    skip: !transcriptTrack?.stable_id
+  });
+
+  if (loading) {
     return null;
   }
 
-  // FIXME: this is a temporary function; need to come up with something more robust
-  const getTranscriptTrack = () => {
-    const childTracks = get(ensObject, 'track.child_tracks', []);
-
-    return find(childTracks, { track_id: TRANSCRIPT_GENE_NAME }) || null;
-  };
-
-  // FIXME: this is a very horrible temporary function;
-  // it will break when multiple transcripts are added
-  // but by that time we'll have to do a major refactor for ensObject and ensObject tracks anyway
-  const getTranscriptStableId = () => {
-    return get(ensObject, 'track.child_tracks.0.label', '');
-  };
-
-  const transcriptTrack = getTranscriptTrack();
-
-  if (!transcriptTrack) {
-    return null;
+  if (!data?.gene || !data.transcript) {
+    return <div>No data available</div>;
   }
+
+  const { gene, transcript } = data;
+
+  const { product } = transcript.product_generating_contexts[0];
+  const stableId = getDisplayStableId(transcript);
+
+  const focusId = buildFocusIdForUrl({
+    type: 'gene',
+    objectId: gene.stable_id as string
+  });
+
+  const entityViewerUrl = urlFor.entityViewer({
+    genomeId: ensObjectGene.genome_id,
+    entityId: focusId
+  });
+
+  // TODO: Wait for Jyo's PR #436 to be merged in
+  const uniprotXref = product?.external_references.find(
+    (xref) => xref.source.id == 'Uniprot/SWISSPROT'
+  );
+
+  const splicedRNALength = getCommaSeparatedNumber(
+    getSplicedRNALength(transcript)
+  );
+
+  const productAminoAcidLength = getCommaSeparatedNumber(
+    getProductAminoAcidLength(transcript)
+  );
 
   return (
-    <div className={styles.drawerView}>
-      <div className={styles.container}>
+    <div className={styles.container}>
+      <div className={styles.standardLabelValue}>
         <div className={styles.label}>Transcript</div>
-        <div className={styles.details}>
-          <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
-          <span className={styles.secondaryDetail}>
-            {transcriptTrack.additional_info}
-          </span>
+        <div className={styles.value}>
+          <div className={styles.featureDetails}>
+            <span className={styles.featureSymbol}>{stableId}</span>
+            {transcript.so_term && (
+              <span>{transcript.so_term.toLowerCase()}</span>
+            )}
+            {transcript.slice.strand.code && (
+              <span>{getStrandDisplayName(transcript.slice.strand.code)}</span>
+            )}
+            <span>{getFormattedLocation(ensObjectGene.location)}</span>
+          </div>
         </div>
+      </div>
 
+      <div className={styles.standardLabelValue}>
+        <div className={styles.label}>Transcript name</div>
+        <div className={styles.value}>{transcript.symbol}</div>
+      </div>
+
+      <div className={styles.standardLabelValue}>
+        <div className={styles.label}>Transcript length</div>
+        <div className={styles.value}>{transcript.slice.location.length}</div>
+      </div>
+
+      <div className={styles.standardLabelValue}>
+        <div className={styles.value}>
+          {transcript.spliced_exons.length} exons
+        </div>
+      </div>
+
+      <div className={styles.standardLabelValue}>
+        <div className={styles.label}>Coding exons</div>
+        <div className={styles.value}>{getNumberOfCodingExons(transcript)}</div>
+      </div>
+
+      <div className={styles.standardLabelValue}>
+        <div className={styles.label}>Combined exon length </div>
+        <div className={styles.value}>
+          {splicedRNALength} <span className={styles.unit}>bp</span>
+        </div>
+      </div>
+
+      {transcript.so_term === 'protein_coding' && (
+        <div className={styles.standardLabelValue}>
+          <div className={styles.label}>Protein</div>
+          <div className={styles.value}>
+            <div>
+              {productAminoAcidLength} <span className={styles.unit}>aa</span>
+            </div>
+            <div className={styles.greyedText}>{product.stable_id}</div>
+            {uniprotXref && (
+              <ExternalReference
+                classNames={{ label: styles.greyedText }}
+                label={'UniProtKB/Swiss-Prot'}
+                to={uniprotXref.url}
+                linkText={uniprotXref.accession_id}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className={styles.standardLabelValue}>
+        <div className={styles.value}>
+          <ViewInApp
+            classNames={{ label: styles.greyedText }}
+            links={{ entityViewer: entityViewerUrl }}
+          />
+        </div>
+      </div>
+
+      <div className={styles.standardLabelValue}>
         <div className={styles.label}>Gene</div>
-        <div className={styles.details}>
-          <span>{ensObject.label}</span>
-          <span className={styles.secondaryDetail}>
-            {getDisplayStableId(ensObject)}
-          </span>
+        <div className={styles.value}>
+          <div>
+            {gene.symbol && <span>{gene.symbol}</span>}
+            {gene.symbol !== stableId && <span>{stableId}</span>}
+          </div>
         </div>
+      </div>
 
-        <div className={styles.label}>Description</div>
-        <div className={styles.details}>
-          {transcriptTrack.description || '--'}
-        </div>
+      <div className={styles.standardLabelValue}>
+        <div className={styles.label}>Gene name</div>
+        <div className={styles.value}>{gene.name}</div>
       </div>
     </div>
   );
