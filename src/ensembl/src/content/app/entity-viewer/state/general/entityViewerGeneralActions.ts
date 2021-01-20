@@ -31,11 +31,9 @@ import { getCommittedSpecies } from 'src/content/app/species-selector/state/spec
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityIds,
-  getEntityViewerActiveEntity,
   getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
-import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
@@ -159,11 +157,6 @@ export const updateEntityId: ActionCreator<ThunkAction<
       [activeGenomeId]: activeEntityId
     };
 
-    const currentEntity = getEntityViewerActiveEntity(state);
-
     dispatch(updateActiveEntityForGenome(updatedActiveEntityIds));
-    if (!currentEntity) {
-      dispatch(fetchEnsObject(activeEntityId));
-    }
   };
 };
