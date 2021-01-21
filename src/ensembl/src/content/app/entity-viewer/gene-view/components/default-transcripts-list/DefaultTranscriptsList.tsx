@@ -128,9 +128,7 @@ const DefaultTranscriptslist = (props: Props) => {
           return (
             <DefaultTranscriptsListItem
               key={index}
-              isDefault={
-                transcript.stable_id === defaultTranscriptId ? true : false
-              }
+              isDefault={transcript.stable_id === defaultTranscriptId}
               gene={gene}
               transcript={transcript}
               rulerTicks={props.rulerTicks}
