@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount, render } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import StandardAppLayout from './StandardAppLayout';
@@ -65,54 +66,57 @@ const minimalProps = {
 };
 
 describe('StandardAppLayout', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('rendering', () => {
     it('renders the main content in the main section', () => {
-      const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.main').find('.mainContent').length).toBe(1);
+      const { container } = render(<StandardAppLayout {...minimalProps} />);
+      const mainSection = container.querySelector('.main') as HTMLElement;
+      expect(mainSection.querySelector('.mainContent')).toBeTruthy();
     });
 
     it('renders the top bar content in the top bar', () => {
-      const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.topbar').find('.topbarContent').length).toBe(1);
+      const { container } = render(<StandardAppLayout {...minimalProps} />);
+      const topBar = container.querySelector('.topbar') as HTMLElement;
+      expect(topBar.querySelector('.topbarContent')).toBeTruthy();
     });
 
     it('renders the sidebar content in the sidebar', () => {
-      const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.sidebar').find('.sidebarContent').length).toBe(1);
+      const { container } = render(<StandardAppLayout {...minimalProps} />);
+      const sidebar = container.querySelector('.sidebar') as HTMLElement;
+      expect(sidebar.querySelectorAll('.sidebarContent')).toBeTruthy();
     });
 
     it('renders sidebar navigation in appropriate slot', () => {
-      const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(wrapper.find('.topbar').find('.sidebarNavigation').length).toBe(1);
+      const { container } = render(<StandardAppLayout {...minimalProps} />);
+      const topBar = container.querySelector('.topbar') as HTMLElement;
+      expect(topBar.querySelector('.sidebarNavigation')).toBeTruthy();
     });
 
     it('renders sidebar toolstrip content in the sidebar toolstrip', () => {
-      const wrapper = render(<StandardAppLayout {...minimalProps} />);
-      expect(
-        wrapper.find('.sidebarToolstripContent').find('.toolstripContent')
-          .length
-      ).toBe(1);
+      const { container } = render(<StandardAppLayout {...minimalProps} />);
+      const sidebarToolstrip = container.querySelector(
+        '.sidebarToolstripContent'
+      ) as HTMLElement;
+      expect(sidebarToolstrip.querySelector('.toolstripContent')).toBeTruthy();
     });
 
     it('applies correct classes to the main section depending on whether sidebar is open', () => {
       // sidebar is open; main section is narrower
-      let wrapper, mainContent;
-      wrapper = render(<StandardAppLayout {...minimalProps} />);
-      mainContent = wrapper.find('.main');
-      expect(mainContent.hasClass('mainDefault')).toBe(true);
-      expect(mainContent.hasClass('mainFullWidth')).toBe(false);
+      const { container, rerender } = render(
+        <StandardAppLayout {...minimalProps} />
+      );
+      const mainSection = container.querySelector('.main') as HTMLElement;
+
+      expect(mainSection.classList.contains('mainDefault')).toBe(true);
+      expect(mainSection.classList.contains('mainFullWidth')).toBe(false);
 
       // sidebar is closed; main section is wider
-      wrapper = render(
-        <StandardAppLayout {...minimalProps} isSidebarOpen={false} />
-      );
-      mainContent = wrapper.find('.main');
-      expect(mainContent.hasClass('mainDefault')).toBe(false);
-      expect(mainContent.hasClass('mainFullWidth')).toBe(true);
+      rerender(<StandardAppLayout {...minimalProps} isSidebarOpen={false} />);
+      expect(mainSection.classList.contains('mainDefault')).toBe(false);
+      expect(mainSection.classList.contains('mainFullWidth')).toBe(true);
     });
 
     describe('with drawer', () => {
@@ -124,38 +128,58 @@ describe('StandardAppLayout', () => {
       };
 
       it('renders drawer content in the drawer', () => {
-        const wrapper = render(<StandardAppLayout {...props} />);
-        expect(wrapper.find('.drawer').find('.drawerContent').length).toBe(1);
+        const { container } = render(<StandardAppLayout {...props} />);
+        const drawer = container.querySelector('.drawer') as HTMLElement;
+        expect(drawer.querySelector('.drawerContent')).toBeTruthy();
       });
 
       it('applies correct classes to the sidebar/drawer wrapper', () => {
-        let wrapper, sidebarWrapper;
         const closedSidebarProps = {
           ...props,
           isSidebarOpen: false
         };
-        wrapper = render(<StandardAppLayout {...closedSidebarProps} />);
-        sidebarWrapper = wrapper.find('.sidebarWrapper');
-        expect(sidebarWrapper.hasClass('sidebarWrapperOpen')).toBe(false);
-        expect(sidebarWrapper.hasClass('sidebarWrapperClosed')).toBe(true);
-        expect(sidebarWrapper.hasClass('sidebarWrapperDrawerOpen')).toBe(false);
+        const { container, rerender } = render(
+          <StandardAppLayout {...closedSidebarProps} />
+        );
+        const sidebarWrapper = container.querySelector(
+          '.sidebarWrapper'
+        ) as HTMLElement;
+        expect(sidebarWrapper.classList.contains('sidebarWrapperOpen')).toBe(
+          false
+        );
+        expect(sidebarWrapper.classList.contains('sidebarWrapperClosed')).toBe(
+          true
+        );
+        expect(
+          sidebarWrapper.classList.contains('sidebarWrapperDrawerOpen')
+        ).toBe(false);
 
         const openSidebarProps = props;
-        wrapper = render(<StandardAppLayout {...openSidebarProps} />);
-        sidebarWrapper = wrapper.find('.sidebarWrapper');
-        expect(sidebarWrapper.hasClass('sidebarWrapperOpen')).toBe(true);
-        expect(sidebarWrapper.hasClass('sidebarWrapperClosed')).toBe(false);
-        expect(sidebarWrapper.hasClass('sidebarWrapperDrawerOpen')).toBe(false);
+        rerender(<StandardAppLayout {...openSidebarProps} />);
+        expect(sidebarWrapper.classList.contains('sidebarWrapperOpen')).toBe(
+          true
+        );
+        expect(sidebarWrapper.classList.contains('sidebarWrapperClosed')).toBe(
+          false
+        );
+        expect(
+          sidebarWrapper.classList.contains('sidebarWrapperDrawerOpen')
+        ).toBe(false);
 
         const openDrawerProps = {
           ...props,
           isDrawerOpen: true
         };
-        wrapper = render(<StandardAppLayout {...openDrawerProps} />);
-        sidebarWrapper = wrapper.find('.sidebarWrapper');
-        expect(sidebarWrapper.hasClass('sidebarWrapperOpen')).toBe(true);
-        expect(sidebarWrapper.hasClass('sidebarWrapperClosed')).toBe(false);
-        expect(sidebarWrapper.hasClass('sidebarWrapperDrawerOpen')).toBe(true);
+        rerender(<StandardAppLayout {...openDrawerProps} />);
+        expect(sidebarWrapper.classList.contains('sidebarWrapperOpen')).toBe(
+          true
+        );
+        expect(sidebarWrapper.classList.contains('sidebarWrapperClosed')).toBe(
+          false
+        );
+        expect(
+          sidebarWrapper.classList.contains('sidebarWrapperDrawerOpen')
+        ).toBe(true);
       });
     });
   });
@@ -172,18 +196,18 @@ describe('StandardAppLayout', () => {
       const props = { ...commonProps, isSidebarOpen: false };
 
       test('sidebar navigation tabs are rendered for desktop viewport and larger', () => {
-        const wrapper = mount(<StandardAppLayout {...props} />);
-        expect(wrapper.find('.sidebarNavigation').length).toBe(1);
+        const { container } = render(<StandardAppLayout {...props} />);
+        expect(container.querySelector('.sidebarNavigation')).toBeTruthy();
       });
 
       test('sidebar navigation tabs are not rendered for laptop viewport and smaller', () => {
-        const wrapper = mount(
+        const { container } = render(
           <StandardAppLayout
             {...props}
             viewportWidth={BreakpointWidth.LAPTOP}
           />
         );
-        expect(wrapper.find('.sidebarNavigation').length).toBe(0);
+        expect(container.querySelector('.sidebarNavigation')).toBeFalsy();
       });
     });
 
@@ -191,14 +215,17 @@ describe('StandardAppLayout', () => {
       const props = commonProps;
 
       it('calls onSidebarToggle when sidebar toggle button is clicked', () => {
-        const wrapper = mount(<StandardAppLayout {...props} />);
-        wrapper.find('.sidebarModeToggleChevron').simulate('click');
+        const { rerender } = render(<StandardAppLayout {...props} />);
+        const sidebarToggleButton = screen.getByTestId(
+          'sidebarModeToggle'
+        ) as HTMLElement;
+        userEvent.click(sidebarToggleButton);
 
         expect(props.onSidebarToggle).toHaveBeenCalledTimes(1);
 
         // do the same for closed sidebar
-        wrapper.setProps({ isSidebarOpen: false });
-        wrapper.find('.sidebarModeToggleChevron').simulate('click');
+        rerender(<StandardAppLayout {...props} isSidebarOpen={false} />);
+        userEvent.click(sidebarToggleButton);
 
         expect(props.onSidebarToggle).toHaveBeenCalledTimes(2);
         expect(props.onDrawerClose).not.toHaveBeenCalled();
@@ -209,23 +236,32 @@ describe('StandardAppLayout', () => {
       const props = { ...commonProps, isDrawerOpen: true };
 
       it('closes drawer when sidebar toggle button is clicked', () => {
-        const wrapper = mount(<StandardAppLayout {...props} />);
-        wrapper.find('.sidebarModeToggleChevron').simulate('click');
+        render(<StandardAppLayout {...props} />);
+        const sidebarToggleButton = screen.getByTestId(
+          'sidebarModeToggle'
+        ) as HTMLElement;
+        userEvent.click(sidebarToggleButton);
 
         expect(props.onDrawerClose).toHaveBeenCalledTimes(1);
         expect(props.onSidebarToggle).not.toHaveBeenCalled();
       });
 
       it('closes drawer when drawer close button is clicked', () => {
-        const wrapper = mount(<StandardAppLayout {...props} />);
-        wrapper.find('.drawerClose').simulate('click');
+        const { container } = render(<StandardAppLayout {...props} />);
+        const closeDrawerButton = container.querySelector(
+          '.drawerClose'
+        ) as HTMLElement;
+        userEvent.click(closeDrawerButton);
 
         expect(props.onDrawerClose).toHaveBeenCalledTimes(1);
       });
 
       it('closes drawer when drawer’s transparent window is clicked', () => {
-        const wrapper = mount(<StandardAppLayout {...props} />);
-        wrapper.find('.drawerWindow').simulate('click');
+        const { container } = render(<StandardAppLayout {...props} />);
+        const drawerWindow = container.querySelector(
+          '.drawerWindow'
+        ) as HTMLElement;
+        userEvent.click(drawerWindow);
 
         expect(props.onDrawerClose).toHaveBeenCalledTimes(1);
       });

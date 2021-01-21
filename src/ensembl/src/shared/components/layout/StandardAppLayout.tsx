@@ -129,7 +129,11 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
 
   return (
     <div className={styles.sidebarModeToggle}>
-      <Chevron className={chevronClasses} onClick={props.onClick} />
+      <Chevron
+        className={chevronClasses}
+        onClick={props.onClick}
+        data-test-id="sidebarModeToggle"
+      />
     </div>
   );
 };
