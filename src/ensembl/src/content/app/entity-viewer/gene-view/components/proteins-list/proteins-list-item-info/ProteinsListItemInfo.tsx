@@ -39,6 +39,8 @@ import { LoadingState } from 'src/shared/types/loading-state';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
 
+import { SWISSPROT_SOURCE } from '../protein-list-constants';
+
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
@@ -90,7 +92,7 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   const uniprotXref = product?.external_references.find(
-    (xref) => xref.source.id == 'Uniprot/SWISSPROT'
+    (xref) => xref.source.id == SWISSPROT_SOURCE
   );
 
   useEffect(() => {
