@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import classNamesMerger from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -22,8 +22,8 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 import styles from './Panel.scss';
 
 export type PanelProps = {
-  header: string | JSX.Element;
-  children: JSX.Element;
+  header: ReactNode;
+  children: ReactNode;
   classNames?: {
     panel?: string;
     header?: string;
