@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
 
 import ProteinsListItem from './proteins-list-item/ProteinsListItem';
@@ -24,39 +24,52 @@ import {
   getLongestProteinLength,
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import {
+  transcriptSortingFunctions,
+  defaultSort
+} from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
+import { getSortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { RootState } from 'src/store';
+import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
 import styles from './ProteinsList.scss';
 
 type ProteinsListProps = {
   gene: Gene;
-  expandedTranscriptIds: string[];
-  toggleExpandedProtein: (id: string) => void;
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
+  const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
+  const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
+  const defaultTranscriptId = useMemo(() => {
+    const defaultTranscripts = defaultSort(props.gene.transcripts);
+    return defaultTranscripts[0].stable_id;
+  }, [props.gene.stable_id]);
 
-  const sortedTranscripts = defaultSort(props.gene.transcripts);
+  const sortingRule = useSelector(getSortingRule);
+
+  const sortingFunction = transcriptSortingFunctions[sortingRule];
+  const sortedTranscripts = sortingFunction(
+    props.gene.transcripts
+  ) as Transcript[];
   const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
   );
 
   useEffect(() => {
-    const hasExpandedTranscripts = !!props.expandedTranscriptIds.length;
+    const hasExpandedTranscripts = !!expandedTranscriptIds.length;
     const firstProteinId =
       proteinCodingTranscripts[0].product_generating_contexts[0].product
         .stable_id;
     // Expand the first transcript by default
     if (!hasExpandedTranscripts && !proteinIdToFocus) {
-      props.toggleExpandedProtein(firstProteinId);
+      dispatch(toggleExpandedProtein(firstProteinId));
     }
   }, []);
 
@@ -64,10 +77,10 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   return (
     <div className={styles.proteinsList}>
-      {proteinCodingTranscripts.map((transcript, index) => (
+      {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem
           key={transcript.stable_id}
-          isDefault={index == 0}
+          isDefault={transcript.stable_id === defaultTranscriptId}
           transcript={transcript}
           trackLength={longestProteinLength}
         />
@@ -76,12 +89,4 @@ const ProteinsList = (props: ProteinsListProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  expandedTranscriptIds: getExpandedTranscriptIds(state)
-});
-
-const mapDispatchToProps = {
-  toggleExpandedProtein
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProteinsList);
+export default ProteinsList;

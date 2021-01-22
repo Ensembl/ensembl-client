@@ -19,6 +19,8 @@ import windowService, {
 } from 'src/services/window-service';
 import mergeWith from 'lodash/mergeWith';
 import JSONValue, { PrimitiveValue, ArrayValue } from 'src/shared/types/JSON';
+import isArray from 'lodash/isArray';
+import unset from 'lodash/unset';
 
 export enum StorageType {
   LOCAL_STORAGE = 'localstorage',
@@ -36,6 +38,11 @@ export interface StorageServiceInterface {
   save: (key: string, value: ValueForSaving, options?: options) => void;
   update: (key: string, fragment: JSONValue, options?: options) => void;
   remove: (key: string, options?: options) => void;
+  removeAt: (
+    key: string,
+    pathOrPaths: string | string[],
+    options?: options
+  ) => void;
   clearAll: () => void;
 }
 
@@ -44,7 +51,17 @@ const defaultOptions: options = {
 };
 
 // We need to overwrite the arrays instead of merging them so that it is easier to remove entries
-const overwriteArray = (currentValue: JSONValue, newValue: JSONValue) => {
+const mergeStrategy = (
+  currentValue: JSONValue,
+  newValue: JSONValue,
+  key: string,
+  object: JSONValue
+) => {
+  // Unset the property if the source value is undefined
+  if (newValue === undefined) {
+    unset(object, key);
+  }
+
   if (Array.isArray(currentValue)) {
     return newValue;
   }
@@ -82,7 +99,7 @@ export class StorageService implements StorageServiceInterface {
   public update(key: string, fragment: JSONValue, options = defaultOptions) {
     const storedData = this.get(key, options);
     if (storedData) {
-      this.save(key, mergeWith(storedData, fragment, overwriteArray), options);
+      this.save(key, mergeWith(storedData, fragment, mergeStrategy), options);
     } else {
       this.save(key, fragment, options);
     }
@@ -91,6 +108,17 @@ export class StorageService implements StorageServiceInterface {
   public remove(key: string, options = defaultOptions) {
     const storage = this.chooseStorage(options.storage);
     storage.removeItem(key);
+  }
+
+  public removeAt(
+    key: string,
+    pathOrPaths: string | string[],
+    options = defaultOptions
+  ) {
+    const paths = isArray(pathOrPaths) ? pathOrPaths : [pathOrPaths];
+    const storedData = this.get(key, options);
+    unset(storedData, paths);
+    this.save(key, storedData, options);
   }
 
   public clearAll() {

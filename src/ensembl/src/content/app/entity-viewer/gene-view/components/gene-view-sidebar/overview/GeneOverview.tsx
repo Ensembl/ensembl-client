@@ -17,16 +17,21 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
-
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import GenePublications from '../publications/GenePublications';
+import MainAccordion from './MainAccordion';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
 
 import styles from './GeneOverview.scss';
 
+/*  
+  TODO: When more data becomes available
+  Please refer to the PR https://github.com/Ensembl/ensembl-client/pull/422
+  and check if some of the deleted code segments can be reused to display the new data.
+*/
 export const GENE_OVERVIEW_QUERY = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
@@ -87,6 +92,8 @@ const GeneOverview = () => {
           ? gene.alternative_symbols.join(', ')
           : 'No synonyms'}
       </div>
+
+      <MainAccordion />
 
       <GenePublications gene={gene} />
     </div>

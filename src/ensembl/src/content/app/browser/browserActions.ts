@@ -20,6 +20,7 @@ import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
 import get from 'lodash/get';
+import pickBy from 'lodash/pickBy';
 
 import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -58,6 +59,7 @@ import {
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 import analyticsTracking from 'src/services/analytics-service';
+import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -399,3 +401,25 @@ export const toggleRegionEditorActive = createAction(
 export const toggleRegionFieldActive = createAction(
   'browser/toggle-region-field-active'
 )<boolean>();
+
+export const deleteGenome = createAction('browser/delete-genome')<string>();
+
+export const deleteSpeciesInGenomeBrowser = (
+  genomeIdToRemove: string
+): ThunkAction<void, any, null, Action<string>> => {
+  return (dispatch, getState: () => RootState) => {
+    const state = getState();
+
+    dispatch(deleteGenome(genomeIdToRemove));
+
+    const updatedActiveEnsObjectIds = pickBy(
+      getBrowserActiveEnsObjectIds(state),
+      (value, key) => key !== genomeIdToRemove
+    );
+
+    dispatch(updateBrowserActiveEnsObjectIds(updatedActiveEnsObjectIds));
+
+    browserStorageService.deleteGenome(genomeIdToRemove);
+    trackPanelStorageService.deleteGenome(genomeIdToRemove);
+  };
+};

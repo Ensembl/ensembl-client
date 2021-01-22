@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { transcriptSortingFunctions } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import {
+  transcriptSortingFunctions,
+  defaultSort
+} from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import {
   getExpandedTranscriptIds,
@@ -57,6 +60,12 @@ const DefaultTranscriptslist = (props: Props) => {
   const dispatch = useDispatch();
 
   const { gene } = props;
+
+  //Using this to get the default order of transcripts in which the first one is selected, this might change later with the data coming directly from thoas
+  const defaultTranscriptId = useMemo(() => {
+    const sortedTranscripts = defaultSort(gene.transcripts);
+    return sortedTranscripts[0].stable_id;
+  }, [gene.stable_id]);
 
   const sortingFunction = transcriptSortingFunctions[sortingRule];
   const sortedTranscripts = sortingFunction(gene.transcripts) as Transcript[];
@@ -119,7 +128,7 @@ const DefaultTranscriptslist = (props: Props) => {
           return (
             <DefaultTranscriptsListItem
               key={index}
-              isDefault={index === 0}
+              isDefault={transcript.stable_id === defaultTranscriptId}
               gene={gene}
               transcript={transcript}
               rulerTicks={props.rulerTicks}

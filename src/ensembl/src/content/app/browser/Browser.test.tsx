@@ -64,7 +64,6 @@ describe('<Browser />', () => {
     isDrawerOpened: false,
     isTrackPanelOpened: false,
     exampleEnsObjects: [],
-    fetchGenomeData: jest.fn(),
     toggleTrackPanel: jest.fn(),
     toggleDrawer: jest.fn(),
     viewportWidth: BreakpointWidth.DESKTOP
@@ -134,19 +133,6 @@ describe('<Browser />', () => {
         wrapper.setProps({ isDrawerOpened: true });
         expect(wrapper.find(BrowserNavBar).length).toBe(0);
       });
-    });
-  });
-
-  describe('behaviour', () => {
-    test('fetches genome data when selected genome changes', () => {
-      const wrapper = mountBrowserComponent({ activeGenomeId: null });
-      expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(0);
-
-      wrapper.setProps({ activeGenomeId: faker.lorem.words() });
-      expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(1);
-
-      wrapper.setProps({ activeGenomeId: faker.lorem.words() });
-      expect(wrapper.props().fetchGenomeData).toHaveBeenCalledTimes(2);
     });
   });
 });

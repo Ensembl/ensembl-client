@@ -102,9 +102,11 @@ describe('storageService', () => {
         const key = faker.lorem.word();
         const key1 = faker.lorem.word();
         const key2 = faker.lorem.word();
+        const key3 = faker.lorem.word();
         const arrayKey1 = faker.lorem.word();
         const arrayKey2 = faker.lorem.word();
 
+        const value = faker.lorem.words();
         const value1 = faker.lorem.words();
         const value2 = faker.lorem.words();
         const value3 = faker.lorem.words();
@@ -113,15 +115,17 @@ describe('storageService', () => {
         const arrayValue3 = [faker.lorem.words()];
 
         const obj = {
-          [key1]: value1,
+          [key1]: value,
+          [key3]: value3,
           [arrayKey1]: arrayValue1,
           [arrayKey2]: arrayValue2
         };
         const updateObj = {
-          [key1]: value3,
+          [key1]: value2,
+          [key3]: undefined,
           [arrayKey1]: [],
           [arrayKey2]: arrayValue3,
-          [key2]: value2
+          [key2]: value1
         };
 
         jest
@@ -148,6 +152,49 @@ describe('storageService', () => {
         storageService.remove(key);
 
         expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(key);
+      });
+    });
+
+    describe('.removeAt()', () => {
+      it('removes a particular entry from the value object for the given path', () => {
+        const key = faker.lorem.word();
+        const key1 = faker.lorem.word();
+        const key2 = faker.lorem.word();
+
+        const obj = {
+          [key]: {
+            [key1]: {
+              [key2]: {
+                foo: 1,
+                bar: 1
+              }
+            }
+          }
+        };
+
+        const updateObj = {
+          [key]: {
+            [key1]: {
+              [key2]: {
+                bar: 1
+              }
+            }
+          }
+        };
+
+        jest
+          .spyOn(mockLocalStorage, 'getItem')
+          .mockImplementation(() => JSON.stringify(obj));
+
+        const storageService = new StorageService(mockWindowService);
+        storageService.removeAt(key, [key, key1, key2, 'foo'], {
+          storage: StorageType.LOCAL_STORAGE
+        });
+
+        const [passedKey, passedValue] = mockLocalStorage.setItem.mock.calls[0];
+
+        expect(passedKey).toBe(key);
+        expect(passedValue).toBe(JSON.stringify(updateObj));
       });
     });
   });
@@ -267,6 +314,52 @@ describe('storageService', () => {
         storageService.remove(key, { storage: StorageType.SESSION_STORAGE });
 
         expect(mockSessionStorage.removeItem).toHaveBeenCalledWith(key);
+      });
+    });
+
+    describe('.removeAt()', () => {
+      it('removes a particular entry from the value object for the given path', () => {
+        const key = faker.lorem.word();
+        const key1 = faker.lorem.word();
+        const key2 = faker.lorem.word();
+
+        const obj = {
+          [key]: {
+            [key1]: {
+              [key2]: {
+                foo: 1,
+                bar: 1
+              }
+            }
+          }
+        };
+
+        const updateObj = {
+          [key]: {
+            [key1]: {
+              [key2]: {
+                bar: 1
+              }
+            }
+          }
+        };
+
+        jest
+          .spyOn(mockSessionStorage, 'getItem')
+          .mockImplementation(() => JSON.stringify(obj));
+
+        const storageService = new StorageService(mockWindowService);
+        storageService.removeAt(key, [key, key1, key2, 'foo'], {
+          storage: StorageType.SESSION_STORAGE
+        });
+
+        const [
+          passedKey,
+          passedValue
+        ] = mockSessionStorage.setItem.mock.calls[0];
+
+        expect(passedKey).toBe(key);
+        expect(passedValue).toBe(JSON.stringify(updateObj));
       });
     });
   });

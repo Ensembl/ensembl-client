@@ -34,7 +34,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -136,8 +136,8 @@ export const TranscriptsListItemInfo = (
         </div>
         <div className={styles.downloadLink}>
           {props.expandDownload ? (
-            <CloseIcon
-              className={styles.closeIcon}
+            <CloseButton
+              className={styles.closeButton}
               onClick={() =>
                 props.toggleTranscriptDownload(transcript.stable_id)
               }

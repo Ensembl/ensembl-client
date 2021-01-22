@@ -35,7 +35,7 @@ import RadioGroup, {
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
@@ -150,7 +150,7 @@ const TranscriptsFilter = (props: Props) => {
             <div className={styles.filterColumn}>{checkboxes}</div>
           </div>
         </div>
-        <CloseIcon className={styles.closeIcon} onClick={props.toggleFilter} />
+        <CloseButton onClick={props.toggleFilter} />
       </div>
     </div>
   );

@@ -80,7 +80,7 @@ describe('BrowserNavBarMain', () => {
     userEvent.click(changeButton);
 
     const closeButton = container.querySelector(
-      '.contentSwitcherClose'
+      '.closeButton'
     ) as HTMLSpanElement;
     userEvent.click(closeButton);
 

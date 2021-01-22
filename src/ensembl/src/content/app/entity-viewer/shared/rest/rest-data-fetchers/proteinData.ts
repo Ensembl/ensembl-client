@@ -87,20 +87,3 @@ export const fetchProteinSummaryStats = async (
 
   return restProteinSummaryAdaptor(proteinStatsData[xrefId]);
 };
-
-type InterproResponse = {
-  entries: unknown;
-};
-
-export const checkInterproUniprotId = async (
-  uniprotId: string,
-  signal?: AbortSignal
-): Promise<boolean> => {
-  const interproUrl = `https://www.ebi.ac.uk/interpro/api/entry/protein/uniprot/${uniprotId}`;
-
-  const interproData: InterproResponse = await apiService.fetch(interproUrl, {
-    signal
-  });
-
-  return !!interproData?.entries;
-};

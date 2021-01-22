@@ -26,6 +26,7 @@ const mockStorageService = {
   save: jest.fn(),
   update: jest.fn(),
   remove: jest.fn(),
+  removeAt: jest.fn(),
   clearAll: jest.fn()
 };
 
