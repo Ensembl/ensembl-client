@@ -21,9 +21,9 @@ import faker from 'faker';
 
 import Panel, { PanelProps } from './Panel';
 
-const panelContent = faker.lorem.words();
+const panelContent = 'This content goes into the panel’s body';
 
-const panelHeader = faker.lorem.words();
+const panelHeader = 'This content goes into the panel’s header';
 
 const onClose = jest.fn();
 
