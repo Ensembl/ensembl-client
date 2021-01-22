@@ -21,9 +21,9 @@ import faker from 'faker';
 
 import Panel, { PanelProps } from './Panel';
 
-const panelContent = 'This content goes into the panel’s body';
+const panelBodyContent = 'This content goes into the panel’s body';
 
-const panelHeader = 'This content goes into the panel’s header';
+const panelHeaderContent = 'This content goes into the panel’s header';
 
 const onClose = jest.fn();
 
@@ -35,8 +35,8 @@ const panelClassNames = {
 };
 
 const defaultProps: PanelProps = {
-  header: panelHeader,
-  children: panelContent,
+  header: panelHeaderContent,
+  children: panelBodyContent,
   classNames: panelClassNames
 };
 
