@@ -38,6 +38,10 @@ jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div>ViewInApp</div>
 ));
 
+jest.mock('src/shared/components/instant-download', () => ({
+  InstantDownloadTranscript: () => <div>ViewInApp</div>
+}));
+
 const transcript = createTranscript();
 const gene = createGene({ transcripts: [transcript] });
 const expandDownload = false;
