@@ -27,7 +27,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
@@ -125,7 +125,7 @@ const EntityViewer = (props: Props) => {
 const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId: getEntityViewerActiveGenomeId(state),
-    activeEntityId: getEntityViewerActiveEnsObjectId(state),
+    activeEntityId: getEntityViewerActiveEntityId(state),
     isSidebarOpen: isEntityViewerSidebarOpen(state),
     viewportWidth: getBreakpointWidth(state)
   };

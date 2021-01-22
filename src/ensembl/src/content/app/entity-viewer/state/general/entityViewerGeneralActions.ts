@@ -30,13 +30,10 @@ import entityViewerStorageService from 'src/content/app/entity-viewer/services/e
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectIds,
-  getEntityViewerActiveEnsObject,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityIds,
+  getEntityViewerActiveEntityId
 } from './entityViewerGeneralSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
-import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-import { setSidebarInitialStateForGenome } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
@@ -58,7 +55,7 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
   const { genomeId: genomeIdFromUrl } = params;
 
   let activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEnsObjectId(state) || undefined;
+  const activeEntityId = getEntityViewerActiveEntityId(state) || undefined;
 
   const entityIdForUrl = activeEntityId
     ? buildFocusIdForUrl(activeEntityId)
@@ -97,15 +94,14 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
 
   if (entityId && genomeIdFromUrl) {
     if (entityId !== activeEntityId) {
-      dispatch(updateEnsObject(entityId));
+      dispatch(updateEntityId(entityId));
     }
-    dispatch(setSidebarInitialStateForGenome(genomeIdFromUrl));
 
     entityViewerStorageService.updateGeneralState({
       activeGenomeId: genomeIdFromUrl
     });
     entityViewerStorageService.updateGeneralState({
-      activeEnsObjectIds: { [genomeIdFromUrl]: entityId }
+      activeEntityIds: { [genomeIdFromUrl]: entityId }
     });
   }
 };
@@ -139,33 +135,28 @@ export const changeActiveGenomeId: ActionCreator<ThunkAction<
   });
 };
 
-export const updateEntityViewerActiveEnsObjectIds = createAction(
-  'entity-viewer/update-active-ens-object-ids'
+export const updateActiveEntityForGenome = createAction(
+  'entity-viewer/update-active-entity-ids'
 )<{ [objectId: string]: string }>();
 
-export const updateEnsObject: ActionCreator<ThunkAction<
+export const updateEntityId: ActionCreator<ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = (activeEnsObjectId: string) => {
+>> = (activeEntityId: string) => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
     if (!activeGenomeId) {
       return;
     }
-    const currentActiveEnsObjectIds = getEntityViewerActiveEnsObjectIds(state);
-    const updatedActiveEnsObjectIds = {
-      ...currentActiveEnsObjectIds,
-      [activeGenomeId]: activeEnsObjectId
+    const currentActiveEntityIds = getEntityViewerActiveEntityIds(state);
+    const updatedActiveEntityIds = {
+      ...currentActiveEntityIds,
+      [activeGenomeId]: activeEntityId
     };
 
-    const currentEnsObject = getEntityViewerActiveEnsObject(state);
-
-    dispatch(updateEntityViewerActiveEnsObjectIds(updatedActiveEnsObjectIds));
-    if (!currentEnsObject) {
-      dispatch(fetchEnsObject(activeEnsObjectId));
-    }
+    dispatch(updateActiveEntityForGenome(updatedActiveEntityIds));
   };
 };

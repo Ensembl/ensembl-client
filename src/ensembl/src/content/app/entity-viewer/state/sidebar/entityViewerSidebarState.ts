@@ -44,14 +44,10 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   };
 }>;
 
-export const buildInitialStateForGenome = (
-  genomeId: string
-): EntityViewerSidebarState => {
+export const buildInitialSidebarStateForGenome = (): EntityViewerSidebarGenomeState => {
   return {
-    [genomeId]: {
-      status: Status.OPEN,
-      selectedTabName: SidebarTabName.OVERVIEW,
-      entities: {}
-    }
+    status: Status.OPEN,
+    selectedTabName: SidebarTabName.OVERVIEW,
+    entities: {}
   };
 };

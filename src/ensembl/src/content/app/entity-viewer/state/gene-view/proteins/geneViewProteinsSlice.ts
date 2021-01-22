@@ -20,7 +20,7 @@ import { ThunkAction } from 'redux-thunk';
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getExpandedTranscriptIds } from './geneViewProteinsSelectors';
 
@@ -48,8 +48,8 @@ export const toggleExpandedProtein = (
 ) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
 
@@ -63,7 +63,7 @@ export const toggleExpandedProtein = (
   dispatch(
     proteinsSlice.actions.updateExpandedProteins({
       activeGenomeId,
-      activeObjectId,
+      activeEntityId,
       expandedIds: [...expandedIds.values()]
     })
   );
@@ -77,15 +77,15 @@ export const clearExpandedProteins = (): ThunkAction<
 > => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
 
   dispatch(
     proteinsSlice.actions.updateExpandedProteins({
       activeGenomeId,
-      activeObjectId,
+      activeEntityId,
       expandedIds: []
     })
   );
@@ -93,7 +93,7 @@ export const clearExpandedProteins = (): ThunkAction<
 
 type ExpandedProteinsPayload = {
   activeGenomeId: string;
-  activeObjectId: string;
+  activeEntityId: string;
   expandedIds: string[];
 };
 
@@ -105,15 +105,15 @@ const proteinsSlice = createSlice({
       state,
       action: PayloadAction<ExpandedProteinsPayload>
     ) {
-      const { activeGenomeId, activeObjectId, expandedIds } = action.payload;
+      const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
       if (!state[activeGenomeId]) {
         state[activeGenomeId] = {
-          [activeObjectId]: { ...defaultStatePerGene }
+          [activeEntityId]: { ...defaultStatePerGene }
         };
-      } else if (!state[activeGenomeId][activeObjectId]) {
-        state[activeGenomeId][activeObjectId] = { ...defaultStatePerGene };
+      } else if (!state[activeGenomeId][activeEntityId]) {
+        state[activeGenomeId][activeEntityId] = { ...defaultStatePerGene };
       }
-      state[activeGenomeId][activeObjectId].expandedTranscriptIds = expandedIds;
+      state[activeGenomeId][activeEntityId].expandedTranscriptIds = expandedIds;
     }
   }
 });

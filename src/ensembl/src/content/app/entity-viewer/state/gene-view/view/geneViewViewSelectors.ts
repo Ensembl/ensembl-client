@@ -16,7 +16,7 @@
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { RootState } from 'src/store';
@@ -30,7 +30,7 @@ import {
 
 const getSliceForGene = (state: RootState): ViewStatePerGene | undefined => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
+  const activeObjectId = getEntityViewerActiveEntityId(state);
   if (!activeGenomeId || !activeObjectId) {
     return;
   }
