@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 import classNamesMerger from 'classnames';
 
-import closeIcon from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import styles from './Panel.scss';
 
 export type PanelProps = {
-  header: string | JSX.Element;
-  children: JSX.Element;
+  header: ReactNode;
+  children: ReactNode;
   classNames?: {
     panel?: string;
     header?: string;
@@ -53,9 +53,7 @@ const Panel = (props: PanelProps) => {
   return (
     <div className={panelClassNames}>
       {onClose && (
-        <span className={closeButtonClassNames} onClick={onClose}>
-          <img src={closeIcon}></img>
-        </span>
+        <CloseButton className={closeButtonClassNames} onClick={onClose} />
       )}
       <div className={headerClassNames}>{header}</div>
       <div className={bodyClassNames}>
