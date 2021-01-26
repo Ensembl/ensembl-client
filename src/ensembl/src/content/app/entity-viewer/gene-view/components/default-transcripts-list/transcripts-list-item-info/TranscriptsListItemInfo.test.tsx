@@ -17,7 +17,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { MemoryRouter } from 'react-router';
-import { useQuery } from '@apollo/client';
 
 import {
   TranscriptsListItemInfo,
@@ -31,7 +30,11 @@ import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
 jest.mock('@apollo/client', () => ({
   gql: jest.fn(),
-  useQuery: jest.fn()
+  useQuery: () =>
+    jest.fn().mockImplementation(() => ({
+      data: null,
+      loading: true
+    }))
 }));
 
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
@@ -39,7 +42,7 @@ jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
 ));
 
 jest.mock('src/shared/components/instant-download', () => ({
-  InstantDownloadTranscript: () => <div>ViewInApp</div>
+  InstantDownloadTranscript: () => <div>InstantDownloadTranscript</div>
 }));
 
 const transcript = createTranscript();
@@ -72,11 +75,6 @@ describe('<TranscriptsListItemInfo /', () => {
 
   beforeEach(() => {
     wrapper = renderComponent();
-
-    (useQuery as any).mockImplementation(() => ({
-      data: null,
-      loading: true
-    }));
   });
 
   /*

@@ -21,8 +21,10 @@ import {
   TranscriptOption,
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
-import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
-import { fetchSequenceChecksums } from './fetchSequenceChecksums';
+import {
+  fetchSequenceChecksums,
+  ProductGeneratingContextFragment
+} from './fetchSequenceChecksums';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -37,11 +39,6 @@ type FetchPayload = {
   transcriptId: string;
   options: Options;
 };
-
-type ProductGeneratingContextFragment = Pick<
-  ProductGeneratingContext,
-  'product' | 'cdna' | 'cds'
->;
 
 export const fetchForTranscript = async (payload: FetchPayload) => {
   const {
@@ -64,7 +61,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
   }
 
   const sequencePromises = urls.map((url) =>
-    fetch(url as string).then((response) => response.text())
+    fetch(url).then((response) => response.text())
   );
   const sequences = await Promise.all(sequencePromises);
   const combinedFasta = sequences.join('\n\n');
@@ -104,9 +101,7 @@ const buildFetchUrl = (
 
   if (sequenceType === 'genomicSequence') {
     return `https://rest.ensembl.org/sequence/id/${data.geneId}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
-  }
-
-  if (data.productGeneratingContext) {
+  } else {
     const contextType = sequenceTypeToContextType[
       sequenceType
     ] as keyof ProductGeneratingContextFragment;
@@ -114,6 +109,7 @@ const buildFetchUrl = (
       data.productGeneratingContext &&
       data.productGeneratingContext[contextType]?.sequence_checksum;
 
+    // TODO: Change this before merging the PR
     return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/plain`;
   }
 };

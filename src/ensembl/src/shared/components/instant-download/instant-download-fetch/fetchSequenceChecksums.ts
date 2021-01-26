@@ -18,18 +18,23 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
-import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
-
 type GeneFragment = {
   transcript: {
     product_generating_contexts: ProductGeneratingContextFragment[];
   };
 };
 
-export type ProductGeneratingContextFragment = Pick<
-  ProductGeneratingContext,
-  'cdna' | 'cds' | 'product'
->;
+export type ProductGeneratingContextFragment = {
+  cdna: {
+    sequence_checksum: string;
+  };
+  cds: {
+    sequence_checksum: string;
+  };
+  product: {
+    sequence_checksum: string;
+  };
+};
 
 const query = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {

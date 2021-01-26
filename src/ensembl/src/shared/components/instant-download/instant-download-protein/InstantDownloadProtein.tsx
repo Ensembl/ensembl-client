@@ -50,7 +50,7 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
     setProteinSeqSelected(!isProteinSeqSelected);
   const onCdsCheckboxChange = () => setCdsSeqSelected(!isCdsSeqSelected);
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     const payload = {
       genomeId,
       transcriptId,

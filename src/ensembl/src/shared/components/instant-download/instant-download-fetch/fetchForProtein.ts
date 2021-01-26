@@ -76,5 +76,6 @@ const buildFetchUrl = (
   const sequenceChecksum =
     productGeneratingContext[contextType]?.sequence_checksum;
 
-  return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/plain`;
+  // TODO: Change this before merging the PR
+  return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
 };

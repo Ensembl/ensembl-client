@@ -113,7 +113,7 @@ const InstantDownloadTranscript = (props: Props) => {
     setTranscriptOptions(filterTranscriptOptions(so_term));
   }, [so_term]);
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     const payload = {
       genomeId,
       geneId,
