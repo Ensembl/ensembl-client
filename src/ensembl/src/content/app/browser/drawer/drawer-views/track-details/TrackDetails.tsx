@@ -50,13 +50,11 @@ const TrackDetails = () => {
         </div>
       </div>
 
-      {(trackDetails.shared_description ||
-        trackDetails.specific_description) && (
+      {trackDetails.description && (
         <div className={styles.standardLabelValue}>
           <div className={styles.label}>Description</div>
           <div className={styles.value}>
-            <div>{trackDetails.shared_description || null}</div>
-            <div>{trackDetails.specific_description || null}</div>
+            <div>{trackDetails.description || null}</div>
           </div>
         </div>
       )}
