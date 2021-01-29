@@ -53,7 +53,7 @@ jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client');
   return {
     ...originalModule,
-    ApolloClient: jest.fn().mockImplementation(() => {
+    ApolloClient: jest.fn(() => {
       return {};
     })
   };
