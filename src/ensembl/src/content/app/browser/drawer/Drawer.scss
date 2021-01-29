@@ -6,49 +6,49 @@
   font-size: 13px;
 }
 
-.drawerView {	
-  overflow-y: auto;	
-  margin-top: 10px;	
+.drawerView {
+  overflow-y: auto;
+  margin-top: 10px;
 
-  h2 {	
-    display: flex;	
-    align-items: center;	
-    justify-content: center;	
-    text-align: center;	
-  }	
+  h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
 
-  p {	
-    margin: 0px;	
-  }	
+  p {
+    margin: 0px;
+  }
 
-  .nextLine {	
-    display: block;	
-    margin-bottom: 10px;	
-  }	
+  .nextLine {
+    display: block;
+    margin-bottom: 10px;
+  }
 
-  .container {	
-    display: grid;	
-    grid-template-columns: 100px 1fr;	
-    grid-column-gap: 1em;	
-    grid-row-gap: 1em;	
-  }	
+  .container {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+  }
 
-  .label {	
-    font-weight: $light;	
-    text-align: right;	
-  }	
+  .label {
+    font-weight: $light;
+    text-align: right;
+  }
 
-  .details {	
-    display: flex;	
-    text-align: left;	
-  }	
+  .details {
+    display: flex;
+    text-align: left;
+  }
 
-  .mainDetail {	
-    font-weight: $bold;	
-  }	
+  .mainDetail {
+    font-weight: $bold;
+  }
 
-  .secondaryDetail {	
-    font-weight: $light;	
-    margin-left: 10px;	
-  }	
+  .secondaryDetail {
+    font-weight: $light;
+    margin-left: 10px;
+  }
 }
