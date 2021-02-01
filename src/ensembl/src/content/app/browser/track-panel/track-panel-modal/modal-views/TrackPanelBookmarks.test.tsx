@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
@@ -25,12 +26,25 @@ import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
 import { PreviouslyViewedObject } from '../../trackPanelState';
 
-jest.mock('react-router-dom', () => ({
-  Link: (props: any) => (
-    <div {...props} className={'link'}>
-      {props.children}
-    </div>
-  )
+jest.mock('react-redux', () => ({
+  useSelector: jest.fn().mockImplementation((selector) => selector()),
+  useDispatch: jest.fn()
+}));
+
+jest.mock('src/shared/state/ens-object/ensObjectSelectors', () => ({
+  getExampleEnsObjects: jest.fn()
+}));
+
+jest.mock('src/content/app/browser/track-panel/trackPanelSelectors', () => ({
+  getActiveGenomePreviouslyViewedObjects: jest.fn()
+}));
+
+jest.mock('src/content/app/browser/browserActions', () => ({
+  changeFocusObject: jest.fn()
+}));
+
+jest.mock('src/content/app/browser/drawer/drawerActions', () => ({
+  changeDrawerViewAndOpen: jest.fn()
 }));
 
 const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
@@ -41,8 +55,6 @@ const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
 });
 
 const closeTrackPanelModal = jest.fn();
-const updateTrackStatesAndSave = jest.fn();
-const fetchExampleEnsObjects = jest.fn();
 const changeDrawerViewAndOpen = jest.fn();
 
 describe('<TrackPanelBookmarks />', () => {
@@ -52,26 +64,31 @@ describe('<TrackPanelBookmarks />', () => {
     max: 20
   });
 
-  const props = {
-    activeGenomeId: faker.random.word(),
-    exampleEnsObjects: times(numberOfExampleObjects, () => createEnsObject()),
-    previouslyViewedObjects: times(numberOfPreviouslyViewedObjects, () =>
-      createPreviouslyViewedLink()
-    ),
-    fetchExampleEnsObjects,
-    updateTrackStatesAndSave,
-    closeTrackPanelModal,
-    changeDrawerViewAndOpen
-  };
+  const exampleEnsObjects = times(numberOfExampleObjects, () =>
+    createEnsObject()
+  );
+
+  const previouslyViewedObjects = times(numberOfPreviouslyViewedObjects, () =>
+    createPreviouslyViewedLink()
+  );
 
   beforeEach(() => {
     jest.resetAllMocks();
+
+    (useSelector as any).mockReturnValue(exampleEnsObjects);
+    (useSelector as any).mockReturnValue(previouslyViewedObjects);
   });
 
-  it('renders previously viewed links', () => {
-    const { container } = render(<TrackPanelBookmarks {...props} />);
+  it.only('renders previously viewed links', () => {
+    const { container } = render(<TrackPanelBookmarks />);
     const links = [...container.querySelectorAll('.link')] as HTMLElement[];
-    const linkTexts = props.previouslyViewedObjects.map(({ label }) => label);
+    const linkTexts = previouslyViewedObjects.map(({ label }) => label);
+
+    linkTexts.forEach((text) =>
+      links.find((link) => {
+        return link.innerHTML === text;
+      })
+    );
 
     expect(
       linkTexts.every((text) =>
@@ -83,7 +100,7 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {
-    render(<TrackPanelBookmarks {...props} />);
+    render(<TrackPanelBookmarks />);
     const previouslyViewedLinksContainer = screen.getByTestId(
       'previously viewed links'
     );
@@ -96,41 +113,32 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('shows the ellipsis only when the total objects is more than 20', () => {
-    const previouslyViewedObjects = times(20, () =>
+    const newPreviouslyViewedObjects = times(20, () =>
       createPreviouslyViewedLink()
     );
-    const { rerender } = render(
-      <TrackPanelBookmarks
-        {...props}
-        previouslyViewedObjects={previouslyViewedObjects}
-      />
-    );
+
+    (useSelector as any).mockReturnValue(newPreviouslyViewedObjects);
+
+    const { rerender } = render(<TrackPanelBookmarks />);
     const previouslyViewedSection = screen.getByText('Previously viewed');
 
     expect(previouslyViewedSection.querySelector('button')).toBeFalsy();
 
     // Add another link to make it 21 links
-    previouslyViewedObjects.push(createPreviouslyViewedLink());
-    rerender(
-      <TrackPanelBookmarks
-        {...props}
-        previouslyViewedObjects={previouslyViewedObjects}
-      />
-    );
+    newPreviouslyViewedObjects.push(createPreviouslyViewedLink());
+    rerender(<TrackPanelBookmarks />);
 
     expect(previouslyViewedSection.querySelector('button')).toBeTruthy();
   });
 
   it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
-    const previouslyViewedObjects = times(21, () =>
+    const newPreviouslyViewedObjects = times(21, () =>
       createPreviouslyViewedLink()
     );
-    render(
-      <TrackPanelBookmarks
-        {...props}
-        previouslyViewedObjects={previouslyViewedObjects}
-      />
-    );
+
+    (useSelector as any).mockReturnValue(newPreviouslyViewedObjects);
+    render(<TrackPanelBookmarks />);
+
     const previouslyViewedSection = screen.getByText('Previously viewed');
     const ellipsisButton = previouslyViewedSection.querySelector(
       'button'
@@ -142,7 +150,7 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('renders correct number of links to example objects', () => {
-    render(<TrackPanelBookmarks {...props} />);
+    render(<TrackPanelBookmarks />);
     const exampleLinksWrapper = screen.getByTestId('example links');
 
     expect(exampleLinksWrapper?.querySelectorAll('.link').length).toBe(
@@ -151,7 +159,7 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('calls closeTrackPanelModal when an example object link is clicked', () => {
-    render(<TrackPanelBookmarks {...props} />);
+    render(<TrackPanelBookmarks />);
     const exampleLinksWrapper = screen.getByTestId('example links');
     const exampleLink = exampleLinksWrapper?.querySelector('.link');
 

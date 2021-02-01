@@ -15,108 +15,88 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
 import analyticsTracking from 'src/services/analytics-service';
-import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { closeTrackPanelModal } from '../../trackPanelActions';
-import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
+import { changeFocusObject } from 'src/content/app/browser/browserActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 
-import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
-import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
-import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { PreviouslyViewedObject } from '../../trackPanelState';
 
 import styles from './TrackPanelBookmarks.scss';
 
-export type TrackPanelBookmarksProps = {
-  activeGenomeId: string | null;
-  exampleEnsObjects: EnsObject[];
-  previouslyViewedObjects: PreviouslyViewedObject[];
-  updateTrackStatesAndSave: (trackStates: BrowserTrackStates) => void;
-  closeTrackPanelModal: () => void;
-  changeDrawerViewAndOpen: (drawerView: string) => void;
-};
+export const ExampleLinks = () => {
+  const exampleEnsObjects = useSelector(getExampleEnsObjects);
+  const dispatch = useDispatch();
 
-type ExampleLinksProps = Pick<
-  TrackPanelBookmarksProps,
-  'exampleEnsObjects' | 'activeGenomeId' | 'closeTrackPanelModal'
->;
-export const ExampleLinks = (props: ExampleLinksProps) => {
+  const onLinkClick = (exampleObject: EnsObject) => {
+    dispatch(changeFocusObject(exampleObject.object_id));
+    dispatch(closeTrackPanelModal());
+  };
+
   return (
     <div data-test-id="example links">
       <div className={styles.sectionTitle}>Example links</div>
-      {props.exampleEnsObjects.map((exampleObject) => {
-        const path = urlFor.browser({
-          genomeId: props.activeGenomeId,
-          focus: buildFocusIdForUrl(exampleObject.object_id)
-        });
-
-        return (
-          <div key={exampleObject.object_id} className={styles.linkHolder}>
-            <Link to={path} onClick={props.closeTrackPanelModal}>
-              Example {exampleObject.type}
-            </Link>
+      {exampleEnsObjects.map((exampleObject) => (
+        <div key={exampleObject.object_id} className={styles.linkHolder}>
+          <div
+            className={styles.pseudoLink}
+            onClick={() => onLinkClick(exampleObject)}
+          >
+            Example {exampleObject.type}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 };
 
-type PreviouslyViewedLinksProps = Pick<
-  TrackPanelBookmarksProps,
-  | 'previouslyViewedObjects'
-  | 'updateTrackStatesAndSave'
-  | 'closeTrackPanelModal'
->;
+export const PreviouslyViewedLinks = () => {
+  const previouslyViewedObjects = useSelector(
+    getActiveGenomePreviouslyViewedObjects
+  );
+  const dispatch = useDispatch();
 
-export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
-  const onLinkClick = (objectType: string, index: number) => {
+  const onLinkClick = (
+    previouslyViewedObject: PreviouslyViewedObject,
+    index: number
+  ) => {
     analyticsTracking.trackEvent({
       category: 'recent_bookmark_link',
-      label: objectType,
+      label: previouslyViewedObject.object_type,
       action: 'clicked',
       value: index + 1
     });
 
-    props.closeTrackPanelModal();
+    dispatch(changeFocusObject(previouslyViewedObject.object_id));
+    dispatch(closeTrackPanelModal());
   };
 
   return (
     <div data-test-id="previously viewed links">
-      {[...props.previouslyViewedObjects]
+      {[...previouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
-          const path = urlFor.browser({
-            genomeId: previouslyViewedObject.genome_id,
-            focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
-          });
-
           return (
             <div
               key={previouslyViewedObject.object_id}
               className={styles.linkHolder}
             >
-              <Link
-                to={path}
-                onClick={() =>
-                  onLinkClick(previouslyViewedObject.object_type, index)
-                }
+              <span
+                className={styles.pseudoLink}
+                onClick={() => onLinkClick(previouslyViewedObject, index)}
               >
                 {previouslyViewedObject.label}
-              </Link>
+              </span>
               <span className={styles.previouslyViewedType}>
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
@@ -127,14 +107,12 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   );
 };
 
-export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
-  const {
-    previouslyViewedObjects,
-    exampleEnsObjects,
-    activeGenomeId,
-    updateTrackStatesAndSave,
-    closeTrackPanelModal
-  } = props;
+export const TrackPanelBookmarks = () => {
+  const previouslyViewedObjects = useSelector(
+    getActiveGenomePreviouslyViewedObjects
+  );
+  const exampleEnsObjects = useSelector(getExampleEnsObjects);
+  const dispatch = useDispatch();
 
   const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
 
@@ -146,7 +124,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       value: previouslyViewedObjects.length
     });
 
-    props.changeDrawerViewAndOpen('bookmarks');
+    dispatch(changeDrawerViewAndOpen('bookmarks'));
   };
 
   return (
@@ -154,18 +132,14 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       <div className={styles.title}>Bookmarks</div>
       {exampleEnsObjects.length ? (
         <>
-          <ExampleLinks
-            exampleEnsObjects={exampleEnsObjects}
-            activeGenomeId={activeGenomeId}
-            closeTrackPanelModal={closeTrackPanelModal}
-          />
+          <ExampleLinks />
         </>
       ) : null}
       {limitedPreviouslyViewedObjects.length ? (
         <>
           <div className={styles.sectionTitle}>
             Previously viewed
-            {props.previouslyViewedObjects.length > 20 && (
+            {previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>
                 <ImageButton
                   status={Status.DEFAULT}
@@ -176,33 +150,11 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
               </span>
             )}
           </div>
-          <PreviouslyViewedLinks
-            previouslyViewedObjects={limitedPreviouslyViewedObjects}
-            updateTrackStatesAndSave={updateTrackStatesAndSave}
-            closeTrackPanelModal={closeTrackPanelModal}
-          />
+          <PreviouslyViewedLinks />
         </>
       ) : null}
     </section>
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return {
-    activeGenomeId,
-    exampleEnsObjects: getExampleEnsObjects(state),
-    previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
-  };
-};
-
-const mapDispatchToProps = {
-  updateTrackStatesAndSave,
-  closeTrackPanelModal,
-  changeDrawerViewAndOpen
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TrackPanelBookmarks);
+export default TrackPanelBookmarks;

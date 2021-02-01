@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useSelector } from 'react-redux';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -32,22 +31,21 @@ import {
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
-import { RootState } from 'src/store';
-
 import styles from './Zmenu.scss';
 
 type Props = {
   featureId: string;
-  activeFeatureId: string | null;
-  genomeId: string | null;
-  isInDefaultPosition: boolean;
-  push: (path: string) => void;
 };
 
 const ZmenuAppLinks = (props: Props) => {
+  const genomeId = useSelector(getBrowserActiveGenomeId);
+  const activeFeatureId = useSelector(getBrowserActiveEnsObjectId);
+  const isInDefaultPosition = useSelector(isFocusObjectPositionDefault);
+
   if (!isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
     return null;
   }
+
   const parsedFeatureId = parseFeatureId(props.featureId);
 
   if (parsedFeatureId.type !== 'gene') {
@@ -57,16 +55,16 @@ const ZmenuAppLinks = (props: Props) => {
   const featureIdForUrl = buildFocusIdForUrl(parsedFeatureId);
 
   const getBrowserLink = () =>
-    urlFor.browser({ genomeId: props.genomeId, focus: featureIdForUrl });
+    urlFor.browser({ genomeId, focus: featureIdForUrl });
 
   const getEntityViewerLink = () =>
     urlFor.entityViewer({
-      genomeId: props.genomeId,
+      genomeId,
       entityId: featureIdForUrl
     });
 
   const shouldShowBrowserButton =
-    props.featureId !== props.activeFeatureId || !props.isInDefaultPosition;
+    props.featureId !== activeFeatureId || !isInDefaultPosition;
 
   type linkType = {
     genomeBrowser?: string;
@@ -91,14 +89,4 @@ const ZmenuAppLinks = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  genomeId: getBrowserActiveGenomeId(state),
-  activeFeatureId: getBrowserActiveEnsObjectId(state),
-  isInDefaultPosition: isFocusObjectPositionDefault(state)
-});
-
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ZmenuAppLinks);
+export default ZmenuAppLinks;
