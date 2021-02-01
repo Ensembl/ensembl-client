@@ -24,9 +24,6 @@ import { getBrowserActiveGenomeId } from '../browserSelectors';
 import { RootState } from 'src/store';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
-import { TrackDetails, trackDetailsSampleData } from './sampleData';
-import { getActiveDrawerTrackId } from 'src/content/app/browser/drawer/drawerSelectors';
-
 export const changeDrawerViewForGenome = createAction(
   'drawer/update-drawer-view',
   (drawerViewForGenome: { [genomeId: string]: DrawerView | null }) =>
@@ -122,35 +119,6 @@ export const closeDrawer = (): ThunkAction<void, any, null, Action<string>> => (
       })
     );
   });
-};
-
-export const setTrackDetails = createAction('browser/set-track-details')<{
-  [genomeId: string]: { [trackId: string]: TrackDetails };
-}>();
-
-export const fetchTrackDetails = (): ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
-> => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const trackId = getActiveDrawerTrackId(state);
-
-  if (!activeGenomeId || !trackId) {
-    return;
-  }
-
-  const trackDetails = trackDetailsSampleData[activeGenomeId][trackId] || null;
-
-  dispatch(
-    setTrackDetails({
-      [activeGenomeId]: {
-        [trackId]: trackDetails
-      }
-    })
-  );
 };
 
 export const setActiveDrawerTrackId = createAction(
