@@ -90,7 +90,7 @@ const defaultProps: TrackPanelListItemProps = {
 const wrapInRedux = (state: typeof mockState = mockState) => {
   return render(
     <Provider store={mockStore(state)}>
-      <TrackPanelListItem {...defaultProps} {...props} />
+      <TrackPanelListItem {...defaultProps} />
     </Provider>
   );
 };
@@ -126,7 +126,7 @@ describe('<TrackPanelListItem />', () => {
       });
 
       it('does not update the active track id if the drawer is closed', () => {
-        const { container } = render(<TrackPanelListItem {...defaultProps} />);
+        const { container } = wrapInRedux();
         const track = container.querySelector('.track') as HTMLElement;
 
         userEvent.click(track);
@@ -135,7 +135,7 @@ describe('<TrackPanelListItem />', () => {
     });
 
     it('toggles the expanded/collapsed state of the track when clicked on the expand button', () => {
-      const { container } = render(<TrackPanelListItem {...defaultProps} />);
+      const { container } = wrapInRedux();
       const expandButton = container.querySelector('.expandBtn') as HTMLElement;
 
       const isCollapsed = isTrackCollapsed(
