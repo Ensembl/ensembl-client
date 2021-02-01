@@ -37,37 +37,11 @@ import * as browserActions from 'src/content/app/browser/browserActions';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
 import { isTrackCollapsed } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 
-jest.mock('../../drawer/drawerActions', () => {
-  const originalModule = jest.requireActual('../../drawer/drawerActions');
+jest.mock('../../drawer/drawerActions');
 
-  return {
-    ...originalModule,
-    changeDrawerView: jest.fn(),
-    setActiveDrawerTrackId: jest.fn()
-  };
-});
+jest.mock('src/content/app/browser/browserActions');
 
-jest.mock('src/content/app/browser/browserActions', () => {
-  const originalModule = jest.requireActual(
-    'src/content/app/browser/browserActions'
-  );
-
-  return {
-    ...originalModule,
-    updateTrackStatesAndSave: jest.fn()
-  };
-});
-
-jest.mock('src/content/app/browser/track-panel/trackPanelActions', () => {
-  const originalModule = jest.requireActual(
-    'src/content/app/browser/track-panel/trackPanelActions'
-  );
-
-  return {
-    ...originalModule,
-    updateCollapsedTrackIds: jest.fn()
-  };
-});
+jest.mock('src/content/app/browser/track-panel/trackPanelActions');
 
 const fakeGenomeId = faker.lorem.words();
 
@@ -113,10 +87,7 @@ const defaultProps: TrackPanelListItemProps = {
   track: createMainTrackInfo()
 };
 
-const wrapInRedux = (
-  props?: Partial<TrackPanelListItemProps>,
-  state: typeof mockState = mockState
-) => {
+const wrapInRedux = (state: typeof mockState = mockState) => {
   return render(
     <Provider store={mockStore(state)}>
       <TrackPanelListItem {...defaultProps} {...props} />
@@ -142,7 +113,6 @@ describe('<TrackPanelListItem />', () => {
     describe('when clicked', () => {
       it('updates the active track id if the drawer is opened', () => {
         const { container } = wrapInRedux(
-          undefined,
           set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
         );
 

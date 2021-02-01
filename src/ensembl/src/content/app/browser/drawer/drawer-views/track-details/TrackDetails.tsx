@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import { getActiveTrackDetails } from 'src/content/app/browser/drawer/drawerSelectors';
-import { fetchTrackDetails } from 'src/content/app/browser/drawer/drawerActions';
+import { getActiveDrawerTrackId } from 'src/content/app/browser/drawer/drawerSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+
+import { trackDetailsSampleData } from '../../sampleData';
+
 import styles from './TrackDetails.scss';
 
 const TrackDetails = () => {
-  const trackDetails = useSelector(getActiveTrackDetails);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const trackId = useSelector(getActiveDrawerTrackId);
 
-  const dispatch = useDispatch();
+  if (!activeGenomeId || !trackId) {
+    return null;
+  }
 
-  useEffect(() => {
-    if (!trackDetails) {
-      dispatch(fetchTrackDetails());
-    }
-  }, [trackDetails]);
+  const trackDetails = trackDetailsSampleData[activeGenomeId][trackId] || null;
 
   if (!trackDetails) {
     return null;
