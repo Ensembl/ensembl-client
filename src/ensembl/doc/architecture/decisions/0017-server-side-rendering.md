@@ -63,10 +63,10 @@ Thus, when doing server-side rendering, careful monitoring of response times is 
 ### Deceptive non-interactive pages
 There is, inevitably, a time, between the moment that a server-rendered page is displayed in the browser (marked as Time to First Paint) and the moment that all the necessary javascript is fetched and parsed by the browser (marked as Time to Interactive). During this time window, the page cannot respond to user interactions. Sometimes, users start interacting with the page during this window of unresponsiveness, which results in a negative experience.
 
-We believe that this will not present a significant problem, because we expect Ensembl users to use powerful hardware and fast networks. To alleviate this problem further, we will be proactively caching the javascript files in the users' browsers using service workers.
+We believe that this will not present a significant problem, because we expect Ensembl users to use powerful hardware and fast networks. To alleviate this problem further, we will be proactively caching javascript files in users' browsers using service workers.
 
 ## Implementation
-Assuming that we agree that server-side rendering is a desirable for the new Ensembl site, below is the discussion of how to achieve it.
+Assuming that we agree that server-side rendering is desirable for the new Ensembl site, below is the discussion of how to achieve it.
 
 The new Ensembl site is being developed using React, which can be run on the server and render a web page to an HTML string or to a Node stream. This points us to a solution that utilizes React itself instead of adding a dedicated rendering service such as Rendertron.
 
@@ -76,7 +76,7 @@ The new Ensembl site is being developed using React, which can be run on the ser
 3. The server must be capable of discerning between pages that need or do not need to be rendered on the server side. Examples:
   - Help&Docs section is a good candidate for being rendered on the server (ideally, even pre-rendered to static HTML pages). These pages will have the least interactivity, but a lot of content that we want to be findable via search engines.
   - Most of the genome browser page does not need to be rendered on the server. Genome browser pages are highly interactive and have minimal textual content visible before user starts interacting with the page.
-  - Entity viewer occupies an intermediate position between these two. It deals with genomic features that we would like to be findable via search engines; but at the same time, it is a highly interactive page with most of the text hidden from the view.
+  - Entity viewer sits somewhere between these two. It deals with genomic features that we would like to be findable via search engines; but at the same time, it is a highly interactive page with most of the text hidden from the view.
 4. The server should be capable of rendering only a part of the page, such as the `<head>` tag with the relevant metadata tags in it. This will ensure that bots can easily retrieve page metadata.
 5. It should be possible to hook into the server-side code so as to enable custom logging, error reporting, or adding custom response headers (e.g. session cookies) if required.
 
