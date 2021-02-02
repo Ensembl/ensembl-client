@@ -141,13 +141,13 @@ Razzle and After.js are far less popular than Next.js, and thus their future is 
 ## Consequences
 ### For UI design
 - We will need to consider what a server-rendered page (i.e. what the user sees before all the scripts have loaded and executed) should look like. This will be different for different "apps", both because the usefulness of server-rendered markup is different on different pages, and because much of the state is stored client-side, making it unavailable for rendering on the server.
-- Measures might need to be considered to discourage interactions with UI elements beefore scripts that support these elements have loaded (e.g. display buttons as disabled).
+- Measures might need to be considered to discourage interactions with UI elements before scripts that support these elements have loaded (e.g. display buttons as disabled).
 
 ### For development
-- When writing code, developers will need to be aware whether a given code path will run on the server, and if so, make sure it does not use any of the client-side APIs.
+- When writing code, developers will need to be aware whether a given code path will run on the server, and, if so, make sure that it does not use any of the client-side APIs.
 
 ### For deployment
-- As opposed to the current setup (Nginx serving a bunch of static files), the load on the server, with server-side rendering, will be greater. This will require proper monitoring of the servers, and a capacity to scale up. Effective caching strategies, e.g. using CDNs, should be considered.
+- As opposed to the current setup (Nginx serving a bunch of static files), server-side rendering will entail a greater load on the servers. This will require proper monitoring of the servers, and a capacity to scale up. Effective caching strategies, e.g. using CDNs, should be considered.
 
 ## References
 ### General
