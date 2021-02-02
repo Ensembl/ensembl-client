@@ -95,7 +95,7 @@ const filterTranscriptOptions = (
 ): Partial<TranscriptOptions> => {
   return so_term === 'protein_coding'
     ? defaultTranscriptOptions
-    : pick(defaultTranscriptOptions, ['genomicSequence', 'cdna']);
+    : pick(defaultTranscriptOptions, ['genomicSequence']);
 };
 
 const InstantDownloadTranscript = (props: Props) => {
