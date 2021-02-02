@@ -23,7 +23,7 @@ import {
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
   fetchSequenceChecksums,
-  ProductGeneratingContextFragment
+  SequenceChecksums
 } from './fetchSequenceChecksums';
 
 type Options = {
@@ -74,7 +74,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 const buildUrlsForTranscript = (
   data: {
     geneId: string;
-    productGeneratingContext: ProductGeneratingContextFragment;
+    productGeneratingContext: SequenceChecksums;
   },
   options: Partial<TranscriptOptions>
 ) => {
@@ -88,7 +88,7 @@ const buildUrlsForTranscript = (
 const buildFetchUrl = (
   data: {
     geneId: string;
-    productGeneratingContext?: ProductGeneratingContextFragment;
+    productGeneratingContext?: SequenceChecksums;
   },
   sequenceType: TranscriptOption
 ) => {
@@ -104,12 +104,12 @@ const buildFetchUrl = (
   } else {
     const contextType = sequenceTypeToContextType[
       sequenceType
-    ] as keyof ProductGeneratingContextFragment;
+    ] as keyof SequenceChecksums;
     const sequenceChecksum =
       data.productGeneratingContext &&
       data.productGeneratingContext[contextType]?.sequence_checksum;
 
     // TODO: Change this before merging the PR
-    return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/plain`;
+    return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
   }
 };

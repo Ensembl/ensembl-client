@@ -18,13 +18,7 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
-type GeneFragment = {
-  transcript: {
-    product_generating_contexts: ProductGeneratingContextFragment[];
-  };
-};
-
-export type ProductGeneratingContextFragment = {
+export type SequenceChecksums = {
   cdna: {
     sequence_checksum: string;
   };
@@ -33,6 +27,12 @@ export type ProductGeneratingContextFragment = {
   };
   product: {
     sequence_checksum: string;
+  };
+};
+
+type GeneFragment = {
+  transcript: {
+    product_generating_contexts: SequenceChecksums[];
   };
 };
 

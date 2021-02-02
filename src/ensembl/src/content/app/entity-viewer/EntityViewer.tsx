@@ -16,8 +16,8 @@
 
 import React, { useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
-import { connect } from 'react-redux';
-import { replace, Replace } from 'connected-react-router';
+import { useSelector, useDispatch } from 'react-redux';
+import { replace } from 'connected-react-router';
 import { useParams } from 'react-router-dom';
 
 import { client } from 'src/gql-client';
@@ -43,31 +43,24 @@ import GeneView from './gene-view/GeneView';
 import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
-import { RootState } from 'src/store';
-import { SidebarStatus } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
-
 import styles from './EntityViewer.scss';
-
-type Props = {
-  isSidebarOpen: boolean;
-  activeGenomeId: string | null;
-  activeEntityId: string | null;
-  viewportWidth: BreakpointWidth;
-  replace: Replace;
-  setDataFromUrl: (params: EntityViewerParams) => void;
-  toggleSidebar: (status?: SidebarStatus) => void;
-};
 
 export type EntityViewerParams = {
   genomeId?: string;
   entityId?: string;
 };
 
-const EntityViewer = (props: Props) => {
+const EntityViewer = () => {
+  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const viewportWidth = useSelector(getBreakpointWidth);
+
+  const dispatch = useDispatch();
+  const onSidebarToggle = () => dispatch(toggleSidebar());
+
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
   const { genomeId, entityId } = params;
-  const { activeGenomeId, activeEntityId } = props;
 
   useEffect(() => {
     if (activeGenomeId && activeEntityId && !entityId) {
@@ -76,9 +69,11 @@ const EntityViewer = (props: Props) => {
         genomeId: activeGenomeId,
         entityId: entityIdForUrl
       });
-      props.replace(replacementUrl);
+
+      dispatch(replace(replacementUrl));
     }
-    props.setDataFromUrl(params);
+
+    dispatch(setDataFromUrl(params));
   }, [params.genomeId, params.entityId]);
 
   return (
@@ -94,10 +89,10 @@ const EntityViewer = (props: Props) => {
             sidebarContent={<GeneViewSideBar />}
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-            isSidebarOpen={props.isSidebarOpen}
-            onSidebarToggle={props.toggleSidebar}
+            isSidebarOpen={isSidebarOpen}
+            onSidebarToggle={onSidebarToggle}
             isDrawerOpen={false}
-            viewportWidth={props.viewportWidth}
+            viewportWidth={viewportWidth}
           />
         ) : (
           <ExampleLinks />
@@ -107,19 +102,4 @@ const EntityViewer = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeGenomeId: getEntityViewerActiveGenomeId(state),
-    activeEntityId: getEntityViewerActiveEntityId(state),
-    isSidebarOpen: isEntityViewerSidebarOpen(state),
-    viewportWidth: getBreakpointWidth(state)
-  };
-};
-
-const mapDispatchToProps = {
-  replace,
-  setDataFromUrl,
-  toggleSidebar
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);
+export default EntityViewer;

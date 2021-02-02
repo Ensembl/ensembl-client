@@ -31,7 +31,7 @@ import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 jest.mock('@apollo/client', () => ({
   gql: jest.fn(),
   useQuery: () =>
-    jest.fn().mockImplementation(() => ({
+    jest.fn(() => ({
       data: null,
       loading: true
     }))

@@ -22,7 +22,7 @@ import {
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import {
   fetchSequenceChecksums,
-  ProductGeneratingContextFragment
+  SequenceChecksums
 } from './fetchSequenceChecksums';
 
 type FetchPayload = {
@@ -52,7 +52,7 @@ export const fetchForProtein = async (payload: FetchPayload) => {
 };
 
 const buildUrlsForProtein = (
-  productGeneratingContext: ProductGeneratingContextFragment,
+  productGeneratingContext: SequenceChecksums,
   options: ProteinOptions
 ) => {
   return options
@@ -63,7 +63,7 @@ const buildUrlsForProtein = (
 };
 
 const buildFetchUrl = (
-  productGeneratingContext: ProductGeneratingContextFragment,
+  productGeneratingContext: SequenceChecksums,
   sequenceType: ProteinOption
 ) => {
   const sequenceTypeToContextType: Record<ProteinOption, string> = {
@@ -72,7 +72,7 @@ const buildFetchUrl = (
   };
   const contextType = sequenceTypeToContextType[
     sequenceType
-  ] as keyof ProductGeneratingContextFragment;
+  ] as keyof SequenceChecksums;
   const sequenceChecksum =
     productGeneratingContext[contextType]?.sequence_checksum;
 
