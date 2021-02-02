@@ -47,14 +47,11 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const productGeneratingContext = await fetchSequenceChecksums({
+  const checksums = await fetchSequenceChecksums({
     genomeId,
     transcriptId
   });
-  const urls = buildUrlsForTranscript(
-    { geneId, productGeneratingContext },
-    transcriptOptions
-  );
+  const urls = buildUrlsForTranscript({ geneId, checksums }, transcriptOptions);
 
   if (geneOptions.genomicSequence) {
     urls.push(buildFetchUrl({ geneId }, 'genomicSequence'));
@@ -74,7 +71,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 const buildUrlsForTranscript = (
   data: {
     geneId: string;
-    productGeneratingContext: SequenceChecksums;
+    checksums: SequenceChecksums;
   },
   options: Partial<TranscriptOptions>
 ) => {
@@ -88,7 +85,7 @@ const buildUrlsForTranscript = (
 const buildFetchUrl = (
   data: {
     geneId: string;
-    productGeneratingContext?: SequenceChecksums;
+    checksums?: SequenceChecksums;
   },
   sequenceType: TranscriptOption
 ) => {
@@ -106,8 +103,7 @@ const buildFetchUrl = (
       sequenceType
     ] as keyof SequenceChecksums;
     const sequenceChecksum =
-      data.productGeneratingContext &&
-      data.productGeneratingContext[contextType]?.sequence_checksum;
+      data.checksums && data.checksums[contextType]?.sequence_checksum;
 
     // TODO: Change this before merging the PR
     return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
