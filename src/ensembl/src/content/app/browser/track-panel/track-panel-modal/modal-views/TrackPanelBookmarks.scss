@@ -4,10 +4,7 @@
   margin: 5px 0 0 20px;
   text-overflow: ellipsis;
   overflow: hidden;
-
-  .pseudoLink {
-    color: $blue;
-    cursor: pointer;
+  a {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -23,7 +20,7 @@
   font-weight: 300;
 }
 
-.title{
+.title {
   font-size: 14px;
   margin: 5px 0 10px 10px;
   font-weight: $bold;

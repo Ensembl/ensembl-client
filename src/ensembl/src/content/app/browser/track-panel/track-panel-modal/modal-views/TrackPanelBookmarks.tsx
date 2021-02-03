@@ -17,45 +17,46 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
+import { Link } from 'react-router-dom';
 
 import analyticsTracking from 'src/services/analytics-service';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { closeTrackPanelModal } from '../../trackPanelActions';
-import { changeFocusObject } from 'src/content/app/browser/browserActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
 
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 import { Status } from 'src/shared/types/status';
-import { PreviouslyViewedObject } from '../../trackPanelState';
 
 import styles from './TrackPanelBookmarks.scss';
 
 export const ExampleLinks = () => {
   const exampleEnsObjects = useSelector(getExampleEnsObjects);
-  const dispatch = useDispatch();
-
-  const onLinkClick = (exampleObject: EnsObject) => {
-    dispatch(changeFocusObject(exampleObject.object_id));
-    dispatch(closeTrackPanelModal());
-  };
+  const activeGenomeId = useSelector(getActiveGenomeId);
 
   return (
     <div data-test-id="example links">
       <div className={styles.sectionTitle}>Example links</div>
-      {exampleEnsObjects.map((exampleObject) => (
-        <div key={exampleObject.object_id} className={styles.linkHolder}>
-          <div
-            className={styles.pseudoLink}
-            onClick={() => onLinkClick(exampleObject)}
-          >
-            Example {exampleObject.type}
+      {exampleEnsObjects.map((exampleObject) => {
+        const path = urlFor.browser({
+          genomeId: activeGenomeId,
+          focus: buildFocusIdForUrl(exampleObject.object_id)
+        });
+
+        return (
+          <div key={exampleObject.object_id} className={styles.linkHolder}>
+            <Link to={path} onClick={closeTrackPanelModal} replace>
+              Example {exampleObject.type}
+            </Link>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -66,18 +67,14 @@ export const PreviouslyViewedLinks = () => {
   );
   const dispatch = useDispatch();
 
-  const onLinkClick = (
-    previouslyViewedObject: PreviouslyViewedObject,
-    index: number
-  ) => {
+  const onLinkClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
       category: 'recent_bookmark_link',
-      label: previouslyViewedObject.object_type,
+      label: objectType,
       action: 'clicked',
       value: index + 1
     });
 
-    dispatch(changeFocusObject(previouslyViewedObject.object_id));
     dispatch(closeTrackPanelModal());
   };
 
@@ -86,17 +83,25 @@ export const PreviouslyViewedLinks = () => {
       {[...previouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
+          const path = urlFor.browser({
+            genomeId: previouslyViewedObject.genome_id,
+            focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
+          });
+
           return (
             <div
               key={previouslyViewedObject.object_id}
               className={styles.linkHolder}
             >
-              <span
-                className={styles.pseudoLink}
-                onClick={() => onLinkClick(previouslyViewedObject, index)}
+              <Link
+                replace
+                to={path}
+                onClick={() =>
+                  onLinkClick(previouslyViewedObject.object_type, index)
+                }
               >
                 {previouslyViewedObject.label}
-              </span>
+              </Link>
               <span className={styles.previouslyViewedType}>
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
@@ -130,11 +135,7 @@ export const TrackPanelBookmarks = () => {
   return (
     <section className="trackPanelBookmarks">
       <div className={styles.title}>Bookmarks</div>
-      {exampleEnsObjects.length ? (
-        <>
-          <ExampleLinks />
-        </>
-      ) : null}
+      {exampleEnsObjects.length ? <ExampleLinks /> : null}
       {limitedPreviouslyViewedObjects.length ? (
         <>
           <div className={styles.sectionTitle}>
