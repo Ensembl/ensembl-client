@@ -21,8 +21,8 @@ import {
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import {
-  fetchTranscriptSequenceChecksums,
-  TranscriptSequenceChecksums
+  fetchTranscriptChecksums,
+  TranscriptChecksums
 } from './fetchSequenceChecksums';
 
 type FetchPayload = {
@@ -33,7 +33,7 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
-  const productGeneratingContext = await fetchTranscriptSequenceChecksums({
+  const productGeneratingContext = await fetchTranscriptChecksums({
     genomeId,
     transcriptId
   });
@@ -52,7 +52,7 @@ export const fetchForProtein = async (payload: FetchPayload) => {
 };
 
 const buildUrlsForProtein = (
-  productGeneratingContext: TranscriptSequenceChecksums,
+  productGeneratingContext: TranscriptChecksums,
   options: ProteinOptions
 ) => {
   return options
@@ -63,7 +63,7 @@ const buildUrlsForProtein = (
 };
 
 const buildFetchUrl = (
-  productGeneratingContext: TranscriptSequenceChecksums,
+  productGeneratingContext: TranscriptChecksums,
   sequenceType: ProteinOption
 ) => {
   const sequenceTypeToContextType: Record<ProteinOption, string> = {
@@ -72,9 +72,8 @@ const buildFetchUrl = (
   };
   const contextType = sequenceTypeToContextType[
     sequenceType
-  ] as keyof TranscriptSequenceChecksums;
-  const sequenceChecksum =
-    productGeneratingContext[contextType]?.sequence_checksum;
+  ] as keyof TranscriptChecksums;
+  const checksum = productGeneratingContext[contextType]?.sequence_checksum;
 
-  return `/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
+  return `/refget/sequence/${checksum}?accept=text/x-fasta`;
 };

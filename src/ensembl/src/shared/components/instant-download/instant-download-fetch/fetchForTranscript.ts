@@ -22,8 +22,8 @@ import {
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
-  fetchTranscriptSequenceChecksums,
-  TranscriptSequenceChecksums
+  fetchTranscriptChecksums,
+  TranscriptChecksums
 } from './fetchSequenceChecksums';
 
 type Options = {
@@ -47,7 +47,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const checksums = await fetchTranscriptSequenceChecksums({
+  const checksums = await fetchTranscriptChecksums({
     genomeId,
     transcriptId
   });
@@ -71,7 +71,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 const buildUrlsForTranscript = (
   data: {
     geneId: string;
-    checksums: TranscriptSequenceChecksums;
+    checksums: TranscriptChecksums;
   },
   options: Partial<TranscriptOptions>
 ) => {
@@ -85,7 +85,7 @@ const buildUrlsForTranscript = (
 const buildFetchUrl = (
   data: {
     geneId: string;
-    checksums?: TranscriptSequenceChecksums;
+    checksums?: TranscriptChecksums;
   },
   sequenceType: TranscriptOption
 ) => {
@@ -101,10 +101,10 @@ const buildFetchUrl = (
   } else {
     const contextType = sequenceTypeToContextType[
       sequenceType
-    ] as keyof TranscriptSequenceChecksums;
-    const sequenceChecksum =
+    ] as keyof TranscriptChecksums;
+    const checksum =
       data.checksums && data.checksums[contextType]?.sequence_checksum;
 
-    return `/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
+    return `/refget/sequence/${checksum}?accept=text/x-fasta`;
   }
 };

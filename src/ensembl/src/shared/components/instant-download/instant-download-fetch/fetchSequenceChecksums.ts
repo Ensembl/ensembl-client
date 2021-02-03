@@ -18,7 +18,7 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
-export type TranscriptSequenceChecksums = {
+export type TranscriptChecksums = {
   cdna: {
     sequence_checksum: string;
   };
@@ -32,7 +32,7 @@ export type TranscriptSequenceChecksums = {
 
 type GeneFragment = {
   transcript: {
-    product_generating_contexts: TranscriptSequenceChecksums[];
+    product_generating_contexts: TranscriptChecksums[];
   };
 };
 
@@ -59,7 +59,7 @@ type Variables = {
   transcriptId: string;
 };
 
-export const fetchTranscriptSequenceChecksums = (variables: Variables) =>
+export const fetchTranscriptChecksums = (variables: Variables) =>
   client
     .query<GeneFragment>({
       query: transcriptChecksumsQuery,
