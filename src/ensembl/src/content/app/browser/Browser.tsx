@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect } from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -65,22 +64,6 @@ import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
-
-const client = new ApolloClient({
-  uri: '/thoas',
-  cache: new InMemoryCache({
-    typePolicies: {
-      Gene: {
-        keyFields: ['stable_id'],
-        fields: {
-          slice: {
-            merge: false
-          }
-        }
-      }
-    }
-  })
-});
 
 export type BrowserProps = {
   activeGenomeId: string | null;
@@ -134,28 +117,26 @@ export const Browser = (props: BrowserProps) => {
   );
 
   return (
-    <ApolloProvider client={client}>
-      <div className={styles.browserInnerWrapper}>
-        <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-        {props.browserQueryParams.focus ? (
-          <StandardAppLayout
-            mainContent={mainContent}
-            sidebarContent={<TrackPanel />}
-            sidebarNavigation={<TrackPanelTabs />}
-            sidebarToolstripContent={<TrackPanelBar />}
-            onSidebarToggle={onSidebarToggle}
-            topbarContent={<BrowserBar />}
-            isSidebarOpen={props.isTrackPanelOpened}
-            isDrawerOpen={props.isDrawerOpened}
-            drawerContent={<Drawer />}
-            onDrawerClose={toggleDrawer}
-            viewportWidth={props.viewportWidth}
-          />
-        ) : (
-          <ExampleObjectLinks {...props} />
-        )}
-      </div>
-    </ApolloProvider>
+    <div className={styles.browserInnerWrapper}>
+      <BrowserAppBar onSpeciesSelect={changeGenomeId} />
+      {props.browserQueryParams.focus ? (
+        <StandardAppLayout
+          mainContent={mainContent}
+          sidebarContent={<TrackPanel />}
+          sidebarNavigation={<TrackPanelTabs />}
+          sidebarToolstripContent={<TrackPanelBar />}
+          onSidebarToggle={onSidebarToggle}
+          topbarContent={<BrowserBar />}
+          isSidebarOpen={props.isTrackPanelOpened}
+          isDrawerOpen={props.isDrawerOpened}
+          drawerContent={<Drawer />}
+          onDrawerClose={toggleDrawer}
+          viewportWidth={props.viewportWidth}
+        />
+      ) : (
+        <ExampleObjectLinks {...props} />
+      )}
+    </div>
   );
 };
 

@@ -49,16 +49,6 @@ jest.mock('ensembl-genome-browser', () => {
   return;
 });
 
-jest.mock('@apollo/client', () => {
-  const originalModule = jest.requireActual('@apollo/client');
-  return {
-    ...originalModule,
-    ApolloClient: jest.fn(() => {
-      return {};
-    })
-  };
-});
-
 describe('<Browser />', () => {
   afterEach(() => {
     jest.resetAllMocks();
