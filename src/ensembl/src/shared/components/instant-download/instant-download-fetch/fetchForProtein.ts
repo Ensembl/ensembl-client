@@ -21,8 +21,8 @@ import {
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import {
-  fetchSequenceChecksums,
-  SequenceChecksums
+  fetchTranscriptSequenceChecksums,
+  TranscriptSequenceChecksums
 } from './fetchSequenceChecksums';
 
 type FetchPayload = {
@@ -33,7 +33,7 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
-  const productGeneratingContext = await fetchSequenceChecksums({
+  const productGeneratingContext = await fetchTranscriptSequenceChecksums({
     genomeId,
     transcriptId
   });
@@ -52,7 +52,7 @@ export const fetchForProtein = async (payload: FetchPayload) => {
 };
 
 const buildUrlsForProtein = (
-  productGeneratingContext: SequenceChecksums,
+  productGeneratingContext: TranscriptSequenceChecksums,
   options: ProteinOptions
 ) => {
   return options
@@ -63,7 +63,7 @@ const buildUrlsForProtein = (
 };
 
 const buildFetchUrl = (
-  productGeneratingContext: SequenceChecksums,
+  productGeneratingContext: TranscriptSequenceChecksums,
   sequenceType: ProteinOption
 ) => {
   const sequenceTypeToContextType: Record<ProteinOption, string> = {
@@ -72,10 +72,9 @@ const buildFetchUrl = (
   };
   const contextType = sequenceTypeToContextType[
     sequenceType
-  ] as keyof SequenceChecksums;
+  ] as keyof TranscriptSequenceChecksums;
   const sequenceChecksum =
     productGeneratingContext[contextType]?.sequence_checksum;
 
-  // TODO: Change this before merging the PR
-  return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
+  return `/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
 };

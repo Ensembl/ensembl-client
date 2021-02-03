@@ -22,8 +22,8 @@ import {
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
-  fetchSequenceChecksums,
-  SequenceChecksums
+  fetchTranscriptSequenceChecksums,
+  TranscriptSequenceChecksums
 } from './fetchSequenceChecksums';
 
 type Options = {
@@ -47,7 +47,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const checksums = await fetchSequenceChecksums({
+  const checksums = await fetchTranscriptSequenceChecksums({
     genomeId,
     transcriptId
   });
@@ -71,7 +71,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 const buildUrlsForTranscript = (
   data: {
     geneId: string;
-    checksums: SequenceChecksums;
+    checksums: TranscriptSequenceChecksums;
   },
   options: Partial<TranscriptOptions>
 ) => {
@@ -85,7 +85,7 @@ const buildUrlsForTranscript = (
 const buildFetchUrl = (
   data: {
     geneId: string;
-    checksums?: SequenceChecksums;
+    checksums?: TranscriptSequenceChecksums;
   },
   sequenceType: TranscriptOption
 ) => {
@@ -101,11 +101,10 @@ const buildFetchUrl = (
   } else {
     const contextType = sequenceTypeToContextType[
       sequenceType
-    ] as keyof SequenceChecksums;
+    ] as keyof TranscriptSequenceChecksums;
     const sequenceChecksum =
       data.checksums && data.checksums[contextType]?.sequence_checksum;
 
-    // TODO: Change this before merging the PR
-    return `http://refget.review.ensembl.org/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
+    return `/refget/sequence/${sequenceChecksum}?accept=text/x-fasta`;
   }
 };
