@@ -40,9 +40,11 @@ import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
+import transcriptListStyles from '../default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './TranscriptsFilter.scss';
 
 type Props = {
+  shouldShowFilterIndicator: boolean;
   transcripts: Transcript[];
   toggleFilter: () => void;
 };
@@ -124,7 +126,15 @@ const TranscriptsFilter = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.filterLabel} onClick={props.toggleFilter}>
-        Filter & sort
+        <span
+          className={
+            props.shouldShowFilterIndicator
+              ? transcriptListStyles.labelWithActivityIndicator
+              : undefined
+          }
+        >
+          Filter & sort
+        </span>
         <ChevronUp className={styles.chevron} />
       </div>
       <div className={filterBoxClassnames}>

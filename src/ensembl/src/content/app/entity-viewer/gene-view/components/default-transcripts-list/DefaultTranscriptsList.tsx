@@ -93,6 +93,7 @@ const DefaultTranscriptslist = (props: Props) => {
       <div className={styles.header}>
         {isFilterOpen && (
           <TranscriptsFilter
+            shouldShowFilterIndicator={shouldShowFilterIndicator}
             toggleFilter={toggleFilter}
             transcripts={sortedTranscripts}
           />
