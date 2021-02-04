@@ -24,12 +24,11 @@ import ZmenuContent from './ZmenuContent';
 import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuContent', () => () => <div>ZmenuContent</div>);
+jest.mock('./ZmenuInstantDownload', () => () => (
+  <div>ZmenuInstantDownload</div>
+));
 
 describe('<Zmenu />', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   const defaultProps: ZmenuProps = {
     anchor_coordinates: {
       x: 490,
@@ -47,6 +46,8 @@ describe('<Zmenu />', () => {
   let wrapper: any;
 
   beforeEach(() => {
+    jest.resetAllMocks();
+
     wrapper = mount(<Zmenu {...defaultProps} />);
   });
 

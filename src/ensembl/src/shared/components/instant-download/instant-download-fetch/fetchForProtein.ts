@@ -20,42 +20,60 @@ import {
   ProteinOption,
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
+import {
+  fetchTranscriptChecksums,
+  TranscriptChecksums
+} from './fetchSequenceChecksums';
 
 type FetchPayload = {
+  genomeId: string;
   transcriptId: string;
   options: ProteinOptions;
 };
 
 export const fetchForProtein = async (payload: FetchPayload) => {
-  const { transcriptId, options } = payload;
-  const urls = buildUrlsForProtein(transcriptId, options);
+  const { genomeId, transcriptId, options } = payload;
+  const productGeneratingContext = await fetchTranscriptChecksums({
+    genomeId,
+    transcriptId
+  });
 
+  const urls = buildUrlsForProtein(productGeneratingContext, options);
   const sequencePromises = urls.map((url) =>
     fetch(url).then((response) => response.text())
   );
 
   const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n');
+  const combinedFasta = sequences.join('\n\n');
 
   downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
   });
 };
 
-const buildUrlsForProtein = (id: string, options: ProteinOptions) => {
+const buildUrlsForProtein = (
+  productGeneratingContext: TranscriptChecksums,
+  options: ProteinOptions
+) => {
   return options
     ? proteinOptionsOrder
         .filter((option) => options[option])
-        .map((option) => buildFetchUrl(id, option))
+        .map((option) => buildFetchUrl(productGeneratingContext, option))
     : [];
 };
 
-const buildFetchUrl = (id: string, sequenceType: ProteinOption) => {
-  const sequenceTypeToTypeParam: Record<ProteinOption, string> = {
-    proteinSequence: 'protein',
+const buildFetchUrl = (
+  productGeneratingContext: TranscriptChecksums,
+  sequenceType: ProteinOption
+) => {
+  const sequenceTypeToContextType: Record<ProteinOption, string> = {
+    proteinSequence: 'product',
     cds: 'cds'
   };
-  const typeParam = sequenceTypeToTypeParam[sequenceType];
+  const contextType = sequenceTypeToContextType[
+    sequenceType
+  ] as keyof TranscriptChecksums;
+  const checksum = productGeneratingContext[contextType]?.sequence_checksum;
 
-  return `https://rest.ensembl.org/sequence/id/${id}?content-type=text/x-fasta&type=${typeParam}`;
+  return `/refget/sequence/${checksum}?accept=text/x-fasta`;
 };
