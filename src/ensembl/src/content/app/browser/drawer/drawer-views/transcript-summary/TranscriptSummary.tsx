@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import get from 'lodash/get';
 import find from 'lodash/find';
+import { useSelector } from 'react-redux';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
-import styles from '../Drawer.scss';
-
-type DrawerTranscriptProps = {
-  ensObject: EnsObjectGene;
-};
+import styles from 'src/content/app/browser/drawer/Drawer.scss';
 
 // TODO: Once we start supporting multiple transcripts, we need to either remove this constant or move it to trackConfig
 const TRANSCRIPT_GENE_NAME = 'track:gene-feat-1';
 
-const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
-  props: DrawerTranscriptProps
-) => {
-  const { ensObject } = props;
+const TranscriptSummary = () => {
+  const ensObject = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
 
   if (!ensObject.track) {
     return null;
@@ -88,4 +84,4 @@ const DrawerTranscript: FunctionComponent<DrawerTranscriptProps> = (
   );
 };
 
-export default DrawerTranscript;
+export default TranscriptSummary;

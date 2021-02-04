@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
+export enum DrawerView {
+  BOOKMARKS = 'bookmarks',
+  TRACK_DETAILS = 'track_details',
+  GENE_SUMMARY = 'gene_summary',
+  TRANSCRIPT_SUMMARY = 'transcript_summary'
+}
+
 export type DrawerState = Readonly<{
   isDrawerOpened: { [genomeId: string]: boolean };
-  drawerView: { [genomeId: string]: string };
+  drawerView: { [genomeId: string]: DrawerView | null };
+  activeDrawerTrackIds: { [genomeId: string]: string | null };
 }>;
 
 export const defaultDrawerState = {
   isDrawerOpened: {},
-  drawerView: {}
+  drawerView: {},
+  activeDrawerTrackIds: {}
 };

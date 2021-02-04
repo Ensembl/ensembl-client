@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
 import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
-import styles from '../Drawer.scss';
+import styles from 'src/content/app/browser/drawer/Drawer.scss';
 
-type DrawerGeneProps = {
-  ensObject: EnsObjectGene;
-};
-
-const DrawerGene: FunctionComponent<DrawerGeneProps> = (
-  props: DrawerGeneProps
-) => {
-  const { ensObject } = props;
+const GeneSummary = () => {
+  const ensObject = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
 
   return (
     <div className={styles.drawerView}>
@@ -49,4 +45,4 @@ const DrawerGene: FunctionComponent<DrawerGeneProps> = (
   );
 };
 
-export default DrawerGene;
+export default GeneSummary;

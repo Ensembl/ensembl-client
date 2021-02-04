@@ -34,6 +34,14 @@ export default function drawer(
         ...state,
         isDrawerOpened: { ...state.isDrawerOpened, ...action.payload }
       };
+    case getType(drawerActions.setActiveDrawerTrackId):
+      return {
+        ...state,
+        activeDrawerTrackIds: {
+          ...state.activeDrawerTrackIds,
+          ...action.payload
+        }
+      };
     default:
       return state;
   }

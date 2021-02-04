@@ -18,7 +18,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
-import { toggleDrawer, changeDrawerView } from '../../drawer/drawerActions';
 import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 import {
@@ -51,8 +50,6 @@ export type TrackPanelListProps = {
   selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
   trackStates: BrowserTrackStates;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
-  changeDrawerView: (drawerView: string) => void;
 };
 
 export const TrackPanelList = (props: TrackPanelListProps) => {
@@ -160,9 +157,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = {
-  changeDrawerView,
-  toggleDrawer
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelList);
+export default connect(mapStateToProps)(TrackPanelList);

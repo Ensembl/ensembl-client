@@ -56,6 +56,7 @@ export type EnsObjectTrack = {
   ensembl_object_id?: string;
   support_level?: string | null;
   track_id: string;
+  stable_id: string | null;
   description: string | null;
 };
 
