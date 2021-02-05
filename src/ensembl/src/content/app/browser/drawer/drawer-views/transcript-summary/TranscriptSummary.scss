@@ -13,14 +13,18 @@
   .value {
     grid-column: value;
 
-    span + span {
+    & > span + span {
       margin-left: 10px;
     }
 
-    div + div{
+    & > div + div{
       margin-top: 10px;
     }
   }
+}
+
+.spaceAbove{
+  margin-top: 40px;
 }
 
 .greyedText{
@@ -56,4 +60,23 @@
   margin-left: 12px;
   color: $dark-grey;
   font-weight: $light;
+}
+
+
+.downloadLink{
+  color: $blue;
+  cursor: pointer;
+}
+
+.downloadWrapper{
+  display: inline-block;
+  margin-left: 40px;
+  min-width: 600px;
+  position: relative;
+}
+
+.closeButton{
+  position: absolute;
+  right: 0;
+  top: 0;
 }

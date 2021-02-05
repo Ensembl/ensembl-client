@@ -18,6 +18,7 @@ import { Slice } from './slice';
 import { SplicedExon } from './exon';
 import { ProductGeneratingContext } from './productGeneratingContext';
 import { LocationWithinRegion } from './location';
+import { ExternalReference } from 'src/content/app/entity-viewer/types/externalReference';
 
 /**
  * NOTE:
@@ -38,4 +39,5 @@ export type Transcript = {
   relative_location: LocationWithinRegion;
   spliced_exons: SplicedExon[];
   product_generating_contexts: ProductGeneratingContext[];
+  external_references: ExternalReference[];
 };
