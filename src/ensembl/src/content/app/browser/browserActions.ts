@@ -84,7 +84,7 @@ export const activateBrowser = () => {
     const host = config.apiHost || currentHost;
 
     const payload = {
-      'config-url': `${protocol}${host}/browser/config`,
+      'config-url': `${protocol}${host}/api/browser/config`,
       key: 'main', // TODO: remove this field after we confirmed that it is redundant
       selector: `#${BROWSER_CONTAINER_ID}`
     };

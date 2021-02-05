@@ -32,26 +32,11 @@ const devServerConfig = {
   // rules to proxy requests to the backend server in development
   proxy: {
     '/api': {
-      target: 'https://staging-2020.ensembl.org',
-      changeOrigin: true,
-      secure: false
-    },
-    '/browser': {
-      target: 'https://staging-2020.ensembl.org',
-      changeOrigin: true,
-      secure: false
-    },
-    '/thoas': {
-      target: 'https://staging-2020.ensembl.org',
+      target: 'http://api-prefix.review.ensembl.org',
       changeOrigin: true,
       secure: false
     },
     '/help-api': {
-      target: 'https://staging-2020.ensembl.org',
-      changeOrigin: true,
-      secure: false
-    },
-    '/refget': {
       target: 'https://staging-2020.ensembl.org',
       changeOrigin: true,
       secure: false

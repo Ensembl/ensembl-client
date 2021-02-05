@@ -68,7 +68,7 @@ export const fetchGenomeInfo: ActionCreator<ThunkAction<
   }
   try {
     dispatch(fetchGenomeInfoAsyncActions.request());
-    const url = `/api/genome/info?genome_id=${genomeId}`;
+    const url = `/api/genomesearch/genome/info?genome_id=${genomeId}`;
     const response = await apiService.fetch(url);
 
     dispatch(
@@ -108,7 +108,7 @@ export const fetchGenomeTrackCategories: ActionCreator<ThunkAction<
 
     dispatch(fetchGenomeTrackCategoriesAsyncActions.request(genomeId));
 
-    const url = `/api/genome/track_categories?genome_id=${genomeId}`;
+    const url = `/api/genomesearch/genome/track_categories?genome_id=${genomeId}`;
     const response = await apiService.fetch(url);
     updatedGenomeTrackCategories[genomeId] = response.track_categories;
 
@@ -145,7 +145,7 @@ export const fetchGenomeKaryotype: ActionCreator<ThunkAction<
 
     dispatch(fetchGenomeKaryotypeAsyncActions.request(genomeId));
 
-    const url = `/api/genome/karyotype?genome_id=${genomeId}`;
+    const url = `/api/genomesearch/genome/karyotype?genome_id=${genomeId}`;
     const response = await apiService.fetch(url);
 
     dispatch(

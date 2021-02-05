@@ -71,8 +71,8 @@ export const fetchEnsObject = (
     dispatch(fetchEnsObjectAsyncActions.request(ensObjectId));
     const { genomeId, objectId, type } = payload;
 
-    const objectInfoUrl = `/api/object/info?genome_id=${genomeId}&type=${type}&stable_id=${objectId}`;
-    const objectTracksUrl = `/api/object/track_list?genome_id=${genomeId}&type=${type}&stable_id=${objectId}`;
+    const objectInfoUrl = `/api/genomesearch/object/info?genome_id=${genomeId}&type=${type}&stable_id=${objectId}`;
+    const objectTracksUrl = `/api/genomesearch/object/track_list?genome_id=${genomeId}&type=${type}&stable_id=${objectId}`;
     const response: EnsObjectResponse = await apiService.fetch(objectInfoUrl);
     response.object_id = buildEnsObjectId(payload);
 
