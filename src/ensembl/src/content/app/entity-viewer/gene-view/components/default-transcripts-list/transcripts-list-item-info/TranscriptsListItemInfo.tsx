@@ -34,16 +34,17 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
 
 import { Gene } from 'src/content/app/entity-viewer/types/gene';
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
-import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 export type TranscriptsListItemInfoProps = {
   gene: Gene;
@@ -135,8 +136,8 @@ export const TranscriptsListItemInfo = (
         </div>
         <div className={styles.downloadLink}>
           {props.expandDownload ? (
-            <CloseIcon
-              className={styles.closeIcon}
+            <CloseButton
+              className={styles.closeButton}
               onClick={() =>
                 props.toggleTranscriptDownload(transcript.stable_id)
               }
@@ -151,7 +152,7 @@ export const TranscriptsListItemInfo = (
             </span>
           )}
         </div>
-        {props.expandDownload && renderInstantDownload(props)}
+        {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>
       <div className={transcriptsListStyles.right}>
         <div className={styles.transcriptName}>
@@ -166,12 +167,16 @@ export const TranscriptsListItemInfo = (
 };
 
 const renderInstantDownload = ({
+  transcript,
   gene,
-  transcript
-}: TranscriptsListItemInfoProps) => {
+  genomeId
+}: TranscriptsListItemInfoProps & {
+  genomeId: string;
+}) => {
   return (
     <div className={styles.download}>
       <InstantDownloadTranscript
+        genomeId={genomeId}
         transcript={{
           id: transcript.unversioned_stable_id,
           so_term: transcript.so_term

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-export type CDNA = {
-  start: number;
-  end: number;
-  length: number;
-  sequence_checksum?: string;
-};
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+export const client = new ApolloClient({
+  uri: '/thoas',
+  cache: new InMemoryCache({
+    typePolicies: {
+      Gene: {
+        keyFields: ['stable_id'],
+        fields: {
+          slice: {
+            merge: false
+          }
+        }
+      }
+    }
+  })
+});

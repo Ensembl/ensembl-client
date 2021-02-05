@@ -16,138 +16,30 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { gql, useQuery } from '@apollo/client';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
-import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
-import {
-  buildFocusIdForUrl,
-  getDisplayStableId
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
-import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
-import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
 
-import styles from './GeneSummary.scss';
-
-const GENE_QUERY = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      alternative_symbols
-      name
-      stable_id
-      symbol
-      so_term
-      transcripts {
-        stable_id
-      }
-      slice {
-        strand {
-          code
-          value
-        }
-        location {
-          length
-        }
-      }
-    }
-  }
-`;
-
-type Gene = Required<
-  Pick<
-    GeneFromGraphql,
-    | 'stable_id'
-    | 'symbol'
-    | 'name'
-    | 'alternative_symbols'
-    | 'so_term'
-    | 'transcripts'
-    | 'slice'
-  >
->;
+import styles from 'src/content/app/browser/drawer/Drawer.scss';
 
 const GeneSummary = () => {
-  const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
-
-  const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
-    variables: {
-      geneId: ensObjectGene.stable_id,
-      genomeId: ensObjectGene.genome_id
-    },
-    skip: !ensObjectGene.stable_id
-  });
-
-  if (loading || !data?.gene) {
-    return null;
-  }
-
-  if (!data?.gene) {
-    return <div>No data available</div>;
-  }
-
-  const { gene } = data;
-
-  const stableId = getDisplayStableId(gene);
-
-  const focusId = buildFocusIdForUrl({
-    type: 'gene',
-    objectId: gene.stable_id as string
-  });
-  const entityViewerUrl = urlFor.entityViewer({
-    genomeId: ensObjectGene.genome_id,
-    entityId: focusId
-  });
+  const ensObject = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.standardLabelValue}>
+    <div className={styles.drawerView}>
+      <div className={styles.container}>
         <div className={styles.label}>Gene</div>
-        <div className={styles.value}>
-          <div className={styles.featureDetails}>
-            {gene.symbol && (
-              <span className={styles.featureSymbol}>{gene.symbol}</span>
-            )}
-            {gene.symbol !== stableId && (
-              <span className={styles.stableId}>{stableId}</span>
-            )}
-            {gene.so_term && <div>{gene.so_term.toLowerCase()}</div>}
-            {gene.slice.strand.code && (
-              <div>{getStrandDisplayName(gene.slice.strand.code)}</div>
-            )}
-            <div>{getFormattedLocation(ensObjectGene.location)}</div>
-          </div>
+        <div className={styles.details}>
+          <span className={styles.mainDetail}>{ensObject.label}</span>
         </div>
-      </div>
 
-      <div className={styles.standardLabelValue}>
-        <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{gene.name}</div>
-      </div>
+        <div className={styles.label}>Stable ID</div>
+        <div className={styles.details}>{getDisplayStableId(ensObject)}</div>
 
-      {gene.alternative_symbols.length > 0 && (
-        <div className={styles.standardLabelValue}>
-          <div className={styles.label}>Synonyms</div>
-          <div className={styles.value}>
-            {gene.alternative_symbols.join(', ')}
-          </div>
-        </div>
-      )}
-
-      <div className={styles.standardLabelValue}>
-        <div className={styles.value}>
-          {`${gene.transcripts.length} transcripts`}
-        </div>
-      </div>
-
-      <div className={styles.standardLabelValue}>
-        <div className={styles.value}>
-          <ViewInApp links={{ entityViewer: entityViewerUrl }} />
-        </div>
+        <div className={styles.label}>Description</div>
+        <div className={styles.details}>{ensObject.description || '--'}</div>
       </div>
     </div>
   );

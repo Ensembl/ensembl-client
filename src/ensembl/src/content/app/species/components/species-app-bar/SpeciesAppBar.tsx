@@ -54,7 +54,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
     <AppBar
       appName={AppName.SPECIES_SELECTOR}
       mainContent={wrappedSpecies}
-      aside={<HelpPopupButton slug="selecting-a-species" />}
+      aside={<HelpPopupButton slug="species-homepage" />}
     />
   );
 };

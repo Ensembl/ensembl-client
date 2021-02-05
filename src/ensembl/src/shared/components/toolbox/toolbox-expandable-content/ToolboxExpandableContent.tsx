@@ -18,7 +18,7 @@ import React, { useState, useContext, ReactNode } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import styles from './ToolboxExpandableContent.scss';
 
@@ -69,11 +69,12 @@ export const ToggleButton = (props: ToggleButtonProps) => {
     toggleExpanded();
   };
 
-  const button = isExpanded ? <CloseIcon /> : props.openElement;
   const buttonClasses = classNames(styles.toggleButton, props.className);
-  return (
+  return isExpanded ? (
+    <CloseButton className={buttonClasses} onClick={handleClick} />
+  ) : (
     <span className={buttonClasses} onClick={handleClick}>
-      {button}
+      {props.openElement}
     </span>
   );
 };

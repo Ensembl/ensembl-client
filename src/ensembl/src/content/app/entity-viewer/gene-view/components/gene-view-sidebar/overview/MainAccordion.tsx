@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import noop from 'lodash/noop';
 import classNames from 'classnames';
 
 import {
@@ -25,58 +24,23 @@ import {
   AccordionItemPanel,
   AccordionItemButton
 } from 'src/shared/components/accordion';
-import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import { PrimaryButton } from 'src/shared/components/button/Button';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as DownloadButton } from 'static/img/launchbar/custom-download.svg';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-
-import { Status } from 'src/shared/types/status';
-
-import { EntityViewerSidebarUIState } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './GeneOverview.scss';
 
-// FIXME:
-// We started using real data from Thoas, and are not yet getting anything that can be rendered
-// in this accordion. When we get back to using this accordion, the type of its props will need updating
-type Props = {
-  sidebarPayload: any | null; // FIXME: update the type with appropriate shape of data
-  sidebarUIState: EntityViewerSidebarUIState | null;
-  updateEntityUI: (uIstate: Partial<EntityViewerSidebarUIState>) => void;
-};
+/*  
+  FIXME: 
+  We started using real data from Thoas, and are not yet getting anything that can be rendered in this accordion. 
+  When more data becomes available, please refer to the PR https://github.com/Ensembl/ensembl-client/pull/433
+  and check if some of the deleted code segments can be reused to display the new data.
+*/
 
 export type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
 
-// TODO: Remove me once instant download component is available
-const mockOnClick = noop;
-
-const MainAccordion = (props: Props) => {
-  const { sidebarPayload, sidebarUIState } = props;
-
-  if (!sidebarPayload) {
-    return null;
-  }
-
-  const { gene } = sidebarPayload;
-  const hasFunctionDescription = Boolean(gene.function?.description);
-
-  const expandedPanels =
-    sidebarUIState?.mainAccordion?.expandedPanels ||
-    (hasFunctionDescription ? ['function'] : []);
-
-  const onChange = (newExpandedPanels: (string | number)[] = []) => {
-    props.updateEntityUI({
-      mainAccordion: {
-        expandedPanels: newExpandedPanels as AccordionSectionID[]
-      }
-    });
-  };
-
-  const functionAccordionButtonClass = classNames(
+const MainAccordion = () => {
+  const disabledAccordionButtonClass = classNames(
     styles.entityViewerAccordionButton,
     {
-      [styles.entityViewerAccordionButtonDisabled]: !hasFunctionDescription
+      [styles.entityViewerAccordionButtonDisabled]: true
     }
   );
 
@@ -84,8 +48,6 @@ const MainAccordion = (props: Props) => {
     <div className={styles.accordionContainer}>
       <Accordion
         className={styles.entityViewerAccordion}
-        onChange={onChange}
-        preExpanded={expandedPanels}
         allowMultipleExpanded={true}
       >
         <AccordionItem
@@ -94,8 +56,8 @@ const MainAccordion = (props: Props) => {
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
-              className={functionAccordionButtonClass}
-              disabled={!hasFunctionDescription}
+              className={disabledAccordionButtonClass}
+              disabled={true}
             >
               Function
             </AccordionItemButton>
@@ -103,23 +65,7 @@ const MainAccordion = (props: Props) => {
           <AccordionItemPanel
             className={styles.entityViewerAccordionItemContent}
           >
-            {gene.function?.description && (
-              <div>
-                <div className={styles.geneFunction}>
-                  {gene.function.description}
-                </div>
-                {gene.function.source?.id && (
-                  <ExternalReference
-                    label={gene.function.source.name}
-                    linkText={gene.function.source.id}
-                    to={gene.function.source.url}
-                    classNames={{
-                      label: styles.providedBy
-                    }}
-                  />
-                )}
-              </div>
-            )}
+            No data available
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -128,69 +74,17 @@ const MainAccordion = (props: Props) => {
           uuid={'sequence'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton className={styles.entityViewerAccordionButton}>
+            <AccordionItemButton
+              className={disabledAccordionButtonClass}
+              disabled={true}
+            >
               Sequence
             </AccordionItemButton>
           </AccordionItemHeading>
           <AccordionItemPanel
             className={styles.entityViewerAccordionItemContent}
           >
-            <div className={styles.sequenceAccordion}>
-              <div className={styles.geneDetails}>
-                <span className={styles.geneTitle}>Gene</span>
-                <span className={styles.stableId}>{gene.id}</span>
-              </div>
-              <div className={styles.geneCheckboxList}>
-                {renderCheckbox({ label: 'Genomic sequence', checked: false })}
-              </div>
-
-              <div className={styles.accordionContentTitle}>
-                All transcripts
-              </div>
-              <div className={styles.transcriptsCheckboxList}>
-                {(gene.filters?.transcript?.sequence as {
-                  label: string;
-                }[]).map((filter, key) =>
-                  renderCheckbox({
-                    label: filter.label,
-                    checked: false,
-                    key: key
-                  })
-                )}
-              </div>
-
-              <div className={styles.sequenceDownload}>
-                <PrimaryButton onClick={mockOnClick} isDisabled={true}>
-                  Download
-                </PrimaryButton>
-              </div>
-
-              <div className={styles.customDownload}>
-                <div className={styles.label}>Get a custom download</div>
-                <div className={styles.icon}>
-                  <ImageButton
-                    image={DownloadButton}
-                    onClick={mockOnClick}
-                    status={Status.SELECTED}
-                  ></ImageButton>
-                </div>
-              </div>
-
-              {gene.filters?.transcript.tark_url && (
-                <div className={styles.tark}>
-                  <div className={styles.description}>
-                    Archive of transcript sequences, including historical gene
-                    sets
-                  </div>
-                  <ExternalReference
-                    label={'Ensembl Transcript Archive'}
-                    linkText={'TARK'}
-                    to={gene.filters.transcript.tark_url as string}
-                    classNames={{ label: styles.tarkLabel }}
-                  />
-                </div>
-              )}
-            </div>
+            <div>No data available</div>
           </AccordionItemPanel>
         </AccordionItem>
 
@@ -200,8 +94,8 @@ const MainAccordion = (props: Props) => {
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
             <AccordionItemButton
-              className={styles.entityViewerAccordionButton}
-              disabled={sidebarPayload.other_data_sets ? false : true}
+              className={disabledAccordionButtonClass}
+              disabled={true}
             >
               Other data sets
             </AccordionItemButton>
@@ -209,49 +103,10 @@ const MainAccordion = (props: Props) => {
           <AccordionItemPanel
             className={styles.entityViewerAccordionItemContent}
           >
-            <div>
-              {sidebarPayload.other_data_sets?.map((
-                entry: any /* FIXME! */,
-                key: number
-              ) =>
-                renderStandardLabelValue({
-                  label: entry.type,
-                  value: entry.value,
-                  key
-                })
-              )}
-            </div>
+            <div>No data available</div>
           </AccordionItemPanel>
         </AccordionItem>
       </Accordion>
-    </div>
-  );
-};
-
-const renderCheckbox = (props: {
-  label: string;
-  checked: boolean;
-  key?: number;
-}) => {
-  // TODO: Remove me once instant download component is available
-  const onChangeMock = noop;
-
-  return (
-    <div key={props.key}>
-      <Checkbox onChange={onChangeMock} {...props} />
-    </div>
-  );
-};
-
-const renderStandardLabelValue = (props: {
-  label: string;
-  key?: number;
-  value: string | JSX.Element;
-}) => {
-  return (
-    <div className={styles.standardLabelValue} key={props.key}>
-      <div className={styles.label}>{props.label}</div>
-      <div className={styles.value}>{props.value}</div>
     </div>
   );
 };

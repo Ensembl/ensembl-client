@@ -15,31 +15,19 @@
  */
 
 import { RootState } from 'src/store';
-import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 import { getQueryParamsMap } from 'src/global/globalHelper';
-import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const getEntityViewerActiveGenomeId = (state: RootState) =>
   state.entityViewer.general.activeGenomeId;
 
-export const getEntityViewerActiveEnsObjectIds = (state: RootState) =>
-  state.entityViewer.general.activeEnsObjectIds;
+export const getEntityViewerActiveEntityIds = (state: RootState) =>
+  state.entityViewer.general.activeEntityIds;
 
-export const getEntityViewerActiveEnsObjectId = (state: RootState) => {
-  const activeEnsObjectIds = getEntityViewerActiveEnsObjectIds(state);
+export const getEntityViewerActiveEntityId = (state: RootState) => {
+  const activeEntityIds = getEntityViewerActiveEntityIds(state);
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  return activeGenomeId ? activeEnsObjectIds[activeGenomeId] : null;
-};
-
-export const getEntityViewerActiveEnsObject = (
-  state: RootState
-): EnsObjectGene | null => {
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeObjectId) {
-    return null;
-  }
-  return getEnsObjectById(state, activeObjectId) as EnsObjectGene;
+  return activeGenomeId ? activeEntityIds[activeGenomeId] : null;
 };
 
 export const getEntityViewerQueryParams = (

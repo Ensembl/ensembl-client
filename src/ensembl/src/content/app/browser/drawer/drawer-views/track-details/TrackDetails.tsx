@@ -14,42 +14,27 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import {
-  getActiveDrawerTrackId,
-  getActiveTrackDetails
-} from 'src/content/app/browser/drawer/drawerSelectors';
-import { fetchTrackDetails } from 'src/content/app/browser/drawer/drawerActions';
+import { getActiveDrawerTrackId } from 'src/content/app/browser/drawer/drawerSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
-import GeneSummary from 'src/content/app/browser/drawer/drawer-views/gene-summary/GeneSummary';
-import TranscriptSummary from 'src/content/app/browser/drawer/drawer-views/transcript-summary/TranscriptSummary';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+
+import { trackDetailsSampleData } from '../../sampleData';
 
 import styles from './TrackDetails.scss';
 
 const TrackDetails = () => {
-  const activeTrackId = useSelector(getActiveDrawerTrackId);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const trackId = useSelector(getActiveDrawerTrackId);
 
-  if (activeTrackId === 'track:gene-feat') {
-    return <GeneSummary />;
-  } else if (activeTrackId === 'track:gene-feat-1') {
-    return <TranscriptSummary />;
+  if (!activeGenomeId || !trackId) {
+    return null;
   }
-  return <OtherTrackDetails />;
-};
 
-const OtherTrackDetails = () => {
-  const trackDetails = useSelector(getActiveTrackDetails);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!trackDetails) {
-      dispatch(fetchTrackDetails());
-    }
-  }, [trackDetails]);
+  const trackDetails = trackDetailsSampleData[activeGenomeId][trackId] || null;
 
   if (!trackDetails) {
     return null;
@@ -67,13 +52,11 @@ const OtherTrackDetails = () => {
         </div>
       </div>
 
-      {(trackDetails.shared_description ||
-        trackDetails.specific_description) && (
+      {trackDetails.description && (
         <div className={styles.standardLabelValue}>
           <div className={styles.label}>Description</div>
           <div className={styles.value}>
-            <div>{trackDetails.shared_description || null}</div>
-            <div>{trackDetails.specific_description || null}</div>
+            <div>{trackDetails.description || null}</div>
           </div>
         </div>
       )}

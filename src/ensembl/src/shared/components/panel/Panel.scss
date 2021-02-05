@@ -35,9 +35,5 @@
   position: absolute;
   right: 10px;
   top: 45px;
-  cursor: pointer;
-  img {
-    height: 15px;
-    width: 15px;
-  }
+  z-index: 1;
 }

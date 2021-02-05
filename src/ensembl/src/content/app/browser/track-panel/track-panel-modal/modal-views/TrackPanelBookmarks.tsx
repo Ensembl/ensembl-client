@@ -39,6 +39,7 @@ import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trac
 import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 import styles from './TrackPanelBookmarks.scss';
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 export type TrackPanelBookmarksProps = {
   activeGenomeId: string | null;
@@ -46,7 +47,7 @@ export type TrackPanelBookmarksProps = {
   previouslyViewedObjects: PreviouslyViewedObject[];
   updateTrackStatesAndSave: (trackStates: BrowserTrackStates) => void;
   closeTrackPanelModal: () => void;
-  changeDrawerViewAndOpen: (drawerView: string) => void;
+  changeDrawerViewAndOpen: (drawerView: DrawerView) => void;
 };
 
 type ExampleLinksProps = Pick<
@@ -146,7 +147,7 @@ export const TrackPanelBookmarks = (props: TrackPanelBookmarksProps) => {
       value: previouslyViewedObjects.length
     });
 
-    props.changeDrawerViewAndOpen('bookmarks');
+    props.changeDrawerViewAndOpen(DrawerView.BOOKMARKS);
   };
 
   return (

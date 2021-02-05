@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import classNames from 'classnames';
 
 import { RootState } from 'src/store';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
@@ -24,8 +23,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 
 import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
-
-import { ReactComponent as CloseIcon } from 'static/img/shared/close.svg';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import styles from './BrowserNavBarMain.scss';
 
@@ -73,9 +71,6 @@ type ContentSwitcherProps = {
 };
 
 const ContentSwitcher = (props: ContentSwitcherProps) => {
-  const switcherContent =
-    props.currentView === Content.CHROMOSOME ? 'Change' : <CloseIcon />;
-
   const handleClick = () => {
     const newView =
       props.currentView === Content.CHROMOSOME
@@ -84,17 +79,16 @@ const ContentSwitcher = (props: ContentSwitcherProps) => {
     props.onSwitch(newView);
   };
 
-  const contentSwitcherStyles = classNames(styles.contentSwitcher, {
-    [styles.contentSwitcherClose]: props.currentView === Content.REGION_SWITCHER
-  });
-
-  return (
-    <div className={styles.contentSwitcherArea}>
-      <span className={contentSwitcherStyles} onClick={handleClick}>
-        {switcherContent}
+  const switcherContent =
+    props.currentView === Content.CHROMOSOME ? (
+      <span className={styles.contentSwitcher} onClick={handleClick}>
+        Change
       </span>
-    </div>
-  );
+    ) : (
+      <CloseButton onClick={handleClick} />
+    );
+
+  return <div className={styles.contentSwitcherArea}>{switcherContent}</div>;
 };
 
 const mapStateToProps = (state: RootState) => ({

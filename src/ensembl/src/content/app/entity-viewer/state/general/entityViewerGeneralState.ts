@@ -18,12 +18,12 @@ import entityViewerStorageService from 'src/content/app/entity-viewer/services/e
 
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
-  activeEnsObjectIds: { [genomeId: string]: string };
+  activeEntityIds: { [genomeId: string]: string };
 }>;
 
 export const initialState: EntityViewerGeneralState = {
   activeGenomeId: null, // FIXME add entity viewer storage service
-  activeEnsObjectIds: {}
+  activeEntityIds: {}
 };
 
 export const buildInitialState = () => {

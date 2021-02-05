@@ -15,7 +15,6 @@
  */
 
 import { ActionType, getType } from 'typesafe-actions';
-import merge from 'lodash/fp/merge';
 
 import { DrawerState, defaultDrawerState } from './drawerState';
 import * as drawerActions from './drawerActions';
@@ -34,11 +33,6 @@ export default function drawer(
       return {
         ...state,
         isDrawerOpened: { ...state.isDrawerOpened, ...action.payload }
-      };
-    case getType(drawerActions.setTrackDetails):
-      return {
-        ...state,
-        trackDetails: merge(state.trackDetails, action.payload)
       };
     case getType(drawerActions.setActiveDrawerTrackId):
       return {

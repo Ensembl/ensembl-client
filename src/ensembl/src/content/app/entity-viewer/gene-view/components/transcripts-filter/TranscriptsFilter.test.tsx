@@ -31,7 +31,7 @@ const mockState = {
   entityViewer: {
     general: {
       activeGenomeId: 'human',
-      activeEnsObjectIds: {
+      activeEntityIds: {
         human: 'gene:brca2'
       }
     },
