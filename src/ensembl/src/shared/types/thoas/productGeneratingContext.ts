@@ -16,16 +16,16 @@
 
 import { Product, ProductType } from './product';
 import { PhasedExon } from './exon';
-import { CDS } from './cds';
+import { FullCDS } from './cds';
 import { UTR } from './utr';
 import { CDNA } from './cdna';
 
 // TODO: have at least two types of product-generating contexts:
 // one for when product is a protein, and another for when product is an RNA
-export type ProductGeneratingContext = {
+export type FullProductGeneratingContext = {
   product_type: ProductType;
   default: boolean;
-  cds: CDS | null;
+  cds: FullCDS | null;
   five_prime_utr: UTR | null;
   three_prime_utr: UTR | null;
   product: Product;

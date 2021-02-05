@@ -23,7 +23,7 @@ import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
+import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneOverview.scss';
 
@@ -44,7 +44,7 @@ export const GENE_OVERVIEW_QUERY = gql`
 `;
 
 type Gene = Required<
-  Pick<GeneFromGraphql, 'stable_id' | 'symbol' | 'name' | 'alternative_symbols'>
+  Pick<FullGene, 'stable_id' | 'symbol' | 'name' | 'alternative_symbols'>
 >;
 
 const GeneOverview = () => {

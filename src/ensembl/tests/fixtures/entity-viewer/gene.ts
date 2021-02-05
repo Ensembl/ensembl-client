@@ -21,10 +21,10 @@ import { scaleLinear } from 'd3';
 import { createSlice } from './slice';
 import { createTranscript } from './transcript';
 
-import { Gene } from 'src/shared/types/thoas/gene';
+import { FullGene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
-export const createGene = (fragment: Partial<Gene> = {}): Gene => {
+export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
   const geneSlice = createSlice();
   const transcript = createTranscript();
 
@@ -33,6 +33,7 @@ export const createGene = (fragment: Partial<Gene> = {}): Gene => {
   const stableId = `${unversionedStableId}.${version}`;
 
   return {
+    type: 'Gene',
     stable_id: stableId,
     unversioned_stable_id: unversionedStableId,
     version,
@@ -41,6 +42,8 @@ export const createGene = (fragment: Partial<Gene> = {}): Gene => {
     so_term: faker.lorem.word(),
     slice: geneSlice,
     transcripts: [transcript],
+    alternative_symbols: [],
+    external_references: [],
     ...fragment
   };
 };

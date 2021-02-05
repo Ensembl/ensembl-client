@@ -14,24 +14,36 @@
  * limitations under the License.
  */
 
-import { Slice, SliceWithLocationOnly } from 'src/shared/types/thoas/slice';
-import { PhasedExon } from 'src/shared/types/thoas/exon';
+import { Pick2, Pick3 } from 'ts-multipick';
+
+import { Slice } from 'src/shared/types/thoas/slice';
+import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
 import { Product, ProductType } from 'src/shared/types/thoas/product';
 
-export const getFeatureCoordinates = (feature: {
-  slice: SliceWithLocationOnly;
-}) => {
+type GetFeatureCoordinatesParams = {
+  slice: Pick2<Slice, 'location', 'start' | 'end'>;
+};
+export const getFeatureCoordinates = (feature: GetFeatureCoordinatesParams) => {
   const { start, end } = feature.slice.location;
   return { start, end };
 };
 
-export const getRegionName = (feature: { slice: Slice }) =>
+type GetRegionNameParams = {
+  slice: Pick2<Slice, 'region', 'name'>;
+};
+export const getRegionName = (feature: GetRegionNameParams) =>
   feature.slice.region.name;
 
-export const getFeatureStrand = (feature: { slice: Slice }) =>
+type GetFeatureStrandParams = {
+  slice: Pick2<Slice, 'strand', 'code'>;
+};
+export const getFeatureStrand = (feature: GetFeatureStrandParams) =>
   feature.slice.strand.code;
 
-export const getFeatureLength = (feature: { slice: SliceWithLocationOnly }) => {
+type GetFeatureLengthParams = {
+  slice: Pick2<Slice, 'location', 'length'>;
+};
+export const getFeatureLength = (feature: GetFeatureLengthParams) => {
   return feature.slice.location.length;
 };
 
@@ -120,9 +132,7 @@ export const getProductAminoAcidLength = (
 
 export type GetSplicedRNALengthParam = {
   spliced_exons: Array<{
-    exon: {
-      slice: SliceWithLocationOnly;
-    };
+    exon: Pick3<Exon, 'slice', 'location', 'length'>;
   }>;
 };
 
