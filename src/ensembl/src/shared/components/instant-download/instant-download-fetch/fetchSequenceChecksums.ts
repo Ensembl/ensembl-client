@@ -18,21 +18,35 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
-export type TranscriptChecksums = {
-  cdna: {
-    sequence_checksum: string;
+export type TranscriptSequenceData = {
+  cdna?: {
+    checksum: string;
+    label: string;
   };
-  cds: {
-    sequence_checksum: string;
+  cds?: {
+    checksum: string;
+    label: string;
   };
-  product: {
-    sequence_checksum: string;
+  protein?: {
+    checksum: string;
+    label: string;
   };
 };
 
-type GeneFragment = {
+type TranscriptQueryResult = {
   transcript: {
-    product_generating_contexts: TranscriptChecksums[];
+    product_generating_contexts: Array<{
+      cdna: {
+        sequence_checksum: string;
+      };
+      cds: {
+        sequence_checksum: string;
+      };
+      product: {
+        stable_id: string;
+        sequence_checksum: string;
+      };
+    }>;
   };
 };
 
@@ -47,6 +61,7 @@ const transcriptChecksumsQuery = gql`
           sequence_checksum
         }
         product {
+          stable_id
           sequence_checksum
         }
       }
@@ -59,10 +74,37 @@ type Variables = {
   transcriptId: string;
 };
 
-export const fetchTranscriptChecksums = (variables: Variables) =>
-  client
-    .query<GeneFragment>({
+export const fetchTranscriptSequenceData = (
+  variables: Variables
+): Promise<TranscriptSequenceData> => {
+  const { transcriptId } = variables;
+
+  return client
+    .query<TranscriptQueryResult>({
       query: transcriptChecksumsQuery,
       variables
     })
-    .then(({ data }) => data.transcript.product_generating_contexts[0]);
+    .then(({ data }) => {
+      // TODO: expect to fetch genomic sequence here as well when checksum becomes available
+      const productGeneratingContext =
+        data.transcript.product_generating_contexts[0];
+      if (!productGeneratingContext) {
+        return {};
+      }
+
+      return {
+        cdna: {
+          checksum: productGeneratingContext.cdna.sequence_checksum,
+          label: `${transcriptId} cdna`
+        },
+        cds: {
+          checksum: productGeneratingContext.cds.sequence_checksum,
+          label: `${transcriptId} cds`
+        },
+        protein: {
+          checksum: productGeneratingContext.product.sequence_checksum,
+          label: `${productGeneratingContext.product.stable_id} pep`
+        }
+      };
+    });
+};
