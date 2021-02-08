@@ -41,7 +41,7 @@ export const ExampleLinks = () => {
   const activeGenomeId = useSelector(getActiveGenomeId);
 
   return (
-    <div data-test-id="example links">
+    <div className="exampleLinks">
       <div className={styles.sectionTitle}>Example links</div>
       {exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({

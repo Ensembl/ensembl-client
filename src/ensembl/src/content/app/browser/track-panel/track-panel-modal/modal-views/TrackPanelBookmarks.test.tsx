@@ -15,73 +15,156 @@
  */
 
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
+import { getType } from 'typesafe-actions';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
+import set from 'lodash/fp/set';
 
-import { createEnsObject } from 'tests/fixtures/ens-object';
+import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+import * as drawerActions from 'src/content/app/browser/drawer/drawerActions';
+
 import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { PreviouslyViewedObject } from '../../trackPanelState';
 
-jest.mock('react-redux', () => ({
-  useSelector: jest.fn().mockImplementation((selector) => selector()),
-  useDispatch: jest.fn()
+jest.mock('react-router-dom', () => ({
+  Link: (props: any) => <a href={props.to}>{props.children}</a>
 }));
 
-jest.mock('src/shared/state/ens-object/ensObjectSelectors', () => ({
-  getExampleEnsObjects: jest.fn()
-}));
+const genomeId = 'triticum_aestivum_GCA_900519105_1';
+const geneSymbol = 'TraesCS3D02G273600';
+const region = '3D:2585940-2634711';
+const geneObjectId = `${genomeId}:gene:${geneSymbol}`;
+const regionObjectId = `${genomeId}:region:${region}`;
 
-jest.mock('src/content/app/browser/track-panel/trackPanelSelectors', () => ({
-  getActiveGenomePreviouslyViewedObjects: jest.fn()
-}));
-
-jest.mock('src/content/app/browser/browserActions', () => ({
-  changeFocusObject: jest.fn()
-}));
-
-jest.mock('src/content/app/browser/drawer/drawerActions', () => ({
-  changeDrawerViewAndOpen: jest.fn()
-}));
-
-const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
+const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.random.uuid()}`,
   object_type: 'gene',
   label: faker.random.word()
 });
 
-const closeTrackPanelModal = jest.fn();
-const changeDrawerViewAndOpen = jest.fn();
+const previouslyViewedObjects = [
+  {
+    genome_id: genomeId,
+    object_id: geneObjectId,
+    object_type: 'gene',
+    label: geneSymbol
+  },
+  {
+    genome_id: genomeId,
+    object_id: regionObjectId,
+    object_type: 'region',
+    label: region
+  }
+];
+
+const example_objects = [
+  {
+    id: geneSymbol,
+    type: 'gene'
+  },
+  {
+    id: region,
+    type: 'region'
+  }
+];
+
+const mockState = {
+  browser: {
+    browserEntity: {
+      activeGenomeId: genomeId,
+      activeEnsObjectIds: {
+        [genomeId]: geneObjectId
+      }
+    },
+    trackPanel: {
+      [genomeId]: {
+        isTrackPanelModalOpened: true,
+        trackPanelModalView: '',
+        previouslyViewedObjects
+      }
+    }
+  },
+  drawer: {
+    isDrawerOpened: { [genomeId]: false },
+    drawerView: { [genomeId]: DrawerView.BOOKMARKS },
+    activeDrawerTrackIds: {}
+  },
+  ensObjects: {
+    [geneObjectId]: {
+      data: {
+        description: 'Heat shock protein 101',
+        genome_id: genomeId,
+        label: geneSymbol,
+        location: {
+          chromosome: '3D',
+          end: 379539827,
+          start: 379535906
+        },
+        stable_id: geneSymbol,
+        type: 'gene',
+        object_id: geneObjectId
+      }
+    },
+    [regionObjectId]: {
+      data: {
+        genome_id: genomeId,
+        label: region,
+        location: {
+          chromosome: '3D',
+          start: 2585940,
+          end: 2634711
+        },
+        type: 'region',
+        object_id: regionObjectId
+      }
+    }
+  },
+  genome: {
+    genomeInfo: {
+      genomeInfoData: {
+        [genomeId]: {
+          example_objects,
+          genome_id: genomeId
+        }
+      }
+    }
+  },
+  speciesPage: {
+    general: {
+      activeGenomeId: null
+    }
+  }
+};
+
+const mockStore = configureMockStore([thunk]);
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+
+  return render(
+    <Provider store={store}>
+      <TrackPanelBookmarks />
+    </Provider>
+  );
+};
 
 describe('<TrackPanelBookmarks />', () => {
-  const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
-  const numberOfPreviouslyViewedObjects = faker.random.number({
-    min: 5,
-    max: 20
-  });
-
-  const exampleEnsObjects = times(numberOfExampleObjects, () =>
-    createEnsObject()
-  );
-
-  const previouslyViewedObjects = times(numberOfPreviouslyViewedObjects, () =>
-    createPreviouslyViewedLink()
-  );
-
   beforeEach(() => {
     jest.resetAllMocks();
-
-    (useSelector as any).mockReturnValue(exampleEnsObjects);
-    (useSelector as any).mockReturnValue(previouslyViewedObjects);
   });
 
-  it.only('renders previously viewed links', () => {
-    const { container } = render(<TrackPanelBookmarks />);
-    const links = [...container.querySelectorAll('.link')] as HTMLElement[];
+  it('renders previously viewed links', () => {
+    const { container } = wrapInRedux();
+    const links = [...container.querySelectorAll('a')] as HTMLElement[];
     const linkTexts = previouslyViewedObjects.map(({ label }) => label);
 
     linkTexts.forEach((text) =>
@@ -100,71 +183,101 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {
-    render(<TrackPanelBookmarks />);
+    wrapInRedux();
+
     const previouslyViewedLinksContainer = screen.getByTestId(
       'previously viewed links'
     );
     const firstLink = (previouslyViewedLinksContainer as HTMLElement).querySelector(
-      '.link'
+      'a'
     );
 
     userEvent.click(firstLink as HTMLElement);
-    expect(closeTrackPanelModal).toBeCalled();
+
+    const trackPanelAction = store
+      .getActions()
+      .find(
+        (action) =>
+          action.type === getType(trackPanelActions.closeTrackPanelModal)
+      );
+
+    expect(trackPanelAction).toBeTruthy();
   });
 
-  it('shows the ellipsis only when the total objects is more than 20', () => {
-    const newPreviouslyViewedObjects = times(20, () =>
-      createPreviouslyViewedLink()
+  it('shows the ellipsis only when there are more than 20 objects', () => {
+    let wrapper = wrapInRedux(
+      set(
+        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        times(20, () => createRandomPreviouslyViewedObject()),
+        mockState
+      )
+    );
+    expect(
+      wrapper.container.querySelector(
+        '.trackPanelBookmarks .sectionTitle button'
+      )
+    ).toBeFalsy();
+
+    // Add 21 links to see if ellipsis is shown
+    wrapper = wrapInRedux(
+      set(
+        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        times(21, () => createRandomPreviouslyViewedObject()),
+        mockState
+      )
     );
 
-    (useSelector as any).mockReturnValue(newPreviouslyViewedObjects);
-
-    const { rerender } = render(<TrackPanelBookmarks />);
-    const previouslyViewedSection = screen.getByText('Previously viewed');
-
-    expect(previouslyViewedSection.querySelector('button')).toBeFalsy();
-
-    // Add another link to make it 21 links
-    newPreviouslyViewedObjects.push(createPreviouslyViewedLink());
-    rerender(<TrackPanelBookmarks />);
-
-    expect(previouslyViewedSection.querySelector('button')).toBeTruthy();
+    expect(
+      wrapper.container.querySelector(
+        '.trackPanelBookmarks .sectionTitle button'
+      )
+    ).toBeTruthy();
   });
 
   it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
-    const newPreviouslyViewedObjects = times(21, () =>
-      createPreviouslyViewedLink()
+    const { container } = wrapInRedux(
+      set(
+        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        times(21, () => createRandomPreviouslyViewedObject()),
+        mockState
+      )
     );
 
-    (useSelector as any).mockReturnValue(newPreviouslyViewedObjects);
-    render(<TrackPanelBookmarks />);
-
-    const previouslyViewedSection = screen.getByText('Previously viewed');
-    const ellipsisButton = previouslyViewedSection.querySelector(
-      'button'
+    const ellipsisButton = container.querySelector(
+      '.trackPanelBookmarks .sectionTitle button'
     ) as HTMLElement;
 
     userEvent.click(ellipsisButton);
 
-    expect(changeDrawerViewAndOpen).toBeCalled();
+    const updateDrawerViewAction = store
+      .getActions()
+      .find(
+        (action) =>
+          action.type === getType(drawerActions.changeDrawerViewAndOpen)
+      );
+
+    expect(updateDrawerViewAction.payload).toEqual(DrawerView.BOOKMARKS);
   });
 
   it('renders correct number of links to example objects', () => {
-    render(<TrackPanelBookmarks />);
-    const exampleLinksWrapper = screen.getByTestId('example links');
+    const { container } = wrapInRedux();
 
-    expect(exampleLinksWrapper?.querySelectorAll('.link').length).toBe(
-      numberOfExampleObjects
+    expect(container.querySelectorAll('.exampleLinks a').length).toBe(
+      example_objects.length
     );
   });
 
   it('calls closeTrackPanelModal when an example object link is clicked', () => {
-    render(<TrackPanelBookmarks />);
-    const exampleLinksWrapper = screen.getByTestId('example links');
-    const exampleLink = exampleLinksWrapper?.querySelector('.link');
+    wrapInRedux();
+    const { container } = wrapInRedux();
+    const exampleLink = container.querySelector('.exampleLinks a');
 
     userEvent.click(exampleLink as HTMLElement);
 
-    expect(closeTrackPanelModal).toBeCalled();
+    const trackPanelAction = store
+      .getActions()
+      .find((action) => action.type === trackPanelActions.closeTrackPanelModal);
+
+    expect(trackPanelAction).toBeTruthy();
   });
 });
