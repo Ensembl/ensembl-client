@@ -30,7 +30,7 @@ import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelect
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
-import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
+import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneSummary.scss';
 

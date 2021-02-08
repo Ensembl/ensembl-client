@@ -18,7 +18,7 @@ import { Slice } from './slice';
 import { SplicedExon } from './exon';
 import { ProductGeneratingContext } from './productGeneratingContext';
 import { LocationWithinRegion } from './location';
-import { ExternalReference } from 'src/content/app/entity-viewer/types/externalReference';
+import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 
 /**
  * NOTE:

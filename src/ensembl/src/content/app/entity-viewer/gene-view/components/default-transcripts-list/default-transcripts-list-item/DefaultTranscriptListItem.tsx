@@ -22,8 +22,8 @@ import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsLi
 
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/shared/types/thoas/gene';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 

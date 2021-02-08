@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { Strand } from 'src/shared/types/thoas/strand';
 
 export type EnsObjectLocation = {
   chromosome: string;

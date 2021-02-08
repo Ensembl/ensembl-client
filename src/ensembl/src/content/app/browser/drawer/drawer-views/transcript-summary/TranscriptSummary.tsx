@@ -40,9 +40,9 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
-import { Transcript as TranscriptFromGraphql } from 'src/content/app/entity-viewer/types/transcript';
-import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
-import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
+import { Transcript as TranscriptFromGraphql } from 'src/shared/types/thoas/transcript';
+import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
+import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './TranscriptSummary.scss';
 

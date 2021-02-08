@@ -15,7 +15,7 @@
  */
 
 // FIXME: Not sure if we need to use source here. If yes, we need to move the type definition to the shared folder.
-import { Source } from 'src/content/app/entity-viewer/types/source';
+import { Source } from 'src/shared/types/thoas/source';
 
 export type TrackDetails = {
   track_id: string;

@@ -39,8 +39,8 @@ import {
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
+import { Transcript } from 'src/shared/types/thoas/transcript';
+import { ProteinDomain } from 'src/shared/types/thoas/product';
 
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';

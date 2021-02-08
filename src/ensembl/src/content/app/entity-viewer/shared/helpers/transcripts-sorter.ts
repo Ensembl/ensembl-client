@@ -27,7 +27,7 @@ import {
 
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import { SliceWithLocationOnly } from 'src/content/app/entity-viewer/types/slice';
+import { SliceWithLocationOnly } from 'src/shared/types/thoas/slice';
 
 function compareTranscriptLengths(
   transcriptOne: { slice: SliceWithLocationOnly },

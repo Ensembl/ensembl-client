@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  Slice,
-  SliceWithLocationOnly
-} from 'src/content/app/entity-viewer/types/slice';
-import { PhasedExon } from 'src/content/app/entity-viewer/types/exon';
-import {
-  Product,
-  ProductType
-} from 'src/content/app/entity-viewer/types/product';
+import { Slice, SliceWithLocationOnly } from 'src/shared/types/thoas/slice';
+import { PhasedExon } from 'src/shared/types/thoas/exon';
+import { Product, ProductType } from 'src/shared/types/thoas/product';
 
 export const getFeatureCoordinates = (feature: {
   slice: SliceWithLocationOnly;
