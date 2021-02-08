@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
@@ -64,6 +65,9 @@ const addProteinDomains = (
 
 const ProteinsListItemInfo = (props: Props) => {
   const { transcript, trackLength } = props;
+  const params: { [key: string]: string } = useParams();
+  const { genomeId } = params;
+
   const [
     transcriptWithProteinDomains,
     setTranscriptWithProteinDomains
@@ -199,6 +203,7 @@ const ProteinsListItemInfo = (props: Props) => {
             )}
             <div className={styles.downloadWrapper}>
               <InstantDownloadProtein
+                genomeId={genomeId}
                 transcriptId={transcript.unversioned_stable_id}
               />
             </div>

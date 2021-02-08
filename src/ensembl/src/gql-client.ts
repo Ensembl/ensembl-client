@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 
-import styles from '../Drawer.scss';
-
-const DrawerContigs: FunctionComponent = () => {
-  return (
-    <div className={styles.drawerView}>
-      <div className={styles.container}>
-        <div className={styles.label}>Track name</div>
-        <div className={styles.details}>Contigs</div>
-
-        <div className={styles.label}>Description</div>
-        <div className={styles.details}>
-          Shows a contiguous stretch of DNA sequence without gaps that has been
-          assembled solely based on direct sequencing information.
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default DrawerContigs;
+export const client = new ApolloClient({
+  uri: '/thoas',
+  cache: new InMemoryCache({
+    typePolicies: {
+      Gene: {
+        keyFields: ['stable_id'],
+        fields: {
+          slice: {
+            merge: false
+          }
+        }
+      }
+    }
+  })
+});

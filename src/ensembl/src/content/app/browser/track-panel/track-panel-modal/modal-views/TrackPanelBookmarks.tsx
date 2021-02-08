@@ -35,6 +35,7 @@ import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.
 import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelBookmarks.scss';
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 export const ExampleLinks = () => {
   const exampleEnsObjects = useSelector(getExampleEnsObjects);
@@ -129,7 +130,7 @@ export const TrackPanelBookmarks = () => {
       value: previouslyViewedObjects.length
     });
 
-    dispatch(changeDrawerViewAndOpen('bookmarks'));
+    dispatch(changeDrawerViewAndOpen(DrawerView.BOOKMARKS));
   };
 
   return (

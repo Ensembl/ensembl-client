@@ -39,6 +39,7 @@ type GeneFields = {
 };
 
 export type InstantDownloadTranscriptEntityProps = {
+  genomeId: string;
   transcript: TranscriptFields;
   gene: GeneFields;
 };
@@ -94,12 +95,14 @@ const filterTranscriptOptions = (
 ): Partial<TranscriptOptions> => {
   return so_term === 'protein_coding'
     ? defaultTranscriptOptions
-    : pick(defaultTranscriptOptions, ['genomicSequence', 'cdna']);
+    : pick(defaultTranscriptOptions, ['genomicSequence']);
 };
 
 const InstantDownloadTranscript = (props: Props) => {
   const {
-    transcript: { so_term }
+    genomeId,
+    gene: { id: geneId },
+    transcript: { id: transcriptId, so_term }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(so_term)
@@ -110,6 +113,20 @@ const InstantDownloadTranscript = (props: Props) => {
     setTranscriptOptions(filterTranscriptOptions(so_term));
   }, [so_term]);
 
+  const onSubmit = () => {
+    const payload = {
+      genomeId,
+      geneId,
+      transcriptId,
+      options: {
+        transcript: transcriptOptions,
+        gene: { genomicSequence: isGeneSequenceSelected }
+      }
+    };
+
+    fetchForTranscript(payload);
+  };
+
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
     const updatedOptions = {
       ...transcriptOptions,
@@ -119,17 +136,6 @@ const InstantDownloadTranscript = (props: Props) => {
   };
   const onGeneOptionChange = () => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
-  };
-  const onSubmit = () => {
-    const payload = {
-      transcriptId: props.transcript.id,
-      geneId: props.gene.id,
-      options: {
-        transcript: transcriptOptions,
-        gene: { genomicSequence: isGeneSequenceSelected }
-      }
-    };
-    fetchForTranscript(payload);
   };
 
   const layoutClass =
