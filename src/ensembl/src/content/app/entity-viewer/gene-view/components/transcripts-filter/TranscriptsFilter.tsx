@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -40,11 +40,10 @@ import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 
-import transcriptListStyles from '../default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './TranscriptsFilter.scss';
 
 type Props = {
-  shouldShowFilterIndicator: boolean;
+  filterLabel: ReactNode;
   transcripts: Transcript[];
   toggleFilter: () => void;
 };
@@ -126,15 +125,7 @@ const TranscriptsFilter = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.filterLabel} onClick={props.toggleFilter}>
-        <span
-          className={
-            props.shouldShowFilterIndicator
-              ? transcriptListStyles.labelWithActivityIndicator
-              : undefined
-          }
-        >
-          Filter & sort
-        </span>
+        {props.filterLabel}
         <ChevronUp className={styles.chevron} />
       </div>
       <div className={filterBoxClassnames}>
