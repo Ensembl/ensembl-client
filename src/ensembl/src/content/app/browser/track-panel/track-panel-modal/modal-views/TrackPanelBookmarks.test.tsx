@@ -167,12 +167,6 @@ describe('<TrackPanelBookmarks />', () => {
     const links = [...container.querySelectorAll('a')] as HTMLElement[];
     const linkTexts = previouslyViewedObjects.map(({ label }) => label);
 
-    linkTexts.forEach((text) =>
-      links.find((link) => {
-        return link.innerHTML === text;
-      })
-    );
-
     expect(
       linkTexts.every((text) =>
         links.find((link) => {
