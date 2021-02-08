@@ -40,6 +40,9 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 export const ExampleLinks = () => {
   const exampleEnsObjects = useSelector(getExampleEnsObjects);
   const activeGenomeId = useSelector(getActiveGenomeId);
+  const dispatch = useDispatch();
+
+  const onLinkClick = () => dispatch(closeTrackPanelModal());
 
   return (
     <div className="exampleLinks">
@@ -52,7 +55,7 @@ export const ExampleLinks = () => {
 
         return (
           <div key={exampleObject.object_id} className={styles.linkHolder}>
-            <Link to={path} onClick={closeTrackPanelModal} replace>
+            <Link to={path} onClick={onLinkClick} replace>
               Example {exampleObject.type}
             </Link>
           </div>

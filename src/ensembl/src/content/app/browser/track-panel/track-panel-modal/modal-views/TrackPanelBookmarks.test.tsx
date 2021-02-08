@@ -18,15 +18,11 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { getType } from 'typesafe-actions';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
 import set from 'lodash/fp/set';
-
-import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
-import * as drawerActions from 'src/content/app/browser/drawer/drawerActions';
 
 import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
@@ -34,7 +30,11 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { PreviouslyViewedObject } from '../../trackPanelState';
 
 jest.mock('react-router-dom', () => ({
-  Link: (props: any) => <a href={props.to}>{props.children}</a>
+  Link: (props: any) => (
+    <a href={props.to} onClick={props.onClick}>
+      {props.children}
+    </a>
+  )
 }));
 
 const genomeId = 'triticum_aestivum_GCA_900519105_1';
@@ -183,25 +183,20 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {
-    wrapInRedux();
-
-    const previouslyViewedLinksContainer = screen.getByTestId(
-      'previously viewed links'
-    );
-    const firstLink = (previouslyViewedLinksContainer as HTMLElement).querySelector(
-      'a'
-    );
+    const { container } = wrapInRedux();
+    const firstLink = container.querySelector('a');
 
     userEvent.click(firstLink as HTMLElement);
 
-    const trackPanelAction = store
-      .getActions()
-      .find(
-        (action) =>
-          action.type === getType(trackPanelActions.closeTrackPanelModal)
-      );
+    const trackPanelActions = store.getActions();
 
-    expect(trackPanelAction).toBeTruthy();
+    // This is the closest you get to see if closeTrackPanelModalAction has been dispatched as getType doesn't work with thunks
+    // This approach is used for the other test cases as well in this file
+    const closeTrackPanelModalAction = trackPanelActions.find(
+      (action) => action.type === 'track-panel/update-track-panel'
+    );
+
+    expect(closeTrackPanelModalAction).toBeTruthy();
   });
 
   it('shows the ellipsis only when there are more than 20 objects', () => {
@@ -234,7 +229,7 @@ describe('<TrackPanelBookmarks />', () => {
     ).toBeTruthy();
   });
 
-  it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
+  it('changes drawer view and toggles drawer when the ellipsis is clicked', () => {
     const { container } = wrapInRedux(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
@@ -249,14 +244,19 @@ describe('<TrackPanelBookmarks />', () => {
 
     userEvent.click(ellipsisButton);
 
-    const updateDrawerViewAction = store
-      .getActions()
-      .find(
-        (action) =>
-          action.type === getType(drawerActions.changeDrawerViewAndOpen)
-      );
+    const dispatchedDrawerActions = store.getActions();
 
-    expect(updateDrawerViewAction.payload).toEqual(DrawerView.BOOKMARKS);
+    const updateDrawerViewAction = dispatchedDrawerActions.find(
+      (action) => action.type === 'drawer/update-drawer-view'
+    );
+    const toggleDrawerAction = dispatchedDrawerActions.find(
+      (action) => action.type === 'drawer/toggle-drawer'
+    );
+
+    expect(updateDrawerViewAction.payload[genomeId]).toEqual(
+      DrawerView.BOOKMARKS
+    );
+    expect(toggleDrawerAction.payload[genomeId]).toEqual(true);
   });
 
   it('renders correct number of links to example objects', () => {
@@ -268,16 +268,16 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('calls closeTrackPanelModal when an example object link is clicked', () => {
-    wrapInRedux();
     const { container } = wrapInRedux();
     const exampleLink = container.querySelector('.exampleLinks a');
 
     userEvent.click(exampleLink as HTMLElement);
 
-    const trackPanelAction = store
-      .getActions()
-      .find((action) => action.type === trackPanelActions.closeTrackPanelModal);
+    const dispatchedTrackPanelActions = store.getActions();
+    const closeTrackPanelModalAction = dispatchedTrackPanelActions.find(
+      (action) => action.type === 'track-panel/update-track-panel'
+    );
 
-    expect(trackPanelAction).toBeTruthy();
+    expect(closeTrackPanelModalAction).toBeTruthy();
   });
 });
