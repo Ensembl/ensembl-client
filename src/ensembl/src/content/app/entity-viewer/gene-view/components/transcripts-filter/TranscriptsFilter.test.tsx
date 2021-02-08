@@ -82,9 +82,11 @@ const wrapInRedux = (
   state: typeof mockState = mockState,
   transcripts = defaultTranscripts
 ) => {
+  const filterLabel = <span>Filter & sort</span>;
   return mount(
     <Provider store={mockStore(state)}>
       <TranscriptsFilter
+        filterLabel={filterLabel}
         transcripts={transcripts}
         toggleFilter={mockToggleFilter}
       />
@@ -122,14 +124,7 @@ describe('<TranscriptsFilter />', () => {
 
   it('correctly handles sorting order change', () => {
     const store = mockStore(mockState);
-    const wrapper = mount(
-      <Provider store={store}>
-        <TranscriptsFilter
-          transcripts={defaultTranscripts}
-          toggleFilter={mockToggleFilter}
-        />
-      </Provider>
-    );
+    const wrapper = wrapInRedux();
     const radioGroup = wrapper.find(RadioGroup);
 
     const onRadioChange = radioGroup.prop('onChange');
