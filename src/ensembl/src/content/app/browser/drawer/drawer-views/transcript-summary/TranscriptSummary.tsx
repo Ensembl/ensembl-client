@@ -182,7 +182,6 @@ const TranscriptSummary = () => {
     entityId: focusId
   });
 
-  // TODO: Wait for Jyo's PR #436 to be merged in
   const uniprotXref = product?.external_references.find(
     (xref) => xref.source.id == 'Uniprot/SWISSPROT'
   );
