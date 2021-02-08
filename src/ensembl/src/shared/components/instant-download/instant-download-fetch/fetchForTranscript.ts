@@ -105,6 +105,6 @@ const buildFetchUrl = (
     const checksum =
       data.checksums && data.checksums[contextType]?.sequence_checksum;
 
-    return `/refget/sequence/${checksum}?accept=text/x-fasta`;
+    return `/api/refget/sequence/${checksum}?accept=text/x-fasta`;
   }
 };
