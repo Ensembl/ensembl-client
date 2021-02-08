@@ -77,14 +77,16 @@ const defaultTranscripts = [
 ];
 
 const mockToggleFilter = jest.fn();
+let store: ReturnType<typeof mockStore>;
 
 const wrapInRedux = (
   state: typeof mockState = mockState,
   transcripts = defaultTranscripts
 ) => {
   const filterLabel = <span>Filter & sort</span>;
+  store = mockStore(state);
   return mount(
-    <Provider store={mockStore(state)}>
+    <Provider store={store}>
       <TranscriptsFilter
         filterLabel={filterLabel}
         transcripts={transcripts}
@@ -123,7 +125,6 @@ describe('<TranscriptsFilter />', () => {
   });
 
   it('correctly handles sorting order change', () => {
-    const store = mockStore(mockState);
     const wrapper = wrapInRedux();
     const radioGroup = wrapper.find(RadioGroup);
 
