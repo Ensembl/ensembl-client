@@ -45,7 +45,7 @@ export const ExampleLinks = () => {
   const onLinkClick = () => dispatch(closeTrackPanelModal());
 
   return (
-    <div className="exampleLinks">
+    <div data-test-id="example links" className="exampleLinks">
       <div className={styles.sectionTitle}>Example links</div>
       {exampleEnsObjects.map((exampleObject) => {
         const path = urlFor.browser({
@@ -142,7 +142,7 @@ export const TrackPanelBookmarks = () => {
       {exampleEnsObjects.length ? <ExampleLinks /> : null}
       {limitedPreviouslyViewedObjects.length ? (
         <>
-          <div className={styles.sectionTitle}>
+          <div data-test-id="previously viewed" className={styles.sectionTitle}>
             Previously viewed
             {previouslyViewedObjects.length > 20 && (
               <span className={styles.ellipsis}>

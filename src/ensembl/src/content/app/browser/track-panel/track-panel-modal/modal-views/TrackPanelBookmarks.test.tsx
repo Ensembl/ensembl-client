@@ -18,7 +18,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
@@ -28,6 +28,7 @@ import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { PreviouslyViewedObject } from '../../trackPanelState';
+import * as trackPanelActions from '../../trackPanelActions';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -136,11 +137,6 @@ const mockState = {
         }
       }
     }
-  },
-  speciesPage: {
-    general: {
-      activeGenomeId: null
-    }
   }
 };
 
@@ -162,35 +158,46 @@ describe('<TrackPanelBookmarks />', () => {
     jest.resetAllMocks();
   });
 
-  it('renders previously viewed links', () => {
-    const { container } = wrapInRedux();
-    const links = [...container.querySelectorAll('a')] as HTMLElement[];
-    const linkTexts = previouslyViewedObjects.map(({ label }) => label);
+  it('renders example links', () => {
+    wrapInRedux();
+    const exampleLinksContainer = screen.getByTestId(
+      'example links'
+    ) as HTMLElement;
+    const exampleLinks = [...exampleLinksContainer.querySelectorAll('a')];
+    const exampleLinkTexts = exampleLinks.map((link) => link.innerHTML);
 
+    expect(exampleLinkTexts.length).toBe(example_objects.length);
+    expect(exampleLinkTexts.includes('Example gene')).toBe(true);
+    expect(exampleLinkTexts.includes('Example region')).toBe(true);
+  });
+
+  it('renders previously viewed links', () => {
+    wrapInRedux();
+    const previouslyViewedSection = screen.getByTestId(
+      'previously viewed links'
+    ) as HTMLElement;
+    const links = [...previouslyViewedSection.querySelectorAll('a')];
+    const linkTexts = links.map((link) => link.innerHTML);
+    const previouslyViewedObjectTexts = previouslyViewedObjects.map(
+      ({ label }) => label
+    );
+
+    expect(linkTexts.length).toBe(previouslyViewedObjects.length);
     expect(
-      linkTexts.every((text) =>
-        links.find((link) => {
-          return link.innerHTML === text;
-        })
-      )
+      previouslyViewedObjectTexts.every((text) => linkTexts.includes(text))
     ).toBe(true);
   });
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {
+    jest.spyOn(trackPanelActions, 'closeTrackPanelModal');
     const { container } = wrapInRedux();
     const firstLink = container.querySelector('a');
 
     userEvent.click(firstLink as HTMLElement);
 
-    const trackPanelActions = store.getActions();
+    expect(trackPanelActions.closeTrackPanelModal).toHaveBeenCalled();
 
-    // This is the closest you get to see if closeTrackPanelModalAction has been dispatched as getType doesn't work with thunks
-    // This approach is used for the other test cases as well in this file
-    const closeTrackPanelModalAction = trackPanelActions.find(
-      (action) => action.type === 'track-panel/update-track-panel'
-    );
-
-    expect(closeTrackPanelModalAction).toBeTruthy();
+    (trackPanelActions.closeTrackPanelModal as any).mockRestore();
   });
 
   it('shows the ellipsis only when there are more than 20 objects', () => {
@@ -233,7 +240,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     const ellipsisButton = container.querySelector(
-      '.trackPanelBookmarks .sectionTitle button'
+      '.sectionTitle button'
     ) as HTMLElement;
 
     userEvent.click(ellipsisButton);
@@ -259,19 +266,5 @@ describe('<TrackPanelBookmarks />', () => {
     expect(container.querySelectorAll('.exampleLinks a').length).toBe(
       example_objects.length
     );
-  });
-
-  it('calls closeTrackPanelModal when an example object link is clicked', () => {
-    const { container } = wrapInRedux();
-    const exampleLink = container.querySelector('.exampleLinks a');
-
-    userEvent.click(exampleLink as HTMLElement);
-
-    const dispatchedTrackPanelActions = store.getActions();
-    const closeTrackPanelModalAction = dispatchedTrackPanelActions.find(
-      (action) => action.type === 'track-panel/update-track-panel'
-    );
-
-    expect(closeTrackPanelModalAction).toBeTruthy();
   });
 });
