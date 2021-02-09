@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import classNames from 'classnames';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
@@ -66,24 +64,20 @@ const HomepageAppLinks = (props: Props) => {
     }
   };
 
-  if (isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
-    const links = props.species.map((species, index) => (
-      <HomepageAppLinksRow
-        key={species.genome_id}
-        species={species}
-        isExpanded={expandedRowIndex === index}
-        toggleExpand={() => onToggleRow(index)}
-      />
-    ));
-    return (
-      <section className={styles.homepageAppLinks}>
-        <h2>Previously viewed</h2>
-        {links}
-      </section>
-    );
-  } else {
-    return <PreviouslyViewedLinks {...props} />;
-  }
+  const links = props.species.map((species, index) => (
+    <HomepageAppLinksRow
+      key={species.genome_id}
+      species={species}
+      isExpanded={expandedRowIndex === index}
+      toggleExpand={() => onToggleRow(index)}
+    />
+  ));
+  return (
+    <section className={styles.homepageAppLinks}>
+      <h2>Previously viewed</h2>
+      {links}
+    </section>
+  );
 };
 
 const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
@@ -137,39 +131,6 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
     </div>
   ) : (
     <div className={rowClasses}>{speciesName}</div>
-  );
-};
-
-// Legacy component that stays there until we have a presentable EntityViewer
-const PreviouslyViewedLinks = (props: Props) => {
-  useEffect(() => {
-    props.fetchDataForLastVisitedObjects();
-  }, []);
-
-  if (
-    !props.species.length ||
-    props.previouslyViewedGenomeBrowserObjects.areLoading
-  ) {
-    return null;
-  }
-
-  const previouslyViewedLinks = props.previouslyViewedGenomeBrowserObjects.objects.map(
-    (object, index) => (
-      <div key={index} className={styles.previouslyViewedItem}>
-        <Link to={object.link}>{object.speciesName}</Link>
-        <span className={styles.previouslyViewedItemAssemblyName}>
-          {' '}
-          {object.assemblyName}
-        </span>
-      </div>
-    )
-  );
-
-  return (
-    <section className={styles.previouslyViewed}>
-      <h2>Previously viewed</h2>
-      {previouslyViewedLinks}
-    </section>
   );
 };
 
