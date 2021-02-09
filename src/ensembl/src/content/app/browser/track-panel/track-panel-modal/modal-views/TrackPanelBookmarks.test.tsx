@@ -39,9 +39,9 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const genomeId = 'triticum_aestivum_GCA_900519105_1';
-const geneSymbol = 'TraesCS3D02G273600';
+const geneId = 'TraesCS3D02G273600';
 const region = '3D:2585940-2634711';
-const geneObjectId = `${genomeId}:gene:${geneSymbol}`;
+const geneObjectId = `${genomeId}:gene:${geneId}`;
 const regionObjectId = `${genomeId}:region:${region}`;
 
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
@@ -56,7 +56,7 @@ const previouslyViewedObjects = [
     genome_id: genomeId,
     object_id: geneObjectId,
     object_type: 'gene',
-    label: geneSymbol
+    label: geneId
   },
   {
     genome_id: genomeId,
@@ -68,7 +68,7 @@ const previouslyViewedObjects = [
 
 const example_objects = [
   {
-    id: geneSymbol,
+    id: geneId,
     type: 'gene'
   },
   {
@@ -103,13 +103,13 @@ const mockState = {
       data: {
         description: 'Heat shock protein 101',
         genome_id: genomeId,
-        label: geneSymbol,
+        label: geneId,
         location: {
           chromosome: '3D',
           end: 379539827,
           start: 379535906
         },
-        stable_id: geneSymbol,
+        stable_id: geneId,
         type: 'gene',
         object_id: geneObjectId
       }
@@ -160,32 +160,26 @@ describe('<TrackPanelBookmarks />', () => {
 
   it('renders example links', () => {
     wrapInRedux();
-    const exampleLinksContainer = screen.getByTestId(
-      'example links'
-    ) as HTMLElement;
-    const exampleLinks = [...exampleLinksContainer.querySelectorAll('a')];
-    const exampleLinkTexts = exampleLinks.map((link) => link.innerHTML);
+    const exampleGeneLink = screen.getByText('Example gene') as HTMLElement;
+    const exampleRegionLink = screen.getByText('Example region') as HTMLElement;
 
-    expect(exampleLinkTexts.length).toBe(example_objects.length);
-    expect(exampleLinkTexts.includes('Example gene')).toBe(true);
-    expect(exampleLinkTexts.includes('Example region')).toBe(true);
+    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
+
+    expect(exampleGeneLink.getAttribute('href')).toBe(expectedGeneHref);
+    expect(exampleRegionLink.getAttribute('href')).toBe(expectedRegionHref);
   });
 
   it('renders previously viewed links', () => {
     wrapInRedux();
-    const previouslyViewedSection = screen.getByTestId(
-      'previously viewed links'
-    ) as HTMLElement;
-    const links = [...previouslyViewedSection.querySelectorAll('a')];
-    const linkTexts = links.map((link) => link.innerHTML);
-    const previouslyViewedObjectTexts = previouslyViewedObjects.map(
-      ({ label }) => label
-    );
+    const geneLink = screen.getByText(geneId) as HTMLElement;
+    const regionLink = screen.getByText(region) as HTMLElement;
 
-    expect(linkTexts.length).toBe(previouslyViewedObjects.length);
-    expect(
-      previouslyViewedObjectTexts.every((text) => linkTexts.includes(text))
-    ).toBe(true);
+    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
+
+    expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
+    expect(regionLink.getAttribute('href')).toBe(expectedRegionHref);
   });
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {

@@ -23,7 +23,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { closeTrackPanelModal } from '../../trackPanelActions';
@@ -39,7 +39,7 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 export const ExampleLinks = () => {
   const exampleEnsObjects = useSelector(getExampleEnsObjects);
-  const activeGenomeId = useSelector(getActiveGenomeId);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const dispatch = useDispatch();
 
   const onLinkClick = () => dispatch(closeTrackPanelModal());
