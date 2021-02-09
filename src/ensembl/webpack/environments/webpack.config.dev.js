@@ -35,11 +35,6 @@ const devServerConfig = {
       target: 'http://api-prefix.review.ensembl.org',
       changeOrigin: true,
       secure: false
-    },
-    '/help-api': {
-      target: 'https://staging-2020.ensembl.org',
-      changeOrigin: true,
-      secure: false
     }
   },
 
