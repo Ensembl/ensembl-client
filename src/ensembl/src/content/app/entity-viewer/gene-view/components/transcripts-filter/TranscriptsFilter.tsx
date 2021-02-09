@@ -43,7 +43,7 @@ import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import styles from './TranscriptsFilter.scss';
 
 type Props = {
-  filterLabel: ReactNode;
+  label: ReactNode;
   transcripts: Transcript[];
   toggleFilter: () => void;
 };
@@ -125,7 +125,7 @@ const TranscriptsFilter = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.filterLabel} onClick={props.toggleFilter}>
-        {props.filterLabel}
+        {props.label}
         <ChevronUp className={styles.chevron} />
       </div>
       <div className={filterBoxClassnames}>
