@@ -48,7 +48,7 @@ jest.mock('./drawer/Drawer', () => () => <div>Drawer</div>);
 jest.mock('ensembl-genome-browser', () => {
   return;
 });
-jest.mock('src/gql-client');
+jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 const defaultProps: BrowserProps = {
   activeGenomeId: faker.lorem.words(),
@@ -64,14 +64,6 @@ const defaultProps: BrowserProps = {
   toggleDrawer: jest.fn(),
   viewportWidth: BreakpointWidth.DESKTOP
 };
-
-jest.mock('@apollo/client', () => {
-  const originalModule = jest.requireActual('@apollo/client');
-  return {
-    ...originalModule,
-    ApolloClient: jest.fn()
-  };
-});
 
 describe('<Browser />', () => {
   afterEach(() => {
