@@ -18,13 +18,6 @@ import apiService from 'src/services/api-service';
 
 import { restProteinSummaryAdaptor } from '../rest-adaptors/rest-protein-adaptor';
 
-export type Xref = {
-  primary_id: string;
-  display_id: string;
-};
-
-export type XrefsInResponse = Xref[];
-
 export type ProteinStatsInResponse = {
   pdbs: number;
   ligands: number;
@@ -49,25 +42,6 @@ export type ProteinStats = {
   ligandsCount: number;
   interactionsCount: number;
   annotationsCount: number;
-};
-
-export const fetchXrefId = async (
-  proteinId: string,
-  signal?: AbortSignal
-): Promise<Xref | undefined> => {
-  const xrefsUrl = `https://rest.ensembl.org/xrefs/id/${proteinId}?content-type=application/json;external_db=Uniprot/SWISSPROT`;
-  const xrefsData: XrefsInResponse | undefined = await apiService.fetch(
-    xrefsUrl,
-    {
-      signal
-    }
-  );
-
-  if (!xrefsData) {
-    return undefined;
-  }
-
-  return xrefsData[0];
 };
 
 export const fetchProteinSummaryStats = async (

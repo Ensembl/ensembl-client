@@ -31,10 +31,10 @@ import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/com
 import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
+import { SWISSPROT_SOURCE } from '../protein-list-constants';
+
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
-
-const SWISSPROT_SOURCE = 'Uniprot/SWISSPROT';
 
 type Props = {
   transcript: Transcript;
