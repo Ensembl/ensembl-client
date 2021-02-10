@@ -133,7 +133,7 @@ const CheckboxWithSelects = (props: CheckboxWithSelectsProps) => {
           const options = [...props.options]
             .filter((option: Option) => {
               if (
-                (selectedOptionsClone.indexOf(option.value) == -1 &&
+                (selectedOptionsClone.indexOf(option.value) === -1 &&
                   firstSelectedOption !== option.value) ||
                 selectedOption === option.value
               ) {
