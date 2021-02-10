@@ -44,7 +44,7 @@ import GeneRelationships from 'src/content/app/entity-viewer/gene-view/component
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneView.scss';

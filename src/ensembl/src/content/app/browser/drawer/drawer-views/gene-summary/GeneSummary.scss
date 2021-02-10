@@ -1,0 +1,47 @@
+@import 'src/styles/common';
+
+.row {
+  display: grid;
+  grid-template-columns: [label] 120px [value] auto;
+  grid-column-gap: 10px;
+  margin-bottom:3px;
+
+  .label {
+    grid-column: label;
+    font-weight: $light;
+    text-align: right;
+  }
+
+  .value {
+    grid-column: value;
+  }
+}
+
+
+.spaceAbove{
+  margin-top: 30px;
+}
+
+
+.featureDetails {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
+
+  & > div:not(:first-child) {
+    margin-left: 30px;
+  }
+}
+
+.featureSymbol {
+  font-weight: $bold;
+}
+.stableId{
+  font-weight: $bold;
+}
+.featureSymbol + .stableId{
+  margin-left: 12px;
+  font-weight: $light;
+}

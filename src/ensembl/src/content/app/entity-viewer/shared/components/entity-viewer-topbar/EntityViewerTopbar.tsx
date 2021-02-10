@@ -19,7 +19,7 @@ import { useQuery, gql } from '@apollo/client';
 
 import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 
-import { Slice } from 'src/content/app/entity-viewer/types/slice';
+import { Slice } from 'src/shared/types/thoas/slice';
 
 import styles from './EntityViewerTopbar.scss';
 

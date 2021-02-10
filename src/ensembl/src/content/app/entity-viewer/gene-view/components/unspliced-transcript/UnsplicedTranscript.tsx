@@ -18,9 +18,9 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { SplicedExon } from 'src/content/app/entity-viewer/types/exon';
-import { CDS } from 'src/content/app/entity-viewer/types/cds';
+import { Transcript } from 'src/shared/types/thoas/transcript';
+import { SplicedExon } from 'src/shared/types/thoas/exon';
+import { CDS } from 'src/shared/types/thoas/cds';
 
 import styles from './UnsplicedTranscript.scss';
 

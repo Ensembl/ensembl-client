@@ -28,6 +28,7 @@ import InstantDownloadButton from '../instant-download-button/InstantDownloadBut
 import styles from './InstantDownloadTranscript.scss';
 
 type Layout = 'horizontal' | 'vertical';
+type Theme = 'light' | 'dark';
 
 type TranscriptFields = {
   id: string;
@@ -46,11 +47,13 @@ export type InstantDownloadTranscriptEntityProps = {
 
 type Props = InstantDownloadTranscriptEntityProps & {
   layout: Layout;
+  theme: Theme;
 };
 
 type TranscriptSectionProps = {
   transcript: TranscriptFields;
   options: Partial<TranscriptOptions>;
+  theme: Theme;
   onChange: (key: keyof TranscriptOptions) => void;
 };
 
@@ -143,16 +146,22 @@ const InstantDownloadTranscript = (props: Props) => {
       ? classNames(styles.layout, styles.layoutHorizontal)
       : classNames(styles.layout, styles.layoutVertical);
 
+  const themeClass =
+    props.theme === 'dark' ? styles.themeDark : styles.themeLight;
+
+  const wrapperClassNames = classNames(themeClass, layoutClass);
+
   const isButtonDisabled = !hasSelectedOptions({
     ...transcriptOptions,
     geneSequence: isGeneSequenceSelected
   });
 
   return (
-    <div className={layoutClass}>
+    <div className={wrapperClassNames}>
       <TranscriptSection
         transcript={props.transcript}
         options={transcriptOptions}
+        theme={props.theme}
         onChange={onTranscriptOptionChange}
       />
       <GeneSection
@@ -170,7 +179,8 @@ const InstantDownloadTranscript = (props: Props) => {
 };
 
 InstantDownloadTranscript.defaultProps = {
-  layout: 'horizontal'
+  layout: 'horizontal',
+  theme: 'dark'
 } as Props;
 
 const TranscriptSection = (props: TranscriptSectionProps) => {
@@ -196,6 +206,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
       isProteinSequenceEnabled={options.proteinSequence}
       isCDNAEnabled={options.cdna}
       isCDSEnabled={options.cds}
+      theme={props.theme}
     />
   );
 

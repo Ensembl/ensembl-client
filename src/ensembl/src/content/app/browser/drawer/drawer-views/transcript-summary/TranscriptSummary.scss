@@ -1,0 +1,85 @@
+@import 'src/styles/common';
+
+.row {
+  display: grid;
+  grid-template-columns: [label] 130px [value] auto;
+  grid-column-gap: 10px;
+  margin-bottom:3px;
+
+  .label {
+    grid-column: label;
+    font-weight: $light;
+    text-align: right;
+    font-size: 12px;
+  }
+
+  .value {
+    grid-column: value;
+
+    & > span + span {
+      margin-left: 10px;
+    }
+
+    & > div + div{
+      margin-top: 3px;
+    }
+  }
+}
+
+.spaceAbove{
+  margin-top: 30px;
+}
+
+.lightText{
+  font-weight: $light;
+}
+
+.unit{
+  font-weight: $light;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+
+.value .featureDetails {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
+
+  & > span:not(:first-child) {
+    margin-left: 30px;
+  }
+}
+
+.featureSymbol {
+  font-weight: $bold;
+}
+.stableId{
+  font-weight: $bold;
+}
+.featureSymbol + .stableId{
+  margin-left: 12px;
+  color: $dark-grey;
+  font-weight: $light;
+}
+
+
+.downloadLink{
+  color: $blue;
+  cursor: pointer;
+}
+
+.downloadWrapper{
+  display: inline-block;
+  margin-left: 40px;
+  min-width: 600px;
+  position: relative;
+}
+
+.closeButton{
+  position: absolute;
+  right: 0;
+  top: 0;
+}

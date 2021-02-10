@@ -18,7 +18,7 @@ import React from 'react';
 import { scaleLinear } from 'd3';
 import classNames from 'classnames';
 
-import { Product } from 'src/content/app/entity-viewer/types/product';
+import { Product } from 'src/shared/types/thoas/product';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinImage.scss';

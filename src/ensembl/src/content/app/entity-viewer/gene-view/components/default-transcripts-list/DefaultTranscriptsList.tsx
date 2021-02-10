@@ -39,8 +39,8 @@ import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultT
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/shared/types/thoas/gene';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 

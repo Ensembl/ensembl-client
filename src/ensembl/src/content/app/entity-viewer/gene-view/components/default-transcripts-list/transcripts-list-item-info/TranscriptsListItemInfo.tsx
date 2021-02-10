@@ -39,8 +39,8 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/shared/types/thoas/gene';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';

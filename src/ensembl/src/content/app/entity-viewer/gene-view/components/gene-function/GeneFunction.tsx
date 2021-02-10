@@ -34,7 +34,7 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 import ProteinsList from '../proteins-list/ProteinsList';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneFunction.scss';
 

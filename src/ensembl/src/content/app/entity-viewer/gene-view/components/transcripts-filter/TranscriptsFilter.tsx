@@ -38,7 +38,7 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 
 import styles from './TranscriptsFilter.scss';
 
