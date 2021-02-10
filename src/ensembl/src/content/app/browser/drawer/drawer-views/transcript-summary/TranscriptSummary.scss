@@ -1,13 +1,15 @@
 @import 'src/styles/common';
 
-.standardLabelValue {
+.row {
   display: grid;
-  grid-template-columns: [label] 130px 10px [value] auto;
+  grid-template-columns: [label] 130px [value] auto;
+  grid-column-gap: 10px;
   margin-bottom:15px;
   .label {
     grid-column: label;
-    color: $dark-grey;
+    font-weight: $light;
     text-align: right;
+    font-size: 12px;
   }
 
   .value {
@@ -27,12 +29,12 @@
   margin-top: 40px;
 }
 
-.greyedText{
-  color: $dark-grey;
+.lightText{
+  font-weight: $light;
 }
 
 .unit{
-  color: $dark-grey;
+  font-weight: $light;
   font-size: 12px;
   margin-left: 5px;
 }

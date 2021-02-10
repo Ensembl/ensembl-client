@@ -199,8 +199,8 @@ const TranscriptSummary = () => {
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.standardLabelValue}>
+    <div>
+      <div className={styles.row}>
         <div className={styles.label}>Transcript</div>
         <div className={styles.value}>
           <div className={styles.featureDetails}>
@@ -216,28 +216,31 @@ const TranscriptSummary = () => {
         </div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.label}>Transcript name</div>
         <div className={styles.value}>{transcript.symbol}</div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.label}>Transcript length</div>
-        <div className={styles.value}>{transcript.slice.location.length}</div>
+        <div className={styles.value}>
+          {getCommaSeparatedNumber(transcript.slice.location.length)}{' '}
+          <span className={styles.unit}>bp</span>{' '}
+        </div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.value}>
           {transcript.spliced_exons.length} exons
         </div>
       </div>
 
-      <div className={`${styles.standardLabelValue} ${styles.spaceAbove}`}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Coding exons</div>
         <div className={styles.value}>{getNumberOfCodingExons(transcript)}</div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.label}>Combined exon length </div>
         <div className={styles.value}>
           {splicedRNALength} <span className={styles.unit}>bp</span>
@@ -245,18 +248,18 @@ const TranscriptSummary = () => {
       </div>
 
       {transcript.so_term === 'protein_coding' && (
-        <div className={styles.standardLabelValue}>
+        <div className={styles.row}>
           <div className={styles.label}>Protein</div>
           <div className={styles.value}>
             <div>
               {productAminoAcidLength} <span className={styles.unit}>aa</span>
             </div>
             {product && (
-              <div className={styles.greyedText}>{product.stable_id}</div>
+              <div className={styles.lightText}>{product.stable_id}</div>
             )}
             {uniprotXref && (
               <ExternalReference
-                classNames={{ label: styles.greyedText }}
+                classNames={{ label: styles.lightText }}
                 label={'UniProtKB/Swiss-Prot'}
                 to={uniprotXref.url}
                 linkText={uniprotXref.accession_id}
@@ -267,10 +270,10 @@ const TranscriptSummary = () => {
       )}
 
       {ccdsXref && (
-        <div className={`${styles.standardLabelValue} ${styles.spaceAbove}`}>
+        <div className={`${styles.row} ${styles.spaceAbove}`}>
           <div className={styles.value}>
             <ExternalReference
-              classNames={{ label: styles.greyedText }}
+              classNames={{ label: styles.lightText }}
               label={'CCDS'}
               to={ccdsXref.url}
               linkText={ccdsXref.accession_id}
@@ -279,7 +282,7 @@ const TranscriptSummary = () => {
         </div>
       )}
 
-      <div className={`${styles.standardLabelValue} ${styles.spaceAbove}`}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           <span
             className={styles.downloadLink}
@@ -307,7 +310,7 @@ const TranscriptSummary = () => {
         </div>
       </div>
 
-      <div className={`${styles.standardLabelValue} ${styles.spaceAbove}`}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div>
@@ -317,15 +320,15 @@ const TranscriptSummary = () => {
         </div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.label}>Gene name</div>
         <div className={styles.value}>{gene.name}</div>
       </div>
 
-      <div className={`${styles.standardLabelValue} ${styles.spaceAbove}`}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           <ViewInApp
-            classNames={{ label: styles.greyedText }}
+            classNames={{ label: styles.lightText }}
             links={{ entityViewer: entityViewerUrl }}
           />
         </div>

@@ -15,12 +15,13 @@
  */
 
 import React, { useEffect } from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
+import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BreakpointWidth } from 'src/global/globalConfig';
@@ -65,22 +66,6 @@ import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
-
-const client = new ApolloClient({
-  uri: '/thoas',
-  cache: new InMemoryCache({
-    typePolicies: {
-      Gene: {
-        keyFields: ['stable_id'],
-        fields: {
-          slice: {
-            merge: false
-          }
-        }
-      }
-    }
-  })
-});
 
 export type BrowserProps = {
   activeGenomeId: string | null;

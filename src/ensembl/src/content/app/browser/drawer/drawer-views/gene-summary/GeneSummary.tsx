@@ -104,33 +104,29 @@ const GeneSummary = () => {
   });
 
   return (
-    <div className={styles.container}>
-      <div className={styles.standardLabelValue}>
+    <div>
+      <div className={styles.row}>
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div className={styles.featureDetails}>
             {gene.symbol && (
               <span className={styles.featureSymbol}>{gene.symbol}</span>
             )}
-            {gene.symbol !== stableId && (
-              <span className={styles.stableId}>{stableId}</span>
-            )}
-            {gene.so_term && <div>{gene.so_term.toLowerCase()}</div>}
-            {gene.slice.strand.code && (
-              <div>{getStrandDisplayName(gene.slice.strand.code)}</div>
-            )}
+            <span className={styles.stableId}>{stableId}</span>
+            <div>{gene.so_term.toLowerCase()}</div>
+            <div>{getStrandDisplayName(gene.slice.strand.code)}</div>
             <div>{getFormattedLocation(ensObjectGene.location)}</div>
           </div>
         </div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.label}>Gene name</div>
         <div className={styles.value}>{gene.name}</div>
       </div>
 
       {gene.alternative_symbols.length > 0 && (
-        <div className={styles.standardLabelValue}>
+        <div className={styles.row}>
           <div className={styles.label}>Synonyms</div>
           <div className={styles.value}>
             {gene.alternative_symbols.join(', ')}
@@ -138,13 +134,13 @@ const GeneSummary = () => {
         </div>
       )}
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.value}>
           {`${gene.transcripts.length} transcripts`}
         </div>
       </div>
 
-      <div className={styles.standardLabelValue}>
+      <div className={styles.row}>
         <div className={styles.value}>
           <ViewInApp links={{ entityViewer: entityViewerUrl }} />
         </div>
