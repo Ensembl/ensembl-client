@@ -92,7 +92,7 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   const uniprotXref = product?.external_references.find(
-    (xref) => xref.source.id == SWISSPROT_SOURCE
+    (xref) => xref.source.id === SWISSPROT_SOURCE
   );
 
   useEffect(() => {
