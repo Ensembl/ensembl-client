@@ -216,7 +216,7 @@ const TranscriptSummary = () => {
         </div>
       </div>
 
-      <div className={styles.row}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Transcript name</div>
         <div className={styles.value}>{transcript.symbol}</div>
       </div>
@@ -299,7 +299,7 @@ const TranscriptSummary = () => {
                   so_term: transcript.so_term
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
-                theme={'dark'}
+                theme={'light'}
               />
               <CloseButton
                 className={styles.closeButton}

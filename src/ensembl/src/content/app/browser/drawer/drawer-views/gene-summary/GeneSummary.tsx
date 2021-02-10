@@ -120,13 +120,13 @@ const GeneSummary = () => {
         </div>
       </div>
 
-      <div className={styles.row}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Gene name</div>
         <div className={styles.value}>{gene.name}</div>
       </div>
 
       {gene.alternative_symbols.length > 0 && (
-        <div className={styles.row}>
+        <div className={`${styles.row} ${styles.spaceAbove}`}>
           <div className={styles.label}>Synonyms</div>
           <div className={styles.value}>
             {gene.alternative_symbols.join(', ')}
@@ -134,13 +134,13 @@ const GeneSummary = () => {
         </div>
       )}
 
-      <div className={styles.row}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           {`${gene.transcripts.length} transcripts`}
         </div>
       </div>
 
-      <div className={styles.row}>
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           <ViewInApp links={{ entityViewer: entityViewerUrl }} />
         </div>

@@ -147,7 +147,7 @@ const InstantDownloadTranscript = (props: Props) => {
       : classNames(styles.layout, styles.layoutVertical);
 
   const themeClass =
-    props.theme === 'light' ? styles.themeLight : styles.themeDark;
+    props.theme === 'dark' ? styles.themeDark : styles.themeLight;
 
   const wrapperClassNames = classNames(themeClass, layoutClass);
 
@@ -180,7 +180,7 @@ const InstantDownloadTranscript = (props: Props) => {
 
 InstantDownloadTranscript.defaultProps = {
   layout: 'horizontal',
-  theme: 'light'
+  theme: 'dark'
 } as Props;
 
 const TranscriptSection = (props: TranscriptSectionProps) => {

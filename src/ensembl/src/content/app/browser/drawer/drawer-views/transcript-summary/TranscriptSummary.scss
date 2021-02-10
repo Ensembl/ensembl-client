@@ -4,7 +4,8 @@
   display: grid;
   grid-template-columns: [label] 130px [value] auto;
   grid-column-gap: 10px;
-  margin-bottom:15px;
+  margin-bottom:3px;
+
   .label {
     grid-column: label;
     font-weight: $light;
@@ -20,13 +21,13 @@
     }
 
     & > div + div{
-      margin-top: 10px;
+      margin-top: 3px;
     }
   }
 }
 
 .spaceAbove{
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 .lightText{

@@ -192,7 +192,7 @@ InstantDownloadTranscriptVisualisation.defaultProps = {
   isCDSEnabled: false,
   isProteinSequenceEnabled: false,
   width: 210,
-  theme: 'light'
+  theme: 'dark'
 } as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;
