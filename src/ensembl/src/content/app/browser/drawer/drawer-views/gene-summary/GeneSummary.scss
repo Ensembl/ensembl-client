@@ -8,7 +8,7 @@
 
   .label {
     grid-column: label;
-    color: $dark-grey;
+    font-weight: $light;
     text-align: right;
   }
 
@@ -43,6 +43,5 @@
 }
 .featureSymbol + .stableId{
   margin-left: 12px;
-  color: $dark-grey;
   font-weight: $light;
 }

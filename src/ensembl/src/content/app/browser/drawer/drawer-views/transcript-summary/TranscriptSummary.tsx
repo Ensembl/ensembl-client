@@ -299,7 +299,7 @@ const TranscriptSummary = () => {
                   so_term: transcript.so_term
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
-                theme={'light'}
+                theme="light"
               />
               <CloseButton
                 className={styles.closeButton}
