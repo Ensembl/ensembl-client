@@ -81,10 +81,6 @@ const ProteinsListItemInfo = (props: Props) => {
     LoadingState.LOADING
   );
 
-  const [xrefLoadingState, setXrefLoadingState] = useState<LoadingState>(
-    LoadingState.LOADING
-  );
-
   const [summaryStatsLoadingState, setSummaryStatsLoadingState] = useState<
     LoadingState
   >(LoadingState.LOADING);
@@ -124,7 +120,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (xrefLoadingState === LoadingState.SUCCESS && !uniprotXref) {
+    if (summaryStatsLoadingState === LoadingState.LOADING && !uniprotXref) {
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
@@ -147,7 +143,7 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryStatsLoadingState, xrefLoadingState, uniprotXref]);
+  }, [summaryStatsLoadingState, uniprotXref]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
@@ -208,10 +204,8 @@ const ProteinsListItemInfo = (props: Props) => {
         <StatusContent
           summaryLoadingState={summaryStatsLoadingState}
           domainsLoadingState={domainsLoadingState}
-          xrefLoadingState={xrefLoadingState}
           setSummaryStatsLoadingState={setSummaryStatsLoadingState}
           setDomainsLoadingState={setDomainsLoadingState}
-          setXrefLoadingState={setXrefLoadingState}
         />
 
         <div className={styles.keyline}></div>
@@ -223,10 +217,8 @@ const ProteinsListItemInfo = (props: Props) => {
 type StatusContentProps = {
   summaryLoadingState: LoadingState;
   domainsLoadingState: LoadingState;
-  xrefLoadingState: LoadingState;
   setSummaryStatsLoadingState: (loadingState: LoadingState) => void;
   setDomainsLoadingState: (loadingState: LoadingState) => void;
-  setXrefLoadingState: (loadingState: LoadingState) => void;
 };
 
 const StatusContent = (props: StatusContentProps) => {
