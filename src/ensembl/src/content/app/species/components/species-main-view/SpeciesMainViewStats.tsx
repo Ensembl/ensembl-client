@@ -176,7 +176,7 @@ const SpeciesMainViewStats = (props: Props) => {
     if (isExpanded) {
       props.setExpandedSections([...expandedSections, section]);
     } else {
-      props.setExpandedSections(expandedSections.filter((s) => s != section));
+      props.setExpandedSections(expandedSections.filter((s) => s !== section));
     }
   };
 
