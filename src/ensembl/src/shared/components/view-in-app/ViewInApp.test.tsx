@@ -15,41 +15,49 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import * as router from 'connected-react-router';
+import configureMockStore from 'redux-mock-store';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
-import { mount } from 'enzyme';
 import sampleSize from 'lodash/sampleSize';
 
-import {
-  ViewInApp,
-  AppButton,
-  AppName,
-  Apps,
-  ViewInAppProps
-} from './ViewInApp';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { ViewInApp, AppName, Apps, ViewInAppProps } from './ViewInApp';
 
-const push = jest.fn();
+jest.mock('connected-react-router', () => ({
+  push: jest.fn(),
+  replace: jest.fn()
+}));
+
+const mockStore = configureMockStore([thunk]);
+const store: ReturnType<typeof mockStore> = mockStore({});
 
 const renderComponent = (props: Partial<ViewInAppProps>) => {
-  const defaultProps = { links: {}, push };
+  const defaultProps = { links: {} };
   const completeProps = {
     ...defaultProps,
     ...props
   };
 
-  const renderedComponent = <ViewInApp {...completeProps} />;
-
-  return mount(renderedComponent);
+  return render(
+    <Provider store={store}>
+      <ViewInApp {...completeProps} />
+    </Provider>
+  );
 };
 
 const appLinkTuples = Object.keys(Apps).map(
   (appName) => [appName as AppName, faker.internet.url()] as const
 );
+
 const randomSampleSize = Math.ceil(Math.random() * appLinkTuples.length);
 const tuplesSample = sampleSize(appLinkTuples, randomSampleSize);
 
 const links = tuplesSample.reduce((result, tuple) => {
   const [appName, link] = tuple;
+
   return {
     ...result,
     [appName]: link
@@ -62,25 +70,32 @@ describe('<ViewInApp />', () => {
   });
 
   it('returns null if the links prop is empty', () => {
-    const wrapper = renderComponent({ links: {} });
-    expect(wrapper.html()).toBe(null);
+    const { container } = renderComponent({ links: {} });
+    expect(container.innerHTML).toBeFalsy();
   });
 
   it('renders correct number of buttons', () => {
-    const wrapper = renderComponent({ links });
-    expect(wrapper.find(ImageButton)).toHaveLength(Object.keys(links).length);
+    const { container } = renderComponent({ links });
+    expect(container.querySelectorAll('button')).toHaveLength(
+      Object.keys(links).length
+    );
   });
 
-  it('switches to correct url when clicked', () => {
-    const wrapper = renderComponent({ links });
-    tuplesSample.forEach(([appName, link]) => {
-      const imageButton = wrapper
-        .find(AppButton)
-        .findWhere((element) => element.prop('appId') === appName)
-        .find(ImageButton);
+  it('calls replace with the passed links', () => {
+    const replaceFn = jest.spyOn(router, 'replace');
 
-      imageButton.simulate('click');
-      expect(push).toHaveBeenCalledWith(link);
+    renderComponent({ links, shouldReplaceState: true });
+
+    tuplesSample.forEach(([appName, link]) => {
+      const appButtonContainer = screen.getByTestId(appName);
+
+      userEvent.click(
+        appButtonContainer.querySelector('button') as HTMLButtonElement
+      );
+
+      expect(replaceFn).toHaveBeenCalledWith(link);
     });
+
+    replaceFn.mockRestore();
   });
 });

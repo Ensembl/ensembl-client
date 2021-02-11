@@ -80,7 +80,7 @@ const ZmenuAppLinks = (props: Props) => {
 
   return (
     <div className={styles.zmenuAppLinks}>
-      <ViewInApp links={links} />
+      <ViewInApp links={links} shouldReplaceState />
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         openElement={<span>Download</span>}
