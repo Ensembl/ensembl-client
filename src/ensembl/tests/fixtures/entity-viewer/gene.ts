@@ -21,7 +21,7 @@ import { scaleLinear } from 'd3';
 import { createSlice } from './slice';
 import { createTranscript } from './transcript';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 export const createGene = (fragment: Partial<Gene> = {}): Gene => {

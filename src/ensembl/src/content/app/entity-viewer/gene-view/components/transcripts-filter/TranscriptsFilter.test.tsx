@@ -88,7 +88,7 @@ const wrapInRedux = (
   return mount(
     <Provider store={store}>
       <TranscriptsFilter
-        filterLabel={filterLabel}
+        label={filterLabel}
         transcripts={transcripts}
         toggleFilter={mockToggleFilter}
       />
