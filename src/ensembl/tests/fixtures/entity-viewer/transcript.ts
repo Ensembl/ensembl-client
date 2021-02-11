@@ -21,17 +21,14 @@ import { createSlice } from './slice';
 import { createProduct } from './product';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import {
-  Exon,
-  SplicedExon,
-  PhasedExon
-} from 'src/content/app/entity-viewer/types/exon';
-import { Slice } from 'src/content/app/entity-viewer/types/slice';
-import { CDS } from 'src/content/app/entity-viewer/types/cds';
-import { CDNA } from 'src/content/app/entity-viewer/types/cdna';
-import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
-import { ProductType } from 'src/content/app/entity-viewer/types/product';
+import { Transcript } from 'src/shared/types/thoas/transcript';
+import { Exon, SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
+import { Slice } from 'src/shared/types/thoas/slice';
+import { CDS } from 'src/shared/types/thoas/cds';
+import { CDNA } from 'src/shared/types/thoas/cdna';
+import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { ProductType } from 'src/shared/types/thoas/product';
+import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 
 export const createTranscript = (
   fragment: Partial<Transcript> = {}
@@ -51,6 +48,7 @@ export const createTranscript = (
     symbol: faker.lorem.word(),
     so_term: faker.lorem.word(),
     slice: transcriptSlice,
+    external_references: createExternalReferences(),
     relative_location: {
       start: 1,
       end: transcriptSlice.location.end,
@@ -62,6 +60,24 @@ export const createTranscript = (
     ],
     ...fragment
   };
+};
+
+const createExternalReferences = (): ExternalReference[] => {
+  const numberOfExternalReferences = faker.random.number({ min: 1, max: 10 });
+
+  return times(numberOfExternalReferences, () => {
+    return {
+      accession_id: faker.random.uuid(),
+      name: faker.random.words(),
+      description: faker.random.words(),
+      url: faker.internet.url(),
+      source: {
+        name: faker.random.words(),
+        id: faker.random.uuid(),
+        url: faker.internet.url()
+      }
+    };
+  });
 };
 
 const createSplicedExons = (
