@@ -42,6 +42,7 @@ export type Props = {
   isCDSEnabled: boolean;
   isProteinSequenceEnabled: boolean;
   width: number;
+  theme: 'light' | 'dark';
 };
 
 const InstantDownloadTranscriptVisualisation = (props: Props) => {
@@ -167,11 +168,15 @@ const InstantDownloadTranscriptVisualisation = (props: Props) => {
     );
   });
 
+  const themeClass =
+    props.theme === 'light' ? styles.themeLight : styles.themeDark;
+
   return (
     <svg
       style={{ overflow: 'visible' }}
       width={props.width}
       height={totalHeight}
+      className={themeClass}
     >
       {exons}
       {halfOuterExons}
@@ -186,7 +191,8 @@ InstantDownloadTranscriptVisualisation.defaultProps = {
   isCDNAEnabled: false,
   isCDSEnabled: false,
   isProteinSequenceEnabled: false,
-  width: 210
+  width: 210,
+  theme: 'dark'
 } as Partial<Props>;
 
 export default InstantDownloadTranscriptVisualisation;

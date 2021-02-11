@@ -23,7 +23,7 @@ import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { Gene as GeneFromGraphql } from 'src/content/app/entity-viewer/types/gene';
+import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneOverview.scss';
 

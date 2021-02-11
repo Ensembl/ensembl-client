@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './TranscriptQualityLabel.scss';

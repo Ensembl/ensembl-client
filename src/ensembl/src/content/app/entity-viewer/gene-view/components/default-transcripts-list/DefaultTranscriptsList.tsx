@@ -16,6 +16,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import classNames from 'classnames';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import {
@@ -38,8 +39,8 @@ import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultT
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Gene } from 'src/shared/types/thoas/gene';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
@@ -84,6 +85,16 @@ const DefaultTranscriptslist = (props: Props) => {
   const shouldShowFilterIndicator =
     sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
 
+  const filterLabel = (
+    <span
+      className={classNames({
+        [styles.labelWithActivityIndicator]: shouldShowFilterIndicator
+      })}
+    >
+      Filter & sort
+    </span>
+  );
+
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
   };
@@ -93,6 +104,7 @@ const DefaultTranscriptslist = (props: Props) => {
       <div className={styles.header}>
         {isFilterOpen && (
           <TranscriptsFilter
+            label={filterLabel}
             toggleFilter={toggleFilter}
             transcripts={sortedTranscripts}
           />
@@ -100,15 +112,7 @@ const DefaultTranscriptslist = (props: Props) => {
         <div className={styles.row}>
           {gene.transcripts.length > 5 && !isFilterOpen && (
             <div className={styles.filterLabel} onClick={toggleFilter}>
-              <span
-                className={
-                  shouldShowFilterIndicator
-                    ? styles.labelWithActivityIndicator
-                    : undefined
-                }
-              >
-                Filter & sort
-              </span>
+              {filterLabel}
               <ChevronDown className={styles.chevron} />
             </div>
           )}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -38,11 +38,12 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 
 import styles from './TranscriptsFilter.scss';
 
 type Props = {
+  label: ReactNode;
   transcripts: Transcript[];
   toggleFilter: () => void;
 };
@@ -124,7 +125,7 @@ const TranscriptsFilter = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={styles.filterLabel} onClick={props.toggleFilter}>
-        Filter & sort
+        {props.label}
         <ChevronUp className={styles.chevron} />
       </div>
       <div className={filterBoxClassnames}>

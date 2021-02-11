@@ -34,10 +34,10 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import {
   ExternalReference as ExternalReferenceType,
   ExternalReferencesGroup
-} from 'src/content/app/entity-viewer/types/externalReference';
+} from 'src/shared/types/thoas/externalReference';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { SliceWithLocationOnly } from 'src/content/app/entity-viewer/types/slice';
-import { ProductGeneratingContext } from 'src/content/app/entity-viewer/types/productGeneratingContext';
+import { SliceWithLocationOnly } from 'src/shared/types/thoas/slice';
+import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './GeneExternalReferences.scss';
 

@@ -21,7 +21,7 @@ import {
   ProteinDomain,
   Product,
   ProductType
-} from 'src/content/app/entity-viewer/types/product';
+} from 'src/shared/types/thoas/product';
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
   const length = fragment?.length || faker.random.number({ min: 10, max: 100 });

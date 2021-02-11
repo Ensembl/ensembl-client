@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-import { Strand } from 'src/shared/types/thoas/strand';
-
-export function getStrandDisplayName(strandCode: Strand) {
-  if (strandCode === Strand.FORWARD) {
-    return 'forward strand';
-  } else {
-    return 'reverse strand';
-  }
-}
+export const SWISSPROT_SOURCE = 'Uniprot/SWISSPROT';

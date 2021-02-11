@@ -17,7 +17,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -41,10 +40,6 @@ const ZmenuAppLinks = (props: Props) => {
   const genomeId = useSelector(getBrowserActiveGenomeId);
   const activeFeatureId = useSelector(getBrowserActiveEnsObjectId);
   const isInDefaultPosition = useSelector(isFocusObjectPositionDefault);
-
-  if (!isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
-    return null;
-  }
 
   const parsedFeatureId = parseFeatureId(props.featureId);
 

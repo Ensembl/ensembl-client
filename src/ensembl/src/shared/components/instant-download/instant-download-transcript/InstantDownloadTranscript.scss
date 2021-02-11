@@ -9,7 +9,6 @@
 }
 
 .label {
-  color: white;
   margin-bottom: 0.5em;
   font-weight: $light;
   word-break: break-all;
@@ -32,8 +31,29 @@
 
 .checkboxLabel {
   font-size: 13px;
-  color: white;
 }
+
+
+.themeDark{
+  .label {
+    color: $white;
+  }
+
+  .checkboxLabel {
+    color: $white;
+  }
+}
+
+.themeLight{
+  .label {
+    color: $dark-grey;
+  }
+
+  .checkboxLabel {
+    color: $dark-grey;
+  }
+}
+
 
 .downloadButtonDisabled {
   border-color: $dark-grey;

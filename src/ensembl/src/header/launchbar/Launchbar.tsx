@@ -71,12 +71,7 @@ const Launchbar = (props: LaunchbarProps) => {
               app="entity-viewer"
               description="Entity Viewer"
               icon={EntityViewerIcon}
-              enabled={
-                isEnvironment([
-                  Environment.DEVELOPMENT,
-                  Environment.INTERNAL
-                ]) && props.committedSpecies.length > 0
-              }
+              enabled={props.committedSpecies.length > 0}
             />
           </div>
           <div className={styles.category}>

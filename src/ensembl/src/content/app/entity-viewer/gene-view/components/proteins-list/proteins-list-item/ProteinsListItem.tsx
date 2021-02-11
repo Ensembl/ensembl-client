@@ -28,13 +28,13 @@ import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/ge
 
 import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
+
+import { SWISSPROT_SOURCE } from '../protein-list-constants';
 
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
-
-const SWISSPROT_SOURCE = 'Uniprot/SWISSPROT';
 
 type Props = {
   transcript: Transcript;

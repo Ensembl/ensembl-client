@@ -63,7 +63,7 @@ export const Provider = (props: ProviderProps) => {
       (uuid) => !props.preExpanded.includes(uuid)
     ).length;
 
-    if (store.expanded.length != props.preExpanded.length || differences) {
+    if (store.expanded.length !== props.preExpanded.length || differences) {
       setStore(store.setExpanded(props.preExpanded));
     }
   }, [props.preExpanded]);

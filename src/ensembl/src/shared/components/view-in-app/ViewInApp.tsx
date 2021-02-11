@@ -17,6 +17,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { push, replace } from 'connected-react-router';
+import classNames from 'classnames';
 
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
 
@@ -45,6 +46,9 @@ export type urlObj = Record<AppName, string>;
 export type ViewInAppProps = {
   links: Partial<urlObj>;
   shouldReplaceState?: boolean;
+  classNames?: {
+    label?: string;
+  };
 };
 
 export const ViewInApp = (props: ViewInAppProps) => {
@@ -52,9 +56,11 @@ export const ViewInApp = (props: ViewInAppProps) => {
     return null;
   }
 
+  const labelClass = classNames(styles.label, props.classNames?.label);
+
   return Object.keys(props.links) ? (
     <div className={styles.viewInAppLinkButtons}>
-      <span className={styles.viewInLabel}>View in</span>
+      <span className={labelClass}>View in</span>
       {(Object.keys(props.links) as AppName[]).map((appId) => {
         return (
           <AppButton

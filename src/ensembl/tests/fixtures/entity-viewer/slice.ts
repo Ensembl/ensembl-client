@@ -16,8 +16,8 @@
 
 import faker from 'faker';
 
-import { Slice } from 'src/content/app/entity-viewer/types/slice';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { Slice } from 'src/shared/types/thoas/slice';
+import { Strand } from 'src/shared/types/thoas/strand';
 
 export const createSlice = (): Slice => {
   const start = faker.random.number({ min: 1, max: 1000000 });

@@ -20,7 +20,7 @@ import {
   EnsObject,
   EnsObjectType
 } from 'src/shared/state/ens-object/ensObjectTypes';
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { Strand } from 'src/shared/types/thoas/strand';
 
 export const createEnsObject = (objectType?: EnsObjectType): EnsObject => {
   const genome_id = faker.lorem.word();
@@ -57,5 +57,6 @@ const createTrackInfo = () => ({
   object_id: faker.lorem.word(),
   support_level: null,
   track_id: faker.lorem.word(),
-  description: null
+  description: null,
+  stable_id: faker.lorem.words()
 });

@@ -48,26 +48,27 @@ jest.mock('./drawer/Drawer', () => () => <div>Drawer</div>);
 jest.mock('ensembl-genome-browser', () => {
   return;
 });
+jest.mock('src/gql-client', () => ({ client: jest.fn() }));
+
+const defaultProps: BrowserProps = {
+  activeGenomeId: faker.lorem.words(),
+  activeEnsObjectId: faker.lorem.words(),
+  browserActivated: false,
+  browserNavOpened: false,
+  browserQueryParams: {},
+  chrLocation: createChrLocationValues().tupleValue,
+  isDrawerOpened: false,
+  isTrackPanelOpened: false,
+  exampleEnsObjects: [],
+  toggleTrackPanel: jest.fn(),
+  toggleDrawer: jest.fn(),
+  viewportWidth: BreakpointWidth.DESKTOP
+};
 
 describe('<Browser />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-
-  const defaultProps: BrowserProps = {
-    activeGenomeId: faker.lorem.words(),
-    activeEnsObjectId: faker.lorem.words(),
-    browserActivated: false,
-    browserNavOpened: false,
-    browserQueryParams: {},
-    chrLocation: createChrLocationValues().tupleValue,
-    isDrawerOpened: false,
-    isTrackPanelOpened: false,
-    exampleEnsObjects: [],
-    toggleTrackPanel: jest.fn(),
-    toggleDrawer: jest.fn(),
-    viewportWidth: BreakpointWidth.DESKTOP
-  };
 
   const wrappingComponent = (props: any) => (
     <MemoryRouter>{props.children}</MemoryRouter>

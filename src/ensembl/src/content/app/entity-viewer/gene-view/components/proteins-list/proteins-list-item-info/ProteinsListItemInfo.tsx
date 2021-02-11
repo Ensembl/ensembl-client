@@ -32,15 +32,15 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { fetchProteinDomains } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
-  fetchXrefId,
   fetchProteinSummaryStats,
-  Xref,
   ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { Transcript } from 'src/content/app/entity-viewer/types/transcript';
-import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
+import { Transcript } from 'src/shared/types/thoas/transcript';
+import { ProteinDomain } from 'src/shared/types/thoas/product';
+
+import { SWISSPROT_SOURCE } from '../protein-list-constants';
 
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
@@ -73,8 +73,6 @@ const ProteinsListItemInfo = (props: Props) => {
     setTranscriptWithProteinDomains
   ] = useState<Transcript | null>(null);
 
-  const [xref, setXref] = useState<Xref | undefined>();
-
   const [proteinSummaryStats, setProteinSummaryStats] = useState<
     ProteinStats | null | undefined
   >();
@@ -96,6 +94,10 @@ const ProteinsListItemInfo = (props: Props) => {
 
   const { product } =
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
+
+  const uniprotXref = product?.external_references.find(
+    (xref) => xref.source.id === SWISSPROT_SOURCE
+  );
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -122,33 +124,13 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-
-    if (xrefLoadingState === LoadingState.LOADING) {
-      fetchXrefId(proteinId, abortController.signal)
-        .then((response) => {
-          if (!abortController.signal.aborted) {
-            response ? setXref(response) : setXref(undefined);
-            setXrefLoadingState(LoadingState.SUCCESS);
-          }
-        })
-        .catch(() => {
-          setXrefLoadingState(LoadingState.ERROR);
-        });
-    }
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [xrefLoadingState]);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    if (xrefLoadingState === LoadingState.SUCCESS && !xref) {
+    if (xrefLoadingState === LoadingState.SUCCESS && !uniprotXref) {
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
 
-    if (summaryStatsLoadingState === LoadingState.LOADING && xref) {
-      fetchProteinSummaryStats(xref.primary_id, abortController.signal)
+    if (summaryStatsLoadingState === LoadingState.LOADING && uniprotXref) {
+      fetchProteinSummaryStats(uniprotXref.accession_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
             response
@@ -165,7 +147,7 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryStatsLoadingState, xrefLoadingState, xref]);
+  }, [summaryStatsLoadingState, xrefLoadingState, uniprotXref]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
@@ -187,17 +169,17 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {xref && (
+            {uniprotXref && (
               <div className={styles.interproUniprotWrapper}>
                 <ProteinExternalReference
                   source={ExternalSource.INTERPRO}
-                  unversionedId={xref.primary_id}
-                  versionedId={xref.display_id}
+                  accessionId={uniprotXref.accession_id}
+                  name={uniprotXref.name}
                 />
                 <ProteinExternalReference
                   source={ExternalSource.UNIPROT}
-                  unversionedId={xref.primary_id}
-                  versionedId={xref.display_id}
+                  accessionId={uniprotXref.accession_id}
+                  name={uniprotXref.name}
                 />
               </div>
             )}
@@ -208,12 +190,12 @@ const ProteinsListItemInfo = (props: Props) => {
               />
             </div>
           </div>
-          {proteinSummaryStats && xref && (
+          {proteinSummaryStats && uniprotXref && (
             <div>
               <ProteinExternalReference
                 source={ExternalSource.PDBE}
-                unversionedId={xref.primary_id}
-                versionedId={xref.display_id}
+                accessionId={uniprotXref.accession_id}
+                name={uniprotXref.name}
               />
               {proteinSummaryStats && (
                 <div className={styles.proteinFeaturesCountWrapper}>
@@ -281,20 +263,16 @@ const StatusContent = (props: StatusContentProps) => {
 
 type ProteinExternalReferenceProps = {
   source: ExternalSource;
-  unversionedId: string;
-  versionedId: string;
+  accessionId: string;
+  name: string;
 };
 
 const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
-  const url = `${externalSourceLinks[props.source]}${props.unversionedId}`;
+  const url = `${externalSourceLinks[props.source]}${props.accessionId}`;
 
   return (
     <div className={styles.proteinExternalReference}>
-      <ExternalReference
-        label={props.source}
-        to={url}
-        linkText={props.versionedId}
-      />
+      <ExternalReference label={props.source} to={url} linkText={props.name} />
     </div>
   );
 };

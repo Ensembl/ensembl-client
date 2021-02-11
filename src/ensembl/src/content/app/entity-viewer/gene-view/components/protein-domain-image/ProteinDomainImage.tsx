@@ -18,7 +18,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
 
-import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
+import { ProteinDomain } from 'src/shared/types/thoas/product';
 
 import styles from './ProteinDomainImage.scss';
 

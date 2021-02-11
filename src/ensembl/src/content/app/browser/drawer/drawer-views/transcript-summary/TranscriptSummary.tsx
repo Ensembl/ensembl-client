@@ -14,70 +14,323 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import get from 'lodash/get';
-import find from 'lodash/find';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { gql, useQuery } from '@apollo/client';
 
-import { getDisplayStableId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import {
+  getDisplayStableId,
+  buildFocusIdForUrl
+} from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+
+// TODO: check if this can be moved to a common place
+import {
+  getNumberOfCodingExons,
+  getSplicedRNALength
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
+import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
+import { Transcript as TranscriptFromGraphql } from 'src/shared/types/thoas/transcript';
+import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
+import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
-import styles from 'src/content/app/browser/drawer/Drawer.scss';
+import styles from './TranscriptSummary.scss';
 
-// TODO: Once we start supporting multiple transcripts, we need to either remove this constant or move it to trackConfig
-const TRANSCRIPT_GENE_NAME = 'track:gene-feat-1';
+type Transcript = Required<
+  Pick<
+    TranscriptFromGraphql,
+    | 'stable_id'
+    | 'unversioned_stable_id'
+    | 'symbol'
+    | 'so_term'
+    | 'external_references'
+    | 'slice'
+    | 'spliced_exons'
+    | 'product_generating_contexts'
+  >
+>;
+
+type Gene = Required<
+  Pick<
+    GeneFromGraphql,
+    'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name'
+  >
+>;
+
+const GENE_AND_TRANSCRIPT_QUERY = gql`
+  query Gene($genomeId: String!, $geneId: String!, $transcriptId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      name
+      stable_id
+      unversioned_stable_id
+      symbol
+    }
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      stable_id
+      unversioned_stable_id
+      so_term
+      symbol
+      external_references {
+        accession_id
+        url
+        source {
+          id
+        }
+      }
+      spliced_exons {
+        relative_location {
+          start
+          end
+        }
+        exon {
+          stable_id
+          slice {
+            location {
+              length
+            }
+          }
+        }
+      }
+      product_generating_contexts {
+        product_type
+        default
+        cds {
+          protein_length
+        }
+        phased_exons {
+          start_phase
+          end_phase
+          exon {
+            stable_id
+          }
+        }
+        product {
+          stable_id
+          external_references {
+            accession_id
+            url
+            source {
+              id
+            }
+          }
+        }
+      }
+      slice {
+        strand {
+          code
+        }
+        location {
+          length
+        }
+      }
+    }
+  }
+`;
 
 const TranscriptSummary = () => {
-  const ensObject = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
+  const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
 
-  if (!ensObject.track) {
+  const transcriptTrack = ensObjectGene?.track?.child_tracks?.[0];
+
+  const [shouldShowDownload, showDownload] = useState(false);
+
+  const { data, loading } = useQuery<{
+    gene: Gene;
+    transcript: Transcript;
+  }>(GENE_AND_TRANSCRIPT_QUERY, {
+    variables: {
+      geneId: ensObjectGene.stable_id,
+      transcriptId: transcriptTrack?.stable_id,
+      genomeId: ensObjectGene.genome_id
+    },
+    skip: !transcriptTrack?.stable_id
+  });
+
+  if (loading) {
     return null;
   }
 
-  // FIXME: this is a temporary function; need to come up with something more robust
-  const getTranscriptTrack = () => {
-    const childTracks = get(ensObject, 'track.child_tracks', []);
-
-    return find(childTracks, { track_id: TRANSCRIPT_GENE_NAME }) || null;
-  };
-
-  // FIXME: this is a very horrible temporary function;
-  // it will break when multiple transcripts are added
-  // but by that time we'll have to do a major refactor for ensObject and ensObject tracks anyway
-  const getTranscriptStableId = () => {
-    return get(ensObject, 'track.child_tracks.0.label', '');
-  };
-
-  const transcriptTrack = getTranscriptTrack();
-
-  if (!transcriptTrack) {
-    return null;
+  if (!data?.gene || !data.transcript) {
+    return <div>No data available</div>;
   }
+
+  const { gene, transcript } = data;
+  const defaultProductGeneratingContext = transcript.product_generating_contexts.find(
+    (entry) => entry.default
+  ) as ProductGeneratingContext;
+
+  const product = defaultProductGeneratingContext.product;
+  const stableId = getDisplayStableId(transcript);
+
+  const focusId = buildFocusIdForUrl({
+    type: 'gene',
+    objectId: gene.unversioned_stable_id as string
+  });
+
+  const entityViewerUrl = urlFor.entityViewer({
+    genomeId: ensObjectGene.genome_id,
+    entityId: focusId
+  });
+
+  const uniprotXref = product?.external_references.find(
+    (xref) => xref.source.id === 'Uniprot/SWISSPROT'
+  );
+
+  const ccdsXref = transcript.external_references.find(
+    (xref) => xref.source.id === 'CCDS'
+  );
+
+  const splicedRNALength = getCommaSeparatedNumber(
+    getSplicedRNALength(transcript)
+  );
+
+  const productAminoAcidLength = getCommaSeparatedNumber(
+    defaultProductGeneratingContext?.cds?.protein_length || 0
+  );
 
   return (
-    <div className={styles.drawerView}>
-      <div className={styles.container}>
+    <div>
+      <div className={styles.row}>
         <div className={styles.label}>Transcript</div>
-        <div className={styles.details}>
-          <span className={styles.mainDetail}>{getTranscriptStableId()}</span>
-          <span className={styles.secondaryDetail}>
-            {transcriptTrack.additional_info}
-          </span>
+        <div className={styles.value}>
+          <div className={styles.featureDetails}>
+            <span className={styles.featureSymbol}>{stableId}</span>
+            {transcript.so_term && (
+              <span>{transcript.so_term.toLowerCase()}</span>
+            )}
+            {transcript.slice.strand.code && (
+              <span>{getStrandDisplayName(transcript.slice.strand.code)}</span>
+            )}
+            <span>{getFormattedLocation(ensObjectGene.location)}</span>
+          </div>
         </div>
+      </div>
 
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
+        <div className={styles.label}>Transcript name</div>
+        <div className={styles.value}>{transcript.symbol}</div>
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.label}>Transcript length</div>
+        <div className={styles.value}>
+          {getCommaSeparatedNumber(transcript.slice.location.length)}{' '}
+          <span className={styles.unit}>bp</span>{' '}
+        </div>
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.value}>
+          {transcript.spliced_exons.length} exons
+        </div>
+      </div>
+
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
+        <div className={styles.label}>Coding exons</div>
+        <div className={styles.value}>{getNumberOfCodingExons(transcript)}</div>
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.label}>Combined exon length </div>
+        <div className={styles.value}>
+          {splicedRNALength} <span className={styles.unit}>bp</span>
+        </div>
+      </div>
+
+      {transcript.so_term === 'protein_coding' && (
+        <div className={styles.row}>
+          <div className={styles.label}>Protein</div>
+          <div className={styles.value}>
+            <div>
+              {productAminoAcidLength} <span className={styles.unit}>aa</span>
+            </div>
+            {product && (
+              <div className={styles.lightText}>{product.stable_id}</div>
+            )}
+            {uniprotXref && (
+              <ExternalReference
+                classNames={{ label: styles.lightText }}
+                label={'UniProtKB/Swiss-Prot'}
+                to={uniprotXref.url}
+                linkText={uniprotXref.accession_id}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {ccdsXref && (
+        <div className={`${styles.row} ${styles.spaceAbove}`}>
+          <div className={styles.value}>
+            <ExternalReference
+              classNames={{ label: styles.lightText }}
+              label={'CCDS'}
+              to={ccdsXref.url}
+              linkText={ccdsXref.accession_id}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
+        <div className={styles.value}>
+          <span
+            className={styles.downloadLink}
+            onClick={() => showDownload(!shouldShowDownload)}
+          >
+            Download
+          </span>
+          {shouldShowDownload && (
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadTranscript
+                genomeId={ensObjectGene.genome_id}
+                transcript={{
+                  id: transcript.unversioned_stable_id,
+                  so_term: transcript.so_term
+                }}
+                gene={{ id: gene.unversioned_stable_id }}
+                theme="light"
+              />
+              <CloseButton
+                className={styles.closeButton}
+                onClick={() => showDownload(false)}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.label}>Gene</div>
-        <div className={styles.details}>
-          <span>{ensObject.label}</span>
-          <span className={styles.secondaryDetail}>
-            {getDisplayStableId(ensObject)}
-          </span>
+        <div className={styles.value}>
+          <div>
+            {gene.symbol && <span>{gene.symbol}</span>}
+            {gene.symbol !== stableId && <span>{stableId}</span>}
+          </div>
         </div>
+      </div>
 
-        <div className={styles.label}>Description</div>
-        <div className={styles.details}>
-          {transcriptTrack.description || '--'}
+      <div className={styles.row}>
+        <div className={styles.label}>Gene name</div>
+        <div className={styles.value}>{gene.name}</div>
+      </div>
+
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
+        <div className={styles.value}>
+          <ViewInApp
+            classNames={{ label: styles.lightText }}
+            links={{ entityViewer: entityViewerUrl }}
+          />
         </div>
       </div>
     </div>

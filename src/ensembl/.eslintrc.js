@@ -30,7 +30,8 @@ module.exports = {
     'react-hooks/rules-of-hooks': 2,
     'prettier/prettier': 0,
     'no-unused-vars': ['warn', { args: 'after-used' }],
-    'no-unneeded-ternary': 'error'
+    'no-unneeded-ternary': 'error',
+    'eqeqeq': 'error'
   },
   settings: {
     react: {
