@@ -120,12 +120,12 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (domainsLoadingState === LoadingState.LOADING && !uniprotXref) {
+    if (domainsLoadingState === LoadingState.SUCCESS && !uniprotXref) {
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
 
-    if (summaryStatsLoadingState === LoadingState.LOADING && uniprotXref) {
+    if (domainsLoadingState === LoadingState.SUCCESS && uniprotXref) {
       fetchProteinSummaryStats(uniprotXref.accession_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
