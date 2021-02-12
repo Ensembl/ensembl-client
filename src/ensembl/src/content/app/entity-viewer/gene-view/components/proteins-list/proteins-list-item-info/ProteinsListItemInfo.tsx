@@ -120,7 +120,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (summaryStatsLoadingState === LoadingState.LOADING && !uniprotXref) {
+    if (domainsLoadingState === LoadingState.LOADING && !uniprotXref) {
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
@@ -143,7 +143,7 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryStatsLoadingState, uniprotXref]);
+  }, [domainsLoadingState, uniprotXref]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
