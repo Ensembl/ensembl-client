@@ -174,7 +174,7 @@ const TranscriptSummary = () => {
 
   const focusId = buildFocusIdForUrl({
     type: 'gene',
-    objectId: gene.unversioned_stable_id as string
+    objectId: gene.unversioned_stable_id
   });
 
   const entityViewerUrl = urlFor.entityViewer({
@@ -183,11 +183,11 @@ const TranscriptSummary = () => {
   });
 
   const uniprotXref = product?.external_references.find(
-    (xref) => xref.source.id == 'Uniprot/SWISSPROT'
+    (xref) => xref.source.id === 'Uniprot/SWISSPROT'
   );
 
   const ccdsXref = transcript.external_references.find(
-    (xref) => xref.source.id == 'CCDS'
+    (xref) => xref.source.id === 'CCDS'
   );
 
   const splicedRNALength = getCommaSeparatedNumber(

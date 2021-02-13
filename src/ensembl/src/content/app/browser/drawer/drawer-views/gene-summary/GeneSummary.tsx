@@ -40,6 +40,7 @@ const GENE_QUERY = gql`
       alternative_symbols
       name
       stable_id
+      unversioned_stable_id
       symbol
       so_term
       transcripts {
@@ -62,6 +63,7 @@ type Gene = Required<
   Pick<
     GeneFromGraphql,
     | 'stable_id'
+    | 'unversioned_stable_id'
     | 'symbol'
     | 'name'
     | 'alternative_symbols'
@@ -96,7 +98,7 @@ const GeneSummary = () => {
 
   const focusId = buildFocusIdForUrl({
     type: 'gene',
-    objectId: gene.stable_id as string
+    objectId: gene.unversioned_stable_id
   });
   const entityViewerUrl = urlFor.entityViewer({
     genomeId: ensObjectGene.genome_id,
