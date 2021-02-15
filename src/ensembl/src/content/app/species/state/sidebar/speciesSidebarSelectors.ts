@@ -17,8 +17,14 @@
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { RootState } from 'src/store';
 
-export const isSidebarOpen = (state: RootState) =>
-  state.speciesPage.sidebar.isOpen;
+export const isSidebarOpen = (state: RootState) => {
+  const activeGenomeId = getActiveGenomeId(state);
+
+  if (!activeGenomeId) {
+    return false;
+  }
+  return !!state.speciesPage.sidebar.species[activeGenomeId]?.isSidebarOpen;
+};
 
 export const getActiveGenomeSidebarPayload = (state: RootState) => {
   const activeGenomeId = getActiveGenomeId(state);

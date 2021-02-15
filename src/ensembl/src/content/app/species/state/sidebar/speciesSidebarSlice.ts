@@ -59,16 +59,15 @@ export type SpeciesSidebarPayload = {
 };
 
 type SpeciesPageSidebarState = {
-  isOpen: boolean;
   species: {
     [genomeId: string]: {
       payload: SpeciesSidebarPayload | null;
+      isSidebarOpen: boolean;
     };
   };
 };
 
 const initialState: SpeciesPageSidebarState = {
-  isOpen: true,
   species: {}
 };
 
@@ -98,8 +97,15 @@ const speciesPageSidebarSlice = createSlice({
   name: 'species-page-sidebar',
   initialState,
   reducers: {
-    toggleSidebar(state) {
-      state.isOpen = !state.isOpen;
+    toggleSidebar(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+      }>
+    ) {
+      state.species[action.payload.genomeId].isSidebarOpen = !state.species[
+        action.payload.genomeId
+      ].isSidebarOpen;
     },
 
     setSidebarPayloadForGenomeId(
@@ -110,7 +116,10 @@ const speciesPageSidebarSlice = createSlice({
       }>
     ) {
       if (!state.species[action.payload.genomeId]) {
-        state.species[action.payload.genomeId] = { payload: null };
+        state.species[action.payload.genomeId] = {
+          payload: null,
+          isSidebarOpen: true
+        };
       }
       state.species[action.payload.genomeId].payload =
         action.payload.sidebarPayload;
