@@ -41,11 +41,14 @@ export const Apps = {
 
 export type AppName = keyof typeof Apps;
 
-export type urlObj = Record<AppName, string>;
+export type LinkObj = { url: string; replaceState: boolean };
+
+export type UrlObj =
+  | Partial<Record<AppName, string>>
+  | Partial<Record<AppName, LinkObj>>;
 
 export type ViewInAppProps = {
-  links: Partial<urlObj>;
-  shouldReplaceState?: boolean;
+  links: UrlObj;
   classNames?: {
     label?: string;
   };
@@ -62,12 +65,22 @@ export const ViewInApp = (props: ViewInAppProps) => {
     <div className={styles.viewInAppLinkButtons}>
       <span className={labelClass}>View in</span>
       {(Object.keys(props.links) as AppName[]).map((appId) => {
+        let url: string;
+        let replaceState = false;
+
+        if (typeof props.links[appId] === 'string') {
+          url = props.links[appId] as string;
+        } else {
+          url = (props.links[appId] as LinkObj)?.url;
+          replaceState = (props.links[appId] as LinkObj)?.replaceState;
+        }
+
         return (
           <AppButton
             key={appId}
             appId={appId}
-            url={props.links[appId] as string}
-            shouldReplaceState={props.shouldReplaceState}
+            url={url}
+            replaceState={replaceState}
           />
         );
       })}
@@ -78,14 +91,14 @@ export const ViewInApp = (props: ViewInAppProps) => {
 type AppButtonProps = {
   appId: AppName;
   url: string;
-  shouldReplaceState?: boolean;
+  replaceState?: boolean;
 };
 
 export const AppButton = (props: AppButtonProps) => {
   const dispatch = useDispatch();
 
   const handleClick = () => {
-    if (props.shouldReplaceState) {
+    if (props.replaceState) {
       dispatch(replace(props.url));
     } else {
       dispatch(push(props.url));

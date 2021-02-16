@@ -24,12 +24,9 @@ import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import sampleSize from 'lodash/sampleSize';
 
-import { ViewInApp, AppName, Apps, ViewInAppProps } from './ViewInApp';
+import { ViewInApp, AppName, Apps, ViewInAppProps, LinkObj } from './ViewInApp';
 
-jest.mock('connected-react-router', () => ({
-  push: jest.fn(),
-  replace: jest.fn()
-}));
+jest.mock('connected-react-router');
 
 const mockStore = configureMockStore([thunk]);
 const store: ReturnType<typeof mockStore> = mockStore({});
@@ -82,9 +79,32 @@ describe('<ViewInApp />', () => {
   });
 
   it('calls replace with the passed links', () => {
-    const replaceFn = jest.spyOn(router, 'replace');
+    const replace = (pathname: string) => ({
+      type: router.LOCATION_CHANGE,
+      payload: {
+        location: {
+          pathname
+        },
+        action: 'REPLACE'
+      }
+    });
+    const mockReplace = jest
+      .spyOn(router, 'replace')
+      .mockImplementation(replace);
 
-    renderComponent({ links, shouldReplaceState: true });
+    const linksWithReplaceState = tuplesSample.reduce((result, tuple) => {
+      const [appName, link] = tuple;
+
+      return {
+        ...result,
+        [appName]: {
+          url: link,
+          replaceState: true
+        }
+      };
+    }, {}) as Record<AppName, LinkObj>;
+
+    renderComponent({ links: linksWithReplaceState });
 
     tuplesSample.forEach(([appName, link]) => {
       const appButtonContainer = screen.getByTestId(appName);
@@ -93,9 +113,9 @@ describe('<ViewInApp />', () => {
         appButtonContainer.querySelector('button') as HTMLButtonElement
       );
 
-      expect(replaceFn).toHaveBeenCalledWith(link);
+      expect(mockReplace).toHaveBeenCalledWith(link);
     });
 
-    replaceFn.mockRestore();
+    (mockReplace as any).mockRestore();
   });
 });

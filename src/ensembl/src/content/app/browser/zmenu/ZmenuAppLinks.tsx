@@ -28,7 +28,7 @@ import {
 } from '../browserSelectors';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
-import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './Zmenu.scss';
 
@@ -61,21 +61,20 @@ const ZmenuAppLinks = (props: Props) => {
   const shouldShowBrowserButton =
     props.featureId !== activeFeatureId || !isInDefaultPosition;
 
-  type linkType = {
-    genomeBrowser?: string;
-    entityViewer?: string;
-  };
-
-  const links: Partial<linkType> = {};
+  const links: UrlObj = {};
 
   if (shouldShowBrowserButton) {
-    links['genomeBrowser'] = getBrowserLink();
+    links['genomeBrowser'] = {
+      url: getBrowserLink(),
+      replaceState: true
+    };
   }
+
   links['entityViewer'] = getEntityViewerLink();
 
   return (
     <div className={styles.zmenuAppLinks}>
-      <ViewInApp links={links} shouldReplaceState />
+      <ViewInApp links={links} />
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         openElement={<span>Download</span>}

@@ -38,7 +38,7 @@ import {
 import { RootState } from 'src/store';
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 import { GenomeStats } from '../../state/general/speciesGeneralSlice';
-import { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
+import { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
   StatsSection,
@@ -59,7 +59,7 @@ type Props = {
 };
 
 type ExampleLinkPopupProps = {
-  links: Partial<urlObj>;
+  links: UrlObj;
   children: ReactNode;
 };
 
