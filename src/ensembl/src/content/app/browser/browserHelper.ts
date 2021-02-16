@@ -178,12 +178,8 @@ export const validateRegion = async (params: {
     try {
       const url = `/api/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
       const response: RegionValidationResponse = await apiService.fetch(url);
-      const regionId = buildEnsObjectId({
-        genomeId,
-        type: 'region',
-        objectId: regionInput
-      });
-      response.region_id = regionId;
+
+      response.region_id = `${genomeId}${response.region_id}`;
 
       processValidationMessages(
         getRegionValidationMessages(response),
