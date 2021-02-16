@@ -24,7 +24,7 @@ export const isSidebarOpen = (state: RootState) => {
     return false;
   }
   return (
-    state.speciesPage.sidebar.species[activeGenomeId]?.isSidebarOpen ?? false
+    state.speciesPage.sidebar.species[activeGenomeId]?.isSidebarOpen ?? true
   );
 };
 
