@@ -20,6 +20,8 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
+import get from 'lodash/get';
+import merge from 'lodash/merge';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { RootState } from 'src/store';
@@ -58,12 +60,19 @@ export type SpeciesSidebarPayload = {
   strain: Strain | null;
 };
 
+type StateForGenome = {
+  payload: SpeciesSidebarPayload | null;
+  isSidebarOpen: boolean;
+};
+
+const initialStateForGenome: StateForGenome = {
+  payload: null,
+  isSidebarOpen: true
+};
+
 type SpeciesPageSidebarState = {
   species: {
-    [genomeId: string]: {
-      payload: SpeciesSidebarPayload | null;
-      isSidebarOpen: boolean;
-    };
+    [genomeId: string]: StateForGenome;
   };
 };
 
@@ -93,6 +102,20 @@ export const fetchSidebarPayload = (): ThunkAction<
   );
 };
 
+const updateStateForGenome = (
+  state: SpeciesPageSidebarState,
+  genomeId: string,
+  fragment: Partial<StateForGenome>
+) => {
+  const stateForGenome = get(
+    state,
+    `species.${genomeId}`,
+    initialStateForGenome
+  );
+  const updatedStateForGenome = merge({}, stateForGenome, fragment);
+  state.species[genomeId] = updatedStateForGenome;
+};
+
 const speciesPageSidebarSlice = createSlice({
   name: 'species-page-sidebar',
   initialState,
@@ -103,9 +126,9 @@ const speciesPageSidebarSlice = createSlice({
         genomeId: string;
       }>
     ) {
-      state.species[action.payload.genomeId].isSidebarOpen = !state.species[
-        action.payload.genomeId
-      ].isSidebarOpen;
+      const isSidebarOpen =
+        !state.species[action.payload.genomeId].isSidebarOpen ?? true;
+      updateStateForGenome(state, action.payload.genomeId, { isSidebarOpen });
     },
 
     setSidebarPayloadForGenomeId(
@@ -115,14 +138,9 @@ const speciesPageSidebarSlice = createSlice({
         sidebarPayload: SpeciesSidebarPayload;
       }>
     ) {
-      if (!state.species[action.payload.genomeId]) {
-        state.species[action.payload.genomeId] = {
-          payload: null,
-          isSidebarOpen: true
-        };
-      }
-      state.species[action.payload.genomeId].payload =
-        action.payload.sidebarPayload;
+      updateStateForGenome(state, action.payload.genomeId, {
+        payload: action.payload.sidebarPayload
+      });
     }
   }
 });
