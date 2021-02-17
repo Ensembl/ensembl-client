@@ -45,7 +45,7 @@ import GeneRelationships from 'src/content/app/entity-viewer/gene-view/component
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneView.scss';
@@ -128,6 +128,7 @@ const QUERY = gql`
             length
             external_references {
               accession_id
+              name
               description
               source {
                 id
@@ -185,16 +186,17 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
-
   useEffect(() => {
     if (!genomeId || !props.gene) {
       return;
     }
 
-    dispatch(updatePreviouslyViewedEntities({
-      genomeId,
-      gene: props.gene
-    }));
+    dispatch(
+      updatePreviouslyViewedEntities({
+        genomeId,
+        gene: props.gene
+      })
+    );
   }, [genomeId, geneId]);
 
   return (

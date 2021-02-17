@@ -45,6 +45,16 @@ const devServerConfig = {
       target: 'https://staging-2020.ensembl.org',
       changeOrigin: true,
       secure: false
+    },
+    '/help-api': {
+      target: 'https://staging-2020.ensembl.org',
+      changeOrigin: true,
+      secure: false
+    },
+    '/refget': {
+      target: 'https://staging-2020.ensembl.org',
+      changeOrigin: true,
+      secure: false
     }
   },
 

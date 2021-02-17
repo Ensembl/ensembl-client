@@ -2,6 +2,7 @@
 
 $heading-outdent: 16px;
 $aside-left-padding: 1.6rem;
+$article-right-padding: 1.5rem; // area over which Macs (which hide their scrollbars by default) will display the scrollbar
 
 .spinnerContainer {
   height: 100%;
@@ -16,7 +17,7 @@ $aside-left-padding: 1.6rem;
   height: 100%;
 
   &_article {
-    grid-template-columns: [article] 440px [empty] 1fr [aside] minmax(200px, 300px);
+    grid-template-columns: [article] calc(440px + #{$article-right-padding}) [empty] 1fr [aside] minmax(200px, 300px);
   }
 
   &_video {
@@ -28,6 +29,7 @@ $aside-left-padding: 1.6rem;
 .article {
   grid-column: article;
   padding-left: $heading-outdent;
+  padding-right: $article-right-padding;
   overflow-y: auto;
 
   h1 {

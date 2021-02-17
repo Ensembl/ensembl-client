@@ -117,6 +117,7 @@ const builtTrackList = (ensObject: EnsObjectResponse) => {
     ensembl_object_id: ensObject.object_id, // we don't use this field
     label: ensObject.label,
     track_id: TrackId.GENE,
-    child_tracks: []
+    child_tracks: [],
+    stable_id: ensObject.stable_id
   };
 };

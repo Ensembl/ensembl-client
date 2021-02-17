@@ -29,7 +29,9 @@ module.exports = {
     'react/no-unescaped-entities': 0,
     'react-hooks/rules-of-hooks': 2,
     'prettier/prettier': 0,
-    'no-unused-vars': ['warn', { args: 'after-used' }]
+    'no-unused-vars': ['warn', { args: 'after-used' }],
+    'no-unneeded-ternary': 'error',
+    'eqeqeq': 'error'
   },
   settings: {
     react: {

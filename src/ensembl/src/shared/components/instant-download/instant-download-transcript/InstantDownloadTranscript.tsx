@@ -28,6 +28,7 @@ import InstantDownloadButton from '../instant-download-button/InstantDownloadBut
 import styles from './InstantDownloadTranscript.scss';
 
 type Layout = 'horizontal' | 'vertical';
+type Theme = 'light' | 'dark';
 
 type TranscriptFields = {
   id: string;
@@ -39,17 +40,20 @@ type GeneFields = {
 };
 
 export type InstantDownloadTranscriptEntityProps = {
+  genomeId: string;
   transcript: TranscriptFields;
   gene: GeneFields;
 };
 
 type Props = InstantDownloadTranscriptEntityProps & {
   layout: Layout;
+  theme: Theme;
 };
 
 type TranscriptSectionProps = {
   transcript: TranscriptFields;
   options: Partial<TranscriptOptions>;
+  theme: Theme;
   onChange: (key: keyof TranscriptOptions) => void;
 };
 
@@ -94,12 +98,14 @@ const filterTranscriptOptions = (
 ): Partial<TranscriptOptions> => {
   return so_term === 'protein_coding'
     ? defaultTranscriptOptions
-    : pick(defaultTranscriptOptions, ['genomicSequence', 'cdna']);
+    : pick(defaultTranscriptOptions, ['genomicSequence']);
 };
 
 const InstantDownloadTranscript = (props: Props) => {
   const {
-    transcript: { so_term }
+    genomeId,
+    gene: { id: geneId },
+    transcript: { id: transcriptId, so_term }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
     filterTranscriptOptions(so_term)
@@ -109,6 +115,20 @@ const InstantDownloadTranscript = (props: Props) => {
   useEffect(() => {
     setTranscriptOptions(filterTranscriptOptions(so_term));
   }, [so_term]);
+
+  const onSubmit = () => {
+    const payload = {
+      genomeId,
+      geneId,
+      transcriptId,
+      options: {
+        transcript: transcriptOptions,
+        gene: { genomicSequence: isGeneSequenceSelected }
+      }
+    };
+
+    fetchForTranscript(payload);
+  };
 
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
     const updatedOptions = {
@@ -120,22 +140,16 @@ const InstantDownloadTranscript = (props: Props) => {
   const onGeneOptionChange = () => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
   };
-  const onSubmit = () => {
-    const payload = {
-      transcriptId: props.transcript.id,
-      geneId: props.gene.id,
-      options: {
-        transcript: transcriptOptions,
-        gene: { genomicSequence: isGeneSequenceSelected }
-      }
-    };
-    fetchForTranscript(payload);
-  };
 
   const layoutClass =
     props.layout === 'horizontal'
       ? classNames(styles.layout, styles.layoutHorizontal)
       : classNames(styles.layout, styles.layoutVertical);
+
+  const themeClass =
+    props.theme === 'dark' ? styles.themeDark : styles.themeLight;
+
+  const wrapperClassNames = classNames(themeClass, layoutClass);
 
   const isButtonDisabled = !hasSelectedOptions({
     ...transcriptOptions,
@@ -143,10 +157,11 @@ const InstantDownloadTranscript = (props: Props) => {
   });
 
   return (
-    <div className={layoutClass}>
+    <div className={wrapperClassNames}>
       <TranscriptSection
         transcript={props.transcript}
         options={transcriptOptions}
+        theme={props.theme}
         onChange={onTranscriptOptionChange}
       />
       <GeneSection
@@ -164,7 +179,8 @@ const InstantDownloadTranscript = (props: Props) => {
 };
 
 InstantDownloadTranscript.defaultProps = {
-  layout: 'horizontal'
+  layout: 'horizontal',
+  theme: 'dark'
 } as Props;
 
 const TranscriptSection = (props: TranscriptSectionProps) => {
@@ -190,6 +206,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
       isProteinSequenceEnabled={options.proteinSequence}
       isCDNAEnabled={options.cdna}
       isCDSEnabled={options.cds}
+      theme={props.theme}
     />
   );
 

@@ -23,7 +23,7 @@ import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormat
 import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneOverviewImage.scss';

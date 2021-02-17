@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
-
-import styles from '../Drawer.scss';
-
-const DrawerContigs: FunctionComponent = () => {
-  return (
-    <div className={styles.drawerView}>
-      <div className={styles.container}>
-        <div className={styles.label}>Track name</div>
-        <div className={styles.details}>Contigs</div>
-
-        <div className={styles.label}>Description</div>
-        <div className={styles.details}>
-          Shows a contiguous stretch of DNA sequence without gaps that has been
-          assembled solely based on direct sequencing information.
-        </div>
-      </div>
-    </div>
-  );
+export type CDS = {
+  start: number;
+  end: number;
+  relative_start: number;
+  relative_end: number;
+  protein_length: number;
+  nucleotide_length: number;
+  sequence_checksum?: string;
 };
-
-export default DrawerContigs;

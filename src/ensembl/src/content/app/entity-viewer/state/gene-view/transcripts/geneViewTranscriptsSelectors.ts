@@ -16,7 +16,7 @@
 
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { RootState } from 'src/store';
@@ -30,12 +30,12 @@ const getSliceForGene = (
   state: RootState
 ): TranscriptsStatePerGene | undefined => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeObjectId = getEntityViewerActiveEnsObjectId(state);
-  if (!activeGenomeId || !activeObjectId) {
+  const activeEntityId = getEntityViewerActiveEntityId(state);
+  if (!activeGenomeId || !activeEntityId) {
     return;
   }
   return state.entityViewer.geneView.transcripts[activeGenomeId]?.[
-    activeObjectId
+    activeEntityId
   ];
 };
 

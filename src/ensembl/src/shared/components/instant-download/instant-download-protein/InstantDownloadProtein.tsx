@@ -26,6 +26,7 @@ import { TranscriptOptions } from '../instant-download-transcript/InstantDownloa
 import styles from './InstantDownloadProtein.scss';
 
 type InstantDownloadProteinProps = {
+  genomeId: string;
   transcriptId: string;
 };
 
@@ -43,6 +44,7 @@ const proteinOptionLabels: Record<keyof ProteinOptions, string> = {
 const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
   const [isProteinSeqSelected, setProteinSeqSelected] = useState(false);
   const [isCdsSeqSelected, setCdsSeqSelected] = useState(false);
+  const { genomeId, transcriptId } = props;
 
   const onProteinCheckboxChange = () =>
     setProteinSeqSelected(!isProteinSeqSelected);
@@ -50,7 +52,8 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
 
   const onSubmit = () => {
     const payload = {
-      transcriptId: props.transcriptId,
+      genomeId,
+      transcriptId,
       options: {
         proteinSequence: isProteinSeqSelected,
         cds: isCdsSeqSelected

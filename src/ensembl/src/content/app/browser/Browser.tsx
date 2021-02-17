@@ -15,11 +15,13 @@
  */
 
 import React, { useEffect } from 'react';
+import { ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
+import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BreakpointWidth } from 'src/global/globalConfig';
@@ -117,26 +119,28 @@ export const Browser = (props: BrowserProps) => {
   );
 
   return (
-    <div className={styles.browserInnerWrapper}>
-      <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-      {props.browserQueryParams.focus ? (
-        <StandardAppLayout
-          mainContent={mainContent}
-          sidebarContent={<TrackPanel />}
-          sidebarNavigation={<TrackPanelTabs />}
-          sidebarToolstripContent={<TrackPanelBar />}
-          onSidebarToggle={onSidebarToggle}
-          topbarContent={<BrowserBar />}
-          isSidebarOpen={props.isTrackPanelOpened}
-          isDrawerOpen={props.isDrawerOpened}
-          drawerContent={<Drawer />}
-          onDrawerClose={toggleDrawer}
-          viewportWidth={props.viewportWidth}
-        />
-      ) : (
-        <ExampleObjectLinks {...props} />
-      )}
-    </div>
+    <ApolloProvider client={client}>
+      <div className={styles.browserInnerWrapper}>
+        <BrowserAppBar onSpeciesSelect={changeGenomeId} />
+        {props.browserQueryParams.focus ? (
+          <StandardAppLayout
+            mainContent={mainContent}
+            sidebarContent={<TrackPanel />}
+            sidebarNavigation={<TrackPanelTabs />}
+            sidebarToolstripContent={<TrackPanelBar />}
+            onSidebarToggle={onSidebarToggle}
+            topbarContent={<BrowserBar />}
+            isSidebarOpen={props.isTrackPanelOpened}
+            isDrawerOpen={props.isDrawerOpened}
+            drawerContent={<Drawer />}
+            onDrawerClose={toggleDrawer}
+            viewportWidth={props.viewportWidth}
+          />
+        ) : (
+          <ExampleObjectLinks {...props} />
+        )}
+      </div>
+    </ApolloProvider>
   );
 };
 

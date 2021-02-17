@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import Panel, { PanelProps } from './Panel';
 
-const panelContent = <p>{faker.lorem.words()}</p>;
+const panelBodyContent = 'This content goes into the panel’s body';
 
-const panelHeader = <p>{faker.lorem.words()}</p>;
+const panelHeaderContent = 'This content goes into the panel’s header';
 
 const onClose = jest.fn();
 
@@ -34,77 +35,74 @@ const panelClassNames = {
 };
 
 const defaultProps: PanelProps = {
-  header: panelHeader,
-  children: panelContent,
+  header: panelHeaderContent,
+  children: panelBodyContent,
   classNames: panelClassNames
 };
 
 const renderPanel = (props?: Partial<PanelProps>) => {
-  return <Panel {...defaultProps} {...props} />;
+  return render(<Panel {...defaultProps} {...props} />);
 };
 
 describe('<Tabs />', () => {
-  let wrapper: any;
-
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('displays the HTML header', () => {
-    wrapper = mount(renderPanel());
+  it('displays the header with the correct content', () => {
+    const { container } = renderPanel();
+    const header = container.querySelector('.header');
 
-    expect(
-      wrapper.find('.header').children().contains(defaultProps.header)
-    ).toBeTruthy();
+    expect(header?.textContent).toBe(defaultProps.header);
   });
 
-  it('displays the string header', () => {
-    const stringHeader = faker.lorem.words();
+  it('displays the body with the correct content', () => {
+    const { container } = renderPanel();
+    const body = container.querySelector('.body');
 
-    wrapper = mount(renderPanel({ header: stringHeader }));
-    expect(wrapper.find('.header').text()).toBe(stringHeader);
-  });
-
-  it('displays the body content', () => {
-    wrapper = mount(renderPanel());
-    expect(wrapper.find('.body').contains(defaultProps.children)).toBeTruthy();
+    expect(body?.textContent).toBe(defaultProps.children);
   });
 
   it('displays the close button only if onClose is set', () => {
-    wrapper = mount(renderPanel({ onClose }));
-    expect(wrapper.find('.closeButton')).toHaveLength(1);
+    const { container } = renderPanel({ onClose });
+    const closeButton = container.querySelector('.closeButton');
+
+    expect(closeButton).toBeTruthy();
   });
 
   it('does not display the close button if onClose is not set', () => {
-    wrapper = mount(renderPanel());
-    expect(wrapper.find('.closeButton')).toHaveLength(0);
+    const { container } = renderPanel();
+    const closeButton = container.querySelector('.closeButton');
+
+    expect(closeButton).toBeFalsy();
   });
 
   it('calls the onClose function when the close button is clicked', () => {
-    wrapper = mount(renderPanel({ onClose }));
-    wrapper.find('.closeButton').simulate('click');
+    const { container } = renderPanel({ onClose });
+    const closeButton = container.querySelector('.closeButton');
+
+    userEvent.click(closeButton as HTMLElement);
 
     expect(onClose).toHaveBeenCalled();
   });
 
   it('applies the passed in classes', () => {
-    wrapper = mount(renderPanel());
+    const { container } = renderPanel();
+    const panel = container.querySelector('.panel') as HTMLElement;
+    const panelBody = container.querySelector('.body') as HTMLElement;
+    const panelHeader = container.querySelector('.header') as HTMLElement;
 
-    expect(
-      wrapper.find('.panel').first().hasClass(panelClassNames.panel)
-    ).toBeTruthy();
-    expect(
-      wrapper.find('.body').first().hasClass(panelClassNames.body)
-    ).toBeTruthy();
-    expect(
-      wrapper.find('.header').first().hasClass(panelClassNames.header)
-    ).toBeTruthy();
+    expect(panel.classList.contains(panelClassNames.panel)).toBe(true);
+    expect(panelBody.classList.contains(panelClassNames.body)).toBe(true);
+    expect(panelHeader.classList.contains(panelClassNames.header)).toBe(true);
   });
 
   it('applies the passed in closeButton className', () => {
-    wrapper = mount(renderPanel({ onClose }));
-    expect(wrapper.find('.closeButton').prop('className')).toContain(
-      panelClassNames.closeButton
+    const { container } = renderPanel({ onClose });
+    const closeButton = container.querySelector('.closeButton') as HTMLElement;
+
+    expect(closeButton.classList.contains(panelClassNames.closeButton)).toBe(
+      true
     );
   });
 });

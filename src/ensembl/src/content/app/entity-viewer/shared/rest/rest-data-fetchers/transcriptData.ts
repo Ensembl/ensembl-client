@@ -16,7 +16,7 @@
 
 import apiService from 'src/services/api-service';
 
-import { ProteinDomain } from 'src/content/app/entity-viewer/types/product';
+import { ProteinDomain } from 'src/shared/types/thoas/product';
 
 export type TranscriptInResponse = {
   object_type: 'Transcript';

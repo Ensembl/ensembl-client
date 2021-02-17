@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-export type CDS = {
-  start: number;
-  end: number;
-  relative_start: number;
-  relative_end: number;
-  protein_length: number;
-  nucleotide_length: number;
-};
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+export const client = new ApolloClient({
+  uri: '/thoas',
+  cache: new InMemoryCache({
+    typePolicies: {
+      Gene: {
+        keyFields: ['stable_id'],
+        fields: {
+          slice: {
+            merge: false
+          }
+        }
+      }
+    }
+  })
+});

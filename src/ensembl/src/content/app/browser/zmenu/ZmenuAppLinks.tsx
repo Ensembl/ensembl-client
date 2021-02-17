@@ -18,7 +18,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'connected-react-router';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -45,9 +44,6 @@ type Props = {
 };
 
 const ZmenuAppLinks = (props: Props) => {
-  if (!isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL])) {
-    return null;
-  }
   const parsedFeatureId = parseFeatureId(props.featureId);
 
   if (parsedFeatureId.type !== 'gene') {

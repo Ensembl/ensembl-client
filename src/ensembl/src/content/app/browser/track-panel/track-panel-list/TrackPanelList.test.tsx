@@ -41,9 +41,7 @@ describe('<TrackPanelList />', () => {
     activeEnsObject: createEnsObject(),
     selectedTrackPanelTab: TrackSet.GENOMIC,
     genomeTrackCategories: createGenomeCategories(),
-    trackStates: createTrackStates(),
-    toggleDrawer: jest.fn(),
-    changeDrawerView: jest.fn()
+    trackStates: createTrackStates()
   };
 
   const mountTrackPanelList = (props?: Partial<TrackPanelListProps>) =>

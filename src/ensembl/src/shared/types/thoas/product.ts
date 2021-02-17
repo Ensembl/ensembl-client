@@ -53,6 +53,7 @@ export type Product = {
   length: number;
   protein_domains: ProteinDomain[];
   external_references: ExternalReference[];
+  sequence_checksum?: string;
 };
 
 export type ProteinDomain = {

@@ -18,12 +18,6 @@ import React from 'react';
 import get from 'lodash/get';
 import { connect } from 'react-redux';
 
-import { RootState } from 'src/store';
-
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as closeIcon } from 'static/img/shared/close.svg';
-import CustomDownloadInfoCard from 'src/content/app/custom-download/components/info-card/CustomDownloadInfoCard';
-import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { setShowPreview } from 'src/content/app/custom-download/state/customDownloadActions';
@@ -35,7 +29,13 @@ import {
 } from 'src/content/app/custom-download/state/customDownloadSelectors';
 import { getSelectedAttributes } from 'src/content/app/custom-download/state/attributes/attributesSelector';
 import { getSelectedFilters } from 'src/content/app/custom-download/state/filters/filtersSelector';
+
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+import CustomDownloadInfoCard from 'src/content/app/custom-download/components/info-card/CustomDownloadInfoCard';
+import PreviewCard from 'src/content/app/custom-download/containers/content/preview-card/PreviewCard';
+
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { RootState } from 'src/store';
 import JSONValue from 'src/shared/types/JSON';
 
 import styles from './PreviewDownload.scss';
@@ -65,13 +65,7 @@ const PreviewDownload = (props: PreviewDownloadProps) => {
   return (
     <div className={styles.previewDownload}>
       <span className={styles.closeButton}>
-        <ImageButton
-          description={'Close preview'}
-          image={closeIcon}
-          onClick={() => {
-            props.setShowPreview(false);
-          }}
-        />
+        <CloseButton onClick={() => props.setShowPreview(false)} />
       </span>
       <table className={styles.previewDownloadTable}>
         <tbody>

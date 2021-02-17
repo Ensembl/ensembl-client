@@ -62,9 +62,8 @@
   border-top: 1px solid $dark-grey;
 }
 
-.closeIcon {
-  cursor: pointer;
-  height: 16px;
+.closeButton {
+  display: inline-block;
 }
 
 .viewInApp {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
 
@@ -24,12 +24,17 @@ import {
   getLongestProteinLength,
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import {
+  transcriptSortingFunctions,
+  defaultSort
+} from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
+import { getSortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
-import { Gene } from 'src/content/app/entity-viewer/types/gene';
+import { Gene } from 'src/shared/types/thoas/gene';
+import { Transcript } from 'src/shared/types/thoas/transcript';
 
 import styles from './ProteinsList.scss';
 
@@ -42,8 +47,17 @@ const ProteinsList = (props: ProteinsListProps) => {
   const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
+  const defaultTranscriptId = useMemo(() => {
+    const defaultTranscripts = defaultSort(props.gene.transcripts);
+    return defaultTranscripts[0].stable_id;
+  }, [props.gene.stable_id]);
 
-  const sortedTranscripts = defaultSort(props.gene.transcripts);
+  const sortingRule = useSelector(getSortingRule);
+
+  const sortingFunction = transcriptSortingFunctions[sortingRule];
+  const sortedTranscripts = sortingFunction(
+    props.gene.transcripts
+  ) as Transcript[];
   const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
   );
@@ -63,10 +77,10 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   return (
     <div className={styles.proteinsList}>
-      {proteinCodingTranscripts.map((transcript, index) => (
+      {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem
           key={transcript.stable_id}
-          isDefault={index == 0}
+          isDefault={transcript.stable_id === defaultTranscriptId}
           transcript={transcript}
           trackLength={longestProteinLength}
         />

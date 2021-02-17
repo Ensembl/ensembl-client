@@ -31,6 +31,7 @@ type Props = {
 };
 
 const ZmenuInstantDownload = (props: Props) => {
+  const genomeId = getGenomeId(props.id);
   const transcriptId = getStableId(props.id);
   const params = {
     endpoint: `/lookup/id/${transcriptId}?content-type=application/json;expand=1`,
@@ -58,6 +59,7 @@ const ZmenuInstantDownload = (props: Props) => {
 
   return (
     <InstantDownloadTranscript
+      genomeId={genomeId}
       {...preparePayload(data as TranscriptInResponse)}
       layout="vertical"
     />
@@ -65,6 +67,7 @@ const ZmenuInstantDownload = (props: Props) => {
 };
 
 // TODO: we may want to move this to a common helper file that deals with messaging with Genome Browser
+const getGenomeId = (id: string) => id.split(':').shift();
 const getStableId = (id: string) => id.split(':').pop();
 
 const preparePayload = (transcript: TranscriptInResponse) => {

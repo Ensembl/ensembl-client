@@ -15,18 +15,19 @@
  */
 
 import React, { useEffect } from 'react';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import { useSelector, useDispatch } from 'react-redux';
 import { replace } from 'connected-react-router';
 import { useParams } from 'react-router-dom';
 
+import { client } from 'src/gql-client';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
   isEntityViewerSidebarOpen,
@@ -53,34 +54,19 @@ export type EntityViewerParams = {
   entityId?: string;
 };
 
-const client = new ApolloClient({
-  uri: '/thoas',
-  cache: new InMemoryCache({
-    typePolicies: {
-      Gene: {
-        keyFields: ['stable_id'],
-        fields: {
-          slice: {
-            merge: false
-          }
-        }
-      }
-    }
-  })
-});
-
 const EntityViewer = () => {
-  const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
-  const activeEntityId = useSelector(getEntityViewerActiveEnsObjectId);
+  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
   const viewportWidth = useSelector(getBreakpointWidth);
+
+  const dispatch = useDispatch();
+
   const isSidebarModalOpen = Boolean(
     useSelector(getEntityViewerSidebarModalView)
   );
 
-  const dispatch = useDispatch();
-
+  const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
   const { genomeId, entityId } = params;
 
   useEffect(() => {

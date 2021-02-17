@@ -15,11 +15,16 @@
  */
 
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
+
 import {
   TranscriptOptions,
   TranscriptOption,
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
+import {
+  fetchTranscriptChecksums,
+  TranscriptChecksums
+} from './fetchSequenceChecksums';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -29,26 +34,34 @@ type Options = {
 };
 
 type FetchPayload = {
-  transcriptId: string;
+  genomeId: string;
   geneId: string;
+  transcriptId: string;
   options: Options;
 };
 
 export const fetchForTranscript = async (payload: FetchPayload) => {
   const {
+    genomeId,
     geneId,
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const urls = buildUrlsForTranscript(transcriptId, transcriptOptions);
+  const checksums = await fetchTranscriptChecksums({
+    genomeId,
+    transcriptId
+  });
+  const urls = buildUrlsForTranscript({ geneId, checksums }, transcriptOptions);
+
   if (geneOptions.genomicSequence) {
-    urls.push(buildFetchUrl(geneId, 'genomicSequence'));
+    urls.push(buildFetchUrl({ geneId }, 'genomicSequence'));
   }
+
   const sequencePromises = urls.map((url) =>
     fetch(url).then((response) => response.text())
   );
   const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n');
+  const combinedFasta = sequences.join('\n\n');
 
   downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
@@ -56,24 +69,42 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 };
 
 const buildUrlsForTranscript = (
-  id: string,
+  data: {
+    geneId: string;
+    checksums: TranscriptChecksums;
+  },
   options: Partial<TranscriptOptions>
 ) => {
   return options
     ? transcriptOptionsOrder
         .filter((option) => options[option])
-        .map((option) => buildFetchUrl(id, option))
+        .map((option) => buildFetchUrl(data, option))
     : [];
 };
 
-const buildFetchUrl = (id: string, sequenceType: TranscriptOption) => {
-  const sequenceTypeToTypeParam: Record<TranscriptOption, string> = {
+const buildFetchUrl = (
+  data: {
+    geneId: string;
+    checksums?: TranscriptChecksums;
+  },
+  sequenceType: TranscriptOption
+) => {
+  const sequenceTypeToContextType: Record<TranscriptOption, string> = {
     genomicSequence: 'genomic',
-    proteinSequence: 'protein',
+    proteinSequence: 'product',
     cdna: 'cdna',
     cds: 'cds'
   };
-  const typeParam = sequenceTypeToTypeParam[sequenceType];
 
-  return `https://rest.ensembl.org/sequence/id/${id}?content-type=text/x-fasta&type=${typeParam}`;
+  if (sequenceType === 'genomicSequence') {
+    return `https://rest.ensembl.org/sequence/id/${data.geneId}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
+  } else {
+    const contextType = sequenceTypeToContextType[
+      sequenceType
+    ] as keyof TranscriptChecksums;
+    const checksum =
+      data.checksums && data.checksums[contextType]?.sequence_checksum;
+
+    return `/refget/sequence/${checksum}?accept=text/x-fasta`;
+  }
 };

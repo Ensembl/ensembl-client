@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Strand } from 'src/content/app/entity-viewer/types/strand';
+import { Strand } from 'src/shared/types/thoas/strand';
 
 export type EnsObjectLocation = {
   chromosome: string;
@@ -56,6 +56,7 @@ export type EnsObjectTrack = {
   ensembl_object_id?: string;
   support_level?: string | null;
   track_id: string;
+  stable_id: string | null;
   description: string | null;
 };
 
