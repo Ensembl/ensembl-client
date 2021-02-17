@@ -192,7 +192,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         />
       </div>
       <div className={styles.viewInLinks}>
-        <ViewInApp links={{ genomeBrowser: gbUrl }} />
+        <ViewInApp links={{ genomeBrowser: { url: gbUrl } }} />
       </div>
 
       <div className={styles.geneViewTabs}>

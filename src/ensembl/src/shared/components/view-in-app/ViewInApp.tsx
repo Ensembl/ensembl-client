@@ -41,11 +41,9 @@ export const Apps = {
 
 export type AppName = keyof typeof Apps;
 
-export type LinkObj = { url: string; replaceState: boolean };
+export type LinkObj = { url: string; replaceState?: boolean };
 
-export type UrlObj =
-  | Partial<Record<AppName, string>>
-  | Partial<Record<AppName, LinkObj>>;
+export type UrlObj = Partial<Record<AppName, LinkObj>>;
 
 export type ViewInAppProps = {
   links: UrlObj;
@@ -65,22 +63,14 @@ export const ViewInApp = (props: ViewInAppProps) => {
     <div className={styles.viewInAppLinkButtons}>
       <span className={labelClass}>View in</span>
       {(Object.keys(props.links) as AppName[]).map((appId) => {
-        let url: string;
-        let replaceState = false;
-
-        if (typeof props.links[appId] === 'string') {
-          url = props.links[appId] as string;
-        } else {
-          url = (props.links[appId] as LinkObj)?.url;
-          replaceState = (props.links[appId] as LinkObj)?.replaceState;
-        }
+        const currentLinkObj = props.links[appId] as LinkObj;
 
         return (
           <AppButton
             key={appId}
             appId={appId}
-            url={url}
-            replaceState={replaceState}
+            url={currentLinkObj.url}
+            replaceState={currentLinkObj.replaceState}
           />
         );
       })}

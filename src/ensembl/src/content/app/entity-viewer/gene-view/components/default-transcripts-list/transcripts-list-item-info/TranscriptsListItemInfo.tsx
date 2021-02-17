@@ -159,7 +159,7 @@ export const TranscriptsListItemInfo = (
           <strong>{transcript.symbol}</strong>
         </div>
         <div className={styles.viewInApp}>
-          <ViewInApp links={{ genomeBrowser: getBrowserLink() }} />
+          <ViewInApp links={{ genomeBrowser: { url: getBrowserLink() } }} />
         </div>
       </div>
     </div>

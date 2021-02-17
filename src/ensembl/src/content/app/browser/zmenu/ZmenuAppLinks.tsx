@@ -70,7 +70,7 @@ const ZmenuAppLinks = (props: Props) => {
     };
   }
 
-  links['entityViewer'] = getEntityViewerLink();
+  links['entityViewer'] = { url: getEntityViewerLink() };
 
   return (
     <div className={styles.zmenuAppLinks}>

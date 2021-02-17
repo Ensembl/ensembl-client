@@ -24,7 +24,14 @@ import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import sampleSize from 'lodash/sampleSize';
 
-import { ViewInApp, AppName, Apps, ViewInAppProps, LinkObj } from './ViewInApp';
+import {
+  ViewInApp,
+  AppName,
+  Apps,
+  ViewInAppProps,
+  LinkObj,
+  UrlObj
+} from './ViewInApp';
 
 jest.mock('connected-react-router');
 
@@ -57,9 +64,9 @@ const links = tuplesSample.reduce((result, tuple) => {
 
   return {
     ...result,
-    [appName]: link
+    [appName]: { url: link }
   };
-}, {}) as Record<AppName, string>;
+}, {}) as UrlObj;
 
 describe('<ViewInApp />', () => {
   beforeEach(() => {

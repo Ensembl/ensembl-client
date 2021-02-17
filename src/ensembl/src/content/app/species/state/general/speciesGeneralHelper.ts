@@ -554,7 +554,7 @@ const getExampleLinks = (props: {
 }) => {
   const { section, genome_id, exampleFocusObjects } = props;
 
-  const exampleLinks: UrlObj = {};
+  let exampleLinks: UrlObj = {};
 
   if (section === SpeciesStatsSection.CODING_STATS) {
     const geneExample = exampleFocusObjects.find(
@@ -569,33 +569,42 @@ const getExampleLinks = (props: {
       : undefined;
 
     if (focusId) {
-      exampleLinks.genomeBrowser = urlFor.browser({
-        genomeId: genome_id,
-        focus: focusId
-      });
+      exampleLinks = {
+        genomeBrowser: {
+          url: urlFor.browser({
+            genomeId: genome_id,
+            focus: focusId
+          })
+        },
+        entityViewer: {
+          url: urlFor.entityViewer({
+            genomeId: genome_id,
+            entityId: focusId
+          })
+        }
+      };
+    } else if (section === SpeciesStatsSection.ASSEMBLY) {
+      const regionExample = exampleFocusObjects.find(
+        (object) => object.type === 'region'
+      );
 
-      exampleLinks.entityViewer = urlFor.entityViewer({
-        genomeId: genome_id,
-        entityId: focusId
-      });
-    }
-  } else if (section === SpeciesStatsSection.ASSEMBLY) {
-    const regionExample = exampleFocusObjects.find(
-      (object) => object.type === 'region'
-    );
+      const focusId = regionExample?.id
+        ? buildFocusIdForUrl({
+            type: 'region',
+            objectId: regionExample.id
+          })
+        : undefined;
 
-    const focusId = regionExample?.id
-      ? buildFocusIdForUrl({
-          type: 'region',
-          objectId: regionExample.id
-        })
-      : undefined;
-
-    if (focusId) {
-      exampleLinks.genomeBrowser = urlFor.browser({
-        genomeId: genome_id,
-        focus: focusId
-      });
+      if (focusId) {
+        exampleLinks = {
+          genomeBrowser: {
+            url: urlFor.browser({
+              genomeId: genome_id,
+              focus: focusId
+            })
+          }
+        };
+      }
     }
   }
 
