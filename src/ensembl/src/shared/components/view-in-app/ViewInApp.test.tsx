@@ -62,7 +62,7 @@ const links = tuplesSample.reduce((result, tuple) => {
 }, {}) as Record<AppName, string>;
 
 describe('<ViewInApp />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -79,19 +79,9 @@ describe('<ViewInApp />', () => {
   });
 
   it('calls replace with the passed links', () => {
-    const replace = (pathname: string) => ({
-      type: router.LOCATION_CHANGE,
-      payload: {
-        location: {
-          pathname
-        },
-        action: 'REPLACE'
-      }
-    });
-    const mockReplace = jest
+    jest
       .spyOn(router, 'replace')
-      .mockImplementation(replace);
-
+      .mockImplementation((link) => ({ type: 'replace', link } as any));
     const linksWithReplaceState = tuplesSample.reduce((result, tuple) => {
       const [appName, link] = tuple;
 
@@ -113,9 +103,7 @@ describe('<ViewInApp />', () => {
         appButtonContainer.querySelector('button') as HTMLButtonElement
       );
 
-      expect(mockReplace).toHaveBeenCalledWith(link);
+      expect(router.replace).toHaveBeenLastCalledWith(link);
     });
-
-    (mockReplace as any).mockRestore();
   });
 });
