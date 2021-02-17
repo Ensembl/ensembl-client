@@ -14,61 +14,56 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { lazy, Suspense } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { getEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { closeSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
-import EntityViewerSidebarSearch from './modal-views/EntityViewerSidebarSearch';
-import EntityViewerSidebarBookmarks from './modal-views/EntityViewerSidebarBookmarks';
-
-import EntityViewerSidebarShare from './modal-views/EntityViewerSidebarShare';
-import EntityViewerSidebarDownloads from './modal-views/EntityViewerSidebarDownloads';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { RootState } from 'src/store';
+import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
-import { SidebarToolstripCollection } from 'src/shared/types/sidebar-toolstrip-collection';
 import styles from './EntityViewerSidebarModal.scss';
 
-export type EntityViewerSidebarModalProps = {
-  entityViewerSidebarModalView: string;
-  closeSidebar: () => void;
+const entityViewerSidebarModals: Record<
+  SidebarModalView,
+  React.LazyExoticComponent<() => JSX.Element | null>
+> = {
+  [SidebarModalView.SEARCH]: lazy(
+    () => import('./modal-views/EntityViewerSidebarSearch')
+  ),
+  [SidebarModalView.BOOKMARKS]: lazy(
+    () => import('./modal-views/EntityViewerSidebarBookmarks')
+  ),
+  [SidebarModalView.DOWNLOADS]: lazy(
+    () => import('./modal-views/EntityViewerSidebarDownloads')
+  )
 };
 
+export const EntityViewerSidebarModal = () => {
+  const dispatch = useDispatch();
 
-const entityViewerSidebarModals: any = {
-  [SidebarToolstripCollection.SEARCH]: < EntityViewerSidebarSearch />,
-  [SidebarToolstripCollection.BOOKMARKS]: <EntityViewerSidebarBookmarks />,
-  [SidebarToolstripCollection.SHARE]: <EntityViewerSidebarShare />,
-  [SidebarToolstripCollection.DOWNLOADS]: <EntityViewerSidebarDownloads />
-}
+  const entityViewerSidebarModalView = useSelector(
+    getEntityViewerSidebarModalView
+  );
 
-export const EntityViewerSidebarModal = (props: EntityViewerSidebarModalProps) => {
-  const modalView = entityViewerSidebarModals[props.entityViewerSidebarModalView] || null;
+  if (!entityViewerSidebarModalView) {
+    return null;
+  }
 
-  const onClose = () => {
-    props.closeSidebar();
-  };
+  const ModalView = entityViewerSidebarModals[entityViewerSidebarModalView];
+
   return (
-    <section className={styles.EntityViewerSidebarModal}>
+    <section className={styles.entityViewerSidebarModal}>
       <div className={styles.closeButton}>
-        <CloseButton onClick={onClose} />
+        <CloseButton onClick={() => dispatch(closeSidebarModal())} />
       </div>
       <div className={styles.EntityViewerSidebarModalView}>
-        {modalView}
+        <Suspense fallback={<div>Loading...</div>}>{<ModalView />}</Suspense>
       </div>
     </section>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  entityViewerSidebarModalView: getEntityViewerSidebarModalView(state)
-});
-
-const mapDispatchToProps = {
-  closeSidebar
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(EntityViewerSidebarModal);
+export default EntityViewerSidebarModal;

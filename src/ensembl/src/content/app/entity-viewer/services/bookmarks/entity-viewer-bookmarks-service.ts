@@ -20,8 +20,8 @@ import storageService, {
 import { PreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 export enum StorageKeys {
-  BOOKMARKS = 'entityviewer.bookmarks',
-  PREVIOUSLY_VIEWED = 'entityviewer.previouslyViewedEntities'
+  BOOKMARKS = 'entityViewer.bookmarks',
+  PREVIOUSLY_VIEWED = 'entityViewer.previouslyViewedEntities'
 }
 
 export class EntityViewerBookmarksStorageService {

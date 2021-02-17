@@ -19,7 +19,6 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
-import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   buildFocusIdForUrl,
@@ -30,25 +29,29 @@ import {
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
+import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
+
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
-import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
 import { RootState } from 'src/store';
 
 import styles from './EntityViewerSidebarBookmarks.scss';
+import modalStyles from '../EntityViewerSidebarModal.scss';
 
 export type ExampleLinksProps = {
   activeGenomeId: string | null;
   exampleEntities: ExampleFocusObject[];
-  closeSidebarModal: () => void;
 };
 
 export const ExampleLinks = (props: ExampleLinksProps) => {
   const exampleGene = props.exampleEntities.find(({ type }) => type === 'gene');
+  const dispatch = useDispatch();
 
-  if (!exampleGene?.id) return <></>;
+  if (!exampleGene?.id) {
+    return null;
+  }
 
   const featureIdInUrl = buildFocusIdForUrl({
     type: 'gene',
@@ -62,9 +65,9 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
 
   return (
     <div data-test-id="example links">
-      <div className={styles.sectionTitle}>Example links</div>
+      <div className={modalStyles.sectionTitle}>Example links</div>
       <div key={exampleGene.id} className={styles.linkHolder}>
-        <Link to={path} onClick={closeSidebarModal}>
+        <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
           Example {exampleGene.type}
         </Link>
       </div>
@@ -73,36 +76,25 @@ export const ExampleLinks = (props: ExampleLinksProps) => {
 };
 
 type PreviouslyViewedLinksProps = {
-  genomeId: string;
-  entityId: string;
+  activeGenomeId: string;
+  activeEntityId: string;
   previouslyViewedEntities: ReturnType<typeof getPreviouslyViewedEntities>;
-  closeSidebarModal: () => void;
 };
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
-  const onLinkClick = (objectType: string, index: number) => {
-    analyticsTracking.trackEvent({
-      category: 'recent_bookmark_link',
-      label: objectType,
-      action: 'clicked',
-      value: index + 1
-    });
+  const dispatch = useDispatch();
 
-    props.closeSidebarModal();
-  };
-
-  const activeObjectId = parseEnsObjectId(props.entityId);
-  const previouslyViewedEntitiesWithoutActiveObject = props.previouslyViewedEntities.filter(
-    (entity) => entity.stable_id !== activeObjectId.objectId
+  const activeEntityStableId = parseEnsObjectId(props.activeEntityId).objectId;
+  const previouslyViewedEntitiesWithoutActiveEntity = props.previouslyViewedEntities.filter(
+    (entity) => entity.stable_id !== activeEntityStableId
   );
 
   return (
     <div data-test-id="previously viewed links">
-      {[...previouslyViewedEntitiesWithoutActiveObject]
-        // .reverse()
-        .map((previouslyViewedEntity, index) => {
+      {[...previouslyViewedEntitiesWithoutActiveEntity].map(
+        (previouslyViewedEntity) => {
           const path = urlFor.entityViewer({
-            genomeId: props.genomeId,
+            genomeId: props.activeGenomeId,
             entityId: buildFocusIdForUrl({
               type: 'gene',
               objectId: previouslyViewedEntity.stable_id
@@ -114,10 +106,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
               key={previouslyViewedEntity.label}
               className={styles.linkHolder}
             >
-              <Link
-                to={path}
-                onClick={() => onLinkClick(previouslyViewedEntity.label, index)}
-              >
+              <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
                 {previouslyViewedEntity.label}
               </Link>
               <span className={styles.previouslyViewedType}>
@@ -125,7 +114,8 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
               </span>
             </div>
           );
-        })}
+        }
+      )}
     </div>
   );
 };
@@ -141,7 +131,9 @@ export const EntityViewerSidebarBookmarks = () => {
     getPreviouslyViewedEntities(state, activeGenomeId)
   );
 
-  const dispatch = useDispatch();
+  if (activeGenomeId === '' || activeEntityId === '') {
+    return null;
+  }
 
   return (
     <section className="entityViewerSidebarBookmarks">
@@ -150,17 +142,15 @@ export const EntityViewerSidebarBookmarks = () => {
         <ExampleLinks
           exampleEntities={exampleEntities}
           activeGenomeId={activeGenomeId}
-          closeSidebarModal={() => dispatch(closeSidebarModal)}
         />
       ) : null}
       {previouslyViewedEntities.length ? (
         <>
-          <div className={styles.sectionTitle}>Previously viewed</div>
+          <div className={modalStyles.sectionTitle}>Previously viewed</div>
           <PreviouslyViewedLinks
-            genomeId={activeGenomeId}
-            entityId={activeEntityId}
+            activeGenomeId={activeGenomeId}
+            activeEntityId={activeEntityId}
             previouslyViewedEntities={previouslyViewedEntities}
-            closeSidebarModal={() => dispatch(closeSidebarModal)}
           />
         </>
       ) : null}

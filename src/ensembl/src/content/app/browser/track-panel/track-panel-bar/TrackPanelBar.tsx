@@ -70,7 +70,7 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
       ? Status.SELECTED
       : Status.UNSELECTED;
   };
-``
+
   return (
     <>
       <div className={styles.sidebarIcon} key="search">

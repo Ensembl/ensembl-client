@@ -22,6 +22,12 @@ export enum SidebarTabName {
   EXTERNAL_REFERENCES = 'External references'
 }
 
+export enum SidebarModalView {
+  SEARCH = 'search',
+  BOOKMARKS = 'bookmarks',
+  DOWNLOADS = 'downloads'
+}
+
 export type SidebarStatus = Status.OPEN | Status.CLOSED;
 
 export type EntityViewerSidebarState = Readonly<{
@@ -42,8 +48,7 @@ export type EntityViewerSidebarGenomeState = Readonly<{
       uIState: EntityViewerSidebarUIState;
     };
   };
-  isSidebarModalOpened: boolean;
-  sidebarModalView: string;
+  sidebarModalView: SidebarModalView | null;
 }>;
 
 export const buildInitialStateForGenome = (
@@ -53,8 +58,7 @@ export const buildInitialStateForGenome = (
     status: Status.OPEN,
     selectedTabName: SidebarTabName.OVERVIEW,
     entities: {},
-    isSidebarModalOpened: false,
-    sidebarModalView: ''
+    sidebarModalView: null
   }
 });
 

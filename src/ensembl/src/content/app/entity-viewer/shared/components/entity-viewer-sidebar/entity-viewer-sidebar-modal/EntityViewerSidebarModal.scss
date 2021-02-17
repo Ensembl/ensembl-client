@@ -2,7 +2,6 @@
 
 .entityViewerSidebarModal {
   background: $white;
-  font-weight: $light;
   position: relative;
   overflow: auto;
 
@@ -11,7 +10,6 @@
   }
 
   p {
-    font-size: 13px;
     margin-bottom: 30px;
   }
 }
@@ -20,9 +18,14 @@
   position: absolute;
   right: 0;
   top: 0;
+}
 
-  img {
-    height: 15px;
-    width: 15px;
-  }
+.sectionTitle {
+  color: $dark-grey;
+  font-size: 12px;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+  font-weight: $light;
 }

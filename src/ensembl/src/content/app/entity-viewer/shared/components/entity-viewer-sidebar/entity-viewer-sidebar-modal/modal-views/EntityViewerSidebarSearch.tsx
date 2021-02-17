@@ -16,14 +16,12 @@
 
 import React from 'react';
 
-const EntityViewerSidebarSearch = () => {
-  return (
-    <section className="trackPanelSearch">
-      <h3>Search</h3>
-      <p>Quickly search in entity viewer</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
-  );
-};
+const EntityViewerSidebarSearch = () => (
+  <section>
+    <h3>Search</h3>
+    <p>Quickly search in entity viewer</p>
+    <p>Not ready yet &hellip;</p>
+  </section>
+);
 
 export default EntityViewerSidebarSearch;

@@ -23,7 +23,7 @@ import { EntityViewerSidebarBookmarks } from './EntityViewerSidebarBookmarks';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
-    <a className={'link'} href={props.to}>
+    <a className="link" href={props.to}>
       {props.children}
     </a>
   )
@@ -31,7 +31,7 @@ jest.mock('react-router-dom', () => ({
 
 const mockStore = configureMockStore();
 
-const exampleObjects = [
+const exampleEntities = [
   {
     id: 'human-brca2',
     type: 'gene'
@@ -56,7 +56,7 @@ const mockState = {
     genomeInfo: {
       genomeInfoData: {
         human: {
-          example_objects: exampleObjects
+          example_objects: exampleEntities
         }
       }
     }
@@ -94,10 +94,10 @@ describe('<EntityViewerSidebarBookmarks />', () => {
     const exampleLinksSection = screen.getByTestId('example links');
     const links = exampleLinksSection.querySelectorAll('a');
 
-    expect(links.length).toBe(exampleObjects.length);
+    expect(links.length).toBe(exampleEntities.length);
   });
 
-  it('shows previously viewed objects if present', () => {
+  it('shows previously viewed entities if present', () => {
     wrapInRedux();
     const previouslyViewedSection = screen.getByTestId(
       'previously viewed links'

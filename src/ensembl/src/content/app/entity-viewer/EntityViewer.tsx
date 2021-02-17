@@ -28,7 +28,10 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEnsObjectId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import {
+  isEntityViewerSidebarOpen,
+  getEntityViewerSidebarModalView
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
@@ -42,7 +45,6 @@ import ExampleLinks from './components/example-links/ExampleLinks';
 import GeneView from './gene-view/GeneView';
 import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
-import { isEntityViewerSidebarModalOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors'
 
 import styles from './EntityViewer.scss';
 
@@ -73,7 +75,9 @@ const EntityViewer = () => {
   const activeEntityId = useSelector(getEntityViewerActiveEnsObjectId);
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
   const viewportWidth = useSelector(getBreakpointWidth);
-  const isSidebarModalOpen = useSelector(isEntityViewerSidebarModalOpen);
+  const isSidebarModalOpen = Boolean(
+    useSelector(getEntityViewerSidebarModalView)
+  );
 
   const dispatch = useDispatch();
 
@@ -91,7 +95,11 @@ const EntityViewer = () => {
     dispatch(setDataFromUrl(params));
   }, [params.genomeId, params.entityId]);
 
-  const SideBarContent = isSidebarModalOpen ? <EntityViewerSidebarModal /> : <GeneViewSideBar />;
+  const SideBarContent = isSidebarModalOpen ? (
+    <EntityViewerSidebarModal />
+  ) : (
+    <GeneViewSideBar />
+  );
 
   return (
     <ApolloProvider client={client}>

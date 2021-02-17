@@ -16,14 +16,12 @@
 
 import React from 'react';
 
-const EntityViewerSidebarDownloads = () => {
-  return (
-    <section className="entityViewerSidebarDownloads">
-      <h3>Downloads</h3>
-      <p>Export your browser configurations as images or data</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
-  );
-};
+const EntityViewerSidebarDownloads = () => (
+  <section>
+    <h3>Downloads</h3>
+    <p>Export your browser configurations as images or data</p>
+    <p>Not ready yet &hellip;</p>
+  </section>
+);
 
 export default EntityViewerSidebarDownloads;
