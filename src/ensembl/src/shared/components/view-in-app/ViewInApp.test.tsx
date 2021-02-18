@@ -24,14 +24,7 @@ import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import sampleSize from 'lodash/sampleSize';
 
-import {
-  ViewInApp,
-  AppName,
-  Apps,
-  ViewInAppProps,
-  LinkObj,
-  UrlObj
-} from './ViewInApp';
+import { ViewInApp, AppName, Apps, ViewInAppProps, UrlObj } from './ViewInApp';
 
 jest.mock('connected-react-router');
 
@@ -85,32 +78,48 @@ describe('<ViewInApp />', () => {
     );
   });
 
-  it('calls replace with the passed links', () => {
+  it('changes url using history push by default', () => {
+    jest
+      .spyOn(router, 'push')
+      .mockImplementation((link) => ({ type: 'push', link } as any));
+
+    const links = {
+      genomeBrowser: {
+        url: faker.internet.url()
+      }
+    };
+
+    renderComponent({ links });
+
+    const appButtonContainer = screen.getByTestId('genomeBrowser');
+
+    userEvent.click(
+      appButtonContainer.querySelector('button') as HTMLButtonElement
+    );
+
+    expect(router.push).toHaveBeenCalledWith(links.genomeBrowser.url);
+  });
+
+  it('changes url using history replace with appropriate props', () => {
     jest
       .spyOn(router, 'replace')
       .mockImplementation((link) => ({ type: 'replace', link } as any));
-    const linksWithReplaceState = tuplesSample.reduce((result, tuple) => {
-      const [appName, link] = tuple;
 
-      return {
-        ...result,
-        [appName]: {
-          url: link,
-          replaceState: true
-        }
-      };
-    }, {}) as Record<AppName, LinkObj>;
+    const links = {
+      genomeBrowser: {
+        url: faker.internet.url(),
+        replaceState: true
+      }
+    };
 
-    renderComponent({ links: linksWithReplaceState });
+    renderComponent({ links });
 
-    tuplesSample.forEach(([appName, link]) => {
-      const appButtonContainer = screen.getByTestId(appName);
+    const appButtonContainer = screen.getByTestId('genomeBrowser');
 
-      userEvent.click(
-        appButtonContainer.querySelector('button') as HTMLButtonElement
-      );
+    userEvent.click(
+      appButtonContainer.querySelector('button') as HTMLButtonElement
+    );
 
-      expect(router.replace).toHaveBeenLastCalledWith(link);
-    });
+    expect(router.replace).toHaveBeenCalledWith(links.genomeBrowser.url);
   });
 });
