@@ -583,28 +583,28 @@ const getExampleLinks = (props: {
           })
         }
       };
-    } else if (section === SpeciesStatsSection.ASSEMBLY) {
-      const regionExample = exampleFocusObjects.find(
-        (object) => object.type === 'region'
-      );
+    }
+  } else if (section === SpeciesStatsSection.ASSEMBLY) {
+    const regionExample = exampleFocusObjects.find(
+      (object) => object.type === 'region'
+    );
 
-      const focusId = regionExample?.id
-        ? buildFocusIdForUrl({
-            type: 'region',
-            objectId: regionExample.id
+    const focusId = regionExample?.id
+      ? buildFocusIdForUrl({
+          type: 'region',
+          objectId: regionExample.id
+        })
+      : undefined;
+
+    if (focusId) {
+      exampleLinks = {
+        genomeBrowser: {
+          url: urlFor.browser({
+            genomeId: genome_id,
+            focus: focusId
           })
-        : undefined;
-
-      if (focusId) {
-        exampleLinks = {
-          genomeBrowser: {
-            url: urlFor.browser({
-              genomeId: genome_id,
-              focus: focusId
-            })
-          }
-        };
-      }
+        }
+      };
     }
   }
 
