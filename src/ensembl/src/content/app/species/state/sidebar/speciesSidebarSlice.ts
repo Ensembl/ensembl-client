@@ -71,14 +71,10 @@ const initialStateForGenome: StateForGenome = {
 };
 
 type SpeciesPageSidebarState = {
-  species: {
-    [genomeId: string]: StateForGenome;
-  };
+  [genomeId: string]: StateForGenome;
 };
 
-const initialState: SpeciesPageSidebarState = {
-  species: {}
-};
+const initialState: SpeciesPageSidebarState = {};
 
 export const fetchSidebarPayload = (): ThunkAction<
   void,
@@ -107,13 +103,9 @@ const updateStateForGenome = (
   genomeId: string,
   fragment: Partial<StateForGenome>
 ) => {
-  const stateForGenome = get(
-    state,
-    `species.${genomeId}`,
-    initialStateForGenome
-  );
+  const stateForGenome = get(state, genomeId, initialStateForGenome);
   const updatedStateForGenome = merge({}, stateForGenome, fragment);
-  state.species[genomeId] = updatedStateForGenome;
+  state[genomeId] = updatedStateForGenome;
 };
 
 const speciesPageSidebarSlice = createSlice({
@@ -127,7 +119,7 @@ const speciesPageSidebarSlice = createSlice({
       }>
     ) {
       const isSidebarOpen =
-        !state.species[action.payload.genomeId].isSidebarOpen ?? true;
+        !state[action.payload.genomeId].isSidebarOpen ?? true;
       updateStateForGenome(state, action.payload.genomeId, { isSidebarOpen });
     },
 
