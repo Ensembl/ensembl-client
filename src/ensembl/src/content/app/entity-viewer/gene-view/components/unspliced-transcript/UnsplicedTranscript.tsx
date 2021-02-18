@@ -17,14 +17,23 @@
 import React from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
+import { Pick3 } from 'ts-multipick';
 
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { SplicedExon } from 'src/shared/types/thoas/exon';
-import { CDS } from 'src/shared/types/thoas/cds';
+import { FullCDS } from 'src/shared/types/thoas/cds';
 
 import styles from './UnsplicedTranscript.scss';
 
 const BLOCK_HEIGHT = 7;
+
+type ProductGeneratingContext = {
+  cds: Pick<FullCDS, 'relative_start' | 'relative_end'>;
+};
+type Transcript = {
+  spliced_exons: Array<Pick<SplicedExon, 'relative_location'>>;
+  product_generating_contexts: ProductGeneratingContext[];
+} & Pick3<FullTranscript, 'slice', 'location', 'length'>;
 
 export type UnsplicedTranscriptProps = {
   transcript: Transcript;
@@ -168,8 +177,11 @@ const Backbone = (
 };
 
 type ExonBlockProps = {
-  spliced_exon: SplicedExon;
-  cds?: CDS | null;
+  spliced_exon: Pick<SplicedExon, 'relative_location'>;
+  cds?: {
+    relative_start: number;
+    relative_end: number;
+  } | null;
   className?: string;
   scale: ScaleLinear<number, number>;
 };

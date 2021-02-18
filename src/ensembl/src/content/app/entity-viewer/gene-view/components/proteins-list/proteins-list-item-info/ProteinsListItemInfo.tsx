@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
+import { Pick2 } from 'ts-multipick';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -37,15 +38,45 @@ import {
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { Product } from 'src/shared/types/thoas/product';
 import { ProteinDomain } from 'src/shared/types/thoas/product';
+import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 
 import { SWISSPROT_SOURCE } from '../protein-list-constants';
 
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
-type Props = {
+type ProductWithoutDomains = Pick<
+  Product,
+  'length' | 'unversioned_stable_id'
+> & {
+  external_references: Array<
+    Pick<ExternalReferenceType, 'accession_id' | 'name'> &
+      Pick2<ExternalReferenceType, 'source', 'id'>
+  >;
+};
+
+type ProductWithDomains = ProductWithoutDomains & {
+  protein_domains: ProteinDomain[];
+};
+
+type Transcript = Pick<FullTranscript, 'unversioned_stable_id'> & {
+  product_generating_contexts: Array<{
+    product: ProductWithoutDomains;
+  }>;
+};
+
+type TranscriptWithProteinDomains = Transcript & {
+  product_generating_contexts: Array<
+    Transcript['product_generating_contexts'][number] & {
+      product: ProductWithDomains;
+    }
+  >;
+};
+
+export type Props = {
   transcript: Transcript;
   trackLength: number;
 };
@@ -60,7 +91,7 @@ const addProteinDomains = (
     ['product_generating_contexts', '0', 'product', 'protein_domains'],
     proteinDomains,
     transcript
-  );
+  ) as TranscriptWithProteinDomains;
 };
 
 const ProteinsListItemInfo = (props: Props) => {
@@ -71,7 +102,7 @@ const ProteinsListItemInfo = (props: Props) => {
   const [
     transcriptWithProteinDomains,
     setTranscriptWithProteinDomains
-  ] = useState<Transcript | null>(null);
+  ] = useState<TranscriptWithProteinDomains | null>(null);
 
   const [proteinSummaryStats, setProteinSummaryStats] = useState<
     ProteinStats | null | undefined
