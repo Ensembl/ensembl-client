@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useSelector } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
@@ -29,21 +28,19 @@ import {
 } from '../browserSelectors';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
-import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-
-import { RootState } from 'src/store';
+import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './Zmenu.scss';
 
 type Props = {
   featureId: string;
-  activeFeatureId: string | null;
-  genomeId: string | null;
-  isInDefaultPosition: boolean;
-  push: (path: string) => void;
 };
 
 const ZmenuAppLinks = (props: Props) => {
+  const genomeId = useSelector(getBrowserActiveGenomeId);
+  const activeFeatureId = useSelector(getBrowserActiveEnsObjectId);
+  const isInDefaultPosition = useSelector(isFocusObjectPositionDefault);
+
   const parsedFeatureId = parseFeatureId(props.featureId);
 
   if (parsedFeatureId.type !== 'gene') {
@@ -53,28 +50,27 @@ const ZmenuAppLinks = (props: Props) => {
   const featureIdForUrl = buildFocusIdForUrl(parsedFeatureId);
 
   const getBrowserLink = () =>
-    urlFor.browser({ genomeId: props.genomeId, focus: featureIdForUrl });
+    urlFor.browser({ genomeId, focus: featureIdForUrl });
 
   const getEntityViewerLink = () =>
     urlFor.entityViewer({
-      genomeId: props.genomeId,
+      genomeId,
       entityId: featureIdForUrl
     });
 
   const shouldShowBrowserButton =
-    props.featureId !== props.activeFeatureId || !props.isInDefaultPosition;
+    props.featureId !== activeFeatureId || !isInDefaultPosition;
 
-  type linkType = {
-    genomeBrowser?: string;
-    entityViewer?: string;
-  };
-
-  const links: Partial<linkType> = {};
+  const links: UrlObj = {};
 
   if (shouldShowBrowserButton) {
-    links['genomeBrowser'] = getBrowserLink();
+    links['genomeBrowser'] = {
+      url: getBrowserLink(),
+      replaceState: true
+    };
   }
-  links['entityViewer'] = getEntityViewerLink();
+
+  links['entityViewer'] = { url: getEntityViewerLink() };
 
   return (
     <div className={styles.zmenuAppLinks}>
@@ -87,14 +83,4 @@ const ZmenuAppLinks = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  genomeId: getBrowserActiveGenomeId(state),
-  activeFeatureId: getBrowserActiveEnsObjectId(state),
-  isInDefaultPosition: isFocusObjectPositionDefault(state)
-});
-
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ZmenuAppLinks);
+export default ZmenuAppLinks;

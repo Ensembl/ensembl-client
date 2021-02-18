@@ -144,7 +144,7 @@ const GeneSummary = () => {
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
-          <ViewInApp links={{ entityViewer: entityViewerUrl }} />
+          <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
         </div>
       </div>
     </div>
