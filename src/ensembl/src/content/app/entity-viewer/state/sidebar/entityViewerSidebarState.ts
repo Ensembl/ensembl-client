@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+
 import { Status } from 'src/shared/types/status';
 import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 
@@ -62,4 +64,9 @@ export const buildInitialStateForGenome = (
   }
 });
 
-export const initialState: EntityViewerSidebarState = {};
+const storedActiveGenomeId = entityViewerStorageService.getGeneralState()
+  ?.activeGenomeId;
+
+export const initialState: EntityViewerSidebarState = storedActiveGenomeId
+  ? buildInitialStateForGenome(storedActiveGenomeId)
+  : {};
