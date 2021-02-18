@@ -26,7 +26,7 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getEntityViewerActiveGenomeId,
-  getEntityViewerActiveEnsObjectId
+  getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
@@ -122,7 +122,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
 export const EntityViewerSidebarBookmarks = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId) || '';
-  const activeEntityId = useSelector(getEntityViewerActiveEnsObjectId) || '';
+  const activeEntityId = useSelector(getEntityViewerActiveEntityId) || '';
 
   const exampleEntities = useSelector((state: RootState) =>
     getGenomeExampleFocusObjects(state, activeGenomeId)

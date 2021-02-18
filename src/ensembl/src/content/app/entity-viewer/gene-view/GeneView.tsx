@@ -32,6 +32,7 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -190,6 +191,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     if (!genomeId || !props.gene) {
       return;
     }
+
+    dispatch(closeSidebarModal());
 
     dispatch(
       updatePreviouslyViewedEntities({
