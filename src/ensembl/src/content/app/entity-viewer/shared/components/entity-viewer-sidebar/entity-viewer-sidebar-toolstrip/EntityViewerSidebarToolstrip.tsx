@@ -38,7 +38,6 @@ import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
 import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
 
 import { Status } from 'src/shared/types/status';
-import { SidebarToolstripCollection } from 'src/shared/types/sidebar-toolstrip-collection';
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
 export const EntityViewerSidebarToolstrip = () => {
@@ -78,7 +77,7 @@ export const EntityViewerSidebarToolstrip = () => {
         status={getViewIconStatus(SidebarModalView.BOOKMARKS)}
         description="Bookmarks"
         className={styles.sidebarIcon}
-        key={SidebarToolstripCollection.BOOKMARKS}
+        key={SidebarModalView.BOOKMARKS}
         onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}
         image={bookmarkIcon}
       />
