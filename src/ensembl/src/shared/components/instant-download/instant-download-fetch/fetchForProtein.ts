@@ -75,5 +75,5 @@ const buildFetchUrl = (
   ] as keyof TranscriptChecksums;
   const checksum = productGeneratingContext[contextType]?.sequence_checksum;
 
-  return `/refget/sequence/${checksum}?accept=text/x-fasta`;
+  return `/api/refget/sequence/${checksum}?accept=text/x-fasta`;
 };
