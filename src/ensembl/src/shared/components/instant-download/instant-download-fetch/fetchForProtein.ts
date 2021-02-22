@@ -23,8 +23,8 @@ import {
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import {
-  fetchTranscriptSequenceData,
-  TranscriptSequenceData
+  fetchTranscriptSequenceMetadata,
+  TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
 import {
@@ -40,7 +40,7 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
-  const transcriptSequenceData = await fetchTranscriptSequenceData({
+  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
     genomeId,
     transcriptId
   });
@@ -66,7 +66,7 @@ export const fetchForProtein = async (payload: FetchPayload) => {
 };
 
 type PrepareDownloadParametersParams = {
-  transcriptSequenceData: TranscriptSequenceData;
+  transcriptSequenceData: TranscriptSequenceMetadata;
   options: ProteinOptions;
 };
 
@@ -92,7 +92,7 @@ const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
 // map of field names received from component to field names returned when fetching checksums
 const labelTypeToSequenceType: Record<
   ProteinOption,
-  keyof TranscriptSequenceData
+  keyof TranscriptSequenceMetadata
 > = {
   proteinSequence: 'protein',
   cds: 'cds'

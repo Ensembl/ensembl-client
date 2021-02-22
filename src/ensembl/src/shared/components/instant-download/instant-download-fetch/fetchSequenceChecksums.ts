@@ -18,7 +18,7 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
-export type TranscriptSequenceData = {
+export type TranscriptSequenceMetadata = {
   cdna?: {
     checksum: string;
     label: string;
@@ -74,9 +74,9 @@ type Variables = {
   transcriptId: string;
 };
 
-export const fetchTranscriptSequenceData = (
+export const fetchTranscriptSequenceMetadata = (
   variables: Variables
-): Promise<TranscriptSequenceData> => {
+): Promise<TranscriptSequenceMetadata> => {
   const { transcriptId } = variables;
 
   return client

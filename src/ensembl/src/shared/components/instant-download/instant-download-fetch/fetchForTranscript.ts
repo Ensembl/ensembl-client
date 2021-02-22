@@ -24,8 +24,8 @@ import {
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
-  fetchTranscriptSequenceData,
-  TranscriptSequenceData
+  fetchTranscriptSequenceMetadata,
+  TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
 import {
@@ -54,7 +54,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const transcriptSequenceData = await fetchTranscriptSequenceData({
+  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
     genomeId,
     transcriptId
   });
@@ -85,14 +85,14 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 
 type PrepareDownloadParametersParams = {
   transcriptId: string;
-  transcriptSequenceData: TranscriptSequenceData;
+  transcriptSequenceData: TranscriptSequenceMetadata;
   options: Partial<TranscriptOptions>;
 };
 
 // map of field names received from component to field names returned when fetching checksums
 const labelTypeToSequenceType: Record<
   TranscriptOption,
-  keyof TranscriptSequenceData | 'genomic'
+  keyof TranscriptSequenceMetadata | 'genomic'
 > = {
   genomicSequence: 'genomic',
   proteinSequence: 'protein',
