@@ -26,19 +26,40 @@ export type TranscriptChecksums = {
     sequence_checksum: string;
   };
   product: {
+    stable_id: string;
     sequence_checksum: string;
   };
 };
 
-type GeneFragment = {
-  transcript: {
-    product_generating_contexts: TranscriptChecksums[];
+export type TranscriptFragment = {
+  stable_id: string;
+  product_generating_contexts: TranscriptChecksums[];
+};
+
+export type TranscriptChecksumsData = {
+  transcript: TranscriptFragment;
+};
+
+type TranscriptChecksumsVariables = {
+  genomeId: string;
+  transcriptId: string;
+};
+
+export type GeneChecksumsData = {
+  gene: {
+    transcripts: TranscriptFragment[];
   };
+};
+
+type GeneChecksumsVariables = {
+  genomeId: string;
+  geneId: string;
 };
 
 const transcriptChecksumsQuery = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {
     transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      stable_id
       product_generating_contexts {
         cds {
           sequence_checksum
@@ -47,6 +68,7 @@ const transcriptChecksumsQuery = gql`
           sequence_checksum
         }
         product {
+          stable_id
           sequence_checksum
         }
       }
@@ -54,15 +76,42 @@ const transcriptChecksumsQuery = gql`
   }
 `;
 
-type Variables = {
-  genomeId: string;
-  transcriptId: string;
-};
+const geneChecksumsQuery = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      transcripts {
+        stable_id
+        product_generating_contexts {
+          cds {
+            sequence_checksum
+          }
+          cdna {
+            sequence_checksum
+          }
+          product {
+            stable_id
+            sequence_checksum
+          }
+        }
+      }
+    }
+  }
+`;
 
-export const fetchTranscriptChecksums = (variables: Variables) =>
+export const fetchTranscriptChecksums = (
+  variables: TranscriptChecksumsVariables
+) =>
   client
-    .query<GeneFragment>({
+    .query<TranscriptChecksumsData>({
       query: transcriptChecksumsQuery,
       variables
     })
     .then(({ data }) => data.transcript.product_generating_contexts[0]);
+
+export const fetchGeneChecksums = (variables: GeneChecksumsVariables) =>
+  client
+    .query<GeneChecksumsData>({
+      query: geneChecksumsQuery,
+      variables
+    })
+    .then(({ data }) => data.gene.transcripts);

@@ -33,12 +33,12 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
-  const productGeneratingContext = await fetchTranscriptChecksums({
+  const checksums = await fetchTranscriptChecksums({
     genomeId,
     transcriptId
   });
 
-  const urls = buildUrlsForProtein(productGeneratingContext, options);
+  const urls = buildUrlsForProtein(checksums, options);
   const sequencePromises = urls.map((url) =>
     fetch(url).then((response) => response.text())
   );
@@ -52,18 +52,18 @@ export const fetchForProtein = async (payload: FetchPayload) => {
 };
 
 const buildUrlsForProtein = (
-  productGeneratingContext: TranscriptChecksums,
+  checksums: TranscriptChecksums,
   options: ProteinOptions
 ) => {
   return options
     ? proteinOptionsOrder
         .filter((option) => options[option])
-        .map((option) => buildFetchUrl(productGeneratingContext, option))
+        .map((option) => buildFetchUrl(checksums, option))
     : [];
 };
 
 const buildFetchUrl = (
-  productGeneratingContext: TranscriptChecksums,
+  checksums: TranscriptChecksums,
   sequenceType: ProteinOption
 ) => {
   const sequenceTypeToContextType: Record<ProteinOption, string> = {
@@ -73,7 +73,7 @@ const buildFetchUrl = (
   const contextType = sequenceTypeToContextType[
     sequenceType
   ] as keyof TranscriptChecksums;
-  const checksum = productGeneratingContext[contextType]?.sequence_checksum;
+  const checksum = checksums[contextType]?.sequence_checksum;
 
   return `/api/refget/sequence/${checksum}?accept=text/x-fasta`;
 };

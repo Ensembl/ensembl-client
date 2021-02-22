@@ -28,6 +28,7 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
+import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
@@ -139,6 +140,18 @@ const GeneSummary = () => {
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           {`${gene.transcripts.length} transcripts`}
+        </div>
+      </div>
+
+      <div className={`${styles.row} ${styles.spaceAbove}`}>
+        {/* <div className={styles.label}></div> */}
+        <div className={styles.value}>
+          Download
+          <InstantDownloadGene
+            genomeId={ensObjectGene.genome_id}
+            gene={{ id: gene.unversioned_stable_id }}
+            theme="light"
+          />
         </div>
       </div>
 
