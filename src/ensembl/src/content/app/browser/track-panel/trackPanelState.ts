@@ -76,7 +76,6 @@ export const pickPersistentTrackPanelProperties = (
 ) => {
   const persistentProperties = [
     'selectedTrackPanelTab',
-    'isTrackPanelOpened',
     'collapsedTrackIds',
     'previouslyViewedObjects'
   ];
