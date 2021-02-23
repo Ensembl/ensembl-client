@@ -651,38 +651,51 @@ export const getStatsForSection = (props: {
       })
     : undefined;
 
+  const processedGroups = groups.map((group) => {
+    const groupStats = groupsStatsMap[group];
+    const expandedStatsKeys: Stats[] = [];
+    const processedStats = groupStats
+      .map((subGroupStats) => {
+        const processedSubGroupStats: IndividualStat[] = [];
+
+        subGroupStats.forEach((stat) => {
+          if (filteredData[stat]) {
+            expandedStatsKeys.push(stat);
+            const individualStat = buildIndividualStat({
+              primaryKey: stat,
+              primaryValue: filteredData[stat],
+              section
+            });
+            individualStat && processedSubGroupStats.push(individualStat);
+          }
+        });
+
+        return processedSubGroupStats.length
+          ? processedSubGroupStats
+          : undefined;
+      })
+      .filter(Boolean);
+
+    const summaryExpandedStatsDifference = expandedStatsKeys?.filter(
+      (key) => !summaryStatsKeys?.includes(key)
+    );
+
+    if (!summaryExpandedStatsDifference.length || !processedStats.length) {
+      return {
+        title: groupTitles[group]
+      };
+    }
+
+    return {
+      title: groupTitles[group],
+      stats: processedStats
+    };
+  });
+
   return {
     section,
     summaryStats,
     exampleLinks,
-    groups: groups.map((group) => {
-      const groupStats = groupsStatsMap[group];
-
-      const processedStats = groupStats
-        .map((subGroupStats) => {
-          const processedSubGroupStats: IndividualStat[] = [];
-
-          subGroupStats.forEach((stat) => {
-            if (filteredData[stat]) {
-              const individualStat = buildIndividualStat({
-                primaryKey: stat,
-                primaryValue: filteredData[stat],
-                section
-              });
-              individualStat && processedSubGroupStats.push(individualStat);
-            }
-          });
-
-          return processedSubGroupStats.length
-            ? processedSubGroupStats
-            : undefined;
-        })
-        .filter(Boolean);
-
-      return {
-        title: groupTitles[group],
-        stats: processedStats.length ? processedStats : undefined
-      };
-    })
+    groups: processedGroups
   } as StatsSection;
 };
