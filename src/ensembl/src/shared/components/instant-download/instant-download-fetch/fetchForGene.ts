@@ -54,8 +54,6 @@ export const fetchForGene = async (payload: FetchPayload) => {
   });
   const urls = buildUrlsForGene(transcripts, transcriptOptions);
 
-  console.log(urls);
-
   if (geneOptions.genomicSequence) {
     urls.push(buildFetchUrl({ geneId }, 'genomicSequence'));
   }
@@ -100,7 +98,7 @@ const buildFetchUrl = (
   };
 
   if (sequenceType === 'genomicSequence') {
-    return `https://rest.ensembl.org/sequence/id/${data.transcript?.stable_id}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
+    return `https://rest.ensembl.org/sequence/id/${data.geneId}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
   } else {
     const contextType = sequenceTypeToContextType[
       sequenceType

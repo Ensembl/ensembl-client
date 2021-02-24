@@ -144,7 +144,6 @@ const GeneSummary = () => {
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
-        {/* <div className={styles.label}></div> */}
         <div className={styles.value}>
           Download
           <InstantDownloadGene

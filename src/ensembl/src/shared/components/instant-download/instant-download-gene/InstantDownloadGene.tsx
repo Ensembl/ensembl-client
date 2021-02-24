@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
-import pick from 'lodash/pick';
 import intersection from 'lodash/intersection';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
@@ -90,37 +89,22 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
   cds: 'CDS'
 };
 
-// const filterTranscriptOptions = (
-//   so_term: string
-// ): Partial<TranscriptOptions> => {
-//   return so_term === 'protein_coding'
-//     ? defaultTranscriptOptions
-//     : pick(defaultTranscriptOptions, ['genomicSequence']);
-// };
-
 const InstantDownloadGene = (props: Props) => {
   const {
     genomeId,
     gene: { id: geneId }
   } = props;
-  // const [transcriptOptions, setTranscriptOptions] = useState(
-  //   filterTranscriptOptions(so_term)
-  // );
   const [transcriptOptions, setTranscriptOptions] = useState(
     defaultTranscriptOptions
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
-
-  // useEffect(() => {
-  //   setTranscriptOptions(filterTranscriptOptions(so_term));
-  // }, [so_term]);
 
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
     const updatedOptions = {
       ...transcriptOptions,
       [key]: !transcriptOptions[key]
     };
-    
+
     setTranscriptOptions(updatedOptions);
   };
 
