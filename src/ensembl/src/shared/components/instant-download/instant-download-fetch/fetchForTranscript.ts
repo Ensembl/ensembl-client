@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { wrap } from 'comlink';
+
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 
 import {
@@ -22,9 +24,14 @@ import {
   transcriptOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
-  fetchTranscriptChecksums,
-  TranscriptChecksums
+  fetchTranscriptSequenceMetadata,
+  TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
+
+import {
+  WorkerApi,
+  SingleSequenceFetchParams
+} from 'src/shared/workers/sequenceFetcher.worker';
 
 type Options = {
   transcript: Partial<TranscriptOptions>;
@@ -47,64 +54,77 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const checksums = await fetchTranscriptChecksums({
+  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
     genomeId,
     transcriptId
   });
-  const urls = buildUrlsForTranscript({ geneId, checksums }, transcriptOptions);
+  const sequenceDownloadParams = prepareDownloadParameters({
+    transcriptId,
+    transcriptSequenceData,
+    options: transcriptOptions
+  });
 
   if (geneOptions.genomicSequence) {
-    urls.push(buildFetchUrl({ geneId }, 'genomicSequence'));
+    sequenceDownloadParams.push(getGenomicSequenceData(geneId));
   }
 
-  const sequencePromises = urls.map((url) =>
-    fetch(url).then((response) => response.text())
-  );
-  const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n\n');
+  const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
+    type: 'module'
+  });
 
-  downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
+  const service = wrap<WorkerApi>(worker);
+
+  const sequences = await service.downloadSequences(sequenceDownloadParams);
+
+  worker.terminate();
+
+  downloadAsFile(sequences, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
   });
 };
 
-const buildUrlsForTranscript = (
-  data: {
-    geneId: string;
-    checksums: TranscriptChecksums;
-  },
-  options: Partial<TranscriptOptions>
-) => {
-  return options
-    ? transcriptOptionsOrder
-        .filter((option) => options[option])
-        .map((option) => buildFetchUrl(data, option))
-    : [];
+type PrepareDownloadParametersParams = {
+  transcriptId: string;
+  transcriptSequenceData: TranscriptSequenceMetadata;
+  options: Partial<TranscriptOptions>;
 };
 
-const buildFetchUrl = (
-  data: {
-    geneId: string;
-    checksums?: TranscriptChecksums;
-  },
-  sequenceType: TranscriptOption
-) => {
-  const sequenceTypeToContextType: Record<TranscriptOption, string> = {
-    genomicSequence: 'genomic',
-    proteinSequence: 'product',
-    cdna: 'cdna',
-    cds: 'cds'
+// map of field names received from component to field names returned when fetching checksums
+const labelTypeToSequenceType: Record<
+  TranscriptOption,
+  keyof TranscriptSequenceMetadata | 'genomic'
+> = {
+  genomicSequence: 'genomic',
+  proteinSequence: 'protein',
+  cdna: 'cdna',
+  cds: 'cds'
+};
+
+const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
+  return transcriptOptionsOrder
+    .filter((option) => params.options[option])
+    .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'protein', 'cdna', 'cds'
+    .map((option) => {
+      if (option === 'genomic') {
+        return getGenomicSequenceData(params.transcriptId);
+      } else {
+        const dataForSingleSequence = params.transcriptSequenceData[option];
+        if (!dataForSingleSequence) {
+          // shouldn't happen; but to keep typescript happy
+          return null;
+        }
+        return {
+          label: dataForSingleSequence.label,
+          url: `/api/refget/sequence/${dataForSingleSequence.checksum}?accept=text/plain`
+        };
+      }
+    })
+    .filter(Boolean) as SingleSequenceFetchParams[];
+};
+
+const getGenomicSequenceData = (id: string) => {
+  return {
+    label: `${id} genomic`,
+    url: `https://rest.ensembl.org/sequence/id/${id}?content-type=text/plain&type=genomic`
   };
-
-  if (sequenceType === 'genomicSequence') {
-    return `https://rest.ensembl.org/sequence/id/${data.geneId}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
-  } else {
-    const contextType = sequenceTypeToContextType[
-      sequenceType
-    ] as keyof TranscriptChecksums;
-    const checksum =
-      data.checksums && data.checksums[contextType]?.sequence_checksum;
-
-    return `/api/refget/sequence/${checksum}?accept=text/x-fasta`;
-  }
 };

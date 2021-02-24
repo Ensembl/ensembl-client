@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { wrap } from 'comlink';
+
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 import {
   ProteinOptions,
@@ -21,9 +23,14 @@ import {
   proteinOptionsOrder
 } from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import {
-  fetchTranscriptChecksums,
-  TranscriptChecksums
+  fetchTranscriptSequenceMetadata,
+  TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
+
+import {
+  WorkerApi,
+  SingleSequenceFetchParams
+} from 'src/shared/workers/sequenceFetcher.worker';
 
 type FetchPayload = {
   genomeId: string;
@@ -33,47 +40,60 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
-  const productGeneratingContext = await fetchTranscriptChecksums({
+  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
     genomeId,
     transcriptId
   });
 
-  const urls = buildUrlsForProtein(productGeneratingContext, options);
-  const sequencePromises = urls.map((url) =>
-    fetch(url).then((response) => response.text())
-  );
+  const sequenceDownloadParams = prepareDownloadParameters({
+    transcriptSequenceData,
+    options
+  });
 
-  const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n\n');
+  const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
+    type: 'module'
+  });
 
-  downloadAsFile(combinedFasta, `${transcriptId}.fasta`, {
+  const service = wrap<WorkerApi>(worker);
+
+  const sequences = await service.downloadSequences(sequenceDownloadParams);
+
+  worker.terminate();
+
+  downloadAsFile(sequences, `${transcriptId}.fasta`, {
     type: 'text/x-fasta'
   });
 };
 
-const buildUrlsForProtein = (
-  productGeneratingContext: TranscriptChecksums,
-  options: ProteinOptions
-) => {
-  return options
-    ? proteinOptionsOrder
-        .filter((option) => options[option])
-        .map((option) => buildFetchUrl(productGeneratingContext, option))
-    : [];
+type PrepareDownloadParametersParams = {
+  transcriptSequenceData: TranscriptSequenceMetadata;
+  options: ProteinOptions;
 };
 
-const buildFetchUrl = (
-  productGeneratingContext: TranscriptChecksums,
-  sequenceType: ProteinOption
-) => {
-  const sequenceTypeToContextType: Record<ProteinOption, string> = {
-    proteinSequence: 'product',
-    cds: 'cds'
-  };
-  const contextType = sequenceTypeToContextType[
-    sequenceType
-  ] as keyof TranscriptChecksums;
-  const checksum = productGeneratingContext[contextType]?.sequence_checksum;
+const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
+  const { transcriptSequenceData } = params;
+  return proteinOptionsOrder
+    .filter((option) => params.options[option])
+    .map((option) => labelTypeToSequenceType[option]) // 'protein', 'cds'
+    .map((option) => {
+      const dataForSingleSequence = transcriptSequenceData[option];
+      if (!dataForSingleSequence) {
+        // shouldn't happen; but to keep typescript happy
+        return null;
+      }
+      return {
+        label: dataForSingleSequence.label,
+        url: `/api/refget/sequence/${dataForSingleSequence.checksum}?accept=text/plain`
+      };
+    })
+    .filter(Boolean) as SingleSequenceFetchParams[];
+};
 
-  return `/api/refget/sequence/${checksum}?accept=text/x-fasta`;
+// map of field names received from component to field names returned when fetching checksums
+const labelTypeToSequenceType: Record<
+  ProteinOption,
+  keyof TranscriptSequenceMetadata
+> = {
+  proteinSequence: 'protein',
+  cds: 'cds'
 };
