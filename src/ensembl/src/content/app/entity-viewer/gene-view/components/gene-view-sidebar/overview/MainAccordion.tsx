@@ -71,25 +71,6 @@ const MainAccordion = () => {
 
         <AccordionItem
           className={styles.entityViewerAccordionItem}
-          uuid={'sequence'}
-        >
-          <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton
-              className={disabledAccordionButtonClass}
-              disabled={true}
-            >
-              Sequence
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel
-            className={styles.entityViewerAccordionItemContent}
-          >
-            <div>No data available</div>
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem
-          className={styles.entityViewerAccordionItem}
           uuid={'other_data_sets'}
         >
           <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
