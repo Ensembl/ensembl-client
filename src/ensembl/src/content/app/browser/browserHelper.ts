@@ -181,7 +181,7 @@ export const validateRegion = async (params: {
       const regionId = buildEnsObjectId({
         genomeId,
         type: 'region',
-        objectId: response.region_id || ''
+        objectId: response.region_id as string
       });
       response.region_id = regionId;
 
