@@ -33,6 +33,7 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -187,12 +188,16 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+
   useEffect(() => {
     if (!genomeId || !props.gene) {
       return;
     }
 
-    dispatch(closeSidebarModal());
+    if (isSidebarOpen) {
+      dispatch(closeSidebarModal());
+    }
 
     dispatch(
       updatePreviouslyViewedEntities({
