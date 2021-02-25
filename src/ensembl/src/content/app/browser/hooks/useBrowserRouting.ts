@@ -16,7 +16,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { replace } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
@@ -155,7 +155,7 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      dispatch(replace(urlFor.browser(params)));
+      dispatch(push(urlFor.browser(params)));
     },
     [genomeId]
   );

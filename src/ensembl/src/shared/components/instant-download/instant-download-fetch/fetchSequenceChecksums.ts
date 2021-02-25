@@ -18,40 +18,56 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
-export type TranscriptChecksums = {
-  cdna: {
-    sequence_checksum: string;
-  };
-  cds: {
-    sequence_checksum: string;
-  };
-  product: {
-    stable_id: string;
-    sequence_checksum: string;
-  };
-};
-
-export type TranscriptFragment = {
+export type TranscriptSequenceMetadata = {
   stable_id: string;
-  product_generating_contexts: TranscriptChecksums[];
+  cdna?: {
+    checksum: string;
+    label: string;
+  };
+  cds?: {
+    checksum: string;
+    label: string;
+  };
+  protein?: {
+    checksum: string;
+    label: string;
+  };
 };
 
-export type TranscriptChecksumsData = {
-  transcript: TranscriptFragment;
+export type GeneSequenceMetadata = {
+  transcripts: TranscriptSequenceMetadata[];
 };
 
-type TranscriptChecksumsVariables = {
+type TranscriptQueryResult = {
+  transcript: {
+    stable_id: string;
+    product_generating_contexts: Array<{
+      cdna: {
+        sequence_checksum: string;
+      };
+      cds: {
+        sequence_checksum: string;
+      };
+      product: {
+        stable_id: string;
+        sequence_checksum: string;
+      };
+    }>;
+  };
+};
+
+type GeneQueryResult = {
+  gene: {
+    transcripts: TranscriptQueryResult[];
+  };
+};
+
+type TranscriptQueryVariables = {
   genomeId: string;
   transcriptId: string;
 };
 
-export type GeneChecksumsData = {
-  gene: {
-    transcripts: TranscriptFragment[];
-  };
-};
-
-type GeneChecksumsVariables = {
+type GeneQueryVariables = {
   genomeId: string;
   geneId: string;
 };
@@ -98,20 +114,53 @@ const geneChecksumsQuery = gql`
   }
 `;
 
-export const fetchTranscriptChecksums = (
-  variables: TranscriptChecksumsVariables
-) =>
+const processTranscriptData = (data: TranscriptQueryResult) => {
+  // TODO: expect to fetch genomic sequence here as well when checksum becomes available
+  const { stable_id } = data.transcript;
+  const productGeneratingContext =
+    data.transcript.product_generating_contexts[0];
+
+  if (!productGeneratingContext) {
+    return { stable_id };
+  }
+
+  return {
+    stable_id,
+    cdna: {
+      checksum: productGeneratingContext.cdna.sequence_checksum,
+      label: `${stable_id} cdna`
+    },
+    cds: {
+      checksum: productGeneratingContext.cds.sequence_checksum,
+      label: `${stable_id} cds`
+    },
+    protein: {
+      checksum: productGeneratingContext.product.sequence_checksum,
+      label: `${productGeneratingContext.product.stable_id} pep`
+    }
+  };
+};
+
+export const fetchTranscriptSequenceMetadata = (
+  variables: TranscriptQueryVariables
+): Promise<TranscriptSequenceMetadata> =>
   client
-    .query<TranscriptChecksumsData>({
+    .query<TranscriptQueryResult>({
       query: transcriptChecksumsQuery,
       variables
     })
-    .then(({ data }) => data.transcript.product_generating_contexts[0]);
+    .then(({ data }) => processTranscriptData(data));
 
-export const fetchGeneChecksums = (variables: GeneChecksumsVariables) =>
+export const fetchGeneequenceMetadata = (
+  variables: GeneQueryVariables
+): Promise<GeneSequenceMetadata> =>
   client
-    .query<GeneChecksumsData>({
+    .query<GeneQueryResult>({
       query: geneChecksumsQuery,
       variables
     })
-    .then(({ data }) => data.gene.transcripts);
+    .then(({ data }) => ({
+      transcripts: data.gene.transcripts.map((transcript) =>
+        processTranscriptData(transcript)
+      )
+    }));
