@@ -33,8 +33,7 @@ export enum StorageKeys {
   CHR_LOCATION = 'browser.chrLocation',
   DEFAULT_CHR_LOCATION = 'browser.defaultChrLocation',
   TRACK_STATES = 'browser.trackStates',
-  TRACK_PANELS = 'browser.trackPanels',
-  SELECTED_TRACK_PANEL_TAB = 'browser.selectedTrackPanelTab'
+  TRACK_PANELS = 'browser.trackPanels'
 }
 
 export class BrowserStorageService {
