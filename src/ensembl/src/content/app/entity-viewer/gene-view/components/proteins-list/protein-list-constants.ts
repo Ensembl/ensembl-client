@@ -15,3 +15,4 @@
  */
 
 export const SWISSPROT_SOURCE = 'Uniprot/SWISSPROT';
+export const SPTREMBL_SOURCE = 'Uniprot/SPTREMBL';
