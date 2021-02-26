@@ -81,7 +81,7 @@ const GeneOverview = () => {
 
       <div className={styles.sectionHead}>Gene name</div>
       <div className={styles.geneName}>
-        {gene.name && gene.name.length ? gene.name : 'None'}
+        {gene.name?.length ? gene.name : 'None'}
       </div>
 
       <div className={styles.sectionHead}>Synonyms</div>
