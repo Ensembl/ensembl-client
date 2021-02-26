@@ -34,7 +34,7 @@ import styles from './GeneOverview.scss';
   and check if some of the deleted code segments can be reused to display the new data.
 */
 
-export type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
+export type AccordionSectionID = 'function' | 'other_data_sets';
 
 const MainAccordion = () => {
   const disabledAccordionButtonClass = classNames(
