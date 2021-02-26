@@ -34,7 +34,7 @@ import styles from './GeneOverview.scss';
   and check if some of the deleted code segments can be reused to display the new data.
 */
 
-export type AccordionSectionID = 'function' | 'sequence' | 'other_data_sets';
+export type AccordionSectionID = 'function' | 'other_data_sets';
 
 const MainAccordion = () => {
   const disabledAccordionButtonClass = classNames(
@@ -66,25 +66,6 @@ const MainAccordion = () => {
             className={styles.entityViewerAccordionItemContent}
           >
             No data available
-          </AccordionItemPanel>
-        </AccordionItem>
-
-        <AccordionItem
-          className={styles.entityViewerAccordionItem}
-          uuid={'sequence'}
-        >
-          <AccordionItemHeading className={styles.entityViewerAccordionHeader}>
-            <AccordionItemButton
-              className={disabledAccordionButtonClass}
-              disabled={true}
-            >
-              Sequence
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel
-            className={styles.entityViewerAccordionItemContent}
-          >
-            <div>No data available</div>
           </AccordionItemPanel>
         </AccordionItem>
 
