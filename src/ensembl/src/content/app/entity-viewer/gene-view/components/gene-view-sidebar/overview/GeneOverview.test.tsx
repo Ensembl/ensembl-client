@@ -138,7 +138,7 @@ describe('<GeneOverview />', () => {
       expect(geneDetailsElement?.textContent).toBe(stableId);
     });
 
-    it('shows "None" message for gene without gene name', () => {
+    it('shows that the gene does not have a name', () => {
       const geneData = { ...completeGeneData, name: null };
       (useQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
@@ -151,7 +151,7 @@ describe('<GeneOverview />', () => {
       expect(geneNameElement?.textContent).toBe('None');
     });
 
-    it('shows "None" message for gene without synonyms', () => {
+    it('shows that the gene does not have synonyms', () => {
       const geneData = { ...completeGeneData, alternative_symbols: [] };
       (useQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
