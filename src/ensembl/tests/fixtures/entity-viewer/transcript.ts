@@ -21,18 +21,30 @@ import { createSlice } from './slice';
 import { createProduct } from './product';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { Exon, SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
 import { Slice } from 'src/shared/types/thoas/slice';
-import { CDS } from 'src/shared/types/thoas/cds';
+import { FullCDS } from 'src/shared/types/thoas/cds';
 import { CDNA } from 'src/shared/types/thoas/cdna';
-import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { ProductType } from 'src/shared/types/thoas/product';
 import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 
+type ProteinCodingProductGeneratingContext = Omit<
+  FullProductGeneratingContext,
+  'cds'
+> & { cds: FullCDS };
+
+type ProteinCodingTranscript = Omit<
+  FullTranscript,
+  'product_generating_contexts'
+> & {
+  product_generating_contexts: ProteinCodingProductGeneratingContext[];
+};
+
 export const createTranscript = (
-  fragment: Partial<Transcript> = {}
-): Transcript => {
+  fragment: Partial<ProteinCodingTranscript> = {}
+): ProteinCodingTranscript => {
   const transcriptSlice = createSlice();
 
   const unversionedStableId = faker.random.uuid();
@@ -42,6 +54,7 @@ export const createTranscript = (
   const exons = createExons(transcriptSlice);
 
   return {
+    type: 'Transcript',
     stable_id: stableId,
     unversioned_stable_id: unversionedStableId,
     version,
@@ -159,7 +172,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
   });
 };
 
-const createCDS = (transcriptSlice: Slice): CDS => {
+const createCDS = (transcriptSlice: Slice): FullCDS => {
   const { start, end } = getFeatureCoordinates({ slice: transcriptSlice });
   const nucleotideLength = end - start + 1;
   const proteinLength = Math.floor(nucleotideLength / 3);
@@ -187,7 +200,7 @@ const createCDNA = (transcriptSlice: Slice): CDNA => {
 const createProductGeneratingContext = (
   transcriptSlice: Slice,
   exons: Exon[]
-): ProductGeneratingContext => {
+): ProteinCodingProductGeneratingContext => {
   return {
     product_type: ProductType.PROTEIN,
     default: true,

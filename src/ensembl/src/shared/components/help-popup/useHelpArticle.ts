@@ -69,7 +69,7 @@ const useHelpArticle = (reference: ArticleReference | VideoReference) => {
   );
 
   const query = reference.type === 'article' ? getQuery(reference) : null;
-  const url = query ? `/help-api/article?${query}` : '';
+  const url = query ? `/api/docs/article?${query}` : '';
 
   const { data: article, loadingState } = useApiService<HelpArticle>({
     endpoint: url,

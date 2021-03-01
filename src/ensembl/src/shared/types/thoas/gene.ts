@@ -15,26 +15,20 @@
  */
 
 import { Slice } from './slice';
-import { Transcript } from './transcript';
-import { Source } from './source';
+import { FullTranscript } from './transcript';
+import { ExternalReference } from './externalReference';
 
-/**
- * NOTE:
- * - According to CDM, the Gene type should have a `type` field with the value "Gene"
- *   (this should help with mixed responses, e.g. with search). But at the moment,
- *   the backend is not including this field in the response.
- * - There are ongoing conversations about the `so_term` and `biotype` field.
- *   We want the biotype; but it's not currently available; so we are using so_term instead
- */
-export type Gene = {
+// description of all gene fields that can be retrieved from a graphql api
+export type FullGene = {
+  type: 'Gene';
   stable_id: string;
   unversioned_stable_id: string;
   version: number | null;
   symbol: string | null;
   name: string | null;
-  source?: Source;
   so_term: string;
   slice: Slice;
-  transcripts: Transcript[];
-  alternative_symbols?: string[];
+  transcripts: FullTranscript[];
+  alternative_symbols: string[];
+  external_references: ExternalReference[];
 };

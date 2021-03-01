@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
+import { Pick2 } from 'ts-multipick';
 
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -36,8 +37,8 @@ import {
   ExternalReferencesGroup
 } from 'src/shared/types/thoas/externalReference';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { SliceWithLocationOnly } from 'src/shared/types/thoas/slice';
-import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { Slice } from 'src/shared/types/thoas/slice';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './GeneExternalReferences.scss';
 
@@ -97,11 +98,12 @@ const QUERY = gql`
 type Transcript = {
   stable_id: string;
   so_term: string;
-  slice: SliceWithLocationOnly;
-  product_generating_contexts: Pick<
-    ProductGeneratingContext,
-    'product_type' | 'product'
-  >[];
+  slice: Pick2<Slice, 'location', 'length'>;
+  product_generating_contexts: Array<
+    Pick<FullProductGeneratingContext, 'product_type'> & {
+      product: { external_references: ExternalReferenceType[] };
+    }
+  >;
   external_references: ExternalReferenceType[];
 };
 

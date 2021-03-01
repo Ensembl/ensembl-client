@@ -16,14 +16,9 @@
 
 import React from 'react';
 
-import { Transcript } from 'src/shared/types/thoas/transcript';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import styles from './TranscriptQualityLabel.scss';
-
-type TranscriptQualityLabelProps = {
-  transcript: Transcript;
-};
 
 const transcriptLabelMap = {
   selected: {
@@ -33,8 +28,9 @@ const transcriptLabelMap = {
   }
 };
 
-export const TranscriptQualityLabel = (props: TranscriptQualityLabelProps) => {
-  const transcriptQuality = props.transcript && 'selected'; // TODO Change this to props.transcript.mane/plus etc when available
+export const TranscriptQualityLabel = () => {
+  // TODO show more meaningful labels by using transcript metadata when the api starts returning it
+  const transcriptQuality = 'selected';
 
   const labelText = transcriptLabelMap[transcriptQuality]?.label;
   if (!labelText) {

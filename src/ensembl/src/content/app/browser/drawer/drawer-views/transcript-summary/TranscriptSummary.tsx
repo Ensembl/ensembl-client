@@ -40,31 +40,30 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
-import { Transcript as TranscriptFromGraphql } from 'src/shared/types/thoas/transcript';
-import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
-import { ProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './TranscriptSummary.scss';
 
-type Transcript = Required<
-  Pick<
-    TranscriptFromGraphql,
-    | 'stable_id'
-    | 'unversioned_stable_id'
-    | 'symbol'
-    | 'so_term'
-    | 'external_references'
-    | 'slice'
-    | 'spliced_exons'
-    | 'product_generating_contexts'
-  >
+// TODO: narrow down the types for spliced exons and product-generating_contexts
+type Transcript = Pick<
+  FullTranscript,
+  | 'stable_id'
+  | 'unversioned_stable_id'
+  | 'symbol'
+  | 'so_term'
+  | 'external_references'
+  | 'slice'
+  | 'spliced_exons'
+  | 'product_generating_contexts'
 >;
 
-type Gene = Required<
-  Pick<
-    GeneFromGraphql,
-    'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name'
-  >
+// TODO: narrow down the type and use it in the Transcript type
+type ProductGeneratingContext = Transcript['product_generating_contexts'][number];
+
+type Gene = Pick<
+  FullGene,
+  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name'
 >;
 
 const GENE_AND_TRANSCRIPT_QUERY = gql`
@@ -174,7 +173,7 @@ const TranscriptSummary = () => {
 
   const focusId = buildFocusIdForUrl({
     type: 'gene',
-    objectId: gene.unversioned_stable_id as string
+    objectId: gene.unversioned_stable_id
   });
 
   const entityViewerUrl = urlFor.entityViewer({
@@ -183,11 +182,11 @@ const TranscriptSummary = () => {
   });
 
   const uniprotXref = product?.external_references.find(
-    (xref) => xref.source.id == 'Uniprot/SWISSPROT'
+    (xref) => xref.source.id === 'Uniprot/SWISSPROT'
   );
 
   const ccdsXref = transcript.external_references.find(
-    (xref) => xref.source.id == 'CCDS'
+    (xref) => xref.source.id === 'CCDS'
   );
 
   const splicedRNALength = getCommaSeparatedNumber(
@@ -329,7 +328,7 @@ const TranscriptSummary = () => {
         <div className={styles.value}>
           <ViewInApp
             classNames={{ label: styles.lightText }}
-            links={{ entityViewer: entityViewerUrl }}
+            links={{ entityViewer: { url: entityViewerUrl } }}
           />
         </div>
       </div>

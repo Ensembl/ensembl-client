@@ -17,6 +17,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
+import { Pick3 } from 'ts-multipick';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -30,7 +31,7 @@ import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelect
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
-import { Gene as GeneFromGraphql } from 'src/shared/types/thoas/gene';
+import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneSummary.scss';
 
@@ -40,6 +41,7 @@ const GENE_QUERY = gql`
       alternative_symbols
       name
       stable_id
+      unversioned_stable_id
       symbol
       so_term
       transcripts {
@@ -48,7 +50,6 @@ const GENE_QUERY = gql`
       slice {
         strand {
           code
-          value
         }
         location {
           length
@@ -58,18 +59,19 @@ const GENE_QUERY = gql`
   }
 `;
 
-type Gene = Required<
-  Pick<
-    GeneFromGraphql,
-    | 'stable_id'
-    | 'symbol'
-    | 'name'
-    | 'alternative_symbols'
-    | 'so_term'
-    | 'transcripts'
-    | 'slice'
-  >
->;
+type Gene = Pick<
+  FullGene,
+  | 'stable_id'
+  | 'unversioned_stable_id'
+  | 'symbol'
+  | 'name'
+  | 'alternative_symbols'
+  | 'so_term'
+> &
+  Pick3<FullGene, 'slice', 'strand', 'code'> &
+  Pick3<FullGene, 'slice', 'location', 'length'> & {
+    transcripts: { stable_id: string }[];
+  };
 
 const GeneSummary = () => {
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
@@ -96,7 +98,7 @@ const GeneSummary = () => {
 
   const focusId = buildFocusIdForUrl({
     type: 'gene',
-    objectId: gene.stable_id as string
+    objectId: gene.unversioned_stable_id
   });
   const entityViewerUrl = urlFor.entityViewer({
     genomeId: ensObjectGene.genome_id,
@@ -142,7 +144,7 @@ const GeneSummary = () => {
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
-          <ViewInApp links={{ entityViewer: entityViewerUrl }} />
+          <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
         </div>
       </div>
     </div>

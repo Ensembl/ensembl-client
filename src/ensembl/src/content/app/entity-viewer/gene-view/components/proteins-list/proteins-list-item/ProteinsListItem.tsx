@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { replace } from 'connected-react-router';
 import classNames from 'classnames';
+import { Pick2 } from 'ts-multipick';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
@@ -26,9 +27,14 @@ import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
 
-import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
+import ProteinsListItemInfo, {
+  Props as ProteinsListItemInfoProps
+} from '../proteins-list-item-info/ProteinsListItemInfo';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { Product as FullProduct } from 'src/shared/types/thoas/product';
+import { ExternalReference as FullExternalReference } from 'src/shared/types/thoas/externalReference';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import { SWISSPROT_SOURCE } from '../protein-list-constants';
@@ -36,7 +42,26 @@ import { SWISSPROT_SOURCE } from '../protein-list-constants';
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
 
-type Props = {
+type Product = Pick<
+  FullProduct,
+  'stable_id' | 'length' | 'unversioned_stable_id'
+> & {
+  external_references: Array<
+    Pick<FullExternalReference, 'accession_id' | 'name' | 'description'> &
+      Pick2<FullExternalReference, 'source', 'id'>
+  >;
+};
+
+type Transcript = Pick<FullTranscript, 'stable_id'> &
+  ProteinsListItemInfoProps['transcript'] & {
+    product_generating_contexts: Array<
+      Pick<FullProductGeneratingContext, 'product_type'> & {
+        product: Product;
+      }
+    >;
+  };
+
+export type Props = {
   transcript: Transcript;
   isDefault?: boolean;
   trackLength: number;
@@ -87,7 +112,8 @@ const ProteinsListItem = (props: Props) => {
 
   const getProteinDescription = () => {
     const swissprotReference = product.external_references.find(
-      (reference) => reference.source.id === SWISSPROT_SOURCE
+      (reference: Product['external_references'][number]) =>
+        reference.source.id === SWISSPROT_SOURCE
     );
 
     return swissprotReference?.description;
@@ -98,7 +124,7 @@ const ProteinsListItem = (props: Props) => {
       <span className={styles.scrollRef} ref={itemRef}></span>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>
-          {isDefault && <TranscriptQualityLabel transcript={transcript} />}
+          {isDefault && <TranscriptQualityLabel />}
         </div>
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{getProductAminoAcidLength(transcript)} aa</div>

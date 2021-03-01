@@ -36,18 +36,27 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
-import DefaultTranscriptslist from './components/default-transcripts-list/DefaultTranscriptsList';
+import GeneOverviewImage, {
+  GeneOverviewImageProps
+} from './components/gene-overview-image/GeneOverviewImage';
+import DefaultTranscriptsList, {
+  Props as DefaultTranscriptsListProps
+} from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
-import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
+import GeneFunction, {
+  Props as GeneFunctionProps
+} from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
-import { Gene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneView.scss';
+
+type Gene = GeneOverviewImageProps['gene'] &
+  DefaultTranscriptsListProps['gene'] &
+  GeneFunctionProps['gene'];
 
 type GeneViewWithDataProps = {
   gene: Gene;
@@ -192,7 +201,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         />
       </div>
       <div className={styles.viewInLinks}>
-        <ViewInApp links={{ genomeBrowser: gbUrl }} />
+        <ViewInApp links={{ genomeBrowser: { url: gbUrl } }} />
       </div>
 
       <div className={styles.geneViewTabs}>
@@ -201,7 +210,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.geneViewTabContent}>
         {selectedTabs.primaryTab === GeneViewTabName.TRANSCRIPTS &&
           basePairsRulerTicks && (
-            <DefaultTranscriptslist
+            <DefaultTranscriptsList
               gene={props.gene}
               rulerTicks={basePairsRulerTicks}
             />

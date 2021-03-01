@@ -20,6 +20,8 @@ import {
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
+import get from 'lodash/get';
+import merge from 'lodash/merge';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { RootState } from 'src/store';
@@ -58,19 +60,21 @@ export type SpeciesSidebarPayload = {
   strain: Strain | null;
 };
 
-type SpeciesPageSidebarState = {
-  isOpen: boolean;
-  species: {
-    [genomeId: string]: {
-      payload: SpeciesSidebarPayload | null;
-    };
-  };
+type StateForGenome = {
+  payload: SpeciesSidebarPayload | null;
+  isSidebarOpen: boolean;
 };
 
-const initialState: SpeciesPageSidebarState = {
-  isOpen: true,
-  species: {}
+const initialStateForGenome: StateForGenome = {
+  payload: null,
+  isSidebarOpen: true
 };
+
+type SpeciesPageSidebarState = {
+  [genomeId: string]: StateForGenome;
+};
+
+const initialState: SpeciesPageSidebarState = {};
 
 export const fetchSidebarPayload = (): ThunkAction<
   void,
@@ -94,12 +98,29 @@ export const fetchSidebarPayload = (): ThunkAction<
   );
 };
 
+const updateStateForGenome = (
+  state: SpeciesPageSidebarState,
+  genomeId: string,
+  fragment: Partial<StateForGenome>
+) => {
+  const stateForGenome = get(state, genomeId, initialStateForGenome);
+  const updatedStateForGenome = merge({}, stateForGenome, fragment);
+  state[genomeId] = updatedStateForGenome;
+};
+
 const speciesPageSidebarSlice = createSlice({
   name: 'species-page-sidebar',
   initialState,
   reducers: {
-    toggleSidebar(state) {
-      state.isOpen = !state.isOpen;
+    toggleSidebar(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+      }>
+    ) {
+      const isSidebarOpen =
+        !state[action.payload.genomeId].isSidebarOpen ?? true;
+      updateStateForGenome(state, action.payload.genomeId, { isSidebarOpen });
     },
 
     setSidebarPayloadForGenomeId(
@@ -109,11 +130,9 @@ const speciesPageSidebarSlice = createSlice({
         sidebarPayload: SpeciesSidebarPayload;
       }>
     ) {
-      if (!state.species[action.payload.genomeId]) {
-        state.species[action.payload.genomeId] = { payload: null };
-      }
-      state.species[action.payload.genomeId].payload =
-        action.payload.sidebarPayload;
+      updateStateForGenome(state, action.payload.genomeId, {
+        payload: action.payload.sidebarPayload
+      });
     }
   }
 });

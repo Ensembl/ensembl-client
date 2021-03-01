@@ -208,7 +208,7 @@ export const fetchAssemblies: ActionCreator<ThunkAction<
   try {
     dispatch(fetchAssembliesAsyncActions.request());
 
-    const url = `/api/alternative_assemblies?genome_id=${genomeId}`;
+    const url = `/api/genomesearch/alternative_assemblies?genome_id=${genomeId}`;
     const response = await apiService.fetch(url, { preserveEndpoint: true });
 
     dispatch(
@@ -230,7 +230,7 @@ export const fetchPopularSpecies: ActionCreator<ThunkAction<
   try {
     dispatch(fetchPopularSpeciesAsyncActions.request());
 
-    const url = '/api/popular_genomes';
+    const url = '/api/genomesearch/popular_genomes';
     const response = await apiService.fetch(url);
 
     dispatch(

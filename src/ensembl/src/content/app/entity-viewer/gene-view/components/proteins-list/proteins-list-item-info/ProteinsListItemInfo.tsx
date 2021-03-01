@@ -17,6 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
+import { Pick2 } from 'ts-multipick';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { PrimaryButton } from 'src/shared/components/button/Button';
@@ -37,15 +38,45 @@ import {
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { Product } from 'src/shared/types/thoas/product';
 import { ProteinDomain } from 'src/shared/types/thoas/product';
+import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 
 import { SWISSPROT_SOURCE } from '../protein-list-constants';
 
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
-type Props = {
+type ProductWithoutDomains = Pick<
+  Product,
+  'length' | 'unversioned_stable_id'
+> & {
+  external_references: Array<
+    Pick<ExternalReferenceType, 'accession_id' | 'name'> &
+      Pick2<ExternalReferenceType, 'source', 'id'>
+  >;
+};
+
+type ProductWithDomains = ProductWithoutDomains & {
+  protein_domains: ProteinDomain[];
+};
+
+type Transcript = Pick<FullTranscript, 'unversioned_stable_id'> & {
+  product_generating_contexts: Array<{
+    product: ProductWithoutDomains;
+  }>;
+};
+
+type TranscriptWithProteinDomains = Transcript & {
+  product_generating_contexts: Array<
+    Transcript['product_generating_contexts'][number] & {
+      product: ProductWithDomains;
+    }
+  >;
+};
+
+export type Props = {
   transcript: Transcript;
   trackLength: number;
 };
@@ -60,7 +91,7 @@ const addProteinDomains = (
     ['product_generating_contexts', '0', 'product', 'protein_domains'],
     proteinDomains,
     transcript
-  );
+  ) as TranscriptWithProteinDomains;
 };
 
 const ProteinsListItemInfo = (props: Props) => {
@@ -71,17 +102,13 @@ const ProteinsListItemInfo = (props: Props) => {
   const [
     transcriptWithProteinDomains,
     setTranscriptWithProteinDomains
-  ] = useState<Transcript | null>(null);
+  ] = useState<TranscriptWithProteinDomains | null>(null);
 
   const [proteinSummaryStats, setProteinSummaryStats] = useState<
     ProteinStats | null | undefined
   >();
 
   const [domainsLoadingState, setDomainsLoadingState] = useState<LoadingState>(
-    LoadingState.LOADING
-  );
-
-  const [xrefLoadingState, setXrefLoadingState] = useState<LoadingState>(
     LoadingState.LOADING
   );
 
@@ -92,10 +119,10 @@ const ProteinsListItemInfo = (props: Props) => {
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
 
-  const { product } =
+  const { product: productWithProteinDomains } =
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
-  const uniprotXref = product?.external_references.find(
+  const uniprotXref = transcript.product_generating_contexts[0].product.external_references.find(
     (xref) => xref.source.id === SWISSPROT_SOURCE
   );
 
@@ -124,7 +151,8 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (xrefLoadingState === LoadingState.SUCCESS && !uniprotXref) {
+    if (summaryStatsLoadingState === LoadingState.LOADING && !uniprotXref) {
+      // if uniprotXref is absent, we cannot fetch relevant data from PDBe; so pretend that we've successfully completed the request
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
@@ -147,19 +175,19 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryStatsLoadingState, xrefLoadingState, uniprotXref]);
+  }, [summaryStatsLoadingState, uniprotXref]);
 
   return (
     <div className={styles.proteinsListItemInfo}>
-      {product && (
+      {productWithProteinDomains && (
         <>
           <ProteinDomainImage
-            proteinDomains={product.protein_domains}
+            proteinDomains={productWithProteinDomains.protein_domains}
             trackLength={trackLength}
             width={gene_image_width}
           />
           <ProteinImage
-            product={product}
+            product={productWithProteinDomains}
             trackLength={trackLength}
             width={gene_image_width}
           />
@@ -169,7 +197,7 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {uniprotXref && (
+            {uniprotXref && domainsLoadingState === LoadingState.SUCCESS && (
               <div className={styles.interproUniprotWrapper}>
                 <ProteinExternalReference
                   source={ExternalSource.INTERPRO}
@@ -183,35 +211,37 @@ const ProteinsListItemInfo = (props: Props) => {
                 />
               </div>
             )}
-            <div className={styles.downloadWrapper}>
-              <InstantDownloadProtein
-                genomeId={genomeId}
-                transcriptId={transcript.unversioned_stable_id}
-              />
-            </div>
+            {domainsLoadingState === LoadingState.SUCCESS && (
+              <div className={styles.downloadWrapper}>
+                <InstantDownloadProtein
+                  genomeId={genomeId}
+                  transcriptId={transcript.unversioned_stable_id}
+                />
+              </div>
+            )}
           </div>
-          {proteinSummaryStats && uniprotXref && (
-            <div>
-              <ProteinExternalReference
-                source={ExternalSource.PDBE}
-                accessionId={uniprotXref.accession_id}
-                name={uniprotXref.name}
-              />
-              {proteinSummaryStats && (
-                <div className={styles.proteinFeaturesCountWrapper}>
-                  <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
-                </div>
-              )}
-            </div>
-          )}
+          {proteinSummaryStats &&
+            uniprotXref &&
+            domainsLoadingState === LoadingState.SUCCESS && (
+              <div>
+                <ProteinExternalReference
+                  source={ExternalSource.PDBE}
+                  accessionId={uniprotXref.accession_id}
+                  name={uniprotXref.name}
+                />
+                {proteinSummaryStats && (
+                  <div className={styles.proteinFeaturesCountWrapper}>
+                    <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
+                  </div>
+                )}
+              </div>
+            )}
         </>
         <StatusContent
           summaryLoadingState={summaryStatsLoadingState}
           domainsLoadingState={domainsLoadingState}
-          xrefLoadingState={xrefLoadingState}
           setSummaryStatsLoadingState={setSummaryStatsLoadingState}
           setDomainsLoadingState={setDomainsLoadingState}
-          setXrefLoadingState={setXrefLoadingState}
         />
 
         <div className={styles.keyline}></div>
@@ -223,10 +253,8 @@ const ProteinsListItemInfo = (props: Props) => {
 type StatusContentProps = {
   summaryLoadingState: LoadingState;
   domainsLoadingState: LoadingState;
-  xrefLoadingState: LoadingState;
   setSummaryStatsLoadingState: (loadingState: LoadingState) => void;
   setDomainsLoadingState: (loadingState: LoadingState) => void;
-  setXrefLoadingState: (loadingState: LoadingState) => void;
 };
 
 const StatusContent = (props: StatusContentProps) => {
