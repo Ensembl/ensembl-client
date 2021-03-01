@@ -18,12 +18,12 @@ import React, { useState, useRef, ReactNode } from 'react';
 import PointerBox, {
   Position
 } from 'src/shared/components/pointer-box/PointerBox';
-import ViewInApp, { urlObj } from 'src/shared/components/view-in-app/ViewInApp';
+import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 
 import styles from './ViewInAppPopup.scss';
 
 export type ViewInAppPopupProps = {
-  links: Partial<urlObj>;
+  links: UrlObj;
   children: ReactNode;
   position: Position;
 };

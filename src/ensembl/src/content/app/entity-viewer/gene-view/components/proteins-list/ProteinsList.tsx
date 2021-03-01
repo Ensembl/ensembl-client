@@ -17,8 +17,11 @@
 import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
+import { Pick3 } from 'ts-multipick';
 
-import ProteinsListItem from './proteins-list-item/ProteinsListItem';
+import ProteinsListItem, {
+  Props as ProteinListItemProps
+} from './proteins-list-item/ProteinsListItem';
 
 import {
   getLongestProteinLength,
@@ -33,12 +36,25 @@ import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
 import { getSortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
-import { Gene } from 'src/shared/types/thoas/gene';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullGene } from 'src/shared/types/thoas/gene';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { Exon } from 'src/shared/types/thoas/exon';
 
 import styles from './ProteinsList.scss';
 
-type ProteinsListProps = {
+type Transcript = Pick<FullTranscript, 'so_term'> &
+  ProteinListItemProps['transcript'] &
+  Pick3<FullTranscript, 'slice', 'location', 'length'> & {
+    spliced_exons: Array<{
+      exon: Pick3<Exon, 'slice', 'location', 'length'>;
+    }>;
+  };
+
+type Gene = Pick<FullGene, 'stable_id'> & {
+  transcripts: Transcript[];
+};
+
+export type ProteinsListProps = {
   gene: Gene;
 };
 
@@ -55,12 +71,10 @@ const ProteinsList = (props: ProteinsListProps) => {
   const sortingRule = useSelector(getSortingRule);
 
   const sortingFunction = transcriptSortingFunctions[sortingRule];
-  const sortedTranscripts = sortingFunction(
-    props.gene.transcripts
-  ) as Transcript[];
+  const sortedTranscripts = sortingFunction(props.gene.transcripts);
   const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
-  );
+  ) as Transcript[];
 
   useEffect(() => {
     const hasExpandedTranscripts = !!expandedTranscriptIds.length;

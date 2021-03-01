@@ -69,7 +69,7 @@ const SpeciesPage = () => {
         topbarContent={<TopBar />}
         isSidebarOpen={sidebarStatus}
         onSidebarToggle={() => {
-          dispatch(toggleSidebar());
+          dispatch(toggleSidebar({ genomeId }));
         }}
         viewportWidth={BreakpointWidth.DESKTOP}
       />

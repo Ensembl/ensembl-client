@@ -16,6 +16,7 @@
 
 import sortBy from 'lodash/sortBy';
 import partition from 'lodash/partition';
+import { Pick2 } from 'ts-multipick';
 
 import {
   getFeatureLength,
@@ -27,11 +28,13 @@ import {
 
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import { SliceWithLocationOnly } from 'src/shared/types/thoas/slice';
+import { Slice } from 'src/shared/types/thoas/slice';
+
+type SliceWithOnlyLength = Pick2<Slice, 'location', 'length'>;
 
 function compareTranscriptLengths(
-  transcriptOne: { slice: SliceWithLocationOnly },
-  transcriptTwo: { slice: SliceWithLocationOnly }
+  transcriptOne: { slice: SliceWithOnlyLength },
+  transcriptTwo: { slice: SliceWithOnlyLength }
 ) {
   const transcriptOneLength = getFeatureLength(transcriptOne);
   const transcriptTwoLength = getFeatureLength(transcriptTwo);
@@ -50,7 +53,7 @@ function compareTranscriptLengths(
 export function defaultSort<
   T extends Array<
     IsProteinCodingTranscriptParam & {
-      slice: SliceWithLocationOnly;
+      slice: SliceWithOnlyLength;
       so_term: string;
     }
   >
@@ -107,7 +110,7 @@ export function sortByExonCountAsc<
 type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
   GetSplicedRNALengthParam & {
     so_term: string;
-    slice: SliceWithLocationOnly;
+    slice: SliceWithOnlyLength;
     spliced_exons: unknown[];
   };
 

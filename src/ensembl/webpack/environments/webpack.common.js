@@ -1,8 +1,8 @@
 const path = require('path');
-const postcssPresetEnv = require('postcss-preset-env');
 const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
+const WorkerPlugin = require("worker-plugin");
 
 const { getPaths } = require('../paths');
 const { isDevelopment } = require('./environment-detector');
@@ -97,7 +97,9 @@ module.exports = (env) => {
         filename: isDev ? 'index.html' : '../index.html',
         template: paths.htmlTemplatePath,
         publicPath: '/'
-      })
+      }),
+
+      new WorkerPlugin()
     ],
 
     // configuration that allows us to not to use file extensions and shorten import paths (using aliases)

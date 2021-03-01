@@ -32,9 +32,7 @@ import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
-import ProteinsList from '../proteins-list/ProteinsList';
-
-import { Gene } from 'src/shared/types/thoas/gene';
+import ProteinsList, { ProteinsListProps } from '../proteins-list/ProteinsList';
 
 import styles from './GeneFunction.scss';
 
@@ -52,8 +50,8 @@ const tabClassNames = {
   selected: styles.selectedTabName
 };
 
-type Props = {
-  gene: Gene;
+export type Props = {
+  gene: ProteinsListProps['gene'];
 };
 
 const GeneFunction = (props: Props) => {

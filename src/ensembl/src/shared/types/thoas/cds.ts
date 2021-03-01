@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type CDS = {
+export type FullCDS = {
   start: number;
   end: number;
   relative_start: number;

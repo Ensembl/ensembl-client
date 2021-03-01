@@ -68,7 +68,7 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
         limit: 20,
         exclude: committedSpeciesIds
       });
-      const url = `/api/genome_search?${query}`;
+      const url = `/api/genomesearch/genome_search?${query}`;
       return observableApiService.fetch(url);
     }),
     map((response) => {

@@ -27,7 +27,7 @@ const TRACK_HEIGHT = 24;
 const PROTEIN_HEIGHT = 10;
 
 type ProteinImageProps = {
-  product: Product;
+  product: Pick<Product, 'length'>;
   trackLength: number; // length in amino acids
   className?: string;
   width: number; // available width for drawing in pixels

@@ -16,28 +16,20 @@
 
 import { Slice } from './slice';
 import { SplicedExon } from './exon';
-import { ProductGeneratingContext } from './productGeneratingContext';
+import { FullProductGeneratingContext } from './productGeneratingContext';
 import { LocationWithinRegion } from './location';
-import { ExternalReference } from 'src/shared/types/thoas/externalReference';
+import { ExternalReference } from './externalReference';
 
-/**
- * NOTE:
- * - According to CDM, the Transcript type should have a `type` field with the value "Transcript"
- *   (this should help with mixed responses, e.g. with search). But at the moment,
- *   the backend is not including this field in the response.
- * - There are ongoing conversations about the `so_term` and `biotype` field.
- *   We want the biotype; but it's not currently available; so we are using so_term instead
- */
-
-export type Transcript = {
+export type FullTranscript = {
+  type: 'Transcript';
   stable_id: string;
   unversioned_stable_id: string;
   version: number | null;
-  symbol: string;
+  symbol: string | null;
   so_term: string;
   slice: Slice;
   relative_location: LocationWithinRegion;
   spliced_exons: SplicedExon[];
-  product_generating_contexts: ProductGeneratingContext[];
+  product_generating_contexts: FullProductGeneratingContext[];
   external_references: ExternalReference[];
 };

@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { push, Push } from 'connected-react-router';
+import { useDispatch } from 'react-redux';
+import { push, replace } from 'connected-react-router';
 import classNames from 'classnames';
 
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
@@ -41,11 +41,12 @@ export const Apps = {
 
 export type AppName = keyof typeof Apps;
 
-export type urlObj = Record<AppName, string>;
+export type LinkObj = { url: string; replaceState?: boolean };
+
+export type UrlObj = Partial<Record<AppName, LinkObj>>;
 
 export type ViewInAppProps = {
-  links: Partial<urlObj>;
-  push: Push;
+  links: UrlObj;
   classNames?: {
     label?: string;
   };
@@ -62,12 +63,14 @@ export const ViewInApp = (props: ViewInAppProps) => {
     <div className={styles.viewInAppLinkButtons}>
       <span className={labelClass}>View in</span>
       {(Object.keys(props.links) as AppName[]).map((appId) => {
+        const currentLinkObj = props.links[appId] as LinkObj;
+
         return (
           <AppButton
             key={appId}
             appId={appId}
-            url={props.links[appId] as string}
-            push={props.push}
+            url={currentLinkObj.url}
+            replaceState={currentLinkObj.replaceState}
           />
         );
       })}
@@ -78,16 +81,22 @@ export const ViewInApp = (props: ViewInAppProps) => {
 type AppButtonProps = {
   appId: AppName;
   url: string;
-  push: Push;
+  replaceState?: boolean;
 };
 
 export const AppButton = (props: AppButtonProps) => {
+  const dispatch = useDispatch();
+
   const handleClick = () => {
-    props.push(props.url);
+    if (props.replaceState) {
+      dispatch(replace(props.url));
+    } else {
+      dispatch(push(props.url));
+    }
   };
 
   return (
-    <div className={styles.viewInAppLink}>
+    <div className={styles.viewInAppLink} data-test-id={props.appId}>
       <ImageButton
         status={Status.DEFAULT}
         description={Apps[props.appId].tooltip}
@@ -98,8 +107,4 @@ export const AppButton = (props: AppButtonProps) => {
   );
 };
 
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(null, mapDispatchToProps)(ViewInApp);
+export default ViewInApp;

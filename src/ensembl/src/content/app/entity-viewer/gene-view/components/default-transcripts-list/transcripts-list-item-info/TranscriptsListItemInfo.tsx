@@ -18,6 +18,7 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
+import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -39,12 +40,41 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 
-import { Gene } from 'src/shared/types/thoas/gene';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullGene } from 'src/shared/types/thoas/gene';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
+
+type Gene = Pick<FullGene, 'unversioned_stable_id'>;
+type Transcript = Pick<
+  FullTranscript,
+  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'so_term'
+> &
+  Pick2<FullTranscript, 'slice', 'location'> &
+  Pick3<FullTranscript, 'slice', 'region', 'name'> & {
+    spliced_exons: Array<
+      Pick2<SplicedExon, 'exon', 'stable_id'> &
+        Pick4<SplicedExon, 'exon', 'slice', 'location', 'length'>
+    >;
+  } & {
+    product_generating_contexts: Array<
+      Pick<FullProductGeneratingContext, 'product_type'> &
+        Pick2<
+          FullProductGeneratingContext,
+          'product',
+          'length' | 'stable_id'
+        > & {
+          phased_exons: Array<
+            Pick<PhasedExon, 'start_phase' | 'end_phase'> &
+              Pick2<PhasedExon, 'exon', 'stable_id'>
+          >;
+        }
+    >;
+  };
 
 export type TranscriptsListItemInfoProps = {
   gene: Gene;
@@ -159,7 +189,7 @@ export const TranscriptsListItemInfo = (
           <strong>{transcript.symbol}</strong>
         </div>
         <div className={styles.viewInApp}>
-          <ViewInApp links={{ genomeBrowser: getBrowserLink() }} />
+          <ViewInApp links={{ genomeBrowser: { url: getBrowserLink() } }} />
         </div>
       </div>
     </div>

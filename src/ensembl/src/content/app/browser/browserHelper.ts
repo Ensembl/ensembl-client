@@ -176,12 +176,12 @@ export const validateRegion = async (params: {
 
   if (genomeId) {
     try {
-      const url = `/api/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
+      const url = `/api/genomesearch/genome/region/validate?genome_id=${genomeId}&region=${regionInput}`;
       const response: RegionValidationResponse = await apiService.fetch(url);
       const regionId = buildEnsObjectId({
         genomeId,
         type: 'region',
-        objectId: regionInput
+        objectId: response.region_id as string
       });
       response.region_id = regionId;
 

@@ -17,6 +17,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
+import { Pick2, Pick3 } from 'ts-multipick';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import {
@@ -35,18 +36,40 @@ import {
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
+import DefaultTranscriptsListItem, {
+  DefaultTranscriptListItemProps
+} from './default-transcripts-list-item/DefaultTranscriptListItem';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { Gene } from 'src/shared/types/thoas/gene';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullGene } from 'src/shared/types/thoas/gene';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { FullCDS } from 'src/shared/types/thoas/cds';
+import { SplicedExon } from 'src/shared/types/thoas/exon';
+import { Slice } from 'src/shared/types/thoas/slice';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
 
-type Props = {
+type ProductGeneratingContext = {
+  product_type: FullProductGeneratingContext['product_type'];
+  cds: Pick<FullCDS, 'relative_start' | 'relative_end'>;
+};
+type Transcript = DefaultTranscriptListItemProps['transcript'] & {
+  so_term: FullTranscript['so_term'];
+  product_generating_contexts: ProductGeneratingContext[];
+} & {
+  spliced_exons: Array<Pick3<SplicedExon, 'exon', 'slice', 'location'>>;
+} & Pick2<FullTranscript, 'slice', 'location'>;
+type Gene = DefaultTranscriptListItemProps['gene'] & {
+  stable_id: FullGene['stable_id'];
+  transcripts: Array<Transcript>;
+  slice: Pick2<Slice, 'location', 'start' | 'end'>;
+};
+
+export type Props = {
   gene: Gene;
   rulerTicks: TicksAndScale;
 };

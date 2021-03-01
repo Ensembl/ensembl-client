@@ -15,148 +15,250 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
+import set from 'lodash/fp/set';
 
-import { createEnsObject } from 'tests/fixtures/ens-object';
 import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { PreviouslyViewedObject } from '../../trackPanelState';
+import * as trackPanelActions from '../../trackPanelActions';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
-    <div {...props} className={'link'}>
+    <a href={props.to} onClick={props.onClick}>
       {props.children}
-    </div>
+    </a>
   )
 }));
 
-const createPreviouslyViewedLink = (): PreviouslyViewedObject => ({
+const genomeId = 'triticum_aestivum_GCA_900519105_1';
+const geneId = 'TraesCS3D02G273600';
+const region = '3D:2585940-2634711';
+const geneObjectId = `${genomeId}:gene:${geneId}`;
+const regionObjectId = `${genomeId}:region:${region}`;
+
+const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.random.uuid()}`,
   object_type: 'gene',
   label: faker.random.word()
 });
 
-const closeTrackPanelModal = jest.fn();
-const updateTrackStatesAndSave = jest.fn();
-const fetchExampleEnsObjects = jest.fn();
-const changeDrawerViewAndOpen = jest.fn();
+const previouslyViewedObjects = [
+  {
+    genome_id: genomeId,
+    object_id: geneObjectId,
+    object_type: 'gene',
+    label: geneId
+  },
+  {
+    genome_id: genomeId,
+    object_id: regionObjectId,
+    object_type: 'region',
+    label: region
+  }
+];
+
+const example_objects = [
+  {
+    id: geneId,
+    type: 'gene'
+  },
+  {
+    id: region,
+    type: 'region'
+  }
+];
+
+const mockState = {
+  browser: {
+    browserEntity: {
+      activeGenomeId: genomeId,
+      activeEnsObjectIds: {
+        [genomeId]: geneObjectId
+      }
+    },
+    trackPanel: {
+      [genomeId]: {
+        isTrackPanelModalOpened: true,
+        trackPanelModalView: '',
+        previouslyViewedObjects
+      }
+    }
+  },
+  drawer: {
+    isDrawerOpened: { [genomeId]: false },
+    drawerView: { [genomeId]: DrawerView.BOOKMARKS },
+    activeDrawerTrackIds: {}
+  },
+  ensObjects: {
+    [geneObjectId]: {
+      data: {
+        description: 'Heat shock protein 101',
+        genome_id: genomeId,
+        label: geneId,
+        location: {
+          chromosome: '3D',
+          end: 379539827,
+          start: 379535906
+        },
+        stable_id: geneId,
+        type: 'gene',
+        object_id: geneObjectId
+      }
+    },
+    [regionObjectId]: {
+      data: {
+        genome_id: genomeId,
+        label: region,
+        location: {
+          chromosome: '3D',
+          start: 2585940,
+          end: 2634711
+        },
+        type: 'region',
+        object_id: regionObjectId
+      }
+    }
+  },
+  genome: {
+    genomeInfo: {
+      genomeInfoData: {
+        [genomeId]: {
+          example_objects,
+          genome_id: genomeId
+        }
+      }
+    }
+  }
+};
+
+const mockStore = configureMockStore([thunk]);
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+
+  return render(
+    <Provider store={store}>
+      <TrackPanelBookmarks />
+    </Provider>
+  );
+};
 
 describe('<TrackPanelBookmarks />', () => {
-  const numberOfExampleObjects = faker.random.number({ min: 5, max: 10 });
-  const numberOfPreviouslyViewedObjects = faker.random.number({
-    min: 5,
-    max: 20
-  });
-
-  const props = {
-    activeGenomeId: faker.random.word(),
-    exampleEnsObjects: times(numberOfExampleObjects, () => createEnsObject()),
-    previouslyViewedObjects: times(numberOfPreviouslyViewedObjects, () =>
-      createPreviouslyViewedLink()
-    ),
-    fetchExampleEnsObjects,
-    updateTrackStatesAndSave,
-    closeTrackPanelModal,
-    changeDrawerViewAndOpen
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  it('renders previously viewed links', () => {
-    const { container } = render(<TrackPanelBookmarks {...props} />);
-    const links = [...container.querySelectorAll('.link')] as HTMLElement[];
-    const linkTexts = props.previouslyViewedObjects.map(({ label }) => label);
+  it('renders example links', () => {
+    wrapInRedux();
+    const exampleGeneLink = screen.getByText('Example gene') as HTMLElement;
+    const exampleRegionLink = screen.getByText('Example region') as HTMLElement;
 
-    expect(
-      linkTexts.every((text) =>
-        links.find((link) => {
-          return link.innerHTML === text;
-        })
-      )
-    ).toBe(true);
+    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
+
+    expect(exampleGeneLink.getAttribute('href')).toBe(expectedGeneHref);
+    expect(exampleRegionLink.getAttribute('href')).toBe(expectedRegionHref);
+  });
+
+  it('renders previously viewed links', () => {
+    wrapInRedux();
+    const geneLink = screen.getByText(geneId) as HTMLElement;
+    const regionLink = screen.getByText(region) as HTMLElement;
+
+    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
+
+    expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
+    expect(regionLink.getAttribute('href')).toBe(expectedRegionHref);
   });
 
   it('closes the bookmarks modal when a bookmark link is clicked', () => {
-    render(<TrackPanelBookmarks {...props} />);
-    const previouslyViewedLinksContainer = screen.getByTestId(
-      'previously viewed links'
-    );
-    const firstLink = (previouslyViewedLinksContainer as HTMLElement).querySelector(
-      '.link'
-    );
+    jest.spyOn(trackPanelActions, 'closeTrackPanelModal');
+    const { container } = wrapInRedux();
+    const firstLink = container.querySelector('a');
 
     userEvent.click(firstLink as HTMLElement);
-    expect(closeTrackPanelModal).toBeCalled();
+
+    expect(trackPanelActions.closeTrackPanelModal).toHaveBeenCalled();
+
+    (trackPanelActions.closeTrackPanelModal as any).mockRestore();
   });
 
-  it('shows the ellipsis only when the total objects is more than 20', () => {
-    const previouslyViewedObjects = times(20, () =>
-      createPreviouslyViewedLink()
+  it('shows the ellipsis only when there are more than 20 objects', () => {
+    let wrapper = wrapInRedux(
+      set(
+        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        times(20, () => createRandomPreviouslyViewedObject()),
+        mockState
+      )
     );
-    const { rerender } = render(
-      <TrackPanelBookmarks
-        {...props}
-        previouslyViewedObjects={previouslyViewedObjects}
-      />
-    );
-    const previouslyViewedSection = screen.getByText('Previously viewed');
+    expect(
+      wrapper.container.querySelector(
+        '.trackPanelBookmarks .sectionTitle button'
+      )
+    ).toBeFalsy();
 
-    expect(previouslyViewedSection.querySelector('button')).toBeFalsy();
-
-    // Add another link to make it 21 links
-    previouslyViewedObjects.push(createPreviouslyViewedLink());
-    rerender(
-      <TrackPanelBookmarks
-        {...props}
-        previouslyViewedObjects={previouslyViewedObjects}
-      />
+    // Add 21 links to see if ellipsis is shown
+    wrapper = wrapInRedux(
+      set(
+        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        times(21, () => createRandomPreviouslyViewedObject()),
+        mockState
+      )
     );
 
-    expect(previouslyViewedSection.querySelector('button')).toBeTruthy();
+    expect(
+      wrapper.container.querySelector(
+        '.trackPanelBookmarks .sectionTitle button'
+      )
+    ).toBeTruthy();
   });
 
-  it('calls changeDrawerViewAndOpen when the ellipsis is clicked', () => {
-    const previouslyViewedObjects = times(21, () =>
-      createPreviouslyViewedLink()
+  it('changes drawer view and toggles drawer when the ellipsis is clicked', () => {
+    const { container } = wrapInRedux(
+      set(
+        `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
+        times(21, () => createRandomPreviouslyViewedObject()),
+        mockState
+      )
     );
-    render(
-      <TrackPanelBookmarks
-        {...props}
-        previouslyViewedObjects={previouslyViewedObjects}
-      />
-    );
-    const previouslyViewedSection = screen.getByText('Previously viewed');
-    const ellipsisButton = previouslyViewedSection.querySelector(
-      'button'
+
+    const ellipsisButton = container.querySelector(
+      '.sectionTitle button'
     ) as HTMLElement;
 
     userEvent.click(ellipsisButton);
 
-    expect(changeDrawerViewAndOpen).toBeCalled();
+    const dispatchedDrawerActions = store.getActions();
+
+    const updateDrawerViewAction = dispatchedDrawerActions.find(
+      (action) => action.type === 'drawer/update-drawer-view'
+    );
+    const toggleDrawerAction = dispatchedDrawerActions.find(
+      (action) => action.type === 'drawer/toggle-drawer'
+    );
+
+    expect(updateDrawerViewAction.payload[genomeId]).toEqual(
+      DrawerView.BOOKMARKS
+    );
+    expect(toggleDrawerAction.payload[genomeId]).toEqual(true);
   });
 
   it('renders correct number of links to example objects', () => {
-    render(<TrackPanelBookmarks {...props} />);
-    const exampleLinksWrapper = screen.getByTestId('example links');
+    const { container } = wrapInRedux();
 
-    expect(exampleLinksWrapper?.querySelectorAll('.link').length).toBe(
-      numberOfExampleObjects
+    expect(container.querySelectorAll('.exampleLinks a').length).toBe(
+      example_objects.length
     );
-  });
-
-  it('calls closeTrackPanelModal when an example object link is clicked', () => {
-    render(<TrackPanelBookmarks {...props} />);
-    const exampleLinksWrapper = screen.getByTestId('example links');
-    const exampleLink = exampleLinksWrapper?.querySelector('.link');
-
-    userEvent.click(exampleLink as HTMLElement);
-
-    expect(closeTrackPanelModal).toBeCalled();
   });
 });

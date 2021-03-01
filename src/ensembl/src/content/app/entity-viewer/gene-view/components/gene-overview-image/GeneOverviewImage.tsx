@@ -16,21 +16,34 @@
 
 import React from 'react';
 import { scaleLinear } from 'd3';
+import { Pick3 } from 'ts-multipick';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
-import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
+import UnsplicedTranscript, {
+  UnsplicedTranscriptProps
+} from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 import BasePairsRuler from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
-import { Gene } from 'src/shared/types/thoas/gene';
+import { FullGene } from 'src/shared/types/thoas/gene';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import styles from './GeneOverviewImage.scss';
-import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
-type GeneOverviewImageProps = {
+type Gene = Pick<FullGene, 'stable_id'> &
+  Pick3<FullGene, 'slice', 'location', 'start' | 'end'> &
+  Pick3<FullGene, 'slice', 'strand', 'code'> & {
+    transcripts: Array<
+      UnsplicedTranscriptProps['transcript'] &
+        Pick3<FullTranscript, 'slice', 'location', 'start' | 'end'>
+    >;
+  };
+
+export type GeneOverviewImageProps = {
   gene: Gene;
   onTicksCalculated: (payload: TicksAndScale) => void;
 };

@@ -17,21 +17,28 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
-import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
+import UnsplicedTranscript, {
+  UnsplicedTranscriptProps
+} from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
+import TranscriptsListItemInfo, {
+  TranscriptsListItemInfoProps
+} from '../transcripts-list-item-info/TranscriptsListItemInfo';
 
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import { Gene } from 'src/shared/types/thoas/gene';
-import { Transcript } from 'src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 
+type Transcript = Pick<FullTranscript, 'stable_id' | 'relative_location'> &
+  TranscriptsListItemInfoProps['transcript'] &
+  UnsplicedTranscriptProps['transcript'];
+
 export type DefaultTranscriptListItemProps = {
-  gene: Gene;
+  gene: TranscriptsListItemInfoProps['gene'];
   isDefault?: boolean;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
@@ -56,9 +63,7 @@ export const DefaultTranscriptListItem = (
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
-        {props.isDefault && (
-          <TranscriptQualityLabel transcript={props.transcript} />
-        )}
+        {props.isDefault && <TranscriptQualityLabel />}
 
         <div className={transcriptsListStyles.middle}>
           <div
