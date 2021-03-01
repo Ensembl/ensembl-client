@@ -70,6 +70,15 @@ type PrepareDownloadParametersParams = {
   options: ProteinOptions;
 };
 
+// map of field names received from component to field names returned when fetching checksums
+const labelTypeToSequenceType: Record<
+  ProteinOption,
+  keyof Omit<TranscriptSequenceMetadata, 'stable_id'>
+> = {
+  proteinSequence: 'protein',
+  cds: 'cds'
+};
+
 const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
   const { transcriptSequenceData } = params;
   return proteinOptionsOrder
@@ -87,13 +96,4 @@ const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
       };
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
-};
-
-// map of field names received from component to field names returned when fetching checksums
-const labelTypeToSequenceType: Record<
-  ProteinOption,
-  keyof TranscriptSequenceMetadata
-> = {
-  proteinSequence: 'protein',
-  cds: 'cds'
 };

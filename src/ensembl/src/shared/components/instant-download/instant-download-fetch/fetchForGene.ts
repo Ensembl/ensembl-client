@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { flattenDeep } from 'lodash';
+import { wrap } from 'comlink';
 
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 
-import {
-  TranscriptOption,
-  TranscriptOptions,
-  transcriptOptionsOrder
-} from '../instant-download-transcript/InstantDownloadTranscript';
-import {
-  fetchGeneChecksums,
-  TranscriptChecksums,
-  TranscriptFragment
-} from './fetchSequenceChecksums';
+import { TranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
+import { fetchGeneSequenceMetadata } from './fetchSequenceChecksums';
 
-type Options = {
+import { WorkerApi } from 'src/shared/workers/sequenceFetcher.worker';
+import {
+  getGenomicSequenceData,
+  prepareDownloadParameters
+} from './fetchForTranscript';
+import { flattenDeep } from 'lodash';
+
+type GeneOptions = {
   transcript: Partial<TranscriptOptions>;
   gene: {
     genomicSequence: boolean;
@@ -39,7 +38,7 @@ type Options = {
 type FetchPayload = {
   genomeId: string;
   geneId: string;
-  options: Options;
+  options: GeneOptions;
 };
 
 export const fetchForGene = async (payload: FetchPayload) => {
@@ -48,66 +47,34 @@ export const fetchForGene = async (payload: FetchPayload) => {
     geneId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
-  const transcripts = await fetchGeneChecksums({
+
+  const geneSequenceData = await fetchGeneSequenceMetadata({
     genomeId,
     geneId
   });
-  const urls = buildUrlsForGene(transcripts, transcriptOptions);
 
-  if (geneOptions.genomicSequence) {
-    urls.push(buildFetchUrl({ geneId }, 'genomicSequence'));
-  }
-
-  const sequencePromises = urls.map((url) =>
-    fetch(url).then((response) => response.text())
-  );
-  const sequences = await Promise.all(sequencePromises);
-  const combinedFasta = sequences.join('\n\n');
-
-  downloadAsFile(combinedFasta, `${geneId}.fasta`, {
-    type: 'text/x-fasta'
-  });
-};
-
-const buildUrlsForGene = (
-  transcripts: TranscriptFragment[],
-  options: Partial<TranscriptOptions>
-) =>
-  flattenDeep(
-    transcripts.map((transcript) =>
-      options
-        ? transcriptOptionsOrder
-            .filter((option) => options[option])
-            .map((option) => buildFetchUrl({ transcript }, option))
-        : []
+  const sequenceDownloadParams = flattenDeep(
+    geneSequenceData.transcripts.map((transcript) =>
+      prepareDownloadParameters({
+        transcriptSequenceData: transcript,
+        options: transcriptOptions
+      })
     )
   );
 
-const buildFetchUrl = (
-  data: {
-    geneId?: string;
-    transcript?: TranscriptFragment;
-  },
-  sequenceType: TranscriptOption
-) => {
-  const sequenceTypeToContextType: Record<TranscriptOption, string> = {
-    genomicSequence: 'genomic',
-    proteinSequence: 'product',
-    cdna: 'cdna',
-    cds: 'cds'
-  };
-
-  if (sequenceType === 'genomicSequence') {
-    return `https://rest.ensembl.org/sequence/id/${data.geneId}?content-type=text/x-fasta&type=${sequenceTypeToContextType.genomicSequence}`;
-  } else {
-    const contextType = sequenceTypeToContextType[
-      sequenceType
-    ] as keyof TranscriptChecksums;
-    const checksum =
-      data.transcript &&
-      data.transcript.product_generating_contexts[0][contextType]
-        ?.sequence_checksum;
-
-    return `/refget/sequence/${checksum}?accept=text/x-fasta`;
+  if (geneOptions.genomicSequence) {
+    sequenceDownloadParams.push(getGenomicSequenceData(geneId));
   }
+
+  const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
+    type: 'module'
+  });
+  const service = wrap<WorkerApi>(worker);
+  const sequences = await service.downloadSequences(sequenceDownloadParams);
+
+  worker.terminate();
+
+  downloadAsFile(sequences, `${geneId}.fasta`, {
+    type: 'text/x-fasta'
+  });
 };

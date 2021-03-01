@@ -35,7 +35,7 @@ const downloadSequences = async (params: SequenceFetcherParams) => {
   const sequences = await Promise.all(sequencePromises);
 
   // start new sequence on a new line; no empty lines allowed in FASTA files
-  return sequences.join('\n');
+  return sequences.join('\n\n');
 };
 
 const workerApi = {

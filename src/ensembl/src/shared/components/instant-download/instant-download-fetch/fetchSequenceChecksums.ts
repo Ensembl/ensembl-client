@@ -38,27 +38,30 @@ export type GeneSequenceMetadata = {
   transcripts: TranscriptSequenceMetadata[];
 };
 
+type TranscriptInQuery = {
+  stable_id: string; // for apollo client caching
+  unversioned_stable_id: string;
+  product_generating_contexts: Array<{
+    cdna: {
+      sequence_checksum: string;
+    };
+    cds: {
+      sequence_checksum: string;
+    };
+    product: {
+      stable_id: string;
+      sequence_checksum: string;
+    };
+  }>;
+};
+
 type TranscriptQueryResult = {
-  transcript: {
-    stable_id: string;
-    product_generating_contexts: Array<{
-      cdna: {
-        sequence_checksum: string;
-      };
-      cds: {
-        sequence_checksum: string;
-      };
-      product: {
-        stable_id: string;
-        sequence_checksum: string;
-      };
-    }>;
-  };
+  transcript: TranscriptInQuery;
 };
 
 type GeneQueryResult = {
   gene: {
-    transcripts: TranscriptQueryResult[];
+    transcripts: TranscriptInQuery[];
   };
 };
 
@@ -76,6 +79,7 @@ const transcriptChecksumsQuery = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {
     transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
       stable_id
+      unversioned_stable_id
       product_generating_contexts {
         cds {
           sequence_checksum
@@ -95,8 +99,10 @@ const transcriptChecksumsQuery = gql`
 const geneChecksumsQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
       transcripts {
         stable_id
+        unversioned_stable_id
         product_generating_contexts {
           cds {
             sequence_checksum
@@ -114,11 +120,10 @@ const geneChecksumsQuery = gql`
   }
 `;
 
-const processTranscriptData = (data: TranscriptQueryResult) => {
+const processTranscriptData = (transcript: TranscriptInQuery) => {
   // TODO: expect to fetch genomic sequence here as well when checksum becomes available
-  const { stable_id } = data.transcript;
-  const productGeneratingContext =
-    data.transcript.product_generating_contexts[0];
+  const { unversioned_stable_id: stable_id } = transcript; // can't retrieve transcript seq via REST using stable_id
+  const productGeneratingContext = transcript.product_generating_contexts[0];
 
   if (!productGeneratingContext) {
     return { stable_id };
@@ -149,9 +154,9 @@ export const fetchTranscriptSequenceMetadata = (
       query: transcriptChecksumsQuery,
       variables
     })
-    .then(({ data }) => processTranscriptData(data));
+    .then(({ data }) => processTranscriptData(data.transcript));
 
-export const fetchGeneequenceMetadata = (
+export const fetchGeneSequenceMetadata = (
   variables: GeneQueryVariables
 ): Promise<GeneSequenceMetadata> =>
   client

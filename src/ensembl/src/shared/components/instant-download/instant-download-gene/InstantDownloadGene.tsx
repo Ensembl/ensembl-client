@@ -28,11 +28,6 @@ import styles from './InstantDownloadGene.scss';
 type Layout = 'horizontal' | 'vertical';
 type Theme = 'light' | 'dark';
 
-// type TranscriptFields = {
-//   id: string;
-//   so_term: string;
-// };
-
 type GeneFields = {
   id: string;
 };
