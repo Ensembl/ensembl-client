@@ -136,7 +136,7 @@ export const EntityViewerSidebarBookmarks = () => {
   }
 
   return (
-    <section className="entityViewerSidebarBookmarks">
+    <section>
       <div className={styles.title}>Bookmarks</div>
       {exampleEntities.length ? (
         <ExampleLinks
