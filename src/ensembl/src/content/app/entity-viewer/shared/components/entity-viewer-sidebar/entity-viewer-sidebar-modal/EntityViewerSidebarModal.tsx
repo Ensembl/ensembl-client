@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, LazyExoticComponent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
@@ -28,7 +28,7 @@ import styles from './EntityViewerSidebarModal.scss';
 
 const entityViewerSidebarModals: Record<
   SidebarModalView,
-  React.LazyExoticComponent<() => JSX.Element | null>
+  LazyExoticComponent<() => JSX.Element | null>
 > = {
   [SidebarModalView.SEARCH]: lazy(
     () => import('./modal-views/EntityViewerSidebarSearch')
@@ -59,7 +59,7 @@ export const EntityViewerSidebarModal = () => {
       <div className={styles.closeButton}>
         <CloseButton onClick={() => dispatch(closeSidebarModal())} />
       </div>
-      <div className={styles.EntityViewerSidebarModalView}>
+      <div>
         <Suspense fallback={<div>Loading...</div>}>{<ModalView />}</Suspense>
       </div>
     </section>
