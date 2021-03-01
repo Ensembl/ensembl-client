@@ -108,9 +108,8 @@ const getCollapsedContent = (props: ContentProps) => {
 
 const getExpandedContent = (props: ContentProps) => {
   const { species, statsSection } = props;
-  const { groups, exampleLinks, section, summaryStats } = statsSection;
+  const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
-  const groupsContent = [];
 
   const expandedContent = groups
     .map((group, group_index) => {
@@ -121,7 +120,6 @@ const getExpandedContent = (props: ContentProps) => {
               [styles.statsGroupWithExampleLink]:
                 !group_index && !row_index && exampleLinkText
             });
-            groupsContent.push(...groupStats);
             return (
               <div key={row_index} className={statsGroupClassName}>
                 {row_index === 0 && (
@@ -147,10 +145,7 @@ const getExpandedContent = (props: ContentProps) => {
     })
     .filter(Boolean);
 
-  const hasExpandedContent =
-    summaryStats?.length !== groupsContent.length && expandedContent.length;
-
-  return hasExpandedContent ? (
+  return expandedContent.length ? (
     <div className={styles.expandedContent}>{expandedContent}</div>
   ) : null;
 };
