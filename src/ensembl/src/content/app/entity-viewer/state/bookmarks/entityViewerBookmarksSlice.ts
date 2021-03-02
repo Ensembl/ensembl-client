@@ -34,7 +34,7 @@ type EntityViewerBookmarksState = {
 type UpdatePreviouslyViewedPayload = {
   genomeId: string;
   gene: {
-    symbol: string | null;
+    symbol?: string | null;
     stable_id: string;
     unversioned_stable_id: string;
   };
