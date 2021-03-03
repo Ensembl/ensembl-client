@@ -16,7 +16,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { scaleLinear, ScaleLinear } from 'd3';
+import { scaleLinear, ScaleLinear, interpolateRound } from 'd3';
 import { Pick3 } from 'ts-multipick';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -66,6 +66,7 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   const scale = scaleLinear()
     .domain([1, transcriptLength])
     .range([1, props.width])
+    .interpolate(interpolateRound)
     .clamp(true);
 
   const transcriptClasses = classNames(
@@ -91,8 +92,9 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   return props.standalone ? (
     <svg
       className={styles.containerSvg}
-      width={scale(length)}
+      width={scale(transcriptLength)}
       height={BLOCK_HEIGHT}
+      viewBox={`0 0 ${scale(transcriptLength)} ${BLOCK_HEIGHT}`}
     >
       {renderedTranscript}
     </svg>
