@@ -16,7 +16,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { scaleLinear, ScaleLinear, interpolateRound } from 'd3';
+import { scaleLinear, ScaleLinear } from 'd3';
 import { Pick3 } from 'ts-multipick';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -65,14 +65,10 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   } = slice;
   const scale = scaleLinear()
     .domain([1, transcriptLength])
-    .range([1, props.width])
-    .interpolate(interpolateRound)
+    .rangeRound([1, props.width])
     .clamp(true);
 
-  const transcriptClasses = classNames(
-    styles.transcript,
-    props.classNames?.transcript
-  );
+  const transcriptClasses = props.classNames?.transcript;
 
   const renderedTranscript = (
     <g className={transcriptClasses}>
@@ -120,10 +116,7 @@ const Backbone = (
     },
     scale
   } = props;
-  const backboneClasses = classNames(
-    styles.backbone,
-    props.classNames?.backbone
-  );
+  const backboneClasses = props.classNames?.backbone || undefined;
 
   if (!spliced_exons.length) {
     return (
@@ -201,12 +194,12 @@ const ExonBlock = (props: ExonBlockProps) => {
   const y = -3;
   const height = BLOCK_HEIGHT;
 
-  const exonClasses = classNames(styles.exon, props.className);
+  const exonClasses = props.className;
 
   if (cds && isNonCodingLeft) {
     const nonCodingPart = (
       <rect
-        className={classNames(exonClasses, styles.emptyBlock)}
+        className={classNames(exonClasses, styles.emptyBlock) || undefined}
         y={y}
         height={height}
         x={props.scale(exonStart)}
@@ -223,7 +216,7 @@ const ExonBlock = (props: ExonBlockProps) => {
       />
     );
     return (
-      <g key={exonStart}>
+      <g key={exonStart} data-test-id="exon">
         {nonCodingPart}
         {codingPart}
       </g>
@@ -240,7 +233,7 @@ const ExonBlock = (props: ExonBlockProps) => {
     );
     const nonCodingPart = (
       <rect
-        className={classNames(exonClasses, styles.emptyBlock)}
+        className={classNames(exonClasses, styles.emptyBlock) || undefined}
         y={y}
         height={height}
         x={props.scale(cds.relative_end)}
@@ -249,18 +242,20 @@ const ExonBlock = (props: ExonBlockProps) => {
     );
 
     return (
-      <g key={exonStart}>
+      <g key={exonStart} data-test-id="exon">
         {codingPart}
         {nonCodingPart}
       </g>
     );
   } else {
-    const classes = classNames(exonClasses, {
-      [styles.emptyBlock]: isCompletelyNonCoding
-    });
+    const classes =
+      classNames(exonClasses, {
+        [styles.emptyBlock]: isCompletelyNonCoding
+      }) || undefined;
     return (
       <rect
         key={exonStart}
+        data-test-id="exon"
         className={classes}
         y={y}
         height={height}

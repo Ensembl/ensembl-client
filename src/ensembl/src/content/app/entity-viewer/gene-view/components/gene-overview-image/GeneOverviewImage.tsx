@@ -80,7 +80,7 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
   // (it will help with drawing genes of circular chromosomes)
   const scale = scaleLinear()
     .domain([geneStart, geneEnd])
-    .range([0, gene_image_width]);
+    .rangeRound([0, gene_image_width]);
 
   const renderedTranscripts = props.gene.transcripts.map(
     (transcript, index) => {
