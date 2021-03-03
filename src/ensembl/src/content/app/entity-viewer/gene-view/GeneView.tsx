@@ -52,12 +52,14 @@ import GeneFunction, {
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
-
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+
+import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneView.scss';
 
-type Gene = GeneOverviewImageProps['gene'] &
+type Gene = Pick<FullGene, 'symbol'> &
+  GeneOverviewImageProps['gene'] &
   DefaultTranscriptsListProps['gene'] &
   GeneFunctionProps['gene'];
 
