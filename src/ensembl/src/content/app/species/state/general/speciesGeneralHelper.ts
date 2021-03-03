@@ -15,6 +15,7 @@
  */
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import isEqual from 'lodash/isEqual';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
@@ -660,16 +661,28 @@ export const getStatsForSection = (props: {
       })
     : undefined;
 
+  const isExpandedContentSame = isEqual(
+    Object.keys(filteredData).sort(),
+    summaryStatsKeys?.sort()
+  );
+
+  if (isExpandedContentSame) {
+    return {
+      section,
+      summaryStats,
+      exampleLinks
+    } as StatsSection;
+  }
+
   const processedGroups = groups.map((group) => {
     const groupStats = groupsStatsMap[group];
-    const expandedStatsKeys: Stats[] = [];
+
     const processedStats = groupStats
       .map((subGroupStats) => {
         const processedSubGroupStats: IndividualStat[] = [];
 
         subGroupStats.forEach((stat) => {
           if (filteredData[stat]) {
-            expandedStatsKeys.push(stat);
             const individualStat = buildIndividualStat({
               primaryKey: stat,
               primaryValue: filteredData[stat],
@@ -684,16 +697,6 @@ export const getStatsForSection = (props: {
           : undefined;
       })
       .filter(Boolean);
-
-    const summaryExpandedStatsDifference = expandedStatsKeys?.filter(
-      (key) => !summaryStatsKeys?.includes(key)
-    );
-
-    if (!summaryExpandedStatsDifference.length || !processedStats.length) {
-      return {
-        title: groupTitles[group]
-      };
-    }
 
     return {
       title: groupTitles[group],
