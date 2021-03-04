@@ -37,7 +37,7 @@ import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import { RootState } from 'src/store';
 
-import styles from './EntityViewerSidebarBookmarks.scss';
+import styles from './EntityViewerBookmarks.scss';
 import modalStyles from '../EntityViewerSidebarModal.scss';
 
 export type ExampleLinksProps = {
