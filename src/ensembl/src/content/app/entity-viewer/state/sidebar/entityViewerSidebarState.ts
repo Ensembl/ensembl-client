@@ -27,6 +27,7 @@ export enum SidebarTabName {
 export enum SidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'bookmarks',
+  SHARE = 'share',
   DOWNLOADS = 'downloads'
 }
 

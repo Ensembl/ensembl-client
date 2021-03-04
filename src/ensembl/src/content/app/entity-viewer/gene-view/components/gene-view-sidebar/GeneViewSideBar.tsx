@@ -24,18 +24,16 @@ import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/sta
 
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
-import styles from './GeneViewSidebar.scss';
-
 const GeneViewSidebar = () => {
   const activeTabName = useSelector(getEntityViewerSidebarTabName);
 
   return (
-    <section className={styles.geneViewSidebar}>
+    <>
       {activeTabName === SidebarTabName.OVERVIEW && <GeneOverview />}
       {activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
         <GeneExternalReferences />
       )}
-    </section>
+    </>
   );
 };
 

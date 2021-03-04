@@ -34,6 +34,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as searchIcon } from 'static/img/sidebar/search.svg';
 import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
+import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
 import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
 
 import { Status } from 'src/shared/types/status';
@@ -73,11 +74,19 @@ export const EntityViewerSidebarToolstrip = () => {
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.BOOKMARKS)}
-        description="Bookmarks"
+        description={SidebarModalView.BOOKMARKS}
         className={styles.sidebarIcon}
         key={SidebarModalView.BOOKMARKS}
         onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}
         image={bookmarkIcon}
+      />
+      <ImageButton
+        status={Status.DISABLED}
+        description={SidebarModalView.SHARE}
+        className={styles.sidebarIcon}
+        key={SidebarModalView.SHARE}
+        onClick={noop}
+        image={shareIcon}
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.DOWNLOADS)}
