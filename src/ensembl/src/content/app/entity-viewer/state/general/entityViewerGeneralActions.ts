@@ -19,7 +19,6 @@ import { Action } from 'redux';
 import { batch } from 'react-redux';
 import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
-import pickBy from 'lodash/pickBy';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
 import {
@@ -164,18 +163,8 @@ export const deleteGenome = createAction('entity-viewer/delete-genome')<
 export const deleteSpeciesInEntityViewer = (
   genomeIdToRemove: string
 ): ThunkAction<void, any, null, Action<string>> => {
-  return (dispatch, getState: () => RootState) => {
+  return (dispatch) => {
     dispatch(deleteGenome(genomeIdToRemove));
-
-    const state = getState();
-
-    const updatedActiveEntityIds = pickBy(
-      getEntityViewerActiveEntityIds(state),
-      (value, key) => key !== genomeIdToRemove
-    );
-
-    dispatch(updateActiveEntityForGenome(updatedActiveEntityIds));
-
     entityViewerStorageService.deleteGenome(genomeIdToRemove);
   };
 };

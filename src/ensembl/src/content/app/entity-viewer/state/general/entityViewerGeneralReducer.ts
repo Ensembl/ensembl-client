@@ -40,18 +40,18 @@ export default function entityViewerReducer(
     case getType(actions.deleteGenome): {
       const genomeIdToRemove = action.payload;
       const activeGenomeId = state.activeGenomeId;
-      if (activeGenomeId === genomeIdToRemove) {
-        const newState = {
-          ...state,
-          activeGenomeId: null,
-          activeEntityIds: pickBy(
-            state.activeEntityIds,
-            (value, key) => key !== activeGenomeId
-          )
-        };
 
-        return newState;
-      }
+      const newState = {
+        ...state,
+        activeGenomeId:
+          activeGenomeId === genomeIdToRemove ? null : activeGenomeId,
+        activeEntityIds: pickBy(
+          state.activeEntityIds,
+          (value, key) => key !== genomeIdToRemove
+        )
+      };
+
+      return newState;
     }
     default:
       return state;
