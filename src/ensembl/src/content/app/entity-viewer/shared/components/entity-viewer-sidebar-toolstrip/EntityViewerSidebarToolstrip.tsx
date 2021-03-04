@@ -15,7 +15,19 @@
  */
 
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import noop from 'lodash/noop';
+
+import {
+  closeSidebarModal,
+  openSidebarModal,
+  toggleSidebar
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import {
+  isEntityViewerSidebarOpen,
+  getSelectedEntityViewerSidebarModalView
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
@@ -29,38 +41,58 @@ import { Status } from 'src/shared/types/status';
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
 export const EntityViewerSidebarToolstrip = () => {
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const currentSidebarModalView = useSelector(
+    getSelectedEntityViewerSidebarModalView
+  );
+  const dispatch = useDispatch();
+
+  const toggleModalView = (selectedModalView: SidebarModalView) => {
+    if (!isSidebarOpen) {
+      dispatch(toggleSidebar(Status.OPEN));
+    }
+
+    if (selectedModalView === currentSidebarModalView) {
+      dispatch(closeSidebarModal());
+    } else {
+      dispatch(openSidebarModal(selectedModalView));
+    }
+  };
+
+  const getViewIconStatus = (selectedModalView: SidebarModalView) => {
+    return selectedModalView === currentSidebarModalView && isSidebarOpen
+      ? Status.SELECTED
+      : Status.UNSELECTED;
+  };
+
   return (
     <>
       <ImageButton
         status={Status.DISABLED}
-        description="Search"
+        description={SidebarModalView.SEARCH}
         className={styles.sidebarIcon}
-        key="search"
         onClick={noop}
         image={searchIcon}
       />
       <ImageButton
         status={Status.DISABLED}
-        description="Bookmarks"
+        description={SidebarModalView.BOOKMARKS}
         className={styles.sidebarIcon}
-        key="bookmarks"
         onClick={noop}
         image={bookmarkIcon}
       />
       <ImageButton
         status={Status.DISABLED}
-        description="Share"
+        description={SidebarModalView.SHARE}
         className={styles.sidebarIcon}
-        key="share"
         onClick={noop}
         image={shareIcon}
       />
       <ImageButton
-        status={Status.DISABLED}
-        description="Downloads"
+        status={getViewIconStatus(SidebarModalView.DOWNLOADS)}
+        description={SidebarModalView.DOWNLOADS}
         className={styles.sidebarIcon}
-        key="downloads"
-        onClick={noop}
+        onClick={() => toggleModalView(SidebarModalView.DOWNLOADS)}
         image={downloadIcon}
       />
     </>

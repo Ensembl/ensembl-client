@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
 import { Pick3 } from 'ts-multipick';
+import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -30,6 +31,7 @@ import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelect
 
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -76,6 +78,7 @@ type Gene = Pick<
 
 const GeneSummary = () => {
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
+  const [shouldShowDownload, showDownload] = useState(false);
 
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
     variables: {
@@ -106,6 +109,8 @@ const GeneSummary = () => {
     entityId: focusId
   });
 
+  const rowClasses = classNames(styles.row, styles.spaceAbove);
+
   return (
     <div>
       <div className={styles.row}>
@@ -123,13 +128,13 @@ const GeneSummary = () => {
         </div>
       </div>
 
-      <div className={`${styles.row} ${styles.spaceAbove}`}>
+      <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
         <div className={styles.value}>{gene.name}</div>
       </div>
 
       {gene.alternative_symbols.length > 0 && (
-        <div className={`${styles.row} ${styles.spaceAbove}`}>
+        <div className={rowClasses}>
           <div className={styles.label}>Synonyms</div>
           <div className={styles.value}>
             {gene.alternative_symbols.join(', ')}
@@ -137,24 +142,36 @@ const GeneSummary = () => {
         </div>
       )}
 
-      <div className={`${styles.row} ${styles.spaceAbove}`}>
+      <div className={rowClasses}>
         <div className={styles.value}>
           {`${gene.transcripts.length} transcripts`}
         </div>
       </div>
 
-      <div className={`${styles.row} ${styles.spaceAbove}`}>
+      <div className={classNames(rowClasses, styles.downloadRow)}>
         <div className={styles.value}>
-          Download
-          <InstantDownloadGene
-            genomeId={ensObjectGene.genome_id}
-            gene={{ id: gene.unversioned_stable_id }}
-            theme="light"
-          />
+          <div
+            className={styles.downloadLink}
+            onClick={() => showDownload(!shouldShowDownload)}
+          >
+            Download
+          </div>
+          {shouldShowDownload && (
+            <div className={styles.downloadWrapper}>
+              <InstantDownloadGene
+                genomeId={ensObjectGene.genome_id}
+                gene={{ id: gene.unversioned_stable_id }}
+              />
+              <CloseButton
+                className={styles.closeButton}
+                onClick={() => showDownload(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={`${styles.row} ${styles.spaceAbove}`}>
+      <div className={rowClasses}>
         <div className={styles.value}>
           <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
         </div>

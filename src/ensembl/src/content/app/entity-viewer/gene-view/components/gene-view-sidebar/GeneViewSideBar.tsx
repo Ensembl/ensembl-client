@@ -15,33 +15,34 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
 import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
+import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
 
-import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import {
+  getEntityViewerSidebarTabName,
+  isEntityViewerSidebarModalOpen
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import { RootState } from 'src/store';
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
-type Props = {
-  activeTabName: SidebarTabName | null;
-};
+import styles from './GeneViewSidebar.scss';
 
-const GeneViewSidebar = (props: Props) => {
+const GeneViewSidebar = () => {
+  const activeTabName = useSelector(getEntityViewerSidebarTabName);
+  const isSidebarOpen = useSelector(isEntityViewerSidebarModalOpen);
+
   return (
-    <>
-      {props.activeTabName === SidebarTabName.OVERVIEW && <GeneOverview />}
-      {props.activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
+    <section className={styles.geneViewSidebar}>
+      {activeTabName === SidebarTabName.OVERVIEW && <GeneOverview />}
+      {activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
         <GeneExternalReferences />
       )}
-    </>
+      {isSidebarOpen && <EntityViewerSidebarModal />}
+    </section>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  activeTabName: getEntityViewerSidebarTabName(state)
-});
-
-export default connect(mapStateToProps)(GeneViewSidebar);
+export default GeneViewSidebar;

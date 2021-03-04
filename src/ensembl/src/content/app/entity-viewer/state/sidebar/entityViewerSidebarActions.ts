@@ -27,11 +27,14 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 import {
   EntityViewerSidebarGenomeState,
   SidebarTabName,
-  SidebarStatus,
-  EntityViewerSidebarUIState
+  ToggleStatus,
+  EntityViewerSidebarUIState,
+  SidebarModalView,
+  EntityViewerSidebarModalUIState
 } from './entityViewerSidebarState';
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
+import { batch } from 'react-redux';
 
 export const updateGenomeState = createAction(
   'entity-viewer-sidebar/update-genome-ui-state'
@@ -62,7 +65,7 @@ export const toggleSidebar: ActionCreator<ThunkAction<
   any,
   null,
   Action<string>
->> = (status?: SidebarStatus) => (dispatch, getState: () => RootState) => {
+>> = (status?: ToggleStatus) => (dispatch, getState: () => RootState) => {
   const state = getState();
 
   const genomeId = getEntityViewerActiveGenomeId(state);
@@ -82,6 +85,45 @@ export const toggleSidebar: ActionCreator<ThunkAction<
 export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
+
+export const updateSidebarModalView = (
+  newModalState: EntityViewerSidebarModalUIState
+) =>
+  updateEntityUI({
+    modal: newModalState
+  });
+
+export const openSidebarModal: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<SidebarModalView>
+>> = (selectedModalView: SidebarModalView) => (dispatch) => {
+  batch(() => {
+    dispatch(
+      updateSidebarModalView({
+        isOpen: Status.OPEN,
+        selectedModalView
+      })
+    );
+  });
+};
+
+export const closeSidebarModal: ActionCreator<ThunkAction<
+  void,
+  any,
+  null,
+  Action<null>
+>> = () => (dispatch) => {
+  batch(() => {
+    dispatch(
+      updateSidebarModalView({
+        isOpen: Status.CLOSED,
+        selectedModalView: null
+      })
+    );
+  });
+};
 
 export const updateEntityUIState = createAction(
   'entity-viewer-sidebar/update-entity-ui-state'

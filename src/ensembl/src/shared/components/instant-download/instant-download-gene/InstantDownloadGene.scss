@@ -2,10 +2,6 @@
 
 .checkboxGrid {
   margin-top: 0.5em;
-  display: grid;
-  // grid-template-columns: 1.5fr 1fr;
-  grid-template-rows: auto;
-  grid-row-gap: 0.2em;
 }
 
 .label {
@@ -31,10 +27,10 @@
 
 .checkboxLabel {
   font-size: 13px;
+  width: 200px;
 }
 
-
-.themeDark{
+.themeDark {
   .label {
     color: $white;
   }
@@ -54,81 +50,32 @@
   }
 }
 
-
 .downloadButtonDisabled {
   border-color: $dark-grey;
   color: $dark-grey;
 }
 
-.layout {
-  display: grid;
-  font-size: 13px;
+.container {
+  position: relative;
 
-  &Horizontal {
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 24px;
-    grid-template-areas:
-      'gene'
-      'transcript'
-      'download';
-
-    .transcriptSection {
-      grid-area: transcript;
-    }
-
-    .geneSection {
-      grid-area: gene;
-
-      .checkboxWrapper {
-        margin-top: 13px;
-        margin-left: 13px;
-      }
-    }
-
-    .transcriptVis,
-    .checkboxGrid {
-      margin-left: 18px;
-    }
-
-    button {
-      grid-area: download;
-      justify-self: end;
-      align-self: end;
+  .geneSection {
+    .checkboxWrapper {
+      margin-top: 13px;
+      margin-left: 13px;
     }
   }
 
-  &Vertical {
-    grid-row-gap: 0.5rem;
+  .transcriptSection {
+    margin-top: 7px;
+  }
 
-    .transcriptSection,
-    .geneSection {
-      padding-left: 18px;
-    }
+  .transcriptVis,
+  .checkboxGrid {
+    margin-left: 18px;
+  }
 
-    .geneSection {
-      margin-top: 18px;
-      margin-bottom: 18px;
-
-      .label {
-        margin-left: -18px;
-      }
-
-      .checkboxWrapper {
-        margin-top: 12px;
-      }
-    }
-
-    .transcriptSection .label {
-      margin-left: -18px;
-    }
-
-    .checkboxGrid {
-      grid-template-columns: 2fr 1fr;
-    }
-
-    button {
-      justify-self: end;
-      align-self: end;
-    }
+  button {
+    margin-top: 14px;
+    float: right;
   }
 }

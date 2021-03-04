@@ -22,20 +22,33 @@ export enum SidebarTabName {
   EXTERNAL_REFERENCES = 'External references'
 }
 
-export type SidebarStatus = Status.OPEN | Status.CLOSED;
+export enum SidebarModalView {
+  SEARCH = 'Search',
+  BOOKMARKS = 'Bookmarks',
+  SHARE = 'Share',
+  DOWNLOADS = 'Downloads'
+}
+
+export type ToggleStatus = Status.OPEN | Status.CLOSED;
 
 export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
 }>;
 
+export type EntityViewerSidebarModalUIState = {
+  isOpen: ToggleStatus;
+  selectedModalView: SidebarModalView | null;
+};
+
 export type EntityViewerSidebarUIState = {
   mainAccordion?: {
     expandedPanels?: OverviewMainAccordionSectionID[];
   };
+  modal?: EntityViewerSidebarModalUIState;
 };
 
 export type EntityViewerSidebarGenomeState = Readonly<{
-  status: SidebarStatus;
+  status: ToggleStatus;
   selectedTabName: SidebarTabName;
   entities: {
     [entityId: string]: {

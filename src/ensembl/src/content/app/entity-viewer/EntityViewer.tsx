@@ -40,7 +40,7 @@ import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-side
 import EntityViewerTopbar from './shared/components/entity-viewer-topbar/EntityViewerTopbar';
 import ExampleLinks from './components/example-links/ExampleLinks';
 import GeneView from './gene-view/GeneView';
-import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
+import GeneViewSidebar from './gene-view/components/gene-view-sidebar/GeneViewSidebar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
 import styles from './EntityViewer.scss';
@@ -86,7 +86,7 @@ const EntityViewer = () => {
             topbarContent={
               <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
             }
-            sidebarContent={<GeneViewSideBar />}
+            sidebarContent={<GeneViewSidebar />}
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
             isSidebarOpen={isSidebarOpen}

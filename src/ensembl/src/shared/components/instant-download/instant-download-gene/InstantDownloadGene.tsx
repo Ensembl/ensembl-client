@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import intersection from 'lodash/intersection';
+import classNames from 'classnames';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
 
@@ -25,7 +25,6 @@ import InstantDownloadButton from '../instant-download-button/InstantDownloadBut
 
 import styles from './InstantDownloadGene.scss';
 
-type Layout = 'horizontal' | 'vertical';
 type Theme = 'light' | 'dark';
 
 type GeneFields = {
@@ -38,7 +37,6 @@ export type InstantDownloadGeneEntityProps = {
 };
 
 type Props = InstantDownloadGeneEntityProps & {
-  layout: Layout;
   theme: Theme;
 };
 
@@ -120,15 +118,10 @@ const InstantDownloadGene = (props: Props) => {
     fetchForGene(payload);
   };
 
-  const layoutClass =
-    props.layout === 'horizontal'
-      ? classNames(styles.layout, styles.layoutHorizontal)
-      : classNames(styles.layout, styles.layoutVertical);
-
   const themeClass =
     props.theme === 'dark' ? styles.themeDark : styles.themeLight;
 
-  const wrapperClassNames = classNames(themeClass, layoutClass);
+  const containerClasses = classNames(styles.container, themeClass);
 
   const isButtonDisabled = !hasSelectedOptions({
     ...transcriptOptions,
@@ -136,7 +129,7 @@ const InstantDownloadGene = (props: Props) => {
   });
 
   return (
-    <div className={wrapperClassNames}>
+    <div className={containerClasses}>
       <GeneSection
         gene={props.gene}
         isGenomicSequenceSelected={isGeneSequenceSelected}
@@ -157,8 +150,7 @@ const InstantDownloadGene = (props: Props) => {
 };
 
 InstantDownloadGene.defaultProps = {
-  layout: 'vertical',
-  theme: 'dark'
+  theme: 'light'
 } as Props;
 
 const GeneSection = (props: GeneSectionProps) => (
