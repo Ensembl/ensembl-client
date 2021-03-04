@@ -15,6 +15,11 @@
   margin-left: -22px;
 }
 
-.assemblyWrapper {
+.selectedAssembly {
   margin-left: 1em;
+}
+
+.selectedAssemblyLabel {
+  color: $grey;
+  margin-right: 0.5em;
 }
