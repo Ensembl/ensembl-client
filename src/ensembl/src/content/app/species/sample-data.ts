@@ -163,7 +163,7 @@ export const sampleData: RawSpeciesStats = {
       promoters: 21822
     }
   },
-  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
+  escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2: {
     assembly_stats: {
       contig_n50: null,
       total_genome_length: 4641652,
@@ -604,7 +604,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_date: '2013-06-01',
     notes: []
   },
-  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
+  escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2: {
     id: 'GCA_000005845.2',
     taxonomy_id: '511145',
     strain: null,
