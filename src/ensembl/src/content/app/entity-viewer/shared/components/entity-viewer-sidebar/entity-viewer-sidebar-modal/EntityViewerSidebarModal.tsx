@@ -31,13 +31,13 @@ const entityViewerSidebarModals: Record<
   LazyExoticComponent<() => JSX.Element | null>
 > = {
   [SidebarModalView.SEARCH]: lazy(
-    () => import('./modal-views/EntityViewerSidebarSearch')
+    () => import('./modal-views/EntityViewerSearch')
   ),
   [SidebarModalView.BOOKMARKS]: lazy(
-    () => import('./modal-views/EntityViewerSidebarBookmarks')
+    () => import('./modal-views/EntityViewerBookmarks')
   ),
   [SidebarModalView.DOWNLOADS]: lazy(
-    () => import('./modal-views/EntityViewerSidebarDownloads')
+    () => import('./modal-views/EntityViewerDownloads')
   )
 };
 

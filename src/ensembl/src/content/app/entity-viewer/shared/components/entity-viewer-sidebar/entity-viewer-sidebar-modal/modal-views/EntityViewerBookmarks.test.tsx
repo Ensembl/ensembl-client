@@ -19,7 +19,7 @@ import { screen, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
-import { EntityViewerSidebarBookmarks } from './EntityViewerSidebarBookmarks';
+import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
