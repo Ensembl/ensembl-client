@@ -54,16 +54,5 @@ export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
     : false;
 };
 
-export const isEntityViewerSidebarModalOpen = (state: RootState): boolean => {
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  return activeEntityId
-    ? getEntityViewerSidebarUIState(state)?.modal?.isOpen === Status.OPEN
-    : false;
-};
-
-export const getSelectedEntityViewerSidebarModalView = (state: RootState) => {
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  return activeEntityId
-    ? getEntityViewerSidebarUIState(state)?.modal?.selectedModalView
-    : null;
-};
+export const getEntityViewerSidebarModalView = (state: RootState) =>
+  getEntityViewerGenomeState(state)?.sidebarModalView ?? null;

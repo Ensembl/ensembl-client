@@ -19,48 +19,45 @@ import { useSelector, useDispatch } from 'react-redux';
 import noop from 'lodash/noop';
 
 import {
-  closeSidebarModal,
-  openSidebarModal,
-  toggleSidebar
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
-import {
   isEntityViewerSidebarOpen,
-  getSelectedEntityViewerSidebarModalView
+  getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import {
+  toggleSidebar,
+  closeSidebarModal,
+  openSidebarModal
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+
 import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as searchIcon } from 'static/img/sidebar/search.svg';
 import { ReactComponent as bookmarkIcon } from 'static/img/sidebar/bookmark.svg';
-import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
 import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
 
 import { Status } from 'src/shared/types/status';
-
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
 export const EntityViewerSidebarToolstrip = () => {
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-  const currentSidebarModalView = useSelector(
-    getSelectedEntityViewerSidebarModalView
-  );
   const dispatch = useDispatch();
+  const sidebarModalView = useSelector(getEntityViewerSidebarModalView);
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
 
-  const toggleModalView = (selectedModalView: SidebarModalView) => {
+  const toggleModalView = (selectedItem: SidebarModalView) => {
     if (!isSidebarOpen) {
-      dispatch(toggleSidebar(Status.OPEN));
+      dispatch(toggleSidebar());
     }
 
-    if (selectedModalView === currentSidebarModalView) {
+    if (selectedItem === sidebarModalView) {
       dispatch(closeSidebarModal());
     } else {
-      dispatch(openSidebarModal(selectedModalView));
+      dispatch(openSidebarModal(selectedItem));
     }
   };
 
-  const getViewIconStatus = (selectedModalView: SidebarModalView) => {
-    return selectedModalView === currentSidebarModalView && isSidebarOpen
+  const getViewIconStatus = (selectedItem: SidebarModalView) => {
+    return selectedItem === sidebarModalView && isSidebarOpen
       ? Status.SELECTED
       : Status.UNSELECTED;
   };
@@ -75,18 +72,12 @@ export const EntityViewerSidebarToolstrip = () => {
         image={searchIcon}
       />
       <ImageButton
-        status={Status.DISABLED}
-        description={SidebarModalView.BOOKMARKS}
+        status={getViewIconStatus(SidebarModalView.BOOKMARKS)}
+        description="Bookmarks"
         className={styles.sidebarIcon}
-        onClick={noop}
+        key={SidebarModalView.BOOKMARKS}
+        onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}
         image={bookmarkIcon}
-      />
-      <ImageButton
-        status={Status.DISABLED}
-        description={SidebarModalView.SHARE}
-        className={styles.sidebarIcon}
-        onClick={noop}
-        image={shareIcon}
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.DOWNLOADS)}

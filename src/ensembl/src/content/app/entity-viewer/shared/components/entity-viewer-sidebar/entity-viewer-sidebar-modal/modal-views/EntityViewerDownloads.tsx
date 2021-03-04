@@ -24,7 +24,9 @@ import {
 
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
-const SidebarModalDownloads = () => {
+import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+const EntityViewerSidebarDownloads = () => {
   const genomeId = useSelector(getEntityViewerActiveGenomeId);
   const geneId = useSelector(getEntityViewerActiveEntityId);
 
@@ -32,12 +34,14 @@ const SidebarModalDownloads = () => {
     return null;
   }
 
+  const { objectId } = parseEnsObjectId(geneId);
+
   return (
     <section>
       <h3>Download</h3>
-      <InstantDownloadGene genomeId={genomeId} gene={{ id: geneId }} />
+      <InstantDownloadGene genomeId={genomeId} gene={{ id: objectId }} />
     </section>
   );
 };
 
-export default SidebarModalDownloads;
+export default EntityViewerSidebarDownloads;

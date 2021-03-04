@@ -74,10 +74,6 @@ export const getTrackPanelStateForGenome = (
 export const pickPersistentTrackPanelProperties = (
   trackPanel: Partial<TrackPanelStateForGenome>
 ) => {
-  const persistentProperties = [
-    'selectedTrackPanelTab',
-    'collapsedTrackIds',
-    'previouslyViewedObjects'
-  ];
+  const persistentProperties = ['collapsedTrackIds', 'previouslyViewedObjects'];
   return pick(trackPanel, persistentProperties);
 };

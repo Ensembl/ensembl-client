@@ -26,6 +26,7 @@ import speciesSelectorStorageService from 'src/content/app/species-selector/serv
 import analyticsTracking from 'src/services/analytics-service';
 import buildAnalyticsObject from 'src/analyticsHelper';
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/browser/browserActions';
+import { deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 
 import {
   getCommittedSpecies,
@@ -352,6 +353,7 @@ export const deleteSpeciesAndSave = (
 
   dispatch(updateCommittedSpecies(updatedCommittedSpecies));
   dispatch(deleteSpeciesInGenomeBrowser(genomeId));
+  dispatch(deleteSpeciesInEntityViewer(genomeId));
   speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
 

@@ -15,16 +15,18 @@
  */
 
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import {
   openSidebar,
+  closeSidebarModal,
   setSidebarTabName
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import {
   isEntityViewerSidebarOpen,
-  getEntityViewerSidebarTabName
+  getEntityViewerSidebarTabName,
+  getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
@@ -44,8 +46,12 @@ Object.values(SidebarTabName).forEach((value) =>
 const DEFAULT_TAB = tabsData[0].title;
 
 const GeneViewSidebarTabs = () => {
-  const selectedTabName = useSelector(getEntityViewerSidebarTabName);
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const selectedTabName = useSelector(getEntityViewerSidebarTabName);
+  const isSidebarModalViewOpen = Boolean(
+    useSelector(getEntityViewerSidebarModalView)
+  );
+
   const dispatch = useDispatch();
 
   if (!selectedTabName) {
@@ -56,7 +62,9 @@ const GeneViewSidebarTabs = () => {
     if (!isSidebarOpen) {
       dispatch(openSidebar());
     }
-
+    if (isSidebarModalViewOpen) {
+      dispatch(closeSidebarModal());
+    }
     dispatch(setSidebarTabName(name as SidebarTabName));
   };
 
@@ -67,10 +75,12 @@ const GeneViewSidebarTabs = () => {
     tabsContainer: styles.tabsContainer
   };
 
+  const isSidebarActive = isSidebarOpen && !isSidebarModalViewOpen;
+
   return (
     <Tabs
       tabs={tabsData}
-      selectedTab={!isSidebarOpen ? null : selectedTabName || DEFAULT_TAB}
+      selectedTab={isSidebarActive ? selectedTabName || DEFAULT_TAB : null}
       onTabChange={handleTabChange}
       classNames={tabClassNames}
     />

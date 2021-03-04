@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+
 import { Status } from 'src/shared/types/status';
 import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 
@@ -23,10 +25,9 @@ export enum SidebarTabName {
 }
 
 export enum SidebarModalView {
-  SEARCH = 'Search',
-  BOOKMARKS = 'Bookmarks',
-  SHARE = 'Share',
-  DOWNLOADS = 'Downloads'
+  SEARCH = 'search',
+  BOOKMARKS = 'bookmarks',
+  DOWNLOADS = 'downloads'
 }
 
 export type ToggleStatus = Status.OPEN | Status.CLOSED;
@@ -35,16 +36,10 @@ export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
 }>;
 
-export type EntityViewerSidebarModalUIState = {
-  isOpen: ToggleStatus;
-  selectedModalView: SidebarModalView | null;
-};
-
 export type EntityViewerSidebarUIState = {
   mainAccordion?: {
     expandedPanels?: OverviewMainAccordionSectionID[];
   };
-  modal?: EntityViewerSidebarModalUIState;
 };
 
 export type EntityViewerSidebarGenomeState = Readonly<{
@@ -55,12 +50,23 @@ export type EntityViewerSidebarGenomeState = Readonly<{
       uIState: EntityViewerSidebarUIState;
     };
   };
+  sidebarModalView: SidebarModalView | null;
 }>;
 
-export const buildInitialSidebarStateForGenome = (): EntityViewerSidebarGenomeState => {
-  return {
+export const buildInitialStateForGenome = (
+  genomeId: string
+): EntityViewerSidebarState => ({
+  [genomeId]: {
     status: Status.OPEN,
     selectedTabName: SidebarTabName.OVERVIEW,
-    entities: {}
-  };
-};
+    entities: {},
+    sidebarModalView: null
+  }
+});
+
+const storedActiveGenomeId = entityViewerStorageService.getGeneralState()
+  ?.activeGenomeId;
+
+export const initialState: EntityViewerSidebarState = storedActiveGenomeId
+  ? buildInitialStateForGenome(storedActiveGenomeId)
+  : {};

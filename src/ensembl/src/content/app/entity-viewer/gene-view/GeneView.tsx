@@ -31,6 +31,9 @@ import {
   View,
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
+import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -49,12 +52,14 @@ import GeneFunction, {
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
-
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+
+import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './GeneView.scss';
 
-type Gene = GeneOverviewImageProps['gene'] &
+type Gene = Pick<FullGene, 'symbol'> &
+  GeneOverviewImageProps['gene'] &
   DefaultTranscriptsListProps['gene'] &
   GeneFunctionProps['gene'];
 
@@ -66,6 +71,7 @@ const QUERY = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
+      symbol
       unversioned_stable_id
       version
       slice {
@@ -179,6 +185,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     setBasePairsRulerTicks
   ] = useState<TicksAndScale | null>(null);
 
+  const dispatch = useDispatch();
   const { search } = useLocation();
   const view = new URLSearchParams(search).get('view');
 
@@ -191,6 +198,25 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const { genomeId, geneId, selectedTabs } = useGeneViewRouting();
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
+
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+
+  useEffect(() => {
+    if (!genomeId || !props.gene) {
+      return;
+    }
+
+    if (isSidebarOpen) {
+      dispatch(closeSidebarModal());
+    }
+
+    dispatch(
+      updatePreviouslyViewedEntities({
+        genomeId,
+        gene: props.gene
+      })
+    );
+  }, [genomeId, geneId]);
 
   return (
     <div className={styles.geneView} ref={targetElementRef}>

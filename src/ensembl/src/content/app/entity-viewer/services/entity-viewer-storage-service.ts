@@ -49,6 +49,20 @@ export class EntityViewerStorageService {
       localStorageOptions
     );
   }
+
+  public deleteGenome(genomeIdToDelete: string): void {
+    const activeGenomeId = this.getGeneralState().activeGenomeId;
+    if (activeGenomeId === genomeIdToDelete) {
+      this.updateGeneralState({
+        activeGenomeId: undefined
+      });
+    }
+    this.storageService.removeAt(
+      StorageKeys.GENERAL_STATE,
+      ['activeEntityIds', genomeIdToDelete],
+      localStorageOptions
+    );
+  }
 }
 
 export default new EntityViewerStorageService(storageService);

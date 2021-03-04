@@ -14,43 +14,54 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { lazy, Suspense, LazyExoticComponent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import SidebarModalDownloads from './modal-views/SidebarModalDownloads';
+import { getEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { getSelectedEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
 import styles from './EntityViewerSidebarModal.scss';
 
+const entityViewerSidebarModals: Record<
+  SidebarModalView,
+  LazyExoticComponent<() => JSX.Element | null>
+> = {
+  [SidebarModalView.SEARCH]: lazy(
+    () => import('./modal-views/EntityViewerSearch')
+  ),
+  [SidebarModalView.BOOKMARKS]: lazy(
+    () => import('./modal-views/EntityViewerBookmarks')
+  ),
+  [SidebarModalView.DOWNLOADS]: lazy(
+    () => import('./modal-views/EntityViewerDownloads')
+  )
+};
+
 export const EntityViewerSidebarModal = () => {
-  const selectedSidebarModalView = useSelector(
-    getSelectedEntityViewerSidebarModalView
-  );
   const dispatch = useDispatch();
 
-  const getModalView = () => {
-    switch (selectedSidebarModalView) {
-      case SidebarModalView.DOWNLOADS:
-        return <SidebarModalDownloads />;
-      default:
-        return null;
-    }
-  };
+  const entityViewerSidebarModalView = useSelector(
+    getEntityViewerSidebarModalView
+  );
 
-  const onClose = () => {
-    dispatch(closeSidebarModal());
-  };
+  if (!entityViewerSidebarModalView) {
+    return null;
+  }
+
+  const ModalView = entityViewerSidebarModals[entityViewerSidebarModalView];
 
   return (
-    <section className={styles.sidebarModal}>
+    <section className={styles.entityViewerSidebarModal}>
       <div className={styles.closeButton}>
-        <CloseButton onClick={onClose} />
+        <CloseButton onClick={() => dispatch(closeSidebarModal())} />
       </div>
-      <div className={styles.sidebarModalView}>{getModalView()}</div>
+      <div>
+        <Suspense fallback={<div>Loading...</div>}>{<ModalView />}</Suspense>
+      </div>
     </section>
   );
 };

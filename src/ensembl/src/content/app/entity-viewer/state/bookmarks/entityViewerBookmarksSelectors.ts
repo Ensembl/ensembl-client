@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import { RootState } from 'src/store';
 
-import entityViewerGeneralReducer from './general/entityViewerGeneralReducer';
-import entityViewerSidebarReducer from './sidebar/entityViewerSidebarReducer';
-import entityViewerGeneViewReducer from './gene-view/entityViewerGeneViewReducer';
-import entityViewerBookmarksReducer from './bookmarks/entityViewerBookmarksSlice';
-
-export default combineReducers({
-  general: entityViewerGeneralReducer,
-  sidebar: entityViewerSidebarReducer,
-  geneView: entityViewerGeneViewReducer,
-  bookmarks: entityViewerBookmarksReducer
-});
+export const getAllPreviouslyViewedEntities = (state: RootState) =>
+  state.entityViewer.bookmarks.previouslyViewed;
+export const getPreviouslyViewedEntities = (
+  state: RootState,
+  genomeId: string
+) => getAllPreviouslyViewedEntities(state)[genomeId] || [];

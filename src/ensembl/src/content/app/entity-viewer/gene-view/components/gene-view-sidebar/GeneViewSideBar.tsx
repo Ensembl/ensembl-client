@@ -19,12 +19,8 @@ import { useSelector } from 'react-redux';
 
 import GeneOverview from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/GeneOverview';
 import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/external-references/GeneExternalReferences';
-import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
 
-import {
-  getEntityViewerSidebarTabName,
-  isEntityViewerSidebarModalOpen
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 
@@ -32,7 +28,6 @@ import styles from './GeneViewSidebar.scss';
 
 const GeneViewSidebar = () => {
   const activeTabName = useSelector(getEntityViewerSidebarTabName);
-  const isSidebarOpen = useSelector(isEntityViewerSidebarModalOpen);
 
   return (
     <section className={styles.geneViewSidebar}>
@@ -40,7 +35,6 @@ const GeneViewSidebar = () => {
       {activeTabName === SidebarTabName.EXTERNAL_REFERENCES && (
         <GeneExternalReferences />
       )}
-      {isSidebarOpen && <EntityViewerSidebarModal />}
     </section>
   );
 };

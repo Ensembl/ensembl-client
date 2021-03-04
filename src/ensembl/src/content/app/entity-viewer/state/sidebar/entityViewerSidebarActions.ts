@@ -15,7 +15,7 @@
  */
 
 import { createAction } from 'typesafe-actions';
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
 import {
@@ -29,23 +29,21 @@ import {
   SidebarTabName,
   ToggleStatus,
   EntityViewerSidebarUIState,
-  SidebarModalView,
-  EntityViewerSidebarModalUIState
+  SidebarModalView
 } from './entityViewerSidebarState';
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
-import { batch } from 'react-redux';
 
 export const updateGenomeState = createAction(
   'entity-viewer-sidebar/update-genome-ui-state'
 )<{ genomeId: string; fragment: Partial<EntityViewerSidebarGenomeState> }>();
 
-export const setSidebarTabName: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (tabName: SidebarTabName) => (dispatch, getState: () => RootState) => {
+export const setSidebarTabName = (
+  tabName: SidebarTabName
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const genomeId = getEntityViewerActiveGenomeId(getState());
 
   if (!genomeId) {
@@ -60,12 +58,12 @@ export const setSidebarTabName: ActionCreator<ThunkAction<
   );
 };
 
-export const toggleSidebar: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (status?: ToggleStatus) => (dispatch, getState: () => RootState) => {
+export const toggleSidebar = (
+  status?: ToggleStatus
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
 
   const genomeId = getEntityViewerActiveGenomeId(state);
@@ -86,45 +84,6 @@ export const openSidebar = () => toggleSidebar(Status.OPEN);
 
 export const closeSidebar = () => toggleSidebar(Status.CLOSED);
 
-export const updateSidebarModalView = (
-  newModalState: EntityViewerSidebarModalUIState
-) =>
-  updateEntityUI({
-    modal: newModalState
-  });
-
-export const openSidebarModal: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<SidebarModalView>
->> = (selectedModalView: SidebarModalView) => (dispatch) => {
-  batch(() => {
-    dispatch(
-      updateSidebarModalView({
-        isOpen: Status.OPEN,
-        selectedModalView
-      })
-    );
-  });
-};
-
-export const closeSidebarModal: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<null>
->> = () => (dispatch) => {
-  batch(() => {
-    dispatch(
-      updateSidebarModalView({
-        isOpen: Status.CLOSED,
-        selectedModalView: null
-      })
-    );
-  });
-};
-
 export const updateEntityUIState = createAction(
   'entity-viewer-sidebar/update-entity-ui-state'
 )<{
@@ -133,12 +92,9 @@ export const updateEntityUIState = createAction(
   fragment: Partial<EntityViewerSidebarUIState>;
 }>();
 
-export const updateEntityUI: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (fragment: Partial<EntityViewerSidebarUIState>) => (
+export const updateEntityUI = (
+  fragment: Partial<EntityViewerSidebarUIState>
+): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -151,4 +107,50 @@ export const updateEntityUI: ActionCreator<ThunkAction<
   }
 
   dispatch(updateEntityUIState({ genomeId, entityId, fragment }));
+};
+
+export const openSidebarModal = (
+  sidebarModalView: SidebarModalView
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+
+  const genomeId = getEntityViewerActiveGenomeId(state);
+  if (!genomeId) {
+    return;
+  }
+
+  dispatch(
+    updateGenomeState({
+      genomeId,
+      fragment: {
+        sidebarModalView
+      }
+    })
+  );
+};
+
+export const closeSidebarModal = (): ThunkAction<
+  void,
+  any,
+  null,
+  Action<string>
+> => (dispatch, getState: () => RootState) => {
+  const state = getState();
+  const genomeId = getEntityViewerActiveGenomeId(state);
+
+  if (!genomeId) {
+    return;
+  }
+
+  dispatch(
+    updateGenomeState({
+      genomeId,
+      fragment: {
+        sidebarModalView: null
+      }
+    })
+  );
 };
