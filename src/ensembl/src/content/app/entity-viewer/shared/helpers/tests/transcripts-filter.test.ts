@@ -3,7 +3,7 @@ import { filterTranscriptsBySOTerm } from '../transcripts-filter';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
 /* Creating filters with different filter set to true/false */
-const proteinCodingfilters = {
+const proteinCodingFilters = {
   protein_coding: true,
   retained_intron: false,
   processed_transcript: false,
@@ -54,7 +54,7 @@ describe('filterTranscriptsBySOTerm', () => {
 
     const filteredTranscripts = filterTranscriptsBySOTerm(
       Transcripts,
-      proteinCodingfilters
+      proteinCodingFilters
     );
 
     expect(filteredTranscripts).toEqual(expectedTranscripts);
