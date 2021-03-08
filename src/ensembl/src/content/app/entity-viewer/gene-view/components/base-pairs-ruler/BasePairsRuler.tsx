@@ -57,7 +57,7 @@ type Props = {
 const FeatureLengthAxis = (props: Props) => {
   const domain = [1, props.length];
   const range = [0, props.width];
-  const scale = scaleLinear().domain(domain).range(range);
+  const scale = scaleLinear().domain(domain).rangeRound(range);
   const { ticks, labelledTicks } = getTicks(scale);
 
   useEffect(() => {

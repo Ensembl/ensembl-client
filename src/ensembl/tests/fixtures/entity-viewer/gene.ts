@@ -51,7 +51,7 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
 const getScale = () => {
   const domain = [1000, faker.random.number({ min: 2000, max: 100000 })];
   const range = [100, faker.random.number({ min: 200, max: 600 })];
-  const scale = scaleLinear().domain(domain).range(range);
+  const scale = scaleLinear().domain(domain).rangeRound(range);
 
   return scale;
 };
