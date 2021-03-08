@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .buttonWrapper {
   position: relative;
   display: inline-block;
@@ -7,7 +9,9 @@
   visibility: hidden;
 }
 
-.loadingIndicator, .successIndicator {
+.loadingIndicator,
+.successIndicator,
+.errorIndicator {
   position: absolute;
   left: 0;
   top: 0;
@@ -19,9 +23,44 @@
   z-index: 1;
 }
 
-// .successIndicator {
+.spinner {
+  width: 25px;
+  height: 25px;
+  border-width: 2px;
+}
 
-// }
+.checkmark {
+  fill: $green;
+  height: 80%;
+  animation: checkmark-pulse 0.5s ease-in;
+}
+
+.cross {
+  fill: $red;
+  height: 80%;
+}
+
+.successIndicator {
+  border: 1px solid $green;
+}
+
+.errorIndicator {
+  border: 1px solid $red;
+}
+
+@keyframes checkmark-pulse {
+	0% {
+		transform: scale(0.6);
+	}
+
+  70% {
+		transform: scale(1.1);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
 
 // .failureIndicator {
 
