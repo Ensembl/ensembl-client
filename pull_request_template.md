@@ -11,6 +11,11 @@
 - [ ] New feature
 - [ ] Improvement to existing feature
 
+## QA
+- [ ] Requested
+- [ ] Approved
+- [ ] Not needed
+
 ## Related JIRA Issue(s)
 <!--_Please provide the URL(s) for any JIRA issues related to this PR._-->
 
