@@ -17,15 +17,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import {
-  getCurrentSpeciesGenomeId,
-  getCurrentSpeciesAssemblies
-} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getSelectedItem } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesCommitButton from 'src/content/app/species-selector/components/species-commit-button/SpeciesCommitButton';
-
-import { Assembly } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSearchPanel.scss';
 
@@ -42,24 +37,17 @@ const SearchPanel = () => {
 };
 
 const SelectedAssembly = () => {
-  const genomeId = useSelector(getCurrentSpeciesGenomeId);
-  // TODO: we probably shouldn't be fetching alternative assemblies for a given genome id
-  // If so, need to remove the fetching logic from redux, and change the shape of the state
-  const assembliesRelatedToSelectedGenome: Assembly[] = useSelector(
-    getCurrentSpeciesAssemblies
-  );
-  const selectedAssembly = assembliesRelatedToSelectedGenome.find(
-    (assembly) => assembly.genome_id === genomeId
-  );
+  const selectedSpecies = useSelector(getSelectedItem);
+  const selectedAssembly = selectedSpecies?.assembly_name;
 
-  if (!genomeId || !selectedAssembly) {
+  if (!selectedAssembly) {
     return null;
   }
 
   return (
     <div className={styles.selectedAssembly}>
       <span className={styles.selectedAssemblyLabel}>Assembly</span>
-      <span>{selectedAssembly.assembly_name}</span>
+      <span>{selectedAssembly}</span>
     </div>
   );
 };

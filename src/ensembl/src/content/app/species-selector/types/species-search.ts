@@ -49,11 +49,6 @@ export type Strain = {
   display_name: string;
 };
 
-export type Assembly = {
-  genome_id: string;
-  assembly_name: string;
-};
-
 export type CommittedItem = {
   genome_id: string;
   reference_genome_id: string | null; // because in Species Selector we need to keep track of how many strains of the same species are selected

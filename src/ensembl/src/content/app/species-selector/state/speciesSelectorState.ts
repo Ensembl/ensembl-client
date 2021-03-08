@@ -20,7 +20,6 @@ import { LoadingState } from 'src/shared/types/loading-state';
 import {
   SearchMatches,
   Strain,
-  Assembly,
   CommittedItem,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
@@ -33,7 +32,6 @@ export type CurrentItem = {
   assembly_name: string | null; // name of the selected assembly
   selectedStrainId: string | null; // genome_id of selected strain
   strains: Strain[];
-  assemblies: Assembly[];
 };
 
 export type SpeciesSelectorState = {
@@ -42,7 +40,6 @@ export type SpeciesSelectorState = {
   };
   ui: {
     isSelectingStrain: boolean;
-    isSelectingAssembly: boolean;
   };
   search: {
     text: string;
@@ -60,8 +57,7 @@ const initialState: SpeciesSelectorState = {
     search: LoadingState.NOT_REQUESTED
   },
   ui: {
-    isSelectingStrain: false,
-    isSelectingAssembly: false
+    isSelectingStrain: false
   },
   search: {
     text: '',
