@@ -43,8 +43,8 @@ type RequestHandlerParams = {
   onError?: (x?: unknown) => void;
 };
 
-const MINIMUM_SPINNER_TIME = 1000; // 2 seconds
-const SUCCESS_INDICATOR_TIME = 1000; // 1 second
+const MINIMUM_SPINNER_TIME = 1000; // 1 second
+const SUCCESS_INDICATOR_TIME = 2000; // 2 seconds
 
 const getLoadingState$ = (params: RequestHandlerParams) => {
   const loadingStart$ = of(LoadingState.LOADING);
