@@ -42,11 +42,12 @@ describe('<BrowserImage />', () => {
 
   const defaultProps: BrowserImageProps = {
     browserCogTrackList: {},
-    browserNavOpened: false,
+    isNavbarOpen: false,
+    activeGenomeId: '',
     isDisabled: false,
     browserActivated: false,
     activateBrowser: jest.fn(),
-    updateBrowserNavStates: jest.fn(),
+    updateBrowserNavIconStates: jest.fn(),
     updateBrowserActivated: jest.fn(),
     updateBrowserActiveEnsObject: jest.fn(),
     setChrLocation: jest.fn(),

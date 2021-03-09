@@ -23,15 +23,28 @@ const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
 const trackStates = browserStorageService.getTrackStates();
 const chrLocations = browserStorageService.getChrLocation();
 
+export enum BrowserNavIcons {
+  NAVIGATE_UP = 'navigate-up',
+  NAVIGATE_RIGHT = 'navigate-right',
+  NAVIGATE_DOWN = 'navigate-down',
+  NAVIGATE_LEFT = 'navigate-left',
+  ZOOM_OUT = 'zoom-out',
+  ZOOM_IN = 'zoom-in'
+}
+
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
-export type BrowserNavStates = [
-  boolean,
-  boolean,
-  boolean,
-  boolean,
-  boolean,
-  boolean
-];
+export type BrowserNavIconStates = {
+  [key in BrowserNavIcons]: boolean;
+};
+
+export const defaultBrowserNavIconsState = {
+  [BrowserNavIcons.NAVIGATE_UP]: false,
+  [BrowserNavIcons.NAVIGATE_RIGHT]: false,
+  [BrowserNavIcons.NAVIGATE_DOWN]: false,
+  [BrowserNavIcons.NAVIGATE_LEFT]: false,
+  [BrowserNavIcons.ZOOM_OUT]: false,
+  [BrowserNavIcons.ZOOM_IN]: false
+};
 
 export type ChrLocation = [string, number, number];
 
@@ -62,13 +75,13 @@ export const defaultBrowserEntityState: BrowserEntityState = {
 };
 
 export type BrowserNavState = Readonly<{
-  browserNavOpened: boolean;
-  browserNavStates: BrowserNavStates;
+  browserNavOpenState: { [genomeId: string]: boolean };
+  browserNavIconStates: BrowserNavIconStates;
 }>;
 
-export const defaultBrowserNavState: BrowserNavState = {
-  browserNavOpened: false,
-  browserNavStates: [true, true, true, true, true, true]
+export const defaultBrowserNavState = {
+  browserNavOpenState: {},
+  browserNavIconStates: defaultBrowserNavIconsState
 };
 
 export type BrowserLocationState = Readonly<{
