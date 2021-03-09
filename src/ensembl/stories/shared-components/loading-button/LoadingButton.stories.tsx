@@ -51,13 +51,29 @@ export const LoadingButtonStory = (args: DefaultArgs) => {
 
   return (
     <div className={styles.wrapper}>
-      <LoadingButton
-        onClick={() => longTask(responseDuration, shouldError)}
-        onSuccess={(result: unknown) => args.onSuccess(result)}
-        onError={(err: unknown) => args.onError(err)}
-      >
-        Press me!
-      </LoadingButton>
+      <div className={styles.backgroundComparisonGrid}>
+        <div className={styles.columnHeading}>Light background</div>
+        <div className={styles.columnHeading}>Dark background</div>
+        <div className={styles.lightContainer}>
+          <LoadingButton
+            onClick={() => longTask(responseDuration, shouldError)}
+            onSuccess={(result: unknown) => args.onSuccess(result)}
+            onError={(err: unknown) => args.onError(err)}
+          >
+            Press me!
+          </LoadingButton>
+        </div>
+
+        <div className={styles.darkContainer}>
+          <LoadingButton
+            onClick={() => longTask(responseDuration, shouldError)}
+            onSuccess={(result: unknown) => args.onSuccess(result)}
+            onError={(err: unknown) => args.onError(err)}
+          >
+            Press me!
+          </LoadingButton>
+        </div>
+      </div>
 
       <p className={styles.note}>
         (note that regardless of the response duration, the spinner will be
