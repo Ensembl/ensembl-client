@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
 import { Pick2 } from 'ts-multipick';
 
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
@@ -235,11 +236,28 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
         </>
+        <StatusContent
+          summaryLoadingState={summaryStatsLoadingState}
+          domainsLoadingState={domainsLoadingState}
+        />
         <div className={styles.keyline}></div>
       </div>
     </div>
   );
 };
+
+type StatusContentProps = {
+  summaryLoadingState: LoadingState;
+  domainsLoadingState: LoadingState;
+};
+
+const StatusContent = (props: StatusContentProps) =>
+  props.domainsLoadingState === LoadingState.LOADING ||
+  props.summaryLoadingState === LoadingState.LOADING ? (
+    <div className={styles.statusContainer}>
+      <CircleLoader />
+    </div>
+  ) : null;
 
 type ProteinExternalReferenceProps = {
   source: ExternalSource;

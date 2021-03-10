@@ -52,3 +52,11 @@ $content-width: $gene_image_width;
   justify-content: center;
   margin-left: 177px;
 }
+
+.statusContainer {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+}
