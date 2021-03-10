@@ -82,9 +82,9 @@ export const EntityViewerSidebarToolstrip = () => {
       />
       <ImageButton
         status={Status.DISABLED}
-        description={SidebarModalView.SHARE}
+        description="Share"
         className={styles.sidebarIcon}
-        key={SidebarModalView.SHARE}
+        key="share"
         onClick={noop}
         image={shareIcon}
       />

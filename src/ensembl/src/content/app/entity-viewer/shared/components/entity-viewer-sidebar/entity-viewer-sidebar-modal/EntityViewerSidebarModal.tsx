@@ -36,9 +36,6 @@ const entityViewerSidebarModals: Record<
   [SidebarModalView.BOOKMARKS]: lazy(
     () => import('./modal-views/EntityViewerBookmarks')
   ),
-  [SidebarModalView.SHARE]: lazy(
-    () => import('./modal-views/EntityViewerShare')
-  ),
   [SidebarModalView.DOWNLOADS]: lazy(
     () => import('./modal-views/EntityViewerDownloads')
   )
