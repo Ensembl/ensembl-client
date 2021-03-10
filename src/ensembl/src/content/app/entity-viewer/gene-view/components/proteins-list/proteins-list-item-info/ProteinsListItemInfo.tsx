@@ -176,6 +176,10 @@ const ProteinsListItemInfo = (props: Props) => {
     };
   }, [summaryStatsLoadingState, uniprotXref]);
 
+  const showLoadingIndicator =
+    domainsLoadingState === LoadingState.LOADING ||
+    summaryStatsLoadingState === LoadingState.LOADING;
+
   return (
     <div className={styles.proteinsListItemInfo}>
       {productWithProteinDomains && (
@@ -236,28 +240,16 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
         </>
-        <StatusContent
-          summaryLoadingState={summaryStatsLoadingState}
-          domainsLoadingState={domainsLoadingState}
-        />
+        {showLoadingIndicator && (
+          <div className={styles.statusContainer}>
+            <CircleLoader />
+          </div>
+        )}
         <div className={styles.keyline}></div>
       </div>
     </div>
   );
 };
-
-type StatusContentProps = {
-  summaryLoadingState: LoadingState;
-  domainsLoadingState: LoadingState;
-};
-
-const StatusContent = (props: StatusContentProps) =>
-  props.domainsLoadingState === LoadingState.LOADING ||
-  props.summaryLoadingState === LoadingState.LOADING ? (
-    <div className={styles.statusContainer}>
-      <CircleLoader />
-    </div>
-  ) : null;
 
 type ProteinExternalReferenceProps = {
   source: ExternalSource;
