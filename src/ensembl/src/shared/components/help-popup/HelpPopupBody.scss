@@ -61,6 +61,15 @@ $article-right-padding: 1.5rem; // area over which Macs (which hide their scroll
   }
 }
 
+.videoLoadingIndicator {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .aside {
   grid-column: aside;
   padding-left: $aside-left-padding;

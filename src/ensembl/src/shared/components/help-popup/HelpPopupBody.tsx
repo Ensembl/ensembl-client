@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, ReactNode } from 'react';
+import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import classNames from 'classnames';
 
 import useHelpArticle, { Article as ArticleType } from './useHelpArticle';
@@ -101,10 +101,21 @@ type VideoProps = {
   video: VideoArticle;
 };
 const Video = (props: VideoProps) => {
+  const [videoLoadingStatus, setVideoLoadingStatus] = useState(
+    LoadingState.LOADING
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useResizeObserver({
     ref: containerRef
   });
+
+  useEffect(() => {
+    setVideoLoadingStatus(LoadingState.LOADING);
+  }, [props.video.youtube_id]);
+
+  const onVideoLoaded = () => {
+    setVideoLoadingStatus(LoadingState.SUCCESS);
+  };
 
   // ensure that the video has a 16:9 aspect ratio
   // TODO: switch to pure CSS when the aspect-ratio rule gets better support (see https://caniuse.com/?search=aspect-ratio)
@@ -122,8 +133,14 @@ const Video = (props: VideoProps) => {
     <div ref={containerRef} className={styles.video}>
       {videoWidth && videoHeight && (
         <div className={styles.videoWrapper}>
+          {videoLoadingStatus === LoadingState.LOADING && (
+            <div className={styles.videoLoadingIndicator} style={videoStyle}>
+              <CircleLoader />
+            </div>
+          )}
           <iframe
             style={videoStyle}
+            onLoad={onVideoLoaded}
             src={`https://www.youtube.com/embed/${props.video.youtube_id}`}
             allowFullScreen
             frameBorder="0"
@@ -144,10 +161,14 @@ const RelatedItems = (props: RelatedItemsProps) => {
   };
 
   const relatedArticles = props.items.map((relatedArticle) => {
+    const relatedItemClassName =
+      relatedArticle.type === 'article'
+        ? styles.relatedArticle
+        : styles.relatedVideo;
     return (
       <span
         key={relatedArticle.slug}
-        className={styles.relatedArticle}
+        className={relatedItemClassName}
         onClick={() => onArticleClick(relatedArticle)}
       >
         {relatedArticle.type === 'video' && (
