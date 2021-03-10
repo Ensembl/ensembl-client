@@ -208,7 +208,7 @@ const renderInstantDownload = ({
       <InstantDownloadTranscript
         genomeId={genomeId}
         transcript={{
-          id: transcript.unversioned_stable_id,
+          id: transcript.stable_id,
           so_term: transcript.so_term
         }}
         gene={{ id: gene.unversioned_stable_id }}

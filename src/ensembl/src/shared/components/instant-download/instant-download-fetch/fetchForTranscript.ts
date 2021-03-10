@@ -15,6 +15,9 @@
  */
 
 import { wrap } from 'comlink';
+import { gql } from '@apollo/client';
+
+import { client } from 'src/gql-client';
 
 import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 
@@ -58,14 +61,22 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     genomeId,
     transcriptId
   });
-  const sequenceDownloadParams = prepareDownloadParameters({
+  const sequenceDownloadParams = await prepareDownloadParameters({
+    genomeId,
     transcriptId,
     transcriptSequenceData,
     options: transcriptOptions
   });
 
   if (geneOptions.genomicSequence) {
-    sequenceDownloadParams.push(getGenomicSequenceData(geneId));
+    const unversioned_gene_stable_id = await getUnversionedStableId({
+      genomeId,
+      stableId: geneId,
+      type: 'gene'
+    });
+    sequenceDownloadParams.push(
+      getGenomicSequenceData(unversioned_gene_stable_id)
+    );
   }
 
   const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
@@ -84,6 +95,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 };
 
 type PrepareDownloadParametersParams = {
+  genomeId: string;
   transcriptId: string;
   transcriptSequenceData: TranscriptSequenceMetadata;
   options: Partial<TranscriptOptions>;
@@ -100,13 +112,20 @@ const labelTypeToSequenceType: Record<
   cds: 'cds'
 };
 
-const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
+const prepareDownloadParameters = async (
+  params: PrepareDownloadParametersParams
+) => {
+  const unversionedStableId = await getUnversionedStableId({
+    genomeId: params.genomeId,
+    stableId: params.transcriptId,
+    type: 'transcript'
+  });
   return transcriptOptionsOrder
     .filter((option) => params.options[option])
     .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'protein', 'cdna', 'cds'
     .map((option) => {
       if (option === 'genomic') {
-        return getGenomicSequenceData(params.transcriptId);
+        return getGenomicSequenceData(unversionedStableId);
       } else {
         const dataForSingleSequence = params.transcriptSequenceData[option];
         if (!dataForSingleSequence) {
@@ -120,6 +139,60 @@ const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
       }
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
+};
+
+type UnversionedStableIdQueryVariables = {
+  genomeId: string;
+  stableId: string;
+  type: 'gene' | 'transcript';
+};
+
+type TranscriptQueryResult = {
+  transcript: {
+    unversioned_stable_id: string;
+  };
+};
+
+type GeneQueryResult = {
+  gene: {
+    unversioned_stable_id: string;
+  };
+};
+
+const getUnversionedStableId = async (
+  variables: UnversionedStableIdQueryVariables
+): Promise<string> => {
+  let query;
+  if (variables.type === 'transcript') {
+    query = gql`
+      query Transcript($genomeId: String!, $stableId: String!) {
+        transcript(byId: { genome_id: $genomeId, stable_id: $stableId }) {
+          unversioned_stable_id
+        }
+      }
+    `;
+  } else {
+    query = gql`
+      query Gene($genomeId: String!, $stableId: String!) {
+        gene(byId: { genome_id: $genomeId, stable_id: $stableId }) {
+          unversioned_stable_id
+        }
+      }
+    `;
+  }
+
+  return client
+    .query<TranscriptQueryResult | GeneQueryResult>({
+      query,
+      variables
+    })
+    .then(({ data }) => {
+      if ('transcript' in data) {
+        return data.transcript.unversioned_stable_id;
+      } else {
+        return data.gene.unversioned_stable_id;
+      }
+    });
 };
 
 const getGenomicSequenceData = (id: string) => {
