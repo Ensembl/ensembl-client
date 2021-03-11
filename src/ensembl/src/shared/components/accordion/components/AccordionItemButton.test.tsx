@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import Accordion from './Accordion';
 import AccordionItem from './AccordionItem';
 import AccordionItemButton from './AccordionItemButton';
@@ -24,13 +24,13 @@ import AccordionItemHeading from './AccordionItemHeading';
 describe('AccordionItemButton', () => {
   it('renders without erroring', () => {
     expect(() => {
-      mount(<AccordionItemButton />);
+      render(<AccordionItemButton />);
     }).not.toThrow();
   });
 
   describe('className prop', () => {
     it('is accordionButton by default', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem uuid={'FOO'}>
             <AccordionItemHeading>
@@ -40,16 +40,11 @@ describe('AccordionItemButton', () => {
         </Accordion>
       );
 
-      expect(
-        wrapper
-          .find(AccordionItemButton)
-          .find('div')
-          .hasClass('accordionButtonDefault')
-      ).toBe(true);
+      expect(container.querySelector('.accordionButtonDefault')).toBeTruthy();
     });
 
     it('can be extended', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem uuid={'FOO'}>
             <AccordionItemHeading>
@@ -60,21 +55,16 @@ describe('AccordionItemButton', () => {
       );
 
       expect(
-        wrapper
-          .find(AccordionItemButton)
-          .find('div')
-          .hasClass('accordionButtonDefault')
-      ).toBe(true);
-
-      expect(
-        wrapper.find(AccordionItemButton).find('div').hasClass('foo')
+        container
+          .querySelector('.accordionButtonDefault')
+          ?.classList.contains('foo')
       ).toBe(true);
     });
   });
 
   describe('children prop', () => {
     it('is respected', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
@@ -84,13 +74,15 @@ describe('AccordionItemButton', () => {
         </Accordion>
       );
 
-      expect(wrapper.find(AccordionItemButton).text()).toBe('Hello World');
+      expect(
+        container.querySelector('.accordionButtonDefault')?.textContent
+      ).toBe('Hello World');
     });
   });
 
   describe('disabled prop', () => {
     it('applies the accordionButtonDisabled className', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
@@ -102,7 +94,9 @@ describe('AccordionItemButton', () => {
         </Accordion>
       );
 
-      expect(wrapper.find('.accordionButtonDisabled')).toHaveLength(1);
+      expect(
+        container.querySelectorAll('.accordionButtonDisabled')
+      ).toHaveLength(1);
     });
   });
 });
