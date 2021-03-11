@@ -160,7 +160,7 @@ const GeneSummary = () => {
             <div className={styles.downloadWrapper}>
               <InstantDownloadGene
                 genomeId={ensObjectGene.genome_id}
-                gene={{ id: gene.unversioned_stable_id }}
+                gene={{ id: gene.stable_id }}
               />
               <CloseButton
                 className={styles.closeButton}

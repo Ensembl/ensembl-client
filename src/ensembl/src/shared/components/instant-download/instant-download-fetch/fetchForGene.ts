@@ -26,7 +26,6 @@ import {
   getGenomicSequenceData,
   prepareDownloadParameters
 } from './fetchForTranscript';
-import { flattenDeep } from 'lodash';
 
 type GeneOptions = {
   transcript: Partial<TranscriptOptions>;
@@ -53,13 +52,12 @@ export const fetchForGene = async (payload: FetchPayload) => {
     geneId
   });
 
-  const sequenceDownloadParams = flattenDeep(
-    geneSequenceData.transcripts.map((transcript) =>
+  const sequenceDownloadParams = geneSequenceData.transcripts.flatMap(
+    (transcript) =>
       prepareDownloadParameters({
         transcriptSequenceData: transcript,
         options: transcriptOptions
       })
-    )
   );
 
   if (geneOptions.genomicSequence) {

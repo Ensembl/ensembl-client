@@ -16,30 +16,46 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { gql, useQuery } from '@apollo/client';
 
 import {
   getEntityViewerActiveEntityId,
   getEntityViewerActiveGenomeId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
+import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
-import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+const QUERY = gql`
+  query Gene($genomeId: String!, $entityId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
+      stable_id
+    }
+  }
+`;
 
 const EntityViewerSidebarDownloads = () => {
   const genomeId = useSelector(getEntityViewerActiveGenomeId);
   const geneId = useSelector(getEntityViewerActiveEntityId);
 
-  if (!genomeId || !geneId) {
+  const entityId = geneId ? parseEnsObjectId(geneId).objectId : null;
+
+  const { data } = useQuery<{ gene: { stable_id: string } }>(QUERY, {
+    variables: { genomeId, entityId }
+  });
+
+  if (!data) {
     return null;
   }
-
-  const { objectId } = parseEnsObjectId(geneId);
 
   return (
     <section>
       <h3>Download</h3>
-      <InstantDownloadGene genomeId={genomeId} gene={{ id: objectId }} />
+      <InstantDownloadGene
+        genomeId={genomeId as string}
+        gene={{ id: data.gene.stable_id }}
+      />
     </section>
   );
 };
