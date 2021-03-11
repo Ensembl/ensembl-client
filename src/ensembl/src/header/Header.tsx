@@ -17,6 +17,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import LaunchbarContainer from './launchbar/LaunchbarContainer';
 import Account from './account/Account';
 
@@ -59,12 +61,23 @@ export const Topbar = () => (
         </div>
       </div>
     </div>
-    <div className={styles.aboutEnsembl}>
+    <AboutEnsembl />
+  </div>
+);
+
+// Temporarily disable the link to About Ensembl in production
+const AboutEnsembl = () =>
+  isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) ? (
+    <Link to="/about" className={styles.aboutEnsembl}>
+      About
+      <Logotype className={styles.logotypeAbout} />
+    </Link>
+  ) : (
+    <div className={styles.aboutEnsemblDisabled}>
       About
       <Logotype className={styles.logotypeAbout} />
     </div>
-  </div>
-);
+  );
 
 export const Header = () => (
   <header>
