@@ -18,13 +18,11 @@ import { createAsyncAction, createAction } from 'typesafe-actions';
 import { ActionCreator, Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import find from 'lodash/find';
-import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
 import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
-import buildAnalyticsObject from 'src/analyticsHelper';
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/browser/browserActions';
 import { deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 
@@ -40,7 +38,6 @@ import {
   SearchMatch,
   SearchMatches,
   // Strain,
-  Assembly,
   PopularSpecies,
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
@@ -54,18 +51,14 @@ const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   reference_genome_id: data.reference_genome_id,
   common_name: data.common_name,
   scientific_name: data.scientific_name,
-  assembly_name: get(
-    find(data.assemblies, ({ genome_id }) => genome_id === data.genome_id),
-    'assembly_name'
-  ) as string,
+  assembly_name: data.assembly_name as string,
   isEnabled: true
 });
 
 enum categories {
   POPULAR_SPECIES = 'popular_species',
   ADD_SPECIES = 'add_species',
-  SELECTED_SPECIES = 'selected_Species',
-  ASSEMBLY_SELECTOR = 'assembly_selector'
+  SELECTED_SPECIES = 'selected_Species'
 }
 
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
@@ -120,12 +113,6 @@ export const fetchPopularSpeciesAsyncActions = createAsyncAction(
   'species_selector/popular_species_success',
   'species_selector/popular_species_failure'
 )<undefined, { popularSpecies: PopularSpecies[] }, Error>();
-
-export const fetchAssembliesAsyncActions = createAsyncAction(
-  'species_selector/assemblies_request',
-  'species_selector/assemblies_success',
-  'species_selector/assemblies_failure'
-)<undefined, { assemblies: Assembly[] }, Error>();
 
 export const setSelectedSpecies = createAction(
   'species_selector/species_selected'
@@ -200,28 +187,6 @@ export const ensureSpeciesIsEnabled: ActionCreator<ThunkAction<
   dispatch(toggleSpeciesUseAndSave(genomeId));
 };
 
-export const fetchAssemblies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch) => {
-  try {
-    dispatch(fetchAssembliesAsyncActions.request());
-
-    const url = `/api/genomesearch/alternative_assemblies?genome_id=${genomeId}`;
-    const response = await apiService.fetch(url, { preserveEndpoint: true });
-
-    dispatch(
-      fetchAssembliesAsyncActions.success({
-        assemblies: response.alternative_assemblies
-      })
-    );
-  } catch (error) {
-    dispatch(fetchAssembliesAsyncActions.failure(error));
-  }
-};
-
 export const fetchPopularSpecies: ActionCreator<ThunkAction<
   void,
   any,
@@ -251,11 +216,9 @@ export const handleSelectedSpecies: ActionCreator<ThunkAction<
   Action<string>
 >> = (item: SearchMatch | PopularSpecies) => (dispatch) => {
   dispatch(setSelectedSpecies(item));
-  const { genome_id } = item;
 
   // TODO: fetch strains when they are ready
   // dispatch(fetchStrains(genome_id));
-  dispatch(fetchAssemblies(genome_id));
 };
 
 export const updateCommittedSpecies = createAction(
@@ -356,14 +319,3 @@ export const deleteSpeciesAndSave = (
   dispatch(deleteSpeciesInEntityViewer(genomeId));
   speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
 };
-
-export const changeAssembly = createAction(
-  'species_selector/change_assembly',
-  (assembly: Assembly) => assembly,
-  (assembly: Assembly) =>
-    buildAnalyticsObject({
-      category: categories.ASSEMBLY_SELECTOR,
-      label: assembly.assembly_name,
-      action: 'select'
-    })
-)();

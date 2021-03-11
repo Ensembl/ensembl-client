@@ -15,10 +15,12 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
+
+import { getSelectedItem } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import SpeciesSearchField from 'src/content/app/species-selector/components/species-search-field/SpeciesSearchField';
 import SpeciesCommitButton from 'src/content/app/species-selector/components/species-commit-button/SpeciesCommitButton';
-import AssemblySelector from 'src/content/app/species-selector/components/assembly-selector/AssemblySelector';
 
 import styles from './SpeciesSearchPanel.scss';
 
@@ -29,10 +31,24 @@ const SearchPanel = () => {
         <SpeciesSearchField />
         <SpeciesCommitButton />
       </div>
-      <div className={styles.assemblyWrapper}>
-        <AssemblySelector />
-      </div>
+      <SelectedAssembly />
     </section>
+  );
+};
+
+const SelectedAssembly = () => {
+  const selectedSpecies = useSelector(getSelectedItem);
+  const selectedAssembly = selectedSpecies?.assembly_name;
+
+  if (!selectedAssembly) {
+    return null;
+  }
+
+  return (
+    <div className={styles.selectedAssembly}>
+      <span className={styles.selectedAssemblyLabel}>Assembly</span>
+      <span>{selectedAssembly}</span>
+    </div>
   );
 };
 

@@ -47,32 +47,12 @@ export const getCurrentSpeciesGenomeId = (state: RootState) => {
   return get(state, 'speciesSelector.currentItem.genome_id', null);
 };
 
-export const getCurrentSpeciesStrains = (state: RootState) => {
-  return get(state, 'speciesSelector.currentItem.strains', []);
-};
-
-export const getCurrentSpeciesAssemblies = (state: RootState) => {
-  return get(state, 'speciesSelector.currentItem.assemblies', []);
-};
-
-export const isSelectingStrain = (state: RootState) => {
-  return state.speciesSelector.ui.isSelectingStrain;
-};
-
-export const isSelectingAssembly = (state: RootState) => {
-  return state.speciesSelector.ui.isSelectingAssembly;
-};
-
 export const hasCurrentSpecies = (state: RootState) => {
   return Boolean(state.speciesSelector.currentItem);
 };
 
 export const canCommitSpecies = (state: RootState) => {
-  return (
-    hasCurrentSpecies(state) &&
-    !isSelectingStrain(state) &&
-    !isSelectingAssembly(state)
-  );
+  return hasCurrentSpecies(state);
 };
 
 export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
