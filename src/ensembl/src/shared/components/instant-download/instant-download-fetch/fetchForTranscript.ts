@@ -57,6 +57,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
+
   const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
     genomeId,
     transcriptId
@@ -74,6 +75,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
       stableId: geneId,
       type: 'gene'
     });
+
     sequenceDownloadParams.push(
       getGenomicSequenceData(unversioned_gene_stable_id)
     );
@@ -167,20 +169,25 @@ const getUnversionedStableId = async (
     query = gql`
       query Transcript($genomeId: String!, $stableId: String!) {
         transcript(byId: { genome_id: $genomeId, stable_id: $stableId }) {
+          stable_id
           unversioned_stable_id
         }
       }
     `;
-  } else {
+  } else if (variables.type === 'gene') {
     query = gql`
       query Gene($genomeId: String!, $stableId: String!) {
         gene(byId: { genome_id: $genomeId, stable_id: $stableId }) {
+          stable_id
           unversioned_stable_id
         }
       }
     `;
   }
 
+  if (!query) {
+    return '';
+  }
   return client
     .query<TranscriptQueryResult | GeneQueryResult>({
       query,

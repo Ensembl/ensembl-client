@@ -49,7 +49,7 @@ import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneVie
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
 
-type Gene = Pick<FullGene, 'unversioned_stable_id'>;
+type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
 type Transcript = Pick<
   FullTranscript,
   'stable_id' | 'unversioned_stable_id' | 'symbol' | 'so_term'
@@ -211,7 +211,7 @@ const renderInstantDownload = ({
           id: transcript.stable_id,
           so_term: transcript.so_term
         }}
-        gene={{ id: gene.unversioned_stable_id }}
+        gene={{ id: gene.stable_id }}
       />
     </div>
   );
