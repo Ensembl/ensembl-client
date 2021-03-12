@@ -15,7 +15,6 @@
  */
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import isEqual from 'lodash/isEqual';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { SpeciesStatsProps as IndividualStat } from 'src/content/app/species/components/species-stats/SpeciesStats';
@@ -661,10 +660,8 @@ export const getStatsForSection = (props: {
       })
     : undefined;
 
-  const isExpandedContentSame = isEqual(
-    Object.keys(filteredData).sort(),
-    summaryStatsKeys?.sort()
-  );
+  const isExpandedContentSame =
+    Object.keys(filteredData).length === summaryStatsKeys?.length;
 
   if (isExpandedContentSame) {
     return {
