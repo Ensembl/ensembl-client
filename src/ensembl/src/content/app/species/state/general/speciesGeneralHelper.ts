@@ -627,7 +627,7 @@ export const getStatsForSection = (props: {
   } = {};
 
   Object.keys(data).forEach((key) => {
-    if (data[key] !== null) {
+    if (data[key] || data[key] === 0) {
       filteredData[key] = data[key] as string | number;
     }
   });
@@ -679,7 +679,7 @@ export const getStatsForSection = (props: {
         const processedSubGroupStats: IndividualStat[] = [];
 
         subGroupStats.forEach((stat) => {
-          if (filteredData[stat] !== null) {
+          if (filteredData[stat] || filteredData[stat] === 0) {
             const individualStat = buildIndividualStat({
               primaryKey: stat,
               primaryValue: filteredData[stat],
