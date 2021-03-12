@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import intersection from 'lodash/intersection';
-import { gql, useQuery } from '@apollo/client';
 import classNames from 'classnames';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
@@ -25,15 +24,6 @@ import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
 
 import styles from './InstantDownloadGene.scss';
-
-const QUERY = gql`
-  query Gene($genomeId: String!, $entityId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
-      stable_id
-      unversioned_stable_id
-    }
-  }
-`;
 
 type Theme = 'light' | 'dark';
 
@@ -102,17 +92,6 @@ const InstantDownloadGene = (props: Props) => {
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
 
-  const { data } = useQuery<{ gene: { unversioned_stable_id: string } }>(
-    QUERY,
-    {
-      variables: { genomeId, entityId: geneId }
-    }
-  );
-
-  if (!data) {
-    return null;
-  }
-
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
     const updatedOptions = {
       ...transcriptOptions,
@@ -129,7 +108,7 @@ const InstantDownloadGene = (props: Props) => {
   const onSubmit = () => {
     const payload = {
       genomeId,
-      geneId: data.gene.unversioned_stable_id,
+      geneId,
       options: {
         transcript: transcriptOptions,
         gene: { genomicSequence: isGeneSequenceSelected }

@@ -73,7 +73,7 @@ type PrepareDownloadParametersParams = {
 // map of field names received from component to field names returned when fetching checksums
 const labelTypeToSequenceType: Record<
   ProteinOption,
-  keyof Omit<TranscriptSequenceMetadata, 'stable_id'>
+  keyof Omit<TranscriptSequenceMetadata, 'stable_id' | 'unversioned_stable_id'>
 > = {
   proteinSequence: 'protein',
   cds: 'cds'

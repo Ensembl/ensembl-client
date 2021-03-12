@@ -20,6 +20,7 @@ import { client } from 'src/gql-client';
 
 export type TranscriptSequenceMetadata = {
   stable_id: string;
+  unversioned_stable_id: string;
   cdna?: {
     checksum: string;
     label: string;
@@ -35,6 +36,8 @@ export type TranscriptSequenceMetadata = {
 };
 
 export type GeneSequenceMetadata = {
+  stable_id: string;
+  unversioned_stable_id: string;
   transcripts: TranscriptSequenceMetadata[];
 };
 
@@ -61,6 +64,8 @@ type TranscriptQueryResult = {
 
 type GeneQueryResult = {
   gene: {
+    stable_id: string;
+    unversioned_stable_id: string;
     transcripts: TranscriptInQuery[];
   };
 };
@@ -96,10 +101,20 @@ const transcriptChecksumsQuery = gql`
   }
 `;
 
+const onlyGeneQuery = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      unversioned_stable_id
+    }
+  }
+`;
+
 const geneChecksumsQuery = gql`
   query Gene($genomeId: String!, $geneId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
       stable_id
+      unversioned_stable_id
       transcripts {
         stable_id
         unversioned_stable_id
@@ -122,15 +137,19 @@ const geneChecksumsQuery = gql`
 
 const processTranscriptData = (transcript: TranscriptInQuery) => {
   // TODO: expect to fetch genomic sequence here as well when checksum becomes available
-  const { unversioned_stable_id: stable_id } = transcript; // can't retrieve transcript seq via REST using stable_id
+  const { stable_id, unversioned_stable_id } = transcript; // can't retrieve transcript seq via REST using stable_id
   const productGeneratingContext = transcript.product_generating_contexts[0];
 
   if (!productGeneratingContext) {
-    return { stable_id };
+    return {
+      stable_id,
+      unversioned_stable_id
+    };
   }
 
   return {
     stable_id,
+    unversioned_stable_id,
     cdna: {
       checksum: productGeneratingContext.cdna.sequence_checksum,
       label: `${stable_id} cdna`
@@ -156,6 +175,21 @@ export const fetchTranscriptSequenceMetadata = (
     })
     .then(({ data }) => processTranscriptData(data.transcript));
 
+type OnlyGeneSequenceMetadata = {
+  stable_id: string;
+  unversioned_stable_id: string;
+};
+// temporary function; will change it to fetch gene sequence checksum when available
+export const fetchGeneWithoutTranscriptsSequenceMetadata = (
+  variables: GeneQueryVariables
+): Promise<OnlyGeneSequenceMetadata> =>
+  client
+    .query<{ gene: OnlyGeneSequenceMetadata }>({
+      query: onlyGeneQuery,
+      variables
+    })
+    .then(({ data }) => data.gene);
+
 export const fetchGeneSequenceMetadata = (
   variables: GeneQueryVariables
 ): Promise<GeneSequenceMetadata> =>
@@ -165,6 +199,8 @@ export const fetchGeneSequenceMetadata = (
       variables
     })
     .then(({ data }) => ({
+      stable_id: data.gene.stable_id,
+      unversioned_stable_id: data.gene.unversioned_stable_id,
       transcripts: data.gene.transcripts.map((transcript) =>
         processTranscriptData(transcript)
       )

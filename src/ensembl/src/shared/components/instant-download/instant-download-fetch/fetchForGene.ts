@@ -61,7 +61,12 @@ export const fetchForGene = async (payload: FetchPayload) => {
   );
 
   if (geneOptions.genomicSequence) {
-    sequenceDownloadParams.push(getGenomicSequenceData(geneId));
+    sequenceDownloadParams.push(
+      getGenomicSequenceData(
+        geneSequenceData.stable_id,
+        geneSequenceData.unversioned_stable_id
+      )
+    );
   }
 
   const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {

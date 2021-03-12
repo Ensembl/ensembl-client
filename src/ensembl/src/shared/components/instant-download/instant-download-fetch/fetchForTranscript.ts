@@ -25,6 +25,7 @@ import {
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
   fetchTranscriptSequenceMetadata,
+  fetchGeneWithoutTranscriptsSequenceMetadata,
   TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
@@ -64,7 +65,13 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
   });
 
   if (geneOptions.genomicSequence) {
-    sequenceDownloadParams.push(getGenomicSequenceData(geneId));
+    const metadata = await fetchGeneWithoutTranscriptsSequenceMetadata({
+      genomeId,
+      geneId
+    });
+    sequenceDownloadParams.push(
+      getGenomicSequenceData(metadata.stable_id, metadata.unversioned_stable_id)
+    );
   }
 
   const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
@@ -90,7 +97,11 @@ type PrepareDownloadParametersParams = {
 // map of field names received from component to field names returned when fetching checksums
 const labelTypeToSequenceType: Record<
   TranscriptOption,
-  keyof Omit<TranscriptSequenceMetadata, 'stable_id'> | 'genomic'
+  | keyof Omit<
+      TranscriptSequenceMetadata,
+      'stable_id' | 'unversioned_stable_id'
+    >
+  | 'genomic'
 > = {
   genomicSequence: 'genomic',
   proteinSequence: 'protein',
@@ -106,7 +117,10 @@ export const prepareDownloadParameters = (
     .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'protein', 'cdna', 'cds'
     .map((option) => {
       if (option === 'genomic') {
-        return getGenomicSequenceData(params.transcriptSequenceData.stable_id);
+        return getGenomicSequenceData(
+          params.transcriptSequenceData.stable_id,
+          params.transcriptSequenceData.unversioned_stable_id
+        );
       } else {
         const dataForSingleSequence = params.transcriptSequenceData[option];
 
@@ -123,7 +137,10 @@ export const prepareDownloadParameters = (
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
 
-export const getGenomicSequenceData = (id: string) => ({
-  label: `${id} genomic`,
-  url: `https://rest.ensembl.org/sequence/id/${id}?content-type=text/plain&type=genomic`
+export const getGenomicSequenceData = (
+  versionedStableId: string,
+  unversionedStableId: string
+) => ({
+  label: `${versionedStableId} genomic`,
+  url: `https://rest.ensembl.org/sequence/id/${unversionedStableId}?content-type=text/plain&type=genomic`
 });
