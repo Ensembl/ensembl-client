@@ -18,15 +18,9 @@ import React, { useState, useRef, ReactNode, useEffect } from 'react';
 import { of, from, merge, timer, combineLatest, Subscription } from 'rxjs';
 import { tap, mergeMap, delay, map, take, catchError } from 'rxjs/operators';
 
-import { PrimaryButton } from 'src/shared/components/button/Button';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import ControlledLoadingButton from './ControlledLoadingButton';
 
-import { ReactComponent as Checkmark } from './checkmark.svg';
-import { ReactComponent as Cross } from './cross.svg';
-
-import { LoadingState } from 'src/shared/types/loading-state.ts';
-
-import styles from './LoadingButton.scss';
+import { LoadingState } from 'src/shared/types/loading-state';
 
 type LoadingButtonProps = {
   onClick: () => Promise<unknown>;
@@ -102,37 +96,15 @@ const LoadingButton = (props: LoadingButtonProps) => {
     return () => subscriptionRef.current?.unsubscribe();
   }, []);
 
-  const buttonClass =
-    loadingState !== LoadingState.NOT_REQUESTED ? styles.invisible : undefined;
-
   return (
-    <div className={styles.buttonWrapper}>
-      {loadingState === LoadingState.LOADING && <Loading />}
-      {loadingState === LoadingState.SUCCESS && <Success />}
-      {loadingState === LoadingState.ERROR && <ErrorIndicator />}
-      <PrimaryButton onClick={onClick} className={buttonClass}>
-        {props.children}
-      </PrimaryButton>
-    </div>
+    <ControlledLoadingButton
+      status={loadingState}
+      onClick={onClick}
+      className={props.className}
+    >
+      {props.children}
+    </ControlledLoadingButton>
   );
 };
-
-const Loading = () => (
-  <div className={styles.loadingIndicator}>
-    <CircleLoader className={styles.spinner} />
-  </div>
-);
-
-const Success = () => (
-  <div className={styles.successIndicator}>
-    <Checkmark className={styles.checkmark} />
-  </div>
-);
-
-const ErrorIndicator = () => (
-  <div className={styles.errorIndicator}>
-    <Cross className={styles.cross} />
-  </div>
-);
 
 export default LoadingButton;

@@ -16,11 +16,20 @@
 
 import React, { useState, ChangeEvent } from 'react';
 
-import LoadingButton from 'src/shared/components/loading-button/LoadingButton';
+import LoadingButton, {
+  ControlledLoadingButton
+} from 'src/shared/components/loading-button';
+import RadioGroup, {
+  OptionValue
+} from 'src/shared/components/radio-group/RadioGroup';
+import Checkbox from 'src/shared/components/checkbox/Checkbox';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './LoadingButton.stories.scss';
 
 type DefaultArgs = {
+  onClick: (...args: any) => void;
   onSuccess: (...args: any) => void;
   onError: (...args: any) => void;
 };
@@ -108,9 +117,63 @@ export const LoadingButtonStory = (args: DefaultArgs) => {
 
 LoadingButtonStory.storyName = 'default';
 
+export const ControlledLoadingButtonStory = (args: DefaultArgs) => {
+  const [buttonStatus, setButtonStatus] = useState<LoadingState>(
+    LoadingState.NOT_REQUESTED
+  );
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
+  const buttonStatuses = [
+    { value: LoadingState.NOT_REQUESTED, label: 'Initial' },
+    { value: LoadingState.LOADING, label: 'Loading' },
+    { value: LoadingState.SUCCESS, label: 'Success' },
+    { value: LoadingState.ERROR, label: 'Error' }
+  ];
+
+  const onStatusChange = (newStatus: OptionValue) => {
+    setButtonStatus(newStatus as LoadingState);
+  };
+
+  const onDisabledChange = () => {
+    setIsDisabled(!isDisabled);
+  };
+
+  return (
+    <div className={styles.wrapper}>
+      <ControlledLoadingButton
+        status={buttonStatus}
+        onClick={args.onClick}
+        isDisabled={isDisabled}
+      >
+        I am button
+      </ControlledLoadingButton>
+      <p className={styles.note}>
+        (notice that this button is controlled entirely from the outside)
+      </p>
+      <div className={styles.controls}>
+        <RadioGroup
+          options={buttonStatuses}
+          selectedOption={buttonStatus}
+          onChange={onStatusChange}
+        />
+      </div>
+      <div style={{ width: '101px' }}>
+        <Checkbox
+          checked={isDisabled}
+          onChange={onDisabledChange}
+          label="Disabled"
+        />
+      </div>
+    </div>
+  );
+};
+
+ControlledLoadingButtonStory.storyName = 'controlled';
+
 export default {
   title: 'Components/Shared Components/LoadingButton',
   argTypes: {
+    onClick: { action: 'click' },
     onSuccess: { action: 'success' },
     onError: { action: 'error' }
   }
