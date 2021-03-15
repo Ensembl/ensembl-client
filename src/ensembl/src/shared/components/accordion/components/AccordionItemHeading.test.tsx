@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import Accordion from './Accordion';
 import AccordionItem from './AccordionItem';
 import AccordionItemButton from './AccordionItemButton';
@@ -24,13 +24,13 @@ import AccordionItemHeading, { SPEC_ERROR } from './AccordionItemHeading';
 describe('AccordionItemHeading', () => {
   it('renders without erroring', () => {
     expect(() => {
-      mount(<AccordionItemHeading />);
+      render(<AccordionItemHeading />);
     }).not.toThrow();
   });
 
   describe('children prop', () => {
     it('is respected', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
@@ -39,7 +39,9 @@ describe('AccordionItemHeading', () => {
           </AccordionItem>
         </Accordion>
       );
-      expect(wrapper.find(AccordionItemButton).text()).toEqual('Hello World');
+      expect(
+        container.querySelector('.accordionButtonDefault')?.textContent
+      ).toEqual('Hello World');
     });
   });
 
@@ -59,7 +61,7 @@ describe('AccordionItemHeading', () => {
 
     it('permits a single AccordionItemButton as a child', () => {
       expect(() =>
-        mount(
+        render(
           <Accordion>
             <AccordionItem>
               <AccordionItemHeading>
@@ -73,7 +75,7 @@ describe('AccordionItemHeading', () => {
 
     it('permits a single AccordionItemButton as a child within an array', () => {
       expect(() =>
-        mount(
+        render(
           <Accordion>
             <AccordionItem>
               <AccordionItemHeading>
@@ -89,7 +91,7 @@ describe('AccordionItemHeading', () => {
 
     it('does not permit multiple AccordionItemButton as children within an array', () => {
       expect(() =>
-        mount(
+        render(
           <Accordion>
             <AccordionItem>
               <AccordionItemHeading>
@@ -106,7 +108,7 @@ describe('AccordionItemHeading', () => {
 
     it('throws an error if you don’t nest an AccordionItemButton', () => {
       expect(() =>
-        mount(
+        render(
           <Accordion>
             <AccordionItem>
               <AccordionItemHeading />
@@ -118,7 +120,7 @@ describe('AccordionItemHeading', () => {
 
     it('throws an error if you nest any non-AccordionItemButton element', () => {
       expect(() =>
-        mount(
+        render(
           <Accordion>
             <AccordionItem>
               <AccordionItemHeading>Foo</AccordionItemHeading>

@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import Accordion from './Accordion';
 import AccordionItem from './AccordionItem';
 import AccordionItemPanel from './AccordionItemPanel';
@@ -28,13 +28,13 @@ enum UUIDS {
 describe('AccordionItemPanel', () => {
   it('renders without erroring', () => {
     expect(() => {
-      mount(<AccordionItemPanel />);
+      render(<AccordionItemPanel />);
     }).not.toThrow();
   });
 
   describe('className prop', () => {
     it('is "accordionPanelDefault" by default', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem uuid={UUIDS.FOO}>
             <AccordionItemPanel />
@@ -43,15 +43,12 @@ describe('AccordionItemPanel', () => {
       );
 
       expect(
-        wrapper
-          .find(AccordionItemPanel)
-          .find('div')
-          .hasClass('accordionPanelDefault')
-      ).toBe(true);
+        container.querySelector('.accordionDefault .accordionPanelDefault')
+      ).toBeTruthy();
     });
 
     it('can be extended', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem uuid={UUIDS.FOO}>
             <AccordionItemPanel className="foo" />
@@ -60,27 +57,29 @@ describe('AccordionItemPanel', () => {
       );
 
       expect(
-        wrapper
-          .find(AccordionItemPanel)
-          .find('div')
-          .hasClass('accordionPanelDefault')
-      ).toBe(true);
-      expect(wrapper.find(AccordionItemPanel).find('div').hasClass('foo')).toBe(
-        true
-      );
+        container.querySelector('.accordionDefault .accordionPanelDefault')
+      ).toBeTruthy();
+
+      expect(
+        container
+          .querySelector('.accordionDefault .accordionPanelDefault')
+          ?.classList.contains('foo')
+      ).toBeTruthy();
     });
   });
 
   describe('children prop', () => {
     it('is respected', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem>
             <AccordionItemPanel>Hello World</AccordionItemPanel>
           </AccordionItem>
         </Accordion>
       );
-      expect(wrapper.find(AccordionItemPanel).text()).toBe('Hello World');
+      expect(
+        container.querySelector('.accordionPanelDefault')?.textContent
+      ).toBe('Hello World');
     });
   });
 });

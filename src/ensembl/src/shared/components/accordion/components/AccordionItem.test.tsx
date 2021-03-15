@@ -15,53 +15,54 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import Accordion from './Accordion';
 import AccordionItem from './AccordionItem';
 
 describe('AccordionItem', () => {
   it('renders without erroring', () => {
     expect(() => {
-      mount(<Accordion />);
+      render(<Accordion />);
     }).not.toThrow();
   });
 
   describe('className prop', () => {
     it('is "accordionItemDefault" by default', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem uuid={'FOO'} />
         </Accordion>
       );
-      expect(
-        wrapper.find(AccordionItem).find('div').hasClass('accordionItemDefault')
-      ).toBe(true);
+      expect(container.querySelector('.accordionItemDefault')).toBeTruthy();
     });
 
     it('can be extended', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem uuid={'FOO'} className="foo" />
         </Accordion>
       );
 
+      expect(container.querySelector('.accordionItemDefault')).toBeTruthy();
+
       expect(
-        wrapper.find(AccordionItem).find('div').hasClass('accordionItemDefault')
+        container
+          .querySelector('.accordionItemDefault')
+          ?.classList.contains('foo')
       ).toBe(true);
-      expect(wrapper.find(AccordionItem).find('div').hasClass('foo')).toBe(
-        true
-      );
     });
   });
 
   describe('children prop', () => {
     it('is respected', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Accordion>
           <AccordionItem>Hello World</AccordionItem>
         </Accordion>
       );
-      expect(wrapper.find(AccordionItem).text()).toBe('Hello World');
+      expect(
+        container.querySelector('.accordionItemDefault')?.textContent
+      ).toBe('Hello World');
     });
   });
 });
