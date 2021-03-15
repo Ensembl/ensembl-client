@@ -63,12 +63,7 @@ describe('<CheckboxWithSelects />', () => {
   it('displays one Select when the checkbox is unchecked', () => {
     const { container } = renderCheckboxWithSelects();
 
-    expect(
-      container
-        .querySelector('.checkboxHolder')
-        ?.querySelector('.hiddenInput')
-        ?.getAttribute('checked')
-    ).toBeFalsy();
+    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
 
     expect(container.querySelectorAll('.select').length).toBe(1);
   });
