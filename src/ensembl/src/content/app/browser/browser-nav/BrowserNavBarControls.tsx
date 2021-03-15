@@ -17,7 +17,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import BrowserNavAction from './BrowserNavAction';
+import BrowserNavIcon from './BrowserNavIcon';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
@@ -40,7 +40,7 @@ type Props = {
 export const BrowserNavBarControls = (props: Props) => (
   <div className={styles.browserNavBarControls}>
     {browserNavConfig.map((item: BrowserNavItem) => (
-      <BrowserNavAction
+      <BrowserNavIcon
         key={item.name}
         browserNavItem={item}
         enabled={props.browserNavIconStates[item.name]}

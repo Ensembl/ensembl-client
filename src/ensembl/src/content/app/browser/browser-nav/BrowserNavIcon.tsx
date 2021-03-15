@@ -23,14 +23,14 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
 
-import iconStyles from './BrowserNavAction.scss';
+import iconStyles from './BrowserNavIcon.scss';
 
 type BrowserNavIconProps = {
   browserNavItem: BrowserNavItem;
   enabled: boolean;
 };
 
-export const BrowserNavAction = (props: BrowserNavIconProps) => {
+export const BrowserNavIcon = (props: BrowserNavIconProps) => {
   const { browserNavItem, enabled } = props;
   const { detail, icon } = browserNavItem;
 
@@ -54,4 +54,4 @@ export const BrowserNavAction = (props: BrowserNavIconProps) => {
   );
 };
 
-export default memo(BrowserNavAction);
+export default memo(BrowserNavIcon);
