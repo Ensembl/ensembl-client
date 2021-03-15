@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { BrowserNavAction } from './BrowserNavAction';
+import { BrowserNavAction } from './BrowserNavIcon';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { browserNavConfig } from '../browserConfig';
 

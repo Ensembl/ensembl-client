@@ -23,7 +23,7 @@ import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
 
 jest.mock(
-  './BrowserNavAction',
+  './BrowserNavIcon',
   () => (props: { enabled: boolean; browserNavItem: BrowserNavItem }) => {
     const className = props.enabled
       ? 'browserNavIcon enabled'
