@@ -180,16 +180,12 @@ describe('Accordion', () => {
           </Accordion>
         );
 
-        userEvent.click(
-          container.querySelector(
-            '.accordionButtonDefault'
-          ) as HTMLButtonElement
-        );
-        userEvent.click(
-          container.querySelector(
-            '.accordionButtonDefault'
-          ) as HTMLButtonElement
-        );
+        const accordionButtonDefault = container.querySelector(
+          '.accordionButtonDefault'
+        ) as HTMLButtonElement;
+
+        userEvent.click(accordionButtonDefault);
+        userEvent.click(accordionButtonDefault);
 
         expect(
           container
@@ -241,7 +237,7 @@ describe('Accordion', () => {
     });
 
     describe('onChange prop', () => {
-      it('is invoked with an array of expanded items’ uuids, if there are any', async () => {
+      it('is invoked with an array of expanded items’ uuids, if there are any', () => {
         const onChange = jest.fn();
         const { container } = render(
           <Accordion onChange={onChange}>
@@ -262,7 +258,7 @@ describe('Accordion', () => {
         expect(onChange).toHaveBeenCalledWith([UUIDS.FOO]);
       });
 
-      it('is invoked with an empty array, if no items are expanded', async () => {
+      it('is invoked with an empty array, if no items are expanded', () => {
         const onChange = jest.fn();
         const { container } = render(
           <Accordion

@@ -43,10 +43,7 @@ describe('AccordionItemPanel', () => {
       );
 
       expect(
-        container
-          .querySelector('.accordionDefault')
-          ?.querySelector('div')
-          ?.querySelector('.accordionPanelDefault')
+        container.querySelector('.accordionDefault .accordionPanelDefault')
       ).toBeTruthy();
     });
 
@@ -60,17 +57,12 @@ describe('AccordionItemPanel', () => {
       );
 
       expect(
-        container
-          .querySelector('.accordionDefault')
-          ?.querySelector('div')
-          ?.querySelector('.accordionPanelDefault')
+        container.querySelector('.accordionDefault .accordionPanelDefault')
       ).toBeTruthy();
 
       expect(
         container
-          .querySelector('.accordionDefault')
-          ?.querySelector('div')
-          ?.querySelector('.accordionPanelDefault')
+          .querySelector('.accordionDefault .accordionPanelDefault')
           ?.classList.contains('foo')
       ).toBeTruthy();
     });
