@@ -169,7 +169,7 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
   });
 
   return (
-    <div data-test-id="example links">
+    <div>
       <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>{links}</div>
     </div>

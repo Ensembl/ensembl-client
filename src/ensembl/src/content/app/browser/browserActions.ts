@@ -238,12 +238,7 @@ export const openBrowserNav = createAction(
 )<{ activeGenomeId: string }>();
 
 export const closeBrowserNav = createAction(
-  'browser/close-browser-navigation',
-  (activeGenomeId: string) => {
-    return {
-      activeGenomeId
-    };
-  }
+  'browser/close-browser-navigation'
 )<{ activeGenomeId: string }>();
 
 export const toggleBrowserNav: ActionCreator<ThunkAction<
@@ -261,7 +256,7 @@ export const toggleBrowserNav: ActionCreator<ThunkAction<
       return;
     }
     if (isBrowserNavOpenState) {
-      dispatch(closeBrowserNav(activeGenomeId));
+      dispatch(closeBrowserNav({ activeGenomeId }));
     } else {
       dispatch(openBrowserNav(activeGenomeId));
     }

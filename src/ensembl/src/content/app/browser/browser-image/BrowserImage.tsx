@@ -48,7 +48,7 @@ import {
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
-  BrowserNavIcons,
+  BrowserNavAction,
   BrowserNavIconStates,
   ChrLocation,
   CogList
@@ -77,8 +77,17 @@ export type BrowserImageProps = {
   changeHighlightedTrackId: (trackId: string) => void;
 };
 
+export type BumperPayload = [
+  top: boolean,
+  right: boolean,
+  bottom: boolean,
+  left: boolean,
+  zoomOut: boolean,
+  zoomIn: boolean
+];
+
 type BpaneOutPayload = {
-  bumper?: boolean[];
+  bumper?: BumperPayload;
   focus?: string;
   'message-counter'?: number;
   'intended-location'?: ChrLocation;
@@ -106,12 +115,12 @@ export const BrowserImage = (props: BrowserImageProps) => {
       const navIconStates = payload.bumper.map((a) => !a);
 
       const navStates = {
-        [BrowserNavIcons.NAVIGATE_UP]: navIconStates[0],
-        [BrowserNavIcons.NAVIGATE_DOWN]: navIconStates[1],
-        [BrowserNavIcons.ZOOM_OUT]: navIconStates[2],
-        [BrowserNavIcons.ZOOM_IN]: navIconStates[3],
-        [BrowserNavIcons.NAVIGATE_LEFT]: navIconStates[4],
-        [BrowserNavIcons.NAVIGATE_RIGHT]: navIconStates[5]
+        [BrowserNavAction.NAVIGATE_UP]: navIconStates[0],
+        [BrowserNavAction.NAVIGATE_DOWN]: navIconStates[1],
+        [BrowserNavAction.ZOOM_OUT]: navIconStates[2],
+        [BrowserNavAction.ZOOM_IN]: navIconStates[3],
+        [BrowserNavAction.NAVIGATE_LEFT]: navIconStates[4],
+        [BrowserNavAction.NAVIGATE_RIGHT]: navIconStates[5]
       };
       props.updateBrowserNavIconStates({
         activeGenomeId: props.activeGenomeId,

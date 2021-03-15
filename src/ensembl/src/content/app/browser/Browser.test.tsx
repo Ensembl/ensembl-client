@@ -104,14 +104,17 @@ describe('<Browser />', () => {
     });
 
     test('renders the genome browser and track panel only when there is a selected focus feature', () => {
-      let { container } = mountBrowserComponent();
+      const { container, rerender } = mountBrowserComponent();
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(0);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(0);
 
-      container = mountBrowserComponent({
-        browserQueryParams: { focus: faker.lorem.words() }
-      }).container;
+      rerender(
+        <Browser
+          {...defaultProps}
+          browserQueryParams={{ focus: faker.lorem.words() }}
+        />
+      );
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(1);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);

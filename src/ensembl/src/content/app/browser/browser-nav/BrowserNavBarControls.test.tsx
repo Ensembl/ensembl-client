@@ -19,11 +19,11 @@ import { screen, render } from '@testing-library/react';
 import faker from 'faker';
 
 import { BrowserNavBarControls } from './BrowserNavBarControls';
-import { BrowserNavIcons, BrowserNavIconStates } from '../browserState';
+import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
 
 jest.mock(
-  './BrowserNavIcon',
+  './BrowserNavAction',
   () => (props: { enabled: boolean; browserNavItem: BrowserNavItem }) => {
     const className = props.enabled
       ? 'browserNavIcon enabled'
@@ -39,12 +39,12 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
 ));
 
 const browserNavIconStates: { [key: string]: boolean } = {
-  [BrowserNavIcons.NAVIGATE_UP]: faker.random.boolean(),
-  [BrowserNavIcons.NAVIGATE_RIGHT]: faker.random.boolean(),
-  [BrowserNavIcons.NAVIGATE_DOWN]: faker.random.boolean(),
-  [BrowserNavIcons.NAVIGATE_LEFT]: faker.random.boolean(),
-  [BrowserNavIcons.ZOOM_OUT]: faker.random.boolean(),
-  [BrowserNavIcons.ZOOM_IN]: faker.random.boolean()
+  [BrowserNavAction.NAVIGATE_UP]: faker.random.boolean(),
+  [BrowserNavAction.NAVIGATE_RIGHT]: faker.random.boolean(),
+  [BrowserNavAction.NAVIGATE_DOWN]: faker.random.boolean(),
+  [BrowserNavAction.NAVIGATE_LEFT]: faker.random.boolean(),
+  [BrowserNavAction.ZOOM_OUT]: faker.random.boolean(),
+  [BrowserNavAction.ZOOM_IN]: faker.random.boolean()
 };
 
 describe('BrowserNavBarControls', () => {
@@ -59,7 +59,7 @@ describe('BrowserNavBarControls', () => {
   });
 
   it('disables buttons if corresponding actions are not possible', () => {
-    // browserNavIconStates are an` array of booleans that indicate whether the button
+    // browserNavIconStates are a set of booleans that indicate whether the button
     // has already caused maximum corresponding effect, and will have no further effect if pressed
     render(
       <BrowserNavBarControls

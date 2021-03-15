@@ -23,7 +23,7 @@ const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
 const trackStates = browserStorageService.getTrackStates();
 const chrLocations = browserStorageService.getChrLocation();
 
-export enum BrowserNavIcons {
+export enum BrowserNavAction {
   NAVIGATE_UP = 'navigate-up',
   NAVIGATE_RIGHT = 'navigate-right',
   NAVIGATE_DOWN = 'navigate-down',
@@ -34,16 +34,16 @@ export enum BrowserNavIcons {
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
 export type BrowserNavIconStates = {
-  [key in BrowserNavIcons]: boolean;
+  [key in BrowserNavAction]: boolean;
 };
 
 export const defaultBrowserNavIconsState = {
-  [BrowserNavIcons.NAVIGATE_UP]: false,
-  [BrowserNavIcons.NAVIGATE_RIGHT]: false,
-  [BrowserNavIcons.NAVIGATE_DOWN]: false,
-  [BrowserNavIcons.NAVIGATE_LEFT]: false,
-  [BrowserNavIcons.ZOOM_OUT]: false,
-  [BrowserNavIcons.ZOOM_IN]: false
+  [BrowserNavAction.NAVIGATE_UP]: false,
+  [BrowserNavAction.NAVIGATE_RIGHT]: false,
+  [BrowserNavAction.NAVIGATE_DOWN]: false,
+  [BrowserNavAction.NAVIGATE_LEFT]: false,
+  [BrowserNavAction.ZOOM_OUT]: false,
+  [BrowserNavAction.ZOOM_IN]: false
 };
 
 export type ChrLocation = [string, number, number];
