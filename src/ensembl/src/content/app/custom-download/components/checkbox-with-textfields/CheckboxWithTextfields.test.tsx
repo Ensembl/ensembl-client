@@ -15,20 +15,19 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
-import { act } from 'react-dom/test-utils';
 
-import CheckboxWithTextfields from './CheckboxWithTextfields';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import Upload, { ReadFile } from 'src/shared/components/upload/Upload';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import CheckboxWithTextfields, {
+  CheckboxWithTextfieldsProps
+} from './CheckboxWithTextfields';
+import { ReadFile } from 'src/shared/components/upload/Upload';
 
 const onTextChange = jest.fn();
 const onFilesChange = jest.fn();
 const onReset = jest.fn();
 
-let wrapper: any;
 const mockReadFile: ReadFile = {
   filename: faker.random.words(),
   content: faker.random.words(),
@@ -51,87 +50,89 @@ const defaultProps = {
 };
 
 describe('<CheckboxWithTextfields />', () => {
+  const renderCheckboxWithTextfields = (
+    props?: Partial<CheckboxWithTextfieldsProps>
+  ) => render(<CheckboxWithTextfields {...defaultProps} {...props} />);
+
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it('renders without error', () => {
-    wrapper = () => {
-      mount(<CheckboxWithTextfields {...defaultProps} />);
-    };
-    expect(wrapper).not.toThrow();
+    expect(() => renderCheckboxWithTextfields()).not.toThrow();
   });
 
   it('displays the Paste Data text by default', () => {
-    wrapper = mount(<CheckboxWithTextfields {...defaultProps} />);
-    expect(wrapper.find('.pasteDataText').text()).toBe('Paste Data');
+    const { container } = renderCheckboxWithTextfields();
+    expect(container.querySelector('.pasteDataText')?.textContent).toBe(
+      'Paste Data'
+    );
   });
 
   it('displays one Upload component by default', () => {
-    wrapper = mount(<CheckboxWithTextfields {...defaultProps} />);
-    expect(wrapper.find(Upload)).toHaveLength(1);
+    const { container } = renderCheckboxWithTextfields();
+    expect(container.querySelectorAll('.defaultUpload')).toHaveLength(1);
   });
 
   it('passes the label to the checkbox component', () => {
     const label = faker.random.words();
-    wrapper = mount(<CheckboxWithTextfields {...defaultProps} label={label} />);
-    expect(wrapper.find(Checkbox).prop('label')).toBe(label);
+    const { container } = renderCheckboxWithTextfields({ label });
+    expect(
+      container.querySelector('.checkboxHolder .defaultLabel')?.textContent
+    ).toBe(label);
   });
 
   it('automatically checks the checkbox when a textValue is passed', () => {
-    wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
-    );
-    expect(wrapper.find(Checkbox).prop('checked')).toBe(true);
+    const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
+    expect(container.querySelector('.checkboxHolder > .checked')).toBeTruthy();
   });
 
   it('automatically checks the checkbox when the files list is not empty', () => {
-    wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} files={[mockReadFile]} />
-    );
-    expect(wrapper.find(Checkbox).prop('checked')).toBe(true);
+    const { container } = renderCheckboxWithTextfields({
+      files: [mockReadFile]
+    });
+
+    expect(container.querySelector('.checkboxHolder .checked')).toBeTruthy();
   });
 
   it('calls the onReset prop when the checkbox is unchecked', () => {
-    wrapper = mount(
-      <CheckboxWithTextfields {...defaultProps} textValue={'foo'} />
+    const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
+    const checkboxLabelElement = container.querySelector(
+      '.checkboxHolder .hiddenInput'
     );
-    wrapper.find(Checkbox).find('label').simulate('click');
+
+    userEvent.click(checkboxLabelElement as HTMLElement);
+
     expect(onReset).toBeCalled();
   });
 
   it('displays N number of file details based on the files prop', () => {
     const files = Array(faker.random.number(10)).fill(mockReadFile);
-    wrapper = mount(<CheckboxWithTextfields {...defaultProps} files={files} />);
-    expect(wrapper.find('.filename').length).toBe(files.length);
+    const { container } = renderCheckboxWithTextfields({ files: files });
+
+    expect(container.querySelectorAll('.filename').length).toBe(files.length);
   });
 
   it('calls the onFilesChange when a file is removed', async () => {
     const files = Array(faker.random.number(10) || 1).fill(mockReadFile);
     const randomNumber = faker.random.number(files.length - 1);
-    wrapper = mount(<CheckboxWithTextfields {...defaultProps} files={files} />);
+    const { container } = renderCheckboxWithTextfields({ files: files });
 
-    await act(async () => {
-      wrapper
-        .find('.removeFileIcon')
-        .at(randomNumber)
-        .find(ImageButton)
-        .prop('onClick')();
-    });
-    wrapper.update();
+    const removeIcon = container
+      .querySelectorAll('.removeFileIcon')
+      [randomNumber].querySelector('.imageButton');
+
+    userEvent.click(removeIcon as HTMLElement);
 
     expect(onFilesChange).toBeCalled();
   });
 
   it('displays an error message if the file has the error field set', async () => {
-    wrapper = mount(
-      <CheckboxWithTextfields
-        {...defaultProps}
-        files={[mockReadFileWithError]}
-      />
-    );
+    const { container } = renderCheckboxWithTextfields({
+      files: [mockReadFileWithError]
+    });
 
-    expect(wrapper.find('.errorMessage').text()).toBe(
+    expect(container.querySelector('.errorMessage')?.textContent).toBe(
       mockReadFileWithError.error
     );
   });

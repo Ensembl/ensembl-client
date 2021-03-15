@@ -15,12 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
-import CheckboxWithRadios from './CheckboxWithRadios';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
+
+import CheckboxWithRadios, {
+  CheckboxWithRadiosProps
+} from './CheckboxWithRadios';
 
 const onChange = jest.fn();
 
@@ -34,7 +36,6 @@ describe('<CheckboxWithRadios />', () => {
     jest.resetAllMocks();
   });
 
-  let wrapper: any;
   const defaultProps = {
     onChange: onChange,
     label: 'foo',
@@ -42,39 +43,53 @@ describe('<CheckboxWithRadios />', () => {
     options: times(5, () => createOption())
   };
 
+  const renderCheckboxWithRadios = (props?: Partial<CheckboxWithRadiosProps>) =>
+    render(<CheckboxWithRadios {...defaultProps} {...props} />);
+
   it('renders without error', () => {
-    wrapper = mount(<CheckboxWithRadios {...defaultProps} />);
-    expect(wrapper.find(CheckboxWithRadios).length).toEqual(1);
+    expect(() => {
+      renderCheckboxWithRadios();
+    }).not.toThrow();
   });
 
   it('does not check the checkbox when there are no options selected', () => {
-    wrapper = mount(<CheckboxWithRadios {...defaultProps} />);
+    const { container } = renderCheckboxWithRadios();
 
-    expect(wrapper.find(Checkbox).prop('checked')).toBe(false);
+    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
   });
 
   it('does not display any radios when the checkbox is unchecked', () => {
-    wrapper = mount(<CheckboxWithRadios {...defaultProps} />);
+    const { container } = renderCheckboxWithRadios();
 
-    expect(wrapper.find(Checkbox).prop('checked')).toBe(false);
-    expect(wrapper.find('input[type="radio"]').length).toBe(0);
+    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
+
+    expect(container.querySelectorAll('input[type="radio"]').length).toBe(0);
   });
 
   it('displays all the radios when the checkbox is checked', () => {
-    wrapper = mount(<CheckboxWithRadios {...defaultProps} />);
+    const { container } = renderCheckboxWithRadios();
 
-    wrapper.find(Checkbox).find('.defaultCheckbox').simulate('click');
-    expect(wrapper.find('input[type="radio"]').length).toBe(
+    const checkboxElement = container.querySelector('.defaultCheckbox');
+
+    userEvent.click(checkboxElement as HTMLElement);
+
+    expect(container.querySelectorAll('input[type="radio"]').length).toBe(
       defaultProps.options.length
     );
   });
 
   it('calls the onChange when the radio is changed with the selected option', () => {
-    wrapper = mount(<CheckboxWithRadios {...defaultProps} />);
+    const { container } = renderCheckboxWithRadios();
 
-    wrapper.find(Checkbox).find('.defaultCheckbox').simulate('click');
+    const checkboxElement = container.querySelector('.defaultCheckbox');
 
-    wrapper.find('input[type="radio"]').first().simulate('change');
+    userEvent.click(checkboxElement as HTMLInputElement);
+
+    const firstRadioInput = container.querySelectorAll(
+      'input[type="radio"]'
+    )[0];
+
+    userEvent.click(firstRadioInput as HTMLInputElement);
 
     expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });

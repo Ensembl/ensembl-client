@@ -15,12 +15,15 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
-
-import CheckboxGrid, { CheckboxGridOption } from './CheckboxGrid';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
+
+import CheckboxGrid, {
+  CheckboxGridOption,
+  CheckboxGridProps
+} from './CheckboxGrid';
 
 const createCheckboxData = (options: CheckboxGridOption[]) => {
   const id = faker.lorem.word();
@@ -49,29 +52,34 @@ describe('<CheckboxGrid />', () => {
     jest.resetAllMocks();
   });
 
-  let wrapper: any;
   const defaultProps = {
     options: defaultOptions,
     onChange,
     label: faker.lorem.word()
   };
+  const renderCheckboxGrid = (props?: Partial<CheckboxGridProps>) =>
+    render(<CheckboxGrid {...defaultProps} {...props} />);
 
   it('renders without error', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
-    expect(wrapper.find(CheckboxGrid).length).toEqual(1);
+    expect(() => {
+      renderCheckboxGrid();
+    }).not.toThrow();
   });
 
   it('renders N number of checkboxes based on the options', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
+    const { container } = renderCheckboxGrid();
 
-    expect(wrapper.find(Checkbox).length).toEqual(defaultOptions.length);
+    expect(container.querySelectorAll('.defaultCheckbox')?.length).toEqual(
+      defaultOptions.length
+    );
   });
 
   it('sorts the checkboxes based on the options array', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
+    const { container } = renderCheckboxGrid();
 
-    const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
-
+    const firstGridContainer = container.querySelectorAll(
+      '.checkboxGridContainer'
+    )[0];
     const labels: string[] = [];
     Object.values(defaultOptions).forEach((element) => {
       labels.push(element.label);
@@ -79,27 +87,30 @@ describe('<CheckboxGrid />', () => {
 
     const firstLabel = labels.shift();
     const lastLabel = labels.pop();
-    const firstCheckbox = firstGridContainer.find(Checkbox).first();
-    expect(firstCheckbox.prop('label')).toEqual(firstLabel);
+    const allCheckboxes = firstGridContainer.querySelectorAll(
+      '.defaultCheckbox'
+    );
+    const firstCheckbox = allCheckboxes[0];
+    expect(firstCheckbox.nextSibling?.textContent).toEqual(firstLabel);
 
-    const lastCheckbox = firstGridContainer.find(Checkbox).last();
-    expect(lastCheckbox.prop('label')).toEqual(lastLabel);
+    const lastCheckbox = allCheckboxes[allCheckboxes.length - 1];
+    expect(lastCheckbox.nextSibling?.textContent).toEqual(lastLabel);
   });
 
   it('calls the checkboxOnChange when a checkbox is checked/unchecked', async () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
-    const firstCheckbox = wrapper.find(Checkbox).first();
+    const { container } = renderCheckboxGrid();
+    const firstCheckbox = container.querySelectorAll('.defaultCheckbox')[0];
 
-    firstCheckbox.find('.defaultCheckbox').simulate('click');
+    userEvent.click(firstCheckbox);
 
-    const checkedStatus = firstCheckbox.prop('checked');
+    const checkedStatus = defaultOptions[0].isChecked;
 
     const firstCheckboxID = defaultOptions[0].id;
     expect(onChange).toBeCalledWith(!checkedStatus, firstCheckboxID);
   });
 
   it('hides the unchecked checkboxes when hideUnchecked is true', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} hideUnchecked={true} />);
+    const { container } = renderCheckboxGrid({ hideUnchecked: true });
 
     let totalCheckedCheckboxes = 0;
 
@@ -109,26 +120,33 @@ describe('<CheckboxGrid />', () => {
       }
     });
 
-    expect(wrapper.find(Checkbox).length).toBe(totalCheckedCheckboxes);
+    expect(container.querySelectorAll('.defaultCheckbox').length).toBe(
+      totalCheckedCheckboxes
+    );
   });
 
   it('hides the title when hideTitles is true', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} hideLabel={true} />);
+    const { container } = renderCheckboxGrid({ hideLabel: true });
 
-    expect(wrapper.find('.checkboxGridTitle').length).toBe(0);
+    expect(container.querySelectorAll('.checkboxGridTitle').length).toBe(0);
   });
 
   it('draws 3 columns by default', () => {
-    wrapper = mount(<CheckboxGrid {...defaultProps} />);
-    const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
-    expect(firstGridContainer.children().length).toBe(3);
+    const { container } = renderCheckboxGrid();
+    const firstGridContainer = container.querySelectorAll(
+      '.checkboxGridContainer'
+    )[0];
+    expect(firstGridContainer.children.length).toBe(3);
   });
 
   it('draws N number of columns based on the `column` parameter', () => {
     const columns = 4;
 
-    wrapper = mount(<CheckboxGrid {...defaultProps} columns={columns} />);
-    const firstGridContainer = wrapper.find('.checkboxGridContainer').first();
-    expect(firstGridContainer.children().length).toBe(columns);
+    const { container } = renderCheckboxGrid({ columns });
+
+    const firstGridContainer = container.querySelectorAll(
+      '.checkboxGridContainer'
+    )[0];
+    expect(firstGridContainer.children.length).toBe(columns);
   });
 });
