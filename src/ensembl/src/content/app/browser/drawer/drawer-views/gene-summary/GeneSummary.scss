@@ -48,8 +48,6 @@
 .downloadRow {
   > .value {
     display: flex;
-    position: relative;
-    width: 400px;
   }
 }
 
@@ -59,7 +57,6 @@
 }
 
 .downloadWrapper {
-  display: inline-block;
   margin-left: 40px;
   position: relative;
 }
