@@ -94,7 +94,7 @@ describe('<CheckboxWithSelects />', () => {
 
     expect(container.querySelectorAll('.select').length).toBe(1);
 
-    expect(container.querySelectorAll('.removeIconHolder').length).toBe(0);
+    expect(container.querySelector('.removeIconHolder')).toBeFalsy();
   });
 
   it('displays the remove button next to the Select if an option is selected', () => {
@@ -127,6 +127,22 @@ describe('<CheckboxWithSelects />', () => {
     expect(container.querySelectorAll('.select').length).toBe(2);
   });
 
+  it('displays all the options when no options are selected', () => {
+    const { container } = renderCheckboxWithSelects();
+
+    const selectElement = container.querySelector(
+      '.select'
+    ) as HTMLInputElement;
+
+    const selectControl = selectElement.querySelector('.selectControl');
+
+    userEvent.click(selectControl as HTMLElement);
+
+    expect(selectElement.querySelectorAll('.option')).toHaveLength(
+      defaultProps.options.length
+    );
+  });
+
   it('hides the options that are already selected within the new Select', () => {
     const { container } = renderCheckboxWithSelects({
       selectedOptions: [defaultProps.options[0].value]
@@ -142,7 +158,9 @@ describe('<CheckboxWithSelects />', () => {
 
     userEvent.click(lastSelectControl as HTMLElement);
 
-    expect(lastSelect.querySelectorAll('.option')).toHaveLength(4);
+    expect(lastSelect.querySelectorAll('.option')).toHaveLength(
+      defaultProps.options.length - 1
+    );
   });
 
   it('does not display the Plus button when all the options are selected', () => {
@@ -154,7 +172,7 @@ describe('<CheckboxWithSelects />', () => {
     const { container } = renderCheckboxWithSelects({
       selectedOptions: optionValues
     });
-    expect(container.querySelectorAll('.addIconHolder').length).toBe(0);
+    expect(container.querySelector('.addIconHolder')).toBeFalsy();
   });
 
   it('calls the onChange function when an option is selected', () => {

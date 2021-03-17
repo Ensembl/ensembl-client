@@ -63,7 +63,7 @@ describe('<CheckboxWithRadios />', () => {
 
     expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
 
-    expect(container.querySelectorAll('input[type="radio"]').length).toBe(0);
+    expect(container.querySelector('.radio')).toBeFalsy();
   });
 
   it('displays all the radios when the checkbox is checked', () => {
@@ -73,7 +73,7 @@ describe('<CheckboxWithRadios />', () => {
 
     userEvent.click(checkboxElement as HTMLElement);
 
-    expect(container.querySelectorAll('input[type="radio"]').length).toBe(
+    expect(container.querySelectorAll('.radio').length).toBe(
       defaultProps.options.length
     );
   });
@@ -85,9 +85,7 @@ describe('<CheckboxWithRadios />', () => {
 
     userEvent.click(checkboxElement as HTMLInputElement);
 
-    const firstRadioInput = container.querySelectorAll(
-      'input[type="radio"]'
-    )[0];
+    const firstRadioInput = container.querySelector('.radio');
 
     userEvent.click(firstRadioInput as HTMLInputElement);
 

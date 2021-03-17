@@ -77,9 +77,9 @@ describe('<CheckboxGrid />', () => {
   it('sorts the checkboxes based on the options array', () => {
     const { container } = renderCheckboxGrid();
 
-    const firstGridContainer = container.querySelectorAll(
+    const firstGridContainer = container.querySelector(
       '.checkboxGridContainer'
-    )[0];
+    );
     const labels: string[] = [];
     Object.values(defaultOptions).forEach((element) => {
       labels.push(element.label);
@@ -87,7 +87,7 @@ describe('<CheckboxGrid />', () => {
 
     const firstLabel = labels.shift();
     const lastLabel = labels.pop();
-    const allCheckboxes = firstGridContainer.querySelectorAll(
+    const allCheckboxes = (firstGridContainer as HTMLElement).querySelectorAll(
       '.defaultCheckbox'
     );
     const firstCheckbox = allCheckboxes[0];
@@ -99,7 +99,9 @@ describe('<CheckboxGrid />', () => {
 
   it('calls the checkboxOnChange when a checkbox is checked/unchecked', async () => {
     const { container } = renderCheckboxGrid();
-    const firstCheckbox = container.querySelectorAll('.defaultCheckbox')[0];
+    const firstCheckbox = container.querySelector(
+      '.defaultCheckbox'
+    ) as HTMLElement;
 
     userEvent.click(firstCheckbox);
 
@@ -125,17 +127,17 @@ describe('<CheckboxGrid />', () => {
     );
   });
 
-  it('hides the title when hideTitles is true', () => {
+  it('hides the grid label when hideLabel is true', () => {
     const { container } = renderCheckboxGrid({ hideLabel: true });
 
-    expect(container.querySelectorAll('.checkboxGridTitle').length).toBe(0);
+    expect(container.querySelector('.checkboxGridTitle')).toBeFalsy();
   });
 
   it('draws 3 columns by default', () => {
     const { container } = renderCheckboxGrid();
-    const firstGridContainer = container.querySelectorAll(
+    const firstGridContainer = container.querySelector(
       '.checkboxGridContainer'
-    )[0];
+    ) as HTMLElement;
     expect(firstGridContainer.children.length).toBe(3);
   });
 
@@ -144,9 +146,9 @@ describe('<CheckboxGrid />', () => {
 
     const { container } = renderCheckboxGrid({ columns });
 
-    const firstGridContainer = container.querySelectorAll(
+    const firstGridContainer = container.querySelector(
       '.checkboxGridContainer'
-    )[0];
+    ) as HTMLElement;
     expect(firstGridContainer.children.length).toBe(columns);
   });
 });
