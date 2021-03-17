@@ -57,13 +57,19 @@ describe('<CheckboxWithSelects />', () => {
   it('does not check the checkbox when there are no options selected', () => {
     const { container } = renderCheckboxWithSelects();
 
-    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeFalsy();
   });
 
   it('displays one Select when the checkbox is unchecked', () => {
     const { container } = renderCheckboxWithSelects();
 
-    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeFalsy();
 
     expect(container.querySelectorAll('.select').length).toBe(1);
   });
@@ -82,7 +88,11 @@ describe('<CheckboxWithSelects />', () => {
     const { container } = renderCheckboxWithSelects({
       selectedOptions: [defaultProps.options[0].value]
     });
-    expect(container.querySelector('.checkboxHolder .checked')).toBeTruthy();
+
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeTruthy();
   });
 
   it('does not display the remove button next to the Select if no option is selected ', () => {

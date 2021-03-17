@@ -84,7 +84,10 @@ describe('<CheckboxWithTextfields />', () => {
 
   it('automatically checks the checkbox when a textValue is passed', () => {
     const { container } = renderCheckboxWithTextfields({ textValue: 'foo' });
-    expect(container.querySelector('.checkboxHolder > .checked')).toBeTruthy();
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeTruthy();
   });
 
   it('automatically checks the checkbox when the files list is not empty', () => {
@@ -92,7 +95,10 @@ describe('<CheckboxWithTextfields />', () => {
       files: [mockReadFile]
     });
 
-    expect(container.querySelector('.checkboxHolder .checked')).toBeTruthy();
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeTruthy();
   });
 
   it('calls the onReset prop when the checkbox is unchecked', () => {

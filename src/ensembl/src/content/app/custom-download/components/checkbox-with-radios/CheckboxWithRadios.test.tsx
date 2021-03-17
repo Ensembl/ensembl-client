@@ -55,13 +55,19 @@ describe('<CheckboxWithRadios />', () => {
   it('does not check the checkbox when there are no options selected', () => {
     const { container } = renderCheckboxWithRadios();
 
-    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeFalsy();
   });
 
   it('does not display any radios when the checkbox is unchecked', () => {
     const { container } = renderCheckboxWithRadios();
 
-    expect(container.querySelector('.checkboxHolder .checked')).toBeFalsy();
+    expect(
+      (container.querySelector('.checkboxHolder input') as HTMLInputElement)
+        .checked
+    ).toBeFalsy();
 
     expect(container.querySelector('.radio')).toBeFalsy();
   });
