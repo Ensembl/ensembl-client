@@ -41,7 +41,7 @@ export type GeneSequenceMetadata = {
   transcripts: TranscriptSequenceMetadata[];
 };
 
-type TranscriptInQuery = {
+type TranscriptInResponse = {
   stable_id: string; // for apollo client caching
   unversioned_stable_id: string;
   product_generating_contexts: Array<{
@@ -59,14 +59,14 @@ type TranscriptInQuery = {
 };
 
 type TranscriptQueryResult = {
-  transcript: TranscriptInQuery;
+  transcript: TranscriptInResponse;
 };
 
 type GeneQueryResult = {
   gene: {
     stable_id: string;
     unversioned_stable_id: string;
-    transcripts: TranscriptInQuery[];
+    transcripts: TranscriptInResponse[];
   };
 };
 
@@ -135,7 +135,7 @@ const geneChecksumsQuery = gql`
   }
 `;
 
-const processTranscriptData = (transcript: TranscriptInQuery) => {
+const processTranscriptData = (transcript: TranscriptInResponse) => {
   // TODO: expect to fetch genomic sequence here as well when checksum becomes available
   const { stable_id, unversioned_stable_id } = transcript; // can't retrieve transcript seq via REST using stable_id
   const productGeneratingContext = transcript.product_generating_contexts[0];
