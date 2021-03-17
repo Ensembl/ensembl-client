@@ -30,15 +30,7 @@ type Props = {
 export const TopMenu = (props: Props) => {
   const { menu } = props;
 
-  // This is a bit of a hack
-  // Only take the first article from every collection of articles
-  const menuItems = menu.data.map((menuItem) => {
-    if (menuItem.type === 'collection') {
-      return menuItem.items[0];
-    } else {
-      return menuItem;
-    }
-  });
+  const menuItems = menu.data;
 
   return (
     <>
