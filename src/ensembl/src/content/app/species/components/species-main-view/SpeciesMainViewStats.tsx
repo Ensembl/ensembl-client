@@ -191,7 +191,11 @@ const SpeciesMainViewStats = (props: Props) => {
           <ExpandableSection
             key={key}
             collapsedContent={getCollapsedContent(contentProps)}
-            expandedContent={getExpandedContent(contentProps)}
+            expandedContent={
+              contentProps.statsSection.groups
+                ? getExpandedContent(contentProps)
+                : null
+            }
             isExpanded={expandedSections.includes(statsSection.section)}
             onToggle={(isEnabled) =>
               onSectionToggle(statsSection.section, isEnabled)

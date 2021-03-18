@@ -627,7 +627,7 @@ export const getStatsForSection = (props: {
   } = {};
 
   Object.keys(data).forEach((key) => {
-    if (data[key] !== null) {
+    if (data[key] || data[key] === 0) {
       filteredData[key] = data[key] as string | number;
     }
   });
@@ -660,38 +660,51 @@ export const getStatsForSection = (props: {
       })
     : undefined;
 
+  const isExpandedContentSame =
+    Object.keys(filteredData).length === summaryStatsKeys?.length;
+
+  if (isExpandedContentSame) {
+    return {
+      section,
+      summaryStats,
+      exampleLinks
+    } as StatsSection;
+  }
+
+  const processedGroups = groups.map((group) => {
+    const groupStats = groupsStatsMap[group];
+
+    const processedStats = groupStats
+      .map((subGroupStats) => {
+        const processedSubGroupStats: IndividualStat[] = [];
+
+        subGroupStats.forEach((stat) => {
+          if (filteredData[stat] || filteredData[stat] === 0) {
+            const individualStat = buildIndividualStat({
+              primaryKey: stat,
+              primaryValue: filteredData[stat],
+              section
+            });
+            individualStat && processedSubGroupStats.push(individualStat);
+          }
+        });
+
+        return processedSubGroupStats.length
+          ? processedSubGroupStats
+          : undefined;
+      })
+      .filter(Boolean);
+
+    return {
+      title: groupTitles[group],
+      stats: processedStats
+    };
+  });
+
   return {
     section,
     summaryStats,
     exampleLinks,
-    groups: groups.map((group) => {
-      const groupStats = groupsStatsMap[group];
-
-      const processedStats = groupStats
-        .map((subGroupStats) => {
-          const processedSubGroupStats: IndividualStat[] = [];
-
-          subGroupStats.forEach((stat) => {
-            if (filteredData[stat]) {
-              const individualStat = buildIndividualStat({
-                primaryKey: stat,
-                primaryValue: filteredData[stat],
-                section
-              });
-              individualStat && processedSubGroupStats.push(individualStat);
-            }
-          });
-
-          return processedSubGroupStats.length
-            ? processedSubGroupStats
-            : undefined;
-        })
-        .filter(Boolean);
-
-      return {
-        title: groupTitles[group],
-        stats: processedStats.length ? processedStats : undefined
-      };
-    })
+    groups: processedGroups
   } as StatsSection;
 };
