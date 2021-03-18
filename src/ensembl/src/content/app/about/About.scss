@@ -1,4 +1,5 @@
 @import 'src/styles/common';
+@import 'src/shared/components/help-article/helpArticleConstants';
 
 $article-right-padding: 1.5rem;
 
@@ -24,6 +25,7 @@ $article-right-padding: 1.5rem;
   grid-template-columns: [article] calc(440px + #{$article-right-padding}) [aside] minmax(200px, 300px);
   grid-column-gap: 10rem;
   padding-left: 80px;
+  padding-top: 44px;
 
   article {
     grid-column: article;
@@ -33,6 +35,9 @@ $article-right-padding: 1.5rem;
     display: flex;
     flex-direction: column;
     grid-column: aside;
-    padding-top: 5rem;
+  }
+
+  .asideTitle {
+    margin-bottom: $aside-title-margin-bottom;
   }
 }

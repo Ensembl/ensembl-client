@@ -19,6 +19,7 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
+import { TextArticle } from 'src/shared/components/help-article';
 import {
   TopMenu,
   SideMenu
@@ -47,13 +48,14 @@ const About = () => {
         </TopMenuBar>
       </div>
       <Main>
-        <article>
-          {article && (
-            <div dangerouslySetInnerHTML={{ __html: article.body }} />
-          )}
-        </article>
+        {article && <TextArticle article={article} />}
         <aside>
-          {menu && <SideMenu menu={menu} currentUrl={location.pathname} />}
+          {menu && (
+            <>
+              <div className={styles.asideTitle}>More about...</div>
+              <SideMenu menu={menu} currentUrl={location.pathname} />
+            </>
+          )}
         </aside>
       </Main>
     </>
