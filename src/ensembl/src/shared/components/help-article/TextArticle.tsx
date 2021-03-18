@@ -16,6 +16,8 @@
 
 import React, { useRef, useEffect, RefObject } from 'react';
 import { TextArticle as TextArticleType } from 'src/shared/types/help-and-docs/article';
+import { useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 
 import styles from './HelpArticle.scss';
 
@@ -38,6 +40,8 @@ const TextArticle = (props: Props) => {
 };
 
 const useRoutingRules = <T extends HTMLElement>(ref: RefObject<T>) => {
+  const dispatch = useDispatch();
+
   const onClick = (event: MouseEvent) => {
     event.preventDefault();
     const target = event.target as HTMLElement;
@@ -47,12 +51,14 @@ const useRoutingRules = <T extends HTMLElement>(ref: RefObject<T>) => {
     }
 
     const href = target.getAttribute('href') as string;
-    if (href.startsWith('http')) {
-      // This is a link to an external source.
-      // Hopefully we won't have links starting with ftp or other protocols
-      window.open(href);
+    if (href.startsWith('/')) {
+      // This is a link to another page within the site;
+      // Use React Router to navigate;
+      dispatch(push(href));
     } else {
-      // TODO
+      // A href containing an absolute urls, with a protocol and a hostname
+      // is treated as a link to an external resource; open it in a new tab
+      window.open(href);
     }
   };
 

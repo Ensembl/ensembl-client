@@ -13,11 +13,12 @@
   h2 {
     font-size: 13px;
     margin-top: calc(2 * #{$line-height});
-    margin-bottom: calc(1 * #{$line-height});
+    margin-bottom: $line-height;
   }
 
   p {
     line-height: $line-height;
+    margin: $line-height 0;
   }
 
   img {
