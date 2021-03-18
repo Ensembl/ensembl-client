@@ -31,6 +31,7 @@ const QUERY = gql`
   query Gene($genomeId: String!, $entityId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
       stable_id
+      so_term
     }
   }
 `;
@@ -41,9 +42,12 @@ const EntityViewerSidebarDownloads = () => {
 
   const entityId = geneId ? parseEnsObjectId(geneId).objectId : null;
 
-  const { data } = useQuery<{ gene: { stable_id: string } }>(QUERY, {
-    variables: { genomeId, entityId }
-  });
+  const { data } = useQuery<{ gene: { stable_id: string; so_term: string } }>(
+    QUERY,
+    {
+      variables: { genomeId, entityId }
+    }
+  );
 
   if (!data) {
     return null;
@@ -54,7 +58,7 @@ const EntityViewerSidebarDownloads = () => {
       <h3>Download</h3>
       <InstantDownloadGene
         genomeId={genomeId as string}
-        gene={{ id: data.gene.stable_id }}
+        gene={{ id: data.gene.stable_id, so_term: data.gene.so_term }}
       />
     </section>
   );

@@ -27,7 +27,7 @@ export enum SidebarTabName {
 export enum SidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'bookmarks',
-  DOWNLOADS = 'downloads'
+  DOWNLOADS = 'download'
 }
 
 export type ToggleStatus = Status.OPEN | Status.CLOSED;

@@ -19,6 +19,7 @@ import intersection from 'lodash/intersection';
 import classNames from 'classnames';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
+import { filterTranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
@@ -29,6 +30,7 @@ type Theme = 'light' | 'dark';
 
 type GeneFields = {
   id: string;
+  so_term: string;
 };
 
 export type InstantDownloadGeneEntityProps = {
@@ -64,16 +66,9 @@ export type TranscriptOption = keyof Partial<TranscriptOptions>;
 export const transcriptOptionsOrder: TranscriptOption[] = [
   'genomicSequence',
   'cdna',
-  'proteinSequence',
-  'cds'
+  'cds',
+  'proteinSequence'
 ];
-
-const defaultTranscriptOptions: TranscriptOptions = {
-  genomicSequence: false,
-  cdna: false,
-  proteinSequence: false,
-  cds: false
-};
 
 const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
   genomicSequence: 'Genomic sequence',
@@ -85,10 +80,10 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
 const InstantDownloadGene = (props: Props) => {
   const {
     genomeId,
-    gene: { id: geneId }
+    gene: { id: geneId, so_term }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
-    defaultTranscriptOptions
+    filterTranscriptOptions(so_term)
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
 
