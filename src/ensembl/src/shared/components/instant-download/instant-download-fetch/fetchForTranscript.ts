@@ -69,7 +69,7 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
       genomeId,
       geneId
     });
-    sequenceDownloadParams.push(
+    sequenceDownloadParams.unshift(
       getGenomicSequenceData(metadata.stable_id, metadata.unversioned_stable_id)
     );
   }
@@ -104,9 +104,9 @@ const labelTypeToSequenceType: Record<
   | 'genomic'
 > = {
   genomicSequence: 'genomic',
-  proteinSequence: 'protein',
   cdna: 'cdna',
-  cds: 'cds'
+  cds: 'cds',
+  proteinSequence: 'protein'
 };
 
 export const prepareDownloadParameters = (
@@ -114,7 +114,7 @@ export const prepareDownloadParameters = (
 ) =>
   transcriptOptionsOrder
     .filter((option) => params.options[option])
-    .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'protein', 'cdna', 'cds'
+    .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'cdna', 'cds', 'protein'
     .map((option) => {
       if (option === 'genomic') {
         return getGenomicSequenceData(

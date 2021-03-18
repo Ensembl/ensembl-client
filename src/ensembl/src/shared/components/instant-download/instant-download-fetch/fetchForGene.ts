@@ -61,7 +61,7 @@ export const fetchForGene = async (payload: FetchPayload) => {
   );
 
   if (geneOptions.genomicSequence) {
-    sequenceDownloadParams.push(
+    sequenceDownloadParams.unshift(
       getGenomicSequenceData(
         geneSequenceData.stable_id,
         geneSequenceData.unversioned_stable_id

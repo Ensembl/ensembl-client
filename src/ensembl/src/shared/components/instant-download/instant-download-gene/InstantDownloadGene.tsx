@@ -72,9 +72,9 @@ export const transcriptOptionsOrder: TranscriptOption[] = [
 
 const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
   genomicSequence: 'Genomic sequence',
-  proteinSequence: 'Protein sequence',
   cdna: 'cDNA',
-  cds: 'CDS'
+  cds: 'CDS',
+  proteinSequence: 'Protein sequence'
 };
 
 const InstantDownloadGene = (props: Props) => {
