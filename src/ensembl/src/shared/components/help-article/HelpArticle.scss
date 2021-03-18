@@ -2,11 +2,22 @@
 @import 'helpArticleConstants';
 
 .textArticle {
+
   h1 {
     font-size: 15px;
     line-height: 18px;
     font-weight: $normal;
     margin: 0 0 #{$heading-margin-bottom} -#{$heading-outdent};
+  }
+
+  h2 {
+    font-size: 13px;
+    margin-top: calc(2 * #{$line-height});
+    margin-bottom: calc(1 * #{$line-height});
+  }
+
+  p {
+    line-height: $line-height;
   }
 
   img {
