@@ -43,15 +43,15 @@
 }
 
 @keyframes checkmark-pulse {
-	0% {
-		transform: scale(0.6);
-	}
+  0% {
+    transform: scale(0.6);
+  }
 
   70% {
-		transform: scale(1.1);
-	}
+    transform: scale(1.1);
+  }
 
-	100% {
-		transform: scale(1);
-	}
+  100% {
+    transform: scale(1);
+  }
 }
