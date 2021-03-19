@@ -157,7 +157,7 @@ export const ControlledLoadingButtonStory = (args: DefaultArgs) => {
           onChange={onStatusChange}
         />
       </div>
-      <div style={{ width: '101px' }}>
+      <div className={styles.buttonDisableControlWrapper}>
         <Checkbox
           checked={isDisabled}
           onChange={onDisabledChange}
