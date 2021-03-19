@@ -24,6 +24,7 @@ import { ReactComponent as trackHeightIcon } from 'static/img/browser/icon_track
 import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_lock_open.svg';
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
+import { BrowserNavAction } from 'src/content/app/browser/browserState';
 
 export type BrowserNavItem = {
   description: string;
@@ -31,7 +32,7 @@ export type BrowserNavItem = {
     [key: string]: number;
   };
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
-  name: string;
+  name: BrowserNavAction;
 };
 
 export const browserNavConfig: BrowserNavItem[] = [
@@ -41,7 +42,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_up_px: 50
     },
     icon: navigateUpIcon,
-    name: 'navigate-up'
+    name: BrowserNavAction.NAVIGATE_UP
   },
   {
     description: 'navigate down',
@@ -49,7 +50,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_down_px: 50
     },
     icon: navigateDownIcon,
-    name: 'navigate-down'
+    name: BrowserNavAction.NAVIGATE_DOWN
   },
   {
     description: 'zoom out',
@@ -57,7 +58,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: -0.3
     },
     icon: zoomOutIcon,
-    name: 'zoom-out'
+    name: BrowserNavAction.ZOOM_OUT
   },
   {
     description: 'zoom in',
@@ -65,7 +66,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: 0.3
     },
     icon: zoomInIcon,
-    name: 'zoom-in'
+    name: BrowserNavAction.ZOOM_IN
   },
   {
     description: 'navigate left',
@@ -73,7 +74,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_left_px: 50
     },
     icon: navigateLeftIcon,
-    name: 'navigate-left'
+    name: BrowserNavAction.NAVIGATE_LEFT
   },
   {
     description: 'navigate right',
@@ -81,7 +82,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_right_px: 50
     },
     icon: navigateRightIcon,
-    name: 'navigate-right'
+    name: BrowserNavAction.NAVIGATE_RIGHT
   }
 ];
 

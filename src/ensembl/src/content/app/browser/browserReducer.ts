@@ -27,11 +27,11 @@ import {
   BrowserLocationState,
   defaultBrowserLocationState,
   BrowserNavState,
-  defaultBrowserNavState,
   TrackConfigState,
   defaultTrackConfigState,
   BrowserEntityState,
-  defaultBrowserEntityState
+  defaultBrowserEntityState,
+  defaultBrowserNavState
 } from './browserState';
 import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
 
@@ -103,11 +103,26 @@ export function browserNav(
 ) {
   switch (action.type) {
     case getType(browserActions.openBrowserNav):
-      return { ...state, browserNavOpened: true };
+      return {
+        ...state,
+        browserNavOpenState: {
+          ...state.browserNavOpenState,
+          [action.payload.activeGenomeId]: true
+        }
+      };
     case getType(browserActions.closeBrowserNav):
-      return { ...state, browserNavOpened: false };
-    case getType(browserActions.updateBrowserNavStates):
-      return { ...state, browserNavStates: action.payload };
+      return {
+        ...state,
+        browserNavOpenState: {
+          ...state.browserNavOpenState,
+          [action.payload.activeGenomeId]: false
+        }
+      };
+    case getType(browserActions.updateBrowserNavIconStates):
+      return {
+        ...state,
+        browserNavIconStates: action.payload.navStates
+      };
     default:
       return state;
   }
