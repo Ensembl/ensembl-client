@@ -38,7 +38,7 @@ type RequestHandlerParams = {
 };
 
 const MINIMUM_SPINNER_TIME = 1000; // 1 second
-const SUCCESS_INDICATOR_TIME = 2000; // 2 seconds
+const COMPLETION_INDICATOR_TIME = 2000; // 2 seconds
 
 const getLoadingState$ = (params: RequestHandlerParams) => {
   const loadingStart$ = of(LoadingState.LOADING);
@@ -57,11 +57,11 @@ const getLoadingState$ = (params: RequestHandlerParams) => {
       )
     )
   ]).pipe(
-    tap(([, result]) => {
-      if (result.status === LoadingState.SUCCESS) {
-        params?.onSuccess?.(result.result);
+    tap(([, response]) => {
+      if (response.status === LoadingState.SUCCESS) {
+        params?.onSuccess?.(response.result);
       } else {
-        params?.onError?.(result.error);
+        params?.onError?.(response.error);
       }
     }),
     mergeMap(([, result]) => {
@@ -69,11 +69,9 @@ const getLoadingState$ = (params: RequestHandlerParams) => {
     })
   );
   const returnToInitial$ = of(LoadingState.NOT_REQUESTED).pipe(
-    delay(SUCCESS_INDICATOR_TIME)
+    delay(COMPLETION_INDICATOR_TIME)
   );
-  const action$ = merge(loadingStart$, request$);
-
-  return action$;
+  return merge(loadingStart$, request$);
 };
 
 const LoadingButton = (props: LoadingButtonProps) => {
