@@ -154,18 +154,16 @@ const GeneSection = (props: GeneSectionProps) => (
       Gene
       <span className={styles.featureId}>{props.gene.id}</span>
     </div>
-    <div>
-      <Checkbox
-        classNames={{
-          checkboxHolder: styles.checkboxWrapper,
-          unchecked: styles.checkboxUnchecked
-        }}
-        labelClassName={styles.checkboxLabel}
-        label="Genomic sequence"
-        checked={props.isGenomicSequenceSelected}
-        onChange={props.onChange}
-      />
-    </div>
+    <Checkbox
+      classNames={{
+        checkboxHolder: styles.checkboxHolder,
+        unchecked: styles.checkboxUnchecked
+      }}
+      labelClassName={styles.checkboxLabel}
+      label="Genomic sequence"
+      checked={props.isGenomicSequenceSelected}
+      onChange={props.onChange}
+    />
   </div>
 );
 
@@ -178,7 +176,10 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
-      classNames={{ unchecked: styles.checkboxUnchecked }}
+      classNames={{
+        checkboxHolder: styles.checkboxHolder,
+        unchecked: styles.checkboxUnchecked
+      }}
       labelClassName={styles.checkboxLabel}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}
@@ -189,7 +190,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   return (
     <div className={styles.transcriptSection}>
       <div className={styles.label}>All transcripts</div>
-      <div className={styles.checkboxGrid}>{checkboxes}</div>
+      {checkboxes}
     </div>
   );
 };

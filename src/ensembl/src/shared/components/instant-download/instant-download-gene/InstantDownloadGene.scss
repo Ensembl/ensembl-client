@@ -11,13 +11,18 @@
   }
 }
 
+.checkboxHolder {
+  margin-left: 15px;
+}
+
 .checkboxUnchecked {
   background-color: transparent;
-  border-color: $dark-grey;
+  border-color: $grey;
 }
 
 .checkboxLabel {
   font-size: 13px;
+  padding-left: 2px;
   width: 200px;
 }
 
@@ -50,22 +55,21 @@
   position: relative;
 
   .geneSection {
-    .checkboxWrapper {
-      margin-top: 13px;
-      margin-left: 13px;
+    .label {
+      margin-bottom: 8px;
     }
   }
 
   .transcriptSection {
-    margin-top: 7px;
-  }
+    margin-top: 25px;
 
-  .checkboxGrid {
-    margin-left: 18px;
+    .label {
+      margin-bottom: 8px;
+    }
   }
 
   button {
-    margin-top: 14px;
+    margin: 35px 20px 0 0;
     float: right;
   }
 }
