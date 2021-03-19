@@ -65,10 +65,10 @@ const getLoadingState$ = (params: RequestHandlerParams) => {
       }
     }),
     mergeMap(([, result]) => {
-      return merge(of(result.status), returnToIniital$);
+      return merge(of(result.status), returnToInitial$);
     })
   );
-  const returnToIniital$ = of(LoadingState.NOT_REQUESTED).pipe(
+  const returnToInitial$ = of(LoadingState.NOT_REQUESTED).pipe(
     delay(SUCCESS_INDICATOR_TIME)
   );
   const action$ = merge(loadingStart$, request$);
