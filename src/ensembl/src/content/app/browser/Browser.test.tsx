@@ -90,15 +90,18 @@ describe('<Browser />', () => {
     });
 
     test('renders links to example objects only if there is no selected focus feature', () => {
-      let { container } = mountBrowserComponent();
+      const { container, rerender } = mountBrowserComponent();
 
       expect(container.querySelectorAll('.exampleLinks')).toHaveLength(1);
 
-      container = mountBrowserComponent({
-        browserQueryParams: {
-          focus: faker.lorem.words()
-        }
-      }).container;
+      rerender(
+        <Browser
+          {...defaultProps}
+          browserQueryParams={{
+            focus: faker.lorem.words()
+          }}
+        />
+      );
 
       expect(container.querySelectorAll('.exampleLinks')).toHaveLength(0);
     });
@@ -128,25 +131,22 @@ describe('<Browser />', () => {
       };
 
       it('is rendered when props.browserNavOpenState is true', () => {
-        let { container } = mountBrowserComponent(props);
+        const { container, rerender } = mountBrowserComponent(props);
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
 
-        container = mountBrowserComponent({
-          ...props,
-          browserNavOpenState: true
-        }).container;
+        rerender(<Browser {...props} browserNavOpenState={true} />);
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
       });
 
       it('is not rendered if drawer is opened', () => {
-        let { container } = mountBrowserComponent({
+        const { container, rerender } = mountBrowserComponent({
           ...props,
           browserNavOpenState: true
         });
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
 
-        container = mountBrowserComponent({ isDrawerOpened: true }).container;
+        rerender(<Browser {...defaultProps} isDrawerOpened={true} />);
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
       });

@@ -38,7 +38,7 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
 
-const browserNavIconStates: { [key: string]: boolean } = {
+const browserNavIconStates: BrowserNavIconStates = {
   [BrowserNavAction.NAVIGATE_UP]: faker.random.boolean(),
   [BrowserNavAction.NAVIGATE_RIGHT]: faker.random.boolean(),
   [BrowserNavAction.NAVIGATE_DOWN]: faker.random.boolean(),
@@ -51,7 +51,7 @@ describe('BrowserNavBarControls', () => {
   it('has an overlay on top when browser nav bar controls are disabled', () => {
     const { container } = render(
       <BrowserNavBarControls
-        browserNavIconStates={browserNavIconStates as BrowserNavIconStates}
+        browserNavIconStates={browserNavIconStates}
         isDisabled={true}
       />
     );
@@ -59,11 +59,9 @@ describe('BrowserNavBarControls', () => {
   });
 
   it('disables buttons if corresponding actions are not possible', () => {
-    // browserNavIconStates are a set of booleans that indicate whether the button
-    // has already caused maximum corresponding effect, and will have no further effect if pressed
     render(
       <BrowserNavBarControls
-        browserNavIconStates={browserNavIconStates as BrowserNavIconStates}
+        browserNavIconStates={browserNavIconStates}
         isDisabled={false}
       />
     );
@@ -71,7 +69,7 @@ describe('BrowserNavBarControls', () => {
     Object.keys(browserNavIconStates).forEach((icon) => {
       const navIcon = screen.getByTestId(icon);
       expect(navIcon.classList.contains('enabled')).toBe(
-        browserNavIconStates[icon]
+        browserNavIconStates[icon as BrowserNavAction]
       );
     });
   });
