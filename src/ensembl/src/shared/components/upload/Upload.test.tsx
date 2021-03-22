@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import faker from 'faker';
 import times from 'lodash/times';
 import noop from 'lodash/noop';
@@ -35,16 +35,16 @@ const renderUpload = (props: any) => render(<Upload {...props} />);
 const fileContents = faker.random.words();
 
 const generateFile = () => {
-  return new Blob([fileContents], { type: 'text/plain' });
+  return new File([fileContents], 'file.txt', { type: 'text/plain' });
 };
 
 const files = times(faker.random.number(10), () => generateFile());
-const addEventListener = jest.fn((_, evtHandler) => {
-  evtHandler();
-});
+
 const mockFileReader = {
-  addEventListener,
-  readAsText: jest.fn(),
+  onload: jest.fn(),
+  readAsText: jest.fn().mockImplementation(function () {
+    mockFileReader.onload();
+  }),
   readAsArrayBuffer: jest.fn(),
   readAsBinaryString: jest.fn(),
   readAsDataURL: jest.fn(),
@@ -55,12 +55,10 @@ describe('Upload', () => {
   let container: any;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     container = renderUpload(defaultProps).container;
     windowService.getFileReader = jest.fn(() => mockFileReader) as any;
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
   });
 
   describe('using the input', () => {
@@ -100,20 +98,47 @@ describe('Upload', () => {
   });
 
   describe('using drag and drop', () => {
-    it('has the necessary event listeners added', () => {
-      //const labelProps = container.querySelector('label').props();
-      //expect(labelProps.onDragEnter).toBeTruthy();
-      //expect(labelProps.onDragLeave).toBeTruthy();
-      //expect(labelProps.onDrop).toBeTruthy();
+    it('changes its appearance when the user drags a file over', () => {
+      const item = {};
+      const dataTransfer = {
+        items: [item]
+      };
+
+      const { container } = renderUpload(defaultProps);
+      const label = container.querySelector('label') as HTMLElement;
+
+      // before dragging
+      expect(label.className.includes('defaultUpload')).toBe(true);
+      expect(label.className.includes('defaultUploadActive')).toBe(false);
+
+      fireEvent.dragEnter(label, { dataTransfer });
+
+      expect(label.className.includes('defaultUploadActive')).toBe(true);
+
+      fireEvent.dragLeave(label);
+
+      expect(label.className.includes('defaultUploadActive')).toBe(false);
     });
 
-    it('does not call the windowService.getFileReader when a file is just dragged in ', () => {
+    it('passes file content to the onChange prop after the file is dropped', async () => {
+      const file = generateFile();
       const mockEvent = {
         ...event,
-        dataTransfer: { files: files, clearData: noop }
+        dataTransfer: { files: [file], clearData: noop }
       };
-      fireEvent.dragEnter(container.querySelector('label'), mockEvent);
-      expect(windowService.getFileReader).not.toHaveBeenCalled();
+      const { container } = renderUpload(defaultProps);
+      const label = container.querySelector('label') as HTMLElement;
+
+      fireEvent.drop(label, mockEvent);
+
+      await waitFor(() => {
+        expect(onChange.mock.calls.length).toBeGreaterThan(0);
+      });
+      const parsedFiles = onChange.mock.calls[0][0]; // the argument passed to onChange is an array of parsed files
+      const parsedFile = parsedFiles[0];
+      expect(parsedFile.filename).toBe('file.txt');
+      expect(parsedFile.content).toBe(fileContents);
+      expect(parsedFile.error).toBe(null);
     });
   });
 });
