@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, ReactNode } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+  MutableRefObject
+} from 'react';
 import classNames from 'classnames';
 
 import HelpPopupHistory from './helpPopupHistory';
@@ -70,27 +76,26 @@ const HelpPopupBody = (props: Props) => {
     }
   };
 
+  const historyButtons = (
+    <HistoryButtons
+      historyRef={historyRef}
+      onHistoryBack={onHistoryBack}
+      onHistoryForward={onHistoryForward}
+    />
+  );
+
   if (loadingState === LoadingState.LOADING) {
     return (
-      <div className={styles.spinnerContainer}>
-        <CircleLoader />
-      </div>
+      <>
+        <div className={styles.spinnerContainer}>
+          <CircleLoader />
+        </div>
+        {historyButtons}
+      </>
     );
   }
 
   if (article) {
-    const historyForwardClasses = classNames(
-      styles.historyButton,
-      historyRef.current?.hasNext()
-        ? styles.historyButtonActive
-        : styles.historyButtonInactive
-    );
-    const historyBackClasses = classNames(
-      styles.historyButton,
-      historyRef.current?.hasPrevious()
-        ? styles.historyButtonActive
-        : styles.historyButtonInactive
-    );
     return (
       <>
         <Grid type={article.type}>
@@ -106,13 +111,7 @@ const HelpPopupBody = (props: Props) => {
             />
           )}
         </Grid>
-        <div className={styles.historyButtons}>
-          <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
-          <ForwardIcon
-            className={historyForwardClasses}
-            onClick={onHistoryForward}
-          />
-        </div>
+        {historyButtons}
       </>
     );
   } else {
@@ -124,11 +123,41 @@ type GridProps = {
   type: ArticleType['type'];
   children: ReactNode;
 };
-
 const Grid = (props: GridProps) => {
   const gridClass = classNames(styles.grid, styles[`grid_${props.type}`]);
 
   return <div className={gridClass}>{props.children}</div>;
+};
+
+type HistoryButtonsProps = {
+  historyRef: MutableRefObject<HelpPopupHistory | null>;
+  onHistoryBack: () => void;
+  onHistoryForward: () => void;
+};
+const HistoryButtons = (props: HistoryButtonsProps) => {
+  const { historyRef, onHistoryBack, onHistoryForward } = props;
+  const historyForwardClasses = classNames(
+    styles.historyButton,
+    historyRef.current?.hasNext()
+      ? styles.historyButtonActive
+      : styles.historyButtonInactive
+  );
+  const historyBackClasses = classNames(
+    styles.historyButton,
+    historyRef.current?.hasPrevious()
+      ? styles.historyButtonActive
+      : styles.historyButtonInactive
+  );
+
+  return (
+    <div className={styles.historyButtons}>
+      <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
+      <ForwardIcon
+        className={historyForwardClasses}
+        onClick={onHistoryForward}
+      />
+    </div>
+  );
 };
 
 type ArticleProps = {
