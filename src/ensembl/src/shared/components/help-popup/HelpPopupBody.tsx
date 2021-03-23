@@ -17,12 +17,16 @@
 import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import classNames from 'classnames';
 
+import HelpPopupHistory from './helpPopupHistory';
+
 import useHelpArticle, { Article as ArticleType } from './useHelpArticle';
-import useResizeObserver from 'src/shared/hooks/useResizeObserver.ts';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
+import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
+import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import {
@@ -41,9 +45,29 @@ const HelpPopupBody = (props: Props) => {
     props
   );
   const { article, loadingState } = useHelpArticle(currentReference);
+  const historyRef = useRef<HelpPopupHistory | null>(null);
+
+  useEffect(() => {
+    historyRef.current = new HelpPopupHistory(currentReference);
+  }, []);
 
   const onRelatedItemClick = (reference: SlugReference) => {
+    historyRef.current?.add(reference);
     setCurrentReference(reference);
+  };
+
+  const onHistoryBack = () => {
+    const prevReference = historyRef.current?.getPrevious();
+    if (prevReference) {
+      setCurrentReference(prevReference);
+    }
+  };
+
+  const onHistoryForward = () => {
+    const nextReference = historyRef.current?.getNext();
+    if (nextReference) {
+      setCurrentReference(nextReference);
+    }
   };
 
   if (loadingState === LoadingState.LOADING) {
@@ -55,20 +79,41 @@ const HelpPopupBody = (props: Props) => {
   }
 
   if (article) {
+    const historyForwardClasses = classNames(
+      styles.historyButton,
+      historyRef.current?.hasNext()
+        ? styles.historyButtonActive
+        : styles.historyButtonInactive
+    );
+    const historyBackClasses = classNames(
+      styles.historyButton,
+      historyRef.current?.hasPrevious()
+        ? styles.historyButtonActive
+        : styles.historyButtonInactive
+    );
     return (
-      <Grid type={article.type}>
-        {article.type === 'article' ? (
-          <Article article={article} />
-        ) : (
-          <Video video={article} />
-        )}
-        {article.related_articles.length > 0 && (
-          <RelatedItems
-            items={article.related_articles}
-            onItemClick={onRelatedItemClick}
+      <>
+        <Grid type={article.type}>
+          {article.type === 'article' ? (
+            <Article article={article} />
+          ) : (
+            <Video video={article} />
+          )}
+          {article.related_articles.length > 0 && (
+            <RelatedItems
+              items={article.related_articles}
+              onItemClick={onRelatedItemClick}
+            />
+          )}
+        </Grid>
+        <div className={styles.historyButtons}>
+          <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
+          <ForwardIcon
+            className={historyForwardClasses}
+            onClick={onHistoryForward}
           />
-        )}
-      </Grid>
+        </div>
+      </>
     );
   } else {
     return null;

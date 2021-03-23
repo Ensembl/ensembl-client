@@ -120,3 +120,40 @@ $article-right-padding: 1.5rem; // area over which Macs (which hide their scroll
     fill: white;
   }
 }
+
+.historyButtons {
+  position: absolute;
+  top: 16px;
+  line-height: 0;
+  right: 70px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    border-radius: 100%;
+    cursor: pointer;
+
+    &:first-child {
+      margin-right: 1.4rem;
+    }
+  }
+}
+
+.historyButton {
+  width: 18px;
+  height: 18px;
+  border-radius: 100%;
+  cursor: pointer;
+
+  &:first-child {
+    margin-right: 1.4rem;
+  }
+
+  &Active {
+    fill: $blue;
+  }
+
+  &Inactive {
+    fill: $grey;
+  }
+}
