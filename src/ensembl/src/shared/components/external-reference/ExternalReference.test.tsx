@@ -70,8 +70,8 @@ describe('<ExternalReference />', () => {
     expect(
       externalLink
         .getElementsByTagName('icon-mock')[0]
-        .classList.contains(defaultProps.classNames?.icon as string)
-    ).toBeTruthy();
+        .getAttribute('classname')
+    ).toMatch(defaultProps.classNames?.icon as string);
     expect(
       externalLink
         .getElementsByTagName('a')[0]
