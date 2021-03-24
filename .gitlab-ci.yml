@@ -24,7 +24,7 @@ variables:
 
   before_script:
   - cd src/ensembl
-  - npm install --global npm
+  - npm install --global npm@7.6.2
   - npm ci
 
   script:
