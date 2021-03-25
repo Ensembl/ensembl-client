@@ -95,7 +95,7 @@ const getCollapsedContent = (props: ContentProps) => {
               <span className={styles.unit}>{summaryStat.primaryUnit}</span>
               {helpText && (
                 <span className={styles.questionButton}>
-                  <QuestionButton helpText={helpText}></QuestionButton>
+                  <QuestionButton helpText={helpText} />
                 </span>
               )}
             </div>

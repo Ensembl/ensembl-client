@@ -89,7 +89,7 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
       )}
       {props.helpText && (
         <span className={defaultStyles.questionButton}>
-          <QuestionButton helpText={props.helpText}></QuestionButton>
+          <QuestionButton helpText={props.helpText} />
         </span>
       )}
 
