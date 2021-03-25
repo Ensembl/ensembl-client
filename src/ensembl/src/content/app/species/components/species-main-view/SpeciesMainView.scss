@@ -69,29 +69,23 @@
 
     .unit {
       color: $dark-grey;
-      padding-left: 5px;
+      padding: 0 6px;
     }
   }
 
   .summaryStat + .summaryStat {
     grid-column: second_summary_stat;
-
-    .value {
-      font-size: 22px;
-    }
-
-    .unit {
-      color: $dark-grey;
-      padding-left: 5px;
-    }
   }
 
   .exampleLink {
     grid-column: example-link;
   }
+
+  .questionButton {
+    top: 2px;
+    position: relative;
+  }
 }
-
-
 
 .statsGroup {
   padding: 16px 20px 0;
@@ -115,4 +109,9 @@
     grid-column: example-link;
   }
 
+}
+
+.noData {
+  color: $dark-grey;
+  line-height: 3;
 }

@@ -11,10 +11,16 @@ $secondary-text-color: $dark-grey;
 
 .preLabel {
   color: $secondary-text-color;
+  padding-right: 4px;
 }
 
 .preLabel + .label {
   margin-top: -3px;
+}
+
+.questionButton {
+  top: 1px;
+  position: relative;
 }
 
 .primaryValue {
