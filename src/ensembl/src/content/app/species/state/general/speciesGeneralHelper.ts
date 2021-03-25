@@ -738,7 +738,7 @@ export const getStatsForSection = (props: {
   }
 
   const availableSummaryStatsKeys = summaryStatsKeys?.filter(
-    (key) => key && filteredData[key]
+    (key) => key && (filteredData[key] || filteredData[key] === 0)
   );
 
   const summaryStats = availableSummaryStatsKeys
