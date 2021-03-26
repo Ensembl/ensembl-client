@@ -210,13 +210,13 @@ const ProteinsListItemInfo = (props: Props) => {
           <div className={styles.proteinSummaryTop}>
             {proteinXrefs && domainsLoadingState === LoadingState.SUCCESS && (
               <div>
-                <div className={styles.uniprotWrapper}>
+                <div className={styles.xrefsWrapper}>
                   <ProteinExternalReferenceGroup
                     source={ExternalSource.UNIPROT}
                     xrefs={proteinXrefs}
                   />
                 </div>
-                <div className={styles.interproWrapper}>
+                <div className={styles.xrefsWrapper}>
                   <ProteinExternalReferenceGroup
                     source={ExternalSource.INTERPRO}
                     xrefs={proteinXrefs}

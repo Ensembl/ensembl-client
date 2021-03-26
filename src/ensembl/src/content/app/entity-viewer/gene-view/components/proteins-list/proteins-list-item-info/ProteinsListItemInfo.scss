@@ -85,8 +85,10 @@ $content-width: $gene_image_width;
   }
 }
 
-.uniprotWrapper {
+.xrefsWrapper {
   padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .xrefGroupWrapper {
