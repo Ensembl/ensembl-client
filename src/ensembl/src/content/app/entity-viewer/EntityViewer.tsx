@@ -44,7 +44,7 @@ import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/compo
 import EntityViewerTopbar from './shared/components/entity-viewer-topbar/EntityViewerTopbar';
 import ExampleLinks from './components/example-links/ExampleLinks';
 import GeneView from './gene-view/GeneView';
-import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
+import GeneViewSidebar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
 import styles from './EntityViewer.scss';
@@ -84,7 +84,7 @@ const EntityViewer = () => {
   const SideBarContent = isSidebarModalOpen ? (
     <EntityViewerSidebarModal />
   ) : (
-    <GeneViewSideBar />
+    <GeneViewSidebar />
   );
 
   return (
