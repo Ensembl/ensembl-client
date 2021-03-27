@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
+import { MenuItem } from 'src/shared/types/help-and-docs/menu';
 
 import styles from './AboutMenu.scss';
 
@@ -34,15 +35,16 @@ export const TopMenu = (props: Props) => {
 
   return (
     <>
-      {menuItems.map((item, index) => (
-        <Link
-          className={styles.topMenuLink}
-          to={item.url as string}
-          key={index}
-        >
-          {item.name}
-        </Link>
-      ))}
+      {menuItems.map((item, index) => {
+        const className = classNames(styles.topMenuLink, {
+          [styles.activeLink]: hasItemWithUrl(item, props.currentUrl)
+        });
+        return (
+          <Link className={className} to={item.url as string} key={index}>
+            {item.name}
+          </Link>
+        );
+      })}
     </>
   );
 };
@@ -75,4 +77,15 @@ export const SideMenu = (props: Props) => {
       })}
     </>
   );
+};
+
+const hasItemWithUrl = (menuItem: MenuItem, url: string) => {
+  if (menuItem.url && menuItem.url === url) {
+    return true;
+  } else if (menuItem.type === 'collection' && menuItem.items.length) {
+    if (menuItem.items.some((item) => hasItemWithUrl(item, url))) {
+      return true;
+    }
+  }
+  return false;
 };

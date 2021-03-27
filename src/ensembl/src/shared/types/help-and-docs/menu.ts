@@ -19,7 +19,7 @@ export type Menu = {
   data: MenuItem[];
 };
 
-type MenuItem = MenuArticleItem | MenuCollectionItem;
+export type MenuItem = MenuArticleItem | MenuCollectionItem;
 
 type MenuCollectionItem = {
   name: string;
