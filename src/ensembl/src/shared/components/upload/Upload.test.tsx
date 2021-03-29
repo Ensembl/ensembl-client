@@ -19,7 +19,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import faker from 'faker';
 import times from 'lodash/times';
 import noop from 'lodash/noop';
-import Upload from './Upload';
+import Upload, { UploadProps } from './Upload';
 import windowService from 'src/services/window-service';
 
 const onChange = jest.fn();
@@ -30,7 +30,8 @@ const defaultProps = {
 
 const event = { preventDefault: noop, stopPropagation: noop };
 
-const renderUpload = (props: any) => render(<Upload {...props} />);
+const renderUpload = (props: Partial<UploadProps> = {}) =>
+  render(<Upload {...defaultProps} {...props} />);
 
 const fileContents = faker.random.words();
 
@@ -52,36 +53,35 @@ const mockFileReader = {
 };
 
 describe('Upload', () => {
-  let container: any;
-
   beforeEach(() => {
     jest.clearAllMocks();
-
-    container = renderUpload(defaultProps).container;
     windowService.getFileReader = jest.fn(() => mockFileReader) as any;
   });
 
   describe('using the input', () => {
+    const container = renderUpload().container;
     it('always renders an input of type file', () => {
       expect(container.querySelectorAll('input[type="file"]')).toHaveLength(1);
     });
 
     it('allows multiple files to be selected by default', () => {
-      expect(container.querySelector('input').getAttribute('multiple')).toEqual(
-        ''
-      );
+      const container = renderUpload().container;
+      expect(
+        container.querySelector('input')?.getAttribute('multiple')
+      ).toEqual('');
     });
 
     it('disables multiple file selection if allowMultiple is set to false', () => {
-      container = renderUpload({ ...defaultProps, allowMultiple: false })
+      const container = renderUpload({ ...defaultProps, allowMultiple: false })
         .container;
       expect(
-        container.querySelector('input').getAttribute('multiple')
+        container.querySelector('input')?.getAttribute('multiple')
       ).toBeFalsy();
     });
 
     it('calls the windowService.getFileReader for every file selected', () => {
-      fireEvent.change(container.querySelector('input'), {
+      const container = renderUpload().container;
+      fireEvent.change(container.querySelector('input') as HTMLElement, {
         ...event,
         target: { files: files }
       });
@@ -89,7 +89,8 @@ describe('Upload', () => {
     });
 
     it('calls the readAsText multiple times based on the number of files', () => {
-      fireEvent.change(container.querySelector('input'), {
+      const container = renderUpload().container;
+      fireEvent.change(container.querySelector('input') as HTMLElement, {
         ...event,
         target: { files: files }
       });
@@ -104,7 +105,7 @@ describe('Upload', () => {
         items: [item]
       };
 
-      const { container } = renderUpload(defaultProps);
+      const { container } = renderUpload();
       const label = container.querySelector('label') as HTMLElement;
 
       // before dragging
@@ -126,7 +127,7 @@ describe('Upload', () => {
         ...event,
         dataTransfer: { files: [file], clearData: noop }
       };
-      const { container } = renderUpload(defaultProps);
+      const { container } = renderUpload();
       const label = container.querySelector('label') as HTMLElement;
 
       fireEvent.drop(label, mockEvent);

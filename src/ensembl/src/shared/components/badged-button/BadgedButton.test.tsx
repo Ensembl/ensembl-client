@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import faker from 'faker';
-import BadgedButton from './BadgedButton';
+import BadgedButton, { Props as BadgedButtonProps } from './BadgedButton';
 import Button from '../button/Button';
 
 const onClick = jest.fn();
@@ -26,7 +26,7 @@ const defaultProps = {
   badgeContent: faker.lorem.words()
 };
 
-const renderButton = (props: any = {}) =>
+const renderButton = (props: Partial<BadgedButtonProps> = {}) =>
   render(
     <BadgedButton {...defaultProps} {...props}>
       <Button onClick={onClick}>{faker.lorem.words()}</Button>
@@ -34,34 +34,40 @@ const renderButton = (props: any = {}) =>
   );
 
 describe('BadgedButton', () => {
-  let container: any;
   beforeEach(() => {
     jest.resetAllMocks();
-    container = renderButton().container;
   });
   it('renders the passed in button', () => {
+    const container = renderButton().container;
     expect(container.querySelectorAll('.button')).toHaveLength(1);
   });
 
   it('assigns the "badgeDefault" class to the badge by default', () => {
+    const container = renderButton().container;
     expect(container.querySelectorAll('.badgeDefault')).toHaveLength(1);
   });
 
   it('extends the badge class', () => {
     const fakeClassName = faker.lorem.word();
-    container = renderButton({ className: fakeClassName }).container;
+    const container = renderButton({ className: fakeClassName }).container;
     expect(
-      container.querySelector('.badgeDefault').classList.contains(fakeClassName)
+      container
+        .querySelector('.badgeDefault')
+        ?.classList.contains(fakeClassName)
     ).toBeTruthy;
   });
 
   it('trims the longer strings to three characters', () => {
-    container = renderButton({ badgeContent: 'abcd' }).container;
-    expect(container.querySelector('.badgeDefault').textContent).toEqual('abc');
+    const container = renderButton({ badgeContent: 'abcd' }).container;
+    expect(container.querySelector('.badgeDefault')?.textContent).toEqual(
+      'abc'
+    );
   });
 
   it('formats number greater than 99 to "99+"', () => {
-    container = renderButton({ badgeContent: 100 }).container;
-    expect(container.querySelector('.badgeDefault').textContent).toEqual('99+');
+    const container = renderButton({ badgeContent: 100 }).container;
+    expect(container.querySelector('.badgeDefault')?.textContent).toEqual(
+      '99+'
+    );
   });
 });
