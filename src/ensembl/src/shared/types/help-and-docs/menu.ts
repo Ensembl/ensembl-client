@@ -16,7 +16,7 @@
 
 export type Menu = {
   name: string;
-  data: MenuItem[];
+  items: MenuItem[];
 };
 
 export type MenuItem = MenuArticleItem | MenuCollectionItem;

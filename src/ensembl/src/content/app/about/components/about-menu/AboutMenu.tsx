@@ -31,7 +31,7 @@ type Props = {
 export const TopMenu = (props: Props) => {
   const { menu } = props;
 
-  const menuItems = menu.data;
+  const menuItems = menu.items;
 
   return (
     <>
@@ -52,7 +52,7 @@ export const TopMenu = (props: Props) => {
 export const SideMenu = (props: Props) => {
   const { menu, currentUrl } = props;
 
-  const menuItem = menu.data.find(
+  const menuItem = menu.items.find(
     (menuItem) =>
       menuItem.type === 'collection' &&
       menuItem.items.find((item) => item.url === currentUrl)
