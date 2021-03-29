@@ -15,15 +15,16 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
-import ZmenuContent from './ZmenuContent';
 
 import { createZmenuContent } from 'tests/fixtures/browser';
 
-jest.mock('./ZmenuContent', () => () => <div>ZmenuContent</div>);
+jest.mock('./ZmenuContent', () => () => (
+  <div className="zmenuContent">ZmenuContent</div>
+));
 jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
@@ -43,17 +44,14 @@ describe('<Zmenu />', () => {
     onLeave: jest.fn()
   };
 
-  let wrapper: any;
-
   beforeEach(() => {
     jest.resetAllMocks();
-
-    wrapper = mount(<Zmenu {...defaultProps} />);
   });
 
   describe('rendering', () => {
     test('renders zmenu content', () => {
-      expect(wrapper.find(ZmenuContent)).toHaveLength(1);
+      const { container } = render(<Zmenu {...defaultProps} />);
+      expect(container.querySelector('.zmenuContent')).toBeTruthy();
     });
   });
 });
