@@ -138,7 +138,7 @@ describe('<GeneOverview />', () => {
       expect(geneDetailsElement?.textContent).toBe(stableId);
     });
 
-    it('does not render gene name section if gene name is not available', () => {
+    it('shows that the gene does not have a name', () => {
       const geneData = { ...completeGeneData, name: null };
       (useQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
@@ -148,10 +148,10 @@ describe('<GeneOverview />', () => {
       const { container } = render(<GeneOverview />);
 
       const geneNameElement = container.querySelector('.geneName');
-      expect(geneNameElement).toBeFalsy();
+      expect(geneNameElement?.textContent).toBe('None');
     });
 
-    it('shows "no synonyms" message for gene without synonyms', () => {
+    it('shows that the gene does not have synonyms', () => {
       const geneData = { ...completeGeneData, alternative_symbols: [] };
       (useQuery as any).mockImplementation(() => ({
         data: { gene: geneData },
@@ -161,7 +161,7 @@ describe('<GeneOverview />', () => {
       const { container } = render(<GeneOverview />);
 
       const synonymsElement = container.querySelector('.synonyms');
-      expect(synonymsElement?.textContent).toBe('No synonyms');
+      expect(synonymsElement?.textContent).toBe('None');
     });
   });
 });

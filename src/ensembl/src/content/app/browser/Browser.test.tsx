@@ -16,35 +16,41 @@
 
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+
 import faker from 'faker';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
-import { Browser, BrowserProps, ExampleObjectLinks } from './Browser';
-import BrowserImage from './browser-image/BrowserImage';
-import TrackPanel from './track-panel/TrackPanel';
-import BrowserNavBar from './browser-nav/BrowserNavBar';
+import { Browser, BrowserProps } from './Browser';
 
 import { createChrLocationValues } from 'tests/fixtures/browser';
 
 jest.mock('./hooks/useBrowserRouting', () => () => ({
   changeGenomeId: jest.fn()
 }));
-jest.mock('./browser-bar/BrowserBar', () => () => <div>BrowserBar</div>);
-jest.mock('./browser-image/BrowserImage', () => () => <div>BrowserImage</div>);
-jest.mock('./browser-nav/BrowserNavBar', () => () => <div>BrowserNavBar</div>);
-jest.mock('./track-panel/TrackPanel', () => () => <div>TrackPanel</div>);
+jest.mock('./browser-bar/BrowserBar', () => () => (
+  <div className="browserBar">BrowserBar</div>
+));
+jest.mock('./browser-image/BrowserImage', () => () => (
+  <div className="browserImage">BrowserImage</div>
+));
+jest.mock('./browser-nav/BrowserNavBar', () => () => (
+  <div className="browserNavBar">BrowserNavBar</div>
+));
+jest.mock('./track-panel/TrackPanel', () => () => (
+  <div className="trackPanel">TrackPanel</div>
+));
 jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
-  <div>BrowserAppBar</div>
+  <div className="browserAppBar">BrowserAppBar</div>
 ));
 jest.mock('./track-panel/track-panel-bar/TrackPanelBar', () => () => (
-  <div>TrackPanelBar</div>
+  <div className="trackPanelBar">TrackPanelBar</div>
 ));
 jest.mock('./track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
-  <div>TrackPanelTabs</div>
+  <div className="trackPanelTabs">TrackPanelTabs</div>
 ));
-jest.mock('./drawer/Drawer', () => () => <div>Drawer</div>);
+jest.mock('./drawer/Drawer', () => () => <div className="drawer">Drawer</div>);
 jest.mock('ensembl-genome-browser', () => {
   return;
 });
@@ -54,7 +60,7 @@ const defaultProps: BrowserProps = {
   activeGenomeId: faker.lorem.words(),
   activeEnsObjectId: faker.lorem.words(),
   browserActivated: false,
-  browserNavOpened: false,
+  browserNavOpenState: false,
   browserQueryParams: {},
   chrLocation: createChrLocationValues().tupleValue,
   isDrawerOpened: false,
@@ -70,43 +76,51 @@ describe('<Browser />', () => {
     jest.resetAllMocks();
   });
 
-  const wrappingComponent = (props: any) => (
-    <MemoryRouter>{props.children}</MemoryRouter>
-  );
-
   const mountBrowserComponent = (props?: Partial<BrowserProps>) =>
-    mount(<Browser {...defaultProps} {...props} />, { wrappingComponent });
+    render(
+      <MemoryRouter>
+        <Browser {...defaultProps} {...props} />
+      </MemoryRouter>
+    );
 
   describe('rendering', () => {
     test('does not render when no activeGenomeId', () => {
-      const wrapper = mountBrowserComponent({ activeGenomeId: null });
-      expect(wrapper.html()).toBe(null);
+      const { container } = mountBrowserComponent({ activeGenomeId: null });
+      expect(container.innerHTML).toBeFalsy();
     });
 
     test('renders links to example objects only if there is no selected focus feature', () => {
-      const wrapper = mountBrowserComponent();
-      expect(wrapper.find(ExampleObjectLinks)).toHaveLength(1);
+      const { container, rerender } = mountBrowserComponent();
 
-      wrapper.setProps({
-        browserQueryParams: {
-          focus: faker.lorem.words()
-        }
-      });
-      expect(wrapper.find(ExampleObjectLinks)).toHaveLength(0);
+      expect(container.querySelectorAll('.exampleLinks')).toHaveLength(1);
+
+      rerender(
+        <Browser
+          {...defaultProps}
+          browserQueryParams={{
+            focus: faker.lorem.words()
+          }}
+        />
+      );
+
+      expect(container.querySelectorAll('.exampleLinks')).toHaveLength(0);
     });
 
     test('renders the genome browser and track panel only when there is a selected focus feature', () => {
-      const wrapper = mountBrowserComponent();
+      const { container, rerender } = mountBrowserComponent();
 
-      expect(wrapper.find(BrowserImage)).toHaveLength(0);
-      expect(wrapper.find(TrackPanel)).toHaveLength(0);
+      expect(container.querySelectorAll('.browserImage')).toHaveLength(0);
+      expect(container.querySelectorAll('.trackPanel')).toHaveLength(0);
 
-      wrapper.setProps({
-        browserQueryParams: { focus: faker.lorem.words() }
-      });
+      rerender(
+        <Browser
+          {...defaultProps}
+          browserQueryParams={{ focus: faker.lorem.words() }}
+        />
+      );
 
-      expect(wrapper.find(BrowserImage)).toHaveLength(1);
-      expect(wrapper.find(TrackPanel)).toHaveLength(1);
+      expect(container.querySelectorAll('.browserImage')).toHaveLength(1);
+      expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);
     });
 
     describe('BrowserNavBar', () => {
@@ -116,23 +130,25 @@ describe('<Browser />', () => {
         browserQueryParams: { focus: 'foo' }
       };
 
-      it('is rendered when props.browserNavOpened is true', () => {
-        const wrapper = mountBrowserComponent(props);
-        expect(wrapper.find(BrowserNavBar).length).toBe(0);
+      it('is rendered when props.browserNavOpenState is true', () => {
+        const { container, rerender } = mountBrowserComponent(props);
+        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
 
-        wrapper.setProps({ browserNavOpened: true });
-        expect(wrapper.find(BrowserNavBar).length).toBe(1);
+        rerender(<Browser {...props} browserNavOpenState={true} />);
+        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
       });
 
       it('is not rendered if drawer is opened', () => {
-        const wrapper = mountBrowserComponent({
+        const { container, rerender } = mountBrowserComponent({
           ...props,
-          browserNavOpened: true
+          browserNavOpenState: true
         });
-        expect(wrapper.find(BrowserNavBar).length).toBe(1);
 
-        wrapper.setProps({ isDrawerOpened: true });
-        expect(wrapper.find(BrowserNavBar).length).toBe(0);
+        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
+
+        rerender(<Browser {...defaultProps} isDrawerOpened={true} />);
+
+        expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
       });
     });
   });

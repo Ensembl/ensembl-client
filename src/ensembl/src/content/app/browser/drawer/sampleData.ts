@@ -238,7 +238,7 @@ export const trackDetailsSampleData: GenomeTrackDetails = {
       description: 'Sequence variants from all sources'
     }
   },
-  escherichia_coli_str_k_12_substr_mg1655_GCA_000005845_2: {
+  escherichia_coli_str_k_12_substr_mg1655_gca_000005845_GCA_000005845_2: {
     'track:gene-pc-fwd': {
       track_id: 'track:gene-pc-fwd',
       track_name: 'Protein coding genes',

@@ -25,6 +25,8 @@ import {
   defaultSort
 } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
+import { filterTranscriptsBySOTerm } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
+
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds,
@@ -93,6 +95,9 @@ const DefaultTranscriptslist = (props: Props) => {
 
   const sortingFunction = transcriptSortingFunctions[sortingRule];
   const sortedTranscripts = sortingFunction(gene.transcripts) as Transcript[];
+  const filteredTranscripts = Object.values(filters).some(Boolean)
+    ? (filterTranscriptsBySOTerm(sortedTranscripts, filters) as Transcript[])
+    : sortedTranscripts;
 
   const [isFilterOpen, setFilterOpen] = useState(false);
 
@@ -101,7 +106,7 @@ const DefaultTranscriptslist = (props: Props) => {
 
     // Expand the first transcript by default
     if (!hasExpandedTranscripts) {
-      dispatch(toggleTranscriptInfo(sortedTranscripts[0].stable_id));
+      dispatch(toggleTranscriptInfo(filteredTranscripts[0].stable_id));
     }
   }, []);
 
@@ -129,7 +134,7 @@ const DefaultTranscriptslist = (props: Props) => {
           <TranscriptsFilter
             label={filterLabel}
             toggleFilter={toggleFilter}
-            transcripts={sortedTranscripts}
+            transcripts={filteredTranscripts}
           />
         )}
         <div className={styles.row}>
@@ -144,7 +149,7 @@ const DefaultTranscriptslist = (props: Props) => {
       </div>
       <div className={styles.content}>
         <StripedBackground {...props} />
-        {sortedTranscripts.map((transcript, index) => {
+        {filteredTranscripts.map((transcript, index) => {
           const expandTranscript = expandedTranscriptIds.includes(
             transcript.stable_id
           );

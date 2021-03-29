@@ -15,6 +15,7 @@
  */
 
 import { ActionType, getType } from 'typesafe-actions';
+import pickBy from 'lodash/pickBy';
 
 import {
   buildInitialState,
@@ -35,6 +36,23 @@ export default function entityViewerReducer(
     }
     case getType(actions.updateActiveEntityForGenome):
       return { ...state, activeEntityIds: action.payload };
+
+    case getType(actions.deleteGenome): {
+      const genomeIdToRemove = action.payload;
+      const activeGenomeId = state.activeGenomeId;
+
+      const newState = {
+        ...state,
+        activeGenomeId:
+          activeGenomeId === genomeIdToRemove ? null : activeGenomeId,
+        activeEntityIds: pickBy(
+          state.activeEntityIds,
+          (value, key) => key !== genomeIdToRemove
+        )
+      };
+
+      return newState;
+    }
     default:
       return state;
   }

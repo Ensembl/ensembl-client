@@ -79,18 +79,14 @@ const GeneOverview = () => {
         <span>{gene.stable_id}</span>
       </div>
 
-      {!!gene.name && (
-        <>
-          <div className={styles.sectionHead}>Gene name</div>
-          <div className={styles.geneName}>{gene.name}</div>
-        </>
-      )}
+      <div className={styles.sectionHead}>Gene name</div>
+      <div className={styles.geneName}>{gene.name || 'None'}</div>
 
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>
         {gene.alternative_symbols.length
           ? gene.alternative_symbols.join(', ')
-          : 'No synonyms'}
+          : 'None'}
       </div>
 
       <MainAccordion />

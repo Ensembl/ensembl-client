@@ -89,8 +89,6 @@ $content-width: $gene_image_width;
 }
 
 .xrefGroupWrapper {
-  // display: grid;
-  // grid-template-areas: 'left right';
   display: flex;
   
   > div:first-child {

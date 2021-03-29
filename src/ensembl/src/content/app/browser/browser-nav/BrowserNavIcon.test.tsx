@@ -22,7 +22,7 @@ import { BrowserNavIcon } from './BrowserNavIcon';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { browserNavConfig } from '../browserConfig';
 
-describe('<BrowserNavIcon />', () => {
+describe('<BrowserNavAction />', () => {
   const browserNavItem = browserNavConfig[0];
 
   test('sends navigation message when clicked', () => {

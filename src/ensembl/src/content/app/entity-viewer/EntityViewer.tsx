@@ -29,18 +29,22 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import {
+  isEntityViewerSidebarOpen,
+  getEntityViewerSidebarModalView
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import { setDataFromUrl } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
 import { toggleSidebar } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 
 import { StandardAppLayout } from 'src/shared/components/layout';
 import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/EntityViewerAppBar';
-import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
+import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
+import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
 import EntityViewerTopbar from './shared/components/entity-viewer-topbar/EntityViewerTopbar';
 import ExampleLinks from './components/example-links/ExampleLinks';
 import GeneView from './gene-view/GeneView';
-import GeneViewSideBar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
+import GeneViewSidebar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
 
 import styles from './EntityViewer.scss';
@@ -57,7 +61,10 @@ const EntityViewer = () => {
   const viewportWidth = useSelector(getBreakpointWidth);
 
   const dispatch = useDispatch();
-  const onSidebarToggle = () => dispatch(toggleSidebar());
+
+  const isSidebarModalOpen = Boolean(
+    useSelector(getEntityViewerSidebarModalView)
+  );
 
   const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
   const { genomeId, entityId } = params;
@@ -69,12 +76,16 @@ const EntityViewer = () => {
         genomeId: activeGenomeId,
         entityId: entityIdForUrl
       });
-
       dispatch(replace(replacementUrl));
     }
-
     dispatch(setDataFromUrl(params));
   }, [params.genomeId, params.entityId]);
+
+  const SideBarContent = isSidebarModalOpen ? (
+    <EntityViewerSidebarModal />
+  ) : (
+    <GeneViewSidebar />
+  );
 
   return (
     <ApolloProvider client={client}>
@@ -86,11 +97,11 @@ const EntityViewer = () => {
             topbarContent={
               <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
             }
-            sidebarContent={<GeneViewSideBar />}
+            sidebarContent={SideBarContent}
             sidebarNavigation={<GeneViewSidebarTabs />}
             sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
             isSidebarOpen={isSidebarOpen}
-            onSidebarToggle={onSidebarToggle}
+            onSidebarToggle={() => dispatch(toggleSidebar())}
             isDrawerOpen={false}
             viewportWidth={viewportWidth}
           />

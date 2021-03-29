@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+
 import { Status } from 'src/shared/types/status';
 import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
 
@@ -22,7 +24,13 @@ export enum SidebarTabName {
   EXTERNAL_REFERENCES = 'External references'
 }
 
-export type SidebarStatus = Status.OPEN | Status.CLOSED;
+export enum SidebarModalView {
+  SEARCH = 'search',
+  BOOKMARKS = 'bookmarks',
+  DOWNLOADS = 'download'
+}
+
+export type ToggleStatus = Status.OPEN | Status.CLOSED;
 
 export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
@@ -35,19 +43,30 @@ export type EntityViewerSidebarUIState = {
 };
 
 export type EntityViewerSidebarGenomeState = Readonly<{
-  status: SidebarStatus;
+  status: ToggleStatus;
   selectedTabName: SidebarTabName;
   entities: {
     [entityId: string]: {
       uIState: EntityViewerSidebarUIState;
     };
   };
+  sidebarModalView: SidebarModalView | null;
 }>;
 
-export const buildInitialSidebarStateForGenome = (): EntityViewerSidebarGenomeState => {
-  return {
+export const buildInitialStateForGenome = (
+  genomeId: string
+): EntityViewerSidebarState => ({
+  [genomeId]: {
     status: Status.OPEN,
     selectedTabName: SidebarTabName.OVERVIEW,
-    entities: {}
-  };
-};
+    entities: {},
+    sidebarModalView: null
+  }
+});
+
+const storedActiveGenomeId = entityViewerStorageService.getGeneralState()
+  ?.activeGenomeId;
+
+export const initialState: EntityViewerSidebarState = storedActiveGenomeId
+  ? buildInitialStateForGenome(storedActiveGenomeId)
+  : {};

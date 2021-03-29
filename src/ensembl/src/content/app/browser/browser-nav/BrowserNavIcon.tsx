@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent, memo } from 'react';
+import React, { memo } from 'react';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
@@ -30,9 +30,7 @@ type BrowserNavIconProps = {
   enabled: boolean;
 };
 
-export const BrowserNavIcon: FunctionComponent<BrowserNavIconProps> = (
-  props: BrowserNavIconProps
-) => {
+export const BrowserNavIcon = (props: BrowserNavIconProps) => {
   const { browserNavItem, enabled } = props;
   const { detail, icon } = browserNavItem;
 

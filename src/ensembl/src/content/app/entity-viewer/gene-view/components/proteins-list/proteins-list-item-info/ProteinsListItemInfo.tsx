@@ -21,7 +21,6 @@ import { Pick2 } from 'ts-multipick';
 import classNames from 'classnames';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
-import { PrimaryButton } from 'src/shared/components/button/Button';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
@@ -188,6 +187,10 @@ const ProteinsListItemInfo = (props: Props) => {
     };
   }, [summaryStatsLoadingState, proteinStatsXref]);
 
+  const showLoadingIndicator =
+    domainsLoadingState === LoadingState.LOADING ||
+    summaryStatsLoadingState === LoadingState.LOADING;
+
   return (
     <div className={styles.proteinsListItemInfo}>
       {productWithProteinDomains && (
@@ -254,56 +257,15 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
         </>
-        <StatusContent
-          summaryLoadingState={summaryStatsLoadingState}
-          domainsLoadingState={domainsLoadingState}
-          setSummaryStatsLoadingState={setSummaryStatsLoadingState}
-          setDomainsLoadingState={setDomainsLoadingState}
-        />
-
+        {showLoadingIndicator && (
+          <div className={styles.statusContainer}>
+            <CircleLoader />
+          </div>
+        )}
         <div className={styles.keyline}></div>
       </div>
     </div>
   );
-};
-
-type StatusContentProps = {
-  summaryLoadingState: LoadingState;
-  domainsLoadingState: LoadingState;
-  setSummaryStatsLoadingState: (loadingState: LoadingState) => void;
-  setDomainsLoadingState: (loadingState: LoadingState) => void;
-};
-
-const StatusContent = (props: StatusContentProps) => {
-  if (
-    props.domainsLoadingState === LoadingState.LOADING ||
-    props.summaryLoadingState === LoadingState.LOADING
-  ) {
-    return (
-      <div className={styles.statusContainer}>
-        <CircleLoader />
-      </div>
-    );
-  }
-
-  const retryHandler = () => {
-    if (props.domainsLoadingState === LoadingState.ERROR) {
-      props.setDomainsLoadingState(LoadingState.LOADING);
-    }
-    if (props.summaryLoadingState === LoadingState.ERROR) {
-      props.setSummaryStatsLoadingState(LoadingState.LOADING);
-    }
-  };
-
-  return props.domainsLoadingState === LoadingState.ERROR ||
-    props.summaryLoadingState === LoadingState.ERROR ? (
-    <div className={styles.statusContainer}>
-      <span className={styles.errorMessage}>
-        Failed to get data from PDBe Knowledge Base.
-      </span>
-      <PrimaryButton onClick={retryHandler}>Try again</PrimaryButton>
-    </div>
-  ) : null;
 };
 
 type ProteinExternalReferenceProps = {

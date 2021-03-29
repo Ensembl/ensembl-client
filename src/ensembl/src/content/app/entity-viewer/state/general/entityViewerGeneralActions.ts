@@ -15,7 +15,7 @@
  */
 
 import { createAction } from 'typesafe-actions';
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { batch } from 'react-redux';
 import { push, replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
@@ -45,12 +45,12 @@ export const setActiveGenomeId = createAction(
   'entity-viewer/set-active-genome-id'
 )<string>();
 
-export const setDataFromUrl: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (params: EntityViewerParams) => (dispatch, getState: () => RootState) => {
+export const setDataFromUrl = (
+  params: EntityViewerParams
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
   const { genomeId: genomeIdFromUrl } = params;
 
@@ -100,18 +100,19 @@ export const setDataFromUrl: ActionCreator<ThunkAction<
     entityViewerStorageService.updateGeneralState({
       activeGenomeId: genomeIdFromUrl
     });
+
     entityViewerStorageService.updateGeneralState({
       activeEntityIds: { [genomeIdFromUrl]: entityId }
     });
   }
 };
 
-export const setDefaultActiveGenomeId: ActionCreator<ThunkAction<
+export const setDefaultActiveGenomeId = (): ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = () => (dispatch, getState: () => RootState) => {
+> => (dispatch, getState: () => RootState) => {
   const state = getState();
   const [firstCommittedSpecies] = getCommittedSpecies(state);
   const activeGenomeId = firstCommittedSpecies.genome_id;
@@ -122,12 +123,9 @@ export const setDefaultActiveGenomeId: ActionCreator<ThunkAction<
   });
 };
 
-export const changeActiveGenomeId: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => (dispatch) => {
+export const changeActiveGenomeId = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
   const newUrl = urlHelper.entityViewer({ genomeId });
   batch(() => {
     dispatch(setActiveGenomeId(genomeId));
@@ -139,12 +137,9 @@ export const updateActiveEntityForGenome = createAction(
   'entity-viewer/update-active-entity-ids'
 )<{ [objectId: string]: string }>();
 
-export const updateEntityId: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (activeEntityId: string) => {
+export const updateEntityId = (
+  activeEntityId: string
+): ThunkAction<void, any, null, Action<string>> => {
   return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
@@ -158,5 +153,18 @@ export const updateEntityId: ActionCreator<ThunkAction<
     };
 
     dispatch(updateActiveEntityForGenome(updatedActiveEntityIds));
+  };
+};
+
+export const deleteGenome = createAction('entity-viewer/delete-genome')<
+  string
+>();
+
+export const deleteSpeciesInEntityViewer = (
+  genomeIdToRemove: string
+): ThunkAction<void, any, null, Action<string>> => {
+  return (dispatch) => {
+    dispatch(deleteGenome(genomeIdToRemove));
+    entityViewerStorageService.deleteGenome(genomeIdToRemove);
   };
 };

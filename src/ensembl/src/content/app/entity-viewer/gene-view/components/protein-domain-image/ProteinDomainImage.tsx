@@ -80,7 +80,7 @@ const ProteinDomainImage = (props: ProteinDomainImageProps) => {
   // Therefore, it is guaranteed that the length of the protein drawn by this component will fall within this domain.
   const scale = scaleLinear()
     .domain([0, trackLength])
-    .range([0, props.width])
+    .rangeRound([0, props.width])
     .clamp(true);
 
   return (

@@ -35,7 +35,7 @@ import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanel
 import { toggleDrawer } from './drawer/drawerActions';
 
 import {
-  getBrowserNavOpened,
+  getBrowserNavOpenState,
   getChrLocation,
   getBrowserActivated,
   getBrowserActiveGenomeId,
@@ -71,7 +71,7 @@ export type BrowserProps = {
   activeGenomeId: string | null;
   activeEnsObjectId: string | null;
   browserActivated: boolean;
-  browserNavOpened: boolean;
+  browserNavOpenState: boolean;
   browserQueryParams: { [key: string]: string };
   chrLocation: ChrLocation | null;
   isDrawerOpened: boolean;
@@ -105,7 +105,7 @@ export const Browser = (props: BrowserProps) => {
   };
 
   const shouldShowNavBar =
-    props.browserActivated && props.browserNavOpened && !isDrawerOpened;
+    props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
 
   if (!props.activeGenomeId) {
     return null;
@@ -183,7 +183,7 @@ const mapStateToProps = (state: RootState) => {
     activeEnsObjectId: getBrowserActiveEnsObjectId(state),
     allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
     browserActivated: getBrowserActivated(state),
-    browserNavOpened: getBrowserNavOpened(state),
+    browserNavOpenState: getBrowserNavOpenState(state),
     browserQueryParams: getBrowserQueryParams(state),
     chrLocation: getChrLocation(state),
     isDrawerOpened: getIsDrawerOpened(state),

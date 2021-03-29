@@ -15,17 +15,17 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import { Consumer, Provider } from './AccordionContext';
 
 describe('ItemContext', () => {
   it('renders children props', () => {
-    const wrapper = mount(
+    const { container } = render(
       <Provider>
         <Consumer>{(): string => 'Hello World'}</Consumer>
       </Provider>
     );
 
-    expect(wrapper.text()).toBe('Hello World');
+    expect(container.textContent).toBe('Hello World');
   });
 });

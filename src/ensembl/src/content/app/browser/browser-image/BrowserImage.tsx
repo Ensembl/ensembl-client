@@ -29,15 +29,16 @@ import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getBrowserCogTrackList,
-  getBrowserNavOpened,
+  getBrowserNavOpenState,
   getBrowserActivated,
   getRegionEditorActive,
-  getRegionFieldActive
+  getRegionFieldActive,
+  getBrowserActiveGenomeId
 } from '../browserSelectors';
 import {
   activateBrowser,
   updateBrowserActivated,
-  updateBrowserNavStates,
+  updateBrowserNavIconStates,
   setChrLocation,
   setActualChrLocation,
   updateBrowserActiveEnsObjectIdsAndSave,
@@ -46,7 +47,12 @@ import {
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import { BrowserNavStates, ChrLocation, CogList } from '../browserState';
+import {
+  BrowserNavAction,
+  BrowserNavIconStates,
+  ChrLocation,
+  CogList
+} from '../browserState';
 import { RootState } from 'src/store';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
@@ -54,11 +60,15 @@ import styles from './BrowserImage.scss';
 
 export type BrowserImageProps = {
   browserCogTrackList: CogList;
-  browserNavOpened: boolean;
+  isNavbarOpen: boolean;
   browserActivated: boolean;
   isDisabled: boolean;
+  activeGenomeId: string | null;
   activateBrowser: () => void;
-  updateBrowserNavStates: (browserNavStates: BrowserNavStates) => void;
+  updateBrowserNavIconStates: (payload: {
+    activeGenomeId: string;
+    navStates: BrowserNavIconStates;
+  }) => void;
   updateBrowserActivated: (browserActivated: boolean) => void;
   updateBrowserActiveEnsObject: (objectId: string) => void;
   setChrLocation: (chrLocation: ChrLocation) => void;
@@ -67,8 +77,17 @@ export type BrowserImageProps = {
   changeHighlightedTrackId: (trackId: string) => void;
 };
 
+export type BumperPayload = [
+  top: boolean,
+  right: boolean,
+  bottom: boolean,
+  left: boolean,
+  zoomOut: boolean,
+  zoomIn: boolean
+];
+
 type BpaneOutPayload = {
-  bumper?: BrowserNavStates;
+  bumper?: BumperPayload;
   focus?: string;
   'message-counter'?: number;
   'intended-location'?: ChrLocation;
@@ -87,13 +106,26 @@ export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
-    const navIconStates = payload.bumper as BrowserNavStates;
     const intendedLocation = payload['intended-location'];
     const actualLocation = payload['actual-location'] || intendedLocation;
     const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
-    if (navIconStates) {
-      props.updateBrowserNavStates(navIconStates);
+    if (payload.bumper && props.activeGenomeId) {
+      // Invert the flags to make it appropriate for the react side
+      const navIconStates = payload.bumper.map((a) => !a);
+
+      const navStates = {
+        [BrowserNavAction.NAVIGATE_UP]: navIconStates[0],
+        [BrowserNavAction.NAVIGATE_DOWN]: navIconStates[1],
+        [BrowserNavAction.ZOOM_OUT]: navIconStates[2],
+        [BrowserNavAction.ZOOM_IN]: navIconStates[3],
+        [BrowserNavAction.NAVIGATE_LEFT]: navIconStates[4],
+        [BrowserNavAction.NAVIGATE_RIGHT]: navIconStates[5]
+      };
+      props.updateBrowserNavIconStates({
+        activeGenomeId: props.activeGenomeId,
+        navStates
+      });
     }
 
     if (intendedLocation) {
@@ -134,7 +166,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, []);
 
   const browserContainerClassNames = classNames(styles.browserStage, {
-    [styles.shorter]: props.browserNavOpened
+    [styles.shorter]: props.isNavbarOpen
   });
 
   return (
@@ -160,15 +192,16 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
 const mapStateToProps = (state: RootState) => ({
   browserCogTrackList: getBrowserCogTrackList(state),
-  browserNavOpened: getBrowserNavOpened(state),
+  isNavbarOpen: getBrowserNavOpenState(state),
   browserActivated: getBrowserActivated(state),
+  activeGenomeId: getBrowserActiveGenomeId(state),
   isDisabled: getRegionEditorActive(state) || getRegionFieldActive(state)
 });
 
 const mapDispatchToProps = {
   activateBrowser,
   updateBrowserActivated,
-  updateBrowserNavStates,
+  updateBrowserNavIconStates,
   updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
   setChrLocation,
   setActualChrLocation,

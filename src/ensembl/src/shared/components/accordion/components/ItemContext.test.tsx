@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import Accordion from './Accordion';
 import { Consumer, Provider } from './ItemContext';
 
 describe('ItemContext', () => {
   it('renders children props', () => {
-    const wrapper = mount(
+    const { container } = render(
       <Accordion>
         <Provider uuid="FOO">
           <Consumer>{(): string => 'Hello World'}</Consumer>
@@ -29,6 +29,8 @@ describe('ItemContext', () => {
       </Accordion>
     );
 
-    expect(wrapper.find(Accordion).text()).toBe('Hello World');
+    expect(container.querySelector('.accordionDefault')?.textContent).toBe(
+      'Hello World'
+    );
   });
 });

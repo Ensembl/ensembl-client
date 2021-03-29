@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
@@ -210,7 +210,6 @@ const GeneExternalReferences = () => {
 
 const TranscriptXrefs = (props: { transcript: Transcript }) => {
   const { transcript } = props;
-  const [isExpanded, setIsExpanded] = useState(false);
   const unsortedXrefs = [...transcript.external_references];
 
   // Add protein level xrefs
@@ -225,17 +224,24 @@ const TranscriptXrefs = (props: { transcript: Transcript }) => {
   const xrefGroups = buildExternalReferencesGroups(unsortedXrefs);
 
   return (
-    <div className={styles.transcriptWrapper}>
-      <div
-        onClick={() => setIsExpanded(!isExpanded)}
-        className={styles.transcriptId}
-      >
-        {transcript.stable_id}
-      </div>
-      {transcript.external_references && isExpanded && (
-        <div className={styles.transcriptXrefs}>{renderXrefs(xrefGroups)}</div>
-      )}
-    </div>
+    <Accordion className={styles.xrefAccordion}>
+      <AccordionItem className={styles.xrefAccordionItem}>
+        <AccordionItemHeading className={styles.xrefAccordionHeader}>
+          <AccordionItemButton className={styles.xrefAccordionButton}>
+            <div className={styles.transcriptId}>{transcript.stable_id}</div>
+          </AccordionItemButton>
+        </AccordionItemHeading>
+        <AccordionItemPanel className={styles.xrefAccordionItemContent}>
+          <div>
+            {transcript.external_references && (
+              <div className={styles.transcriptXrefs}>
+                {renderXrefs(xrefGroups)}
+              </div>
+            )}
+          </div>
+        </AccordionItemPanel>
+      </AccordionItem>
+    </Accordion>
   );
 };
 
