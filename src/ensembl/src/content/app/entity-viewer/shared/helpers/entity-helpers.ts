@@ -177,7 +177,7 @@ export const getProteinXrefs = (
   >
 ) => {
   let proteinXrefs = xrefs.filter(
-    (xref) => xref.source.id !== SWISSPROT_SOURCE
+    (xref) => xref.source.id === SWISSPROT_SOURCE
   );
 
   if (!proteinXrefs.length) {
