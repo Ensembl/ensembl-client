@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount, render } from 'enzyme';
+import { render } from '@testing-library/react';
+import ReactDOMServer from 'react-dom/server';
 
 import BasePairsRuler from './BasePairsRuler';
 
@@ -26,16 +27,24 @@ const defaultProps = {
 
 describe('<BasePairsRuler />', () => {
   describe('rendering', () => {
-    it('renders inside an <svg> element if standalone', () => {
-      const wrapper = render(
+    it('renders an <svg> element if standalone', () => {
+      const { container } = render(
         <BasePairsRuler {...defaultProps} standalone={true} />
       );
-      expect(wrapper.is('svg')).toBe(true);
+      expect((container.firstChild as Element).tagName).toBe('svg');
     });
 
-    it('renders inside a <g> element (svg group) if not standalone', () => {
-      const wrapper = render(<BasePairsRuler {...defaultProps} />);
-      expect(wrapper.is('g')).toBe(true);
+    it('renders a <g> element (svg group) if not standalone', () => {
+      const stringifiedElement = ReactDOMServer.renderToString(
+        <BasePairsRuler {...defaultProps} />
+      );
+      const parser = new DOMParser();
+      const parsedElement = parser.parseFromString(
+        stringifiedElement,
+        'image/svg+xml'
+      );
+
+      expect((parsedElement.firstChild as Element).tagName).toBe('g');
     });
   });
 
@@ -47,7 +56,7 @@ describe('<BasePairsRuler />', () => {
 
     it('passes calculated ticks to the callback', () => {
       const callback = jest.fn();
-      mount(<BasePairsRuler {...props} onTicksCalculated={callback} />);
+      render(<BasePairsRuler {...props} onTicksCalculated={callback} />);
       expect(callback).toHaveBeenCalledTimes(1);
 
       const payload = callback.mock.calls[0][0];
