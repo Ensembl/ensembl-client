@@ -24,7 +24,7 @@ export type MenuItem = MenuArticleItem | MenuCollectionItem;
 type MenuCollectionItem = {
   name: string;
   type: 'collection';
-  url?: string; // if a meenu directory has an index page associated with it
+  url?: string; // if a menu directory has an index page associated with it
   items: MenuItem[];
 };
 
