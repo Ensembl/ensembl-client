@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from 'enzyme';
+import React, { ReactElement } from 'react';
+import { render } from '@testing-library/react';
+import ReactDOMServer from 'react-dom/server';
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
@@ -26,22 +27,34 @@ const minimalProps = {
   width: 600
 };
 
+// jsdom doesn't like naked <g> or <rect> elements
+// that get rendered by UnsplicedTranscript when it isn't in standalone mode
+const parseFromRenderedString = (reactElement: ReactElement) => {
+  const htmlString = ReactDOMServer.renderToString(reactElement);
+  const parser = new DOMParser();
+  return parser.parseFromString(htmlString, 'image/svg+xml');
+};
+
 describe('<UnsplicedTranscript />', () => {
   it('renders inside an <svg> element if standalone', () => {
-    const wrapper = render(
+    const element = parseFromRenderedString(
       <UnsplicedTranscript {...minimalProps} standalone={true} />
     );
-    expect(wrapper.is('svg')).toBe(true);
+    expect((element.firstChild as HTMLElement).tagName).toBe('svg');
   });
 
   it('renders inside a <g> element (svg group) if not standalone', () => {
-    const wrapper = render(<UnsplicedTranscript {...minimalProps} />);
-    expect(wrapper.is('g')).toBe(true);
+    const element = parseFromRenderedString(
+      <UnsplicedTranscript {...minimalProps} />
+    );
+    expect((element.firstChild as HTMLElement).tagName).toBe('g');
   });
 
   it('renders the correct number of exons', () => {
-    const wrapper = render(<UnsplicedTranscript {...minimalProps} />);
-    expect(wrapper.find('[data-test-id=exon]').length).toBe(
+    const { container } = render(
+      <UnsplicedTranscript {...minimalProps} standalone={true} />
+    );
+    expect(container.querySelectorAll('[data-test-id=exon]').length).toBe(
       minimalProps.transcript.spliced_exons.length
     );
   });
