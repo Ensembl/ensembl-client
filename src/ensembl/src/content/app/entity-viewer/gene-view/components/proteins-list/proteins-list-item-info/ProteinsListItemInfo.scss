@@ -6,10 +6,7 @@ $content-width: $gene_image_width;
 .proteinSummary {
   margin-left: 178px;
   width: $content-width;
-
-  > div {
-    padding: 10px 0 10px 0;
-  }
+  padding-top: 10px;
 }
 
 .keyline {
@@ -22,7 +19,7 @@ $content-width: $gene_image_width;
 
 .proteinSummaryTop {
   display: grid;
-  grid-template-columns: [references] 300px [download] 395px;
+  grid-template-columns: [references] 350px [download] 345px;
   align-items: flex-start;
 }
 
@@ -95,4 +92,9 @@ $content-width: $gene_image_width;
   // display: grid;
   // grid-template-areas: 'left right';
   display: flex;
+  
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+  }
 }

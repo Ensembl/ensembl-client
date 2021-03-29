@@ -158,13 +158,15 @@ export const getLongestProteinLength = (gene: GetLongestProteinLengthParam) => {
 
 export enum ExternalSource {
   INTERPRO = 'Interpro',
-  UNIPROT = 'UniProtKB/TrEMBL',
+  UNIPROT_TREMBL = 'UniProtKB/TrEMBL',
+  UNIPROT_SWISSPROT = 'UniProtKB/Swiss-Prot',
   PDBE = 'PDBe-KB'
 }
 
 export const externalSourceLinks = {
   [ExternalSource.INTERPRO]: 'https://www.ebi.ac.uk/interpro/protein/UniProt/',
-  [ExternalSource.UNIPROT]: 'https://www.uniprot.org/uniprot/',
+  [ExternalSource.UNIPROT_TREMBL]: 'https://www.uniprot.org/uniprot/',
+  [ExternalSource.UNIPROT_SWISSPROT]: 'https://www.uniprot.org/uniprot/',
   [ExternalSource.PDBE]: 'https://www.ebi.ac.uk/pdbe/pdbe-kb/proteins/'
 };
 
@@ -175,7 +177,7 @@ export const getProteinXrefs = (
   >
 ) => {
   let proteinXrefs = xrefs.filter(
-    (xref) => xref.source.id === SWISSPROT_SOURCE
+    (xref) => xref.source.id !== SWISSPROT_SOURCE
   );
 
   if (!proteinXrefs.length) {

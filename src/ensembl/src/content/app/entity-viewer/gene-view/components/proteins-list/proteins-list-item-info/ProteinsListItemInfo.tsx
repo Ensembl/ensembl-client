@@ -45,6 +45,8 @@ import { Product } from 'src/shared/types/thoas/product';
 import { ProteinDomain } from 'src/shared/types/thoas/product';
 import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 
+import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
+
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
@@ -186,8 +188,6 @@ const ProteinsListItemInfo = (props: Props) => {
     };
   }, [summaryStatsLoadingState, proteinStatsXref]);
 
-  // const interproXrefs = proteinXrefs.splice(0,3)
-
   return (
     <div className={styles.proteinsListItemInfo}>
       {productWithProteinDomains && (
@@ -212,7 +212,11 @@ const ProteinsListItemInfo = (props: Props) => {
               <div>
                 <div className={styles.xrefsWrapper}>
                   <ProteinExternalReferenceGroup
-                    source={ExternalSource.UNIPROT}
+                    source={
+                      proteinXrefs[0].source.id === SWISSPROT_SOURCE
+                        ? ExternalSource.UNIPROT_SWISSPROT
+                        : ExternalSource.UNIPROT_TREMBL
+                    }
                     xrefs={proteinXrefs}
                   />
                 </div>
