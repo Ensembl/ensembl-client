@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import times from 'lodash/times';
 import { push } from 'connected-react-router';
 
@@ -25,7 +26,7 @@ import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import {
   SpeciesSelectorAppBar,
-  PlaceholderMessage
+  placeholderMessage
 } from './SpeciesSelectorAppBar';
 
 jest.mock('react-router-dom', () => ({
@@ -48,32 +49,34 @@ describe('<SpeciesSelectorAppBar />', () => {
 
   it('shows placeholder message if no species are selected', () => {
     const props = { ...defaultProps, selectedSpecies: [] };
-    const wrapper = mount(<SpeciesSelectorAppBar {...props} />);
-    expect(wrapper.find(PlaceholderMessage).length).toBe(1);
+    const { container } = render(<SpeciesSelectorAppBar {...props} />);
+    expect(container.querySelector('.placeholderMessage')?.textContent).toBe(
+      placeholderMessage
+    );
   });
 
   it('does not show placeholder message if there are selected species', () => {
-    const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
-    expect(wrapper.find(PlaceholderMessage).length).toBe(0);
+    const { container } = render(<SpeciesSelectorAppBar {...defaultProps} />);
+    expect(container.querySelector('.placeholderMessage')).toBeFalsy();
   });
 
   it('renders the list of selected species if there are some', () => {
-    const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
+    const { container } = render(<SpeciesSelectorAppBar {...defaultProps} />);
 
-    expect(wrapper.find('.species').length).toBe(
+    expect(container.querySelectorAll('.species').length).toBe(
       defaultProps.selectedSpecies.length
     );
   });
 
   it('opens the species page when a SelectedSpecies tab button is clicked', () => {
-    const wrapper = mount(<SpeciesSelectorAppBar {...defaultProps} />);
+    const { container } = render(<SpeciesSelectorAppBar {...defaultProps} />);
+    const firstSelectedSpecies = container.querySelector(
+      '.species'
+    ) as HTMLElement;
 
-    const firstSelectedSpecies = wrapper.find('.species').first();
-
-    firstSelectedSpecies.simulate('click');
+    userEvent.click(firstSelectedSpecies);
 
     const firstSpeciesGenomeId = defaultProps.selectedSpecies[0].genome_id;
-
     const speciesPageUrl = urlFor.speciesPage({
       genomeId: firstSpeciesGenomeId
     });
