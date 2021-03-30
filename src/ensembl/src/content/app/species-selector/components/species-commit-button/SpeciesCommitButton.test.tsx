@@ -15,11 +15,10 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
-
-import { PrimaryButton } from 'src/shared/components/button/Button';
 
 const onCommit = jest.fn();
 const defaultProps = {
@@ -29,53 +28,37 @@ const defaultProps = {
 };
 
 describe('<SpeciesCommitButton />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('shows PrimaryButton if a species has been selected', () => {
-    const wrapper = mount(<SpeciesCommitButton {...defaultProps} />);
-
-    expect(wrapper.find(PrimaryButton).length).toBe(1);
+    const { container } = render(<SpeciesCommitButton {...defaultProps} />);
+    expect(container.querySelector('button.primaryButton')).toBeTruthy();
   });
 
   it('does not show any button if no species has been selected', () => {
-    const props = {
-      ...defaultProps,
-      hasCurrentSpecies: false
-    };
-    const wrapper = mount(<SpeciesCommitButton {...props} />);
-    expect(wrapper.find(PrimaryButton).length).toBe(0);
+    const { container } = render(
+      <SpeciesCommitButton {...defaultProps} hasCurrentSpecies={false} />
+    );
+    expect(container.querySelector('button')).toBeFalsy();
   });
 
-  it('passes disabled prop to the button', () => {
-    const enabledProps = defaultProps;
-    const disabledProps = { ...defaultProps, disabled: true };
-    const enabledButton = mount(<SpeciesCommitButton {...enabledProps} />).find(
-      PrimaryButton
+  it('does not register clicks if disabled', () => {
+    const { container } = render(
+      <SpeciesCommitButton {...defaultProps} disabled={true} />
     );
-    const disabledButton = mount(
-      <SpeciesCommitButton {...disabledProps} />
-    ).find(PrimaryButton);
+    const disabledButton = container.querySelector('button') as HTMLElement;
+    userEvent.click(disabledButton);
 
-    expect(enabledButton.prop('isDisabled')).toBe(false);
-    expect(disabledButton.prop('isDisabled')).toBe(true);
+    expect(onCommit).not.toHaveBeenCalled();
   });
 
   it('calls the onCommit prop if clicked when enabled', () => {
-    const wrapper = mount(<SpeciesCommitButton {...defaultProps} />);
-    const button = wrapper.find(PrimaryButton);
+    const { container } = render(<SpeciesCommitButton {...defaultProps} />);
+    const button = container.querySelector('button') as HTMLElement;
+    userEvent.click(button);
 
-    button.simulate('click');
     expect(onCommit).toHaveBeenCalled();
-  });
-
-  it('does not call the onCommit prop if clicked when disabled', () => {
-    const props = { ...defaultProps, disabled: true };
-    const wrapper = mount(<SpeciesCommitButton {...props} />);
-    const button = wrapper.find(PrimaryButton);
-
-    button.simulate('click');
-    expect(onCommit).not.toHaveBeenCalled();
   });
 });
