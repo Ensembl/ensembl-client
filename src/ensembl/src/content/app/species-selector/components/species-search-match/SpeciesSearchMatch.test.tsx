@@ -15,11 +15,9 @@
  */
 
 import React from 'react';
-import { render } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import SpeciesSearchMatch from './SpeciesSearchMatch';
-
-import styles from './SpeciesSearchMatch.scss';
 
 import { MatchedFieldName } from 'src/content/app/species-selector/types/species-search';
 
@@ -39,19 +37,15 @@ const matchTemplate = {
 };
 
 describe('<SpeciesSearchMatch />', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('highlights a single match in the description field', () => {
-    const renderedMatch = render(<SpeciesSearchMatch match={matchTemplate} />);
-    const highlightedFragments = renderedMatch.find(`.${styles.matched}`);
+  it('highlights a single match in the description field', () => {
+    const { container } = render(<SpeciesSearchMatch match={matchTemplate} />);
+    const highlightedFragments = container.querySelectorAll('.matched');
     expect(highlightedFragments.length).toBe(1);
     // highlighting Hum in Human
-    expect(highlightedFragments.first().text()).toBe('Hum');
+    expect(highlightedFragments[0].textContent).toBe('Hum');
   });
 
-  test('highlights a single match in the scientific_name field', () => {
+  it('highlights a single match in the scientific_name field', () => {
     const match = {
       ...matchTemplate,
       matched_substrings: [
@@ -62,17 +56,20 @@ describe('<SpeciesSearchMatch />', () => {
         }
       ]
     };
-    const renderedMatch = render(<SpeciesSearchMatch match={match} />);
-    const highlightedFragments = renderedMatch.find(
-      `.${styles.scientificName}
-      .${styles.matched}`
+    const { container } = render(<SpeciesSearchMatch match={match} />);
+    const renderedScientificName = container.querySelector(
+      '.scientificName'
+    ) as HTMLElement;
+    const highlightedFragments = renderedScientificName.querySelectorAll(
+      '.matched'
     );
+
     expect(highlightedFragments.length).toBe(1);
     // highlighting Hom in Homo sapiens
-    expect(highlightedFragments.first().text()).toBe('Hom');
+    expect(highlightedFragments[0].textContent).toBe('Hom');
   });
 
-  test('highlights multiple matches in the description field', () => {
+  it('can highlight multiple matches', () => {
     const match = {
       ...matchTemplate,
       common_name: null,
@@ -92,12 +89,12 @@ describe('<SpeciesSearchMatch />', () => {
       ]
     };
 
-    const renderedMatch = render(<SpeciesSearchMatch match={match} />);
+    const { container } = render(<SpeciesSearchMatch match={match} />);
 
-    const highlightedFragments = renderedMatch.find(`.${styles.matched}`);
+    const highlightedFragments = container.querySelectorAll('.matched');
     expect(highlightedFragments.length).toBe(2);
     // highlighting Bac in Bacillus and sub in subtilis
-    expect(highlightedFragments.first().text()).toBe('Bac');
-    expect(highlightedFragments.last().text()).toBe('sub');
+    expect(highlightedFragments[0].textContent).toBe('Bac');
+    expect(highlightedFragments[1].textContent).toBe('sub');
   });
 });
