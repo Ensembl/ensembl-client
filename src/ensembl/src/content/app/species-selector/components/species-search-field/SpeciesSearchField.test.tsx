@@ -15,15 +15,12 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
-import flatten from 'lodash/flatten';
 
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
-import SpeciesSearchMatch from '../species-search-match/SpeciesSearchMatch';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
-import AutosuggestSearchField from 'src/shared/components/autosuggest-search-field/AutosuggestSearchField';
 
 import {
   SearchMatch,
@@ -79,60 +76,69 @@ describe('<SpeciesSearchField />', () => {
   });
 
   describe('rendering', () => {
-    test('contains AutosuggestSearchField', () => {
-      const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
+    it('contains AutosuggestSearchField', () => {
+      const { container } = render(<SpeciesSearchField {...defaultProps} />);
 
-      expect(wrapper.find(AutosuggestSearchField).length).toBe(1);
+      expect(
+        container.querySelector('.autosuggestionSearchField')
+      ).toBeTruthy();
     });
 
-    test('does not show clear button for empty field', () => {
-      const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
+    it('does not show clear button for empty field', () => {
+      const { container } = render(<SpeciesSearchField {...defaultProps} />);
 
-      expect(wrapper.find(CloseButton).length).toBe(0);
+      expect(container.querySelector('.closeButton')).toBeFalsy();
     });
 
-    test('displays suggested matches', () => {
+    it('displays suggested matches', () => {
       const matches = buildSearchMatchGroups();
       const props = {
         ...defaultProps,
         searchText,
         matches
       };
-      const wrapper = mount(<SpeciesSearchField {...props} />);
-      const expectedMatchedItemsNumber = flatten(matches).length;
+      const { container } = render(<SpeciesSearchField {...props} />);
+      const renderedMatches = container.querySelectorAll('.speciesSearchMatch');
 
-      expect(wrapper.find(SpeciesSearchMatch).length).toBe(
-        expectedMatchedItemsNumber
-      );
+      expect(renderedMatches.length).toBe(matches.flat().length);
     });
   });
 
   describe('behaviour', () => {
     let matches: SearchMatches[];
-    let wrapper: any;
+
+    const renderSpeciesSearchField = () =>
+      render(
+        <SpeciesSearchField
+          {...defaultProps}
+          searchText={searchText}
+          matches={matches}
+        />
+      );
 
     beforeEach(() => {
       matches = buildSearchMatchGroups();
-      const props = {
-        ...defaultProps,
-        searchText,
-        matches
-      };
-      wrapper = mount(<SpeciesSearchField {...props} />);
     });
 
-    test('triggers the onMatchSelected function when a match is clicked', () => {
-      const firstMatchData = flatten(matches)[0];
-      const firstMatchElement = wrapper.find(SpeciesSearchMatch).at(0);
-      firstMatchElement.simulate('click');
+    it('triggers the onMatchSelected function when a match is clicked', () => {
+      const { container } = renderSpeciesSearchField();
+      const firstMatchData = matches.flat()[0];
+      const firstMatchElement = container.querySelector(
+        '.speciesSearchMatch'
+      ) as HTMLElement;
+
+      userEvent.click(firstMatchElement);
 
       expect(onMatchSelected).toHaveBeenCalledWith(firstMatchData);
     });
 
-    test('shows a button for clearing field contents in a non-empty field', () => {
-      const clearButton = wrapper.find(CloseButton);
+    it('shows a button for clearing field contents in a non-empty field', () => {
+      const { container } = renderSpeciesSearchField();
+      const clearButton = container.querySelector(
+        '.closeButton'
+      ) as HTMLElement;
 
-      clearButton.simulate('click');
+      userEvent.click(clearButton);
 
       expect(clearSelectedSearchResult).toHaveBeenCalled();
       expect(clearSearch).toHaveBeenCalled();
@@ -140,12 +146,12 @@ describe('<SpeciesSearchField />', () => {
   });
 
   describe('no matches found', () => {
-    test('shows "not found" message', () => {
-      const wrapper = mount(<SpeciesSearchField {...defaultProps} />);
-      const messagePanel = wrapper.find('.autosuggestionPlate');
+    it('shows "not found" message', () => {
+      const { container } = render(<SpeciesSearchField {...defaultProps} />);
+      const messagePanel = container.querySelector('.autosuggestionPlate');
 
-      expect(messagePanel.length).toBe(1);
-      expect(messagePanel.text()).toBe(NOT_FOUND_TEXT);
+      expect(messagePanel).toBeTruthy();
+      expect(messagePanel?.textContent).toBe(NOT_FOUND_TEXT);
     });
   });
 });
