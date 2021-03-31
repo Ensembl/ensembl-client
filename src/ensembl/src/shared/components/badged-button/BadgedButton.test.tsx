@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import faker from 'faker';
-import BadgedButton from './BadgedButton';
+import BadgedButton, { Props as BadgedButtonProps } from './BadgedButton';
 import Button from '../button/Button';
 
 const onClick = jest.fn();
@@ -26,66 +26,48 @@ const defaultProps = {
   badgeContent: faker.lorem.words()
 };
 
-const renderButton = (
-  ButtonComponent: React.FunctionComponent<any>,
-  props: any = defaultProps
-) => mount(<ButtonComponent {...props} />);
+const renderButton = (props: Partial<BadgedButtonProps> = {}) =>
+  render(
+    <BadgedButton {...defaultProps} {...props}>
+      <Button onClick={onClick}>{faker.lorem.words()}</Button>
+    </BadgedButton>
+  );
 
 describe('BadgedButton', () => {
-  let wrapper: any;
-
   beforeEach(() => {
-    wrapper = renderButton(BadgedButton, {
-      ...defaultProps,
-      children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
-    });
-  });
-
-  afterEach(() => {
     jest.resetAllMocks();
   });
-
   it('renders the passed in button', () => {
-    expect(wrapper.find('button').length).toEqual(1);
+    const { container } = renderButton();
+    expect(container.querySelectorAll('.button')).toHaveLength(1);
   });
 
   it('assigns the "badgeDefault" class to the badge by default', () => {
-    const renderedBadge = wrapper.find('.badgeDefault');
-    expect(renderedBadge).toHaveLength(1);
+    const { container } = renderButton();
+    expect(container.querySelectorAll('.badgeDefault')).toHaveLength(1);
   });
 
   it('extends the badge class', () => {
     const fakeClassName = faker.lorem.word();
-
-    const wrapper = renderButton(BadgedButton, {
-      ...defaultProps,
-      children: <Button onClick={onClick}>{faker.lorem.words()}</Button>,
-      className: fakeClassName
-    });
-    const renderedBadge = wrapper.find('.badgeDefault');
-
-    expect(renderedBadge.hasClass(fakeClassName)).toBe(true);
+    const { container } = renderButton({ className: fakeClassName });
+    expect(
+      container
+        .querySelector('.badgeDefault')
+        ?.classList.contains(fakeClassName)
+    ).toBeTruthy;
   });
 
   it('trims the longer strings to three characters', () => {
-    const wrapper = renderButton(BadgedButton, {
-      badgeContent: 'abcd',
-      children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
-    });
-
-    const renderedBadge = wrapper.find('.badgeDefault');
-
-    expect(renderedBadge.text()).toBe('abc');
+    const { container } = renderButton({ badgeContent: 'abcd' });
+    expect(container.querySelector('.badgeDefault')?.textContent).toEqual(
+      'abc'
+    );
   });
 
   it('formats number greater than 99 to "99+"', () => {
-    const wrapper = renderButton(BadgedButton, {
-      badgeContent: 100,
-      children: <Button onClick={onClick}>{faker.lorem.words()}</Button>
-    });
-
-    const renderedBadge = wrapper.find('.badgeDefault');
-
-    expect(renderedBadge.text()).toBe('99+');
+    const { container } = renderButton({ badgeContent: 100 });
+    expect(container.querySelector('.badgeDefault')?.textContent).toEqual(
+      '99+'
+    );
   });
 });
