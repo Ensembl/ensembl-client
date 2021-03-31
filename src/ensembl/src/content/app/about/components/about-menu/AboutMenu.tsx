@@ -29,13 +29,9 @@ type Props = {
 };
 
 export const TopMenu = (props: Props) => {
-  const { menu } = props;
-
-  const menuItems = menu.items;
-
   return (
     <>
-      {menuItems.map((item, index) => {
+      {props.menu.items.map((item, index) => {
         const className = classNames(styles.topMenuLink, {
           [styles.activeLink]: hasItemWithUrl(item, props.currentUrl)
         });
@@ -79,13 +75,11 @@ export const SideMenu = (props: Props) => {
   );
 };
 
-const hasItemWithUrl = (menuItem: MenuItem, url: string) => {
-  if (menuItem.url && menuItem.url === url) {
+const hasItemWithUrl = (menuItem: MenuItem, url: string): boolean => {
+  if (menuItem.url === url) {
     return true;
   } else if (menuItem.type === 'collection' && menuItem.items.length) {
-    if (menuItem.items.some((item) => hasItemWithUrl(item, url))) {
-      return true;
-    }
+    return menuItem.items.some((item) => hasItemWithUrl(item, url));
   }
   return false;
 };

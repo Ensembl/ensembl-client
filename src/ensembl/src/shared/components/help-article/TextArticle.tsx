@@ -15,9 +15,10 @@
  */
 
 import React, { useRef, useEffect, RefObject } from 'react';
-import { TextArticle as TextArticleType } from 'src/shared/types/help-and-docs/article';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
+
+import { TextArticle as TextArticleType } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.scss';
 
