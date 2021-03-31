@@ -38,18 +38,18 @@ describe('BadgedButton', () => {
     jest.resetAllMocks();
   });
   it('renders the passed in button', () => {
-    const container = renderButton().container;
+    const { container } = renderButton();
     expect(container.querySelectorAll('.button')).toHaveLength(1);
   });
 
   it('assigns the "badgeDefault" class to the badge by default', () => {
-    const container = renderButton().container;
+    const { container } = renderButton();
     expect(container.querySelectorAll('.badgeDefault')).toHaveLength(1);
   });
 
   it('extends the badge class', () => {
     const fakeClassName = faker.lorem.word();
-    const container = renderButton({ className: fakeClassName }).container;
+    const { container } = renderButton({ className: fakeClassName });
     expect(
       container
         .querySelector('.badgeDefault')
@@ -58,14 +58,14 @@ describe('BadgedButton', () => {
   });
 
   it('trims the longer strings to three characters', () => {
-    const container = renderButton({ badgeContent: 'abcd' }).container;
+    const { container } = renderButton({ badgeContent: 'abcd' });
     expect(container.querySelector('.badgeDefault')?.textContent).toEqual(
       'abc'
     );
   });
 
   it('formats number greater than 99 to "99+"', () => {
-    const container = renderButton({ badgeContent: 100 }).container;
+    const { container } = renderButton({ badgeContent: 100 });
     expect(container.querySelector('.badgeDefault')?.textContent).toEqual(
       '99+'
     );

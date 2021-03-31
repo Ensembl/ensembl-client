@@ -72,8 +72,7 @@ describe('Upload', () => {
     });
 
     it('disables multiple file selection if allowMultiple is set to false', () => {
-      const container = renderUpload({ ...defaultProps, allowMultiple: false })
-        .container;
+      const container = renderUpload({ allowMultiple: false }).container;
       expect(
         container.querySelector('input')?.getAttribute('multiple')
       ).toBeFalsy();

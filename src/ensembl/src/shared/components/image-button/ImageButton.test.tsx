@@ -145,7 +145,7 @@ describe('<ImageButton />', () => {
 
       const tooltip = container.querySelectorAll('.tooltip');
       expect(tooltip).toHaveLength(1);
-      expect(tooltip[0].innerHTML).toBe(description);
+      expect(tooltip[0].textContent).toBe(description);
     });
 
     it('does not show tooltip if clicked', () => {
