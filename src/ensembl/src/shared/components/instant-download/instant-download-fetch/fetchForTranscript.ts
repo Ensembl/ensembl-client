@@ -25,10 +25,12 @@ import {
 } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 import {
   fetchTranscriptSequenceMetadata,
+  fetchGeneWithoutTranscriptsSequenceMetadata,
   TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
-import {
+// @ts-expect-error There is in fact no default export in the worker
+import SequenceFetcherWorker, {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
@@ -59,18 +61,21 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId
   });
   const sequenceDownloadParams = prepareDownloadParameters({
-    transcriptId,
     transcriptSequenceData,
     options: transcriptOptions
   });
 
   if (geneOptions.genomicSequence) {
-    sequenceDownloadParams.push(getGenomicSequenceData(geneId));
+    const metadata = await fetchGeneWithoutTranscriptsSequenceMetadata({
+      genomeId,
+      geneId
+    });
+    sequenceDownloadParams.unshift(
+      getGenomicSequenceData(metadata.stable_id, metadata.unversioned_stable_id)
+    );
   }
 
-  const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
-    type: 'module'
-  });
+  const worker = new SequenceFetcherWorker();
 
   const service = wrap<WorkerApi>(worker);
 
@@ -84,7 +89,6 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
 };
 
 type PrepareDownloadParametersParams = {
-  transcriptId: string;
   transcriptSequenceData: TranscriptSequenceMetadata;
   options: Partial<TranscriptOptions>;
 };
@@ -92,27 +96,38 @@ type PrepareDownloadParametersParams = {
 // map of field names received from component to field names returned when fetching checksums
 const labelTypeToSequenceType: Record<
   TranscriptOption,
-  keyof TranscriptSequenceMetadata | 'genomic'
+  | keyof Omit<
+      TranscriptSequenceMetadata,
+      'stable_id' | 'unversioned_stable_id'
+    >
+  | 'genomic'
 > = {
   genomicSequence: 'genomic',
-  proteinSequence: 'protein',
   cdna: 'cdna',
-  cds: 'cds'
+  cds: 'cds',
+  proteinSequence: 'protein'
 };
 
-const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
-  return transcriptOptionsOrder
+export const prepareDownloadParameters = (
+  params: PrepareDownloadParametersParams
+) =>
+  transcriptOptionsOrder
     .filter((option) => params.options[option])
-    .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'protein', 'cdna', 'cds'
+    .map((option) => labelTypeToSequenceType[option]) // 'genomic', 'cdna', 'cds', 'protein'
     .map((option) => {
       if (option === 'genomic') {
-        return getGenomicSequenceData(params.transcriptId);
+        return getGenomicSequenceData(
+          params.transcriptSequenceData.stable_id,
+          params.transcriptSequenceData.unversioned_stable_id
+        );
       } else {
         const dataForSingleSequence = params.transcriptSequenceData[option];
+
         if (!dataForSingleSequence) {
           // shouldn't happen; but to keep typescript happy
           return null;
         }
+
         return {
           label: dataForSingleSequence.label,
           url: `/api/refget/sequence/${dataForSingleSequence.checksum}?accept=text/plain`
@@ -120,11 +135,11 @@ const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
       }
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
-};
 
-const getGenomicSequenceData = (id: string) => {
-  return {
-    label: `${id} genomic`,
-    url: `https://rest.ensembl.org/sequence/id/${id}?content-type=text/plain&type=genomic`
-  };
-};
+export const getGenomicSequenceData = (
+  versionedStableId: string,
+  unversionedStableId: string
+) => ({
+  label: `${versionedStableId} genomic`,
+  url: `https://rest.ensembl.org/sequence/id/${unversionedStableId}?content-type=text/plain&type=genomic`
+});

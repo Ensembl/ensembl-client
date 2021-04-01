@@ -27,7 +27,8 @@ import {
   TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
-import {
+// @ts-expect-error There is in fact no default export in the worker
+import SequenceFetcherWorker, {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
@@ -50,9 +51,7 @@ export const fetchForProtein = async (payload: FetchPayload) => {
     options
   });
 
-  const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
-    type: 'module'
-  });
+  const worker = new SequenceFetcherWorker();
 
   const service = wrap<WorkerApi>(worker);
 
@@ -68,6 +67,15 @@ export const fetchForProtein = async (payload: FetchPayload) => {
 type PrepareDownloadParametersParams = {
   transcriptSequenceData: TranscriptSequenceMetadata;
   options: ProteinOptions;
+};
+
+// map of field names received from component to field names returned when fetching checksums
+const labelTypeToSequenceType: Record<
+  ProteinOption,
+  keyof Omit<TranscriptSequenceMetadata, 'stable_id' | 'unversioned_stable_id'>
+> = {
+  proteinSequence: 'protein',
+  cds: 'cds'
 };
 
 const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
@@ -87,13 +95,4 @@ const prepareDownloadParameters = (params: PrepareDownloadParametersParams) => {
       };
     })
     .filter(Boolean) as SingleSequenceFetchParams[];
-};
-
-// map of field names received from component to field names returned when fetching checksums
-const labelTypeToSequenceType: Record<
-  ProteinOption,
-  keyof TranscriptSequenceMetadata
-> = {
-  proteinSequence: 'protein',
-  cds: 'cds'
 };

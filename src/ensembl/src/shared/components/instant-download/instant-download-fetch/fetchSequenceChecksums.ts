@@ -19,6 +19,8 @@ import { gql } from '@apollo/client';
 import { client } from 'src/gql-client';
 
 export type TranscriptSequenceMetadata = {
+  stable_id: string;
+  unversioned_stable_id: string;
   cdna?: {
     checksum: string;
     label: string;
@@ -33,26 +35,56 @@ export type TranscriptSequenceMetadata = {
   };
 };
 
+export type GeneSequenceMetadata = {
+  stable_id: string;
+  unversioned_stable_id: string;
+  transcripts: TranscriptSequenceMetadata[];
+};
+
+type TranscriptInResponse = {
+  stable_id: string; // for apollo client caching
+  unversioned_stable_id: string;
+  product_generating_contexts: Array<{
+    cdna: {
+      sequence_checksum: string;
+    };
+    cds: {
+      sequence_checksum: string;
+    };
+    product: {
+      stable_id: string;
+      sequence_checksum: string;
+    };
+  }>;
+};
+
 type TranscriptQueryResult = {
-  transcript: {
-    product_generating_contexts: Array<{
-      cdna: {
-        sequence_checksum: string;
-      };
-      cds: {
-        sequence_checksum: string;
-      };
-      product: {
-        stable_id: string;
-        sequence_checksum: string;
-      };
-    }>;
+  transcript: TranscriptInResponse;
+};
+
+type GeneQueryResult = {
+  gene: {
+    stable_id: string;
+    unversioned_stable_id: string;
+    transcripts: TranscriptInResponse[];
   };
+};
+
+type TranscriptQueryVariables = {
+  genomeId: string;
+  transcriptId: string;
+};
+
+type GeneQueryVariables = {
+  genomeId: string;
+  geneId: string;
 };
 
 const transcriptChecksumsQuery = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {
     transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      stable_id
+      unversioned_stable_id
       product_generating_contexts {
         cds {
           sequence_checksum
@@ -69,42 +101,107 @@ const transcriptChecksumsQuery = gql`
   }
 `;
 
-type Variables = {
-  genomeId: string;
-  transcriptId: string;
+const onlyGeneQuery = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      unversioned_stable_id
+    }
+  }
+`;
+
+const geneChecksumsQuery = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      unversioned_stable_id
+      transcripts {
+        stable_id
+        unversioned_stable_id
+        product_generating_contexts {
+          cds {
+            sequence_checksum
+          }
+          cdna {
+            sequence_checksum
+          }
+          product {
+            stable_id
+            sequence_checksum
+          }
+        }
+      }
+    }
+  }
+`;
+
+const processTranscriptData = (transcript: TranscriptInResponse) => {
+  // TODO: expect to fetch genomic sequence here as well when checksum becomes available
+  const { stable_id, unversioned_stable_id } = transcript; // can't retrieve transcript seq via REST using stable_id
+  const productGeneratingContext = transcript.product_generating_contexts[0];
+
+  if (!productGeneratingContext) {
+    return {
+      stable_id,
+      unversioned_stable_id
+    };
+  }
+
+  return {
+    stable_id,
+    unversioned_stable_id,
+    cdna: {
+      checksum: productGeneratingContext.cdna.sequence_checksum,
+      label: `${stable_id} cdna`
+    },
+    cds: {
+      checksum: productGeneratingContext.cds.sequence_checksum,
+      label: `${stable_id} cds`
+    },
+    protein: {
+      checksum: productGeneratingContext.product.sequence_checksum,
+      label: `${productGeneratingContext.product.stable_id} pep`
+    }
+  };
 };
 
 export const fetchTranscriptSequenceMetadata = (
-  variables: Variables
-): Promise<TranscriptSequenceMetadata> => {
-  const { transcriptId } = variables;
-
-  return client
+  variables: TranscriptQueryVariables
+): Promise<TranscriptSequenceMetadata> =>
+  client
     .query<TranscriptQueryResult>({
       query: transcriptChecksumsQuery,
       variables
     })
-    .then(({ data }) => {
-      // TODO: expect to fetch genomic sequence here as well when checksum becomes available
-      const productGeneratingContext =
-        data.transcript.product_generating_contexts[0];
-      if (!productGeneratingContext) {
-        return {};
-      }
+    .then(({ data }) => processTranscriptData(data.transcript));
 
-      return {
-        cdna: {
-          checksum: productGeneratingContext.cdna.sequence_checksum,
-          label: `${transcriptId} cdna`
-        },
-        cds: {
-          checksum: productGeneratingContext.cds.sequence_checksum,
-          label: `${transcriptId} cds`
-        },
-        protein: {
-          checksum: productGeneratingContext.product.sequence_checksum,
-          label: `${productGeneratingContext.product.stable_id} pep`
-        }
-      };
-    });
+type OnlyGeneSequenceMetadata = {
+  stable_id: string;
+  unversioned_stable_id: string;
 };
+// temporary function; will change it to fetch gene sequence checksum when available
+export const fetchGeneWithoutTranscriptsSequenceMetadata = (
+  variables: GeneQueryVariables
+): Promise<OnlyGeneSequenceMetadata> =>
+  client
+    .query<{ gene: OnlyGeneSequenceMetadata }>({
+      query: onlyGeneQuery,
+      variables
+    })
+    .then(({ data }) => data.gene);
+
+export const fetchGeneSequenceMetadata = (
+  variables: GeneQueryVariables
+): Promise<GeneSequenceMetadata> =>
+  client
+    .query<GeneQueryResult>({
+      query: geneChecksumsQuery,
+      variables
+    })
+    .then(({ data }) => ({
+      stable_id: data.gene.stable_id,
+      unversioned_stable_id: data.gene.unversioned_stable_id,
+      transcripts: data.gene.transcripts.map((transcript) =>
+        processTranscriptData(transcript)
+      )
+    }));

@@ -21,8 +21,8 @@ import faker from 'faker';
 import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
 
 const defaultProps: ExternalReferenceProps = {
-  label: faker.random.words(),
-  linkText: faker.random.words(),
+  label: faker.random.word(),
+  linkText: faker.random.word(),
   to: faker.internet.url(),
   classNames: {
     container: faker.random.word(),
@@ -66,9 +66,10 @@ describe('<ExternalReference />', () => {
     ).toBeTruthy();
 
     expect(
-      container.querySelector(
-        `.externalLinkcontainer .${defaultProps.classNames?.icon}`
-      )
+      container
+        .querySelector(`.externalLinkcontainer icon-mock`)
+        ?.getAttribute('classname')
+        ?.indexOf(defaultProps.classNames?.icon as string)
     ).toBeTruthy();
 
     expect(

@@ -93,7 +93,7 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
   cds: 'CDS'
 };
 
-const filterTranscriptOptions = (
+export const filterTranscriptOptions = (
   so_term: string
 ): Partial<TranscriptOptions> => {
   return so_term === 'protein_coding'

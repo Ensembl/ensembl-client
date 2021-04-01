@@ -1,4 +1,4 @@
-FROM node:10.15.1
+FROM node:14.16.0
 
 ARG SOURCE_DIR="./"
 
@@ -8,5 +8,6 @@ COPY ${SOURCE_DIR} /srv/ensembl-client/
 
 # NOTE: NODE_ENV=development before npm install ensures that dev dependencies won't get skipped
 RUN cd /srv/ensembl-client/ && \
-    NODE_ENV=development npm install && \
+    npm install --global npm@7.6.2 && \
+    npm ci && \
     npm run test

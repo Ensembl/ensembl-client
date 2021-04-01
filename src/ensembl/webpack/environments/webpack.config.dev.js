@@ -61,7 +61,7 @@ const devServerConfig = {
 // concatenate the common config with the dev config
 module.exports = () => ({
   mode: 'development',
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [
       // this is the loader that will make webpack load file formats that are not supported by other loaders

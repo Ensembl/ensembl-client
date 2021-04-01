@@ -27,10 +27,10 @@ export enum SidebarTabName {
 export enum SidebarModalView {
   SEARCH = 'search',
   BOOKMARKS = 'bookmarks',
-  DOWNLOADS = 'downloads'
+  DOWNLOADS = 'download'
 }
 
-export type SidebarStatus = Status.OPEN | Status.CLOSED;
+export type ToggleStatus = Status.OPEN | Status.CLOSED;
 
 export type EntityViewerSidebarState = Readonly<{
   [genomeId: string]: EntityViewerSidebarGenomeState;
@@ -43,7 +43,7 @@ export type EntityViewerSidebarUIState = {
 };
 
 export type EntityViewerSidebarGenomeState = Readonly<{
-  status: SidebarStatus;
+  status: ToggleStatus;
   selectedTabName: SidebarTabName;
   entities: {
     [entityId: string]: {

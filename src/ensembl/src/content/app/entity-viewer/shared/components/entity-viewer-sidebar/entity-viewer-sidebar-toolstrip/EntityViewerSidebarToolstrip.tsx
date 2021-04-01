@@ -69,7 +69,6 @@ export const EntityViewerSidebarToolstrip = () => {
         status={Status.DISABLED}
         description="Search"
         className={styles.sidebarIcon}
-        key="search"
         onClick={noop}
         image={searchIcon}
       />
@@ -90,11 +89,10 @@ export const EntityViewerSidebarToolstrip = () => {
         image={shareIcon}
       />
       <ImageButton
-        status={Status.DISABLED}
-        description="Downloads"
+        status={getViewIconStatus(SidebarModalView.DOWNLOADS)}
+        description="Download"
         className={styles.sidebarIcon}
-        key="downloads"
-        onClick={noop}
+        onClick={() => toggleModalView(SidebarModalView.DOWNLOADS)}
         image={downloadIcon}
       />
     </>
