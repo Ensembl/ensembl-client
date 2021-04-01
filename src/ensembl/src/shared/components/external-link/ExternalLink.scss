@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
-.container {
+.externalLinkcontainer {
   display: inline-grid;
-  grid-template-columns:  [icon] auto [nolink] auto [link] auto;
+  grid-template-columns:  [icon] auto [link] auto;
 }
 
 .icon {
@@ -17,15 +17,7 @@
 
 .link {
   display: inline-block;
-  grid-column: link;
   position: relative;
   top: -2px;
-  margin-left: 5px;
-}
-
-.noLink {
-  display: inline-block;
-  grid-column: nolink;
-  position: relative;
   margin-left: 5px;
 }

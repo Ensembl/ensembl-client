@@ -36,21 +36,16 @@ const ExternalLink = (props: ExternalLinkProps) => {
   const linkClass = classNames(styles.link, props.classNames?.link);
 
   return (
-    <span className={styles.container}>
-      {props.to && (
-        <>
-          <LinkIcon className={iconClass} />
-          <a
-            className={linkClass}
-            href={props.to}
-            target="_blank"
-            rel="nofollow noreferrer"
-          >
-            {props.linkText}
-          </a>
-        </>
-      )}
-      {!props.to && <span className={styles.noLink}>{props.linkText}</span>}
+    <span className={styles.externalLinkcontainer}>
+      <LinkIcon className={iconClass} />
+      <a
+        className={linkClass}
+        href={props.to}
+        target="_blank"
+        rel="nofollow noreferrer"
+      >
+        {props.linkText}
+      </a>
     </span>
   );
 };
