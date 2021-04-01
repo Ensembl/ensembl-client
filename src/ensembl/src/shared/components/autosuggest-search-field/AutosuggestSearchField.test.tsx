@@ -21,8 +21,6 @@ import faker from 'faker';
 import times from 'lodash/times';
 import random from 'lodash/random';
 
-import * as keyCodes from 'src/shared/constants/keyCodes';
-
 import AutosuggestSearchField from './AutosuggestSearchField';
 import { GroupOfMatchesType } from './AutosuggestionPanel';
 
@@ -130,8 +128,7 @@ describe('<AutosuggestSearchField />', () => {
         ) as HTMLInputElement;
 
         fireEvent.keyDown(searchField, {
-          key: 'ArrowDown',
-          keyCode: keyCodes.DOWN
+          key: 'ArrowDown'
         });
 
         const suggestedItems = container.querySelectorAll(
@@ -153,8 +150,7 @@ describe('<AutosuggestSearchField />', () => {
         ) as HTMLInputElement;
 
         fireEvent.keyDown(searchField, {
-          key: 'ArrowDown',
-          keyCode: keyCodes.UP
+          key: 'ArrowUp'
         });
 
         const suggestedItems = container.querySelectorAll(
@@ -247,8 +243,7 @@ describe('<AutosuggestSearchField />', () => {
 
         // highlight the first match, then submit
         fireEvent.keyDown(searchField, {
-          key: 'ArrowDown',
-          keyCode: keyCodes.DOWN
+          key: 'ArrowDown'
         });
         fireEvent.submit(searchField);
 

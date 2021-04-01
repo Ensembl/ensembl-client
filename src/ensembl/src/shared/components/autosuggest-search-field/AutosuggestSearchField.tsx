@@ -24,8 +24,6 @@ import AutosuggestionPanel, {
   MatchIndex
 } from './AutosuggestionPanel';
 
-import * as keyCodes from 'src/shared/constants/keyCodes';
-
 import styles from './AutosuggestSearchField.scss';
 
 type CommonProps = {
@@ -166,11 +164,11 @@ const AutosuggestSearchField = (props: Props) => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (![keyCodes.UP, keyCodes.DOWN].includes(event.keyCode)) return;
+    if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
 
     event.preventDefault();
 
-    if (event.keyCode === keyCodes.UP) {
+    if (event.key === 'ArrowUp') {
       setHighlightedItemIndex(
         getPreviousItemIndex(props, highlightedItemIndex)
       );
