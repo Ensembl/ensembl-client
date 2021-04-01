@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import ReactDOMServer from 'react-dom/server';
 
 import BasePairsRuler from './BasePairsRuler';
 
@@ -35,16 +34,13 @@ describe('<BasePairsRuler />', () => {
     });
 
     it('renders a <g> element (svg group) if not standalone', () => {
-      const stringifiedElement = ReactDOMServer.renderToString(
-        <BasePairsRuler {...defaultProps} />
+      const { getByTestId } = render(
+        <svg data-test-id="test wrapper">
+          <BasePairsRuler {...defaultProps} />
+        </svg>
       );
-      const parser = new DOMParser();
-      const parsedElement = parser.parseFromString(
-        stringifiedElement,
-        'image/svg+xml'
-      );
-
-      expect((parsedElement.firstChild as Element).tagName).toBe('g');
+      const wrapper = getByTestId('test wrapper');
+      expect((wrapper.firstChild as Element).tagName).toBe('g');
     });
   });
 
