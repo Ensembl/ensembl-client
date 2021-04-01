@@ -91,7 +91,7 @@ const Select = (props: SelectProps) => {
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keyup', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   const openPanel = () => {
