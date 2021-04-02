@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import useApiService from 'src/shared/hooks/useApiService';
-
-import { TextArticle, VideoArticle, SlugReference } from './types';
-
-const getQuery = (reference: SlugReference) => {
-  return `slug=${reference.slug}`;
+export type Menu = {
+  name: string;
+  items: MenuItem[];
 };
 
-export type Article = TextArticle | VideoArticle;
+export type MenuItem = MenuArticleItem | MenuCollectionItem;
 
-const useHelpArticle = (reference: SlugReference) => {
-  const query = getQuery(reference);
-  const url = `/api/docs/article?${query}`;
-
-  const { data: article, loadingState } = useApiService<Article>({
-    endpoint: url
-  });
-
-  return {
-    loadingState,
-    article
-  };
+type MenuCollectionItem = {
+  name: string;
+  type: 'collection';
+  url?: string; // if a menu directory has an index page associated with it
+  items: MenuItem[];
 };
 
-export default useHelpArticle;
+type MenuArticleItem = {
+  name: string;
+  type: 'article' | 'video';
+  url: string;
+};

@@ -1,0 +1,43 @@
+@import 'src/styles/common';
+@import 'src/shared/components/help-article/helpArticleConstants';
+
+$article-right-padding: 1.5rem;
+
+.appBar {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  padding: 0 44px;
+}
+
+.topMenuBar {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 44px;
+  background: $light-grey;
+  box-shadow: 0 2px 3px $grey;
+}
+
+.main {
+  height: 100%;
+  display: grid;
+  grid-template-columns: [article] calc(440px + #{$article-right-padding}) [aside] minmax(200px, 300px);
+  grid-column-gap: 10rem;
+  padding-left: 80px;
+  padding-top: 44px;
+
+  article {
+    grid-column: article;
+  }
+  
+  aside {
+    display: flex;
+    flex-direction: column;
+    grid-column: aside;
+  }
+
+  .asideTitle {
+    margin-bottom: $aside-title-margin-bottom;
+  }
+}
