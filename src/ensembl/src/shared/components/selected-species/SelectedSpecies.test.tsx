@@ -27,7 +27,7 @@ import SelectedSpecies, {
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 const speciesData = {
-  genome_id: faker.random.uuid(),
+  genome_id: faker.datatype.uuid(),
   reference_genome_id: null,
   common_name: 'Human',
   scientific_name: 'Homo sapiens',

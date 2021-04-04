@@ -28,7 +28,7 @@ import CheckboxGrid, {
 const createCheckboxData = (options: CheckboxGridOption[]) => {
   const id = faker.lorem.word();
   const label = faker.lorem.word();
-  const isChecked = faker.random.boolean();
+  const isChecked = faker.datatype.boolean();
 
   options.push({
     id,

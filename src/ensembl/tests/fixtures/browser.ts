@@ -1,3 +1,19 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import faker from 'faker';
 
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
@@ -9,14 +25,14 @@ import {
 } from 'src/content/app/browser/browserHelper';
 
 export const createCogTrackList = (): CogList => ({
-  'track:contig': faker.random.number(),
-  'track:gc': faker.random.number(),
-  'track:gene-feat': faker.random.number(),
-  'track:gene-other-fwd': faker.random.number(),
-  'track:gene-other-rev': faker.random.number(),
-  'track:gene-pc-fwd': faker.random.number(),
-  'track:gene-pc-rev': faker.random.number(),
-  'track:variant': faker.random.number()
+  'track:contig': faker.datatype.number(),
+  'track:gc': faker.datatype.number(),
+  'track:gene-feat': faker.datatype.number(),
+  'track:gene-other-fwd': faker.datatype.number(),
+  'track:gene-other-rev': faker.datatype.number(),
+  'track:gene-pc-fwd': faker.datatype.number(),
+  'track:gene-pc-rev': faker.datatype.number(),
+  'track:variant': faker.datatype.number()
 });
 
 export const createTrackConfigLabel = () => ({
@@ -59,7 +75,7 @@ export const createZmenuContent = () => [
 ];
 
 export const createRegionValidationInfo = (): RegionValidationResponse => {
-  const randomValue = faker.random.number();
+  const randomValue = faker.datatype.number();
 
   return {
     end: {
@@ -86,7 +102,7 @@ export const createRegionValidationInfo = (): RegionValidationResponse => {
       error_code: null,
       error_message: null,
       is_valid: true,
-      value: randomValue + faker.random.number()
+      value: randomValue + faker.datatype.number()
     }
   };
 };
@@ -108,8 +124,8 @@ export const createRegionValidationMessages = (): RegionValidationMessages => ({
 export const createChrLocationValues = () => {
   const tupleValue: ChrLocation = [
     faker.lorem.words(),
-    faker.random.number(),
-    faker.random.number()
+    faker.datatype.number(),
+    faker.datatype.number()
   ];
   const stringValue = getChrLocationStr(tupleValue);
 

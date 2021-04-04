@@ -47,7 +47,7 @@ export const createTranscript = (
 ): ProteinCodingTranscript => {
   const transcriptSlice = createSlice();
 
-  const unversionedStableId = faker.random.uuid();
+  const unversionedStableId = faker.datatype.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
 
@@ -76,17 +76,17 @@ export const createTranscript = (
 };
 
 const createExternalReferences = (): ExternalReference[] => {
-  const numberOfExternalReferences = faker.random.number({ min: 1, max: 10 });
+  const numberOfExternalReferences = faker.datatype.number({ min: 1, max: 10 });
 
   return times(numberOfExternalReferences, () => {
     return {
-      accession_id: faker.random.uuid(),
+      accession_id: faker.datatype.uuid(),
       name: faker.random.words(),
       description: faker.random.words(),
       url: faker.internet.url(),
       source: {
         name: faker.random.words(),
-        id: faker.random.uuid(),
+        id: faker.datatype.uuid(),
         url: faker.internet.url()
       }
     };
@@ -136,7 +136,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
   });
   const length = transcriptEnd - transcriptStart + 1;
 
-  const numberOfExons = faker.random.number({ min: 1, max: 10 });
+  const numberOfExons = faker.datatype.number({ min: 1, max: 10 });
   const maxExonLength = Math.floor(length / numberOfExons);
 
   return times(numberOfExons, (index: number) => {
@@ -144,11 +144,11 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
     const maxCoordinate = minCoordinate + maxExonLength;
     const middleCoordinate =
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
-    const exonStart = faker.random.number({
+    const exonStart = faker.datatype.number({
       min: minCoordinate,
       max: middleCoordinate
     });
-    const exonEnd = faker.random.number({
+    const exonEnd = faker.datatype.number({
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
@@ -166,7 +166,7 @@ const createExons = (transcriptSlice: Slice): Exon[] => {
     };
 
     return {
-      stable_id: faker.random.uuid(),
+      stable_id: faker.datatype.uuid(),
       slice
     };
   });
