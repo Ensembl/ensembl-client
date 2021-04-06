@@ -67,14 +67,14 @@ describe('<ExternalReference />', () => {
 
     expect(
       container
-        .querySelector(`.externalLinkcontainer icon-mock`)
+        .querySelector(`.externalLinkContainer icon-mock`)
         ?.getAttribute('classname')
         ?.indexOf(defaultProps.classNames?.icon as string)
     ).toBeTruthy();
 
     expect(
       container.querySelector(
-        `.externalLinkcontainer .${defaultProps.classNames?.link}`
+        `.externalLinkContainer .${defaultProps.classNames?.link}`
       )
     ).toBeTruthy();
   });
@@ -82,8 +82,12 @@ describe('<ExternalReference />', () => {
   it('does not display ExternalLink component when there is no link', () => {
     const { container } = renderExternalReference({ to: undefined });
 
-    expect(container.querySelector(`.externalLinkcontainer`)).toBeFalsy();
+    expect(container.querySelector(`.externalLinkContainer`)).toBeFalsy();
 
     expect(container.querySelector(`.noLink`)).toBeTruthy();
+
+    expect(container.querySelector(`.noLink`)?.textContent).toBe(
+      defaultProps.linkText
+    );
   });
 });
