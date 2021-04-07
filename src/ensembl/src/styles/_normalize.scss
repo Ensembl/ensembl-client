@@ -62,15 +62,8 @@ select {
   border-radius: $global-radius;
 }
 
-// Styles Google Maps and MapQuest embeds properly
-// sass-lint:disable-line no-ids
-.map_canvas,
-.mqa-display {
-  img,
-  embed,
-  object {
-    max-width: none !important;
-  }
+ul {
+  margin: 0;
 }
 
 // Reset <button> styles created by most browsers
