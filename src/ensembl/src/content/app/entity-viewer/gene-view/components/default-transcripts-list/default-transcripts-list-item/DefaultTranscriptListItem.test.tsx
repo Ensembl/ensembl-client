@@ -30,12 +30,12 @@ import {
 } from 'tests/fixtures/entity-viewer/gene';
 
 jest.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
-  <div className="transcriptsListItemInfo">TranscriptsListItemInfo</div>
+  <div data-test-id="transcriptsListItemInfo">TranscriptsListItemInfo</div>
 ));
 
 jest.mock(
   'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript',
-  () => () => <div className="unsplicedTranscript">UnsplicedTranscript</div>
+  () => () => <div data-test-id="unsplicedTranscript">UnsplicedTranscript</div>
 );
 
 const toggleTranscriptInfo = jest.fn();
@@ -58,8 +58,8 @@ describe('<DefaultTranscriptListItem />', () => {
     render(<DefaultTranscriptListItem {...defaultProps} {...props} />);
 
   it('displays unspliced transcript', () => {
-    const { container } = renderComponent();
-    expect(container.querySelector('.unsplicedTranscript')).toBeTruthy();
+    const { queryByTestId } = renderComponent();
+    expect(queryByTestId('unsplicedTranscript')).toBeTruthy();
   });
 
   it('toggles transcript item info onClick', () => {
@@ -77,15 +77,15 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   it('hides transcript info by default', () => {
-    const { container } = renderComponent();
+    const { queryByTestId } = renderComponent();
 
-    expect(container.querySelector('.transcriptsListItemInfo')).toBeFalsy();
+    expect(queryByTestId('transcriptsListItemInfo')).toBeFalsy();
   });
 
   it('displays transcript info if expandTranscript is true', () => {
-    const { container } = renderComponent({ expandTranscript: true });
+    const { queryByTestId } = renderComponent({ expandTranscript: true });
 
-    expect(container.querySelector('.transcriptsListItemInfo')).toBeTruthy();
+    expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });
 
   it('displays selected transcript', () => {

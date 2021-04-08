@@ -23,7 +23,7 @@ import Zmenu, { ZmenuProps } from './Zmenu';
 import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuContent', () => () => (
-  <div className="zmenuContent">ZmenuContent</div>
+  <div data-test-id="zmenuContent">ZmenuContent</div>
 ));
 jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
@@ -50,8 +50,8 @@ describe('<Zmenu />', () => {
 
   describe('rendering', () => {
     test('renders zmenu content', () => {
-      const { container } = render(<Zmenu {...defaultProps} />);
-      expect(container.querySelector('.zmenuContent')).toBeTruthy();
+      const { queryByTestId } = render(<Zmenu {...defaultProps} />);
+      expect(queryByTestId('zmenuContent')).toBeTruthy();
     });
   });
 });

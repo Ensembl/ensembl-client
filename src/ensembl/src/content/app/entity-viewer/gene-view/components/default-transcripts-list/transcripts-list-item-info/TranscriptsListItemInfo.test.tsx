@@ -28,12 +28,14 @@ import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
-  <div className="viewInApp">ViewInApp</div>
+  <div data-test-id="viewInApp">ViewInApp</div>
 ));
 
 jest.mock('src/shared/components/instant-download', () => ({
   InstantDownloadTranscript: () => (
-    <div className="instantDownloadTranscript">InstantDownloadTranscript</div>
+    <div data-test-id="instantDownloadTranscript">
+      InstantDownloadTranscript
+    </div>
   )
 }));
 
@@ -73,20 +75,20 @@ describe('<TranscriptsListItemInfo /', () => {
   });
 
   it('renders ViewInApp component', () => {
-    const { container } = renderComponent();
-    expect(container.querySelector('.viewInApp')).toBeTruthy();
+    const { queryByTestId } = renderComponent();
+    expect(queryByTestId('viewInApp')).toBeTruthy();
   });
 
   it('hides Download component by default', () => {
-    const { container } = renderComponent();
-    expect(container.querySelector('.instantDownloadTranscript')).toBeFalsy();
+    const { queryByTestId } = renderComponent();
+    expect(queryByTestId('instantDownloadTranscript')).toBeFalsy();
   });
 
   it('shows Download component if expandDownload is true', () => {
-    const { container } = renderComponent({
+    const { queryByTestId } = renderComponent({
       expandDownload: true
     });
-    expect(container.querySelector('.instantDownloadTranscript')).toBeTruthy();
+    expect(queryByTestId('instantDownloadTranscript')).toBeTruthy();
   });
 
   it('calls correct callback when protein link is clicked', () => {
