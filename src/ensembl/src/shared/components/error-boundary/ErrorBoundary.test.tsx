@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import noop from 'lodash/noop';
 
 import errorService from 'src/services/error-service';
 
@@ -44,12 +43,12 @@ describe('<ErrorBoundary />', () => {
     e.preventDefault();
   });
 
-  beforeEach(() => {
-    jest.spyOn(errorService, 'report').mockImplementation(noop);
+  beforeAll(() => {
+    errorService.report = jest.fn();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders children components if they render normally', () => {
