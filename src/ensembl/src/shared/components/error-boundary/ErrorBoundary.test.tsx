@@ -34,8 +34,6 @@ const Fallback = ({ error }: { error: Error }) => (
   </span>
 );
 
-jest.spyOn(errorService, 'report');
-
 describe('<ErrorBoundary />', () => {
   // suppress error messages from React and jsdom
   // (see https://github.com/facebook/react/pull/13384)
