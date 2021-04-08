@@ -607,7 +607,7 @@ const buildIndividualStat = (
     preLabel,
     label: label || primaryKey,
     primaryValue,
-    primaryUnit: primaryUnit,
+    primaryUnit,
     helpText
   };
 };
