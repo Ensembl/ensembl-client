@@ -44,7 +44,7 @@ const ExternalReference = (props: ExternalReferenceProps) => {
   const labelClass = classNames(styles.label, props.classNames?.label);
 
   return (
-    <div {...containerProps}>
+    <div {...containerProps} data-test-id="external reference container">
       {!!props.label && <span className={labelClass}>{props.label}</span>}
       {props.to ? (
         <ExternalLink

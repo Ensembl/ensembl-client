@@ -14,91 +14,154 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef, ReactNode } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+  MutableRefObject
+} from 'react';
 import classNames from 'classnames';
 
-import useHelpArticle, {
-  emptyRelatedItems,
-  CurrentArticle,
-  CurrentVideo,
-  CurrentItem,
-  RelatedItems as RelatedItemsType,
-  ArticleReference,
-  VideoReference
-} from './useHelpArticle';
-import useResizeObserver from 'src/shared/hooks/useResizeObserver.ts';
+import HelpPopupHistory from './helpPopupHistory';
+
+import useHelpArticle, { Article as ArticleType } from './useHelpArticle';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
+import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
+import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
 
+import { LoadingState } from 'src/shared/types/loading-state';
 import {
   RelatedArticle,
-  HelpVideo,
-  SlugReference,
-  PathReference
+  TextArticle,
+  VideoArticle,
+  SlugReference
 } from './types';
 
 import styles from './HelpPopupBody.scss';
 
-type Props = SlugReference | PathReference;
+type Props = SlugReference;
 
 const HelpPopupBody = (props: Props) => {
-  const [currentReference, setCurrentReference] = useState<
-    ArticleReference | VideoReference
-  >(createArticleReference(props));
-  const { currentHelpItem, relatedHelpItems } = useHelpArticle(
-    currentReference
+  const [currentReference, setCurrentReference] = useState<SlugReference>(
+    props
   );
+  const { article, loadingState } = useHelpArticle(currentReference);
+  const historyRef = useRef<HelpPopupHistory | null>(null);
 
-  const onRelatedItemClick = (reference: ArticleReference | VideoReference) => {
+  useEffect(() => {
+    historyRef.current = new HelpPopupHistory(currentReference);
+  }, []);
+
+  const onRelatedItemClick = (reference: SlugReference) => {
+    historyRef.current?.add(reference);
     setCurrentReference(reference);
   };
 
-  if (currentHelpItem?.type === 'article') {
+  const onHistoryBack = () => {
+    const prevReference = historyRef.current?.getPrevious();
+    if (prevReference) {
+      setCurrentReference(prevReference);
+    }
+  };
+
+  const onHistoryForward = () => {
+    const nextReference = historyRef.current?.getNext();
+    if (nextReference) {
+      setCurrentReference(nextReference);
+    }
+  };
+
+  const historyButtons = (
+    <HistoryButtons
+      historyRef={historyRef}
+      onHistoryBack={onHistoryBack}
+      onHistoryForward={onHistoryForward}
+    />
+  );
+
+  if (loadingState === LoadingState.LOADING) {
     return (
-      <Grid type="article">
-        <Article article={currentHelpItem} />
-        <RelatedItems
-          currentItem={currentHelpItem}
-          items={relatedHelpItems || emptyRelatedItems}
-          onItemClick={onRelatedItemClick}
-        />
-      </Grid>
+      <>
+        <div className={styles.spinnerContainer}>
+          <CircleLoader />
+        </div>
+        {historyButtons}
+      </>
     );
-  } else if (currentHelpItem?.type === 'video') {
+  }
+
+  if (article) {
     return (
-      <Grid type="video">
-        <Video video={currentHelpItem} />
-        <RelatedItems
-          currentItem={currentHelpItem}
-          items={relatedHelpItems || emptyRelatedItems}
-          onItemClick={onRelatedItemClick}
-        />
-      </Grid>
+      <>
+        <Grid type={article.type}>
+          {article.type === 'article' ? (
+            <Article article={article} />
+          ) : (
+            <Video video={article} />
+          )}
+          {article.related_articles.length > 0 && (
+            <RelatedItems
+              items={article.related_articles}
+              onItemClick={onRelatedItemClick}
+            />
+          )}
+        </Grid>
+        {historyButtons}
+      </>
     );
   } else {
-    return (
-      <div className={styles.spinnerContainer}>
-        <CircleLoader />
-      </div>
-    );
+    return null;
   }
 };
 
 type GridProps = {
-  type: CurrentItem['type'];
+  type: ArticleType['type'];
   children: ReactNode;
 };
-
 const Grid = (props: GridProps) => {
   const gridClass = classNames(styles.grid, styles[`grid_${props.type}`]);
 
   return <div className={gridClass}>{props.children}</div>;
 };
 
+type HistoryButtonsProps = {
+  historyRef: MutableRefObject<HelpPopupHistory | null>;
+  onHistoryBack: () => void;
+  onHistoryForward: () => void;
+};
+const HistoryButtons = (props: HistoryButtonsProps) => {
+  const { historyRef, onHistoryBack, onHistoryForward } = props;
+  const historyForwardClasses = classNames(
+    styles.historyButton,
+    historyRef.current?.hasNext()
+      ? styles.historyButtonActive
+      : styles.historyButtonInactive
+  );
+  const historyBackClasses = classNames(
+    styles.historyButton,
+    historyRef.current?.hasPrevious()
+      ? styles.historyButtonActive
+      : styles.historyButtonInactive
+  );
+
+  return (
+    <div className={styles.historyButtons}>
+      <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
+      <ForwardIcon
+        className={historyForwardClasses}
+        onClick={onHistoryForward}
+      />
+    </div>
+  );
+};
+
 type ArticleProps = {
-  article: CurrentArticle;
+  article: TextArticle;
 };
 const Article = (props: ArticleProps) => {
   return (
@@ -109,13 +172,24 @@ const Article = (props: ArticleProps) => {
 };
 
 type VideoProps = {
-  video: CurrentVideo;
+  video: VideoArticle;
 };
 const Video = (props: VideoProps) => {
+  const [videoLoadingStatus, setVideoLoadingStatus] = useState(
+    LoadingState.LOADING
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useResizeObserver({
     ref: containerRef
   });
+
+  useEffect(() => {
+    setVideoLoadingStatus(LoadingState.LOADING);
+  }, [props.video.youtube_id]);
+
+  const onVideoLoaded = () => {
+    setVideoLoadingStatus(LoadingState.SUCCESS);
+  };
 
   // ensure that the video has a 16:9 aspect ratio
   // TODO: switch to pure CSS when the aspect-ratio rule gets better support (see https://caniuse.com/?search=aspect-ratio)
@@ -133,8 +207,14 @@ const Video = (props: VideoProps) => {
     <div ref={containerRef} className={styles.video}>
       {videoWidth && videoHeight && (
         <div className={styles.videoWrapper}>
+          {videoLoadingStatus === LoadingState.LOADING && (
+            <div className={styles.videoLoadingIndicator} style={videoStyle}>
+              <CircleLoader />
+            </div>
+          )}
           <iframe
             style={videoStyle}
+            onLoad={onVideoLoaded}
             src={`https://www.youtube.com/embed/${props.video.youtube_id}`}
             allowFullScreen
             frameBorder="0"
@@ -146,53 +226,31 @@ const Video = (props: VideoProps) => {
 };
 
 type RelatedItemsProps = {
-  items: RelatedItemsType;
-  currentItem: CurrentItem;
-  onItemClick: (reference: ArticleReference | VideoReference) => void;
+  items: ArticleType['related_articles'];
+  onItemClick: (reference: SlugReference) => void;
 };
 const RelatedItems = (props: RelatedItemsProps) => {
   const onArticleClick = (article: RelatedArticle) => {
-    props.onItemClick(createArticleReference({ path: article.path }));
+    props.onItemClick({ slug: article.slug });
   };
 
-  const onVideoClick = (video: HelpVideo) => {
-    props.onItemClick(createVideoReference(video.youtube_id));
-  };
-
-  const relatedArticles = props.items.articles.map((relatedArticle) => {
-    const elementClasses = classNames(styles.relatedArticle, {
-      [styles.relatedCurrent]:
-        props.currentItem.type === 'article' &&
-        props.currentItem.path === relatedArticle.path
-    });
+  const relatedArticles = props.items.map((relatedArticle) => {
+    const relatedItemClassName =
+      relatedArticle.type === 'article'
+        ? styles.relatedArticle
+        : styles.relatedVideo;
     return (
       <span
         key={relatedArticle.slug}
-        className={elementClasses}
+        className={relatedItemClassName}
         onClick={() => onArticleClick(relatedArticle)}
       >
+        {relatedArticle.type === 'video' && (
+          <span className={styles.relatedVideoIcon}>
+            <VideoIcon />
+          </span>
+        )}
         {relatedArticle.title}
-      </span>
-    );
-  });
-
-  const relatedVideoElements = props.items.videos.map((video) => {
-    const elementClasses = classNames(styles.relatedVideo, {
-      [styles.relatedCurrent]:
-        props.currentItem.type === 'video' &&
-        props.currentItem.youtube_id === video.youtube_id
-    });
-
-    return (
-      <span
-        key={video.youtube_id}
-        className={elementClasses}
-        onClick={() => onVideoClick(video)}
-      >
-        <span className={styles.relatedVideoIcon}>
-          <VideoIcon />
-        </span>
-        {video.title}
       </span>
     );
   });
@@ -200,28 +258,11 @@ const RelatedItems = (props: RelatedItemsProps) => {
   return (
     <aside className={styles.aside}>
       <>
-        <h2>Help with...</h2>
-        <div className={styles.relatedArticlesContainer}>
-          {relatedArticles}
-          {relatedVideoElements}
-        </div>
+        <h2>More help...</h2>
+        <div className={styles.relatedArticlesContainer}>{relatedArticles}</div>
       </>
     </aside>
   );
-};
-
-const createArticleReference = (reference: SlugReference | PathReference) => {
-  return {
-    type: 'article' as const,
-    reference
-  };
-};
-
-const createVideoReference = (youtubeId: string) => {
-  return {
-    type: 'video' as const,
-    youtube_id: youtubeId
-  };
 };
 
 const calculateVideoDimensions = (

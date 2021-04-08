@@ -29,14 +29,30 @@ const devServerConfig = {
     });
   },
 
-  // rules to proxy requests to the backend server in development
-  proxy: {
-    '/api': {
+  /**
+   * Rules to proxy requests to the backend server in development.
+   * The `context` field can be either a string or an array of strings for matching routes.
+   * If you want to match just a subgroup of urls within a namespace,
+   * you can add an exclusion rule to the array.
+   * Example: { context: ['/api/**', '!/api/docs/**'] }
+   * will match all routes in the `/api` namespace except for `/api/docs`.
+   *
+   * Notice that, according to the docs, the context array cannot contain a mix
+   * of string paths and wildcard paths.
+   * Valid examples:
+   *  - only string paths: { context: '/foo' }, { context: ['/foo', '/bar'] }
+   *  - only wildcard paths: { context: ['/api/**', '!/api/docs/**'] }
+   * Invalid example:
+   *  - mix of string and wildcard paths: { context: ['/api', '!/api/docs/**'] }
+   */
+  proxy: [
+    {
+      context: ['/api/**'],
       target: 'https://staging-2020.ensembl.org',
       changeOrigin: true,
       secure: false
     }
-  },
+  ],
 
   // fallback for the history API used by the react router when page is reloaded
   // this should prevent 404 errors that usually occur in SPA on reloads
@@ -61,7 +77,7 @@ const devServerConfig = {
 // concatenate the common config with the dev config
 module.exports = () => ({
   mode: 'development',
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [
       // this is the loader that will make webpack load file formats that are not supported by other loaders

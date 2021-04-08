@@ -61,6 +61,15 @@ $article-right-padding: 1.5rem; // area over which Macs (which hide their scroll
   }
 }
 
+.videoLoadingIndicator {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .aside {
   grid-column: aside;
   padding-left: $aside-left-padding;
@@ -109,5 +118,31 @@ $article-right-padding: 1.5rem; // area over which Macs (which hide their scroll
   svg {
     height: 80%;
     fill: white;
+  }
+}
+
+.historyButtons {
+  position: absolute;
+  top: 16px;
+  line-height: 0;
+  right: 70px;
+}
+
+.historyButton {
+  width: 18px;
+  height: 18px;
+  border-radius: 100%;
+
+  &:first-child {
+    margin-right: 1.4rem;
+  }
+
+  &Active {
+    fill: $blue;
+    cursor: pointer;
+  }
+
+  &Inactive {
+    fill: $grey;
   }
 }

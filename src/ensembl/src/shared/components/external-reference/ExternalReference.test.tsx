@@ -15,55 +15,67 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import faker from 'faker';
 
 import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
-import ExternalLink from '../external-link/ExternalLink';
 
 const defaultProps: ExternalReferenceProps = {
-  label: faker.random.words(),
-  linkText: faker.random.words(),
+  label: faker.random.word(),
+  linkText: faker.random.word(),
   to: faker.internet.url(),
   classNames: {
-    container: faker.random.words(),
-    label: faker.random.words(),
-    icon: faker.random.words(),
-    link: faker.random.words()
+    container: faker.random.word(),
+    label: faker.random.word(),
+    icon: faker.random.word(),
+    link: faker.random.word()
   }
 };
 
 describe('<ExternalReference />', () => {
   const renderExternalReference = (
     props: Partial<ExternalReferenceProps> = {}
-  ) => mount(<ExternalReference {...defaultProps} {...props} />);
+  ) => render(<ExternalReference {...defaultProps} {...props} />);
 
-  let wrapper: any;
+  let container: any;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    wrapper = renderExternalReference();
+    container = renderExternalReference().container;
   });
 
   it('renders without error', () => {
-    expect(() => wrapper).not.toThrow();
+    expect(() => container).not.toThrow();
   });
 
   it('hides label container div when there is no label', () => {
-    wrapper = renderExternalReference({ label: undefined });
-    expect(wrapper.find('.label')).toHaveLength(0);
+    container = renderExternalReference({ label: undefined }).container;
+    expect(container.querySelectorAll('.label')).toHaveLength(0);
   });
 
   it('applies the passed in classNames', () => {
     expect(
-      wrapper.render().hasClass(defaultProps.classNames?.container)
+      screen
+        .getByTestId('external reference container')
+        .classList.contains(defaultProps.classNames?.container as string)
     ).toBeTruthy();
+
     expect(
-      wrapper.find('.label').hasClass(defaultProps.classNames?.label)
+      container
+        .querySelector('.label')
+        .classList.contains(defaultProps.classNames?.label)
     ).toBeTruthy();
-    expect(wrapper.find(ExternalLink).prop('classNames')).toEqual({
-      icon: defaultProps.classNames?.icon,
-      link: defaultProps.classNames?.link
-    });
+
+    const externalLink = screen.getByTestId('external link container');
+    expect(
+      externalLink
+        .getElementsByTagName('icon-mock')[0]
+        .getAttribute('classname')
+    ).toMatch(defaultProps.classNames?.icon as string);
+    expect(
+      externalLink
+        .getElementsByTagName('a')[0]
+        .classList.contains(defaultProps.classNames?.link as string)
+    ).toBeTruthy();
   });
 });

@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+
 import faker from 'faker';
 
 import ExternalLink, { ExternalLinkProps } from './ExternalLink';
@@ -24,32 +25,27 @@ const defaultProps: ExternalLinkProps = {
   linkText: faker.random.words(),
   to: faker.internet.url(),
   classNames: {
-    icon: faker.random.words(),
-    link: faker.random.words()
+    icon: faker.random.word(),
+    link: faker.random.word()
   }
 };
 
 describe('<ExternalLink />', () => {
   const renderExternalLink = (props: Partial<ExternalLinkProps> = {}) =>
-    mount(<ExternalLink {...defaultProps} {...props} />);
-
-  let wrapper: any;
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-    wrapper = renderExternalLink();
-  });
+    render(<ExternalLink {...defaultProps} {...props} />);
 
   it('renders without error', () => {
-    expect(() => wrapper).not.toThrow();
+    const { container } = renderExternalLink();
+    expect(() => container).not.toThrow();
   });
 
   it('applies the passed in classNames', () => {
+    const { container } = renderExternalLink();
+    expect(container.getElementsByClassName('.icon')).toBeTruthy();
     expect(
-      wrapper.find('.icon').hasClass(defaultProps.classNames?.icon)
-    ).toBeTruthy();
-    expect(
-      wrapper.find('.link').hasClass(defaultProps.classNames?.link)
+      container
+        .querySelector('.link')
+        ?.classList.contains(defaultProps.classNames?.link as string)
     ).toBeTruthy();
   });
 });

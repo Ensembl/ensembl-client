@@ -14,28 +14,4 @@
  * limitations under the License.
  */
 
-import useApiService from 'src/shared/hooks/useApiService';
-
-import { TextArticle, VideoArticle, SlugReference } from './types';
-
-const getQuery = (reference: SlugReference) => {
-  return `slug=${reference.slug}`;
-};
-
-export type Article = TextArticle | VideoArticle;
-
-const useHelpArticle = (reference: SlugReference) => {
-  const query = getQuery(reference);
-  const url = `/api/docs/article?${query}`;
-
-  const { data: article, loadingState } = useApiService<Article>({
-    endpoint: url
-  });
-
-  return {
-    loadingState,
-    article
-  };
-};
-
-export default useHelpArticle;
+export { default as TextArticle } from './TextArticle';

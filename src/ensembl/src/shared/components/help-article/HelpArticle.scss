@@ -1,0 +1,41 @@
+@import 'src/styles/common';
+@import 'helpArticleConstants';
+
+.textArticle {
+
+  h1 {
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: $normal;
+    margin: 0 0 #{$heading-margin-bottom} -#{$heading-outdent};
+  }
+
+  h2 {
+    font-size: 13px;
+    margin-top: calc(2 * #{$line-height});
+    margin-bottom: $line-height;
+  }
+
+  p {
+    line-height: $line-height;
+    margin: $line-height 0;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  // Notice that the external-link svg has the same shape as in the static/img/shared folder
+  // But the version copied here has the fill color set inline, because it is being accessed as an external image via url
+  a[href^=http] {
+    &::before {
+      content: url('./external-link.svg');
+      display: inline-block;
+      margin: 0 0.125rem;
+      position: relative;
+      height: 10px;
+      width: 10px;
+    }
+  }
+}
+

@@ -21,11 +21,15 @@ import downloadAsFile from 'src/shared/helpers/downloadAsFile';
 import { TranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 import { fetchGeneSequenceMetadata } from './fetchSequenceChecksums';
 
-import { WorkerApi } from 'src/shared/workers/sequenceFetcher.worker';
 import {
   getGenomicSequenceData,
   prepareDownloadParameters
 } from './fetchForTranscript';
+
+// @ts-expect-error There is in fact no default export in the worker
+import SequenceFetcherWorker, {
+  WorkerApi
+} from 'src/shared/workers/sequenceFetcher.worker';
 
 type GeneOptions = {
   transcript: Partial<TranscriptOptions>;
@@ -69,9 +73,8 @@ export const fetchForGene = async (payload: FetchPayload) => {
     );
   }
 
-  const worker = new Worker('src/shared/workers/sequenceFetcher.worker', {
-    type: 'module'
-  });
+  const worker = new SequenceFetcherWorker();
+
   const service = wrap<WorkerApi>(worker);
   const sequences = await service.downloadSequences(sequenceDownloadParams);
 

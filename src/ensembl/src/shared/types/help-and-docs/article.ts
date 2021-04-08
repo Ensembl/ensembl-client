@@ -40,11 +40,3 @@ export type RelatedArticle = {
   url: string;
   type: ArticleType;
 };
-
-export type SlugReference = {
-  slug: string; // slug of the help article, e.g. "selecting-a-species"
-};
-
-export type UrlReference = {
-  url: string; // url of the article
-};
