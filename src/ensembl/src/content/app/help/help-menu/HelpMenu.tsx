@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
+import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
+
 import { Menu as MenuType, MenuItem } from 'src/shared/types/help-and-docs/menu';
 
 import styles from './HelpMenu.scss';
@@ -65,7 +67,7 @@ const Submenu = (props: SubmenuProps) => {
 
   useEffect(() => {
     setChildItems(null);
-  }, props.items);
+  }, [props.items]);
 
   const renderedMenuItems = props.items.map((item, index) => {
     const className = classNames(
@@ -80,6 +82,9 @@ const Submenu = (props: SubmenuProps) => {
     return (
       <li key={index} { ...props } className={className}>
         {item.name}
+        { item.type === 'collection' &&
+          <Chevron className={styles.chevron} />
+        }
       </li>
     );
   });
@@ -92,7 +97,9 @@ const Submenu = (props: SubmenuProps) => {
 
   return childItems
   ? <>
-      { renderedSubmenu}
+      <span className={styles.submenuItemName}>
+        { renderedSubmenu}
+      </span>
       <Submenu items={childItems}/>
     </>
   : renderedSubmenu;
