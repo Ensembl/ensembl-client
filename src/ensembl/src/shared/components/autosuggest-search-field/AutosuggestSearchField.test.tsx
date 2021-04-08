@@ -43,11 +43,17 @@ const generateGroupOfMatches = (numberOfMatches = 2, title?: string) => {
 };
 
 describe('<AutosuggestSearchField />', () => {
+  const search = faker.lorem.word();
   const onChange = jest.fn();
   const onSelect = jest.fn();
   const onSubmit = jest.fn();
-  const search = faker.lorem.word();
   const groupsOfMatches = times(2, () => generateGroupOfMatches());
+
+  const minimalProps = {
+    search,
+    onChange,
+    onSelect
+  };
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -56,12 +62,7 @@ describe('<AutosuggestSearchField />', () => {
   describe('appearance', () => {
     it('renders only search field if no matches have been found', () => {
       const { container } = render(
-        <AutosuggestSearchField
-          search={search}
-          onChange={onChange}
-          onSelect={onSelect}
-          matchGroups={[]}
-        />
+        <AutosuggestSearchField {...minimalProps} />
       );
 
       expect(container.querySelector('.searchField')).toBeTruthy();
@@ -72,9 +73,7 @@ describe('<AutosuggestSearchField />', () => {
     it('renders AutosuggestionPanel with matches if they are provided', () => {
       const { container } = render(
         <AutosuggestSearchField
-          search={search}
-          onChange={onChange}
-          onSelect={onSelect}
+          {...minimalProps}
           matchGroups={groupsOfMatches}
         />
       );
@@ -96,9 +95,7 @@ describe('<AutosuggestSearchField />', () => {
   describe('behaviour', () => {
     describe('general behavour', () => {
       const props = {
-        search,
-        onChange,
-        onSelect,
+        ...minimalProps,
         matchGroups: groupsOfMatches
       };
 
@@ -169,9 +166,7 @@ describe('<AutosuggestSearchField />', () => {
 
     describe('when raw input submission is not allowed', () => {
       const props = {
-        search,
-        onChange,
-        onSelect,
+        ...minimalProps,
         matchGroups: groupsOfMatches
       };
 
@@ -207,9 +202,7 @@ describe('<AutosuggestSearchField />', () => {
 
     describe('when raw input submission is allowed', () => {
       const props = {
-        search,
-        onChange,
-        onSelect,
+        ...minimalProps,
         matchGroups: groupsOfMatches,
         allowRawInputSubmission: true,
         onSubmit
@@ -256,10 +249,7 @@ describe('<AutosuggestSearchField />', () => {
 
     describe('when no matches are found', () => {
       const props = {
-        search,
-        onChange,
-        onSelect,
-        matchGroups: [],
+        ...minimalProps,
         notFound: true
       };
 
