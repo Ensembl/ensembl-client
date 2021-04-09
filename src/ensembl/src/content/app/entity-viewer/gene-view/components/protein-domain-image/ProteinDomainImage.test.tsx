@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import { createProduct } from 'tests/fixtures/entity-viewer/product';
 
@@ -35,40 +35,30 @@ const domainsByResourceGroups = getDomainsByResourceGroups(
 );
 
 describe('<ProteinDomainImage />', () => {
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(
+  const renderComponent = () =>
+    render(
       <ProteinDomainImage {...minimalProps} trackLength={product.length} />
     );
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
 
   it('renders the correct number of tracks', () => {
-    let totalDomains = 0;
+    const { container } = renderComponent();
+    const totalDomainGroupsCount = Object.values(
+      domainsByResourceGroups
+    ).flatMap((group) => Object.keys(group)).length;
 
-    Object.keys(domainsByResourceGroups).forEach((resourceGroupName) => {
-      totalDomains += Object.keys(domainsByResourceGroups[resourceGroupName])
-        .length;
-    });
-    expect(totalDomains).toBeTruthy();
-    expect(wrapper.find('svg').length).toBe(totalDomains);
+    expect(container.querySelectorAll('svg').length).toBe(
+      totalDomainGroupsCount
+    );
   });
 
-  it('renders the correct number of domains within the SVGs', () => {
-    const firstGroupKey = Object.keys(domainsByResourceGroups)[0];
+  it('renders the correct number of domains in an svg', () => {
+    const { container } = renderComponent();
+    const firstDomainsGroup = Object.values(
+      domainsByResourceGroups
+    ).flatMap((resource) => Object.values(resource))[0];
 
-    const firstGroupSubKey = Object.keys(
-      domainsByResourceGroups[firstGroupKey]
-    )[0];
-
-    const totalDomainsInFirstSvg =
-      domainsByResourceGroups[firstGroupKey][firstGroupSubKey].length;
-    expect(wrapper.find('svg').at(0).find('.domain').length).toBe(
-      totalDomainsInFirstSvg
-    );
+    expect(
+      container.querySelector('svg')?.querySelectorAll('.domain').length
+    ).toBe(firstDomainsGroup.length);
   });
 });

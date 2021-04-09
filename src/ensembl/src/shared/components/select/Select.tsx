@@ -18,7 +18,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 
 import { splitFromSelected } from './helpers/select-helpers';
-import * as keyCodes from 'src/shared/constants/keyCodes';
 
 import SelectOptionsPanel from './SelectOptionsPanel';
 import SelectArrowhead from './SelectArrowhead';
@@ -92,7 +91,7 @@ const Select = (props: SelectProps) => {
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keyup', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
   }, []);
 
   const openPanel = () => {
@@ -115,18 +114,13 @@ const Select = (props: SelectProps) => {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    if (
-      !(
-        focusRef.current &&
-        [keyCodes.ENTER, keyCodes.ESC].includes(event.keyCode)
-      )
-    ) {
+    if (!focusRef.current) {
       return;
     }
 
-    if (event.keyCode === keyCodes.ENTER) {
+    if (event.key === 'Enter') {
       openPanel();
-    } else if (event.keyCode === keyCodes.ESC) {
+    } else if (event.key === 'Escape') {
       closePanel();
     }
   };

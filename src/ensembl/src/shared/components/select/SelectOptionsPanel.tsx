@@ -33,8 +33,6 @@ import {
   scrollOptionIntoView
 } from './helpers/select-helpers';
 
-import * as keyCodes from 'src/shared/constants/keyCodes';
-
 import SelectArrowhead, {
   Direction as ArrowheadDirection
 } from './SelectArrowhead';
@@ -111,20 +109,20 @@ const SelectOptionsPanel = (props: Props) => {
   highlightedItemIndexRef.current = highlightedItemIndex;
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (![keyCodes.UP, keyCodes.DOWN, keyCodes.ENTER].includes(event.keyCode)) {
+    if (!['ArrowUp', 'ArrowDown', 'Enter'].includes(event.key)) {
       return;
     }
 
     event.preventDefault();
 
-    if (event.keyCode === keyCodes.UP) {
+    if (event.key === 'ArrowUp') {
       dispatch({
         type: HighlightActionType.PREVIOUS,
         payload: props.optionGroups
       });
-    } else if (event.keyCode === keyCodes.DOWN) {
+    } else if (event.key === 'ArrowDown') {
       dispatch({ type: HighlightActionType.NEXT, payload: props.optionGroups });
-    } else if (event.keyCode === keyCodes.ENTER) {
+    } else if (event.key === 'Enter') {
       highlightedItemIndexRef.current &&
         props.onSelect(highlightedItemIndexRef.current);
     }

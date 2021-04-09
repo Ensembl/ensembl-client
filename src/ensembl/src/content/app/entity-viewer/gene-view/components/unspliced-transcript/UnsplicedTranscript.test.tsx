@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
@@ -28,20 +28,29 @@ const minimalProps = {
 
 describe('<UnsplicedTranscript />', () => {
   it('renders inside an <svg> element if standalone', () => {
-    const wrapper = render(
+    const { container } = render(
       <UnsplicedTranscript {...minimalProps} standalone={true} />
     );
-    expect(wrapper.is('svg')).toBe(true);
+
+    expect((container.firstChild as HTMLElement).tagName).toBe('svg');
   });
 
   it('renders inside a <g> element (svg group) if not standalone', () => {
-    const wrapper = render(<UnsplicedTranscript {...minimalProps} />);
-    expect(wrapper.is('g')).toBe(true);
+    const { getByTestId } = render(
+      <svg data-test-id="test wrapper">
+        <UnsplicedTranscript {...minimalProps} />
+      </svg>
+    );
+
+    const svgWrapper = getByTestId('test wrapper');
+    expect((svgWrapper.firstChild as HTMLElement).tagName).toBe('g');
   });
 
   it('renders the correct number of exons', () => {
-    const wrapper = render(<UnsplicedTranscript {...minimalProps} />);
-    expect(wrapper.find('[data-test-id=exon]').length).toBe(
+    const { container } = render(
+      <UnsplicedTranscript {...minimalProps} standalone={true} />
+    );
+    expect(container.querySelectorAll('[data-test-id=exon]').length).toBe(
       minimalProps.transcript.spliced_exons.length
     );
   });

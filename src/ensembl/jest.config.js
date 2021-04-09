@@ -12,7 +12,6 @@ module.exports = {
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/tests/setup-jest.js'],
   setupFilesAfterEnv: [
-    '<rootDir>/tests/setup-enzyme.ts',
     '<rootDir>/tests/setup-rtl.ts'
   ],
   testEnvironment: 'jsdom',

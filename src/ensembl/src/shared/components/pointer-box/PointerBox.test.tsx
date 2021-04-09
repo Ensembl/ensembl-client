@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import PointerBox from './PointerBox';
@@ -29,17 +29,17 @@ describe('<PointerBox />', () => {
   });
 
   afterEach(() => {
-    document.querySelector('.pointerBox')?.remove();
+    document.body.removeChild(anchor);
   });
 
   it('renders at the top level of document.body by default', () => {
-    mount(<PointerBox anchor={anchor}>{faker.lorem.paragraph()}</PointerBox>);
+    render(<PointerBox anchor={anchor}>{faker.lorem.paragraph()}</PointerBox>);
 
     expect(document.querySelectorAll('body > .pointerBox').length).toBe(1);
   });
 
   it('can render inside anchor element', () => {
-    mount(
+    render(
       <PointerBox anchor={anchor} renderInsideAnchor={true}>
         {faker.lorem.paragraph()}
       </PointerBox>
