@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import configureMockStore from 'redux-mock-store';
 
@@ -24,65 +25,84 @@ import {
   ZmenuContent,
   ZmenuContentProps,
   ZmenuContentItem,
-  ZmenuContentItemProps,
-  ZmenuContentLine
+  ZmenuContentItemProps
 } from './ZmenuContent';
 
-import {
-  Markup,
-  ZmenuContentItem as ZmenuContentItemType
-} from './zmenu-types';
+import { Markup } from './zmenu-types';
 import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
-describe('<ZmenuContent />', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+const mockReduxState = {};
+const mockStoreCreator = configureMockStore();
+const mockStore = mockStoreCreator(() => mockReduxState);
 
-  const mockStoreCreator = configureMockStore();
-  const mockStore = mockStoreCreator(() => ({}));
-  const wrappingComponent = (props: any) => (
-    <Provider store={mockStore}>{props.children}</Provider>
+const defaultProps: ZmenuContentProps = {
+  content: createZmenuContent()
+};
+
+const renderZmenuContent = (
+  props: Partial<ZmenuContentProps> = {},
+  store = mockStore
+) =>
+  render(
+    <Provider store={store}>
+      <ZmenuContent {...defaultProps} {...props} />
+    </Provider>
   );
-  const defaultProps: ZmenuContentProps = {
-    content: createZmenuContent()
-  };
-  let wrapper: any;
 
+describe('<ZmenuContent />', () => {
   beforeEach(() => {
-    wrapper = mount(<ZmenuContent {...defaultProps} />, { wrappingComponent });
+    jest.resetAllMocks();
   });
 
   describe('rendering', () => {
     it('renders the correct zmenu content information', () => {
-      const firstLineData = wrapper
-        .find(ZmenuContentLine)
-        .first()
-        .props()
-        .blocks.map((items: ZmenuContentItemType[]) => items[0].text);
+      const { container } = renderZmenuContent();
+      const zmenuContentLine = defaultProps.content[0].lines[0];
 
-      firstLineData.forEach((lineText: string) => {
-        expect(wrapper.find('.zmenuContentLine').first().text()).toContain(
-          lineText
-        );
+      const renderedContentBlocks = container.querySelectorAll(
+        '.zmenuContentBlock'
+      );
+
+      // check that the number of blocks of text is correct
+      expect(renderedContentBlocks.length).toBe(zmenuContentLine.length);
+
+      // check that the text from each block of text has been rendered
+      zmenuContentLine.forEach((block, index) => {
+        const blockText = block.reduce((acc, { text }) => acc + text, '');
+        expect(renderedContentBlocks[index].textContent).toBe(blockText);
+      });
+
+      zmenuContentLine.forEach((block, blockIndex) => {
+        block.forEach((blockItem, blockItemIndex) => {
+          const renderedElement = renderedContentBlocks[
+            blockIndex
+          ].querySelectorAll('span')[blockItemIndex];
+          if (blockItem.markup.includes(Markup.LIGHT)) {
+            expect(renderedElement.classList.contains('markupLight'));
+          }
+          if (blockItem.markup.includes(Markup.STRONG)) {
+            expect(renderedElement.classList.contains('markupStrong'));
+          }
+        });
       });
     });
   });
 
-  describe('behaviour', () => {
-    it('changes focus feature when feature link is clicked', () => {
+  describe('<ZmenuContentItem />', () => {
+    it('calls function to change focus feature when feature link is clicked', () => {
       const props: ZmenuContentItemProps = {
         id: faker.lorem.words(),
         markup: [Markup.FOCUS],
         text: faker.lorem.words(),
         changeFocusObject: jest.fn()
       };
-      const wrapper = mount(<ZmenuContentItem {...props} />);
+      const { container } = render(<ZmenuContentItem {...props} />);
 
-      wrapper.simulate('click');
-      expect(wrapper.props().changeFocusObject).toHaveBeenCalledTimes(1);
+      userEvent.click(container.firstChild as HTMLDivElement);
+
+      expect(props.changeFocusObject).toHaveBeenCalledTimes(1);
     });
   });
 });

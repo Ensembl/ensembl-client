@@ -15,18 +15,39 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 
 import { VisibilityIcon } from './VisibilityIcon';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { Status } from 'src/shared/types/status';
 
+jest.mock('src/shared/components/image-button/ImageButton', () => {
+  return jest.fn(() => <div data-test-id="image button" />);
+});
+
 describe('<VisibilityIcon />', () => {
-  it('renders ImageButton with DEFAULT status when partially selected', () => {
-    const onClick = jest.fn();
-    const wrapper = mount(
+  const onClick = jest.fn();
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders ImageButton', () => {
+    render(<VisibilityIcon status={Status.SELECTED} onClick={onClick} />);
+
+    expect(screen.queryByTestId('image button')).toBeTruthy();
+  });
+
+  it('passes the DEFAULT status to ImageButton when partially selected', () => {
+    render(
       <VisibilityIcon status={Status.PARTIALLY_SELECTED} onClick={onClick} />
     );
-    expect(wrapper.find(ImageButton).prop('status')).toBe(Status.DEFAULT);
+
+    const imageButtonProps = (ImageButton as any).mock.calls[0][0];
+
+    // image button status should be default
+    expect(imageButtonProps.status).toBe(Status.DEFAULT);
+    // however, the default class of the image button should be partiallySelected
+    expect(imageButtonProps.statusClasses.default).toBe('partiallySelected');
   });
 });

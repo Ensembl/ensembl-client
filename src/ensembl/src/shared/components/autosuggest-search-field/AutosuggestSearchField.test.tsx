@@ -15,17 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
 import random from 'lodash/random';
 
-import * as keyCodes from 'src/shared/constants/keyCodes';
-
 import AutosuggestSearchField from './AutosuggestSearchField';
-import AutosuggestionPanel, { GroupOfMatchesType } from './AutosuggestionPanel';
-import SearchField from 'src/shared/components/search-field/SearchField';
-import Input from 'src/shared/components/input/Input';
+import { GroupOfMatchesType } from './AutosuggestionPanel';
 
 const generateMatch = () => {
   const text = faker.lorem.words();
@@ -46,11 +43,17 @@ const generateGroupOfMatches = (numberOfMatches = 2, title?: string) => {
 };
 
 describe('<AutosuggestSearchField />', () => {
+  const search = faker.lorem.word();
   const onChange = jest.fn();
   const onSelect = jest.fn();
   const onSubmit = jest.fn();
-  const search = faker.lorem.word();
   const groupsOfMatches = times(2, () => generateGroupOfMatches());
+
+  const minimalProps = {
+    search,
+    onChange,
+    onSelect
+  };
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -58,26 +61,19 @@ describe('<AutosuggestSearchField />', () => {
 
   describe('appearance', () => {
     it('renders only search field if no matches have been found', () => {
-      const mountedComponent = mount(
-        <AutosuggestSearchField
-          search={search}
-          onChange={onChange}
-          onSelect={onSelect}
-          matchGroups={[]}
-        />
+      const { container } = render(
+        <AutosuggestSearchField {...minimalProps} />
       );
 
-      expect(mountedComponent.find(SearchField).length).toBe(1);
-      expect(mountedComponent.find(Input).prop('value')).toBe(search);
-      expect(mountedComponent.find(AutosuggestionPanel).length).toBe(0);
+      expect(container.querySelector('.searchField')).toBeTruthy();
+      expect(container.querySelector('input')?.value).toBe(search);
+      expect(container.querySelector('.autosuggestionPlate')).toBeFalsy();
     });
 
     it('renders AutosuggestionPanel with matches if they are provided', () => {
-      const mountedComponent = mount(
+      const { container } = render(
         <AutosuggestSearchField
-          search={search}
-          onChange={onChange}
-          onSelect={onSelect}
+          {...minimalProps}
           matchGroups={groupsOfMatches}
         />
       );
@@ -87,111 +83,116 @@ describe('<AutosuggestSearchField />', () => {
         return sum + numberOfMatchesInGroup;
       }, 0);
 
-      expect(mountedComponent.find(SearchField).length).toBe(1);
-      expect(mountedComponent.find(Input).prop('value')).toBe(search);
-      expect(mountedComponent.find(AutosuggestionPanel).length).toBe(1);
-      expect(mountedComponent.find('.autosuggestionPlateItem').length).toBe(
-        expectedNumberOfMatches
-      );
+      expect(container.querySelector('.searchField')).toBeTruthy();
+      expect(container.querySelector('input')?.value).toBe(search);
+      expect(container.querySelector('.autosuggestionPlate')).toBeTruthy();
+      expect(
+        container.querySelectorAll('.autosuggestionPlateItem').length
+      ).toBe(expectedNumberOfMatches);
     });
   });
 
   describe('behaviour', () => {
     describe('general behavour', () => {
-      let mountedComponent: any;
-
-      beforeEach(() => {
-        mountedComponent = mount(
-          <AutosuggestSearchField
-            search={search}
-            onChange={onChange}
-            onSelect={onSelect}
-            matchGroups={groupsOfMatches}
-          />
-        );
-      });
+      const props = {
+        ...minimalProps,
+        matchGroups: groupsOfMatches
+      };
 
       it('clicking on a suggested match submits its data', () => {
-        const suggestedItems = mountedComponent.find(
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const suggestedItems = container.querySelectorAll(
           '.autosuggestionPlateItem'
         );
 
         const randomItemIndex = random(0, suggestedItems.length - 1);
-        const randomItem = suggestedItems.at(randomItemIndex);
+        const randomItem = suggestedItems[randomItemIndex];
         const itemsData = groupsOfMatches.reduce((result, group) => {
           return [...result, ...group.matches.map(({ data }) => data)];
         }, [] as any);
 
         const expectedItemData = itemsData[randomItemIndex];
 
-        randomItem.simulate('click');
+        userEvent.click(randomItem);
 
         expect(onSelect).toHaveBeenCalledWith(expectedItemData);
       });
 
       it('pressing the ArrowDown button selects next item', () => {
-        const searchField = mountedComponent.find('input');
-        searchField.simulate('keydown', { keyCode: keyCodes.DOWN });
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const searchField = container.querySelector(
+          'input'
+        ) as HTMLInputElement;
 
-        const suggestedItems = mountedComponent.find(
+        fireEvent.keyDown(searchField, {
+          key: 'ArrowDown'
+        });
+
+        const suggestedItems = container.querySelectorAll(
           '.autosuggestionPlateItem'
         );
 
         // initially, the first item was selected; so we now expect the second one to be
         expect(
-          suggestedItems.at(1).hasClass('autosuggestionPlateHighlightedItem')
+          suggestedItems[1].classList.contains(
+            'autosuggestionPlateHighlightedItem'
+          )
         ).toBe(true);
       });
 
       it('pressing the ArrowUp button selects previous item', () => {
-        const searchField = mountedComponent.find('input');
-        searchField.simulate('keydown', { keyCode: keyCodes.UP });
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const searchField = container.querySelector(
+          'input'
+        ) as HTMLInputElement;
 
-        const suggestedItems = mountedComponent.find(
+        fireEvent.keyDown(searchField, {
+          key: 'ArrowUp'
+        });
+
+        const suggestedItems = container.querySelectorAll(
           '.autosuggestionPlateItem'
         );
-        const expectedIndex = suggestedItems.length - 1;
+        const expectedIndex = suggestedItems.length - 1; // wrap to the end of the list
 
         // initially, the first item was selected; so we now expect the last one to be
         expect(
-          suggestedItems
-            .at(expectedIndex)
-            .hasClass('autosuggestionPlateHighlightedItem')
+          suggestedItems[expectedIndex].classList.contains(
+            'autosuggestionPlateHighlightedItem'
+          )
         ).toBe(true);
       });
     });
 
     describe('when raw input submission is not allowed', () => {
-      let mountedComponent: any;
-
-      beforeEach(() => {
-        mountedComponent = mount(
-          <AutosuggestSearchField
-            search={search}
-            onChange={onChange}
-            onSelect={onSelect}
-            matchGroups={groupsOfMatches}
-          />
-        );
-      });
+      const props = {
+        ...minimalProps,
+        matchGroups: groupsOfMatches
+      };
 
       it('first match in AutosuggestionPanel is pre-selected', () => {
-        const suggestedItems = mountedComponent.find(
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const suggestedItems = container.querySelectorAll(
           '.autosuggestionPlateItem'
         );
-        const highlightedItems = mountedComponent.find(
-          '.autosuggestionPlateHighlightedItem'
+        const highlightedItems = [...suggestedItems].filter((el) =>
+          el.classList.contains('autosuggestionPlateHighlightedItem')
         );
 
         expect(highlightedItems.length).toBe(1);
         expect(
-          suggestedItems.at(0).hasClass('autosuggestionPlateHighlightedItem')
+          suggestedItems[0].classList.contains(
+            'autosuggestionPlateHighlightedItem'
+          )
         ).toBe(true);
       });
 
       it('triggering submit event confirms selection of a match', () => {
-        const searchField = mountedComponent.find(SearchField);
-        searchField.simulate('submit');
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const searchField = container.querySelector(
+          'input'
+        ) as HTMLInputElement;
+        fireEvent.submit(searchField);
 
         const firstMatchData = groupsOfMatches[0].matches[0].data;
 
@@ -200,23 +201,16 @@ describe('<AutosuggestSearchField />', () => {
     });
 
     describe('when raw input submission is allowed', () => {
-      let mountedComponent: any;
-
-      beforeEach(() => {
-        mountedComponent = mount(
-          <AutosuggestSearchField
-            search={search}
-            onChange={onChange}
-            onSelect={onSelect}
-            matchGroups={groupsOfMatches}
-            allowRawInputSubmission={true}
-            onSubmit={onSubmit}
-          />
-        );
-      });
+      const props = {
+        ...minimalProps,
+        matchGroups: groupsOfMatches,
+        allowRawInputSubmission: true,
+        onSubmit
+      };
 
       it('first match in AutosuggestionPanel is not pre-selected', () => {
-        const highlightedItems = mountedComponent.find(
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const highlightedItems = container.querySelectorAll(
           '.autosuggestionPlateHighlightedItem'
         );
 
@@ -224,19 +218,27 @@ describe('<AutosuggestSearchField />', () => {
       });
 
       it('triggering submit event submits current search value if no match is selected', () => {
-        const searchField = mountedComponent.find(SearchField);
-        searchField.simulate('submit');
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const searchField = container.querySelector(
+          'input'
+        ) as HTMLInputElement;
+        fireEvent.submit(searchField);
 
         expect(onSubmit).toHaveBeenCalledWith(search);
         expect(onSelect).not.toHaveBeenCalled();
       });
 
       it('triggering submit event confirms selection of a match if the match is selected', () => {
-        // highlight the first match
-        const searchField = mountedComponent.find('input');
-        searchField.simulate('keydown', { keyCode: keyCodes.DOWN });
+        const { container } = render(<AutosuggestSearchField {...props} />);
+        const searchField = container.querySelector(
+          'input'
+        ) as HTMLInputElement;
 
-        searchField.simulate('submit');
+        // highlight the first match, then submit
+        fireEvent.keyDown(searchField, {
+          key: 'ArrowDown'
+        });
+        fireEvent.submit(searchField);
 
         const firstMatchData = groupsOfMatches[0].matches[0].data;
 
@@ -246,39 +248,29 @@ describe('<AutosuggestSearchField />', () => {
     });
 
     describe('when no matches are found', () => {
-      it('shows a "not found" message', () => {
-        const wrapper = mount(
-          <AutosuggestSearchField
-            search={search}
-            onChange={onChange}
-            onSelect={onSelect}
-            matchGroups={[]}
-            notFound={true}
-          />
-        );
+      const props = {
+        ...minimalProps,
+        notFound: true
+      };
 
-        const panel = wrapper.find('.autosuggestionPlate');
+      it('shows a "not found" message', () => {
+        const { container } = render(<AutosuggestSearchField {...props} />);
+
+        const panel = container.querySelector('.autosuggestionPlate');
         const defaultMessage = AutosuggestSearchField.defaultProps.notFoundText;
 
-        expect(panel.text()).toBe(defaultMessage);
+        expect(panel?.textContent).toBe(defaultMessage);
       });
 
       it('respects the notFoundText prop when displaying the message', () => {
         const notFoundText = faker.lorem.words();
-        const wrapper = mount(
-          <AutosuggestSearchField
-            search={search}
-            onChange={onChange}
-            onSelect={onSelect}
-            matchGroups={[]}
-            notFound={true}
-            notFoundText={notFoundText}
-          />
+        const { container } = render(
+          <AutosuggestSearchField {...props} notFoundText={notFoundText} />
         );
 
-        const panel = wrapper.find('.autosuggestionPlate');
+        const panel = container.querySelector('.autosuggestionPlate');
 
-        expect(panel.text()).toBe(notFoundText);
+        expect(panel?.textContent).toBe(notFoundText);
       });
     });
   });

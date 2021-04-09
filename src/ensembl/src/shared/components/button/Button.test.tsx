@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import { PrimaryButton, SecondaryButton } from './Button';
@@ -26,66 +27,69 @@ const defaultProps = {
   onClick
 };
 
-const renderButton = (
-  ButtonComponent: React.FunctionComponent<any>,
-  props: any = defaultProps
-) => mount(<ButtonComponent {...props} />);
-
 describe('PrimaryButton', () => {
-  let wrapper: any;
-  let buttonChildren: any;
-
-  beforeEach(() => {
-    buttonChildren = faker.lorem.words();
-    wrapper = renderButton(PrimaryButton, {
-      ...defaultProps,
-      children: buttonChildren
-    });
-  });
-
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  test('renders a button', () => {
-    expect(wrapper.find('button').length).toEqual(1);
+  it('renders a button', () => {
+    const { container } = render(
+      <PrimaryButton {...defaultProps}>I am primary button</PrimaryButton>
+    );
+    expect(container.querySelector('button')).toBeTruthy();
   });
 
-  test('assigns the primaryButton class to the button', () => {
-    const renderedButton = wrapper.find('button');
-    expect(renderedButton.hasClass('primaryButton')).toBe(true);
+  it('assigns the primaryButton class to the button', () => {
+    const { container } = render(
+      <PrimaryButton {...defaultProps}>I am primary button</PrimaryButton>
+    );
+    const button = container.querySelector('button');
+    expect(button?.classList.contains('primaryButton')).toBe(true);
   });
 
-  test('extends own class with external classname', () => {
+  it('extends button’s own class with external classname', () => {
     const externalClass = faker.lorem.word();
-    const wrapper = renderButton(PrimaryButton, {
-      ...defaultProps,
-      children: buttonChildren,
-      className: externalClass
-    });
-    const renderedButton = wrapper.find('button');
+    const { container } = render(
+      <PrimaryButton {...defaultProps} className={externalClass}>
+        I am primary button
+      </PrimaryButton>
+    );
+    const button = container.querySelector('button');
 
-    expect(renderedButton.hasClass('primaryButton')).toBe(true);
-    expect(renderedButton.hasClass(externalClass)).toBe(true);
+    expect(button?.classList.contains('primaryButton')).toBe(true);
+    expect(button?.classList.contains(externalClass)).toBe(true);
   });
 
-  test('contains passed children', () => {
-    const renderedButton = wrapper.find('button');
-    expect(renderedButton.text()).toBe(buttonChildren);
+  it('renders children', () => {
+    const buttonText = faker.lorem.words();
+    const { container } = render(
+      <PrimaryButton {...defaultProps}>{buttonText}</PrimaryButton>
+    );
+    const button = container.querySelector('button');
+    expect(button?.textContent).toBe(buttonText);
   });
 
-  test('calls onClick when clicked', () => {
-    wrapper.simulate('click');
+  it('calls onClick when clicked', () => {
+    const { container } = render(
+      <PrimaryButton {...defaultProps}>I am primary button</PrimaryButton>
+    );
+    const button = container.querySelector('button') as HTMLButtonElement;
+
+    userEvent.click(button);
+
     expect(onClick).toHaveBeenCalled();
   });
 
-  test('does not call onClick if disabled', () => {
-    const wrapper = renderButton(PrimaryButton, {
-      ...defaultProps,
-      children: buttonChildren,
-      isDisabled: true
-    });
-    wrapper.simulate('click');
+  it('does not call onClick if disabled', () => {
+    const { container } = render(
+      <PrimaryButton {...defaultProps} isDisabled={true}>
+        I am primary button
+      </PrimaryButton>
+    );
+    const button = container.querySelector('button') as HTMLButtonElement;
+
+    userEvent.click(button);
+
     expect(onClick).not.toHaveBeenCalled();
   });
 });
@@ -93,50 +97,24 @@ describe('PrimaryButton', () => {
 describe('SecondaryButton', () => {
   // same as primary, but has a different class
 
-  let wrapper: any;
-  let buttonChildren: any;
-
-  beforeEach(() => {
-    buttonChildren = faker.lorem.words();
-    wrapper = renderButton(SecondaryButton, {
-      ...defaultProps,
-      children: buttonChildren
-    });
+  it('assigns the secondaryButton class to the button', () => {
+    const { container } = render(
+      <SecondaryButton {...defaultProps}>I am secondary button</SecondaryButton>
+    );
+    const button = container.querySelector('button');
+    expect(button?.classList.contains('secondaryButton')).toBe(true);
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
-  test('renders a button', () => {
-    expect(wrapper.find('button').length).toEqual(1);
-  });
-
-  test('assigns the secondaryButton class to the button', () => {
-    const renderedButton = wrapper.find('button');
-    expect(renderedButton.hasClass('secondaryButton')).toBe(true);
-  });
-
-  test('extends own class with external classname', () => {
+  it('extends own class with external classname', () => {
     const externalClass = faker.lorem.word();
-    const wrapper = renderButton(SecondaryButton, {
-      ...defaultProps,
-      children: buttonChildren,
-      className: externalClass
-    });
-    const renderedButton = wrapper.find('button');
+    const { container } = render(
+      <SecondaryButton {...defaultProps} className={externalClass}>
+        I am secondary button
+      </SecondaryButton>
+    );
+    const button = container.querySelector('button');
 
-    expect(renderedButton.hasClass('secondaryButton')).toBe(true);
-    expect(renderedButton.hasClass(externalClass)).toBe(true);
-  });
-
-  test('contains passed children', () => {
-    const renderedButton = wrapper.find('button');
-    expect(renderedButton.text()).toBe(buttonChildren);
-  });
-
-  test('calls onClick when clicked', () => {
-    wrapper.simulate('click');
-    expect(onClick).toHaveBeenCalled();
+    expect(button?.classList.contains('secondaryButton')).toBe(true);
+    expect(button?.classList.contains(externalClass)).toBe(true);
   });
 });

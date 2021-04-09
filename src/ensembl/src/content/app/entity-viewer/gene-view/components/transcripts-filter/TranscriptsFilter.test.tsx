@@ -16,7 +16,8 @@
 
 import React from 'react';
 import configureMockStore from 'redux-mock-store';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
@@ -24,8 +25,6 @@ import set from 'lodash/fp/set';
 import { Status } from 'src/shared/types/status';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 import TranscriptsFilter from './TranscriptsFilter';
-
-import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 
 const mockState = {
   entityViewer: {
@@ -85,7 +84,7 @@ const wrapInRedux = (
 ) => {
   const filterLabel = <span>Filter & sort</span>;
   store = mockStore(state);
-  return mount(
+  return render(
     <Provider store={store}>
       <TranscriptsFilter
         label={filterLabel}
@@ -99,12 +98,14 @@ const wrapInRedux = (
 describe('<TranscriptsFilter />', () => {
   it('shows correct sorting option as selected', () => {
     // default sorting option
-    let wrapper = wrapInRedux();
-    const defaultSortingLabel = wrapper
-      .find('label')
-      .findWhere((el) => el.text() === 'Default');
-    const defaultSortingRadioButton = defaultSortingLabel.find('input');
-    expect(defaultSortingRadioButton.prop('checked')).toBe(true);
+    let { container } = wrapInRedux();
+    const defaultSortingLabel = [...container.querySelectorAll('label')].find(
+      (el) => el.textContent === 'Default'
+    );
+    const defaultSortingRadioButton = defaultSortingLabel?.querySelector(
+      'input'
+    );
+    expect(defaultSortingRadioButton?.checked).toBe(true);
 
     // after we change sorting option
     const updatedState = set(
@@ -112,25 +113,23 @@ describe('<TranscriptsFilter />', () => {
       'spliced_length_desc',
       mockState
     );
-    wrapper = wrapInRedux(updatedState);
+    container = wrapInRedux(updatedState).container;
 
-    const secondSortingLabel = wrapper
-      .find('label')
-      .findWhere(
-        (el) => el.text() === 'Combined exon length: longest – shortest'
-      );
-    const secondSortingRadioButton = secondSortingLabel.find('input');
+    const secondSortingLabel = [...container.querySelectorAll('label')].find(
+      (el) => el.textContent === 'Combined exon length: longest – shortest'
+    );
+    const secondSortingRadioButton = secondSortingLabel?.querySelector('input');
 
-    expect(secondSortingRadioButton.prop('checked')).toBe(true);
+    expect(secondSortingRadioButton?.checked).toBe(true);
   });
 
-  it('correctly handles sorting order change', () => {
-    const wrapper = wrapInRedux();
-    const radioGroup = wrapper.find(RadioGroup);
+  it('correctly changes the sorting order', () => {
+    const { container } = wrapInRedux();
+    const label = [...container.querySelectorAll('label')].find(
+      (el) => el.textContent === 'Combined exon length: longest – shortest'
+    );
 
-    const onRadioChange = radioGroup.prop('onChange');
-    const newSortingRule = 'spliced_length_desc';
-    onRadioChange(newSortingRule);
+    userEvent.click(label as HTMLElement);
 
     const sortingActions = store
       .getActions()
@@ -141,6 +140,6 @@ describe('<TranscriptsFilter />', () => {
       );
 
     expect(sortingActions.length).toBe(1);
-    expect(sortingActions[0].payload.sortingRule).toBe(newSortingRule);
+    expect(sortingActions[0].payload.sortingRule).toBe('spliced_length_desc');
   });
 });

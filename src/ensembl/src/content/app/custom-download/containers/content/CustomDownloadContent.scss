@@ -4,13 +4,6 @@
   position: relative;
   display: grid;
   grid-template-columns: 40px 1fr 10px 1fr 40px;
-
-  &.default {
-    height: calc(100vh - 220px);
-  }
-  &.taller {
-    height: calc(100vh - 165px);
-  }
 }
 
 .tabList {

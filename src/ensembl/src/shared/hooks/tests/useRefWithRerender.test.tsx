@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import useRefWithRerender from '../useRefWithRerender';
 
 describe('useRefWithRerender', () => {
   it('updates the component when ref.current value changes', async () => {
     const TestComponent = () => {
-      const elementRef = useRefWithRerender<HTMLDivElement>(null);
+      const elementRef = useRefWithRerender<HTMLDivElement>(null); // notice that we start with null
 
       return (
         <div ref={elementRef}>
@@ -33,7 +33,11 @@ describe('useRefWithRerender', () => {
       );
     };
 
-    const wrapper = mount(<TestComponent />);
-    expect(wrapper.find('.success').length).toBe(1);
+    const { container } = render(<TestComponent />);
+
+    // Although the element ref within the TestComponent was initialized with null,
+    // we expect the component to re-render automatically when the ref received a new value
+    // (i.e. was assigned to a DOM element), and to make the success message visible
+    expect(container.querySelector('.success')).toBeTruthy();
   });
 });

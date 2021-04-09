@@ -15,7 +15,8 @@
  */
 
 import React, { useRef } from 'react';
-import { mount, ReactWrapper } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import useOutsideClick from '../useOutsideClick';
 
@@ -41,37 +42,34 @@ const TestComponent = () => {
 };
 
 describe('useOutsideClick', () => {
-  let rootElement: HTMLDivElement;
-  let wrapper: ReactWrapper;
-  const clickEvent = new Event('click', { bubbles: true });
-
-  beforeEach(() => {
-    rootElement = document.createElement('div');
-    document.body.appendChild(rootElement);
-    wrapper = mount(<TestComponent />, { attachTo: rootElement });
-  });
-
   afterEach(() => {
-    wrapper.detach();
-    document.body.removeChild(rootElement);
     jest.resetAllMocks();
   });
 
   it('fires click handler if click is outside the host components', async () => {
-    const outerElement = wrapper.find('.wrapper').getDOMNode();
-    outerElement.dispatchEvent(clickEvent);
+    const { container } = render(<TestComponent />);
+    const outerElement = container.querySelector('.wrapper') as HTMLElement;
+
+    userEvent.click(outerElement);
 
     expect(clickHandler).toHaveBeenCalled();
   });
 
   it('does not fire click handler if click was inside any of the host components', async () => {
-    const innerElement1 = wrapper.find('.test-element1').getDOMNode();
-    const innerElement2 = wrapper.find('.test-element2').getDOMNode();
-    const innerElement3 = wrapper.find('.test-element3').getDOMNode();
+    const { container } = render(<TestComponent />);
+    const innerElement1 = container.querySelector(
+      '.test-element1'
+    ) as HTMLElement;
+    const innerElement2 = container.querySelector(
+      '.test-element2'
+    ) as HTMLElement;
+    const innerElement3 = container.querySelector(
+      '.test-element3'
+    ) as HTMLElement;
 
-    innerElement1.dispatchEvent(clickEvent);
-    innerElement2.dispatchEvent(clickEvent);
-    innerElement3.dispatchEvent(clickEvent);
+    userEvent.click(innerElement1);
+    userEvent.click(innerElement2);
+    userEvent.click(innerElement3);
 
     expect(clickHandler).not.toHaveBeenCalled();
   });

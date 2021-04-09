@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
 import RoundButton, { RoundButtonStatus } from './RoundButton';
@@ -26,65 +27,69 @@ const defaultProps = {
   onClick
 };
 
-const renderButton = (
-  ButtonComponent: React.FunctionComponent<any>,
-  props: any = defaultProps
-) => mount(<ButtonComponent {...props} />);
-
 describe('RoundButton', () => {
-  let wrapper: any;
-  let buttonChildren: any;
-
-  beforeEach(() => {
-    buttonChildren = faker.lorem.words();
-    wrapper = renderButton(RoundButton, {
-      ...defaultProps,
-      children: buttonChildren
-    });
-  });
-
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  test('renders a button', () => {
-    expect(wrapper.find('button').length).toEqual(1);
+  it('renders a button', () => {
+    const { container } = render(
+      <RoundButton {...defaultProps}>I am round button</RoundButton>
+    );
+    expect(container.querySelector('button')).toBeTruthy();
   });
 
-  test('assigns the "default" class to the button', () => {
-    const renderedButton = wrapper.find('button');
-    expect(renderedButton.hasClass('default')).toBe(true);
+  it('assigns the "default" class to the button', () => {
+    const { container } = render(
+      <RoundButton {...defaultProps}>I am round button</RoundButton>
+    );
+    const button = container.querySelector('button');
+    expect(button?.classList.contains('default')).toBe(true);
   });
 
-  test('applies additional classes depending on the status', () => {
-    const wrapper = renderButton(RoundButton, {
-      ...defaultProps,
-      children: buttonChildren,
-      status: RoundButtonStatus.ACTIVE
-    });
-    const renderedButton = wrapper.find('button');
+  it('applies additional classes depending on the status', () => {
+    const { container } = render(
+      <RoundButton {...defaultProps} status={RoundButtonStatus.ACTIVE}>
+        I am round button
+      </RoundButton>
+    );
+    const button = container.querySelector('button');
 
-    expect(renderedButton.hasClass('default')).toBe(true);
-    expect(renderedButton.hasClass('active')).toBe(true);
+    expect(button?.classList.contains('default')).toBe(true);
+    expect(button?.classList.contains('active')).toBe(true);
   });
 
-  test('contains passed children', () => {
-    const renderedButton = wrapper.find('button');
-    expect(renderedButton.text()).toBe(buttonChildren);
+  it('contains passed children', () => {
+    const buttonText = faker.lorem.words();
+    const { container } = render(
+      <RoundButton {...defaultProps}>{buttonText}</RoundButton>
+    );
+    const button = container.querySelector('button');
+
+    expect(button?.textContent).toBe(buttonText);
   });
 
-  test('calls onClick when clicked', () => {
-    wrapper.simulate('click');
+  it('calls onClick when clicked', () => {
+    const { container } = render(
+      <RoundButton {...defaultProps}>I am round button</RoundButton>
+    );
+    const button = container.querySelector('button') as HTMLElement;
+
+    userEvent.click(button);
+
     expect(onClick).toHaveBeenCalled();
   });
 
-  test('does not call onClick if disabled', () => {
-    const wrapper = renderButton(RoundButton, {
-      ...defaultProps,
-      children: buttonChildren,
-      status: RoundButtonStatus.DISABLED
-    });
-    wrapper.simulate('click');
+  it('does not call onClick if disabled', () => {
+    const { container } = render(
+      <RoundButton {...defaultProps} status={RoundButtonStatus.DISABLED}>
+        I am round button
+      </RoundButton>
+    );
+    const button = container.querySelector('button') as HTMLElement;
+
+    userEvent.click(button);
+
     expect(onClick).not.toHaveBeenCalled();
   });
 });

@@ -15,6 +15,9 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
+
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { ReactComponent as SearchIcon } from 'static/img/launchbar/search.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
@@ -28,19 +31,14 @@ import LaunchbarButton from './LaunchbarButton';
 
 import styles from './Launchbar.scss';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-
-type LaunchbarProps = {
-  launchbarExpanded: boolean;
-  committedSpecies: CommittedItem[];
-};
-
 export const getCategoryClass = (separator: boolean): string => {
   return separator ? 'border' : '';
 };
 
-const Launchbar = (props: LaunchbarProps) => {
-  return props.launchbarExpanded ? (
+const Launchbar = () => {
+  const committedSpecies = useSelector(getEnabledCommittedSpecies);
+
+  return (
     <div className={styles.launchbar}>
       <div className={styles.categoriesWrapper}>
         <div className={styles.categories}>
@@ -63,7 +61,7 @@ const Launchbar = (props: LaunchbarProps) => {
               app="genome-browser"
               description="Genome browser"
               icon={BrowserIcon}
-              enabled={props.committedSpecies.length > 0}
+              enabled={committedSpecies.length > 0}
             />
           </div>
           <div className={styles.category}>
@@ -71,7 +69,7 @@ const Launchbar = (props: LaunchbarProps) => {
               app="entity-viewer"
               description="Entity Viewer"
               icon={EntityViewerIcon}
-              enabled={props.committedSpecies.length > 0}
+              enabled={committedSpecies.length > 0}
             />
           </div>
           <div className={styles.category}>
@@ -83,7 +81,7 @@ const Launchbar = (props: LaunchbarProps) => {
                 isEnvironment([
                   Environment.DEVELOPMENT,
                   Environment.INTERNAL
-                ]) && props.committedSpecies.length > 0
+                ]) && committedSpecies.length > 0
               }
             />
           </div>
@@ -101,7 +99,7 @@ const Launchbar = (props: LaunchbarProps) => {
         <span className={styles.aboutText}>Genome data & annotation</span>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default Launchbar;

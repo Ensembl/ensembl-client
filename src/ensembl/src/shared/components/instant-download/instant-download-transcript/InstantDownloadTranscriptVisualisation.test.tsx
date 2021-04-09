@@ -15,56 +15,74 @@
  */
 
 import React from 'react';
-import { render } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import InstantDownloadTranscriptVisualisation, {
   Props
 } from './InstantDownloadTranscriptVisualisation';
 
 describe('InstantDownloadTranscriptVisualisation', () => {
-  const renderWrapper = (props: Partial<Props> = {}) => {
+  const renderComponent = (props: Partial<Props> = {}) => {
     return render(<InstantDownloadTranscriptVisualisation {...props} />);
   };
 
   it('renders an svg element', () => {
-    const wrapper = renderWrapper();
-    expect(wrapper.is('svg')).toBe(true);
+    const { container } = renderComponent();
+    expect(container.querySelector('svg')).toBeTruthy();
   });
 
   it('contains 5 exons', () => {
-    const wrapper = renderWrapper();
-    expect(wrapper.find('.outerExon, .innerExon').length).toBe(5);
+    const { container } = renderComponent();
+    expect(container.querySelectorAll('.outerExon, .innerExon').length).toBe(5);
   });
 
   it('highlights only exons within coding sequence if CDS is enabled', () => {
-    const wrapper = renderWrapper({ isCDSEnabled: true });
-    expect(wrapper.find('.highlighted.innerExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.halfOuterExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.outerExon').length).toBe(0);
-    expect(wrapper.find('.highlighted.backbone').length).toBe(0);
+    const { container } = renderComponent({ isCDSEnabled: true });
+    expect(
+      container.querySelectorAll('.highlighted.innerExon').length
+    ).toBeTruthy();
+    expect(
+      container.querySelectorAll('.highlighted.halfOuterExon').length
+    ).toBeTruthy();
+    expect(container.querySelectorAll('.highlighted.outerExon').length).toBe(0);
+    expect(container.querySelectorAll('.highlighted.backbone').length).toBe(0);
   });
 
   it('correctly highlights cDNA segments', () => {
-    const wrapper = renderWrapper({ isCDNAEnabled: true });
-    expect(wrapper.find('.highlighted.innerExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.halfOuterExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.outerExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.backbone').length).toBe(0);
+    const { container } = renderComponent({ isCDNAEnabled: true });
+    expect(
+      container.querySelectorAll('.highlighted.innerExon').length
+    ).toBeTruthy();
+    expect(
+      container.querySelectorAll('.highlighted.halfOuterExon').length
+    ).toBeTruthy();
+    expect(
+      container.querySelectorAll('.highlighted.outerExon').length
+    ).toBeTruthy();
+    expect(container.querySelectorAll('.highlighted.backbone').length).toBe(0);
   });
 
   it('correctly highlights complete genomic sequence', () => {
-    const wrapper = renderWrapper({ isGenomicSequenceEnabled: true });
-    expect(wrapper.find('.highlighted.innerExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.halfOuterExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.outerExon').length).toBeTruthy();
-    expect(wrapper.find('.highlighted.intron').length).toBeTruthy();
+    const { container } = renderComponent({ isGenomicSequenceEnabled: true });
+    expect(
+      container.querySelectorAll('.highlighted.innerExon').length
+    ).toBeTruthy();
+    expect(
+      container.querySelectorAll('.highlighted.halfOuterExon').length
+    ).toBeTruthy();
+    expect(
+      container.querySelectorAll('.highlighted.outerExon').length
+    ).toBeTruthy();
+    expect(
+      container.querySelectorAll('.highlighted.intron').length
+    ).toBeTruthy();
   });
 
   it('shows protein segments if protein sequence option is enabled', () => {
-    let wrapper = renderWrapper();
-    expect(wrapper.find('.protein').length).toBe(0);
+    let { container } = renderComponent();
+    expect(container.querySelectorAll('.protein').length).toBe(0);
 
-    wrapper = renderWrapper({ isProteinSequenceEnabled: true });
-    expect(wrapper.find('.protein').length).toBeTruthy();
+    container = renderComponent({ isProteinSequenceEnabled: true }).container;
+    expect(container.querySelectorAll('.protein').length).toBeGreaterThan(0);
   });
 });

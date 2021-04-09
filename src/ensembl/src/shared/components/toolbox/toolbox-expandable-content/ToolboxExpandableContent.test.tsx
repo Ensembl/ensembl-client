@@ -15,19 +15,22 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import ToolboxExpandableContent, {
   ToggleButton
 } from './ToolboxExpandableContent';
 
 const MainContent = () => (
-  <div>
+  <div data-test-id="main content">
     <span>This is main content</span>
     <ToggleButton openElement={<span>Click me!</span>} />
   </div>
 );
-const FooterContent = () => <div>This is footer content</div>;
+const FooterContent = () => (
+  <div data-test-id="footer content">This is footer content</div>
+);
 
 const minimalProps = {
   mainContent: <MainContent />,
@@ -36,17 +39,21 @@ const minimalProps = {
 
 describe('<ToolboxExpandableContent />', () => {
   it('renders only main content by default', () => {
-    const wrapper = mount(<ToolboxExpandableContent {...minimalProps} />);
+    render(<ToolboxExpandableContent {...minimalProps} />);
+    const mainContent = screen.queryByTestId('main content');
+    const footerContent = screen.queryByTestId('footer content');
 
-    expect(wrapper.exists(MainContent)).toBe(true);
-    expect(wrapper.exists(FooterContent)).toBe(false);
+    expect(mainContent).toBeTruthy();
+    expect(footerContent).toBeFalsy();
   });
 
   it('shows footer content when ToggleButton is clicked', () => {
-    const wrapper = mount(<ToolboxExpandableContent {...minimalProps} />);
-    const toggleButton = wrapper.find(ToggleButton);
-    toggleButton.simulate('click');
+    render(<ToolboxExpandableContent {...minimalProps} />);
+    const toggleButton = screen.getByText('Click me!');
 
-    expect(wrapper.exists(FooterContent)).toBe(true);
+    userEvent.click(toggleButton);
+
+    const footerContent = screen.queryByTestId('footer content');
+    expect(footerContent).toBeTruthy();
   });
 });

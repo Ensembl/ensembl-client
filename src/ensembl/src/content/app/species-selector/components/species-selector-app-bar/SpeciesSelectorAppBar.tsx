@@ -36,11 +36,12 @@ type Props = {
   push: (url: string) => void;
 };
 
-export const PlaceholderMessage = () => (
-  <div className={styles.placeholderMessage}>
-    Search for a species, select from popular species or browse species by data
-    to manage your favourites
-  </div>
+export const placeholderMessage = `
+Search for a species, select from popular species or browse species by data
+to manage your favourites`;
+
+const PlaceholderMessage = () => (
+  <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
 export const SpeciesSelectorAppBar = (props: Props) => {

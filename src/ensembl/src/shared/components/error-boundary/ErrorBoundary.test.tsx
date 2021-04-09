@@ -15,62 +15,79 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import errorService from 'src/services/error-service';
 
 import ErrorBoundary from './ErrorBoundary';
 
-const Child = () => <span>I am a child</span>;
+const Child = () => <span className="child">I am a child</span>;
+const BrokenChild = (props: { errorMessage: string }) => {
+  throw new Error(props.errorMessage);
+
+  return <div className="child">You shouldn't see me!</div>;
+};
 
 const Fallback = ({ error }: { error: Error }) => (
-  <span>I am the fallback component that received error {error}</span>
+  <span className="fallback">
+    I am the fallback component that received error {error.message}
+  </span>
 );
 
-jest.spyOn(errorService, 'report');
-
 describe('<ErrorBoundary />', () => {
+  // suppress error messages from React and jsdom
+  // (see https://github.com/facebook/react/pull/13384)
+  window.addEventListener('error', (e) => {
+    e.preventDefault();
+  });
+
+  beforeAll(() => {
+    errorService.report = jest.fn();
+  });
+
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders children components if they render normally', () => {
-    const wrapper = mount(
+    const { container } = render(
       <ErrorBoundary fallbackComponent={Fallback}>
         <Child />
         <Child />
       </ErrorBoundary>
     );
 
-    expect(wrapper.find(Child).length).toBe(2);
+    expect(container.querySelectorAll('.child').length).toBe(2);
   });
 
   it('renders the fallback component if a child fails to render', () => {
-    const wrapper = mount(
+    const errorMessage = 'oops';
+    const { container } = render(
       <ErrorBoundary fallbackComponent={Fallback}>
         <Child />
-        <Child />
+        <BrokenChild errorMessage={errorMessage} />
       </ErrorBoundary>
     );
-    const error = 'oops!';
 
-    wrapper.find(Child).at(0).simulateError(error);
+    const fallbackComponent = container.querySelector('.fallback');
 
-    expect(wrapper.find(Child).length).toBe(0);
-    expect(wrapper.find(Fallback).length).toBe(1);
-    expect(wrapper.find(Fallback).prop('error')).toBe(error);
+    expect(container.querySelectorAll('.child').length).toBe(0);
+    expect(fallbackComponent).toBeTruthy();
+    expect(fallbackComponent?.textContent).toMatch(errorMessage);
   });
 
   it('calls errorService.report and passes the error to it', () => {
-    const wrapper = mount(
+    const errorMessage = 'oops';
+    render(
       <ErrorBoundary fallbackComponent={Fallback}>
         <Child />
+        <BrokenChild errorMessage={errorMessage} />
       </ErrorBoundary>
     );
-    const error = 'oops!';
 
-    wrapper.find(Child).at(0).simulateError(error);
-
-    expect(errorService.report).toHaveBeenCalledWith(error);
+    expect(errorService.report).toHaveBeenCalledTimes(1);
+    const errorServiceReportCalls = (errorService.report as any).mock.calls;
+    const error = errorServiceReportCalls[0][0];
+    expect(error.message).toBe(errorMessage);
   });
 });

@@ -37,7 +37,6 @@ describe('<TrackPanelList />', () => {
   const defaultProps: TrackPanelListProps = {
     activeGenomeId: faker.lorem.words(),
     isDrawerOpened: true,
-    launchbarExpanded: true,
     activeEnsObject: createEnsObject(),
     selectedTrackPanelTab: TrackSet.GENOMIC,
     genomeTrackCategories: createGenomeCategories(),

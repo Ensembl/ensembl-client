@@ -15,14 +15,13 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import {
   DefaultTranscriptListItem,
   DefaultTranscriptListItemProps
 } from './DefaultTranscriptListItem';
-import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
-import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 import {
@@ -31,20 +30,18 @@ import {
 } from 'tests/fixtures/entity-viewer/gene';
 
 jest.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
-  <div>TranscriptsListItemInfo</div>
+  <div data-test-id="transcriptsListItemInfo">TranscriptsListItemInfo</div>
 ));
 
 jest.mock(
   'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript',
-  () => () => <div>UnsplicedTranscript</div>
+  () => () => <div data-test-id="unsplicedTranscript">UnsplicedTranscript</div>
 );
 
 const toggleTranscriptInfo = jest.fn();
 
 describe('<DefaultTranscriptListItem />', () => {
-  let wrapper: any;
-
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
@@ -58,35 +55,43 @@ describe('<DefaultTranscriptListItem />', () => {
   };
 
   const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) =>
-    mount(<DefaultTranscriptListItem {...defaultProps} {...props} />);
+    render(<DefaultTranscriptListItem {...defaultProps} {...props} />);
 
   it('displays unspliced transcript', () => {
-    wrapper = renderComponent();
-    expect(wrapper.exists(UnsplicedTranscript)).toBe(true);
+    const { queryByTestId } = renderComponent();
+    expect(queryByTestId('unsplicedTranscript')).toBeTruthy();
   });
 
   it('toggles transcript item info onClick', () => {
-    wrapper = renderComponent();
-    wrapper.find('.clickableTranscriptArea').simulate('click');
+    const { container } = renderComponent();
+    const clickableArea = container.querySelector(
+      '.clickableTranscriptArea'
+    ) as HTMLElement;
+    const transcriptLabel = container.querySelector('.right') as HTMLElement;
+
+    userEvent.click(clickableArea);
     expect(toggleTranscriptInfo).toHaveBeenCalledTimes(1);
-    wrapper.find('.right').simulate('click');
+
+    userEvent.click(transcriptLabel);
     expect(toggleTranscriptInfo).toHaveBeenCalledTimes(2);
   });
 
   it('hides transcript info by default', () => {
-    wrapper = renderComponent();
+    const { queryByTestId } = renderComponent();
 
-    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(false);
+    expect(queryByTestId('transcriptsListItemInfo')).toBeFalsy();
   });
 
   it('displays transcript info if expandTranscript is true', () => {
-    wrapper = renderComponent({ expandTranscript: true });
+    const { queryByTestId } = renderComponent({ expandTranscript: true });
 
-    expect(wrapper.exists(TranscriptsListItemInfo)).toBe(true);
+    expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });
 
   it('displays selected transcript', () => {
-    wrapper = renderComponent({ isDefault: true });
-    expect(wrapper.find('.transcriptQualityLabel').text()).toBe('Selected');
+    const { container } = renderComponent({ isDefault: true });
+    expect(
+      container.querySelector('.transcriptQualityLabel')?.textContent
+    ).toBe('Selected');
   });
 });

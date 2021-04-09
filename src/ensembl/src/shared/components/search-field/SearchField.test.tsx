@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import SearchField from './SearchField';
-import Input from 'src/shared/components/input/Input';
 
 describe('<SearchField />', () => {
   const commonProps = {
@@ -31,34 +31,37 @@ describe('<SearchField />', () => {
     jest.resetAllMocks();
   });
 
-  const getMountedComponent = (props: any) => mount(<SearchField {...props} />);
-
   describe('rendering', () => {
-    test('renders an Input element', () => {
-      const mountedComponent = getMountedComponent(commonProps);
-      expect(mountedComponent.find(Input).length).toBe(1);
+    it('renders an Input element', () => {
+      const { container } = render(<SearchField {...commonProps} />);
+      expect(container.querySelector('input')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
-    test('calls onChange handler for every search change', () => {
-      const mountedComponent = getMountedComponent(commonProps);
-      const newSearch = 'foo';
-      mountedComponent
-        .find('input')
-        .simulate('change', { target: { value: newSearch } });
+    it('calls onChange handler for every search change', () => {
+      const search = 'fo';
+      const { container } = render(
+        <SearchField {...commonProps} search={search} />
+      );
+      const input = container.querySelector('input') as HTMLElement;
+
+      // since the input is a controlled element,
+      // changing its value by a single letter is the only meaningful change we can check
+      userEvent.type(input, 'o');
+
       expect(commonProps.onChange).toHaveBeenCalled();
-      expect(commonProps.onChange.mock.calls[0][0]).toBe(newSearch);
+      expect(commonProps.onChange.mock.calls[0][0]).toBe('foo');
     });
 
-    test('calls onSubmit passing it the search value if enter is pressed', () => {
-      // cheating here slightly by directly simulating the submit event
+    it('calls onSubmit passing it the search value if enter is pressed', () => {
       const search = 'foo';
-      const mountedComponent = getMountedComponent({
-        ...commonProps,
-        search
-      });
-      mountedComponent.simulate('submit');
+      const { container } = render(
+        <SearchField {...commonProps} search={search} />
+      );
+      const input = container.querySelector('input') as HTMLElement;
+
+      userEvent.type(input, '{enter}');
       expect(commonProps.onSubmit).toHaveBeenCalled();
       expect(commonProps.onSubmit.mock.calls[0][0]).toBe(search);
     });

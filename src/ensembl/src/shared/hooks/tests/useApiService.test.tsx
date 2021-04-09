@@ -16,8 +16,7 @@
 
 import React from 'react';
 import faker from 'faker';
-import { act } from 'react-dom/test-utils';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 
 import apiService from 'src/services/api-service';
 import useApiService from '../useApiService';
@@ -91,51 +90,40 @@ describe('useApiService', () => {
   });
 
   it('fetches data', async () => {
-    const wrapper = mount(<TestingComponent />);
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2);
-      });
-      wrapper.update();
-    });
+    render(<TestingComponent />);
+    await screen.findByText(mockSuccessData.message); // would error if not found
 
     expect(apiService.fetch).toHaveBeenCalledWith(mockEndpoint, {});
-    expect(wrapper.find('.success').text()).toBe(mockSuccessData.message);
     expect(onAbort).not.toHaveBeenCalled();
   });
 
   it('does not fetch data if the `skip` option is set to true', async () => {
-    const wrapper = mount(<TestingComponent skip={true} />);
-    // waiting the same duration of time as in the test where the hook successfully fetches the data
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2);
-      });
-      wrapper.update();
+    const { container } = render(<TestingComponent skip={true} />);
+
+    // in this test, we are effectively proving a negative,
+    // so just wait for a fraction of a second to afford useApiService the time
+    // in which it would have called the fetch function had it not been prevented by the skip option
+    await new Promise((resolve) => {
+      setTimeout(resolve, 2);
     });
 
     expect(apiService.fetch).not.toHaveBeenCalled();
-    expect(wrapper.text()).toBe('Data not requested');
+    expect(container.textContent).toBe('Data not requested');
   });
 
   it('returns error if request errored out', async () => {
-    jest.spyOn(apiService, 'fetch').mockImplementation(mockFailedFetch as any);
-    const wrapper = mount(<TestingComponent />);
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 1);
-      });
-      wrapper.update();
-    });
+    jest.spyOn(apiService, 'fetch').mockImplementation(mockFailedFetch);
+    const { container } = render(<TestingComponent />);
 
-    expect(wrapper.find('.success').length).toBe(0);
-    expect(wrapper.find('.error').text()).toBe(mockErrorData.message);
+    await screen.findByText(mockErrorData.message); // would error if not found
+
+    expect(container.querySelector('.success')).toBeFalsy();
   });
 
   it('aborts request on unmount if passed isAbortable option', () => {
-    const wrapper = mount(<TestingComponent isAbortable={true} />);
-    wrapper.unmount();
+    const { unmount } = render(<TestingComponent isAbortable={true} />);
+    unmount();
 
-    expect(onAbort).toHaveBeenCalled();
+    expect(onAbort).toHaveBeenCalledTimes(1);
   });
 });

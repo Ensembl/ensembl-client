@@ -15,14 +15,12 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 
 import {
   FeatureSummaryStrip,
   FeatureSummaryStripProps
 } from './FeatureSummaryStrip';
-
-import { GeneSummaryStrip, RegionSummaryStrip } from '../feature-summary-strip';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
@@ -42,20 +40,23 @@ describe('<FeatureSummaryStrip />', () => {
   ) => <FeatureSummaryStrip {...defaultProps} {...props} />;
 
   describe('general', () => {
-    test('contains GeneSummaryStrip if focus object is gene', () => {
-      const renderedFeatureSummaryStrip = mount(
+    // the tests below are just checking that the FeatureSummaryStrip component
+    // will select an appropriate component for rendering
+    // based on the type of the object that it receives
+
+    it('contains GeneSummaryStrip if focus object is gene', () => {
+      const { container } = render(
         renderFeatureSummaryStrip({ ensObject: createEnsObject('gene') })
       );
-      expect(renderedFeatureSummaryStrip.find(GeneSummaryStrip).length).toBe(1);
+
+      expect(container.textContent).toBe('Gene Summary Strip'); // text from the mocked module
     });
 
-    test('contains RegionSummaryStrip if focus object is region', () => {
-      const renderedFeatureSummaryStrip = mount(
+    it('contains RegionSummaryStrip if focus object is region', () => {
+      const { container } = render(
         renderFeatureSummaryStrip({ ensObject: createEnsObject('region') })
       );
-      expect(renderedFeatureSummaryStrip.find(RegionSummaryStrip).length).toBe(
-        1
-      );
+      expect(container.textContent).toBe('Region Summary Strip'); // text from the mocked module
     });
   });
 });
