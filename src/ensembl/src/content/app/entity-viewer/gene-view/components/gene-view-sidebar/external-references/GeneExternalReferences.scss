@@ -4,7 +4,7 @@
   font-size: 13px;
 }
 .sectionHead {
-  color: $dark-grey;
+  font-weight: $light;
   font-size: 12px;
   border-bottom: 1px solid $grey;
   margin-bottom: 15px;
@@ -35,11 +35,12 @@
 }
 
 .xrefAccordionButton {
-  color: $black;
+  color: $blue;
   padding: 0px;
   width: auto;
   padding-right: 60px;
   display: inline-block;
+  margin-left: 20px;
 
   &:before,
   &:after {
@@ -62,9 +63,11 @@
   cursor: pointer;
 }
 .transcriptXrefs {
-  margin: 10px 0 20px 20px;
+  margin: 10px 0 20px 0;
 }
 
 .externalReferenceContainer{
   margin-bottom:10px;
+  margin-left: 20px;
 }
+

@@ -36,7 +36,7 @@ const ExternalLink = (props: ExternalLinkProps) => {
   const linkClass = classNames(styles.link, props.classNames?.link);
 
   return (
-    <span className={styles.container} data-test-id="external link container">
+    <span className={styles.externalLinkContainer}>
       <LinkIcon className={iconClass} />
       <a
         className={linkClass}
