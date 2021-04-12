@@ -41,9 +41,8 @@ describe('<ExternalLink />', () => {
 
     expect(
       container
-        .querySelector(`icon-mock`)
-        ?.getAttribute('classname')
-        ?.includes(defaultProps.classNames?.icon as string)
+        .querySelector(`svg`)
+        ?.classList.contains(defaultProps.classNames?.icon as string)
     ).toBeTruthy();
 
     expect(
