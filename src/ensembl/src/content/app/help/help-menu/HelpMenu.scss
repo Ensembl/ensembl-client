@@ -25,7 +25,8 @@ $submenuSidePadding: 30px;
   position: absolute;
   background-color: $off-white;
   top: 100%;
-  min-height: 40vh;
+  height: 360px;
+  max-height: 50vh;
   width: 100%;
   z-index: 4;
   padding: 0 calc(44px - #{$submenuSidePadding}); // FIXME: 44px is a magic number

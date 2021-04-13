@@ -97,9 +97,7 @@ const Submenu = (props: SubmenuProps) => {
 
   return childItems
   ? <>
-      <span className={styles.submenuItemName}>
-        { renderedSubmenu}
-      </span>
+      { renderedSubmenu}
       <Submenu items={childItems}/>
     </>
   : renderedSubmenu;
