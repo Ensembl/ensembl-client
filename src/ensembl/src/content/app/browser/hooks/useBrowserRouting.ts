@@ -149,15 +149,25 @@ const useBrowserRouting = () => {
         ? buildFocusIdForUrl(activeEnsObjectId)
         : null;
 
-      const params = {
+      const nextUrlParams = {
         genomeId,
         focus: focusIdForUrl,
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
-      dispatch(push(urlFor.browser(params)));
+      // In case the url is simply /genome-browser, use the `replace` history method to redirect the user further.
+      // This will allow the user to return from the next page (genome browser with genome id selected)
+      // back to the page from which they have navigated to the current one. If the `push` method is used,
+      // the user will not be able to get back past this page, because the url without genome id will remain
+      // in the history, and the user will be forcefully redirected to the url with the genome id.
+      // 
+      // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
+      // becomes a valid searchable page in its own right.
+      const historyMethod = params.genomeId ? push : replace;
+
+      dispatch(historyMethod(urlFor.browser(nextUrlParams)));
     },
-    [genomeId]
+    [params.genomeId]
   );
 
   return {
