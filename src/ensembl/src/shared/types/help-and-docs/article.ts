@@ -21,16 +21,24 @@ export type Article = {
   url: string;
   title: string; // part of article metadata; for use in the page meta tag
   description: string; // part of article metadata; for use in the page meta tag
-  related_articles: RelatedArticle[];
+};
+
+// IndexArticle is where the article metaphor wears a bit thin.
+// It only contains references to other, proper articles.
+// Its purpose is to be displayed on an index page, such as /help  
+export type IndexArticle = Article & {
+  items: IndexArticleItem[];
 };
 
 export type TextArticle = Article & {
   type: 'article';
+  related_articles: RelatedArticle[];
   body: string; // the actual html of the article
 };
 
 export type VideoArticle = Article & {
   type: 'video';
+  related_articles: RelatedArticle[];
   youtube_id: string;
 };
 
@@ -39,4 +47,10 @@ export type RelatedArticle = {
   slug: string;
   url: string;
   type: ArticleType;
+};
+
+export type IndexArticleItem = {
+  title: string;
+  summary: string;
+  url: string;
 };
