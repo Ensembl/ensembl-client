@@ -47,7 +47,10 @@ const Item = (props: ItemProps) => {
     <div
       ref={anchorRef}
       className={className}
-      onClick={() => setShowPointerBox(!showPointerBox)}
+      onClick={(event) => {
+        event.stopPropagation();
+        setShowPointerBox(!showPointerBox);
+      }}
     >
       Click me
       {showPointerBox && (

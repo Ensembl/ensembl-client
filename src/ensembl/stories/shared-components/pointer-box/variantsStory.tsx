@@ -53,7 +53,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryTopLeft
           )}
-          onClick={() => setVisibleId(Position.TOP_LEFT)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.TOP_LEFT);
+          }}
         >
           {visibleId === Position.TOP_LEFT && topLeftRef.current && (
             <PointerBox
@@ -72,7 +75,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryTopRight
           )}
-          onClick={() => setVisibleId(Position.TOP_RIGHT)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.TOP_RIGHT);
+          }}
         >
           {visibleId === Position.TOP_RIGHT && topRightRef.current && (
             <PointerBox
@@ -91,7 +97,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryRightTop
           )}
-          onClick={() => setVisibleId(Position.RIGHT_BOTTOM)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.RIGHT_BOTTOM);
+          }}
         >
           {visibleId === Position.RIGHT_BOTTOM && rightTopRef.current && (
             <PointerBox
@@ -111,7 +120,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryRightBottom
           )}
-          onClick={() => setVisibleId(Position.RIGHT_TOP)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.RIGHT_TOP);
+          }}
         >
           {visibleId === Position.RIGHT_TOP && rightBottomRef.current && (
             <PointerBox
@@ -131,7 +143,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryBottomLeft
           )}
-          onClick={() => setVisibleId(Position.BOTTOM_LEFT)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.BOTTOM_LEFT);
+          }}
         >
           {visibleId === Position.BOTTOM_LEFT && bottomLeftRef.current && (
             <PointerBox
@@ -150,7 +165,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryBottomRight
           )}
-          onClick={() => setVisibleId(Position.BOTTOM_RIGHT)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.BOTTOM_RIGHT);
+          }}
         >
           {visibleId === Position.BOTTOM_RIGHT && bottomRightRef.current && (
             <PointerBox
@@ -169,7 +187,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryLeftTop
           )}
-          onClick={() => setVisibleId(Position.LEFT_BOTTOM)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.LEFT_BOTTOM);
+          }}
         >
           {visibleId === Position.LEFT_BOTTOM && leftTopRef.current && (
             <PointerBox
@@ -189,7 +210,10 @@ const VariantsStory = () => {
             styles.variantsStoryAnchor,
             styles.variantsStoryLeftBottom
           )}
-          onClick={() => setVisibleId(Position.LEFT_TOP)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setVisibleId(Position.LEFT_TOP);
+          }}
         >
           {visibleId === Position.LEFT_TOP && leftBottomRef.current && (
             <PointerBox
