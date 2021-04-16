@@ -33,8 +33,13 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
   const [showPointerBox, setShowPointerBox] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
 
+  const onAnchorClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setShowPointerBox(!showPointerBox);
+  };
+
   return (
-    <span className={styles.wrapper} ref={anchorRef} onClick={() => setShowPointerBox(!showPointerBox)}>
+    <span className={styles.wrapper} ref={anchorRef} onClick={onAnchorClick}>
       {children}
       {showPointerBox && anchorRef.current && (
         <PointerBox
