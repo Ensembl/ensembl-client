@@ -63,9 +63,6 @@ export default function useOutsideClick<T extends HTMLElement>(
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
-      refs.forEach((ref) =>
-        ref?.current?.removeEventListener('click', onClickInside)
-      );
     };
   });
 }
