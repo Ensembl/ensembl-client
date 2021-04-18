@@ -1,6 +1,10 @@
 @import 'src/styles/common';
 @import 'helpArticleConstants';
 
+$indexItemWidth: 364px;
+$indexItemsHorizontalGap: 100px;
+$indexLeftPadding: 68px;
+
 .textArticle {
 
   h1 {
@@ -39,3 +43,29 @@
   }
 }
 
+.indexArticle {
+  display: grid;
+  grid-template-columns: repeat(3, #{$indexItemWidth});
+  grid-column-gap: $indexItemsHorizontalGap;
+  grid-row-gap: 52px;
+  max-width: calc(#{$indexLeftPadding} + 3 * #{$indexItemWidth} + 2 * #{$indexItemsHorizontalGap});
+  padding-left: $indexLeftPadding;
+
+  .indexItem {
+    width: $indexItemWidth;
+    flex: 0 0 auto;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: $bold;
+  }
+}
+
+@media (max-width: $indexLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap) {
+
+  .indexArticle {
+    grid-template-columns: repeat(2, #{$indexItemWidth});
+  }
+
+}

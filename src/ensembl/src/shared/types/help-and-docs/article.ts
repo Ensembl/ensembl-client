@@ -25,8 +25,9 @@ export type Article = {
 
 // IndexArticle is where the article metaphor wears a bit thin.
 // It only contains references to other, proper articles.
-// Its purpose is to be displayed on an index page, such as /help  
+// Its purpose is to be displayed on an index page, such as /help
 export type IndexArticle = Article & {
+  type: 'index';
   items: IndexArticleItem[];
 };
 

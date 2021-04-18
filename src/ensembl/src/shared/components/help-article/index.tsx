@@ -15,3 +15,4 @@
  */
 
 export { default as TextArticle } from './TextArticle';
+export { default as IndexArticle } from './IndexArticle';
