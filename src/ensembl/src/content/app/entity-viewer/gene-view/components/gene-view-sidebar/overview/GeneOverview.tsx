@@ -80,7 +80,9 @@ const GeneOverview = () => {
       </div>
 
       <div className={styles.sectionHead}>Gene name</div>
-      <div className={styles.geneName}>{gene.name || 'None'}</div>
+      <div className={styles.geneName}>
+        {gene.name === 'novel transcript' || !gene.name ? 'None' : gene.name}
+      </div>
 
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>

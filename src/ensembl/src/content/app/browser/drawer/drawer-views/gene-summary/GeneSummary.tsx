@@ -130,7 +130,9 @@ const GeneSummary = () => {
 
       <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{gene.name}</div>
+        <div className={styles.value}>
+          {gene.name === 'novel transcript' || !gene.name ? 'None' : gene.name}
+        </div>
       </div>
 
       {gene.alternative_symbols.length > 0 && (
