@@ -3,7 +3,9 @@
 
 $indexItemWidth: 364px;
 $indexItemsHorizontalGap: 100px;
-$indexLeftPadding: 68px;
+$pageLeftPadding: 88px;
+$aside-left-padding: 12px;
+$textColumnWidth: 450px;
 
 .textArticle {
 
@@ -23,10 +25,11 @@ $indexLeftPadding: 68px;
   p {
     line-height: $line-height;
     margin: $line-height 0;
+    width: $textColumnWidth;
   }
 
-  img {
-    max-width: 100%;
+  figure {
+    margin: 1em 0;
   }
 
   // Notice that the external-link svg has the same shape as in the static/img/shared folder
@@ -48,8 +51,7 @@ $indexLeftPadding: 68px;
   grid-template-columns: repeat(3, #{$indexItemWidth});
   grid-column-gap: $indexItemsHorizontalGap;
   grid-row-gap: 52px;
-  max-width: calc(#{$indexLeftPadding} + 3 * #{$indexItemWidth} + 2 * #{$indexItemsHorizontalGap});
-  padding-left: $indexLeftPadding;
+  max-width: calc(3 * #{$indexItemWidth} + 2 * #{$indexItemsHorizontalGap});
 
   .indexItem {
     width: $indexItemWidth;
@@ -62,10 +64,55 @@ $indexLeftPadding: 68px;
   }
 }
 
-@media (max-width: $indexLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap) {
+@media (max-width: $pageLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap) {
 
   .indexArticle {
     grid-template-columns: repeat(2, #{$indexItemWidth});
   }
 
+}
+
+.aside {
+  grid-column: aside;
+
+  h2 {
+    font-size: 13px;
+    font-weight: 300;
+    margin: 0 0 1rem;
+  }
+}
+
+.relatedArticles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.relatedArticle,
+.relatedVideo {
+  color: $blue;
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+}
+
+.relatedVideo {
+  position: relative;
+}
+
+.relatedVideoIcon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: $blue;
+  height: 10px;
+  width: 16px;
+  margin-left: -#{$aside-left-padding};
+
+  svg {
+    height: 80%;
+    fill: white;
+  }
 }

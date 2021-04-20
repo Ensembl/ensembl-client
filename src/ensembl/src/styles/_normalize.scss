@@ -37,6 +37,10 @@ body {
   }
 }
 
+figure {
+  margin: 0;
+}
+
 img {
   // Get rid of gap under images by making them display: inline-block; by default
   display: inline-block;

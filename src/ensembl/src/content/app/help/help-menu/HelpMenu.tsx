@@ -1,63 +1,73 @@
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
 
-import { Menu as MenuType, MenuItem } from 'src/shared/types/help-and-docs/menu';
+import {
+  Menu as MenuType,
+  MenuItem
+} from 'src/shared/types/help-and-docs/menu';
 
 import styles from './HelpMenu.scss';
 
 export type Props = {
-  menu: MenuType,
+  menu: MenuType;
   currentUrl: string;
 };
 
 const HelpMenu = (props: Props) => {
-  const [ submenuItems, setSubmenuItems ] = useState<MenuItem[] | null>(null);
-
+  const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
 
   const closePanel = () => setSubmenuItems(null);
 
   const topLevelItems = props.menu.items.map((item, index) => {
-    const className = classNames(
-      styles.topMenuItem
-    );
-    const onMouseEnter = item.type === 'collection'
-      ? () => setSubmenuItems(item.items)
-      : () => setSubmenuItems(null);
+    const className = classNames(styles.topMenuItem);
+    const onMouseEnter =
+      item.type === 'collection'
+        ? () => setSubmenuItems(item.items)
+        : () => setSubmenuItems(null);
     return (
-      <span
-        className={className}
-        key={index}
-        onMouseEnter={onMouseEnter}
-      >
+      <span className={className} key={index} onMouseEnter={onMouseEnter}>
         {item.name}
       </span>
-    )
+    );
   });
 
   return (
     <div className={styles.helpMenu}>
-      <div className={styles.menuBar}>
-        { topLevelItems }
-      </div>
-      { 
-        submenuItems && (
-          <>
-            <div className={styles.expandedMenuPanel}>
-              <Submenu items={submenuItems} />
-            </div>           
-            <div
-              className={styles.backdrop}
-              onMouseEnter={(closePanel)}
-              onClick={closePanel}
-            />
-          </>
-        )
-      }
-    </div>);
+      <div className={styles.menuBar}>{topLevelItems}</div>
+      {submenuItems && (
+        <>
+          <div className={styles.expandedMenuPanel}>
+            <Submenu items={submenuItems} />
+          </div>
+          <div
+            className={styles.backdrop}
+            onMouseEnter={closePanel}
+            onClick={closePanel}
+          />
+        </>
+      )}
+    </div>
+  );
 };
-
 
 type SubmenuProps = {
   items: MenuItem[];
@@ -70,9 +80,7 @@ const Submenu = (props: SubmenuProps) => {
   }, [props.items]);
 
   const renderedMenuItems = props.items.map((item, index) => {
-    const className = classNames(
-      styles.submenuItem
-    );
+    const className = classNames(styles.submenuItem);
     const props: { onMouseOver?: () => void } = {};
     if (item.type === 'collection') {
       props.onMouseOver = () => setChildItems(item.items);
@@ -80,36 +88,34 @@ const Submenu = (props: SubmenuProps) => {
       props.onMouseOver = () => setChildItems(null);
     }
     return (
-      <li key={index} { ...props } className={className}>
-        {item.name}
-        { item.type === 'collection' &&
-          <Chevron className={styles.chevron} />
-        }
+      <li key={index} {...props} className={className}>
+        {item.type === 'collection' ? (
+          <>
+            {item.name}
+            <Chevron className={styles.chevron} />
+          </>
+        ) : (
+          <Link to={item.url}>{item.name}</Link>
+        )}
       </li>
     );
   });
 
   const renderedSubmenu = (
-    <ul className={styles.submenu}>
-      {renderedMenuItems}
-    </ul>
+    <ul className={styles.submenu}>{renderedMenuItems}</ul>
   );
 
-  return childItems
-  ? <>
-      { renderedSubmenu}
-      <Submenu items={childItems}/>
+  return childItems ? (
+    <>
+      {renderedSubmenu}
+      <Submenu items={childItems} />
     </>
-  : renderedSubmenu;
+  ) : (
+    renderedSubmenu
+  );
 };
 
-
-// FIXME: remove?
-const buildMenuId = (menuItem: MenuItem) =>
-  `${menuItem.type}-${menuItem.name}`;
-
 export default HelpMenu;
-
 
 /*
 // const [pathToChildren, setPathToChildren] = useState<string[]>([]);

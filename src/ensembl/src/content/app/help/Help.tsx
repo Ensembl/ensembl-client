@@ -20,7 +20,12 @@ import { useLocation } from 'react-router';
 import useApiService from 'src/shared/hooks/useApiService';
 
 import HelpMenu from './help-menu/HelpMenu';
-import { IndexArticle } from 'src/shared/components/help-article';
+import {
+  IndexArticle,
+  TextArticle,
+  RelatedArticles,
+  HelpArticleGrid
+} from 'src/shared/components/help-article';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import {
@@ -42,6 +47,10 @@ const Help = () => {
     endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`
   });
 
+  if (!article) {
+    return null; // FIXME
+  }
+
   return (
     <>
       <AppBar />
@@ -59,10 +68,20 @@ const AppBar = () => {
 
 const MainContent = (props: { article: ArticleType }) => {
   const { article } = props;
+  let content;
   if (article.type === 'index') {
-    return <IndexArticle article={article} />;
+    content = <IndexArticle article={article} />;
+  } else if (article.type === 'article') {
+    content = (
+      <HelpArticleGrid>
+        <TextArticle article={article} />
+        {!!article.related_articles.length && (
+          <RelatedArticles articles={article.related_articles} />
+        )}
+      </HelpArticleGrid>
+    );
   }
-  return <div>some other article</div>;
+  return <main className={styles.main}>{content}</main>;
 };
 
 export default Help;
