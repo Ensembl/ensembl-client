@@ -57,7 +57,8 @@
 
   .title {
     grid-column: title;
-    color: $medium-dark-grey;
+    color: $black;
+    font-weight: $light;
   }
 
   .summaryStat {
@@ -68,8 +69,9 @@
     }
 
     .unit {
-      color: $dark-grey;
+      color: $black;
       padding: 0 6px;
+      font-weight: $light;
     }
   }
 
@@ -94,7 +96,8 @@
   
   .title {
     grid-column: title;
-    color: $medium-dark-grey;
+    color: $black;
+    font-weight: $light;
   }
 
   .stats {
@@ -112,6 +115,7 @@
 }
 
 .noData {
-  color: $dark-grey;
+  color: $black;
+  font-weight: $light;
   line-height: 3;
 }

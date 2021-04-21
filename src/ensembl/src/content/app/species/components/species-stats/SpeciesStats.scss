@@ -10,8 +10,9 @@ $secondary-text-color: $dark-grey;
 }
 
 .preLabel {
-  color: $secondary-text-color;
+  color: $black;
   padding-right: 4px;
+  font-weight: $light;
 }
 
 .preLabel + .label {
@@ -24,7 +25,7 @@ $secondary-text-color: $dark-grey;
 }
 
 .primaryValue {
-  font-size: 26px;
+  font-size: 24px;
   padding-left: 30px;
 }
 .primaryUnit {

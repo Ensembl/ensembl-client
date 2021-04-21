@@ -531,19 +531,19 @@ const statsFormattingOptions: StatsFormattingOptions = {
       headerUnit: 'structural variants'
     },
     [Stats.SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]: {
-      preLabel: 'Short Variants',
+      preLabel: 'Short variants',
       label: 'With phenotype assertions'
     },
     [Stats.SHORT_VARIANTS_WITH_PUBLICATIONS]: {
-      preLabel: 'Short Variants',
+      preLabel: 'Short variants',
       label: 'With publications'
     },
     [Stats.SHORT_VARIANTS_FREQUENCY_STUDIES]: {
-      preLabel: 'Short Variants',
+      preLabel: 'Short variants',
       label: 'Frequency studies'
     },
     [Stats.STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]: {
-      preLabel: 'Structural Variants',
+      preLabel: 'Structural variants',
       label: 'With phenotype assertions'
     }
   },
