@@ -18,6 +18,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
@@ -80,9 +81,7 @@ const GeneOverview = () => {
       </div>
 
       <div className={styles.sectionHead}>Gene name</div>
-      <div className={styles.geneName}>
-        {gene.name === 'novel transcript' || !gene.name ? 'None' : gene.name}
-      </div>
+      <div className={styles.geneName}>{getGeneName(gene.name)}</div>
 
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>
