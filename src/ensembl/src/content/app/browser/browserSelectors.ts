@@ -15,7 +15,7 @@
  */
 
 import { RootState } from 'src/store';
-import { ChrLocation } from './browserState';
+import { ChrLocation, defaultBrowserNavIconsState } from './browserState';
 
 import { getQueryParamsMap } from 'src/global/globalHelper';
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
@@ -65,11 +65,21 @@ export const getBrowserQueryParams = (
   state: RootState
 ): { [key: string]: string } => getQueryParamsMap(state.router.location.search);
 
-export const getBrowserNavOpened = (state: RootState) =>
-  state.browser.browserNav.browserNavOpened;
+export const getBrowserNavOpenState = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
 
-export const getBrowserNavStates = (state: RootState) =>
-  state.browser.browserNav.browserNavStates;
+  if (!activeGenomeId) {
+    return false;
+  }
+
+  return state.browser.browserNav.browserNavOpenState[activeGenomeId] || false;
+};
+
+export const getBrowserNavIconStates = (state: RootState) => {
+  return (
+    state.browser.browserNav.browserNavIconStates || defaultBrowserNavIconsState
+  );
+};
 
 export const getAllChrLocations = (state: RootState) =>
   state.browser.browserLocation.chrLocations;

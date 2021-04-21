@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-const PersonalData = () => {
-  return (
-    <section className="personaData">
-      <h3>Personal Data</h3>
-      <p>Upload your own data to be displayed in the browser</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
-  );
+export type Menu = {
+  name: string;
+  items: MenuItem[];
 };
 
-export default PersonalData;
+export type MenuItem = MenuArticleItem | MenuCollectionItem;
+
+type MenuCollectionItem = {
+  name: string;
+  type: 'collection';
+  url?: string; // if a menu directory has an index page associated with it
+  items: MenuItem[];
+};
+
+type MenuArticleItem = {
+  name: string;
+  type: 'article' | 'video';
+  url: string;
+};

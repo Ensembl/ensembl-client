@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
+export type ArticleType = 'article' | 'video';
 
-import { RootState } from 'src/store';
-import { getAccountExpanded } from '../headerSelectors';
-
-import styles from './Account.scss';
-
-type AccountProps = {
-  accountExpanded: boolean;
+export type Article = {
+  slug: string; // an article identtifier
+  url: string;
+  title: string; // part of article metadata; for use in the page meta tag
+  description: string; // part of article metadata; for use in the page meta tag
+  related_articles: RelatedArticle[];
 };
 
-export const Account = (props: AccountProps) => {
-  return props.accountExpanded ? (
-    <div className={styles.account}>
-      <h2>Account area placeholder</h2>
-    </div>
-  ) : null;
+export type TextArticle = Article & {
+  type: 'article';
+  body: string; // the actual html of the article
 };
 
-const mapStateToProps = (state: RootState) => ({
-  accountExpanded: getAccountExpanded(state)
-});
+export type VideoArticle = Article & {
+  type: 'video';
+  youtube_id: string;
+};
 
-export default connect(mapStateToProps)(Account);
+export type RelatedArticle = {
+  title: string;
+  slug: string;
+  url: string;
+  type: ArticleType;
+};

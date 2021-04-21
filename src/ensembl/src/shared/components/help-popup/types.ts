@@ -14,31 +14,37 @@
  * limitations under the License.
  */
 
-export type HelpVideo = {
-  title: string;
-  description: string;
+export type ArticleType = 'article' | 'video';
+
+export type Article = {
+  slug: string; // an article identtifier
+  url: string;
+  title: string; // part of article metadata; for use in the page meta tag
+  description: string; // part of article metadata; for use in the page meta tag
+  related_articles: RelatedArticle[];
+};
+
+export type TextArticle = Article & {
+  type: 'article';
+  body: string; // the actual html of the article
+};
+
+export type VideoArticle = Article & {
+  type: 'video';
   youtube_id: string;
 };
 
 export type RelatedArticle = {
   title: string;
   slug: string;
-  path: string;
-};
-
-export type HelpArticle = {
-  path: string;
-  slug: string;
-  title: string;
-  body: string;
-  videos: HelpVideo[];
-  related_articles: RelatedArticle[];
+  url: string;
+  type: ArticleType;
 };
 
 export type SlugReference = {
   slug: string; // slug of the help article, e.g. "selecting-a-species"
 };
 
-export type PathReference = {
-  path: string; // path to the article in the help&docs repo starting from the docs root folder, e.g. "ensembl-help/getting-started/about-the-site"
+export type UrlReference = {
+  url: string; // url of the article
 };

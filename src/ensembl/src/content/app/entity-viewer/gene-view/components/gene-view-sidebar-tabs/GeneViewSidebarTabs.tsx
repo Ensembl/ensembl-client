@@ -36,6 +36,7 @@ import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import styles from './GeneViewSidebarTabs.scss';
 
 const tabsData: Tab[] = [];
+
 Object.values(SidebarTabName).forEach((value) =>
   tabsData.push({
     title: value

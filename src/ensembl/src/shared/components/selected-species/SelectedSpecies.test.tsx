@@ -16,7 +16,8 @@
 
 import React from 'react';
 import faker from 'faker';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import merge from 'lodash/fp/merge';
 
@@ -42,36 +43,37 @@ const minimalProps = {
 
 describe('<SelectedSpecies />', () => {
   const renderSelectedSpecies = (props: SelectedSpeciesProps) =>
-    mount(<SelectedSpecies {...speciesData} {...props} />);
-
-  it('renders without error', () => {
-    expect(() => renderSelectedSpecies(minimalProps)).not.toThrow();
-  });
+    render(<SelectedSpecies {...speciesData} {...props} />);
 
   describe('lozenge', () => {
-    it('has correct classes whenactive and enabled', () => {
-      const wrapper = renderSelectedSpecies(minimalProps);
-      expect(wrapper.children('div').hasClass('inUseActive')).toEqual(true);
+    it('has correct classes when active and enabled', () => {
+      const { container } = renderSelectedSpecies(minimalProps);
+      const lozenge = container.firstChild as HTMLElement;
+      expect(lozenge.classList.contains('inUseActive')).toBe(true);
     });
+
     it('has correct classes when active and not enabled', () => {
       const props = set('species.isEnabled', false, minimalProps);
-      const wrapper = renderSelectedSpecies(props);
-      expect(wrapper.children('div').hasClass('notInUseActive')).toEqual(true);
+      const { container } = renderSelectedSpecies(props);
+      const lozenge = container.firstChild as HTMLElement;
+      expect(lozenge.classList.contains('notInUseActive')).toBe(true);
     });
+
     it('has correct classes when inactive and enabled', () => {
       const props = set('isActive', false, minimalProps);
-      const wrapper = renderSelectedSpecies(props);
-      expect(wrapper.children('div').hasClass('inUseInactive')).toEqual(true);
+      const { container } = renderSelectedSpecies(props);
+      const lozenge = container.firstChild as HTMLElement;
+      expect(lozenge.classList.contains('inUseInactive')).toBe(true);
     });
+
     it('has correct classes when inactive and disabled', () => {
       const props = merge(minimalProps, {
         isActive: false,
         species: { isEnabled: false }
       });
-      const wrapper = renderSelectedSpecies(props);
-      expect(wrapper.children('div').hasClass('notInUseInactive')).toEqual(
-        true
-      );
+      const { container } = renderSelectedSpecies(props);
+      const lozenge = container.firstChild as HTMLElement;
+      expect(lozenge.classList.contains('notInUseInactive')).toBe(true);
     });
   });
 
@@ -82,14 +84,20 @@ describe('<SelectedSpecies />', () => {
 
     it('responds to clicks when inactive', () => {
       const props = set('isActive', false, minimalProps);
-      const wrapper = renderSelectedSpecies(props);
-      wrapper.simulate('click');
+      const { container } = renderSelectedSpecies(props);
+      const lozenge = container.firstChild as HTMLElement;
+
+      userEvent.click(lozenge);
+
       expect(props.onClick).toHaveBeenCalledWith(speciesData.genome_id);
     });
 
     it('does not respond to clicks when active', () => {
-      const wrapper = renderSelectedSpecies(minimalProps);
-      wrapper.simulate('click');
+      const { container } = renderSelectedSpecies(minimalProps);
+      const lozenge = container.firstChild as HTMLElement;
+
+      userEvent.click(lozenge);
+
       expect(minimalProps.onClick).not.toHaveBeenCalled();
     });
   });

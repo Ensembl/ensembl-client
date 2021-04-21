@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, getByText } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { push } from 'connected-react-router';
 import thunk from 'redux-thunk';
@@ -55,7 +56,7 @@ const mockState = {
 const mockStore = configureMockStore([thunk]);
 
 const wrapInRedux = (state: typeof mockState = mockState) => {
-  return mount(
+  return render(
     <Provider store={mockStore(state)}>
       <SpeciesRemove />
     </Provider>
@@ -68,37 +69,35 @@ describe('SpeciesSelectionControls', () => {
   });
 
   it('correctly toggles removal confirmation dialog', () => {
-    const wrapper = wrapInRedux();
-    const removeLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Remove')
-      .first();
-    removeLabel.simulate('click');
+    const { container } = wrapInRedux();
+    const removeLabel = getByText(container as HTMLElement, 'Remove');
 
-    expect(wrapper.text()).toContain(confirmationMessage);
+    // open removal confitmation dialog
+    userEvent.click(removeLabel);
 
-    const doNotRemoveLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Do not remove')
-      .first();
+    expect(container.querySelector('.speciesRemovalWarning')?.textContent).toBe(
+      confirmationMessage
+    );
 
-    doNotRemoveLabel.simulate('click');
+    // close removal confitmation dialog
+    const doNotRemoveLabel = getByText(
+      container as HTMLElement,
+      'Do not remove'
+    );
+    userEvent.click(doNotRemoveLabel);
 
-    expect(wrapper.text()).not.toContain(confirmationMessage);
+    expect(container.querySelector('.speciesRemovalWarning')).toBeFalsy();
   });
 
   it('removes species and redirects to species selector after removal', () => {
-    const wrapper = wrapInRedux();
+    const { container } = wrapInRedux();
 
     // open removal confitmation dialog
-    const removeLabel = wrapper
-      .find('span')
-      .filterWhere((wrapper) => wrapper.text() === 'Remove')
-      .first();
-    removeLabel.simulate('click');
+    const removeLabel = getByText(container as HTMLElement, 'Remove');
+    userEvent.click(removeLabel);
 
-    const removeButton = wrapper.find('button.primaryButton');
-    removeButton.simulate('click');
+    const removeButton = getByText(container as HTMLElement, 'Remove'); // this will be a button element now
+    userEvent.click(removeButton);
 
     expect(deleteSpeciesAndSave).toHaveBeenCalledWith(
       selectedSpecies.genome_id

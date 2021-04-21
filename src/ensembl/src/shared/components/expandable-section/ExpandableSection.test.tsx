@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
 import faker from 'faker';
 
 import ExpandableSection, { ExpandableSectionProps } from './ExpandableSection';
@@ -39,64 +41,64 @@ const defaultProps: ExpandableSectionProps = {
 describe('<ExpandableSection />', () => {
   const renderExpandableSection = (
     props: Partial<ExpandableSectionProps> = {}
-  ) => mount(<ExpandableSection {...defaultProps} {...props} />);
+  ) => render(<ExpandableSection {...defaultProps} {...props} />);
 
-  let wrapper: any;
+  let container: any;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    wrapper = renderExpandableSection();
+    container = renderExpandableSection().container;
   });
 
   it('renders without error', () => {
-    expect(() => wrapper).not.toThrow();
+    expect(() => container).not.toThrow();
   });
 
   it('hides the expanded content when isExpanded is false', () => {
-    wrapper = renderExpandableSection({
+    container = renderExpandableSection({
       isExpanded: false
-    });
-    expect(wrapper.find('.expandedContent')).toHaveLength(0);
-    expect(wrapper.find('.collapsedContent')).toHaveLength(1);
+    }).container;
+    expect(container.querySelectorAll('.expandedContent')).toHaveLength(0);
+    expect(container.querySelectorAll('.collapsedContent')).toHaveLength(1);
   });
 
   it('shows the expanded content when isExpanded is true', () => {
-    expect(wrapper.find('.expandedContent')).toHaveLength(1);
-    expect(wrapper.find('.collapsedContent')).toHaveLength(0);
+    expect(container.querySelectorAll('.expandedContent')).toHaveLength(1);
+    expect(container.querySelectorAll('.collapsedContent')).toHaveLength(0);
   });
 
   it('calls onToggle prop when collapsing or expanding', () => {
-    wrapper.find('.toggle').simulate('click');
+    userEvent.click(container.querySelector('.toggle'));
     expect(mockOnToggle).toBeCalledWith(false);
 
-    wrapper = renderExpandableSection({
+    container = renderExpandableSection({
       isExpanded: false
-    });
+    }).container;
 
-    wrapper.find('.toggle').simulate('click');
+    userEvent.click(container.querySelector('.toggle'));
     expect(mockOnToggle).toBeCalledWith(true);
   });
 
   it('applies the passed in classNames', () => {
     expect(
-      wrapper
-        .find('.expandableSection')
-        .hasClass(defaultProps.classNames?.wrapper)
+      container
+        .querySelector('.expandableSection')
+        .classList.contains(defaultProps.classNames?.wrapper)
     ).toBeTruthy();
 
     expect(
-      wrapper
-        .find('.expandedContent')
-        .hasClass(defaultProps.classNames?.expanded)
+      container
+        .querySelector('.expandedContent')
+        .classList.contains(defaultProps.classNames?.expanded)
     ).toBeTruthy();
 
-    wrapper = renderExpandableSection({
+    container = renderExpandableSection({
       isExpanded: false
-    });
+    }).container;
     expect(
-      wrapper
-        .find('.collapsedContent')
-        .hasClass(defaultProps.classNames?.collapsed)
+      container
+        .querySelector('.collapsedContent')
+        .classList.contains(defaultProps.classNames?.collapsed)
     ).toBeTruthy();
   });
 });

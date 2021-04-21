@@ -4,7 +4,7 @@
   display: grid;
   grid-template-columns: [label] 120px [value] auto;
   grid-column-gap: 10px;
-  margin-bottom:3px;
+  margin-bottom: 3px;
 
   .label {
     grid-column: label;
@@ -17,8 +17,7 @@
   }
 }
 
-
-.spaceAbove{
+.spaceAbove {
   margin-top: 30px;
 }
 
@@ -38,10 +37,32 @@
 .featureSymbol {
   font-weight: $bold;
 }
-.stableId{
+.stableId {
   font-weight: $bold;
 }
-.featureSymbol + .stableId{
+.featureSymbol + .stableId {
   margin-left: 12px;
   font-weight: $light;
+}
+
+.downloadRow {
+  > .value {
+    display: flex;
+  }
+}
+
+.downloadLink {
+  color: $blue;
+  cursor: pointer;
+}
+
+.downloadWrapper {
+  margin-left: 40px;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  right: 0;
+  top: 0;
 }

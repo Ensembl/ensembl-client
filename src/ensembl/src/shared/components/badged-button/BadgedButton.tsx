@@ -18,7 +18,7 @@ import React from 'react';
 import defaultStyles from './BadgedButton.scss';
 import classNames from 'classnames';
 
-type Props = {
+export type Props = {
   children: React.ReactChild;
   badgeContent?: string | number | undefined;
   className?: string;

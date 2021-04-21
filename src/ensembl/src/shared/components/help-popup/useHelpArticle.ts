@@ -14,114 +14,27 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-
 import useApiService from 'src/shared/hooks/useApiService';
 
-import {
-  HelpArticle,
-  HelpVideo,
-  RelatedArticle,
-  SlugReference,
-  PathReference
-} from './types';
+import { TextArticle, VideoArticle, SlugReference } from './types';
 
-const getQuery = (params: { reference: SlugReference | PathReference }) => {
-  if ('slug' in params.reference) {
-    return `slug=${params.reference.slug}`;
-  } else {
-    return `path=${encodeURIComponent(params.reference.path)}`;
-  }
+const getQuery = (reference: SlugReference) => {
+  return `slug=${reference.slug}`;
 };
 
-type Reference = SlugReference | PathReference;
+export type Article = TextArticle | VideoArticle;
 
-export type ArticleReference = {
-  type: 'article';
-  reference: Reference;
-};
+const useHelpArticle = (reference: SlugReference) => {
+  const query = getQuery(reference);
+  const url = `/api/docs/article?${query}`;
 
-export type VideoReference = {
-  type: 'video';
-  youtube_id: string;
-};
-
-export type RelatedItems = {
-  articles: RelatedArticle[];
-  videos: HelpVideo[];
-};
-
-export type CurrentArticle = HelpArticle & { type: 'article' };
-export type CurrentVideo = HelpVideo & { type: 'video' };
-export type CurrentItem = CurrentArticle | CurrentVideo;
-
-export const emptyRelatedItems: RelatedItems = {
-  articles: [],
-  videos: []
-};
-
-const useHelpArticle = (reference: ArticleReference | VideoReference) => {
-  const [currentHelpItem, setCurrentHelpItem] = useState<CurrentItem | null>(
-    null
-  );
-  const [relatedHelpItems, setRelatedHelpItems] = useState<RelatedItems | null>(
-    null
-  );
-
-  const query = reference.type === 'article' ? getQuery(reference) : null;
-  const url = query ? `/api/docs/article?${query}` : '';
-
-  const { data: article, loadingState } = useApiService<HelpArticle>({
-    endpoint: url,
-    skip: !url
-  });
-
-  useEffect(() => {
-    if (
-      article &&
-      reference.type === 'article' &&
-      (('slug' in reference.reference &&
-        reference.reference.slug === article.slug) ||
-        ('path' in reference.reference &&
-          reference.reference.path === article.path))
-    ) {
-      setCurrentHelpItem({
-        ...article,
-        type: 'article'
-      });
-    } else if (relatedHelpItems && reference.type === 'video') {
-      const video = relatedHelpItems.videos.find(
-        (video) => video.youtube_id === reference.youtube_id
-      ) as HelpVideo;
-      setCurrentHelpItem({ ...video, type: 'video' });
-    }
-  }, [article?.path, reference.type]);
-
-  useEffect(() => {
-    if (!article || relatedHelpItems) {
-      return;
-    }
-    // keep track only for the article that was fetched initially
-    setRelatedHelpItems(prepareRelatedItems(article));
+  const { data: article, loadingState } = useApiService<Article>({
+    endpoint: url
   });
 
   return {
     loadingState,
-    relatedHelpItems,
-    currentHelpItem
-  };
-};
-
-const prepareRelatedItems = (article: HelpArticle): RelatedItems => {
-  const currentArticle = {
-    title: article.title,
-    slug: article.slug,
-    path: article.path
-  };
-  const relatedArticles = [currentArticle, ...article.related_articles];
-  return {
-    articles: relatedArticles,
-    videos: article.videos
+    article
   };
 };
 

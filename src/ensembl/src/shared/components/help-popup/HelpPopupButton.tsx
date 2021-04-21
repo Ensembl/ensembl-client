@@ -24,19 +24,11 @@ import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 
+import { SlugReference } from './types';
+
 import styles from './HelpPopupButton.scss';
 
-type SlugReference = {
-  slug: string; // slug of the help article, e.g. "selecting-a-species"
-};
-
-type PathReference = {
-  path: string; // path to the article in the help&docs repo starting from the docs root folder, e.g. "ensembl-help/getting-started/about-the-site"
-};
-
-type ArticleReference = SlugReference | PathReference;
-
-type Props = ArticleReference;
+type Props = SlugReference;
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);

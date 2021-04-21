@@ -22,28 +22,28 @@ import Overlay from 'src/shared/components/overlay/Overlay';
 
 import { browserNavConfig, BrowserNavItem } from '../browserConfig';
 import {
-  getBrowserNavStates,
+  getBrowserNavIconStates,
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
-import { BrowserNavStates } from '../browserState';
+import { BrowserNavIconStates } from '../browserState';
 
 import { RootState } from 'src/store';
 
 import styles from './BrowserNavBarControls.scss';
 
 type Props = {
-  browserNavStates: BrowserNavStates;
+  browserNavIconStates: BrowserNavIconStates;
   isDisabled: boolean;
 };
 
 export const BrowserNavBarControls = (props: Props) => (
   <div className={styles.browserNavBarControls}>
-    {browserNavConfig.map((item: BrowserNavItem, index: number) => (
+    {browserNavConfig.map((item: BrowserNavItem) => (
       <BrowserNavIcon
         key={item.name}
         browserNavItem={item}
-        enabled={!props.browserNavStates[index]}
+        enabled={props.browserNavIconStates[item.name]}
       />
     ))}
     {props.isDisabled && <Overlay className={styles.overlay} />}
@@ -55,7 +55,7 @@ const mapStateToProps = (state: RootState) => {
     getRegionEditorActive(state) || getRegionFieldActive(state);
 
   return {
-    browserNavStates: getBrowserNavStates(state),
+    browserNavIconStates: getBrowserNavIconStates(state),
     isDisabled
   };
 };

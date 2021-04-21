@@ -15,28 +15,43 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import faker from 'faker';
-import times from 'lodash/times';
 
 import { BrowserNavBarControls } from './BrowserNavBarControls';
-import { BrowserNavStates } from '../browserState';
+import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
+import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
 
-jest.mock('./BrowserNavIcon', () => (props: { enabled: boolean }) => {
-  const className = props.enabled ? 'browserNavIcon enabled' : 'browserNavIcon';
-  return <div className={className} />;
-});
+jest.mock(
+  './BrowserNavIcon',
+  () => (props: { enabled: boolean; browserNavItem: BrowserNavItem }) => {
+    const className = props.enabled
+      ? 'browserNavIcon enabled'
+      : 'browserNavIcon';
+    return (
+      <div className={className} data-test-id={props.browserNavItem.name} />
+    );
+  }
+);
+
 jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
 
-const browserNavStates = times(6, faker.random.boolean) as BrowserNavStates;
+const browserNavIconStates: BrowserNavIconStates = {
+  [BrowserNavAction.NAVIGATE_UP]: faker.random.boolean(),
+  [BrowserNavAction.NAVIGATE_RIGHT]: faker.random.boolean(),
+  [BrowserNavAction.NAVIGATE_DOWN]: faker.random.boolean(),
+  [BrowserNavAction.NAVIGATE_LEFT]: faker.random.boolean(),
+  [BrowserNavAction.ZOOM_OUT]: faker.random.boolean(),
+  [BrowserNavAction.ZOOM_IN]: faker.random.boolean()
+};
 
 describe('BrowserNavBarControls', () => {
   it('has an overlay on top when browser nav bar controls are disabled', () => {
     const { container } = render(
       <BrowserNavBarControls
-        browserNavStates={browserNavStates}
+        browserNavIconStates={browserNavIconStates}
         isDisabled={true}
       />
     );
@@ -44,20 +59,18 @@ describe('BrowserNavBarControls', () => {
   });
 
   it('disables buttons if corresponding actions are not possible', () => {
-    // browserNavStates are an array of booleans that indicate whether the button
-    // has already caused maximum corresponding effect, and will have no further effect if pressed
-    const { container } = render(
+    render(
       <BrowserNavBarControls
-        browserNavStates={browserNavStates}
+        browserNavIconStates={browserNavIconStates}
         isDisabled={false}
       />
     );
 
-    const controlButtons = container.querySelectorAll('.browserNavIcon');
-
-    controlButtons.forEach((button, index) => {
-      const isDisabled = browserNavStates[index];
-      expect(button.classList.contains('enabled')).toBe(!isDisabled);
+    Object.keys(browserNavIconStates).forEach((icon) => {
+      const navIcon = screen.getByTestId(icon);
+      expect(navIcon.classList.contains('enabled')).toBe(
+        browserNavIconStates[icon as BrowserNavAction]
+      );
     });
   });
 });

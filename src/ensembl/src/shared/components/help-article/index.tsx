@@ -14,27 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { shallow } from 'enzyme';
-
-import { Header } from './Header';
-import Account from './account/Account';
-import LaunchbarContainer from './launchbar/LaunchbarContainer';
-
-describe('<Header />', () => {
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = shallow(<Header />);
-  });
-
-  describe('contains', () => {
-    test('Account', () => {
-      expect(wrapper.contains(<Account />)).toBe(true);
-    });
-
-    test('Launchbar', () => {
-      expect(wrapper.contains(<LaunchbarContainer />)).toBe(true);
-    });
-  });
-});
+export { default as TextArticle } from './TextArticle';

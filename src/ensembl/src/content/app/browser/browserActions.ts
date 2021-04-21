@@ -38,7 +38,7 @@ import {
   getBrowserTrackStates,
   getChrLocation,
   getBrowserActiveEnsObjectIds,
-  getBrowserNavOpened
+  getBrowserNavOpenState
 } from './browserSelectors';
 
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -51,7 +51,7 @@ import {
 import { BROWSER_CONTAINER_ID } from './browser-constants';
 
 import {
-  BrowserNavStates,
+  BrowserNavIconStates,
   ChrLocation,
   CogList,
   ChrLocations
@@ -224,18 +224,22 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
 
 export const openBrowserNav = createAction(
   'browser/open-browser-navigation',
-  () => {
+  (activeGenomeId: string) => {
     analyticsTracking.trackEvent({
       category: 'browser_navigation',
       label: 'open_browser_navigation',
       action: 'clicked'
     });
+
+    return {
+      activeGenomeId
+    };
   }
-)();
+)<{ activeGenomeId: string }>();
 
 export const closeBrowserNav = createAction(
   'browser/close-browser-navigation'
-)();
+)<{ activeGenomeId: string }>();
 
 export const toggleBrowserNav: ActionCreator<ThunkAction<
   any,
@@ -244,19 +248,24 @@ export const toggleBrowserNav: ActionCreator<ThunkAction<
   Action<string>
 >> = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
-    const isBrowserNavOpened = getBrowserNavOpened(getState());
+    const state = getState();
+    const isBrowserNavOpenState = getBrowserNavOpenState(state);
+    const activeGenomeId = getBrowserActiveGenomeId(state);
 
-    if (isBrowserNavOpened) {
-      dispatch(closeBrowserNav());
+    if (!activeGenomeId) {
+      return;
+    }
+    if (isBrowserNavOpenState) {
+      dispatch(closeBrowserNav({ activeGenomeId }));
     } else {
-      dispatch(openBrowserNav());
+      dispatch(openBrowserNav(activeGenomeId));
     }
   };
 };
 
-export const updateBrowserNavStates = createAction(
+export const updateBrowserNavIconStates = createAction(
   'browser/update-browser-nav-states'
-)<BrowserNavStates>();
+)<{ activeGenomeId: string; navStates: BrowserNavIconStates }>();
 
 export const updateChrLocation = createAction(
   'browser/update-chromosome-location'

@@ -25,10 +25,6 @@ export default (
   action: ActionType<typeof headerActions>
 ): HeaderState => {
   switch (action.type) {
-    case getType(headerActions.toggleAccount):
-      return { ...state, accountExpanded: !state.accountExpanded };
-    case getType(headerActions.toggleLaunchbar):
-      return { ...state, launchbarExpanded: !state.launchbarExpanded };
     case getType(headerActions.changeCurrentApp):
       return { ...state, currentApp: action.payload };
     default:

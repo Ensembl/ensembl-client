@@ -33,6 +33,7 @@ const SpeciesPage = lazy(() => import('./species/SpeciesPage'));
 const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
+const About = lazy(() => import('./about/About'));
 
 type AppProps = {
   changeCurrentApp: (name: string) => void;
@@ -67,6 +68,7 @@ const App = (props: AppProps) => {
             component={EntityViewer}
           />
           <Route path={`/genome-browser/:genomeId?`} component={Browser} />
+          <Route path={`/about`} component={About} />
           <Route>
             <Redirect to={{ ...location, state: { is404: true } }} />
           </Route>

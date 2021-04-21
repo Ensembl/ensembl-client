@@ -1,0 +1,75 @@
+@import 'src/styles/common';
+
+.label {
+  margin-bottom: 0.5em;
+  font-weight: $light;
+  word-break: break-all;
+
+  .featureId {
+    margin-left: 0.5em;
+    font-weight: $bold;
+  }
+}
+
+.checkboxHolder {
+  margin-left: 15px;
+}
+
+.checkboxUnchecked {
+  background-color: transparent;
+  border-color: $grey;
+}
+
+.checkboxLabel {
+  font-size: 13px;
+  padding-left: 2px;
+  width: 200px;
+}
+
+.themeDark {
+  .label {
+    color: $white;
+  }
+
+  .checkboxLabel {
+    color: $white;
+  }
+}
+
+.themeLight {
+  .label {
+    color: $dark-grey;
+  }
+
+  .checkboxLabel {
+    color: $dark-grey;
+  }
+}
+
+.downloadButtonDisabled {
+  border-color: $dark-grey;
+  color: $dark-grey;
+}
+
+.container {
+  position: relative;
+
+  .geneSection {
+    .label {
+      margin-bottom: 8px;
+    }
+  }
+
+  .transcriptSection {
+    margin-top: 25px;
+
+    .label {
+      margin-bottom: 8px;
+    }
+  }
+
+  button {
+    margin: 35px 20px 0 0;
+    float: right;
+  }
+}

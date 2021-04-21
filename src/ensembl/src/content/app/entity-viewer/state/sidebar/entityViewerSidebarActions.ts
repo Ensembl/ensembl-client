@@ -27,7 +27,7 @@ import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/s
 import {
   EntityViewerSidebarGenomeState,
   SidebarTabName,
-  SidebarStatus,
+  ToggleStatus,
   EntityViewerSidebarUIState,
   SidebarModalView
 } from './entityViewerSidebarState';
@@ -59,7 +59,7 @@ export const setSidebarTabName = (
 };
 
 export const toggleSidebar = (
-  status?: SidebarStatus
+  status?: ToggleStatus
 ): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState

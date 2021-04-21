@@ -2,15 +2,12 @@ const path = require('path');
 const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
-const WorkerPlugin = require("worker-plugin");
 
 const { getPaths } = require('../paths');
-const { isDevelopment } = require('./environment-detector');
 
 module.exports = (env) => {
-  const isDev = isDevelopment(env.mode);
+  const isDev = env.dev;
   const paths = getPaths();
-
   return {
     // the starting point of webpack bundling
     entry: {
@@ -19,6 +16,13 @@ module.exports = (env) => {
 
     module: {
       rules: [
+        {
+          test: /\.worker\.ts$/,
+          use: [
+            { loader: "worker-loader" },
+            { loader: 'babel-loader' }
+          ],
+        },
         {
           test: /.tsx?$/,
           loader: 'babel-loader',
@@ -67,9 +71,9 @@ module.exports = (env) => {
     },
 
     // prevent webpack from searching fs (node API) to load the web assembly files
-    node: {
-      fs: 'empty'
-    },
+    // node: {
+    //   fs: 'empty'
+    // },
 
     // this is the config to define how the output files needs to be
     output: {
@@ -96,10 +100,9 @@ module.exports = (env) => {
         // in prod, path for saving static assets is dist/static/, and index.html has to be saved top-level in the dist folder
         filename: isDev ? 'index.html' : '../index.html',
         template: paths.htmlTemplatePath,
-        publicPath: '/'
-      }),
-
-      new WorkerPlugin()
+        publicPath: isDev ? '/' : '/static'
+      })
+      
     ],
 
     // configuration that allows us to not to use file extensions and shorten import paths (using aliases)
@@ -109,7 +112,9 @@ module.exports = (env) => {
         config: path.join(paths.rootPath, 'config.ts'),
         src: path.join(paths.rootPath, 'src'),
         tests: path.join(paths.rootPath, 'tests'),
-        static: path.join(paths.rootPath, 'static')
+        static: path.join(paths.rootPath, 'static'),
+        fs: false,
+        path: false
       }
     }
   }
