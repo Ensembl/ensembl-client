@@ -314,8 +314,8 @@ const TranscriptSummary = () => {
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div>
-            {gene.symbol && <span>{gene.symbol}</span>}
-            {gene.symbol !== stableId && <span className={styles.leftSpacing}>{gene.stable_id}</span>}
+            {gene.symbol && <span className={styles.geneSymbol}>{gene.symbol}</span>}
+            {gene.symbol !== stableId && <span>{gene.stable_id}</span>}
           </div>
         </div>
       </div>
