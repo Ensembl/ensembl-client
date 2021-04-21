@@ -27,6 +27,7 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 // TODO: check if this can be moved to a common place
 import {
@@ -321,7 +322,7 @@ const TranscriptSummary = () => {
 
       <div className={styles.row}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{gene.name}</div>
+        <div className={styles.value}>{getGeneName(gene.name)}</div>
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
