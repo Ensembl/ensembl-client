@@ -15,7 +15,7 @@
  */
 
 export function getGeneName(geneName: string | null) {
-  if(geneName && geneName != 'novel transcript') {
+  if(geneName && geneName !== 'novel transcript') {
     return geneName.replace(/\[Source:.*\]/,'');
   } else {
     return 'None';

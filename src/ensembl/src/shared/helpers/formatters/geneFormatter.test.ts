@@ -20,6 +20,7 @@
    it('returns the correct gene display name', () => {
      expect(getGeneName('novel transcript')).toBe('None');
      expect(getGeneName('')).toBe('None');
-     expect(getGeneName('Heat shock protein 101[Source:UniProtKB/TrEMBL;Acc:Q9SPH4]')).toBe('Heat shock protein 101');
+     expect(getGeneName(null)).toBe('None');
+     expect(getGeneName('Heat shock protein 101 [Source:UniProtKB/TrEMBL;Acc:Q9SPH4]')).toBe('Heat shock protein 101 ');
    });
  });
