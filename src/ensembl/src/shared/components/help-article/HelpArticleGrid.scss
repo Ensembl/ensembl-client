@@ -5,6 +5,7 @@ $maxWidth: calc(#{$mainMaxWidth} + #{$gutterWidth} + #{$asideWidth});
 
 .grid {
   display: grid;
+  min-height: 100%;
   grid-template-columns: [main] minmax(auto, $mainMaxWidth) [aside] $asideWidth;
   column-gap: $gutterWidth;
 }

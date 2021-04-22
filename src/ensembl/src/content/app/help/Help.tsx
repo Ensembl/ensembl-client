@@ -24,7 +24,8 @@ import {
   IndexArticle,
   TextArticle,
   RelatedArticles,
-  HelpArticleGrid
+  HelpArticleGrid,
+  VideoArticle
 } from 'src/shared/components/help-article';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
@@ -71,10 +72,16 @@ const MainContent = (props: { article: ArticleType }) => {
   let content;
   if (article.type === 'index') {
     content = <IndexArticle article={article} />;
-  } else if (article.type === 'article') {
+  } else if (['article', 'video'].includes(article.type)) {
+    const renderedArticle =
+      article.type === 'article' ? (
+        <TextArticle article={article} />
+      ) : (
+        <VideoArticle video={article} />
+      );
     content = (
       <HelpArticleGrid>
-        <TextArticle article={article} />
+        {renderedArticle}
         {!!article.related_articles.length && (
           <RelatedArticles articles={article.related_articles} />
         )}
