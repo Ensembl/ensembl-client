@@ -55,13 +55,18 @@ export default function useOutsideClick<T extends HTMLElement>(
       clickedInside = true;
     };
 
-    refs.forEach((ref) =>
-      ref?.current?.addEventListener('click', onClickInside)
+    const elements = refs.map((ref) => ref.current).filter(Boolean) as T[];
+
+    elements.forEach((element) =>
+      element.addEventListener('click', onClickInside)
     );
 
     document.addEventListener('click', handleClickOutside);
 
     return () => {
+      elements.forEach((element) =>
+        element.removeEventListener('click', onClickInside)
+      );
       document.removeEventListener('click', handleClickOutside);
     };
   });
