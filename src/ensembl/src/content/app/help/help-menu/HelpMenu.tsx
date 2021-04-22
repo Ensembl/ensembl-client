@@ -35,18 +35,27 @@ export type Props = {
 const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
 
-  const closePanel = () => setSubmenuItems(null);
+  const toggleMegaMenu = (items: MenuItem[]) => {
+    const nextValue = submenuItems ? null : items;
+    setSubmenuItems(nextValue);
+  };
+
+  const closeMegaMenu = () => setSubmenuItems(null);
 
   const topLevelItems = props.menu.items.map((item, index) => {
     const className = classNames(styles.topMenuItem);
-    const onMouseEnter =
-      item.type === 'collection'
-        ? () => setSubmenuItems(item.items)
-        : () => setSubmenuItems(null);
-    return (
-      <span className={className} key={index} onMouseEnter={onMouseEnter}>
+    const commonProps = {
+      key: index,
+      className
+    };
+    return item.type === 'collection' ? (
+      <span {...commonProps} onClick={() => toggleMegaMenu(item.items)}>
         {item.name}
       </span>
+    ) : (
+      <Link {...commonProps} to={item.url}>
+        {item.name}
+      </Link>
     );
   });
 
@@ -60,8 +69,8 @@ const HelpMenu = (props: Props) => {
           </div>
           <div
             className={styles.backdrop}
-            onMouseEnter={closePanel}
-            onClick={closePanel}
+            onMouseEnter={closeMegaMenu}
+            onClick={closeMegaMenu}
           />
         </>
       )}
