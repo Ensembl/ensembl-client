@@ -41,9 +41,6 @@ variables:
 .build-nginx-wp:
   image: docker
 
-  services:
-    - docker:dind
-
   stage: build_docker_images
 
   before_script:
