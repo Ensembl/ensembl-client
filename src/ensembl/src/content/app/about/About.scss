@@ -19,7 +19,22 @@ $article-right-padding: 1.5rem;
   box-shadow: 0 2px 3px $grey;
 }
 
-.main {
+.grid {
+  height: 100%;
+  overflow-y: auto;
+  padding-left: 80px;
+  padding-top: 44px;
+}
+
+.aside {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+}
+
+.xmain {
   height: 100%;
   display: grid;
   grid-template-columns: [article] calc(440px + #{$article-right-padding}) [aside] minmax(200px, 300px);

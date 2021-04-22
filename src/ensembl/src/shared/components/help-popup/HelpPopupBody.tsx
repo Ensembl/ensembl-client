@@ -91,7 +91,7 @@ const HelpPopupBody = (props: Props) => {
   if (article) {
     return (
       <>
-        <HelpArticleGrid>
+        <HelpArticleGrid className={styles.grid}>
           {article.type === 'article' ? (
             <TextArticle article={article} className={styles.article} />
           ) : (

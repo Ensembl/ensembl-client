@@ -19,7 +19,10 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import { TextArticle } from 'src/shared/components/help-article';
+import {
+  TextArticle,
+  HelpArticleGrid
+} from 'src/shared/components/help-article';
 import {
   TopMenu,
   SideMenu
@@ -47,9 +50,9 @@ const About = () => {
           {menu && <TopMenu menu={menu} currentUrl={location.pathname} />}
         </TopMenuBar>
       </div>
-      <Main>
+      <HelpArticleGrid className={styles.grid}>
         {article && <TextArticle article={article} />}
-        <aside>
+        <aside className={styles.aside}>
           {menu && (
             <>
               <div className={styles.asideTitle}>More about...</div>
@@ -57,7 +60,7 @@ const About = () => {
             </>
           )}
         </aside>
-      </Main>
+      </HelpArticleGrid>
     </>
   );
 };
@@ -68,10 +71,6 @@ const AppBar = () => {
 
 const TopMenuBar = (props: { children: ReactNode }) => {
   return <div className={styles.topMenuBar}>{props.children}</div>;
-};
-
-const Main = (props: { children: ReactNode }) => {
-  return <main className={styles.main}>{props.children}</main>;
 };
 
 export default About;

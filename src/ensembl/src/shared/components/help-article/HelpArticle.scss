@@ -22,14 +22,22 @@ $textColumnWidth: 450px;
     margin-bottom: $line-height;
   }
 
+  h1, h2, h3, p, ul {
+    width: $textColumnWidth;
+  }
+
   p, ul {
     line-height: $line-height;
     margin: $line-height 0;
-    width: $textColumnWidth;
   }
 
   figure {
     margin: 1em 0;
+  }
+
+  hr {
+    display: inline-block;
+    width: $textColumnWidth;
   }
 
   // Notice that the external-link svg has the same shape as in the static/img/shared folder

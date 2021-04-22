@@ -15,15 +15,18 @@
  */
 
 import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import styles from './HelpArticleGrid.scss';
 
 type Props = {
   children: ReactNode;
+  className?: string;
 };
 
 const HelpArticleGrid = (props: Props) => {
-  return <div className={styles.grid}>{props.children}</div>;
+  const gridClasses = classNames(styles.grid, props.className);
+  return <div className={gridClasses}>{props.children}</div>;
 };
 
 export default HelpArticleGrid;
