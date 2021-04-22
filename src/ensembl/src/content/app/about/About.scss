@@ -34,25 +34,7 @@ $article-right-padding: 1.5rem;
   align-self: start;
 }
 
-.xmain {
-  height: 100%;
-  display: grid;
-  grid-template-columns: [article] calc(440px + #{$article-right-padding}) [aside] minmax(200px, 300px);
-  grid-column-gap: 10rem;
-  padding-left: 80px;
-  padding-top: 44px;
-
-  article {
-    grid-column: article;
-  }
-  
-  aside {
-    display: flex;
-    flex-direction: column;
-    grid-column: aside;
-  }
-
-  .asideTitle {
-    margin-bottom: $aside-title-margin-bottom;
-  }
+.asideTitle {
+  font-weight: $light;
+  margin-bottom: 1rem;
 }
