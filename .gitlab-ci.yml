@@ -185,7 +185,7 @@ Test_N_Build:
   - master
 
 # Job to build static asset for internal environment
-# dev branch -> Internal
+# master branch -> Internal
 Test_N_Build:internal:
   extends: .build-static
 
@@ -254,7 +254,7 @@ Nginx:Live-WP:
     - Test_N_Build
 
 # Job to build nginx docker image for staging and internal environment
-# dev branch -> internal
+# master branch -> internal
 Nginx:Internal-EHK:
   extends: .build-nginx-ehk
   variables:
@@ -266,7 +266,7 @@ Nginx:Internal-EHK:
     - Test_N_Build:internal
 
 # Job to build nginx docker image for staging and internal environment at WP
-# dev branch -> internal
+# master branch -> internal
 Nginx:Internal-WP:
   extends: .build-nginx-wp
   variables:
