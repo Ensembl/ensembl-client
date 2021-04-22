@@ -13,64 +13,11 @@ $heading-outdent: 16px;
   height: 100%;
 }
 
-// FIXME: remove class?
-// .grid {
-//   display: grid;
-//   grid-column-gap: 15px;
-//   height: 100%;
-
-//   &_article {
-//     grid-template-columns: [article] calc(440px + #{$article-right-padding}) [empty] 1fr [aside] minmax(200px, 300px);
-//   }
-
-//   &_video {
-//     grid-column-gap: 30px;
-//     grid-template-columns: [video] minmax(450px, 1fr) [aside] minmax(200px, 300px);
-//   }
-// }
-
 .article {
   overflow-y: auto;
   height: 100%;
   padding-left: $heading-outdent;
 }
-
-// .video {
-//   height: 90%;
-// }
-
-// .videoWrapper {
-//   // the position of the wrapper is set to relative and the position of the iframe to absolute
-//   // because the wrapper needs to change its dimensions when its parent does
-//   // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
-//   // TODO: change this to aspect-ratio CSS rule when it gets better browser support
-//   position: relative;
-
-//   iframe {
-//     position: absolute;
-//     top: 0;
-//   }
-// }
-
-// .videoLoadingIndicator {
-//   position: absolute;
-//   height: 100%;
-//   width: 100%;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// }
-
-// .aside {
-//   grid-column: aside;
-//   padding-left: $aside-left-padding;
-
-//   h2 {
-//     font-size: 13px;
-//     font-weight: 300;
-//     margin: 0 0 1rem;
-//   }
-// }
 
 .relatedArticlesContainer {
   display: flex;
@@ -93,24 +40,6 @@ $heading-outdent: 16px;
 .relatedVideo {
   position: relative;
 }
-
-// .relatedVideoIcon {
-//   position: absolute;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   top: 50%;
-//   transform: translateY(-50%);
-//   background-color: $blue;
-//   height: 10px;
-//   width: 16px;
-//   margin-left: -#{$aside-left-padding};
-
-//   svg {
-//     height: 80%;
-//     fill: white;
-//   }
-// }
 
 .historyButtons {
   position: absolute;

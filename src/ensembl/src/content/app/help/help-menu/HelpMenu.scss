@@ -18,9 +18,6 @@ $submenuSidePadding: 30px;
 }
 
 .expandedMenuPanel {
-  // display: grid;
-  // grid-template-columns: repeat(4, 1fr);
-  // background-image: repeating-linear-gradient(90deg, $off-white, $off-white 25%, $grey calc(25% + 1px));
   display: flex;
   position: absolute;
   background-color: $off-white;
