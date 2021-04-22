@@ -4,7 +4,7 @@
 $indexItemWidth: 364px;
 $indexItemsHorizontalGap: 100px;
 $pageLeftPadding: 88px;
-$aside-left-padding: 12px;
+$asideLeftPadding: 12px;
 $textColumnWidth: 450px;
 
 .textArticle {
@@ -22,7 +22,7 @@ $textColumnWidth: 450px;
     margin-bottom: $line-height;
   }
 
-  p {
+  p, ul {
     line-height: $line-height;
     margin: $line-height 0;
     width: $textColumnWidth;
@@ -72,8 +72,38 @@ $textColumnWidth: 450px;
 
 }
 
+.videoArticle {
+  height: 90%;
+}
+
+.videoWrapper {
+  // the position of the wrapper is set to relative and the position of the iframe to absolute
+  // because the wrapper needs to change its dimensions when its parent does
+  // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
+  // TODO: change this to aspect-ratio CSS rule when it gets better browser support
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  iframe {
+    position: absolute;
+    top: 0;
+  }
+}
+
+.videoLoadingIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .aside {
   grid-column: aside;
+  position: sticky;
+  top: 0;
+  align-self: start;
 
   h2 {
     font-size: 13px;
@@ -105,11 +135,11 @@ $textColumnWidth: 450px;
   align-items: center;
   justify-content: center;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translate(-100%, -50%);
   background-color: $blue;
   height: 10px;
   width: 16px;
-  margin-left: -#{$aside-left-padding};
+  margin-left: -#{$asideLeftPadding};
 
   svg {
     height: 80%;

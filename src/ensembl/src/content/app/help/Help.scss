@@ -1,3 +1,10 @@
+.help {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  // overflow: hidden;
+}
+
 .appBar {
   display: flex;
   align-items: center;
@@ -6,6 +13,8 @@
 }
 
 .main {
+  height: 100%;
+  overflow-y: auto;
   padding-left: 80px;
   padding-top: 44px;
 }

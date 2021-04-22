@@ -15,6 +15,7 @@
  */
 
 import React, { useRef, useEffect, RefObject } from 'react';
+import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 
@@ -25,37 +26,41 @@ import styles from './HelpArticle.scss';
 type Props = {
   article: TextArticleType;
   className?: string;
+  onInternalLinkClick?: (link: string) => void;
 };
 
 const TextArticle = (props: Props) => {
   const articleRef = useRef<HTMLElement | null>(null);
-  useRoutingRules(articleRef);
+  useRoutingRules(articleRef, props.onInternalLinkClick);
+  const articleClasses = classNames(styles.textArticle, props.className);
 
   return (
     <article
       ref={articleRef}
-      className={styles.textArticle}
+      className={articleClasses}
       dangerouslySetInnerHTML={{ __html: props.article.body }}
     />
   );
 };
 
-const useRoutingRules = <T extends HTMLElement>(ref: RefObject<T>) => {
+const useRoutingRules = <T extends HTMLElement>(
+  ref: RefObject<T>,
+  onInternalLinkClick?: (link: string) => void
+) => {
   const dispatch = useDispatch();
 
   const onClick = (event: MouseEvent) => {
-    event.preventDefault();
     const target = event.target as HTMLElement;
 
     if (!target?.matches('a')) {
       return;
     }
+    event.preventDefault();
 
     const href = target.getAttribute('href') as string;
     if (href.startsWith('/')) {
-      // This is a link to another page within the site;
-      // Use React Router to navigate;
-      dispatch(push(href));
+      // This is an internal link
+      onInternalLinkClick ? onInternalLinkClick(href) : dispatch(push(href));
     } else {
       // A href containing an absolute urls, with a protocol and a hostname
       // is treated as a link to an external resource; open it in a new tab
@@ -64,9 +69,10 @@ const useRoutingRules = <T extends HTMLElement>(ref: RefObject<T>) => {
   };
 
   useEffect(() => {
-    ref?.current?.addEventListener('click', onClick);
+    const element = ref.current;
+    element?.addEventListener('click', onClick);
 
-    return () => ref?.current?.removeEventListener('click', onClick);
+    return () => element?.removeEventListener('click', onClick);
   });
 };
 

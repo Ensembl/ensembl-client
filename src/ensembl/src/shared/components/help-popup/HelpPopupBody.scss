@@ -1,8 +1,6 @@
 @import 'src/styles/common';
 
 $heading-outdent: 16px;
-$aside-left-padding: 1.6rem;
-$article-right-padding: 1.5rem; // area over which Macs (which hide their scrollbars by default) will display the scrollbar
 
 .spinnerContainer {
   height: 100%;
@@ -11,75 +9,64 @@ $article-right-padding: 1.5rem; // area over which Macs (which hide their scroll
   justify-content: center;
 }
 
-.grid {
-  display: grid;
-  grid-column-gap: 15px;
-  height: 100%;
+// FIXME: remove class?
+// .grid {
+//   display: grid;
+//   grid-column-gap: 15px;
+//   height: 100%;
 
-  &_article {
-    grid-template-columns: [article] calc(440px + #{$article-right-padding}) [empty] 1fr [aside] minmax(200px, 300px);
-  }
+//   &_article {
+//     grid-template-columns: [article] calc(440px + #{$article-right-padding}) [empty] 1fr [aside] minmax(200px, 300px);
+//   }
 
-  &_video {
-    grid-column-gap: 30px;
-    grid-template-columns: [video] minmax(450px, 1fr) [aside] minmax(200px, 300px);
-  }
-}
+//   &_video {
+//     grid-column-gap: 30px;
+//     grid-template-columns: [video] minmax(450px, 1fr) [aside] minmax(200px, 300px);
+//   }
+// }
 
 .article {
-  grid-column: article;
-  padding-left: $heading-outdent;
-  padding-right: $article-right-padding;
   overflow-y: auto;
-
-  h1 {
-    margin-left: -$heading-outdent;
-    font-weight: 300;
-    margin-top: 0;
-  }
-
-  img {
-    max-width: 100%;
-  }
-}
-
-.video {
-  grid-column: video;
-  height: 90%;
-}
-
-.videoWrapper {
-  // the position of the wrapper is set to relative and the position of the iframe to absolute
-  // because the wrapper needs to change its dimensions when its parent does
-  // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
-  // TODO: change this to aspect-ratio CSS rule when it gets better browser support
-  position: relative;
-
-  iframe {
-    position: absolute;
-    top: 0;
-  }
-}
-
-.videoLoadingIndicator {
-  position: absolute;
   height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding-left: $heading-outdent;
 }
 
-.aside {
-  grid-column: aside;
-  padding-left: $aside-left-padding;
+// .video {
+//   height: 90%;
+// }
 
-  h2 {
-    font-size: 13px;
-    font-weight: 300;
-    margin: 0 0 1rem;
-  }
-}
+// .videoWrapper {
+//   // the position of the wrapper is set to relative and the position of the iframe to absolute
+//   // because the wrapper needs to change its dimensions when its parent does
+//   // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
+//   // TODO: change this to aspect-ratio CSS rule when it gets better browser support
+//   position: relative;
+
+//   iframe {
+//     position: absolute;
+//     top: 0;
+//   }
+// }
+
+// .videoLoadingIndicator {
+//   position: absolute;
+//   height: 100%;
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+// .aside {
+//   grid-column: aside;
+//   padding-left: $aside-left-padding;
+
+//   h2 {
+//     font-size: 13px;
+//     font-weight: 300;
+//     margin: 0 0 1rem;
+//   }
+// }
 
 .relatedArticlesContainer {
   display: flex;
@@ -103,23 +90,23 @@ $article-right-padding: 1.5rem; // area over which Macs (which hide their scroll
   position: relative;
 }
 
-.relatedVideoIcon {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: $blue;
-  height: 10px;
-  width: 16px;
-  margin-left: -#{$aside-left-padding};
+// .relatedVideoIcon {
+//   position: absolute;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   top: 50%;
+//   transform: translateY(-50%);
+//   background-color: $blue;
+//   height: 10px;
+//   width: 16px;
+//   margin-left: -#{$aside-left-padding};
 
-  svg {
-    height: 80%;
-    fill: white;
-  }
-}
+//   svg {
+//     height: 80%;
+//     fill: white;
+//   }
+// }
 
 .historyButtons {
   position: absolute;

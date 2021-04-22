@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
 
@@ -25,19 +26,35 @@ import styles from './HelpArticle.scss';
 
 type Props = {
   articles: RelatedArticleType[];
+  title?: string;
+  onArticleClick?: (article: RelatedArticleType) => void;
 };
 
 const RelatedArticles = (props: Props) => {
+  const dispatch = useDispatch();
+
+  const onArticleClick = (article: RelatedArticleType) => {
+    if (props.onArticleClick) {
+      props.onArticleClick(article);
+    } else {
+      dispatch(push(article.url));
+    }
+  };
+
   const relatedArticles = props.articles.map((relatedArticle) => {
     const relatedItemClassName =
       relatedArticle.type === 'article'
         ? styles.relatedArticle
         : styles.relatedVideo;
     return (
-      <Link
-        to={relatedArticle.url}
+      <a
+        href={relatedArticle.url}
         key={relatedArticle.slug}
         className={relatedItemClassName}
+        onClick={(event) => {
+          event.preventDefault();
+          onArticleClick(relatedArticle);
+        }}
       >
         {relatedArticle.type === 'video' && (
           <span className={styles.relatedVideoIcon}>
@@ -45,14 +62,16 @@ const RelatedArticles = (props: Props) => {
           </span>
         )}
         {relatedArticle.title}
-      </Link>
+      </a>
     );
   });
+
+  const title = props.title || 'More help...';
 
   return (
     <aside className={styles.aside}>
       <>
-        <h2>More help...</h2>
+        <h2>{title}</h2>
         <div className={styles.relatedArticles}>{relatedArticles}</div>
       </>
     </aside>

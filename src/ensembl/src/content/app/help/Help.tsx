@@ -54,7 +54,7 @@ const Help = () => {
   return (
     <>
       <AppBar />
-      <div>
+      <div className={styles.help}>
         {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
         {article && <MainContent article={article} />}
       </div>
