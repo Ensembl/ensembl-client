@@ -93,7 +93,7 @@ const HelpPopupBody = (props: Props) => {
       <>
         <HelpArticleGrid className={styles.grid}>
           {article.type === 'article' ? (
-            <TextArticle article={article} className={styles.article} />
+            <TextArticle article={article} />
           ) : (
             <VideoArticle video={article} />
           )}

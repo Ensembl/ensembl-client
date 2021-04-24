@@ -13,12 +13,6 @@ $heading-outdent: 16px;
   height: 100%;
 }
 
-.article {
-  overflow-y: auto;
-  height: 100%;
-  padding-left: $heading-outdent;
-}
-
 .relatedArticlesContainer {
   display: flex;
   flex-direction: column;

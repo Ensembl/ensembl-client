@@ -8,6 +8,10 @@ $asideLeftPadding: 12px;
 $textColumnWidth: 450px;
 
 .textArticle {
+  height: 100%;
+  overflow-y: auto;
+  padding-left: $heading-outdent;
+  padding-bottom: 3rem;
 
   h1 {
     font-size: 15px;
