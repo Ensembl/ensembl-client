@@ -1,6 +1,6 @@
 .help {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: [menu] auto [article-grid] minmax(0, 1fr);
   height: 100%;
 }
 
@@ -15,4 +15,8 @@
   height: 100%;
   padding-left: 80px;
   padding-top: 44px;
+}
+
+.articleGrid {
+  grid-row: article-grid;
 }

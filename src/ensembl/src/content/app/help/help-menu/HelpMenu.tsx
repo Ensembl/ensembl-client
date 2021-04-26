@@ -16,6 +16,8 @@
 
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
 import { Link } from 'react-router-dom';
 
 import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
@@ -65,7 +67,7 @@ const HelpMenu = (props: Props) => {
       {submenuItems && (
         <>
           <div className={styles.expandedMenuPanel}>
-            <Submenu items={submenuItems} />
+            <Submenu items={submenuItems} onLinkClick={closeMegaMenu}/>
           </div>
           <div
             className={styles.backdrop}
@@ -80,21 +82,31 @@ const HelpMenu = (props: Props) => {
 
 type SubmenuProps = {
   items: MenuItem[];
+  onLinkClick: () => void;
 };
 const Submenu = (props: SubmenuProps) => {
   const [childItems, setChildItems] = useState<MenuItem[] | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setChildItems(null);
   }, [props.items]);
 
+  const onLinkClick = (url: string) => {
+    // hopefully, the url is an internal one;
+    // might need extra logic if we can have external urls in the menu
+    props.onLinkClick();
+    dispatch(push(url));
+  };
+
   const renderedMenuItems = props.items.map((item, index) => {
     const className = classNames(styles.submenuItem);
-    const props: { onMouseOver?: () => void } = {};
+    const props: Record<string, unknown> = {};
     if (item.type === 'collection') {
       props.onMouseOver = () => setChildItems(item.items);
     } else {
       props.onMouseOver = () => setChildItems(null);
+      props.onClick = () => onLinkClick(item.url);
     }
     return (
       <li key={index} {...props} className={className}>
@@ -103,9 +115,8 @@ const Submenu = (props: SubmenuProps) => {
             {item.name}
             <Chevron className={styles.chevron} />
           </>
-        ) : (
-          <Link to={item.url}>{item.name}</Link>
-        )}
+        ) : item.name
+        }
       </li>
     );
   });
@@ -117,7 +128,7 @@ const Submenu = (props: SubmenuProps) => {
   return childItems ? (
     <>
       {renderedSubmenu}
-      <Submenu items={childItems} />
+      <Submenu items={childItems} onLinkClick={props.onLinkClick}/>
     </>
   ) : (
     renderedSubmenu

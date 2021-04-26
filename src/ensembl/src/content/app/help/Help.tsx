@@ -48,10 +48,6 @@ const Help = () => {
     endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`
   });
 
-  if (!article) {
-    return null; // FIXME
-  }
-
   return (
     <>
       <AppBar />
@@ -80,7 +76,7 @@ const MainContent = (props: { article: ArticleType }) => {
         <VideoArticle video={article} />
       );
     content = (
-      <HelpArticleGrid>
+      <HelpArticleGrid className={styles.articleGrid}>
         {renderedArticle}
         {!!article.related_articles.length && (
           <RelatedArticles articles={article.related_articles} />
