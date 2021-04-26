@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
@@ -36,9 +36,19 @@ export type Props = {
 
 const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
+  const clickedMenuRef = useRef<number|null>(null);
 
-  const toggleMegaMenu = (items: MenuItem[]) => {
-    const nextValue = submenuItems ? null : items;
+  const toggleMegaMenu = (items: MenuItem[], menuIndex: number) => {
+    let nextValue = null;
+    if (clickedMenuRef.current === null || clickedMenuRef.current !== menuIndex) {
+      // clicking on a menu item for the first time
+      clickedMenuRef.current = menuIndex;
+      nextValue = items;
+    } else {
+      // this means a repeated click on the same menu iteem
+      clickedMenuRef.current = null;
+    }
+
     setSubmenuItems(nextValue);
   };
 
@@ -51,7 +61,7 @@ const HelpMenu = (props: Props) => {
       className
     };
     return item.type === 'collection' ? (
-      <span {...commonProps} onClick={() => toggleMegaMenu(item.items)}>
+      <span {...commonProps} onClick={() => toggleMegaMenu(item.items, index)}>
         {item.name}
       </span>
     ) : (
