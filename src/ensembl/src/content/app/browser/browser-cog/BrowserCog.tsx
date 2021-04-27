@@ -37,7 +37,17 @@ const BrowserCog = (props: BrowserCogProps) => {
 
   const toggleCog = useCallback(() => {
     if (cogActivated === false) {
-      updateSelectedCog(trackId);
+      // Wrapping updateSelectedCog in a setTimeout below is a cheap workaround for the way we currently keep track
+      // of which BrowserTrackConfig is open.
+      // Imagine a user clicks on one cog (to open one BrowserTrackConfig), and then clicks on another cog.
+      // This will trigger two events that we are tracking: 1) click on a new cog; 2) click outside the opened BrowserTrackConfig.
+      // Using the setTimeout to bump the execution of updateSelectedCog to the end of the queue,
+      // we allow the time for the click outside the opened BrowserTrackConfig to get registered and for the component to get closed
+      // before dispatching the action that will open the BrowserTrackConfig for the newly clicked cog.
+      // (In the future, we should probably review how the state of the cogs is maintained. Does it even need to be in redux?)
+      setTimeout(() => {
+        updateSelectedCog(trackId);
+      }, 0);
 
       analyticsTracking.trackEvent({
         category: 'track_settings',
@@ -73,7 +83,7 @@ const BrowserCog = (props: BrowserCogProps) => {
     setTrackConfigAnimation(false);
   }, [cogActivated]);
 
-  const transitions = useTransition(showTrackConfig, null, {
+  const transition = useTransition(showTrackConfig, {
     config: { duration: 100 },
     enter: { opacity: 1 },
     from: { opacity: 0 },
@@ -90,10 +100,10 @@ const BrowserCog = (props: BrowserCogProps) => {
           image={cogIconConfig.icon}
         />
       </div>
-      {transitions.map(({ item, key, props: style }) => {
+      {transition((style, item) => {
         return (
           item && (
-            <animated.div key={key} style={style}>
+            <animated.div key="browserTrackConfig" style={style}>
               <BrowserTrackConfig
                 onClose={() => props.updateSelectedCog(null)}
               />

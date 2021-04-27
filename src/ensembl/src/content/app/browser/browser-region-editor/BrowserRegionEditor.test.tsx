@@ -97,8 +97,10 @@ describe('<BrowserRegionEditor />', () => {
 
     it('validates region input on submit', () => {
       const [stick] = initialChrLocation;
-      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
-      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+      const locationStartInput = getCommaSeparatedNumber(
+        faker.datatype.number()
+      );
+      const locationEndInput = getCommaSeparatedNumber(faker.datatype.number());
 
       const { container } = render(<BrowserRegionEditor {...defaultProps} />);
       const [firstInput, secondInput] = container.querySelectorAll('input');
@@ -129,8 +131,10 @@ describe('<BrowserRegionEditor />', () => {
         jest.restoreAllMocks();
       });
 
-      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
-      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+      const locationStartInput = getCommaSeparatedNumber(
+        faker.datatype.number()
+      );
+      const locationEndInput = getCommaSeparatedNumber(faker.datatype.number());
       const startError = 'start error message';
       const endError = 'end error message';
       const mockValidationMessages = createRegionValidationMessages();
@@ -208,8 +212,10 @@ describe('<BrowserRegionEditor />', () => {
     });
 
     describe('on validation success', () => {
-      const locationStartInput = getCommaSeparatedNumber(faker.random.number());
-      const locationEndInput = getCommaSeparatedNumber(faker.random.number());
+      const locationStartInput = getCommaSeparatedNumber(
+        faker.datatype.number()
+      );
+      const locationEndInput = getCommaSeparatedNumber(faker.datatype.number());
       const regionId = faker.lorem.words();
 
       beforeEach(() => {

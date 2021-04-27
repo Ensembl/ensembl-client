@@ -3,7 +3,6 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
-    'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable rules that conflict with prettier
     'plugin:prettier/recommended' // Displays prettier errors as ESLint errors. This has to be the last in this array (not yet sure why).
   ],
   plugins: ['react-hooks'],

@@ -113,15 +113,15 @@ describe('<CheckboxWithTextfields />', () => {
   });
 
   it('displays N number of file details based on the files prop', () => {
-    const files = Array(faker.random.number(10)).fill(mockReadFile);
+    const files = Array(faker.datatype.number(10)).fill(mockReadFile);
     const { container } = renderCheckboxWithTextfields({ files: files });
 
     expect(container.querySelectorAll('.filename').length).toBe(files.length);
   });
 
   it('calls the onFilesChange when a file is removed', async () => {
-    const files = Array(faker.random.number(10) || 1).fill(mockReadFile);
-    const randomNumber = faker.random.number(files.length - 1);
+    const files = Array(faker.datatype.number(10) || 1).fill(mockReadFile);
+    const randomNumber = faker.datatype.number(files.length - 1);
     const { container } = renderCheckboxWithTextfields({ files: files });
 
     const removeIcon = container

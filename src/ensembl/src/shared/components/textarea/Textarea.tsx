@@ -55,7 +55,6 @@ const Textarea = (props: Props) => {
       | React.ChangeEvent<HTMLTextAreaElement>
       | React.FocusEvent<HTMLTextAreaElement>
   ) => {
-    e.persist();
     const value = e.target.value;
 
     if (eventName === 'change') {

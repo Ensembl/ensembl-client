@@ -39,12 +39,12 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
 ));
 
 const browserNavIconStates: BrowserNavIconStates = {
-  [BrowserNavAction.NAVIGATE_UP]: faker.random.boolean(),
-  [BrowserNavAction.NAVIGATE_RIGHT]: faker.random.boolean(),
-  [BrowserNavAction.NAVIGATE_DOWN]: faker.random.boolean(),
-  [BrowserNavAction.NAVIGATE_LEFT]: faker.random.boolean(),
-  [BrowserNavAction.ZOOM_OUT]: faker.random.boolean(),
-  [BrowserNavAction.ZOOM_IN]: faker.random.boolean()
+  [BrowserNavAction.NAVIGATE_UP]: faker.datatype.boolean(),
+  [BrowserNavAction.NAVIGATE_RIGHT]: faker.datatype.boolean(),
+  [BrowserNavAction.NAVIGATE_DOWN]: faker.datatype.boolean(),
+  [BrowserNavAction.NAVIGATE_LEFT]: faker.datatype.boolean(),
+  [BrowserNavAction.ZOOM_OUT]: faker.datatype.boolean(),
+  [BrowserNavAction.ZOOM_IN]: faker.datatype.boolean()
 };
 
 describe('BrowserNavBarControls', () => {

@@ -25,7 +25,7 @@ import { Strand } from 'src/shared/types/thoas/strand';
 export const createEnsObject = (objectType?: EnsObjectType): EnsObject => {
   const genome_id = faker.lorem.word();
   const type = objectType || 'gene';
-  const object_id = `${genome_id}:${objectType}:${faker.random.uuid()};`;
+  const object_id = `${genome_id}:${objectType}:${faker.datatype.uuid()};`;
   return {
     bio_type: faker.lorem.words(),
     label: faker.lorem.word(),
@@ -42,11 +42,11 @@ export const createEnsObject = (objectType?: EnsObjectType): EnsObject => {
 };
 
 const createLocation = () => {
-  const startPosition = faker.random.number(10000);
-  const endPosition = startPosition + faker.random.number(10000);
+  const startPosition = faker.datatype.number(10000);
+  const endPosition = startPosition + faker.datatype.number(10000);
 
   return {
-    chromosome: String(faker.random.number(30)),
+    chromosome: String(faker.datatype.number(30)),
     start: startPosition,
     end: endPosition
   };

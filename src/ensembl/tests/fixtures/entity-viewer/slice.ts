@@ -20,9 +20,9 @@ import { Slice } from 'src/shared/types/thoas/slice';
 import { Strand } from 'src/shared/types/thoas/strand';
 
 export const createSlice = (): Slice => {
-  const start = faker.random.number({ min: 1, max: 1000000 });
+  const start = faker.datatype.number({ min: 1, max: 1000000 });
   const end =
-    start + faker.random.number({ min: start + 100, max: start + 10000 });
+    start + faker.datatype.number({ min: start + 100, max: start + 10000 });
   const length = end - start + 1;
 
   return {
@@ -32,11 +32,11 @@ export const createSlice = (): Slice => {
       length
     },
     strand: {
-      code: faker.random.boolean() ? Strand.FORWARD : Strand.REVERSE
+      code: faker.datatype.boolean() ? Strand.FORWARD : Strand.REVERSE
     },
     region: {
       name: faker.lorem.word(),
-      assembly: faker.random.uuid()
+      assembly: faker.datatype.uuid()
     }
   };
 };

@@ -20,7 +20,7 @@ import faker from 'faker';
 
 describe('getCommaSeparatedNumber', () => {
   it('returns x,xxx for the input number xxxx', () => {
-    const randomNumber = faker.random.number({ min: 1000, max: 9999 });
+    const randomNumber = faker.datatype.number({ min: 1000, max: 9999 });
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 
@@ -39,7 +39,7 @@ describe('getCommaSeparatedNumber', () => {
   });
 
   it('returns xx,xxx for the input number xxxxx', () => {
-    const randomNumber = faker.random.number({ min: 10000, max: 99999 });
+    const randomNumber = faker.datatype.number({ min: 10000, max: 99999 });
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 
@@ -58,7 +58,7 @@ describe('getCommaSeparatedNumber', () => {
   });
 
   it('returns xxx,xxx for the input number xxxxxx', () => {
-    const randomNumber = faker.random.number({ min: 100000, max: 999999 });
+    const randomNumber = faker.datatype.number({ min: 100000, max: 999999 });
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 
@@ -77,7 +77,7 @@ describe('getCommaSeparatedNumber', () => {
   });
 
   it('returns x,xxx,xxx for the input number xxxxxxx', () => {
-    const randomNumber = faker.random.number({ min: 1000000, max: 9999999 });
+    const randomNumber = faker.datatype.number({ min: 1000000, max: 9999999 });
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 
@@ -99,7 +99,7 @@ describe('getCommaSeparatedNumber', () => {
   });
 
   it('returns -x,xxx for the input number -xxxx', () => {
-    const randomNumber = faker.random.number({ min: -9999, max: -1000 });
+    const randomNumber = faker.datatype.number({ min: -9999, max: -1000 });
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 
@@ -118,7 +118,7 @@ describe('getCommaSeparatedNumber', () => {
   });
 
   it('returns -x,xxx for the input number -xxxx', () => {
-    const randomNumber = faker.random.number({ min: -9999, max: -1000 });
+    const randomNumber = faker.datatype.number({ min: -9999, max: -1000 });
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 
@@ -138,8 +138,8 @@ describe('getCommaSeparatedNumber', () => {
 
   it('returns x,xxx.x for the input number xxxx.x', () => {
     const randomNumber =
-      faker.random.number({ min: 1000, max: 9999 }) +
-      faker.random.number({ min: 1, max: 9 }) / 10;
+      faker.datatype.number({ min: 1000, max: 9999 }) +
+      faker.datatype.number({ min: 1, max: 9 }) / 10;
 
     const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -39,14 +39,16 @@ export function useRestoreScrollPosition(props: RestoreScrollPositionProps) {
 
   useEffect(() => {
     const targetElement = targetElementRef.current as HTMLDivElement;
-    // Give it some time for the component to mount before restoring the scroll position
-    setTimeout(() => {
-      if (!skip && (scrollPosition.scrollTop || scrollPosition.scrollLeft)) {
-        targetElement.scrollTop = scrollPosition.scrollTop;
-        targetElement.scrollLeft = scrollPosition.scrollLeft;
-      }
-    }, 100);
 
+    if (!skip && (scrollPosition.scrollTop || scrollPosition.scrollLeft)) {
+      targetElement.scrollTop = scrollPosition.scrollTop;
+      targetElement.scrollLeft = scrollPosition.scrollLeft;
+    }
+  }, [referenceId]);
+
+  // using the useLayoutEffect hook here, because its cleanup function runs
+  // synchronously, before the component is unmounted from the DOM
+  useLayoutEffect(() => {
     return () => {
       const targetElement = targetElementRef.current as HTMLDivElement;
       dispatch(

@@ -26,9 +26,9 @@ import { BrowserLocationIndicator } from './BrowserLocationIndicator';
 import { ChrLocation } from '../browserState';
 
 const chrName = faker.lorem.word();
-const startPosition = faker.random.number({ min: 1, max: 1000000 });
+const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
 const endPosition =
-  startPosition + faker.random.number({ min: 1000, max: 1000000 });
+  startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
 
 const props = {
   location: [chrName, startPosition, endPosition] as ChrLocation,

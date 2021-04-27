@@ -46,7 +46,7 @@ const regionObjectId = `${genomeId}:region:${region}`;
 
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
-  object_id: `${faker.random.word()}:gene:${faker.random.uuid()}`,
+  object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,
   object_type: 'gene',
   label: faker.random.word()
 });

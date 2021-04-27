@@ -9,7 +9,7 @@ const { getPaths } = require('../paths');
 const paths = getPaths('development');
 
 const devServerConfig = {
-  before(app) {
+  onBeforeSetupMiddleware({ app }) {
     // use proper mime-type for wasm files
     app.get('*.wasm', function(req, res, next) {
       const options = {
@@ -64,13 +64,15 @@ const devServerConfig = {
   // enable hot module reloading
   hot: true,
 
-  // configuration to customise what is displayed in the console by webpack
-  stats: {
-    assets: false,
-    chunks: false,
-    colors: true,
-    modules: false
-  }
+  static: [
+    {
+      directory: path.resolve(__dirname, '../..', 'static'),
+      publicPath: '/static',
+      serveIndex: true,
+      watch: true,
+    }
+  ]
+
 };
 
 

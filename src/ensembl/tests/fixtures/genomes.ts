@@ -55,7 +55,7 @@ export const createGenomeKaryotype = () =>
   times(25, () => ({
     is_chromosome: true,
     is_circular: false,
-    length: faker.random.number(),
+    length: faker.datatype.number(),
     name: faker.lorem.words(),
     type: GenomeKaryotypeItemType.CHROMOSOME
   }));

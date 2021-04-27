@@ -22,7 +22,7 @@ import classNames from 'classnames';
 import { Pick2 } from 'ts-multipick';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers.ts';
+import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';

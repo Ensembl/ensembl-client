@@ -25,7 +25,7 @@ import times from 'lodash/times';
 const onChange = jest.fn();
 
 const createOption = () => ({
-  value: faker.random.uuid(),
+  value: faker.datatype.uuid(),
   label: faker.random.words(5)
 });
 
