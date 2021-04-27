@@ -39,7 +39,7 @@ const generateFile = () => {
   return new File([fileContents], 'file.txt', { type: 'text/plain' });
 };
 
-const files = times(faker.random.number(10), () => generateFile());
+const files = times(faker.datatype.number(10), () => generateFile());
 
 const mockFileReader = {
   onload: jest.fn(),

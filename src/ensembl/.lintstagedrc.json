@@ -1,0 +1,11 @@
+{
+  "*.{ts,tsx}": [
+    "eslint --max-warnings=0",
+    "manage-licence-header add",
+    "prettier --write"
+  ],
+  "*.{scss}": [
+    "stylelint",
+    "prettier --write"
+  ]
+}

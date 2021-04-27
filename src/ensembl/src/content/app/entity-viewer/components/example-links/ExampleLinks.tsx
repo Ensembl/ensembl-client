@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 
@@ -28,18 +28,12 @@ import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSele
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { RootState } from 'src/store';
-import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
 import styles from './ExampleLinks.scss';
 
 type ExampleGene = {
   unversioned_stable_id: string;
   symbol: string;
-};
-
-type ExampleLinksProps = {
-  activeGenomeId: string | null;
-  exampleEntities: ExampleFocusObject[];
 };
 
 const QUERY = gql`
@@ -53,11 +47,12 @@ const QUERY = gql`
 `;
 
 // NOTE: the component currently handles only example gene
-const ExampleLinks = (props: ExampleLinksProps) => {
-  const exampleGeneId = props.exampleEntities.find(
-    ({ type }) => type === 'gene'
-  )?.id;
-  const { activeGenomeId } = props;
+const ExampleLinks = () => {
+  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+  const exampleEntities = useSelector((state: RootState) =>
+    getGenomeExampleFocusObjects(state, activeGenomeId || '')
+  );
+  const exampleGeneId = exampleEntities.find(({ type }) => type === 'gene')?.id;
   const { loading, data, error } = useQuery<{ gene: ExampleGene }>(QUERY, {
     variables: { geneId: exampleGeneId, genomeId: activeGenomeId },
     skip: !exampleGeneId || !activeGenomeId
@@ -84,7 +79,7 @@ const ExampleLinks = (props: ExampleLinksProps) => {
     objectId: data.gene.unversioned_stable_id
   });
   const path = urlHelper.entityViewer({
-    genomeId: props.activeGenomeId,
+    genomeId: activeGenomeId,
     entityId: featureIdInUrl
   });
 
@@ -98,15 +93,4 @@ const ExampleLinks = (props: ExampleLinksProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const exampleEntities = activeGenomeId
-    ? getGenomeExampleFocusObjects(state, activeGenomeId)
-    : [];
-  return {
-    activeGenomeId,
-    exampleEntities
-  };
-};
-
-export default connect(mapStateToProps)(ExampleLinks);
+export default ExampleLinks;
