@@ -240,15 +240,10 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
           </div>
-          {proteinSummaryStats &&
+          { proteinSummaryStats &&
             proteinXrefs &&
             domainsLoadingState === LoadingState.SUCCESS && (
               <div>
-                <ProteinExternalReference
-                  source={ExternalSource.PDBE}
-                  accessionId={proteinStatsXref.accession_id}
-                  name={proteinStatsXref.name}
-                />
                 {proteinSummaryStats && (
                   <div className={styles.proteinFeaturesCountWrapper}>
                     <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
@@ -309,39 +304,61 @@ const ProteinExternalReferenceGroup = (
 
   const chevronClass = classNames(
     styles.chevron,
-    isXrefGroupOpen && styles.close
+    isXrefGroupOpen? styles.chevronDown : styles.chevronUp
   );
 
   if (xrefs.length > 3) {
     const displayXref = xrefs[0];
+
+    if (!displayXref) {
+      return null;
+    }
+
     return (
       <div className={styles.xrefGroupWrapper}>
-        <div>
           {!isXrefGroupOpen ? (
-            <ProteinExternalReference
-              key={displayXref.accession_id}
-              source={source}
-              accessionId={displayXref.accession_id}
-              name={displayXref.name}
-            />
+            <div className={styles.xrefWithChevron}>
+              <ProteinExternalReference
+                key={displayXref.accession_id}
+                source={source}
+                accessionId={displayXref.accession_id}
+                name={displayXref.name}
+              />
+              <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
+                + {xrefs.length - 1}
+                <ChevronDown className={chevronClass} />
+              </div>
+            </div>
           ) : (
-            xrefs.map((xref) => {
-              return (
+            <div className={styles.xrefGroupWrapper}>
+              <div className={styles.xrefWithChevron}>
                 <ProteinExternalReference
-                  key={xref.accession_id}
+                  key={displayXref.accession_id}
                   source={source}
-                  accessionId={xref.accession_id}
-                  name={xref.name}
+                  accessionId={displayXref.accession_id}
+                  name={displayXref.name}
                 />
-              );
-            })
+                <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
+                  + {xrefs.length - 1}
+                  <ChevronDown className={chevronClass} />
+                </div>
+              </div>
+              { xrefs.map((xref, i) => {
+                if (i === 0) { // Ignore first element as it is displayed above with chevron.
+                  return;
+                }
+                return (
+                  <ProteinExternalReference
+                    key={xref.accession_id}
+                    source={source}
+                    accessionId={xref.accession_id}
+                    name={xref.name}
+                  />
+                );
+              })}
+            </div>
           )}
         </div>
-        <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
-          + {xrefs.length - 1}
-          <ChevronDown className={chevronClass} />
-        </div>
-      </div>
     );
   } else {
     return (
