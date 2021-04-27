@@ -1,6 +1,6 @@
 # CI/CD Pipeline
 # dev branch -> staging
-# dev branch -> internal (Custom Downloads + Entity Viewer)
+# master branch -> internal (Custom Downloads)
 # master branch -> live
 
 # Define stages for the CI/CD pipeline
@@ -185,7 +185,7 @@ Test_N_Build:
   - master
 
 # Job to build static asset for internal environment
-# dev branch -> Internal
+# master branch -> Internal
 Test_N_Build:internal:
   extends: .build-static
 
@@ -200,7 +200,7 @@ Test_N_Build:internal:
     - src/ensembl/dist/
 
   only:
-  - dev
+  - master
 
 Test_N_Build:review:
   extends: .build-static
@@ -254,26 +254,26 @@ Nginx:Live-WP:
     - Test_N_Build
 
 # Job to build nginx docker image for staging and internal environment
-# dev branch -> internal
+# master branch -> internal
 Nginx:Internal-EHK:
   extends: .build-nginx-ehk
   variables:
     DEPLOYENV: internal
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
   only:
-  - dev
+  - master
   needs:
     - Test_N_Build:internal
 
 # Job to build nginx docker image for staging and internal environment at WP
-# dev branch -> internal
+# master branch -> internal
 Nginx:Internal-WP:
   extends: .build-nginx-wp
   variables:
     DEPLOYENV: internal
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
   only:
-  - dev
+  - master
   needs:
     - Test_N_Build:internal
 
@@ -374,7 +374,7 @@ Internal:EHK-HH:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
     KUBE_CONTEXT: ens-dev-ctx
   only:
-  - dev
+  - master
   needs:
     - Test_N_Build:internal
     - Nginx:Internal-EHK
@@ -387,7 +387,7 @@ Internal:WP-HX:
   environment:
     name : wp-hx-internal
   only:
-  - dev
+  - master
   needs:
     - Test_N_Build:internal
     - Nginx:Internal-WP
@@ -400,7 +400,7 @@ Internal:WP-HH:
   environment:
     name : wp-hh-internal
   only:
-  - dev
+  - master
   needs:
     - Test_N_Build:internal
     - Nginx:Internal-WP
