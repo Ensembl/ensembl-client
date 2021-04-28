@@ -36,11 +36,14 @@ export type Props = {
 
 const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
-  const clickedMenuRef = useRef<number|null>(null);
+  const clickedMenuRef = useRef<number | null>(null);
 
   const toggleMegaMenu = (items: MenuItem[], menuIndex: number) => {
     let nextValue = null;
-    if (clickedMenuRef.current === null || clickedMenuRef.current !== menuIndex) {
+    if (
+      clickedMenuRef.current === null ||
+      clickedMenuRef.current !== menuIndex
+    ) {
       // clicking on a menu item for the first time
       clickedMenuRef.current = menuIndex;
       nextValue = items;
@@ -52,7 +55,10 @@ const HelpMenu = (props: Props) => {
     setSubmenuItems(nextValue);
   };
 
-  const closeMegaMenu = () => setSubmenuItems(null);
+  const closeMegaMenu = () => {
+    setSubmenuItems(null);
+    clickedMenuRef.current = null;
+  };
 
   const topLevelItems = props.menu.items.map((item, index) => {
     const className = classNames(styles.topMenuItem);
@@ -77,7 +83,7 @@ const HelpMenu = (props: Props) => {
       {submenuItems && (
         <>
           <div className={styles.expandedMenuPanel}>
-            <Submenu items={submenuItems} onLinkClick={closeMegaMenu}/>
+            <Submenu items={submenuItems} onLinkClick={closeMegaMenu} />
           </div>
           <div
             className={styles.backdrop}
@@ -125,8 +131,9 @@ const Submenu = (props: SubmenuProps) => {
             {item.name}
             <Chevron className={styles.chevron} />
           </>
-        ) : item.name
-        }
+        ) : (
+          item.name
+        )}
       </li>
     );
   });
@@ -138,7 +145,7 @@ const Submenu = (props: SubmenuProps) => {
   return childItems ? (
     <>
       {renderedSubmenu}
-      <Submenu items={childItems} onLinkClick={props.onLinkClick}/>
+      <Submenu items={childItems} onLinkClick={props.onLinkClick} />
     </>
   ) : (
     renderedSubmenu
