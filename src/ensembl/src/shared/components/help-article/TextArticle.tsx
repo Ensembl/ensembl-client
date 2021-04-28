@@ -19,12 +19,12 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 
-import { TextArticle as TextArticleType } from 'src/shared/types/help-and-docs/article';
+import { TextArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.scss';
 
 type Props = {
-  article: TextArticleType;
+  article: TextArticleData;
   className?: string;
   onInternalLinkClick?: (link: string) => void;
 };

@@ -18,14 +18,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import {
-  IndexArticle as IndexArticleType,
-  IndexArticleItem as IndexArticleItemType
+  IndexArticleData,
+  IndexArticleItem
 } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.scss';
 
 type Props = {
-  article: IndexArticleType;
+  article: IndexArticleData;
 };
 
 const IndexArticle = (props: Props) => {
@@ -35,7 +35,7 @@ const IndexArticle = (props: Props) => {
   return <div className={styles.indexArticle}>{indexItems}</div>;
 };
 
-const IndexItem = (props: IndexArticleItemType) => {
+const IndexItem = (props: IndexArticleItem) => {
   const { title, summary, url } = props;
   return (
     <div className={styles.indexItem}>

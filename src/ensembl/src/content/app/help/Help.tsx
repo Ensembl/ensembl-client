@@ -30,14 +30,14 @@ import {
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import {
-  TextArticle as TextArticleType,
-  VideoArticle as VideoArticleType,
-  IndexArticle as IndexArticleType
+  TextArticleData,
+  VideoArticleData,
+  IndexArticleData
 } from 'src/shared/types/help-and-docs/article';
 
 import styles from './Help.scss';
 
-type ArticleType = TextArticleType | VideoArticleType | IndexArticleType;
+type ArticleData = TextArticleData | VideoArticleData | IndexArticleData;
 
 const Help = () => {
   const location = useLocation();
@@ -63,7 +63,7 @@ const AppBar = () => {
   return <div className={styles.appBar}>Help</div>;
 };
 
-const MainContent = (props: { article: ArticleType }) => {
+const MainContent = (props: { article: ArticleData }) => {
   const { article } = props;
   let content;
   if (article.type === 'index') {

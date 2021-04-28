@@ -29,7 +29,7 @@ import {
 } from 'src/content/app/about/components/about-menu/AboutMenu';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
-import { TextArticle as TextArticleType } from 'src/shared/types/help-and-docs/article';
+import { TextArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './About.scss';
 
@@ -38,7 +38,7 @@ const About = () => {
   const { data: menu } = useApiService<MenuType>({
     endpoint: `/api/docs/menus?name=about`
   });
-  const { data: article } = useApiService<TextArticleType>({
+  const { data: article } = useApiService<TextArticleData>({
     endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`
   });
 
