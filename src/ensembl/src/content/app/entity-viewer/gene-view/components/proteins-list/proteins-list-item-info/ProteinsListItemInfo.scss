@@ -20,18 +20,16 @@ $content-width: $gene_image_width;
 .proteinSummaryTop {
   display: grid;
   grid-template-columns: [references] 350px [download] 345px;
+  align-items: start;
 }
 
 .downloadWrapper {
   display: flex;
   justify-content: flex-end;
   grid-column: download;
-  align-items: flex-start;
 }
 
 .proteinExternalReference {
-  display: inline-block;
-
   &:first-child {
     margin-right: 16px;
   }
@@ -78,20 +76,17 @@ $content-width: $gene_image_width;
 }
 
 .chevronUp {
-  transform: rotate(0deg);
+  transform: rotate(-180deg);
 }
 
-.chevronDown {
-  transform: rotate(-180deg);
+.xrefCountChevronOpen {
+  color: $medium-dark-grey;
 }
 
 .xrefsWrapper {
   padding-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-}
 
-.xrefGroupWrapper {
-  display: flex;
-  flex-direction: column;
+  &:first-child {
+    padding-top: 6px;
+  }
 }

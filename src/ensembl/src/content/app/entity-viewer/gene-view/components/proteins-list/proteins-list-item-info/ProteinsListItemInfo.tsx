@@ -240,7 +240,7 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
           </div>
-          { proteinSummaryStats &&
+          {proteinSummaryStats &&
             proteinXrefs &&
             domainsLoadingState === LoadingState.SUCCESS && (
               <div>
@@ -304,18 +304,13 @@ const ProteinExternalReferenceGroup = (
 
   const chevronClass = classNames(
     styles.chevron,
-    isXrefGroupOpen? styles.chevronDown : styles.chevronUp
+    {[styles.chevronUp]: isXrefGroupOpen}
   );
 
   if (xrefs.length > 3) {
     const displayXref = xrefs[0];
-
-    if (!displayXref) {
-      return null;
-    }
-
     return (
-      <div className={styles.xrefGroupWrapper}>
+      <>
           {!isXrefGroupOpen ? (
             <div className={styles.xrefWithChevron}>
               <ProteinExternalReference
@@ -330,7 +325,7 @@ const ProteinExternalReferenceGroup = (
               </div>
             </div>
           ) : (
-            <div className={styles.xrefGroupWrapper}>
+            <>
               <div className={styles.xrefWithChevron}>
                 <ProteinExternalReference
                   key={displayXref.accession_id}
@@ -339,14 +334,11 @@ const ProteinExternalReferenceGroup = (
                   name={displayXref.name}
                 />
                 <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
-                  + {xrefs.length - 1}
+                  <span className={styles.xrefCountChevronOpen}> + {xrefs.length - 1}</span>
                   <ChevronDown className={chevronClass} />
                 </div>
               </div>
-              { xrefs.map((xref, i) => {
-                if (i === 0) { // Ignore first element as it is displayed above with chevron.
-                  return;
-                }
+              { xrefs.slice(1).map((xref) => {
                 return (
                   <ProteinExternalReference
                     key={xref.accession_id}
@@ -356,9 +348,9 @@ const ProteinExternalReferenceGroup = (
                   />
                 );
               })}
-            </div>
+            </>
           )}
-        </div>
+        </>
     );
   } else {
     return (
