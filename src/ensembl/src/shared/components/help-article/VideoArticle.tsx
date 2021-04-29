@@ -21,12 +21,12 @@ import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { LoadingState } from 'src/shared/types/loading-state';
-import { VideoArticle as VideoArticleType } from 'src/shared/components/help-popup/types';
+import { VideoArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.scss';
 
 type Props = {
-  video: VideoArticleType;
+  video: VideoArticleData;
 };
 
 const VideoArticle = (props: Props) => {

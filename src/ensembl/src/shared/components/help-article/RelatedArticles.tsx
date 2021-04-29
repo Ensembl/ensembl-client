@@ -20,20 +20,20 @@ import { push } from 'connected-react-router';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
 
-import { RelatedArticle as RelatedArticleType } from 'src/shared/components/help-popup/types';
+import { RelatedArticleData } from 'src/shared/types/help-and-docs/article';
 
 import styles from './HelpArticle.scss';
 
 type Props = {
-  articles: RelatedArticleType[];
+  articles: RelatedArticleData[];
   title?: string;
-  onArticleClick?: (article: RelatedArticleType) => void;
+  onArticleClick?: (article: RelatedArticleData) => void;
 };
 
 const RelatedArticles = (props: Props) => {
   const dispatch = useDispatch();
 
-  const onArticleClick = (article: RelatedArticleType) => {
+  const onArticleClick = (article: RelatedArticleData) => {
     if (props.onArticleClick) {
       props.onArticleClick(article);
     } else {

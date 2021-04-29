@@ -33,17 +33,17 @@ export type IndexArticleData = ArticleData & {
 
 export type TextArticleData = ArticleData & {
   type: 'article';
-  related_articles: RelatedArticle[];
+  related_articles: RelatedArticleData[];
   body: string; // the actual html of the article
 };
 
 export type VideoArticleData = ArticleData & {
   type: 'video';
-  related_articles: RelatedArticle[];
+  related_articles: RelatedArticleData[];
   youtube_id: string;
 };
 
-export type RelatedArticle = {
+export type RelatedArticleData = {
   title: string;
   slug: string;
   url: string;
