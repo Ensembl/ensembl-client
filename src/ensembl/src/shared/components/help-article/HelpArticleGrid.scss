@@ -1,7 +1,6 @@
 $asideWidth: 250px;
 $gutterWidth: 87px;
 $mainMaxWidth: 980px;
-$maxWidth: calc(#{$mainMaxWidth} + #{$gutterWidth} + #{$asideWidth});
 
 .grid {
   display: grid;

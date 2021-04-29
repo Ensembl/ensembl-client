@@ -15,6 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
@@ -23,6 +24,10 @@ import styles from './Modal.scss';
 type Props = {
   onClose: () => void;
   children: ReactNode;
+  classNames?: {
+    background?: string;
+    body?: string;
+  };
 };
 
 const Modal = (props: Props) => {
@@ -30,9 +35,16 @@ const Modal = (props: Props) => {
     event.stopPropagation();
   };
 
+  const backgroundClasses = classNames(
+    styles.background,
+    props.classNames?.background
+  );
+
+  const bodyClasses = classNames(styles.body, props.classNames?.body);
+
   const modal = (
-    <div className={styles.background} onClick={props.onClose}>
-      <div className={styles.body} onClick={preventEventBubbling}>
+    <div className={backgroundClasses} onClick={props.onClose}>
+      <div className={bodyClasses} onClick={preventEventBubbling}>
         <div className={styles.close}>
           <CloseButton onClick={props.onClose} />
         </div>
