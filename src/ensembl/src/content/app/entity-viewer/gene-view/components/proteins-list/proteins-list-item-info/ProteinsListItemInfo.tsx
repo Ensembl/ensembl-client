@@ -311,7 +311,21 @@ const ProteinExternalReferenceGroup = (
     const displayXref = xrefs[0];
     return (
       <>
-          {!isXrefGroupOpen ? (
+        {!isXrefGroupOpen ? (
+          <div className={styles.xrefWithChevron}>
+            <ProteinExternalReference
+              key={displayXref.accession_id}
+              source={source}
+              accessionId={displayXref.accession_id}
+              name={displayXref.name}
+            />
+            <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
+              + {xrefs.length - 1}
+              <ChevronDown className={chevronClass} />
+            </div>
+          </div>
+        ) : (
+          <>
             <div className={styles.xrefWithChevron}>
               <ProteinExternalReference
                 key={displayXref.accession_id}
@@ -320,37 +334,23 @@ const ProteinExternalReferenceGroup = (
                 name={displayXref.name}
               />
               <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
-                + {xrefs.length - 1}
+                <span className={styles.xrefCountChevronOpen}> + {xrefs.length - 1}</span>
                 <ChevronDown className={chevronClass} />
               </div>
             </div>
-          ) : (
-            <>
-              <div className={styles.xrefWithChevron}>
+            { xrefs.slice(1).map((xref) => {
+              return (
                 <ProteinExternalReference
-                  key={displayXref.accession_id}
+                  key={xref.accession_id}
                   source={source}
-                  accessionId={displayXref.accession_id}
-                  name={displayXref.name}
+                  accessionId={xref.accession_id}
+                  name={xref.name}
                 />
-                <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
-                  <span className={styles.xrefCountChevronOpen}> + {xrefs.length - 1}</span>
-                  <ChevronDown className={chevronClass} />
-                </div>
-              </div>
-              { xrefs.slice(1).map((xref) => {
-                return (
-                  <ProteinExternalReference
-                    key={xref.accession_id}
-                    source={source}
-                    accessionId={xref.accession_id}
-                    name={xref.name}
-                  />
-                );
-              })}
-            </>
-          )}
-        </>
+              );
+            })}
+          </>
+        )}
+      </>
     );
   } else {
     return (
