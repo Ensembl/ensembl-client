@@ -20,13 +20,13 @@ import times from 'lodash/times';
 import random from 'lodash/random';
 import find from 'lodash/find';
 import get from 'lodash/get';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import Select from './Select';
-import SelectOptionsPanel from './SelectOptionsPanel';
 
 const createOption = (isSelected = false) => ({
-  value: faker.random.uuid(),
+  value: faker.datatype.uuid(),
   label: faker.random.words(5),
   isSelected
 });
@@ -41,32 +41,29 @@ const createOptionGroup = (number = 5) => {
 const onSelect = jest.fn();
 
 describe('<Select />', () => {
-  let wrapper: any;
-
   describe('basic functionality', () => {
     const defaultProps = {
       optionGroups: [createOptionGroup()],
       onSelect
     };
 
-    beforeEach(() => {
-      wrapper = mount(<Select {...defaultProps} />);
+    it('is closed by default', () => {
+      const { container } = render(<Select {...defaultProps} />);
+      expect(container.querySelector('.selectControl')).toBeTruthy();
+      expect(container.querySelector('.optionsPanel')).toBeFalsy();
     });
 
-    test('is closed by default', () => {
-      expect(wrapper.find('.selectControl').length).toBe(1);
-      expect(wrapper.find(SelectOptionsPanel).length).toBe(0);
-    });
+    it('opens options panel on click', async () => {
+      const { container } = render(<Select {...defaultProps} />);
 
-    test('opens options panel on click', async () => {
-      const selectControl = wrapper.find('.selectControl');
-      selectControl.simulate('click');
-
-      wrapper.update();
+      // open the select dropdown
+      const selectControl = container.querySelector('.selectControl');
+      userEvent.click(selectControl as HTMLElement);
 
       // the element visible during closed state is still there
-      expect(wrapper.find('.selectControlInvisible').length).toBe(1);
-      expect(wrapper.find(SelectOptionsPanel).length).toBe(1);
+      expect(container.querySelector('.selectControlInvisible')).toBeTruthy();
+      // also, the option panel opens
+      expect(container.querySelector('.optionsPanel')).toBeTruthy();
     });
   });
 
@@ -76,16 +73,15 @@ describe('<Select />', () => {
       onSelect
     };
 
-    test('shows the list of options', () => {
-      wrapper = mount(<Select {...defaultProps} />);
+    it('shows the list of options', () => {
+      const { container } = render(<Select {...defaultProps} />);
 
-      // open the select
-      const selectControl = wrapper.find('.selectControl');
-      selectControl.simulate('click');
-      wrapper.update();
+      // open the select dropdown
+      const selectControl = container.querySelector('.selectControl');
+      userEvent.click(selectControl as HTMLElement);
 
-      const optionGroups = wrapper.find('ul');
-      const options = wrapper.find('li');
+      const optionGroups = container.querySelectorAll('ul');
+      const options = container.querySelectorAll('li');
 
       expect(optionGroups.length).toBe(1);
       expect(options.length).toBe(defaultProps.options.length);
@@ -98,16 +94,15 @@ describe('<Select />', () => {
       onSelect
     };
 
-    test('shows the list of groups of options', () => {
-      wrapper = mount(<Select {...defaultProps} />);
+    it('shows the list of groups of options', () => {
+      const { container } = render(<Select {...defaultProps} />);
 
-      // open the select
-      const selectControl = wrapper.find('.selectControl');
-      selectControl.simulate('click');
-      wrapper.update();
+      // open the select dropdown
+      const selectControl = container.querySelector('.selectControl');
+      userEvent.click(selectControl as HTMLElement);
 
-      const optionGroups = wrapper.find('ul');
-      const options = wrapper.find('li');
+      const optionGroups = container.querySelectorAll('ul');
+      const options = container.querySelectorAll('li');
 
       const expectedOptionsNumber = defaultProps.optionGroups.reduce(
         (sum, group) => {
@@ -127,29 +122,20 @@ describe('<Select />', () => {
       onSelect
     };
 
-    test('calls onSelect and passes it the option value', () => {
-      wrapper = mount(<Select {...defaultProps} />);
+    it('calls onSelect and passes it the option value', () => {
+      const { container } = render(<Select {...defaultProps} />);
 
-      // open the select
-      const selectControl = wrapper.find('.selectControl');
-
-      selectControl.simulate('click');
-      wrapper.update();
+      // open the select dropdown
+      const selectControl = container.querySelector('.selectControl');
+      userEvent.click(selectControl as HTMLElement);
 
       // choose a random option
-      const options = wrapper.find('li');
+      const options = container.querySelectorAll('li');
       const optionIndex = random(options.length - 1);
-      const option = options.at(optionIndex);
-      const optionText = option.text();
+      const option = options[optionIndex];
+      const optionText = option.textContent;
 
-      const mockedClickEvent = {
-        stopPropagation: jest.fn(),
-        nativeEvent: {
-          stopImmediatePropagation: jest.fn()
-        }
-      };
-
-      option.simulate('click', mockedClickEvent);
+      userEvent.click(option);
 
       const expectedValue = get(
         find(defaultProps.options, ({ label }) => label === optionText),

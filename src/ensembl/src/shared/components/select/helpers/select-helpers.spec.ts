@@ -26,7 +26,7 @@ import {
 } from './select-helpers';
 
 const buildOption = (): Option => ({
-  value: faker.random.number(),
+  value: faker.datatype.number(),
   label: faker.lorem.words(),
   isSelected: false
 });

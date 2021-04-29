@@ -26,7 +26,6 @@ import {
 } from 'src/shared/state/ens-object/ensObjectTypes';
 import { RootState } from 'src/store';
 import { getIsDrawerOpened } from '../../drawer/drawerSelectors';
-import { getLaunchbarExpanded } from 'src/header/headerSelectors';
 import {
   getBrowserActiveEnsObject,
   getBrowserTrackStates,
@@ -45,7 +44,6 @@ import styles from './TrackPanelList.scss';
 export type TrackPanelListProps = {
   activeGenomeId: string | null;
   isDrawerOpened: boolean;
-  launchbarExpanded: boolean;
   activeEnsObject: EnsObject | null;
   selectedTrackPanelTab: TrackSet;
   genomeTrackCategories: GenomeTrackCategory[];
@@ -147,7 +145,6 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeGenomeId,
     isDrawerOpened: getIsDrawerOpened(state),
-    launchbarExpanded: getLaunchbarExpanded(state),
     activeEnsObject: getBrowserActiveEnsObject(state),
     selectedTrackPanelTab: getSelectedTrackPanelTab(state),
     genomeTrackCategories: activeGenomeId

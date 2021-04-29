@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-
 import faker from 'faker';
 
 import ExternalLink, { ExternalLinkProps } from './ExternalLink';
@@ -31,9 +30,7 @@ const defaultProps: ExternalLinkProps = {
 };
 
 describe('<ExternalLink />', () => {
-  const renderExternalLink = (props: Partial<ExternalLinkProps> = {}) =>
-    render(<ExternalLink {...defaultProps} {...props} />);
-
+  const renderExternalLink = () => render(<ExternalLink {...defaultProps} />);
   it('renders without error', () => {
     const { container } = renderExternalLink();
     expect(() => container).not.toThrow();
@@ -41,11 +38,15 @@ describe('<ExternalLink />', () => {
 
   it('applies the passed in classNames', () => {
     const { container } = renderExternalLink();
-    expect(container.getElementsByClassName('.icon')).toBeTruthy();
+
     expect(
       container
-        .querySelector('.link')
-        ?.classList.contains(defaultProps.classNames?.link as string)
+        .querySelector(`svg`)
+        ?.classList.contains(defaultProps.classNames?.icon as string)
+    ).toBeTruthy();
+
+    expect(
+      container.querySelector(`.link.${defaultProps.classNames?.link}`)
     ).toBeTruthy();
   });
 });

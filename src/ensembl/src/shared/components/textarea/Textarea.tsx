@@ -21,7 +21,7 @@ import noop from 'lodash/noop';
 import styles from './Textarea.scss';
 
 type PropsForRespondingWithEvents = {
-  onChange: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onFocus: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
   onBlur: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
   callbackWithEvent: true;

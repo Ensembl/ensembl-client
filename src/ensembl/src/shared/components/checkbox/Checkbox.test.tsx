@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Checkbox from './Checkbox';
 import faker from 'faker';
 
@@ -26,114 +27,128 @@ describe('<Checkbox />', () => {
     jest.resetAllMocks();
   });
 
-  it('renders without error', () => {
-    expect(() => {
-      mount(<Checkbox checked={false} onChange={onChange} />);
-    }).not.toThrow();
-  });
-
   it('does not display any label by default', () => {
-    const wrapper = mount(<Checkbox checked={false} onChange={onChange} />);
-    expect(wrapper.find('label')).toHaveLength(0);
+    const { container } = render(
+      <Checkbox checked={false} onChange={onChange} />
+    );
+    expect(container.querySelector('label')).toBeFalsy();
   });
 
   it('displays the label if it is passed as a prop', () => {
     const label = faker.lorem.words();
-    const wrapper = mount(
+    const { container } = render(
       <Checkbox checked={false} onChange={onChange} label={label} />
     );
 
-    expect(wrapper.find('label').text()).toBe(label);
+    expect(container.querySelector('label')?.textContent).toBe(label);
   });
 
   it('applies default classes', () => {
     const label = faker.lorem.words();
-    const wrapper = mount(
+    const { container } = render(
       <Checkbox checked={false} onChange={onChange} label={label} />
     );
-    expect(wrapper.find('.checkboxHolder')).toHaveLength(1);
-    expect(wrapper.find('.defaultCheckbox')).toHaveLength(1);
-    expect(wrapper.find('.defaultLabel')).toHaveLength(1);
+
+    expect(container.querySelector('.checkboxHolder')).toBeTruthy();
+    expect(container.querySelector('.defaultCheckbox')).toBeTruthy();
+    expect(container.querySelector('.defaultLabel')).toBeTruthy();
   });
 
   it('correctly applies classes when checkbox is selected or disabled', () => {
-    const wrapper = mount(
+    const { container, rerender } = render(
       <Checkbox checked={false} onChange={onChange} disabled={true} />
     );
-    let checkbox = wrapper.find('.defaultCheckbox');
-    expect(checkbox.hasClass('unchecked')).toBe(true);
-    expect(checkbox.hasClass('disabled')).toBe(true);
+    const renderedCheckbox = container.querySelector('.defaultCheckbox');
+    expect(renderedCheckbox?.classList.contains('unchecked')).toBe(true);
+    expect(renderedCheckbox?.classList.contains('disabled')).toBe(true);
 
-    wrapper.setProps({ checked: true, disabled: false });
-    checkbox = wrapper.find('.defaultCheckbox');
-    expect(checkbox.hasClass('checked')).toBe(true);
-    expect(checkbox.hasClass('unchecked')).toBe(false);
-    expect(checkbox.hasClass('disabled')).toBe(false);
+    rerender(<Checkbox checked={true} onChange={onChange} disabled={false} />);
+
+    expect(renderedCheckbox?.classList.contains('checked')).toBe(true);
+    expect(renderedCheckbox?.classList.contains('unchecked')).toBe(false);
+    expect(renderedCheckbox?.classList.contains('disabled')).toBe(false);
   });
 
   it('correctly applies classes passed from the parent', () => {
     const classesFromParent = {
-      checkboxHolder: faker.random.uuid(),
-      checked: faker.random.uuid(),
-      unchecked: faker.random.uuid(),
-      disabled: faker.random.uuid()
+      checkboxHolder: faker.datatype.uuid(),
+      checked: faker.datatype.uuid(),
+      unchecked: faker.datatype.uuid(),
+      disabled: faker.datatype.uuid()
     };
     const label = faker.lorem.words();
     const labelClassFromParent = faker.lorem.word();
+    const props = {
+      checked: false,
+      onChange,
+      classNames: classesFromParent,
+      disabled: true,
+      label,
+      labelClassName: labelClassFromParent
+    };
 
-    const wrapper = mount(
-      <Checkbox
-        checked={false}
-        onChange={onChange}
-        classNames={classesFromParent}
-        disabled={true}
-        label={label}
-        labelClassName={labelClassFromParent}
-      />
-    );
-    const topLevelElement = wrapper.find('.checkboxHolder');
-    let checkbox = wrapper.find('.defaultCheckbox');
-    const labelElement = wrapper.find('label');
+    const { container, rerender } = render(<Checkbox {...props} />);
+    const topLevelElement = container.querySelector('.checkboxHolder');
+    const checkbox = container.querySelector('.defaultCheckbox');
+    const labelElement = container.querySelector('label');
 
-    expect(topLevelElement.hasClass(classesFromParent.checkboxHolder)).toBe(
+    expect(
+      topLevelElement?.classList.contains(classesFromParent.checkboxHolder)
+    ).toBe(true);
+    expect(labelElement?.classList.contains(labelClassFromParent)).toBe(true);
+    expect(checkbox?.classList.contains(classesFromParent.unchecked)).toBe(
       true
     );
-    expect(labelElement.hasClass(labelClassFromParent)).toBe(true);
-    expect(checkbox.hasClass(classesFromParent.unchecked)).toBe(true);
-    expect(checkbox.hasClass(classesFromParent.disabled)).toBe(true);
+    expect(checkbox?.classList.contains(classesFromParent.disabled)).toBe(true);
 
-    wrapper.setProps({ checked: true, disabled: false });
-    checkbox = wrapper.find('.defaultCheckbox');
-    expect(checkbox.hasClass(classesFromParent.checked)).toBe(true);
-    expect(checkbox.hasClass(classesFromParent.unchecked)).toBe(false);
-    expect(checkbox.hasClass(classesFromParent.disabled)).toBe(false);
+    rerender(<Checkbox {...props} checked={true} disabled={false} />);
+
+    expect(checkbox?.classList.contains(classesFromParent.checked)).toBe(true);
+    expect(checkbox?.classList.contains(classesFromParent.unchecked)).toBe(
+      false
+    );
+    expect(checkbox?.classList.contains(classesFromParent.disabled)).toBe(
+      false
+    );
   });
 
   describe('behaviour on change', () => {
     it('calls the onChange prop when clicked', () => {
-      const wrapper = mount(<Checkbox checked={false} onChange={onChange} />);
+      const { container } = render(
+        <Checkbox checked={false} onChange={onChange} />
+      );
+      const checkbox = container.querySelector(
+        '.defaultCheckbox'
+      ) as HTMLElement;
 
-      wrapper.find('.defaultCheckbox').simulate('click');
+      userEvent.click(checkbox);
+
       expect(onChange).toHaveBeenCalledWith(true);
     });
 
     it('does not call the onChange prop when disabled', () => {
-      const wrapper = mount(
+      const { container } = render(
         <Checkbox checked={false} onChange={onChange} disabled={true} />
       );
+      const checkbox = container.querySelector(
+        '.defaultCheckbox'
+      ) as HTMLElement;
 
-      wrapper.find('.defaultCheckbox').simulate('click');
+      userEvent.click(checkbox);
 
       expect(onChange).not.toHaveBeenCalled();
     });
 
     it('calls the onChange function if the label is clicked', () => {
       const label = faker.lorem.words();
-      const wrapper = mount(
+      const { container } = render(
         <Checkbox checked={false} label={label} onChange={onChange} />
       );
+      const renderedLabel = container.querySelector(
+        '.defaultLabel'
+      ) as HTMLElement;
 
-      wrapper.find('.defaultLabel').simulate('click');
+      userEvent.click(renderedLabel);
 
       expect(onChange).toHaveBeenCalled();
     });

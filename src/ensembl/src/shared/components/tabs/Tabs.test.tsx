@@ -15,18 +15,19 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import times from 'lodash/times';
 
-import Tabs, { Tab, TabsProps } from './Tabs';
+import Tabs, { Tab } from './Tabs';
 
 const onTabChange = jest.fn();
 
 const createTabGroup = (): Tab[] => {
   const options = times(10, () => ({
-    title: faker.random.uuid(),
-    isDisabled: faker.random.boolean()
+    title: faker.datatype.uuid(),
+    isDisabled: faker.datatype.boolean()
   }));
 
   // Make sure we have atleast one enabled and one disabled entry
@@ -58,82 +59,97 @@ const defaultProps = {
   classNames: tabClassNames
 };
 
-const renderTabs = (props: TabsProps) => <Tabs {...props}></Tabs>;
+const renderTabs = () => render(<Tabs {...defaultProps} />);
 
 describe('<Tabs />', () => {
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(renderTabs({ ...defaultProps }));
-  });
-
   afterEach(() => {
     jest.resetAllMocks();
   });
 
   it('displays all the tabs passed in', () => {
-    expect(wrapper.find('.tab')).toHaveLength(defaultProps.tabs.length);
+    const { container } = renderTabs();
+    expect(container.querySelectorAll('.tab')).toHaveLength(
+      defaultProps.tabs.length
+    );
   });
 
   it('adds respective class to the disabled tabs', () => {
+    const { container } = renderTabs();
     const disabledTabIndex = tabsData.findIndex((tab) => tab.isDisabled);
     expect(
-      wrapper.find('.tab').at(disabledTabIndex).hasClass('disabled')
-    ).toBeTruthy();
+      container
+        .querySelectorAll('.tab')
+        [disabledTabIndex].classList.contains('disabled')
+    ).toBe(true);
   });
 
   it('adds respective class to the selected tab', () => {
+    const { container } = renderTabs();
     const selectedTabIndex = tabsData.findIndex(
       (tab) => tab.title === defaultProps.selectedTab
     );
     expect(
-      wrapper.find('.tab').at(selectedTabIndex).hasClass('selected')
-    ).toBeTruthy();
+      container
+        .querySelectorAll('.tab')
+        [selectedTabIndex].classList.contains('selected')
+    ).toBe(true);
   });
 
   it('calls the onTabChange function when a tab is selected', () => {
+    const { container } = renderTabs();
     const unselectedTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && !tab.isDisabled
     );
-    wrapper.find('.tab').at(unselectedTabIndex).simulate('click');
+    const unselectedTab = container.querySelectorAll('.tab')[
+      unselectedTabIndex
+    ];
+
+    userEvent.click(unselectedTab);
 
     expect(onTabChange).toBeCalledWith(tabsData[unselectedTabIndex].title);
   });
 
-  it(' does not call the onTabChange if the tab is disabled', () => {
+  it('does not call the onTabChange if the tab is disabled', () => {
+    const { container } = renderTabs();
     const unselectedDisabledTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && tab.isDisabled
     );
-    wrapper.find('.tab').at(unselectedDisabledTabIndex).simulate('click');
+    const disabledTab = container.querySelectorAll('.tab')[
+      unselectedDisabledTabIndex
+    ];
+
+    userEvent.click(disabledTab);
 
     expect(onTabChange).not.toBeCalled();
   });
 
-  it(' applies the passed in default class', () => {
-    expect(
-      wrapper.find('.tab').first().hasClass(tabClassNames.default)
-    ).toBeTruthy();
+  it('applies the passed in default class', () => {
+    const { container } = renderTabs();
+    const tab = container.querySelector('.tab');
+    expect(tab?.classList.contains(tabClassNames.default)).toBe(true);
   });
 
-  it(' applies the passed in selected class', () => {
+  it('applies the passed in selected class', () => {
+    const { container } = renderTabs();
     const selectedTabIndex = tabsData.findIndex(
       (tab) => tab.title === defaultProps.selectedTab
     );
-    expect(
-      wrapper.find('.tab').at(selectedTabIndex).hasClass(tabClassNames.selected)
-    ).toBeTruthy();
+    const selectedTab = container.querySelectorAll('.tab')[selectedTabIndex];
+    expect(selectedTab.classList.contains(tabClassNames.selected)).toBe(true);
   });
 
-  it(' applies the passed in disabled class', () => {
+  it('applies the passed in disabled class', () => {
+    const { container } = renderTabs();
     const disabledTabIndex = tabsData.findIndex((tab) => tab.isDisabled);
-    expect(
-      wrapper.find('.tab').at(disabledTabIndex).hasClass(tabClassNames.disabled)
-    ).toBeTruthy();
+    const disabledTab = container.querySelectorAll('.tab')[disabledTabIndex];
+    expect(disabledTab.classList.contains(tabClassNames.disabled)).toBe(true);
   });
 
-  it(' applies the passed in tabsContainer class', () => {
-    expect(
-      wrapper.find('.tabsContainer').hasClass(tabClassNames.tabsContainer)
-    ).toBeTruthy();
+  it('applies the passed in tabsContainer class', () => {
+    const { container } = renderTabs();
+    const tabsContainer = container.querySelector('.tabsContainer');
+    expect(tabsContainer?.classList.contains(tabClassNames.tabsContainer)).toBe(
+      true
+    );
   });
 });

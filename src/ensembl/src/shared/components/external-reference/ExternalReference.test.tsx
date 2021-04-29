@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
@@ -37,45 +37,56 @@ describe('<ExternalReference />', () => {
     props: Partial<ExternalReferenceProps> = {}
   ) => render(<ExternalReference {...defaultProps} {...props} />);
 
-  let container: any;
-
   beforeEach(() => {
     jest.resetAllMocks();
-    container = renderExternalReference().container;
   });
 
   it('renders without error', () => {
+    const { container } = renderExternalReference();
     expect(() => container).not.toThrow();
   });
 
   it('hides label container div when there is no label', () => {
-    container = renderExternalReference({ label: undefined }).container;
-    expect(container.querySelectorAll('.label')).toHaveLength(0);
+    const { container } = renderExternalReference({ label: undefined });
+
+    expect(container.querySelector('.label')).toBeFalsy();
   });
 
   it('applies the passed in classNames', () => {
+    const { container } = renderExternalReference();
+
     expect(
-      screen
-        .getByTestId('external reference container')
-        .classList.contains(defaultProps.classNames?.container as string)
+      container.querySelector(`.${defaultProps.classNames?.container}`)
     ).toBeTruthy();
 
     expect(
       container
         .querySelector('.label')
-        .classList.contains(defaultProps.classNames?.label)
+        ?.classList.contains(defaultProps.classNames?.label as string)
     ).toBeTruthy();
 
-    const externalLink = screen.getByTestId('external link container');
     expect(
-      externalLink
-        .getElementsByTagName('icon-mock')[0]
-        .getAttribute('classname')
-    ).toMatch(defaultProps.classNames?.icon as string);
-    expect(
-      externalLink
-        .getElementsByTagName('a')[0]
-        .classList.contains(defaultProps.classNames?.link as string)
+      container
+        .querySelector(`.externalLinkContainer svg`)
+        ?.classList.contains(defaultProps.classNames?.icon as string)
     ).toBeTruthy();
+
+    expect(
+      container.querySelector(
+        `.externalLinkContainer .${defaultProps.classNames?.link}`
+      )
+    ).toBeTruthy();
+  });
+
+  it('does not display ExternalLink component when there is no link', () => {
+    const { container } = renderExternalReference({ to: undefined });
+
+    expect(container.querySelector(`.externalLinkContainer`)).toBeFalsy();
+
+    expect(container.querySelector(`.noLink`)).toBeTruthy();
+
+    expect(container.querySelector(`.noLink`)?.textContent).toBe(
+      defaultProps.linkText
+    );
   });
 });

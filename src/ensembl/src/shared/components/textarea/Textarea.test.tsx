@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { mount, render } from 'enzyme';
+import React, { useState } from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 import Textarea from './Textarea';
 
@@ -29,11 +30,6 @@ describe('<Textarea />', () => {
     onBlur: jest.fn()
   };
 
-  const getWrappedTextarea = (props: any) => mount(<Textarea {...props} />);
-
-  const getStaticallyWrappedTextarea = (props: any) =>
-    render(<Textarea {...props} />);
-
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -46,58 +42,58 @@ describe('<Textarea />', () => {
       value: textareaValue
     };
 
-    test('passes relevant props to the Textarea element', () => {
-      const wrappedTextarea = getStaticallyWrappedTextarea(props);
+    it('passes relevant props to the Textarea element', () => {
+      const { container } = render(<Textarea {...props} />);
+      const textarea = container.firstChild as HTMLElement;
 
-      expect(wrappedTextarea.attr('id')).toBe(commonTextareaProps.id);
-      expect(wrappedTextarea.attr('name')).toBe(commonTextareaProps.name);
-      expect(wrappedTextarea.attr('class')).toMatch(
+      expect(textarea.getAttribute('id')).toBe(commonTextareaProps.id);
+      expect(textarea.getAttribute('name')).toBe(commonTextareaProps.name);
+      expect(textarea.getAttribute('class')).toMatch(
         commonTextareaProps.className
       );
     });
 
-    test('disableResize class name is applied when resizable is false', () => {
-      const wrappedTextarea = getStaticallyWrappedTextarea({
-        ...commonTextareaProps,
-        resizable: false
-      });
-      expect(wrappedTextarea.hasClass('disableResize')).toBe(true);
+    it('disables resize when the resizable prop is false', () => {
+      const { container } = render(<Textarea {...props} resizable={false} />);
+      const textarea = container.firstChild as HTMLElement;
+
+      expect(textarea.classList.contains('disableResize')).toBe(true);
     });
   });
 
   describe('responding with data', () => {
-    test('passes string value to onChange', () => {
-      const changedValue = faker.random.words();
-      const wrappedTextarea = getWrappedTextarea({
-        ...commonTextareaProps,
-        value: textareaValue
-      });
+    it('passes string value to onChange', () => {
+      const textareaValue = 'Hello worl';
+      const { container } = render(
+        <Textarea {...commonTextareaProps} value={textareaValue} />
+      );
+      const textarea = container.firstChild as HTMLElement;
 
-      wrappedTextarea.simulate('change', { target: { value: changedValue } });
+      userEvent.type(textarea, 'd');
       expect(commonTextareaProps.onChange).toHaveBeenLastCalledWith(
-        changedValue
+        'Hello world'
       );
     });
 
-    test('passes string value to onFocus', () => {
-      const wrappedTextarea = getWrappedTextarea({
-        ...commonTextareaProps,
-        value: textareaValue
-      });
+    it('passes string value to onFocus', () => {
+      const { container } = render(
+        <Textarea {...commonTextareaProps} value={textareaValue} />
+      );
+      const textarea = container.firstChild as HTMLElement;
 
-      wrappedTextarea.simulate('focus');
+      fireEvent.focus(textarea);
       expect(commonTextareaProps.onFocus).toHaveBeenLastCalledWith(
         textareaValue
       );
     });
 
-    test('passes string value to onBlur', () => {
-      const wrappedTextarea = getWrappedTextarea({
-        ...commonTextareaProps,
-        value: textareaValue
-      });
+    it('passes string value to onBlur', () => {
+      const { container } = render(
+        <Textarea {...commonTextareaProps} value={textareaValue} />
+      );
+      const textarea = container.firstChild as HTMLElement;
 
-      wrappedTextarea.simulate('blur');
+      fireEvent.blur(textarea);
       expect(commonTextareaProps.onBlur).toHaveBeenLastCalledWith(
         textareaValue
       );
@@ -105,41 +101,65 @@ describe('<Textarea />', () => {
   });
 
   describe('responding with events', () => {
-    test('passes event to onChange', () => {
-      const changedValue = faker.random.words();
-      const wrappedTextarea = getWrappedTextarea({
-        ...commonTextareaProps,
-        value: textareaValue,
-        callbackWithEvent: true
-      });
+    it('passes event to onChange', () => {
+      const initialText = 'Hello worl';
+      const spy = jest.fn();
 
-      wrappedTextarea.simulate('change', { target: { value: changedValue } });
-      expect(commonTextareaProps.onChange.mock.calls[0][0].target.value).toBe(
-        changedValue
-      );
+      const StatefulTextareaWrapper = () => {
+        const [text, setText] = useState(initialText);
+
+        const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+          const value = e.target.value;
+          spy(e);
+          setText(value);
+        };
+
+        return (
+          <Textarea
+            {...commonTextareaProps}
+            onChange={onChange}
+            value={text}
+            callbackWithEvent={true}
+          />
+        );
+      };
+      const { container } = render(<StatefulTextareaWrapper />);
+      const textarea = container.firstChild as HTMLElement;
+
+      // fireEvent.change(textarea, { target: { value: 'd' } });
+      userEvent.type(textarea, 'd');
+      expect(spy.mock.calls[0][0].target.value).toBe('Hello world');
     });
 
-    test('passes event to onFocus', () => {
-      const wrappedTextarea = getWrappedTextarea({
-        ...commonTextareaProps,
-        value: textareaValue,
-        callbackWithEvent: true
-      });
+    it('passes event to onFocus', () => {
+      const { container } = render(
+        <Textarea
+          {...commonTextareaProps}
+          value={textareaValue}
+          callbackWithEvent={true}
+        />
+      );
+      const textarea = container.firstChild as HTMLElement;
 
-      wrappedTextarea.simulate('focus');
+      fireEvent.focus(textarea);
+
       expect(commonTextareaProps.onFocus.mock.calls[0][0].target.value).toBe(
         textareaValue
       );
     });
 
-    test('passes event to onBlur', () => {
-      const wrappedTextarea = getWrappedTextarea({
-        ...commonTextareaProps,
-        value: textareaValue,
-        callbackWithEvent: true
-      });
+    it('passes event to onBlur', () => {
+      const { container } = render(
+        <Textarea
+          {...commonTextareaProps}
+          value={textareaValue}
+          callbackWithEvent={true}
+        />
+      );
+      const textarea = container.firstChild as HTMLElement;
 
-      wrappedTextarea.simulate('blur');
+      fireEvent.blur(textarea);
+
       expect(commonTextareaProps.onBlur.mock.calls[0][0].target.value).toBe(
         textareaValue
       );

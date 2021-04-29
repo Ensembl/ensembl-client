@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount, render } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import set from 'lodash/fp/set';
 import { push } from 'connected-react-router';
 
@@ -24,8 +25,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { PopularSpeciesButton } from './PopularSpeciesButton';
 
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
-
-import styles from './PopularSpeciesButton.scss';
 
 jest.mock('src/shared/components/inline-svg/InlineSvg', () => () => <div />);
 jest.mock('connected-react-router', () => ({
@@ -45,27 +44,29 @@ const commonProps = {
 };
 
 describe('<PopularSpeciesButton />', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('not available', () => {
     it('has appropriate class', () => {
       const props = set('species.is_available', false, commonProps);
-      const renderedButton = render(<PopularSpeciesButton {...props} />).find(
+      const { container } = render(<PopularSpeciesButton {...props} />);
+      const button = container.querySelector(
         '.popularSpeciesButton'
-      );
-      expect(renderedButton.hasClass(styles.popularSpeciesButtonDisabled)).toBe(
+      ) as HTMLElement;
+      expect(button.classList.contains('popularSpeciesButtonDisabled')).toBe(
         true
       );
     });
 
     it('does not call handleSelectedSpecies prop when clicked', () => {
       const props = set('species.is_available', false, commonProps);
-      const wrapper = mount(<PopularSpeciesButton {...props} />).find(
+      const { container } = render(<PopularSpeciesButton {...props} />);
+      const button = container.querySelector(
         '.popularSpeciesButton'
-      );
-      wrapper.simulate('click');
+      ) as HTMLElement;
+      userEvent.click(button);
 
       expect(handleSelectedSpecies).not.toHaveBeenCalled();
     });
@@ -73,19 +74,21 @@ describe('<PopularSpeciesButton />', () => {
 
   describe('not selected', () => {
     it('has appropriate class', () => {
-      const renderedButton = render(
-        <PopularSpeciesButton {...commonProps} isSelected={false} />
-      ).find('.popularSpeciesButton');
-      expect(renderedButton.hasClass('popularSpeciesButtonActive')).toBe(false);
+      const { container } = render(<PopularSpeciesButton {...commonProps} />);
+      const button = container.querySelector(
+        '.popularSpeciesButton'
+      ) as HTMLElement;
+      expect(button.classList.length).toBe(1); // has only .popularSpeciesButton class
     });
 
     it('calls handleSelectedSpecies prop when clicked', () => {
-      const wrapper = mount(<PopularSpeciesButton {...commonProps} />).find(
+      const { container } = render(<PopularSpeciesButton {...commonProps} />);
+      const button = container.querySelector(
         '.popularSpeciesButton'
-      );
-      wrapper.simulate('click');
-
+      ) as HTMLElement;
       const speciesData = commonProps.species;
+
+      userEvent.click(button);
 
       expect(handleSelectedSpecies).toHaveBeenCalledWith(speciesData);
     });
@@ -93,19 +96,26 @@ describe('<PopularSpeciesButton />', () => {
 
   describe('selected', () => {
     it('has appropriate class', () => {
-      const renderedButton = render(
+      const { container } = render(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
-      ).find('.popularSpeciesButton');
-      expect(renderedButton.hasClass('popularSpeciesButtonSelected')).toBe(
+      );
+      const button = container.querySelector(
+        '.popularSpeciesButton'
+      ) as HTMLElement;
+      expect(button.classList.contains('popularSpeciesButtonSelected')).toBe(
         true
       );
     });
 
     it('clears selected species when clicked', () => {
-      const wrapper = mount(
+      const { container } = render(
         <PopularSpeciesButton {...commonProps} isSelected={true} />
-      ).find('.popularSpeciesButton');
-      wrapper.simulate('click');
+      );
+      const button = container.querySelector(
+        '.popularSpeciesButton'
+      ) as HTMLElement;
+
+      userEvent.click(button);
 
       expect(clearSelectedSpecies).toHaveBeenCalled();
       expect(handleSelectedSpecies).not.toHaveBeenCalled();
@@ -115,20 +125,26 @@ describe('<PopularSpeciesButton />', () => {
 
   describe('committed', () => {
     it('has appropriate class', () => {
-      const renderedButton = render(
+      const { container } = render(
         <PopularSpeciesButton {...commonProps} isCommitted={true} />
-      ).find('.popularSpeciesButton');
-      expect(renderedButton.hasClass('popularSpeciesButtonCommitted')).toBe(
+      );
+      const button = container.querySelector(
+        '.popularSpeciesButton'
+      ) as HTMLElement;
+      expect(button.classList.contains('popularSpeciesButtonCommitted')).toBe(
         true
       );
     });
 
     it('opens species page when it is clicked', () => {
-      const wrapper = mount(
+      const { container } = render(
         <PopularSpeciesButton {...commonProps} isCommitted={true} />
-      ).find('.popularSpeciesButton');
+      );
+      const button = container.querySelector(
+        '.popularSpeciesButton'
+      ) as HTMLElement;
 
-      wrapper.simulate('click');
+      userEvent.click(button);
 
       expect(push).toHaveBeenCalledWith(
         urlFor.speciesPage({

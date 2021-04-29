@@ -31,11 +31,11 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 const trackPanelProperties: TrackPanelStateForGenome = {
-  isTrackPanelModalOpened: faker.random.boolean(),
+  isTrackPanelModalOpened: faker.datatype.boolean(),
   selectedTrackPanelTab: TrackSet.GENOMIC,
   trackPanelModalView: faker.lorem.word(),
   highlightedTrackId: faker.lorem.word(),
-  isTrackPanelOpened: faker.random.boolean(),
+  isTrackPanelOpened: faker.datatype.boolean(),
   collapsedTrackIds: [faker.lorem.word()],
   bookmarks: [],
   previouslyViewedObjects: []

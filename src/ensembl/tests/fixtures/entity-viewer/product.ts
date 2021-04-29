@@ -24,8 +24,9 @@ import {
 } from 'src/shared/types/thoas/product';
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
-  const length = fragment?.length || faker.random.number({ min: 10, max: 100 });
-  const unversionedStableId = faker.random.uuid();
+  const length =
+    fragment?.length || faker.datatype.number({ min: 10, max: 100 });
+  const unversionedStableId = faker.datatype.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
 
@@ -43,7 +44,7 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
 };
 
 const createProteinDomains = (proteinLength: number): ProteinDomain[] => {
-  const numberOfDomains = faker.random.number({ min: 1, max: 10 });
+  const numberOfDomains = faker.datatype.number({ min: 1, max: 10 });
   const maxDomainLength = Math.floor(proteinLength / numberOfDomains);
 
   return times(numberOfDomains, (index: number) => {
@@ -51,17 +52,17 @@ const createProteinDomains = (proteinLength: number): ProteinDomain[] => {
     const maxCoordinate = maxDomainLength * (index + 1);
     const middleCoordinate =
       maxCoordinate - (maxCoordinate - minCoordinate) / 2;
-    const start = faker.random.number({
+    const start = faker.datatype.number({
       min: minCoordinate,
       max: middleCoordinate
     });
-    const end = faker.random.number({
+    const end = faker.datatype.number({
       min: middleCoordinate + 1,
       max: maxCoordinate - 1
     });
 
     return {
-      id: faker.random.uuid(),
+      id: faker.datatype.uuid(),
       name: faker.random.words(),
       resource_name: faker.random.word(),
       location: {

@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import RadioGroup from './RadioGroup';
 
 import faker from 'faker';
@@ -24,7 +25,7 @@ import times from 'lodash/times';
 const onChange = jest.fn();
 
 const createOption = () => ({
-  value: faker.random.uuid(),
+  value: faker.datatype.uuid(),
   label: faker.random.words(5)
 });
 
@@ -39,47 +40,49 @@ describe('<RadioGroup />', () => {
     options: times(5, () => createOption())
   };
 
-  let wrapper: any;
+  it('renders as many radio buttons as the number of passed options', () => {
+    const { container } = render(<RadioGroup {...defaultProps} />);
 
-  it('renders without error', () => {
-    expect(() => {
-      mount(<RadioGroup {...defaultProps} />);
-    }).not.toThrow();
+    expect(container.querySelectorAll('.radio').length).toBe(
+      defaultProps.options.length
+    );
   });
 
   it('does not call the onChange function when clicking on already selected option', () => {
+    // pre-select the first option, then click on the first radio button
     const selectedOption = defaultProps.options[0].value;
-    wrapper = mount(
+    const { container } = render(
       <RadioGroup {...defaultProps} selectedOption={selectedOption} />
     );
+    const firstRadioButton = container.querySelector('.radio');
 
-    wrapper.find('.radio').first().simulate('click');
+    userEvent.click(firstRadioButton as HTMLElement);
 
     expect(onChange).not.toHaveBeenCalled();
   });
 
   it('calls the onChange function when option is changed', () => {
+    // pre-select the second option, then click on the first radio button
     const selectedOption = defaultProps.options[1].value;
-    wrapper = mount(
+    const { container } = render(
       <RadioGroup {...defaultProps} selectedOption={selectedOption} />
     );
+    const firstRadioButton = container.querySelector('.radio');
 
-    wrapper.find('.radio').first().simulate('click');
+    userEvent.click(firstRadioButton as HTMLElement);
 
     expect(onChange).toHaveBeenCalledWith(defaultProps.options[0].value);
   });
 
-  it('does not call onChange function if the status is disabled', () => {
-    wrapper = mount(<RadioGroup {...defaultProps} disabled={true} />);
+  it('does not respond to interactions when disabled', () => {
+    const { container } = render(
+      <RadioGroup {...defaultProps} disabled={true} />
+    );
 
-    wrapper.find('.radio').first().simulate('change');
+    const firstRadioButton = container.querySelector('.radio');
+
+    userEvent.click(firstRadioButton as HTMLElement);
 
     expect(onChange).not.toHaveBeenCalled();
-  });
-
-  it('renders as many radio buttons as the number of passed options', () => {
-    wrapper = mount(<RadioGroup {...defaultProps} />);
-
-    expect(wrapper.find('.radio').length).toBe(defaultProps.options.length);
   });
 });

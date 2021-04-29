@@ -19,8 +19,7 @@ import { Link } from 'react-router-dom';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
-import LaunchbarContainer from './launchbar/LaunchbarContainer';
-import Account from './account/Account';
+import Launchbar from './launchbar/Launchbar';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
@@ -82,8 +81,7 @@ const AboutEnsembl = () =>
 export const Header = () => (
   <header>
     <Topbar />
-    <Account />
-    <LaunchbarContainer />
+    <Launchbar />
   </header>
 );
 
