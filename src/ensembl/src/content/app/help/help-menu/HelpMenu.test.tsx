@@ -63,7 +63,7 @@ describe('<HelpMenu>', () => {
 
     it('opens the megamenu when clicked', () => {
       const { container, getByText } = renderMenu();
-      expect(container.querySelector('.expandedMenuPanel')).toBeFalsy; // start with a closed megamenu
+      expect(container.querySelector('.expandedMenuPanel')).toBeFalsy(); // start with a closed megamenu
       expect(() => getByText('Viewing Ensembl data')).toThrow(); // getByText will throw if it can't find an element
       const itemWithSubmenu = getByText('Using Ensembl');
 
