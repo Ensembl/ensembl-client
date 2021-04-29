@@ -71,7 +71,7 @@ const HelpMenu = (props: Props) => {
         {item.name}
       </span>
     ) : (
-      <Link {...commonProps} to={item.url}>
+      <Link {...commonProps} to={item.url} onClick={closeMegaMenu}>
         {item.name}
       </Link>
     );
