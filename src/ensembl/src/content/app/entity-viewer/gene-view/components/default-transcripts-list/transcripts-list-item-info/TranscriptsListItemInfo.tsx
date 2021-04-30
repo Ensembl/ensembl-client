@@ -185,9 +185,6 @@ export const TranscriptsListItemInfo = (
         {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>
       <div className={transcriptsListStyles.right}>
-        <div className={styles.transcriptName}>
-          <strong>{transcript.symbol}</strong>
-        </div>
         <div className={styles.viewInApp}>
           <ViewInApp links={{ genomeBrowser: { url: getBrowserLink() } }} />
         </div>

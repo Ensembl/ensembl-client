@@ -216,11 +216,6 @@ const TranscriptSummary = () => {
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
-        <div className={styles.label}>Transcript name</div>
-        <div className={styles.value}>{transcript.symbol}</div>
-      </div>
-
-      <div className={styles.row}>
         <div className={styles.label}>Transcript length</div>
         <div className={styles.value}>
           {getCommaSeparatedNumber(transcript.slice.location.length)}{' '}
