@@ -29,6 +29,8 @@ export enum SpeciesStatsSection {
   NON_CODING_STATS = 'non_coding_stats',
   PSEUDOGENES = 'pseudogene_stats',
   ASSEMBLY = 'assembly_stats',
+  HOMOLOGY = 'homology_stats',
+  VARIATION = 'variation_stats',
   REGULATION = 'regulation_stats'
 }
 
@@ -43,6 +45,9 @@ enum Groups {
   ASSEMBLY = 'assembly',
   ASSEMBLY_ANALYSIS = 'assembly_analysis',
   TRANSCRIPTS = 'transcripts',
+  HOMOLOGY = 'homology',
+  VARIATION = 'variation',
+  VARIATION_EVIDENCE = 'variation_evidence',
   REGULATION = 'regulation'
 }
 
@@ -56,6 +61,9 @@ const groupTitles = {
   [Groups.ASSEMBLY]: 'Assembly',
   [Groups.ASSEMBLY_ANALYSIS]: 'Analysis',
   [Groups.TRANSCRIPTS]: 'Transcripts',
+  [Groups.HOMOLOGY]: 'Homology',
+  [Groups.VARIATION]: 'Variation',
+  [Groups.VARIATION_EVIDENCE]: 'Evidence',
   [Groups.REGULATION]: 'Regulation'
 };
 
@@ -123,11 +131,29 @@ enum Stats {
   PSEUDOGENES_TOTAL_INTRONS = 'total_introns',
   PSEUDOGENES_AVERAGE_INTRON_LENGTH = 'average_intron_length',
 
+  // Homology stats
+  HOMOLOGY = 'homology',
+  HOMOLOGY_COVERAGE = 'coverage',
+
+  // Variation stats
+  VARIATION = 'variation',
+  SHORT_VARIANTS = 'short_variants',
+  STRUCTURAL_VARIANTS = 'structural_variants',
+  SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS = 'short_variants_with_phenotype_assertions',
+  SHORT_VARIANTS_WITH_PUBLICATIONS = 'short_variants_with_publications',
+  SHORT_VARIANTS_FREQUENCY_STUDIES = 'short_variants_frequency_studies',
+  STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS = 'structural_variants_with_phenotype_assertions',
+
   // Regulation stats
   REGULATION = 'regulation',
   REGULATION_ENHANCERS = 'enhancers',
   REGULATION_PROMOTERS = 'promoters'
 }
+
+const helpText = {
+  HOMOLOGY_COVERAGE:
+    'Coding genes with orthologues and/or paralogues with other species in Ensembl'
+};
 
 type SpeciesStatsSectionGroups = {
   [key in SpeciesStatsSection]: {
@@ -135,6 +161,7 @@ type SpeciesStatsSectionGroups = {
     groups: Groups[];
     summaryStatsKeys?: [Stats?, Stats?];
     exampleLinkText?: string;
+    helpText?: string;
   };
 };
 
@@ -161,6 +188,17 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
     title: 'Non-coding genes',
     groups: [Groups.NON_CODING_GENES, Groups.NON_CODING_ANALYSIS],
     summaryStatsKeys: [Stats.NON_CODING_GENES]
+  },
+  [SpeciesStatsSection.HOMOLOGY]: {
+    title: 'Homology',
+    groups: [Groups.HOMOLOGY],
+    summaryStatsKeys: [Stats.HOMOLOGY_COVERAGE],
+    helpText: helpText.HOMOLOGY_COVERAGE
+  },
+  [SpeciesStatsSection.VARIATION]: {
+    title: 'Variation',
+    groups: [Groups.VARIATION, Groups.VARIATION_EVIDENCE],
+    summaryStatsKeys: [Stats.SHORT_VARIANTS, Stats.STRUCTURAL_VARIANTS]
   },
   [SpeciesStatsSection.REGULATION]: {
     title: 'Regulation',
@@ -262,6 +300,16 @@ const groupsStatsMap = {
     [Stats.COMPONENT_SEQUENCES, Stats.CONTIG_N50]
   ],
   [Groups.ASSEMBLY_ANALYSIS]: [[Stats.AVERAGE_GC_CONTENT]],
+  [Groups.HOMOLOGY]: [[Stats.HOMOLOGY_COVERAGE]],
+  [Groups.VARIATION]: [[Stats.SHORT_VARIANTS, Stats.STRUCTURAL_VARIANTS]],
+  [Groups.VARIATION_EVIDENCE]: [
+    [
+      Stats.SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS,
+      Stats.SHORT_VARIANTS_WITH_PUBLICATIONS,
+      Stats.SHORT_VARIANTS_FREQUENCY_STUDIES
+    ],
+    [Stats.STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]
+  ],
   [Groups.REGULATION]: [
     [Stats.REGULATION_ENHANCERS, Stats.REGULATION_PROMOTERS]
   ]
@@ -269,11 +317,13 @@ const groupsStatsMap = {
 
 // Individual stat formatting options.
 type StatsFormattingOption = {
+  preLabel?: string;
   label: string;
   headerUnit?: string;
   primaryUnit?: string;
   secondaryUnit?: string;
   primaryValuePostfix?: string;
+  helpText?: string;
 };
 
 type StatsFormattingOptions = {
@@ -458,6 +508,45 @@ const statsFormattingOptions: StatsFormattingOptions = {
       label: 'Average GC content'
     }
   },
+  [SpeciesStatsSection.HOMOLOGY]: {
+    [Stats.HOMOLOGY]: {
+      label: 'Homology'
+    },
+    [Stats.HOMOLOGY_COVERAGE]: {
+      label: 'Coverage',
+      headerUnit: 'coverage',
+      primaryValuePostfix: '%'
+    }
+  },
+  [SpeciesStatsSection.VARIATION]: {
+    [Stats.VARIATION]: {
+      label: 'Variation'
+    },
+    [Stats.SHORT_VARIANTS]: {
+      label: 'Short variants',
+      headerUnit: 'short variants'
+    },
+    [Stats.STRUCTURAL_VARIANTS]: {
+      label: 'Structural variants',
+      headerUnit: 'structural variants'
+    },
+    [Stats.SHORT_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]: {
+      preLabel: 'Short variants',
+      label: 'With phenotype assertions'
+    },
+    [Stats.SHORT_VARIANTS_WITH_PUBLICATIONS]: {
+      preLabel: 'Short variants',
+      label: 'With publications'
+    },
+    [Stats.SHORT_VARIANTS_FREQUENCY_STUDIES]: {
+      preLabel: 'Short variants',
+      label: 'Frequency studies'
+    },
+    [Stats.STRUCTURAL_VARIANTS_WITH_PHENOTYPE_ASSERTIONS]: {
+      preLabel: 'Structural variants',
+      label: 'With phenotype assertions'
+    }
+  },
   [SpeciesStatsSection.REGULATION]: {
     [Stats.REGULATION]: {
       label: 'Regulation'
@@ -505,7 +594,9 @@ const buildIndividualStat = (
   const {
     primaryValuePostfix = '',
     label,
-    primaryUnit
+    primaryUnit,
+    preLabel,
+    helpText
   } = statsFormattingOptions[section][primaryKey] as StatsFormattingOption;
 
   if (typeof primaryValue === 'number') {
@@ -513,9 +604,11 @@ const buildIndividualStat = (
   }
 
   return {
+    preLabel,
     label: label || primaryKey,
     primaryValue,
-    primaryUnit: primaryUnit
+    primaryUnit,
+    helpText
   };
 };
 
@@ -620,7 +713,11 @@ export const getStatsForSection = (props: {
 
   const data = sampleData[genome_id][section];
 
-  if (!data) return;
+  if (!data) {
+    return {
+      section
+    } as StatsSection;
+  }
 
   const filteredData: {
     [key: string]: string | number;
@@ -640,9 +737,13 @@ export const getStatsForSection = (props: {
     return;
   }
 
-  const summaryStats = summaryStatsKeys
+  const availableSummaryStatsKeys = summaryStatsKeys?.filter(
+    (key) => key && (filteredData[key] || filteredData[key] === 0)
+  );
+
+  const summaryStats = availableSummaryStatsKeys
     ?.map((key) => {
-      return key
+      return key && (filteredData[key] || filteredData[key] === 0)
         ? buildHeaderStat({
             primaryKey: key,
             primaryValue: filteredData[key],
@@ -661,7 +762,7 @@ export const getStatsForSection = (props: {
     : undefined;
 
   const isExpandedContentSame =
-    Object.keys(filteredData).length === summaryStatsKeys?.length;
+    Object.keys(filteredData).length === availableSummaryStatsKeys?.length;
 
   if (isExpandedContentSame) {
     return {
@@ -677,7 +778,6 @@ export const getStatsForSection = (props: {
     const processedStats = groupStats
       .map((subGroupStats) => {
         const processedSubGroupStats: IndividualStat[] = [];
-
         subGroupStats.forEach((stat) => {
           if (filteredData[stat] || filteredData[stat] === 0) {
             const individualStat = buildIndividualStat({

@@ -17,11 +17,14 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+
 import defaultStyles from './SpeciesStats.scss';
 
 type PrimaryDataProps = {
   primaryValue: string | number;
   primaryUnit?: string;
+  helpText?: string;
 };
 
 type PropsWithSecondaryData = {
@@ -83,6 +86,11 @@ const SpeciesStats = (props: SpeciesStatsProps) => {
     <div className={styles.wrapper}>
       {props.preLabel && (
         <span className={styles.preLabel}>{props.preLabel}</span>
+      )}
+      {props.helpText && (
+        <span className={defaultStyles.questionButton}>
+          <QuestionButton helpText={props.helpText} />
+        </span>
       )}
 
       <div className={styles.label}>{props.label}</div>

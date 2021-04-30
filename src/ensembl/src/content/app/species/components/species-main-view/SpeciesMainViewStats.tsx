@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import {
   getActiveGenomeId,
@@ -81,21 +82,28 @@ type ContentProps = {
 const getCollapsedContent = (props: ContentProps) => {
   const { species, statsSection } = props;
   const { summaryStats, section, exampleLinks } = statsSection;
-  const { title, exampleLinkText } = sectionGroupsMap[section];
+  const { title, helpText, exampleLinkText } = sectionGroupsMap[section];
 
   return (
     <div className={styles.collapsedContent}>
       <span className={styles.title}>{title}</span>
-
-      {summaryStats?.length &&
+      {summaryStats?.length ? (
         summaryStats.map((summaryStat, index) => {
           return (
             <div className={styles.summaryStat} key={index}>
               <span className={styles.value}>{summaryStat.primaryValue}</span>
               <span className={styles.unit}>{summaryStat.primaryUnit}</span>
+              {helpText && (
+                <span className={styles.questionButton}>
+                  <QuestionButton helpText={helpText} />
+                </span>
+              )}
             </div>
           );
-        })}
+        })
+      ) : (
+        <div className={styles.noData}>no data</div>
+      )}
 
       {exampleLinks && species.isEnabled && (
         <ExampleLinkWithPopup links={exampleLinks}>
@@ -192,6 +200,7 @@ const SpeciesMainViewStats = (props: Props) => {
             key={key}
             collapsedContent={getCollapsedContent(contentProps)}
             expandedContent={
+              contentProps.statsSection.summaryStats?.length &&
               contentProps.statsSection.groups
                 ? getExpandedContent(contentProps)
                 : null

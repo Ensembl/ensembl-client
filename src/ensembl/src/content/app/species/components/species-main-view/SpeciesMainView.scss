@@ -54,44 +54,41 @@
   padding: 6px 20px;
   grid-template-columns: [title] 120px [first_summary_stat] 250px [second_summary_stat] auto [example-link] 150px;
   align-items: center;
+  min-height: 50px;
 
   .title {
     grid-column: title;
-    color: $medium-dark-grey;
+    color: $black;
+    font-weight: $light;
   }
 
   .summaryStat {
     grid-column: first_summary_stat;
 
     .value {
-      font-size: 26px;
+      font-size: 24px;
     }
 
     .unit {
-      color: $dark-grey;
-      padding-left: 5px;
+      color: $black;
+      padding: 0 6px;
+      font-weight: $light;
     }
   }
 
   .summaryStat + .summaryStat {
     grid-column: second_summary_stat;
-
-    .value {
-      font-size: 22px;
-    }
-
-    .unit {
-      color: $dark-grey;
-      padding-left: 5px;
-    }
   }
 
   .exampleLink {
     grid-column: example-link;
   }
+
+  .questionButton {
+    top: 2px;
+    position: relative;
+  }
 }
-
-
 
 .statsGroup {
   padding: 16px 20px 0;
@@ -100,7 +97,8 @@
   
   .title {
     grid-column: title;
-    color: $medium-dark-grey;
+    color: $black;
+    font-weight: $light;
   }
 
   .stats {
@@ -115,4 +113,9 @@
     grid-column: example-link;
   }
 
+}
+
+.noData {
+  color: $black;
+  font-weight: $light;
 }
