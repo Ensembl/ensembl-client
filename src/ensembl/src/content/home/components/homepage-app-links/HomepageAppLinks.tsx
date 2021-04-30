@@ -56,7 +56,7 @@ type HomepageAppLinksRowProps = {
 const HomepageAppLinks = (props: Props) => {
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
 
-  const onToggleRow = (index: number) => {
+  const onToggleRow = (index: number | null) => {
     if (index === expandedRowIndex) {
       setExpandedRowIndex(null);
     } else {
@@ -86,7 +86,7 @@ const HomepageAppLinksRow = (props: HomepageAppLinksRowProps) => {
   const dispatch = useDispatch();
 
   const onOutsideClick = () => {
-    toggleExpand();
+    isExpanded && toggleExpand();
   };
 
   useOutsideClick(elementRef, onOutsideClick);
