@@ -19,25 +19,21 @@ $article-right-padding: 1.5rem;
   box-shadow: 0 2px 3px $grey;
 }
 
-.main {
+.grid {
   height: 100%;
-  display: grid;
-  grid-template-columns: [article] calc(440px + #{$article-right-padding}) [aside] minmax(200px, 300px);
-  grid-column-gap: 10rem;
   padding-left: 80px;
   padding-top: 44px;
+}
 
-  article {
-    grid-column: article;
-  }
-  
-  aside {
-    display: flex;
-    flex-direction: column;
-    grid-column: aside;
-  }
+.aside {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: start;
+}
 
-  .asideTitle {
-    margin-bottom: $aside-title-margin-bottom;
-  }
+.asideTitle {
+  font-weight: $light;
+  margin-bottom: 1rem;
 }

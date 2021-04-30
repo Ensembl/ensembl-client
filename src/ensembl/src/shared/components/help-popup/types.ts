@@ -14,33 +14,6 @@
  * limitations under the License.
  */
 
-export type ArticleType = 'article' | 'video';
-
-export type Article = {
-  slug: string; // an article identtifier
-  url: string;
-  title: string; // part of article metadata; for use in the page meta tag
-  description: string; // part of article metadata; for use in the page meta tag
-  related_articles: RelatedArticle[];
-};
-
-export type TextArticle = Article & {
-  type: 'article';
-  body: string; // the actual html of the article
-};
-
-export type VideoArticle = Article & {
-  type: 'video';
-  youtube_id: string;
-};
-
-export type RelatedArticle = {
-  title: string;
-  slug: string;
-  url: string;
-  type: ArticleType;
-};
-
 export type SlugReference = {
   slug: string; // slug of the help article, e.g. "selecting-a-species"
 };

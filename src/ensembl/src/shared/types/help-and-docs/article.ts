@@ -16,27 +16,42 @@
 
 export type ArticleType = 'article' | 'video';
 
-export type Article = {
+export type ArticleData = {
   slug: string; // an article identtifier
   url: string;
   title: string; // part of article metadata; for use in the page meta tag
   description: string; // part of article metadata; for use in the page meta tag
-  related_articles: RelatedArticle[];
 };
 
-export type TextArticle = Article & {
+// IndexArticle is where the article metaphor wears a bit thin.
+// It only contains references to other, proper articles.
+// Its purpose is to be displayed on an index page, such as /help
+export type IndexArticleData = ArticleData & {
+  type: 'index';
+  items: IndexArticleItem[];
+};
+
+export type TextArticleData = ArticleData & {
   type: 'article';
+  related_articles: RelatedArticleData[];
   body: string; // the actual html of the article
 };
 
-export type VideoArticle = Article & {
+export type VideoArticleData = ArticleData & {
   type: 'video';
+  related_articles: RelatedArticleData[];
   youtube_id: string;
 };
 
-export type RelatedArticle = {
+export type RelatedArticleData = {
   title: string;
   slug: string;
   url: string;
   type: ArticleType;
+};
+
+export type IndexArticleItem = {
+  title: string;
+  summary: string;
+  url: string;
 };

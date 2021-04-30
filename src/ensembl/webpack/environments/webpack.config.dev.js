@@ -47,8 +47,15 @@ const devServerConfig = {
    */
   proxy: [
     {
-      context: ['/api/**'],
+      context: ['/api/**', '!/api/docs/**'],
       target: 'https://staging-2020.ensembl.org',
+      changeOrigin: true,
+      secure: false
+    },
+    {
+      context: ['/api/docs/**'],
+      target: 'http://localhost:3000',
+      pathRewrite: { '^/api/docs': '/api' },
       changeOrigin: true,
       secure: false
     }
