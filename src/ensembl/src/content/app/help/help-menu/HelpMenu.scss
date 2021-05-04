@@ -1,0 +1,74 @@
+@import 'src/styles/common';
+
+$submenuSidePadding: 30px;
+
+.helpMenu {
+  grid-row: menu;
+  position: relative;
+}
+
+.menuBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 44px;
+  background: $light-grey;
+  box-shadow: 0 2px 3px $grey;
+  z-index: 5;
+}
+
+.expandedMenuPanel {
+  display: flex;
+  position: absolute;
+  background-color: $off-white;
+  top: 100%;
+  height: 360px;
+  max-height: 50vh;
+  width: 100%;
+  z-index: 4;
+  padding: 0 calc(44px - #{$submenuSidePadding}); // FIXME: 44px is a magic number
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background-color: rgba($color: #000000, $alpha: 0.3);
+}
+
+.topMenuItem, .submenuItem {
+  color: $blue;
+  cursor: pointer;
+}
+
+.topMenuItem {
+  & + & {
+    margin-left: 46px;
+  }
+}
+
+.submenu {
+  border-right: 2px solid $light-grey;
+  padding: 18px 10px;
+  min-width: 326px;
+  flex-grow: 0;
+}
+
+.submenuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4em $submenuSidePadding;
+}
+
+.submenuItem:hover {
+  background: $ice-blue;
+}
+
+.chevron {
+  height: 14px;
+  fill: $blue;
+}

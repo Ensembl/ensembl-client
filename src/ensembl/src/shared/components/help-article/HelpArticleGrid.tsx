@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-export { default as TextArticle } from './TextArticle';
-export { default as VideoArticle } from './VideoArticle';
-export { default as IndexArticle } from './IndexArticle';
-export { default as HelpArticleGrid } from './HelpArticleGrid';
-export { default as RelatedArticles } from './RelatedArticles';
+import React, { ReactNode } from 'react';
+import classNames from 'classnames';
+
+import styles from './HelpArticleGrid.scss';
+
+type Props = {
+  children: ReactNode;
+  className?: string;
+};
+
+const HelpArticleGrid = (props: Props) => {
+  const gridClasses = classNames(styles.grid, props.className);
+  return <div className={gridClasses}>{props.children}</div>;
+};
+
+export default HelpArticleGrid;

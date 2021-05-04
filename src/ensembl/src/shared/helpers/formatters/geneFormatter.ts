@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-export { default as TextArticle } from './TextArticle';
-export { default as VideoArticle } from './VideoArticle';
-export { default as IndexArticle } from './IndexArticle';
-export { default as HelpArticleGrid } from './HelpArticleGrid';
-export { default as RelatedArticles } from './RelatedArticles';
+export function getGeneName(geneName: string | null) {
+  if(geneName && geneName !== 'novel transcript') {
+    return geneName.replace(/\[Source:.*\]/,'').trim();
+  } else {
+    return 'None';
+  }
+}

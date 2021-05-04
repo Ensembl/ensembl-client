@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
-import useApiService from 'src/shared/hooks/useApiService';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-import { SlugReference } from './types';
 import {
-  TextArticleData,
-  VideoArticleData
+  IndexArticleData,
+  IndexArticleItem
 } from 'src/shared/types/help-and-docs/article';
 
-const getQuery = (reference: SlugReference) => {
-  return `slug=${reference.slug}`;
+import styles from './HelpArticle.scss';
+
+type Props = {
+  article: IndexArticleData;
 };
 
-export type ArticleData = TextArticleData | VideoArticleData;
-
-const useHelpArticle = (reference: SlugReference) => {
-  const query = getQuery(reference);
-  const url = `/api/docs/article?${query}`;
-
-  const { data: article, loadingState } = useApiService<ArticleData>({
-    endpoint: url
-  });
-
-  return {
-    loadingState,
-    article
-  };
+const IndexArticle = (props: Props) => {
+  const indexItems = props.article.items.map((item) => (
+    <IndexItem {...item} key={item.url} />
+  ));
+  return <div className={styles.indexArticle}>{indexItems}</div>;
 };
 
-export default useHelpArticle;
+const IndexItem = (props: IndexArticleItem) => {
+  const { title, summary, url } = props;
+  return (
+    <div className={styles.indexItem}>
+      <h2>{title}</h2>
+      <p>{summary}</p>
+      <div>
+        <Link to={url}>See more</Link>
+      </div>
+    </div>
+  );
+};
+
+export default IndexArticle;

@@ -1,7 +1,17 @@
 @import 'src/styles/common';
 @import 'helpArticleConstants';
 
+$indexItemWidth: 364px;
+$indexItemsHorizontalGap: 100px;
+$pageLeftPadding: 88px;
+$asideLeftPadding: 12px;
+$textColumnWidth: 450px;
+
 .textArticle {
+  height: 100%;
+  overflow-y: auto;
+  padding-left: $heading-outdent;
+  padding-bottom: 3rem;
 
   h1 {
     font-size: 15px;
@@ -16,13 +26,22 @@
     margin-bottom: $line-height;
   }
 
-  p {
+  h1, h2, h3, p, ul {
+    width: $textColumnWidth;
+  }
+
+  p, ul {
     line-height: $line-height;
     margin: $line-height 0;
   }
 
-  img {
-    max-width: 100%;
+  figure {
+    margin: 1em 0;
+  }
+
+  hr {
+    display: inline-block;
+    width: $textColumnWidth;
   }
 
   // Notice that the external-link svg has the same shape as in the static/img/shared folder
@@ -39,3 +58,103 @@
   }
 }
 
+.indexArticle {
+  display: grid;
+  grid-template-columns: repeat(3, #{$indexItemWidth});
+  grid-column-gap: $indexItemsHorizontalGap;
+  grid-row-gap: 52px;
+  max-width: calc(3 * #{$indexItemWidth} + 2 * #{$indexItemsHorizontalGap});
+
+  .indexItem {
+    width: $indexItemWidth;
+    flex: 0 0 auto;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: $bold;
+  }
+}
+
+@media (max-width: $pageLeftPadding + 3 * $indexItemWidth + 2 * $indexItemsHorizontalGap) {
+
+  .indexArticle {
+    grid-template-columns: repeat(2, #{$indexItemWidth});
+  }
+
+}
+
+.videoArticle {
+  height: 90%;
+}
+
+.videoWrapper {
+  // the position of the wrapper is set to relative and the position of the iframe to absolute
+  // because the wrapper needs to change its dimensions when its parent does
+  // while iframe's dimensions are set via javascript by observing wrapper's dimensions through ResizeObserver
+  // TODO: change this to aspect-ratio CSS rule when it gets better browser support
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  iframe {
+    position: absolute;
+    top: 0;
+  }
+}
+
+.videoLoadingIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aside {
+  grid-column: aside;
+  position: sticky;
+  top: 0;
+  align-self: start;
+
+  h2 {
+    font-size: 13px;
+    font-weight: $light;
+    margin: 0 0 1rem;
+  }
+}
+
+.relatedArticles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.relatedArticle,
+.relatedVideo {
+  color: $blue;
+  cursor: pointer;
+  margin-bottom: 0.4rem;
+}
+
+.relatedVideo {
+  position: relative;
+}
+
+.relatedVideoIcon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translate(-100%, -50%);
+  background-color: $blue;
+  height: 10px;
+  width: 16px;
+  margin-left: -#{$asideLeftPadding};
+
+  svg {
+    height: 80%;
+    fill: white;
+  }
+}

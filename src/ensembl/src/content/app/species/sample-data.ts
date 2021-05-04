@@ -90,6 +90,17 @@ export const sampleData: RawSpeciesStats = {
       total_introns: 25165,
       average_intron_length: 4336.85
     },
+    homology_stats: {
+      coverage: 98.8
+    },
+    variation_stats: {
+      short_variants: 713730678,
+      structural_variants: 32132047,
+      short_variants_with_phenotype_assertions: 13336864,
+      short_variants_with_publications: 303288,
+      short_variants_frequency_studies: 8,
+      structural_variants_with_phenotype_assertions: 1921150
+    },
     regulation_stats: {
       enhancers: 132592,
       promoters: 35191
@@ -158,6 +169,17 @@ export const sampleData: RawSpeciesStats = {
       total_introns: 22805,
       average_intron_length: 3049.46
     },
+    homology_stats: {
+      coverage: 0
+    },
+    variation_stats: {
+      short_variants: 677181182,
+      structural_variants: 36348512,
+      short_variants_with_phenotype_assertions: 10233814,
+      short_variants_with_publications: 328161,
+      short_variants_frequency_studies: 8,
+      structural_variants_with_phenotype_assertions: 1682589
+    },
     regulation_stats: {
       enhancers: 92264,
       promoters: 21822
@@ -225,6 +247,9 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 1.17,
       total_introns: 19,
       average_intron_length: 1150.95
+    },
+    homology_stats: {
+      coverage: 93.1
     }
   },
   caenorhabditis_elegans_GCA_000002985_3: {
@@ -289,6 +314,9 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 3.93,
       total_introns: 5737,
       average_intron_length: 203.57
+    },
+    homology_stats: {
+      coverage: 51.8
     }
   },
   plasmodium_falciparum_GCA_000002765_2: {
@@ -353,6 +381,9 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 3.01,
       total_introns: 308,
       average_intron_length: 48.51
+    },
+    homology_stats: {
+      coverage: 43.3
     }
   },
   saccharomyces_cerevisiae_GCA_000146045_2: {
@@ -417,6 +448,17 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 1,
       total_introns: 0,
       average_intron_length: null
+    },
+    variation_stats: {
+      short_variants: 263537,
+      structural_variants: null,
+      short_variants_with_phenotype_assertions: null,
+      short_variants_with_publications: null,
+      short_variants_frequency_studies: null,
+      structural_variants_with_phenotype_assertions: null
+    },
+    homology_stats: {
+      coverage: 57.7
     }
   },
   triticum_aestivum_GCA_900519105_1: {
@@ -481,6 +523,17 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: null,
       total_introns: null,
       average_intron_length: null
+    },
+    variation_stats: {
+      short_variants: 18093911,
+      structural_variants: null,
+      short_variants_with_phenotype_assertions: null,
+      short_variants_with_publications: null,
+      short_variants_frequency_studies: 1,
+      structural_variants_with_phenotype_assertions: null
+    },
+    homology_stats: {
+      coverage: 98.7
     }
   },
   actinobacillus: {

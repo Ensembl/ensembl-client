@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-export { default as TextArticle } from './TextArticle';
-export { default as VideoArticle } from './VideoArticle';
-export { default as IndexArticle } from './IndexArticle';
-export { default as HelpArticleGrid } from './HelpArticleGrid';
-export { default as RelatedArticles } from './RelatedArticles';
+ import { getGeneName } from './geneFormatter';
+  
+ describe('getGeneName', () => {
+   it('returns the correct gene display name', () => {
+     expect(getGeneName('novel transcript')).toBe('None');
+     expect(getGeneName('')).toBe('None');
+     expect(getGeneName(null)).toBe('None');
+     expect(getGeneName('Heat shock protein 101 [Source:UniProtKB/TrEMBL;Acc:Q9SPH4]')).toBe('Heat shock protein 101');
+   });
+ });
