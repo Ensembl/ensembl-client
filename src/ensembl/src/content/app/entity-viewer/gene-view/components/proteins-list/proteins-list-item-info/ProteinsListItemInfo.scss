@@ -73,7 +73,6 @@ $content-width: $gene_image_width;
   margin-bottom: -1px;
   height: 12px;
   width: 12px;
-  transform: rotate(0deg);
   transition: transform linear 0.2s;
   &Down {
     transform: rotate(-180deg);
