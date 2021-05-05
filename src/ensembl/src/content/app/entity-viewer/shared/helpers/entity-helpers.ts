@@ -19,7 +19,7 @@ import { Pick2, Pick3 } from 'ts-multipick';
 import { Slice } from 'src/shared/types/thoas/slice';
 import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
 import { Product, ProductType } from 'src/shared/types/thoas/product';
-import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
+import { ProductWithoutDomains } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/proteins-list-item-info/ProteinsListItemInfo';
 
 import {
   SWISSPROT_SOURCE,
@@ -170,12 +170,13 @@ export const externalSourceLinks = {
   [ExternalSource.PDBE]: 'https://www.ebi.ac.uk/pdbe/pdbe-kb/proteins/'
 };
 
-export const getProteinXrefs = (
-  xrefs: Array<
-    Pick<ExternalReferenceType, 'accession_id' | 'name'> &
-      Pick2<ExternalReferenceType, 'source', 'id'>
-  >
-) => {
+export const getProteinXrefs = (transcript: {
+  product_generating_contexts: Array<{
+    product: Pick<ProductWithoutDomains, 'external_references'>;
+  }>;
+}) => {
+  const xrefs =
+    transcript.product_generating_contexts[0].product.external_references;
   let proteinXrefs = xrefs.filter(
     (xref) => xref.source.id === SWISSPROT_SOURCE
   );

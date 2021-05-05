@@ -26,6 +26,7 @@ import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/pro
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadProtein from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
+import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import {
   ExternalSource,
@@ -48,8 +49,6 @@ import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/compon
 
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
-
-import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 export type ProductWithoutDomains = Pick<
   Product,
@@ -126,9 +125,7 @@ const ProteinsListItemInfo = (props: Props) => {
   const { product: productWithProteinDomains } =
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
-  const proteinXrefs = getProteinXrefs(
-    transcript.product_generating_contexts[0].product.external_references
-  );
+  const proteinXrefs = getProteinXrefs(transcript);
   const proteinStatsXref = proteinXrefs && proteinXrefs[0];
 
   useEffect(() => {
@@ -303,13 +300,9 @@ const ProteinExternalReferenceGroup = (
     setXrefGroupOpen(!isXrefGroupOpen);
   };
 
-  const chevronClasses = classNames(
-    styles.chevron,
-    {
-      [styles.chevronDown]: isXrefGroupOpen
-    }
-    // isXrefGroupOpen? styles.chevronDown : styles.chevronUp
-  );
+  const chevronClasses = classNames(styles.chevron, {
+    [styles.chevronUp]: isXrefGroupOpen
+  });
 
   if (xrefs.length > 3) {
     const displayXref = xrefs[0];
