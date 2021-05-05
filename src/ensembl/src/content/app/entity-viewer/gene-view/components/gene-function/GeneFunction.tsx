@@ -112,7 +112,9 @@ const GeneFunction = (props: Props) => {
   const getCurrentTabContent = () => {
     switch (selectedTabName) {
       case GeneFunctionTabName.PROTEINS:
-        return <ProteinsList gene={props.gene} />;
+        return hasProteinCodingTranscripts ? (
+          <ProteinsList gene={props.gene} />
+        ) : null;
       default:
         return <>Data for these views will be available soon...</>;
     }
