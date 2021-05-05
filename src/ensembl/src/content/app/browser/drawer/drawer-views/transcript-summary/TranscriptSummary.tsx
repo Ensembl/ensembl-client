@@ -50,7 +50,6 @@ type Transcript = Pick<
   FullTranscript,
   | 'stable_id'
   | 'unversioned_stable_id'
-  | 'symbol'
   | 'so_term'
   | 'external_references'
   | 'slice'
@@ -78,7 +77,6 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
       stable_id
       unversioned_stable_id
       so_term
-      symbol
       external_references {
         accession_id
         url
