@@ -103,7 +103,7 @@ const GeneRelationships = (props: Props) => {
       case GeneRelationshipsTabName.GENE_FAMILIES:
         return <>Gene families data</>;
       default:
-        return <>Data for these views will be available soon...</>;
+        return <>No data</>;
     }
   };
 
