@@ -19,7 +19,7 @@ import { Pick2, Pick3 } from 'ts-multipick';
 import { Slice } from 'src/shared/types/thoas/slice';
 import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
 import { Product, ProductType } from 'src/shared/types/thoas/product';
-import { ProductWithoutDomains } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/proteins-list-item-info/ProteinsListItemInfo';
+import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 
 import {
   SWISSPROT_SOURCE,
@@ -170,9 +170,13 @@ export const externalSourceLinks = {
   [ExternalSource.PDBE]: 'https://www.ebi.ac.uk/pdbe/pdbe-kb/proteins/'
 };
 
-export const getProteinXrefs = (transcript: {
+export const getProteinXrefs = <
+  T extends Pick2<ExternalReference, 'source', 'id'>
+>(transcript: {
   product_generating_contexts: Array<{
-    product: Pick<ProductWithoutDomains, 'external_references'>;
+    product: {
+      external_references: T[];
+    };
   }>;
 }) => {
   const xrefs =

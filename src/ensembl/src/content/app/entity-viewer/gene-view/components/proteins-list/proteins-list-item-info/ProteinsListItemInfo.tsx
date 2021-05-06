@@ -209,26 +209,27 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {proteinXrefs && domainsLoadingState === LoadingState.SUCCESS && (
-              <div>
-                <div className={styles.xrefsWrapper}>
-                  <ProteinExternalReferenceGroup
-                    source={
-                      proteinXrefs[0].source.id === SWISSPROT_SOURCE
-                        ? ExternalSource.UNIPROT_SWISSPROT
-                        : ExternalSource.UNIPROT_TREMBL
-                    }
-                    xrefs={proteinXrefs}
-                  />
+            {proteinXrefs?.length > 0 &&
+              domainsLoadingState === LoadingState.SUCCESS && (
+                <div>
+                  <div className={styles.xrefsWrapper}>
+                    <ProteinExternalReferenceGroup
+                      source={
+                        proteinXrefs[0].source.id === SWISSPROT_SOURCE
+                          ? ExternalSource.UNIPROT_SWISSPROT
+                          : ExternalSource.UNIPROT_TREMBL
+                      }
+                      xrefs={proteinXrefs}
+                    />
+                  </div>
+                  <div className={styles.xrefsWrapper}>
+                    <ProteinExternalReferenceGroup
+                      source={ExternalSource.INTERPRO}
+                      xrefs={proteinXrefs}
+                    />
+                  </div>
                 </div>
-                <div className={styles.xrefsWrapper}>
-                  <ProteinExternalReferenceGroup
-                    source={ExternalSource.INTERPRO}
-                    xrefs={proteinXrefs}
-                  />
-                </div>
-              </div>
-            )}
+              )}
             {domainsLoadingState === LoadingState.SUCCESS && (
               <div className={styles.downloadWrapper}>
                 <InstantDownloadProtein
@@ -317,7 +318,9 @@ const ProteinExternalReferenceGroup = (
           />
           <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
             <span
-              className={isXrefGroupOpen ? styles.xrefCountChevronOpen : ''}
+              className={
+                isXrefGroupOpen ? styles.xrefCountChevronOpen : undefined
+              }
             >
               + {xrefs.length - 1}
               <ChevronDown className={chevronClasses} />
