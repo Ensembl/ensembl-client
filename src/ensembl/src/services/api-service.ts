@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-// this service temporarily uses the native browser fetch API;
-// we will modify it to use a library once we decide which one to choose
+import fetch from 'cross-fetch';
 
 import config from 'config';
 import LRUCache from 'src/shared/utils/lruCache';
@@ -62,7 +61,7 @@ class ApiService {
     this.cache = new LRUCache({ maxAge: 60 * 60 * 1000 });
   }
 
-  // temporary method, for easy testing, until we choose a library
+  // method to enable easy testing
   public getFetch() {
     return fetch;
   }

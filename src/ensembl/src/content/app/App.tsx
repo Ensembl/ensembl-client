@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useEffect, lazy, Suspense } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
+
+import routes from 'src/routes/routesConfig';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 
 import Header from 'src/header/Header';
-
-const HomePage = lazy(() => import('../home/Home'));
-const GlobalSearch = lazy(() => import('./global-search/GlobalSearch'));
-const SpeciesSelector = lazy(
-  () => import('./species-selector/SpeciesSelector')
-);
-const SpeciesPage = lazy(() => import('./species/SpeciesPage'));
-const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
-const Browser = lazy(() => import('./browser/Browser'));
-const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
-const About = lazy(() => import('./about/About'));
-const Help = lazy(() => import('./help/Help'));
+import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
 type AppProps = {
   changeCurrentApp: (name: string) => void;
@@ -56,27 +47,40 @@ const App = (props: AppProps) => {
   return (
     <>
       <Header />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Switch>
-          <Route path={`/`} component={HomePage} exact />
-          <Route path={`/global-search`} component={GlobalSearch} />
-          <Route path={`/species-selector`} component={SpeciesSelector} />
-          <Route path={`/species/:genomeId`} component={SpeciesPage} />
-          <Redirect exact from="/species" to={urlFor.speciesSelector()} />
-          <Route path={`/custom-download`} component={CustomDownload} />
+      <Switch>
+        {routes.map((route, index) => (
           <Route
-            path={`/entity-viewer/:genomeId?/:entityId?`}
-            component={EntityViewer}
+            key={index}
+            path={route.path}
+            exact={route.exact}
+            render={(props) => <route.component {...props} />}
           />
-          <Route path={`/genome-browser/:genomeId?`} component={Browser} />
-          <Route path={`/about`} component={About} />
-          <Route path={`/help`} component={Help} />
-          <Route>
-            <Redirect to={{ ...location, state: { is404: true } }} />
-          </Route>
-        </Switch>
-      </Suspense>
+        ))}
+        <Redirect exact from="/species" to={urlFor.speciesSelector()} />
+        <Route component={NotFound} />
+      </Switch>
     </>
+  );
+};
+
+const Status = ({ code, children }: { code: number; children: ReactNode }) => {
+  return (
+    <Route
+      render={({ staticContext }) => {
+        if (staticContext) {
+          (staticContext as any).status = code;
+        }
+        return children;
+      }}
+    />
+  );
+};
+
+const NotFound = () => {
+  return (
+    <Status code={404}>
+      <NotFoundErrorScreen />
+    </Status>
   );
 };
 

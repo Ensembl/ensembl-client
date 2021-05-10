@@ -26,7 +26,7 @@ import {
   toggleSidebar,
   closeSidebarModal,
   openSidebarModal
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
 

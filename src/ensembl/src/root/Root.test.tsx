@@ -16,32 +16,39 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { MemoryRouter, Redirect, useLocation } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 
-import { Root, Props as RootProps } from './Root';
+import useRestoredReduxState from './useRestoredReduxState';
+import { updateBreakpointWidth } from '../global/globalActions';
+
+import { Root } from './Root';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';
 import windowService from 'src/services/window-service';
 
 import { mockMatchMedia } from 'tests/mocks/mockWindowService';
 
+jest.mock('react-helmet-async', () => ({
+  Helmet: jest.fn(() => <div id="helmet" />)
+}));
 jest.mock('../content/app/App', () => () => <div id="app" />);
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
-
-const updateBreakpointWidth = jest.fn();
+jest.mock('../global/globalActions', () => ({
+  updateBreakpointWidth: jest.fn(() => ({ type: 'updateBreakpointWidth' }))
+}));
+jest.mock('./useRestoredReduxState', () => jest.fn());
 
 describe('<Root />', () => {
-  const defaultProps = {
-    updateBreakpointWidth: updateBreakpointWidth
-  };
-
-  const getRenderedRoot = (props: Partial<RootProps> = {}) =>
-    render(
-      <MemoryRouter>
-        <Root {...defaultProps} {...props} />
-      </MemoryRouter>
+  const getRenderedRoot = () => {
+    const mockStore = configureMockStore();
+    return render(
+      <Provider store={mockStore({})}>
+        <Root />
+      </Provider>
     );
+  };
 
   beforeEach(() => {
     jest
@@ -50,7 +57,7 @@ describe('<Root />', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('contains App', () => {
@@ -58,9 +65,14 @@ describe('<Root />', () => {
     expect(container.querySelector('#app')).toBeTruthy();
   });
 
+  it('runs a function to restore redux state', () => {
+    getRenderedRoot();
+    expect(useRestoredReduxState).toHaveBeenCalled(); // it might be called a couple of itmes, because the component may rerender; this is fine
+  });
+
   it('calls updateBreakpointWidth on mount', () => {
     getRenderedRoot();
-    expect(updateBreakpointWidth).toHaveBeenCalled();
+    expect(updateBreakpointWidth).toHaveBeenCalledTimes(1);
   });
 
   it('shows privacy banner if privacy policy version is not set or if version does not match', () => {
@@ -79,23 +91,5 @@ describe('<Root />', () => {
     const { container } = getRenderedRoot();
     expect(container.querySelector('.privacyBanner')).toBeFalsy();
     (privacyBannerService.shouldShowBanner as any).mockRestore();
-  });
-
-  it('displays 404 screen if no route was matched', () => {
-    const Redirect404 = () => {
-      const location = useLocation();
-
-      return <Redirect to={{ ...location, state: { is404: true } }} />;
-    };
-
-    const { container } = render(
-      <MemoryRouter>
-        <Root {...defaultProps} />
-        <Redirect404 />
-      </MemoryRouter>
-    );
-
-    expect(container.querySelector('#app')).toBeFalsy();
-    expect(container.textContent).toContain('page not found');
   });
 });

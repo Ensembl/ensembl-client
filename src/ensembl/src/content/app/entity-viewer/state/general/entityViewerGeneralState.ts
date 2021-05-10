@@ -15,6 +15,7 @@
  */
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+import { isClient } from 'src/shared/helpers/environment';
 
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
@@ -27,5 +28,8 @@ export const initialState: EntityViewerGeneralState = {
 };
 
 export const buildInitialState = () => {
-  return { ...initialState, ...entityViewerStorageService.getGeneralState() };
+  const savedState = isClient()
+    ? entityViewerStorageService.getGeneralState()
+    : {};
+  return { ...initialState, ...savedState };
 };

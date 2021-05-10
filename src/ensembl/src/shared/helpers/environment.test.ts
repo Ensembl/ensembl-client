@@ -15,11 +15,10 @@
  */
 
 import { isEnvironment, Environment } from './environment';
-import config from 'config';
 
 describe('isEnvironment', () => {
   // Set the environment to development
-  config.environment = 'development';
+  process.env.ENVIRONMENT = 'development';
 
   it('returns true if the envrionment matches', () => {
     const isAvailableOnEnvironment = isEnvironment([Environment.DEVELOPMENT]);

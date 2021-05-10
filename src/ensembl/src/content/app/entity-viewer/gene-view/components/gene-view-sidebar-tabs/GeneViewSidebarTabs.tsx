@@ -21,7 +21,7 @@ import {
   openSidebar,
   closeSidebarModal,
   setSidebarTabName
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import {
   isEntityViewerSidebarOpen,

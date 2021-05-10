@@ -17,6 +17,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import useHasMounted from 'src/shared/hooks/useHasMounted';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import Launchbar from './launchbar/Launchbar';
@@ -78,11 +79,19 @@ const AboutEnsembl = () =>
     </div>
   );
 
-export const Header = () => (
-  <header>
-    <Topbar />
-    <Launchbar />
-  </header>
-);
+export const Header = () => {
+  const hasMounted = useHasMounted();
+
+  if (!hasMounted) {
+    return <header />;
+  }
+
+  return (
+    <header>
+      <Topbar />
+      <Launchbar />
+    </header>
+  );
+};
 
 export default Header;

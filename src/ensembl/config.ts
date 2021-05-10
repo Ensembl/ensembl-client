@@ -14,6 +14,37 @@
  * limitations under the License.
  */
 
+import { isClient } from 'src/shared/helpers/environment';
+
+export const CONFIG_FIELD_ON_WINDOW = '__CONFIG__';
+
+export type BaseApiUrls = {
+  thoasBaseUrl: string;
+  genomeSearchBaseUrl: string;
+  docsBaseUrl: string;
+  genomeBrowserBaseUrl: string;
+  refgetBaseUrl: string;
+};
+
+const getBaseApiUrls = (): BaseApiUrls => {
+  if (isClient()) {
+    return (window as any)[CONFIG_FIELD_ON_WINDOW]?.apiPaths;
+  }
+
+  // the following will be run on the server
+  return {
+    thoasBaseUrl:
+      process.env.SSR_THOAS_BASE_URL ?? 'https://2020.ensembl.org/api/thoas',
+    genomeSearchBaseUrl:
+      process.env.SSR_GENOME_SEARCH_BASE_URL ??
+      'https://2020.ensembl.org/api/genomesearch',
+    docsBaseUrl:
+      process.env.SSR_DOCS_BASE_URL ?? 'https://2020.ensembl.org/api/docs',
+    genomeBrowserBaseUrl: '/api/browser', // irrelevant for server-side rendering
+    refgetBaseUrl: '/api/refget' // irrelevant for server-side rendering
+  };
+};
+
 export default {
   // Version numbers
   app_version: '0.4.0',
@@ -23,14 +54,14 @@ export default {
   isProduction: process.env.NODE_ENV === 'production',
   isTest: process.env.NODE_ENV === 'test',
 
-  // Deployment environment
-  environment: process.env.ENVIRONMENT,
-
-  apiHost: process.env.API_HOST,
+  apiHost: process.env.API_HOST || '',
 
   // Keys for services
-  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
+  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY || '',
 
-  // Genesearch endpoint
-  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT
+  // Genesearch endpoint (used by Custom Download)
+  // TODO: move this endpoint into the getBaseApiUrls function when the time comes
+  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT,
+
+  ...getBaseApiUrls()
 };

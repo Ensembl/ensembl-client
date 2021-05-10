@@ -31,6 +31,10 @@ export class BrowserMessagingService {
   private outgoingMessageQueue: JSONValue[] = [];
 
   public constructor(windowService: WindowServiceInterface) {
+    if (typeof window === 'undefined') {
+      this.window = {} as Window;
+      return;
+    }
     this.window = windowService.getWindow();
     this.subscribeToMessages();
     this.subscribe('bpane-ready', this.onRecipientReady);

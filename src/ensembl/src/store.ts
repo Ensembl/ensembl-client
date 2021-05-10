@@ -41,11 +41,14 @@ const middleware = [
   analyticsMiddleWare
 ];
 
+const preloadedState = (window as any).__PRELOADED_STATE__ || {};
+
 export default function getReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
     middleware,
-    devTools: config.isDevelopment
+    devTools: config.isDevelopment,
+    preloadedState
   });
 
   epicMiddleware.run(rootEpic as any);

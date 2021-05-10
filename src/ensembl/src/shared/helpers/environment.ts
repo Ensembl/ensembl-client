@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import config from 'config';
-
 export enum Environment {
   DEVELOPMENT = 'development',
   INTERNAL = 'internal',
   PRODUCTION = 'production'
 }
 
+// Deployment environment
 export const isEnvironment = (environment: Environment[]): boolean => {
-  return environment.includes(config.environment as Environment);
+  const currentEnvironment = getEnvironmentValue();
+  return environment.includes(currentEnvironment);
+};
+
+const getEnvironmentValue = () =>
+  (process.env.ENVIRONMENT || 'development') as Environment;
+
+export const isServer = (): boolean => {
+  return typeof window === 'undefined';
+};
+
+export const isClient = (): boolean => {
+  return typeof window === 'object';
 };

@@ -15,10 +15,11 @@
  */
 
 import React, { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { hydrate } from 'react-dom';
 import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
 import { ConnectedRouter } from 'connected-react-router';
+import { HelmetProvider } from 'react-helmet-async';
 import configureStore, { history } from './store';
 import Root from './root/Root';
 
@@ -28,12 +29,14 @@ import './styles/main';
 
 const store = configureStore();
 
-render(
+hydrate(
   <StrictMode>
     <CookiesProvider>
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <Root />
+          <HelmetProvider>
+            <Root />
+          </HelmetProvider>
         </ConnectedRouter>
       </Provider>
     </CookiesProvider>

@@ -32,7 +32,7 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -179,10 +179,8 @@ const GeneView = () => {
 const COMPONENT_ID = 'entity_viewer_gene_view';
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
-  const [
-    basePairsRulerTicks,
-    setBasePairsRulerTicks
-  ] = useState<TicksAndScale | null>(null);
+  const [basePairsRulerTicks, setBasePairsRulerTicks] =
+    useState<TicksAndScale | null>(null);
 
   const dispatch = useDispatch();
   const { search } = useLocation();

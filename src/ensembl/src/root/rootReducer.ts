@@ -28,7 +28,7 @@ import speciesSelector from '../content/app/species-selector/state/speciesSelect
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
 
-const rootReducer = (history: any) =>
+const createRootReducer = (history: any) =>
   combineReducers({
     browser,
     drawer,
@@ -43,4 +43,10 @@ const rootReducer = (history: any) =>
     entityViewer
   });
 
-export default rootReducer;
+export const createServerSideRootReducer = () =>
+  combineReducers({
+    speciesSelector,
+    entityViewer
+  });
+
+export default createRootReducer;

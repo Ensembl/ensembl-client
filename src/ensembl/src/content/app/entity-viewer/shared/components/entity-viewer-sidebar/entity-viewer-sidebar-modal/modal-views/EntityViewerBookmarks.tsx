@@ -31,7 +31,7 @@ import {
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
 
@@ -85,9 +85,10 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   const dispatch = useDispatch();
 
   const activeEntityStableId = parseEnsObjectId(props.activeEntityId).objectId;
-  const previouslyViewedEntitiesWithoutActiveEntity = props.previouslyViewedEntities.filter(
-    (entity) => entity.stable_id !== activeEntityStableId
-  );
+  const previouslyViewedEntitiesWithoutActiveEntity =
+    props.previouslyViewedEntities.filter(
+      (entity) => entity.stable_id !== activeEntityStableId
+    );
 
   return (
     <div data-test-id="previously viewed links">

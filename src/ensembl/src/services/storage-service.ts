@@ -74,6 +74,13 @@ export class StorageService implements StorageServiceInterface {
   private sessionStorage: Storage;
 
   public constructor(windowService: WindowServiceInterface) {
+    if (typeof window === 'undefined') {
+      // FIXME: when we rewrite storage-related services, make sure to avoid their eager initialization at import time
+      // The two lines below are a temporary hack that will cause bugs if this service ever gets called server-side (it shouldn't)
+      this.localStorage = {} as Storage;
+      this.sessionStorage = {} as Storage;
+      return;
+    }
     this.localStorage = windowService.getLocalStorage();
     this.sessionStorage = windowService.getSessionStorage();
   }

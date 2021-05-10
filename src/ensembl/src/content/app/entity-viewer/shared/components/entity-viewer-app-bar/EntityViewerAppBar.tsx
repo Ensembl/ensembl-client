@@ -15,8 +15,9 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { push } from 'connected-react-router';
 import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -25,33 +26,31 @@ import { AppName } from 'src/global/globalConfig';
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { changeActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
-
 import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
-import { RootState } from 'src/store';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+const EntityViewerAppBar = () => {
+  const dispatch = useDispatch();
+  const speciesList = useSelector(getEnabledCommittedSpecies);
+  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
 
-type EntityViewerAppBarProps = {
-  species: CommittedItem[];
-  activeGenomeId: string | null;
-  onSpeciesSelect: (genomeId: string) => void;
-};
+  const onSpeciesTabClick = (genomeId: string) => {
+    const url = urlFor.entityViewer({
+      genomeId
+    });
+    dispatch(push(url));
+  };
 
-const EntityViewerAppBar = (props: EntityViewerAppBarProps) => {
-  const speciesTabs = useMemo(() => {
-    return props.species.map((species, index) => (
-      <SelectedSpecies
-        key={index}
-        species={species}
-        isActive={species.genome_id === props.activeGenomeId}
-        onClick={() => props.onSpeciesSelect(species.genome_id)}
-      />
-    ));
-  }, [props.species]);
+  const speciesTabs = speciesList.map((species, index) => (
+    <SelectedSpecies
+      key={index}
+      species={species}
+      isActive={species.genome_id === activeGenomeId}
+      onClick={() => onSpeciesTabClick(species.genome_id)}
+    />
+  ));
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);
@@ -73,16 +72,4 @@ const EntityViewerAppBar = (props: EntityViewerAppBarProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  species: getEnabledCommittedSpecies(state),
-  activeGenomeId: getEntityViewerActiveGenomeId(state)
-});
-
-const mapDispatchToProps = {
-  onSpeciesSelect: changeActiveGenomeId
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(EntityViewerAppBar, isEqual));
+export default memo(EntityViewerAppBar, isEqual);

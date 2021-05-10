@@ -15,6 +15,7 @@
  */
 
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+import { isClient } from 'src/shared/helpers/environment';
 
 import { Status } from 'src/shared/types/status';
 import { AccordionSectionID as OverviewMainAccordionSectionID } from 'src/content/app/entity-viewer/gene-view/components/gene-view-sidebar/overview/MainAccordion';
@@ -64,8 +65,9 @@ export const buildInitialStateForGenome = (
   }
 });
 
-const storedActiveGenomeId = entityViewerStorageService.getGeneralState()
-  ?.activeGenomeId;
+const storedActiveGenomeId = isClient()
+  ? entityViewerStorageService.getGeneralState()?.activeGenomeId
+  : null;
 
 export const initialState: EntityViewerSidebarState = storedActiveGenomeId
   ? buildInitialStateForGenome(storedActiveGenomeId)
