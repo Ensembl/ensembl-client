@@ -17,6 +17,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import useHasMounted from 'src/shared/hooks/useHasMounted';
+
 import Launchbar from './launchbar/Launchbar';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
@@ -62,11 +64,19 @@ export const Topbar = () => (
   </div>
 );
 
-export const Header = () => (
-  <header>
-    <Topbar />
-    <Launchbar />
-  </header>
-);
+export const Header = () => {
+  const hasMounted = useHasMounted();
+
+  if (!hasMounted) {
+    return <header />;
+  }
+
+  return (
+    <header>
+      <Topbar />
+      <Launchbar />
+    </header>
+  );
+};
 
 export default Header;

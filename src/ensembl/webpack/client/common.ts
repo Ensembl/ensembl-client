@@ -1,27 +1,42 @@
-const path = require('path');
-const HtmlPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const { getPaths } = require('../paths');
+import path from 'path';
+import { ProgressPlugin, Configuration } from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import ForkTsCheckerPlugin from 'fork-ts-checker-webpack-plugin';
+import LoadablePlugin from '@loadable/webpack-plugin';
 
-module.exports = (env) => {
+import { getPaths } from '../paths';
+
+export default (env: Record<string, unknown>): Configuration => {
   const isDev = env.dev;
   const paths = getPaths();
+
   return {
     // the starting point of webpack bundling
     entry: {
-      index: path.join(paths.rootPath, 'src/index.tsx')
+      client: path.join(paths.rootPath, 'src/index.tsx')
     },
 
     module: {
       rules: [
         {
           test: /\.worker\.ts$/,
-          use: [
-            { loader: "worker-loader" },
-            { loader: 'babel-loader' }
-          ],
+          use: [{ loader: 'worker-loader' }, { loader: 'babel-loader' }]
         },
         {
           test: /.tsx?$/,
@@ -44,16 +59,14 @@ module.exports = (env) => {
                 sourceMap: true,
                 modules: {
                   localIdentName: '[local]__[name]__[hash:base64:5]'
-                },
+                }
               }
             },
             {
               loader: 'postcss-loader',
               options: {
                 postcssOptions: {
-                  plugins: [
-                    ['postcss-preset-env']
-                  ]
+                  plugins: [['postcss-preset-env']]
                 }
               }
             },
@@ -65,15 +78,10 @@ module.exports = (env) => {
         // but also use @svgr/webpack to be able to require svg's directly as React components
         {
           test: /\.svg$/,
-          use: ['@svgr/webpack', 'file-loader'],
+          use: ['@svgr/webpack', 'file-loader']
         }
       ]
     },
-
-    // prevent webpack from searching fs (node API) to load the web assembly files
-    // node: {
-    //   fs: 'empty'
-    // },
 
     // this is the config to define how the output files needs to be
     output: {
@@ -95,17 +103,14 @@ module.exports = (env) => {
       // checks typescript types
       new ForkTsCheckerPlugin(),
 
-      // generates the index file using the provided html template
-      new HtmlPlugin({
-        // in prod, path for saving static assets is dist/static/, and index.html has to be saved top-level in the dist folder
-        filename: isDev ? 'index.html' : '../index.html',
-        template: paths.htmlTemplatePath,
-        publicPath: isDev ? '/' : '/static'
-      })
-      
+      new ProgressPlugin(),
+
+      new LoadablePlugin({
+        writeToDisk: true
+      }) as { apply(...args: any[]): void } // types workaround from https://github.com/DefinitelyTyped/DefinitelyTyped/issues/50948#issuecomment-797664500
     ],
 
-    // configuration that allows us to not to use file extensions and shorten import paths (using aliases)
+    // add aliases for more convenient imports
     resolve: {
       extensions: ['.tsx', '.ts', '.js', '.scss'],
       alias: {
@@ -117,5 +122,5 @@ module.exports = (env) => {
         path: false
       }
     }
-  }
+  };
 };

@@ -18,7 +18,7 @@ export function registerSW() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/service-worker.js')
+        .register('/static/service-worker.js')
         .then((registration) => {
           console.info('SW registered: ', registration);
         })

@@ -40,16 +40,18 @@ type UpdatePreviouslyViewedPayload = {
   };
 };
 
-const storedPreviouslyViewedEntities = entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
-
 const initialState: EntityViewerBookmarksState = {
-  previouslyViewed: storedPreviouslyViewedEntities
+  previouslyViewed: {}
 };
 
 const bookmarksSlice = createSlice({
   name: 'entity-viewer-bookmarks',
   initialState,
   reducers: {
+    loadPreviouslyViewedEntities(state) {
+      state.previouslyViewed =
+        entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
+    },
     updatePreviouslyViewedEntities(
       state,
       action: PayloadAction<UpdatePreviouslyViewedPayload>
@@ -77,6 +79,7 @@ const bookmarksSlice = createSlice({
   }
 });
 
-export const { updatePreviouslyViewedEntities } = bookmarksSlice.actions;
+export const { updatePreviouslyViewedEntities, loadPreviouslyViewedEntities } =
+  bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;

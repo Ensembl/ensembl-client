@@ -14,87 +14,27 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router';
-import { useSelector, useDispatch } from 'react-redux';
-import { push, replace } from 'connected-react-router';
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import loadable from '@loadable/component';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { isSidebarOpen } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
-import { toggleSidebar } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
-import { setActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSlice';
-
-import SpeciesAppBar from './components/species-app-bar/SpeciesAppBar';
-import SpeciesSidebar from './components/species-sidebar/SpeciesSidebar';
-import { StandardAppLayout } from 'src/shared/components/layout';
-import SpeciesMainView from 'src/content/app/species/components/species-main-view/SpeciesMainView';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
-
-import styles from './SpeciesPage.scss';
-
-type SpeciesPageParams = {
-  genomeId: string;
-};
+const LoadableSpeciesPageContent = loadable(
+  () => import('./SpeciesPageContent')
+);
 
 const SpeciesPage = () => {
-  const { genomeId } = useParams() as SpeciesPageParams;
-  const dispatch = useDispatch();
-
-  const changeGenomeId = (genomeId: string) => {
-    const params = {
-      genomeId
-    };
-
-    dispatch(replace(urlFor.speciesPage(params)));
-  };
-
-  const sidebarStatus = useSelector(isSidebarOpen);
-
-  useEffect(() => {
-    dispatch(setActiveGenomeId(genomeId));
-    dispatch(fetchGenomeData(genomeId));
-  }, [genomeId]);
+  const hasMounted = useHasMounted();
 
   return (
     <>
-      <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
-
-      <StandardAppLayout
-        mainContent={<SpeciesMainView />}
-        sidebarContent={<SpeciesSidebar />}
-        sidebarNavigation={null}
-        topbarContent={<TopBar />}
-        isSidebarOpen={sidebarStatus}
-        onSidebarToggle={() => {
-          dispatch(toggleSidebar({ genomeId }));
-        }}
-        viewportWidth={BreakpointWidth.DESKTOP}
-      />
+      <Helmet>
+        <title>Species page — Ensembl</title>
+        <meta name="description" content="Species home page" />
+      </Helmet>
+      {hasMounted && <LoadableSpeciesPageContent />}
     </>
-  );
-};
-
-const TopBar = () => {
-  const dispatch = useDispatch();
-
-  const returnToSpeciesSelector = () => {
-    dispatch(push(urlFor.speciesSelector()));
-  };
-
-  return (
-    <div className={styles.topbar}>
-      <div className={styles.topbarLeft}>
-        <span className={styles.pageTitle}>Species Home page</span>
-        <CloseButton
-          className={styles.close}
-          onClick={returnToSpeciesSelector}
-        />
-      </div>
-      <div className={styles.dataForSpecies}>Data for this species</div>
-    </div>
   );
 };
 

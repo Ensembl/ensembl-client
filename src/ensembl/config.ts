@@ -14,23 +14,79 @@
  * limitations under the License.
  */
 
+import { isClient, readEnvironment } from 'src/shared/helpers/environment';
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
+
+export type BaseApiUrls = {
+  thoasBaseUrl: string;
+  genomeSearchBaseUrl: string;
+  docsBaseUrl: string;
+  genomeBrowserBaseUrl: string;
+  refgetBaseUrl: string;
+  customDownloadGeneSearch: string;
+};
+
+export type PublicKeys = {
+  googleAnalyticsKey: string;
+};
+
+const defaultApiUrls: BaseApiUrls = {
+  thoasBaseUrl: 'https://2020.ensembl.org/api/thoas',
+  genomeSearchBaseUrl: 'https://2020.ensembl.org/api/genomesearch',
+  docsBaseUrl: 'https://2020.ensembl.org/api/docs',
+  genomeBrowserBaseUrl: '/api/browser',
+  refgetBaseUrl: '/api/refget',
+  customDownloadGeneSearch: ''
+};
+
+const defaultKeys = {
+  googleAnalyticsKey: ''
+};
+
+const getBaseApiUrls = (): BaseApiUrls => {
+  if (isClient()) {
+    return (window as any)[CONFIG_FIELD_ON_WINDOW]?.apiPaths ?? defaultApiUrls;
+  }
+
+  // the following will be run on the server
+  return {
+    thoasBaseUrl: process.env.SSR_THOAS_BASE_URL ?? defaultApiUrls.thoasBaseUrl,
+    genomeSearchBaseUrl:
+      process.env.SSR_GENOME_SEARCH_BASE_URL ??
+      defaultApiUrls.genomeBrowserBaseUrl,
+    docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
+    genomeBrowserBaseUrl: defaultApiUrls.genomeBrowserBaseUrl, // irrelevant for server-side rendering
+    refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
+    customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch // irrelevant for server-side rendering
+  };
+};
+
+const getKeys = (): PublicKeys => {
+  if (isClient()) {
+    return (window as any)[CONFIG_FIELD_ON_WINDOW]?.keys || defaultKeys;
+  }
+
+  return defaultKeys;
+};
+
+const buildEnvironment = readEnvironment().buildEnvironment;
+
 export default {
   // Version numbers
   app_version: '0.4.0',
 
-  // Node environment
-  isDevelopment: process.env.NODE_ENV === 'development',
-  isProduction: process.env.NODE_ENV === 'production',
-  isTest: process.env.NODE_ENV === 'test',
+  // build environment
+  isDevelopment: buildEnvironment === 'development',
+  isProduction: buildEnvironment !== 'development',
 
-  // Deployment environment
-  environment: process.env.ENVIRONMENT,
+  // TODO: remove this from the config in the future (will require refactoring of the apiService)
+  // We will instead be passing base urls for differeent microservices individually
+  apiHost: '',
 
-  apiHost: process.env.API_HOST,
+  // Genesearch endpoint (used by Custom Download)
+  // TODO: change the name of this field to something returned from getBaseApiUrls when we continue work on Custom Download
+  genesearchAPIEndpoint: getBaseApiUrls().customDownloadGeneSearch,
 
-  // Keys for services
-  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY,
-
-  // Genesearch endpoint
-  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT
+  ...getBaseApiUrls(),
+  ...getKeys()
 };
