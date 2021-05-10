@@ -9,9 +9,10 @@
 .middle {
   display: grid;
   grid-template-areas:
-    'left middle right .'
-    '. . . downloadLink'
-    'download download download download';
+    'left middle right'
+    'moreinformation . .'
+    'downloadLink . .'
+    'download download download';
   grid-column-gap: 10px;
   background: $soft-black;
   padding: 15px 20px;
@@ -42,17 +43,16 @@
   width: 210px;
 }
 
+.moreInformation {
+  margin-top: 10px;
+}
+
 .downloadLink {
   grid-area: downloadLink;
   color: $blue;
-  width: 66px;
-  height: 16px;
-  text-align: right;
+  text-align: left;
   line-height: 1;
-
-  span {
-    cursor: pointer;
-  }
+  cursor: pointer;
 }
 
 .download {
@@ -62,8 +62,15 @@
   border-top: 1px solid $dark-grey;
 }
 
-.closeButton {
-  display: inline-block;
+.chevron {
+  margin-left: 10px;
+  margin-bottom: -3px;
+  height: 12px;
+  width: 12px;
+  transition: transform linear 0.2s;
+  &Up {
+    transform: rotate(180deg);
+  }
 }
 
 .viewInApp {
