@@ -69,7 +69,7 @@
   width: 12px;
   transition: transform linear 0.2s;
   &Up {
-    transform: rotate(180deg);
+    transform: rotate(-180deg);
   }
 }
 
