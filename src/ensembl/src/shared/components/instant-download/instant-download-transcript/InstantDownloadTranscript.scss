@@ -3,7 +3,7 @@
 .checkboxGrid {
   margin-top: 0.5em;
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
   grid-row-gap: 0.2em;
 }
@@ -66,27 +66,30 @@
 
   &Horizontal {
     grid-template-columns: 1fr 1fr;
-    grid-column-gap: 24px;
+    grid-column-gap: 10px;
     grid-template-areas:
       'transcript gene'
       'transcript download';
 
     .transcriptSection {
       grid-area: transcript;
+      width: 393px;
     }
 
     .geneSection {
       grid-area: gene;
 
       .checkboxWrapper {
-        margin-top: 13px;
-        margin-left: 13px;
+        margin-left: 12px;
       }
     }
 
-    .transcriptVis,
-    .checkboxGrid {
+    .transcriptVis {
       margin-left: 18px;
+    }
+
+    .checkboxGrid {
+      margin-left: 12px;
     }
 
     button {
