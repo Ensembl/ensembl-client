@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+ import {OutgoingActionType, IncomingActionType} from 'src/content/app/browser/browser-messaging-service';
+
 // relation of the point of interest to the central point of the canvas;
 // a gentle hint by genome browser about where there is the most available space
 // e.g. if the reported side of a point is 'left', zmenu will position itself
@@ -36,15 +38,6 @@ export enum Markup {
   EMPHASIS = 'emphasis',
   FOCUS = 'focus',
   LIGHT = 'light'
-}
-
-export enum ZmenuAction {
-  CREATE = 'create_zmenu',
-  DESTROY = 'destroy_zmenu',
-  ACTIVITY_OUTSIDE = 'zmenu-activity-outside', // TODO: sometime later, unify underscores vs hyphens (together with Genome Browser)
-  REPOSITION = 'update_zmenu_position',
-  ENTER = 'zmenu-enter',
-  LEAVE = 'zmenu-leave'
 }
 
 export type ZmenuContentItem = {
@@ -71,7 +64,7 @@ export type ZmenuData = {
 
 // Sent from Genome browser to React
 export type ZmenuCreatePayload = {
-  action: ZmenuAction.CREATE;
+  action: IncomingActionType.ZMENU_CREATE;
   id: string;
   anchor_coordinates: AnchorCoordinates;
   content: ZmenuContentFeature[];
@@ -80,34 +73,34 @@ export type ZmenuCreatePayload = {
 // Sent from Genome browser to React
 export type ZmenuDestroyPayload = {
   id: string;
-  action: ZmenuAction.DESTROY;
+  action: IncomingActionType.ZMENU_DESTROY;
 };
 
 // Sent from React to Genome browser
 // (on mouseover; perhaps tap?)
 export type ZmenuEnterPayload = {
   id: string;
-  action: ZmenuAction.ENTER;
+  action: OutgoingActionType.ZMENU_ENTER;
 };
 
 // Sent from React to Genome browser
 // (on mouseleave, or on click outside)
 export type ZmenuOutsideActivityPayload = {
   id: string;
-  action: ZmenuAction.ACTIVITY_OUTSIDE;
+  action: OutgoingActionType.ZMENU_ACTIVITY_OUTSIDE;
 };
 
 // Sent from React to Genome browser
 // (on mouseleave, or on click outside)
 export type ZmenuLeavePayload = {
   id: string;
-  action: ZmenuAction.LEAVE;
+  action: OutgoingActionType.ZMENU_LEAVE;
 };
 
 // Sent from Genome browser to React
 export type ZmenuRepositionPayload = {
   id: string;
-  action: ZmenuAction.REPOSITION;
+  action: IncomingActionType.ZMENU_REPOSITION;
   anchor_coordinates: {
     x: number;
     y: number;

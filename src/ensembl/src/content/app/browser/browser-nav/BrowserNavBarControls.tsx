@@ -26,7 +26,7 @@ import {
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
-import { BrowserNavIconStates } from '../browserState';
+import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 
 import { RootState } from 'src/store';
 
@@ -36,6 +36,7 @@ type Props = {
   browserNavIconStates: BrowserNavIconStates;
   isDisabled: boolean;
 };
+
 
 export const BrowserNavBarControls = (props: Props) => (
   <div className={styles.browserNavBarControls}>

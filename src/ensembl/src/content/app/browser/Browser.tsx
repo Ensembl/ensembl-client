@@ -21,6 +21,8 @@ import { Link } from 'react-router-dom';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
+import GenomeBrowserService from 'genome-browser-service/lib/GenomeBrowserService';
+
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -66,6 +68,9 @@ import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
+
+
+export const GenomeBrowserServiceContext = React.createContext<GenomeBrowserService | null>(null);
 
 export type BrowserProps = {
   activeGenomeId: string | null;
@@ -203,23 +208,12 @@ const ReduxConnectedBrowser = connect(
   mapDispatchToProps
 )(Browser);
 
-const WasmLoadingBrowserContainer = () => {
-  useEffect(() => {
-    /* eslint-disable */
-    // @ts-ignore ensembl-genome-browser does not have typescript definitions
-    import('ensembl-genome-browser');
-    /* eslint-enable */
-  });
-
-  return <ReduxConnectedBrowser />;
-};
-
 const ErrorWrappedBrowser = () => {
   // if an error happens during loading of the browser,
   // we will be able to show custom error string
   return (
     <ErrorBoundary fallbackComponent={NewTechError}>
-      <WasmLoadingBrowserContainer />
+      <ReduxConnectedBrowser />
     </ErrorBoundary>
   );
 };

@@ -24,7 +24,9 @@ import { ReactComponent as trackHeightIcon } from 'static/img/browser/icon_track
 import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_lock_open.svg';
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
+import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import { BrowserNavAction } from 'src/content/app/browser/browserState';
+
 
 export type BrowserNavItem = {
   description: string;
@@ -42,7 +44,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_up_px: 50
     },
     icon: navigateUpIcon,
-    name: BrowserNavAction.NAVIGATE_UP
+    name: OutgoingActionType.MOVE_UP
   },
   {
     description: 'navigate down',
@@ -50,7 +52,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_down_px: 50
     },
     icon: navigateDownIcon,
-    name: BrowserNavAction.NAVIGATE_DOWN
+    name: OutgoingActionType.MOVE_DOWN
   },
   {
     description: 'zoom out',
@@ -58,7 +60,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: -0.3
     },
     icon: zoomOutIcon,
-    name: BrowserNavAction.ZOOM_OUT
+    name: OutgoingActionType.ZOOM_OUT
   },
   {
     description: 'zoom in',
@@ -66,7 +68,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: 0.3
     },
     icon: zoomInIcon,
-    name: BrowserNavAction.ZOOM_IN
+    name: OutgoingActionType.ZOOM_IN
   },
   {
     description: 'navigate left',
@@ -74,7 +76,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_left_px: 50
     },
     icon: navigateLeftIcon,
-    name: BrowserNavAction.NAVIGATE_LEFT
+    name: OutgoingActionType.MOVE_LEFT
   },
   {
     description: 'navigate right',
@@ -82,7 +84,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_right_px: 50
     },
     icon: navigateRightIcon,
-    name: BrowserNavAction.NAVIGATE_RIGHT
+    name: OutgoingActionType.MOVE_RIGHT
   }
 ];
 

@@ -27,7 +27,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowserService, { OutgoingAction, OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
@@ -88,7 +88,14 @@ export const activateBrowser = () => {
       key: 'main', // TODO: remove this field after we confirmed that it is redundant
       selector: `#${BROWSER_CONTAINER_ID}`
     };
-    browserMessagingService.send('bpane-activate', payload);
+
+    const action: OutgoingAction = {
+      type: OutgoingActionType.ACTIVATE_BROWSER,
+      payload
+    }
+
+    const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    genomeBrowserService.send(action);
 
     dispatch(updateBrowserActivated(true));
   };
@@ -216,10 +223,15 @@ export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
     });
   });
 
-  browserMessagingService.send('bpane', {
-    off: tracksToTurnOff,
-    on: tracksToTurnOn
-  });
+  const action: OutgoingAction = {
+    type: OutgoingActionType.TOGGLE_TRACKS,
+    payload: {
+      off: tracksToTurnOff,
+      on: tracksToTurnOn
+    }
+  }
+  const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    genomeBrowserService.send(action);
 };
 
 export const openBrowserNav = createAction(
@@ -349,11 +361,17 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
       focusInstruction.focus = activeEnsObjectId;
     }
 
-    browserMessagingService.send('bpane', {
-      stick: `${locationData.genomeId}:${chrCode}`,
-      goto: `${startBp}-${endBp}`,
-      ...focusInstruction
-    });
+    const action: OutgoingAction = {
+      type: OutgoingActionType.SET_FOCUS_LOCATION,
+      payload: {
+        stick: `${locationData.genomeId}:${chrCode}`,
+        goto: `${startBp}-${endBp}`,
+        ...focusInstruction
+      }
+    }
+
+    const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    genomeBrowserService.send(action);
   };
 };
 
@@ -372,9 +390,15 @@ export const changeFocusObject = (
 
   dispatch(updatePreviouslyViewedObjectsAndSave());
 
-  browserMessagingService.send('bpane', {
-    focus: objectId
-  });
+  const action: OutgoingAction = {
+    type: OutgoingActionType.SET_FOCUS,
+    payload: {
+      focus: objectId
+    }
+  }
+
+  const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    genomeBrowserService.send(action);
 };
 
 export const updateCogList = createAction('browser/update-cog-list')<number>();

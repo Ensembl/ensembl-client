@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowserService, {OutgoingAction, OutgoingActionType} from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
@@ -61,8 +61,10 @@ import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import styles from './TrackPanelListItem.scss';
+
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 export type TrackPanelListItemProps = {
@@ -193,11 +195,15 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const updateGenomeBrowser = (status: Status) => {
     const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
 
-    const payload = {
-      [currentTrackStatus]: `${track.track_id}`
+    const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    const action: OutgoingAction = {
+      type: OutgoingActionType.TOGGLE_TRACKS,
+      payload: {
+        [currentTrackStatus]: `${track.track_id}`
+      }
     };
 
-    browserMessagingService.send('bpane', payload);
+    genomeBrowserService.send(action);
   };
 
   const trackClassNames = classNames(styles.track, {

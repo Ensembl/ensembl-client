@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useCallback, memo } from 'react';
+import React, { useRef, useEffect, useCallback, memo, useContext } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
@@ -24,7 +24,8 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+import {GenomeBrowserServiceContext} from 'src/content/app/browser/Browser';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
@@ -104,6 +105,8 @@ const parseLocation = (location: ChrLocation) => {
 
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
+  const genomeBrowserService = useContext(GenomeBrowserServiceContext);
+
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
     const intendedLocation = payload['intended-location'];
@@ -115,12 +118,12 @@ export const BrowserImage = (props: BrowserImageProps) => {
       const navIconStates = payload.bumper.map((a) => !a);
 
       const navStates = {
-        [BrowserNavAction.NAVIGATE_UP]: navIconStates[0],
-        [BrowserNavAction.NAVIGATE_DOWN]: navIconStates[1],
-        [BrowserNavAction.ZOOM_OUT]: navIconStates[2],
-        [BrowserNavAction.ZOOM_IN]: navIconStates[3],
-        [BrowserNavAction.NAVIGATE_LEFT]: navIconStates[4],
-        [BrowserNavAction.NAVIGATE_RIGHT]: navIconStates[5]
+        [OutgoingActionType.MOVE_UP]: navIconStates[0],
+        [OutgoingActionType.MOVE_DOWN]: navIconStates[1],
+        [OutgoingActionType.ZOOM_OUT]: navIconStates[2],
+        [OutgoingActionType.ZOOM_IN]: navIconStates[3],
+        [OutgoingActionType.MOVE_LEFT]: navIconStates[4],
+        [OutgoingActionType.MOVE_RIGHT]: navIconStates[5]
       };
       props.updateBrowserNavIconStates({
         activeGenomeId: props.activeGenomeId,
@@ -146,8 +149,13 @@ export const BrowserImage = (props: BrowserImageProps) => {
     }
   }, []);
 
+  
+
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
+    if(!genomeBrowserService){
+      return;
+    }
+    const subscription = genomeBrowserService.subscribe(
       'bpane-out',
       listenBpaneOut
     );
@@ -181,6 +189,9 @@ export const BrowserImage = (props: BrowserImageProps) => {
           id={BROWSER_CONTAINER_ID}
           className={browserContainerClassNames}
           ref={browserRef}
+        />
+        <div
+          id={"other"}
         />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />

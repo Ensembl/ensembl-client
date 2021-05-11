@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
 
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
@@ -23,14 +24,13 @@ const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
 const trackStates = browserStorageService.getTrackStates();
 const chrLocations = browserStorageService.getChrLocation();
 
-export enum BrowserNavAction {
-  NAVIGATE_UP = 'navigate-up',
-  NAVIGATE_RIGHT = 'navigate-right',
-  NAVIGATE_DOWN = 'navigate-down',
-  NAVIGATE_LEFT = 'navigate-left',
-  ZOOM_OUT = 'zoom-out',
-  ZOOM_IN = 'zoom-in'
-}
+export type BrowserNavAction = 
+  | OutgoingActionType.MOVE_UP
+  | OutgoingActionType.MOVE_DOWN
+  | OutgoingActionType.MOVE_LEFT
+  | OutgoingActionType.MOVE_RIGHT
+  | OutgoingActionType.ZOOM_IN
+  | OutgoingActionType.ZOOM_OUT
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
 export type BrowserNavIconStates = {
@@ -38,12 +38,12 @@ export type BrowserNavIconStates = {
 };
 
 export const defaultBrowserNavIconsState = {
-  [BrowserNavAction.NAVIGATE_UP]: false,
-  [BrowserNavAction.NAVIGATE_RIGHT]: false,
-  [BrowserNavAction.NAVIGATE_DOWN]: false,
-  [BrowserNavAction.NAVIGATE_LEFT]: false,
-  [BrowserNavAction.ZOOM_OUT]: false,
-  [BrowserNavAction.ZOOM_IN]: false
+  [OutgoingActionType.MOVE_UP]: false,
+  [OutgoingActionType.MOVE_DOWN]: false,
+  [OutgoingActionType.MOVE_LEFT]: false,
+  [OutgoingActionType.MOVE_RIGHT]: false,
+  [OutgoingActionType.ZOOM_OUT]: false,
+  [OutgoingActionType.ZOOM_IN]: false
 };
 
 export type ChrLocation = [string, number, number];

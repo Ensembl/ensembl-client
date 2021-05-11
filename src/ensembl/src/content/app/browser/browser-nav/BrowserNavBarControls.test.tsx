@@ -21,6 +21,7 @@ import faker from 'faker';
 import { BrowserNavBarControls } from './BrowserNavBarControls';
 import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
+import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 
 jest.mock(
   './BrowserNavIcon',
@@ -39,12 +40,12 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
 ));
 
 const browserNavIconStates: BrowserNavIconStates = {
-  [BrowserNavAction.NAVIGATE_UP]: faker.random.boolean(),
-  [BrowserNavAction.NAVIGATE_RIGHT]: faker.random.boolean(),
-  [BrowserNavAction.NAVIGATE_DOWN]: faker.random.boolean(),
-  [BrowserNavAction.NAVIGATE_LEFT]: faker.random.boolean(),
-  [BrowserNavAction.ZOOM_OUT]: faker.random.boolean(),
-  [BrowserNavAction.ZOOM_IN]: faker.random.boolean()
+  [OutgoingActionType.MOVE_UP]: faker.random.boolean(),
+  [OutgoingActionType.MOVE_RIGHT]: faker.random.boolean(),
+  [OutgoingActionType.MOVE_DOWN]: faker.random.boolean(),
+  [OutgoingActionType.MOVE_LEFT]: faker.random.boolean(),
+  [OutgoingActionType.ZOOM_OUT]: faker.random.boolean(),
+  [OutgoingActionType.ZOOM_IN]: faker.random.boolean()
 };
 
 describe('BrowserNavBarControls', () => {

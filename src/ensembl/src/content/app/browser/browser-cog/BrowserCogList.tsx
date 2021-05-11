@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowserService, { OutgoingAction, OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import BrowserCog from './BrowserCog';
 import {
   updateCogList,
@@ -34,6 +34,7 @@ import {
   getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import styles from './BrowserCogList.scss';
 
@@ -66,8 +67,11 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     }
   };
 
+  const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
+
+    const subscription = genomeBrowserService.subscribe(
       'bpane-scroll',
       listenBpaneScroll
     );
@@ -97,10 +101,16 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
           offs.push(`${name}:names`); // by default, track label is not shown
         }
       });
-      browserMessagingService.send('bpane', {
-        off: offs,
-        on: ons
-      });
+
+      const action: OutgoingAction = {
+        type: OutgoingActionType.TOGGLE_TRACKS,
+        payload: {
+          off: offs,
+          on: ons
+        }
+      }
+      
+      genomeBrowserService.send(action);
     }
   }, [
     props.trackConfigNames,

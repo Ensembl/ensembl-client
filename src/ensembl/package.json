@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@apollo/client": "3.2.3",
-    "@reduxjs/toolkit": "1.4.0",
+    "@reduxjs/toolkit": "1.5.1",
     "@sentry/browser": "5.25.0",
     "classnames": "2.2.6",
     "comlink": "4.3.0",
@@ -57,7 +57,7 @@
     "core-js": "3.6.5",
     "d3": "6.2.0",
     "dotenv": "8.2.0",
-    "ensembl-genome-browser": "https://raw.githubusercontent.com/Ensembl/ensembl-genome-browser-assets/master/assets-80f51620ed443c640cdfd6b5aebd505b.tar.gz",
+    "genome-browser-service": "https://github.com/msmanoj/genome-browser-service.git",
     "graphql": "15.3.0",
     "lodash": "4.17.20",
     "query-string": "6.13.5",
