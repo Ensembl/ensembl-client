@@ -15,7 +15,7 @@
     'download download download';
   grid-column-gap: 10px;
   background: $soft-black;
-  padding: 15px 20px;
+  padding: 15px 30px;
 
   strong {
     color: $white;
@@ -51,15 +51,13 @@
   grid-area: downloadLink;
   color: $blue;
   text-align: left;
-  line-height: 1;
+  line-height: 2;
   cursor: pointer;
 }
 
 .download {
   grid-area: download;
-  padding-top: 15px;
-  margin-top: 15px;
-  border-top: 1px solid $dark-grey;
+  padding-top: 6px;
 }
 
 .chevron {

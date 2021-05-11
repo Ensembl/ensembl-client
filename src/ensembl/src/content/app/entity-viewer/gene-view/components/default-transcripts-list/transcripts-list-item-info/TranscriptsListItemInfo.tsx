@@ -107,6 +107,10 @@ export const TranscriptsListItemInfo = (
     getSplicedRNALength(transcript)
   );
 
+  const aminoAcidLength = getCommaSeparatedNumber(
+    getProductAminoAcidLength(transcript)
+  );
+
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -153,7 +157,7 @@ export const TranscriptsListItemInfo = (
           {isProteinCodingTranscript(transcript) && (
             <>
               <div>
-                <strong>{getProductAminoAcidLength(transcript)} aa</strong>
+                <strong>{aminoAcidLength} aa</strong>
               </div>
               {getLinkToProteinView(
                 transcript.product_generating_contexts[0]?.product.stable_id
