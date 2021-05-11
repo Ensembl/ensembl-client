@@ -15,7 +15,7 @@
 
   .featureId {
     margin-left: 0.5em;
-    font-weight: $bold;
+    font-weight: $normal;
   }
 }
 
@@ -28,11 +28,6 @@
   background-color: transparent;
   border-color: $dark-grey;
 }
-
-.checkboxLabel {
-  font-size: 13px;
-}
-
 
 .themeDark{
   .label {
@@ -62,7 +57,6 @@
 
 .layout {
   display: grid;
-  font-size: 13px;
 
   &Horizontal {
     grid-template-columns: 1fr 1fr;
