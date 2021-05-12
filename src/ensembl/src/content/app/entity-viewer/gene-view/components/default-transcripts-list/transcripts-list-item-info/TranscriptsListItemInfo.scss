@@ -2,7 +2,6 @@
 
 .listItemInfo {
   color: $grey;
-  line-height: 2;
   padding-top: 0;
 }
 
@@ -31,28 +30,36 @@
 .topLeft {
   grid-area: left;
   width: 190px;
+  div {
+    padding-bottom: 6px;
+  }
 }
 
 .topMiddle {
   grid-area: middle;
   width: 150px;
+  div {
+    padding-bottom: 6px;
+  }
 }
 
 .topRight {
   grid-area: right;
   width: 210px;
+  div {
+    padding-bottom: 6px;
+  }
 }
 
 .moreInformation {
-  margin-top: 10px;
+  padding-top: 16px;
 }
 
 .downloadLink {
   grid-area: downloadLink;
   color: $blue;
-  text-align: left;
-  line-height: 2;
   cursor: pointer;
+  padding-top: 6px;
 }
 
 .download {

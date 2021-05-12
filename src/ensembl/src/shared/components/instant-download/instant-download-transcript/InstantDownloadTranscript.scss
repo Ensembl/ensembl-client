@@ -64,6 +64,7 @@
     grid-template-areas:
       'transcript gene'
       'transcript download';
+    margin-bottom: 12px;
 
     .transcriptSection {
       grid-area: transcript;
@@ -74,16 +75,16 @@
       grid-area: gene;
 
       .checkboxWrapper {
-        margin-left: 12px;
+        margin-left: 6px;
       }
     }
 
     .transcriptVis {
-      margin-left: 18px;
+      margin-left: 12px;
     }
 
     .checkboxGrid {
-      margin-left: 12px;
+      padding-left: 6px;
     }
 
     button {
