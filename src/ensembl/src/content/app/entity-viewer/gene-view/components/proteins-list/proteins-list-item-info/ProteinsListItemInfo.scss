@@ -39,6 +39,9 @@ $content-width: $gene_image_width;
   display: inline-block;
 }
 
+.proteinStatsWrapper {
+  display: flex;
+}
 
 .imageLoadingContainer {
   width: $content-width;

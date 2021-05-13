@@ -242,12 +242,15 @@ const ProteinsListItemInfo = (props: Props) => {
           {proteinSummaryStats &&
             proteinXrefs &&
             domainsLoadingState === LoadingState.SUCCESS && (
-              <div>
-                {proteinSummaryStats && (
-                  <div className={styles.proteinFeaturesCountWrapper}>
-                    <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
-                  </div>
-                )}
+              <div className={styles.proteinStatsWrapper}>
+                <ProteinExternalReference
+                  source={ExternalSource.PDBE}
+                  accessionId={proteinStatsXref.accession_id}
+                  name={proteinStatsXref.name}
+                />
+                <div className={styles.proteinFeaturesCountWrapper}>
+                  <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
+                </div>
               </div>
             )}
         </>
@@ -282,7 +285,7 @@ const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
   );
 };
 
-type ProteinExternalReferenceGroupProps = {
+export type ProteinExternalReferenceGroupProps = {
   source: ExternalSource;
   xrefs: Array<
     Pick<ExternalReferenceType, 'accession_id' | 'name'> &
@@ -290,7 +293,7 @@ type ProteinExternalReferenceGroupProps = {
   >;
 };
 
-const ProteinExternalReferenceGroup = (
+export const ProteinExternalReferenceGroup = (
   props: ProteinExternalReferenceGroupProps
 ) => {
   const { source, xrefs } = props;
@@ -316,7 +319,11 @@ const ProteinExternalReferenceGroup = (
             accessionId={displayXref.accession_id}
             name={displayXref.name}
           />
-          <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
+          <div
+            data-test-id="chevron"
+            className={styles.xrefGroupChevron}
+            onClick={toggleXrefGroup}
+          >
             <span
               className={
                 isXrefGroupOpen ? styles.xrefCountChevronOpen : undefined
