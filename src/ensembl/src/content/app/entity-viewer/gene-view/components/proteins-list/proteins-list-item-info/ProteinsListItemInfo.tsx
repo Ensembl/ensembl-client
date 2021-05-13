@@ -285,7 +285,7 @@ const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
   );
 };
 
-export type ProteinExternalReferenceGroupProps = {
+type ProteinExternalReferenceGroupProps = {
   source: ExternalSource;
   xrefs: Array<
     Pick<ExternalReferenceType, 'accession_id' | 'name'> &
@@ -319,11 +319,7 @@ export const ProteinExternalReferenceGroup = (
             accessionId={displayXref.accession_id}
             name={displayXref.name}
           />
-          <div
-            data-test-id="chevron"
-            className={styles.xrefGroupChevron}
-            onClick={toggleXrefGroup}
-          >
+          <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
             <span
               className={
                 isXrefGroupOpen ? styles.xrefCountChevronOpen : undefined

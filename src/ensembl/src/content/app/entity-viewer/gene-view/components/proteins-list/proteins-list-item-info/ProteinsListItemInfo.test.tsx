@@ -47,62 +47,59 @@ const tremblXrefs = times(4, () =>
 times(4, (index) => (tremblXrefs[index].accession_id = `trembl_${index}`));
 
 describe('<ProteinsListItemInfo /', () => {
-  it('renders a single xref', () => {
-    const props = {
-      source: ExternalSource.UNIPROT_SWISSPROT,
-      xrefs: [swissprotXref]
-    };
-    // ProteinExternalReferenceGroup expect xrefs from a single source
-    const { queryByText } = render(
-      <ProteinExternalReferenceGroup {...props} />
-    );
-    expect(queryByText(swissprotXref.source.name)).toBeTruthy();
-    expect(queryByText(swissprotXref.accession_id)).toBeTruthy();
-  });
-
-  describe('multiple xrefs', () => {
-    it('renders 2 xrefs', () => {
+  describe('<ProteinExternalReferenceGroup />', () => {
+    it('renders a single xref', () => {
       const props = {
-        source: ExternalSource.UNIPROT_TREMBL,
-        xrefs: tremblXrefs.slice(0, 2)
+        source: ExternalSource.UNIPROT_SWISSPROT,
+        xrefs: [swissprotXref]
       };
-      const { queryByText, queryAllByText } = render(
+      // ProteinExternalReferenceGroup expect xrefs from a single source
+      const { queryByText } = render(
         <ProteinExternalReferenceGroup {...props} />
       );
-      expect(queryAllByText(props.source)).toHaveLength(2);
-      expect(queryByText(props.xrefs[0].accession_id)).toBeTruthy();
-      expect(queryByText(props.xrefs[1].accession_id)).toBeTruthy();
+      expect(queryByText(swissprotXref.source.name)).toBeTruthy();
+      expect(queryByText(swissprotXref.accession_id)).toBeTruthy();
     });
 
-    it('displays 1 xref with an option to expand other ids if there are more than 3 xrefs', () => {
-      const props = {
-        source: ExternalSource.UNIPROT_TREMBL,
-        xrefs: tremblXrefs
-      };
-      const { container, queryByText, queryAllByText } = render(
-        <ProteinExternalReferenceGroup {...props} />
-      );
-      expect(queryByText(props.source)).toBeTruthy();
-      expect(queryAllByText(props.xrefs[0].accession_id)).toHaveLength(1);
-      const chevron = container.querySelector('.chevron');
-      expect(chevron).toBeTruthy();
-    });
+    describe('multiple xrefs', () => {
+      it('renders 3 xrefs', () => {
+        const props = {
+          source: ExternalSource.UNIPROT_TREMBL,
+          xrefs: tremblXrefs.slice(0, 3)
+        };
+        const { queryByText, queryAllByText } = render(
+          <ProteinExternalReferenceGroup {...props} />
+        );
+        expect(queryAllByText(props.source)).toHaveLength(3);
+        expect(queryByText(props.xrefs[0].accession_id)).toBeTruthy();
+        expect(queryByText(props.xrefs[1].accession_id)).toBeTruthy();
+        expect(queryByText(props.xrefs[2].accession_id)).toBeTruthy();
+      });
 
-    it('displays all xrefs when expanded if there are more than 3 xrefs', () => {
-      const props = {
-        source: ExternalSource.UNIPROT_TREMBL,
-        xrefs: tremblXrefs
-      };
-      const { container, getByText, getAllByText } = render(
-        <ProteinExternalReferenceGroup {...props} />
-      );
-      const chevron = container.querySelector('.chevron') as HTMLElement;
-      userEvent.click(chevron);
-      expect(getByText(props.xrefs[1].accession_id)).toBeTruthy();
-      expect(getAllByText(props.source)).toHaveLength(4);
-      expect(container.querySelectorAll('.externalLinkContainer')).toHaveLength(
-        4
-      );
+      it('displays xref with an option to expand if there are more than 3 xrefs', () => {
+        const props = {
+          source: ExternalSource.UNIPROT_TREMBL,
+          xrefs: tremblXrefs
+        };
+        const {
+          container,
+          getByText,
+          getAllByText,
+          queryByText,
+          queryAllByText
+        } = render(<ProteinExternalReferenceGroup {...props} />);
+        expect(queryByText(props.source)).toBeTruthy();
+        expect(queryAllByText(props.xrefs[0].accession_id)).toHaveLength(1);
+        const chevron = container.querySelector('.chevron') as HTMLElement;
+        expect(chevron).toBeTruthy();
+
+        userEvent.click(chevron);
+        expect(getByText(props.xrefs[1].accession_id)).toBeTruthy();
+        expect(getAllByText(props.source)).toHaveLength(4);
+        expect(
+          container.querySelectorAll('.externalLinkContainer')
+        ).toHaveLength(4);
+      });
     });
   });
 });
