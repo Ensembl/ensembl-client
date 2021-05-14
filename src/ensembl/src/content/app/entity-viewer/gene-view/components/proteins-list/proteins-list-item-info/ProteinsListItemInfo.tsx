@@ -126,7 +126,7 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   const proteinXrefs = getProteinXrefs(transcript);
-  const proteinStatsXref = proteinXrefs && proteinXrefs[0];
+  const displayXref = proteinXrefs && proteinXrefs[0];
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -153,20 +153,14 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (
-      summaryStatsLoadingState === LoadingState.LOADING &&
-      !proteinStatsXref
-    ) {
-      // if proteinStatsXref is absent, we cannot fetch relevant data from PDBe; so pretend that we've successfully completed the request
+    if (summaryStatsLoadingState === LoadingState.LOADING && !displayXref) {
+      // if displayXref is absent, we cannot fetch relevant data from PDBe; so pretend that we've successfully completed the request
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
 
-    if (summaryStatsLoadingState === LoadingState.LOADING && proteinStatsXref) {
-      fetchProteinSummaryStats(
-        proteinStatsXref.accession_id,
-        abortController.signal
-      )
+    if (summaryStatsLoadingState === LoadingState.LOADING && displayXref) {
+      fetchProteinSummaryStats(displayXref.accession_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
             response
@@ -183,7 +177,7 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryStatsLoadingState, proteinStatsXref]);
+  }, [summaryStatsLoadingState, displayXref]);
 
   const showLoadingIndicator =
     domainsLoadingState === LoadingState.LOADING ||
@@ -209,7 +203,7 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {proteinXrefs?.length > 0 &&
+            {proteinXrefs.length > 0 &&
               domainsLoadingState === LoadingState.SUCCESS && (
                 <div>
                   <div className={styles.xrefsWrapper}>
@@ -239,20 +233,18 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
           </div>
-          {proteinSummaryStats &&
-            proteinXrefs &&
-            domainsLoadingState === LoadingState.SUCCESS && (
-              <div className={styles.proteinStatsWrapper}>
-                <ProteinExternalReference
-                  source={ExternalSource.PDBE}
-                  accessionId={proteinStatsXref.accession_id}
-                  name={proteinStatsXref.name}
-                />
-                <div className={styles.proteinFeaturesCountWrapper}>
-                  <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
-                </div>
+          {proteinSummaryStats && domainsLoadingState === LoadingState.SUCCESS && (
+            <div className={styles.proteinStatsWrapper}>
+              <ProteinExternalReference
+                source={ExternalSource.PDBE}
+                accessionId={displayXref.accession_id}
+                name={displayXref.name}
+              />
+              <div className={styles.proteinFeaturesCountWrapper}>
+                <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
               </div>
-            )}
+            </div>
+          )}
         </>
         {showLoadingIndicator && (
           <div className={styles.statusContainer}>
