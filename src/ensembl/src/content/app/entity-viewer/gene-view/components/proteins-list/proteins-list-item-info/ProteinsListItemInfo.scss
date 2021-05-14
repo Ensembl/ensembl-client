@@ -6,10 +6,7 @@ $content-width: $gene_image_width;
 .proteinSummary {
   margin-left: 178px;
   width: $content-width;
-
-  > div {
-    padding: 10px 0 10px 0;
-  }
+  padding-top: 10px;
 }
 
 .keyline {
@@ -21,9 +18,9 @@ $content-width: $gene_image_width;
 }
 
 .proteinSummaryTop {
-  align-items: center;
   display: grid;
-  grid-template-columns: [references] 300px [download] 395px;
+  grid-template-columns: [references] 350px [download] 345px;
+  align-items: start;
 }
 
 .downloadWrapper {
@@ -33,10 +30,8 @@ $content-width: $gene_image_width;
 }
 
 .proteinExternalReference {
-  display: inline-block;
-
   &:first-child {
-    margin-right: 40px;
+    margin-right: 16px;
   }
 }
 
@@ -44,6 +39,9 @@ $content-width: $gene_image_width;
   display: inline-block;
 }
 
+.proteinStatsWrapper {
+  display: flex;
+}
 
 .imageLoadingContainer {
   width: $content-width;
@@ -59,4 +57,39 @@ $content-width: $gene_image_width;
   align-items: center;
   justify-content: center;
   margin-top: 40px;
+}
+
+.xrefWithChevron {
+  display: flex;
+}
+
+.xrefGroupChevron {
+  text-align: right;
+  padding-right: 2px;
+  cursor: pointer;
+  font-weight: $normal;
+  min-width: 50px;
+}
+
+.chevron {
+  margin-left: 6px;
+  margin-bottom: -1px;
+  height: 12px;
+  width: 12px;
+  transition: transform linear 0.2s;
+  &Up {
+    transform: rotate(-180deg);
+  }
+}
+
+.xrefCountChevronOpen {
+  color: $medium-dark-grey;
+}
+
+.xrefsWrapper {
+  padding-bottom: 10px;
+
+  &:first-child {
+    padding-top: 6px;
+  }
 }

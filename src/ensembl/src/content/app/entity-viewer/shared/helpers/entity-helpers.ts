@@ -19,6 +19,12 @@ import { Pick2, Pick3 } from 'ts-multipick';
 import { Slice } from 'src/shared/types/thoas/slice';
 import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
 import { Product, ProductType } from 'src/shared/types/thoas/product';
+import { ExternalReference } from 'src/shared/types/thoas/externalReference';
+
+import {
+  SWISSPROT_SOURCE,
+  SPTREMBL_SOURCE
+} from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
 
 type GetFeatureCoordinatesParams = {
   slice: Pick2<Slice, 'location', 'start' | 'end'>;
@@ -152,12 +158,36 @@ export const getLongestProteinLength = (gene: GetLongestProteinLengthParam) => {
 
 export enum ExternalSource {
   INTERPRO = 'Interpro',
-  UNIPROT = 'UniProt',
+  UNIPROT_TREMBL = 'UniProtKB/TrEMBL',
+  UNIPROT_SWISSPROT = 'UniProtKB/Swiss-Prot',
   PDBE = 'PDBe-KB'
 }
 
 export const externalSourceLinks = {
   [ExternalSource.INTERPRO]: 'https://www.ebi.ac.uk/interpro/protein/UniProt/',
-  [ExternalSource.UNIPROT]: 'https://www.uniprot.org/uniprot/',
+  [ExternalSource.UNIPROT_TREMBL]: 'https://www.uniprot.org/uniprot/',
+  [ExternalSource.UNIPROT_SWISSPROT]: 'https://www.uniprot.org/uniprot/',
   [ExternalSource.PDBE]: 'https://www.ebi.ac.uk/pdbe/pdbe-kb/proteins/'
+};
+
+export const getProteinXrefs = <
+  T extends Pick2<ExternalReference, 'source', 'id'>
+>(transcript: {
+  product_generating_contexts: Array<{
+    product: {
+      external_references: T[];
+    };
+  }>;
+}) => {
+  const xrefs =
+    transcript.product_generating_contexts[0].product.external_references;
+  let proteinXrefs = xrefs.filter(
+    (xref) => xref.source.id === SWISSPROT_SOURCE
+  );
+
+  if (!proteinXrefs.length) {
+    proteinXrefs = xrefs.filter((xref) => xref.source.id === SPTREMBL_SOURCE);
+  }
+
+  return proteinXrefs;
 };
