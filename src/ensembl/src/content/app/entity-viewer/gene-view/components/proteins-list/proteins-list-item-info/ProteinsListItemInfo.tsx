@@ -126,7 +126,7 @@ const ProteinsListItemInfo = (props: Props) => {
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
   const proteinXrefs = getProteinXrefs(transcript);
-  const displayXref = proteinXrefs && proteinXrefs[0];
+  const displayXref = proteinXrefs[0];
 
   useEffect(() => {
     const abortController = new AbortController();
