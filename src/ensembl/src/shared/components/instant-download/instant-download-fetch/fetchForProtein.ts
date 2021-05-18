@@ -51,17 +51,22 @@ export const fetchForProtein = async (payload: FetchPayload) => {
     options
   });
 
-  const worker = new SequenceFetcherWorker();
+  try {
+    const worker = new SequenceFetcherWorker();
 
-  const service = wrap<WorkerApi>(worker);
+    const service = wrap<WorkerApi>(worker);
 
-  const sequences = await service.downloadSequences(sequenceDownloadParams);
+    const sequences = await service.downloadSequences(sequenceDownloadParams);
 
-  worker.terminate();
+    worker.terminate();
 
-  downloadAsFile(sequences, `${transcriptId}.fasta`, {
-    type: 'text/x-fasta'
-  });
+    downloadAsFile(sequences, `${transcriptId}.fasta`, {
+      type: 'text/x-fasta'
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
 
 type PrepareDownloadParametersParams = {

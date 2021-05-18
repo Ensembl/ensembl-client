@@ -99,6 +99,7 @@ const LoadingButton = (props: LoadingButtonProps) => {
       status={loadingState}
       onClick={onClick}
       className={props.className}
+      isDisabled={props.isDisabled}
     >
       {props.children}
     </ControlledLoadingButton>

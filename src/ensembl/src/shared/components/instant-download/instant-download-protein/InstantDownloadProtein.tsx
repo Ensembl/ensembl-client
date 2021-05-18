@@ -17,7 +17,8 @@
 import React, { useState } from 'react';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
+// import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
+import LoadingButton from 'src/shared/components/loading-button/LoadingButton';
 
 import { fetchForProtein } from '../instant-download-fetch/fetchForProtein';
 
@@ -50,7 +51,12 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
     setProteinSeqSelected(!isProteinSeqSelected);
   const onCdsCheckboxChange = () => setCdsSeqSelected(!isCdsSeqSelected);
 
-  const onSubmit = () => {
+  const resetCheckboxes = () => {
+    setProteinSeqSelected(false);
+    setCdsSeqSelected(false);
+  };
+
+  const onSubmit = async () => {
     const payload = {
       genomeId,
       transcriptId,
@@ -60,7 +66,14 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
       }
     };
 
-    fetchForProtein(payload);
+    new Promise((resolve, reject) => {
+      if (fetchForProtein(payload)) {
+        resolve('success');
+        resetCheckboxes();
+      } else {
+        reject('error');
+      }
+    });
   };
 
   const isDownloadDisabled = () => !isProteinSeqSelected && !isCdsSeqSelected;
@@ -79,13 +92,22 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
         checked={isCdsSeqSelected}
         onChange={onCdsCheckboxChange}
       />
-      <InstantDownloadButton
+
+      <LoadingButton
+        isDisabled={isDownloadDisabled()}
+        onClick={onSubmit}
+        onSuccess={() => true}
+        onError={() => true}
+      >
+        Download
+      </LoadingButton>
+      {/* <InstantDownloadButton
         className={
           isDownloadDisabled() ? styles.downloadButtonDisabled : undefined
         }
         isDisabled={isDownloadDisabled()}
         onClick={onSubmit}
-      />
+      /> */}
     </div>
   );
 };
