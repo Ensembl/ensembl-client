@@ -54,6 +54,10 @@
   }
 }
 
+.downloadButton {
+  text-align: right;
+}
+
 .layout {
   display: grid;
   font-size: 13px;
@@ -82,10 +86,6 @@
     .transcriptVis,
     .checkboxGrid {
       margin-left: 18px;
-    }
-
-    .downloadButton {
-      text-align: right;
     }
 
     button {
