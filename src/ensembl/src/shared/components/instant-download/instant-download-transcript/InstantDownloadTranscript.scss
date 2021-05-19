@@ -54,15 +54,10 @@
   }
 }
 
-
-.downloadButtonDisabled {
-  border-color: $dark-grey;
-  color: $dark-grey;
-}
-
 .layout {
   display: grid;
   font-size: 13px;
+  align-items: start;
 
   &Horizontal {
     grid-template-columns: 1fr 1fr;
@@ -87,6 +82,10 @@
     .transcriptVis,
     .checkboxGrid {
       margin-left: 18px;
+    }
+
+    .downloadButton {
+      text-align: right;
     }
 
     button {

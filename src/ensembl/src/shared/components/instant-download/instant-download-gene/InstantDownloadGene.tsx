@@ -100,7 +100,7 @@ const InstantDownloadGene = (props: Props) => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const payload = {
       genomeId,
       geneId,
@@ -110,7 +110,15 @@ const InstantDownloadGene = (props: Props) => {
       }
     };
 
-    fetchForGene(payload);
+    const fetch = await fetchForGene(payload);
+    return new Promise((resolve, reject) => {
+      if (fetch) {
+        resolve('success');
+      } else {
+        reject('error');
+      }
+      setIsGeneSequenceSelected(false);
+    });
   };
 
   const themeClass =
@@ -135,11 +143,12 @@ const InstantDownloadGene = (props: Props) => {
         theme={props.theme}
         onChange={onTranscriptOptionChange}
       />
-      <InstantDownloadButton
-        className={isButtonDisabled ? styles.downloadButtonDisabled : undefined}
-        isDisabled={isButtonDisabled}
-        onClick={onSubmit}
-      />
+      <div className={styles.downloadButton}>
+        <InstantDownloadButton
+          isDisabled={isButtonDisabled}
+          onClick={onSubmit}
+        />
+      </div>
     </div>
   );
 };

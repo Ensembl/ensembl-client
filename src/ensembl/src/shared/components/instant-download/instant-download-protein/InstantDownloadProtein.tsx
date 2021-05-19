@@ -17,8 +17,7 @@
 import React, { useState } from 'react';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
-// import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
-import LoadingButton from 'src/shared/components/loading-button/LoadingButton';
+import InstantDownloadButton from 'src/shared/components/instant-download/instant-download-button/InstantDownloadButton';
 
 import { fetchForProtein } from '../instant-download-fetch/fetchForProtein';
 
@@ -66,13 +65,14 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
       }
     };
 
-    new Promise((resolve, reject) => {
-      if (fetchForProtein(payload)) {
+    const fetch = await fetchForProtein(payload);
+    return new Promise((resolve, reject) => {
+      if (fetch) {
         resolve('success');
-        resetCheckboxes();
       } else {
         reject('error');
       }
+      resetCheckboxes();
     });
   };
 
@@ -92,22 +92,10 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
         checked={isCdsSeqSelected}
         onChange={onCdsCheckboxChange}
       />
-
-      <LoadingButton
+      <InstantDownloadButton
         isDisabled={isDownloadDisabled()}
         onClick={onSubmit}
-        onSuccess={() => true}
-        onError={() => true}
-      >
-        Download
-      </LoadingButton>
-      {/* <InstantDownloadButton
-        className={
-          isDownloadDisabled() ? styles.downloadButtonDisabled : undefined
-        }
-        isDisabled={isDownloadDisabled()}
-        onClick={onSubmit}
-      /> */}
+      />
     </div>
   );
 };

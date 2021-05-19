@@ -41,17 +41,18 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
-  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
-    genomeId,
-    transcriptId
-  });
-
-  const sequenceDownloadParams = prepareDownloadParameters({
-    transcriptSequenceData,
-    options
-  });
 
   try {
+    const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
+      genomeId,
+      transcriptId
+    });
+
+    const sequenceDownloadParams = prepareDownloadParameters({
+      transcriptSequenceData,
+      options
+    });
+
     const worker = new SequenceFetcherWorker();
 
     const service = wrap<WorkerApi>(worker);
