@@ -19,7 +19,10 @@ import intersection from 'lodash/intersection';
 import classNames from 'classnames';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
-import { filterTranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
+import {
+  filterTranscriptOptions,
+  defaultTranscriptOptions
+} from '../instant-download-transcript/InstantDownloadTranscript';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
@@ -100,6 +103,11 @@ const InstantDownloadGene = (props: Props) => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
   };
 
+  const resetCheckboxes = () => {
+    setIsGeneSequenceSelected(false);
+    setTranscriptOptions(defaultTranscriptOptions);
+  };
+
   const onSubmit = async () => {
     const payload = {
       genomeId,
@@ -117,7 +125,7 @@ const InstantDownloadGene = (props: Props) => {
       } else {
         reject('error');
       }
-      setIsGeneSequenceSelected(false);
+      resetCheckboxes();
     });
   };
 

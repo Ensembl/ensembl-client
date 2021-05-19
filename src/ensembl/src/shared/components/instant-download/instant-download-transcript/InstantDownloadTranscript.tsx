@@ -79,7 +79,7 @@ export const transcriptOptionsOrder: TranscriptOption[] = [
   'cds'
 ];
 
-const defaultTranscriptOptions: TranscriptOptions = {
+export const defaultTranscriptOptions: TranscriptOptions = {
   genomicSequence: false,
   cdna: false,
   proteinSequence: false,
