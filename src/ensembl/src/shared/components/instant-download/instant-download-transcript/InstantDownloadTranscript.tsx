@@ -118,6 +118,7 @@ const InstantDownloadTranscript = (props: Props) => {
 
   const resetCheckboxes = () => {
     setIsGeneSequenceSelected(false);
+    setTranscriptOptions(defaultTranscriptOptions);
   };
 
   const onSubmit = async () => {
