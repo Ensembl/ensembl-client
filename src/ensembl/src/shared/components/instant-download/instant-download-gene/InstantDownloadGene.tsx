@@ -118,15 +118,11 @@ const InstantDownloadGene = (props: Props) => {
       }
     };
 
-    const fetch = await fetchForGene(payload);
-    return new Promise((resolve, reject) => {
-      if (fetch) {
-        resolve('success');
-      } else {
-        reject('error');
-      }
+    try {
+      await fetchForGene(payload);
+    } finally {
       resetCheckboxes();
-    });
+    }
   };
 
   const themeClass =

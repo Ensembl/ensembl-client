@@ -65,15 +65,11 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
       }
     };
 
-    const fetch = await fetchForProtein(payload);
-    return new Promise((resolve, reject) => {
-      if (fetch) {
-        resolve('success');
-      } else {
-        reject('error');
-      }
+    try {
+      await fetchForProtein(payload);
+    } finally {
       resetCheckboxes();
-    });
+    }
   };
 
   const isDownloadDisabled = () => !isProteinSeqSelected && !isCdsSeqSelected;

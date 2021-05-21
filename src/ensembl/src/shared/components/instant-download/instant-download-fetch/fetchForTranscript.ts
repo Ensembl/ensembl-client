@@ -56,45 +56,36 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     transcriptId,
     options: { transcript: transcriptOptions, gene: geneOptions }
   } = payload;
+  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
+    genomeId,
+    transcriptId
+  });
+  const sequenceDownloadParams = prepareDownloadParameters({
+    transcriptSequenceData,
+    options: transcriptOptions
+  });
 
-  try {
-    const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
+  if (geneOptions.genomicSequence) {
+    const metadata = await fetchGeneWithoutTranscriptsSequenceMetadata({
       genomeId,
-      transcriptId
+      geneId
     });
-    const sequenceDownloadParams = prepareDownloadParameters({
-      transcriptSequenceData,
-      options: transcriptOptions
-    });
-
-    if (geneOptions.genomicSequence) {
-      const metadata = await fetchGeneWithoutTranscriptsSequenceMetadata({
-        genomeId,
-        geneId
-      });
-      sequenceDownloadParams.unshift(
-        getGenomicSequenceData(
-          metadata.stable_id,
-          metadata.unversioned_stable_id
-        )
-      );
-    }
-
-    const worker = new SequenceFetcherWorker();
-
-    const service = wrap<WorkerApi>(worker);
-
-    const sequences = await service.downloadSequences(sequenceDownloadParams);
-
-    worker.terminate();
-
-    downloadAsFile(sequences, `${transcriptId}.fasta`, {
-      type: 'text/x-fasta'
-    });
-    return true;
-  } catch (e) {
-    return false;
+    sequenceDownloadParams.unshift(
+      getGenomicSequenceData(metadata.stable_id, metadata.unversioned_stable_id)
+    );
   }
+
+  const worker = new SequenceFetcherWorker();
+
+  const service = wrap<WorkerApi>(worker);
+
+  const sequences = await service.downloadSequences(sequenceDownloadParams);
+
+  worker.terminate();
+
+  downloadAsFile(sequences, `${transcriptId}.fasta`, {
+    type: 'text/x-fasta'
+  });
 };
 
 type PrepareDownloadParametersParams = {

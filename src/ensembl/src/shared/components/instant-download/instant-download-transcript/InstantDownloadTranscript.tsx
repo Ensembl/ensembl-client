@@ -132,15 +132,11 @@ const InstantDownloadTranscript = (props: Props) => {
       }
     };
 
-    const fetch = await fetchForTranscript(payload);
-    return new Promise((resolve, reject) => {
-      if (fetch) {
-        resolve('success');
-      } else {
-        reject('error');
-      }
+    try {
+      await fetchForTranscript(payload);
+    } finally {
       resetCheckboxes();
-    });
+    }
   };
 
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {

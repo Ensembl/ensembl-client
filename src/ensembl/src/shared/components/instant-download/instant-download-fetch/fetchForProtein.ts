@@ -41,33 +41,27 @@ type FetchPayload = {
 
 export const fetchForProtein = async (payload: FetchPayload) => {
   const { genomeId, transcriptId, options } = payload;
+  const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
+    genomeId,
+    transcriptId
+  });
 
-  try {
-    const transcriptSequenceData = await fetchTranscriptSequenceMetadata({
-      genomeId,
-      transcriptId
-    });
+  const sequenceDownloadParams = prepareDownloadParameters({
+    transcriptSequenceData,
+    options
+  });
 
-    const sequenceDownloadParams = prepareDownloadParameters({
-      transcriptSequenceData,
-      options
-    });
+  const worker = new SequenceFetcherWorker();
 
-    const worker = new SequenceFetcherWorker();
+  const service = wrap<WorkerApi>(worker);
 
-    const service = wrap<WorkerApi>(worker);
+  const sequences = await service.downloadSequences(sequenceDownloadParams);
 
-    const sequences = await service.downloadSequences(sequenceDownloadParams);
+  worker.terminate();
 
-    worker.terminate();
-
-    downloadAsFile(sequences, `${transcriptId}.fasta`, {
-      type: 'text/x-fasta'
-    });
-    return true;
-  } catch (e) {
-    return false;
-  }
+  downloadAsFile(sequences, `${transcriptId}.fasta`, {
+    type: 'text/x-fasta'
+  });
 };
 
 type PrepareDownloadParametersParams = {
