@@ -87,6 +87,9 @@ const ProteinsList = (props: ProteinsListProps) => {
   ) as Transcript[];
 
   useEffect(() => {
+    if (!proteinCodingTranscripts.length) {
+      return;
+    }
     const hasExpandedTranscripts = !!expandedTranscriptIds.length;
     const firstProteinId =
       proteinCodingTranscripts[0].product_generating_contexts[0].product
