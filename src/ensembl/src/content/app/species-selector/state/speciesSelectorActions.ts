@@ -15,7 +15,7 @@
  */
 
 import { createAsyncAction, createAction } from 'typesafe-actions';
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import find from 'lodash/find';
 import pickBy from 'lodash/pickBy';
@@ -37,7 +37,6 @@ import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/specie
 import {
   SearchMatch,
   SearchMatches,
-  // Strain,
   PopularSpecies,
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
@@ -65,35 +64,32 @@ import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constant
 
 import { RootState } from 'src/store';
 
-export const setSearchText = createAction('species_selector/set_search_text')<
-  string
->();
+export const setSearchText = createAction(
+  'species_selector/set_search_text'
+)<string>();
 
-export const updateSearch: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (text: string) => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const selectedItem = getSelectedItem(state);
-  const previousText = getSearchText(state);
-  if (selectedItem) {
-    dispatch(clearSelectedSearchResult());
-  }
+export const updateSearch =
+  (text: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const selectedItem = getSelectedItem(state);
+    const previousText = getSearchText(state);
+    if (selectedItem) {
+      dispatch(clearSelectedSearchResult());
+    }
 
-  const trimmedText = text.trim();
-  if (text.length < previousText.length) {
-    // user is deleting their input; clear search results
-    dispatch(clearSearchResults());
-  }
+    const trimmedText = text.trim();
+    if (text.length < previousText.length) {
+      // user is deleting their input; clear search results
+      dispatch(clearSearchResults());
+    }
 
-  if (trimmedText.length >= MINIMUM_SEARCH_LENGTH) {
-    dispatch(fetchSpeciesSearchResults.request(trimmedText));
-  }
+    if (trimmedText.length >= MINIMUM_SEARCH_LENGTH) {
+      dispatch(fetchSpeciesSearchResults.request(trimmedText));
+    }
 
-  dispatch(setSearchText(text));
-};
+    dispatch(setSearchText(text));
+  };
 
 export const fetchSpeciesSearchResults = createAsyncAction(
   'species_selector/species_search_request',
@@ -144,178 +140,163 @@ export const clearSelectedSearchResult = createAction(
 //   }
 // };
 
-export const ensureSpeciesIsCommitted: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const committedSpecies = getCommittedSpecies(state);
-  const genomeInfo = getGenomeInfoById(state, genomeId);
-  if (getCommittedSpeciesById(state, genomeId) || !genomeInfo) {
-    return;
-  }
-
-  const newCommittedSpecies = [
-    ...committedSpecies,
-    {
-      ...pickBy(genomeInfo, (value, key) => {
-        return key !== 'example_objects';
-      }),
-      isEnabled: true
+export const ensureSpeciesIsCommitted =
+  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  async (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const committedSpecies = getCommittedSpecies(state);
+    const genomeInfo = getGenomeInfoById(state, genomeId);
+    if (getCommittedSpeciesById(state, genomeId) || !genomeInfo) {
+      return;
     }
-  ] as CommittedItem[];
 
-  dispatch(updateCommittedSpecies(newCommittedSpecies));
-  speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
-};
+    const newCommittedSpecies = [
+      ...committedSpecies,
+      {
+        ...pickBy(genomeInfo, (value, key) => {
+          return key !== 'example_objects';
+        }),
+        isEnabled: true
+      }
+    ] as CommittedItem[];
 
-export const ensureSpeciesIsEnabled: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => (dispatch, getState: () => RootState) => {
-  const state = getState();
+    dispatch(updateCommittedSpecies(newCommittedSpecies));
+    speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
+  };
 
-  const currentSpecies = getCommittedSpeciesById(state, genomeId);
-  if (!currentSpecies || currentSpecies.isEnabled) {
-    return;
-  }
+export const ensureSpeciesIsEnabled =
+  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
 
-  dispatch(toggleSpeciesUseAndSave(genomeId));
-};
+    const currentSpecies = getCommittedSpeciesById(state, genomeId);
+    if (!currentSpecies || currentSpecies.isEnabled) {
+      return;
+    }
 
-export const fetchPopularSpecies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => async (dispatch) => {
-  try {
-    dispatch(fetchPopularSpeciesAsyncActions.request());
+    dispatch(toggleSpeciesUseAndSave(genomeId));
+  };
 
-    const url = '/api/genomesearch/popular_genomes';
-    const response = await apiService.fetch(url);
+export const fetchPopularSpecies =
+  (): ThunkAction<void, any, null, Action<string>> => async (dispatch) => {
+    try {
+      dispatch(fetchPopularSpeciesAsyncActions.request());
 
-    dispatch(
-      fetchPopularSpeciesAsyncActions.success({
-        popularSpecies: response.popular_species
-      })
-    );
-  } catch (error) {
-    dispatch(fetchPopularSpeciesAsyncActions.failure(error));
-  }
-};
+      const url = '/api/genomesearch/popular_genomes';
+      const response = await apiService.fetch(url);
 
-export const handleSelectedSpecies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (item: SearchMatch | PopularSpecies) => (dispatch) => {
-  dispatch(setSelectedSpecies(item));
+      dispatch(
+        fetchPopularSpeciesAsyncActions.success({
+          popularSpecies: response.popular_species
+        })
+      );
+    } catch (error) {
+      dispatch(fetchPopularSpeciesAsyncActions.failure(error));
+    }
+  };
 
-  // TODO: fetch strains when they are ready
-  // dispatch(fetchStrains(genome_id));
-};
+export const handleSelectedSpecies =
+  (
+    item: SearchMatch | PopularSpecies
+  ): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch) => {
+    dispatch(setSelectedSpecies(item));
+
+    // TODO: fetch strains when they are ready
+    // dispatch(fetchStrains(genome_id));
+  };
 
 export const updateCommittedSpecies = createAction(
   'species_selector/update_committed_species'
 )<CommittedItem[]>();
 
-export const commitSelectedSpeciesAndSave: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (dispatch, getState) => {
-  const committedSpecies = getCommittedSpecies(getState());
-  const selectedItem = getSelectedItem(getState());
+export const commitSelectedSpeciesAndSave =
+  (): ThunkAction<void, any, null, Action<string>> => (dispatch, getState) => {
+    const committedSpecies = getCommittedSpecies(getState());
+    const selectedItem = getSelectedItem(getState());
 
-  if (!selectedItem) {
-    return;
-  }
+    if (!selectedItem) {
+      return;
+    }
 
-  const newCommittedSpecies = [
-    ...committedSpecies,
-    buildCommittedItem(selectedItem)
-  ];
+    const newCommittedSpecies = [
+      ...committedSpecies,
+      buildCommittedItem(selectedItem)
+    ];
 
-  const speciesName = getSpeciesAnalyticsName(selectedItem);
+    const speciesName = getSpeciesAnalyticsName(selectedItem);
 
-  analyticsTracking.setSpeciesDimension(selectedItem.genome_id);
+    analyticsTracking.setSpeciesDimension(selectedItem.genome_id);
 
-  analyticsTracking.trackEvent({
-    category: categories.ADD_SPECIES,
-    label: speciesName,
-    action: 'select'
-  });
+    analyticsTracking.trackEvent({
+      category: categories.ADD_SPECIES,
+      label: speciesName,
+      action: 'select'
+    });
 
-  dispatch(updateCommittedSpecies(newCommittedSpecies));
-  dispatch(clearSelectedSearchResult());
+    dispatch(updateCommittedSpecies(newCommittedSpecies));
+    dispatch(clearSelectedSearchResult());
 
-  speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
-};
+    speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
+  };
 
-export const toggleSpeciesUseAndSave = (
-  genomeId: string
-): ThunkAction<void, any, null, Action<string>> => (dispatch, getState) => {
-  const state = getState();
-  const committedSpecies = getCommittedSpecies(state);
-  const currentSpecies = getCommittedSpeciesById(state, genomeId);
-  if (!currentSpecies) {
-    return; // should never happen
-  }
-  const speciesNameForAnalytics = getSpeciesAnalyticsName(currentSpecies);
-  const updatedStatus = currentSpecies.isEnabled ? 'do_not_use' : 'use';
+export const toggleSpeciesUseAndSave =
+  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState) => {
+    const state = getState();
+    const committedSpecies = getCommittedSpecies(state);
+    const currentSpecies = getCommittedSpeciesById(state, genomeId);
+    if (!currentSpecies) {
+      return; // should never happen
+    }
+    const speciesNameForAnalytics = getSpeciesAnalyticsName(currentSpecies);
+    const updatedStatus = currentSpecies.isEnabled ? 'do_not_use' : 'use';
 
-  const updatedCommittedSpecies = committedSpecies.map((item) => {
-    return item.genome_id === genomeId
-      ? {
-          ...item,
-          isEnabled: !item.isEnabled
-        }
-      : item;
-  });
-
-  analyticsTracking.trackEvent({
-    category: categories.SELECTED_SPECIES,
-    label: speciesNameForAnalytics,
-    action: updatedStatus
-  });
-
-  dispatch(updateCommittedSpecies(updatedCommittedSpecies));
-  speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
-};
-
-export const deleteSpeciesAndSave = (
-  genomeId: string
-): ThunkAction<void, any, null, Action<string>> => (dispatch, getState) => {
-  const committedSpecies = getCommittedSpecies(getState());
-  const deletedSpecies = find(
-    committedSpecies,
-    ({ genome_id }) => genome_id === genomeId
-  );
-
-  if (deletedSpecies) {
-    const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
-
-    analyticsTracking.setSpeciesDimension(deletedSpecies.genome_id);
+    const updatedCommittedSpecies = committedSpecies.map((item) => {
+      return item.genome_id === genomeId
+        ? {
+            ...item,
+            isEnabled: !item.isEnabled
+          }
+        : item;
+    });
 
     analyticsTracking.trackEvent({
       category: categories.SELECTED_SPECIES,
-      label: deletedSpeciesName,
-      action: 'unselect'
+      label: speciesNameForAnalytics,
+      action: updatedStatus
     });
-  }
-  const updatedCommittedSpecies = committedSpecies.filter(
-    ({ genome_id }) => genome_id !== genomeId
-  );
 
-  dispatch(updateCommittedSpecies(updatedCommittedSpecies));
-  dispatch(deleteSpeciesInGenomeBrowser(genomeId));
-  dispatch(deleteSpeciesInEntityViewer(genomeId));
-  speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
-};
+    dispatch(updateCommittedSpecies(updatedCommittedSpecies));
+    speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
+  };
+
+export const deleteSpeciesAndSave =
+  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState) => {
+    const committedSpecies = getCommittedSpecies(getState());
+    const deletedSpecies = find(
+      committedSpecies,
+      ({ genome_id }) => genome_id === genomeId
+    );
+
+    if (deletedSpecies) {
+      const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
+
+      analyticsTracking.setSpeciesDimension(deletedSpecies.genome_id);
+
+      analyticsTracking.trackEvent({
+        category: categories.SELECTED_SPECIES,
+        label: deletedSpeciesName,
+        action: 'unselect'
+      });
+    }
+    const updatedCommittedSpecies = committedSpecies.filter(
+      ({ genome_id }) => genome_id !== genomeId
+    );
+
+    dispatch(updateCommittedSpecies(updatedCommittedSpecies));
+    dispatch(deleteSpeciesInGenomeBrowser(genomeId));
+    dispatch(deleteSpeciesInEntityViewer(genomeId));
+    speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
+  };
