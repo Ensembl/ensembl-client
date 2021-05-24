@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 
-import GenomeBrowserService, { OutgoingAction } from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingAction } from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
 
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
@@ -26,7 +27,6 @@ import { Status } from 'src/shared/types/status';
 import iconStyles from './BrowserNavIcon.scss';
 
 
-const genomeBrowserService = new GenomeBrowserService('foo');
 
 type BrowserNavIconProps = {
   browserNavItem: BrowserNavItem;
@@ -34,6 +34,13 @@ type BrowserNavIconProps = {
 };
 
 export const BrowserNavIcon = (props: BrowserNavIconProps) => {
+  
+  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
+
+  if(!genomeBrowserService){
+    return null;
+  }
+  
   const { browserNavItem, enabled } = props;
   const { icon } = browserNavItem;
 

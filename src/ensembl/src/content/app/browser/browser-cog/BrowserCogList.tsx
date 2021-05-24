@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import GenomeBrowserService, { OutgoingAction, OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
+import { OutgoingAction, OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import BrowserCog from './BrowserCog';
 import {
   updateCogList,
@@ -34,9 +35,9 @@ import {
   getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import styles from './BrowserCogList.scss';
+
 
 type BrowserCogListProps = {
   browserActivated: boolean;
@@ -67,16 +68,16 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     }
   };
 
-  const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
 
   useEffect(() => {
 
-    const subscription = genomeBrowserService.subscribe(
+    const subscription = genomeBrowserService?.subscribe(
       'bpane-scroll',
       listenBpaneScroll
     );
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
         }
       }
       
-      genomeBrowserService.send(action);
+      genomeBrowserService?.send(action);
     }
   }, [
     props.trackConfigNames,

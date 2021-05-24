@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 
 import GenomeBrowserService, {OutgoingActionType, OutgoingAction} from 'src/content/app/browser/browser-messaging-service';
 
@@ -32,6 +32,7 @@ import { ZmenuData } from './zmenu-types';
 import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import styles from './Zmenu.scss';
+import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
 
 
 enum Direction {
@@ -47,15 +48,16 @@ export type ZmenuProps = ZmenuData & {
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
+  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
 
   const onOutsideClick = () => {
+
     
-    const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
     const action: OutgoingAction = {
       payload : { id: props.id},
       type: OutgoingActionType.ZMENU_ACTIVITY_OUTSIDE
     }
-    genomeBrowserService.send(action);
+    genomeBrowserService?.send(action);
   }
 
   const direction = chooseDirection(props);

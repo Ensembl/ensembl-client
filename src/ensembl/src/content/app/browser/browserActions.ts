@@ -97,6 +97,10 @@ export const activateBrowser = () => {
     const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
     genomeBrowserService.send(action);
 
+    genomeBrowserService.send({
+      type: OutgoingActionType.PING
+    });
+
     dispatch(updateBrowserActivated(true));
   };
 };

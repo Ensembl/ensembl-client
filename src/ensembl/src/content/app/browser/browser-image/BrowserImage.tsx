@@ -24,8 +24,7 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
-import {GenomeBrowserServiceContext} from 'src/content/app/browser/Browser';
+import GenomeBrowserService, { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
@@ -58,6 +57,7 @@ import { RootState } from 'src/store';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
+import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
 
 export type BrowserImageProps = {
   browserCogTrackList: CogList;
@@ -105,7 +105,7 @@ const parseLocation = (location: ChrLocation) => {
 
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
-  const genomeBrowserService = useContext(GenomeBrowserServiceContext);
+  const {genomeBrowserService, setGenomeBrowserService} = useContext(GenomeBrowserServiceContext);
 
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
@@ -152,21 +152,23 @@ export const BrowserImage = (props: BrowserImageProps) => {
   
 
   useEffect(() => {
-    if(!genomeBrowserService){
-      return;
-    }
-    const subscription = genomeBrowserService.subscribe(
+    const subscription = genomeBrowserService?.subscribe(
       'bpane-out',
       listenBpaneOut
     );
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
   useEffect(() => {
     props.activateBrowser();
+    const genomeBrowser = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    genomeBrowser.init();
+    if(setGenomeBrowserService){
+      setGenomeBrowserService(genomeBrowser)
+    };
 
     return function cleanup() {
       props.updateBrowserActivated(false);

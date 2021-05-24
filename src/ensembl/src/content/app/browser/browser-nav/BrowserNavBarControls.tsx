@@ -44,7 +44,8 @@ export const BrowserNavBarControls = (props: Props) => (
       <BrowserNavIcon
         key={item.name}
         browserNavItem={item}
-        enabled={props.browserNavIconStates[item.name]}
+        // enabled={props.browserNavIconStates[item.name]}
+        enabled={true}
       />
     ))}
     {props.isDisabled && <Overlay className={styles.overlay} />}

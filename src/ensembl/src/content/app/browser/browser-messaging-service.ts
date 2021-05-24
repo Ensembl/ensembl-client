@@ -20,9 +20,10 @@
 
 // import JSONValue from 'src/shared/types/JSON';
 
-import GenomeBrowserService from 'genome-browser-service/lib/GenomeBrowserService';
-import { OutgoingActionType, IncomingActionType, OutgoingAction, IncomingAction }  from 'genome-browser-service/lib/action';
+import GenomeBrowserService  from 'genome-browser-service/lib/GenomeBrowserService';
+import { OutgoingActionType, IncomingActionType, OutgoingAction, IncomingAction, }  from 'genome-browser-service/lib/action';
 
 export { OutgoingActionType, IncomingActionType, OutgoingAction, IncomingAction  };
+
 
 export default GenomeBrowserService;

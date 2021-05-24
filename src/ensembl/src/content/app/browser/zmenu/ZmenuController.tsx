@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
@@ -31,6 +31,7 @@ import {
   ZmenuRepositionPayload
 } from './zmenu-types';
 import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
+import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
@@ -47,15 +48,15 @@ type StateZmenu = {
 const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
-  const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
 
   useEffect(() => {
-    const subscription = genomeBrowserService.subscribe(
+    const subscription = genomeBrowserService?.subscribe(
       'bpane-zmenu',
       handleBpaneEvent
     );
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
@@ -105,7 +106,7 @@ const ZmenuController = (props: Props) => {
       },
       type: OutgoingActionType.ZMENU_ENTER
     };
-    genomeBrowserService.send(action);
+    genomeBrowserService?.send(action);
   };
 
   const handleZmenuLeave = (id: string) => {
@@ -113,7 +114,7 @@ const ZmenuController = (props: Props) => {
       payload: {id},
       type: OutgoingActionType.ZMENU_LEAVE
     };
-    genomeBrowserService.send(action);
+    genomeBrowserService?.send(action);
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (

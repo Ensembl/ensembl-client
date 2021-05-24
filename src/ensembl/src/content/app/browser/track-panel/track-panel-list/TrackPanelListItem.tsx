@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, ReactNode, useCallback } from 'react';
+import React, { MouseEvent, ReactNode, useCallback, useContext } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { RootState } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
-import GenomeBrowserService, {OutgoingAction, OutgoingActionType} from 'src/content/app/browser/browser-messaging-service';
+import {OutgoingAction, OutgoingActionType} from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
@@ -61,9 +61,9 @@ import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import styles from './TrackPanelListItem.scss';
+import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
 
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
@@ -88,6 +88,8 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   );
   const activeDrawerTrackId = useSelector(getActiveDrawerTrackId);
 
+  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
+  
   const dispatch = useDispatch();
 
   const updateDrawerView = () => {
@@ -193,17 +195,16 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
   const updateGenomeBrowser = (status: Status) => {
-    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
+    const isTurnedOn = status === Status.SELECTED ;
 
-    const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
     const action: OutgoingAction = {
-      type: OutgoingActionType.TOGGLE_TRACKS,
+      type: isTurnedOn ? OutgoingActionType.TURN_ON_TRACKS : OutgoingActionType.TURN_OFF_TRACKS,
       payload: {
-        [currentTrackStatus]: `${track.track_id}`
+        track_ids: [`${track.track_id}`.replace('track:', '')]
       }
     };
 
-    genomeBrowserService.send(action);
+    genomeBrowserService?.send(action);
   };
 
   const trackClassNames = classNames(styles.track, {
@@ -211,6 +212,8 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     [styles.trackHighlighted]:
       track.track_id === drawerView || track.track_id === highlightedTrackId
   });
+
+
 
   return (
     <>
