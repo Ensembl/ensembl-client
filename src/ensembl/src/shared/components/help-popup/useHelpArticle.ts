@@ -16,19 +16,23 @@
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import { TextArticle, VideoArticle, SlugReference } from './types';
+import { SlugReference } from './types';
+import {
+  TextArticleData,
+  VideoArticleData
+} from 'src/shared/types/help-and-docs/article';
 
 const getQuery = (reference: SlugReference) => {
   return `slug=${reference.slug}`;
 };
 
-export type Article = TextArticle | VideoArticle;
+export type ArticleData = TextArticleData | VideoArticleData;
 
 const useHelpArticle = (reference: SlugReference) => {
   const query = getQuery(reference);
   const url = `/api/docs/article?${query}`;
 
-  const { data: article, loadingState } = useApiService<Article>({
+  const { data: article, loadingState } = useApiService<ArticleData>({
     endpoint: url
   });
 

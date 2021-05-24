@@ -53,7 +53,7 @@ export const Tabs = (props: TabsProps) => {
 
     return classNames(defaultClassNames, {
       [disabledClassNames]: tab.isDisabled,
-      [selectedClassNames]: tab.title === props.selectedTab
+      [selectedClassNames]: !tab.isDisabled && tab.title === props.selectedTab
     });
   };
 

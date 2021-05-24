@@ -54,7 +54,7 @@ const HelpPopupButton = (props: Props) => {
         </div>
       </div>
       {shouldShowModal && (
-        <Modal onClose={closeModal}>
+        <Modal classNames={{ body: styles.helpPopup }} onClose={closeModal}>
           <HelpPopupBody {...props} />
         </Modal>
       )}

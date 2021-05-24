@@ -1,0 +1,10 @@
+$asideWidth: 250px;
+$gutterWidth: 87px;
+$mainMaxWidth: 980px;
+
+.grid {
+  display: grid;
+  height: 100%;
+  grid-template-columns: [main] minmax(auto, $mainMaxWidth) [aside] $asideWidth;
+  column-gap: $gutterWidth;
+}

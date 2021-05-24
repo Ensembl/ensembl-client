@@ -27,6 +27,7 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 // TODO: check if this can be moved to a common place
 import {
@@ -50,7 +51,6 @@ type Transcript = Pick<
   FullTranscript,
   | 'stable_id'
   | 'unversioned_stable_id'
-  | 'symbol'
   | 'so_term'
   | 'external_references'
   | 'slice'
@@ -78,7 +78,6 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
       stable_id
       unversioned_stable_id
       so_term
-      symbol
       external_references {
         accession_id
         url
@@ -216,11 +215,6 @@ const TranscriptSummary = () => {
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
-        <div className={styles.label}>Transcript name</div>
-        <div className={styles.value}>{transcript.symbol}</div>
-      </div>
-
-      <div className={styles.row}>
         <div className={styles.label}>Transcript length</div>
         <div className={styles.value}>
           {getCommaSeparatedNumber(transcript.slice.location.length)}{' '}
@@ -313,15 +307,17 @@ const TranscriptSummary = () => {
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div>
-            {gene.symbol && <span>{gene.symbol}</span>}
-            {gene.symbol !== stableId && <span>{stableId}</span>}
+            {gene.symbol && (
+              <span className={styles.geneSymbol}>{gene.symbol}</span>
+            )}
+            {gene.symbol !== stableId && <span>{gene.stable_id}</span>}
           </div>
         </div>
       </div>
 
       <div className={styles.row}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{gene.name}</div>
+        <div className={styles.value}>{getGeneName(gene.name)}</div>
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>

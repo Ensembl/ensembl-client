@@ -87,10 +87,13 @@ const Launchbar = () => {
           </div>
           <div className={styles.category}>
             <LaunchbarButton
-              app="help-docs"
+              app="help"
               description="Help & documentation"
               icon={HelpIcon}
-              enabled={false}
+              enabled={isEnvironment([
+                Environment.DEVELOPMENT,
+                Environment.INTERNAL
+              ])}
             />
           </div>
         </div>

@@ -86,7 +86,6 @@ const QUERY = gql`
       transcripts {
         stable_id
         unversioned_stable_id
-        symbol
         so_term
         slice {
           location {

@@ -26,8 +26,8 @@ const onTabChange = jest.fn();
 
 const createTabGroup = (): Tab[] => {
   const options = times(10, () => ({
-    title: faker.random.uuid(),
-    isDisabled: faker.random.boolean()
+    title: faker.datatype.uuid(),
+    isDisabled: faker.datatype.boolean()
   }));
 
   // Make sure we have atleast one enabled and one disabled entry

@@ -19,7 +19,7 @@ import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import { BrowserCogList } from './BrowserCogList';
-import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service'
+import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
 const genomeBrowserService = new GenomeBrowserService('foo');
@@ -32,7 +32,7 @@ describe('<BrowserCogList />', () => {
   const defaultProps = {
     browserActivated: true,
     browserCogList: 0,
-    browserCogTrackList: { 'track:gc': faker.random.number() },
+    browserCogTrackList: { 'track:gc': faker.datatype.number() },
     trackConfigNames: {},
     trackConfigLabel: {},
     selectedCog: faker.lorem.words(),

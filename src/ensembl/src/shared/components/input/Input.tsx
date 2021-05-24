@@ -53,7 +53,6 @@ const Input = (props: Props) => {
   const eventHandler = (eventName: string) => (
     e: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
   ) => {
-    e.persist();
     const value = e.target.value;
 
     if (eventName === 'change') {

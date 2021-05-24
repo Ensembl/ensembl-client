@@ -52,7 +52,7 @@ import styles from './TranscriptsListItemInfo.scss';
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
 type Transcript = Pick<
   FullTranscript,
-  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'so_term'
+  'stable_id' | 'unversioned_stable_id' | 'so_term'
 > &
   Pick2<FullTranscript, 'slice', 'location'> &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
@@ -185,9 +185,6 @@ export const TranscriptsListItemInfo = (
         {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>
       <div className={transcriptsListStyles.right}>
-        <div className={styles.transcriptName}>
-          <strong>{transcript.symbol}</strong>
-        </div>
         <div className={styles.viewInApp}>
           <ViewInApp links={{ genomeBrowser: { url: getBrowserLink() } }} />
         </div>

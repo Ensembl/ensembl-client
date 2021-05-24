@@ -34,6 +34,7 @@ const CustomDownload = lazy(() => import('./custom-download/CustomDownload'));
 const Browser = lazy(() => import('./browser/Browser'));
 const EntityViewer = lazy(() => import('./entity-viewer/EntityViewer'));
 const About = lazy(() => import('./about/About'));
+const Help = lazy(() => import('./help/Help'));
 
 type AppProps = {
   changeCurrentApp: (name: string) => void;
@@ -69,6 +70,7 @@ const App = (props: AppProps) => {
           />
           <Route path={`/genome-browser/:genomeId?`} component={Browser} />
           <Route path={`/about`} component={About} />
+          <Route path={`/help`} component={Help} />
           <Route>
             <Redirect to={{ ...location, state: { is404: true } }} />
           </Route>

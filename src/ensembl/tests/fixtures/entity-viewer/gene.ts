@@ -28,7 +28,7 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
   const geneSlice = createSlice();
   const transcript = createTranscript();
 
-  const unversionedStableId = faker.random.uuid();
+  const unversionedStableId = faker.datatype.uuid();
   const version = 1;
   const stableId = `${unversionedStableId}.${version}`;
 
@@ -49,15 +49,15 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
 };
 
 const getScale = () => {
-  const domain = [1000, faker.random.number({ min: 2000, max: 100000 })];
-  const range = [100, faker.random.number({ min: 200, max: 600 })];
+  const domain = [1000, faker.datatype.number({ min: 2000, max: 100000 })];
+  const range = [100, faker.datatype.number({ min: 200, max: 600 })];
   const scale = scaleLinear().domain(domain).rangeRound(range);
 
   return scale;
 };
 
 export const createRulerTicks = (): TicksAndScale => ({
-  labelledTicks: times(faker.random.number({ min: 1, max: 10 }), Number),
-  ticks: times(faker.random.number({ min: 1, max: 5 }), Number),
+  labelledTicks: times(faker.datatype.number({ min: 1, max: 10 }), Number),
+  ticks: times(faker.datatype.number({ min: 1, max: 5 }), Number),
   scale: getScale()
 });

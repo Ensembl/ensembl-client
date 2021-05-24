@@ -23,6 +23,7 @@ import classNames from 'classnames';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 import {
   buildFocusIdForUrl,
   getDisplayStableId
@@ -130,7 +131,7 @@ const GeneSummary = () => {
 
       <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{gene.name}</div>
+        <div className={styles.value}>{getGeneName(gene.name)}</div>
       </div>
 
       {gene.alternative_symbols.length > 0 && (

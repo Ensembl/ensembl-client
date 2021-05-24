@@ -15,3 +15,7 @@
  */
 
 export { default as TextArticle } from './TextArticle';
+export { default as VideoArticle } from './VideoArticle';
+export { default as IndexArticle } from './IndexArticle';
+export { default as HelpArticleGrid } from './HelpArticleGrid';
+export { default as RelatedArticles } from './RelatedArticles';

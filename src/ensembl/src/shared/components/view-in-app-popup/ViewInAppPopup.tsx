@@ -33,12 +33,17 @@ const ViewInAppPopup = (props: ViewInAppPopupProps) => {
   const [showPointerBox, setShowPointerBox] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
 
+  const onAnchorClick = () => {
+    setShowPointerBox(!showPointerBox);
+  };
+
   return (
-    <span ref={anchorRef} onClick={() => setShowPointerBox(!showPointerBox)}>
+    <span className={styles.wrapper} ref={anchorRef} onClick={onAnchorClick}>
       {children}
       {showPointerBox && anchorRef.current && (
         <PointerBox
           anchor={anchorRef.current}
+          renderInsideAnchor={true}
           onOutsideClick={() => setShowPointerBox(false)}
           position={props.position}
           autoAdjust={true}

@@ -66,7 +66,7 @@ describe('browserHelper', () => {
         error_code: null,
         error_message: startError,
         is_valid: false,
-        value: faker.random.number()
+        value: faker.datatype.number()
       }
     };
     const invalidEndInfo: Partial<RegionValidationResponse> = {
@@ -74,7 +74,7 @@ describe('browserHelper', () => {
         error_code: null,
         error_message: endError,
         is_valid: false,
-        value: faker.random.number()
+        value: faker.datatype.number()
       }
     };
     const mockValidationMessages = createRegionValidationMessages(); // all error messages are null by default

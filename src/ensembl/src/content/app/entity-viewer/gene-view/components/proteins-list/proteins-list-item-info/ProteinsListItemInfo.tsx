@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
 import { Pick2 } from 'ts-multipick';
+import classNames from 'classnames';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
@@ -25,10 +26,12 @@ import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/pro
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadProtein from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
+import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import {
   ExternalSource,
-  externalSourceLinks
+  externalSourceLinks,
+  getProteinXrefs
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { fetchProteinDomains } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 import {
@@ -42,12 +45,12 @@ import { Product } from 'src/shared/types/thoas/product';
 import { ProteinDomain } from 'src/shared/types/thoas/product';
 import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 
-import { SWISSPROT_SOURCE } from '../protein-list-constants';
+import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
 
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
-type ProductWithoutDomains = Pick<
+export type ProductWithoutDomains = Pick<
   Product,
   'length' | 'unversioned_stable_id'
 > & {
@@ -111,9 +114,10 @@ const ProteinsListItemInfo = (props: Props) => {
     LoadingState.LOADING
   );
 
-  const [summaryStatsLoadingState, setSummaryStatsLoadingState] = useState<
-    LoadingState
-  >(LoadingState.LOADING);
+  const [
+    summaryStatsLoadingState,
+    setSummaryStatsLoadingState
+  ] = useState<LoadingState>(LoadingState.LOADING);
 
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
@@ -121,9 +125,8 @@ const ProteinsListItemInfo = (props: Props) => {
   const { product: productWithProteinDomains } =
     transcriptWithProteinDomains?.product_generating_contexts[0] || {};
 
-  const uniprotXref = transcript.product_generating_contexts[0].product.external_references.find(
-    (xref) => xref.source.id === SWISSPROT_SOURCE
-  );
+  const proteinXrefs = getProteinXrefs(transcript);
+  const displayXref = proteinXrefs[0];
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -150,14 +153,14 @@ const ProteinsListItemInfo = (props: Props) => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (summaryStatsLoadingState === LoadingState.LOADING && !uniprotXref) {
-      // if uniprotXref is absent, we cannot fetch relevant data from PDBe; so pretend that we've successfully completed the request
+    if (summaryStatsLoadingState === LoadingState.LOADING && !displayXref) {
+      // if displayXref is absent, we cannot fetch relevant data from PDBe; so pretend that we've successfully completed the request
       setSummaryStatsLoadingState(LoadingState.SUCCESS);
       return;
     }
 
-    if (summaryStatsLoadingState === LoadingState.LOADING && uniprotXref) {
-      fetchProteinSummaryStats(uniprotXref.accession_id, abortController.signal)
+    if (summaryStatsLoadingState === LoadingState.LOADING && displayXref) {
+      fetchProteinSummaryStats(displayXref.accession_id, abortController.signal)
         .then((response) => {
           if (!abortController.signal.aborted) {
             response
@@ -174,7 +177,7 @@ const ProteinsListItemInfo = (props: Props) => {
     return function cleanup() {
       abortController.abort();
     };
-  }, [summaryStatsLoadingState, uniprotXref]);
+  }, [summaryStatsLoadingState, displayXref]);
 
   const showLoadingIndicator =
     domainsLoadingState === LoadingState.LOADING ||
@@ -200,20 +203,27 @@ const ProteinsListItemInfo = (props: Props) => {
       <div className={styles.proteinSummary}>
         <>
           <div className={styles.proteinSummaryTop}>
-            {uniprotXref && domainsLoadingState === LoadingState.SUCCESS && (
-              <div className={styles.interproUniprotWrapper}>
-                <ProteinExternalReference
-                  source={ExternalSource.INTERPRO}
-                  accessionId={uniprotXref.accession_id}
-                  name={uniprotXref.name}
-                />
-                <ProteinExternalReference
-                  source={ExternalSource.UNIPROT}
-                  accessionId={uniprotXref.accession_id}
-                  name={uniprotXref.name}
-                />
-              </div>
-            )}
+            {proteinXrefs.length > 0 &&
+              domainsLoadingState === LoadingState.SUCCESS && (
+                <div>
+                  <div className={styles.xrefsWrapper}>
+                    <ProteinExternalReferenceGroup
+                      source={
+                        proteinXrefs[0].source.id === SWISSPROT_SOURCE
+                          ? ExternalSource.UNIPROT_SWISSPROT
+                          : ExternalSource.UNIPROT_TREMBL
+                      }
+                      xrefs={proteinXrefs}
+                    />
+                  </div>
+                  <div className={styles.xrefsWrapper}>
+                    <ProteinExternalReferenceGroup
+                      source={ExternalSource.INTERPRO}
+                      xrefs={proteinXrefs}
+                    />
+                  </div>
+                </div>
+              )}
             {domainsLoadingState === LoadingState.SUCCESS && (
               <div className={styles.downloadWrapper}>
                 <InstantDownloadProtein
@@ -223,22 +233,18 @@ const ProteinsListItemInfo = (props: Props) => {
               </div>
             )}
           </div>
-          {proteinSummaryStats &&
-            uniprotXref &&
-            domainsLoadingState === LoadingState.SUCCESS && (
-              <div>
-                <ProteinExternalReference
-                  source={ExternalSource.PDBE}
-                  accessionId={uniprotXref.accession_id}
-                  name={uniprotXref.name}
-                />
-                {proteinSummaryStats && (
-                  <div className={styles.proteinFeaturesCountWrapper}>
-                    <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
-                  </div>
-                )}
+          {proteinSummaryStats && domainsLoadingState === LoadingState.SUCCESS && (
+            <div className={styles.proteinStatsWrapper}>
+              <ProteinExternalReference
+                source={ExternalSource.PDBE}
+                accessionId={displayXref.accession_id}
+                name={displayXref.name}
+              />
+              <div className={styles.proteinFeaturesCountWrapper}>
+                <ProteinFeaturesCount proteinStats={proteinSummaryStats} />
               </div>
-            )}
+            </div>
+          )}
         </>
         {showLoadingIndicator && (
           <div className={styles.statusContainer}>
@@ -262,9 +268,89 @@ const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
 
   return (
     <div className={styles.proteinExternalReference}>
-      <ExternalReference label={props.source} to={url} linkText={props.name} />
+      <ExternalReference
+        label={props.source}
+        to={url}
+        linkText={props.accessionId}
+      />
     </div>
   );
+};
+
+type ProteinExternalReferenceGroupProps = {
+  source: ExternalSource;
+  xrefs: Array<
+    Pick<ExternalReferenceType, 'accession_id' | 'name'> &
+      Pick2<ExternalReferenceType, 'source', 'id'>
+  >;
+};
+
+export const ProteinExternalReferenceGroup = (
+  props: ProteinExternalReferenceGroupProps
+) => {
+  const { source, xrefs } = props;
+
+  const [isXrefGroupOpen, setXrefGroupOpen] = useState(false);
+
+  const toggleXrefGroup = () => {
+    setXrefGroupOpen(!isXrefGroupOpen);
+  };
+
+  const chevronClasses = classNames(styles.chevron, {
+    [styles.chevronUp]: isXrefGroupOpen
+  });
+
+  if (xrefs.length > 3) {
+    const displayXref = xrefs[0];
+    return (
+      <>
+        <div className={styles.xrefWithChevron}>
+          <ProteinExternalReference
+            key={displayXref.accession_id}
+            source={source}
+            accessionId={displayXref.accession_id}
+            name={displayXref.name}
+          />
+          <div className={styles.xrefGroupChevron} onClick={toggleXrefGroup}>
+            <span
+              className={
+                isXrefGroupOpen ? styles.xrefCountChevronOpen : undefined
+              }
+            >
+              + {xrefs.length - 1}
+              <ChevronDown className={chevronClasses} />
+            </span>
+          </div>
+        </div>
+        {isXrefGroupOpen &&
+          xrefs.slice(1).map((xref) => {
+            return (
+              <ProteinExternalReference
+                key={xref.accession_id}
+                source={source}
+                accessionId={xref.accession_id}
+                name={xref.name}
+              />
+            );
+          })}
+      </>
+    );
+  } else {
+    return (
+      <>
+        {xrefs.map((xref) => {
+          return (
+            <ProteinExternalReference
+              key={xref.accession_id}
+              source={source}
+              accessionId={xref.accession_id}
+              name={xref.name}
+            />
+          );
+        })}
+      </>
+    );
+  }
 };
 
 export default ProteinsListItemInfo;
