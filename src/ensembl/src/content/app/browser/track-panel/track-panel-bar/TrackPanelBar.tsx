@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  getIsTrackPanelModalOpened,
   getIsTrackPanelOpened,
   getTrackPanelModalView
 } from '../trackPanelSelectors';
@@ -27,6 +26,8 @@ import {
   closeTrackPanelModal,
   openTrackPanelModal
 } from '../trackPanelActions';
+import { toggleDrawer } from 'src/content/app/browser/drawer/drawerActions';
+import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
@@ -37,36 +38,34 @@ import { ReactComponent as personalDataIcon } from 'static/img/sidebar/own-data.
 import { ReactComponent as shareIcon } from 'static/img/sidebar/share.svg';
 import { ReactComponent as downloadIcon } from 'static/img/sidebar/download.svg';
 
-import { RootState } from 'src/store';
 import { Status } from 'src/shared/types/status';
 
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
-export type TrackPanelBarProps = {
-  isTrackPanelModalOpened: boolean;
-  isTrackPanelOpened: boolean;
-  trackPanelModalView: string;
-  closeTrackPanelModal: () => void;
-  openTrackPanelModal: (trackPanelModalView: string) => void;
-  toggleTrackPanel: (isTrackPanelOpened?: boolean) => void;
-};
+export const TrackPanelBar = () => {
+  const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
+  const trackPanelModalView = useSelector(getTrackPanelModalView);
+  const isDrawerOpened = useSelector(getIsDrawerOpened);
+  const dispatch = useDispatch();
 
-export const TrackPanelBar = (props: TrackPanelBarProps) => {
   const toggleModalView = (selectedItem: string) => {
-    if (!props.isTrackPanelOpened) {
-      props.toggleTrackPanel(true);
+    if (!isTrackPanelOpened) {
+      dispatch(toggleTrackPanel(true));
     }
 
-    if (selectedItem === props.trackPanelModalView) {
-      props.closeTrackPanelModal();
+    if (isDrawerOpened) {
+      dispatch(toggleDrawer(false));
+    }
+
+    if (selectedItem === trackPanelModalView) {
+      dispatch(closeTrackPanelModal());
     } else {
-      props.openTrackPanelModal(selectedItem);
+      dispatch(openTrackPanelModal(selectedItem));
     }
   };
 
   const getViewIconStatus = (selectedItem: string) => {
-    return selectedItem === props.trackPanelModalView &&
-      props.isTrackPanelOpened
+    return selectedItem === trackPanelModalView && isTrackPanelOpened
       ? Status.SELECTED
       : Status.UNSELECTED;
   };
@@ -125,16 +124,4 @@ export const TrackPanelBar = (props: TrackPanelBarProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state),
-  trackPanelModalView: getTrackPanelModalView(state)
-});
-
-const mapDispatchToProps = {
-  closeTrackPanelModal,
-  openTrackPanelModal,
-  toggleTrackPanel
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelBar);
+export default TrackPanelBar;

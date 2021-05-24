@@ -16,7 +16,7 @@
 
 import { createAction } from 'typesafe-actions';
 import { ThunkAction } from 'redux-thunk';
-import { Action, ActionCreator } from 'redux';
+import { Action } from 'redux';
 import uniq from 'lodash/uniq';
 
 import { RootState } from 'src/store';
@@ -51,12 +51,12 @@ export const updateTrackPanelForGenome = createAction(
   }
 )();
 
-export const toggleTrackPanel: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (isTrackPanelOpened: boolean) => (dispatch, getState: () => RootState) => {
+export const toggleTrackPanel = (
+  isTrackPanelOpened: boolean
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -74,12 +74,9 @@ export const toggleTrackPanel: ActionCreator<ThunkAction<
   );
 };
 
-export const selectTrackPanelTab: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (selectedTrackPanelTab: TrackSet) => (
+export const selectTrackPanelTab = (
+  selectedTrackPanelTab: TrackSet
+): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
 ) => {
@@ -108,12 +105,12 @@ export const selectTrackPanelTab: ActionCreator<ThunkAction<
   );
 };
 
-export const changeTrackPanelModalViewForGenome: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
+export const changeTrackPanelModalViewForGenome = (
+  trackPanelModalView: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const activeGenomeId = getBrowserActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -130,12 +127,12 @@ export const changeTrackPanelModalViewForGenome: ActionCreator<ThunkAction<
   );
 };
 
-export const updatePreviouslyViewedObjectsAndSave: ActionCreator<ThunkAction<
+export const updatePreviouslyViewedObjectsAndSave = (): ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = () => (dispatch, getState: () => RootState) => {
+> => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObject = getBrowserActiveEnsObject(state);
@@ -179,12 +176,12 @@ export const updatePreviouslyViewedObjectsAndSave: ActionCreator<ThunkAction<
   );
 };
 
-export const changeHighlightedTrackId: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (highlightedTrackId: string) => (dispatch, getState: () => RootState) => {
+export const changeHighlightedTrackId = (
+  highlightedTrackId: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
@@ -203,12 +200,12 @@ export const changeHighlightedTrackId: ActionCreator<ThunkAction<
   );
 };
 
-export const openTrackPanelModal: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (trackPanelModalView: string) => (dispatch, getState: () => RootState) => {
+export const openTrackPanelModal = (
+  trackPanelModalView: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
 
   const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -229,12 +226,12 @@ export const openTrackPanelModal: ActionCreator<ThunkAction<
   );
 };
 
-export const closeTrackPanelModal: ActionCreator<ThunkAction<
+export const closeTrackPanelModal = (): ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = () => (dispatch, getState: () => RootState) => {
+> => (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
@@ -254,12 +251,10 @@ export const closeTrackPanelModal: ActionCreator<ThunkAction<
   );
 };
 
-export const updateCollapsedTrackIds: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (payload: { trackId: string; isCollapsed: boolean }) => (
+export const updateCollapsedTrackIds = (payload: {
+  trackId: string;
+  isCollapsed: boolean;
+}): ThunkAction<void, any, null, Action<string>> => (
   dispatch,
   getState: () => RootState
 ) => {
