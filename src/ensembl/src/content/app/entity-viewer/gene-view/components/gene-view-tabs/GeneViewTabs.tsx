@@ -56,7 +56,7 @@ const GeneViewTabs = (props: Props) => {
     default: styles.geneTab,
     selected: styles.selectedGeneTab,
     disabled: styles.disabledGeneTab,
-    tabsContainer: styles.geneViewTabs
+    tabsContainer: styles.geneViewTabs //FIXME: Pass this as a props so that it can be styled from the parent
   };
 
   const onTabChange = (selectedTabName: string) => {

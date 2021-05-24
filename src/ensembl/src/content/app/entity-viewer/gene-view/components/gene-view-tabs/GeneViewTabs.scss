@@ -15,8 +15,10 @@
 }
 
 .geneViewTabs {
-  position: absolute;
-  bottom: -9px;
+  padding: 0;
+  height: auto;
+  z-index: 2;
+  overflow-y: visible;
 }
 
 .disabledGeneTab {

@@ -264,28 +264,32 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.viewInLinks}>
         <ViewInApp links={{ genomeBrowser: { url: gbUrl } }} />
       </div>
-
-      <div
-        className={classNames([styles.filterLabelContainer], {
-          [styles.openFilterLabelContainer]: isFilterOpen
-        })}
-      >
-        {props.gene.transcripts.length > 5 && (
-          <div className={styles.filterLabel} onClick={toggleFilter}>
-            {filterLabel}
-            {chevron}
+      <div className={styles.geneViewTabs}>
+        <div
+          className={classNames([styles.filterLabelContainer], {
+            [styles.openFilterLabelContainer]: isFilterOpen
+          })}
+        >
+          {props.gene.transcripts.length > 5 && (
+            <div className={styles.filterLabel} onClick={toggleFilter}>
+              {filterLabel}
+              {chevron}
+            </div>
+          )}
+        </div>
+        <div className={styles.tabWrapper}>
+          <GeneViewTabs />
+        </div>
+        {isFilterOpen && (
+          <div className={styles.filtersWrapper}>
+            <TranscriptsFilter
+              toggleFilter={toggleFilter}
+              transcripts={props.gene.transcripts}
+            />
           </div>
         )}
       </div>
-      {isFilterOpen && (
-        <TranscriptsFilter
-          toggleFilter={toggleFilter}
-          transcripts={props.gene.transcripts}
-        />
-      )}
-      <div className={styles.geneViewTabs}>
-        <GeneViewTabs />
-      </div>
+
       <div className={styles.geneViewTabContent}>
         {selectedTabs.primaryTab === GeneViewTabName.TRANSCRIPTS &&
           basePairsRulerTicks && (
