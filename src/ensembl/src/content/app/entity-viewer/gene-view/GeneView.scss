@@ -46,5 +46,51 @@ $backgroundColor: $black;
 }
 
 .geneViewTabContent {
-  grid-area: 3 / 1 / 4 / 4;
+  grid-area: 4 / 1 / 4 / 4;
+}
+
+.filterLabelContainer {
+  grid-area: 2/1;
+  z-index: 3;
+  margin: 44px 1px -5px 2px;  
+  padding-right: 20px;
+  padding-top: 3px;
+  position: sticky;
+  height: 100%;
+  top: -37px;    
+}
+
+.openFilterLabelContainer {
+  background-color: $soft-black;
+  border-radius: 3px;
+}
+
+.filterLabel {
+  grid-column: 1/2;
+  text-align: right;
+  padding-right: 2px;
+  cursor: pointer;
+  color: $blue;  
+}
+
+.labelWithActivityIndicator {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 100%;
+    height: 5px;
+    width: 5px;
+    background: $red;
+    right: -6px;
+    top: -2px;
+  }
+}
+
+.chevron {
+  margin-left: 10px;
+  margin-bottom: -3px;
+  height: 12px;
+  width: 12px;
 }
