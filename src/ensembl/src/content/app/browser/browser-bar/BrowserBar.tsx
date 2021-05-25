@@ -33,6 +33,7 @@ import { ChrLocation } from '../browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './BrowserBar.scss';
+import { Environment, isEnvironment } from 'src/shared/helpers/environment';
 
 export type BrowserBarProps = {
   chrLocation: ChrLocation | null;
@@ -60,7 +61,9 @@ export const BrowserBar = (props: BrowserBarProps) => {
         />
       )}
       <div className={styles.browserLocationIndicatorWrapper}>
-        <BrowserLocationIndicator />
+        <BrowserLocationIndicator
+          disabled={isEnvironment([Environment.PRODUCTION])}
+        />
       </div>
     </div>
   );

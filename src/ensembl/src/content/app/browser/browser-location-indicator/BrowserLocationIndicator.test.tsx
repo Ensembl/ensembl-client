@@ -33,7 +33,8 @@ const endPosition =
 const props = {
   location: [chrName, startPosition, endPosition] as ChrLocation,
   onClick: jest.fn(),
-  disabled: false
+  disabled: false,
+  isDrawerOpened: false
 };
 
 describe('BrowserLocationIndicator', () => {
