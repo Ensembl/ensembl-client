@@ -15,10 +15,19 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
+import { getType } from 'typesafe-actions';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
+import set from 'lodash/fp/set';
 
-import { TrackPanelBar, TrackPanelBarProps } from './TrackPanelBar';
+import { TrackPanelBar } from './TrackPanelBar';
+
+import * as drawerActions from '../../drawer/drawerActions';
+import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
@@ -27,58 +36,160 @@ jest.mock(
   )
 );
 
+const fakeGenomeId = 'human';
+
+const mockState = {
+  drawer: {
+    isDrawerOpened: { [fakeGenomeId]: false },
+    drawerView: { [fakeGenomeId]: DrawerView.BOOKMARKS }
+  },
+  browser: {
+    browserEntity: {
+      activeGenomeId: fakeGenomeId
+    },
+    trackPanel: {
+      [fakeGenomeId]: {
+        isTrackPanelOpened: true,
+        trackPanelModalView: 'bookmarks'
+      }
+    }
+  }
+};
+
+const mockStore = configureMockStore([thunk]);
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <TrackPanelBar />
+    </Provider>
+  );
+};
+
 describe('<TrackPanelBar />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: TrackPanelBarProps = {
-    isTrackPanelModalOpened: true,
-    isTrackPanelOpened: true,
-    trackPanelModalView: 'foo',
-    closeTrackPanelModal: jest.fn(),
-    openTrackPanelModal: jest.fn(),
-    toggleTrackPanel: jest.fn()
-  };
-
   describe('rendering', () => {
     it('displays correct number of buttons', () => {
-      const { container } = render(<TrackPanelBar {...defaultProps} />);
+      const { container } = wrapInRedux();
       expect(container.querySelectorAll('button').length).toBe(6);
     });
 
     it('passes correct data to callbacks when buttons are clicked', () => {
-      const { container } = render(<TrackPanelBar {...defaultProps} />);
+      const { container } = wrapInRedux(
+        set(
+          `browser.trackPanel.${fakeGenomeId}.trackPanelModalView`,
+          '',
+          mockState
+        )
+      );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
-      expect(defaultProps.openTrackPanelModal).toHaveBeenCalledWith(
-        'bookmarks'
-      );
+
+      const toggleTrackPanelAction = store
+        .getActions()
+        .find(
+          (action) =>
+            action.type === getType(trackPanelActions.updateTrackPanelForGenome)
+        );
+
+      const expectedPayload = {
+        activeGenomeId: fakeGenomeId,
+        data: {
+          ...mockState.browser.trackPanel[fakeGenomeId],
+          trackPanelModalView: 'bookmarks',
+          isTrackPanelModalOpened: true
+        }
+      };
+
+      expect(toggleTrackPanelAction.payload).toEqual(expectedPayload);
     });
 
     it('opens the track panel if it is closed when a button is clicked', () => {
-      const props = { ...defaultProps, isTrackPanelOpened: false };
-      const { container } = render(<TrackPanelBar {...props} />);
+      const { container } = wrapInRedux(
+        set(
+          `browser.trackPanel.${fakeGenomeId}.isTrackPanelOpened`,
+          false,
+          mockState
+        )
+      );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
-      expect(defaultProps.toggleTrackPanel).toHaveBeenCalledWith(true);
+      const toggleTrackPanelAction = store
+        .getActions()
+        .find(
+          (action) =>
+            action.type === getType(trackPanelActions.updateTrackPanelForGenome)
+        );
+
+      const expectedPayload = {
+        activeGenomeId: fakeGenomeId,
+        data: {
+          ...mockState.browser.trackPanel[fakeGenomeId],
+          isTrackPanelOpened: true
+        }
+      };
+
+      expect(toggleTrackPanelAction.payload).toEqual(expectedPayload);
     });
 
     it('causes track panel modal to close if a pressed button is clicked again', () => {
-      const props = { ...defaultProps, trackPanelModalView: 'bookmarks' }; // the modal is open and is showing bookmarks
-      const { container } = render(<TrackPanelBar {...props} />);
+      const { container } = wrapInRedux();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
-      expect(defaultProps.closeTrackPanelModal).toHaveBeenCalled();
+
+      const toggleTrackPanelAction = store
+        .getActions()
+        .find(
+          (action) =>
+            action.type === getType(trackPanelActions.updateTrackPanelForGenome)
+        );
+
+      const expectedPayload = {
+        activeGenomeId: fakeGenomeId,
+        data: {
+          ...mockState.browser.trackPanel[fakeGenomeId],
+          isTrackPanelModalOpened: false,
+          isTrackPanelOpened: true,
+          trackPanelModalView: ''
+        }
+      };
+
+      expect(toggleTrackPanelAction.payload).toEqual(expectedPayload);
+    });
+
+    it('closes drawer view when the modal view changes', () => {
+      const { container } = wrapInRedux(
+        set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
+      );
+      const bookmarksButton = [...container.querySelectorAll('button')].find(
+        (button) => button.innerHTML === 'Bookmarks'
+      ) as HTMLButtonElement;
+
+      userEvent.click(bookmarksButton);
+
+      const drawerToggleAction = store
+        .getActions()
+        .find(
+          (action) =>
+            action.type === getType(drawerActions.toggleDrawerForGenome)
+        );
+      expect(drawerToggleAction.payload).toEqual({
+        [fakeGenomeId]: false
+      });
     });
   });
 });
