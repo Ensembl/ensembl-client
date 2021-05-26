@@ -3,9 +3,10 @@ module.exports = {
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
-    'plugin:prettier/recommended' // Displays prettier errors as ESLint errors. This has to be the last in this array (not yet sure why).
+    'plugin:prettier/recommended', // Displays prettier errors as ESLint errors. This has to be the last in this array (not yet sure why).
+    'plugin:jest/style'
   ],
-  plugins: ['react-hooks'],
+  plugins: ['react-hooks', 'eslint'],
   parserOptions: {
     ecmaVersion: 2019,
     sourceType: 'module',
@@ -20,7 +21,7 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 0,
     '@typescript-eslint/prefer-interface': 0,
     '@typescript-eslint/explicit-function-return-type': 0,
-    "@typescript-eslint/explicit-module-boundary-types": 0,
+    '@typescript-eslint/explicit-module-boundary-types': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-use-before-define': 0,
     '@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used' }],
@@ -29,9 +30,12 @@ module.exports = {
     'react/no-unescaped-entities': 0,
     'react-hooks/rules-of-hooks': 2,
     'prettier/prettier': 0,
-    "no-unused-vars": "off",
+    'no-unused-vars': 'off',
     'no-unneeded-ternary': 'error',
-    'eqeqeq': 'error'
+    'eqeqeq': 'error',
+    'jest/no-focused-tests': 'error',
+    'jest/no-identical-title': 'error',
+    'jest/valid-expect': 'error'
   },
   settings: {
     react: {
