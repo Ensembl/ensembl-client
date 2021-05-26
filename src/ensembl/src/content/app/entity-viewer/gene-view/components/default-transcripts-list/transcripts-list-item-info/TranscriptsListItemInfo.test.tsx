@@ -64,9 +64,11 @@ describe('<TranscriptsListItemInfo /', () => {
     const { container } = renderComponent();
     const expectedProteinLength =
       defaultProps.transcript.product_generating_contexts[0].product?.length;
-    expect(container.querySelector('.topMiddle strong')?.textContent).toMatch(
-      `${expectedProteinLength}`
-    );
+    const currentProteinLength = container
+      .querySelector('.topMiddle strong')
+      ?.textContent?.split(/\s/)[0]
+      ?.replace(/,/g, '');
+    expect(currentProteinLength).toMatch(`${expectedProteinLength}`);
   });
 
   it('contains the download link', () => {
