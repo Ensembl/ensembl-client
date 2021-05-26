@@ -103,7 +103,7 @@ describe('BrowserLocationIndicator', () => {
   });
 
   describe('behaviour', () => {
-    it('calls the onClick prop when clicked', () => {
+    it('calls toggleBrowserNav when clicked', () => {
       const { container } = wrapInRedux();
       const indicator = container.querySelector('.chrLocationView');
 
@@ -111,7 +111,7 @@ describe('BrowserLocationIndicator', () => {
       expect(toggleBrowserNav).toHaveBeenCalled();
     });
 
-    it('does not call the onClick prop if disabled', () => {
+    it('does not call toggleBrowserNav if disabled', () => {
       const { container, rerender } = wrapInRedux();
       const indicator = container.querySelector('.chrLocationView');
 
