@@ -3,7 +3,7 @@
 .checkboxGrid {
   margin-top: 0.5em;
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto;
   grid-row-gap: 0.2em;
 }
@@ -15,7 +15,7 @@
 
   .featureId {
     margin-left: 0.5em;
-    font-weight: $bold;
+    font-weight: $normal;
   }
 }
 
@@ -28,11 +28,6 @@
   background-color: transparent;
   border-color: $dark-grey;
 }
-
-.checkboxLabel {
-  font-size: 13px;
-}
-
 
 .themeDark{
   .label {
@@ -65,27 +60,31 @@
 
   &Horizontal {
     grid-template-columns: 1fr 1fr;
-    grid-column-gap: 24px;
+    grid-column-gap: 10px;
     grid-template-areas:
       'transcript gene'
       'transcript download';
+    margin-bottom: 12px;
 
     .transcriptSection {
       grid-area: transcript;
+      width: 393px;
     }
 
     .geneSection {
       grid-area: gene;
 
       .checkboxWrapper {
-        margin-top: 13px;
-        margin-left: 13px;
+        margin-left: 6px;
       }
     }
 
-    .transcriptVis,
+    .transcriptVis {
+      margin-left: 12px;
+    }
+
     .checkboxGrid {
-      margin-left: 18px;
+      padding-left: 6px;
     }
 
     button {

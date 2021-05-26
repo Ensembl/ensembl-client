@@ -24,10 +24,10 @@ import * as observableApiService from 'src/services/observable-api-service';
 import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { RootState } from 'src/store';
+import { SearchMatches } from 'src/content/app/species-selector/types/species-search';
 
 type Action = ActionType<typeof speciesSelectorActions>;
 
-// FIXME: this is a mock implementation of the fetcher
 export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
   action$,
   state$
@@ -69,10 +69,13 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
         exclude: committedSpeciesIds
       });
       const url = `/api/genomesearch/genome_search?${query}`;
-      return observableApiService.fetch(url);
+      return observableApiService.fetch<{
+        genome_matches: SearchMatches[];
+        total_hits: number;
+      }>(url);
     }),
     map((response) => {
-      if (response.error) {
+      if ('error' in response) {
         // TODO: develop a strategy for handling network errors
         return speciesSelectorActions.fetchSpeciesSearchResults.failure(
           response.message

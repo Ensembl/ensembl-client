@@ -15,7 +15,7 @@
  */
 
 import { createAsyncAction, createAction } from 'typesafe-actions';
-import { ActionCreator, Action } from 'redux';
+import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import find from 'lodash/find';
 import pickBy from 'lodash/pickBy';
@@ -37,7 +37,6 @@ import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/specie
 import {
   SearchMatch,
   SearchMatches,
-  // Strain,
   PopularSpecies,
   CommittedItem
 } from 'src/content/app/species-selector/types/species-search';
@@ -65,16 +64,16 @@ import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constant
 
 import { RootState } from 'src/store';
 
-export const setSearchText = createAction('species_selector/set_search_text')<
-  string
->();
+export const setSearchText = createAction(
+  'species_selector/set_search_text'
+)<string>();
 
-export const updateSearch: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (text: string) => (dispatch, getState: () => RootState) => {
+export const updateSearch = (
+  text: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
   const selectedItem = getSelectedItem(state);
   const previousText = getSearchText(state);
@@ -144,12 +143,12 @@ export const clearSelectedSearchResult = createAction(
 //   }
 // };
 
-export const ensureSpeciesIsCommitted: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const ensureSpeciesIsCommitted = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => async (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
   const committedSpecies = getCommittedSpecies(state);
   const genomeInfo = getGenomeInfoById(state, genomeId);
@@ -171,12 +170,12 @@ export const ensureSpeciesIsCommitted: ActionCreator<ThunkAction<
   speciesSelectorStorageService.saveSelectedSpecies(newCommittedSpecies);
 };
 
-export const ensureSpeciesIsEnabled: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => (dispatch, getState: () => RootState) => {
+export const ensureSpeciesIsEnabled = (
+  genomeId: string
+): ThunkAction<void, any, null, Action<string>> => (
+  dispatch,
+  getState: () => RootState
+) => {
   const state = getState();
 
   const currentSpecies = getCommittedSpeciesById(state, genomeId);
@@ -187,12 +186,12 @@ export const ensureSpeciesIsEnabled: ActionCreator<ThunkAction<
   dispatch(toggleSpeciesUseAndSave(genomeId));
 };
 
-export const fetchPopularSpecies: ActionCreator<ThunkAction<
+export const fetchPopularSpecies = (): ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = () => async (dispatch) => {
+> => async (dispatch) => {
   try {
     dispatch(fetchPopularSpeciesAsyncActions.request());
 
@@ -209,12 +208,9 @@ export const fetchPopularSpecies: ActionCreator<ThunkAction<
   }
 };
 
-export const handleSelectedSpecies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (item: SearchMatch | PopularSpecies) => (dispatch) => {
+export const handleSelectedSpecies = (
+  item: SearchMatch | PopularSpecies
+): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
   dispatch(setSelectedSpecies(item));
 
   // TODO: fetch strains when they are ready
@@ -225,12 +221,12 @@ export const updateCommittedSpecies = createAction(
   'species_selector/update_committed_species'
 )<CommittedItem[]>();
 
-export const commitSelectedSpeciesAndSave: ActionCreator<ThunkAction<
+export const commitSelectedSpeciesAndSave = (): ThunkAction<
   void,
   any,
   null,
   Action<string>
->> = () => (dispatch, getState) => {
+> => (dispatch, getState) => {
   const committedSpecies = getCommittedSpecies(getState());
   const selectedItem = getSelectedItem(getState());
 

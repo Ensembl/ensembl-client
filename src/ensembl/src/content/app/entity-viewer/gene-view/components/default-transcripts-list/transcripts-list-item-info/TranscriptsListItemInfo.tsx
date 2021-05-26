@@ -35,7 +35,6 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -48,6 +47,8 @@ import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneVie
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
+
+import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
 type Transcript = Pick<
@@ -106,6 +107,10 @@ export const TranscriptsListItemInfo = (
     getSplicedRNALength(transcript)
   );
 
+  const aminoAcidLength = getCommaSeparatedNumber(
+    getProductAminoAcidLength(transcript)
+  );
+
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
 
@@ -133,6 +138,11 @@ export const TranscriptsListItemInfo = (
     const { genomeId } = params;
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
   };
+
+  const chevronClassForDownload = classNames(styles.chevron, {
+    [styles.chevronUp]: props.expandDownload
+  });
+
   return (
     <div className={mainStyles}>
       <div className={transcriptsListStyles.left}></div>
@@ -147,7 +157,7 @@ export const TranscriptsListItemInfo = (
           {isProteinCodingTranscript(transcript) && (
             <>
               <div>
-                <strong>{getProductAminoAcidLength(transcript)} aa</strong>
+                <strong>{aminoAcidLength} aa</strong>
               </div>
               {getLinkToProteinView(
                 transcript.product_generating_contexts[0]?.product.stable_id
@@ -164,23 +174,15 @@ export const TranscriptsListItemInfo = (
             of {transcript.spliced_exons.length}
           </div>
         </div>
-        <div className={styles.downloadLink}>
-          {props.expandDownload ? (
-            <CloseButton
-              className={styles.closeButton}
-              onClick={() =>
-                props.toggleTranscriptDownload(transcript.stable_id)
-              }
-            />
-          ) : (
-            <span
-              onClick={() =>
-                props.toggleTranscriptDownload(transcript.stable_id)
-              }
-            >
-              Download
-            </span>
-          )}
+
+        <div className={styles.moreInformation}>More information</div>
+
+        <div
+          className={styles.downloadLink}
+          onClick={() => props.toggleTranscriptDownload(transcript.stable_id)}
+        >
+          Download
+          <ChevronDown className={chevronClassForDownload} />
         </div>
         {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>
