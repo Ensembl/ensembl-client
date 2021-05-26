@@ -17,40 +17,62 @@
 import React from 'react';
 import faker from 'faker';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
+import configureMockStore from 'redux-mock-store';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import { BrowserLocationIndicator } from './BrowserLocationIndicator';
+import { toggleBrowserNav } from '../browserActions';
 
 import { ChrLocation } from '../browserState';
+
+jest.mock('../browserActions.ts', () => ({
+  toggleBrowserNav: jest.fn(() => ({ type: 'toggle-browser-nav' }))
+}));
 
 const chrName = faker.lorem.word();
 const startPosition = faker.datatype.number({ min: 1, max: 1000000 });
 const endPosition =
   startPosition + faker.datatype.number({ min: 1000, max: 1000000 });
 
-const props = {
-  location: [chrName, startPosition, endPosition] as ChrLocation,
-  onClick: jest.fn(),
-  disabled: false,
-  isDrawerOpened: false
+const mockState = {
+  browser: {
+    browserLocation: {
+      actualChrLocations: {
+        human: [chrName, startPosition, endPosition] as ChrLocation
+      }
+    },
+    browserEntity: {
+      activeGenomeId: 'human'
+    }
+  }
+};
+
+const mockStore = configureMockStore();
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  return render(
+    <Provider store={mockStore(state)}>
+      <BrowserLocationIndicator />
+    </Provider>
+  );
 };
 
 describe('BrowserLocationIndicator', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('rendering', () => {
     it('displays chromosome name', () => {
-      const { container } = render(<BrowserLocationIndicator {...props} />);
+      const { container } = wrapInRedux();
       const renderedName = container.querySelector('.chrCode');
       expect(renderedName?.textContent).toBe(chrName);
     });
 
     it('displays location', () => {
-      const { container } = render(<BrowserLocationIndicator {...props} />);
+      const { container } = wrapInRedux();
       const renderedLocation = container.querySelector('.chrRegion');
       expect(renderedLocation?.textContent).toBe(
         `${getCommaSeparatedNumber(startPosition)}-${getCommaSeparatedNumber(
@@ -60,15 +82,20 @@ describe('BrowserLocationIndicator', () => {
     });
 
     it('adds disabled class when component is disabled', () => {
-      const { container, rerender } = render(
-        <BrowserLocationIndicator {...props} />
-      );
+      const { container, rerender } = wrapInRedux();
       const element = container.firstChild as HTMLDivElement;
       expect(
         element.classList.contains('browserLocationIndicatorDisabled')
       ).toBe(false);
 
-      rerender(<BrowserLocationIndicator {...props} disabled={true} />);
+      const wrappedComponent = (
+        <Provider store={mockStore(mockState)}>
+          <BrowserLocationIndicator disabled={true} />
+        </Provider>
+      );
+
+      rerender(wrappedComponent);
+
       expect(
         element.classList.contains('browserLocationIndicatorDisabled')
       ).toBe(true);
@@ -77,21 +104,26 @@ describe('BrowserLocationIndicator', () => {
 
   describe('behaviour', () => {
     it('calls the onClick prop when clicked', () => {
-      const { container } = render(<BrowserLocationIndicator {...props} />);
+      const { container } = wrapInRedux();
       const indicator = container.querySelector('.chrLocationView');
 
       userEvent.click(indicator as HTMLDivElement);
-      expect(props.onClick).toHaveBeenCalled();
+      expect(toggleBrowserNav).toHaveBeenCalled();
     });
 
     it('does not call the onClick prop if disabled', () => {
-      const { container } = render(
-        <BrowserLocationIndicator {...props} disabled={true} />
-      );
+      const { container, rerender } = wrapInRedux();
       const indicator = container.querySelector('.chrLocationView');
 
+      const wrappedComponent = (
+        <Provider store={mockStore(mockState)}>
+          <BrowserLocationIndicator disabled={true} />
+        </Provider>
+      );
+
+      rerender(wrappedComponent);
       userEvent.click(indicator as HTMLDivElement);
-      expect(props.onClick).not.toHaveBeenCalled();
+      expect(toggleBrowserNav).not.toHaveBeenCalled();
     });
   });
 });

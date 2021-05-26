@@ -62,7 +62,9 @@ export const BrowserBar = (props: BrowserBarProps) => {
       )}
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator
-          disabled={isEnvironment([Environment.PRODUCTION])}
+          disabled={
+            props.isDrawerOpened || isEnvironment([Environment.PRODUCTION])
+          }
         />
       </div>
     </div>

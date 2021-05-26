@@ -23,17 +23,15 @@ import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFor
 import { toggleBrowserNav } from '../browserActions';
 
 import { getActualChrLocation } from '../browserSelectors';
-import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import styles from './BrowserLocationIndicator.scss';
 
 type Props = {
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 export const BrowserLocationIndicator = (props: Props) => {
   const actualChrLocation = useSelector(getActualChrLocation);
-  const isDrawerOpened = useSelector(getIsDrawerOpened);
   const dispatch = useDispatch();
 
   const [chrCode, chrStart, chrEnd] = actualChrLocation || [];
@@ -41,12 +39,10 @@ export const BrowserLocationIndicator = (props: Props) => {
     return null;
   }
 
-  const isDisabled = props.disabled || isDrawerOpened;
-
   const className = classNames(styles.browserLocationIndicator, {
-    [styles.browserLocationIndicatorDisabled]: isDisabled
+    [styles.browserLocationIndicatorDisabled]: props.disabled
   });
-  const onClickProps = isDisabled
+  const onClickProps = props.disabled
     ? {}
     : { onClick: () => dispatch(toggleBrowserNav()) };
 
