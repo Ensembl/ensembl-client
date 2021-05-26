@@ -56,6 +56,11 @@ const colours = [
     value: variables['orange']
   },
   {
+    name: 'Mustard',
+    variableName: '$mustard',
+    value: variables['mustard']
+  },
+  {
     name: 'Grey',
     variableName: '$grey',
     value: variables['grey']
