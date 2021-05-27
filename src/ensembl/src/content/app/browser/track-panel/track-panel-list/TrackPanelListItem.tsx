@@ -21,7 +21,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'src/store';
 
 import analyticsTracking from 'src/services/analytics-service';
-import {OutgoingAction, OutgoingActionType} from 'src/content/app/browser/browser-messaging-service';
+import {
+  OutgoingAction,
+  OutgoingActionType
+} from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
@@ -63,8 +66,7 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 import styles from './TrackPanelListItem.scss';
-import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
-
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 export type TrackPanelListItemProps = {
@@ -88,8 +90,8 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   );
   const activeDrawerTrackId = useSelector(getActiveDrawerTrackId);
 
-  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
-  
+  const { genomeBrowser } = useContext(GenomeBrowserContext);
+
   const dispatch = useDispatch();
 
   const updateDrawerView = () => {
@@ -195,16 +197,18 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
   const updateGenomeBrowser = (status: Status) => {
-    const isTurnedOn = status === Status.SELECTED ;
+    const isTurnedOn = status === Status.SELECTED;
 
     const action: OutgoingAction = {
-      type: isTurnedOn ? OutgoingActionType.TURN_ON_TRACKS : OutgoingActionType.TURN_OFF_TRACKS,
+      type: isTurnedOn
+        ? OutgoingActionType.TURN_ON_TRACKS
+        : OutgoingActionType.TURN_OFF_TRACKS,
       payload: {
         track_ids: [`${track.track_id}`.replace('track:', '')]
       }
     };
 
-    genomeBrowserService?.send(action);
+    genomeBrowser?.send(action);
   };
 
   const trackClassNames = classNames(styles.track, {
@@ -212,8 +216,6 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     [styles.trackHighlighted]:
       track.track_id === drawerView || track.track_id === highlightedTrackId
   });
-
-
 
   return (
     <>

@@ -19,14 +19,12 @@ import React, { memo, useContext } from 'react';
 import { OutgoingAction } from 'src/content/app/browser/browser-messaging-service';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
 
 import iconStyles from './BrowserNavIcon.scss';
-
-
 
 type BrowserNavIconProps = {
   browserNavItem: BrowserNavItem;
@@ -34,23 +32,22 @@ type BrowserNavIconProps = {
 };
 
 export const BrowserNavIcon = (props: BrowserNavIconProps) => {
-  
-  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
+  const { genomeBrowser } = useContext(GenomeBrowserContext);
 
-  if(!genomeBrowserService){
+  if (!genomeBrowser) {
     return null;
   }
-  
+
   const { browserNavItem, enabled } = props;
   const { icon } = browserNavItem;
 
   const action: OutgoingAction = {
     type: browserNavItem.name as any,
     payload: browserNavItem.detail
-  } 
+  };
   const navigateBrowser = () => {
     if (enabled) {
-      genomeBrowserService.send(action);
+      genomeBrowser.send(action);
     }
   };
 

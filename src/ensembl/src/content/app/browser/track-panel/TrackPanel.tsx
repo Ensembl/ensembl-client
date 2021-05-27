@@ -28,25 +28,26 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-
-import { restoreBrowserTrackStates } from '../browserActions';
-
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
-  restoreBrowserTrackStates: () => void;
 };
 
 export const TrackPanel = (props: TrackPanelProps) => {
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
+  const { genomeBrowser, restoreBrowserTrackStates } = useGenomeBrowser();
+
   useEffect(() => {
-    props.restoreBrowserTrackStates();
+    if (genomeBrowser) {
+      restoreBrowserTrackStates();
+    }
   }, [props.activeEnsObject]);
 
   return shouldRenderContent ? (
@@ -69,11 +70,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = {
-  restoreBrowserTrackStates
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(TrackPanel, isEqual));
+export default connect(mapStateToProps)(memo(TrackPanel, isEqual));

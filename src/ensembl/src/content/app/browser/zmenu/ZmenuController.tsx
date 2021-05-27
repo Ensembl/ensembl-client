@@ -19,7 +19,11 @@ import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
 
-import GenomeBrowserService, { OutgoingActionType, OutgoingAction, IncomingActionType, IncomingAction } from 'src/content/app/browser/browser-messaging-service';
+import {
+  OutgoingActionType,
+  OutgoingAction,
+  IncomingActionType
+} from 'src/content/app/browser/browser-messaging-service';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
@@ -30,8 +34,7 @@ import {
   ZmenuDestroyPayload,
   ZmenuRepositionPayload
 } from './zmenu-types';
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
-import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
@@ -48,10 +51,10 @@ type StateZmenu = {
 const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
-  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
+  const { genomeBrowser } = useContext(GenomeBrowserContext);
 
   useEffect(() => {
-    const subscription = genomeBrowserService?.subscribe(
+    const subscription = genomeBrowser?.subscribe(
       'bpane-zmenu',
       handleBpaneEvent
     );
@@ -101,20 +104,20 @@ const ZmenuController = (props: Props) => {
 
   const handleZmenuEnter = (id: string) => {
     const action: OutgoingAction = {
-      payload : {
+      payload: {
         id
       },
       type: OutgoingActionType.ZMENU_ENTER
     };
-    genomeBrowserService?.send(action);
+    genomeBrowser?.send(action);
   };
 
   const handleZmenuLeave = (id: string) => {
     const action: OutgoingAction = {
-      payload: {id},
+      payload: { id },
       type: OutgoingActionType.ZMENU_LEAVE
     };
-    genomeBrowserService?.send(action);
+    genomeBrowser?.send(action);
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (

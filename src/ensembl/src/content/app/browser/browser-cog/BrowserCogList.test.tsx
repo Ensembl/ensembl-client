@@ -22,7 +22,7 @@ import { BrowserCogList } from './BrowserCogList';
 import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
-const genomeBrowserService = new GenomeBrowserService('foo');
+const genomeBrowser = new GenomeBrowserService('foo');
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {
@@ -57,10 +57,10 @@ describe('<BrowserCogList />', () => {
 
   describe('behaviour', () => {
     it('sends navigation message when track name setting in browser cog is updated', () => {
-      jest.spyOn(genomeBrowserService, 'send');
+      jest.spyOn(genomeBrowser, 'send');
 
       const { rerender } = render(<BrowserCogList {...defaultProps} />);
-      (genomeBrowserService.send as any).mockReset();
+      (genomeBrowser.send as any).mockReset();
 
       rerender(
         <BrowserCogList
@@ -68,7 +68,7 @@ describe('<BrowserCogList />', () => {
           trackConfigNames={{ 'track:gc': true }}
         />
       );
-      expect(genomeBrowserService.send).toHaveBeenLastCalledWith('bpane', {
+      expect(genomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
         off: [],
         on: ['track:gc:label', 'track:gc:names']
       });
@@ -82,17 +82,17 @@ describe('<BrowserCogList />', () => {
           trackConfigNames={{ 'track:gc': false }}
         />
       );
-      expect(genomeBrowserService.send).toHaveBeenLastCalledWith('bpane', {
+      expect(genomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
         off: ['track:gc:label'],
         on: ['track:gc:names']
       });
     });
 
     it('sends navigation message when track label setting in browser cog is updated', () => {
-      jest.spyOn(genomeBrowserService, 'send');
+      jest.spyOn(genomeBrowser, 'send');
 
       const { rerender } = render(<BrowserCogList {...defaultProps} />);
-      (genomeBrowserService.send as any).mockReset();
+      (genomeBrowser.send as any).mockReset();
 
       rerender(
         <BrowserCogList
@@ -100,7 +100,7 @@ describe('<BrowserCogList />', () => {
           trackConfigLabel={{ 'track:gc': true }}
         />
       );
-      expect(genomeBrowserService.send).toHaveBeenLastCalledWith('bpane', {
+      expect(genomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
         off: ['track:gc:label'],
         on: ['track:gc:names']
       });
@@ -114,7 +114,7 @@ describe('<BrowserCogList />', () => {
           trackConfigLabel={{ 'track:gc': false }}
         />
       );
-      expect(genomeBrowserService.send).toHaveBeenLastCalledWith('bpane', {
+      expect(genomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
         off: ['track:gc:label', 'track:gc:names'],
         on: []
       });

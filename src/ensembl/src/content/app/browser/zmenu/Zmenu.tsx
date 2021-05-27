@@ -16,7 +16,10 @@
 
 import React, { useContext } from 'react';
 
-import GenomeBrowserService, {OutgoingActionType, OutgoingAction} from 'src/content/app/browser/browser-messaging-service';
+import {
+  OutgoingActionType,
+  OutgoingAction
+} from 'src/content/app/browser/browser-messaging-service';
 
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
@@ -29,11 +32,9 @@ import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
 import { ZmenuData } from './zmenu-types';
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import styles from './Zmenu.scss';
-import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
-
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 enum Direction {
   LEFT = 'left',
@@ -48,17 +49,15 @@ export type ZmenuProps = ZmenuData & {
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
-  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
+  const { genomeBrowser } = useContext(GenomeBrowserContext);
 
   const onOutsideClick = () => {
-
-    
     const action: OutgoingAction = {
-      payload : { id: props.id},
+      payload: { id: props.id },
       type: OutgoingActionType.ZMENU_ACTIVITY_OUTSIDE
-    }
-    genomeBrowserService?.send(action);
-  }
+    };
+    genomeBrowser?.send(action);
+  };
 
   const direction = chooseDirection(props);
   const toolboxPosition =

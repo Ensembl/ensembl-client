@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useCallback, memo, useContext } from 'react';
+import React, { useRef, useEffect, useCallback, memo } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
@@ -24,7 +24,7 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import GenomeBrowserService, { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
@@ -36,7 +36,6 @@ import {
   getBrowserActiveGenomeId
 } from '../browserSelectors';
 import {
-  activateBrowser,
   updateBrowserActivated,
   updateBrowserNavIconStates,
   setChrLocation,
@@ -47,17 +46,12 @@ import {
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import {
-  BrowserNavAction,
-  BrowserNavIconStates,
-  ChrLocation,
-  CogList
-} from '../browserState';
+import { BrowserNavIconStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
-import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type BrowserImageProps = {
   browserCogTrackList: CogList;
@@ -65,7 +59,6 @@ export type BrowserImageProps = {
   browserActivated: boolean;
   isDisabled: boolean;
   activeGenomeId: string | null;
-  activateBrowser: () => void;
   updateBrowserNavIconStates: (payload: {
     activeGenomeId: string;
     navStates: BrowserNavIconStates;
@@ -105,7 +98,8 @@ const parseLocation = (location: ChrLocation) => {
 
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
-  const {genomeBrowserService, setGenomeBrowserService} = useContext(GenomeBrowserServiceContext);
+
+  const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
 
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
@@ -149,13 +143,8 @@ export const BrowserImage = (props: BrowserImageProps) => {
     }
   }, []);
 
-  
-
   useEffect(() => {
-    const subscription = genomeBrowserService?.subscribe(
-      'bpane-out',
-      listenBpaneOut
-    );
+    const subscription = genomeBrowser?.subscribe('bpane-out', listenBpaneOut);
 
     return () => {
       subscription?.unsubscribe();
@@ -163,12 +152,8 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, []);
 
   useEffect(() => {
-    props.activateBrowser();
-    const genomeBrowser = new GenomeBrowserService(BROWSER_CONTAINER_ID);
-    genomeBrowser.init();
-    if(setGenomeBrowserService){
-      setGenomeBrowserService(genomeBrowser)
-    };
+    activateGenomeBrowser();
+    props.updateBrowserActivated(true);
 
     return function cleanup() {
       props.updateBrowserActivated(false);
@@ -192,9 +177,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
           className={browserContainerClassNames}
           ref={browserRef}
         />
-        <div
-          id={"other"}
-        />
+        <div id={'other'} />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
         {props.isDisabled ? <Overlay /> : null}
@@ -212,7 +195,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  activateBrowser,
   updateBrowserActivated,
   updateBrowserNavIconStates,
   updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,

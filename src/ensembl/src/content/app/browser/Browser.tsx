@@ -67,10 +67,6 @@ import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
-
-
-
 
 export type BrowserProps = {
   activeGenomeId: string | null;
@@ -106,11 +102,11 @@ export const Browser = (props: BrowserProps) => {
   };
 
   const toggleDrawer = () => {
-    props.toggleDrawer(!props.isDrawerOpened);
+    props.toggleDrawer(!isDrawerOpened);
   };
 
   const shouldShowNavBar = true;
-    // props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
+  // props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
 
   if (!props.activeGenomeId) {
     return null;
@@ -136,7 +132,7 @@ export const Browser = (props: BrowserProps) => {
             onSidebarToggle={onSidebarToggle}
             topbarContent={<BrowserBar />}
             isSidebarOpen={props.isTrackPanelOpened}
-            isDrawerOpen={props.isDrawerOpened}
+            isDrawerOpen={isDrawerOpened}
             drawerContent={<Drawer />}
             onDrawerClose={toggleDrawer}
             viewportWidth={props.viewportWidth}
@@ -208,22 +204,20 @@ const ReduxConnectedBrowser = connect(
   mapDispatchToProps
 )(Browser);
 
-export const GenomeBrowserServiceContext = React.createContext<{
-  genomeBrowserService?: GenomeBrowserService | null, 
-  setGenomeBrowserService?: (genomeBrowserService: GenomeBrowserService) => void
-  }>(
-  {}
-);
+export const GenomeBrowserContext = React.createContext<{
+  genomeBrowser?: GenomeBrowserService | null;
+  setGenomeBrowser?: (genomeBrowser: GenomeBrowserService) => void;
+}>({});
 
 const GenomeBrowserInitContainer = () => {
+  const [genomeBrowser, setGenomeBrowser] =
+    useState<GenomeBrowserService | null>(null);
 
-  const [genomeBrowserService, setGenomeBrowserService] = useState<GenomeBrowserService | null>(null);
-
-  return <GenomeBrowserServiceContext.Provider
-      value={{genomeBrowserService, setGenomeBrowserService}}
-    >
+  return (
+    <GenomeBrowserContext.Provider value={{ genomeBrowser, setGenomeBrowser }}>
       <ReduxConnectedBrowser /> ;
-    </GenomeBrowserServiceContext.Provider>
+    </GenomeBrowserContext.Provider>
+  );
 };
 
 const ErrorWrappedBrowser = () => {

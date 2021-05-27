@@ -17,8 +17,11 @@
 import React, { useContext, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { GenomeBrowserServiceContext } from 'src/content/app/browser/Browser';
-import { OutgoingAction, OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
+import {
+  OutgoingAction,
+  OutgoingActionType
+} from 'src/content/app/browser/browser-messaging-service';
 import BrowserCog from './BrowserCog';
 import {
   updateCogList,
@@ -37,7 +40,6 @@ import {
 } from '../browserSelectors';
 
 import styles from './BrowserCogList.scss';
-
 
 type BrowserCogListProps = {
   browserActivated: boolean;
@@ -68,11 +70,10 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     }
   };
 
-  const {genomeBrowserService} = useContext(GenomeBrowserServiceContext);
+  const { genomeBrowser } = useContext(GenomeBrowserContext);
 
   useEffect(() => {
-
-    const subscription = genomeBrowserService?.subscribe(
+    const subscription = genomeBrowser?.subscribe(
       'bpane-scroll',
       listenBpaneScroll
     );
@@ -109,9 +110,9 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
           off: offs,
           on: ons
         }
-      }
-      
-      genomeBrowserService?.send(action);
+      };
+
+      genomeBrowser?.send(action);
     }
   }, [
     props.trackConfigNames,

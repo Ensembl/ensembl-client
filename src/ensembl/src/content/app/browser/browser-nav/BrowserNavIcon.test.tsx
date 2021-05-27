@@ -22,13 +22,13 @@ import { BrowserNavIcon } from './BrowserNavIcon';
 import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
 import { browserNavConfig } from '../browserConfig';
 
-const genomeBrowserService = new GenomeBrowserService('foo');
+const genomeBrowser = new GenomeBrowserService('foo');
 
 describe('<BrowserNavAction />', () => {
   const browserNavItem = browserNavConfig[0];
 
   test('sends navigation message when clicked', () => {
-    jest.spyOn(genomeBrowserService, 'send');
+    jest.spyOn(genomeBrowser, 'send');
 
     const { container } = render(
       <BrowserNavIcon browserNavItem={browserNavItem} enabled={true} />
@@ -36,12 +36,12 @@ describe('<BrowserNavAction />', () => {
     const button = container.querySelector('button') as HTMLButtonElement;
 
     userEvent.click(button);
-    expect(genomeBrowserService.send).toHaveBeenCalledTimes(1);
-    expect(genomeBrowserService.send).toHaveBeenCalledWith(
+    expect(genomeBrowser.send).toHaveBeenCalledTimes(1);
+    expect(genomeBrowser.send).toHaveBeenCalledWith(
       'bpane',
       browserNavItem.detail
     );
 
-    (genomeBrowserService.send as any).mockRestore();
+    (genomeBrowser.send as any).mockRestore();
   });
 });
