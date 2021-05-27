@@ -2,19 +2,19 @@
 
 .listItemInfo {
   color: $grey;
-  line-height: 2;
   padding-top: 0;
 }
 
 .middle {
   display: grid;
   grid-template-areas:
-    'left middle right .'
-    '. . . downloadLink'
-    'download download download download';
+    'left middle right'
+    'moreinformation . .'
+    'downloadLink . .'
+    'download download download';
   grid-column-gap: 10px;
   background: $soft-black;
-  padding: 15px 20px;
+  padding: 15px 30px;
 
   strong {
     color: $white;
@@ -30,40 +30,52 @@
 .topLeft {
   grid-area: left;
   width: 190px;
+  div {
+    padding-bottom: 6px;
+  }
 }
 
 .topMiddle {
   grid-area: middle;
   width: 150px;
+  div {
+    padding-bottom: 6px;
+  }
 }
 
 .topRight {
   grid-area: right;
   width: 210px;
+  div {
+    padding-bottom: 6px;
+  }
+}
+
+.moreInformation {
+  padding-top: 16px;
 }
 
 .downloadLink {
   grid-area: downloadLink;
   color: $blue;
-  width: 66px;
-  height: 16px;
-  text-align: right;
-  line-height: 1;
-
-  span {
-    cursor: pointer;
-  }
+  cursor: pointer;
+  padding-top: 6px;
 }
 
 .download {
   grid-area: download;
-  padding-top: 15px;
-  margin-top: 15px;
-  border-top: 1px solid $dark-grey;
+  padding-top: 6px;
 }
 
-.closeButton {
-  display: inline-block;
+.chevron {
+  margin-left: 10px;
+  margin-bottom: -3px;
+  height: 12px;
+  width: 12px;
+  transition: transform linear 0.2s;
+  &Up {
+    transform: rotate(-180deg);
+  }
 }
 
 .viewInApp {

@@ -18,9 +18,9 @@ import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
 
-export const fetch = (url: string) =>
+export const fetch = <T>(url: string) =>
   ajax(url).pipe(
-    map((ajaxResponse) => ajaxResponse.response),
+    map((ajaxResponse) => ajaxResponse.response as T),
     catchError((err) => {
       // Network or other error, handle appropriately
       return of({ error: true, message: err.message });
