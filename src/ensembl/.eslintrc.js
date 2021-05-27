@@ -6,7 +6,7 @@ module.exports = {
     'plugin:prettier/recommended', // Displays prettier errors as ESLint errors. This has to be the last in this array (not yet sure why).
     'plugin:jest/style'
   ],
-  plugins: ['react-hooks', 'eslint'],
+  plugins: ['react-hooks', 'jest'],
   parserOptions: {
     ecmaVersion: 2019,
     sourceType: 'module',
