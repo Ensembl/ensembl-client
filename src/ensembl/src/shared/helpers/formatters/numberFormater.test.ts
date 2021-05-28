@@ -117,25 +117,6 @@ describe('getCommaSeparatedNumber', () => {
     expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
   });
 
-  it('returns -x,xxx for the input number -xxxx', () => {
-    const randomNumber = faker.datatype.number({ min: -9999, max: -1000 });
-
-    const formattedRandomNumber = getCommaSeparatedNumber(randomNumber);
-
-    const numberSplitByComma = formattedRandomNumber.split(',');
-
-    // Check if there are two elements in the array
-    expect(numberSplitByComma.length).toBe(2);
-
-    // Check if the length of the first element is 2
-    expect(numberSplitByComma[0].length).toBe(2);
-
-    // Check if the length of the second element is 3
-    expect(numberSplitByComma[1].length).toBe(3);
-
-    expect(Number(numberSplitByComma.join(''))).toBe(randomNumber);
-  });
-
   it('returns x,xxx.x for the input number xxxx.x', () => {
     const randomNumber =
       faker.datatype.number({ min: 1000, max: 9999 }) +
