@@ -70,11 +70,13 @@ export class BrowserMessagingService {
     }
     const subscribers = this.subscribers[type];
     if (subscribers) {
-      subscribers.forEach((subscriber: Function) => subscriber(payload));
+      subscribers.forEach((subscriber: (payload?: any) => void) =>
+        subscriber(payload)
+      );
     }
   };
 
-  public subscribe = (eventName: string, callback: Function) => {
+  public subscribe = (eventName: string, callback: (payload?: any) => void) => {
     if (!this.subscribers[eventName]) {
       this.subscribers[eventName] = new Set();
     }
