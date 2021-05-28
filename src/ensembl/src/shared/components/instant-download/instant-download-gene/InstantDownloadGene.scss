@@ -46,11 +46,6 @@
   }
 }
 
-.downloadButtonDisabled {
-  border-color: $dark-grey;
-  color: $dark-grey;
-}
-
 .container {
   position: relative;
 
@@ -68,7 +63,7 @@
     }
   }
 
-  button {
+  .downloadButton {
     margin: 35px 20px 0 0;
     float: right;
   }

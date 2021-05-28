@@ -19,7 +19,10 @@ import intersection from 'lodash/intersection';
 import classNames from 'classnames';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
-import { filterTranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
+import {
+  filterTranscriptOptions,
+  defaultTranscriptOptions
+} from '../instant-download-transcript/InstantDownloadTranscript';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
@@ -100,7 +103,12 @@ const InstantDownloadGene = (props: Props) => {
     setIsGeneSequenceSelected(!isGeneSequenceSelected);
   };
 
-  const onSubmit = () => {
+  const resetCheckboxes = () => {
+    setIsGeneSequenceSelected(false);
+    setTranscriptOptions(defaultTranscriptOptions);
+  };
+
+  const onSubmit = async () => {
     const payload = {
       genomeId,
       geneId,
@@ -110,7 +118,11 @@ const InstantDownloadGene = (props: Props) => {
       }
     };
 
-    fetchForGene(payload);
+    try {
+      await fetchForGene(payload);
+    } finally {
+      resetCheckboxes();
+    }
   };
 
   const themeClass =
@@ -135,11 +147,12 @@ const InstantDownloadGene = (props: Props) => {
         theme={props.theme}
         onChange={onTranscriptOptionChange}
       />
-      <InstantDownloadButton
-        className={isButtonDisabled ? styles.downloadButtonDisabled : undefined}
-        isDisabled={isButtonDisabled}
-        onClick={onSubmit}
-      />
+      <div className={styles.downloadButton}>
+        <InstantDownloadButton
+          isDisabled={isButtonDisabled}
+          onClick={onSubmit}
+        />
+      </div>
     </div>
   );
 };

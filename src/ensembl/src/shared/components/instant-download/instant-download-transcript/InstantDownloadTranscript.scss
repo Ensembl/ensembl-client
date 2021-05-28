@@ -49,14 +49,14 @@
   }
 }
 
-
-.downloadButtonDisabled {
-  border-color: $dark-grey;
-  color: $dark-grey;
+.downloadButton {
+  text-align: right;
 }
 
 .layout {
   display: grid;
+  font-size: 13px;
+  align-items: start;
 
   &Horizontal {
     grid-template-columns: 1fr 1fr;

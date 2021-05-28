@@ -50,7 +50,12 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
     setProteinSeqSelected(!isProteinSeqSelected);
   const onCdsCheckboxChange = () => setCdsSeqSelected(!isCdsSeqSelected);
 
-  const onSubmit = () => {
+  const resetCheckboxes = () => {
+    setProteinSeqSelected(false);
+    setCdsSeqSelected(false);
+  };
+
+  const onSubmit = async () => {
     const payload = {
       genomeId,
       transcriptId,
@@ -60,7 +65,11 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
       }
     };
 
-    fetchForProtein(payload);
+    try {
+      await fetchForProtein(payload);
+    } finally {
+      resetCheckboxes();
+    }
   };
 
   const isDownloadDisabled = () => !isProteinSeqSelected && !isCdsSeqSelected;
@@ -80,9 +89,6 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
         onChange={onCdsCheckboxChange}
       />
       <InstantDownloadButton
-        className={
-          isDownloadDisabled() ? styles.downloadButtonDisabled : undefined
-        }
         isDisabled={isDownloadDisabled()}
         onClick={onSubmit}
       />

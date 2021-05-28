@@ -47,18 +47,14 @@ export const fetchSpeciesSearchResultsEpic: Epic<Action, Action, RootState> = (
       // but forget the previous query every time user clears search results
       (action1, action2) =>
         action1.type === action2.type &&
-        (
-          action1 as PayloadAction<
+        (action1 as PayloadAction<
+          'species_selector/species_search_request',
+          string
+        >).payload ===
+          (action2 as PayloadAction<
             'species_selector/species_search_request',
             string
-          >
-        ).payload ===
-          (
-            action2 as PayloadAction<
-              'species_selector/species_search_request',
-              string
-            >
-          ).payload
+          >).payload
     ),
     filter(
       isActionOf(speciesSelectorActions.fetchSpeciesSearchResults.request)
