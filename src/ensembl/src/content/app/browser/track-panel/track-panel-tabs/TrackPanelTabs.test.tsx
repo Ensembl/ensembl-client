@@ -46,7 +46,7 @@ describe('<TrackPanelTabs />', () => {
       const tabs = [...container.querySelectorAll('.trackPanelTab')];
 
       tabValues.forEach((text) => {
-        expect(tabs.some((tab) => tab.innerHTML === text));
+        expect(tabs.some((tab) => tab.innerHTML === text)).toBeTruthy();
       });
     });
   });

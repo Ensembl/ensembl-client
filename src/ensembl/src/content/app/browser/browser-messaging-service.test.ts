@@ -20,11 +20,14 @@ import faker from 'faker';
 import windowService from 'src/services/window-service';
 
 class MockWindow {
-  private subscribers: { [name: string]: Function[] } = {};
+  private subscribers: { [name: string]: ((payload?: any) => void)[] } = {};
 
   public postMessage = jest.fn();
 
-  public addEventListener = (name: string, callback: Function) => {
+  public addEventListener = (
+    name: string,
+    callback: (payload?: any) => void
+  ) => {
     if (!this.subscribers[name]) {
       this.subscribers[name] = [];
     }

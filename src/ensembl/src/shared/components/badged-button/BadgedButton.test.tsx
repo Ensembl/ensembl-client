@@ -54,7 +54,7 @@ describe('BadgedButton', () => {
       container
         .querySelector('.badgeDefault')
         ?.classList.contains(fakeClassName)
-    ).toBeTruthy;
+    ).toBeTruthy();
   });
 
   it('trims the longer strings to three characters', () => {

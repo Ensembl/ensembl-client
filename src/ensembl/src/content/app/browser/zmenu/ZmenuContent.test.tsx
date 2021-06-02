@@ -61,9 +61,8 @@ describe('<ZmenuContent />', () => {
       const { container } = renderZmenuContent();
       const zmenuContentLine = defaultProps.content[0].lines[0];
 
-      const renderedContentBlocks = container.querySelectorAll(
-        '.zmenuContentBlock'
-      );
+      const renderedContentBlocks =
+        container.querySelectorAll('.zmenuContentBlock');
 
       // check that the number of blocks of text is correct
       expect(renderedContentBlocks.length).toBe(zmenuContentLine.length);
@@ -76,14 +75,19 @@ describe('<ZmenuContent />', () => {
 
       zmenuContentLine.forEach((block, blockIndex) => {
         block.forEach((blockItem, blockItemIndex) => {
-          const renderedElement = renderedContentBlocks[
-            blockIndex
-          ].querySelectorAll('span')[blockItemIndex];
+          const renderedElement =
+            renderedContentBlocks[blockIndex].querySelectorAll('span')[
+              blockItemIndex
+            ];
           if (blockItem.markup.includes(Markup.LIGHT)) {
-            expect(renderedElement.classList.contains('markupLight'));
+            expect(
+              renderedElement.classList.contains('markupLight')
+            ).toBeTruthy();
           }
           if (blockItem.markup.includes(Markup.STRONG)) {
-            expect(renderedElement.classList.contains('markupStrong'));
+            expect(
+              renderedElement.classList.contains('markupStrong')
+            ).toBeTruthy();
           }
         });
       });
