@@ -42,6 +42,17 @@ jest.mock('../browserHelper', () => {
   };
 });
 
+const mockChangeBrowserLocation = jest.fn();
+const mockChangeFocusObject = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeBrowserLocation: mockChangeBrowserLocation,
+  changeFocusObject: mockChangeFocusObject
+}));
+
+jest.mock('genome-browser-service/lib/GenomeBrowserService', () => {
+  return;
+});
+
 describe('<BrowserRegionField />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -52,8 +63,6 @@ describe('<BrowserRegionField />', () => {
     chrLocation: createChrLocationValues().tupleValue,
     isActive: false,
     isGhosted: false,
-    changeBrowserLocation: jest.fn(),
-    changeFocusObject: jest.fn(),
     toggleRegionFieldActive: jest.fn()
   };
 
@@ -155,7 +164,7 @@ describe('<BrowserRegionField />', () => {
           `${newChrLocation[0]}:${newChrLocation[1]}-${newChrLocation[2]}{enter}`
         );
 
-        expect(defaultProps.changeFocusObject).toHaveBeenCalledWith(regionId);
+        expect(mockChangeFocusObject).toHaveBeenCalledWith(regionId);
       });
 
       it('preserves the same chromosome if input contains only new start and end coordinates', () => {
@@ -172,8 +181,7 @@ describe('<BrowserRegionField />', () => {
           input,
           `${newChrLocation[1]}-${newChrLocation[2]}{enter}`
         );
-
-        expect(defaultProps.changeBrowserLocation).toHaveBeenCalledWith({
+        expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
           genomeId: defaultProps.activeGenomeId,
           ensObjectId: null,
           chrLocation: newChrLocation

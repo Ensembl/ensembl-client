@@ -21,6 +21,15 @@ import faker from 'faker';
 
 import { BrowserReset, BrowserResetProps } from './BrowserReset';
 
+const mockChangeFocusObject = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeFocusObject: mockChangeFocusObject
+}));
+
+jest.mock('genome-browser-service/lib/GenomeBrowserService', () => {
+  return;
+});
+
 describe('<BrowserReset />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -28,7 +37,6 @@ describe('<BrowserReset />', () => {
 
   const defaultProps: BrowserResetProps = {
     focusObjectId: `${faker.lorem.word()}:gene:${faker.lorem.word()}`,
-    changeFocusObject: jest.fn(),
     isActive: true
   };
 
@@ -53,7 +61,7 @@ describe('<BrowserReset />', () => {
 
       userEvent.click(button);
 
-      expect(defaultProps.changeFocusObject).toHaveBeenCalledWith(
+      expect(mockChangeFocusObject).toHaveBeenCalledWith(
         defaultProps.focusObjectId
       );
     });

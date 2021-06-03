@@ -22,7 +22,6 @@ import {
   isFocusObjectPositionDefault
 } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
-import { changeFocusObject } from '../browserActions';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
@@ -31,10 +30,10 @@ import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg'
 
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type BrowserResetProps = {
   focusObjectId: string | null;
-  changeFocusObject: (objectId: string) => void;
   isActive: boolean;
 };
 
@@ -42,6 +41,9 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   props: BrowserResetProps
 ) => {
   const { focusObjectId } = props;
+
+  const { changeFocusObject } = useGenomeBrowser();
+
   if (!focusObjectId) {
     return null;
   }
@@ -51,7 +53,7 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   };
 
   const handleClick = () => {
-    props.changeFocusObject(focusObjectId);
+    changeFocusObject(focusObjectId);
   };
 
   return (
@@ -75,8 +77,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = {
-  changeFocusObject
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BrowserReset);
+export default connect(mapStateToProps)(BrowserReset);

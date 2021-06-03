@@ -43,8 +43,6 @@ import {
   getBrowserNavOpenState
 } from './browserSelectors';
 
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
-
 import { RootState } from 'src/store';
 import {
   BrowserTrackStates,
@@ -301,66 +299,6 @@ export const setChrLocation: ActionCreator<
     }
   };
 };
-
-export const changeBrowserLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (locationData: {
-  genomeId: string;
-  ensObjectId: string | null;
-  chrLocation: ChrLocation;
-}) => {
-  return (_, getState: () => RootState) => {
-    const state = getState();
-    // const [chrCode, startBp, endBp] = locationData.chrLocation;
-
-    const activeEnsObjectId =
-      locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
-
-    const focusInstruction: { focus?: string } = {};
-    if (activeEnsObjectId) {
-      focusInstruction.focus = activeEnsObjectId;
-    }
-
-    // const action: OutgoingAction = {
-    //   type: OutgoingActionType.SET_FOCUS_LOCATION,
-    //   payload: {
-    //     stick: `${locationData.genomeId}:${chrCode}`,
-    //     goto: `${startBp}-${endBp}`,
-    //     ...focusInstruction
-    //   }
-    // }
-
-    // const genomeBrowser = new GenomeBrowserService(BROWSER_CONTAINER_ID);
-    // genomeBrowser.send(action);
-  };
-};
-
-export const changeFocusObject =
-  (objectId: string): ThunkAction<any, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    dispatch(updatePreviouslyViewedObjectsAndSave());
-
-    // TODO: remove the if below
-    if (!objectId) {
-      return;
-    }
-    // const action: OutgoingAction = {
-    //   type: OutgoingActionType.SET_FOCUS,
-    //   payload: {
-    //     focus: objectId
-    //   }
-    // }
-
-    // const genomeBrowser = new GenomeBrowserService(BROWSER_CONTAINER_ID);
-    //   genomeBrowser.send(action);
-  };
 
 export const updateCogList = createAction('browser/update-cog-list')<number>();
 

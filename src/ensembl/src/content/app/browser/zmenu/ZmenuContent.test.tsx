@@ -33,6 +33,15 @@ import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
+const mockChangeFocusObject = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeFocusObject: mockChangeFocusObject
+}));
+
+jest.mock('genome-browser-service/lib/GenomeBrowserService', () => {
+  return;
+});
+
 const mockReduxState = {};
 const mockStoreCreator = configureMockStore();
 const mockStore = mockStoreCreator(() => mockReduxState);
@@ -61,9 +70,8 @@ describe('<ZmenuContent />', () => {
       const { container } = renderZmenuContent();
       const zmenuContentLine = defaultProps.content[0].lines[0];
 
-      const renderedContentBlocks = container.querySelectorAll(
-        '.zmenuContentBlock'
-      );
+      const renderedContentBlocks =
+        container.querySelectorAll('.zmenuContentBlock');
 
       // check that the number of blocks of text is correct
       expect(renderedContentBlocks.length).toBe(zmenuContentLine.length);
@@ -76,9 +84,10 @@ describe('<ZmenuContent />', () => {
 
       zmenuContentLine.forEach((block, blockIndex) => {
         block.forEach((blockItem, blockItemIndex) => {
-          const renderedElement = renderedContentBlocks[
-            blockIndex
-          ].querySelectorAll('span')[blockItemIndex];
+          const renderedElement =
+            renderedContentBlocks[blockIndex].querySelectorAll('span')[
+              blockItemIndex
+            ];
           if (blockItem.markup.includes(Markup.LIGHT)) {
             expect(renderedElement.classList.contains('markupLight'));
           }
@@ -95,14 +104,13 @@ describe('<ZmenuContent />', () => {
       const props: ZmenuContentItemProps = {
         id: faker.lorem.words(),
         markup: [Markup.FOCUS],
-        text: faker.lorem.words(),
-        changeFocusObject: jest.fn()
+        text: faker.lorem.words()
       };
       const { container } = render(<ZmenuContentItem {...props} />);
 
       userEvent.click(container.firstChild as HTMLDivElement);
 
-      expect(props.changeFocusObject).toHaveBeenCalledTimes(1);
+      expect(mockChangeFocusObject).toHaveBeenCalledTimes(1);
     });
   });
 });

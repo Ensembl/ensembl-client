@@ -32,11 +32,7 @@ import {
   getRegionFieldActive
 } from '../browserSelectors';
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  toggleRegionEditorActive
-} from '../browserActions';
+import { toggleRegionEditorActive } from '../browserActions';
 import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
@@ -53,6 +49,7 @@ import applyIcon from 'static/img/shared/apply.svg';
 import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type BrowserRegionEditorProps = {
   activeGenomeId: string | null;
@@ -60,12 +57,6 @@ export type BrowserRegionEditorProps = {
   genomeKaryotype: GenomeKaryotypeItem[] | null;
   isActive: boolean;
   isDisabled: boolean;
-  changeBrowserLocation: (locationData: {
-    genomeId: string;
-    ensObjectId: string | null;
-    chrLocation: ChrLocation;
-  }) => void;
-  changeFocusObject: (objectId: string) => void;
   toggleRegionEditorActive: (regionEditorActive: boolean) => void;
 };
 
@@ -81,6 +72,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   );
 
   const [shouldShowSubmitButton, showSubmitButton] = useState(false);
+  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
 
   useEffect(() => {
     const shouldShowButton =
@@ -109,12 +101,10 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     updateAllInputs();
   }, [props.chrLocation]);
 
-  const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
-    string | null
-  >(null);
-  const [locationEndErrorMessage, setLocationEndErrorMessage] = useState<
-    string | null
-  >(null);
+  const [locationStartErrorMessage, setLocationStartErrorMessage] =
+    useState<string | null>(null);
+  const [locationEndErrorMessage, setLocationEndErrorMessage] =
+    useState<string | null>(null);
 
   const getKaryotypeOptions = () =>
     genomeKaryotype.map(({ name }) => ({
@@ -158,7 +148,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   };
 
   const changeLocation = (newChrLocation: ChrLocation) =>
-    props.changeBrowserLocation({
+    changeBrowserLocation({
       genomeId: props.activeGenomeId as string,
       ensObjectId: null,
       chrLocation: newChrLocation
@@ -197,7 +187,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     if (stickInput === stick) {
       changeLocation(newChrLocation);
     } else {
-      props.changeFocusObject(regionId);
+      changeFocusObject(regionId);
     }
 
     analyticsTracking.trackEvent({
@@ -299,8 +289,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mpaDispatchToProps = {
-  changeBrowserLocation,
-  changeFocusObject,
   toggleRegionEditorActive
 };
 

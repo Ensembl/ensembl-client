@@ -48,7 +48,7 @@ export const TrackPanel = (props: TrackPanelProps) => {
     if (genomeBrowser) {
       restoreBrowserTrackStates();
     }
-  }, [props.activeEnsObject]);
+  }, [props.activeEnsObject, genomeBrowser]);
 
   return shouldRenderContent ? (
     props.isTrackPanelModalOpened ? (

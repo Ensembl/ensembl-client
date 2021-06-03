@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
@@ -29,8 +29,12 @@ import {
 } from 'src/content/app/browser/browserSelectors';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { ChrLocation } from 'src/content/app/browser/browserState';
 
 const useGenomeBrowser = () => {
+  const dispatch = useDispatch();
+
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
 
@@ -89,9 +93,60 @@ const useGenomeBrowser = () => {
     }
   };
 
+  const changeFocusObject = (objectId: string) => {
+    if (!activeGenomeId || !genomeBrowser) {
+      return;
+    }
+
+    dispatch(updatePreviouslyViewedObjectsAndSave());
+    const action: OutgoingAction = {
+      type: OutgoingActionType.SET_FOCUS,
+      payload: {
+        focus: objectId
+      }
+    };
+
+    genomeBrowser.send(action);
+  };
+
+  const changeBrowserLocation = (locationData: {
+    genomeId: string;
+    ensObjectId: string | null;
+    chrLocation: ChrLocation;
+  }) => {
+    const [, startBp, endBp] = locationData.chrLocation;
+
+    const currentActiveEnsObjectId =
+      locationData.ensObjectId || activeEnsObjectId;
+
+    if (!genomeBrowser) {
+      return;
+    }
+
+    const focusInstruction: { focus?: string } = {};
+    if (currentActiveEnsObjectId) {
+      focusInstruction.focus = currentActiveEnsObjectId;
+    }
+
+    const action: OutgoingAction = {
+      type: OutgoingActionType.SET_FOCUS_LOCATION,
+      payload: {
+        // stick: `${locationData.genomeId}:${chrCode}`,
+        // goto: `${startBp}-${endBp}`,
+        startBp,
+        endBp
+        // ...focusInstruction
+      }
+    };
+
+    genomeBrowser.send(action);
+  };
+
   return {
     activateGenomeBrowser,
     restoreBrowserTrackStates,
+    changeFocusObject,
+    changeBrowserLocation,
     genomeBrowser
   };
 };
