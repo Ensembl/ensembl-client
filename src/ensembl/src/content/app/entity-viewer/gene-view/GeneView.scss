@@ -79,14 +79,18 @@ $backgroundColor: $black;
 .openFilterLabelContainer {
   background-color: $soft-black;
   border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  border-top-right-radius: 3px;  
 }
 
 .filterLabel {
   text-align: right;
   padding-right: 2px;
   cursor: pointer;
-  color: $blue;  
+  color: $blue;
+}
+
+.openFilterLabel {
+  color: $white;
 }
 
 .labelWithActivityIndicator {
@@ -96,10 +100,10 @@ $backgroundColor: $black;
     content: '';
     position: absolute;
     border-radius: 100%;
-    height: 5px;
-    width: 5px;
+    height: 8px;
+    width: 8px;
     background: $red;
-    right: -6px;
+    right: -10px;
     top: -2px;
   }
 }

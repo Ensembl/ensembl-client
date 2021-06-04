@@ -271,7 +271,12 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           })}
         >
           {props.gene.transcripts.length > 5 && (
-            <div className={styles.filterLabel} onClick={toggleFilter}>
+            <div
+              className={classNames([styles.filterLabel], {
+                [styles.openFilterLabel]: isFilterOpen
+              })}
+              onClick={toggleFilter}
+            >
               {filterLabel}
               {chevron}
             </div>
