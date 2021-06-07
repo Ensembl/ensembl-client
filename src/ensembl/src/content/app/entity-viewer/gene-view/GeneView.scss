@@ -46,8 +46,7 @@ $backgroundColor: $black;
   z-index: 2;
   position: sticky;
   top: -80px;
-  height: 100%;
-  background-color: $backgroundColor;
+  height: 100%;  
 }
 
 .tabWrapper {
@@ -56,6 +55,7 @@ $backgroundColor: $black;
   display: flex;
   align-items: flex-end;
   padding: 4px;
+  background-color: $backgroundColor;
 }
 
 .filtersWrapper {
@@ -73,7 +73,8 @@ $backgroundColor: $black;
   padding-bottom: 9px;
   padding-top: 6px;
   position: sticky;
-  top: -37px;    
+  top: -37px;  
+  background-color: $backgroundColor;  
 }
 
 .openFilterLabelContainer {

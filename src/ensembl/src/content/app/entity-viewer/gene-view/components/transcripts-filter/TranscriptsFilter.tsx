@@ -125,8 +125,7 @@ const TranscriptsFilter = (props: Props) => {
   return (
     <div className={styles.container}>
       <div className={filterBoxClassnames}>
-        <div></div>
-        <div className={styles.sort}>
+        <div className={styles.sortContainer}>
           <div className={styles.header}>Sort by</div>
           <div className={styles.sortContent}>
             <RadioGroup
