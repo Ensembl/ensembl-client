@@ -77,14 +77,31 @@
   }
 }
 
-.about {
+.logotype {
+  height: 12px;
+  fill: white;
+}
+
+.aboutEnsembl {
   display: flex;
   align-items: center;
-  margin-left: 20px;
+  padding-right: 46px;
+  font-size: 13px;
+  color: $blue;
+}
 
-  .aboutText {
-    font-weight: $light;
-    margin-right: 25px;
-    margin-top: 2px;
+.logotypeAbout {
+  height: 10px;
+  fill: $blue;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+// For disabling temporarily the about Ensembl link in production
+.aboutEnsemblDisabled {
+  color: $medium-dark-grey;
+
+  .logotypeAbout {
+    fill: $medium-dark-grey;
   }
 }
