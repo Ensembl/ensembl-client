@@ -52,9 +52,11 @@ export const PreviouslyViewedLinks = () => {
     dispatch(closeTrackPanelModal());
   };
 
+  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
+
   return (
     <div data-test-id="previously viewed links">
-      {[...previouslyViewedObjects]
+      {[...limitedPreviouslyViewedObjects]
         .reverse()
         .map((previouslyViewedObject, index) => {
           const path = urlFor.browser({
@@ -95,8 +97,6 @@ export const TrackPanelBookmarks = () => {
   );
   const dispatch = useDispatch();
 
-  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
-
   const onEllipsisClick = () => {
     analyticsTracking.trackEvent({
       category: 'drawer_open',
@@ -111,7 +111,7 @@ export const TrackPanelBookmarks = () => {
   return (
     <section className="trackPanelBookmarks">
       <div className={styles.title}>Previously viewed</div>
-      {limitedPreviouslyViewedObjects.length ? (
+      {previouslyViewedObjects.length ? (
         <>
           <div data-test-id="previously viewed" className={styles.sectionTitle}>
             Previously viewed
