@@ -92,18 +92,18 @@ export const selectTrackPanelTab = (
     action: 'selected'
   });
 
-  dispatch(
-    updateTrackPanelForGenome({
-      activeGenomeId,
-      data: {
-        ...getActiveTrackPanel(getState()),
-        selectedTrackPanelTab,
-        isTrackPanelModalOpened: false,
-        trackPanelModalView: ''
-      }
-    })
-  );
-};
+    dispatch(
+      updateTrackPanelForGenome({
+        activeGenomeId,
+        data: {
+          ...getActiveTrackPanel(getState()),
+          selectedTrackPanelTab,
+          isTrackPanelModalOpened: false,
+          trackPanelModalView: ''
+        }
+      })
+    );
+  };
 
 export const changeTrackPanelModalViewForGenome = (
   trackPanelModalView: string
@@ -148,13 +148,18 @@ export const updatePreviouslyViewedObjectsAndSave = (): ThunkAction<
     (previouslyViewedObject) =>
       previouslyViewedObject.object_id === activeEnsObject.object_id
   );
+
   if (existingIndex === -1) {
     // IF it is not present, add it to the end
     previouslyViewedObjects.push({
       genome_id: activeEnsObject.genome_id,
       object_id: activeEnsObject.object_id,
       object_type: activeEnsObject.type,
-      label: activeEnsObject.label
+      label: activeEnsObject.label,
+      versioned_stable_id:
+        activeEnsObject.type === 'gene'
+          ? activeEnsObject?.versioned_stable_id
+          : null
     });
   }
 

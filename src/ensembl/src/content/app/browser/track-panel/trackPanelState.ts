@@ -23,6 +23,7 @@ export type PreviouslyViewedObject = {
   object_id: string;
   object_type: string;
   label: string;
+  versioned_stable_id: string | null;
 };
 
 export type PreviouslyViewedObjects = {

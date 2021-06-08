@@ -40,6 +40,7 @@ jest.mock('react-router-dom', () => ({
 
 const genomeId = 'triticum_aestivum_GCA_900519105_1';
 const geneId = 'TraesCS3D02G273600';
+const versionedStableId = 'TraesCS3D02G273600.1';
 const region = '3D:2585940-2634711';
 const geneObjectId = `${genomeId}:gene:${geneId}`;
 const regionObjectId = `${genomeId}:region:${region}`;
@@ -48,7 +49,8 @@ const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,
   object_type: 'gene',
-  label: faker.random.word()
+  label: faker.random.word(),
+  versioned_stable_id: faker.random.word()
 });
 
 const previouslyViewedObjects = [
@@ -56,7 +58,8 @@ const previouslyViewedObjects = [
     genome_id: genomeId,
     object_id: geneObjectId,
     object_type: 'gene',
-    label: geneId
+    label: geneId,
+    versioned_stable_id: versionedStableId
   },
   {
     genome_id: genomeId,
@@ -158,18 +161,6 @@ describe('<TrackPanelBookmarks />', () => {
     jest.resetAllMocks();
   });
 
-  it('renders example links', () => {
-    wrapInRedux();
-    const exampleGeneLink = screen.getByText('Example gene') as HTMLElement;
-    const exampleRegionLink = screen.getByText('Example region') as HTMLElement;
-
-    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
-    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
-
-    expect(exampleGeneLink.getAttribute('href')).toBe(expectedGeneHref);
-    expect(exampleRegionLink.getAttribute('href')).toBe(expectedRegionHref);
-  });
-
   it('renders previously viewed links', () => {
     wrapInRedux();
     const geneLink = screen.getByText(geneId) as HTMLElement;
@@ -252,13 +243,5 @@ describe('<TrackPanelBookmarks />', () => {
       DrawerView.BOOKMARKS
     );
     expect(toggleDrawerAction.payload[genomeId]).toEqual(true);
-  });
-
-  it('renders correct number of links to example objects', () => {
-    const { container } = wrapInRedux();
-
-    expect(container.querySelectorAll('.exampleLinks a').length).toBe(
-      example_objects.length
-    );
   });
 });

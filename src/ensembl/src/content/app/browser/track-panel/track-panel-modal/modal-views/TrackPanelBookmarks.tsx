@@ -23,9 +23,7 @@ import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
@@ -36,34 +34,6 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelBookmarks.scss';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
-
-export const ExampleLinks = () => {
-  const exampleEnsObjects = useSelector(getExampleEnsObjects);
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const dispatch = useDispatch();
-
-  const onLinkClick = () => dispatch(closeTrackPanelModal());
-
-  return (
-    <div data-test-id="example links" className="exampleLinks">
-      <div className={styles.sectionTitle}>Example links</div>
-      {exampleEnsObjects.map((exampleObject) => {
-        const path = urlFor.browser({
-          genomeId: activeGenomeId,
-          focus: buildFocusIdForUrl(exampleObject.object_id)
-        });
-
-        return (
-          <div key={exampleObject.object_id} className={styles.linkHolder}>
-            <Link to={path} onClick={onLinkClick} replace>
-              Example {exampleObject.type}
-            </Link>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 export const PreviouslyViewedLinks = () => {
   const previouslyViewedObjects = useSelector(
@@ -105,6 +75,9 @@ export const PreviouslyViewedLinks = () => {
                 }
               >
                 {previouslyViewedObject.label}
+                <span className={styles.previouslyViewedVersionedStableId}>
+                  {previouslyViewedObject.versioned_stable_id}
+                </span>
               </Link>
               <span className={styles.previouslyViewedType}>
                 {upperFirst(previouslyViewedObject.object_type)}
@@ -120,7 +93,6 @@ export const TrackPanelBookmarks = () => {
   const previouslyViewedObjects = useSelector(
     getActiveGenomePreviouslyViewedObjects
   );
-  const exampleEnsObjects = useSelector(getExampleEnsObjects);
   const dispatch = useDispatch();
 
   const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
@@ -138,8 +110,7 @@ export const TrackPanelBookmarks = () => {
 
   return (
     <section className="trackPanelBookmarks">
-      <div className={styles.title}>Bookmarks</div>
-      {exampleEnsObjects.length ? <ExampleLinks /> : null}
+      <div className={styles.title}>Previously viewed</div>
       {limitedPreviouslyViewedObjects.length ? (
         <>
           <div data-test-id="previously viewed" className={styles.sectionTitle}>
