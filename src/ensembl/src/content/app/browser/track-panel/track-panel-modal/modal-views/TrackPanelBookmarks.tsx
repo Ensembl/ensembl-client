@@ -109,24 +109,23 @@ export const TrackPanelBookmarks = () => {
   };
 
   return (
-    <section className="trackPanelBookmarks">
+    <section className={styles.trackPanelBookmarks}>
       <div className={styles.title}>Previously viewed</div>
       {previouslyViewedObjects.length ? (
         <>
-          <div data-test-id="previously viewed" className={styles.sectionTitle}>
-            Previously viewed
-            {previouslyViewedObjects.length > 20 && (
-              <span className={styles.ellipsis}>
+          <PreviouslyViewedLinks />
+          {previouslyViewedObjects.length > 20 && (
+            <div className={styles.more} onClick={onEllipsisClick}>
+              <span>more</span>
+              <div className={styles.ellipsis}>
                 <ImageButton
                   status={Status.DEFAULT}
                   description={'View all'}
                   image={EllipsisIcon}
-                  onClick={onEllipsisClick}
                 />
-              </span>
-            )}
-          </div>
-          <PreviouslyViewedLinks />
+              </div>
+            </div>
+          )}
         </>
       ) : null}
     </section>
