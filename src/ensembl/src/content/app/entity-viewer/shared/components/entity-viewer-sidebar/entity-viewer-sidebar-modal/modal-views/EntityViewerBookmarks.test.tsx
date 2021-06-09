@@ -40,11 +40,13 @@ const exampleEntities = [
 
 const previouslyViewedEntities = [
   {
+    versioned_stable_id: 'human-fry.1',
     stable_id: 'human-fry',
     label: 'FRY',
     type: 'gene'
   },
   {
+    versioned_stable_id: 'human-tp53.1',
     stable_id: 'human-tp53',
     label: 'TP53',
     type: 'gene'
