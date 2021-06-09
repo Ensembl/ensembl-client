@@ -116,3 +116,7 @@ $backgroundColor: $black;
   height: 12px;
   width: 12px;
 }
+
+.chevronUp {
+  transform: rotate(180deg);
+}

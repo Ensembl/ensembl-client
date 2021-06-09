@@ -32,7 +32,6 @@ import {
   View,
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
-import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
@@ -62,9 +61,9 @@ import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
+import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
-import { ReactComponent as ChevronUp } from 'static/img/shared/chevron-up.svg';
 
 import styles from './GeneView.scss';
 
@@ -226,11 +225,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       Filter & sort
     </span>
   );
-  const chevron = !isFilterOpen ? (
-    <ChevronDown className={styles.chevron} />
-  ) : (
-    <ChevronUp className={styles.chevron} />
-  );
 
   const toggleFilter = () => {
     setFilterOpen(!isFilterOpen);
@@ -278,7 +272,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
               onClick={toggleFilter}
             >
               {filterLabel}
-              {chevron}
+              <ChevronDown
+                className={classNames([styles.chevron], {
+                  [styles.chevronUp]: isFilterOpen
+                })}
+              />
             </div>
           )}
         </div>
