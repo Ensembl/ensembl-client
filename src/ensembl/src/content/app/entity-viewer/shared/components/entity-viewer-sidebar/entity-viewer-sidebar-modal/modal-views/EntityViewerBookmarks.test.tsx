@@ -89,14 +89,6 @@ describe('<EntityViewerSidebarBookmarks />', () => {
     jest.resetAllMocks();
   });
 
-  it('shows example links if they are present', () => {
-    wrapInRedux();
-    const exampleLinksSection = screen.getByTestId('example links');
-    const links = exampleLinksSection.querySelectorAll('a');
-
-    expect(links.length).toBe(exampleEntities.length);
-  });
-
   it('shows previously viewed entities if present', () => {
     wrapInRedux();
     const previouslyViewedSection = screen.getByTestId(
