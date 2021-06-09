@@ -185,7 +185,7 @@ describe('<TrackPanelBookmarks />', () => {
     (trackPanelActions.closeTrackPanelModal as any).mockRestore();
   });
 
-  it('shows the ellipsis only when there are more than 20 objects', () => {
+  it('shows link to view more only when there are more than 20 objects', () => {
     let wrapper = wrapInRedux(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
@@ -193,10 +193,9 @@ describe('<TrackPanelBookmarks />', () => {
         mockState
       )
     );
+
     expect(
-      wrapper.container.querySelector(
-        '.trackPanelBookmarks .sectionTitle button'
-      )
+      wrapper.container.querySelector('.trackPanelBookmarks .more')
     ).toBeFalsy();
 
     // Add 21 links to see if ellipsis is shown
@@ -209,13 +208,11 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     expect(
-      wrapper.container.querySelector(
-        '.trackPanelBookmarks .sectionTitle button'
-      )
+      wrapper.container.querySelector('.trackPanelBookmarks .more')
     ).toBeTruthy();
   });
 
-  it('changes drawer view and toggles drawer when the ellipsis is clicked', () => {
+  it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
     const { container } = wrapInRedux(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
@@ -225,7 +222,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     const ellipsisButton = container.querySelector(
-      '.sectionTitle button'
+      '.trackPanelBookmarks .more'
     ) as HTMLElement;
 
     userEvent.click(ellipsisButton);
