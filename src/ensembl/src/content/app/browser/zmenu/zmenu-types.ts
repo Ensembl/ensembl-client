@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
- import {OutgoingActionType, IncomingActionType} from 'src/content/app/browser/browser-messaging-service';
+import {
+  OutgoingActionType,
+  IncomingActionType
+} from 'src/content/app/browser/browser-messaging-service';
 
 // relation of the point of interest to the central point of the canvas;
 // a gentle hint by genome browser about where there is the most available space
@@ -106,8 +109,3 @@ export type ZmenuRepositionPayload = {
     y: number;
   };
 };
-
-export type ZmenuIncomingPayload =
-  | ZmenuCreatePayload
-  | ZmenuDestroyPayload
-  | ZmenuRepositionPayload;

@@ -19,6 +19,8 @@ import { connect } from 'react-redux';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 import {
+  IncomingAction,
+  IncomingActionType,
   OutgoingAction,
   OutgoingActionType
 } from 'src/content/app/browser/browser-messaging-service';
@@ -74,8 +76,9 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      'bpane-scroll',
-      listenBpaneScroll
+      [IncomingActionType.UPDATE_SCROLL_POSITION],
+      (action: IncomingAction) =>
+        listenBpaneScroll(action.payload as BpaneScrollPayload)
     );
 
     return () => subscription?.unsubscribe();

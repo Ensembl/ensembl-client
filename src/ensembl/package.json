@@ -42,7 +42,7 @@
     "core-js": "3.12.1",
     "d3": "6.7.0",
     "dotenv": "10.0.0",
-    "genome-browser-service": "/Users/manojpandian/Documents/Projects/genome-browser-service",
+    "ensembl-genome-browser": "git://github.com/Ensembl/ensembl-genome-browser.git",
     "graphql": "15.5.0",
     "lodash": "4.17.21",
     "query-string": "7.0.0",

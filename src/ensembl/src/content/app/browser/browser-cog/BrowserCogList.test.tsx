@@ -22,7 +22,7 @@ import { BrowserCogList } from './BrowserCogList';
 import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
-const genomeBrowser = new GenomeBrowserService('foo');
+const genomeBrowser = new GenomeBrowserService();
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {

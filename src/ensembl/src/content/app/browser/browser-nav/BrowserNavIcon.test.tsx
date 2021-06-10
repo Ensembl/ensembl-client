@@ -22,7 +22,7 @@ import { BrowserNavIcon } from './BrowserNavIcon';
 import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
 import { browserNavConfig } from '../browserConfig';
 
-const genomeBrowser = new GenomeBrowserService('foo');
+const genomeBrowser = new GenomeBrowserService();
 
 describe('<BrowserNavAction />', () => {
   const browserNavItem = browserNavConfig[0];

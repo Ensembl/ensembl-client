@@ -24,7 +24,11 @@ import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+import {
+  IncomingAction,
+  IncomingActionType,
+  OutgoingActionType
+} from 'src/content/app/browser/browser-messaging-service';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
@@ -144,7 +148,11 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, []);
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe('bpane-out', listenBpaneOut);
+    const subscription = genomeBrowser?.subscribe(
+      [IncomingActionType.GENOME_BROWSER_READY],
+      (action: IncomingAction) =>
+        listenBpaneOut(action.payload as BpaneOutPayload)
+    );
 
     return () => {
       subscription?.unsubscribe();

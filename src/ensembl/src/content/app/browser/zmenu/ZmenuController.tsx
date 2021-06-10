@@ -22,14 +22,14 @@ import Zmenu from './Zmenu';
 import {
   OutgoingActionType,
   OutgoingAction,
-  IncomingActionType
+  IncomingActionType,
+  IncomingAction
 } from 'src/content/app/browser/browser-messaging-service';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
   ZmenuData,
-  ZmenuIncomingPayload,
   ZmenuCreatePayload,
   ZmenuDestroyPayload,
   ZmenuRepositionPayload
@@ -55,20 +55,25 @@ const ZmenuController = (props: Props) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      'bpane-zmenu',
+      [
+        IncomingActionType.ZMENU_CREATE,
+        IncomingActionType.ZMENU_DESTROY,
+        IncomingActionType.ZMENU_REPOSITION
+      ],
       handleBpaneEvent
     );
 
     return () => subscription?.unsubscribe();
   }, []);
 
-  const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
-    if (payload.action === IncomingActionType.ZMENU_CREATE) {
-      handleZmenuCreate(payload);
-    } else if (payload.action === IncomingActionType.ZMENU_DESTROY) {
-      handleZmenuDestroy(payload);
-    } else if (payload.action === IncomingActionType.ZMENU_REPOSITION) {
-      handleZmenuReposition(payload);
+  const handleBpaneEvent = (action: IncomingAction) => {
+    const { type, payload } = action;
+    if (type === IncomingActionType.ZMENU_CREATE) {
+      handleZmenuCreate(payload as ZmenuCreatePayload);
+    } else if (type === IncomingActionType.ZMENU_DESTROY) {
+      handleZmenuDestroy(payload as ZmenuDestroyPayload);
+    } else if (type === IncomingActionType.ZMENU_REPOSITION) {
+      handleZmenuReposition(payload as ZmenuRepositionPayload);
     }
   };
 

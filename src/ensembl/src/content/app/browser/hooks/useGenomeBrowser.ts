@@ -17,7 +17,6 @@ import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 import GenomeBrowserService, {
   OutgoingAction,
   OutgoingActionType
@@ -83,7 +82,7 @@ const useGenomeBrowser = () => {
   };
 
   const activateGenomeBrowser = async () => {
-    const genomeBrowserService = new GenomeBrowserService(BROWSER_CONTAINER_ID);
+    const genomeBrowserService = new GenomeBrowserService();
     await genomeBrowserService.init();
     if (setGenomeBrowser) {
       genomeBrowserService.send({

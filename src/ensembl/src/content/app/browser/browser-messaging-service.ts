@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-// import windowService, {
-//   WindowServiceInterface
-// } from 'src/services/window-service';
+import EnsemblGenomeBrowser, {
+  OutgoingActionType,
+  IncomingActionType,
+  OutgoingAction,
+  IncomingAction
+} from 'ensembl-genome-browser';
 
-// import JSONValue from 'src/shared/types/JSON';
+export {
+  OutgoingActionType,
+  IncomingActionType,
+  OutgoingAction,
+  IncomingAction
+};
 
-import GenomeBrowserService  from 'genome-browser-service/lib/GenomeBrowserService';
-import { OutgoingActionType, IncomingActionType, OutgoingAction, IncomingAction, }  from 'genome-browser-service/lib/action';
-
-export { OutgoingActionType, IncomingActionType, OutgoingAction, IncomingAction  };
-
-
-export default GenomeBrowserService;
+export default EnsemblGenomeBrowser;
