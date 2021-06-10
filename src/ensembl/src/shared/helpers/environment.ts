@@ -20,6 +20,9 @@ export enum Environment {
   PRODUCTION = 'production'
 }
 
+// FIXME: remove the dependency on process.env; it should not be exposed to the client anyway
+const currentEnvValue = process.env.ENVIRONMENT;
+
 // Deployment environment
 export const isEnvironment = (environment: Environment[]): boolean => {
   const currentEnvironment = getEnvironmentValue();
@@ -27,7 +30,7 @@ export const isEnvironment = (environment: Environment[]): boolean => {
 };
 
 const getEnvironmentValue = () =>
-  (process.env.ENVIRONMENT || 'development') as Environment;
+  (currentEnvValue || 'development') as Environment;
 
 export const isServer = (): boolean => {
   return typeof window === 'undefined';
