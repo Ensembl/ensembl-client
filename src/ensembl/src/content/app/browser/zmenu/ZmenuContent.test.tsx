@@ -89,10 +89,14 @@ describe('<ZmenuContent />', () => {
               blockItemIndex
             ];
           if (blockItem.markup.includes(Markup.LIGHT)) {
-            expect(renderedElement.classList.contains('markupLight'));
+            expect(
+              renderedElement.classList.contains('markupLight')
+            ).toBeTruthy();
           }
           if (blockItem.markup.includes(Markup.STRONG)) {
-            expect(renderedElement.classList.contains('markupStrong'));
+            expect(
+              renderedElement.classList.contains('markupStrong')
+            ).toBeTruthy();
           }
         });
       });

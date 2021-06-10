@@ -16,16 +16,16 @@
 
 import React from 'react';
 
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import LoadingButton from '../../loading-button';
 
 type Props = {
   isDisabled?: boolean;
   className?: string;
-  onClick: () => void;
+  onClick: () => Promise<unknown>;
 };
 
 const InstantDownloadButton = (props: Props) => {
-  return <PrimaryButton {...props}>Download</PrimaryButton>;
+  return <LoadingButton {...props}>Download</LoadingButton>;
 };
 
 export default InstantDownloadButton;

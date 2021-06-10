@@ -37,7 +37,9 @@ describe('fasta formatter', () => {
 
     const [firstLine, ...sequenceLines] = fastaFormattedSequence.split('\n');
     expect(firstLine).toBe(`>${sequenceLabel}`);
-    expect(sequenceLines.every((line) => line.length <= LINE_LENGTH));
+    expect(
+      sequenceLines.every((line) => line.length <= LINE_LENGTH)
+    ).toBeTruthy();
     expect(sequenceLines.join('')).toBe(rawSequence);
   });
 });

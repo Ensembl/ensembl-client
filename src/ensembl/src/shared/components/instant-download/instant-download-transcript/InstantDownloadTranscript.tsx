@@ -79,7 +79,7 @@ export const transcriptOptionsOrder: TranscriptOption[] = [
   'cds'
 ];
 
-const defaultTranscriptOptions: TranscriptOptions = {
+export const defaultTranscriptOptions: TranscriptOptions = {
   genomicSequence: false,
   cdna: false,
   proteinSequence: false,
@@ -116,7 +116,12 @@ const InstantDownloadTranscript = (props: Props) => {
     setTranscriptOptions(filterTranscriptOptions(so_term));
   }, [so_term]);
 
-  const onSubmit = () => {
+  const resetCheckboxes = () => {
+    setIsGeneSequenceSelected(false);
+    setTranscriptOptions(defaultTranscriptOptions);
+  };
+
+  const onSubmit = async () => {
     const payload = {
       genomeId,
       geneId,
@@ -127,7 +132,11 @@ const InstantDownloadTranscript = (props: Props) => {
       }
     };
 
-    fetchForTranscript(payload);
+    try {
+      await fetchForTranscript(payload);
+    } finally {
+      resetCheckboxes();
+    }
   };
 
   const onTranscriptOptionChange = (key: keyof TranscriptOptions) => {
@@ -169,11 +178,12 @@ const InstantDownloadTranscript = (props: Props) => {
         isGenomicSequenceSelected={isGeneSequenceSelected}
         onChange={onGeneOptionChange}
       />
-      <InstantDownloadButton
-        className={isButtonDisabled ? styles.downloadButtonDisabled : undefined}
-        isDisabled={isButtonDisabled}
-        onClick={onSubmit}
-      />
+      <div className={styles.downloadButton}>
+        <InstantDownloadButton
+          isDisabled={isButtonDisabled}
+          onClick={onSubmit}
+        />
+      </div>
     </div>
   );
 };
