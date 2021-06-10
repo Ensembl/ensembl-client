@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import webpack, { Configuration } from 'webpack';
-import dotenv from 'dotenv';
+import { Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-
-const dotenvConfig = dotenv.config();
 
 // development config, to be merged with the common config
 export default (): Configuration => ({
@@ -37,11 +34,6 @@ export default (): Configuration => ({
     ]
   },
   plugins: [
-    // make environment variables available to the script
-    new webpack.DefinePlugin({
-      'process.env': JSON.stringify(dotenvConfig.parsed)
-    }),
-
     // plugin to extract css from the webpack javascript build files
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css',
