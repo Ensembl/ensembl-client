@@ -19,10 +19,15 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { BrowserNavIcon } from './BrowserNavIcon';
-import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowser from 'src/content/app/browser/browser-messaging-service';
 import { browserNavConfig } from '../browserConfig';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-const genomeBrowser = new GenomeBrowserService();
+jest.mock('src/content/app/browser/browser-messaging-service', () => {
+  return MockGenomeBrowser;
+});
+
+const genomeBrowser = new GenomeBrowser();
 
 describe('<BrowserNavAction />', () => {
   const browserNavItem = browserNavConfig[0];

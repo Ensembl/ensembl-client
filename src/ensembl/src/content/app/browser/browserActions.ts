@@ -26,7 +26,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import GenomeBrowserService, {
+import GenomeBrowser, {
   OutgoingAction,
   OutgoingActionType
 } from 'src/content/app/browser/browser-messaging-service';
@@ -158,7 +158,7 @@ export const updateTrackStatesAndSave: ActionCreator<
 
 export const restoreBrowserTrackStates: ActionCreator<
   ThunkAction<void, any, null, Action<string>>
-> = (genomeBrowser: GenomeBrowserService) => (_, getState: () => RootState) => {
+> = (genomeBrowser: GenomeBrowser) => (_, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);

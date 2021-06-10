@@ -19,10 +19,16 @@ import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import { BrowserCogList } from './BrowserCogList';
-import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowser from 'src/content/app/browser/browser-messaging-service';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
+jest.mock('src/content/app/browser/browser-messaging-service', () => {
+  return MockGenomeBrowser;
+});
+
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
-const genomeBrowser = new GenomeBrowserService();
+const genomeBrowser = new GenomeBrowser();
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {

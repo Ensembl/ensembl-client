@@ -25,7 +25,7 @@ import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import GenomeBrowserService from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowser from 'src/content/app/browser/browser-messaging-service';
 
 import {
   parseEnsObjectId,
@@ -205,13 +205,13 @@ const ReduxConnectedBrowser = connect(
 )(Browser);
 
 export const GenomeBrowserContext = React.createContext<{
-  genomeBrowser?: GenomeBrowserService | null;
-  setGenomeBrowser?: (genomeBrowser: GenomeBrowserService) => void;
+  genomeBrowser?: GenomeBrowser | null;
+  setGenomeBrowser?: (genomeBrowser: GenomeBrowser) => void;
 }>({});
 
 const GenomeBrowserInitContainer = () => {
   const [genomeBrowser, setGenomeBrowser] =
-    useState<GenomeBrowserService | null>(null);
+    useState<GenomeBrowser | null>(null);
 
   return (
     <GenomeBrowserContext.Provider value={{ genomeBrowser, setGenomeBrowser }}>
