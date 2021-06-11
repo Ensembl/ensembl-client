@@ -10,4 +10,4 @@ COPY src/ensembl/dist ./dist/
 RUN npm ci --only=production
 
 EXPOSE 8080
-CMD [ "node", "src/ensembl/dist/server/server.js" ]
+CMD [ "node", "dist/server/server.js" ]
