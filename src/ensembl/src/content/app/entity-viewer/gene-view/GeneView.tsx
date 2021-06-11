@@ -265,23 +265,25 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           })}
         >
           {props.gene.transcripts.length > 5 && (
-            <div
-              className={classNames([styles.filterLabel], {
-                [styles.openFilterLabel]: isFilterOpen
-              })}
-              onClick={toggleFilter}
-            >
-              {filterLabel}
-              <ChevronDown
-                className={classNames([styles.chevron], {
-                  [styles.chevronUp]: isFilterOpen
+            <div className={styles.filterLabelWrapper}>
+              <div
+                className={classNames([styles.filterLabel], {
+                  [styles.openFilterLabel]: isFilterOpen
                 })}
-              />
+                onClick={toggleFilter}
+              >
+                {filterLabel}
+                <ChevronDown
+                  className={classNames([styles.chevron], {
+                    [styles.chevronUp]: isFilterOpen
+                  })}
+                />
+              </div>
             </div>
           )}
         </div>
         <div className={styles.tabWrapper}>
-          <GeneViewTabs />
+          <GeneViewTabs isFilterOpen={isFilterOpen} />
         </div>
         {isFilterOpen && (
           <div className={styles.filtersWrapper}>

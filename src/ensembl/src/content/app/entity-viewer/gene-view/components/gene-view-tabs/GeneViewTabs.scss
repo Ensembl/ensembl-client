@@ -44,6 +44,12 @@
   }
 }
 
+.selectedGeneTab.withOpenFilter {
+  &::after {
+    display: none;
+  }
+}
+
 .geneTab:first-of-type {
   &::after {
     display: none;

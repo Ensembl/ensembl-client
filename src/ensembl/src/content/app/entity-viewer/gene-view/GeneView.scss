@@ -47,7 +47,6 @@ $backgroundColor: $black;
   position: sticky;
   top: -80px;
   height: 100%;  
-  background-color: $backgroundColor;
 }
 
 .tabWrapper {
@@ -68,20 +67,29 @@ $backgroundColor: $black;
 }
 
 .filterLabelContainer {
-  grid-area: filter-toggle;
-  align-self: end;
+  grid-area: filter-toggle;  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: sticky;
+  top: 0;      
+}
+
+.filterLabelWrapper {  
   padding-right: 20px;
   padding-bottom: 9px;
   padding-top: 6px;
-  position: sticky;
-  top: -37px;  
-  background-color: $backgroundColor;  
-}
+} 
 
 .openFilterLabelContainer {
-  background-color: $soft-black;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;  
+  background-color: $backgroundColor;
+  top: -80px;
+
+  .filterLabelWrapper {
+    background-color: $soft-black;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;  
+  }  
 }
 
 .filterLabel {
