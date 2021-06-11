@@ -19,17 +19,12 @@ import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
-import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import GenomeBrowser, {
-  OutgoingAction,
-  OutgoingActionType
-} from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
@@ -44,10 +39,7 @@ import {
 } from './browserSelectors';
 
 import { RootState } from 'src/store';
-import {
-  BrowserTrackStates,
-  TrackStates
-} from './track-panel/trackPanelConfig';
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 
 import {
   BrowserNavIconStates,
@@ -56,7 +48,6 @@ import {
   ChrLocations
 } from './browserState';
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { Status } from 'src/shared/types/status';
 import analyticsTracking from 'src/services/analytics-service';
 import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
@@ -154,54 +145,6 @@ export const updateTrackStatesAndSave: ActionCreator<
   dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
-};
-
-export const restoreBrowserTrackStates: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = (genomeBrowser: GenomeBrowser) => (_, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-
-  if (!activeGenomeId || !activeEnsObjectId) {
-    return;
-  }
-
-  const trackStatesFromStorage = browserStorageService.getTrackStates();
-  const mergedTrackStates = {
-    ...get(
-      trackStatesFromStorage,
-      `${activeGenomeId}.objectTracks.${activeEnsObjectId}`
-    ),
-    ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
-  } as TrackStates;
-
-  const tracksToTurnOff: string[] = [];
-  const tracksToTurnOn: string[] = [];
-
-  Object.values(mergedTrackStates).forEach((trackStates) => {
-    Object.keys(trackStates).forEach((trackId) => {
-      trackStates[trackId] === Status.SELECTED
-        ? tracksToTurnOn.push(trackId.replace('track:', ''))
-        : tracksToTurnOff.push(trackId.replace('track:', ''));
-    });
-  });
-
-  const turnOffAction: OutgoingAction = {
-    type: OutgoingActionType.TURN_OFF_TRACKS,
-    payload: {
-      track_ids: tracksToTurnOff
-    }
-  };
-
-  const turnOnAction: OutgoingAction = {
-    type: OutgoingActionType.TURN_ON_TRACKS,
-    payload: {
-      track_ids: tracksToTurnOn
-    }
-  };
-  genomeBrowser.send(turnOffAction);
-  genomeBrowser.send(turnOnAction);
 };
 
 export const openBrowserNav = createAction(
