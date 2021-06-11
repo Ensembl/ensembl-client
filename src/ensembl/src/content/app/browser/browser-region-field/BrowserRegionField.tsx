@@ -58,9 +58,8 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputGroupRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLElement>(null);
-  const { changeFocusObject } = useGenomeBrowser();
+  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
   const handleFocus = () => props.toggleRegionFieldActive(true);
-  const { changeBrowserLocation } = useGenomeBrowser();
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 

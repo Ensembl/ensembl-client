@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 
 import {
   OutgoingActionType,
@@ -22,6 +22,7 @@ import {
 } from 'src/content/app/browser/browser-messaging-service';
 
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
   Toolbox,
@@ -34,7 +35,6 @@ import ZmenuInstantDownload from './ZmenuInstantDownload';
 import { ZmenuData } from './zmenu-types';
 
 import styles from './Zmenu.scss';
-import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 enum Direction {
   LEFT = 'left',
@@ -49,7 +49,7 @@ export type ZmenuProps = ZmenuData & {
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
-  const { genomeBrowser } = useContext(GenomeBrowserContext);
+  const { genomeBrowser } = useGenomeBrowser();
 
   const onOutsideClick = () => {
     const action: OutgoingAction = {

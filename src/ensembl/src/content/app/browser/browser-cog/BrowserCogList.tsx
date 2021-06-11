@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import {
   IncomingAction,
   IncomingActionType,
@@ -72,7 +72,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     }
   };
 
-  const { genomeBrowser } = useContext(GenomeBrowserContext);
+  const { genomeBrowser } = useGenomeBrowser();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(

@@ -26,7 +26,7 @@ import {
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
-import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
+import { BrowserNavIconStates } from '../browserState';
 
 import { RootState } from 'src/store';
 
@@ -37,15 +37,13 @@ type Props = {
   isDisabled: boolean;
 };
 
-
 export const BrowserNavBarControls = (props: Props) => (
   <div className={styles.browserNavBarControls}>
     {browserNavConfig.map((item: BrowserNavItem) => (
       <BrowserNavIcon
         key={item.name}
         browserNavItem={item}
-        // enabled={props.browserNavIconStates[item.name]}
-        enabled={true}
+        enabled={props.browserNavIconStates[item.name]}
       />
     ))}
     {props.isDisabled && <Overlay className={styles.overlay} />}

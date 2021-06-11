@@ -21,6 +21,13 @@ import faker from 'faker';
 import { TrackPanel, TrackPanelProps } from './TrackPanel';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser,
+  restoreBrowserTrackStates: jest.fn()
+}));
 
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
   <div className="trackPanel" />

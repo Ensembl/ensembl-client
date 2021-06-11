@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, ReactNode, useCallback, useContext } from 'react';
+import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -44,6 +44,7 @@ import {
   setActiveDrawerTrackId,
   toggleDrawer
 } from '../../drawer/drawerActions';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
   getHighlightedTrackId,
@@ -66,7 +67,6 @@ import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg'
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 import styles from './TrackPanelListItem.scss';
-import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 export type TrackPanelListItemProps = {
@@ -90,7 +90,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   );
   const activeDrawerTrackId = useSelector(getActiveDrawerTrackId);
 
-  const { genomeBrowser } = useContext(GenomeBrowserContext);
+  const { genomeBrowser } = useGenomeBrowser();
 
   const dispatch = useDispatch();
 

@@ -47,7 +47,7 @@ jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   changeBrowserLocation: mockChangeBrowserLocation
 }));
 
-jest.mock('genome-ensembl-browser', () => {
+jest.mock('ensembl-genome-browser', () => {
   return;
 });
 

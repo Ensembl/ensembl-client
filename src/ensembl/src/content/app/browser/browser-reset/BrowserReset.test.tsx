@@ -26,7 +26,7 @@ jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   changeFocusObject: mockChangeFocusObject
 }));
 
-jest.mock('genome-ensembl-browser', () => {
+jest.mock('ensembl-genome-browser', () => {
   return;
 });
 

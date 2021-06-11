@@ -18,6 +18,12 @@ class MockGenomeBrowser {
   public send() {
     return jest.fn();
   }
+
+  public subscribe() {
+    return {
+      unsubscribe: jest.fn()
+    };
+  }
 }
 
 export default MockGenomeBrowser;

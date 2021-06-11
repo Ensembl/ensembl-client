@@ -17,7 +17,8 @@ import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
-import GenomeBrowser, {
+import GenomeBrowser from 'ensembl-genome-browser';
+import {
   OutgoingAction,
   OutgoingActionType
 } from 'src/content/app/browser/browser-messaging-service';

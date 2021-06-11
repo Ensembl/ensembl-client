@@ -18,6 +18,13 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import { BrowserImage, BrowserImageProps } from './BrowserImage';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser,
+  activateGenomeBrowser: jest.fn()
+}));
 
 jest.mock('../browser-cog/BrowserCogList', () => () => (
   <div id="browserCogList" />

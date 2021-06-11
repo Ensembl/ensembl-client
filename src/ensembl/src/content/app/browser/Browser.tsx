@@ -25,7 +25,7 @@ import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { BreakpointWidth } from 'src/global/globalConfig';
-import GenomeBrowser from 'src/content/app/browser/browser-messaging-service';
+import GenomeBrowser from 'ensembl-genome-browser';
 
 import {
   parseEnsObjectId,
@@ -105,8 +105,8 @@ export const Browser = (props: BrowserProps) => {
     props.toggleDrawer(!isDrawerOpened);
   };
 
-  const shouldShowNavBar = true;
-  // props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
+  const shouldShowNavBar =
+    props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
 
   if (!props.activeGenomeId) {
     return null;
