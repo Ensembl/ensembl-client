@@ -11,7 +11,8 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
+  CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
+  CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
   KUBE_CONTEXT: ens-dev-ctx
   DEPLOYENV: dev
   ENVIRONMENT: production
@@ -20,11 +21,11 @@ variables:
 # Template to build static assets
 .build-static:
   stage: test_build_static
-  image: node:14.16.0
+  image: node:14.17.0
 
   before_script:
   - cd src/ensembl
-  - npm install --global npm@7.7.4
+  - npm install --global npm@7.12.1
   - npm ci
 
   script:
@@ -35,6 +36,8 @@ variables:
     name: static_assets
     paths:
     - src/ensembl/dist/
+    - src/ensembl/package.json
+    - src/ensembl/package-lock.json
 
 # Template to build nginx docker image for WP k8s cluster
 # WP k8s cluster uses ingress
@@ -53,10 +56,29 @@ variables:
     - apk update && apk add git
     - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
     - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-    - git -C ensembl-client-nginx checkout migration/wp-hx/ingress
+    - git -C ensembl-client-nginx checkout migration/ssr
     - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
     - docker push ${CONTAINER_IMAGE}
     - docker rmi ${CONTAINER_IMAGE}
+    - docker logout $CI_REGISTRY
+
+# Template to build nginx docker image for WP k8s cluster
+# WP k8s cluster uses ingress
+.build-node:
+  image: docker
+
+  services:
+    - docker:dind
+
+  stage: build_docker_images
+
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+  script:
+    - docker build -t ${CONTAINER_NODE_IMAGE} -f src/ensembl/Dockerfile.node --no-cache .
+    - docker push ${CONTAINER_NODE_IMAGE}
+    - docker rmi ${CONTAINER_NODE_IMAGE}
     - docker logout $CI_REGISTRY
 
 # Template to build nginx docker image for EHK k8s cluster
@@ -94,29 +116,19 @@ variables:
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
-# Template to deploy to WP k8s cluster
-.deploy-wp-feature:
-  stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout deployfeature
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
-
 # Template to deploy review-app to WP k8s cluster
 .deploy-wp-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout wp-review-apps
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+  - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template for stopping review app - Do cleanup here 
 .stop-wp-review:
@@ -290,6 +302,19 @@ Nginx:review:
   needs:
     - Test_N_Build:review
 
+Node:review:
+  extends: .build-node
+  variables:
+    DEPLOYENV: dev
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+  except:
+  - dev
+  - master
+  - /^nodeploy\/.*$/
+
+  needs:
+    - Test_N_Build:review
+
 # Job to deploy to staging environment (EHK k8s cluster)
 Staging:EHK-HH:
   extends: .deploy-ehk
@@ -405,22 +430,6 @@ Internal:WP-HH:
     - Test_N_Build:internal
     - Nginx:Internal-WP
 
-Feature:EHK-HH:
-  extends: .deploy-ehk
-  variables:
-    DEPLOYENV: ${CI_COMMIT_REF_SLUG}
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    KUBE_CONTEXT: ens-dev-ctx
-
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-
 Review:WP-HX:
   extends: .deploy-wp-review
   variables:
@@ -438,6 +447,7 @@ Review:WP-HX:
   needs:
     - Test_N_Build:review
     - Nginx:review
+    - Node:review
 
 stop_review:
   extends: .stop-wp-review
