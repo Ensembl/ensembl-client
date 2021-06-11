@@ -72,10 +72,6 @@ module.exports = () => {
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: path.join(paths.nodeModulesPath, 'ensembl-genome-browser/browser*.wasm'),
-            to: path.join(paths.buildStaticPath, 'browser', '[name][ext]')
-          },
-          {
             from: path.join(paths.staticPath, 'favicons/*'),
             to: path.join(paths.buildStaticPath, 'favicons', '[name][ext]')
           },

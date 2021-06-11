@@ -2,32 +2,12 @@ const dotenv = require('dotenv').config();
 
 const webpack = require('webpack');
 const path = require('path');
-const url = require('url');
 const StylelintWebpackPlugin = require('stylelint-webpack-plugin');
 
 const { getPaths } = require('../paths');
 const paths = getPaths('development');
 
 const devServerConfig = {
-  onBeforeSetupMiddleware({ app }) {
-    // use proper mime-type for wasm files
-    app.get('*.wasm', function(req, res, next) {
-      const options = {
-        root: path.join(paths.nodeModulesPath, 'ensembl-genome-browser'),
-        dotfiles: 'deny',
-        headers: {
-          'Content-Type': 'application/wasm'
-        }
-      };
-      const parsedUrl = url.parse(req.url);
-      const fileName = path.basename(parsedUrl.pathname);
-      res.sendFile(fileName, options, function(err) {
-        if (err) {
-          next(err);
-        }
-      });
-    });
-  },
 
   /**
    * Rules to proxy requests to the backend server in development.
