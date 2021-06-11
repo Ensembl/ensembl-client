@@ -85,7 +85,6 @@ const ExampleLinks = () => {
 
   return (
     <div>
-      <div className={styles.exampleLinks__emptyTopbar} />
       <div className={styles.exampleLinks}>
         <Link to={path}>Example gene</Link>
       </div>

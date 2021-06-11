@@ -66,6 +66,7 @@ import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
+import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
 export type BrowserProps = {
   activeGenomeId: string | null;
@@ -107,10 +108,6 @@ export const Browser = (props: BrowserProps) => {
   const shouldShowNavBar =
     props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
 
-  if (!props.activeGenomeId) {
-    return null;
-  }
-
   const mainContent = (
     <>
       {shouldShowNavBar && <BrowserNavBar />}
@@ -122,7 +119,7 @@ export const Browser = (props: BrowserProps) => {
     <ApolloProvider client={client}>
       <div className={styles.browserInnerWrapper}>
         <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-        {props.browserQueryParams.focus ? (
+        {props.activeGenomeId && props.browserQueryParams.focus ? (
           <StandardAppLayout
             mainContent={mainContent}
             sidebarContent={<TrackPanel />}
@@ -137,7 +134,7 @@ export const Browser = (props: BrowserProps) => {
             viewportWidth={props.viewportWidth}
           />
         ) : (
-          <ExampleObjectLinks {...props} />
+          <BrowserInterstitial />
         )}
       </div>
     </ApolloProvider>

@@ -44,6 +44,9 @@ jest.mock('./track-panel/TrackPanel', () => () => (
 jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
   <div className="browserAppBar">BrowserAppBar</div>
 ));
+jest.mock('./interstitial/BrowserInterstitial', () => () => (
+  <div className="browserInterstitial">BrowserInterstitial</div>
+));
 jest.mock('./track-panel/track-panel-bar/TrackPanelBar', () => () => (
   <div className="trackPanelBar">TrackPanelBar</div>
 ));
@@ -84,9 +87,9 @@ describe('<Browser />', () => {
     );
 
   describe('rendering', () => {
-    test('does not render when no activeGenomeId', () => {
+    test('render interstitial page when there is no species selected', () => {
       const { container } = mountBrowserComponent({ activeGenomeId: null });
-      expect(container.innerHTML).toBeFalsy();
+      expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
     test('renders links to example objects only if there is no selected focus feature', () => {

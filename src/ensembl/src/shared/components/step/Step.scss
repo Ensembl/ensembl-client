@@ -1,0 +1,21 @@
+@import 'src/styles/common';
+
+.stepIcon {
+  width: 28px;
+  height: 28px;
+  color: $white;
+  font-weight: $bold;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 14px;
+  background-color: $grey;
+  float: left;
+  margin-right: 12px;
+}
+
+.stepTitle {
+  font-weight: $bold;
+  color: $black;
+  position: relative;
+  top: 5px;
+}

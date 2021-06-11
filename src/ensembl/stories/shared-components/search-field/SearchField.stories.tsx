@@ -34,11 +34,13 @@ const Wrapper = (props: any) => {
 };
 
 export const DefaultSearchFieldStory = () => (
-  <Wrapper
-    searchField={SearchField}
-    className={styles.searchField}
-    rightCorner={<QuestionButton helpText="This is a hint" />}
-  />
+  <>
+    <Wrapper
+      searchField={SearchField}
+      className={styles.searchField}
+      rightCorner={<QuestionButton helpText="This is a hint" />}
+    />
+  </>
 );
 
 DefaultSearchFieldStory.storyName = 'default';
