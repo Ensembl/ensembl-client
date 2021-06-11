@@ -110,13 +110,13 @@ const AboutEnsembl = () =>
   isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) ? (
     <Link to="/about" className={styles.aboutEnsembl}>
       About the
-      <Logotype className={styles.logotypeAbout} />
+      <Logotype className={styles.logotype} />
       team & its work
     </Link>
   ) : (
     <div className={styles.aboutEnsemblDisabled}>
       About the
-      <Logotype className={styles.logotypeAbout} />
+      <Logotype className={styles.logotype} />
       team & its work
     </div>
   );

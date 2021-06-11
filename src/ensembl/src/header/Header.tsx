@@ -58,9 +58,7 @@ export const Topbar = () => (
         </div>
       </div>
     </div>
-    <div className={styles.topRight}>
-      <span className={styles.topRightText}>Genome data & annotation</span>
-    </div>
+    <div className={styles.topbarRight}>Genome data & annotation</div>
   </div>
 );
 

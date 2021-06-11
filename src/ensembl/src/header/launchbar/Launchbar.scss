@@ -77,11 +77,6 @@
   }
 }
 
-.logotype {
-  height: 12px;
-  fill: white;
-}
-
 .aboutEnsembl {
   display: flex;
   align-items: center;
@@ -90,7 +85,7 @@
   color: $blue;
 }
 
-.logotypeAbout {
+.logotype {
   height: 10px;
   fill: $blue;
   margin-left: 0.5rem;
@@ -101,7 +96,7 @@
 .aboutEnsemblDisabled {
   color: $medium-dark-grey;
 
-  .logotypeAbout {
+  .logotype {
     fill: $medium-dark-grey;
   }
 }
