@@ -24,8 +24,8 @@ import { HelmetProvider, FilledContext } from 'react-helmet-async';
 import { ChunkExtractor } from '@loadable/server';
 
 import routesConfig from 'src/routes/routesConfig';
-import { getBaseApiUrls } from '../helpers/getConfigForClient';
-import { CONFIG_FIELD_ON_WINDOW } from 'config';
+import { getConfigForClient } from '../helpers/getConfigForClient';
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 import { getServerSideReduxStore } from '../serverSideReduxStore';
 
@@ -107,7 +107,9 @@ const viewRouter = async (req: Request, res: Response) => {
       ${extractor.getStyleTags()}
       <script>
         window.__PRELOADED_STATE__ = ${JSON.stringify(reduxState)}
-        window.${CONFIG_FIELD_ON_WINDOW} = ${JSON.stringify(getBaseApiUrls())}
+        window.${CONFIG_FIELD_ON_WINDOW} = ${JSON.stringify(
+    getConfigForClient()
+  )}
       </script>
     </head>
     <body>  

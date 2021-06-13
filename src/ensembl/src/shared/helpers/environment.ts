@@ -14,23 +14,34 @@
  * limitations under the License.
  */
 
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
+
 export enum Environment {
   DEVELOPMENT = 'development',
   INTERNAL = 'internal',
   PRODUCTION = 'production'
 }
 
-// FIXME: remove the dependency on process.env; it should not be exposed to the client anyway
-const currentEnvValue = process.env.ENVIRONMENT;
+export const readEnvironment = () => {
+  if (isClient()) {
+    // just make sure never to call this in jsdom environment
+    return (window as any)[CONFIG_FIELD_ON_WINDOW].environment;
+  } else {
+    return {
+      buildEnvironment: process.env.NODE_ENV ?? 'production',
+      deploymentEnvironment: process.env.ENVIRONMENT ?? 'development'
+    };
+  }
+};
 
 // Deployment environment
 export const isEnvironment = (environment: Environment[]): boolean => {
-  const currentEnvironment = getEnvironmentValue();
+  const currentEnvironment = getDeploymentEnvironment();
   return environment.includes(currentEnvironment);
 };
 
-const getEnvironmentValue = () =>
-  (currentEnvValue || 'development') as Environment;
+const getDeploymentEnvironment = () =>
+  readEnvironment().deploymentEnvironment as Environment;
 
 export const isServer = (): boolean => {
   return typeof window === 'undefined';

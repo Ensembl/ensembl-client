@@ -17,13 +17,35 @@
 // get base urls for the apis to be used by the client
 import type { BaseApiUrls } from 'config';
 
-export const getBaseApiUrls = (): BaseApiUrls => {
+const getBaseApiUrls = (): BaseApiUrls => {
   return {
     thoasBaseUrl: process.env.BROWSER_THOAS_BASE_URL ?? '/api/thoas',
     genomeSearchBaseUrl:
       process.env.BROWSER_GENOME_SEARCH_BASE_URL ?? '/api/genomesearch',
     docsBaseUrl: process.env.BROWSER_DOCS_BASE_URL ?? '/api/docs',
     genomeBrowserBaseUrl: process.env.GENOME_BROWSER_BASE_URL ?? '/api/browser',
-    refgetBaseUrl: process.env.REFGET_BASE_URL ?? '/api/refget'
+    refgetBaseUrl: process.env.REFGET_BASE_URL ?? '/api/refget',
+    customDownloadGeneSearch: process.env.GENESEARCH_API_ENDPOINT ?? ''
+  };
+};
+
+const getEnvironment = () => {
+  return {
+    buildEnvironment: process.env.NODE_ENV ?? 'production',
+    deploymentEnvironment: process.env.ENVIRONMENT ?? 'development'
+  };
+};
+
+const getKeys = () => {
+  return {
+    googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY ?? ''
+  };
+};
+
+export const getConfigForClient = () => {
+  return {
+    apiPaths: getBaseApiUrls(),
+    environment: getEnvironment(),
+    keys: getKeys()
   };
 };

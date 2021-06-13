@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { isClient } from 'src/shared/helpers/environment';
-
-export const CONFIG_FIELD_ON_WINDOW = '__CONFIG__';
+import { isClient, readEnvironment } from 'src/shared/helpers/environment';
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 export type BaseApiUrls = {
   thoasBaseUrl: string;
@@ -24,11 +23,16 @@ export type BaseApiUrls = {
   docsBaseUrl: string;
   genomeBrowserBaseUrl: string;
   refgetBaseUrl: string;
+  customDownloadGeneSearch: string;
+};
+
+export type PublicKeys = {
+  googleAnalyticsKey: string;
 };
 
 const getBaseApiUrls = (): BaseApiUrls => {
   if (isClient()) {
-    return (window as any)[CONFIG_FIELD_ON_WINDOW]?.apiPaths;
+    return (window as any)[CONFIG_FIELD_ON_WINDOW].apiPaths;
   }
 
   // the following will be run on the server
@@ -41,27 +45,39 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl:
       process.env.SSR_DOCS_BASE_URL ?? 'https://2020.ensembl.org/api/docs',
     genomeBrowserBaseUrl: '/api/browser', // irrelevant for server-side rendering
-    refgetBaseUrl: '/api/refget' // irrelevant for server-side rendering
+    refgetBaseUrl: '/api/refget', // irrelevant for server-side rendering
+    customDownloadGeneSearch: '' // irrelevant for server-side rendering
   };
 };
+
+const getKeys = (): PublicKeys => {
+  if (isClient()) {
+    return (window as any)[CONFIG_FIELD_ON_WINDOW].keys;
+  }
+
+  return {
+    googleAnalyticsKey: ''
+  };
+};
+
+const buildEnvironment = readEnvironment().buildEnvironment;
 
 export default {
   // Version numbers
   app_version: '0.4.0',
 
-  // Node environment
-  isDevelopment: process.env.NODE_ENV === 'development',
-  isProduction: process.env.NODE_ENV === 'production',
-  isTest: process.env.NODE_ENV === 'test',
+  // build environment
+  isDevelopment: buildEnvironment === 'development',
+  isProduction: buildEnvironment !== 'development',
 
-  apiHost: process.env.API_HOST || '',
-
-  // Keys for services
-  googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY || '',
+  // TODO: remove this from the config in the future (will require refactoring of the apiService)
+  // We will instead be passing base urls for differeent microservices individually
+  apiHost: '',
 
   // Genesearch endpoint (used by Custom Download)
-  // TODO: move this endpoint into the getBaseApiUrls function when the time comes
-  genesearchAPIEndpoint: process.env.GENESEARCH_API_ENDPOINT,
+  // TODO: change the name of this field to something returned from getBaseApiUrls when we continue work on Custom Download
+  genesearchAPIEndpoint: getBaseApiUrls().customDownloadGeneSearch,
 
-  ...getBaseApiUrls()
+  ...getBaseApiUrls(),
+  ...getKeys()
 };
