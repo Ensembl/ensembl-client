@@ -25,8 +25,6 @@ import CustomDownloadPage from 'src/content/app/custom-download/CustomDownloadPa
 import AboutPage from 'src/content/app/about/AboutPage';
 import HelpPage from 'src/content/app/help/HelpPage';
 
-// import { ServerSideReduxStore } from 'src/store';
-
 type ServerFetchParams = {
   store: any; // FIXME: should be ServerSideReduxStore, but needs tweaking
   match: any; // FIXME: ideally, should be match type from react-router-dom; but needs its generic extended

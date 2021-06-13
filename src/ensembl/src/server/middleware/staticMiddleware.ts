@@ -27,6 +27,8 @@ const setCustomAssetsHeaders = (res: Response, path: string) => {
   }
 };
 
+// In the dev environment, static files requested from the /static folder
+// will be served by Node using this middleware
 const staticMiddleware = express.static(paths.buildStaticPath, {
   setHeaders: setCustomAssetsHeaders
 });
