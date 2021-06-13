@@ -122,7 +122,7 @@ const useEntityViewerRouting = () => {
 
   useEffect(() => {
     if (!genomeId && activeGenomeId) {
-      // the url is just /entity-viewer; but the user has already viewed at some species in EntityViewer
+      // the url is /entity-viewer; but the user has already viewed some species in EntityViewer
       const entityIdForUrl = activeEntityId
         ? buildFocusIdForUrl(activeEntityId)
         : undefined;

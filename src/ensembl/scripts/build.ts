@@ -23,11 +23,12 @@ const build = async () => {
     dev: false
   });
 
-  webpack([webpackClientConfig, webpackServerConfig], (err, stats) => {
+  // the arguments of the callback function are error and webpack stats
+  webpack([webpackClientConfig, webpackServerConfig], (err) => {
     if (err) {
       console.log('error!', err); // eslint-disable-line no-console
     }
-    console.log('done!', stats); // eslint-disable-line no-console
+    console.log('The production build is ready'); // eslint-disable-line no-console
   });
 };
 

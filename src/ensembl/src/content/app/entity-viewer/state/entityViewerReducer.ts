@@ -16,14 +16,14 @@
 
 import { combineReducers } from 'redux';
 
-import entityViewerPageMetaRedicer from './pageMeta/entityViewerPageMetaSlice';
+import entityViewerPageMetaReducer from './pageMeta/entityViewerPageMetaSlice';
 import entityViewerGeneralReducer from './general/entityViewerGeneralSlice';
 import entityViewerSidebarReducer from './sidebar/entityViewerSidebarSlice';
 import entityViewerGeneViewReducer from './gene-view/entityViewerGeneViewReducer';
 import entityViewerBookmarksReducer from './bookmarks/entityViewerBookmarksSlice';
 
 export default combineReducers({
-  pageMeta: entityViewerPageMetaRedicer,
+  pageMeta: entityViewerPageMetaReducer,
   general: entityViewerGeneralReducer,
   sidebar: entityViewerSidebarReducer,
   geneView: entityViewerGeneViewReducer,

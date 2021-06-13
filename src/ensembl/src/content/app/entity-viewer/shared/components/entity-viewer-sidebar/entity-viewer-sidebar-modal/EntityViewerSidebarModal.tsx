@@ -22,7 +22,7 @@ import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/e
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './EntityViewerSidebarModal.scss';
 
