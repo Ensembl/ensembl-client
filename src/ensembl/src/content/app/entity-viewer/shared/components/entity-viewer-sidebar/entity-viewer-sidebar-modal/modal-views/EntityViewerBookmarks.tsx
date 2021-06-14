@@ -70,11 +70,11 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
             >
               <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
                 {previouslyViewedEntity.label}
-                <span className={styles.versionedStableId}>
+                <span className={styles.entityId}>
                   {previouslyViewedEntity.versioned_stable_id}
                 </span>
               </Link>
-              <span className={styles.previouslyViewedType}>
+              <span className={styles.entityType}>
                 {upperFirst(previouslyViewedEntity.type)}
               </span>
             </div>
@@ -99,7 +99,7 @@ export const EntityViewerSidebarBookmarks = () => {
 
   return (
     <section>
-      <div className={styles.title}>Bookmarks</div>
+      <div className={styles.title}>Previously viewed</div>
       {previouslyViewedEntities.length ? (
         <>
           <PreviouslyViewedLinks

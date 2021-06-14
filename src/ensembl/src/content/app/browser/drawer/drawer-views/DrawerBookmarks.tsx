@@ -26,6 +26,7 @@ import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackP
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 import analyticsTracking from 'src/services/analytics-service';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import styles from './DrawerBookmarks.scss';
 
@@ -36,10 +37,8 @@ export type DrawerBookmarksProps = {
 };
 
 const DrawerBookmarks = (props: DrawerBookmarksProps) => {
-  const limitedPreviouslyViewedObjects = props.previouslyViewedObjects.slice(
-    0,
-    props.previouslyViewedObjects.length - 20
-  );
+  const limitedPreviouslyViewedObjects =
+    props.previouslyViewedObjects.slice(20);
 
   const onClickHandler = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -58,12 +57,11 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
       <div className={styles.drawerTitle}>Previously viewed</div>
       <div className={styles.contentWrapper}>
         <div className={styles.linksWrapper}>
-          {[...limitedPreviouslyViewedObjects]
-            .reverse()
-            .map((previouslyViewedObject, index) => {
+          {[...limitedPreviouslyViewedObjects].map(
+            (previouslyViewedObject, index) => {
               const path = urlFor.browser({
                 genomeId: previouslyViewedObject.genome_id,
-                focus: previouslyViewedObject.object_id
+                focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
               });
 
               return (
@@ -81,7 +79,8 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
                   </span>
                 </span>
               );
-            })}
+            }
+          )}
         </div>
       </div>
     </>

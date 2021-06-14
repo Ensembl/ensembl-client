@@ -52,13 +52,12 @@ export const PreviouslyViewedLinks = () => {
     dispatch(closeTrackPanelModal());
   };
 
-  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-20);
+  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(0, 20);
 
   return (
     <div data-test-id="previously viewed links">
-      {[...limitedPreviouslyViewedObjects]
-        .reverse()
-        .map((previouslyViewedObject, index) => {
+      {[...limitedPreviouslyViewedObjects].map(
+        (previouslyViewedObject, index) => {
           const path = urlFor.browser({
             genomeId: previouslyViewedObject.genome_id,
             focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
@@ -77,16 +76,19 @@ export const PreviouslyViewedLinks = () => {
                 }
               >
                 {previouslyViewedObject.label}
-                <span className={styles.previouslyViewedVersionedStableId}>
-                  {previouslyViewedObject.versioned_stable_id}
-                </span>
+                {previouslyViewedObject.versioned_stable_id && (
+                  <span className={styles.objectId}>
+                    {previouslyViewedObject.versioned_stable_id}
+                  </span>
+                )}
               </Link>
-              <span className={styles.previouslyViewedType}>
+              <span className={styles.objectType}>
                 {upperFirst(previouslyViewedObject.object_type)}
               </span>
             </div>
           );
-        })}
+        }
+      )}
     </div>
   );
 };
