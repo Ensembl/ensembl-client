@@ -30,34 +30,43 @@ export type PublicKeys = {
   googleAnalyticsKey: string;
 };
 
+const defaultApiUrls: BaseApiUrls = {
+  thoasBaseUrl: 'https://2020.ensembl.org/api/thoas',
+  genomeSearchBaseUrl: 'https://2020.ensembl.org/api/genomesearch',
+  docsBaseUrl: 'https://2020.ensembl.org/api/docs',
+  genomeBrowserBaseUrl: '/api/browser',
+  refgetBaseUrl: '/api/refget',
+  customDownloadGeneSearch: ''
+};
+
+const defaultKeys = {
+  googleAnalyticsKey: ''
+};
+
 const getBaseApiUrls = (): BaseApiUrls => {
   if (isClient()) {
-    return (window as any)[CONFIG_FIELD_ON_WINDOW].apiPaths;
+    return (window as any)[CONFIG_FIELD_ON_WINDOW]?.apiPaths ?? defaultApiUrls;
   }
 
   // the following will be run on the server
   return {
-    thoasBaseUrl:
-      process.env.SSR_THOAS_BASE_URL ?? 'https://2020.ensembl.org/api/thoas',
+    thoasBaseUrl: process.env.SSR_THOAS_BASE_URL ?? defaultApiUrls.thoasBaseUrl,
     genomeSearchBaseUrl:
       process.env.SSR_GENOME_SEARCH_BASE_URL ??
-      'https://2020.ensembl.org/api/genomesearch',
-    docsBaseUrl:
-      process.env.SSR_DOCS_BASE_URL ?? 'https://2020.ensembl.org/api/docs',
-    genomeBrowserBaseUrl: '/api/browser', // irrelevant for server-side rendering
-    refgetBaseUrl: '/api/refget', // irrelevant for server-side rendering
-    customDownloadGeneSearch: '' // irrelevant for server-side rendering
+      defaultApiUrls.genomeBrowserBaseUrl,
+    docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
+    genomeBrowserBaseUrl: defaultApiUrls.genomeBrowserBaseUrl, // irrelevant for server-side rendering
+    refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
+    customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch // irrelevant for server-side rendering
   };
 };
 
 const getKeys = (): PublicKeys => {
   if (isClient()) {
-    return (window as any)[CONFIG_FIELD_ON_WINDOW].keys;
+    return (window as any)[CONFIG_FIELD_ON_WINDOW]?.keys || defaultKeys;
   }
 
-  return {
-    googleAnalyticsKey: ''
-  };
+  return defaultKeys;
 };
 
 const buildEnvironment = readEnvironment().buildEnvironment;

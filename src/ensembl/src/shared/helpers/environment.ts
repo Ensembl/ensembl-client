@@ -22,10 +22,17 @@ export enum Environment {
   PRODUCTION = 'production'
 }
 
-export const readEnvironment = () => {
+const defaultEnvironment = {
+  buildEnvironment: 'production',
+  deploymentEnvironment: 'development'
+};
+
+export const readEnvironment = (): typeof defaultEnvironment => {
   if (isClient()) {
     // just make sure never to call this in jsdom environment
-    return (window as any)[CONFIG_FIELD_ON_WINDOW].environment;
+    return (
+      (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment ?? defaultEnvironment
+    );
   } else {
     return {
       buildEnvironment: process.env.NODE_ENV ?? 'production',
