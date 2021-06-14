@@ -67,6 +67,7 @@ $backgroundColor: $black;
 }
 
 .filterLabelContainer {
+  background-color: $backgroundColor;
   grid-area: filter-toggle;  
   display: flex;
   flex-direction: column;
