@@ -116,19 +116,6 @@ variables:
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
-# Template to deploy to WP k8s cluster
-.deploy-wp-feature:
-  stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout deployfeature
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
-
 # Template to deploy review-app to WP k8s cluster
 .deploy-wp-review:
   stage: deploy
