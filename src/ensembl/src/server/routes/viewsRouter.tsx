@@ -105,7 +105,7 @@ const viewRouter = async (req: Request, res: Response) => {
       </script>
     </head>
     <body>  
-      <div id="ens-app">${markup}</div>
+      <div id="ens-app" class="ens-app">${markup}</div>
     
       ${extractor.getScriptTags()}
     </body>
