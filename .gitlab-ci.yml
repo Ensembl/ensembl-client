@@ -430,22 +430,6 @@ Internal:WP-HH:
     - Test_N_Build:internal
     - Nginx:Internal-WP
 
-Feature:EHK-HH:
-  extends: .deploy-ehk
-  variables:
-    DEPLOYENV: ${CI_COMMIT_REF_SLUG}
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    KUBE_CONTEXT: ens-dev-ctx
-
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-
 Review:WP-HX:
   extends: .deploy-wp-review
   variables:
