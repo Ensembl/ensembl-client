@@ -463,6 +463,7 @@ Review:WP-HX:
   needs:
     - Test_N_Build:review
     - Nginx:review
+    - Node:review
 
 stop_review:
   extends: .stop-wp-review
