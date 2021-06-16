@@ -126,7 +126,7 @@ variables:
   - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
   - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
   - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
   - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
@@ -293,7 +293,7 @@ Nginx:review:
   extends: .build-nginx-wp
   variables:
     DEPLOYENV: dev
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   except:
   - dev
   - master
@@ -433,7 +433,9 @@ Internal:WP-HH:
 Review:WP-HX:
   extends: .deploy-wp-review
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
