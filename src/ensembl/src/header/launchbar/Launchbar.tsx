@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -25,6 +26,7 @@ import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg'
 import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 import { ReactComponent as CustomDownloadIcon } from 'static/img/launchbar/custom-download.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
+import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import LaunchbarButton from './LaunchbarButton';
@@ -90,21 +92,33 @@ const Launchbar = () => {
               app="help"
               description="Help & documentation"
               icon={HelpIcon}
-              enabled={
-                isEnvironment([
-                  Environment.DEVELOPMENT,
-                  Environment.INTERNAL
-                ])
-              }
+              enabled={isEnvironment([
+                Environment.DEVELOPMENT,
+                Environment.INTERNAL
+              ])}
             />
           </div>
         </div>
       </div>
-      <div className={styles.about}>
-        <span className={styles.aboutText}>Genome data & annotation</span>
-      </div>
+      <AboutEnsembl />
     </div>
   );
 };
+
+// Temporarily disable the link to About Ensembl in production
+const AboutEnsembl = () =>
+  isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) ? (
+    <Link to="/about" className={styles.aboutEnsembl}>
+      About the
+      <Logotype className={styles.logotype} />
+      team & its work
+    </Link>
+  ) : (
+    <div className={styles.aboutEnsemblDisabled}>
+      About the
+      <Logotype className={styles.logotype} />
+      team & its work
+    </div>
+  );
 
 export default Launchbar;
