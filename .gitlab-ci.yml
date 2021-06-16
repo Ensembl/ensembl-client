@@ -127,10 +127,8 @@ variables:
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
   - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - cat ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  - cat ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  #- kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
-  #- kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template for stopping review app - Do cleanup here 
 .stop-wp-review:
