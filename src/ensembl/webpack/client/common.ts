@@ -98,7 +98,6 @@ export default (env: Record<string, unknown>): Configuration => {
       publicPath: isDev ? '/' : '/static/'
     },
 
-    // the plugins that extends the webpack configuration
     plugins: [
       // checks typescript types
       new ForkTsCheckerPlugin(),
@@ -114,6 +113,7 @@ export default (env: Record<string, unknown>): Configuration => {
     resolve: {
       extensions: ['.tsx', '.ts', '.js', '.scss'],
       alias: {
+        ensemblRoot: path.join(paths.rootPath),
         config: path.join(paths.rootPath, 'config.ts'),
         src: path.join(paths.rootPath, 'src'),
         tests: path.join(paths.rootPath, 'tests'),

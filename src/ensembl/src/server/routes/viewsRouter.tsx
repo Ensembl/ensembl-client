@@ -30,7 +30,7 @@ import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 import { getServerSideReduxStore } from '../serverSideReduxStore';
 
 import Root from 'src/root/Root';
-import { getPaths } from '../../../webpack/paths';
+import { getPaths } from 'ensemblRoot/webpack/paths';
 
 const paths = getPaths();
 const statsFile = path.resolve(paths.buildStaticPath, 'loadable-stats.json');

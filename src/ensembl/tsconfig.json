@@ -12,6 +12,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
+      "ensemblRoot/*": [
+        "./*"
+      ],
       "src/*": [
         "src/*"
       ],

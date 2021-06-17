@@ -98,6 +98,7 @@ export default (): Configuration => {
     resolve: {
       extensions: ['.tsx', '.ts', '.js', '.scss'],
       alias: {
+        ensemblRoot: path.join(paths.rootPath),
         config: path.join(paths.rootPath, 'config.ts'),
         src: path.join(paths.rootPath, 'src'),
         tests: path.join(paths.rootPath, 'tests'),
