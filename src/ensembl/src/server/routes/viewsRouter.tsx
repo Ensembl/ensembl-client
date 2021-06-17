@@ -24,13 +24,13 @@ import { HelmetProvider, FilledContext } from 'react-helmet-async';
 import { ChunkExtractor } from '@loadable/server';
 
 import routesConfig from 'src/routes/routesConfig';
+import { getPaths } from 'ensemblRoot/webpack/paths';
 import { getConfigForClient } from '../helpers/getConfigForClient';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 import { getServerSideReduxStore } from '../serverSideReduxStore';
 
 import Root from 'src/root/Root';
-import { getPaths } from 'ensemblRoot/webpack/paths';
 
 const paths = getPaths();
 const statsFile = path.resolve(paths.buildStaticPath, 'loadable-stats.json');
