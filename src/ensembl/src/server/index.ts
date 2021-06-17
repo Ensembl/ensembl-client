@@ -20,5 +20,5 @@ const port = 8080;
 
 server.listen(port, () => {
   // eslint-disable-next-line
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Ensembl-client server listening at http://localhost:${port}`);
 });

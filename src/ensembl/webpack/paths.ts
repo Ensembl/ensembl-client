@@ -24,18 +24,16 @@ export const getPaths = (env = 'development') => {
   const isDev = ['dev', 'development'].includes(env);
 
   const rootPath = projectRoot;
-  const nodeModulesPath = path.resolve(rootPath, 'node_modules');
   const staticPath = path.resolve(rootPath, 'static');
   const buildPath = path.resolve(rootPath, 'dist');
-  const serverEntryPath = path.resolve(rootPath, 'src/server/index.ts');
 
   return {
     rootPath,
     projectRoot,
-    nodeModulesPath,
     buildPath,
     staticPath,
-    serverEntryPath,
+    serverEntryPath: path.resolve(rootPath, 'src/server/index.ts'),
+    nodeModulesPath: path.resolve(rootPath, 'node_modules'),
     buildServerDir: path.resolve(buildPath, 'server'),
     buildStaticPath: path.resolve(buildPath, 'static'),
     htmlFileName: isDev ? 'index.html' : '../index.html',
