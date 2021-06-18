@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import classNames from 'classnames';
 import { Pick2, Pick3 } from 'ts-multipick';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -33,15 +32,11 @@ import {
   getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
-import {
-  toggleTranscriptInfo,
-  SortingRule
-} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import DefaultTranscriptsListItem, {
   DefaultTranscriptListItemProps
 } from './default-transcripts-list-item/DefaultTranscriptListItem';
-import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
 
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -50,8 +45,6 @@ import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGene
 import { FullCDS } from 'src/shared/types/thoas/cds';
 import { SplicedExon } from 'src/shared/types/thoas/exon';
 import { Slice } from 'src/shared/types/thoas/slice';
-
-import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import styles from './DefaultTranscriptsList.scss';
 
@@ -99,8 +92,6 @@ const DefaultTranscriptslist = (props: Props) => {
     ? (filterTranscriptsBySOTerm(sortedTranscripts, filters) as Transcript[])
     : sortedTranscripts;
 
-  const [isFilterOpen, setFilterOpen] = useState(false);
-
   useEffect(() => {
     const hasExpandedTranscripts = !!expandedTranscriptIds.length;
 
@@ -110,40 +101,10 @@ const DefaultTranscriptslist = (props: Props) => {
     }
   }, []);
 
-  const shouldShowFilterIndicator =
-    sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
-
-  const filterLabel = (
-    <span
-      className={classNames({
-        [styles.labelWithActivityIndicator]: shouldShowFilterIndicator
-      })}
-    >
-      Filter & sort
-    </span>
-  );
-
-  const toggleFilter = () => {
-    setFilterOpen(!isFilterOpen);
-  };
-
   return (
     <div>
       <div className={styles.header}>
-        {isFilterOpen && (
-          <TranscriptsFilter
-            label={filterLabel}
-            toggleFilter={toggleFilter}
-            transcripts={filteredTranscripts}
-          />
-        )}
         <div className={styles.row}>
-          {gene.transcripts.length > 5 && !isFilterOpen && (
-            <div className={styles.filterLabel} onClick={toggleFilter}>
-              {filterLabel}
-              <ChevronDown className={styles.chevron} />
-            </div>
-          )}
           <div className={styles.right}>Transcript ID</div>
         </div>
       </div>

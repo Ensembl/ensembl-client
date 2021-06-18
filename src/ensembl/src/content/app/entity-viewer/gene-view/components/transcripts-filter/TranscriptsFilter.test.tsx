@@ -82,12 +82,10 @@ const wrapInRedux = (
   state: typeof mockState = mockState,
   transcripts = defaultTranscripts
 ) => {
-  const filterLabel = <span>Filter & sort</span>;
   store = mockStore(state);
   return render(
     <Provider store={store}>
       <TranscriptsFilter
-        label={filterLabel}
         transcripts={transcripts}
         toggleFilter={mockToggleFilter}
       />
