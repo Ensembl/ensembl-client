@@ -62,7 +62,7 @@ variables:
     - docker rmi ${CONTAINER_IMAGE}
     - docker logout $CI_REGISTRY
 
-# Template to build nginx docker image for WP k8s cluster
+# Template to build node docker image for WP k8s cluster
 # WP k8s cluster uses ingress
 .build-node:
   image: docker
@@ -185,6 +185,8 @@ Nginx:Staging:
   needs:
     - Test_N_Build
 
+# Job to build node docker image for staging environment
+# dev branch -> Staging
 Node:Staging:
   extends: .build-node
   only:
@@ -203,6 +205,8 @@ Nginx:Live:
   needs:
     - Test_N_Build
 
+# Job to build node docker image for live environment
+# master branch -> Live
 Node:Live:
   extends: .build-node
   variables:
@@ -212,7 +216,7 @@ Node:Live:
   needs:
     - Test_N_Build
 
-# Job to build nginx docker image for staging and internal environment at WP
+# Job to build nginx docker image for internal environment at WP
 # master branch -> internal
 Nginx:Internal:
   extends: .build-nginx
@@ -224,6 +228,8 @@ Nginx:Internal:
   needs:
     - Test_N_Build:internal
 
+# Job to build node docker image for internal environment at WP
+# master branch -> internal
 Node:Internal:
   extends: .build-node
   variables:
@@ -234,6 +240,8 @@ Node:Internal:
   needs:
     - Test_N_Build:internal
 
+# Job to build nginx docker image for review environment at WP
+# all other branch -> dev
 Nginx:review:
   extends: .build-nginx
   variables:
@@ -247,6 +255,8 @@ Nginx:review:
   needs:
     - Test_N_Build:review
 
+# Job to build node docker image for review environment at WP
+# all other branch -> dev
 Node:review:
   extends: .build-node
   variables:
@@ -272,7 +282,7 @@ Staging:HX:
     - Nginx:Staging
     - Node:Staging
 
-# Job to deploy to staging environment (WP-HH k8s cluster)
+# Job to deploy to staging environment (WP-HL k8s cluster)
 Staging:HL:
   extends: .deploy
   environment:
@@ -297,7 +307,7 @@ Live:HX:
     - Test_N_Build
     - Nginx:Live
 
-# Job to deploy to live environment (WP-HH k8s cluster)
+# Job to deploy to live environment (WP-HL k8s cluster)
 Live:HL:
   extends: .deploy
   variables:
@@ -323,7 +333,7 @@ Internal:HX:
     - Test_N_Build:internal
     - Nginx:Internal
 
-# Job to deploy to internal environment (WP-HH k8s cluster)
+# Job to deploy to internal environment (WP-HL k8s cluster)
 Internal:HL:
   extends: .deploy
   variables:
