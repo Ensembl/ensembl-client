@@ -82,7 +82,7 @@ variables:
     - docker logout $CI_REGISTRY
 
 # Template to deploy to WP k8s cluster
-.deploy-wp:
+.deploy:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
@@ -92,7 +92,7 @@ variables:
   - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
 # Template to deploy review-app to WP k8s cluster
-.deploy-wp-review:
+.deploy-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
@@ -106,7 +106,7 @@ variables:
   - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template for stopping review app - Do cleanup here 
-.stop-wp-review:
+.stop-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   variables:
@@ -192,7 +192,7 @@ Node:Staging:
 
 # Job to build nginx docker image for live environment
 # master branch -> Live
-Nginx:Live-WP:
+Nginx:Live:
   extends: .build-nginx
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
@@ -203,7 +203,7 @@ Nginx:Live-WP:
 
 # Job to build nginx docker image for staging and internal environment at WP
 # master branch -> internal
-Nginx:Internal-WP:
+Nginx:Internal:
   extends: .build-nginx
   variables:
     DEPLOYENV: internal
@@ -241,7 +241,7 @@ Node:review:
 
 # Job to deploy to staging environment (WP-HX k8s cluster)
 Staging:HX:
-  extends: .deploy-wp
+  extends: .deploy
   environment:
     name : wp-hx-staging
   only:
@@ -253,7 +253,7 @@ Staging:HX:
 
 # Job to deploy to staging environment (WP-HH k8s cluster)
 Staging:HL:
-  extends: .deploy-wp
+  extends: .deploy
   environment:
     name : wp-hh-staging
   only:
@@ -264,8 +264,8 @@ Staging:HL:
     - Node:Staging
 
 # Job to deploy to live environment (WP-HX k8s cluster)
-Live:WP-HX:
-  extends: .deploy-wp
+Live:HX:
+  extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
   environment:
@@ -274,11 +274,11 @@ Live:WP-HX:
   - master
   needs:
     - Test_N_Build
-    - Nginx:Live-WP
+    - Nginx:Live
 
 # Job to deploy to live environment (WP-HH k8s cluster)
-Live:WP-HH:
-  extends: .deploy-wp
+Live:HH:
+  extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
   environment:
@@ -287,11 +287,11 @@ Live:WP-HH:
   - master
   needs:
     - Test_N_Build
-    - Nginx:Live-WP
+    - Nginx:Live
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
-Internal:WP-HX:
-  extends: .deploy-wp
+Internal:HX:
+  extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
   environment:
@@ -300,11 +300,11 @@ Internal:WP-HX:
   - master
   needs:
     - Test_N_Build:internal
-    - Nginx:Internal-WP
+    - Nginx:Internal
 
 # Job to deploy to internal environment (WP-HH k8s cluster)
-Internal:WP-HH:
-  extends: .deploy-wp
+Internal:HH:
+  extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
   environment:
@@ -313,10 +313,10 @@ Internal:WP-HH:
   - master
   needs:
     - Test_N_Build:internal
-    - Nginx:Internal-WP
+    - Nginx:Internal
 
-Review:WP-HX:
-  extends: .deploy-wp-review
+Review:HX:
+  extends: .deploy-review
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
@@ -337,7 +337,7 @@ Review:WP-HX:
     - Node:review
 
 stop_review:
-  extends: .stop-wp-review
+  extends: .stop-review
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
