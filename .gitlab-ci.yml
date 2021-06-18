@@ -86,10 +86,12 @@ variables:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout migration/wp-hx
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+  - git -C ensembl-k8s-manifests/ checkout wp-k8s
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template to deploy review-app to WP k8s cluster
 .deploy-review:
@@ -195,7 +197,16 @@ Node:Staging:
 Nginx:Live:
   extends: .build-nginx
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
+  only:
+  - master
+  needs:
+    - Test_N_Build
+
+Node:Live:
+  extends: .build-node
+  variables:
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   only:
   - master
   needs:
@@ -207,7 +218,17 @@ Nginx:Internal:
   extends: .build-nginx
   variables:
     DEPLOYENV: internal
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
+  only:
+  - master
+  needs:
+    - Test_N_Build:internal
+
+Node:Internal:
+  extends: .build-node
+  variables:
+    DEPLOYENV: internal
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   only:
   - master
   needs:
@@ -277,7 +298,7 @@ Live:HX:
     - Nginx:Live
 
 # Job to deploy to live environment (WP-HH k8s cluster)
-Live:HH:
+Live:HL:
   extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
@@ -303,7 +324,7 @@ Internal:HX:
     - Nginx:Internal
 
 # Job to deploy to internal environment (WP-HH k8s cluster)
-Internal:HH:
+Internal:HL:
   extends: .deploy
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
@@ -317,10 +338,6 @@ Internal:HH:
 
 Review:HX:
   extends: .deploy-review
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
