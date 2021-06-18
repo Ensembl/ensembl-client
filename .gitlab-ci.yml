@@ -33,7 +33,7 @@ variables:
   - npm run build
 
   artifacts:
-    name: static_assets
+    name: build_artifacts
     paths:
     - src/ensembl/dist/
     - src/ensembl/package.json
@@ -41,7 +41,7 @@ variables:
 
 # Template to build nginx docker image for WP k8s cluster
 # WP k8s cluster uses ingress
-.build-nginx-wp:
+.build-nginx:
   image: docker
 
   services:
@@ -146,10 +146,6 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
 
-  script:
-  - npm run test
-  - npm run build
-
   only:
   - dev
   - master
@@ -163,11 +159,6 @@ Test_N_Build:internal:
     GOOGLE_ANALYTICS_KEY: ${GA_KEY}
     ENVIRONMENT: internal
     API_HOST: ""
-
-  artifacts:
-    name: static_assets
-    paths:
-    - src/ensembl/dist/
 
   only:
   - master
@@ -185,10 +176,15 @@ Test_N_Build:review:
 
 # Job to build nginx docker image for staging environment
 # dev branch -> Staging
-Nginx:Staging-WP:
-  extends: .build-nginx-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
+Nginx:Staging:
+  extends: .build-nginx
+  only:
+  - dev
+  needs:
+    - Test_N_Build
+
+Node:Staging:
+  extends: .build-node
   only:
   - dev
   needs:
@@ -197,7 +193,7 @@ Nginx:Staging-WP:
 # Job to build nginx docker image for live environment
 # master branch -> Live
 Nginx:Live-WP:
-  extends: .build-nginx-wp
+  extends: .build-nginx
   variables:
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
   only:
@@ -208,7 +204,7 @@ Nginx:Live-WP:
 # Job to build nginx docker image for staging and internal environment at WP
 # master branch -> internal
 Nginx:Internal-WP:
-  extends: .build-nginx-wp
+  extends: .build-nginx
   variables:
     DEPLOYENV: internal
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
@@ -218,7 +214,7 @@ Nginx:Internal-WP:
     - Test_N_Build:internal
 
 Nginx:review:
-  extends: .build-nginx-wp
+  extends: .build-nginx
   variables:
     DEPLOYENV: dev
     CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
@@ -244,30 +240,28 @@ Node:review:
     - Test_N_Build:review
 
 # Job to deploy to staging environment (WP-HX k8s cluster)
-Staging:WP-HX:
+Staging:HX:
   extends: .deploy-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
   environment:
     name : wp-hx-staging
   only:
   - dev
   needs:
     - Test_N_Build
-    - Nginx:Staging-WP
+    - Nginx:Staging
+    - Node:Staging
 
 # Job to deploy to staging environment (WP-HH k8s cluster)
-Staging:WP-HH:
+Staging:HL:
   extends: .deploy-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
   environment:
     name : wp-hh-staging
   only:
   - dev
   needs:
     - Test_N_Build
-    - Nginx:Staging-WP
+    - Nginx:Staging
+    - Node:Staging
 
 # Job to deploy to live environment (WP-HX k8s cluster)
 Live:WP-HX:
