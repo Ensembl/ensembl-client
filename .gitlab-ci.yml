@@ -199,7 +199,7 @@ Node:Staging:
 Nginx:Live:
   extends: .build-nginx
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
   only:
   - master
   needs:
@@ -298,7 +298,8 @@ Staging:HL:
 Live:HX:
   extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name : wp-hx-live
   only:
@@ -306,12 +307,14 @@ Live:HX:
   needs:
     - Test_N_Build
     - Nginx:Live
+    - Node:Live
 
 # Job to deploy to live environment (WP-HL k8s cluster)
 Live:HL:
   extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name : wp-hh-live
   only:
@@ -319,12 +322,14 @@ Live:HL:
   needs:
     - Test_N_Build
     - Nginx:Live
+    - Node:Live
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
 Internal:HX:
   extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
     name : wp-hx-internal
   only:
@@ -332,12 +337,14 @@ Internal:HX:
   needs:
     - Test_N_Build:internal
     - Nginx:Internal
+    - Node:Internal
 
 # Job to deploy to internal environment (WP-HL k8s cluster)
 Internal:HL:
   extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
     name : wp-hh-internal
   only:
@@ -345,6 +352,7 @@ Internal:HL:
   needs:
     - Test_N_Build:internal
     - Nginx:Internal
+    - Node:Internal
 
 Review:HX:
   extends: .deploy-review
