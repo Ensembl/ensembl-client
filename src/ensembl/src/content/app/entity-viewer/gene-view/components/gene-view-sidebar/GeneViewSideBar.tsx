@@ -22,7 +22,7 @@ import GeneExternalReferences from 'src/content/app/entity-viewer/gene-view/comp
 
 import { getEntityViewerSidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 const GeneViewSidebar = () => {
   const activeTabName = useSelector(getEntityViewerSidebarTabName);

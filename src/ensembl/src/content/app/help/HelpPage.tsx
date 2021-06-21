@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
+import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import loadable from '@loadable/component';
 
-export type EntityViewerGeneralState = Readonly<{
-  activeGenomeId: string | null;
-  activeEntityIds: { [genomeId: string]: string };
-}>;
+import useHasMounted from 'src/shared/hooks/useHasMounted';
 
-export const initialState: EntityViewerGeneralState = {
-  activeGenomeId: null, // FIXME add entity viewer storage service
-  activeEntityIds: {}
+const LoadableHelp = loadable(() => import('./Help'));
+
+const HelpPage = () => {
+  const hasMounted = useHasMounted();
+
+  return (
+    <>
+      <Helmet>
+        <title>Help and documentation — Ensembl</title>
+        <meta name="description" content="Ensembl help and documentation" />
+      </Helmet>
+      {hasMounted && <LoadableHelp />}
+    </>
+  );
 };
 
-export const buildInitialState = () => {
-  return { ...initialState, ...entityViewerStorageService.getGeneralState() };
-};
+export default HelpPage;

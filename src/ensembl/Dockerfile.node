@@ -1,0 +1,13 @@
+# PRODUCTION IMAGE
+FROM node:14.17.0-alpine
+
+WORKDIR /srv/ensembl-client/
+
+ENV NODE_ENV=production
+COPY src/ensembl/package*.json ./
+COPY src/ensembl/dist ./dist/
+
+RUN npm ci --only=production
+
+EXPOSE 8080
+CMD [ "node", "dist/server/server.js" ]

@@ -18,10 +18,16 @@ import browserStorageService from './browser-storage-service';
 
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 
-const activeGenomeId = browserStorageService.getActiveGenomeId();
-const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
-const trackStates = browserStorageService.getTrackStates();
-const chrLocations = browserStorageService.getChrLocation();
+const isServer = typeof window === 'undefined';
+
+const activeGenomeId = !isServer
+  ? browserStorageService.getActiveGenomeId()
+  : null;
+const activeEnsObjectIds = !isServer
+  ? browserStorageService.getActiveEnsObjectIds()
+  : [];
+const trackStates = !isServer ? browserStorageService.getTrackStates() : {};
+const chrLocations = !isServer ? browserStorageService.getChrLocation() : [];
 
 export enum BrowserNavAction {
   NAVIGATE_UP = 'navigate-up',

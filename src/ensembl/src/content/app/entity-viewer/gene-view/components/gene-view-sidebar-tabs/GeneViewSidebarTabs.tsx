@@ -21,7 +21,7 @@ import {
   openSidebar,
   closeSidebarModal,
   setSidebarTabName
-} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+} from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import {
   isEntityViewerSidebarOpen,
@@ -29,7 +29,7 @@ import {
   getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
-import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
