@@ -35,7 +35,7 @@ export const getEntityViewerGenomeState = (state: RootState) => {
 export const getEntityViewerSidebarUIState = (state: RootState) => {
   const activeEntityId = getEntityViewerActiveEntityId(state);
   return activeEntityId
-    ? getEntityViewerGenomeState(state)?.entities[activeEntityId]?.uIState ||
+    ? getEntityViewerGenomeState(state)?.entities[activeEntityId]?.uiState ||
         null
     : null;
 };
@@ -54,5 +54,9 @@ export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
     : false;
 };
 
-export const getEntityViewerSidebarModalView = (state: RootState) =>
-  getEntityViewerGenomeState(state)?.sidebarModalView ?? null;
+export const getEntityViewerSidebarModalView = (state: RootState) => {
+  const activeGenomeId = getEntityViewerActiveGenomeId(state);
+  return activeGenomeId
+    ? getEntityViewerGenomeState(state)?.sidebarModalView
+    : null;
+};

@@ -33,8 +33,6 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import {
   getFilters,
   getSortingRule
@@ -209,8 +207,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-
   const shouldShowFilterIndicator =
     sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
 
@@ -231,10 +227,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   useEffect(() => {
     if (!genomeId || !props.gene) {
       return;
-    }
-
-    if (isSidebarOpen) {
-      dispatch(closeSidebarModal());
     }
 
     dispatch(
