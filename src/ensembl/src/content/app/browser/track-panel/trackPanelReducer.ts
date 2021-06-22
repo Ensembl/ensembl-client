@@ -18,16 +18,15 @@ import { ActionType, getType } from 'typesafe-actions';
 import pickBy from 'lodash/pickBy';
 
 import {
-  getInitialTrackPanelState,
-  getInitialTrackPanelStateForGenome,
-  getPersistentTrackPanelStateForGenome,
+  getTrackPanelState,
+  getTrackPanelStateForGenome,
   TrackPanelState
 } from './trackPanelState';
 import * as browserActions from 'src/content/app/browser/browserActions';
 import * as trackPanelActions from './trackPanelActions';
 
 export default function trackPanel(
-  state: TrackPanelState = getInitialTrackPanelState(),
+  state: TrackPanelState = getTrackPanelState(),
   action:
     | ActionType<typeof trackPanelActions>
     | ActionType<typeof browserActions>
@@ -35,19 +34,15 @@ export default function trackPanel(
   switch (action.type) {
     case getType(browserActions.setDataFromUrl):
       const { activeGenomeId } = action.payload;
-      const newTrackPanelStateForGenome = state[activeGenomeId]
-        ? {
-            ...state[activeGenomeId],
-            ...getPersistentTrackPanelStateForGenome(activeGenomeId)
-          }
-        : {
-            ...getInitialTrackPanelStateForGenome(activeGenomeId)
-          };
 
-      return {
-        ...state,
-        [activeGenomeId]: newTrackPanelStateForGenome
-      };
+      if (!state[activeGenomeId]) {
+        return {
+          ...state,
+          [activeGenomeId]: getTrackPanelStateForGenome(activeGenomeId)
+        };
+      } else {
+        return state;
+      }
     case getType(trackPanelActions.updateTrackPanelForGenome):
       return {
         ...state,

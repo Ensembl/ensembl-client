@@ -55,19 +55,21 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   collapsedTrackIds: []
 };
 
-export const getInitialTrackPanelState = (): TrackPanelState => {
+export const getTrackPanelState = (): TrackPanelState => {
   const genomeId = browserStorageService.getActiveGenomeId();
-  return genomeId
-    ? { [genomeId]: getInitialTrackPanelStateForGenome(genomeId) }
-    : {};
+  return genomeId ? { [genomeId]: getTrackPanelStateForGenome(genomeId) } : {};
 };
 
-export const getInitialTrackPanelStateForGenome = (
+export const getTrackPanelStateForGenome = (
   genomeId: string
-): TrackPanelStateForGenome => ({
-  ...defaultTrackPanelStateForGenome,
-  ...getPersistentTrackPanelStateForGenome(genomeId)
-});
+): TrackPanelStateForGenome => {
+  return genomeId
+    ? {
+        ...defaultTrackPanelStateForGenome,
+        ...getPersistentTrackPanelStateForGenome(genomeId)
+      }
+    : defaultTrackPanelStateForGenome;
+};
 
 export const getPersistentTrackPanelStateForGenome = (
   genomeId: string
