@@ -22,7 +22,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import usePrevious from 'src/shared/hooks/usePrevious';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
-import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
+import Chevron from 'src/shared/components/chevron/Chevron';
 
 import styles from './StandardAppLayout.scss';
 
@@ -122,15 +122,13 @@ StandardAppLayout.defaultProps = {
 };
 
 const SidebarModeToggle = (props: SidebarModeToggleProps) => {
-  const chevronClasses = classNames(styles.sidebarModeToggleChevron, {
-    [styles.sidebarModeToggleChevronOpen]:
-      props.showAction === SidebarModeToggleAction.OPEN
-  });
-
   return (
     <div className={styles.sidebarModeToggle}>
       <Chevron
-        className={chevronClasses}
+        direction={
+          props.showAction === SidebarModeToggleAction.OPEN ? 'left' : 'right'
+        }
+        classNames={{ svg: styles.sidebarModeToggleChevron }}
         onClick={props.onClick}
         data-test-id="sidebarModeToggle"
       />

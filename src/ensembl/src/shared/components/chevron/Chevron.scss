@@ -5,6 +5,10 @@
   height: 8px;
 }
 
+.chevron_clickable {
+  cursor: pointer;
+}
+
 .chevron_animated {
   transition: transform 0.3s ease-in-out;
 }

@@ -26,7 +26,11 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 type Props = {
   direction: Direction;
   animateDirectionChange: boolean;
-  className?: string;
+  onClick?: () => void;
+  classNames?: {
+    wrapper?: string;
+    svg?: string;
+  };
 };
 
 const Chevron = (props: Props) => {
@@ -34,11 +38,16 @@ const Chevron = (props: Props) => {
   const chevronClasses = classNames(
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
+    { [styles.chevron_clickable]: props.onClick },
     { [styles.chevron_animated]: props.animateDirectionChange },
-    props.className
+    props.classNames?.svg
   );
 
-  return <ChevronDown className={chevronClasses} />;
+  return (
+    <span className={props.classNames?.wrapper}>
+      <ChevronDown className={chevronClasses} onClick={props.onClick} />
+    </span>
+  );
 };
 
 Chevron.defaultProps = {
