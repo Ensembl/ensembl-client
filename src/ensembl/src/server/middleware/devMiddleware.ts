@@ -78,31 +78,12 @@ const devMiddleware = [genomeBrowserRouter, proxyMiddleware, docsProxyMiddleware
 
 */
 
-// const proxyMiddleware = createProxyMiddleware('/api', {
-//   target: 'https://staging-2020.ensembl.org',
-//   changeOrigin: true,
-//   secure: false
-// });
-
-const proxyMiddleware = createProxyMiddleware(['/api/**', '!/api/thoas'], {
+const proxyMiddleware = createProxyMiddleware('/api', {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-const thoasProxyMiddleware = createProxyMiddleware('/api/thoas', {
-  target: 'http://localhost:8000',
-  pathRewrite: {
-    '^/api/docs': '/api' // rewrite path
-  },
-  changeOrigin: true,
-  secure: false
-});
-
-const devMiddleware = [
-  genomeBrowserRouter,
-  proxyMiddleware,
-  thoasProxyMiddleware
-];
+const devMiddleware = [genomeBrowserRouter, proxyMiddleware];
 
 export default devMiddleware;
