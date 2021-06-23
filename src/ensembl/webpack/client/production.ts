@@ -1,27 +1,48 @@
-const webpack = require('webpack');
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const CompressionPlugin = require('compression-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
+/**
+ * See the NOTICE file distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const { getPaths } = require('../paths');
+import path from 'path';
+import webpack, { Configuration } from 'webpack';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import CompressionPlugin from 'compression-webpack-plugin';
+import WorkboxPlugin from 'workbox-webpack-plugin';
+import dotenv from 'dotenv';
+
+import { getPaths } from '../paths';
 const paths = getPaths('production');
 
 // copy from the environment the same variables that are declared in .env.example
 // NOTE: if no environment variable with corresponding key is present, the value from .env.example will be used
-const dotenv = require('dotenv').config({
+const dotenvConfig = dotenv.config({
   path: paths.envTemplatePath
 });
-const getEnvironmentVariables = () => Object.keys(dotenv.parsed).reduce((result, key) => ({
-  ...result,
-  [`process.env.${key}`]: JSON.stringify(process.env[key])
-}), {});
+const getEnvironmentVariables = () =>
+  Object.keys(dotenvConfig.parsed).reduce(
+    (result, key) => ({
+      ...result,
+      [`process.env.${key}`]: JSON.stringify(process.env[key])
+    }),
+    {}
+  );
 
-// concatenate the common config with the prod config
-module.exports = () => {
+// production config, to be merged with the common config
+export default (): Configuration => {
   return {
     mode: 'production',
     devtool: 'source-map',
@@ -95,15 +116,14 @@ module.exports = () => {
 
       new CompressionPlugin({
         test: /.(js|css|html|wasm)$/,
-        filename: "[path][base].br",
-        algorithm: "brotliCompress",
+        filename: '[path][base].br',
+        algorithm: 'brotliCompress',
         threshold: 5120,
         minRatio: 0.7
       }),
 
       // adds workbox library (from Google) support to enable service workers
       new WorkboxPlugin.GenerateSW({
-        swDest: '../service-worker.js', // save service worker in the root folder (/dist) instead of /dist/static
         clientsClaim: true,
         skipWaiting: true,
         exclude: [
@@ -113,17 +133,14 @@ module.exports = () => {
           /\.br$/,
           /\.js\.map$/,
           /\.css\.map$/,
-          /^.*favicons\/.*$/  // this is a roundabout way to exclude all files in the favicons folder; simple `/\/favicons\//` regex won't work
+          /^.*favicons\/.*$/ // this is a roundabout way to exclude all files in the favicons folder; simple `/\/favicons\//` regex won't work
         ]
-      }),
+      })
     ],
     optimization: {
       // use terser plugin instead of uglify js to support minimisation for modern React.js features
       // also, optimise/minimise CSS files
-      minimizer: [
-        new TerserPlugin(),
-        new CssMinimizerPlugin()
-      ],
+      minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
 
       // create a separate webpack runtime chunk that will be used for all bundles
       runtimeChunk: true,
@@ -143,6 +160,5 @@ module.exports = () => {
       // module names are hashed into small numeric values
       moduleIds: 'deterministic'
     }
-  }
-
+  };
 };

@@ -17,7 +17,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import Launchbar from './launchbar/Launchbar';
 
@@ -60,29 +60,23 @@ export const Topbar = () => (
         </div>
       </div>
     </div>
-    <AboutEnsembl />
+    <div className={styles.topbarRight}>Genome data & annotation</div>
   </div>
 );
 
-// Temporarily disable the link to About Ensembl in production
-const AboutEnsembl = () =>
-  isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) ? (
-    <Link to="/about" className={styles.aboutEnsembl}>
-      About
-      <Logotype className={styles.logotypeAbout} />
-    </Link>
-  ) : (
-    <div className={styles.aboutEnsemblDisabled}>
-      About
-      <Logotype className={styles.logotypeAbout} />
-    </div>
-  );
+export const Header = () => {
+  const hasMounted = useHasMounted();
 
-export const Header = () => (
-  <header>
-    <Topbar />
-    <Launchbar />
-  </header>
-);
+  if (!hasMounted) {
+    return <header />;
+  }
+
+  return (
+    <header>
+      <Topbar />
+      <Launchbar />
+    </header>
+  );
+};
 
 export default Header;

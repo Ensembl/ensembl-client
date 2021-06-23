@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralState';
+import { EntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 import storageService, {
   StorageServiceInterface,
   StorageType

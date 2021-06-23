@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import config from 'config';
+import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
 export enum Environment {
   DEVELOPMENT = 'development',
@@ -22,6 +22,38 @@ export enum Environment {
   PRODUCTION = 'production'
 }
 
+const defaultEnvironment = {
+  buildEnvironment: 'production',
+  deploymentEnvironment: 'development'
+};
+
+export const readEnvironment = (): typeof defaultEnvironment => {
+  if (isClient()) {
+    // just make sure never to call this in jsdom environment
+    return (
+      (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment ?? defaultEnvironment
+    );
+  } else {
+    return {
+      buildEnvironment: process.env.NODE_ENV ?? 'production',
+      deploymentEnvironment: process.env.ENVIRONMENT ?? 'development'
+    };
+  }
+};
+
+// Deployment environment
 export const isEnvironment = (environment: Environment[]): boolean => {
-  return environment.includes(config.environment as Environment);
+  const currentEnvironment = getDeploymentEnvironment();
+  return environment.includes(currentEnvironment);
+};
+
+const getDeploymentEnvironment = () =>
+  readEnvironment().deploymentEnvironment as Environment;
+
+export const isServer = (): boolean => {
+  return typeof window === 'undefined';
+};
+
+export const isClient = (): boolean => {
+  return typeof window === 'object';
 };

@@ -31,10 +31,14 @@ import {
   transcriptSortingFunctions,
   defaultSort
 } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { filterTranscriptsBySOTerm } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
-import { getSortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+import {
+  getFilters,
+  getSortingRule
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -72,11 +76,20 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   const sortingFunction = transcriptSortingFunctions[sortingRule];
   const sortedTranscripts = sortingFunction(props.gene.transcripts);
-  const proteinCodingTranscripts = sortedTranscripts.filter(
+
+  const filters = useSelector(getFilters);
+  const filteredTranscripts = Object.values(filters).some(Boolean)
+    ? (filterTranscriptsBySOTerm(sortedTranscripts, filters) as Transcript[])
+    : sortedTranscripts;
+
+  const proteinCodingTranscripts = filteredTranscripts.filter(
     isProteinCodingTranscript
   ) as Transcript[];
 
   useEffect(() => {
+    if (!proteinCodingTranscripts.length) {
+      return;
+    }
     const hasExpandedTranscripts = !!expandedTranscriptIds.length;
     const firstProteinId =
       proteinCodingTranscripts[0].product_generating_contexts[0].product
@@ -89,7 +102,9 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   const longestProteinLength = getLongestProteinLength(props.gene);
 
-  return (
+  return !proteinCodingTranscripts.length ? (
+    <div>No transcripts to show with the filters selected</div>
+  ) : (
     <div className={styles.proteinsList}>
       {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem

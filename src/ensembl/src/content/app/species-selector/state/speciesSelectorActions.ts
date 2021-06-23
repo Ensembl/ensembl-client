@@ -24,7 +24,7 @@ import apiService from 'src/services/api-service';
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 import analyticsTracking from 'src/services/analytics-service';
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/browser/browserActions';
-import { deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralActions';
+import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
 import {
   getCommittedSpecies,
@@ -175,6 +175,12 @@ export const ensureSpeciesIsEnabled =
     }
 
     dispatch(toggleSpeciesUseAndSave(genomeId));
+  };
+
+export const loadStoredSpecies =
+  (): ThunkAction<void, any, null, Action<string>> => (dispatch) => {
+    const storedSpecies = speciesSelectorStorageService.getSelectedSpecies();
+    dispatch(updateCommittedSpecies(storedSpecies));
   };
 
 export const fetchPopularSpecies =

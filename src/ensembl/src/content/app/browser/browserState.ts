@@ -19,18 +19,24 @@ import browserStorageService from './browser-storage-service';
 
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 
-const activeGenomeId = browserStorageService.getActiveGenomeId();
-const activeEnsObjectIds = browserStorageService.getActiveEnsObjectIds();
-const trackStates = browserStorageService.getTrackStates();
-const chrLocations = browserStorageService.getChrLocation();
+const isServer = typeof window === 'undefined';
 
-export type BrowserNavAction = 
+const activeGenomeId = !isServer
+  ? browserStorageService.getActiveGenomeId()
+  : null;
+const activeEnsObjectIds = !isServer
+  ? browserStorageService.getActiveEnsObjectIds()
+  : [];
+const trackStates = !isServer ? browserStorageService.getTrackStates() : {};
+const chrLocations = !isServer ? browserStorageService.getChrLocation() : [];
+
+export type BrowserNavAction =
   | OutgoingActionType.MOVE_UP
   | OutgoingActionType.MOVE_DOWN
   | OutgoingActionType.MOVE_LEFT
   | OutgoingActionType.MOVE_RIGHT
   | OutgoingActionType.ZOOM_IN
-  | OutgoingActionType.ZOOM_OUT
+  | OutgoingActionType.ZOOM_OUT;
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
 export type BrowserNavIconStates = {

@@ -15,8 +15,10 @@
 }
 
 .geneViewTabs {
-  position: absolute;
-  bottom: -9px;
+  padding: 0;
+  height: auto;
+  z-index: 2;
+  overflow-y: visible;
 }
 
 .disabledGeneTab {
@@ -39,6 +41,12 @@
     transform-origin: 0 0;
     transform: rotate(-45deg);
     top: 28px;
+  }
+}
+
+.selectedGeneTab.withOpenFilter {
+  &::after {
+    display: none;
   }
 }
 

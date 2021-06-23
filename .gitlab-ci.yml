@@ -11,7 +11,8 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
+  CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}
+  CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}
   KUBE_CONTEXT: ens-dev-ctx
   DEPLOYENV: dev
   ENVIRONMENT: production
@@ -20,11 +21,11 @@ variables:
 # Template to build static assets
 .build-static:
   stage: test_build_static
-  image: node:14.16.0
+  image: node:14.17.0
 
   before_script:
   - cd src/ensembl
-  - npm install --global npm@7.7.4
+  - npm install --global npm@7.12.1
   - npm ci
 
   script:
@@ -32,13 +33,15 @@ variables:
   - npm run build
 
   artifacts:
-    name: static_assets
+    name: build_artifacts
     paths:
     - src/ensembl/dist/
+    - src/ensembl/package.json
+    - src/ensembl/package-lock.json
 
 # Template to build nginx docker image for WP k8s cluster
 # WP k8s cluster uses ingress
-.build-nginx-wp:
+.build-nginx:
   image: docker
 
   services:
@@ -53,14 +56,15 @@ variables:
     - apk update && apk add git
     - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
     - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-    - git -C ensembl-client-nginx checkout migration/wp-hx/ingress
+    - git -C ensembl-client-nginx checkout migration/ssr
     - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
     - docker push ${CONTAINER_IMAGE}
     - docker rmi ${CONTAINER_IMAGE}
     - docker logout $CI_REGISTRY
 
-# Template to build nginx docker image for EHK k8s cluster
-.build-nginx-ehk:
+# Template to build node docker image for WP k8s cluster
+# WP k8s cluster uses ingress
+.build-node:
   image: docker
 
   services:
@@ -72,54 +76,39 @@ variables:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
   script:
-  - apk update && apk add git
-  - git clone --depth 1 https://github.com/Ensembl/ensembl-2020-static-assests.git
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-nginx.git
-  - sed -i "s/<DEPLOYMENT_ENV>/${DEPLOYENV}/g" ensembl-client-nginx/config/conf.d/local.conf
-  - docker build -t ${CONTAINER_IMAGE} -f ensembl-client-nginx/Dockerfile --no-cache .
-  - docker push ${CONTAINER_IMAGE}
-  - docker rmi ${CONTAINER_IMAGE}
-  - docker logout "$CI_REGISTRY"
-
-  needs:
-    - Test_N_Build
+    - docker build -t ${CONTAINER_NODE_IMAGE} -f src/ensembl/Dockerfile.node --no-cache .
+    - docker push ${CONTAINER_NODE_IMAGE}
+    - docker rmi ${CONTAINER_NODE_IMAGE}
+    - docker logout $CI_REGISTRY
 
 # Template to deploy to WP k8s cluster
-.deploy-wp:
+.deploy:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout migration/wp-hx
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-
-# Template to deploy to WP k8s cluster
-.deploy-wp-feature:
-  stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout deployfeature
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_service_node.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_service_node.yaml
+  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+  - git -C ensembl-k8s-manifests/ checkout wp-k8s
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template to deploy review-app to WP k8s cluster
-.deploy-wp-review:
+.deploy-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy/ checkout wp-review-apps
-  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml 
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
+  - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+  - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
+  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template for stopping review app - Do cleanup here 
-.stop-wp-review:
+.stop-review:
   stage: deploy
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   variables:
@@ -129,23 +118,6 @@ variables:
   - kubectl delete ingress ensembl-client-${CI_COMMIT_REF_SLUG}-ingress
   - kubectl delete svc ensembl-client-${CI_COMMIT_REF_SLUG}-svc
   - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-deployment
-
-# Template to deploy to EHK k8s cluster
-.deploy-ehk:
-  stage: deploy
-  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
-  before_script:
-  - export KUBECONFIG=/etc/deploy/config
-  - mkdir -p /etc/deploy
-  - echo ${EMBASSY_KUBECONFIG} | base64 -d > ${KUBECONFIG}
-  script:
-  - git clone https://gitlab.ebi.ac.uk/kamal/ensembl-client-caas-deploy.git
-  - git -C ensembl-client-caas-deploy checkout refactor-manifest
-  - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}-${DEPLOYENV}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - sed -i "s/<DEPLOYMNET_ENV>/${DEPLOYENV}/g" ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - cat ensembl-client-caas-deploy/ensembl_client_deployment.yaml
-  - kubectl config use-context ${KUBE_CONTEXT}
-  - kubectl apply -f ensembl-client-caas-deploy/ensembl_client_deployment.yaml
 
 Test:
   image: node:14.16.0
@@ -176,10 +148,6 @@ Test_N_Build:
     ENVIRONMENT: production
     API_HOST: ""
 
-  script:
-  - npm run test
-  - npm run build
-
   only:
   - dev
   - master
@@ -193,11 +161,6 @@ Test_N_Build:internal:
     GOOGLE_ANALYTICS_KEY: ${GA_KEY}
     ENVIRONMENT: internal
     API_HOST: ""
-
-  artifacts:
-    name: static_assets
-    paths:
-    - src/ensembl/dist/
 
   only:
   - master
@@ -213,30 +176,19 @@ Test_N_Build:review:
   - master
   - /^nodeploy\/.*$/
 
-# Job to build nginx docker image for staging environment (EHK k8s cluster)
-Nginx:Staging-EHK:
-  extends: .build-nginx-ehk
-  variables:
-    DEPLOYENV: staging
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-staging
-  only:
-  - dev
-
-# Job to build nginx docker image for live environment (EHK k8s cluster)
-Nginx:Live-EHK:
-  extends: .build-nginx-ehk
-  variables:
-    DEPLOYENV: prod
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
-  only:
-  - master
-
 # Job to build nginx docker image for staging environment
 # dev branch -> Staging
-Nginx:Staging-WP:
-  extends: .build-nginx-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
+Nginx:Staging:
+  extends: .build-nginx
+  only:
+  - dev
+  needs:
+    - Test_N_Build
+
+# Job to build node docker image for staging environment
+# dev branch -> Staging
+Node:Staging:
+  extends: .build-node
   only:
   - dev
   needs:
@@ -244,44 +196,57 @@ Nginx:Staging-WP:
 
 # Job to build nginx docker image for live environment
 # master branch -> Live
-Nginx:Live-WP:
-  extends: .build-nginx-wp
+Nginx:Live:
+  extends: .build-nginx
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
   only:
   - master
   needs:
     - Test_N_Build
 
-# Job to build nginx docker image for staging and internal environment
+# Job to build node docker image for live environment
+# master branch -> Live
+Node:Live:
+  extends: .build-node
+  variables:
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
+  only:
+  - master
+  needs:
+    - Test_N_Build
+
+# Job to build nginx docker image for internal environment at WP
 # master branch -> internal
-Nginx:Internal-EHK:
-  extends: .build-nginx-ehk
+Nginx:Internal:
+  extends: .build-nginx
   variables:
     DEPLOYENV: internal
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
   only:
   - master
   needs:
     - Test_N_Build:internal
 
-# Job to build nginx docker image for staging and internal environment at WP
+# Job to build node docker image for internal environment at WP
 # master branch -> internal
-Nginx:Internal-WP:
-  extends: .build-nginx-wp
+Node:Internal:
+  extends: .build-node
   variables:
     DEPLOYENV: internal
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   only:
   - master
   needs:
     - Test_N_Build:internal
 
+# Job to build nginx docker image for review environment at WP
+# all other branch -> dev
 Nginx:review:
-  extends: .build-nginx-wp
+  extends: .build-nginx
   variables:
     DEPLOYENV: dev
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   except:
   - dev
   - master
@@ -290,141 +255,107 @@ Nginx:review:
   needs:
     - Test_N_Build:review
 
-# Job to deploy to staging environment (EHK k8s cluster)
-Staging:EHK-HH:
-  extends: .deploy-ehk
+# Job to build node docker image for review environment at WP
+# all other branch -> dev
+Node:review:
+  extends: .build-node
   variables:
-    DEPLOYENV: staging
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-staging
-    KUBE_CONTEXT: ens-stage-ctx
-  only:
+    DEPLOYENV: dev
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+  except:
   - dev
+  - master
+  - /^nodeploy\/.*$/
+
   needs:
-    - Nginx:Staging-EHK
+    - Test_N_Build:review
 
 # Job to deploy to staging environment (WP-HX k8s cluster)
-Staging:WP-HX:
-  extends: .deploy-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
+Staging:HX:
+  extends: .deploy
   environment:
     name : wp-hx-staging
   only:
   - dev
   needs:
     - Test_N_Build
-    - Nginx:Staging-WP
+    - Nginx:Staging
+    - Node:Staging
 
-# Job to deploy to staging environment (WP-HH k8s cluster)
-Staging:WP-HH:
-  extends: .deploy-wp
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-stage-ing
+# Job to deploy to staging environment (WP-HL k8s cluster)
+Staging:HL:
+  extends: .deploy
   environment:
     name : wp-hh-staging
   only:
   - dev
   needs:
     - Test_N_Build
-    - Nginx:Staging-WP
-
-# Job to deploy to live environment (EHK k8s cluster)
-Live:EHK-HH:
-  extends: .deploy-ehk
-  variables:
-    DEPLOYENV: prod
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod
-    KUBE_CONTEXT: ens-prod-ctx
-  only:
-  - master
-  needs:
-    - Nginx:Live-EHK
+    - Nginx:Staging
+    - Node:Staging
 
 # Job to deploy to live environment (WP-HX k8s cluster)
-Live:WP-HX:
-  extends: .deploy-wp
+Live:HX:
+  extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name : wp-hx-live
   only:
   - master
   needs:
     - Test_N_Build
-    - Nginx:Live-WP
+    - Nginx:Live
+    - Node:Live
 
-# Job to deploy to live environment (WP-HH k8s cluster)
-Live:WP-HH:
-  extends: .deploy-wp
+# Job to deploy to live environment (WP-HL k8s cluster)
+Live:HL:
+  extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-prod-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-prod
   environment:
     name : wp-hh-live
   only:
   - master
   needs:
     - Test_N_Build
-    - Nginx:Live-WP
-
-# Job to deploy to internal environment (EHK k8s cluster)
-Internal:EHK-HH:
-  extends: .deploy-ehk
-  variables:
-    DEPLOYENV: internal
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal
-    KUBE_CONTEXT: ens-dev-ctx
-  only:
-  - master
-  needs:
-    - Test_N_Build:internal
-    - Nginx:Internal-EHK
+    - Nginx:Live
+    - Node:Live
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
-Internal:WP-HX:
-  extends: .deploy-wp
+Internal:HX:
+  extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
     name : wp-hx-internal
   only:
   - master
   needs:
     - Test_N_Build:internal
-    - Nginx:Internal-WP
+    - Nginx:Internal
+    - Node:Internal
 
-# Job to deploy to internal environment (WP-HH k8s cluster)
-Internal:WP-HH:
-  extends: .deploy-wp
+# Job to deploy to internal environment (WP-HL k8s cluster)
+Internal:HL:
+  extends: .deploy
   variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-internal-ing
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-internal
   environment:
     name : wp-hh-internal
   only:
   - master
   needs:
     - Test_N_Build:internal
-    - Nginx:Internal-WP
+    - Nginx:Internal
+    - Node:Internal
 
-Feature:EHK-HH:
-  extends: .deploy-ehk
-  variables:
-    DEPLOYENV: ${CI_COMMIT_REF_SLUG}
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    KUBE_CONTEXT: ens-dev-ctx
-
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-
-Review:WP-HX:
-  extends: .deploy-wp-review
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+Review:HX:
+  extends: .deploy-review
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
@@ -438,9 +369,10 @@ Review:WP-HX:
   needs:
     - Test_N_Build:review
     - Nginx:review
+    - Node:review
 
 stop_review:
-  extends: .stop-wp-review
+  extends: .stop-review
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop

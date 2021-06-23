@@ -18,11 +18,11 @@ import React, { lazy, Suspense, LazyExoticComponent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarActions';
+import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarState';
+import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './EntityViewerSidebarModal.scss';
 

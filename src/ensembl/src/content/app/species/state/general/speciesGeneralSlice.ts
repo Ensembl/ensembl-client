@@ -54,71 +54,67 @@ type SpeciesGeneralState = {
 const initialState: SpeciesGeneralState = {
   activeGenomeId: null,
   stats: {},
-  uiState: speciesStorageService.getUIState() || {}
+  uiState: {}
 };
 
-export const fetchStatsForActiveGenome = (): ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
-> => (dispatch, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getActiveGenomeId(state);
-  if (!activeGenomeId) {
-    return;
-  }
+export const fetchStatsForActiveGenome =
+  (): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
 
-  const exampleFocusObjects = getGenomeExampleFocusObjects(
-    state,
-    activeGenomeId
-  );
+    const exampleFocusObjects = getGenomeExampleFocusObjects(
+      state,
+      activeGenomeId
+    );
 
-  const speciesStats = Object.values(SpeciesStatsSection)
-    .map((section) =>
-      getStatsForSection({
-        genome_id: activeGenomeId,
-        section,
-        exampleFocusObjects
+    const speciesStats = Object.values(SpeciesStatsSection)
+      .map((section) =>
+        getStatsForSection({
+          genome_id: activeGenomeId,
+          section,
+          exampleFocusObjects
+        })
+      )
+      .filter(Boolean) as GenomeStats;
+
+    dispatch(
+      speciesGeneralSlice.actions.setStatsForGenomeId({
+        genomeId: activeGenomeId,
+        stats: speciesStats
       })
-    )
-    .filter(Boolean) as GenomeStats;
+    );
+  };
 
-  dispatch(
-    speciesGeneralSlice.actions.setStatsForGenomeId({
-      genomeId: activeGenomeId,
-      stats: speciesStats
-    })
-  );
-};
+export const setActiveGenomeExpandedSections =
+  (
+    expandedSections: SpeciesStatsSection[]
+  ): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getActiveGenomeId(state);
+    if (!activeGenomeId) {
+      return;
+    }
 
-export const setActiveGenomeExpandedSections = (
-  expandedSections: SpeciesStatsSection[]
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const activeGenomeId = getActiveGenomeId(state);
-  if (!activeGenomeId) {
-    return;
-  }
+    speciesStorageService.updateUIState(
+      set(
+        `${activeGenomeId}.expandedSections`,
+        expandedSections,
+        state.speciesPage.general.uiState
+      )
+    );
 
-  speciesStorageService.updateUIState(
-    set(
-      `${activeGenomeId}.expandedSections`,
-      expandedSections,
-      state.speciesPage.general.uiState
-    )
-  );
-
-  dispatch(
-    speciesGeneralSlice.actions.setExpandedSections({
-      genomeId: activeGenomeId,
-      expandedSections
-    })
-  );
-};
+    dispatch(
+      speciesGeneralSlice.actions.setExpandedSections({
+        genomeId: activeGenomeId,
+        expandedSections
+      })
+    );
+  };
 
 const speciesGeneralSlice = createSlice({
   name: 'species-page-general',
@@ -151,6 +147,10 @@ const speciesGeneralSlice = createSlice({
         action.payload.expandedSections,
         stateToUpdate
       );
+    },
+
+    restoreUI(state) {
+      state.uiState = speciesStorageService.getUIState();
     }
   }
 });
@@ -158,7 +158,8 @@ const speciesGeneralSlice = createSlice({
 export const {
   setActiveGenomeId,
   setStatsForGenomeId,
-  setExpandedSections
+  setExpandedSections,
+  restoreUI
 } = speciesGeneralSlice.actions;
 
 export default speciesGeneralSlice.reducer;

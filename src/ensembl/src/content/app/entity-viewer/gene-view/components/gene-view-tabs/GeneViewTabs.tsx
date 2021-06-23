@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { push, Push } from 'connected-react-router';
@@ -48,15 +49,18 @@ type Props = {
   selectedTab: string;
   selectedTabViews?: SelectedTabViews;
   push: Push;
+  isFilterOpen: boolean;
 };
 
 const GeneViewTabs = (props: Props) => {
   const { genomeId, entityId } = useParams() as { [key: string]: string };
   const tabClassNames = {
     default: styles.geneTab,
-    selected: styles.selectedGeneTab,
+    selected: classNames(styles.selectedGeneTab, {
+      [styles.withOpenFilter]: props.isFilterOpen
+    }),
     disabled: styles.disabledGeneTab,
-    tabsContainer: styles.geneViewTabs
+    tabsContainer: styles.geneViewTabs //FIXME: Pass this as a props so that it can be styled from the parent
   };
 
   const onTabChange = (selectedTabName: string) => {

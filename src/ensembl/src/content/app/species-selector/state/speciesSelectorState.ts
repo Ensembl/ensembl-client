@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
-
 import { LoadingState } from 'src/shared/types/loading-state';
 import {
   SearchMatches,
@@ -50,8 +48,6 @@ export type SpeciesSelectorState = {
   popularSpecies: PopularSpecies[];
 };
 
-const storedSelectedSpecies = speciesSelectorStorageService.getSelectedSpecies();
-
 const initialState: SpeciesSelectorState = {
   loadingStates: {
     search: LoadingState.NOT_REQUESTED
@@ -64,7 +60,7 @@ const initialState: SpeciesSelectorState = {
     results: null
   },
   currentItem: null,
-  committedItems: storedSelectedSpecies || [],
+  committedItems: [],
   popularSpecies: []
 };
 

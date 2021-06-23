@@ -12,15 +12,6 @@
   font-weight: 300;
 }
 
-.headerChevron {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  margin-left: 0.5em;
-  top: 5px;
-  position: relative;
-}
-
 .content {
   position: relative;
   padding-top: 36px;
@@ -63,37 +54,4 @@
 
 .right {
   grid-column: 5/6;
-}
-
-.filterLabel {
-  grid-column: 1/2;
-  text-align: right;
-  padding-right: 2px;
-  cursor: pointer;
-}
-
-.labelWithActivityIndicator {
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    border-radius: 100%;
-    height: 5px;
-    width: 5px;
-    background: $red;
-    right: -6px;
-    top: -2px;
-  }
-}
-
-.chevron {
-  margin-left: 10px;
-  margin-bottom: -3px;
-  height: 12px;
-  width: 12px;
-}
-
-.hidden {
-  display: none;
 }

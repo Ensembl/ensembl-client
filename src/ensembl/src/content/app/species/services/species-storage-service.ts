@@ -37,7 +37,7 @@ export class SpeciesStorageService {
   }
 
   public getUIState(): UIState {
-    return this.storageService.get(StorageKeys.GENOME_UI_STATE, options);
+    return this.storageService.get(StorageKeys.GENOME_UI_STATE, options) || {};
   }
 
   public updateUIState(uiState: UIState) {

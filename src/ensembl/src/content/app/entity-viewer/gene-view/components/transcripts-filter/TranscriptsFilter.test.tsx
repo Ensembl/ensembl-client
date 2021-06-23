@@ -82,12 +82,10 @@ const wrapInRedux = (
   state: typeof mockState = mockState,
   transcripts = defaultTranscripts
 ) => {
-  const filterLabel = <span>Filter & sort</span>;
   store = mockStore(state);
   return render(
     <Provider store={store}>
       <TranscriptsFilter
-        label={filterLabel}
         transcripts={transcripts}
         toggleFilter={mockToggleFilter}
       />
@@ -102,9 +100,8 @@ describe('<TranscriptsFilter />', () => {
     const defaultSortingLabel = [...container.querySelectorAll('label')].find(
       (el) => el.textContent === 'Default'
     );
-    const defaultSortingRadioButton = defaultSortingLabel?.querySelector(
-      'input'
-    );
+    const defaultSortingRadioButton =
+      defaultSortingLabel?.querySelector('input');
     expect(defaultSortingRadioButton?.checked).toBe(true);
 
     // after we change sorting option
