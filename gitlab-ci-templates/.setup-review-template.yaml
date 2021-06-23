@@ -13,6 +13,7 @@
   before_script:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
+    - cd ensembl-k8s-manifests/
     # ensembl-client
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_nginx_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_nginx_ingress.yaml
