@@ -3,6 +3,9 @@
 # master branch -> internal (Custom Downloads)
 # master branch -> live
 
+# include template to setup review app
+include: '/gitlab-ci-templates/.setup-review-template.yaml'
+
 # Define stages for the CI/CD pipeline
 stages:
   - test
