@@ -1,7 +1,7 @@
 # Template to setup review app
 # Create Service, Apply Ingress rules etc
 .setup-review:
-  stage: deploy
+  stage: setup
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   variables:
     BROWSER_SERVICE_SLUG: dev

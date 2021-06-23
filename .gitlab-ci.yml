@@ -8,6 +8,7 @@ include: '/gitlab-ci-templates/.setup-review-template.yaml'
 
 # Define stages for the CI/CD pipeline
 stages:
+  - setup
   - test
   - test_build_static
   - build_docker_images
