@@ -19,16 +19,16 @@ import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
-import { ReactComponent as EBILogo } from 'static/img/home/EMBLEBI-logo.svg';
-import { ReactComponent as ElixirLogo } from 'static/img/home/elixir-logo.svg';
-import { ReactComponent as FacebookIcon } from 'static/img/home/facebook.svg';
-import { ReactComponent as TwitterIcon } from 'static/img/home/twitter.svg';
-import { ReactComponent as BlogIcon } from 'static/img/home/blog.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
 import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 import speciesStripUrl from 'static/img/home/species-strip.svg';
+import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg';
+import elixirLogoUrl from 'static/img/home/elixir-logo.svg';
+import facebookIconUrl from 'static/img/home/facebook.svg';
+import twitterIconUrl from 'static/img/home/twitter.svg';
+import blogIconUrl from 'static/img/home/blog.svg';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -54,10 +54,12 @@ const Home = () => {
             <div className={styles.selectionWrapper}>
               <div className={styles.selectionContainer}>
                 <div className={styles.buttonsContainer}>
-                  <div className={styles.button}>
-                    <span>Species selector</span>
-                    <SpeciesSelectorIcon className={styles.icon} />
-                  </div>
+                  <Link to="/species-selector">
+                    <div className={styles.button}>
+                      <span>Species selector</span>
+                      <SpeciesSelectorIcon className={styles.icon} />
+                    </div>
+                  </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
                   <div className={styles.bottomText}>
@@ -68,10 +70,12 @@ const Home = () => {
 
               <div className={styles.selectionContainer}>
                 <div className={styles.buttonsContainer}>
-                  <div className={styles.button}>
-                    <span>Genome browser</span>
-                    <BrowserIcon className={styles.icon} />
-                  </div>
+                  <Link to="/genome-browser">
+                    <div className={styles.button}>
+                      <span>Genome browser</span>
+                      <BrowserIcon className={styles.icon} />
+                    </div>
+                  </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
                   <div className={styles.bottomText}>
@@ -82,10 +86,12 @@ const Home = () => {
 
               <div className={styles.selectionContainer}>
                 <div className={styles.buttonsContainer}>
-                  <div className={styles.button}>
-                    <span>Entity viewer</span>
-                    <EntityViewerIcon className={styles.icon} />
-                  </div>
+                  <Link to="/entity-viewer">
+                    <div className={styles.button}>
+                      <span>Entity viewer</span>
+                      <EntityViewerIcon className={styles.icon} />
+                    </div>
+                  </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
                   <div className={styles.bottomText}>
@@ -111,30 +117,56 @@ const Home = () => {
           )}
         </div>
 
-        {/* <div className={styles.speciesStripContainer}>
-          
-        </div> */}
-
         <div className={styles.speciesContainer}>
+          <span className={styles.platform}></span>
           <img src={speciesStripUrl} className={styles.speciesStrip} />
-          {/* <span className={styles.platform}></span> */}
         </div>
       </div>
       <div className={styles.footer}>
         <div className={styles.footerLeft}>
           <Logotype className={styles.logotype} />
-          <EBILogo className={styles.ebiLogo} />
+          <img src={ebiLogoUrl} className={styles.ebiLogo} />
           <div className={styles.text}>
             Wellcome Genome Campus, Hinxton, Cambridgeshire CB10 1SD, UK
           </div>
         </div>
 
         <div className={styles.footerRightIcons}>
-          <div className={styles.link}>Ensembl blog</div>
-          <BlogIcon className={styles.mediaIcons} />
-          <FacebookIcon className={styles.mediaIcons} />
-          <TwitterIcon className={styles.mediaIcons} />
-          <ElixirLogo className={styles.elixirLogo} />
+          <a
+            href="//www.ensembl.info"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className={styles.link}>Ensembl blog</div>
+          </a>
+          <a
+            href="//www.ensembl.info"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={blogIconUrl} className={styles.mediaIcons} />
+          </a>
+          <a
+            href="//www.facebook.com/Ensembl.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={facebookIconUrl} className={styles.mediaIcons} />
+          </a>
+          <a
+            href="//www.twitter.com/ensembl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={twitterIconUrl} className={styles.mediaIcons} />
+          </a>
+          <a
+            href="//www.elixir-europe.org/platforms/data/core-data-resources"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img src={elixirLogoUrl} className={styles.elixirLogo} />
+          </a>
         </div>
       </div>
     </div>

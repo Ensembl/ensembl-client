@@ -11,127 +11,153 @@
   background-color: $blue;
   background-image: linear-gradient($black, $blue);
   padding-top: 40px; 
+}
 
-  .middleHomeWrapper {
-    display: grid;
-    grid-template-columns: auto 200px;
-  }
+.middleHomeWrapper {
+  position: relative;
+}
 
-  .middleHome {    
-    display: grid;
-    grid-template-rows: 38px 110px 100px; 
-    justify-content: center;
-    height: 248px;
+.middleHome {    
+  display: grid;
+  grid-template-rows: 38px 110px 100px; 
+  justify-content: center;
+  height: 248px;
 
-    .logotypeContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .logotype {
-      width: 270px;
-      height: 36px;
-      fill: $white;
-    }
-
-    .text {
-      display: flex;
-      flex-direction: column;
-      align-items: center;      
-      font-size: 18px;
-      font-weight: 300;
-      color: $white;
-      margin-top: 15px;
-    }
-  }
-
-  .selectionWrapper {
-    display: grid;
-    grid-template-columns: 270px 270px 270px;
-  }
-
-  .selectionContainer {
-    display: grid;
-    grid-template-rows: 56px 44px;
-
-    .button {
-      display: grid;
-      grid-template-columns: auto auto;
-      justify-content: center;
-      width: 221px;
-      height: 40px;
-      background-color: $blue;
-      color: $white;
-      border-radius: 6px;
-      text-align: center;      
-      padding: 5px;     
-      font-size: 18px;
-      font-weight: $bold; 
-
-      .icon {
-        fill: $white;
-        height: 32px;
-        width: 32px;        
-      }
-    }
-
-    .bottomText {
-      font-size: 14px;
-      color: $white;
-      padding: 10px;
-      width: 190px;
-      text-align: center;
-      margin-left: 20px;
-    }
-  }
-
-  .homeTopRight {
-    color: $blue;
-    font-weight: $bold;
-    display: grid;
-    grid-template-columns: auto auto;
-    height: 40px;
-    cursor: pointer;
-
-    .wrapper {
-      display: grid;
-      grid-template-columns: auto auto;
-    }
-
-    .text {
-      margin-top: 10px;
-    }
-
-    .helpIcon {
-      width: 36px;
-      height: 36px;
-      fill: $white;
-      background-color: $blue;
-    }
-  }
-
-  .homeTopRightDisabled {
-    cursor: default;
-    color: $grey;
-    
-    .helpIcon {
-      fill: $white;
-      background-color: $grey;
-    }
-  }
-
-  .speciesContainer {
+  .logotypeContainer {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .logotype {
+    width: 270px;
+    height: 36px;
+    fill: $white;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;      
+    font-size: 18px;
+    font-weight: 300;
+    color: $white;
+    margin-top: 15px;
+  }
+}
+
+.selectionWrapper {
+  display: grid;
+  grid-template-columns: 270px 270px 270px;
+} 
+
+.selectionContainer {
+  display: grid;
+  grid-template-rows: 56px 44px;
+  justify-content: center;
+
+  .button {
+    position: relative;
+    width: 221px;
+    height: 40px;
+    background-color: $blue;
+    color: $white;
+    border-radius: 6px;
+    text-align: center;      
+    padding: 5px;     
+    font-size: 18px;
+    font-weight: $bold; 
+
+    span {
+      margin-left: -20px;
+    }
+
+    .icon {
+      position: absolute;
+      right: 20px;
+      fill: $white;
+      height: 32px;
+      width: 32px;        
+    }
+  }
+
+  .bottomText {
+    font-size: 14px;
+    color: $white;
+    padding: 10px;
+    width: 190px;
+    text-align: center;
+    margin-left: 20px;
+  }
+}
+
+.homeTopRight {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  color: $blue;
+  font-weight: $bold;
+  display: grid;
+  grid-template-columns: auto auto;
+  height: 40px;
+  cursor: pointer;
+
+  .wrapper {
+    display: grid;
+    grid-template-columns: 130px auto;
+  }
+
+  .text {
+    margin-top: 10px;
+  }
+
+  .helpIcon {
+    width: 36px;
+    height: 36px;
+    fill: $white;
+    background-color: $blue;
+  }
+}
+
+.homeTopRightDisabled {
+  cursor: default;
+  color: $grey;
+  
+  .helpIcon {
+    fill: $white;
+    background-color: $grey;
+  }
+}
+
+.speciesContainer {
+  overflow-x: hidden;
+  position: relative;
+
+  .speciesStrip {
+    max-width: none;
+    height: 100%;
+    position: absolute;
+    bottom: 0;    
+    transform: translateX(calc(-1 * (100% - 100vw) / 2));
+  }
+
+  .platform {
+    position: absolute;
+    bottom: 0;
+    background-color: $dark-grey;
+    background-image: linear-gradient($dark-grey, $black);
+    height: 50px;
+    width: 100%;
+  }
+
+  @media (orientation: portrait) {
+    .speciesStrip {
+      max-height: 60%;
+    }
 
     .platform {
-      background-color: $dark-grey;
-      background-image: linear-gradient($dark-grey, $black);
-      height: 50px;
-      width: 100%;
-    }    
+      height: 6%;
+    }
   }
 }
 
@@ -141,56 +167,57 @@
   padding-left: 60px;
   padding-right: 60px;
 
-  .footerLeft {
-    grid-column: 1/2;
-    display: flex;
-    align-items: center;
-  
-    .logotype {
-      width: 92px;
-      height: 34px;
-      margin-right: 10px;
-      fill: $dark-grey;
-    }
-  
-    .ebiLogo {
-      margin-right: 20px;
-      width: 110px;
-      height: 34px;
-    }
-  
-    .text {
-      font-size: 15px;
-      font-weight: 300;
-      color: $dark-grey;
-      margin-right: 10px;    
-    }  
+}
+
+.footerLeft {
+  grid-column: 1/2;
+  display: flex;
+  align-items: center;
+
+  .logotype {
+    width: 92px;
+    height: 34px;
+    margin-right: 10px;
+    fill: $dark-grey;
   }
-  
-  .footerRightIcons {
-    grid-column: 2/2; 
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-  
-    .link {
-      margin-right: 12px;
-      margin-bottom: 10px;
-      color: $blue;    
-    }  
-  
-    .mediaIcons {
-      width: 24px;
-      height: 24px;
-      margin: 0 12px 10px 12px;
-    }
-      
-    .elixirLogo {
-      width: 71px;
-      height: 52px;
-      margin-left: 90px;
-    }  
+
+  .ebiLogo {
+    margin-right: 20px;
+    width: 110px;
+    height: 34px;
   }
+
+  .text {
+    font-size: 15px;
+    font-weight: 300;
+    color: $dark-grey;
+    margin-right: 10px;    
+  }  
+}
+
+.footerRightIcons {
+  grid-column: 2/2; 
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  .link {
+    margin-right: 12px;
+    margin-bottom: 10px;
+    color: $blue;    
+  }  
+
+  .mediaIcons {
+    width: 24px;
+    height: 24px;
+    margin: 0 12px 10px 12px;
+  }
+    
+  .elixirLogo {
+    width: 71px;
+    height: 52px;
+    margin-left: 90px;
+  }  
 }
 
 
