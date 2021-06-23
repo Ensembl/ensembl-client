@@ -356,6 +356,9 @@ Internal:HL:
 
 Review:HX:
   extends: .deploy-review
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
