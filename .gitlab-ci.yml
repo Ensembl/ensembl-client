@@ -388,3 +388,11 @@ stop_review:
   - dev
   - master
   - /^nodeploy\/.*$/
+
+SetupReview:HX:
+  extends: .setup-review
+  environment:
+    name : wp-hx-dev-ing
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"'
+      when: always
