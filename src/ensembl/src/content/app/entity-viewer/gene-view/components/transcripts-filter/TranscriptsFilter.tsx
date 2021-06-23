@@ -73,14 +73,9 @@ const TranscriptsFilter = (props: Props) => {
     .map((a) => a.so_term)
     .filter(Boolean) as string[];
 
-  const uniqueBiotypes = Array.from(new Set(biotypes)).sort((a, b) =>
-    a.localeCompare(b)
-  );
-  //Bring protein coding to the top of the array if exist
-  if (uniqueBiotypes.includes('protein_coding')) {
-    uniqueBiotypes.splice(uniqueBiotypes.indexOf('protein_coding'), 1);
-    uniqueBiotypes.unshift('protein_coding');
-  }
+  const uniqueBiotypes = Array.from(new Set(biotypes)).sort((a, b) => {
+    return sortBiotypes(a, b);
+  });
 
   // TODO: Add protein coding options in RadioOptions if there are protein coding biotype
   const initialFilters = uniqueBiotypes.reduce((accumulator, biotype): {
@@ -158,6 +153,14 @@ const TranscriptsFilter = (props: Props) => {
       </div>
     </div>
   );
+};
+
+const sortBiotypes = (a: string, b: string) => {
+  if (a === 'protein_coding') {
+    return -1;
+  } else {
+    return a.localeCompare(b);
+  }
 };
 
 export default TranscriptsFilter;
