@@ -23,7 +23,7 @@ import styles from './Chevron.scss';
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
-type Props = {
+export type Props = {
   direction: Direction;
   animateDirectionChange: boolean;
   onClick?: () => void;

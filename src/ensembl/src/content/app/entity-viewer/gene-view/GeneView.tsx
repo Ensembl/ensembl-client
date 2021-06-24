@@ -57,7 +57,7 @@ import GeneRelationships from 'src/content/app/entity-viewer/gene-view/component
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import Chevron from 'src/shared/components/chevron/Chevron';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
@@ -255,19 +255,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         >
           {props.gene.transcripts.length > 5 && (
             <div className={styles.filterLabelWrapper}>
-              <div
-                className={classNames([styles.filterLabel], {
-                  [styles.openFilterLabel]: isFilterOpen
-                })}
+              <ShowHide
                 onClick={toggleFilter}
-              >
-                {filterLabel}
-                <Chevron
-                  direction={isFilterOpen ? 'up' : 'down'}
-                  animateDirectionChange={true}
-                  classNames={{ svg: styles.chevron }}
-                />
-              </div>
+                isExpanded={isFilterOpen}
+                label={filterLabel}
+              />
             </div>
           )}
         </div>
