@@ -43,10 +43,21 @@ const Chevron = (props: Props) => {
     props.classNames?.svg
   );
 
+  const Wrapper = props.onClick
+    ? 'button'
+    : props.classNames?.wrapper
+    ? 'span'
+    : React.Fragment;
+
+  const wrapperProps = {
+    onClick: props.onClick,
+    className: props.classNames?.wrapper
+  };
+
   return (
-    <span className={props.classNames?.wrapper}>
-      <ChevronDown className={chevronClasses} onClick={props.onClick} />
-    </span>
+    <Wrapper {...wrapperProps}>
+      <ChevronDown className={chevronClasses} />
+    </Wrapper>
   );
 };
 

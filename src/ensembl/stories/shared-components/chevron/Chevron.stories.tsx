@@ -111,6 +111,30 @@ export const ChevronStory = () => {
 
 ChevronStory.storyName = 'default';
 
+export const ChevronWrappedInButtonStory = () => {
+  const [direction, setDirection] = useState<ChevronDirection>('down');
+
+  const handleClick = () => {
+    const newDirection = direction === 'up' ? 'down' : 'up';
+    setDirection(newDirection);
+  };
+
+  return (
+    <div className={styles.storyWrapper}>
+      <div className={styles.showRoom}>
+        <span className={styles.label}>{'Click the chevron →'}</span>
+        <Chevron
+          direction={direction as ChevronDirection}
+          animateDirectionChange={true}
+          onClick={handleClick}
+        />
+      </div>
+    </div>
+  );
+};
+
+ChevronWrappedInButtonStory.storyName = 'as button';
+
 export default {
   title: 'Components/Shared Components/Chevron'
 };
