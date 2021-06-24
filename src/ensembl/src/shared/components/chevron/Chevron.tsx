@@ -38,7 +38,6 @@ const Chevron = (props: Props) => {
   const chevronClasses = classNames(
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_clickable]: props.onClick },
     { [styles.chevron_animated]: props.animateDirectionChange },
     props.classNames?.svg
   );
