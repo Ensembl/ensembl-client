@@ -2,6 +2,7 @@
 
 .chevron {
   fill: $blue;
+  user-select: none;
   height: 8px;
 }
 
@@ -14,7 +15,7 @@
 }
 
 .chevron_up {
-  transform: rotate(180deg);
+  transform: rotate(-180deg);
 }
 
 .chevron_left {

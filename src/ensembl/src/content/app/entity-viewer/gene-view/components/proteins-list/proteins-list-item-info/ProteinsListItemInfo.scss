@@ -73,13 +73,6 @@ $content-width: $gene_image_width;
 
 .chevron {
   margin-left: 6px;
-  margin-bottom: -1px;
-  height: 12px;
-  width: 12px;
-  transition: transform linear 0.2s;
-  &Up {
-    transform: rotate(-180deg);
-  }
 }
 
 .xrefCountChevronOpen {

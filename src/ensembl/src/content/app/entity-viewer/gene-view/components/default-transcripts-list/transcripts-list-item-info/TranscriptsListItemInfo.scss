@@ -60,15 +60,17 @@
   color: $blue;
   cursor: pointer;
   padding-top: 6px;
+
+  // nesting because need higher specificity to override child's CSS rules
+  .chevron {
+    margin-left: 10px;
+    height: 6px;
+  }
 }
 
 .download {
   grid-area: download;
   padding-top: 6px;
-}
-
-.chevron {
-  margin-left: 10px;
 }
 
 .viewInApp {

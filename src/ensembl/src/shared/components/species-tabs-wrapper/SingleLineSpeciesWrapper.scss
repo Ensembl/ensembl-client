@@ -21,8 +21,8 @@
   }
 }
 
-// Increase the specificity of the selector to always win over the selector of the species component
-.species.species {
+// This class needs higher specificity, because it overrides CSS rules in the child
+.species {
   width: 100%;
   margin-bottom: 0;
 }
