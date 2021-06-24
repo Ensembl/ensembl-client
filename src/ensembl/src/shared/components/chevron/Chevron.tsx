@@ -48,10 +48,13 @@ const Chevron = (props: Props) => {
     ? 'span'
     : React.Fragment;
 
-  const wrapperProps = {
-    onClick: props.onClick,
-    className: props.classNames?.wrapper
-  };
+  const wrapperProps =
+    Wrapper === React.Fragment
+      ? {}
+      : {
+          onClick: props.onClick,
+          className: props.classNames?.wrapper
+        };
 
   return (
     <Wrapper {...wrapperProps}>
