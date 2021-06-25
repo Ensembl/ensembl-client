@@ -54,9 +54,5 @@ export const isEntityViewerSidebarOpen = (state: RootState): boolean => {
     : false;
 };
 
-export const getEntityViewerSidebarModalView = (state: RootState) => {
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  return activeGenomeId
-    ? getEntityViewerGenomeState(state)?.sidebarModalView
-    : null;
-};
+export const getEntityViewerSidebarModalView = (state: RootState) =>
+  getEntityViewerGenomeState(state)?.sidebarModalView ?? null;
