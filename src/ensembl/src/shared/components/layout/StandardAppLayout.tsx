@@ -130,7 +130,6 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
         }
         classNames={{ svg: styles.sidebarModeToggleChevron }}
         onClick={props.onClick}
-        data-test-id="sidebarModeToggle"
       />
     </div>
   );
