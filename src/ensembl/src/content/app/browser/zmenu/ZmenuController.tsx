@@ -17,14 +17,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
-import Zmenu from './Zmenu';
 
 import {
   OutgoingActionType,
   OutgoingAction,
   IncomingActionType,
   IncomingAction
-} from 'src/content/app/browser/browser-messaging-service';
+} from 'ensembl-genome-browser';
+
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
+
+import Zmenu from './Zmenu';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
@@ -34,7 +37,6 @@ import {
   ZmenuDestroyPayload,
   ZmenuRepositionPayload
 } from './zmenu-types';
-import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;

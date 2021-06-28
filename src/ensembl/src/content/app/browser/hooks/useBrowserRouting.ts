@@ -20,24 +20,26 @@ import { push, replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
+import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
   buildEnsObjectId,
   parseEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 import { setActiveGenomeId, setDataFromUrlAndSave } from '../browserActions';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
   getAllChrLocations
 } from '../browserSelectors';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:

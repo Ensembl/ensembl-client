@@ -19,18 +19,19 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 
+import {
+  IncomingAction,
+  IncomingActionType,
+  OutgoingActionType
+} from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import {
-  IncomingAction,
-  IncomingActionType,
-  OutgoingActionType
-} from 'src/content/app/browser/browser-messaging-service';
-import { parseFeatureId } from 'src/content/app/browser/browserHelper';
-import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getBrowserCogTrackList,
   getBrowserNavOpenState,
@@ -47,15 +48,17 @@ import {
   updateBrowserActiveEnsObjectIdsAndSave,
   updateDefaultPositionFlag
 } from '../browserActions';
-
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
+
+import { parseFeatureId } from 'src/content/app/browser/browserHelper';
+import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import { BrowserNavIconStates, ChrLocation, CogList } from '../browserState';
 import { RootState } from 'src/store';
-import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type BrowserImageProps = {
   browserCogTrackList: CogList;

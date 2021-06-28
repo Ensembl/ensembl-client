@@ -18,18 +18,18 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
+
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getDisplayStableId,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
-
-// TODO: check if this can be moved to a common place
 import {
   getNumberOfCodingExons,
   getSplicedRNALength
@@ -59,7 +59,8 @@ type Transcript = Pick<
 >;
 
 // TODO: narrow down the type and use it in the Transcript type
-type ProductGeneratingContext = Transcript['product_generating_contexts'][number];
+type ProductGeneratingContext =
+  Transcript['product_generating_contexts'][number];
 
 type Gene = Pick<
   FullGene,
@@ -163,9 +164,10 @@ const TranscriptSummary = () => {
   }
 
   const { gene, transcript } = data;
-  const defaultProductGeneratingContext = transcript.product_generating_contexts.find(
-    (entry) => entry.default
-  ) as ProductGeneratingContext;
+  const defaultProductGeneratingContext =
+    transcript.product_generating_contexts.find(
+      (entry) => entry.default
+    ) as ProductGeneratingContext;
 
   const product = defaultProductGeneratingContext.product;
   const stableId = getDisplayStableId(transcript);

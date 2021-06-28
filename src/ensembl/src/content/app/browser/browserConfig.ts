@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
 import { ReactComponent as zoomInIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as zoomOutIcon } from 'static/img/browser/zoom-out.svg';
 import { ReactComponent as navigateUpIcon } from 'static/img/browser/navigate-up.svg';
@@ -24,9 +26,8 @@ import { ReactComponent as trackHeightIcon } from 'static/img/browser/icon_track
 import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_lock_open.svg';
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
-import { BrowserNavAction } from 'src/content/app/browser/browserState';
 
+import { BrowserNavAction } from 'src/content/app/browser/browserState';
 
 export type BrowserNavItem = {
   description: string;

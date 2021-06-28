@@ -16,13 +16,14 @@
 
 import React, { memo } from 'react';
 
-import { OutgoingAction } from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingAction } from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import iconStyles from './BrowserNavIcon.scss';
 

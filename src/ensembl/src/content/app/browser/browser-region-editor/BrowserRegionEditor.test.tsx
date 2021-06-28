@@ -26,13 +26,14 @@ import {
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
 import {
-  getCommaSeparatedNumber,
-  getNumberWithoutCommas
-} from 'src/shared/helpers/formatters/numberFormatter';
-import {
   createChrLocationValues,
   createRegionValidationMessages
 } from 'tests/fixtures/browser';
+
+import {
+  getCommaSeparatedNumber,
+  getNumberWithoutCommas
+} from 'src/shared/helpers/formatters/numberFormatter';
 import * as browserHelper from '../browserHelper';
 
 jest.mock('src/shared/components/select/Select', () => () => (

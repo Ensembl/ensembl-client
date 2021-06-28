@@ -17,21 +17,15 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import {
   IncomingAction,
   IncomingActionType,
   OutgoingAction,
   OutgoingActionType
-} from 'src/content/app/browser/browser-messaging-service';
-import BrowserCog from './BrowserCog';
-import {
-  updateCogList,
-  updateCogTrackList,
-  updateSelectedCog
-} from '../browserActions';
-import { RootState } from 'src/store';
-import { CogList } from '../browserState';
+} from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import {
   getBrowserActivated,
   getBrowserCogList,
@@ -40,6 +34,16 @@ import {
   getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import {
+  updateCogList,
+  updateCogTrackList,
+  updateSelectedCog
+} from '../browserActions';
+
+import BrowserCog from './BrowserCog';
+
+import { RootState } from 'src/store';
+import { CogList } from '../browserState';
 
 import styles from './BrowserCogList.scss';
 

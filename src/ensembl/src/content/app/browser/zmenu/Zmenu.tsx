@@ -16,13 +16,10 @@
 
 import React from 'react';
 
-import {
-  OutgoingActionType,
-  OutgoingAction
-} from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingActionType, OutgoingAction } from 'ensembl-genome-browser';
 
-import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
 import {
   Toolbox,

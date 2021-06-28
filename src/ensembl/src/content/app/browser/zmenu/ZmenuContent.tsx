@@ -17,6 +17,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import ZmenuAppLinks from './ZmenuAppLinks';
 
 import {
@@ -28,7 +30,6 @@ import {
 } from './zmenu-types';
 
 import styles from './Zmenu.scss';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];

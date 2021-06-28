@@ -18,12 +18,14 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import faker from 'faker';
 
-import { BrowserCogList } from './BrowserCogList';
+import { OutgoingActionType } from 'ensembl-genome-browser';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+
+import { BrowserCogList } from './BrowserCogList';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
+
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: mockGenomeBrowser
 }));

@@ -20,7 +20,6 @@ import isEqual from 'lodash/isEqual';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import { RootState } from 'src/store';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
@@ -28,8 +27,11 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
+import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { RootState } from 'src/store';
 
 export type TrackPanelProps = {
   activeGenomeId: string | null;

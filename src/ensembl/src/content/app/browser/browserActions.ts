@@ -25,7 +25,9 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
+import analyticsTracking from 'src/services/analytics-service';
 import browserStorageService from './browser-storage-service';
+import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
@@ -40,7 +42,6 @@ import {
 
 import { RootState } from 'src/store';
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
-
 import {
   BrowserNavIconStates,
   ChrLocation,
@@ -48,8 +49,6 @@ import {
   ChrLocations
 } from './browserState';
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import analyticsTracking from 'src/services/analytics-service';
-import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;

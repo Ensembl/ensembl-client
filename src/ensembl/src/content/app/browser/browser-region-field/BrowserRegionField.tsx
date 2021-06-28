@@ -18,11 +18,8 @@ import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import Input from 'src/shared/components/input/Input';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
-import { ChrLocation } from '../browserState';
-import { RootState } from 'src/store';
 import { toggleRegionFieldActive } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
@@ -30,6 +27,7 @@ import {
   getChrLocation,
   getRegionEditorActive
 } from '../browserSelectors';
+
 import {
   getChrLocationFromStr,
   validateRegion,
@@ -38,11 +36,16 @@ import {
 
 import analyticsTracking from 'src/services/analytics-service';
 
+import Input from 'src/shared/components/input/Input';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
+import { ChrLocation } from '../browserState';
+import { RootState } from 'src/store';
+
 import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionField.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type BrowserRegionFieldProps = {
   activeGenomeId: string | null;

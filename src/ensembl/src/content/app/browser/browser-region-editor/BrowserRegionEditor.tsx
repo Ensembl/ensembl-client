@@ -18,13 +18,14 @@ import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { ChrLocation } from '../browserState';
-import { RootState } from 'src/store';
 import {
   getRegionEditorActive,
   getBrowserActiveGenomeId,
@@ -33,8 +34,6 @@ import {
 } from '../browserSelectors';
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
 import { toggleRegionEditorActive } from '../browserActions';
-import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
-import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
 import {
   getCommaSeparatedNumber,
@@ -44,12 +43,15 @@ import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';
 
+import { ChrLocation } from '../browserState';
+import { RootState } from 'src/store';
+import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
+
 import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export type BrowserRegionEditorProps = {
   activeGenomeId: string | null;

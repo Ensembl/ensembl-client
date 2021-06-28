@@ -28,8 +28,9 @@ import {
   ZmenuContentItemProps
 } from './ZmenuContent';
 
-import { Markup } from './zmenu-types';
 import { createZmenuContent } from 'tests/fixtures/browser';
+
+import { Markup } from './zmenu-types';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 

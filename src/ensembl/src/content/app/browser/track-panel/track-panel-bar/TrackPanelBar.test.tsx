@@ -25,8 +25,9 @@ import set from 'lodash/fp/set';
 
 import { TrackPanelBar } from './TrackPanelBar';
 
-import * as drawerActions from '../../drawer/drawerActions';
+import * as drawerActions from 'src/content/app/browser/drawer/drawerActions';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 jest.mock(

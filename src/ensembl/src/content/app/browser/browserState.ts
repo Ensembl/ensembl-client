@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
 import browserStorageService from './browser-storage-service';
 
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';

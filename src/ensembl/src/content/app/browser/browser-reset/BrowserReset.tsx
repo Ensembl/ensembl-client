@@ -17,6 +17,8 @@
 import React, { FunctionComponent } from 'react';
 import { connect } from 'react-redux';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import {
   getBrowserActiveEnsObjectId,
   isFocusObjectPositionDefault
@@ -25,12 +27,12 @@ import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
-import styles from './BrowserReset.scss';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 
 import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
-import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
+import styles from './BrowserReset.scss';
 
 export type BrowserResetProps = {
   focusObjectId: string | null;

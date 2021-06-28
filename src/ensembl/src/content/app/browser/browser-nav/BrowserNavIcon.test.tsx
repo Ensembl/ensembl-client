@@ -18,10 +18,13 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { BrowserNavIcon } from './BrowserNavIcon';
-import { browserNavConfig } from '../browserConfig';
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
+
+import { BrowserNavIcon } from './BrowserNavIcon';
+
+import { browserNavConfig } from '../browserConfig';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({

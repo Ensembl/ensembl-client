@@ -18,10 +18,12 @@ import React from 'react';
 import { screen, render } from '@testing-library/react';
 import faker from 'faker';
 
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
 import { BrowserNavBarControls } from './BrowserNavBarControls';
+
 import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
-import { OutgoingActionType } from 'src/content/app/browser/browser-messaging-service';
 
 jest.mock(
   './BrowserNavIcon',
