@@ -3,8 +3,12 @@
 # master branch -> internal (Custom Downloads)
 # master branch -> live
 
+# include template to setup review app
+include: '/gitlab-ci-templates/.setup-review-template.yaml'
+
 # Define stages for the CI/CD pipeline
 stages:
+  - setup
   - test
   - test_build_static
   - build_docker_images
@@ -356,6 +360,9 @@ Internal:HL:
 
 Review:HX:
   extends: .deploy-review
+  variables:
+    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
@@ -382,3 +389,11 @@ stop_review:
   - dev
   - master
   - /^nodeploy\/.*$/
+
+SetupReview:HX:
+  extends: .setup-review
+  environment:
+    name : wp-hx-dev-ing
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"'
+      when: always
