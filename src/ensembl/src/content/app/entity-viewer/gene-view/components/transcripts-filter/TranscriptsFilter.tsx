@@ -158,6 +158,8 @@ const TranscriptsFilter = (props: Props) => {
 const sortBiotypes = (a: string, b: string) => {
   if (a === 'protein_coding') {
     return -1;
+  } else if (b === 'protein_coding') {
+    return 1;
   } else {
     return a.localeCompare(b);
   }
