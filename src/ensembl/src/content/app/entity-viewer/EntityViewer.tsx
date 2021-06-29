@@ -88,23 +88,21 @@ const EntityViewer = () => {
   return (
     <ApolloProvider client={client}>
       <div className={styles.entityViewer}>
+        <EntityViewerAppBar />
         {genomeId && entityId ? (
-          <>
-            <EntityViewerAppBar />
-            <StandardAppLayout
-              mainContent={<GeneView />}
-              topbarContent={
-                <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
-              }
-              sidebarContent={SideBarContent}
-              sidebarNavigation={<GeneViewSidebarTabs />}
-              sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-              isSidebarOpen={isSidebarOpen}
-              onSidebarToggle={() => dispatch(toggleSidebar())}
-              isDrawerOpen={false}
-              viewportWidth={viewportWidth}
-            />
-          </>
+          <StandardAppLayout
+            mainContent={<GeneView />}
+            topbarContent={
+              <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
+            }
+            sidebarContent={SideBarContent}
+            sidebarNavigation={<GeneViewSidebarTabs />}
+            sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+            isSidebarOpen={isSidebarOpen}
+            onSidebarToggle={() => dispatch(toggleSidebar())}
+            isDrawerOpen={false}
+            viewportWidth={viewportWidth}
+          />
         ) : (
           <EntityViewerInterstitial />
         )}

@@ -15,45 +15,31 @@
  */
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import EntityViewerInterstitialInstructions from './entity-viewer-interstitial-instructions/EntityViewerInterstitialInstructions';
-import AppBar from 'src/shared/components/app-bar/AppBar';
-import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import ExampleLinks from 'src/content/app/entity-viewer/components/example-links/ExampleLinks';
-import EntityViewerAppBar from '../shared/components/entity-viewer-app-bar/EntityViewerAppBar';
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
+import styles from './EntityViewerInterstitial.scss';
+
 const EntityViewerInterstitial = () => {
-  const params: EntityViewerParams = useParams(); // NOTE: will likely cause a problem when server-side rendering
-  const { genomeId, entityId } = params;
+  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+
+  if (!activeGenomeId) {
+    return <EntityViewerInterstitialInstructions />;
+  }
 
   return (
-    <>
-      {!genomeId && !entityId ? (
-        <>
-          <AppBar
-            appName="Entity Viewer"
-            mainContent="To start using this app..."
-          />
-          <EntityViewerInterstitialInstructions />
-        </>
-      ) : (
-        <>
-          <EntityViewerAppBar />
-          <InAppSearch />
-          <ExampleLinks />
-        </>
-      )}
-    </>
+    <div>
+      <div className={styles.topPanel}>
+        <InAppSearch className={styles.searchField} />
+      </div>
+      <ExampleLinks />
+    </div>
   );
 };
 
 export default EntityViewerInterstitial;
-
-{
-  /* <>
-
-<EntityViewerInterstitialInstructions />
-</> */
-}

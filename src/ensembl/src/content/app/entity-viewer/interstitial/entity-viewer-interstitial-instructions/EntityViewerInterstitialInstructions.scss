@@ -19,7 +19,7 @@ $leftMargin: 40px;
   display: grid;
   grid-template-columns: repeat(4, #{$columnWidth});
   grid-column-gap: $columnGap;
-  grid-row-gap: $rowGap;;
+  grid-row-gap: $rowGap;
   max-width: calc(4 * #{$columnWidth} + 3 * #{$columnGap});
 }
 

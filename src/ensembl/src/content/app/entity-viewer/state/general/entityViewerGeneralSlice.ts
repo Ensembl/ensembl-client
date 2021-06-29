@@ -106,8 +106,8 @@ export const setDefaultActiveGenomeId =
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const [firstCommittedSpecies] = getCommittedSpecies(state);
-    const activeGenomeId = firstCommittedSpecies.genome_id;
-    dispatch(setActiveGenomeId(activeGenomeId));
+    const activeGenomeId = firstCommittedSpecies?.genome_id;
+    activeGenomeId && dispatch(setActiveGenomeId(activeGenomeId));
   };
 
 const entityViewerGeneralSlice = createSlice({
