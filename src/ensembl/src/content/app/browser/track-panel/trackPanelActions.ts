@@ -152,7 +152,9 @@ export const updatePreviouslyViewedObjectsAndSave =
     const label =
       geneSymbolAvailable && versioned_stable_id
         ? [activeEnsObject.label, versioned_stable_id]
-        : [versioned_stable_id];
+        : activeEnsObject.type === 'gene'
+        ? [versioned_stable_id]
+        : [activeEnsObject.label];
 
     const newObject = {
       genome_id: activeEnsObject.genome_id,

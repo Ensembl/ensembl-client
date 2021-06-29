@@ -49,7 +49,7 @@ const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,
   type: 'gene',
-  label: [faker.random.words(2)]
+  label: [faker.random.word(), faker.random.word()]
 });
 
 const previouslyViewedObjects = [
@@ -63,7 +63,7 @@ const previouslyViewedObjects = [
     genome_id: genomeId,
     object_id: regionObjectId,
     type: 'region',
-    label: region
+    label: [region]
   }
 ];
 
@@ -161,8 +161,8 @@ describe('<TrackPanelBookmarks />', () => {
 
   it('renders previously viewed links', () => {
     wrapInRedux();
-    const geneLink = screen.getByText(geneId) as HTMLElement;
-    const regionLink = screen.getByText(region) as HTMLElement;
+    const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
+    const regionLink = screen.getByText(region).closest('a') as HTMLElement;
 
     const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
     const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
