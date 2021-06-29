@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import noop from 'lodash/noop';
+import { useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Step } from 'src/shared/components/step/Step';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
@@ -28,14 +30,15 @@ import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg'
 import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
 
 import styles from './BrowserInterstitialInstructions.scss';
-import classNames from 'classnames';
-
-const speciesSelectorButtonClasses = classNames(
-  styles.stepsWrapper,
-  styles.speciesSelectorButton
-);
 
 const BrowserInterstitialInstructions = () => {
+  const dispatch = useDispatch();
+
+  const goToSpeciesSelector = () => {
+    const url = urlFor.speciesSelector();
+    dispatch(push(url));
+  };
+
   return (
     <section className={styles.instructionsPanel}>
       <div className={styles.instructionsWrapper}>
@@ -79,11 +82,12 @@ const BrowserInterstitialInstructions = () => {
           </div>
         </div>
 
-        <div className={speciesSelectorButtonClasses}>
-          <Link to="/species-selector">
-            <PrimaryButton onClick={noop}>Go to Species Selector</PrimaryButton>
-          </Link>
-        </div>
+        <PrimaryButton
+          className={styles.speciesSelectorButton}
+          onClick={goToSpeciesSelector}
+        >
+          Go to Species Selector
+        </PrimaryButton>
       </div>
     </section>
   );
