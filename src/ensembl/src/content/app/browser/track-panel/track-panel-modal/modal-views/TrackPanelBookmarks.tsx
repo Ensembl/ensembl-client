@@ -27,11 +27,6 @@ import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import { ReactComponent as EllipsisIcon } from 'static/img/track-panel/ellipsis.svg';
-
-import { Status } from 'src/shared/types/status';
-
 import styles from './TrackPanelBookmarks.scss';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
@@ -56,39 +51,37 @@ export const PreviouslyViewedLinks = () => {
 
   return (
     <div data-test-id="previously viewed links">
-      {[...limitedPreviouslyViewedObjects].map(
-        (previouslyViewedObject, index) => {
-          const path = urlFor.browser({
-            genomeId: previouslyViewedObject.genome_id,
-            focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
-          });
+      {limitedPreviouslyViewedObjects.map((previouslyViewedObject, index) => {
+        const path = urlFor.browser({
+          genomeId: previouslyViewedObject.genome_id,
+          focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
+        });
 
-          return (
-            <div
-              key={previouslyViewedObject.object_id}
-              className={styles.linkHolder}
+        return (
+          <div
+            key={previouslyViewedObject.object_id}
+            className={styles.linkHolder}
+          >
+            <Link
+              replace
+              to={path}
+              onClick={() =>
+                onLinkClick(previouslyViewedObject.object_type, index)
+              }
             >
-              <Link
-                replace
-                to={path}
-                onClick={() =>
-                  onLinkClick(previouslyViewedObject.object_type, index)
-                }
-              >
-                {previouslyViewedObject.label}
-                {previouslyViewedObject.versioned_stable_id && (
-                  <span className={styles.objectId}>
-                    {previouslyViewedObject.versioned_stable_id}
-                  </span>
-                )}
-              </Link>
-              <span className={styles.objectType}>
-                {upperFirst(previouslyViewedObject.object_type)}
-              </span>
-            </div>
-          );
-        }
-      )}
+              {previouslyViewedObject.label}
+              {previouslyViewedObject.versioned_stable_id && (
+                <span className={styles.objectId}>
+                  {previouslyViewedObject.versioned_stable_id}
+                </span>
+              )}
+            </Link>
+            <span className={styles.objectType}>
+              {upperFirst(previouslyViewedObject.object_type)}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -99,7 +92,7 @@ export const TrackPanelBookmarks = () => {
   );
   const dispatch = useDispatch();
 
-  const onEllipsisClick = () => {
+  const onMoreClick = () => {
     analyticsTracking.trackEvent({
       category: 'drawer_open',
       label: 'recent_bookmarks',
@@ -117,15 +110,8 @@ export const TrackPanelBookmarks = () => {
         <>
           <PreviouslyViewedLinks />
           {previouslyViewedObjects.length > 20 && (
-            <div className={styles.more} onClick={onEllipsisClick}>
-              <span>more</span>
-              <div className={styles.ellipsis}>
-                <ImageButton
-                  status={Status.DEFAULT}
-                  description={'View all'}
-                  image={EllipsisIcon}
-                />
-              </div>
+            <div className={styles.more} onClick={onMoreClick}>
+              more...
             </div>
           )}
         </>

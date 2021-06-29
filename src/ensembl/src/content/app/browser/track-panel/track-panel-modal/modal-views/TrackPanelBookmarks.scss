@@ -36,16 +36,8 @@
 
 .more {
   font-size: 12px;
-  position: relative;
   margin-top: 25px;
-  display: inline-flex;
   cursor: pointer;
   color: $blue;
   font-weight: $normal;
-
-  .ellipsis {
-    width: 14px;
-    top: 4px;
-    position: relative;
-  }
 }

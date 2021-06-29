@@ -57,7 +57,7 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
       <div className={styles.drawerTitle}>Previously viewed</div>
       <div className={styles.contentWrapper}>
         <div className={styles.linksWrapper}>
-          {[...limitedPreviouslyViewedObjects].map(
+          {limitedPreviouslyViewedObjects.map(
             (previouslyViewedObject, index) => {
               const path = urlFor.browser({
                 genomeId: previouslyViewedObject.genome_id,
