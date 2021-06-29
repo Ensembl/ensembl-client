@@ -6,11 +6,11 @@ $rowGap: 60px;
 $leftMargin: 40px;
 
 .instructionsPanel {
+  display: flex;
   background-color: $light-grey;
   min-height: 235px;
   padding: 29px $global-padding-left;
   box-shadow: 0 3px 5px $global-box-shadow;
-  display: flex;
 }
 
 .instructionsWrapper {

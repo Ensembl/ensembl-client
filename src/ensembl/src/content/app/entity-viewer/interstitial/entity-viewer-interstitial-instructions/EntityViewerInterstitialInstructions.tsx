@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import classNames from 'classnames';
+import { useDispatch } from 'react-redux';
+import { push } from 'connected-react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Step } from 'src/shared/components/step/Step';
 import { ImageButton } from 'src/shared/components/image-button/ImageButton';
@@ -29,12 +31,14 @@ import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
 
 import styles from './EntityViewerInterstitialInstructions.scss';
 
-const speciesSelectorButtonClasses = classNames(
-  styles.stepsWrapper,
-  styles.speciesSelectorButton
-);
-
 const EntityViewerInterstitialInstructions = () => {
+  const dispatch = useDispatch();
+
+  const goToSpeciesSelector = () => {
+    const url = urlFor.speciesSelector();
+    dispatch(push(url));
+  };
+
   return (
     <section className={styles.instructionsPanel}>
       <div className={styles.instructionsWrapper}>
@@ -77,13 +81,12 @@ const EntityViewerInterstitialInstructions = () => {
           </div>
         </div>
 
-        <div className={speciesSelectorButtonClasses}>
-          <Link to="/species-selector">
-            <PrimaryButton onClick={() => null}>
-              Go to Species Selector
-            </PrimaryButton>
-          </Link>
-        </div>
+        <PrimaryButton
+          className={styles.speciesSelectorButton}
+          onClick={goToSpeciesSelector}
+        >
+          Go to Species Selector
+        </PrimaryButton>
       </div>
     </section>
   );
