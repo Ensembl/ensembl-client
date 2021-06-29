@@ -70,9 +70,11 @@ export const PreviouslyViewedLinks = () => {
               <span className={styles.label}>
                 {previouslyViewedObject.label[0]}
               </span>
-              <span className={styles.label}>
-                {previouslyViewedObject.label[1]}
-              </span>
+              {previouslyViewedObject.label[1] && (
+                <span className={styles.label}>
+                  {previouslyViewedObject.label[1]}
+                </span>
+              )}
             </Link>
             <span className={styles.type}>
               {upperFirst(previouslyViewedObject.type)}

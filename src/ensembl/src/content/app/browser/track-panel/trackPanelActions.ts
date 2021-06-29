@@ -144,9 +144,15 @@ export const updatePreviouslyViewedObjectsAndSave =
         ? activeEnsObject.versioned_stable_id
         : null;
 
-    const label = versioned_stable_id
-      ? [activeEnsObject.label, versioned_stable_id]
-      : [activeEnsObject.label];
+    //FIXME Hack to find if gene symbol is available or not
+    const geneSymbolAvailable =
+      activeEnsObject.type === 'gene' &&
+      activeEnsObject.label !== activeEnsObject.stable_id;
+
+    const label =
+      geneSymbolAvailable && versioned_stable_id
+        ? [activeEnsObject.label, versioned_stable_id]
+        : [versioned_stable_id];
 
     const newObject = {
       genome_id: activeEnsObject.genome_id,
