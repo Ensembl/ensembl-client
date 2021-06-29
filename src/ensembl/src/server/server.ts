@@ -23,8 +23,13 @@ import viewsRouter from './routes/viewsRouter';
 const app = express();
 
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
-app.use(devMiddleware);
-app.use('/static', staticMiddleware);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use('/static', staticMiddleware);
+} else {
+  // in development, the contents of the static folder will be handled by webpack
+  app.use(devMiddleware);
+}
 
 // All GET requests not covered by the middleware above will be handled by the viewsRouter
 app.get('*', viewsRouter);
