@@ -87,29 +87,17 @@ describe('<Browser />', () => {
     );
 
   describe('rendering', () => {
-    test('render interstitial page when there is no species selected', () => {
+    it('renders an interstitial if no species is selected', () => {
       const { container } = mountBrowserComponent({ activeGenomeId: null });
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
-    test('renders links to example objects only if there is no selected focus feature', () => {
-      const { container, rerender } = mountBrowserComponent();
-
-      expect(container.querySelectorAll('.exampleLinks')).toHaveLength(1);
-
-      rerender(
-        <Browser
-          {...defaultProps}
-          browserQueryParams={{
-            focus: faker.lorem.words()
-          }}
-        />
-      );
-
-      expect(container.querySelectorAll('.exampleLinks')).toHaveLength(0);
+    it('renders an interstitial if no feature has been selected', () => {
+      const { container } = mountBrowserComponent();
+      expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
-    test('renders the genome browser and track panel only when there is a selected focus feature', () => {
+    it('renders the genome browser and track panel only when there is a selected focus feature', () => {
       const { container, rerender } = mountBrowserComponent();
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(0);
