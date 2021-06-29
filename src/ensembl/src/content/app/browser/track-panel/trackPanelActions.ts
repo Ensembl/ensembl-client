@@ -139,15 +139,20 @@ export const updatePreviouslyViewedObjectsAndSave =
         (entity) => entity.object_id !== activeEnsObject.object_id
       ) || [];
 
+    const versioned_stable_id =
+      activeEnsObject.type === 'gene'
+        ? activeEnsObject.versioned_stable_id
+        : null;
+
+    const label = versioned_stable_id
+      ? [activeEnsObject.label, versioned_stable_id]
+      : [activeEnsObject.label];
+
     const newObject = {
       genome_id: activeEnsObject.genome_id,
       object_id: activeEnsObject.object_id,
-      object_type: activeEnsObject.type,
-      label: activeEnsObject.label,
-      versioned_stable_id:
-        activeEnsObject.type === 'gene'
-          ? activeEnsObject.versioned_stable_id
-          : null
+      type: activeEnsObject.type,
+      label: label
     };
 
     const updatedEntitiesArray = [

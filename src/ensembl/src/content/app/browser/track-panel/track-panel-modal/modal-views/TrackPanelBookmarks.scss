@@ -15,17 +15,15 @@
     font-size: 13px;
     font-weight: $normal;
   }
+  .label {
+    margin-right: 8px;
+  }
 }
 
-.objectType {
+.type {
   color: $dark-grey;
-  margin-left: 8px;
   font-size: 12px;
   font-weight: 300;
-}
-
-.objectId {
-  margin-left: 8px;
 }
 
 .title {

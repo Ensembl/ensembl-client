@@ -21,9 +21,8 @@ import pick from 'lodash/pick';
 export type PreviouslyViewedObject = {
   genome_id: string;
   object_id: string;
-  object_type: string;
-  label: string;
-  versioned_stable_id: string | null;
+  type: string;
+  label: string[];
 };
 
 export type PreviouslyViewedObjects = {

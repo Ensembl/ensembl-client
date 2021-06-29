@@ -7,9 +7,12 @@
   white-space: nowrap;
 }
 
-.entityType {
+.label {
+  margin-right: 8px;
+}
+
+.type {
   color: $dark-grey;
-  margin-left: 8px;
   font-size: 12px;
   font-weight: $light;
 }
@@ -18,8 +21,4 @@
   font-size: 14px;
   margin: 5px 0 25px 10px;
   font-weight: $bold;
-}
-
-.entityId {
-  margin-left: 8px;
 }

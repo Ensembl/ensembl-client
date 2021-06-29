@@ -48,33 +48,32 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   const activeEntityStableId = parseEnsObjectId(props.activeEntityId).objectId;
   const previouslyViewedEntitiesWithoutActiveEntity =
     props.previouslyViewedEntities.filter(
-      (entity) => entity.stable_id !== activeEntityStableId
+      (entity) => entity.entity_id !== activeEntityStableId
     );
 
   return (
     <div data-test-id="previously viewed links">
       {[...previouslyViewedEntitiesWithoutActiveEntity].map(
-        (previouslyViewedEntity) => {
+        (previouslyViewedEntity, index) => {
           const path = urlFor.entityViewer({
             genomeId: props.activeGenomeId,
             entityId: buildFocusIdForUrl({
               type: 'gene',
-              objectId: previouslyViewedEntity.stable_id
+              objectId: previouslyViewedEntity.entity_id
             })
           });
 
           return (
-            <div
-              key={previouslyViewedEntity.label}
-              className={styles.linkHolder}
-            >
+            <div key={index} className={styles.linkHolder}>
               <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
-                {previouslyViewedEntity.label}
-                <span className={styles.entityId}>
-                  {previouslyViewedEntity.versioned_stable_id}
+                <span className={styles.label}>
+                  {previouslyViewedEntity.label[0]}
+                </span>
+                <span className={styles.label}>
+                  {previouslyViewedEntity.label[1]}
                 </span>
               </Link>
-              <span className={styles.entityType}>
+              <span className={styles.type}>
                 {upperFirst(previouslyViewedEntity.type)}
               </span>
             </div>

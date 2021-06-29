@@ -65,19 +65,17 @@ export const PreviouslyViewedLinks = () => {
             <Link
               replace
               to={path}
-              onClick={() =>
-                onLinkClick(previouslyViewedObject.object_type, index)
-              }
+              onClick={() => onLinkClick(previouslyViewedObject.type, index)}
             >
-              {previouslyViewedObject.label}
-              {previouslyViewedObject.versioned_stable_id && (
-                <span className={styles.objectId}>
-                  {previouslyViewedObject.versioned_stable_id}
-                </span>
-              )}
+              <span className={styles.label}>
+                {previouslyViewedObject.label[0]}
+              </span>
+              <span className={styles.label}>
+                {previouslyViewedObject.label[1]}
+              </span>
             </Link>
-            <span className={styles.objectType}>
-              {upperFirst(previouslyViewedObject.object_type)}
+            <span className={styles.type}>
+              {upperFirst(previouslyViewedObject.type)}
             </span>
           </div>
         );
