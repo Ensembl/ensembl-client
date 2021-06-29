@@ -12,22 +12,23 @@ $rightCornerWidth: 40px;
   height: 36px;
   box-shadow: inset 2px 2px 4px -2px $dark-grey;
   background: white;
-}
 
-.speciesSearchField {
-  width: 100%;
-  background: $white;
-  padding-left: 18px;
-  border: none;
-
-  input {
-    &::placeholder {
-      color: $grey;
-    }
-
-    &:focus {
+  // nesting to increase specificity of the selector (needs to override child rules)
+  .speciesSearchField {
+    width: 100%;
+    background: $white;
+    padding-left: 18px;
+    border: none;
+  
+    input {
       &::placeholder {
-        color: white;
+        color: $grey;
+      }
+  
+      &:focus {
+        &::placeholder {
+          color: white;
+        }
       }
     }
   }
