@@ -36,17 +36,18 @@
   }
 }
 
-.appListContainer {
-  display: grid;
-  grid-template-columns: 270px 270px 270px;
-} 
-
 .appList {
   display: grid;
-  grid-template-rows: 56px 44px;
+  grid-template-columns: repeat(3, 270px);
+} 
+
+.appListItem {
+  display: grid;
+  grid-template-rows: 56px auto;
   justify-content: center;
 
   .button {
+    display: block;
     position: relative;
     width: 221px;
     height: 40px;
@@ -102,8 +103,8 @@
   }
 
   .helpIcon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     fill: $white;
     background-color: $blue;
   }
@@ -136,7 +137,7 @@
     bottom: 0;
     background-color: $dark-grey;
     background-image: linear-gradient($dark-grey, $black);
-    height: 50px;
+    height: 9%;
     width: 100%;
   }
 
@@ -152,12 +153,11 @@
   }
 }
 
-.footer {
+footer {
   display: grid;
   grid-template-columns: auto auto;
   padding-left: 60px;
   padding-right: 60px;
-
 }
 
 .footerLeft {

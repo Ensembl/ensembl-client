@@ -49,14 +49,12 @@ const Home = () => {
           <div className={styles.mainTopMiddle}>
             <Logotype className={styles.logotype} />
             <div className={styles.text}>Genome data & annotation</div>
-            <div className={styles.appListContainer}>
-              <div className={styles.appList}>
+            <div className={styles.appList}>
+              <div className={styles.appListItem}>
                 <div className={styles.buttonsContainer}>
-                  <Link to="/species-selector">
-                    <div className={styles.button}>
-                      <span>Species selector</span>
-                      <SpeciesSelectorIcon className={styles.icon} />
-                    </div>
+                  <Link to="/species-selector" className={styles.button}>
+                    <span>Species selector</span>
+                    <SpeciesSelectorIcon className={styles.icon} />
                   </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
@@ -66,13 +64,11 @@ const Home = () => {
                 </div>
               </div>
 
-              <div className={styles.appList}>
+              <div className={styles.appListItem}>
                 <div className={styles.buttonsContainer}>
-                  <Link to="/genome-browser">
-                    <div className={styles.button}>
-                      <span>Genome browser</span>
-                      <BrowserIcon className={styles.icon} />
-                    </div>
+                  <Link to="/genome-browser" className={styles.button}>
+                    <span>Genome browser</span>
+                    <BrowserIcon className={styles.icon} />
                   </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
@@ -82,13 +78,11 @@ const Home = () => {
                 </div>
               </div>
 
-              <div className={styles.appList}>
+              <div className={styles.appListItem}>
                 <div className={styles.buttonsContainer}>
-                  <Link to="/entity-viewer">
-                    <div className={styles.button}>
-                      <span>Entity viewer</span>
-                      <EntityViewerIcon className={styles.icon} />
-                    </div>
+                  <Link to="/entity-viewer" className={styles.button}>
+                    <span>Entity viewer</span>
+                    <EntityViewerIcon className={styles.icon} />
                   </Link>
                 </div>
                 <div className={styles.bottomTextContainer}>
@@ -120,7 +114,7 @@ const Home = () => {
           <img src={speciesStripUrl} className={styles.speciesStrip} />
         </div>
       </div>
-      <div className={styles.footer}>
+      <footer>
         <div className={styles.footerLeft}>
           <Logotype className={styles.logotype} />
           <img src={ebiLogoUrl} className={styles.ebiLogo} />
@@ -166,7 +160,7 @@ const Home = () => {
             <img src={elixirLogoUrl} className={styles.elixirLogo} />
           </a>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
