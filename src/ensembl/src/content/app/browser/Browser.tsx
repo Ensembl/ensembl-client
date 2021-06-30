@@ -60,13 +60,13 @@ import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { NewTechError } from 'src/shared/components/error-screen';
+import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
 import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
-import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
 export type BrowserProps = {
   activeGenomeId: string | null;
