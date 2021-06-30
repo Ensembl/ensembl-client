@@ -17,6 +17,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import SearchField from 'src/shared/components/search-field/SearchField';
 import QuestionButton, {
   QuestionButtonOption
@@ -35,6 +37,10 @@ const InAppSearch = (props: Props) => {
     styles.searchFieldWrapper,
     props.className
   );
+
+  if (isEnvironment([Environment.PRODUCTION])) {
+    return <div className={styles.fauxSearchField}>Gene ID or name...</div>;
+  }
 
   return (
     <div>

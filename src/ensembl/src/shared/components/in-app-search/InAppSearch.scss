@@ -12,3 +12,12 @@
     height: 100%;
   }
 }
+
+// TODO: remove this temporary class when in-app search becomes functional
+.fauxSearchField {
+  color: $grey;
+  height: 36px;
+  box-shadow: inset 1px 1px 3px 0 $dark-grey;
+  padding: 12px 20px;
+  width: 485px;
+}
