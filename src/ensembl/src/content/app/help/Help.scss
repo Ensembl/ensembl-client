@@ -1,6 +1,6 @@
 .help {
   display: grid;
-  grid-template-rows: [menu] auto [article-grid] minmax(0, 1fr);
+  grid-template-rows: [appBar] auto [menu] auto [article-grid] minmax(0, 1fr);
   height: 100%;
 }
 

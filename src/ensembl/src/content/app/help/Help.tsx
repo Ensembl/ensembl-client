@@ -49,13 +49,11 @@ const Help = () => {
   });
 
   return (
-    <>
+    <div className={styles.help}>
       <AppBar />
-      <div className={styles.help}>
-        {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
-        {article && <MainContent article={article} />}
-      </div>
-    </>
+      {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
+      {article && <MainContent article={article} />}
+    </div>
   );
 };
 
