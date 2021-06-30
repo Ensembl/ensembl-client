@@ -23,6 +23,7 @@ export type ProteinStatsInResponse = {
   ligands: number;
   interaction_partners: number;
   annotations: number;
+  similar_proteins: number;
 };
 
 export type ProteinAcessionInResponse = {
@@ -42,6 +43,7 @@ export type ProteinStats = {
   ligandsCount: number;
   interactionsCount: number;
   annotationsCount: number;
+  similarProteinsCount: number;
 };
 
 export const fetchProteinSummaryStats = async (
@@ -50,11 +52,10 @@ export const fetchProteinSummaryStats = async (
 ): Promise<ProteinStats | null> => {
   const proteinStatsUrl = `https://www.ebi.ac.uk/pdbe/graph-api/uniprot/summary_stats/${xrefId}`;
 
-  const proteinStatsData:
-    | UniProtSummaryStats
-    | undefined = await apiService.fetch(proteinStatsUrl, {
-    signal
-  });
+  const proteinStatsData: UniProtSummaryStats | undefined =
+    await apiService.fetch(proteinStatsUrl, {
+      signal
+    });
   if (!proteinStatsData) {
     return null;
   }

@@ -25,5 +25,6 @@ export const restProteinSummaryAdaptor = (
   structuresCount: proteinStats.pdbs,
   ligandsCount: proteinStats.ligands,
   interactionsCount: proteinStats.interaction_partners,
-  annotationsCount: proteinStats.annotations
+  annotationsCount: proteinStats.annotations,
+  similarProteinsCount: proteinStats.similar_proteins
 });
