@@ -44,15 +44,13 @@ const Home = () => {
 
   return (
     <div className={styles.home}>
-      <div className={styles.container}>
-        <div className={styles.middleHomeWrapper}>
-          <div className={styles.middleHome}>
-            <div className={styles.logotypeContainer}>
-              <Logotype className={styles.logotype} />
-            </div>
+      <div className={styles.main}>
+        <div className={styles.mainTop}>
+          <div className={styles.mainTopMiddle}>
+            <Logotype className={styles.logotype} />
             <div className={styles.text}>Genome data & annotation</div>
-            <div className={styles.selectionWrapper}>
-              <div className={styles.selectionContainer}>
+            <div className={styles.appListContainer}>
+              <div className={styles.appList}>
                 <div className={styles.buttonsContainer}>
                   <Link to="/species-selector">
                     <div className={styles.button}>
@@ -68,7 +66,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div className={styles.selectionContainer}>
+              <div className={styles.appList}>
                 <div className={styles.buttonsContainer}>
                   <Link to="/genome-browser">
                     <div className={styles.button}>
@@ -84,7 +82,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div className={styles.selectionContainer}>
+              <div className={styles.appList}>
                 <div className={styles.buttonsContainer}>
                   <Link to="/entity-viewer">
                     <div className={styles.button}>
@@ -133,35 +131,35 @@ const Home = () => {
 
         <div className={styles.footerRightIcons}>
           <a
-            href="//www.ensembl.info"
+            href="https://www.ensembl.info"
             target="_blank"
             rel="noopener noreferrer"
           >
             <div className={styles.link}>Ensembl blog</div>
           </a>
           <a
-            href="//www.ensembl.info"
+            href="https://www.ensembl.info"
             target="_blank"
             rel="noopener noreferrer"
           >
             <img src={blogIconUrl} className={styles.mediaIcons} />
           </a>
           <a
-            href="//www.facebook.com/Ensembl.org"
+            href="https://www.facebook.com/Ensembl.org"
             target="_blank"
             rel="noopener noreferrer"
           >
             <img src={facebookIconUrl} className={styles.mediaIcons} />
           </a>
           <a
-            href="//www.twitter.com/ensembl"
+            href="https://twitter.com/ensembl"
             target="_blank"
             rel="noopener noreferrer"
           >
             <img src={twitterIconUrl} className={styles.mediaIcons} />
           </a>
           <a
-            href="//www.elixir-europe.org/platforms/data/core-data-resources"
+            href="https://elixir-europe.org/platforms/data/core-data-resources"
             target="_blank"
             rel="noopener noreferrer"
           >

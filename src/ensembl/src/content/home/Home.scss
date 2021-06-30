@@ -5,53 +5,43 @@
   grid-template-rows: minmax(550px, auto) 85px;
 }
 
-.container {
+.main {
   display: grid;
   grid-template-rows: auto 1fr;
-  background-color: $blue;
   background-image: linear-gradient($black, $blue);
   padding-top: 40px; 
 }
 
-.middleHomeWrapper {
+.mainTop {
   position: relative;
 }
 
-.middleHome {    
+.mainTopMiddle {    
   display: grid;
-  grid-template-rows: 38px 110px 100px; 
+  grid-template-rows: auto 110px auto; 
   justify-content: center;
-  height: 248px;
-
-  .logotypeContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
 
   .logotype {
-    width: 270px;
     height: 36px;
     fill: $white;
+    justify-self: center;
   }
 
   .text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;      
+    text-align: center;     
     font-size: 18px;
-    font-weight: 300;
+    font-weight: $light;
     color: $white;
     margin-top: 15px;
   }
 }
 
-.selectionWrapper {
+.appListContainer {
   display: grid;
   grid-template-columns: 270px 270px 270px;
 } 
 
-.selectionContainer {
+.appList {
   display: grid;
   grid-template-rows: 56px 44px;
   justify-content: center;
@@ -153,6 +143,7 @@
   @media (orientation: portrait) {
     .speciesStrip {
       max-height: 60%;
+      transform: translateX(calc(-1 * (100% - 100vw) / 2));
     }
 
     .platform {
