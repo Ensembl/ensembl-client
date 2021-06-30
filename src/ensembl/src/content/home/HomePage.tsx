@@ -28,7 +28,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>Ensembl home page</title>
+        <title>Ensembl</title>
         <meta name="description" content="This is Ensembl home page" />
       </Helmet>
       {hasMounted && <LoadableHome />}
