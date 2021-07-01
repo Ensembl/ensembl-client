@@ -35,7 +35,11 @@ const EntityViewerInterstitial = () => {
   return (
     <div>
       <div className={styles.topPanel}>
-        <InAppSearch className={styles.searchField} />
+        <InAppSearch
+          app="entityViewer"
+          mode="interstitial"
+          genomeId={activeGenomeId}
+        />
       </div>
       <ExampleLinks />
     </div>

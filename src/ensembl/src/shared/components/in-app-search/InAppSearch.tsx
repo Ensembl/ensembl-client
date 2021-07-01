@@ -15,52 +15,109 @@
  */
 
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
+import upperFirst from 'lodash/upperFirst';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+import { search } from 'src/shared/state/in-app-search/inAppSearchSlice';
+import { getSearchResults } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
 import SearchField from 'src/shared/components/search-field/SearchField';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
+import InAppSearchMatches from './InAppSearchMatches';
+
+import type { RootState } from 'src/store';
+import type { AppName } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import styles from './InAppSearch.scss';
 
-type Props = {
-  className?: string;
+export type InAppSearchMode = 'interstitial' | 'sidebar';
+
+export type Props = {
+  app: AppName;
+  genomeId: string;
+  mode: InAppSearchMode;
+  className?: string; // <== will remove
 };
 
 const InAppSearch = (props: Props) => {
-  const [value, setValue] = useState('');
-
-  const searchFieldWrapperClasses = classNames(
-    styles.searchFieldWrapper,
-    props.className
+  const { app, genomeId, mode } = props;
+  const [query, setQuery] = useState('');
+  const searchResult = useSelector((state: RootState) =>
+    getSearchResults(state, props.app, props.genomeId)
   );
+  const dispatch = useDispatch();
 
-  if (isEnvironment([Environment.PRODUCTION])) {
-    return <div className={styles.fauxSearchField}>Gene ID or name...</div>;
-  }
+  const onSearchSubmit = () => {
+    const searchParams = {
+      app,
+      genome_id: genomeId,
+      query,
+      page: 1,
+      per_page: 50
+    };
+    dispatch(search(searchParams));
+  };
 
   return (
     <div>
-      <div className={searchFieldWrapperClasses}>
-        <SearchField
-          placeholder="Gene ID or name..."
-          search={value}
-          onChange={setValue}
-          className={styles.searchField}
-          rightCorner={
-            <QuestionButton
-              helpText="This is a hint"
-              styleOption={QuestionButtonOption.INPUT}
-            />
-          }
-        />
+      <div
+        className={getInAppSearchTopStyles(mode)}
+        data-test-id="in-app search top"
+      >
+        <div className={styles.label}>Find a gene in this species</div>
+        <div className={getSearchFieldWrapperClasses(mode)}>
+          <SearchField
+            placeholder="Gene ID or name..."
+            search={query}
+            onChange={setQuery}
+            onSubmit={onSearchSubmit}
+            className={styles.searchField}
+            rightCorner={
+              <QuestionButton
+                helpText="This is a hint"
+                styleOption={QuestionButtonOption.INPUT}
+              />
+            }
+          />
+        </div>
+        <PrimaryButton
+          onClick={onSearchSubmit}
+          className={styles.searchButton}
+          isDisabled={!query}
+        >
+          Go
+        </PrimaryButton>
+        {searchResult && (
+          <div className={styles.hitsCount}>
+            <span className={styles.hitsNumber}>
+              {getCommaSeparatedNumber(searchResult.meta.total_hits)}
+            </span>{' '}
+            {pluralise('gene', searchResult.meta.total_hits)}
+          </div>
+        )}
       </div>
-
-      {/* <InAppCommitButton /> */}
+      {searchResult && (
+        <InAppSearchMatches {...searchResult} mode={props.mode} />
+      )}
     </div>
+  );
+};
+
+const getInAppSearchTopStyles = (mode: InAppSearchMode) => {
+  return styles[`inAppSearchTop${upperFirst(mode)}`];
+};
+
+const getSearchFieldWrapperClasses = (mode: InAppSearchMode) => {
+  return classNames(
+    styles.searchFieldWrapper,
+    styles[`searchFieldWrapper${upperFirst(mode)}`]
   );
 };
 

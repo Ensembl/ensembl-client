@@ -53,6 +53,7 @@ const Button = (props: Props) => {
     <button
       className={classNames(styles.button, props.className)}
       onClick={handleClick}
+      disabled={props.isDisabled}
     >
       {props.children}
     </button>
