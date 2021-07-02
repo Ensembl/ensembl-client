@@ -22,7 +22,7 @@ export type PreviouslyViewedObject = {
   genome_id: string;
   object_id: string;
   type: string;
-  label: (string | null)[];
+  label: string[];
 };
 
 export type PreviouslyViewedObjects = {

@@ -220,7 +220,7 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     const ellipsisButton = container.querySelector(
-      '.trackPanelBookmarks .more'
+      '.trackPanelBookmarks .more span'
     ) as HTMLElement;
 
     userEvent.click(ellipsisButton);

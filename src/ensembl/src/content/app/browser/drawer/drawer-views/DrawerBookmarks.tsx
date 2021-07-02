@@ -72,9 +72,16 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
                       onClickHandler(previouslyViewedObject.type, index)
                     }
                   >
-                    {previouslyViewedObject.label}
+                    <span className={styles.label}>
+                      {previouslyViewedObject.label[0]}
+                    </span>
+                    {previouslyViewedObject.label[1] && (
+                      <span className={styles.label}>
+                        {previouslyViewedObject.label[1]}
+                      </span>
+                    )}
                   </Link>
-                  <span className={styles.previouslyViewedType}>
+                  <span className={styles.type}>
                     {upperFirst(previouslyViewedObject.type)}
                   </span>
                 </span>

@@ -110,8 +110,8 @@ export const TrackPanelBookmarks = () => {
         <>
           <PreviouslyViewedLinks />
           {previouslyViewedObjects.length > 20 && (
-            <div className={styles.more} onClick={onMoreClick}>
-              more...
+            <div className={styles.more}>
+              <span onClick={onMoreClick}>more...</span>
             </div>
           )}
         </>

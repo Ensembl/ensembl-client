@@ -141,7 +141,7 @@ export const updatePreviouslyViewedObjectsAndSave =
 
     const versioned_stable_id =
       activeEnsObject.type === 'gene'
-        ? activeEnsObject.versioned_stable_id
+        ? activeEnsObject.versioned_stable_id || activeEnsObject.label
         : activeEnsObject.label;
 
     //FIXME Hack to find if gene symbol is available or not

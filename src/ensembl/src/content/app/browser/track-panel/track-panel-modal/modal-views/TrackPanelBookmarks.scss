@@ -33,9 +33,11 @@
 }
 
 .more {
-  font-size: 12px;
   margin-top: 25px;
-  cursor: pointer;
-  color: $blue;
-  font-weight: $normal;
+  span {
+    font-size: 12px;
+    cursor: pointer;
+    color: $blue;
+    font-weight: $normal;
+  }
 }
