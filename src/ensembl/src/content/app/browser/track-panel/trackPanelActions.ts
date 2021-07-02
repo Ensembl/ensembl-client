@@ -141,18 +141,19 @@ export const updatePreviouslyViewedObjectsAndSave =
 
     const versioned_stable_id =
       activeEnsObject.type === 'gene'
-        ? activeEnsObject.versioned_stable_id || activeEnsObject.label
-        : activeEnsObject.label;
+        ? activeEnsObject.versioned_stable_id
+        : null;
 
-    //FIXME Hack to find if gene symbol is available or not
-    const geneSymbolAvailable =
+    const geneSymbol =
       activeEnsObject.type === 'gene' &&
-      activeEnsObject.label !== activeEnsObject.stable_id;
+      activeEnsObject.label !== activeEnsObject.stable_id
+        ? activeEnsObject.label
+        : null;
 
     const label =
-      geneSymbolAvailable && versioned_stable_id
-        ? [activeEnsObject.label, versioned_stable_id]
-        : [versioned_stable_id];
+      activeEnsObject.type === 'gene'
+        ? ([geneSymbol, versioned_stable_id].filter(Boolean) as string[])
+        : [activeEnsObject.label];
 
     const newObject = {
       genome_id: activeEnsObject.genome_id,
