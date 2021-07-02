@@ -63,7 +63,7 @@ const Launchbar = () => {
               app="genome-browser"
               description="Genome browser"
               icon={BrowserIcon}
-              enabled={committedSpecies.length > 0}
+              enabled={true}
             />
           </div>
           <div className={styles.category}>
@@ -71,7 +71,7 @@ const Launchbar = () => {
               app="entity-viewer"
               description="Entity Viewer"
               icon={EntityViewerIcon}
-              enabled={committedSpecies.length > 0}
+              enabled={true}
             />
           </div>
           <div className={styles.category}>

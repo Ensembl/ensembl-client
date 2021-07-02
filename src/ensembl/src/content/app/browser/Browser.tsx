@@ -60,6 +60,7 @@ import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { NewTechError } from 'src/shared/components/error-screen';
+import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
 import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
@@ -107,10 +108,6 @@ export const Browser = (props: BrowserProps) => {
   const shouldShowNavBar =
     props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
 
-  if (!props.activeGenomeId) {
-    return null;
-  }
-
   const mainContent = (
     <>
       {shouldShowNavBar && <BrowserNavBar />}
@@ -122,7 +119,7 @@ export const Browser = (props: BrowserProps) => {
     <ApolloProvider client={client}>
       <div className={styles.browserInnerWrapper}>
         <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-        {props.browserQueryParams.focus ? (
+        {props.activeGenomeId && props.browserQueryParams.focus ? (
           <StandardAppLayout
             mainContent={mainContent}
             sidebarContent={<TrackPanel />}
@@ -137,7 +134,7 @@ export const Browser = (props: BrowserProps) => {
             viewportWidth={props.viewportWidth}
           />
         ) : (
-          <ExampleObjectLinks {...props} />
+          <BrowserInterstitial />
         )}
       </div>
     </ApolloProvider>

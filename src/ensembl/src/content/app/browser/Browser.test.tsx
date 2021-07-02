@@ -44,6 +44,9 @@ jest.mock('./track-panel/TrackPanel', () => () => (
 jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
   <div className="browserAppBar">BrowserAppBar</div>
 ));
+jest.mock('./interstitial/BrowserInterstitial', () => () => (
+  <div className="browserInterstitial">BrowserInterstitial</div>
+));
 jest.mock('./track-panel/track-panel-bar/TrackPanelBar', () => () => (
   <div className="trackPanelBar">TrackPanelBar</div>
 ));
@@ -84,29 +87,17 @@ describe('<Browser />', () => {
     );
 
   describe('rendering', () => {
-    test('does not render when no activeGenomeId', () => {
+    it('renders an interstitial if no species is selected', () => {
       const { container } = mountBrowserComponent({ activeGenomeId: null });
-      expect(container.innerHTML).toBeFalsy();
+      expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
-    test('renders links to example objects only if there is no selected focus feature', () => {
-      const { container, rerender } = mountBrowserComponent();
-
-      expect(container.querySelectorAll('.exampleLinks')).toHaveLength(1);
-
-      rerender(
-        <Browser
-          {...defaultProps}
-          browserQueryParams={{
-            focus: faker.lorem.words()
-          }}
-        />
-      );
-
-      expect(container.querySelectorAll('.exampleLinks')).toHaveLength(0);
+    it('renders an interstitial if no feature has been selected', () => {
+      const { container } = mountBrowserComponent();
+      expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
-    test('renders the genome browser and track panel only when there is a selected focus feature', () => {
+    it('renders the genome browser and track panel only when there is a selected focus feature', () => {
       const { container, rerender } = mountBrowserComponent();
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(0);

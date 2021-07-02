@@ -1,0 +1,23 @@
+@import 'src/styles/common';
+
+.searchFieldWrapper {
+  padding: 4px;
+  box-shadow: inset 2px 2px 4px -2px $dark-grey;
+  background: white;
+
+  // nesting to increase specificity of the selector
+  .searchField {
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// TODO: remove this temporary class when in-app search becomes functional
+.fauxSearchField {
+  color: $grey;
+  height: 36px;
+  box-shadow: inset 1px 1px 3px 0 $dark-grey;
+  padding: 12px 20px;
+  width: 485px;
+}

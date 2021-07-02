@@ -8,7 +8,6 @@
     'top top'
     'main right';
   align-items: center;
-  font-size: 12px;
   padding: 8px 20px;
   min-height: 80px;
   width: 100%;
@@ -17,6 +16,8 @@
 .appBarTop {
   grid-area: top;
   min-height: 30px;
+  color: $black;
+  font-weight: 300;
 }
 
 .appBarMain {

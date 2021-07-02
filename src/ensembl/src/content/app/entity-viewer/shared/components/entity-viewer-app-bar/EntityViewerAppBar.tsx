@@ -63,10 +63,14 @@ const EntityViewerAppBar = () => {
     />
   );
 
+  const mainContent = activeGenomeId
+    ? wrappedSpecies
+    : 'To start using this app...';
+
   return (
     <AppBar
       appName={AppName.ENTITY_VIEWER}
-      mainContent={wrappedSpecies}
+      mainContent={mainContent}
       aside={<HelpPopupButton slug="entity-viewer" />}
     />
   );

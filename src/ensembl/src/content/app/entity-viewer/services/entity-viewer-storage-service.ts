@@ -35,7 +35,7 @@ export class EntityViewerStorageService {
     this.storageService = storageService;
   }
 
-  public getGeneralState(): Partial<EntityViewerGeneralState> {
+  public getGeneralState(): Partial<EntityViewerGeneralState> | null {
     return this.storageService.get(
       StorageKeys.GENERAL_STATE,
       localStorageOptions
@@ -51,7 +51,7 @@ export class EntityViewerStorageService {
   }
 
   public deleteGenome(genomeIdToDelete: string): void {
-    const activeGenomeId = this.getGeneralState().activeGenomeId;
+    const activeGenomeId = this.getGeneralState()?.activeGenomeId;
     if (activeGenomeId === genomeIdToDelete) {
       this.updateGeneralState({
         activeGenomeId: undefined

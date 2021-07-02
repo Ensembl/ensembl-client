@@ -1,0 +1,24 @@
+@import 'src/styles/common';
+
+// TODO: this panel is the same as in SpeciesSelector, and in EntityViewer.
+// We should extract it in a component (or at least reuse the same CSS classes)
+.topPanel {
+  background-color: $light-grey;
+  height: 235px;
+  padding: 65px 40px;
+  padding-left: $global-padding-left;
+  box-shadow: 0 3px 5px $global-box-shadow;
+}
+
+.searchField {
+  max-width: 485px;
+  height: 30px;
+}
+
+.exampleLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 40px;
+  padding-left: $global-padding-left;
+}
