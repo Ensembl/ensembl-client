@@ -160,7 +160,11 @@ const QUERY = gql`
             value
             label
             definition
-            description
+          }
+          mane {
+            value
+            label
+            definition
           }
         }
       }
