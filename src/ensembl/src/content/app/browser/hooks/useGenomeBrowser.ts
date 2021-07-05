@@ -17,7 +17,10 @@ import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 
-import GenomeBrowser from 'ensembl-genome-browser';
+import GenomeBrowser, {
+  OutgoingAction,
+  OutgoingActionType
+} from 'ensembl-genome-browser';
 
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
@@ -28,7 +31,6 @@ import {
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
-import { OutgoingAction, OutgoingActionType } from 'ensembl-genome-browser';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 import { ChrLocation } from 'src/content/app/browser/browserState';
