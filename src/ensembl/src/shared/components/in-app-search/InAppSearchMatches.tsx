@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
+
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
+import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
+import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import PointerBox, {
+  Position as PointerBoxPosition
+} from 'src/shared/components/pointer-box/PointerBox';
+import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type {
   SearchResults,
@@ -49,14 +60,90 @@ type InAppSearchMatchProps = {
 
 const InAppSearchMatch = (props: InAppSearchMatchProps) => {
   const { symbol, stable_id } = props.match;
+  const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
+
+  const elementRef = useRef<HTMLDivElement>(null);
+
+  const onClick = () => {
+    setShouldShowTooltip(!shouldShowTooltip);
+  };
+
+  const hideTooltip = () => setShouldShowTooltip(false);
 
   const symbolElement = symbol ? <span>{symbol}</span> : null;
   const stableIdElement = <span>{stable_id}</span>;
 
   return (
-    <div className={styles.searchMatch}>
-      {symbolElement}
-      {stableIdElement}
+    <>
+      <div className={styles.searchMatch} onClick={onClick} ref={elementRef}>
+        {symbolElement}
+        {stableIdElement}
+      </div>
+      {shouldShowTooltip && elementRef.current && (
+        <PointerBox
+          anchor={elementRef.current}
+          position={PointerBoxPosition.RIGHT_BOTTOM}
+          classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
+          onOutsideClick={hideTooltip}
+        >
+          <MatchDetails {...props} />
+        </PointerBox>
+      )}
+    </>
+  );
+};
+
+const MatchDetails = (props: InAppSearchMatchProps) => {
+  const { match } = props;
+  const { genome_id: genomeId, unversioned_stable_id } = match;
+
+  const formattedLocation = getFormattedLocation({
+    chromosome: match.slice.region.name,
+    start: match.slice.location.start,
+    end: match.slice.location.end
+  });
+
+  const urlForGenomeBrowser = urlFor.browser({
+    genomeId,
+    focus: buildFocusIdForUrl({ type: 'gene', objectId: unversioned_stable_id })
+  });
+
+  const urlForEntityViewer = urlFor.entityViewer({
+    genomeId,
+    entityId: buildFocusIdForUrl({
+      type: 'gene',
+      objectId: unversioned_stable_id
+    })
+  });
+
+  const links = {
+    genomeBrowser: {
+      url: urlForGenomeBrowser,
+      replaceState: true // TODO: could be more complicated than that; depending on the app
+    },
+    entityViewer: {
+      url: urlForEntityViewer,
+      replaceState: false
+    }
+  };
+
+  return (
+    <div className={styles.tooltipContent}>
+      <div>
+        <span>{match.biotype}</span>
+        <span>{getStrandDisplayName(match.slice.strand.code)}</span>
+      </div>
+
+      <div>{formattedLocation}</div>
+
+      <div>
+        <span>{match.transcript_count}</span>
+        {pluralise('transcript', match.transcript_count)}
+      </div>
+
+      <div>
+        <ViewInApp links={links} />
+      </div>
     </div>
   );
 };

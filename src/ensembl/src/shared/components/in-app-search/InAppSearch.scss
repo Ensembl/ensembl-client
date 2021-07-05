@@ -56,13 +56,47 @@
 }
 
 .searchMatches {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   margin-top: 36px;
 }
 
 .searchMatch {
   color: $blue;
+  cursor: pointer;
+  display: inline-block;
 
   & > span:nth-child(2) {
     margin-left: 0.6rem;
+  }
+}
+
+.tooltip {
+  background: $black;
+  padding: 12px 20px;
+  filter: drop-shadow(2px 2px 3px $shadow-color);
+  color: $white;
+}
+
+.tooltipTip {
+  fill: $black;
+}
+
+.tooltipContent {
+  & > div:first-child span:first-child {
+    margin-right: 28px;
+  }
+
+  & > div:nth-child(3) span:first-child {
+    font-weight: $bold;
+  }
+
+  & > div:not(:last-child) {
+    margin-bottom: 6px;
+  }
+
+  & > div:last-child {
+    margin-top: 28px;
   }
 }
