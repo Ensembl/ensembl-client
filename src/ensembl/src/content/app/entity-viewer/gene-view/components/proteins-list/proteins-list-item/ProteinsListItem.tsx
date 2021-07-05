@@ -53,6 +53,7 @@ type Product = Pick<
 };
 
 type Transcript = Pick<FullTranscript, 'stable_id'> &
+  Pick2<FullTranscript, 'metadata', 'mane' | 'canonical'> &
   ProteinsListItemInfoProps['transcript'] & {
     product_generating_contexts: Array<
       Pick<FullProductGeneratingContext, 'product_type'> & {
@@ -68,7 +69,7 @@ export type Props = {
 };
 
 const ProteinsListItem = (props: Props) => {
-  const { isDefault, transcript, trackLength } = props;
+  const { transcript, trackLength } = props;
   const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
   const dispatch = useDispatch();
 
@@ -124,7 +125,7 @@ const ProteinsListItem = (props: Props) => {
       <span className={styles.scrollRef} ref={itemRef}></span>
       <div className={transcriptsListStyles.row}>
         <div className={transcriptsListStyles.left}>
-          {isDefault && <TranscriptQualityLabel />}
+          <TranscriptQualityLabel metadata={transcript.metadata} />
         </div>
         <div onClick={toggleListItemInfo} className={midStyles}>
           <div>{getProductAminoAcidLength(transcript)} aa</div>

@@ -19,6 +19,7 @@ import { SplicedExon } from './exon';
 import { FullProductGeneratingContext } from './productGeneratingContext';
 import { LocationWithinRegion } from './location';
 import { ExternalReference } from './externalReference';
+import { TranscriptMetadata } from './metadata';
 
 export type FullTranscript = {
   type: 'Transcript';
@@ -32,4 +33,5 @@ export type FullTranscript = {
   spliced_exons: SplicedExon[];
   product_generating_contexts: FullProductGeneratingContext[];
   external_references: ExternalReference[];
+  metadata: TranscriptMetadata;
 };

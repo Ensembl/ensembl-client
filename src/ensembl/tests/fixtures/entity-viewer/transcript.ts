@@ -29,6 +29,7 @@ import { CDNA } from 'src/shared/types/thoas/cdna';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { ProductType } from 'src/shared/types/thoas/product';
 import { ExternalReference } from 'src/shared/types/thoas/externalReference';
+import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
 
 type ProteinCodingProductGeneratingContext = Omit<
   FullProductGeneratingContext,
@@ -71,7 +72,23 @@ export const createTranscript = (
     product_generating_contexts: [
       createProductGeneratingContext(transcriptSlice, exons)
     ],
+    metadata: createTranscriptMetadata(),
     ...fragment
+  };
+};
+
+const createTranscriptMetadata = (): TranscriptMetadata => {
+  return {
+    canonical: {
+      label: 'Ensembl canonical',
+      value: true,
+      definition: faker.lorem.sentence()
+    },
+    mane: {
+      label: 'MANE Select',
+      value: 'select',
+      definition: faker.lorem.sentence()
+    }
   };
 };
 

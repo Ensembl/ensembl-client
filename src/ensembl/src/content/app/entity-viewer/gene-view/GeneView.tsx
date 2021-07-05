@@ -155,6 +155,14 @@ const QUERY = gql`
             }
           }
         }
+        metadata {
+          canonical {
+            value
+            label
+            definition
+            description
+          }
+        }
       }
     }
   }
