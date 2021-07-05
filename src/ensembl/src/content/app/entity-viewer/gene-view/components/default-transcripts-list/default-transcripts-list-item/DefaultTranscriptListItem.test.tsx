@@ -88,10 +88,10 @@ describe('<DefaultTranscriptListItem />', () => {
     expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });
 
-  it('displays selected transcript', () => {
-    const { container } = renderComponent({ isDefault: true });
+  it('displays Ensembl canonical transcript with the correct label', () => {
+    const { container } = renderComponent();
     expect(
       container.querySelector('.transcriptQualityLabel')?.textContent
-    ).toBe('Selected');
+    ).toBe(defaultProps.transcript.metadata.mane.label);
   });
 });
