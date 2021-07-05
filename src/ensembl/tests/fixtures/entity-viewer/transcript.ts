@@ -60,7 +60,6 @@ export const createTranscript = (
     unversioned_stable_id: unversionedStableId,
     version,
     symbol: faker.lorem.word(),
-    so_term: faker.lorem.word(),
     slice: transcriptSlice,
     external_references: createExternalReferences(),
     relative_location: {
@@ -77,13 +76,19 @@ export const createTranscript = (
   };
 };
 
-const createTranscriptMetadata = (): TranscriptMetadata => {
+export const createTranscriptMetadata = (fragment: Partial<TranscriptMetadata> = {}): TranscriptMetadata => {
   return {
+    biotype: {
+      label: faker.lorem.word(),
+      value: faker.lorem.word(),
+      definition: faker.lorem.sentence()
+    },
     canonical: null,
     mane: null,
     gencode_basic: null,
     tsl: null,
-    appris: null
+    appris: null,
+    ...fragment
   };
 };
 

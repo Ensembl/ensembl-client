@@ -28,10 +28,10 @@ import {
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import {
-  transcriptSortingFunctions,
+  getTranscriptSortingFunction,
   defaultSort
 } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
-import { filterTranscriptsBySOTerm } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
+import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
@@ -46,8 +46,7 @@ import { Exon } from 'src/shared/types/thoas/exon';
 
 import styles from './ProteinsList.scss';
 
-type Transcript = Pick<FullTranscript, 'so_term'> &
-  ProteinListItemProps['transcript'] &
+type Transcript = ProteinListItemProps['transcript'] &
   Pick3<FullTranscript, 'slice', 'location', 'length'> & {
     spliced_exons: Array<{
       exon: Pick3<Exon, 'slice', 'location', 'length'>;
@@ -74,15 +73,15 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   const sortingRule = useSelector(getSortingRule);
 
-  const sortingFunction = transcriptSortingFunctions[sortingRule];
-  const sortedTranscripts = sortingFunction(props.gene.transcripts);
-
   const filters = useSelector(getFilters);
   const filteredTranscripts = Object.values(filters).some(Boolean)
-    ? (filterTranscriptsBySOTerm(sortedTranscripts, filters) as Transcript[])
-    : sortedTranscripts;
+    ? (filterTranscripts(props.gene.transcripts, filters) as Transcript[])
+    : props.gene.transcripts;
 
-  const proteinCodingTranscripts = filteredTranscripts.filter(
+  const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
+  const sortedTranscripts = sortingFunction(filteredTranscripts);
+
+  const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
   ) as Transcript[];
 

@@ -29,13 +29,13 @@
 
 .filterContent {
   display: grid;
-  grid-template-columns: 210px 210px 210px;
+  grid-template-columns: repeat(3, 210px);
   height: auto;
 }
 
 .header {
   width: 200px;
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 10px;
 }
 

@@ -38,7 +38,6 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
     stable_id: stableId,
     unversioned_stable_id: unversionedStableId,
     version,
-    so_term: faker.lorem.word(),
     length: length,
     protein_domains: createProteinDomains(length),
     external_references: times(2, () => createExternalReference()),

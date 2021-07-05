@@ -24,6 +24,8 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
+import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds,
@@ -54,7 +56,13 @@ export type GeneViewTranscriptsState = {
   };
 };
 
-export type Filters = { [filter: string]: boolean };
+export type Filter = {
+  label: string;
+  selected: boolean;
+  type: keyof Pick<TranscriptMetadata, 'tsl' | 'appris' | 'biotype'>;
+};
+
+export type Filters = Record<string, Filter>;
 
 const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedIds: [],
@@ -214,9 +222,7 @@ type ExpandedIdsPayload = {
 type UpdateFiltersPayload = {
   activeGenomeId: string;
   activeEntityId: string;
-  filters: {
-    [filter: string]: boolean;
-  };
+  filters: Filters;
 };
 
 type UpdateSortingRulePayload = {

@@ -39,27 +39,30 @@ import { InstantDownloadTranscript } from 'src/shared/components/instant-downloa
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import QuestionButton from 'ensemblRoot/src/shared/components/question-button/QuestionButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './TranscriptSummary.scss';
+import { TranscriptQualityLabel } from 'ensemblRoot/src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 // TODO: narrow down the types for spliced exons and product-generating_contexts
 type Transcript = Pick<
   FullTranscript,
   | 'stable_id'
   | 'unversioned_stable_id'
-  | 'so_term'
   | 'external_references'
   | 'slice'
   | 'spliced_exons'
   | 'product_generating_contexts'
+  | 'metadata'
 >;
 
 // TODO: narrow down the type and use it in the Transcript type
-type ProductGeneratingContext = Transcript['product_generating_contexts'][number];
+type ProductGeneratingContext =
+  Transcript['product_generating_contexts'][number];
 
 type Gene = Pick<
   FullGene,
@@ -77,7 +80,6 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
     transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
       stable_id
       unversioned_stable_id
-      so_term
       external_references {
         accession_id
         url
@@ -131,6 +133,23 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
           length
         }
       }
+      metadata {
+        biotype {
+          label
+          value
+          definition
+        }
+        canonical {
+          value
+          label
+          definition
+        }
+        mane {
+          value
+          label
+          definition
+        }
+      }
     }
   }
 `;
@@ -163,9 +182,12 @@ const TranscriptSummary = () => {
   }
 
   const { gene, transcript } = data;
-  const defaultProductGeneratingContext = transcript.product_generating_contexts.find(
-    (entry) => entry.default
-  ) as ProductGeneratingContext;
+  const metadata = transcript.metadata;
+
+  const defaultProductGeneratingContext =
+    transcript.product_generating_contexts.find(
+      (entry) => entry.default
+    ) as ProductGeneratingContext;
 
   const product = defaultProductGeneratingContext.product;
   const stableId = getDisplayStableId(transcript);
@@ -203,8 +225,16 @@ const TranscriptSummary = () => {
         <div className={styles.value}>
           <div className={styles.featureDetails}>
             <span className={styles.featureSymbol}>{stableId}</span>
-            {transcript.so_term && (
-              <span>{transcript.so_term.toLowerCase()}</span>
+            <span className={styles.label}>
+              <TranscriptQualityLabel metadata={metadata} />
+            </span>
+            {metadata.biotype && (
+              <>
+                <span>{metadata.biotype.label.toLowerCase()}</span>
+                <div className={styles.questionButton}>
+                  <QuestionButton helpText={metadata.biotype.definition} />
+                </div>
+              </>
             )}
             {transcript.slice.strand.code && (
               <span>{getStrandDisplayName(transcript.slice.strand.code)}</span>
@@ -240,7 +270,7 @@ const TranscriptSummary = () => {
         </div>
       </div>
 
-      {transcript.so_term === 'protein_coding' && (
+      {metadata.biotype?.value === 'protein_coding' && (
         <div className={styles.row}>
           <div className={styles.label}>Protein</div>
           <div className={styles.value}>
@@ -289,7 +319,7 @@ const TranscriptSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 transcript={{
                   id: transcript.unversioned_stable_id,
-                  so_term: transcript.so_term
+                  biotype: metadata.biotype?.value as string
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"
@@ -307,7 +337,9 @@ const TranscriptSummary = () => {
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div>
-            {gene.symbol && <span className={styles.geneSymbol}>{gene.symbol}</span>}
+            {gene.symbol && (
+              <span className={styles.geneSymbol}>{gene.symbol}</span>
+            )}
             {gene.symbol !== stableId && <span>{gene.stable_id}</span>}
           </div>
         </div>

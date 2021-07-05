@@ -28,12 +28,18 @@ import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
 import styles from './EntityViewerDownloads.scss';
+import { GeneMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
 
 const QUERY = gql`
   query Gene($genomeId: String!, $entityId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
       stable_id
-      so_term
+      metadata {
+        biotype {
+          label
+          value
+        }
+      }
     }
   }
 `;
@@ -44,12 +50,11 @@ const EntityViewerSidebarDownloads = () => {
 
   const entityId = geneId ? parseEnsObjectId(geneId).objectId : null;
 
-  const { data } = useQuery<{ gene: { stable_id: string; so_term: string } }>(
-    QUERY,
-    {
-      variables: { genomeId, entityId }
-    }
-  );
+  const { data } = useQuery<{
+    gene: { stable_id: string; metadata: GeneMetadata };
+  }>(QUERY, {
+    variables: { genomeId, entityId }
+  });
 
   if (!data) {
     return null;
@@ -60,7 +65,10 @@ const EntityViewerSidebarDownloads = () => {
       <h3>Download</h3>
       <InstantDownloadGene
         genomeId={genomeId as string}
-        gene={{ id: data.gene.stable_id, so_term: data.gene.so_term }}
+        gene={{
+          id: data.gene.stable_id,
+          biotype: data.gene.metadata.biotype.value as string
+        }}
       />
     </section>
   );

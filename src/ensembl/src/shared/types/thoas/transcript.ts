@@ -27,7 +27,6 @@ export type FullTranscript = {
   unversioned_stable_id: string;
   version: number | null;
   symbol: string | null;
-  so_term: string;
   slice: Slice;
   relative_location: LocationWithinRegion;
   spliced_exons: SplicedExon[];

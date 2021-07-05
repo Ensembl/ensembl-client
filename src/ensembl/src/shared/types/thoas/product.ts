@@ -49,7 +49,6 @@ export type Product = {
   stable_id: string;
   unversioned_stable_id: string;
   version: number | null;
-  so_term: string;
   length: number;
   protein_domains: ProteinDomain[];
   external_references: ExternalReference[];

@@ -24,7 +24,7 @@ import {
   sortByExonCountAsc
 } from '../transcripts-sorter';
 
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import { createTranscript, createTranscriptMetadata } from 'tests/fixtures/entity-viewer/transcript';
 
 /* Creating dummy transcritps with different protein coding and non coding length  to test default sort*/
 const createLongProteinCodingTranscript = () => {
@@ -40,14 +40,12 @@ const createShortProteinCodingTranscript = () => {
 const createLongNonCodingTranscript = () => {
   const transcript = createTranscript();
   transcript.slice.location.length = 150_000;
-  transcript.so_term = 'xyz'; // <- to make sure that during default sorting we put this last
   transcript.product_generating_contexts = [];
   return transcript;
 };
 const createShortNonCodingTranscript = () => {
   const transcript = createTranscript();
   transcript.slice.location.length = 5_000;
-  transcript.so_term = 'abc'; // <- to make sure that during default sorting we put this first
   transcript.product_generating_contexts = [];
   return transcript;
 };
@@ -108,27 +106,42 @@ const createTranscriptWithSmallestExons = () => {
 };
 
 const createMANETranscript = () => {
-  const transcript = createTranscript();
-  transcript.metadata.canonical = {
-    label: 'Ensembl canonical',
-    value: true,
-    definition: faker.lorem.sentence()
-  };
-  transcript.metadata.mane = {
-    label: 'MANE Select',
-    value: 'select',
-    definition: faker.lorem.sentence()
-  };
+  const metadata = createTranscriptMetadata({
+      biotype: {
+        label: 'Protein coding',
+        value: 'protein_coding',
+        definition: faker.lorem.sentence()
+      },
+      canonical: {
+        label: 'Ensembl canonical',
+        value: true,
+        definition: faker.lorem.sentence()
+      },
+      mane: {
+        label: 'MANE Select',
+        value: 'select',
+        definition: faker.lorem.sentence()
+      },
+    })
+
+  const transcript = createTranscript({metadata});
   return transcript;
 };
 
 const createOtherMANETranscript = () => {
-  const transcript = createTranscript();
-  transcript.metadata.mane = {
-    label: 'MANE Plus Clinical',
-    value: 'plus_clinical',
-    definition: faker.lorem.sentence()
-  };
+  const metadata = createTranscriptMetadata({
+    biotype: {
+      label: 'Protein coding',
+      value: 'protein_coding',
+      definition: faker.lorem.sentence()
+    },
+    mane: {
+      label: 'MANE Plus Clinical',
+      value: 'plus_clinical',
+      definition: faker.lorem.sentence()
+    }
+  })
+  const transcript = createTranscript({metadata});
   return transcript;
 };
 
@@ -156,7 +169,7 @@ describe('default sort', () => {
       - MANE transcripts
       - protein-coding transcripts
       - sorts protein-coding transcripts by length
-      - sorts non-coding transcripts by so_term term alphabetically
+      - sorts non-coding transcripts by biotype alphabetically
     */
 
     const unsortedTranscripts = [
@@ -173,8 +186,8 @@ describe('default sort', () => {
       otherManeTranscript,
       longProteinCodingTranscript,
       shortProteinCodingTranscript,
-      longNonCodingTranscript, // its so_term is "xyz"
-      shortNonCodingTranscript // its so_term is "abc"
+      longNonCodingTranscript,
+      shortNonCodingTranscript
     ];
 
     const sortedTranscripts = defaultSort(unsortedTranscripts);

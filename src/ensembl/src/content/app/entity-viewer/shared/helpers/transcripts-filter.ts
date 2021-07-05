@@ -17,17 +17,33 @@
 import { Filters } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { Pick2 } from 'ts-multipick';
+import { metadataFields } from '../../gene-view/components/transcripts-filter/TranscriptsFilter';
 
-type TranscriptSOTerm = Pick<FullTranscript, 'so_term'>;
+type Transcript = Pick2<
+  FullTranscript,
+  'metadata',
+  'biotype' | 'tsl' | 'appris'
+>;
 
-export function filterTranscriptsBySOTerm(
-  transcripts: TranscriptSOTerm[],
+export function filterTranscripts<T extends Transcript>(
+  transcripts: T[],
   filters: Filters
 ) {
-  const soTerms = Object.keys(filters).filter((key) => filters[key]);
-  const filteredTranscripts = transcripts.filter((transcript) => {
-    return soTerms.includes(transcript.so_term);
-  });
+  const selectedFilters = new Set([
+    ...Object.keys(filters).filter((key) => filters[key].selected)
+  ]);
+
+  if (selectedFilters.size === 0) {
+    return transcripts;
+  }
+
+  const filteredTranscripts = transcripts.filter((transcript) =>
+    metadataFields.some((key) => {
+      const value = transcript.metadata[key]?.value as string | undefined;
+      return value ? selectedFilters.has(value) : false;
+    })
+  );
 
   return filteredTranscripts;
 }

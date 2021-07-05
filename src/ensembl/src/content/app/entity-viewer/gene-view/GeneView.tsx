@@ -92,7 +92,6 @@ const QUERY = gql`
       transcripts {
         stable_id
         unversioned_stable_id
-        so_term
         slice {
           location {
             start
@@ -164,6 +163,19 @@ const QUERY = gql`
           }
         }
         metadata {
+          biotype {
+            label
+            value
+            definition
+          }
+          tsl {
+            label
+            value
+          }
+          appris {
+            label
+            value
+          }
           canonical {
             value
             label

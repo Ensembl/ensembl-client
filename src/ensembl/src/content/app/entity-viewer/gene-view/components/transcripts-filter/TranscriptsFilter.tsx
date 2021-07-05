@@ -17,6 +17,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
+import { Pick2 } from 'ts-multipick';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import {
@@ -26,6 +27,8 @@ import {
 import {
   setFilters,
   setSortingRule,
+  Filter,
+  Filters,
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
@@ -41,7 +44,11 @@ import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
 import styles from './TranscriptsFilter.scss';
 
-type Transcript = Pick<FullTranscript, 'so_term'>;
+type Transcript = Pick2<
+  FullTranscript,
+  'metadata',
+  'biotype' | 'tsl' | 'appris'
+>;
 
 type Props = {
   transcripts: Transcript[];
@@ -63,29 +70,35 @@ const radioData: RadioOptions = sortingOrderToLabel.map(([key, value]) => ({
   label: value
 }));
 
+export const metadataFields = ['biotype', 'appris', 'tsl'] as const;
+
+const createFilter = (metadataType: Filter['type'], label: string) => ({
+  label,
+  selected: false,
+  type: metadataType
+});
+
 const TranscriptsFilter = (props: Props) => {
   const filters = useSelector(getFilters);
   const sortingRule = useSelector(getSortingRule);
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
   const dispatch = useDispatch();
 
-  const biotypes = props.transcripts
-    .map((a) => a.so_term)
-    .filter(Boolean) as string[];
+  const initialFilters: Filters = {};
 
-  const uniqueBiotypes = Array.from(new Set(biotypes)).sort((a, b) => {
-    return sortBiotypes(a, b);
-  });
+  for (const transcript of props.transcripts) {
+    metadataFields.forEach((key) => {
+      const metadataItem = transcript.metadata[key];
+      if (metadataItem) {
+        initialFilters[metadataItem.value as string] = createFilter(
+          key,
+          metadataItem.label
+        );
+      }
+    });
+  }
 
   // TODO: Add protein coding options in RadioOptions if there are protein coding biotype
-  const initialFilters = uniqueBiotypes.reduce((accumulator, biotype): {
-    [filter: string]: boolean;
-  } => {
-    return {
-      ...accumulator,
-      [biotype]: false
-    };
-  }, {});
 
   useEffect(() => {
     if (Object.keys(filters).length === 0) {
@@ -101,28 +114,44 @@ const TranscriptsFilter = (props: Props) => {
     dispatch(setSortingRule(value as SortingRule));
   };
 
-  const onFilterChange = (filterName: string, isChecked: boolean) => {
+  const onFilterChange = (
+    filterName: string,
+    filter: Filter,
+    selected: boolean
+  ) => {
+    const updatedFilter = { ...filter, selected };
     const updatedFilters = {
       ...filters,
-      [filterName]: isChecked
+      [filterName]: updatedFilter
     };
 
     dispatch(setFilters(updatedFilters));
   };
 
-  const checkboxes = Object.entries(filters).map(([key, value]) => (
-    <Checkbox
-      key={key}
-      classNames={{
-        unchecked: styles.checkboxUnchecked,
-        checked: styles.checkboxChecked
-      }}
-      labelClassName={styles.label}
-      checked={value}
-      label={key}
-      onChange={(isChecked) => onFilterChange(key, isChecked)}
-    />
-  ));
+  const filtersArray = Object.entries(filters);
+
+  const filterColumns = metadataFields.map((fieldName) => {
+    const filtersForColumn = filtersArray.filter(
+      ([, filter]) => filter.type === fieldName
+    );
+    filtersForColumn.sort(sortFilters);
+
+    const checkboxes = filtersForColumn.map(([key, filter]) => (
+      <Checkbox
+        key={key}
+        classNames={{
+          unchecked: styles.checkboxUnchecked,
+          checked: styles.checkboxChecked
+        }}
+        labelClassName={styles.label}
+        checked={filter.selected}
+        label={filter.label}
+        onChange={(selected) => onFilterChange(key, filter, selected)}
+      />
+    ));
+
+    return <div key={fieldName}>{checkboxes}</div>;
+  });
 
   return (
     <div className={styles.container}>
@@ -145,9 +174,7 @@ const TranscriptsFilter = (props: Props) => {
         </div>
         <div className={styles.filter}>
           <div className={styles.header}>Filter by</div>
-          <div className={styles.filterContent}>
-            <div className={styles.filterColumn}>{checkboxes}</div>
-          </div>
+          <div className={styles.filterContent}>{filterColumns}</div>
         </div>
         <CloseButton onClick={props.toggleFilter} />
       </div>
@@ -155,13 +182,13 @@ const TranscriptsFilter = (props: Props) => {
   );
 };
 
-const sortBiotypes = (a: string, b: string) => {
-  if (a === 'protein_coding') {
+const sortFilters = (a: [string, Filter], b: [string, Filter]) => {
+  if (a[0] === 'protein_coding') {
     return -1;
-  } else if (b === 'protein_coding') {
+  } else if (b[0] === 'protein_coding') {
     return 1;
   } else {
-    return a.localeCompare(b);
+    return a[1].label.localeCompare(b[1].label);
   }
 };
 
