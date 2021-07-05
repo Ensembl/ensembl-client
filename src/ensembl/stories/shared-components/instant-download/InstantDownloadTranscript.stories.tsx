@@ -45,9 +45,8 @@ type TranscriptType = 'coding' | 'non-coding';
 
 export const InstantDownloadTranscriptStory = () => {
   const [layout, setLayout] = useState<Layout>('horizontal');
-  const [transcriptType, setTranscriptType] = useState<TranscriptType>(
-    'coding'
-  );
+  const [transcriptType, setTranscriptType] =
+    useState<TranscriptType>('coding');
 
   const gene =
     transcriptType === 'coding'
@@ -80,7 +79,7 @@ export const InstantDownloadTranscriptStory = () => {
           gene={{ id: gene.unversioned_stable_id }}
           transcript={{
             id: transcript.unversioned_stable_id,
-            so_term: transcript.so_term
+            biotype: transcript.metadata.biotype.value as string
           }}
         />
       </div>

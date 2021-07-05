@@ -51,10 +51,8 @@ import styles from './TranscriptsListItemInfo.scss';
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
-type Transcript = Pick<
-  FullTranscript,
-  'stable_id' | 'unversioned_stable_id' | 'so_term'
-> &
+type Transcript = Pick<FullTranscript, 'stable_id' | 'unversioned_stable_id'> &
+  Pick2<FullTranscript, 'metadata', 'biotype'> &
   Pick2<FullTranscript, 'slice', 'location'> &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     spliced_exons: Array<
@@ -149,7 +147,7 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
-            <strong>{transcript.so_term}</strong>
+            <strong>{transcript.metadata.biotype.label}</strong>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
@@ -208,7 +206,7 @@ const renderInstantDownload = ({
         genomeId={genomeId}
         transcript={{
           id: transcript.stable_id,
-          so_term: transcript.so_term
+          biotype: transcript.metadata.biotype.value as string
         }}
         gene={{ id: gene.stable_id }}
       />

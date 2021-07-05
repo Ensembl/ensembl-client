@@ -56,10 +56,12 @@ type Transcript = Pick<
   | 'slice'
   | 'spliced_exons'
   | 'product_generating_contexts'
+  | 'metadata'
 >;
 
 // TODO: narrow down the type and use it in the Transcript type
-type ProductGeneratingContext = Transcript['product_generating_contexts'][number];
+type ProductGeneratingContext =
+  Transcript['product_generating_contexts'][number];
 
 type Gene = Pick<
   FullGene,
@@ -131,6 +133,23 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
           length
         }
       }
+      metadata {
+        biotype {
+          label
+          value
+          definition
+        }
+        canonical {
+          value
+          label
+          definition
+        }
+        mane {
+          value
+          label
+          definition
+        }
+      }
     }
   }
 `;
@@ -163,9 +182,10 @@ const TranscriptSummary = () => {
   }
 
   const { gene, transcript } = data;
-  const defaultProductGeneratingContext = transcript.product_generating_contexts.find(
-    (entry) => entry.default
-  ) as ProductGeneratingContext;
+  const defaultProductGeneratingContext =
+    transcript.product_generating_contexts.find(
+      (entry) => entry.default
+    ) as ProductGeneratingContext;
 
   const product = defaultProductGeneratingContext.product;
   const stableId = getDisplayStableId(transcript);
@@ -289,7 +309,7 @@ const TranscriptSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 transcript={{
                   id: transcript.unversioned_stable_id,
-                  so_term: transcript.so_term
+                  biotype: transcript.metadata.biotype.value as string
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"
@@ -307,7 +327,9 @@ const TranscriptSummary = () => {
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div>
-            {gene.symbol && <span className={styles.geneSymbol}>{gene.symbol}</span>}
+            {gene.symbol && (
+              <span className={styles.geneSymbol}>{gene.symbol}</span>
+            )}
             {gene.symbol !== stableId && <span>{gene.stable_id}</span>}
           </div>
         </div>

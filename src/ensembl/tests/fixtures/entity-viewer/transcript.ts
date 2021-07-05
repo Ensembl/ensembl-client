@@ -77,8 +77,13 @@ export const createTranscript = (
   };
 };
 
-const createTranscriptMetadata = (): TranscriptMetadata => {
+export const createTranscriptMetadata = (): TranscriptMetadata => {
   return {
+    biotype: {
+      label: 'Protein coding',
+      value: 'protein_coding',
+      definition: faker.lorem.sentence()
+    },
     canonical: {
       label: 'Ensembl canonical',
       value: true,

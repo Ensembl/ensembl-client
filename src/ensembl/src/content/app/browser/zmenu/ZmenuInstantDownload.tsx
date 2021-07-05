@@ -37,9 +37,8 @@ const ZmenuInstantDownload = (props: Props) => {
     endpoint: `/lookup/id/${transcriptId}?content-type=application/json;expand=1`,
     host: 'https://rest.ensembl.org'
   };
-  const { loadingState, data, error } = useApiService<TranscriptInResponse>(
-    params
-  );
+  const { loadingState, data, error } =
+    useApiService<TranscriptInResponse>(params);
 
   if (
     loadingState === LoadingState.NOT_REQUESTED ||
@@ -73,12 +72,12 @@ const getStableId = (id: string) => id.split(':').pop();
 const preparePayload = (transcript: TranscriptInResponse) => {
   const geneId = transcript.Parent;
   const transcriptId = transcript.id;
-  const so_term = transcript.biotype;
+  const biotype = transcript.biotype;
 
   return {
     transcript: {
       id: transcriptId,
-      so_term
+      biotype
     },
     gene: {
       id: geneId

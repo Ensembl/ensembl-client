@@ -20,10 +20,16 @@ type ValueSetMetadata = {
   definition: string;
 };
 
+type BiotypeMetadata = ValueSetMetadata;
 type ManeMetadata = ValueSetMetadata;
 type CanonicalMetadata = ValueSetMetadata;
 
 export type TranscriptMetadata = {
+  biotype: BiotypeMetadata;
   mane: ManeMetadata;
   canonical: CanonicalMetadata;
+};
+
+export type GeneMetadata = {
+  biotype: BiotypeMetadata;
 };

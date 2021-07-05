@@ -32,7 +32,7 @@ type Theme = 'light' | 'dark';
 
 type TranscriptFields = {
   id: string;
-  so_term: string;
+  biotype: string;
 };
 
 type GeneFields = {
@@ -94,9 +94,9 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
 };
 
 export const filterTranscriptOptions = (
-  so_term: string
+  biotype: string
 ): Partial<TranscriptOptions> => {
-  return so_term === 'protein_coding'
+  return biotype === 'protein_coding'
     ? defaultTranscriptOptions
     : pick(defaultTranscriptOptions, ['genomicSequence']);
 };
@@ -105,16 +105,16 @@ const InstantDownloadTranscript = (props: Props) => {
   const {
     genomeId,
     gene: { id: geneId },
-    transcript: { id: transcriptId, so_term }
+    transcript: { id: transcriptId, biotype }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
-    filterTranscriptOptions(so_term)
+    filterTranscriptOptions(biotype)
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
 
   useEffect(() => {
-    setTranscriptOptions(filterTranscriptOptions(so_term));
-  }, [so_term]);
+    setTranscriptOptions(filterTranscriptOptions(biotype));
+  }, [biotype]);
 
   const resetCheckboxes = () => {
     setIsGeneSequenceSelected(false);
