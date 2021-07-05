@@ -74,7 +74,6 @@ export const TrackPanelBar = () => {
     <>
       <div className={styles.sidebarIcon} key="search">
         <ImageButton
-          status={Status.DISABLED}
           description="Track search"
           onClick={() => toggleModalView('search')}
           image={searchIcon}

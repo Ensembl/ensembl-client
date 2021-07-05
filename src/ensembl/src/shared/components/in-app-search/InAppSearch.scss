@@ -63,12 +63,26 @@
 }
 
 .searchMatch {
+  position: relative;
+  display: inline-block;
   color: $blue;
   cursor: pointer;
-  display: inline-block;
 
   & > span:nth-child(2) {
     margin-left: 0.6rem;
+  }
+
+  .searchMatchAnchor {
+    position: absolute;
+    height: 100%;
+
+    &Interstitial {
+      right: -1.5ch;
+    }
+
+    &Sidebar {
+      left: 3ch;
+    }
   }
 }
 

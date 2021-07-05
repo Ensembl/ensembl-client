@@ -15,6 +15,8 @@
  */
 
 import React, { useState, useRef } from 'react';
+import classNames from 'classnames';
+import upperFirst from 'lodash/upperFirst';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
@@ -62,7 +64,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
   const { symbol, stable_id } = props.match;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
 
-  const elementRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLSpanElement>(null);
 
   const onClick = () => {
     setShouldShowTooltip(!shouldShowTooltip);
@@ -75,14 +77,22 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
 
   return (
     <>
-      <div className={styles.searchMatch} onClick={onClick} ref={elementRef}>
+      <div className={styles.searchMatch} onClick={onClick}>
         {symbolElement}
         {stableIdElement}
+        <span
+          className={getSearchMatchAnchorClasses(props.mode)}
+          ref={anchorRef}
+        />
       </div>
-      {shouldShowTooltip && elementRef.current && (
+      {shouldShowTooltip && anchorRef.current && (
         <PointerBox
-          anchor={elementRef.current}
-          position={PointerBoxPosition.RIGHT_BOTTOM}
+          anchor={anchorRef.current}
+          position={
+            props.mode === 'interstitial'
+              ? PointerBoxPosition.RIGHT_BOTTOM
+              : PointerBoxPosition.BOTTOM_RIGHT
+          }
           classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
           onOutsideClick={hideTooltip}
         >
@@ -145,6 +155,13 @@ const MatchDetails = (props: InAppSearchMatchProps) => {
         <ViewInApp links={links} />
       </div>
     </div>
+  );
+};
+
+const getSearchMatchAnchorClasses = (mode: InAppSearchMode) => {
+  return classNames(
+    styles.searchMatchAnchor,
+    styles[`searchMatchAnchor${upperFirst(mode)}`]
   );
 };
 
