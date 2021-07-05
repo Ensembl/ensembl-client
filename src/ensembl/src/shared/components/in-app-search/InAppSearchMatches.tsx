@@ -147,7 +147,9 @@ const MatchDetails = (props: InAppSearchMatchProps) => {
       <div>{formattedLocation}</div>
 
       <div>
-        <span>{match.transcript_count}</span>
+        <span className={styles.transcriptsCount}>
+          {match.transcript_count}
+        </span>
         {pluralise('transcript', match.transcript_count)}
       </div>
 

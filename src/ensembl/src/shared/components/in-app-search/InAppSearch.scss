@@ -17,6 +17,7 @@
           'search-field search-field'
           'hits-count search-button';
   grid-template-columns: 1fr min-content;
+  align-items: top;
 }
 
 .searchFieldWrapper {
@@ -47,8 +48,13 @@
   grid-area: search-button;
 }
 
+.inAppSearchTopSidebar .searchButton {
+  margin-top: 18px;
+}
+
 .hitsCount {
   grid-area: hits-count;
+  padding: 20px 0 0 20px;
 
   .hitsNumber {
     font-weight: $bold;
@@ -57,9 +63,10 @@
 
 .searchMatches {
   display: flex;
+  padding-left: 20px;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 36px;
+  margin-top: 30px;
 }
 
 .searchMatch {
@@ -67,6 +74,11 @@
   display: inline-block;
   color: $blue;
   cursor: pointer;
+  line-height: 1;
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
 
   & > span:nth-child(2) {
     margin-left: 0.6rem;
@@ -98,6 +110,8 @@
 }
 
 .tooltipContent {
+  font-weight: $light;
+
   & > div:first-child span:first-child {
     margin-right: 28px;
   }
@@ -112,5 +126,9 @@
 
   & > div:last-child {
     margin-top: 28px;
+  }
+
+  .transcriptsCount {
+    margin-right: 1ch;
   }
 }
