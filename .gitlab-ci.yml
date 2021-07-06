@@ -399,12 +399,9 @@ SetupReview:HX:
       when: always
 
 in-app-search:
-  stage: deploy
+  stage: test
   variables:
     UPSTREAM_BRANCH: $CI_COMMIT_REF_NAME
   trigger:
     project: ensembl-web/ensembl_search_hub
     branch: trigger-jobs
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"'
-      when: always
