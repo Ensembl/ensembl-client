@@ -39,6 +39,7 @@ import {
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Slice } from 'src/shared/types/thoas/slice';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
+import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
 
 import styles from './GeneExternalReferences.scss';
 
@@ -90,6 +91,23 @@ const QUERY = gql`
             }
           }
         }
+        metadata {
+          biotype {
+            label
+            value
+            definition
+          }
+          canonical {
+            value
+            label
+            definition
+          }
+          mane {
+            value
+            label
+            definition
+          }
+        }
       }
     }
   }
@@ -105,6 +123,7 @@ type Transcript = {
     }
   >;
   external_references: ExternalReferenceType[];
+  metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
 };
 
 type Gene = {

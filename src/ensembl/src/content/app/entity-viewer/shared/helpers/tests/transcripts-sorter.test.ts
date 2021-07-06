@@ -24,26 +24,32 @@ import {
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
+const createTranscriptWithEmptyMetadata = () => {
+  const transcript = createTranscript();
+  transcript.metadata.canonical = transcript.metadata.mane = null;
+  return transcript;
+};
+
 /* Creating dummy transcritps with different protein coding and non coding length  to test default sort*/
 const createLongProteinCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.slice.location.length = 100_000;
   return transcript;
 };
 const createShortProteinCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.slice.location.length = 10_000;
   return transcript;
 };
 const createLongNonCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.slice.location.length = 150_000;
   transcript.so_term = 'xyz'; // <- to make sure that during default sorting we put this last
   transcript.product_generating_contexts = [];
   return transcript;
 };
 const createShortNonCodingTranscript = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.slice.location.length = 5_000;
   transcript.so_term = 'abc'; // <- to make sure that during default sorting we put this first
   transcript.product_generating_contexts = [];
@@ -52,7 +58,7 @@ const createShortNonCodingTranscript = () => {
 
 /* Creating dummy transcritps with different spliced length */
 const createTranscriptWithGreatestSplicedLength = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   const splicedExon = transcript.spliced_exons[0];
   transcript.stable_id = 'transcript_with_greatest_spliced_length';
   splicedExon.exon.slice.location.length = 15_000;
@@ -60,7 +66,7 @@ const createTranscriptWithGreatestSplicedLength = () => {
   return transcript;
 };
 const createTranscriptWithMediumSplicedLength = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.stable_id = 'transcript_with_medium_spliced_length';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 10_000;
@@ -68,7 +74,7 @@ const createTranscriptWithMediumSplicedLength = () => {
   return transcript;
 };
 const createTranscriptWithSmallestSplicedLength = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.stable_id = 'transcript_with_smallest_spliced_length';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 5_000;
@@ -78,7 +84,7 @@ const createTranscriptWithSmallestSplicedLength = () => {
 
 /* Creating dummy transcritps with different numbers of Exons */
 const createTranscriptWithGreatestExons = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   const splicedExon = transcript.spliced_exons[0];
   transcript.stable_id = 'transcript_with_greatest_exons';
   transcript.spliced_exons = [
@@ -90,7 +96,7 @@ const createTranscriptWithGreatestExons = () => {
   return transcript;
 };
 const createTranscriptWithMediumExons = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.stable_id = 'transcript_with_medium_exons';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 10_000;
@@ -98,7 +104,7 @@ const createTranscriptWithMediumExons = () => {
   return transcript;
 };
 const createTranscriptWithSmallestExons = () => {
-  const transcript = createTranscript();
+  const transcript = createTranscriptWithEmptyMetadata();
   transcript.stable_id = 'transcript_with_smallest_exons';
   const splicedExon = transcript.spliced_exons[0];
   transcript.spliced_exons = [splicedExon, splicedExon];
@@ -109,17 +115,24 @@ const longProteinCodingTranscript = createLongProteinCodingTranscript();
 const shortProteinCodingTranscript = createShortProteinCodingTranscript();
 const longNonCodingTranscript = createLongNonCodingTranscript();
 const shortNonCodingTranscript = createShortNonCodingTranscript();
-const transcriptWithGreatestSplicedLength = createTranscriptWithGreatestSplicedLength();
-const transcriptWithMediumSplicedLength = createTranscriptWithMediumSplicedLength();
-const transcriptWithSmallestSplicedLength = createTranscriptWithSmallestSplicedLength();
+const transcriptWithGreatestSplicedLength =
+  createTranscriptWithGreatestSplicedLength();
+const transcriptWithMediumSplicedLength =
+  createTranscriptWithMediumSplicedLength();
+const transcriptWithSmallestSplicedLength =
+  createTranscriptWithSmallestSplicedLength();
 const transcriptWithGreatestExons = createTranscriptWithGreatestExons();
 const transcriptWithMediumExons = createTranscriptWithMediumExons();
 const transcriptWithSmallestExons = createTranscriptWithSmallestExons();
+const canonicalTranscript = createTranscript();
 
 describe('default sort', () => {
   it('sorts transcripts correctly', () => {
     /*
-      - puts protein-coding transcripts first
+      Sorting is done in the below order
+      - canonical transcript
+      - MANE transcripts
+      - protein-coding transcripts
       - sorts protein-coding transcripts by length
       - sorts non-coding transcripts by so_term term alphabetically
     */
@@ -128,14 +141,16 @@ describe('default sort', () => {
       shortNonCodingTranscript,
       shortProteinCodingTranscript,
       longNonCodingTranscript, // this is the longest
-      longProteinCodingTranscript
+      longProteinCodingTranscript,
+      canonicalTranscript
     ];
 
     const expectedTranscripts = [
+      canonicalTranscript,
       longProteinCodingTranscript,
       shortProteinCodingTranscript,
-      shortNonCodingTranscript, // its so_term is "abc"
-      longNonCodingTranscript // its so_term is "xyz"
+      longNonCodingTranscript, // its so_term is "xyz"
+      shortNonCodingTranscript // its so_term is "abc"
     ];
 
     const sortedTranscripts = defaultSort(unsortedTranscripts);

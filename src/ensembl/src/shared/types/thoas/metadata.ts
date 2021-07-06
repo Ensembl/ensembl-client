@@ -24,6 +24,6 @@ type ManeMetadata = ValueSetMetadata;
 type CanonicalMetadata = ValueSetMetadata;
 
 export type TranscriptMetadata = {
-  mane: ManeMetadata;
-  canonical: CanonicalMetadata;
+  mane: ManeMetadata | null;
+  canonical: CanonicalMetadata | null;
 };

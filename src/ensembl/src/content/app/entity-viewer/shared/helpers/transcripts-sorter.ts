@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import sortBy from 'lodash/sortBy';
 import partition from 'lodash/partition';
 import { Pick2 } from 'ts-multipick';
 
@@ -29,6 +28,7 @@ import {
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { Slice } from 'src/shared/types/thoas/slice';
+import { FullTranscript } from 'ensemblRoot/src/shared/types/thoas/transcript';
 
 type SliceWithOnlyLength = Pick2<Slice, 'location', 'length'>;
 
@@ -50,28 +50,45 @@ function compareTranscriptLengths(
   return 0;
 }
 
+const isCanonical = (
+  transcript: Pick2<FullTranscript, 'metadata', 'canonical'>
+) => transcript.metadata.canonical;
+
+const isManeTranscript = (
+  transcript: Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>
+) => transcript.metadata.mane;
+
 export function defaultSort<
   T extends Array<
     IsProteinCodingTranscriptParam & {
       slice: SliceWithOnlyLength;
       so_term: string;
-    }
+    } & Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>
   >
 >(transcripts: T): T {
-  const [proteinCodingTranscripts, nonProteinCodingTranscripts] = partition(
+  const [ensemblCanonicalTranscript, nonCanonicalTranscripts] = partition(
     transcripts,
+    isCanonical
+  );
+
+  const [maneTranscripts, otherTranscripts] = partition(
+    nonCanonicalTranscripts,
+    isManeTranscript
+  );
+
+  const [proteinCodingTranscripts, nonProteinCodingTranscripts] = partition(
+    otherTranscripts,
     isProteinCodingTranscript
   );
-  proteinCodingTranscripts.sort(compareTranscriptLengths);
 
-  const sortedNonProteinCodingTranscripts = sortBy(
-    nonProteinCodingTranscripts,
-    ['so_term']
-  );
+  proteinCodingTranscripts.sort(compareTranscriptLengths);
+  nonProteinCodingTranscripts.sort(compareTranscriptLengths);
 
   return [
+    ...ensemblCanonicalTranscript,
+    ...maneTranscripts,
     ...proteinCodingTranscripts,
-    ...sortedNonProteinCodingTranscripts
+    ...nonProteinCodingTranscripts
   ] as T;
 }
 
@@ -112,7 +129,7 @@ type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
     so_term: string;
     slice: SliceWithOnlyLength;
     spliced_exons: unknown[];
-  };
+  } & Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>;
 
 type SortingFunction<T extends GeneViewSortableTranscript> = (
   transcript: T[]
