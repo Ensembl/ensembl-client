@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import upperFirst from 'lodash/upperFirst';
 
-import { search } from 'src/shared/state/in-app-search/inAppSearchSlice';
-import { getSearchResults } from 'src/shared/state/in-app-search/inAppSearchSelectors';
+import {
+  search,
+  updateQuery
+} from 'src/shared/state/in-app-search/inAppSearchSlice';
+import {
+  getSearchQuery,
+  getSearchResults
+} from 'src/shared/state/in-app-search/inAppSearchSelectors';
 
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -48,11 +54,17 @@ export type Props = {
 
 const InAppSearch = (props: Props) => {
   const { app, genomeId, mode } = props;
-  const [query, setQuery] = useState('');
+  const query = useSelector((state: RootState) =>
+    getSearchQuery(state, props.app, props.genomeId)
+  );
   const searchResult = useSelector((state: RootState) =>
-    getSearchResults(state, props.app, props.genomeId)
+    getSearchResults(state, app, genomeId)
   );
   const dispatch = useDispatch();
+
+  const onQueryChange = (query: string) => {
+    dispatch(updateQuery({ app, genomeId, query }));
+  };
 
   const onSearchSubmit = () => {
     const searchParams = {
@@ -76,7 +88,7 @@ const InAppSearch = (props: Props) => {
           <SearchField
             placeholder="Gene ID or name..."
             search={query}
-            onChange={setQuery}
+            onChange={onQueryChange}
             onSubmit={onSearchSubmit}
             className={styles.searchField}
             rightCorner={

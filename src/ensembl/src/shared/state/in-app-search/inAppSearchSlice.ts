@@ -57,8 +57,13 @@ export type SearchResults = {
   matches: SearchMatch[];
 };
 
+type StateForGenome = {
+  query: string;
+  result: SearchResults | null;
+};
+
 // object with keys being genome ids and values being SearchResults
-type StateForApp = Record<string, SearchResults>;
+type StateForApp = Record<string, StateForGenome>;
 
 type State = Record<AppName, StateForApp>;
 
@@ -104,6 +109,17 @@ const initialState: State = {
   entityViewer: {}
 };
 
+const getDefaultStateForGenome = () => ({
+  query: '',
+  result: null
+});
+
+type UpdateQueryPayload = {
+  app: AppName;
+  genomeId: string;
+  query: string;
+};
+
 type ClearSearchPayload = {
   app: AppName;
   genomeId: string;
@@ -113,6 +129,15 @@ const inAppSearchSlice = createSlice({
   name: 'in-app-search',
   initialState,
   reducers: {
+    updateQuery(state, action: PayloadAction<UpdateQueryPayload>) {
+      const {
+        payload: { app, genomeId, query }
+      } = action;
+      if (!state[app][genomeId]) {
+        state[app][genomeId] = getDefaultStateForGenome();
+      }
+      state[app][genomeId].query = query;
+    },
     clearSearch(state, action: PayloadAction<ClearSearchPayload>) {
       const { payload } = action;
       delete state[payload.app][payload.genomeId];
@@ -120,12 +145,17 @@ const inAppSearchSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(search.fulfilled, (state, action) => {
-      const { payload } = action;
-      state[payload.app][payload.genome_id] = payload.result;
+      const {
+        payload: { app, genome_id, result }
+      } = action;
+      if (!state[app][genome_id]) {
+        state[app][genome_id] = getDefaultStateForGenome();
+      }
+      state[app][genome_id].result = result;
     });
   }
 });
 
-export const { clearSearch } = inAppSearchSlice.actions;
+export const { updateQuery, clearSearch } = inAppSearchSlice.actions;
 
 export default inAppSearchSlice.reducer;
