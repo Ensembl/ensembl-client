@@ -92,6 +92,6 @@ describe('<DefaultTranscriptListItem />', () => {
     const { container } = renderComponent();
     expect(
       container.querySelector('.transcriptQualityLabel')?.textContent
-    ).toBe(defaultProps.transcript.metadata.mane.label);
+    ).toBe(defaultProps.transcript.metadata.mane?.label);
   });
 });
