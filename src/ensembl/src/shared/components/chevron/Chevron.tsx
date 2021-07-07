@@ -25,7 +25,7 @@ export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export type Props = {
   direction: Direction;
-  animateDirectionChange: boolean;
+  animate: boolean;
   onClick?: () => void;
   classNames?: {
     wrapper?: string;
@@ -38,7 +38,7 @@ const Chevron = (props: Props) => {
   const chevronClasses = classNames(
     styles.chevron,
     { [styles[`chevron_${props.direction}`]]: isNonDefaultDirection },
-    { [styles.chevron_animated]: props.animateDirectionChange },
+    { [styles.chevron_animated]: props.animate },
     props.classNames?.svg
   );
 
@@ -64,7 +64,7 @@ const Chevron = (props: Props) => {
 };
 
 Chevron.defaultProps = {
-  animateDirectionChange: false
+  animate: false
 };
 
 export default Chevron;

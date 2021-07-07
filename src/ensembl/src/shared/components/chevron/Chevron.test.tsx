@@ -38,7 +38,7 @@ describe('<Chevron />', () => {
       rerender(<Chevron direction="right" />);
       expect(chevron.classList.contains('chevron_right')).toBe(true);
 
-      rerender(<Chevron direction="down" animateDirectionChange={true} />);
+      rerender(<Chevron direction="down" animate={true} />);
       expect(chevron.classList.contains('chevron_animated')).toBe(true);
     });
   });

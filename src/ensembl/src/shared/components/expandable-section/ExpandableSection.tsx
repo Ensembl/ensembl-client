@@ -68,7 +68,7 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
         <div className={styles.toggle} onClick={toggleExpanded}>
           <Chevron
             direction={isExpanded ? 'up' : 'down'}
-            animateDirectionChange={true}
+            animate={true}
             classNames={{ svg: styles.chevron }}
           />
         </div>

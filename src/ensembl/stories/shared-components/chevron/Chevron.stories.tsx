@@ -75,7 +75,7 @@ export const ChevronStory = () => {
         <span className={styles.label}>Some text next to a chevron</span>
         <Chevron
           direction={direction as ChevronDirection}
-          animateDirectionChange={animation}
+          animate={animation}
           classNames={{ svg: customClass ? styles.customChevron : undefined }}
         />
       </div>
@@ -125,7 +125,7 @@ export const ChevronWrappedInButtonStory = () => {
         <span className={styles.label}>{'Click the chevron →'}</span>
         <Chevron
           direction={direction as ChevronDirection}
-          animateDirectionChange={true}
+          animate={true}
           onClick={handleClick}
         />
       </div>

@@ -64,7 +64,7 @@ export const AccordionItemButton = (props: Props) => {
       <div>
         <Chevron
           direction={rest['aria-expanded'] ? 'up' : 'down'}
-          animateDirectionChange={true}
+          animate={true}
         />
       </div>
     </div>

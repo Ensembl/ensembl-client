@@ -53,7 +53,7 @@ const ShowHide = (props: Props) => {
         {props.label}
         <Chevron
           direction={props.isExpanded ? 'up' : 'down'}
-          animateDirectionChange={true}
+          animate={true}
           classNames={chevronClasses}
         />
       </span>
