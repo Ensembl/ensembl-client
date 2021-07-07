@@ -49,7 +49,6 @@ export type Props = {
   app: AppName;
   genomeId: string;
   mode: InAppSearchMode;
-  className?: string; // <== will remove
 };
 
 const InAppSearch = (props: Props) => {
