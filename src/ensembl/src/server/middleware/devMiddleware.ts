@@ -78,23 +78,12 @@ const devMiddleware = [genomeBrowserRouter, proxyMiddleware, docsProxyMiddleware
 
 */
 
-const proxyMiddleware = createProxyMiddleware(['/api/**', '!/api/search/**'], {
+const proxyMiddleware = createProxyMiddleware('/api', {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-// http://in-app-search.review.ensembl.org/api/search
-const searchProxyMiddleware = createProxyMiddleware('/api/search/**', {
-  target: 'http://in-app-search.review.ensembl.org',
-  changeOrigin: true,
-  secure: false
-});
-
-const devMiddleware = [
-  genomeBrowserRouter,
-  proxyMiddleware,
-  searchProxyMiddleware
-];
+const devMiddleware = [genomeBrowserRouter, proxyMiddleware];
 
 export default devMiddleware;
