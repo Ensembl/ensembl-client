@@ -15,20 +15,20 @@
  */
 
 import type { RootState } from 'src/store';
-import type { AppName, SearchResults } from './inAppSearchSlice';
+import type { AppName } from './inAppSearchSlice';
 
 export const getSearchQuery = (
   state: RootState,
   appName: AppName,
   genomeId: string
-): string => {
-  return state.inAppSearch[appName][genomeId]?.query || '';
+) => {
+  return state.inAppSearch[appName][genomeId]?.query ?? '';
 };
 
 export const getSearchResults = (
   state: RootState,
   appName: AppName,
   genomeId: string
-): SearchResults | null => {
-  return state.inAppSearch[appName][genomeId]?.result || null;
+) => {
+  return state.inAppSearch[appName][genomeId]?.result ?? null;
 };
