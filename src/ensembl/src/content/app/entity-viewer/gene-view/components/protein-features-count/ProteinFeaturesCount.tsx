@@ -22,6 +22,7 @@ import structuresIcon from 'static/img/entity-viewer/icon_protein_structures.svg
 import ligandsIcon from 'static/img/entity-viewer/icon_protein_ligands.svg';
 import interactionsIcon from 'static/img/entity-viewer/icon_protein_interactions.svg';
 import annotationsIcon from 'static/img/entity-viewer/icon_protein_annotations.svg';
+import similarProteinsIcon from 'static/img/entity-viewer/icon_protein_similar.svg';
 
 import styles from './ProteinFeaturesCount.scss';
 
@@ -33,7 +34,8 @@ enum FeatureCountLabel {
   ANNOTATIONS = 'Functional annotations',
   INTERACTIONS = 'Interactions',
   LIGANDS = 'Ligands',
-  STRUCTURES = 'Structures'
+  STRUCTURES = 'Structures',
+  SIMILAR_PROTEINS = 'Similar proteins'
 }
 
 const ProteinFeaturesCount = (props: ProteinFeaturesCountProps) => {
@@ -60,6 +62,11 @@ const ProteinFeaturesCount = (props: ProteinFeaturesCountProps) => {
         label={FeatureCountLabel.ANNOTATIONS}
         count={proteinStats.annotationsCount}
         icon={annotationsIcon}
+      />
+      <FeatureCount
+        label={FeatureCountLabel.SIMILAR_PROTEINS}
+        count={proteinStats.similarProteinsCount}
+        icon={similarProteinsIcon}
       />
     </div>
   );
