@@ -61,12 +61,14 @@ export const AccordionItemButton = (props: Props) => {
       data-accordion-component="AccordionItemButton"
     >
       <div>{children}</div>
-      <div>
-        <Chevron
-          direction={rest['aria-expanded'] ? 'up' : 'down'}
-          animate={true}
-        />
-      </div>
+      {!disabled && (
+        <div>
+          <Chevron
+            direction={rest['aria-expanded'] ? 'up' : 'down'}
+            animate={true}
+          />
+        </div>
+      )}
     </div>
   );
 };
