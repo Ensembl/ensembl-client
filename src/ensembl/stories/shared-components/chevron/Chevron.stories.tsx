@@ -122,7 +122,7 @@ export const ChevronWrappedInButtonStory = () => {
   return (
     <div className={styles.storyWrapper}>
       <div className={styles.showRoom}>
-        <span className={styles.label}>{'Click the chevron →'}</span>
+        <span className={styles.label}>Click the chevron →</span>
         <Chevron
           direction={direction as ChevronDirection}
           animate={true}
