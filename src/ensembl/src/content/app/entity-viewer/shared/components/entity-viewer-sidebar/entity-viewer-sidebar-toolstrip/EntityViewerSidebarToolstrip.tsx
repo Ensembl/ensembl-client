@@ -74,7 +74,7 @@ export const EntityViewerSidebarToolstrip = () => {
       />
       <ImageButton
         status={getViewIconStatus(SidebarModalView.BOOKMARKS)}
-        description="Bookmarks"
+        description="Previously viewed"
         className={styles.sidebarIcon}
         key={SidebarModalView.BOOKMARKS}
         onClick={() => toggleModalView(SidebarModalView.BOOKMARKS)}

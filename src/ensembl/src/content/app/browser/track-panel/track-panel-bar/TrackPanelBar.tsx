@@ -91,7 +91,7 @@ export const TrackPanelBar = () => {
       <div className={styles.sidebarIcon} key="bookmarks">
         <ImageButton
           status={getViewIconStatus('bookmarks')}
-          description="Bookmarks"
+          description="Previously viewed"
           onClick={() => toggleModalView('bookmarks')}
           image={bookmarkIcon}
         />
