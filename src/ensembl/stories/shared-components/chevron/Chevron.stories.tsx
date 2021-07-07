@@ -24,7 +24,7 @@ import RadioGroup from 'src/shared/components/radio-group/RadioGroup';
 import styles from './Chevron.stories.scss';
 
 export const ChevronStory = () => {
-  const [direction, setDirection] = useState('down');
+  const [direction, setDirection] = useState<ChevronDirection>('down');
   const [animation, setAnimation] = useState(false);
   const [customClass, setCustomClass] = useState(false);
 
@@ -74,7 +74,7 @@ export const ChevronStory = () => {
       <div className={styles.showRoom}>
         <span className={styles.label}>Some text next to a chevron</span>
         <Chevron
-          direction={direction as ChevronDirection}
+          direction={direction}
           animate={animation}
           classNames={{ svg: customClass ? styles.customChevron : undefined }}
         />
@@ -85,7 +85,9 @@ export const ChevronStory = () => {
           <RadioGroup
             options={directionOptions}
             selectedOption={direction}
-            onChange={(direction) => setDirection(direction as string)}
+            onChange={(direction) =>
+              setDirection(direction as ChevronDirection)
+            }
           />
         </div>
         <div className={styles.controlsAnimation}>
