@@ -19,6 +19,15 @@ import { render } from '@testing-library/react';
 
 import { BrowserImage, BrowserImageProps } from './BrowserImage';
 
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser,
+  activateGenomeBrowser: jest.fn()
+}));
+
 jest.mock('../browser-cog/BrowserCogList', () => () => (
   <div id="browserCogList" />
 ));
@@ -46,9 +55,8 @@ describe('<BrowserImage />', () => {
     activeGenomeId: '',
     isDisabled: false,
     browserActivated: false,
-    activateBrowser: jest.fn(),
-    updateBrowserNavIconStates: jest.fn(),
     updateBrowserActivated: jest.fn(),
+    updateBrowserNavIconStates: jest.fn(),
     updateBrowserActiveEnsObject: jest.fn(),
     setChrLocation: jest.fn(),
     setActualChrLocation: jest.fn(),
@@ -84,7 +92,7 @@ describe('<BrowserImage />', () => {
   describe('behaviour', () => {
     it('activates browser on mount', () => {
       renderBrowserImage();
-      expect(defaultProps.activateBrowser).toHaveBeenCalled();
+      expect(defaultProps.updateBrowserActivated).toHaveBeenCalled();
     });
   });
 });

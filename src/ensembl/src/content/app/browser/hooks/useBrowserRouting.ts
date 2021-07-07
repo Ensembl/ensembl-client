@@ -20,23 +20,21 @@ import { push, replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getQueryParamsMap } from 'src/global/globalHelper';
+import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
   buildEnsObjectId,
   parseEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  setActiveGenomeId,
-  setDataFromUrlAndSave
-} from '../browserActions';
+import { setActiveGenomeId, setDataFromUrlAndSave } from '../browserActions';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
@@ -73,6 +71,7 @@ const useBrowserRouting = () => {
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
+  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
 
   useEffect(() => {
     if (!genomeId) {
@@ -115,20 +114,18 @@ const useBrowserRouting = () => {
        because it will also try to bookmark the Ensembl object that is stored in redux state
        before it gets changed by setDataFromUrlAndSave
       */
-      dispatch(changeFocusObject(newFocusId as string));
+      changeFocusObject(newFocusId as string);
     } else if (chrLocation) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
 
       if (!isSameLocationAsInRedux || isFirstRender) {
-        dispatch(
-          changeBrowserLocation({
-            genomeId,
-            ensObjectId: newFocusId,
-            chrLocation
-          })
-        );
+        changeBrowserLocation({
+          genomeId,
+          ensObjectId: newFocusId,
+          chrLocation
+        });
       }
       firstRenderRef.current = false;
     }
@@ -160,7 +157,7 @@ const useBrowserRouting = () => {
       // back to the page from which they have navigated to the current one. If the `push` method is used,
       // the user will not be able to get back past this page, because the url without genome id will remain
       // in the history, and the user will be forcefully redirected to the url with the genome id.
-      // 
+      //
       // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
       // becomes a valid searchable page in its own right.
       const historyMethod = params.genomeId ? push : replace;

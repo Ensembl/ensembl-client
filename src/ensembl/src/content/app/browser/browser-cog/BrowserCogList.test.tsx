@@ -18,9 +18,17 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import faker from 'faker';
 
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
 import { BrowserCogList } from './BrowserCogList';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+const mockGenomeBrowser = new MockGenomeBrowser();
+
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser
+}));
 
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
@@ -57,10 +65,10 @@ describe('<BrowserCogList />', () => {
 
   describe('behaviour', () => {
     it('sends navigation message when track name setting in browser cog is updated', () => {
-      jest.spyOn(browserMessagingService, 'send');
+      jest.spyOn(mockGenomeBrowser, 'send');
 
       const { rerender } = render(<BrowserCogList {...defaultProps} />);
-      (browserMessagingService.send as any).mockReset();
+      (mockGenomeBrowser.send as any).mockReset();
 
       rerender(
         <BrowserCogList
@@ -68,9 +76,9 @@ describe('<BrowserCogList />', () => {
           trackConfigNames={{ 'track:gc': true }}
         />
       );
-      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
-        off: [],
-        on: ['track:gc:label', 'track:gc:names']
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith({
+        payload: { off: [], on: ['track:gc:label', 'track:gc:names'] },
+        type: OutgoingActionType.TOGGLE_TRACKS
       });
 
       // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
@@ -82,17 +90,17 @@ describe('<BrowserCogList />', () => {
           trackConfigNames={{ 'track:gc': false }}
         />
       );
-      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
-        off: ['track:gc:label'],
-        on: ['track:gc:names']
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith({
+        payload: { off: ['track:gc:label'], on: ['track:gc:names'] },
+        type: OutgoingActionType.TOGGLE_TRACKS
       });
     });
 
     it('sends navigation message when track label setting in browser cog is updated', () => {
-      jest.spyOn(browserMessagingService, 'send');
+      jest.spyOn(mockGenomeBrowser, 'send');
 
       const { rerender } = render(<BrowserCogList {...defaultProps} />);
-      (browserMessagingService.send as any).mockReset();
+      (mockGenomeBrowser.send as any).mockReset();
 
       rerender(
         <BrowserCogList
@@ -100,11 +108,12 @@ describe('<BrowserCogList />', () => {
           trackConfigLabel={{ 'track:gc': true }}
         />
       );
-      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
-        off: ['track:gc:label'],
-        on: ['track:gc:names']
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith({
+        payload: { off: ['track:gc:label'], on: ['track:gc:names'] },
+        type: OutgoingActionType.TOGGLE_TRACKS
       });
 
+      (mockGenomeBrowser.send as any).mockReset();
       // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
       // See a comment in BrowserCogList for explanation
       // We expect this to be fixed later on.
@@ -114,9 +123,9 @@ describe('<BrowserCogList />', () => {
           trackConfigLabel={{ 'track:gc': false }}
         />
       );
-      expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
-        off: ['track:gc:label', 'track:gc:names'],
-        on: []
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith({
+        payload: { off: ['track:gc:label', 'track:gc:names'], on: [] },
+        type: OutgoingActionType.TOGGLE_TRACKS
       });
     });
   });

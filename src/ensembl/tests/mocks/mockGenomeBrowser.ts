@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import { OutgoingAction } from 'ensembl-genome-browser';
+class MockGenomeBrowser {
+  public send() {
+    return jest.fn();
+  }
 
-export const createOutgoingAction = (action: OutgoingAction) => {
-  return { ...action };
-};
+  public subscribe() {
+    return {
+      unsubscribe: jest.fn()
+    };
+  }
+}
+
+export default MockGenomeBrowser;

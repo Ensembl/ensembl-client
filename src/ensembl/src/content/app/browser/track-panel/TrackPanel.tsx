@@ -20,7 +20,6 @@ import isEqual from 'lodash/isEqual';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import { RootState } from 'src/store';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
@@ -29,25 +28,29 @@ import {
   getBrowserActiveEnsObject
 } from '../browserSelectors';
 
-import { restoreBrowserTrackStates } from '../browserActions';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { RootState } from 'src/store';
 
 export type TrackPanelProps = {
   activeGenomeId: string | null;
   browserActivated: boolean;
   activeEnsObject: EnsObject | null;
   isTrackPanelModalOpened: boolean;
-  restoreBrowserTrackStates: () => void;
 };
 
 export const TrackPanel = (props: TrackPanelProps) => {
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
+  const { genomeBrowser, restoreBrowserTrackStates } = useGenomeBrowser();
+
   useEffect(() => {
-    props.restoreBrowserTrackStates();
-  }, [props.activeEnsObject]);
+    if (genomeBrowser) {
+      restoreBrowserTrackStates();
+    }
+  }, [props.activeEnsObject, genomeBrowser]);
 
   return shouldRenderContent ? (
     props.isTrackPanelModalOpened ? (
@@ -69,11 +72,4 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = {
-  restoreBrowserTrackStates
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(TrackPanel, isEqual));
+export default connect(mapStateToProps)(memo(TrackPanel, isEqual));

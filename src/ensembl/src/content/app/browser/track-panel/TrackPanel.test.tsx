@@ -20,7 +20,15 @@ import faker from 'faker';
 
 import { TrackPanel, TrackPanelProps } from './TrackPanel';
 
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
 import { createEnsObject } from 'tests/fixtures/ens-object';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser,
+  restoreBrowserTrackStates: jest.fn()
+}));
 
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
   <div className="trackPanel" />
@@ -42,8 +50,7 @@ describe('<TrackPanel />', () => {
     activeGenomeId: null,
     browserActivated: false,
     activeEnsObject: null,
-    isTrackPanelModalOpened: false,
-    restoreBrowserTrackStates: jest.fn()
+    isTrackPanelModalOpened: false
   };
 
   const renderTrackPanel = (props?: Partial<TrackPanelProps>) =>

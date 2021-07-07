@@ -17,15 +17,15 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import BrowserCog from './BrowserCog';
 import {
-  updateCogList,
-  updateCogTrackList,
-  updateSelectedCog
-} from '../browserActions';
-import { RootState } from 'src/store';
-import { CogList } from '../browserState';
+  IncomingAction,
+  IncomingActionType,
+  OutgoingAction,
+  OutgoingActionType
+} from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import {
   getBrowserActivated,
   getBrowserCogList,
@@ -34,6 +34,16 @@ import {
   getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import {
+  updateCogList,
+  updateCogTrackList,
+  updateSelectedCog
+} from '../browserActions';
+
+import BrowserCog from './BrowserCog';
+
+import { RootState } from 'src/store';
+import { CogList } from '../browserState';
 
 import styles from './BrowserCogList.scss';
 
@@ -66,13 +76,16 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     }
   };
 
+  const { genomeBrowser } = useGenomeBrowser();
+
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
-      'bpane-scroll',
-      listenBpaneScroll
+    const subscription = genomeBrowser?.subscribe(
+      [IncomingActionType.UPDATE_SCROLL_POSITION],
+      (action: IncomingAction) =>
+        listenBpaneScroll(action.payload as BpaneScrollPayload)
     );
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -97,10 +110,16 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
           offs.push(`${name}:names`); // by default, track label is not shown
         }
       });
-      browserMessagingService.send('bpane', {
-        off: offs,
-        on: ons
-      });
+
+      const action: OutgoingAction = {
+        type: OutgoingActionType.TOGGLE_TRACKS,
+        payload: {
+          off: offs,
+          on: ons
+        }
+      };
+
+      genomeBrowser?.send(action);
     }
   }, [
     props.trackConfigNames,

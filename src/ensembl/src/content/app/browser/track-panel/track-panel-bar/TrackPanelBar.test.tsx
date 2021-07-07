@@ -25,15 +25,15 @@ import set from 'lodash/fp/set';
 
 import { TrackPanelBar } from './TrackPanelBar';
 
-import * as drawerActions from '../../drawer/drawerActions';
+import * as drawerActions from 'src/content/app/browser/drawer/drawerActions';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
-  () => (props: { description: string; onClick: () => void }) => (
+  () => (props: { description: string; onClick: () => void }) =>
     <button onClick={props.onClick}>{props.description}</button>
-  )
 );
 
 const fakeGenomeId = 'human';

@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
+
+import {
+  OutgoingActionType,
+  OutgoingAction,
+  IncomingActionType,
+  IncomingAction
+} from 'ensembl-genome-browser';
+
+import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
+
 import Zmenu from './Zmenu';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
   ZmenuData,
-  ZmenuAction,
-  ZmenuIncomingPayload,
   ZmenuCreatePayload,
   ZmenuDestroyPayload,
   ZmenuRepositionPayload
@@ -46,22 +53,29 @@ type StateZmenu = {
 const ZmenuController = (props: Props) => {
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
+  const { genomeBrowser } = useContext(GenomeBrowserContext);
+
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
-      'bpane-zmenu',
+    const subscription = genomeBrowser?.subscribe(
+      [
+        IncomingActionType.ZMENU_CREATE,
+        IncomingActionType.ZMENU_DESTROY,
+        IncomingActionType.ZMENU_REPOSITION
+      ],
       handleBpaneEvent
     );
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
-  const handleBpaneEvent = (payload: ZmenuIncomingPayload) => {
-    if (payload.action === ZmenuAction.CREATE) {
-      handleZmenuCreate(payload);
-    } else if (payload.action === ZmenuAction.DESTROY) {
-      handleZmenuDestroy(payload);
-    } else if (payload.action === ZmenuAction.REPOSITION) {
-      handleZmenuReposition(payload);
+  const handleBpaneEvent = (action: IncomingAction) => {
+    const { type, payload } = action;
+    if (type === IncomingActionType.ZMENU_CREATE) {
+      handleZmenuCreate(payload as ZmenuCreatePayload);
+    } else if (type === IncomingActionType.ZMENU_DESTROY) {
+      handleZmenuDestroy(payload as ZmenuDestroyPayload);
+    } else if (type === IncomingActionType.ZMENU_REPOSITION) {
+      handleZmenuReposition(payload as ZmenuRepositionPayload);
     }
   };
 
@@ -96,19 +110,21 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuEnter = (id: string) => {
-    const payload = {
-      id,
-      action: ZmenuAction.ENTER
+    const action: OutgoingAction = {
+      payload: {
+        id
+      },
+      type: OutgoingActionType.ZMENU_ENTER
     };
-    browserMessagingService.send('bpane', payload);
+    genomeBrowser?.send(action);
   };
 
   const handleZmenuLeave = (id: string) => {
-    const payload = {
-      id,
-      action: ZmenuAction.LEAVE
+    const action: OutgoingAction = {
+      payload: { id },
+      type: OutgoingActionType.ZMENU_LEAVE
     };
-    browserMessagingService.send('bpane', payload);
+    genomeBrowser?.send(action);
   };
 
   const zmenuElements = Object.keys(zmenus).map((id) => (

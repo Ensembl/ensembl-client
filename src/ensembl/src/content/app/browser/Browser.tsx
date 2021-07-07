@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import useBrowserRouting from './hooks/useBrowserRouting';
+import GenomeBrowser from 'ensembl-genome-browser';
 
-import { client } from 'src/gql-client';
-import analyticsTracking from 'src/services/analytics-service';
-import * as urlFor from 'src/shared/helpers/urlHelper';
-import { BreakpointWidth } from 'src/global/globalConfig';
+import useBrowserRouting from './hooks/useBrowserRouting';
 
 import {
   parseEnsObjectId,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
+import { client } from 'src/gql-client';
+import analyticsTracking from 'src/services/analytics-service';
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
-
 import {
   getBrowserNavOpenState,
   getChrLocation,
@@ -43,7 +43,6 @@ import {
   getBrowserActiveEnsObjectId,
   getBrowserActiveEnsObjectIds
 } from './browserSelectors';
-
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
 import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
@@ -62,6 +61,7 @@ import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
 import { NewTechError } from 'src/shared/components/error-screen';
 import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
+import { BreakpointWidth } from 'src/global/globalConfig';
 import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
@@ -102,7 +102,7 @@ export const Browser = (props: BrowserProps) => {
   };
 
   const toggleDrawer = () => {
-    props.toggleDrawer(!props.isDrawerOpened);
+    props.toggleDrawer(!isDrawerOpened);
   };
 
   const shouldShowNavBar =
@@ -128,7 +128,7 @@ export const Browser = (props: BrowserProps) => {
             onSidebarToggle={onSidebarToggle}
             topbarContent={<BrowserBar />}
             isSidebarOpen={props.isTrackPanelOpened}
-            isDrawerOpen={props.isDrawerOpened}
+            isDrawerOpen={isDrawerOpened}
             drawerContent={<Drawer />}
             onDrawerClose={toggleDrawer}
             viewportWidth={props.viewportWidth}
@@ -200,15 +200,20 @@ const ReduxConnectedBrowser = connect(
   mapDispatchToProps
 )(Browser);
 
-const WasmLoadingBrowserContainer = () => {
-  useEffect(() => {
-    /* eslint-disable */
-    // @ts-ignore ensembl-genome-browser does not have typescript definitions
-    import('ensembl-genome-browser');
-    /* eslint-enable */
-  });
+export const GenomeBrowserContext = React.createContext<{
+  genomeBrowser?: GenomeBrowser | null;
+  setGenomeBrowser?: (genomeBrowser: GenomeBrowser) => void;
+}>({});
 
-  return <ReduxConnectedBrowser />;
+const GenomeBrowserInitContainer = () => {
+  const [genomeBrowser, setGenomeBrowser] =
+    useState<GenomeBrowser | null>(null);
+
+  return (
+    <GenomeBrowserContext.Provider value={{ genomeBrowser, setGenomeBrowser }}>
+      <ReduxConnectedBrowser /> ;
+    </GenomeBrowserContext.Provider>
+  );
 };
 
 const ErrorWrappedBrowser = () => {
@@ -216,7 +221,7 @@ const ErrorWrappedBrowser = () => {
   // we will be able to show custom error string
   return (
     <ErrorBoundary fallbackComponent={NewTechError}>
-      <WasmLoadingBrowserContainer />
+      <GenomeBrowserInitContainer />
     </ErrorBoundary>
   );
 };

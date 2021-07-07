@@ -18,22 +18,16 @@ import React, { useState, FormEvent, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import Input from 'src/shared/components/input/Input';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
-import { ChrLocation } from '../browserState';
-import { RootState } from 'src/store';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  toggleRegionFieldActive
-} from '../browserActions';
+import { toggleRegionFieldActive } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
   getRegionFieldActive,
   getChrLocation,
   getRegionEditorActive
 } from '../browserSelectors';
+
 import {
   getChrLocationFromStr,
   validateRegion,
@@ -41,6 +35,12 @@ import {
 } from '../browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';
+
+import Input from 'src/shared/components/input/Input';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
+import { ChrLocation } from '../browserState';
+import { RootState } from 'src/store';
 
 import applyIcon from 'static/img/shared/apply.svg';
 
@@ -52,12 +52,6 @@ export type BrowserRegionFieldProps = {
   chrLocation: ChrLocation | null;
   isActive: boolean;
   isGhosted: boolean;
-  changeBrowserLocation: (locationData: {
-    genomeId: string;
-    ensObjectId: string | null;
-    chrLocation: ChrLocation;
-  }) => void;
-  changeFocusObject: (objectId: string) => void;
   toggleRegionFieldActive: (regionFieldActive: boolean) => void;
 };
 
@@ -67,7 +61,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputGroupRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLElement>(null);
-
+  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
   const handleFocus = () => props.toggleRegionFieldActive(true);
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
@@ -104,13 +98,13 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
         getRegionInputWithStick(regionFieldInput)
       );
 
-      props.changeBrowserLocation({
+      changeBrowserLocation({
         genomeId: props.activeGenomeId as string,
         ensObjectId: null,
         chrLocation: newChrLocation
       });
     } else {
-      props.changeFocusObject(regionId);
+      changeFocusObject(regionId);
     }
 
     analyticsTracking.trackEvent({
@@ -207,8 +201,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const mapDispatchToProps = {
-  changeBrowserLocation,
-  changeFocusObject,
   toggleRegionFieldActive
 };
 

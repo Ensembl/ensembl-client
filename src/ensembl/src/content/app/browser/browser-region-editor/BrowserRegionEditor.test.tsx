@@ -26,13 +26,14 @@ import {
 
 import { createGenomeKaryotype } from 'tests/fixtures/genomes';
 import {
-  getCommaSeparatedNumber,
-  getNumberWithoutCommas
-} from 'src/shared/helpers/formatters/numberFormatter';
-import {
   createChrLocationValues,
   createRegionValidationMessages
 } from 'tests/fixtures/browser';
+
+import {
+  getCommaSeparatedNumber,
+  getNumberWithoutCommas
+} from 'src/shared/helpers/formatters/numberFormatter';
 import * as browserHelper from '../browserHelper';
 
 jest.mock('src/shared/components/select/Select', () => () => (
@@ -41,6 +42,15 @@ jest.mock('src/shared/components/select/Select', () => () => (
 jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
+
+const mockChangeBrowserLocation = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeBrowserLocation: mockChangeBrowserLocation
+}));
+
+jest.mock('ensembl-genome-browser', () => {
+  return;
+});
 
 jest.mock('../browserHelper');
 
@@ -52,8 +62,6 @@ describe('<BrowserRegionEditor />', () => {
     genomeKaryotype: createGenomeKaryotype(),
     isActive: true,
     isDisabled: false,
-    changeBrowserLocation: jest.fn(),
-    changeFocusObject: jest.fn(),
     toggleRegionEditorActive: jest.fn()
   };
 
@@ -237,6 +245,7 @@ describe('<BrowserRegionEditor />', () => {
       it('changes the browser location in same region if stick is the same', () => {
         const { container } = render(<BrowserRegionEditor {...defaultProps} />);
         const [firstInput, secondInput] = container.querySelectorAll('input');
+
         const submitButton = container.querySelector(
           'button[type="submit"]'
         ) as HTMLButtonElement;
@@ -248,13 +257,10 @@ describe('<BrowserRegionEditor />', () => {
         userEvent.type(secondInput, locationEndInput);
 
         userEvent.click(submitButton);
+        expect(mockChangeBrowserLocation).toHaveBeenCalled();
 
-        expect(defaultProps.changeBrowserLocation).toHaveBeenCalled();
-
-        const {
-          ensObjectId,
-          chrLocation
-        } = (defaultProps.changeBrowserLocation as any).mock.calls[0][0];
+        const { ensObjectId, chrLocation } = (mockChangeBrowserLocation as any)
+          .mock.calls[0][0];
         const [, start, end] = chrLocation;
         expect(ensObjectId).toBe(null);
         expect(start).toBe(getNumberWithoutCommas(locationStartInput));

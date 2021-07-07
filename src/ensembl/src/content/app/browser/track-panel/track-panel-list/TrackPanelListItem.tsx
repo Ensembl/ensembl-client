@@ -18,21 +18,11 @@ import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { RootState } from 'src/store';
+import { OutgoingAction, OutgoingActionType } from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import analyticsTracking from 'src/services/analytics-service';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
-
-import {
-  TrackItemColour,
-  TrackItemColourKey,
-  TrackId,
-  TrackActivityStatus
-} from '../trackPanelConfig';
-import { Status } from 'src/shared/types/status';
 
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/trackPanelActions';
@@ -40,27 +30,38 @@ import {
   changeDrawerView,
   setActiveDrawerTrackId,
   toggleDrawer
-} from '../../drawer/drawerActions';
-
-import {
-  getHighlightedTrackId,
-  isTrackCollapsed
-} from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+} from 'src/content/app/browser/drawer/drawerActions';
 import {
   getIsDrawerOpened,
   getDrawerView,
   getActiveDrawerTrackId
-} from '../../drawer/drawerSelectors';
+} from 'src/content/app/browser/drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId
-} from '../../browserSelectors';
+} from 'src/content/app/browser/browserSelectors';
+import {
+  getHighlightedTrackId,
+  isTrackCollapsed
+} from 'src/content/app/browser/track-panel/trackPanelSelectors';
+
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
 
 import chevronDownIcon from 'static/img/shared/chevron-down.svg';
 import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
+
+import { RootState } from 'src/store';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
+import {
+  TrackItemColour,
+  TrackItemColourKey,
+  TrackId,
+  TrackActivityStatus
+} from '../trackPanelConfig';
+import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelListItem.scss';
 
@@ -85,6 +86,8 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     isTrackCollapsed(state, trackId)
   );
   const activeDrawerTrackId = useSelector(getActiveDrawerTrackId);
+
+  const { genomeBrowser } = useGenomeBrowser();
 
   const dispatch = useDispatch();
 
@@ -191,13 +194,18 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
   const updateGenomeBrowser = (status: Status) => {
-    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
+    const isTurnedOn = status === Status.SELECTED;
 
-    const payload = {
-      [currentTrackStatus]: `${track.track_id}`
+    const action: OutgoingAction = {
+      type: isTurnedOn
+        ? OutgoingActionType.TURN_ON_TRACKS
+        : OutgoingActionType.TURN_OFF_TRACKS,
+      payload: {
+        track_ids: [`${track.track_id}`.replace('track:', '')]
+      }
     };
 
-    browserMessagingService.send('bpane', payload);
+    genomeBrowser?.send(action);
   };
 
   const trackClassNames = classNames(styles.track, {

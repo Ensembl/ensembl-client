@@ -63,10 +63,12 @@ const start = async () => {
     'StartServer',
     once(() => {
       // Not sure if this message is sufficiently visible
+
+      // eslint-disable-next-line no-console
       setTimeout(
-        () => console.log('Starting the server; please wait...'),
+        () => console.log('Starting the server; please wait...'), // eslint-disable-line no-console
         1000
-      ); // eslint-disable-line no-console
+      );
       serverCompiler.watch(
         {},
         once(() => {

@@ -29,13 +29,21 @@ import {
   TrackPanelListItemProps
 } from './TrackPanelListItem';
 
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
 import { createMainTrackInfo } from 'tests/fixtures/track-panel';
-import { Status } from 'src/shared/types/status';
-import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 import * as drawerActions from '../../drawer/drawerActions';
 import * as browserActions from 'src/content/app/browser/browserActions';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+
+import { Status } from 'src/shared/types/status';
+import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser
+}));
 
 jest.mock('src/content/app/browser/browser-storage-service.ts'); // don't want to pollute localStorage
 

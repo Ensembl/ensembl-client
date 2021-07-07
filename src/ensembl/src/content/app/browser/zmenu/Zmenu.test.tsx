@@ -20,7 +20,16 @@ import faker from 'faker';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
 import { createZmenuContent } from 'tests/fixtures/browser';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser
+}));
+
+jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 jest.mock('./ZmenuContent', () => () => (
   <div data-test-id="zmenuContent">ZmenuContent</div>

@@ -102,13 +102,15 @@ export default (): Configuration => {
         config: path.join(paths.rootPath, 'config.ts'),
         src: path.join(paths.rootPath, 'src'),
         tests: path.join(paths.rootPath, 'tests'),
-        static: path.join(paths.rootPath, 'static'),
-        fs: false,
-        path: false
+        static: path.join(paths.rootPath, 'static')
       }
     },
 
     // ignore node_modules when bundling for the server
-    externals: [nodeExternals()]
+    externals: [
+      nodeExternals({
+        allowlist: ['ensembl-genome-browser']
+      })
+    ]
   };
 };

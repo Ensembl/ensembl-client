@@ -100,9 +100,8 @@ describe('<TranscriptsFilter />', () => {
     const defaultSortingLabel = [...container.querySelectorAll('label')].find(
       (el) => el.textContent === 'Default'
     );
-    const defaultSortingRadioButton = defaultSortingLabel?.querySelector(
-      'input'
-    );
+    const defaultSortingRadioButton =
+      defaultSortingLabel?.querySelector('input');
     expect(defaultSortingRadioButton?.checked).toBe(true);
 
     // after we change sorting option

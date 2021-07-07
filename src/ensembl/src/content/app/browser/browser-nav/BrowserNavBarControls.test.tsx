@@ -18,7 +18,10 @@ import React from 'react';
 import { screen, render } from '@testing-library/react';
 import faker from 'faker';
 
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
 import { BrowserNavBarControls } from './BrowserNavBarControls';
+
 import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
 
@@ -39,12 +42,12 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
 ));
 
 const browserNavIconStates: BrowserNavIconStates = {
-  [BrowserNavAction.NAVIGATE_UP]: faker.datatype.boolean(),
-  [BrowserNavAction.NAVIGATE_RIGHT]: faker.datatype.boolean(),
-  [BrowserNavAction.NAVIGATE_DOWN]: faker.datatype.boolean(),
-  [BrowserNavAction.NAVIGATE_LEFT]: faker.datatype.boolean(),
-  [BrowserNavAction.ZOOM_OUT]: faker.datatype.boolean(),
-  [BrowserNavAction.ZOOM_IN]: faker.datatype.boolean()
+  [OutgoingActionType.MOVE_UP]: faker.random.boolean(),
+  [OutgoingActionType.MOVE_RIGHT]: faker.random.boolean(),
+  [OutgoingActionType.MOVE_DOWN]: faker.random.boolean(),
+  [OutgoingActionType.MOVE_LEFT]: faker.random.boolean(),
+  [OutgoingActionType.ZOOM_OUT]: faker.random.boolean(),
+  [OutgoingActionType.ZOOM_IN]: faker.random.boolean()
 };
 
 describe('BrowserNavBarControls', () => {

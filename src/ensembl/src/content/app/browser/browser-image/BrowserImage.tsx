@@ -19,14 +19,19 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 
+import {
+  IncomingAction,
+  IncomingActionType,
+  OutgoingActionType
+} from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { parseFeatureId } from 'src/content/app/browser/browserHelper';
-import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getBrowserCogTrackList,
   getBrowserNavOpenState,
@@ -36,7 +41,6 @@ import {
   getBrowserActiveGenomeId
 } from '../browserSelectors';
 import {
-  activateBrowser,
   updateBrowserActivated,
   updateBrowserNavIconStates,
   setChrLocation,
@@ -44,17 +48,15 @@ import {
   updateBrowserActiveEnsObjectIdsAndSave,
   updateDefaultPositionFlag
 } from '../browserActions';
-
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import {
-  BrowserNavAction,
-  BrowserNavIconStates,
-  ChrLocation,
-  CogList
-} from '../browserState';
-import { RootState } from 'src/store';
+import { parseFeatureId } from 'src/content/app/browser/browserHelper';
+import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
+
+import { BrowserNavIconStates, ChrLocation, CogList } from '../browserState';
+import { RootState } from 'src/store';
 
 import styles from './BrowserImage.scss';
 
@@ -64,7 +66,6 @@ export type BrowserImageProps = {
   browserActivated: boolean;
   isDisabled: boolean;
   activeGenomeId: string | null;
-  activateBrowser: () => void;
   updateBrowserNavIconStates: (payload: {
     activeGenomeId: string;
     navStates: BrowserNavIconStates;
@@ -104,6 +105,9 @@ const parseLocation = (location: ChrLocation) => {
 
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
+
+  const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
+
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
     const intendedLocation = payload['intended-location'];
@@ -115,12 +119,12 @@ export const BrowserImage = (props: BrowserImageProps) => {
       const navIconStates = payload.bumper.map((a) => !a);
 
       const navStates = {
-        [BrowserNavAction.NAVIGATE_UP]: navIconStates[0],
-        [BrowserNavAction.NAVIGATE_DOWN]: navIconStates[1],
-        [BrowserNavAction.ZOOM_OUT]: navIconStates[2],
-        [BrowserNavAction.ZOOM_IN]: navIconStates[3],
-        [BrowserNavAction.NAVIGATE_LEFT]: navIconStates[4],
-        [BrowserNavAction.NAVIGATE_RIGHT]: navIconStates[5]
+        [OutgoingActionType.MOVE_UP]: navIconStates[0],
+        [OutgoingActionType.MOVE_DOWN]: navIconStates[1],
+        [OutgoingActionType.ZOOM_OUT]: navIconStates[2],
+        [OutgoingActionType.ZOOM_IN]: navIconStates[3],
+        [OutgoingActionType.MOVE_LEFT]: navIconStates[4],
+        [OutgoingActionType.MOVE_RIGHT]: navIconStates[5]
       };
       props.updateBrowserNavIconStates({
         activeGenomeId: props.activeGenomeId,
@@ -147,18 +151,20 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, []);
 
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
-      'bpane-out',
-      listenBpaneOut
+    const subscription = genomeBrowser?.subscribe(
+      [IncomingActionType.GENOME_BROWSER_READY],
+      (action: IncomingAction) =>
+        listenBpaneOut(action.payload as BpaneOutPayload)
     );
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
   useEffect(() => {
-    props.activateBrowser();
+    activateGenomeBrowser();
+    props.updateBrowserActivated(true);
 
     return function cleanup() {
       props.updateBrowserActivated(false);
@@ -182,6 +188,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
           className={browserContainerClassNames}
           ref={browserRef}
         />
+        <div id={'other'} />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
         {props.isDisabled ? <Overlay /> : null}
@@ -199,7 +206,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = {
-  activateBrowser,
   updateBrowserActivated,
   updateBrowserNavIconStates,
   updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,

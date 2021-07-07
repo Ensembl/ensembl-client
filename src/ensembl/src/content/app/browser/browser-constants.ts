@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const BROWSER_CONTAINER_ID = 'genome-browser';
+export const BROWSER_CONTAINER_ID = 'browser';
