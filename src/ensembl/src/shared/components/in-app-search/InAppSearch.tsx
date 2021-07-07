@@ -21,6 +21,7 @@ import upperFirst from 'lodash/upperFirst';
 
 import {
   search,
+  clearSearch,
   updateQuery
 } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import {
@@ -36,6 +37,7 @@ import { PrimaryButton } from 'src/shared/components/button/Button';
 import QuestionButton, {
   QuestionButtonOption
 } from 'src/shared/components/question-button/QuestionButton';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 import InAppSearchMatches from './InAppSearchMatches';
 
 import type { RootState } from 'src/store';
@@ -76,6 +78,19 @@ const InAppSearch = (props: Props) => {
     dispatch(search(searchParams));
   };
 
+  const clear = () => {
+    dispatch(clearSearch({ app: props.app, genomeId: props.genomeId }));
+  };
+
+  const rightCorner = query ? (
+    <CloseButton onClick={clear} />
+  ) : (
+    <QuestionButton
+      helpText="This is a hint"
+      styleOption={QuestionButtonOption.INPUT}
+    />
+  );
+
   return (
     <div>
       <div
@@ -90,12 +105,7 @@ const InAppSearch = (props: Props) => {
             onChange={onQueryChange}
             onSubmit={onSearchSubmit}
             className={styles.searchField}
-            rightCorner={
-              <QuestionButton
-                helpText="This is a hint"
-                styleOption={QuestionButtonOption.INPUT}
-              />
-            }
+            rightCorner={rightCorner}
           />
         </div>
         <PrimaryButton
