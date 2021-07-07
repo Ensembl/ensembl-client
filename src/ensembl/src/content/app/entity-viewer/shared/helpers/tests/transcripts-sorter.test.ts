@@ -110,6 +110,11 @@ const createTranscriptWithSmallestExons = () => {
   transcript.spliced_exons = [splicedExon, splicedExon];
   return transcript;
 };
+const createOtherManeTranscript = () => {
+  const transcript = createTranscript();
+  transcript.metadata.canonical = null;
+  return transcript;
+};
 
 const longProteinCodingTranscript = createLongProteinCodingTranscript();
 const shortProteinCodingTranscript = createShortProteinCodingTranscript();
@@ -124,7 +129,8 @@ const transcriptWithSmallestSplicedLength =
 const transcriptWithGreatestExons = createTranscriptWithGreatestExons();
 const transcriptWithMediumExons = createTranscriptWithMediumExons();
 const transcriptWithSmallestExons = createTranscriptWithSmallestExons();
-const canonicalTranscript = createTranscript();
+const maneSelectTranscript = createTranscript();
+const otherManeTranscript = createOtherManeTranscript();
 
 describe('default sort', () => {
   it('sorts transcripts correctly', () => {
@@ -141,12 +147,14 @@ describe('default sort', () => {
       shortNonCodingTranscript,
       shortProteinCodingTranscript,
       longNonCodingTranscript, // this is the longest
+      otherManeTranscript,
       longProteinCodingTranscript,
-      canonicalTranscript
+      maneSelectTranscript
     ];
 
     const expectedTranscripts = [
-      canonicalTranscript,
+      maneSelectTranscript,
+      otherManeTranscript,
       longProteinCodingTranscript,
       shortProteinCodingTranscript,
       longNonCodingTranscript, // its so_term is "xyz"
