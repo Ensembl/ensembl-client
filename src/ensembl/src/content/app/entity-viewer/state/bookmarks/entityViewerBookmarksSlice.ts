@@ -18,8 +18,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 
 type PreviouslyViewedEntity = {
-  entity_id: string;
-  label: string[];
+  stable_id: string;
+  label: string;
   type: 'gene';
 };
 
@@ -59,12 +59,11 @@ const bookmarksSlice = createSlice({
       const { genomeId, gene } = action.payload;
       const savedEntitiesWithoutCurrentEntity =
         state.previouslyViewed[genomeId]?.filter(
-          (entity) => entity.entity_id !== gene.unversioned_stable_id
+          (entity) => entity.stable_id !== gene.unversioned_stable_id
         ) || [];
-
       const newEntity = {
-        entity_id: gene.unversioned_stable_id,
-        label: gene.symbol ? [gene.symbol, gene.stable_id] : [gene.stable_id],
+        stable_id: gene.unversioned_stable_id,
+        label: gene.symbol || gene.stable_id,
         type: 'gene' as const
       };
       const updatedEntites = [

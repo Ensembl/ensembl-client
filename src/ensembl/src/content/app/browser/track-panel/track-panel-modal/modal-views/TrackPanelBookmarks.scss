@@ -1,11 +1,7 @@
 @import 'src/styles/common';
 
-.trackPanelBookmarks {
-  margin-left: 10px;
-}
-
 .linkHolder {
-  margin-top: 6px;
+  margin: 5px 0 0 20px;
   text-overflow: ellipsis;
   overflow: hidden;
   a {
@@ -15,29 +11,33 @@
     font-size: 13px;
     font-weight: $normal;
   }
-  .label {
-    margin-right: 8px;
-  }
 }
 
-.type {
+.previouslyViewedType {
   color: $dark-grey;
+  margin-left: 8px;
   font-size: 12px;
   font-weight: 300;
 }
 
 .title {
   font-size: 14px;
-  margin: 5px 0 25px 0;
+  margin: 5px 0 10px 10px;
   font-weight: $bold;
 }
 
-.more {
-  margin-top: 25px;
-  span {
-    font-size: 12px;
-    cursor: pointer;
-    color: $blue;
-    font-weight: $normal;
+.sectionTitle {
+  color: $dark-grey;
+  font-size: 12px;
+  border-bottom: 1px solid $grey;
+  margin-bottom: 15px;
+  position: relative;
+  margin-top: 20px;
+
+  .ellipsis {
+    position: absolute;
+    right: 5px;
+    top: -2px;
+    width: 25px;
   }
 }

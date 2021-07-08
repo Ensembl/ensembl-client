@@ -40,12 +40,12 @@ const exampleEntities = [
 
 const previouslyViewedEntities = [
   {
-    entity_id: 'human-fry',
+    stable_id: 'human-fry',
     label: 'FRY',
     type: 'gene'
   },
   {
-    entity_id: 'human-tp53',
+    stable_id: 'human-tp53',
     label: 'TP53',
     type: 'gene'
   }
@@ -87,6 +87,14 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
 describe('<EntityViewerSidebarBookmarks />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  it('shows example links if they are present', () => {
+    wrapInRedux();
+    const exampleLinksSection = screen.getByTestId('example links');
+    const links = exampleLinksSection.querySelectorAll('a');
+
+    expect(links.length).toBe(exampleEntities.length);
   });
 
   it('shows previously viewed entities if present', () => {

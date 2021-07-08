@@ -40,7 +40,6 @@ jest.mock('react-router-dom', () => ({
 
 const genomeId = 'triticum_aestivum_GCA_900519105_1';
 const geneId = 'TraesCS3D02G273600';
-const versionedStableId = 'TraesCS3D02G273600.1';
 const region = '3D:2585940-2634711';
 const geneObjectId = `${genomeId}:gene:${geneId}`;
 const regionObjectId = `${genomeId}:region:${region}`;
@@ -48,22 +47,22 @@ const regionObjectId = `${genomeId}:region:${region}`;
 const createRandomPreviouslyViewedObject = (): PreviouslyViewedObject => ({
   genome_id: faker.random.word(),
   object_id: `${faker.random.word()}:gene:${faker.datatype.uuid()}`,
-  type: 'gene',
-  label: [faker.random.word(), faker.random.word()]
+  object_type: 'gene',
+  label: faker.random.word()
 });
 
 const previouslyViewedObjects = [
   {
     genome_id: genomeId,
     object_id: geneObjectId,
-    type: 'gene',
-    label: [geneId, versionedStableId]
+    object_type: 'gene',
+    label: geneId
   },
   {
     genome_id: genomeId,
     object_id: regionObjectId,
-    type: 'region',
-    label: [region]
+    object_type: 'region',
+    label: region
   }
 ];
 
@@ -159,10 +158,22 @@ describe('<TrackPanelBookmarks />', () => {
     jest.resetAllMocks();
   });
 
+  it('renders example links', () => {
+    wrapInRedux();
+    const exampleGeneLink = screen.getByText('Example gene') as HTMLElement;
+    const exampleRegionLink = screen.getByText('Example region') as HTMLElement;
+
+    const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
+    const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
+
+    expect(exampleGeneLink.getAttribute('href')).toBe(expectedGeneHref);
+    expect(exampleRegionLink.getAttribute('href')).toBe(expectedRegionHref);
+  });
+
   it('renders previously viewed links', () => {
     wrapInRedux();
-    const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
-    const regionLink = screen.getByText(region).closest('a') as HTMLElement;
+    const geneLink = screen.getByText(geneId) as HTMLElement;
+    const regionLink = screen.getByText(region) as HTMLElement;
 
     const expectedGeneHref = `/genome-browser/${genomeId}?focus=gene:${geneId}`;
     const expectedRegionHref = `/genome-browser/${genomeId}?focus=region:${region}`;
@@ -183,7 +194,7 @@ describe('<TrackPanelBookmarks />', () => {
     (trackPanelActions.closeTrackPanelModal as any).mockRestore();
   });
 
-  it('shows link to view more only when there are more than 20 objects', () => {
+  it('shows the ellipsis only when there are more than 20 objects', () => {
     let wrapper = wrapInRedux(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
@@ -191,9 +202,10 @@ describe('<TrackPanelBookmarks />', () => {
         mockState
       )
     );
-
     expect(
-      wrapper.container.querySelector('.trackPanelBookmarks .more')
+      wrapper.container.querySelector(
+        '.trackPanelBookmarks .sectionTitle button'
+      )
     ).toBeFalsy();
 
     // Add 21 links to see if ellipsis is shown
@@ -206,11 +218,13 @@ describe('<TrackPanelBookmarks />', () => {
     );
 
     expect(
-      wrapper.container.querySelector('.trackPanelBookmarks .more')
+      wrapper.container.querySelector(
+        '.trackPanelBookmarks .sectionTitle button'
+      )
     ).toBeTruthy();
   });
 
-  it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
+  it('changes drawer view and toggles drawer when the ellipsis is clicked', () => {
     const { container } = wrapInRedux(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
@@ -219,11 +233,11 @@ describe('<TrackPanelBookmarks />', () => {
       )
     );
 
-    const moreLink = container.querySelector(
-      '.trackPanelBookmarks .more span'
+    const ellipsisButton = container.querySelector(
+      '.sectionTitle button'
     ) as HTMLElement;
 
-    userEvent.click(moreLink);
+    userEvent.click(ellipsisButton);
 
     const dispatchedDrawerActions = store.getActions();
 
@@ -238,5 +252,13 @@ describe('<TrackPanelBookmarks />', () => {
       DrawerView.BOOKMARKS
     );
     expect(toggleDrawerAction.payload[genomeId]).toEqual(true);
+  });
+
+  it('renders correct number of links to example objects', () => {
+    const { container } = wrapInRedux();
+
+    expect(container.querySelectorAll('.exampleLinks a').length).toBe(
+      example_objects.length
+    );
   });
 });

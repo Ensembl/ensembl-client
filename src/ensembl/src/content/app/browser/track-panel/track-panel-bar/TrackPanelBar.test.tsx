@@ -31,8 +31,9 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
-  () => (props: { description: string; onClick: () => void }) =>
+  () => (props: { description: string; onClick: () => void }) => (
     <button onClick={props.onClick}>{props.description}</button>
+  )
 );
 
 const fakeGenomeId = 'human';
@@ -87,7 +88,7 @@ describe('<TrackPanelBar />', () => {
         )
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -120,7 +121,7 @@ describe('<TrackPanelBar />', () => {
         )
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -145,7 +146,7 @@ describe('<TrackPanelBar />', () => {
     it('causes track panel modal to close if a pressed button is clicked again', () => {
       const { container } = wrapInRedux();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -175,7 +176,7 @@ describe('<TrackPanelBar />', () => {
         set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Previously viewed'
+        (button) => button.innerHTML === 'Bookmarks'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
