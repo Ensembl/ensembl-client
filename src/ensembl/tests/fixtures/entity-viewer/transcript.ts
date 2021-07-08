@@ -79,16 +79,8 @@ export const createTranscript = (
 
 const createTranscriptMetadata = (): TranscriptMetadata => {
   return {
-    canonical: {
-      label: 'Ensembl canonical',
-      value: true,
-      definition: faker.lorem.sentence()
-    },
-    mane: {
-      label: 'MANE Select',
-      value: 'select',
-      definition: faker.lorem.sentence()
-    }
+    canonical: null,
+    mane: null
   };
 };
 

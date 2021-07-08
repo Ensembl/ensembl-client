@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import faker from 'faker';
+
 import {
   defaultSort,
   sortBySplicedLengthDesc,
@@ -24,32 +26,26 @@ import {
 
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
-const createTranscriptWithEmptyMetadata = () => {
-  const transcript = createTranscript();
-  transcript.metadata.canonical = transcript.metadata.mane = null;
-  return transcript;
-};
-
 /* Creating dummy transcritps with different protein coding and non coding length  to test default sort*/
 const createLongProteinCodingTranscript = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.slice.location.length = 100_000;
   return transcript;
 };
 const createShortProteinCodingTranscript = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.slice.location.length = 10_000;
   return transcript;
 };
 const createLongNonCodingTranscript = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.slice.location.length = 150_000;
   transcript.so_term = 'xyz'; // <- to make sure that during default sorting we put this last
   transcript.product_generating_contexts = [];
   return transcript;
 };
 const createShortNonCodingTranscript = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.slice.location.length = 5_000;
   transcript.so_term = 'abc'; // <- to make sure that during default sorting we put this first
   transcript.product_generating_contexts = [];
@@ -58,7 +54,7 @@ const createShortNonCodingTranscript = () => {
 
 /* Creating dummy transcritps with different spliced length */
 const createTranscriptWithGreatestSplicedLength = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   const splicedExon = transcript.spliced_exons[0];
   transcript.stable_id = 'transcript_with_greatest_spliced_length';
   splicedExon.exon.slice.location.length = 15_000;
@@ -66,7 +62,7 @@ const createTranscriptWithGreatestSplicedLength = () => {
   return transcript;
 };
 const createTranscriptWithMediumSplicedLength = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.stable_id = 'transcript_with_medium_spliced_length';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 10_000;
@@ -74,7 +70,7 @@ const createTranscriptWithMediumSplicedLength = () => {
   return transcript;
 };
 const createTranscriptWithSmallestSplicedLength = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.stable_id = 'transcript_with_smallest_spliced_length';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 5_000;
@@ -84,7 +80,7 @@ const createTranscriptWithSmallestSplicedLength = () => {
 
 /* Creating dummy transcritps with different numbers of Exons */
 const createTranscriptWithGreatestExons = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   const splicedExon = transcript.spliced_exons[0];
   transcript.stable_id = 'transcript_with_greatest_exons';
   transcript.spliced_exons = [
@@ -96,7 +92,7 @@ const createTranscriptWithGreatestExons = () => {
   return transcript;
 };
 const createTranscriptWithMediumExons = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.stable_id = 'transcript_with_medium_exons';
   const splicedExon = transcript.spliced_exons[0];
   splicedExon.exon.slice.location.length = 10_000;
@@ -104,15 +100,40 @@ const createTranscriptWithMediumExons = () => {
   return transcript;
 };
 const createTranscriptWithSmallestExons = () => {
-  const transcript = createTranscriptWithEmptyMetadata();
+  const transcript = createTranscript();
   transcript.stable_id = 'transcript_with_smallest_exons';
   const splicedExon = transcript.spliced_exons[0];
   transcript.spliced_exons = [splicedExon, splicedExon];
   return transcript;
 };
-const createOtherManeTranscript = () => {
+
+const createMANETranscript = () => {
   const transcript = createTranscript();
-  transcript.metadata.canonical = null;
+  transcript.metadata = {
+    canonical: {
+      label: 'Ensembl canonical',
+      value: true,
+      definition: faker.lorem.sentence()
+    },
+    mane: {
+      label: 'MANE Select',
+      value: 'select',
+      definition: faker.lorem.sentence()
+    }
+  };
+  return transcript;
+};
+
+const createOtherMANETranscript = () => {
+  const transcript = createTranscript();
+  transcript.metadata = {
+    canonical: null,
+    mane: {
+      label: 'MANE Plus Clinical',
+      value: 'plus_clinical',
+      definition: faker.lorem.sentence()
+    }
+  };
   return transcript;
 };
 
@@ -129,8 +150,8 @@ const transcriptWithSmallestSplicedLength =
 const transcriptWithGreatestExons = createTranscriptWithGreatestExons();
 const transcriptWithMediumExons = createTranscriptWithMediumExons();
 const transcriptWithSmallestExons = createTranscriptWithSmallestExons();
-const maneSelectTranscript = createTranscript();
-const otherManeTranscript = createOtherManeTranscript();
+const maneSelectTranscript = createMANETranscript();
+const otherManeTranscript = createOtherMANETranscript();
 
 describe('default sort', () => {
   it('sorts transcripts correctly', () => {

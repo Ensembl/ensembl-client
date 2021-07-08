@@ -92,20 +92,11 @@ const QUERY = gql`
           }
         }
         metadata {
-          biotype {
-            label
-            value
-            definition
-          }
           canonical {
             value
-            label
-            definition
           }
           mane {
             value
-            label
-            definition
           }
         }
       }

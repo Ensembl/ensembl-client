@@ -17,6 +17,7 @@
 import React from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+
 import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
 
 import styles from './TranscriptQualityLabel.scss';
@@ -26,20 +27,21 @@ type Props = {
 };
 
 const getTranscriptMetadata = (props: Props) => {
-  if (props.metadata.canonical && props.metadata.mane?.value === 'select') {
+  const { canonical, mane } = props.metadata;
+  if (canonical && mane?.value === 'select') {
     return {
-      label: props.metadata.mane.label,
-      definition: props.metadata.mane.definition
+      label: mane.label,
+      definition: mane.definition
     };
-  } else if (props.metadata.canonical) {
+  } else if (canonical) {
     return {
-      label: props.metadata.canonical.label,
-      definition: props.metadata.canonical.definition
+      label: canonical.label,
+      definition: canonical.definition
     };
-  } else if (props.metadata.mane) {
+  } else if (mane) {
     return {
-      label: props.metadata.mane.label,
-      definition: props.metadata.mane.definition
+      label: mane.label,
+      definition: mane.definition
     };
   }
 };
