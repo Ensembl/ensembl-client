@@ -56,7 +56,7 @@ export type Props = {
 const InAppSearch = (props: Props) => {
   const { app, genomeId, mode } = props;
   const query = useSelector((state: RootState) =>
-    getSearchQuery(state, props.app, props.genomeId)
+    getSearchQuery(state, app, genomeId)
   );
   const searchResult = useSelector((state: RootState) =>
     getSearchResults(state, app, genomeId)
@@ -79,7 +79,7 @@ const InAppSearch = (props: Props) => {
   };
 
   const clear = () => {
-    dispatch(clearSearch({ app: props.app, genomeId: props.genomeId }));
+    dispatch(clearSearch({ app, genomeId }));
   };
 
   const rightCorner = query ? (
@@ -124,9 +124,7 @@ const InAppSearch = (props: Props) => {
           </div>
         )}
       </div>
-      {searchResult && (
-        <InAppSearchMatches {...searchResult} mode={props.mode} />
-      )}
+      {searchResult && <InAppSearchMatches {...searchResult} mode={mode} />}
     </div>
   );
 };
