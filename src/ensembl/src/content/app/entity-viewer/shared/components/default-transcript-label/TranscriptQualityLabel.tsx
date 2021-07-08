@@ -28,7 +28,7 @@ type Props = {
 
 const getTranscriptMetadata = (props: Props) => {
   const { canonical, mane } = props.metadata;
-  if (canonical && mane?.value === 'select') {
+  if (canonical && mane) {
     return {
       label: mane.label,
       definition: mane.definition

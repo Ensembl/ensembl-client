@@ -20,47 +20,17 @@ import { render } from '@testing-library/react';
 
 import { TranscriptQualityLabel } from './TranscriptQualityLabel';
 
-const createMANETranscriptMetadata = () => {
-  return {
-    metadata: {
-      canonical: {
-        label: 'Ensembl canonical',
-        value: true,
-        definition: faker.lorem.sentence()
-      },
-      mane: {
-        label: 'MANE Select',
-        value: 'select',
-        definition: faker.lorem.sentence()
-      }
-    }
-  };
-};
-
-const createCanonicalTranscriptMetadata = () => {
-  return {
-    metadata: {
-      canonical: {
-        label: 'Ensembl canonical',
-        value: true,
-        definition: faker.lorem.sentence()
-      },
-      mane: null
-    }
-  };
-};
-
-const createOtherMANETranscriptMetadata = () => {
-  return {
-    metadata: {
-      canonical: null,
-      mane: {
-        label: 'MANE Plus Clinical',
-        value: 'plus_clinical',
-        definition: faker.lorem.sentence()
-      }
-    }
-  };
+const metadata = {
+  canonical: {
+    label: faker.lorem.word(),
+    value: true,
+    definition: faker.lorem.sentence()
+  },
+  mane: {
+    label: faker.lorem.word(),
+    value: faker.lorem.word(),
+    definition: faker.lorem.sentence()
+  }
 };
 
 describe('<TranscriptQualityLabel />', () => {
@@ -70,21 +40,19 @@ describe('<TranscriptQualityLabel />', () => {
 
   it('displays correct labels for transcript metadata', () => {
     const { queryByText, rerender } = render(
-      <TranscriptQualityLabel {...createMANETranscriptMetadata()} />
+      <TranscriptQualityLabel metadata={metadata} />
     );
-    let label = queryByText('MANE Select');
+    let label = queryByText(metadata.mane.label);
+    expect(label).toBeTruthy();
+
+    rerender(<TranscriptQualityLabel metadata={{ ...metadata, mane: null }} />);
+    label = queryByText(metadata.canonical.label);
     expect(label).toBeTruthy();
 
     rerender(
-      <TranscriptQualityLabel {...createCanonicalTranscriptMetadata()} />
+      <TranscriptQualityLabel metadata={{ ...metadata, canonical: null }} />
     );
-    label = queryByText('Ensembl canonical');
-    expect(label).toBeTruthy();
-
-    rerender(
-      <TranscriptQualityLabel {...createOtherMANETranscriptMetadata()} />
-    );
-    label = queryByText('MANE Plus Clinical');
+    label = queryByText(metadata.mane.label);
     expect(label).toBeTruthy();
   });
 });
