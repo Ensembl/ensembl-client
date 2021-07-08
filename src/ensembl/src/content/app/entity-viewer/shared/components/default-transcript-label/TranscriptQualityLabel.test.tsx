@@ -39,7 +39,7 @@ describe('<TranscriptQualityLabel />', () => {
   });
 
   it('displays correct labels for transcript metadata', () => {
-    const { queryByText, rerender } = render(
+    const { container, queryByText, rerender } = render(
       <TranscriptQualityLabel metadata={metadata} />
     );
     let label = queryByText(metadata.mane.label);
@@ -54,5 +54,12 @@ describe('<TranscriptQualityLabel />', () => {
     );
     label = queryByText(metadata.mane.label);
     expect(label).toBeTruthy();
+
+    rerender(
+      <TranscriptQualityLabel
+        metadata={{ ...metadata, canonical: null, mane: null }}
+      />
+    );
+    expect(container.firstChild).toBe(null);
   });
 });

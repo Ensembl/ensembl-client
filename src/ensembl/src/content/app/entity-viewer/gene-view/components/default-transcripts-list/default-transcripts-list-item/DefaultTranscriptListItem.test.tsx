@@ -87,11 +87,4 @@ describe('<DefaultTranscriptListItem />', () => {
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });
-
-  it('displays Ensembl canonical transcript with the correct label', () => {
-    const { container } = renderComponent();
-    expect(
-      container.querySelector('.transcriptQualityLabel')?.textContent
-    ).toBe(defaultProps.transcript.metadata.mane?.label);
-  });
 });
