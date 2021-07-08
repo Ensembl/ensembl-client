@@ -219,11 +219,11 @@ describe('<TrackPanelBookmarks />', () => {
       )
     );
 
-    const ellipsisButton = container.querySelector(
+    const moreLink = container.querySelector(
       '.trackPanelBookmarks .more span'
     ) as HTMLElement;
 
-    userEvent.click(ellipsisButton);
+    userEvent.click(moreLink);
 
     const dispatchedDrawerActions = store.getActions();
 
