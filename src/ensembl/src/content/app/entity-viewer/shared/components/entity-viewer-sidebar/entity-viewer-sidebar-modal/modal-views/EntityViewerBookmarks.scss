@@ -1,21 +1,24 @@
 @import 'src/styles/common';
 
 .linkHolder {
-  margin: 5px 0 0 20px;
+  margin: 5px 0 0 10px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.previouslyViewedType {
+.label {
+  margin-right: 8px;
+}
+
+.type {
   color: $dark-grey;
-  margin-left: 8px;
   font-size: 12px;
   font-weight: $light;
 }
 
 .title{
   font-size: 14px;
-  margin: 5px 0 10px 10px;
+  margin: 5px 0 25px 10px;
   font-weight: $bold;
 }
