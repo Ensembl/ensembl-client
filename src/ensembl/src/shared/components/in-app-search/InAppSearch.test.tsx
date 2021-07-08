@@ -86,7 +86,6 @@ describe('<InAppSearch />', () => {
       const sidebarProps = { ...defaultProps, mode: 'sidebar' as const };
       rerender(
         <Provider store={getStore()}>
-          s
           <InAppSearch {...sidebarProps} />
         </Provider>
       );
