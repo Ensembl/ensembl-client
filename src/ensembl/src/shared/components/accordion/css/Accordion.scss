@@ -10,6 +10,9 @@
 }
 
 .accordionButtonDefault {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 0.6rem;
   color: #444;
   cursor: pointer;
   padding: 18px;
@@ -19,39 +22,11 @@
   position: relative;
 }
 
-.accordionButtonDefault:after,
-.accordionButtonDefault:before {
-  display: inline-block;
-  position: absolute;
-  margin-top: 10px;
-  content: '';
-  height: 2px;
-  width: 10px;
-  margin-right: 12px;
-  transition: transform 0.2s linear, top 0.2s linear;
-  background-color: $blue;
-}
-
 .accordionButtonDisabled {
+  display: block;
   background-color: $light-grey;
   color: $grey;
   cursor: default;
-  &:after,
-  &:before {
-    display: none;
-  }
-}
-
-.accordionButtonDefault:before {
-  right: 21px;
-  top: 20px;
-  transform: rotate(45deg);
-}
-
-.accordionButtonDefault:after {
-  right: 15px;
-  top: 20px;
-  transform: rotate(-45deg);
 }
 
 .accordionButtonDefault[aria-expanded='true']::before,

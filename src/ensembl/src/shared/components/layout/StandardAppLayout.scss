@@ -114,18 +114,7 @@ $drawerWindowWidth: 45px;
 }
 
 .sidebarModeToggle {
-  width: 22px;
-  height: 22px;
   margin-bottom: 55px;
-}
-
-.sidebarModeToggleChevron {
-  cursor: pointer;
-  fill: $blue;
-
-  &Open {
-    transform: rotate(180deg);
-  }
 }
 
 .sidebarTabs {

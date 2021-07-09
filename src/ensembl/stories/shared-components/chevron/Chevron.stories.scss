@@ -1,0 +1,42 @@
+.storyWrapper {
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.showRoom {
+  margin-bottom: 4rem;
+}
+
+.label {
+  margin-right: 0.6rem;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 100px 100px;
+  grid-template-areas: 
+          'direction animation'
+          'direction class';
+  column-gap: 2rem;
+  row-gap: 1rem;
+}
+
+.controlsDirection {
+  grid-area: direction;
+}
+
+.controlsAnimation {
+  grid-area: animation;
+}
+
+.controlsClass {
+  grid-area: class;
+}
+
+.customChevron {
+  height: 30px;
+  width: 30px;
+}

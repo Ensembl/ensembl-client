@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
 
@@ -215,9 +215,11 @@ describe('StandardAppLayout', () => {
       const props = commonProps;
 
       it('calls onSidebarToggle when sidebar toggle button is clicked', () => {
-        const { rerender } = render(<StandardAppLayout {...props} />);
-        const sidebarToggleButton = screen.getByTestId(
-          'sidebarModeToggle'
+        const { rerender, container } = render(
+          <StandardAppLayout {...props} />
+        );
+        const sidebarToggleButton = container.querySelector(
+          '.sidebarModeToggle button'
         ) as HTMLElement;
         userEvent.click(sidebarToggleButton);
 
@@ -236,9 +238,9 @@ describe('StandardAppLayout', () => {
       const props = { ...commonProps, isDrawerOpen: true };
 
       it('closes drawer when sidebar toggle button is clicked', () => {
-        render(<StandardAppLayout {...props} />);
-        const sidebarToggleButton = screen.getByTestId(
-          'sidebarModeToggle'
+        const { container } = render(<StandardAppLayout {...props} />);
+        const sidebarToggleButton = container.querySelector(
+          '.sidebarModeToggle button'
         ) as HTMLElement;
         userEvent.click(sidebarToggleButton);
 

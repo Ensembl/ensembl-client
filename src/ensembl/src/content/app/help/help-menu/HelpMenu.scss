@@ -5,6 +5,12 @@ $submenuSidePadding: 30px;
 .helpMenu {
   grid-row: menu;
   position: relative;
+
+  // increase specificity through nesting in order to be able to override child's styles
+  .chevron {
+    height: 7px;
+    fill: $blue;
+  }
 }
 
 .menuBar {
@@ -66,9 +72,4 @@ $submenuSidePadding: 30px;
 
 .submenuItem:hover {
   background: $ice-blue;
-}
-
-.chevron {
-  height: 14px;
-  fill: $blue;
 }

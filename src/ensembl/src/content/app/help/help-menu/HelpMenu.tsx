@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import { Link } from 'react-router-dom';
 
-import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
+import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
   Menu as MenuType,
@@ -129,7 +129,7 @@ const Submenu = (props: SubmenuProps) => {
         {item.type === 'collection' ? (
           <>
             {item.name}
-            <Chevron className={styles.chevron} />
+            <Chevron direction="right" classNames={{ svg: styles.chevron }} />
           </>
         ) : (
           item.name

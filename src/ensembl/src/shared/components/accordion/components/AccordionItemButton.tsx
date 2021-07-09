@@ -18,9 +18,12 @@ import React from 'react';
 import noop from 'lodash/noop';
 import classNames from 'classnames';
 
+import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
+
+import Chevron from 'src/shared/components/chevron/Chevron';
+
 import { InjectedButtonAttributes } from '../helpers/AccordionStore';
 import { DivAttributes } from '../helpers/types';
-import { Consumer as ItemConsumer, ItemContext } from './ItemContext';
 
 import defaultStyles from '../css/Accordion.scss';
 
@@ -36,6 +39,7 @@ export const AccordionItemButton = (props: Props) => {
     extendDefaultStyles,
     toggleExpanded,
     disabled,
+    children,
     ...rest
   } = props;
 
@@ -55,7 +59,17 @@ export const AccordionItemButton = (props: Props) => {
       className={styles}
       onClick={disabled ? noop : toggleExpanded}
       data-accordion-component="AccordionItemButton"
-    />
+    >
+      <div>{children}</div>
+      {!disabled && (
+        <div>
+          <Chevron
+            direction={rest['aria-expanded'] ? 'up' : 'down'}
+            animate={true}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

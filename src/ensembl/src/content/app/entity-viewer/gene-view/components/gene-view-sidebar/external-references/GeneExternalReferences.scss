@@ -39,13 +39,8 @@
   padding: 0px;
   width: auto;
   padding-right: 60px;
-  display: inline-block;
+  grid-template-columns: max-content max-content;
   margin-left: 20px;
-
-  &:before,
-  &:after {
-    margin-top: -10px;
-  }
 }
 
 .xrefAccordionItem:not(:first-child) {

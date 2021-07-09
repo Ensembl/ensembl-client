@@ -16,7 +16,8 @@
 
 import React from 'react';
 
-import chevronRightIcon from 'static/img/shared/chevron-right-grey.svg';
+import Chevron from 'src/shared/components/chevron/Chevron';
+
 import styles from './AppBar.scss';
 
 type AppBarProps = {
@@ -37,9 +38,10 @@ export const AppBar = (props: AppBarProps) => (
 export const HelpAndDocumentation = () => {
   return (
     <div className={styles.helpLink}>
-      <a className="inactive">
-        Help &amp; documentation <img src={chevronRightIcon} alt="" />
-      </a>
+      <span>
+        Help &amp; documentation
+        <Chevron direction="right" classNames={{ svg: styles.chevron }} />
+      </span>
     </div>
   );
 };

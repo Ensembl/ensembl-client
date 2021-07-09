@@ -23,9 +23,6 @@ import { RootState } from 'src/store';
 import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
-
 import {
   TrackItemColour,
   TrackItemColourKey,
@@ -57,8 +54,10 @@ import {
   getBrowserActiveEnsObjectId
 } from '../../browserSelectors';
 
-import chevronDownIcon from 'static/img/shared/chevron-down.svg';
-import chevronUpIcon from 'static/img/shared/chevron-up.svg';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
+import Chevron from 'src/shared/components/chevron/Chevron';
+import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
+
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
@@ -225,12 +224,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
             </span>
           )}
           {track.child_tracks && (
-            <button onClick={toggleExpand} className={styles.expandBtn}>
-              <img
-                src={isCollapsed ? chevronDownIcon : chevronUpIcon}
-                alt={isCollapsed ? 'expand' : 'collapse'}
-              />
-            </button>
+            <Chevron
+              onClick={toggleExpand}
+              direction={isCollapsed ? 'down' : 'up'}
+              classNames={{ svg: styles.chevron }}
+            />
           )}
         </label>
         <div className={styles.ellipsisHolder}>
