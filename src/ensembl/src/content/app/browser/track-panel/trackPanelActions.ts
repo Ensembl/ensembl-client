@@ -153,7 +153,7 @@ export const updatePreviouslyViewedObjectsAndSave =
     const label =
       activeEnsObject.type === 'gene'
         ? ([geneSymbol, versioned_stable_id].filter(Boolean) as string[])
-        : [activeEnsObject.label];
+        : activeEnsObject.label;
 
     const newObject = {
       genome_id: activeEnsObject.genome_id,

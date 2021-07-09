@@ -67,13 +67,7 @@ export const PreviouslyViewedLinks = () => {
               to={path}
               onClick={() => onLinkClick(previouslyViewedObject.type, index)}
             >
-              {previouslyViewedObject.label.map((label, index) => {
-                return (
-                  <span key={index} className={styles.label}>
-                    {label}
-                  </span>
-                );
-              })}
+              {buildLabelElement(previouslyViewedObject.label)}
             </Link>
             <span className={styles.type}>
               {upperFirst(previouslyViewedObject.type)}
@@ -83,6 +77,18 @@ export const PreviouslyViewedLinks = () => {
       })}
     </div>
   );
+};
+
+const buildLabelElement = (labelText: string | string[]) => {
+  if (Array.isArray(labelText)) {
+    return labelText.map((fragment, index) => (
+      <span key={index} className={styles.label}>
+        {fragment}
+      </span>
+    ));
+  } else {
+    return <span className={styles.label}>{labelText}</span>;
+  }
 };
 
 export const TrackPanelBookmarks = () => {

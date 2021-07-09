@@ -19,7 +19,7 @@ import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/s
 
 type PreviouslyViewedEntity = {
   entity_id: string;
-  label: string[];
+  label: string | string[];
   type: 'gene';
 };
 
@@ -64,7 +64,7 @@ const bookmarksSlice = createSlice({
 
       const newEntity = {
         entity_id: gene.unversioned_stable_id,
-        label: gene.symbol ? [gene.symbol, gene.stable_id] : [gene.stable_id],
+        label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
         type: 'gene' as const
       };
       const updatedEntites = [
