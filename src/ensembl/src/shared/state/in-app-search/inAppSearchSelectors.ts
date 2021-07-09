@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useSelector } from 'react-redux';
+import type { RootState } from 'src/store';
+import type { AppName } from './inAppSearchSlice';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
-
-import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
-
-const TrackPanelSearch = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-
-  return (
-    <section className="trackPanelSearch">
-      <h3>Search</h3>
-      <div>
-        {activeGenomeId && (
-          <InAppSearch
-            app="genomeBrowser"
-            genomeId={activeGenomeId}
-            mode="sidebar"
-          />
-        )}
-      </div>
-    </section>
-  );
+export const getSearchQuery = (
+  state: RootState,
+  appName: AppName,
+  genomeId: string
+) => {
+  return state.inAppSearch[appName][genomeId]?.query ?? '';
 };
 
-export default TrackPanelSearch;
+export const getSearchResults = (
+  state: RootState,
+  appName: AppName,
+  genomeId: string
+) => {
+  return state.inAppSearch[appName][genomeId]?.result ?? null;
+};

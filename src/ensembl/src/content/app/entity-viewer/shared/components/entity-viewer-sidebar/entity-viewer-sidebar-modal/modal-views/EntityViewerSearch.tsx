@@ -15,13 +15,29 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-const EntityViewerSidebarSearch = () => (
-  <section>
-    <h3>Search</h3>
-    <p>Quickly search in entity viewer</p>
-    <p>Not ready yet &hellip;</p>
-  </section>
-);
+import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+
+import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
+
+const EntityViewerSidebarSearch = () => {
+  const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
+
+  return (
+    <section>
+      <h3>Search</h3>
+      <div>
+        {activeGenomeId && (
+          <InAppSearch
+            app="entityViewer"
+            genomeId={activeGenomeId}
+            mode="sidebar"
+          />
+        )}
+      </div>
+    </section>
+  );
+};
 
 export default EntityViewerSidebarSearch;

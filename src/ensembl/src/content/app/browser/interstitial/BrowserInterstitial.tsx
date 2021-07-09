@@ -42,7 +42,11 @@ const BrowserInterstitial = () => {
   return (
     <div>
       <div className={styles.topPanel}>
-        <InAppSearch className={styles.searchField} />
+        <InAppSearch
+          app="genomeBrowser"
+          genomeId={activeGenomeId}
+          mode="interstitial"
+        />
       </div>
       <ExampleLinks />
     </div>

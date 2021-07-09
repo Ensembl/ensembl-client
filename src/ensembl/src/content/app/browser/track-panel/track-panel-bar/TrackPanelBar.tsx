@@ -21,13 +21,16 @@ import {
   getIsTrackPanelOpened,
   getTrackPanelModalView
 } from '../trackPanelSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+
 import {
   toggleTrackPanel,
   closeTrackPanelModal,
   openTrackPanelModal
 } from '../trackPanelActions';
 import { toggleDrawer } from 'src/content/app/browser/drawer/drawerActions';
-import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
+import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
@@ -43,6 +46,7 @@ import { Status } from 'src/shared/types/status';
 import styles from 'src/shared/components/layout/StandardAppLayout.scss';
 
 export const TrackPanelBar = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
   const trackPanelModalView = useSelector(getTrackPanelModalView);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
@@ -55,6 +59,15 @@ export const TrackPanelBar = () => {
 
     if (isDrawerOpened) {
       dispatch(toggleDrawer(false));
+    }
+
+    if (selectedItem === 'search') {
+      dispatch(
+        clearSearch({
+          app: 'genomeBrowser',
+          genomeId: activeGenomeId as string
+        })
+      );
     }
 
     if (selectedItem === trackPanelModalView) {
@@ -74,8 +87,8 @@ export const TrackPanelBar = () => {
     <>
       <div className={styles.sidebarIcon} key="search">
         <ImageButton
-          status={Status.DISABLED}
-          description="Track search"
+          status={getViewIconStatus('search')}
+          description="Search"
           onClick={() => toggleModalView('search')}
           image={searchIcon}
         />
