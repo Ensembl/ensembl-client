@@ -37,8 +37,7 @@ export type DrawerBookmarksProps = {
 };
 
 const DrawerBookmarks = (props: DrawerBookmarksProps) => {
-  const limitedPreviouslyViewedObjects =
-    props.previouslyViewedObjects.slice(20);
+  const previouslyViewedObjects = props.previouslyViewedObjects.slice(20);
 
   const onClickHandler = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -57,37 +56,35 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
       <div className={styles.drawerTitle}>Previously viewed</div>
       <div className={styles.contentWrapper}>
         <div className={styles.linksWrapper}>
-          {limitedPreviouslyViewedObjects.map(
-            (previouslyViewedObject, index) => {
-              const path = urlFor.browser({
-                genomeId: previouslyViewedObject.genome_id,
-                focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
-              });
+          {previouslyViewedObjects.map((previouslyViewedObject, index) => {
+            const path = urlFor.browser({
+              genomeId: previouslyViewedObject.genome_id,
+              focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
+            });
 
-              return (
-                <span key={index} className={styles.linkHolder}>
-                  <Link
-                    to={path}
-                    onClick={() =>
-                      onClickHandler(previouslyViewedObject.type, index)
-                    }
-                  >
-                    <span className={styles.label}>
-                      {previouslyViewedObject.label[0]}
-                    </span>
-                    {previouslyViewedObject.label[1] && (
-                      <span className={styles.label}>
-                        {previouslyViewedObject.label[1]}
-                      </span>
-                    )}
-                  </Link>
-                  <span className={styles.type}>
-                    {upperFirst(previouslyViewedObject.type)}
+            return (
+              <span key={index} className={styles.linkHolder}>
+                <Link
+                  to={path}
+                  onClick={() =>
+                    onClickHandler(previouslyViewedObject.type, index)
+                  }
+                >
+                  <span className={styles.label}>
+                    {previouslyViewedObject.label[0]}
                   </span>
+                  {previouslyViewedObject.label[1] && (
+                    <span className={styles.label}>
+                      {previouslyViewedObject.label[1]}
+                    </span>
+                  )}
+                </Link>
+                <span className={styles.type}>
+                  {upperFirst(previouslyViewedObject.type)}
                 </span>
-              );
-            }
-          )}
+              </span>
+            );
+          })}
         </div>
       </div>
     </>

@@ -33,7 +33,7 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 export const PreviouslyViewedLinks = () => {
   const previouslyViewedObjects = useSelector(
     getActiveGenomePreviouslyViewedObjects
-  );
+  ).slice(0, 20);
   const dispatch = useDispatch();
 
   const onLinkClick = (objectType: string, index: number) => {
@@ -47,11 +47,9 @@ export const PreviouslyViewedLinks = () => {
     dispatch(closeTrackPanelModal());
   };
 
-  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(0, 20);
-
   return (
     <div data-test-id="previously viewed links">
-      {limitedPreviouslyViewedObjects.map((previouslyViewedObject, index) => {
+      {previouslyViewedObjects.map((previouslyViewedObject, index) => {
         const path = urlFor.browser({
           genomeId: previouslyViewedObject.genome_id,
           focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
