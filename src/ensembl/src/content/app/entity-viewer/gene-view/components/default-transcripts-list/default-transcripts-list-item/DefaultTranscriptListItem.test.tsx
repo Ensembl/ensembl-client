@@ -87,11 +87,4 @@ describe('<DefaultTranscriptListItem />', () => {
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });
-
-  it('displays selected transcript', () => {
-    const { container } = renderComponent({ isDefault: true });
-    expect(
-      container.querySelector('.transcriptQualityLabel')?.textContent
-    ).toBe('Selected');
-  });
 });

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import faker from 'faker';
+
 import {
   defaultSort,
   sortBySplicedLengthDesc,
@@ -105,21 +107,59 @@ const createTranscriptWithSmallestExons = () => {
   return transcript;
 };
 
+const createMANETranscript = () => {
+  const transcript = createTranscript();
+  transcript.metadata = {
+    canonical: {
+      label: 'Ensembl canonical',
+      value: true,
+      definition: faker.lorem.sentence()
+    },
+    mane: {
+      label: 'MANE Select',
+      value: 'select',
+      definition: faker.lorem.sentence()
+    }
+  };
+  return transcript;
+};
+
+const createOtherMANETranscript = () => {
+  const transcript = createTranscript();
+  transcript.metadata = {
+    canonical: null,
+    mane: {
+      label: 'MANE Plus Clinical',
+      value: 'plus_clinical',
+      definition: faker.lorem.sentence()
+    }
+  };
+  return transcript;
+};
+
 const longProteinCodingTranscript = createLongProteinCodingTranscript();
 const shortProteinCodingTranscript = createShortProteinCodingTranscript();
 const longNonCodingTranscript = createLongNonCodingTranscript();
 const shortNonCodingTranscript = createShortNonCodingTranscript();
-const transcriptWithGreatestSplicedLength = createTranscriptWithGreatestSplicedLength();
-const transcriptWithMediumSplicedLength = createTranscriptWithMediumSplicedLength();
-const transcriptWithSmallestSplicedLength = createTranscriptWithSmallestSplicedLength();
+const transcriptWithGreatestSplicedLength =
+  createTranscriptWithGreatestSplicedLength();
+const transcriptWithMediumSplicedLength =
+  createTranscriptWithMediumSplicedLength();
+const transcriptWithSmallestSplicedLength =
+  createTranscriptWithSmallestSplicedLength();
 const transcriptWithGreatestExons = createTranscriptWithGreatestExons();
 const transcriptWithMediumExons = createTranscriptWithMediumExons();
 const transcriptWithSmallestExons = createTranscriptWithSmallestExons();
+const maneSelectTranscript = createMANETranscript();
+const otherManeTranscript = createOtherMANETranscript();
 
 describe('default sort', () => {
   it('sorts transcripts correctly', () => {
     /*
-      - puts protein-coding transcripts first
+      Sorting is done in the below order
+      - canonical transcript
+      - MANE transcripts
+      - protein-coding transcripts
       - sorts protein-coding transcripts by length
       - sorts non-coding transcripts by so_term term alphabetically
     */
@@ -128,14 +168,18 @@ describe('default sort', () => {
       shortNonCodingTranscript,
       shortProteinCodingTranscript,
       longNonCodingTranscript, // this is the longest
-      longProteinCodingTranscript
+      otherManeTranscript,
+      longProteinCodingTranscript,
+      maneSelectTranscript
     ];
 
     const expectedTranscripts = [
+      maneSelectTranscript,
+      otherManeTranscript,
       longProteinCodingTranscript,
       shortProteinCodingTranscript,
-      shortNonCodingTranscript, // its so_term is "abc"
-      longNonCodingTranscript // its so_term is "xyz"
+      longNonCodingTranscript, // its so_term is "xyz"
+      shortNonCodingTranscript // its so_term is "abc"
     ];
 
     const sortedTranscripts = defaultSort(unsortedTranscripts);

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { Source } from './source';
+type ValueSetMetadata = {
+  value: string | number | boolean;
+  label: string;
+  definition: string;
+};
 
-export type Metadata = {
-  [key: string]: {
-    description: string;
-    value?: string;
-    source_uri?: string;
-    source?: Source;
-  };
+type ManeMetadata = ValueSetMetadata;
+type CanonicalMetadata = ValueSetMetadata;
+
+export type TranscriptMetadata = {
+  mane: ManeMetadata | null;
+  canonical: CanonicalMetadata | null;
 };

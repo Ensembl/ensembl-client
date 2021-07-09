@@ -33,7 +33,10 @@ import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/com
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 
-type Transcript = Pick<FullTranscript, 'stable_id' | 'relative_location'> &
+type Transcript = Pick<
+  FullTranscript,
+  'stable_id' | 'relative_location' | 'metadata'
+> &
   TranscriptsListItemInfoProps['transcript'] &
   UnsplicedTranscriptProps['transcript'];
 
@@ -63,7 +66,7 @@ export const DefaultTranscriptListItem = (
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
-        {props.isDefault && <TranscriptQualityLabel />}
+        <TranscriptQualityLabel metadata={props.transcript.metadata} />
 
         <div className={transcriptsListStyles.middle}>
           <div
