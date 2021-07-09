@@ -139,9 +139,9 @@ export const updatePreviouslyViewedObjectsAndSave =
         (entity) => entity.object_id !== activeEnsObject.object_id
       ) || [];
 
-    const versioned_stable_id =
+    const stable_id =
       activeEnsObject.type === 'gene'
-        ? activeEnsObject.versioned_stable_id
+        ? activeEnsObject.versioned_stable_id || activeEnsObject.stable_id
         : null;
 
     const geneSymbol =
@@ -151,9 +151,9 @@ export const updatePreviouslyViewedObjectsAndSave =
         : null;
 
     const label =
-      activeEnsObject.type === 'gene'
-        ? ([geneSymbol, versioned_stable_id].filter(Boolean) as string[])
-        : [activeEnsObject.label];
+      activeEnsObject.type === 'gene' && geneSymbol
+        ? [geneSymbol, stable_id as string]
+        : activeEnsObject.label;
 
     const newObject = {
       genome_id: activeEnsObject.genome_id,
@@ -168,10 +168,10 @@ export const updatePreviouslyViewedObjectsAndSave =
     ];
 
     // Limit the total number of previously viewed objects to 250
-    const limitedPreviouslyViewedObjects = updatedEntitiesArray.slice(-250);
+    const previouslyViewedObjectsSlice = updatedEntitiesArray.slice(-250);
 
     trackPanelStorageService.updatePreviouslyViewedObjects({
-      [activeGenomeId]: limitedPreviouslyViewedObjects
+      [activeGenomeId]: previouslyViewedObjectsSlice
     });
 
     dispatch(
@@ -179,7 +179,7 @@ export const updatePreviouslyViewedObjectsAndSave =
         activeGenomeId,
         data: {
           ...getActiveTrackPanel(state),
-          previouslyViewedObjects: limitedPreviouslyViewedObjects
+          previouslyViewedObjects: previouslyViewedObjectsSlice
         }
       })
     );

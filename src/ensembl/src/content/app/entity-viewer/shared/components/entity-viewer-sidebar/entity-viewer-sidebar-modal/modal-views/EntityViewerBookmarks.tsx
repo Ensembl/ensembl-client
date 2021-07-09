@@ -66,14 +66,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           return (
             <div key={index} className={styles.linkHolder}>
               <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
-                <span className={styles.label}>
-                  {previouslyViewedEntity.label[0]}
-                </span>
-                {previouslyViewedEntity.label[1] && (
-                  <span className={styles.label}>
-                    {previouslyViewedEntity.label[1]}
-                  </span>
-                )}
+                {buildLabelElement(previouslyViewedEntity.label)}
               </Link>
               <span className={styles.type}>
                 {upperFirst(previouslyViewedEntity.type)}
@@ -84,6 +77,18 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
       )}
     </div>
   );
+};
+
+const buildLabelElement = (labelText: string | string[]) => {
+  if (Array.isArray(labelText)) {
+    return labelText.map((fragment, index) => (
+      <span key={index} className={styles.label}>
+        {fragment}
+      </span>
+    ));
+  } else {
+    return <span className={styles.label}>{labelText}</span>;
+  }
 };
 
 export const EntityViewerSidebarBookmarks = () => {
