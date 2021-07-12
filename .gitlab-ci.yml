@@ -32,7 +32,8 @@ variables:
 
   after_script:
     - echo "Setting env for next job"
-    - echo "BUILD_JOB_ID:${CI_JOB_ID}" > build_static.env
+    - echo "BUILD_JOB_ID=${CI_JOB_ID}" >> build_static.env
+    - cat build_static.env
 
   artifacts:
     reports: 
@@ -46,6 +47,8 @@ variables:
     name : wp-hx-dev-ing
   script:
     - echo  "BUILD_JOB ID IN PUSH STATIC:${BUILD_JOB_ID}"
+  dependencies:
+    - test_build_static 
 
 Test_N_Build:
   extends: .build-static
