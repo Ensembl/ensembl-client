@@ -74,15 +74,7 @@ export default (env: Record<string, unknown>): Configuration => {
         // but also use @svgr/webpack to be able to require svg's directly as React components
         {
           test: /\.svg$/,
-          use: [
-            '@svgr/webpack',
-            {
-              loader: 'file-loader',
-              options: {
-                esModule: false
-              }
-            }
-          ]
+          use: ['@svgr/webpack', 'file-loader']
         }
       ]
     },
