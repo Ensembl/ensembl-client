@@ -47,11 +47,11 @@ variables:
     name : wp-hx-dev-ing
   script:
     - echo  "BUILD_JOB ID IN PUSH STATIC:${BUILD_JOB_ID}"
-  dependencies:
-    - test_build_static 
 
 Test_N_Build:
   extends: .build-static
 
 PushStatic:
   extends: .push_static
+  dependencies:
+    - Test_N_Build
