@@ -59,7 +59,7 @@ const SpeciesPageContent = () => {
   }, [genomeId]);
 
   return (
-    <>
+    <div className={styles.speciesPage}>
       <SpeciesAppBar onSpeciesSelect={changeGenomeId} />
 
       <StandardAppLayout
@@ -73,7 +73,7 @@ const SpeciesPageContent = () => {
         }}
         viewportWidth={BreakpointWidth.DESKTOP}
       />
-    </>
+    </div>
   );
 };
 
