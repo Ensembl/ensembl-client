@@ -80,7 +80,10 @@ export const createTranscript = (
 const createTranscriptMetadata = (): TranscriptMetadata => {
   return {
     canonical: null,
-    mane: null
+    mane: null,
+    gencode_basic: null,
+    tsl: null,
+    appris: null
   };
 };
 

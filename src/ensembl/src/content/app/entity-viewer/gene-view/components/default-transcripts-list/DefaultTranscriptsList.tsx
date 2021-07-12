@@ -26,6 +26,7 @@ import { filterTranscriptsBySOTerm } from 'src/content/app/entity-viewer/shared/
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds,
+  getExpandedTranscriptMoreInfoIds,
   getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
@@ -72,6 +73,9 @@ const DefaultTranscriptslist = (props: Props) => {
   const expandedTranscriptDownloadIds = useSelector(
     getExpandedTranscriptDownloadIds
   );
+  const expandedTranscriptMoreInfoIds = useSelector(
+    getExpandedTranscriptMoreInfoIds
+  );
   const sortingRule = useSelector(getSortingRule);
   const filters = useSelector(getFilters);
   const dispatch = useDispatch();
@@ -109,6 +113,9 @@ const DefaultTranscriptslist = (props: Props) => {
           const expandDownload = expandedTranscriptDownloadIds.includes(
             transcript.stable_id
           );
+          const expandMoreInfo = expandedTranscriptMoreInfoIds.includes(
+            transcript.stable_id
+          );
 
           return (
             <DefaultTranscriptsListItem
@@ -118,6 +125,7 @@ const DefaultTranscriptslist = (props: Props) => {
               rulerTicks={props.rulerTicks}
               expandTranscript={expandTranscript}
               expandDownload={expandDownload}
+              expandMoreInfo={expandMoreInfo}
             />
           );
         })}

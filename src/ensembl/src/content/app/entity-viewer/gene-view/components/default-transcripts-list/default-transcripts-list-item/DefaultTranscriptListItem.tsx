@@ -47,6 +47,7 @@ export type DefaultTranscriptListItemProps = {
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;
   expandDownload: boolean;
+  expandMoreInfo: boolean;
   toggleTranscriptInfo: (id: string) => void;
 };
 
@@ -101,6 +102,7 @@ export const DefaultTranscriptListItem = (
           gene={props.gene}
           transcript={props.transcript}
           expandDownload={props.expandDownload}
+          expandMoreInfo={props.expandMoreInfo}
         />
       ) : null}
     </div>

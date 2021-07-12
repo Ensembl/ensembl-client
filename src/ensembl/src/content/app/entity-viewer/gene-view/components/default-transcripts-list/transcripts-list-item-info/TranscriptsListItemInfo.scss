@@ -9,8 +9,9 @@
   display: grid;
   grid-template-areas:
     'left middle right'
-    'moreinformation . .'
-    'downloadLink . .'
+    'moreinformationLink . .'
+    'moreInformation moreInformation moreInformation'
+    'downloadLink . .'    
     'download download download';
   grid-column-gap: 10px;
   background: $soft-black;
@@ -51,8 +52,24 @@
   }
 }
 
-.moreInformation {
+.moreInformationLink {
   padding-top: 16px;
+  color: $blue;
+  cursor: pointer;
+}
+
+.moreInformation {
+  grid-area: moreInformation;
+  display: grid;
+  grid-template-columns: 190px auto;
+  padding-top: 6px;
+}
+
+.moreInfoColumn {
+  width: 190px;
+  div {
+    padding-bottom: 6px;
+  }
 }
 
 .downloadLink {
