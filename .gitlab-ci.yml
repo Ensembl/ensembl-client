@@ -24,11 +24,13 @@ variables:
   image: node:14.17.0
 
   before_script:
-    - cd src/ensembl
+  - cd src/ensembl
+  - npm install --global npm@7.12.1
+  - npm ci
 
   script:
-    - echo "test_build_static"
-    - echo "Running ${CI_JOB_ID}"
+  - npm run test
+  - npm run build
 
   after_script:
     - echo "Setting env for next job"
@@ -36,6 +38,11 @@ variables:
     - cat build_static.env
 
   artifacts:
+    name: build_artifacts
+    paths:
+      - src/ensembl/dist/
+      - src/ensembl/package.json
+      - src/ensembl/package-lock.json
     reports: 
       dotenv: build_static.env 
 
@@ -47,11 +54,13 @@ variables:
     name : wp-hx-dev-ing
   script:
     - echo  "BUILD_JOB ID IN PUSH STATIC:${BUILD_JOB_ID}"
+    - ls -l src/ensembl/
+    - ls -l src/ensembl/dist/
 
 Test_N_Build:
   extends: .build-static
 
 PushStatic:
   extends: .push_static
-  dependencies:
+  needs:
     - Test_N_Build
