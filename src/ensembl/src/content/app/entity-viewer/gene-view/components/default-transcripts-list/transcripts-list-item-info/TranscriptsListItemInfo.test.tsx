@@ -42,12 +42,15 @@ jest.mock('src/shared/components/instant-download', () => ({
 const transcript = createTranscript();
 const gene = createGene({ transcripts: [transcript] });
 const expandDownload = false;
+const expandMoreInfo = false;
 
 const defaultProps = {
   gene,
   transcript,
   expandDownload,
+  expandMoreInfo,
   toggleTranscriptDownload: jest.fn(),
+  toggleTranscriptMoreInfo: jest.fn(),
   onProteinLinkClick: jest.fn()
 };
 

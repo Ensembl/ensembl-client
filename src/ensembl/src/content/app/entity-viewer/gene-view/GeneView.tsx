@@ -154,6 +154,15 @@ const QUERY = gql`
             }
           }
         }
+        external_references {
+          accession_id
+          name
+          url
+          source {
+            id
+            name
+          }
+        }
         metadata {
           canonical {
             value
@@ -164,6 +173,15 @@ const QUERY = gql`
             value
             label
             definition
+          }
+          gencode_basic {
+            label
+          }
+          appris {
+            label
+          }
+          tsl {
+            label
           }
         }
       }
