@@ -36,12 +36,22 @@ variables:
   - npm run test
   - npm run build
 
+  after_script:
+    - echo "BUILD_JOB_ID:${CI_JOB_ID}" > build_static.env
+
   artifacts:
-    name: build_artifacts
-    paths:
-    - src/ensembl/dist/
-    - src/ensembl/package.json
-    - src/ensembl/package-lock.json
+    reports: 
+      dotenv: build_static.env 
+
+
+.push_static:
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
+  stage: deploy
+  environment:
+    name : wp-hx-dev-ing
+  script:
+    - cat ${BUILD_JOB_ID} 
+
 
 # Template to build nginx docker image for WP k8s cluster
 # WP k8s cluster uses ingress
@@ -246,33 +256,33 @@ Node:Internal:
 
 # Job to build nginx docker image for review environment at WP
 # all other branch -> dev
-Nginx:review:
-  extends: .build-nginx
-  variables:
-    DEPLOYENV: dev
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
+#Nginx:review:
+#  extends: .build-nginx
+#  variables:
+#    DEPLOYENV: dev
+#    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+#  except:
+#  - dev
+#  - master
+#  - /^nodeploy\/.*$/
 
-  needs:
-    - Test_N_Build:review
+#  needs:
+#    - Test_N_Build:review
 
 # Job to build node docker image for review environment at WP
 # all other branch -> dev
-Node:review:
-  extends: .build-node
-  variables:
-    DEPLOYENV: dev
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
+# Node:review:
+#   extends: .build-node
+#   variables:
+#     DEPLOYENV: dev
+#     CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+#   except:
+#   - dev
+#   - master
+#   - /^nodeploy\/.*$/
 
-  needs:
-    - Test_N_Build:review
+#  needs:
+#    - Test_N_Build:review
 
 # Job to deploy to staging environment (WP-HX k8s cluster)
 Staging:HX:
@@ -358,25 +368,28 @@ Internal:HL:
     - Nginx:Internal
     - Node:Internal
 
-Review:HX:
-  extends: .deploy-review
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
-    on_stop: stop_review
-    kubernetes:
-      namespace: ensembl-dev
-  except:
-  - dev
-  - master
-  - /^nodeploy\/.*$/
-  needs:
-    - Test_N_Build:review
-    - Nginx:review
-    - Node:review
+#Review:HX:
+#  extends: .deploy-review
+#  variables:
+#    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+#    CONTAINER_NODE_IMAGE: ${CI_REGISTRY_IMAGE}:node-${CI_COMMIT_SHORT_SHA}-${CI_COMMIT_REF_SLUG}
+#  environment:
+#    name: review/$CI_COMMIT_REF_SLUG
+#    url: http://$CI_COMMIT_REF_SLUG.review.ensembl.org
+#    on_stop: stop_review
+#    kubernetes:
+#      namespace: ensembl-dev
+#  except:
+#  - dev
+#  - master
+#  - /^nodeploy\/.*$/
+#  needs:
+#    - Test_N_Build:review
+#    - Nginx:review
+#    - Node:review
+
+PushStatic:
+  extends: .push_static
 
 stop_review:
   extends: .stop-review
