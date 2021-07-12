@@ -119,7 +119,10 @@ const createMANETranscript = () => {
       label: 'MANE Select',
       value: 'select',
       definition: faker.lorem.sentence()
-    }
+    },
+    gencode_basic: null,
+    tsl: null,
+    appris: null
   };
   return transcript;
 };
@@ -132,7 +135,10 @@ const createOtherMANETranscript = () => {
       label: 'MANE Plus Clinical',
       value: 'plus_clinical',
       definition: faker.lorem.sentence()
-    }
+    },
+    gencode_basic: null,
+    tsl: null,
+    appris: null
   };
   return transcript;
 };
