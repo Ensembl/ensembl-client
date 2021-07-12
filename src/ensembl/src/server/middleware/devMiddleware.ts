@@ -78,12 +78,21 @@ const devMiddleware = [genomeBrowserRouter, proxyMiddleware, docsProxyMiddleware
 
 */
 
+// proxy all requests for static assets to the server that runs webpack dev middleware
+const staticAssetsMiddleware = createProxyMiddleware('/static', {
+  target: 'http://localhost:8081'
+});
+
 const proxyMiddleware = createProxyMiddleware('/api', {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-const devMiddleware = [genomeBrowserRouter, proxyMiddleware];
+const devMiddleware = [
+  genomeBrowserRouter,
+  staticAssetsMiddleware,
+  proxyMiddleware
+];
 
 export default devMiddleware;

@@ -29,8 +29,7 @@ import {
   TranscriptSequenceMetadata
 } from './fetchSequenceChecksums';
 
-// @ts-expect-error There is in fact no default export in the worker
-import SequenceFetcherWorker, {
+import type {
   WorkerApi,
   SingleSequenceFetchParams
 } from 'src/shared/workers/sequenceFetcher.worker';
@@ -75,7 +74,9 @@ export const fetchForTranscript = async (payload: FetchPayload) => {
     );
   }
 
-  const worker = new SequenceFetcherWorker();
+  const worker = new Worker(
+    new URL('src/shared/workers/sequenceFetcher.worker.ts', import.meta.url)
+  );
 
   const service = wrap<WorkerApi>(worker);
 
