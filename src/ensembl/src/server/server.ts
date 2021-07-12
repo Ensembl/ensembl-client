@@ -25,6 +25,8 @@ const app = express();
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
 
 if (process.env.NODE_ENV === 'production') {
+  // should be able to handle requests for the contents of /static directory by itself
+  // (even though in real production deployment, requests for /static will be routed to an nginx container)
   app.use('/static', staticMiddleware);
 } else {
   // in development, the contents of the static folder will be handled by webpack
