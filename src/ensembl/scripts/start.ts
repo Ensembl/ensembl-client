@@ -77,7 +77,9 @@ const start = async () => {
 
   app.use(
     webpackDevMiddleware(clientCompiler, {
-      publicPath: `${DEVSERVER_HOST}:${WEBPACK_PORT}${webpackClientConfig.output.publicPath}`
+      // according to the docs, the middleware should be able to pick the publicPath straight from the clientCompiler,
+      // but it refuses to do so, hence the manually passed option – TODO: investigate
+      publicPath: '/static/'
     })
   );
 
