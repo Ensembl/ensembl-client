@@ -53,9 +53,12 @@ variables:
   environment:
     name : wp-hx-dev-ing
   script:
-    - echo  "BUILD_JOB ID IN PUSH STATIC:${BUILD_JOB_ID}"
-    - ls -l src/ensembl/
-    - ls -l src/ensembl/dist/
+    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
+    - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" ensembl-k8s-manifests/static_assets_copy_job.yaml
+    - sed -i "s#<PROJECT_ID>#${BUILD_JOB_ID}#g" ensembl-k8s-manifests/static_assets_copy_job.yaml
+    - cat ensembl-k8s-manifests/static_assets_copy_job.yaml
+
 
 Test_N_Build:
   extends: .build-static
