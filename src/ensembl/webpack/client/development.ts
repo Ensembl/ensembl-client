@@ -30,12 +30,7 @@ export default (): Configuration => ({
       // this is the loader that will make webpack load file formats that are not supported by other loaders
       {
         test: /\.(woff|woff2|eot|ttf|otf|gif|png|jpe?g)$/,
-        type: 'asset/resource',
-        // loader: 'file-loader',
-        // options: {
-        //   // the file path and name that webpack will use to store these files
-        //   name: `[path][name].[ext]`
-        // }
+        type: 'asset/resource'
       }
     ]
   },
