@@ -23,11 +23,14 @@ import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
+import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 
 import {
   getExpandedTranscriptIds,
   getExpandedTranscriptDownloadIds
 } from './geneViewTranscriptsSelectors';
+
+import { parseEnsObjectId } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
 
 import { RootState } from 'src/store';
 
@@ -61,106 +64,113 @@ const defaultStatePerGene: TranscriptsStatePerGene = {
   sortingRule: SortingRule.DEFAULT
 };
 
-export const setFilters = (
-  filters: Filters
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  if (!activeGenomeId || !activeEntityId) {
-    return;
-  }
-  dispatch(
-    transcriptsSlice.actions.updateFilters({
-      activeGenomeId,
-      activeEntityId,
-      filters
-    })
-  );
-};
+export const restoreFiltersAndSort =
+  (): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.restoreFiltersAndSort({
+        activeGenomeId,
+        activeEntityId
+      })
+    );
+  };
 
-export const setSortingRule = (
-  sortingRule: SortingRule
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  if (!activeGenomeId || !activeEntityId) {
-    return;
-  }
+export const setFilters =
+  (filters: Filters): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.updateFilters({
+        activeGenomeId,
+        activeEntityId,
+        filters
+      })
+    );
+  };
 
-  dispatch(
-    transcriptsSlice.actions.updateSortingRule({
-      activeGenomeId,
-      activeEntityId,
-      sortingRule
-    })
-  );
-};
+export const setSortingRule =
+  (sortingRule: SortingRule): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
 
-export const toggleTranscriptInfo = (
-  transcriptId: string
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  if (!activeGenomeId || !activeEntityId) {
-    return;
-  }
+    dispatch(
+      transcriptsSlice.actions.updateSortingRule({
+        activeGenomeId,
+        activeEntityId,
+        sortingRule
+      })
+    );
+  };
 
-  const expandedIds = new Set<string>(getExpandedTranscriptIds(state));
-  if (expandedIds.has(transcriptId)) {
-    expandedIds.delete(transcriptId);
-  } else {
-    expandedIds.add(transcriptId);
-  }
+export const toggleTranscriptInfo =
+  (transcriptId: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
 
-  dispatch(
-    transcriptsSlice.actions.updateExpandedTranscripts({
-      activeGenomeId,
-      activeEntityId,
-      expandedIds: [...expandedIds.values()]
-    })
-  );
-};
+    const expandedIds = new Set<string>(getExpandedTranscriptIds(state));
+    if (expandedIds.has(transcriptId)) {
+      expandedIds.delete(transcriptId);
+    } else {
+      expandedIds.add(transcriptId);
+    }
 
-export const toggleTranscriptDownload = (
-  transcriptId: string
-): ThunkAction<void, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const activeGenomeId = getEntityViewerActiveGenomeId(state);
-  const activeEntityId = getEntityViewerActiveEntityId(state);
-  if (!activeGenomeId || !activeEntityId) {
-    return;
-  }
+    dispatch(
+      transcriptsSlice.actions.updateExpandedTranscripts({
+        activeGenomeId,
+        activeEntityId,
+        expandedIds: [...expandedIds.values()]
+      })
+    );
+  };
 
-  const expandedIds = new Set<string>(getExpandedTranscriptDownloadIds(state));
-  if (expandedIds.has(transcriptId)) {
-    expandedIds.delete(transcriptId);
-  } else {
-    expandedIds.add(transcriptId);
-  }
+export const toggleTranscriptDownload =
+  (transcriptId: string): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
 
-  dispatch(
-    transcriptsSlice.actions.updateExpandedDownloads({
-      activeGenomeId,
-      activeEntityId,
-      expandedIds: [...expandedIds.values()]
-    })
-  );
-};
+    const expandedIds = new Set<string>(
+      getExpandedTranscriptDownloadIds(state)
+    );
+    if (expandedIds.has(transcriptId)) {
+      expandedIds.delete(transcriptId);
+    } else {
+      expandedIds.add(transcriptId);
+    }
+
+    dispatch(
+      transcriptsSlice.actions.updateExpandedDownloads({
+        activeGenomeId,
+        activeEntityId,
+        expandedIds: [...expandedIds.values()]
+      })
+    );
+  };
 
 const ensureGenePresence = (
   state: GeneViewTranscriptsState,
@@ -190,6 +200,11 @@ type ExpandedIdsPayload = {
   expandedIds: string[];
 };
 
+type FiltersAndSortPayload = {
+  activeGenomeId: string;
+  activeEntityId: string;
+};
+
 type UpdateFiltersPayload = {
   activeGenomeId: string;
   activeEntityId: string;
@@ -208,6 +223,34 @@ const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
   initialState: {} as GeneViewTranscriptsState,
   reducers: {
+    restoreFiltersAndSort(state, action: PayloadAction<FiltersAndSortPayload>) {
+      const { activeGenomeId, activeEntityId } = action.payload;
+
+      const previouslyViewedEntities =
+        entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
+
+      const unversionedStableId = parseEnsObjectId(activeEntityId).objectId;
+
+      const previouslyViewedActiveEntitiy = previouslyViewedEntities[
+        activeGenomeId
+      ]?.find((entry) => entry.entity_id === unversionedStableId);
+      const filters = previouslyViewedActiveEntitiy?.filters || {};
+      const sortingRule =
+        previouslyViewedActiveEntitiy?.sortingRule || 'default';
+
+      const updatedState = ensureGenePresence(state, action.payload);
+      const updatedStateWithFilters = set(
+        `${activeGenomeId}.${activeEntityId}.filters`,
+        filters,
+        updatedState
+      );
+
+      return set(
+        `${activeGenomeId}.${activeEntityId}.sortingRule`,
+        sortingRule,
+        updatedStateWithFilters
+      );
+    },
     updateExpandedTranscripts(
       state,
       action: PayloadAction<ExpandedIdsPayload>

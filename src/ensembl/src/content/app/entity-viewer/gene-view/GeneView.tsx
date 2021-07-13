@@ -59,7 +59,10 @@ import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
-import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import {
+  restoreFiltersAndSort,
+  SortingRule
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
@@ -198,14 +201,18 @@ const GeneView = () => {
 const COMPONENT_ID = 'entity_viewer_gene_view';
 
 const GeneViewWithData = (props: GeneViewWithDataProps) => {
+  const params: { [key: string]: string } = useParams();
+  const { entityId } = params;
+
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
   const [isFilterOpen, setFilterOpen] = useState(false);
+  const dispatch = useDispatch();
 
   const sortingRule = useSelector(getSortingRule);
   const filters = useSelector(getFilters);
-  const dispatch = useDispatch();
+
   const { search } = useLocation();
   const view = new URLSearchParams(search).get('view');
 
@@ -240,6 +247,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     if (!genomeId || !props.gene) {
       return;
     }
+    dispatch(restoreFiltersAndSort());
 
     dispatch(
       updatePreviouslyViewedEntities({
@@ -292,6 +300,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
             <TranscriptsFilter
               toggleFilter={toggleFilter}
               transcripts={props.gene.transcripts}
+              genomeId={genomeId}
+              entityId={entityId}
             />
           </div>
         )}

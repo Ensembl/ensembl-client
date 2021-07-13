@@ -24,6 +24,12 @@ import {
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import {
+  updatePreviouslyViewedEntitiyFilters,
+  updatePreviouslyViewedEntitiySorting
+} from 'ensemblRoot/src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
+
+import {
+  Filters,
   setFilters,
   setSortingRule,
   SortingRule
@@ -45,6 +51,8 @@ type Transcript = Pick<FullTranscript, 'so_term'>;
 
 type Props = {
   transcripts: Transcript[];
+  genomeId: string;
+  entityId: string;
   toggleFilter: () => void;
 };
 
@@ -69,7 +77,8 @@ const TranscriptsFilter = (props: Props) => {
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
   const dispatch = useDispatch();
 
-  const biotypes = props.transcripts
+  const { genomeId, entityId, transcripts } = props;
+  const biotypes = transcripts
     .map((a) => a.so_term)
     .filter(Boolean) as string[];
 
@@ -99,13 +108,29 @@ const TranscriptsFilter = (props: Props) => {
 
   const onSortingRuleChange = (value: OptionValue) => {
     dispatch(setSortingRule(value as SortingRule));
+
+    dispatch(
+      updatePreviouslyViewedEntitiySorting({
+        genomeId,
+        entityId,
+        sortingRule: value as SortingRule
+      })
+    );
   };
 
   const onFilterChange = (filterName: string, isChecked: boolean) => {
-    const updatedFilters = {
+    const updatedFilters: Filters = {
       ...filters,
       [filterName]: isChecked
     };
+
+    dispatch(
+      updatePreviouslyViewedEntitiyFilters({
+        genomeId,
+        entityId,
+        filters: updatedFilters
+      })
+    );
 
     dispatch(setFilters(updatedFilters));
   };

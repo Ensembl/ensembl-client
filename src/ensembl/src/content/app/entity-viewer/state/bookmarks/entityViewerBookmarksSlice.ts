@@ -15,12 +15,19 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  Filters,
+  SortingRule
+} from 'ensemblRoot/src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { parseFocusIdFromUrl } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 
 type PreviouslyViewedEntity = {
   entity_id: string;
   label: string[];
   type: 'gene';
+  filters: Filters;
+  sortingRule: SortingRule;
 };
 
 export type PreviouslyViewedEntities = {
@@ -57,6 +64,10 @@ const bookmarksSlice = createSlice({
       action: PayloadAction<UpdatePreviouslyViewedPayload>
     ) {
       const { genomeId, gene } = action.payload;
+      const previouslySavedCurrentEntity = state.previouslyViewed[
+        genomeId
+      ]?.find((entity) => entity.entity_id === gene.unversioned_stable_id);
+
       const savedEntitiesWithoutCurrentEntity =
         state.previouslyViewed[genomeId]?.filter(
           (entity) => entity.entity_id !== gene.unversioned_stable_id
@@ -65,7 +76,10 @@ const bookmarksSlice = createSlice({
       const newEntity = {
         entity_id: gene.unversioned_stable_id,
         label: gene.symbol ? [gene.symbol, gene.stable_id] : [gene.stable_id],
-        type: 'gene' as const
+        type: 'gene' as const,
+        filters: previouslySavedCurrentEntity?.filters || {},
+        sortingRule:
+          previouslySavedCurrentEntity?.sortingRule || SortingRule.DEFAULT
       };
       const updatedEntites = [
         newEntity,
@@ -76,11 +90,68 @@ const bookmarksSlice = createSlice({
       entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
         [genomeId]: updatedEntites
       });
+    },
+
+    updatePreviouslyViewedEntitiyFilters(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        entityId: string;
+        filters: Filters;
+      }>
+    ) {
+      const { genomeId, entityId } = action.payload;
+
+      const unversionedStableId = parseFocusIdFromUrl(entityId).objectId;
+
+      const previouslySavedCurrentEntityIndex = state.previouslyViewed[
+        genomeId
+      ]?.findIndex((entity) => entity.entity_id === unversionedStableId);
+
+      const updatedEntites = [...state.previouslyViewed[genomeId]];
+      updatedEntites[previouslySavedCurrentEntityIndex].filters =
+        action.payload.filters;
+
+      state.previouslyViewed[genomeId] = updatedEntites;
+
+      entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
+        [genomeId]: updatedEntites
+      });
+    },
+
+    updatePreviouslyViewedEntitiySorting(
+      state,
+      action: PayloadAction<{
+        genomeId: string;
+        entityId: string;
+        sortingRule: SortingRule;
+      }>
+    ) {
+      const { genomeId, entityId } = action.payload;
+      const unversionedStableId = parseFocusIdFromUrl(entityId).objectId;
+
+      const previouslySavedCurrentEntityIndex = state.previouslyViewed[
+        genomeId
+      ]?.findIndex((entity) => entity.entity_id === unversionedStableId);
+
+      const updatedEntites = [...state.previouslyViewed[genomeId]];
+      updatedEntites[previouslySavedCurrentEntityIndex].sortingRule =
+        action.payload.sortingRule;
+
+      state.previouslyViewed[genomeId] = updatedEntites;
+
+      entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
+        [genomeId]: updatedEntites
+      });
     }
   }
 });
 
-export const { updatePreviouslyViewedEntities, loadPreviouslyViewedEntities } =
-  bookmarksSlice.actions;
+export const {
+  updatePreviouslyViewedEntities,
+  updatePreviouslyViewedEntitiySorting,
+  updatePreviouslyViewedEntitiyFilters,
+  loadPreviouslyViewedEntities
+} = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;
