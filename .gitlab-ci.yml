@@ -56,7 +56,7 @@ variables:
     - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
     - git -C ensembl-k8s-manifests/ checkout wp-k8s-review
     - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" ensembl-k8s-manifests/static_assets_copy_job.yaml
-    - sed -i "s#<PROJECT_ID>#${BUILD_JOB_ID}#g" ensembl-k8s-manifests/static_assets_copy_job.yaml
+    - sed -i "s#<JOB_ID>#${BUILD_JOB_ID}#g" ensembl-k8s-manifests/static_assets_copy_job.yaml
     - cat ensembl-k8s-manifests/static_assets_copy_job.yaml
 
 
