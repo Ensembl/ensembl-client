@@ -36,12 +36,17 @@ variables:
   - npm run test
   - npm run build
 
+  after_script:
+    - echo "BUILD_JOB_ID=${CI_JOB_ID}" >> build_static.env
+
   artifacts:
     name: build_artifacts
     paths:
-    - src/ensembl/dist/
-    - src/ensembl/package.json
-    - src/ensembl/package-lock.json
+      - src/ensembl/dist/
+      - src/ensembl/package.json
+      - src/ensembl/package-lock.json
+    reports:
+      dotenv: build_static.env
 
 # Template to build nginx docker image for WP k8s cluster
 # WP k8s cluster uses ingress
@@ -65,6 +70,23 @@ variables:
     - docker push ${CONTAINER_IMAGE}
     - docker rmi ${CONTAINER_IMAGE}
     - docker logout $CI_REGISTRY
+
+.publish_assets:
+  image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.5
+  stage: deploy
+  environment:
+    name : jobs/k8s-job
+
+  before_script:
+    - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
+    - git -C ensembl-k8s-manifests/ checkout wp-k8s
+    - cd ensembl-k8s-manifests
+
+  script:
+    - sed -i "s#<PROJECT_ID>#${CI_PROJECT_ID}#g" static_assets_copy_job.yaml
+    - sed -i "s#<JOB_ID>#${BUILD_JOB_ID}#g" static_assets_copy_job.yaml
+    - kustomize edit set namesuffix -- -${CI_PROJECT_ID}-${BUILD_JOB_ID}
+    - kubectl apply -k .
 
 # Template to build node docker image for WP k8s cluster
 # WP k8s cluster uses ingress
@@ -286,6 +308,16 @@ Staging:HX:
     - Nginx:Staging
     - Node:Staging
 
+Pub:Staging-HX:
+  extends: .publish_assets
+  environment:
+    name : wp-hx-staging
+  only:
+    - dev
+  needs:
+    - Test_N_Build
+    - Node:Staging
+
 # Job to deploy to staging environment (WP-HL k8s cluster)
 Staging:HL:
   extends: .deploy
@@ -296,6 +328,16 @@ Staging:HL:
   needs:
     - Test_N_Build
     - Nginx:Staging
+    - Node:Staging
+
+Pub:Staging-HL:
+  extends: .publish_assets
+  environment:
+    name : wp-hh-staging
+  only:
+    - dev
+  needs:
+    - Test_N_Build
     - Node:Staging
 
 # Job to deploy to live environment (WP-HX k8s cluster)
@@ -313,6 +355,16 @@ Live:HX:
     - Nginx:Live
     - Node:Live
 
+Pub:Live-HX:
+  extends: .publish_assets
+  environment:
+    name : wp-hx-live
+  only:
+  - master
+  needs:
+    - Test_N_Build
+    - Node:Live
+
 # Job to deploy to live environment (WP-HL k8s cluster)
 Live:HL:
   extends: .deploy
@@ -326,6 +378,16 @@ Live:HL:
   needs:
     - Test_N_Build
     - Nginx:Live
+    - Node:Live
+
+Pub:Live-HL:
+  extends: .publish_assets
+  environment:
+    name : wp-hh-live
+  only:
+  - master
+  needs:
+    - Test_N_Build
     - Node:Live
 
 # Job to deploy to internal environment (WP-HX k8s cluster)
@@ -343,6 +405,16 @@ Internal:HX:
     - Nginx:Internal
     - Node:Internal
 
+Pub:Internal-HX:
+  extends: .publish_assets
+  environment:
+    name : wp-hx-internal
+  only:
+  - master
+  needs:
+    - Test_N_Build:internal
+    - Node:Internal
+
 # Job to deploy to internal environment (WP-HL k8s cluster)
 Internal:HL:
   extends: .deploy
@@ -356,6 +428,16 @@ Internal:HL:
   needs:
     - Test_N_Build:internal
     - Nginx:Internal
+    - Node:Internal
+
+Pub:Internal-HL:
+  extends: .publish_assets
+  environment:
+    name : wp-hh-internal
+  only:
+  - master
+  needs:
+    - Test_N_Build:internal
     - Node:Internal
 
 Review:HX:
@@ -376,6 +458,19 @@ Review:HX:
   needs:
     - Test_N_Build:review
     - Nginx:review
+    - Node:review
+
+
+Pub:Review-HX:
+  extends: .publish_assets
+
+  except:
+    - dev
+    - master
+    - /^nodeploy\/.*$/
+
+  needs:
+    - Test_N_Build:review
     - Node:review
 
 stop_review:
