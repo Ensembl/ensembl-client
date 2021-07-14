@@ -123,13 +123,14 @@ export const TranscriptsListItemInfo = (
 
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
-  const transcriptCCDS = transcript.external_references.find((x) =>
-    x.accession_id.match('CCDS')
+  const transcriptCCDS = transcript.external_references.find(
+    (xref) => xref.source.name === 'CCDS'
   );
   const transcriptMetaData =
     transcript.metadata.gencode_basic?.label ||
     transcript.metadata?.tsl ||
     transcript.metadata?.appris;
+
   const moreInfoLinkStyles = classNames(styles.moreInformationLink, {
     [styles.moreInformationLinkEnabled]: !!(
       transcriptMetaData || transcriptCCDS
