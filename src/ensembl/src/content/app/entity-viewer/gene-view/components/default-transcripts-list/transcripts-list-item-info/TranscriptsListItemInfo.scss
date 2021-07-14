@@ -57,25 +57,12 @@
 
 .downloadLink {
   grid-area: downloadLink;
-  color: $blue;
-  cursor: pointer;
   padding-top: 6px;
 }
 
 .download {
   grid-area: download;
   padding-top: 6px;
-}
-
-.chevron {
-  margin-left: 10px;
-  margin-bottom: -3px;
-  height: 12px;
-  width: 12px;
-  transition: transform linear 0.2s;
-  &Up {
-    transform: rotate(-180deg);
-  }
 }
 
 .viewInApp {

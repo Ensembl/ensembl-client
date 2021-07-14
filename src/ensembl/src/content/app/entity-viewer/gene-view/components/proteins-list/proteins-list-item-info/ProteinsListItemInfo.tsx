@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
 import { Pick2 } from 'ts-multipick';
-import classNames from 'classnames';
 
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
@@ -26,7 +25,7 @@ import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/pro
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadProtein from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
-import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
+import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
   ExternalSource,
@@ -101,23 +100,18 @@ const ProteinsListItemInfo = (props: Props) => {
   const params: { [key: string]: string } = useParams();
   const { genomeId } = params;
 
-  const [
-    transcriptWithProteinDomains,
-    setTranscriptWithProteinDomains
-  ] = useState<TranscriptWithProteinDomains | null>(null);
+  const [transcriptWithProteinDomains, setTranscriptWithProteinDomains] =
+    useState<TranscriptWithProteinDomains | null>(null);
 
-  const [proteinSummaryStats, setProteinSummaryStats] = useState<
-    ProteinStats | null | undefined
-  >();
+  const [proteinSummaryStats, setProteinSummaryStats] =
+    useState<ProteinStats | null | undefined>();
 
   const [domainsLoadingState, setDomainsLoadingState] = useState<LoadingState>(
     LoadingState.LOADING
   );
 
-  const [
-    summaryStatsLoadingState,
-    setSummaryStatsLoadingState
-  ] = useState<LoadingState>(LoadingState.LOADING);
+  const [summaryStatsLoadingState, setSummaryStatsLoadingState] =
+    useState<LoadingState>(LoadingState.LOADING);
 
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
@@ -296,10 +290,6 @@ export const ProteinExternalReferenceGroup = (
     setXrefGroupOpen(!isXrefGroupOpen);
   };
 
-  const chevronClasses = classNames(styles.chevron, {
-    [styles.chevronUp]: isXrefGroupOpen
-  });
-
   if (xrefs.length > 3) {
     const displayXref = xrefs[0];
     return (
@@ -318,7 +308,11 @@ export const ProteinExternalReferenceGroup = (
               }
             >
               + {xrefs.length - 1}
-              <ChevronDown className={chevronClasses} />
+              <Chevron
+                direction={isXrefGroupOpen ? 'up' : 'down'}
+                animate={true}
+                classNames={{ svg: styles.chevron }}
+              />
             </span>
           </div>
         </div>

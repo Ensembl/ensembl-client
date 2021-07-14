@@ -11,6 +11,13 @@
   padding: 8px 20px;
   min-height: 80px;
   width: 100%;
+
+  // nesting to increase specificity to override child's styles
+  .chevron {
+    margin-left: 5px;
+    height: 7px;
+    fill: $grey;
+  }
 }
 
 .appBarTop {
@@ -38,15 +45,9 @@
   margin-left: 2em;
   text-align: right;
 
-  a {
+  span {
     color: $black;
     font-size: 12px;
     font-weight: $light;
-  }
-
-  img {
-    height: 14px;
-    margin-left: 5px;
-    width: 14px;
   }
 }
