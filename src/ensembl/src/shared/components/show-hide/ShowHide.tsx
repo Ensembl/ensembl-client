@@ -41,6 +41,8 @@ type Props = {
 };
 
 const ShowHide = (props: Props) => {
+  const wrapperClasses = classNames(styles.showHide, props.classNames?.wrapper);
+
   const labelClasses = classNames(styles.label, props.classNames?.label);
 
   const chevronClasses = {
@@ -48,7 +50,7 @@ const ShowHide = (props: Props) => {
   };
 
   return (
-    <div className={props.classNames?.wrapper}>
+    <div className={wrapperClasses}>
       <span onClick={props.onClick} className={labelClasses}>
         {props.label}
         <Chevron
