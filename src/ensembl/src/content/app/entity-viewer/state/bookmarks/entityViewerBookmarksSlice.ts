@@ -26,8 +26,8 @@ type PreviouslyViewedEntity = {
   entity_id: string;
   label: string[];
   type: 'gene';
-  filters: Filters;
-  sortingRule: SortingRule;
+  filters?: Filters;
+  sortingRule?: SortingRule;
 };
 
 export type PreviouslyViewedEntities = {
@@ -56,15 +56,28 @@ const bookmarksSlice = createSlice({
   initialState,
   reducers: {
     loadPreviouslyViewedEntities(state) {
-      state.previouslyViewed =
+      const previouslyViewedEntities =
         entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
+      const entitiesWithoutFilterAndSort: PreviouslyViewedEntities = {};
+
+      Object.entries(previouslyViewedEntities).map((entry) => {
+        const [genomeId, entries] = entry;
+        entitiesWithoutFilterAndSort[genomeId] = entries.map((entry) => ({
+          ...entry,
+          filters: undefined,
+          sortingRule: undefined
+        }));
+      });
+      state.previouslyViewed = entitiesWithoutFilterAndSort;
     },
     updatePreviouslyViewedEntities(
       state,
       action: PayloadAction<UpdatePreviouslyViewedPayload>
     ) {
       const { genomeId, gene } = action.payload;
-      const previouslySavedCurrentEntity = state.previouslyViewed[
+      const previouslyViewedEntities =
+        entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
+      const previouslySavedCurrentEntity = previouslyViewedEntities[
         genomeId
       ]?.find((entity) => entity.entity_id === gene.unversioned_stable_id);
 
@@ -73,22 +86,29 @@ const bookmarksSlice = createSlice({
           (entity) => entity.entity_id !== gene.unversioned_stable_id
         ) || [];
 
-      const newEntity = {
+      const newEntityWithoutFilterAndSort = {
         entity_id: gene.unversioned_stable_id,
         label: gene.symbol ? [gene.symbol, gene.stable_id] : [gene.stable_id],
-        type: 'gene' as const,
+        type: 'gene' as const
+      };
+
+      const newEntity = {
+        ...newEntityWithoutFilterAndSort,
         filters: previouslySavedCurrentEntity?.filters || {},
         sortingRule:
           previouslySavedCurrentEntity?.sortingRule || SortingRule.DEFAULT
       };
-      const updatedEntites = [
-        newEntity,
+
+      state.previouslyViewed[genomeId] = [
+        newEntityWithoutFilterAndSort,
         ...savedEntitiesWithoutCurrentEntity
       ].slice(0, 20);
-      state.previouslyViewed[genomeId] = updatedEntites;
 
       entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
-        [genomeId]: updatedEntites
+        [genomeId]: [newEntity, ...savedEntitiesWithoutCurrentEntity].slice(
+          0,
+          20
+        )
       });
     },
 
