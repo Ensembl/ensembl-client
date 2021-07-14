@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+.helpLanding {
+
+  ul {
+    list-style-type: disc;
+    padding-left: 15px;
+  }
+}
+
+.sectionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: $light-grey;
+}

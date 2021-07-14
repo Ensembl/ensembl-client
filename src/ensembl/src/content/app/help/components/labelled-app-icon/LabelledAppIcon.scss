@@ -1,0 +1,30 @@
+@import 'src/styles/common';
+
+.container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.iconWrapper {
+  height: 32px;
+  width: 32px;
+  background-color: $dark-grey;
+
+  svg {
+    width: 100%;
+    fill: white;
+  }
+}
+
+.iconWrapperSmall {
+  height: 26px;
+  width: 26px;
+}
+
+.label {
+  margin-left: 18px;
+}
+
+.labelSmall {
+  margin-left: 12px;
+}

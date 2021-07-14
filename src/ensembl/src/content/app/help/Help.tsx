@@ -19,9 +19,9 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import HelpMenu from './help-menu/HelpMenu';
+import HelpMenu from './components/help-menu/HelpMenu';
+import HelpLanding from './components/help-landing/HelpLanding';
 import {
-  IndexArticle,
   TextArticle,
   RelatedArticles,
   HelpArticleGrid,
@@ -47,12 +47,17 @@ const Help = () => {
   const { data: article } = useApiService<any>({
     endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`
   });
+  const main = isIndexRoute(location.pathname) ? (
+    <HelpLanding />
+  ) : article ? (
+    <MainContent article={article} />
+  ) : null;
 
   return (
     <div className={styles.help}>
       <AppBar />
       {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
-      {article && <MainContent article={article} />}
+      {main}
     </div>
   );
 };
@@ -65,7 +70,7 @@ const MainContent = (props: { article: ArticleData }) => {
   const { article } = props;
   let content;
   if (article.type === 'index') {
-    content = <IndexArticle article={article} />;
+    // content = <IndexArticle article={article} />;
   } else if (['article', 'video'].includes(article.type)) {
     const renderedArticle =
       article.type === 'article' ? (
@@ -83,6 +88,11 @@ const MainContent = (props: { article: ArticleData }) => {
     );
   }
   return <main className={styles.main}>{content}</main>;
+};
+
+const isIndexRoute = (pathname: string) => {
+  // handle both /help and /help/
+  return pathname.split('/').filter(Boolean).join() === 'help';
 };
 
 export default Help;

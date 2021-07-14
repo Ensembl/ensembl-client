@@ -78,12 +78,25 @@ const devMiddleware = [genomeBrowserRouter, proxyMiddleware, docsProxyMiddleware
 
 */
 
-const proxyMiddleware = createProxyMiddleware('/api', {
+const proxyMiddleware = createProxyMiddleware(['/api/**', '!/api/docs/**'], {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-const devMiddleware = [genomeBrowserRouter, proxyMiddleware];
+const docsProxyMiddleware = createProxyMiddleware('/api/docs/**', {
+  target: 'http://localhost:3000',
+  pathRewrite: {
+    '^/api/docs': '/api' // rewrite path
+  },
+  changeOrigin: true,
+  secure: false
+});
+
+const devMiddleware = [
+  genomeBrowserRouter,
+  proxyMiddleware,
+  docsProxyMiddleware
+];
 
 export default devMiddleware;
