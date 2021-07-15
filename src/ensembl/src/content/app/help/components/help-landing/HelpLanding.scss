@@ -1,20 +1,48 @@
 @import 'src/styles/common';
 
 .helpLanding {
+  height: 100%;
+  overflow: auto;
+  padding: 40px 140px;
 
   ul {
     list-style-type: disc;
     padding-left: 15px;
   }
+
+  .showHideWrapper {
+    display: inline-block;
+    margin-left: 3ch;
+  }
 }
 
 .sectionGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 324px);
+  column-gap: 96px;
 }
 
 .stepsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   background-color: $light-grey;
+  margin-top: 1ch;
+  padding: 20px 0 40px 0;
+}
+
+.searchIcon {
+  width: 30px;
+  height: 30px;
+  fill: $dark-grey;
+}
+
+.stepChildren {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  line-height: 1;
+}
+
+.lastSection {
+  margin-top: 40px;
 }

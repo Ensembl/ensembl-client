@@ -15,9 +15,13 @@
  */
 
 import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import LabelledAppIcon from '../labelled-app-icon/LabelledAppIcon';
 import { Step } from 'src/shared/components/step/Step';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+
+import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
 
 import styles from './HelpLanding.scss';
 
@@ -26,6 +30,7 @@ const HelpLanding = () => {
     <div className={styles.helpLanding}>
       <AppsSection />
       <StartUsingSection />
+      <LastSection />
     </div>
   );
 };
@@ -40,7 +45,7 @@ const AppsSection = () => {
           <div>
             <LabelledAppIcon app="speciesSelector" />
           </div>
-          {'Create & manage your own species list'}
+          Create &amp; manage your own species list
           <ul>
             <li>opened from the launchbar at the top of every page</li>
             <li>add as many species as you want</li>
@@ -53,7 +58,7 @@ const AppsSection = () => {
           <div>
             <LabelledAppIcon app="genomeBrowser" />
           </div>
-          {'Look at genes & transcripts in their genetic context'}
+          Look at genes &amp; transcripts in their genetic context
           <ul>
             <li>opened from the launchbar at the top of every page</li>
             <li>view an example gene or region or search for your own genes</li>
@@ -65,7 +70,7 @@ const AppsSection = () => {
           <div>
             <LabelledAppIcon app="entityViewer" />
           </div>
-          {'Get gene & transcript information'}
+          Get gene &amp; transcript information
           <ul>
             <li>opened from the launchbar at the top of every page</li>
             <li>see all the information we have for your gene</li>
@@ -87,30 +92,68 @@ const StartUsingSection = () => {
       <h1>Start using the apps</h1>
       <div>
         <span>A step-by-step guide to using an app for the first time</span>
-        <span onClick={toggleExpanded}>Show me what to do</span>
+        <ShowHide
+          label="Show me what to do"
+          isExpanded={isExpanded}
+          onClick={toggleExpanded}
+          classNames={{ wrapper: styles.showHideWrapper }}
+        />
       </div>
 
       {isExpanded && (
         <div className={styles.stepsGrid}>
           <div>
-            <Step count={1} title="Find and add a species" />
-            <LabelledAppIcon app="speciesSelector" size="small" />
+            <Step count={1} label="Find and add a species">
+              <LabelledAppIcon app="speciesSelector" size="small" />
+            </Step>
           </div>
 
           <div>
-            <Step count={2} title="Select an app" />
-            <LabelledAppIcon app="genomeBrowser" size="small" />
-            <LabelledAppIcon app="entityViewer" size="small" />
+            <Step count={2} label="Select an app">
+              <div className={styles.stepChildren}>
+                <LabelledAppIcon app="genomeBrowser" size="small" />
+                <LabelledAppIcon app="entityViewer" size="small" />
+              </div>
+            </Step>
           </div>
 
           <div>
             <Step
               count={3}
-              title="Use Search or the example links to view a gene or region"
-            />
+              label="Use Search or the example links to view a gene or region"
+            >
+              <div className={styles.stepChildren}>
+                <SearchIcon className={styles.searchIcon} />
+                <div>Example gene</div>
+                <div>Example region</div>
+              </div>
+            </Step>
           </div>
         </div>
       )}
+    </section>
+  );
+};
+
+const LastSection = () => {
+  const sectionClassnames = classNames(styles.sectionGrid, styles.lastSection);
+  return (
+    <section className={sectionClassnames}>
+      <div>
+        <h1>Using Ensembl</h1>
+        <p>
+          Use the Help menu above to find articles &amp; videos that will help
+          you understand more about what what each app does, and how to use it
+        </p>
+      </div>
+      <div>
+        <h1>Ensembl annotation &amp; prediction</h1>
+        <p>
+          Learn how Ensembl predicts the genes present in an assembled genome,
+          and is then able to provide efficient functional annotations to those
+          genes.
+        </p>
+      </div>
     </section>
   );
 };
