@@ -32,7 +32,7 @@ export const StepStory = () => {
       {steps.map((step, index) => {
         return (
           <div key={index} className={styles.stepWrapper}>
-            <Step count={index} title={step} />
+            <Step count={index} label={step} />
           </div>
         );
       })}
@@ -40,7 +40,41 @@ export const StepStory = () => {
   );
 };
 
-StepStory.storyName = 'step';
+StepStory.storyName = 'default';
+
+export const MultilineStepStory = () => {
+  const label = `
+    This is going to be a long label that should wrap over several lines.
+  `;
+
+  return (
+    <div className={styles.multilineStepWrapper}>
+      <Step count={1} label={label} />
+    </div>
+  );
+};
+
+MultilineStepStory.storyName = 'multiline';
+
+export const StepWithChildrenStory = () => {
+  const label = 'There’s more to see below me';
+  const longChildText = `
+    Hey, look at me! I have been passed to the Step component,
+    and this is where I am getting rendered. Ain't I pretty?
+  `;
+
+  const childElement = <div>{longChildText}</div>;
+
+  return (
+    <div className={styles.multilineStepWrapper}>
+      <Step count={1} label={label}>
+        {childElement}
+      </Step>
+    </div>
+  );
+};
+
+StepWithChildrenStory.storyName = 'with children';
 
 export default {
   title: 'Components/Shared Components/Step'

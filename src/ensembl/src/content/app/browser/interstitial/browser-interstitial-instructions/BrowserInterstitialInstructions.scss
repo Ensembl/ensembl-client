@@ -23,7 +23,6 @@ $leftMargin: 40px;
 }
 
 .description {
-  margin: 25px 40px;
   display: flex;
   align-items: center;
 
@@ -52,12 +51,11 @@ $leftMargin: 40px;
 }
 
 .searchDescription {
-  margin: 14px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
   color: $dark-grey;
-
-  .exampleText {
-    margin: 10px 4px;
-  }
 }
 
 .speciesSelectorButton {

@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
+import classNames from 'classnames';
 
 import styles from './Step.scss';
 
 type StepProps = {
   count: number;
-  title: string;
+  label: string;
+  children?: ReactNode;
 };
 
 export const Step = (props: StepProps) => {
+  const wrapperClassname = classNames(styles.wrapper, {
+    [styles.wrapperWithChildren]: props.children
+  });
+
   return (
-    <div>
+    <div className={wrapperClassname}>
       <div className={styles.stepIcon}>
         <span>{props.count}</span>
       </div>
-      <div className={styles.stepTitle}>{props.title}</div>
+      <div className={styles.stepLabel}>{props.label}</div>
+      {props.children && (
+        <div className={styles.childrenContainer}>{props.children}</div>
+      )}
     </div>
   );
 };
