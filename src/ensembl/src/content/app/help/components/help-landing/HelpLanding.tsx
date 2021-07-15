@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import classNames from 'classnames';
 
 import LabelledAppIcon from '../labelled-app-icon/LabelledAppIcon';
 import { Step } from 'src/shared/components/step/Step';
@@ -40,9 +39,9 @@ const AppsSection = () => {
     <section>
       <h1>Ensembl apps</h1>
 
-      <div className={styles.sectionGrid}>
-        <div>
-          <div>
+      <div className={styles.appsGrid}>
+        <div className={styles.appBlock}>
+          <div className={styles.appLabel}>
             <LabelledAppIcon app="speciesSelector" />
           </div>
           Create &amp; manage your own species list
@@ -54,8 +53,8 @@ const AppsSection = () => {
           </ul>
         </div>
 
-        <div>
-          <div>
+        <div className={styles.appBlock}>
+          <div className={styles.appLabel}>
             <LabelledAppIcon app="genomeBrowser" />
           </div>
           Look at genes &amp; transcripts in their genetic context
@@ -66,8 +65,8 @@ const AppsSection = () => {
           </ul>
         </div>
 
-        <div>
-          <div>
+        <div className={styles.appBlock}>
+          <div className={styles.appLabel}>
             <LabelledAppIcon app="entityViewer" />
           </div>
           Get gene &amp; transcript information
@@ -136,9 +135,8 @@ const StartUsingSection = () => {
 };
 
 const LastSection = () => {
-  const sectionClassnames = classNames(styles.sectionGrid, styles.lastSection);
   return (
-    <section className={sectionClassnames}>
+    <section className={styles.lastSectionGrid}>
       <div>
         <h1>Using Ensembl</h1>
         <p>

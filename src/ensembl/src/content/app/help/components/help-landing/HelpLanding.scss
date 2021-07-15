@@ -1,33 +1,53 @@
 @import 'src/styles/common';
 
+$indent-left: 34px;
+
 .helpLanding {
   height: 100%;
   overflow: auto;
-  padding: 40px 140px;
-
-  ul {
-    list-style-type: disc;
-    padding-left: 15px;
-  }
+  padding: 40px 40px 40px 140px;
 
   .showHideWrapper {
     display: inline-block;
     margin-left: 3ch;
   }
+
+  section + section {
+    margin-top: 40px;
+  }
 }
 
-.sectionGrid {
+.appsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 324px);
+  grid-template-columns: repeat(auto-fit, 324px);
   column-gap: 96px;
+  row-gap: 30px;
+  margin-left: $indent-left;
 }
 
 .stepsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, 218px);
+  column-gap: 200px;
+  max-width: 1200px;
   background-color: $light-grey;
   margin-top: 1ch;
-  padding: 20px 0 40px 0;
+  padding: 20px $indent-left 40px $indent-left;
+}
+
+.appBlock {
+  ul {
+    margin-top: 1ch;
+    list-style-type: disc;
+    padding-left: 15px;
+    font-size: 12px;
+    color: $dark-grey;
+  }
+}
+
+.appLabel {
+  line-height: 1;
+  margin-bottom: 16px;
 }
 
 .searchIcon {
@@ -43,6 +63,13 @@
   line-height: 1;
 }
 
-.lastSection {
-  margin-top: 40px;
+.lastSectionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 324px);
+  column-gap: calc(96px + #{$indent-left});
+  row-gap: 30px;
+
+  p {
+    padding-left: $indent-left;
+  }
 }
