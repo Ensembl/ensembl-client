@@ -460,19 +460,6 @@ Review:HX:
     - Nginx:review
     - Node:review
 
-
-Pub:Review-HX:
-  extends: .publish_assets
-
-  except:
-    - dev
-    - master
-    - /^nodeploy\/.*$/
-
-  needs:
-    - Test_N_Build:review
-    - Node:review
-
 stop_review:
   extends: .stop-review
   environment:
