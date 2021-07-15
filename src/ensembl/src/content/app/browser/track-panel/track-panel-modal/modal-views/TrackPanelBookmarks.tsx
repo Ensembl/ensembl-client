@@ -29,8 +29,9 @@ import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerAc
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import styles from './TrackPanelBookmarks.scss';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+
+import styles from './TrackPanelBookmarks.scss';
 
 export const PreviouslyViewedLinks = () => {
   const previouslyViewedObjects = useSelector(
