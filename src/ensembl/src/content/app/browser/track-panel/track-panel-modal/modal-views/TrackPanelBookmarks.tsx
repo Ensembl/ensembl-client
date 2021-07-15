@@ -27,6 +27,8 @@ import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
+import TextLine from 'src/shared/components/text-line/TextLine';
+
 import styles from './TrackPanelBookmarks.scss';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
@@ -65,7 +67,10 @@ export const PreviouslyViewedLinks = () => {
               to={path}
               onClick={() => onLinkClick(previouslyViewedObject.type, index)}
             >
-              {buildLabelElement(previouslyViewedObject.label)}
+              <TextLine
+                text={previouslyViewedObject.label}
+                className={styles.label}
+              />
             </Link>
             <span className={styles.type}>
               {upperFirst(previouslyViewedObject.type)}
@@ -75,18 +80,6 @@ export const PreviouslyViewedLinks = () => {
       })}
     </div>
   );
-};
-
-const buildLabelElement = (labelText: string | string[]) => {
-  if (Array.isArray(labelText)) {
-    return labelText.map((fragment, index) => (
-      <span key={index} className={styles.label}>
-        {fragment}
-      </span>
-    ));
-  } else {
-    return <span className={styles.label}>{labelText}</span>;
-  }
 };
 
 export const TrackPanelBookmarks = () => {

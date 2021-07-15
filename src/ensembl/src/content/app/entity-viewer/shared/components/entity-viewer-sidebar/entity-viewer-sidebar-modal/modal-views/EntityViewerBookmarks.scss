@@ -9,6 +9,10 @@
 
 .label {
   margin-right: 8px;
+
+  span + span {
+    margin-left: 8px;
+  }
 }
 
 .type {
