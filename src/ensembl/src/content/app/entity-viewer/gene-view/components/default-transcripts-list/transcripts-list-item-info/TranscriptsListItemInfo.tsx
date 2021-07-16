@@ -131,12 +131,6 @@ export const TranscriptsListItemInfo = (
     transcript.metadata?.tsl ||
     transcript.metadata?.appris;
 
-  const moreInfoLinkStyles = classNames(styles.moreInformationLink, {
-    [styles.moreInformationLinkEnabled]: !!(
-      transcriptMetaData || transcriptCCDS
-    )
-  });
-
   const focusIdForUrl = buildFocusIdForUrl({
     type: 'gene',
     objectId: props.gene.unversioned_stable_id
@@ -162,14 +156,6 @@ export const TranscriptsListItemInfo = (
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
   };
 
-  const chevronClassForDownload = classNames(styles.chevron, {
-    [styles.chevronUp]: props.expandDownload
-  });
-
-  const chevronClassForMoreInfo = classNames(styles.chevron, {
-    [styles.chevronUp]: props.expandMoreInfo
-  });
-
   const moreInfoContent = () => {
     return (
       <>
@@ -189,6 +175,7 @@ export const TranscriptsListItemInfo = (
         {!!transcriptCCDS && (
           <div className={styles.moreInfoColumn}>
             <ExternalReference
+              classNames={{ label: styles.normalText }}
               label={'CCDS'}
               to={transcriptCCDS.url}
               linkText={transcriptCCDS.accession_id}
@@ -232,14 +219,14 @@ export const TranscriptsListItemInfo = (
         </div>
 
         {!!(transcriptMetaData || transcriptCCDS) && (
-          <ShowHide 
+          <ShowHide
             onClick={() => props.toggleTranscriptMoreInfo(transcript.stable_id)}
-            label="More Information"
+            label="More information"
             isExpanded={props.expandMoreInfo}
-            classNames={{ wrapper: styles.moreInfoLinkStyles }}                
+            classNames={{ wrapper: styles.moreInformationLink }}
           />
         )}
- 
+
         {props.expandMoreInfo && (
           <div className={styles.moreInformation}>{moreInfoContent()}</div>
         )}

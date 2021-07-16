@@ -31,6 +31,7 @@
 .topLeft {
   grid-area: left;
   width: 190px;
+  margin-bottom: 12px;
   div {
     padding-bottom: 6px;
   }
@@ -53,7 +54,7 @@
 }
 
 .moreInformationLink {
-  padding-top: 16px;
+  padding-top: 6px;
   color: $blue;
   cursor: pointer;
 }
@@ -64,6 +65,7 @@
   grid-template-columns: 190px auto;
   grid-column-gap: 32px;
   padding-top: 6px;
+  margin-bottom: 6px;
 }
 
 .moreInfoColumn {
@@ -71,6 +73,10 @@
   div {
     padding-bottom: 6px;
   }
+}
+
+.normalText {
+  font-weight: $normal;
 }
 
 .downloadLink {
