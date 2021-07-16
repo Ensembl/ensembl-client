@@ -311,7 +311,9 @@ Staging:HX:
 Pub:Staging-HX:
   extends: .publish_assets
   environment:
-    name : wp-hx-staging
+    name : hx-jobs/staging
+    kubernetes:
+      namespace: ensembl-stage
   only:
     - dev
   needs:
@@ -333,7 +335,9 @@ Staging:HL:
 Pub:Staging-HL:
   extends: .publish_assets
   environment:
-    name : wp-hh-staging
+    name : hl-jobs/staging
+    kubernetes:
+      namespace: ensembl-stage
   only:
     - dev
   needs:
@@ -358,7 +362,9 @@ Live:HX:
 Pub:Live-HX:
   extends: .publish_assets
   environment:
-    name : wp-hx-live
+    name : hx-jobs/prod
+    kubernetes:
+      namespace: ensembl-prod
   only:
   - master
   needs:
@@ -383,7 +389,9 @@ Live:HL:
 Pub:Live-HL:
   extends: .publish_assets
   environment:
-    name : wp-hh-live
+    name : hl-jobs/prod
+    kubernetes:
+      namespace: ensembl-prod
   only:
   - master
   needs:
@@ -408,7 +416,9 @@ Internal:HX:
 Pub:Internal-HX:
   extends: .publish_assets
   environment:
-    name : wp-hx-internal
+    name : hx-jobs/internal
+    kubernetes:
+      namespace: ensembl-internal
   only:
   - master
   needs:
@@ -433,7 +443,9 @@ Internal:HL:
 Pub:Internal-HL:
   extends: .publish_assets
   environment:
-    name : wp-hh-internal
+    name : hl-jobs/internal
+    kubernetes:
+      namespace: ensembl-internal
   only:
   - master
   needs:
