@@ -63,8 +63,9 @@
   grid-area: moreInformation;
   display: grid;
   grid-template-columns: 190px auto;
-  grid-column-gap: 32px;
+  grid-column-gap: 20px;
   padding-top: 6px;
+  padding-left: 12px;
   margin-bottom: 6px;
 }
 

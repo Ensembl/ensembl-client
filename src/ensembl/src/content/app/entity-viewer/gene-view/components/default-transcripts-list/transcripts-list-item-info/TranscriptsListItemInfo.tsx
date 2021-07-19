@@ -126,10 +126,10 @@ export const TranscriptsListItemInfo = (
   const transcriptCCDS = transcript.external_references.find(
     (xref) => xref.source.name === 'CCDS'
   );
-  const transcriptMetaData =
-    transcript.metadata.gencode_basic?.label ||
-    transcript.metadata?.tsl ||
-    transcript.metadata?.appris;
+
+  const hasRelevantMetadata = (
+    ['gencode_basic', 'tsl', 'appris'] as const
+  ).some((key) => transcript.metadata[key]);
 
   const focusIdForUrl = buildFocusIdForUrl({
     type: 'gene',
@@ -159,7 +159,7 @@ export const TranscriptsListItemInfo = (
   const moreInfoContent = () => {
     return (
       <>
-        {!!transcriptMetaData && (
+        {hasRelevantMetadata && (
           <div className={styles.moreInfoColumn}>
             {transcript.metadata.gencode_basic?.label && (
               <div>{transcript.metadata.gencode_basic?.label}</div>
@@ -218,7 +218,7 @@ export const TranscriptsListItemInfo = (
           </div>
         </div>
 
-        {!!(transcriptMetaData || transcriptCCDS) && (
+        {(hasRelevantMetadata || !!transcriptCCDS) && (
           <ShowHide
             onClick={() => props.toggleTranscriptMoreInfo(transcript.stable_id)}
             label="More information"
