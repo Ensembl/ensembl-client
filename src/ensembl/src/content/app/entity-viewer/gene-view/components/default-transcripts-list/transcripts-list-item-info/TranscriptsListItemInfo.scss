@@ -13,7 +13,7 @@
     'moreInformation moreInformation moreInformation'
     'downloadLink . .'    
     'download download download';
-  grid-column-gap: 10px;
+  column-gap: 10px;
   background: $soft-black;
   padding: 15px 30px;
 
@@ -63,7 +63,7 @@
   grid-area: moreInformation;
   display: grid;
   grid-template-columns: 190px auto;
-  grid-column-gap: 20px;
+  column-gap: 20px;
   padding-top: 6px;
   padding-left: 12px;
   margin-bottom: 6px;
