@@ -18,9 +18,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
-import { Link } from 'react-router-dom';
 
 import Chevron from 'src/shared/components/chevron/Chevron';
+import HelpMenuLink from './HelpMenuLink';
 
 import {
   Menu as MenuType,
@@ -71,9 +71,9 @@ const HelpMenu = (props: Props) => {
         {item.name}
       </span>
     ) : (
-      <Link {...commonProps} to={item.url} onClick={closeMegaMenu}>
+      <HelpMenuLink {...commonProps} to={item.url} onClick={closeMegaMenu}>
         {item.name}
-      </Link>
+      </HelpMenuLink>
     );
   });
 
