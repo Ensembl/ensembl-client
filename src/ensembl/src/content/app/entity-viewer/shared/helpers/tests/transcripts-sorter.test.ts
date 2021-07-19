@@ -109,30 +109,25 @@ const createTranscriptWithSmallestExons = () => {
 
 const createMANETranscript = () => {
   const transcript = createTranscript();
-  transcript.metadata = {
-    canonical: {
-      label: 'Ensembl canonical',
-      value: true,
-      definition: faker.lorem.sentence()
-    },
-    mane: {
-      label: 'MANE Select',
-      value: 'select',
-      definition: faker.lorem.sentence()
-    }
+  transcript.metadata.canonical = {
+    label: 'Ensembl canonical',
+    value: true,
+    definition: faker.lorem.sentence()
+  };
+  transcript.metadata.mane = {
+    label: 'MANE Select',
+    value: 'select',
+    definition: faker.lorem.sentence()
   };
   return transcript;
 };
 
 const createOtherMANETranscript = () => {
   const transcript = createTranscript();
-  transcript.metadata = {
-    canonical: null,
-    mane: {
-      label: 'MANE Plus Clinical',
-      value: 'plus_clinical',
-      definition: faker.lorem.sentence()
-    }
+  transcript.metadata.mane = {
+    label: 'MANE Plus Clinical',
+    value: 'plus_clinical',
+    definition: faker.lorem.sentence()
   };
   return transcript;
 };

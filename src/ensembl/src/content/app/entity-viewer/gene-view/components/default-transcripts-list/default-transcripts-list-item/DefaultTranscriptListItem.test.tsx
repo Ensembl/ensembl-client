@@ -51,6 +51,7 @@ describe('<DefaultTranscriptListItem />', () => {
     rulerTicks: createRulerTicks(),
     expandTranscript: false,
     expandDownload: false,
+    expandMoreInfo: false,
     toggleTranscriptInfo: toggleTranscriptInfo
   };
 

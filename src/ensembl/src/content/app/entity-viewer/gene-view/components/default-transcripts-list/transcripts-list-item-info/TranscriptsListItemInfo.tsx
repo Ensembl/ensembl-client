@@ -36,8 +36,12 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import {
+  toggleTranscriptDownload,
+  toggleTranscriptMoreInfo
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -52,9 +56,14 @@ import styles from './TranscriptsListItemInfo.scss';
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
 type Transcript = Pick<
   FullTranscript,
-  'stable_id' | 'unversioned_stable_id' | 'so_term'
+  'stable_id' | 'unversioned_stable_id' | 'so_term' | 'external_references'
 > &
   Pick2<FullTranscript, 'slice', 'location'> &
+  Pick2<
+    FullTranscript,
+    'metadata',
+    'canonical' | 'mane' | 'gencode_basic' | 'appris' | 'tsl'
+  > &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     spliced_exons: Array<
       Pick2<SplicedExon, 'exon', 'stable_id'> &
@@ -80,7 +89,9 @@ export type TranscriptsListItemInfoProps = {
   gene: Gene;
   transcript: Transcript;
   expandDownload: boolean;
+  expandMoreInfo: boolean;
   toggleTranscriptDownload: (id: string) => void;
+  toggleTranscriptMoreInfo: (id: string) => void;
   onProteinLinkClick: () => void;
 };
 
@@ -112,6 +123,13 @@ export const TranscriptsListItemInfo = (
 
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
+  const transcriptCCDS = transcript.external_references.find(
+    (xref) => xref.source.name === 'CCDS'
+  );
+
+  const hasRelevantMetadata = (
+    ['gencode_basic', 'tsl', 'appris'] as const
+  ).some((key) => transcript.metadata[key]);
 
   const focusIdForUrl = buildFocusIdForUrl({
     type: 'gene',
@@ -136,6 +154,36 @@ export const TranscriptsListItemInfo = (
   const getBrowserLink = () => {
     const { genomeId } = params;
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
+  };
+
+  const moreInfoContent = () => {
+    return (
+      <>
+        {hasRelevantMetadata && (
+          <div className={styles.moreInfoColumn}>
+            {transcript.metadata.gencode_basic?.label && (
+              <div>{transcript.metadata.gencode_basic?.label}</div>
+            )}
+            {transcript.metadata?.tsl && (
+              <div>{transcript.metadata.tsl?.label}</div>
+            )}
+            {transcript.metadata?.appris && (
+              <div>{transcript.metadata.appris?.label}</div>
+            )}
+          </div>
+        )}
+        {!!transcriptCCDS && (
+          <div className={styles.moreInfoColumn}>
+            <ExternalReference
+              classNames={{ label: styles.normalText }}
+              label={'CCDS'}
+              to={transcriptCCDS.url}
+              linkText={transcriptCCDS.accession_id}
+            />
+          </div>
+        )}
+      </>
+    );
   };
 
   return (
@@ -170,7 +218,18 @@ export const TranscriptsListItemInfo = (
           </div>
         </div>
 
-        <div className={styles.moreInformation}>More information</div>
+        {(hasRelevantMetadata || !!transcriptCCDS) && (
+          <ShowHide
+            onClick={() => props.toggleTranscriptMoreInfo(transcript.stable_id)}
+            label="More information"
+            isExpanded={props.expandMoreInfo}
+            classNames={{ wrapper: styles.moreInformationLink }}
+          />
+        )}
+
+        {props.expandMoreInfo && (
+          <div className={styles.moreInformation}>{moreInfoContent()}</div>
+        )}
 
         <ShowHide
           onClick={() => props.toggleTranscriptDownload(transcript.stable_id)}
@@ -212,6 +271,7 @@ const renderInstantDownload = ({
 
 const mapDispatchToProps = {
   toggleTranscriptDownload,
+  toggleTranscriptMoreInfo,
   onProteinLinkClick: clearExpandedProteins
 };
 
