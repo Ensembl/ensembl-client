@@ -146,11 +146,12 @@ variables:
   - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-deployment
 
 Test:
-  image: node:14.16.0
+  image: node:14.17.0
   stage: test
 
   before_script:
   - cd src/ensembl
+  - npm install --global npm@7.12.1
   - npm ci
 
   script:
@@ -489,5 +490,5 @@ SetupReview:HX:
   environment:
     name : wp-hx-dev-ing
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && $CI_COMMIT_REF_NAME =~  "/^nodeploy\/.*$/"'
       when: always
