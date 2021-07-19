@@ -17,6 +17,9 @@
   }
   .label {
     margin-right: 8px;
+    span + span {
+      margin-left: 8px;
+    }
   }
 }
 
@@ -34,7 +37,7 @@
 
 .more {
   margin-top: 25px;
-  span {
+  span { /* stylelint-disable-line no-descending-specificity */
     font-size: 12px;
     cursor: pointer;
     color: $blue;

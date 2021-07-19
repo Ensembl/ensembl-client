@@ -32,6 +32,8 @@ import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state
 
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
+import TextLine from 'src/shared/components/text-line/TextLine';
+
 import { RootState } from 'src/store';
 
 import styles from './EntityViewerBookmarks.scss';
@@ -66,14 +68,10 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           return (
             <div key={index} className={styles.linkHolder}>
               <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
-                <span className={styles.label}>
-                  {previouslyViewedEntity.label[0]}
-                </span>
-                {previouslyViewedEntity.label[1] && (
-                  <span className={styles.label}>
-                    {previouslyViewedEntity.label[1]}
-                  </span>
-                )}
+                <TextLine
+                  text={previouslyViewedEntity.label}
+                  className={styles.label}
+                />
               </Link>
               <span className={styles.type}>
                 {upperFirst(previouslyViewedEntity.type)}

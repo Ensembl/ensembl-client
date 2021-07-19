@@ -20,13 +20,19 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { RootState } from 'src/store';
-import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import analyticsTracking from 'src/services/analytics-service';
+
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
+
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import analyticsTracking from 'src/services/analytics-service';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import TextLine from 'src/shared/components/text-line/TextLine';
+
+import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
+import { RootState } from 'src/store';
 
 import styles from './DrawerBookmarks.scss';
 
@@ -37,10 +43,9 @@ export type DrawerBookmarksProps = {
 };
 
 const DrawerBookmarks = (props: DrawerBookmarksProps) => {
-  const limitedPreviouslyViewedObjects =
-    props.previouslyViewedObjects.slice(20);
+  const previouslyViewedObjects = props.previouslyViewedObjects.slice(20);
 
-  const onClickHandler = (objectType: string, index: number) => {
+  const onClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
       category: 'recent_bookmark_link',
       label: objectType,
@@ -57,37 +62,29 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
       <div className={styles.drawerTitle}>Previously viewed</div>
       <div className={styles.contentWrapper}>
         <div className={styles.linksWrapper}>
-          {limitedPreviouslyViewedObjects.map(
-            (previouslyViewedObject, index) => {
-              const path = urlFor.browser({
-                genomeId: previouslyViewedObject.genome_id,
-                focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
-              });
+          {previouslyViewedObjects.map((previouslyViewedObject, index) => {
+            const path = urlFor.browser({
+              genomeId: previouslyViewedObject.genome_id,
+              focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
+            });
 
-              return (
-                <span key={index} className={styles.linkHolder}>
-                  <Link
-                    to={path}
-                    onClick={() =>
-                      onClickHandler(previouslyViewedObject.type, index)
-                    }
-                  >
-                    <span className={styles.label}>
-                      {previouslyViewedObject.label[0]}
-                    </span>
-                    {previouslyViewedObject.label[1] && (
-                      <span className={styles.label}>
-                        {previouslyViewedObject.label[1]}
-                      </span>
-                    )}
-                  </Link>
-                  <span className={styles.type}>
-                    {upperFirst(previouslyViewedObject.type)}
-                  </span>
+            return (
+              <span key={index} className={styles.linkHolder}>
+                <Link
+                  to={path}
+                  onClick={() => onClick(previouslyViewedObject.type, index)}
+                >
+                  <TextLine
+                    text={previouslyViewedObject.label}
+                    className={styles.label}
+                  />
+                </Link>
+                <span className={styles.type}>
+                  {upperFirst(previouslyViewedObject.type)}
                 </span>
-              );
-            }
-          )}
+              </span>
+            );
+          })}
         </div>
       </div>
     </>

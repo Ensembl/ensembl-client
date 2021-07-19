@@ -27,13 +27,16 @@ import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/
 import { closeTrackPanelModal } from '../../trackPanelActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
-import styles from './TrackPanelBookmarks.scss';
+import TextLine from 'src/shared/components/text-line/TextLine';
+
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+
+import styles from './TrackPanelBookmarks.scss';
 
 export const PreviouslyViewedLinks = () => {
   const previouslyViewedObjects = useSelector(
     getActiveGenomePreviouslyViewedObjects
-  );
+  ).slice(0, 20);
   const dispatch = useDispatch();
 
   const onLinkClick = (objectType: string, index: number) => {
@@ -47,11 +50,9 @@ export const PreviouslyViewedLinks = () => {
     dispatch(closeTrackPanelModal());
   };
 
-  const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(0, 20);
-
   return (
     <div data-test-id="previously viewed links">
-      {limitedPreviouslyViewedObjects.map((previouslyViewedObject, index) => {
+      {previouslyViewedObjects.map((previouslyViewedObject, index) => {
         const path = urlFor.browser({
           genomeId: previouslyViewedObject.genome_id,
           focus: buildFocusIdForUrl(previouslyViewedObject.object_id)
@@ -67,13 +68,10 @@ export const PreviouslyViewedLinks = () => {
               to={path}
               onClick={() => onLinkClick(previouslyViewedObject.type, index)}
             >
-              {previouslyViewedObject.label.map((label, index) => {
-                return (
-                  <span key={index} className={styles.label}>
-                    {label}
-                  </span>
-                );
-              })}
+              <TextLine
+                text={previouslyViewedObject.label}
+                className={styles.label}
+              />
             </Link>
             <span className={styles.type}>
               {upperFirst(previouslyViewedObject.type)}
