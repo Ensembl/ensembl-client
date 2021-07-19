@@ -19,6 +19,8 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import Chevron from 'src/shared/components/chevron/Chevron';
 import HelpMenuLink from './HelpMenuLink';
 
@@ -37,6 +39,14 @@ export type Props = {
 const HelpMenu = (props: Props) => {
   const [submenuItems, setSubmenuItems] = useState<MenuItem[] | null>(null);
   const clickedMenuRef = useRef<number | null>(null);
+
+  if (isEnvironment([Environment.PRODUCTION])) {
+    return (
+      <div className={styles.helpMenu}>
+        <div className={styles.menuBar}>Overview</div>
+      </div>
+    );
+  }
 
   const toggleMegaMenu = (items: MenuItem[], menuIndex: number) => {
     let nextValue = null;

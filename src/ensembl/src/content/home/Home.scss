@@ -110,16 +110,6 @@
   }
 }
 
-.homeTopRightDisabled {
-  cursor: default;
-  color: $grey;
-  
-  .helpIcon {
-    fill: $white;
-    background-color: $grey;
-  }
-}
-
 .speciesContainer {
   overflow-x: hidden;
   position: relative;

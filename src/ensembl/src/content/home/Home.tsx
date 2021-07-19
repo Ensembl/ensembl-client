@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import classNames from 'classnames';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
@@ -29,8 +28,6 @@ import elixirLogoUrl from 'static/img/home/elixir-logo.svg';
 import facebookIconUrl from 'static/img/home/facebook.svg';
 import twitterIconUrl from 'static/img/home/twitter.svg';
 import blogIconUrl from 'static/img/home/blog.svg';
-
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import styles from './Home.scss';
 
@@ -93,20 +90,10 @@ const Home = () => {
               </div>
             </div>
           </div>
-          {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) ? (
-            <div className={styles.homeTopRight}>
-              <Link to="/help">{helpButton}</Link>
-            </div>
-          ) : (
-            <div
-              className={classNames(
-                styles.homeTopRight,
-                styles.homeTopRightDisabled
-              )}
-            >
-              {helpButton}
-            </div>
-          )}
+
+          <div className={styles.homeTopRight}>
+            <Link to="/help">{helpButton}</Link>
+          </div>
         </div>
 
         <div className={styles.speciesContainer}>
