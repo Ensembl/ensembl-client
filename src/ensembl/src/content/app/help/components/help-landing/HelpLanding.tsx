@@ -20,6 +20,8 @@ import LabelledAppIcon from '../labelled-app-icon/LabelledAppIcon';
 import { Step } from 'src/shared/components/step/Step';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
 
 import styles from './HelpLanding.scss';
@@ -29,7 +31,12 @@ const HelpLanding = () => {
     <div className={styles.helpLanding}>
       <AppsSection />
       <StartUsingSection />
-      <LastSection />
+      {
+        /* We don't yet have full documentation announced in this section */
+        isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+          <LastSection />
+        )
+      }
     </div>
   );
 };
