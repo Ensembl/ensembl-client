@@ -249,7 +249,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
   const shouldShowFilterIndicator =
-    sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
+    sortingRule !== SortingRule.DEFAULT ||
+    Object.values(filters).some((filter) => filter.selected);
 
   const filterLabel = (
     <span

@@ -127,7 +127,7 @@ const GeneSummary = () => {
               <span className={styles.featureSymbol}>{gene.symbol}</span>
             )}
             <span className={styles.stableId}>{stableId}</span>
-            <div>{gene.metadata.biotype.label.toLowerCase()}</div>
+            <div>{gene.metadata.biotype.label}</div>
             <div>{getStrandDisplayName(gene.slice.strand.code)}</div>
             <div>{getFormattedLocation(ensObjectGene.location)}</div>
           </div>

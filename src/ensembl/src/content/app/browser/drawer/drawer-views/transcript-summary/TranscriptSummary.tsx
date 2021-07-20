@@ -230,7 +230,7 @@ const TranscriptSummary = () => {
             </span>
             {metadata.biotype && (
               <>
-                <span>{metadata.biotype.label.toLowerCase()}</span>
+                <span>{metadata.biotype.label}</span>
                 <div className={styles.questionButton}>
                   <QuestionButton helpText={metadata.biotype.definition} />
                 </div>
@@ -270,7 +270,7 @@ const TranscriptSummary = () => {
         </div>
       </div>
 
-      {metadata.biotype?.value === 'protein_coding' && (
+      {metadata.biotype.value === 'protein_coding' && (
         <div className={styles.row}>
           <div className={styles.label}>Protein</div>
           <div className={styles.value}>

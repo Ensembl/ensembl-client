@@ -20,6 +20,7 @@ import classNames from 'classnames';
 import { Pick2 } from 'ts-multipick';
 
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
+import { getEntityViewerActiveEntityId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
   getFilters,
   getSortingRule
@@ -78,15 +79,9 @@ const createFilter = (metadataType: Filter['type'], label: string) => ({
   type: metadataType
 });
 
-const TranscriptsFilter = (props: Props) => {
-  const filters = useSelector(getFilters);
-  const sortingRule = useSelector(getSortingRule);
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-  const dispatch = useDispatch();
-
+const createInitialFilters = (transcripts: Props['transcripts']) => {
   const initialFilters: Filters = {};
-
-  for (const transcript of props.transcripts) {
+  for (const transcript of transcripts) {
     metadataFields.forEach((key) => {
       const metadataItem = transcript.metadata[key];
       if (metadataItem) {
@@ -97,6 +92,18 @@ const TranscriptsFilter = (props: Props) => {
       }
     });
   }
+  return initialFilters;
+};
+
+const TranscriptsFilter = (props: Props) => {
+  const filters = useSelector(getFilters);
+  const sortingRule = useSelector(getSortingRule);
+  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
+  const activeEntityId = useSelector(getEntityViewerActiveEntityId);
+
+  const dispatch = useDispatch();
+
+  const initialFilters: Filters = createInitialFilters(props.transcripts);
 
   // TODO: Add protein coding options in RadioOptions if there are protein coding biotype
 
@@ -104,7 +111,7 @@ const TranscriptsFilter = (props: Props) => {
     if (Object.keys(filters).length === 0) {
       dispatch(setFilters(initialFilters));
     }
-  }, []);
+  }, [activeEntityId]);
 
   const filterBoxClassnames = classNames(styles.filterBox, {
     [styles.filterBoxFullWidth]: !isSidebarOpen

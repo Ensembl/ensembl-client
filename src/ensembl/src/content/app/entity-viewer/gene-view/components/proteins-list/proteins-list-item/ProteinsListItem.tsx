@@ -52,12 +52,7 @@ type Product = Pick<
   >;
 };
 
-type Transcript = Pick<FullTranscript, 'stable_id'> &
-  Pick2<
-    FullTranscript,
-    'metadata',
-    'mane' | 'canonical' | 'biotype' | 'appris' | 'tsl'
-  > &
+type Transcript = Pick<FullTranscript, 'stable_id' | 'metadata'> &
   ProteinsListItemInfoProps['transcript'] & {
     product_generating_contexts: Array<
       Pick<FullProductGeneratingContext, 'product_type'> & {
@@ -68,7 +63,6 @@ type Transcript = Pick<FullTranscript, 'stable_id'> &
 
 export type Props = {
   transcript: Transcript;
-  isDefault?: boolean;
   trackLength: number;
 };
 

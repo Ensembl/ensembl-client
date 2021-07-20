@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
 import { Pick3 } from 'ts-multipick';
@@ -27,10 +27,7 @@ import {
   getLongestProteinLength,
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import {
-  getTranscriptSortingFunction,
-  defaultSort
-} from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
@@ -66,10 +63,6 @@ const ProteinsList = (props: ProteinsListProps) => {
   const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
-  const defaultTranscriptId = useMemo(() => {
-    const defaultTranscripts = defaultSort(props.gene.transcripts);
-    return defaultTranscripts[0].stable_id;
-  }, [props.gene.stable_id]);
 
   const sortingRule = useSelector(getSortingRule);
 
@@ -108,7 +101,6 @@ const ProteinsList = (props: ProteinsListProps) => {
       {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem
           key={transcript.stable_id}
-          isDefault={transcript.stable_id === defaultTranscriptId}
           transcript={transcript}
           trackLength={longestProteinLength}
         />

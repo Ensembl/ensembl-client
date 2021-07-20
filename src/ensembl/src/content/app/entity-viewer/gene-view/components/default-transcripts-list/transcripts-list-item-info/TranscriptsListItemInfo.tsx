@@ -54,7 +54,10 @@ import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
 
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
-type Transcript = Pick<FullTranscript, 'stable_id' | 'unversioned_stable_id' | 'external_references' | 'metadata'> &
+type Transcript = Pick<
+  FullTranscript,
+  'stable_id' | 'unversioned_stable_id' | 'external_references' | 'metadata'
+> &
   Pick2<FullTranscript, 'slice', 'location'> &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     spliced_exons: Array<
@@ -184,7 +187,7 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
-            <strong>{transcript.metadata.biotype?.label.toLowerCase()}</strong>
+            <strong>{transcript.metadata.biotype.label}</strong>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
@@ -253,7 +256,7 @@ const renderInstantDownload = ({
         genomeId={genomeId}
         transcript={{
           id: transcript.stable_id,
-          biotype: transcript.metadata.biotype?.value as string
+          biotype: transcript.metadata.biotype.value as string
         }}
         gene={{ id: gene.stable_id }}
       />
