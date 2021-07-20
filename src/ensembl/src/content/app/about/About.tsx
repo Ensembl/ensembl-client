@@ -27,10 +27,12 @@ import {
   TopMenu,
   SideMenu
 } from 'src/content/app/about/components/about-menu/AboutMenu';
+import { CircleLoader } from 'src/shared/components/loader/Loader';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import { TextArticleData } from 'src/shared/types/help-and-docs/article';
 
+import helpStyles from '../help/Help.scss';
 import styles from './About.scss';
 
 const About = () => {
@@ -43,15 +45,19 @@ const About = () => {
   });
 
   return (
-    <>
-      <div>
-        <AppBar />
-        <TopMenuBar>
-          {menu && <TopMenu menu={menu} currentUrl={location.pathname} />}
-        </TopMenuBar>
-      </div>
+    <div className={helpStyles.help}>
+      <AppBar />
+      <TopMenuBar>
+        {menu && <TopMenu menu={menu} currentUrl={location.pathname} />}
+      </TopMenuBar>
       <HelpArticleGrid className={styles.grid}>
-        {article && <TextArticle article={article} />}
+        {article ? (
+          <TextArticle article={article} />
+        ) : (
+          <div className={styles.spinnerContainer}>
+            <CircleLoader />
+          </div>
+        )}
         <aside className={styles.aside}>
           {menu && (
             <>
@@ -61,7 +67,7 @@ const About = () => {
           )}
         </aside>
       </HelpArticleGrid>
-    </>
+    </div>
   );
 };
 
