@@ -15,7 +15,7 @@
  */
 
 // React Router doesn't handle absolute urls, requiring users
-// to writhe their own components to address this use case.
+// to write their own components to address this use case.
 // We may want to move this component to the shared folder,
 // if we discover a need to reuse it.
 
