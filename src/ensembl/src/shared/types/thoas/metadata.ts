@@ -20,12 +20,14 @@ export type ValueSetMetadata = {
   definition: string;
 };
 
+type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
+
 export type TranscriptMetadata = {
   tsl: ValueSetMetadata | null;
   appris: ValueSetMetadata | null;
   biotype: ValueSetMetadata;
   mane: ValueSetMetadata | null;
-  canonical: ValueSetMetadata | null;
+  canonical: CanonicalMetadata | null;
   gencode_basic: ValueSetMetadata | null;
 };
 
