@@ -168,7 +168,7 @@ const GeneSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 gene={{
                   id: gene.stable_id,
-                  biotype: gene.metadata.biotype.value as string
+                  biotype: gene.metadata.biotype.value
                 }}
               />
               <CloseButton

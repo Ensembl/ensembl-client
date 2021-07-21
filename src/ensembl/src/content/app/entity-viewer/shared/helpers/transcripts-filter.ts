@@ -40,7 +40,7 @@ export function filterTranscripts<T extends Transcript>(
 
   const filteredTranscripts = transcripts.filter((transcript) =>
     metadataFields.some((key) => {
-      const value = transcript.metadata[key]?.value as string | undefined;
+      const value = transcript.metadata[key]?.value;
       return value ? selectedFilters.has(value) : false;
     })
   );

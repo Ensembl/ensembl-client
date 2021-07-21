@@ -85,7 +85,7 @@ const createInitialFilters = (transcripts: Props['transcripts']) => {
     metadataFields.forEach((key) => {
       const metadataItem = transcript.metadata[key];
       if (metadataItem) {
-        initialFilters[metadataItem.value as string] = createFilter(
+        initialFilters[metadataItem.value] = createFilter(
           key,
           metadataItem.label
         );

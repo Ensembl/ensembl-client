@@ -51,7 +51,6 @@ type ProductGeneratingContext = {
   cds: Pick<FullCDS, 'relative_start' | 'relative_end'>;
 };
 type Transcript = DefaultTranscriptListItemProps['transcript'] & {
-  biotype: FullTranscript['metadata']['biotype'];
   product_generating_contexts: ProductGeneratingContext[];
 } & {
   spliced_exons: Array<Pick3<SplicedExon, 'exon', 'slice', 'location'>>;

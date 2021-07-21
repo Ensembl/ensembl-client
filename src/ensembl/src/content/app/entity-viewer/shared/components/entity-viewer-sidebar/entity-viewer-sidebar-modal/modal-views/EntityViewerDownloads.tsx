@@ -67,7 +67,7 @@ const EntityViewerSidebarDownloads = () => {
         genomeId={genomeId as string}
         gene={{
           id: data.gene.stable_id,
-          biotype: data.gene.metadata.biotype.value as string
+          biotype: data.gene.metadata.biotype.value
         }}
       />
     </section>

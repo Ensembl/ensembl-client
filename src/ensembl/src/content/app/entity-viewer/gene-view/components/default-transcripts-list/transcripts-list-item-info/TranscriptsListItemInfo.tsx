@@ -256,7 +256,7 @@ const renderInstantDownload = ({
         genomeId={genomeId}
         transcript={{
           id: transcript.stable_id,
-          biotype: transcript.metadata.biotype.value as string
+          biotype: transcript.metadata.biotype.value
         }}
         gene={{ id: gene.stable_id }}
       />

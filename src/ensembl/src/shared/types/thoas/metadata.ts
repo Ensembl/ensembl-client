@@ -15,7 +15,7 @@
  */
 
 export type ValueSetMetadata = {
-  value: string | number | boolean;
+  value: string;
   label: string;
   definition: string;
 };

@@ -319,7 +319,7 @@ const TranscriptSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 transcript={{
                   id: transcript.unversioned_stable_id,
-                  biotype: metadata.biotype.value as string
+                  biotype: metadata.biotype.value
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"
