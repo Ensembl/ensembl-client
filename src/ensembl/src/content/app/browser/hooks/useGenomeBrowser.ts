@@ -34,6 +34,7 @@ import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 import { ChrLocation } from 'src/content/app/browser/browserState';
+import { parseEnsObjectId } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();
@@ -96,7 +97,7 @@ const useGenomeBrowser = () => {
     }
   };
 
-  const changeFocusObject = (objectId: string) => {
+  const changeFocusObject = (focus: string) => {
     if (!activeGenomeId || !genomeBrowser) {
       return;
     }
@@ -105,7 +106,7 @@ const useGenomeBrowser = () => {
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
-        focus: objectId
+        focus
       }
     };
 
@@ -117,11 +118,11 @@ const useGenomeBrowser = () => {
     ensObjectId: string | null;
     chrLocation: ChrLocation;
   }) => {
-    const [, startBp, endBp] = locationData.chrLocation;
+    const [chromosome, startBp, endBp] = locationData.chrLocation;
 
     const currentActiveEnsObjectId =
       locationData.ensObjectId || activeEnsObjectId;
-
+    parseEnsObjectId;
     if (!genomeBrowser) {
       return;
     }
@@ -134,7 +135,7 @@ const useGenomeBrowser = () => {
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS_LOCATION,
       payload: {
-        // stick: `${locationData.genomeId}:${chrCode}`,
+        stick: `${activeGenomeId}:${chromosome}`,
         // goto: `${startBp}-${endBp}`,
         startBp,
         endBp

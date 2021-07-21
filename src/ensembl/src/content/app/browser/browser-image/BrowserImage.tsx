@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useCallback, memo } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import isEqual from 'lodash/isEqual';
 
-import {
-  IncomingAction,
-  IncomingActionType,
-  OutgoingActionType
-} from 'ensembl-genome-browser';
+import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -50,8 +46,8 @@ import {
 } from '../browserActions';
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import { parseFeatureId } from 'src/content/app/browser/browserHelper';
-import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+// import { parseFeatureId } from 'src/content/app/browser/browserHelper';
+// import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
@@ -87,14 +83,14 @@ export type BumperPayload = [
   zoomIn: boolean
 ];
 
-type BpaneOutPayload = {
-  bumper?: BumperPayload;
-  focus?: string;
-  'message-counter'?: number;
-  'intended-location'?: ChrLocation;
-  'actual-location'?: ChrLocation;
-  'is-focus-position'?: boolean;
-};
+// type BpaneOutPayload = {
+//   bumper?: BumperPayload;
+//   focus?: string;
+//   'message-counter'?: number;
+//   'intended-location'?: ChrLocation;
+//   'actual-location'?: ChrLocation;
+//   'is-focus-position'?: boolean;
+// };
 
 const parseLocation = (location: ChrLocation) => {
   // FIXME: is there any reason to receive genome and chromosome in the same string?
@@ -108,65 +104,74 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
   const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
 
-  const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
-    const ensObjectId = payload.focus;
-    const intendedLocation = payload['intended-location'];
-    const actualLocation = payload['actual-location'] || intendedLocation;
-    const isFocusObjectInDefaultPosition = payload['is-focus-position'];
+  // const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
+  //   const ensObjectId = payload.focus;
 
-    if (payload.bumper && props.activeGenomeId) {
-      // Invert the flags to make it appropriate for the react side
-      const navIconStates = payload.bumper.map((a) => !a);
+  //   const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
-      const navStates = {
-        [OutgoingActionType.MOVE_UP]: navIconStates[0],
-        [OutgoingActionType.MOVE_DOWN]: navIconStates[1],
-        [OutgoingActionType.ZOOM_OUT]: navIconStates[2],
-        [OutgoingActionType.ZOOM_IN]: navIconStates[3],
-        [OutgoingActionType.MOVE_LEFT]: navIconStates[4],
-        [OutgoingActionType.MOVE_RIGHT]: navIconStates[5]
-      };
-      props.updateBrowserNavIconStates({
-        activeGenomeId: props.activeGenomeId,
-        navStates
-      });
-    }
+  //   if (payload.bumper && props.activeGenomeId) {
+  //     // Invert the flags to make it appropriate for the react side
+  //     const navIconStates = payload.bumper.map((a) => !a);
 
-    if (intendedLocation) {
-      props.setChrLocation(parseLocation(intendedLocation));
-    }
+  //     const navStates = {
+  //       [OutgoingActionType.MOVE_UP]: navIconStates[0],
+  //       [OutgoingActionType.MOVE_DOWN]: navIconStates[1],
+  //       [OutgoingActionType.ZOOM_OUT]: navIconStates[2],
+  //       [OutgoingActionType.ZOOM_IN]: navIconStates[3],
+  //       [OutgoingActionType.MOVE_LEFT]: navIconStates[4],
+  //       [OutgoingActionType.MOVE_RIGHT]: navIconStates[5]
+  //     };
+  //     props.updateBrowserNavIconStates({
+  //       activeGenomeId: props.activeGenomeId,
+  //       navStates
+  //     });
+  //   }
 
-    if (actualLocation) {
-      props.setActualChrLocation(parseLocation(actualLocation));
-    }
+  //   if (ensObjectId) {
+  //     const parsedId = parseFeatureId(ensObjectId);
+  //     props.updateBrowserActiveEnsObject(buildEnsObjectId(parsedId));
+  //   }
 
-    if (ensObjectId) {
-      const parsedId = parseFeatureId(ensObjectId);
-      props.updateBrowserActiveEnsObject(buildEnsObjectId(parsedId));
-    }
-
-    if (typeof isFocusObjectInDefaultPosition === 'boolean') {
-      props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
-    }
-  }, []);
+  //   if (typeof isFocusObjectInDefaultPosition === 'boolean') {
+  //     props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.GENOME_BROWSER_READY],
-      (action: IncomingAction) =>
-        listenBpaneOut(action.payload as BpaneOutPayload)
+      [IncomingActionType.CURRENT, IncomingActionType.TARGET],
+      (action: IncomingAction) => {
+        if (action.type === IncomingActionType.CURRENT) {
+          props.setActualChrLocation(parseLocation(action.payload));
+        } else if (action.type === IncomingActionType.TARGET) {
+          props.setChrLocation(parseLocation(action.payload));
+        }
+      }
     );
 
     return () => {
       subscription?.unsubscribe();
     };
-  }, []);
+  }, [genomeBrowser]);
+
+  useEffect(() => {
+    const subscription = genomeBrowser?.subscribe(
+      [IncomingActionType.READY],
+      () =>
+        // listenBpaneOut(action.payload as BpaneOutPayload)
+        props.updateBrowserActivated(true)
+    );
+
+    return () => {
+      subscription?.unsubscribe();
+      props.updateBrowserActivated(false);
+    };
+  }, [genomeBrowser]);
 
   useEffect(() => {
     activateGenomeBrowser();
     props.updateBrowserActivated(true);
-
-    return function cleanup() {
+    return () => {
       props.updateBrowserActivated(false);
     };
   }, []);

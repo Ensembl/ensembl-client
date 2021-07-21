@@ -71,7 +71,8 @@ const useBrowserRouting = () => {
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
-  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
+  const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
+    useGenomeBrowser();
 
   useEffect(() => {
     if (!genomeId) {
@@ -130,7 +131,7 @@ const useBrowserRouting = () => {
       firstRenderRef.current = false;
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, location]);
+  }, [genomeId, focus, location, genomeBrowser]);
 
   useEffect(() => {
     if (genomeId) {
