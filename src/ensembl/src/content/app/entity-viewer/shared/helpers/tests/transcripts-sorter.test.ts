@@ -24,7 +24,10 @@ import {
   sortByExonCountAsc
 } from '../transcripts-sorter';
 
-import { createTranscript, createTranscriptMetadata } from 'tests/fixtures/entity-viewer/transcript';
+import {
+  createTranscript,
+  createTranscriptMetadata
+} from 'tests/fixtures/entity-viewer/transcript';
 
 /* Creating dummy transcritps with different protein coding and non coding length  to test default sort*/
 const createLongProteinCodingTranscript = () => {
@@ -107,24 +110,24 @@ const createTranscriptWithSmallestExons = () => {
 
 const createMANETranscript = () => {
   const metadata = createTranscriptMetadata({
-      biotype: {
-        label: 'Protein coding',
-        value: 'protein_coding',
-        definition: faker.lorem.sentence()
-      },
-      canonical: {
-        label: 'Ensembl canonical',
-        value: true,
-        definition: faker.lorem.sentence()
-      },
-      mane: {
-        label: 'MANE Select',
-        value: 'select',
-        definition: faker.lorem.sentence()
-      },
-    })
+    biotype: {
+      label: 'Protein coding',
+      value: 'protein_coding',
+      definition: faker.lorem.sentence()
+    },
+    canonical: {
+      label: 'Ensembl canonical',
+      value: true,
+      definition: faker.lorem.sentence()
+    },
+    mane: {
+      label: 'MANE Select',
+      value: 'select',
+      definition: faker.lorem.sentence()
+    }
+  });
 
-  const transcript = createTranscript({metadata});
+  const transcript = createTranscript({ metadata });
   return transcript;
 };
 
@@ -140,8 +143,8 @@ const createOtherMANETranscript = () => {
       value: 'plus_clinical',
       definition: faker.lorem.sentence()
     }
-  })
-  const transcript = createTranscript({metadata});
+  });
+  const transcript = createTranscript({ metadata });
   return transcript;
 };
 
@@ -168,8 +171,8 @@ describe('default sort', () => {
       - canonical transcript
       - MANE transcripts
       - protein-coding transcripts
-      - sorts protein-coding transcripts by length
-      - sorts non-coding transcripts by biotype alphabetically
+      - protein-coding transcripts sorted by length
+      - non-coding transcripts sorted by length
     */
 
     const unsortedTranscripts = [
