@@ -32,7 +32,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
 const getEnvironment = () => {
   return {
     buildEnvironment: process.env.NODE_ENV ?? 'production',
-    deploymentEnvironment: process.env.ENVIRONMENT ?? 'production'
+    deploymentEnvironment: process.env.ENVIRONMENT ?? 'development'
   };
 };
 

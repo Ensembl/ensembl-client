@@ -20,7 +20,7 @@ import upperFirst from 'lodash/upperFirst';
 
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
-import { ReactComponent as SearchIcon } from 'static/img/sidebar/search.svg';
+import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
 
 import styles from './LabelledAppIcon.scss';
 
@@ -36,7 +36,7 @@ type Props = {
 const appNameToComponent: Record<AppName, React.FunctionComponent> = {
   speciesSelector: SpeciesSelectorIcon,
   genomeBrowser: BrowserIcon,
-  entityViewer: SearchIcon
+  entityViewer: EntityViewerIcon
 };
 
 const appNameToLabel: Record<AppName, string> = {

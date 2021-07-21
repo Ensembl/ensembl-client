@@ -67,8 +67,10 @@ const AppsSection = () => {
           Look at genes &amp; transcripts in their genetic context
           <ul>
             <li>opened from the launchbar at the top of every page</li>
-            <li>view an example gene or region or search for your own genes</li>
-            <li>configure the view to show the information you want to see</li>
+            <li>
+              view an example gene or region, or search for your own genes
+            </li>
+            <li>download the data you want</li>
           </ul>
         </div>
 
