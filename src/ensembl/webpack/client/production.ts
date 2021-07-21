@@ -96,10 +96,6 @@ export default (): Configuration => {
             to: path.join(paths.buildStaticPath, 'favicons', '[name][ext]')
           },
           {
-            from: path.join(paths.staticPath, 'manifest.json'),
-            to: path.join(paths.buildStaticPath, '[name][ext]')
-          },
-          {
             from: path.join(paths.staticPath, 'robots.txt'),
             to: paths.buildPath
           }
