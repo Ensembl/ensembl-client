@@ -76,7 +76,9 @@ export const createTranscript = (
   };
 };
 
-export const createTranscriptMetadata = (fragment: Partial<TranscriptMetadata> = {}): TranscriptMetadata => {
+export const createTranscriptMetadata = (
+  fragment?: Partial<TranscriptMetadata>
+): TranscriptMetadata => {
   return {
     biotype: {
       label: faker.lorem.word(),
@@ -92,22 +94,26 @@ export const createTranscriptMetadata = (fragment: Partial<TranscriptMetadata> =
   };
 };
 
+export const createExternalReference = (
+  fragment?: Partial<ExternalReference>
+): ExternalReference => {
+  return {
+    accession_id: faker.datatype.uuid(),
+    name: faker.random.words(),
+    description: faker.random.words(),
+    url: faker.internet.url(),
+    source: {
+      name: faker.random.words(),
+      id: faker.datatype.uuid(),
+      url: faker.internet.url()
+    },
+    ...fragment
+  };
+};
 const createExternalReferences = (): ExternalReference[] => {
   const numberOfExternalReferences = faker.datatype.number({ min: 1, max: 10 });
 
-  return times(numberOfExternalReferences, () => {
-    return {
-      accession_id: faker.datatype.uuid(),
-      name: faker.random.words(),
-      description: faker.random.words(),
-      url: faker.internet.url(),
-      source: {
-        name: faker.random.words(),
-        id: faker.datatype.uuid(),
-        url: faker.internet.url()
-      }
-    };
-  });
+  return times(numberOfExternalReferences, () => createExternalReference());
 };
 
 const createSplicedExons = (

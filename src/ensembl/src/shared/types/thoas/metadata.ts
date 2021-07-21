@@ -22,11 +22,19 @@ export type ValueSetMetadata = {
 
 type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
 
+type NCBITranscriptMetadata = {
+  id: string;
+  url: string;
+};
+type MANEMetadata = ValueSetMetadata & {
+  ncbi_transcript: NCBITranscriptMetadata | null;
+};
+
 export type TranscriptMetadata = {
   tsl: ValueSetMetadata | null;
   appris: ValueSetMetadata | null;
   biotype: ValueSetMetadata;
-  mane: ValueSetMetadata | null;
+  mane: MANEMetadata | null;
   canonical: CanonicalMetadata | null;
   gencode_basic: ValueSetMetadata | null;
 };

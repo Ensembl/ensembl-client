@@ -185,6 +185,10 @@ const QUERY = gql`
             value
             label
             definition
+            ncbi_transcript {
+              id
+              url
+            }
           }
           gencode_basic {
             label
