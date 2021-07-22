@@ -33,7 +33,7 @@ type Props = {
   size: Size;
 };
 
-const appNameToComponent: Record<AppName, React.FunctionComponent> = {
+const appNameToIcon: Record<AppName, React.FunctionComponent> = {
   speciesSelector: SpeciesSelectorIcon,
   genomeBrowser: BrowserIcon,
   entityViewer: EntityViewerIcon
@@ -48,7 +48,7 @@ const appNameToLabel: Record<AppName, string> = {
 const LabelledAppIcon = (props: Props) => {
   const { app, size } = props;
 
-  const IconComponent = appNameToComponent[app];
+  const IconComponent = appNameToIcon[app];
   const label = appNameToLabel[app];
 
   const iconWrapperStyles = classNames(
