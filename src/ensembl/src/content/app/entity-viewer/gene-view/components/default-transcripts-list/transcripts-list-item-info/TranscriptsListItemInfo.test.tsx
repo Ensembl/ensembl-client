@@ -30,7 +30,7 @@ import {
   createTranscript,
   createTranscriptMetadata
 } from 'tests/fixtures/entity-viewer/transcript';
-import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/external-references';
+import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/external-reference';
 
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div data-test-id="viewInApp">ViewInApp</div>
@@ -175,7 +175,7 @@ describe('<TranscriptsListItemInfo /', () => {
     expect(CCDSLabel).toBeTruthy();
   });
 
-  it('displays Refseq when ncbi_transcript is available for MANE metadata', () => {
+  it('displays the Refseq with a link', () => {
     const MANETranscript = createMANETranscript();
     const refseqId = MANETranscript.metadata.mane?.ncbi_transcript?.id;
     const refseqUrl = MANETranscript.metadata.mane?.ncbi_transcript?.url;
