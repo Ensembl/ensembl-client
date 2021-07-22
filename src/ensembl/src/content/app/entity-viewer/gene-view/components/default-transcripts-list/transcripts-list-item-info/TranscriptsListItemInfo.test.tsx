@@ -157,30 +157,39 @@ describe('<TranscriptsListItemInfo /', () => {
     expect(defaultProps.onProteinLinkClick).toHaveBeenCalled();
   });
 
-  it('display metadata when it is available', () => {
+  it('displays metadata when it is available', () => {
     const { queryByText } = renderComponent({
       transcript: createGencodeBasicTranscript(),
       expandMoreInfo: true
     });
-    const refseqText = queryByText('gencode basic');
-    expect(refseqText).toBeTruthy();
+    const metadataLabel = queryByText('gencode basic');
+    expect(metadataLabel).toBeTruthy();
   });
 
-  it('display CCDS when it is available in external references', () => {
+  it('displays CCDS when it is available in external references', () => {
     const { queryByText } = renderComponent({
       transcript: createCCDSXrefTranscript(),
       expandMoreInfo: true
     });
-    const refseqText = queryByText('CCDS');
-    expect(refseqText).toBeTruthy();
+    const CCDSLabel = queryByText('CCDS');
+    expect(CCDSLabel).toBeTruthy();
   });
 
-  it('display Refseq when ncbi_transcript is available', () => {
-    const { queryByText } = renderComponent({
-      transcript: createMANETranscript(),
+  it('displays Refseq when ncbi_transcript is available for MANE metadata', () => {
+    const MANETranscript = createMANETranscript();
+    const refseqId = MANETranscript.metadata.mane?.ncbi_transcript?.id;
+    const refseqUrl = MANETranscript.metadata.mane?.ncbi_transcript?.url;
+    const { container, queryByText } = renderComponent({
+      transcript: MANETranscript,
       expandMoreInfo: true
     });
-    const refseqText = queryByText('RefSeq');
-    expect(refseqText).toBeTruthy();
+    const refseqLabel = queryByText('RefSeq');
+    expect(refseqLabel).toBeTruthy();
+
+    const refseqLink = [...container.querySelectorAll('a')].find(
+      (link) => link.textContent === refseqId
+    ) as HTMLElement;
+
+    expect(refseqLink.getAttribute('href')).toBe(refseqUrl);
   });
 });
