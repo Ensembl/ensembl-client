@@ -19,6 +19,7 @@ import times from 'lodash/times';
 
 import { createSlice } from './slice';
 import { createProduct } from './product';
+import { createExternalReference } from './external-references';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -94,22 +95,6 @@ export const createTranscriptMetadata = (
   };
 };
 
-export const createExternalReference = (
-  fragment?: Partial<ExternalReference>
-): ExternalReference => {
-  return {
-    accession_id: faker.datatype.uuid(),
-    name: faker.random.words(),
-    description: faker.random.words(),
-    url: faker.internet.url(),
-    source: {
-      name: faker.random.words(),
-      id: faker.datatype.uuid(),
-      url: faker.internet.url()
-    },
-    ...fragment
-  };
-};
 const createExternalReferences = (): ExternalReference[] => {
   const numberOfExternalReferences = faker.datatype.number({ min: 1, max: 10 });
 

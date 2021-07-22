@@ -30,7 +30,7 @@ import {
   createTranscript,
   createTranscriptMetadata
 } from 'tests/fixtures/entity-viewer/transcript';
-import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/product';
+import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/external-references';
 
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div data-test-id="viewInApp">ViewInApp</div>
