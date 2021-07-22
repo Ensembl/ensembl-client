@@ -27,7 +27,7 @@ type NCBITranscriptMetadata = {
   url: string;
 };
 type MANEMetadata = ValueSetMetadata & {
-  ncbi_transcript: NCBITranscriptMetadata | null;
+  ncbi_transcript: NCBITranscriptMetadata;
 };
 
 export type TranscriptMetadata = {

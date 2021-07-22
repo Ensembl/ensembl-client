@@ -146,7 +146,10 @@ const createOtherMANETranscript = () => {
       label: 'MANE Plus Clinical',
       value: 'plus_clinical',
       definition: faker.lorem.sentence(),
-      ncbi_transcript: null
+      ncbi_transcript: {
+        id: faker.lorem.word(),
+        url: faker.lorem.sentence()
+      }
     }
   });
   const transcript = createTranscript({ metadata });
