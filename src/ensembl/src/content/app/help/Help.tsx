@@ -95,7 +95,7 @@ const MainContent = (props: { article: ArticleData }) => {
 
 const isIndexRoute = (pathname: string) => {
   // handle both /help and /help/
-  return pathname.replace('/', '') === 'help';
+  return pathname.replaceAll('/', '') === 'help';
 };
 
 export default Help;
