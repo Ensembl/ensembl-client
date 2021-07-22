@@ -179,8 +179,8 @@ describe('default sort', () => {
       - canonical transcript
       - MANE transcripts
       - protein-coding transcripts
-      - sorts protein-coding transcripts by length
-      - sorts non-coding transcripts by biotype alphabetically
+      - protein-coding transcripts sorted by length
+      - non-coding transcripts sorted by length
     */
 
     const unsortedTranscripts = [

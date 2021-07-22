@@ -67,9 +67,10 @@ const ProteinsList = (props: ProteinsListProps) => {
   const sortingRule = useSelector(getSortingRule);
 
   const filters = useSelector(getFilters);
-  const filteredTranscripts = Object.values(filters).some(Boolean)
-    ? (filterTranscripts(props.gene.transcripts, filters) as Transcript[])
-    : props.gene.transcripts;
+  const filteredTranscripts = filterTranscripts(
+    props.gene.transcripts,
+    filters
+  );
 
   const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
   const sortedTranscripts = sortingFunction(filteredTranscripts);
