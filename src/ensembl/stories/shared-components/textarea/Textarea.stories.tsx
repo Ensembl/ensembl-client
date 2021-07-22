@@ -17,6 +17,7 @@
 import React, { useState } from 'react';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
+import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 
 import styles from './Textarea.stories.scss';
 
@@ -66,6 +67,17 @@ export const FocusBlurStory = (args: DefaultArgs) => (
 );
 
 FocusBlurStory.storyName = 'with onFocus and onBlur';
+
+export const ShadedTextareaStory = (args: DefaultArgs) => (
+  <Wrapper
+    textarea={ShadedTextarea}
+    placeholder="Enter something..."
+    onFocus={args.onFocus()}
+    onBlur={args.onBlur()}
+  />
+);
+
+ShadedTextareaStory.storyName = 'shaded textarea';
 
 export const CustomStyledStory = () => (
   <Wrapper

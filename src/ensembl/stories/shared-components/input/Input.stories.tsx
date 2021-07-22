@@ -17,6 +17,7 @@
 import React, { useState } from 'react';
 
 import Input from 'src/shared/components/input/Input';
+import ShadedInput from 'src/shared/components/input/ShadedInput';
 
 import styles from './Input.stories.scss';
 
@@ -34,7 +35,7 @@ const Wrapper = (props: any) => {
   };
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <Input value={value} {...otherProps} onChange={onChange} />
     </div>
   );
@@ -63,6 +64,12 @@ export const FocusAndBlurStory = (args: DefaultArgs) => (
 );
 
 FocusAndBlurStory.storyName = 'handling focus and blur';
+
+export const ShadedInputStory = (args: DefaultArgs) => (
+  <Wrapper input={ShadedInput} placeholder="Enter something..." {...args} />
+);
+
+ShadedInputStory.storyName = 'shaded input';
 
 export const CustomInputStory = (args: DefaultArgs) => (
   <Wrapper
