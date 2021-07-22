@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
+// React Router doesn't handle absolute urls, requiring users
+// to write their own components to address this use case.
+// We may want to move this component to the shared folder,
+// if we discover a need to reuse it.
+
 import React, { ReactNode } from 'react';
-import classNames from 'classnames';
+import { Link } from 'react-router-dom';
 
-import styles from './Step.scss';
-
-type StepProps = {
-  count: number;
-  label: string;
-  children?: ReactNode;
+type Props = {
+  to: string;
+  className?: string;
+  onClick?: () => void;
+  children: ReactNode;
 };
 
-export const Step = (props: StepProps) => {
-  const wrapperClassname = classNames(styles.wrapper, {
-    [styles.wrapperWithChildren]: props.children
-  });
+const HelpMenuLink = (props: Props) => {
+  const { to, ...otherProps } = props;
 
-  return (
-    <div className={wrapperClassname}>
-      <div className={styles.stepIcon}>
-        <span>{props.count}</span>
-      </div>
-      <div className={styles.stepLabel}>{props.label}</div>
-      {props.children && (
-        <div className={styles.childrenContainer}>{props.children}</div>
-      )}
-    </div>
-  );
+  if (to.match(/^https?:\/\//)) {
+    // absolute link
+    return <a href={to} {...otherProps} />;
+  } else {
+    return <Link {...props} />;
+  }
 };
+
+export default HelpMenuLink;

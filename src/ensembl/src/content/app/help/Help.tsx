@@ -19,9 +19,9 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import HelpMenu from './help-menu/HelpMenu';
+import HelpMenu from './components/help-menu/HelpMenu';
+import HelpLanding from './components/help-landing/HelpLanding';
 import {
-  IndexArticle,
   TextArticle,
   RelatedArticles,
   HelpArticleGrid,
@@ -31,28 +31,36 @@ import {
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import {
   TextArticleData,
-  VideoArticleData,
-  IndexArticleData
+  VideoArticleData
 } from 'src/shared/types/help-and-docs/article';
 
 import styles from './Help.scss';
 
-type ArticleData = TextArticleData | VideoArticleData | IndexArticleData;
+type ArticleData = TextArticleData | VideoArticleData;
 
 const Help = () => {
   const location = useLocation();
+  const isIndexPage = isIndexRoute(location.pathname);
   const { data: menu } = useApiService<MenuType>({
     endpoint: `/api/docs/menus?name=help`
   });
   const { data: article } = useApiService<any>({
-    endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`
+    endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`,
+    skip: isIndexPage
   });
+  const main = isIndexPage ? (
+    <main className={styles.main}>
+      <HelpLanding />
+    </main>
+  ) : article ? (
+    <MainContent article={article} />
+  ) : null;
 
   return (
     <div className={styles.help}>
       <AppBar />
       {menu && <HelpMenu menu={menu} currentUrl={location.pathname} />}
-      {article && <MainContent article={article} />}
+      {main}
     </div>
   );
 };
@@ -63,26 +71,31 @@ const AppBar = () => {
 
 const MainContent = (props: { article: ArticleData }) => {
   const { article } = props;
-  let content;
-  if (article.type === 'index') {
-    content = <IndexArticle article={article} />;
-  } else if (['article', 'video'].includes(article.type)) {
-    const renderedArticle =
-      article.type === 'article' ? (
-        <TextArticle article={article} />
-      ) : (
-        <VideoArticle video={article} />
-      );
-    content = (
-      <HelpArticleGrid className={styles.articleGrid}>
-        {renderedArticle}
-        {!!article.related_articles.length && (
-          <RelatedArticles articles={article.related_articles} />
-        )}
-      </HelpArticleGrid>
-    );
+  if (article.type !== 'article' && article.type !== 'video') {
+    return null;
   }
+  const renderedArticle =
+    article.type === 'article' ? (
+      <TextArticle article={article} />
+    ) : (
+      <VideoArticle video={article} />
+    );
+
+  const content = (
+    <HelpArticleGrid className={styles.articleGrid}>
+      {renderedArticle}
+      {!!article.related_articles.length && (
+        <RelatedArticles articles={article.related_articles} />
+      )}
+    </HelpArticleGrid>
+  );
+
   return <main className={styles.main}>{content}</main>;
+};
+
+const isIndexRoute = (pathname: string) => {
+  // handle both /help and /help/
+  return pathname.replaceAll('/', '') === 'help';
 };
 
 export default Help;

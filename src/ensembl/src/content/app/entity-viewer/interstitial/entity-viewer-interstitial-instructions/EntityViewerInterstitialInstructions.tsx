@@ -43,42 +43,45 @@ const EntityViewerInterstitialInstructions = () => {
     <section className={styles.instructionsPanel}>
       <div className={styles.instructionsWrapper}>
         <div className={styles.stepWrapper}>
-          <Step count={1} title="Find and add a species" />
-          <div className={styles.description}>
-            <ImageButton
-              className={styles.imageButtonIcon}
-              status={Status.DISABLED}
-              image={SpeciesSelectorIcon}
-            />
-            <div className={styles.iconLabel}>Species Selector</div>
-          </div>
+          <Step count={1} label="Find and add a species">
+            <div className={styles.description}>
+              <ImageButton
+                className={styles.imageButtonIcon}
+                status={Status.DISABLED}
+                image={SpeciesSelectorIcon}
+              />
+              <div className={styles.iconLabel}>Species Selector</div>
+            </div>
+          </Step>
         </div>
 
         <div className={styles.stepWrapper}>
-          <Step count={2} title="Return to this app" />
-          <div className={styles.description}>
-            <ImageButton
-              className={styles.imageButtonIcon}
-              status={Status.DISABLED}
-              image={EntityViewerIcon}
-            />
-            <div className={styles.iconLabel}>Entity Viewer</div>
-          </div>
+          <Step count={2} label="Return to this app">
+            <div className={styles.description}>
+              <ImageButton
+                className={styles.imageButtonIcon}
+                status={Status.DISABLED}
+                image={EntityViewerIcon}
+              />
+              <div className={styles.iconLabel}>Entity Viewer</div>
+            </div>
+          </Step>
         </div>
 
         <div className={styles.stepWrapper}>
           <Step
             count={3}
-            title="Use Search or the example links to view a gene"
-          />
-          <div className={styles.searchDescription}>
-            <ImageButton
-              className={styles.searchButtonIcon}
-              status={Status.DISABLED}
-              image={SearchIcon}
-            />
-            <div className={styles.exampleText}>Example gene</div>
-          </div>
+            label="Use Search or the example links to view a gene"
+          >
+            <div className={styles.searchDescription}>
+              <ImageButton
+                className={styles.searchButtonIcon}
+                status={Status.DISABLED}
+                image={SearchIcon}
+              />
+              <div className={styles.exampleText}>Example gene</div>
+            </div>
+          </Step>
         </div>
 
         <PrimaryButton
