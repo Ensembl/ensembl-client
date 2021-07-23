@@ -29,7 +29,11 @@ const metadata = {
   mane: {
     label: faker.lorem.word(),
     value: faker.lorem.word(),
-    definition: faker.lorem.sentence()
+    definition: faker.lorem.sentence(),
+    ncbi_transcript: {
+      id: faker.lorem.word(),
+      url: faker.lorem.sentence()
+    }
   }
 };
 

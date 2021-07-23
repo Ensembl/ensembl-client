@@ -17,6 +17,7 @@
 import { Slice } from './slice';
 import { FullTranscript } from './transcript';
 import { ExternalReference } from './externalReference';
+import { GeneMetadata } from './metadata';
 
 // description of all gene fields that can be retrieved from a graphql api
 export type FullGene = {
@@ -26,9 +27,9 @@ export type FullGene = {
   version: number | null;
   symbol: string | null;
   name: string | null;
-  so_term: string;
   slice: Slice;
   transcripts: FullTranscript[];
   alternative_symbols: string[];
   external_references: ExternalReference[];
+  metadata: GeneMetadata;
 };

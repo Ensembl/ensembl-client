@@ -34,7 +34,6 @@ export type SearchMatch = {
   unversioned_stable_id: string;
   biotype: string;
   symbol: string | null;
-  so_term: string;
   name: string;
   genome_id: string;
   transcript_count: number;
