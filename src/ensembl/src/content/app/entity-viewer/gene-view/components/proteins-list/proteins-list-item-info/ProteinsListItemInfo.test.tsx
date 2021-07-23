@@ -20,7 +20,7 @@ import userEvent from '@testing-library/user-event';
 import times from 'lodash/times';
 
 import { ProteinExternalReferenceGroup } from './ProteinsListItemInfo';
-import { createExternalReference } from 'tests/fixtures/entity-viewer/external-references';
+import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/external-reference';
 import { ExternalSource } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 jest.mock(

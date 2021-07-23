@@ -17,7 +17,7 @@
 import faker from 'faker';
 import times from 'lodash/times';
 
-import { createExternalReference } from './external-references';
+import { createExternalReference } from './external-reference';
 
 import {
   ProteinDomain,

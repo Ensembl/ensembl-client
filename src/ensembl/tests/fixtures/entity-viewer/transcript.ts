@@ -19,7 +19,7 @@ import times from 'lodash/times';
 
 import { createSlice } from './slice';
 import { createProduct } from './product';
-import { createExternalReference } from './external-references';
+import { createExternalReference } from './external-reference';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
