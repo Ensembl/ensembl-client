@@ -123,7 +123,11 @@ const createMANETranscript = () => {
     mane: {
       label: 'MANE Select',
       value: 'select',
-      definition: faker.lorem.sentence()
+      definition: faker.lorem.sentence(),
+      ncbi_transcript: {
+        id: faker.lorem.word(),
+        url: faker.lorem.sentence()
+      }
     }
   });
 
@@ -141,7 +145,11 @@ const createOtherMANETranscript = () => {
     mane: {
       label: 'MANE Plus Clinical',
       value: 'plus_clinical',
-      definition: faker.lorem.sentence()
+      definition: faker.lorem.sentence(),
+      ncbi_transcript: {
+        id: faker.lorem.word(),
+        url: faker.lorem.sentence()
+      }
     }
   });
   const transcript = createTranscript({ metadata });

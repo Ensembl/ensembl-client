@@ -19,6 +19,7 @@ import times from 'lodash/times';
 
 import { createSlice } from './slice';
 import { createProduct } from './product';
+import { createExternalReference } from './external-reference';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -76,7 +77,9 @@ export const createTranscript = (
   };
 };
 
-export const createTranscriptMetadata = (fragment: Partial<TranscriptMetadata> = {}): TranscriptMetadata => {
+export const createTranscriptMetadata = (
+  fragment?: Partial<TranscriptMetadata>
+): TranscriptMetadata => {
   return {
     biotype: {
       label: faker.lorem.word(),
@@ -95,19 +98,7 @@ export const createTranscriptMetadata = (fragment: Partial<TranscriptMetadata> =
 const createExternalReferences = (): ExternalReference[] => {
   const numberOfExternalReferences = faker.datatype.number({ min: 1, max: 10 });
 
-  return times(numberOfExternalReferences, () => {
-    return {
-      accession_id: faker.datatype.uuid(),
-      name: faker.random.words(),
-      description: faker.random.words(),
-      url: faker.internet.url(),
-      source: {
-        name: faker.random.words(),
-        id: faker.datatype.uuid(),
-        url: faker.internet.url()
-      }
-    };
-  });
+  return times(numberOfExternalReferences, () => createExternalReference());
 };
 
 const createSplicedExons = (

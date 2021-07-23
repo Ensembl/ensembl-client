@@ -42,7 +42,6 @@ type Transcript = Pick<
 
 export type DefaultTranscriptListItemProps = {
   gene: TranscriptsListItemInfoProps['gene'];
-  isDefault?: boolean;
   transcript: Transcript;
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;

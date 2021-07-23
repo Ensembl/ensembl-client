@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-export type ValueSetMetadata = {
-  value: string;
-  label: string;
-  definition: string;
-};
+import faker from 'faker';
+import merge from 'lodash/merge';
 
-type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
+import { ExternalReference } from 'ensemblRoot/src/shared/types/thoas/externalReference';
 
-type NCBITranscriptMetadata = {
-  id: string;
-  url: string;
-};
-type MANEMetadata = ValueSetMetadata & {
-  ncbi_transcript: NCBITranscriptMetadata;
-};
+export const createExternalReference = (
+  fragment?: Partial<
+    Omit<ExternalReference, 'source'> & {
+      source: Partial<ExternalReference['source']>;
+    }
+  >
+): ExternalReference => {
+  const xref = {
+    accession_id: faker.lorem.word(),
+    name: faker.lorem.word(),
+    description: faker.lorem.word(),
+    url: faker.lorem.word(),
+    source: {
+      name: faker.lorem.word(),
+      id: faker.lorem.word(),
+      url: faker.lorem.word()
+    }
+  };
 
-export type TranscriptMetadata = {
-  tsl: ValueSetMetadata | null;
-  appris: ValueSetMetadata | null;
-  biotype: ValueSetMetadata;
-  mane: MANEMetadata | null;
-  canonical: CanonicalMetadata | null;
-  gencode_basic: ValueSetMetadata | null;
-};
-
-export type GeneMetadata = {
-  biotype: ValueSetMetadata;
+  return merge(xref, fragment);
 };
