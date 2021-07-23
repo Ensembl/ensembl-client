@@ -1,5 +1,11 @@
+@import 'src/styles/common';
+
 .wrapper {
   max-width: 500px;
+}
+
+.greyWrapper {
+  background-color: $light-grey;
 }
 
 .customizedInput {
