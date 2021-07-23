@@ -183,7 +183,7 @@ describe('<TranscriptsListItemInfo /', () => {
       transcript: MANETranscript,
       expandMoreInfo: true
     });
-    const refseqLabel = queryByText('RefSeq');
+    const refseqLabel = queryByText('RefSeq match');
     expect(refseqLabel).toBeTruthy();
 
     const refseqLink = [...container.querySelectorAll('a')].find(
