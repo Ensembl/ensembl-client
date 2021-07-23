@@ -105,8 +105,6 @@ const TranscriptsFilter = (props: Props) => {
 
   const initialFilters: Filters = createInitialFilters(props.transcripts);
 
-  // TODO: Add protein coding options in RadioOptions if there are protein coding biotype
-
   useEffect(() => {
     if (Object.keys(filters).length === 0) {
       dispatch(setFilters(initialFilters));
