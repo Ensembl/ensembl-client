@@ -173,7 +173,7 @@ export const TranscriptsListItemInfo = (
             {!!transcriptNCBI && (
               <ExternalReference
                 classNames={{ label: styles.normalText }}
-                label={'RefSeq'}
+                label={'RefSeq match'}
                 to={transcriptNCBI.url}
                 linkText={transcriptNCBI.id}
               />
