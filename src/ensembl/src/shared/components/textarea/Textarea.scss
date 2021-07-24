@@ -9,6 +9,11 @@
   &:active {
     outline: none;
   }
+
+  &::placeholder {
+    color: $black;
+    font-weight: $light;
+  }
 }
 
 .disableResize {
@@ -16,7 +21,7 @@
 }
 
 .shadedTextarea {
-  box-shadow: inset 2px 2px 4px -2px $dark-grey;
+  box-shadow: $form-field-shadow;
+  padding: 7px 15px;
   border: none;
-  padding: 4px;
 }

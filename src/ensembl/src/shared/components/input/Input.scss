@@ -16,8 +16,8 @@
 }
 
 .shadedInput {
-  box-shadow: inset 2px 2px 4px -2px $medium-dark-grey, inset -2px -2px 1px -2px $dark-grey;
+  box-shadow: $form-field-shadow;
   border: none;
-  padding: 4px 15px;
+  padding: 0 15px;
   height: 30px;
 }

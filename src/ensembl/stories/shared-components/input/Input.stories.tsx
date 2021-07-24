@@ -66,26 +66,24 @@ export const FocusAndBlurStory = (args: DefaultArgs) => (
 FocusAndBlurStory.storyName = 'handling focus and blur';
 
 export const ShadedInputStory = (args: DefaultArgs) => (
-  <div>
-    <Wrapper
-      input={ShadedInput}
-      placeholder="Placeholder for dev..."
-      {...args}
-    />
-    <div
-      style={{
-        marginTop: '100px',
-        backgroundColor: '#f1f2f4',
-        padding: '50px'
-      }}
-    >
+  <>
+    <div className={styles.stage}>
+      <p>Against white background</p>
       <Wrapper
         input={ShadedInput}
         placeholder="Placeholder for dev..."
         {...args}
       />
     </div>
-  </div>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>Against grey background</p>
+      <Wrapper
+        input={ShadedInput}
+        placeholder="Placeholder for dev..."
+        {...args}
+      />
+    </div>
+  </>
 );
 
 ShadedInputStory.storyName = 'shaded input';
