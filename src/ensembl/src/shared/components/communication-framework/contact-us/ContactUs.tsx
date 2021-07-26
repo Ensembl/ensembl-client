@@ -16,8 +16,10 @@
 
 import React, { useState } from 'react';
 
+import { ContactUsInitialForm } from 'src/shared/components/contact-us-form';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+import { Invitation, Header } from './preform-header/PreformHeader';
 
 import { ReactComponent as BlogIcon } from 'static/img/home/blog.svg';
 import { ReactComponent as FacebookIcon } from 'static/img/home/facebook.svg';
@@ -29,15 +31,22 @@ const ContactUs = () => {
   const [shouldShowForm, setShouldShowForm] = useState(false);
 
   if (shouldShowForm) {
-    return <div>Will display the form</div>;
+    return (
+      <div>
+        <Invitation />
+        <Header
+          title="Send us a message"
+          onClick={() => setShouldShowForm(false)}
+        />
+        <ContactUsInitialForm />
+      </div>
+    );
   }
 
   return (
     <div className={styles.wrapper}>
       <section>
-        <p>
-          Please contact us if you have a problem with the website or need help
-        </p>
+        <Invitation />
         <SecondaryButton onClick={() => setShouldShowForm(!shouldShowForm)}>
           Contact us
         </SecondaryButton>

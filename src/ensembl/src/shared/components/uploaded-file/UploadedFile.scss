@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.uploadedFile {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+}
+
+.name {
+  flex-shrink: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.size {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-weight: $light;
+}
+
+.delete {
+  flex: 0 0 auto;
+  margin-left: 6px;
+}

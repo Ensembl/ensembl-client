@@ -29,4 +29,9 @@ const ShadedTextarea = (props: TextareaProps) => {
   return <Textarea className={inputClasses} {...otherProps} />;
 };
 
+ShadedTextarea.defaultProps = {
+  callbackWithEvent: false,
+  resizable: false
+};
+
 export default ShadedTextarea;

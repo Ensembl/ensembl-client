@@ -16,21 +16,20 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import styles from './Input.scss';
 
 type PropsForRespondingWithEvents = {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onFocus: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  onBlur: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   callbackWithEvent: true;
 };
 
 type PropsForRespondingWithData = {
-  onChange: (value: string) => void;
-  onFocus: (value?: string) => void;
-  onBlur: (value?: string) => void;
+  onChange?: (value: string) => void;
+  onFocus?: (value?: string) => void;
+  onBlur?: (value?: string) => void;
   callbackWithEvent: false;
 };
 
@@ -44,25 +43,38 @@ export type Props = {
   autoFocus?: boolean;
   placeholder?: string;
   className?: string; // to customize input styling when using CSS modules
-  onKeyUp: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 } & OnChangeProps;
 
 const Input = (props: Props) => {
-  const eventHandler = (eventName: string) => (
-    e: React.ChangeEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
+  const eventHandler =
+    (eventName: string) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLInputElement>
+        | React.FocusEvent<HTMLInputElement>
+    ) => {
+      const value = e.target.value;
 
-    if (eventName === 'change') {
-      props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
-    } else if (eventName === 'focus') {
-      props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
-    } else if (eventName === 'blur') {
-      props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
-    }
-  };
+      if (eventName === 'change') {
+        if (!props.onChange) {
+          return;
+        }
+        props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
+      } else if (eventName === 'focus') {
+        if (!props.onFocus) {
+          return;
+        }
+        props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
+      } else if (eventName === 'blur') {
+        if (!props.onBlur) {
+          return;
+        }
+        props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
+      }
+    };
 
   const className = classNames(styles.input, props.className);
 
@@ -86,12 +98,7 @@ const Input = (props: Props) => {
 };
 
 Input.defaultProps = {
-  callbackWithEvent: false,
-  onFocus: noop,
-  onBlur: noop,
-  onKeyUp: noop,
-  onKeyDown: noop,
-  onKeyPress: noop
+  callbackWithEvent: false
 };
 
 export default Input;

@@ -15,22 +15,15 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import Input, { Props as InputProps } from './Input';
+import { ContactUsInitialForm } from 'src/shared/components/contact-us-form';
 
-import styles from './Input.scss';
-
-const ShadedInput = (props: InputProps) => {
-  const { className, ...otherProps } = props;
-
-  const inputClasses = classNames(styles.shadedInput, className);
-
-  return <Input className={inputClasses} {...otherProps} />;
+export const DefaultStory = () => {
+  return <ContactUsInitialForm />;
 };
 
-ShadedInput.defaultProps = {
-  callbackWithEvent: false
-};
+DefaultStory.storyName = 'default';
 
-export default ShadedInput;
+export default {
+  title: 'Components/Shared Components/Contact Us form'
+};
