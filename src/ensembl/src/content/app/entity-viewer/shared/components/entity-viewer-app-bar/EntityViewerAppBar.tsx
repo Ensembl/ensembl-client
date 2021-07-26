@@ -67,11 +67,15 @@ const EntityViewerAppBar = () => {
     ? wrappedSpecies
     : 'To start using this app...';
 
+  const entityViewerSlug = {
+    slug: 'entity-viewer'
+  };
+
   return (
     <AppBar
       appName={AppName.ENTITY_VIEWER}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="entity-viewer" />}
+      aside={<HelpPopupButton slug={entityViewerSlug} />}
     />
   );
 };

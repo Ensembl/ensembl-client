@@ -66,11 +66,15 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     ? wrappedSpecies
     : 'To start using this app...';
 
+  const browserSlug = {
+    slug: 'genome-browser'
+  };
+
   return (
     <AppBar
       appName={AppName.GENOME_BROWSER}
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="genome-browser" />}
+      aside={<HelpPopupButton slug={browserSlug} />}
     />
   );
 };

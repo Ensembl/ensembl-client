@@ -50,11 +50,15 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
     <SpeciesTabsWrapper isWrappable={true} speciesTabs={speciesTabs} />
   );
 
+  const speciesHomepageSlug = {
+    slug: 'species-homepage'
+  };
+
   return (
     <AppBar
       appName={AppName.SPECIES_SELECTOR}
       mainContent={wrappedSpecies}
-      aside={<HelpPopupButton slug="species-homepage" />}
+      aside={<HelpPopupButton slug={speciesHomepageSlug} />}
     />
   );
 };
