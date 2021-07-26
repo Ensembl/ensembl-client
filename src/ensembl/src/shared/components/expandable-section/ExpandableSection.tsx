@@ -17,7 +17,7 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
-import { ReactComponent as Chevron } from 'static/img/shared/chevron-right.svg';
+import Chevron from 'src/shared/components/chevron/Chevron';
 
 import styles from './ExpandableSection.scss';
 
@@ -41,10 +41,6 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
       setIsExpanded(props.isExpanded);
     }
   }, [props.isExpanded]);
-
-  const chevronClasses = classNames(styles.chevron, {
-    [styles.chevronDown]: isExpanded
-  });
 
   const wrapperClassNames = classNames(
     styles.expandableSection,
@@ -70,7 +66,11 @@ const ExpandableSection = (props: ExpandableSectionProps) => {
     <div className={wrapperClassNames}>
       {props.expandedContent && (
         <div className={styles.toggle} onClick={toggleExpanded}>
-          <Chevron className={chevronClasses} />
+          <Chevron
+            direction={isExpanded ? 'up' : 'down'}
+            animate={true}
+            classNames={{ svg: styles.chevron }}
+          />
         </div>
       )}
 

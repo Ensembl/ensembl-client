@@ -47,9 +47,8 @@ import {
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
+import Chevron from 'src/shared/components/chevron/Chevron';
 
-import chevronDownIcon from 'static/img/shared/chevron-down.svg';
-import chevronUpIcon from 'static/img/shared/chevron-up.svg';
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
 import { RootState } from 'src/store';
@@ -233,12 +232,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
             </span>
           )}
           {track.child_tracks && (
-            <button onClick={toggleExpand} className={styles.expandBtn}>
-              <img
-                src={isCollapsed ? chevronDownIcon : chevronUpIcon}
-                alt={isCollapsed ? 'expand' : 'collapse'}
-              />
-            </button>
+            <Chevron
+              onClick={toggleExpand}
+              direction={isCollapsed ? 'down' : 'up'}
+              classNames={{ svg: styles.chevron }}
+            />
           )}
         </label>
         <div className={styles.ellipsisHolder}>

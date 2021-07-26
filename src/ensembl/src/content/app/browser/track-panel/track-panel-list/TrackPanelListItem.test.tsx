@@ -144,7 +144,7 @@ describe('<TrackPanelListItem />', () => {
 
     it('toggles the expanded/collapsed state of the track when clicked on the expand button', async () => {
       const { container } = wrapInRedux();
-      const expandButton = container.querySelector('.expandBtn') as HTMLElement;
+      const expandButton = container.querySelector('.chevron') as HTMLElement;
 
       userEvent.click(expandButton);
 

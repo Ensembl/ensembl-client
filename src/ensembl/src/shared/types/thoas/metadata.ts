@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+type ValueSetMetadata = {
+  value: string | number | boolean;
+  label: string;
+  definition: string;
+};
 
-import { Source } from './source';
+type ManeMetadata = ValueSetMetadata;
+type CanonicalMetadata = ValueSetMetadata;
+type GencodeBasicMetadata = ValueSetMetadata;
+type ApprisMetadata = ValueSetMetadata;
+type TSLMetadata = ValueSetMetadata;
 
-export type Metadata = {
-  [key: string]: {
-    description: string;
-    value?: string;
-    source_uri?: string;
-    source?: Source;
-  };
+export type TranscriptMetadata = {
+  mane: ManeMetadata | null;
+  canonical: CanonicalMetadata | null;
+  gencode_basic: GencodeBasicMetadata | null;
+  appris: ApprisMetadata | null;
+  tsl: TSLMetadata | null;
 };

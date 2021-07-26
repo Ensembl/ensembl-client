@@ -33,8 +33,6 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import {
   getFilters,
   getSortingRule
@@ -59,11 +57,10 @@ import GeneRelationships from 'src/content/app/entity-viewer/gene-view/component
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-
-import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
 
 import styles from './GeneView.scss';
 
@@ -157,6 +154,36 @@ const QUERY = gql`
             }
           }
         }
+        external_references {
+          accession_id
+          name
+          url
+          source {
+            id
+            name
+          }
+        }
+        metadata {
+          canonical {
+            value
+            label
+            definition
+          }
+          mane {
+            value
+            label
+            definition
+          }
+          gencode_basic {
+            label
+          }
+          appris {
+            label
+          }
+          tsl {
+            label
+          }
+        }
       }
     }
   }
@@ -209,8 +236,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const focusId = buildFocusIdForUrl({ type: 'gene', objectId: geneId });
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
-  const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
-
   const shouldShowFilterIndicator =
     sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
 
@@ -231,10 +256,6 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   useEffect(() => {
     if (!genomeId || !props.gene) {
       return;
-    }
-
-    if (isSidebarOpen) {
-      dispatch(closeSidebarModal());
     }
 
     dispatch(
@@ -264,19 +285,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         >
           {props.gene.transcripts.length > 5 && (
             <div className={styles.filterLabelWrapper}>
-              <div
-                className={classNames([styles.filterLabel], {
-                  [styles.openFilterLabel]: isFilterOpen
-                })}
+              <ShowHide
                 onClick={toggleFilter}
-              >
-                {filterLabel}
-                <ChevronDown
-                  className={classNames([styles.chevron], {
-                    [styles.chevronUp]: isFilterOpen
-                  })}
-                />
-              </div>
+                isExpanded={isFilterOpen}
+                label={filterLabel}
+              />
             </div>
           )}
         </div>

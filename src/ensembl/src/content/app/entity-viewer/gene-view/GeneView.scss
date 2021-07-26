@@ -76,7 +76,9 @@ $backgroundColor: $black;
   top: 0;      
 }
 
-.filterLabelWrapper {  
+.filterLabelWrapper {
+  display: flex;
+  justify-content: flex-end;
   padding-right: 20px;
   padding-bottom: 9px;
   padding-top: 6px;
@@ -117,15 +119,4 @@ $backgroundColor: $black;
     right: -10px;
     top: -2px;
   }
-}
-
-.chevron {
-  margin-left: 10px;
-  margin-bottom: -3px;
-  height: 12px;
-  width: 12px;
-}
-
-.chevronUp {
-  transform: rotate(180deg);
 }

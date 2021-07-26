@@ -135,25 +135,44 @@ export const updatePreviouslyViewedObjectsAndSave =
       ...getActiveGenomePreviouslyViewedObjects(state)
     ];
 
-    const existingIndex = previouslyViewedObjects.findIndex(
-      (previouslyViewedObject) =>
-        previouslyViewedObject.object_id === activeEnsObject.object_id
-    );
-    if (existingIndex === -1) {
-      // IF it is not present, add it to the end
-      previouslyViewedObjects.push({
-        genome_id: activeEnsObject.genome_id,
-        object_id: activeEnsObject.object_id,
-        object_type: activeEnsObject.type,
-        label: activeEnsObject.label
-      });
-    }
+    const savedEntitiesWithoutCurrentEntity =
+      previouslyViewedObjects?.filter(
+        (entity) => entity.object_id !== activeEnsObject.object_id
+      ) || [];
+
+    const stable_id =
+      activeEnsObject.type === 'gene'
+        ? activeEnsObject.versioned_stable_id || activeEnsObject.stable_id
+        : null;
+
+    const geneSymbol =
+      activeEnsObject.type === 'gene' &&
+      activeEnsObject.label !== activeEnsObject.stable_id
+        ? activeEnsObject.label
+        : null;
+
+    const label =
+      activeEnsObject.type === 'gene' && geneSymbol
+        ? [geneSymbol, stable_id as string]
+        : activeEnsObject.label;
+
+    const newObject = {
+      genome_id: activeEnsObject.genome_id,
+      object_id: activeEnsObject.object_id,
+      type: activeEnsObject.type,
+      label: label
+    };
+
+    const updatedEntitiesArray = [
+      newObject,
+      ...savedEntitiesWithoutCurrentEntity
+    ];
 
     // Limit the total number of previously viewed objects to 250
-    const limitedPreviouslyViewedObjects = previouslyViewedObjects.slice(-250);
+    const previouslyViewedObjectsSlice = updatedEntitiesArray.slice(-250);
 
     trackPanelStorageService.updatePreviouslyViewedObjects({
-      [activeGenomeId]: limitedPreviouslyViewedObjects
+      [activeGenomeId]: previouslyViewedObjectsSlice
     });
 
     dispatch(
@@ -161,7 +180,7 @@ export const updatePreviouslyViewedObjectsAndSave =
         activeGenomeId,
         data: {
           ...getActiveTrackPanel(state),
-          previouslyViewedObjects: limitedPreviouslyViewedObjects
+          previouslyViewedObjects: previouslyViewedObjectsSlice
         }
       })
     );

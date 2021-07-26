@@ -33,9 +33,16 @@
     font-size: 13px;
   }
 
-  .previouslyViewedType {
+  .label {
+    margin-right: 8px;
+
+    span + span {
+      margin-left: 8px;
+    }
+  }
+
+  .type {
     color: $dark-grey;
-    margin-left: 8px;
     font-size: 12px;
     font-weight: 300;
   }

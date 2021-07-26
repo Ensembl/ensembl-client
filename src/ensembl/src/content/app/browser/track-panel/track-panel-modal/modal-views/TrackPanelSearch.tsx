@@ -15,13 +15,27 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
+
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+
+import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 
 const TrackPanelSearch = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+
   return (
     <section className="trackPanelSearch">
       <h3>Search</h3>
-      <p>Quickly find the tracks you want to show or hide in the browser</p>
-      <p>Not ready yet &hellip;</p>
+      <div>
+        {activeGenomeId && (
+          <InAppSearch
+            app="genomeBrowser"
+            genomeId={activeGenomeId}
+            mode="sidebar"
+          />
+        )}
+      </div>
     </section>
   );
 };

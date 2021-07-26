@@ -88,7 +88,7 @@ describe('<TrackPanelBar />', () => {
         )
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Bookmarks'
+        (button) => button.innerHTML === 'Previously viewed'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -121,7 +121,7 @@ describe('<TrackPanelBar />', () => {
         )
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Bookmarks'
+        (button) => button.innerHTML === 'Previously viewed'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -146,7 +146,7 @@ describe('<TrackPanelBar />', () => {
     it('causes track panel modal to close if a pressed button is clicked again', () => {
       const { container } = wrapInRedux();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Bookmarks'
+        (button) => button.innerHTML === 'Previously viewed'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);
@@ -176,7 +176,7 @@ describe('<TrackPanelBar />', () => {
         set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
-        (button) => button.innerHTML === 'Bookmarks'
+        (button) => button.innerHTML === 'Previously viewed'
       ) as HTMLButtonElement;
 
       userEvent.click(bookmarksButton);

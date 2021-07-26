@@ -27,7 +27,7 @@ type BrowserUrlParams = {
 
 type EntityViewerUrlParams = {
   genomeId?: string | null;
-  entityId?: string;
+  entityId?: string | null;
   view?: string | null;
   proteinId?: string | null;
 };

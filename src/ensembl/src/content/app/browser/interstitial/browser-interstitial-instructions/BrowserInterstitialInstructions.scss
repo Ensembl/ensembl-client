@@ -1,0 +1,76 @@
+@import 'src/styles/common';
+
+$columnWidth: 230px;
+$columnGap: 60px;
+$rowGap: 60px;
+$leftMargin: 40px;
+
+.instructionsPanel {
+  display: flex;
+  background-color: $light-grey;
+  min-height: 235px;
+  padding: 29px $global-padding-left;
+  box-shadow: 0 3px 5px $global-box-shadow;
+}
+
+.instructionsWrapper {
+  margin-left: $leftMargin;
+  display: grid;
+  grid-template-columns: repeat(4, #{$columnWidth});
+  grid-column-gap: $columnGap;
+  grid-row-gap: $rowGap;
+  max-width: calc(4 * #{$columnWidth} + 3 * #{$columnGap});
+}
+
+.description {
+  display: flex;
+  align-items: center;
+
+  .iconLabel {
+    margin-left: 12px;
+  }
+}
+
+.imageButtonIcon {
+  width: 32px;
+  height: 32px;
+  background-color: $dark-grey;
+
+  svg {
+    fill: $white;
+  }
+}
+
+.searchButtonIcon {
+  width: 30px;
+  height: 30px;
+
+  svg {
+    fill: $dark-grey;
+  }
+}
+
+.searchDescription {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  color: $dark-grey;
+}
+
+.speciesSelectorButton {
+  margin-left: 40px;
+  align-self: start;
+  justify-self: start;
+}
+
+
+@media (max-width: 2 * $global-padding-left + $leftMargin + 4 * $columnWidth + 3 * $columnGap) {
+
+  .instructionsWrapper {
+    grid-template-columns: repeat(2, #{$columnWidth});
+  }
+  .speciesSelectorButton {
+    margin-left: 0;
+  }
+}

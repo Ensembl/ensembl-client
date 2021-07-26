@@ -1,44 +1,204 @@
 @import 'src/styles/common';
 
 .home {
-  padding-bottom: 80px;
+  display: grid;
+  grid-template-rows: minmax(550px, auto) 85px;
+}
 
-  h2 {
-    color: $grey;
-    font-size: 14px;
-    font-weight: $normal;
-  }
+.main {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background-image: linear-gradient($black, $blue);
+  padding-top: 40px; 
+}
+
+.mainTop {
   position: relative;
 }
 
-.search {
-  background: $light-grey;
-  box-shadow: 0 3px 5px $medium-light-grey;
-  min-height: 235px;
-  padding: 15px 60px;
+.mainTopMiddle {    
+  display: grid;
+  grid-template-rows: auto 110px auto; 
+  justify-content: center;
 
-  h2 {
-    margin-left: 20px;
+  .logotype {
+    height: 36px;
+    fill: $white;
+    justify-self: center;
   }
 
-  input[type='text'] {
-    border: none;
-    width: 100%;
-    max-width: 485px;
-    height: 36px;
-    box-shadow: inset 2px 2px 4px -2px $dark-grey;
-    padding: 12px 20px;
+  .text {
+    text-align: center;     
+    font-size: 18px;
+    font-weight: $light;
+    color: $white;
+    margin-top: 15px;
+  }
+}
 
-    &::placeholder {
-      color: $grey;
+.appList {
+  display: grid;
+  grid-template-columns: repeat(3, 270px);
+} 
+
+.appListItem {
+  display: grid;
+  grid-template-rows: 56px auto;
+  justify-content: center;
+
+  .button {
+    display: block;
+    position: relative;
+    width: 221px;
+    height: 40px;
+    background-color: $blue;
+    color: $white;
+    border-radius: 6px;
+    text-align: center;      
+    padding: 5px;     
+    font-size: 18px;
+    font-weight: $bold; 
+
+    span {
+      margin-left: -20px;
+    }
+
+    .icon {
+      position: absolute;
+      right: 20px;
+      fill: $white;
+      height: 32px;
+      width: 32px;        
     }
   }
 
-  button {
-    border: 1px solid $grey;
-    border-radius: 5px;
-    margin-left: 15px;
-    padding: 8px 24px;
-    text-transform: uppercase;
+  .bottomText {
+    font-size: 14px;
+    color: $white;
+    padding: 10px;
+    width: 190px;
+    text-align: center;
+    margin-left: 20px;
   }
 }
+
+.homeTopRight {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  color: $blue;
+  font-weight: $bold;
+  display: grid;
+  grid-template-columns: auto auto;
+  height: 40px;
+  cursor: pointer;
+
+  .wrapper {
+    display: grid;
+    grid-template-columns: 130px auto;
+  }
+
+  .text {
+    margin-top: 10px;
+  }
+
+  .helpIcon {
+    width: 32px;
+    height: 32px;
+    fill: $white;
+    background-color: $blue;
+  }
+}
+
+.speciesContainer {
+  overflow-x: hidden;
+  position: relative;
+
+  .speciesStrip {
+    max-width: none;
+    height: 100%;
+    position: absolute;
+    bottom: 0;    
+    transform: translateX(calc(-1 * (100% - 100vw) / 2));
+  }
+
+  .platform {
+    position: absolute;
+    bottom: 0;
+    background-color: $dark-grey;
+    background-image: linear-gradient($dark-grey, $black);
+    height: 9%;
+    width: 100%;
+  }
+
+  @media (orientation: portrait) {
+    .speciesStrip {
+      max-height: 60%;
+      transform: translateX(calc(-1 * (100% - 100vw) / 2));
+    }
+
+    .platform {
+      height: 6%;
+    }
+  }
+}
+
+footer {
+  display: grid;
+  grid-template-columns: auto auto;
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
+.footerLeft {
+  grid-column: 1/2;
+  display: flex;
+  align-items: center;
+
+  .logotype {
+    width: 92px;
+    height: 34px;
+    margin-right: 10px;
+    fill: $dark-grey;
+  }
+
+  .ebiLogo {
+    margin-right: 20px;
+    width: 110px;
+    height: 34px;
+  }
+
+  .text {
+    font-size: 15px;
+    font-weight: 300;
+    color: $dark-grey;
+    margin-right: 10px;    
+  }  
+}
+
+.footerRightIcons {
+  grid-column: 2/2; 
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  .link {
+    margin-right: 12px;
+    margin-bottom: 10px;
+    color: $blue;    
+  }  
+
+  .mediaIcons {
+    width: 24px;
+    height: 24px;
+    margin: 0 12px 10px 12px;
+  }
+    
+  .elixirLogo {
+    width: 71px;
+    height: 52px;
+    margin-left: 90px;
+  }  
+}
+
+

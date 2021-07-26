@@ -3,5 +3,6 @@
 .entityViewer {
   height: 100%;
   display: grid;
+  align-items: start;
   grid-template-rows: auto 1fr;
 }

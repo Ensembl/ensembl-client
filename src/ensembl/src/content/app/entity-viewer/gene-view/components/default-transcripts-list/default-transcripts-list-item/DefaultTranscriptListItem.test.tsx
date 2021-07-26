@@ -51,6 +51,7 @@ describe('<DefaultTranscriptListItem />', () => {
     rulerTicks: createRulerTicks(),
     expandTranscript: false,
     expandDownload: false,
+    expandMoreInfo: false,
     toggleTranscriptInfo: toggleTranscriptInfo
   };
 
@@ -86,12 +87,5 @@ describe('<DefaultTranscriptListItem />', () => {
     const { queryByTestId } = renderComponent({ expandTranscript: true });
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
-  });
-
-  it('displays selected transcript', () => {
-    const { container } = renderComponent({ isDefault: true });
-    expect(
-      container.querySelector('.transcriptQualityLabel')?.textContent
-    ).toBe('Selected');
   });
 });

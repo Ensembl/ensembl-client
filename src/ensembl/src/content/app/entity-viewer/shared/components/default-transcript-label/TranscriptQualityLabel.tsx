@@ -18,31 +18,44 @@ import React from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
+import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+
 import styles from './TranscriptQualityLabel.scss';
 
-const transcriptLabelMap = {
-  selected: {
-    label: 'Selected',
-    helpText:
-      'The selected transcript is a default single transcript per protein coding gene that is representative of biology, well-supported, expressed and highly conserved'
+type Props = {
+  metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
+};
+
+const getTranscriptMetadata = (props: Props) => {
+  const { canonical, mane } = props.metadata;
+  if (canonical && mane) {
+    return {
+      label: mane.label,
+      definition: mane.definition
+    };
+  } else if (canonical) {
+    return {
+      label: canonical.label,
+      definition: canonical.definition
+    };
+  } else if (mane) {
+    return {
+      label: mane.label,
+      definition: mane.definition
+    };
   }
 };
 
-export const TranscriptQualityLabel = () => {
-  // TODO show more meaningful labels by using transcript metadata when the api starts returning it
-  const transcriptQuality = 'selected';
-
-  const labelText = transcriptLabelMap[transcriptQuality]?.label;
-  if (!labelText) {
+export const TranscriptQualityLabel = (props: Props) => {
+  const metadata = getTranscriptMetadata(props);
+  if (!metadata) {
     return null;
   }
 
   return (
     <div className={styles.transcriptQualityLabel}>
-      <span>{labelText}</span>
-      <QuestionButton
-        helpText={transcriptLabelMap[transcriptQuality]?.helpText}
-      />
+      <span>{metadata.label}</span>
+      <QuestionButton helpText={metadata.definition} />
     </div>
   );
 };

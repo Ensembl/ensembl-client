@@ -35,8 +35,13 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
-import { toggleTranscriptDownload } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import {
+  toggleTranscriptDownload,
+  toggleTranscriptMoreInfo
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -48,14 +53,17 @@ import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneVie
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
 
-import { ReactComponent as ChevronDown } from 'static/img/shared/chevron-down.svg';
-
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
 type Transcript = Pick<
   FullTranscript,
-  'stable_id' | 'unversioned_stable_id' | 'so_term'
+  'stable_id' | 'unversioned_stable_id' | 'so_term' | 'external_references'
 > &
   Pick2<FullTranscript, 'slice', 'location'> &
+  Pick2<
+    FullTranscript,
+    'metadata',
+    'canonical' | 'mane' | 'gencode_basic' | 'appris' | 'tsl'
+  > &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     spliced_exons: Array<
       Pick2<SplicedExon, 'exon', 'stable_id'> &
@@ -81,7 +89,9 @@ export type TranscriptsListItemInfoProps = {
   gene: Gene;
   transcript: Transcript;
   expandDownload: boolean;
+  expandMoreInfo: boolean;
   toggleTranscriptDownload: (id: string) => void;
+  toggleTranscriptMoreInfo: (id: string) => void;
   onProteinLinkClick: () => void;
 };
 
@@ -113,6 +123,13 @@ export const TranscriptsListItemInfo = (
 
   const mainStyles = classNames(transcriptsListStyles.row, styles.listItemInfo);
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
+  const transcriptCCDS = transcript.external_references.find(
+    (xref) => xref.source.name === 'CCDS'
+  );
+
+  const hasRelevantMetadata = (
+    ['gencode_basic', 'tsl', 'appris'] as const
+  ).some((key) => transcript.metadata[key]);
 
   const focusIdForUrl = buildFocusIdForUrl({
     type: 'gene',
@@ -139,9 +156,35 @@ export const TranscriptsListItemInfo = (
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
   };
 
-  const chevronClassForDownload = classNames(styles.chevron, {
-    [styles.chevronUp]: props.expandDownload
-  });
+  const moreInfoContent = () => {
+    return (
+      <>
+        {hasRelevantMetadata && (
+          <div className={styles.moreInfoColumn}>
+            {transcript.metadata.gencode_basic?.label && (
+              <div>{transcript.metadata.gencode_basic?.label}</div>
+            )}
+            {transcript.metadata?.tsl && (
+              <div>{transcript.metadata.tsl?.label}</div>
+            )}
+            {transcript.metadata?.appris && (
+              <div>{transcript.metadata.appris?.label}</div>
+            )}
+          </div>
+        )}
+        {!!transcriptCCDS && (
+          <div className={styles.moreInfoColumn}>
+            <ExternalReference
+              classNames={{ label: styles.normalText }}
+              label={'CCDS'}
+              to={transcriptCCDS.url}
+              linkText={transcriptCCDS.accession_id}
+            />
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <div className={mainStyles}>
@@ -175,15 +218,25 @@ export const TranscriptsListItemInfo = (
           </div>
         </div>
 
-        <div className={styles.moreInformation}>More information</div>
+        {(hasRelevantMetadata || !!transcriptCCDS) && (
+          <ShowHide
+            onClick={() => props.toggleTranscriptMoreInfo(transcript.stable_id)}
+            label="More information"
+            isExpanded={props.expandMoreInfo}
+            classNames={{ wrapper: styles.moreInformationLink }}
+          />
+        )}
 
-        <div
-          className={styles.downloadLink}
+        {props.expandMoreInfo && (
+          <div className={styles.moreInformation}>{moreInfoContent()}</div>
+        )}
+
+        <ShowHide
           onClick={() => props.toggleTranscriptDownload(transcript.stable_id)}
-        >
-          Download
-          <ChevronDown className={chevronClassForDownload} />
-        </div>
+          label="Download"
+          isExpanded={props.expandDownload}
+          classNames={{ wrapper: styles.downloadLink }}
+        />
         {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>
       <div className={transcriptsListStyles.right}>
@@ -218,6 +271,7 @@ const renderInstantDownload = ({
 
 const mapDispatchToProps = {
   toggleTranscriptDownload,
+  toggleTranscriptMoreInfo,
   onProteinLinkClick: clearExpandedProteins
 };
 

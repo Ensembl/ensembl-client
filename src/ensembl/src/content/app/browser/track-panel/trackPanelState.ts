@@ -21,8 +21,8 @@ import pick from 'lodash/pick';
 export type PreviouslyViewedObject = {
   genome_id: string;
   object_id: string;
-  object_type: string;
-  label: string;
+  type: string;
+  label: string | string[];
 };
 
 export type PreviouslyViewedObjects = {
@@ -55,7 +55,7 @@ export const defaultTrackPanelStateForGenome: TrackPanelStateForGenome = {
   collapsedTrackIds: []
 };
 
-export const getInitialTrackPanelState = (): TrackPanelState => {
+export const getTrackPanelState = (): TrackPanelState => {
   const genomeId = browserStorageService.getActiveGenomeId();
   return genomeId ? { [genomeId]: getTrackPanelStateForGenome(genomeId) } : {};
 };
@@ -63,13 +63,18 @@ export const getInitialTrackPanelState = (): TrackPanelState => {
 export const getTrackPanelStateForGenome = (
   genomeId: string
 ): TrackPanelStateForGenome => {
-  const storedTrackPanel =
-    browserStorageService.getTrackPanels()[genomeId] || {};
-  return {
-    ...defaultTrackPanelStateForGenome,
-    ...storedTrackPanel
-  };
+  return genomeId
+    ? {
+        ...defaultTrackPanelStateForGenome,
+        ...getPersistentTrackPanelStateForGenome(genomeId)
+      }
+    : defaultTrackPanelStateForGenome;
 };
+
+export const getPersistentTrackPanelStateForGenome = (
+  genomeId: string
+): Partial<TrackPanelStateForGenome> =>
+  browserStorageService.getTrackPanels()[genomeId] || {};
 
 export const pickPersistentTrackPanelProperties = (
   trackPanel: Partial<TrackPanelStateForGenome>

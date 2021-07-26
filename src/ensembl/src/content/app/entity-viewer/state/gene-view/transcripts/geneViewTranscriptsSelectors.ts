@@ -51,6 +51,13 @@ export const getExpandedTranscriptDownloadIds = (
   return transcriptsSlice?.expandedDownloadIds ?? [];
 };
 
+export const getExpandedTranscriptMoreInfoIds = (
+  state: RootState
+): string[] => {
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.expandedMoreInfoIds ?? [];
+};
+
 export const getFilters = (state: RootState): Filters => {
   const transcriptsSlice = getSliceForGene(state);
   return transcriptsSlice?.filters ?? {};

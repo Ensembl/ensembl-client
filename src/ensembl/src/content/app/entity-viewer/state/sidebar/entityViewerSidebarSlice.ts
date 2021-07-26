@@ -56,7 +56,7 @@ export type EntityViewerSidebarGenomeState = Readonly<{
   selectedTabName: SidebarTabName;
   entities: {
     [entityId: string]: {
-      uIState: EntityViewerSidebarUIState;
+      uiState: EntityViewerSidebarUIState;
     };
   };
   sidebarModalView: SidebarModalView | null;
@@ -222,7 +222,7 @@ const entityViewerSidebarSlice = createSlice({
       };
 
       mergeWith(
-        state[genomeId].entities[entityId].uIState,
+        state[genomeId].entities[entityId].uiState,
         newFragment,
         overwriteArray
       );

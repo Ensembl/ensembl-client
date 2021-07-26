@@ -35,10 +35,6 @@ export default (env: Record<string, unknown>): Configuration => {
     module: {
       rules: [
         {
-          test: /\.worker\.ts$/,
-          use: [{ loader: 'worker-loader' }, { loader: 'babel-loader' }]
-        },
-        {
           test: /.tsx?$/,
           loader: 'babel-loader',
           exclude: /node_modules/
@@ -87,15 +83,12 @@ export default (env: Record<string, unknown>): Configuration => {
     output: {
       // dev will take the default file names as no physical files are emitted
       // prod will have emitted files and will include the content hash, which will change every time the contents of the js file changes.
-      filename: isDev ? undefined : '[name].[contenthash].js',
+      filename: isDev ? '[name].js' : '[name].[contenthash].js',
 
       path: paths.buildStaticPath,
 
-      // stop webpack from adding additional comments/info to generated bundles as it is a performance hit (slows down build times)
-      pathinfo: false,
-
       // prepend the public path as the root path to all the files that are inserted into the index file
-      publicPath: isDev ? '/' : '/static/'
+      publicPath: '/static/'
     },
 
     plugins: [

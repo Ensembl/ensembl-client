@@ -1,0 +1,38 @@
+@import 'src/styles/common';
+
+.wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'icon label';
+  column-gap: 12px;
+  row-gap: 14px;
+}
+
+.wrapperWithChildren {
+  grid-template-areas:
+        'icon label'
+        '. children';
+}
+
+.stepIcon {
+  grid-area: icon;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: $white;
+  font-weight: $bold;
+  border-radius: 50%;
+  background-color: $grey;
+}
+
+.stepLabel {
+  font-weight: $bold;
+  color: $black;
+  padding-top: 5px;
+}
+
+.childrenContainer {
+  grid-area: children;
+}

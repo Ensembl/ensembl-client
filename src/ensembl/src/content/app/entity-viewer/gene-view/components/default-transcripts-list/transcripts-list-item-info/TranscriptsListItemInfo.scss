@@ -9,10 +9,11 @@
   display: grid;
   grid-template-areas:
     'left middle right'
-    'moreinformation . .'
-    'downloadLink . .'
+    'moreinformationLink . .'
+    'moreInformation moreInformation moreInformation'
+    'downloadLink . .'    
     'download download download';
-  grid-column-gap: 10px;
+  column-gap: 10px;
   background: $soft-black;
   padding: 15px 30px;
 
@@ -30,6 +31,7 @@
 .topLeft {
   grid-area: left;
   width: 190px;
+  margin-bottom: 12px;
   div {
     padding-bottom: 6px;
   }
@@ -51,31 +53,41 @@
   }
 }
 
+.moreInformationLink {
+  padding-top: 6px;
+  color: $blue;
+  cursor: pointer;
+}
+
 .moreInformation {
-  padding-top: 16px;
+  grid-area: moreInformation;
+  display: grid;
+  grid-template-columns: 190px auto;
+  column-gap: 20px;
+  padding-top: 6px;
+  padding-left: 12px;
+  margin-bottom: 6px;
+}
+
+.moreInfoColumn {
+  width: 190px;
+  div {
+    padding-bottom: 6px;
+  }
+}
+
+.normalText {
+  font-weight: $normal;
 }
 
 .downloadLink {
   grid-area: downloadLink;
-  color: $blue;
-  cursor: pointer;
   padding-top: 6px;
 }
 
 .download {
   grid-area: download;
   padding-top: 6px;
-}
-
-.chevron {
-  margin-left: 10px;
-  margin-bottom: -3px;
-  height: 12px;
-  width: 12px;
-  transition: transform linear 0.2s;
-  &Up {
-    transform: rotate(-180deg);
-  }
 }
 
 .viewInApp {

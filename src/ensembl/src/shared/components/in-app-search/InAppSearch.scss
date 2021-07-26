@@ -1,0 +1,134 @@
+@import 'src/styles/common';
+
+.inAppSearchTopInterstitial {
+  display: inline-grid;
+  grid-template-areas:
+          'label label'
+          'search-field search-button'
+          'hits-count .';
+  grid-template-columns: 485px auto;
+  column-gap: 48px;
+}
+
+.inAppSearchTopSidebar {
+  display: grid;
+  grid-template-areas:
+          'label label'
+          'search-field search-field'
+          'hits-count search-button';
+  grid-template-columns: 1fr min-content;
+  align-items: top;
+}
+
+.searchFieldWrapper {
+  grid-area: search-field;
+  padding: 4px;
+  box-shadow: inset 2px 2px 4px -2px $dark-grey;
+  background: white;
+
+  &Interstitial {
+    height: 30px;
+  }
+
+  // nesting to increase specificity of the selector
+  .searchField {
+    border: none;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.label {
+  grid-area: label;
+  color: $dark-grey;
+  margin-bottom: 15px;
+}
+
+.searchButton {
+  grid-area: search-button;
+}
+
+.inAppSearchTopSidebar .searchButton {
+  margin-top: 18px;
+}
+
+.hitsCount {
+  grid-area: hits-count;
+  padding: 20px 0 0 20px;
+
+  .hitsNumber {
+    font-weight: $bold;
+  }
+}
+
+.searchMatches {
+  display: flex;
+  padding-left: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 30px;
+}
+
+.searchMatch {
+  position: relative;
+  display: inline-block;
+  color: $blue;
+  cursor: pointer;
+  line-height: 1;
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  & > span:nth-child(2) {
+    margin-left: 0.6rem;
+  }
+
+  .searchMatchAnchor {
+    position: absolute;
+    height: 100%;
+
+    &Interstitial {
+      right: -1.5ch;
+    }
+
+    &Sidebar {
+      left: 3ch;
+    }
+  }
+}
+
+.tooltip {
+  background: $black;
+  padding: 12px 20px;
+  filter: drop-shadow(2px 2px 3px $shadow-color);
+  color: $white;
+}
+
+.tooltipTip {
+  fill: $black;
+}
+
+.tooltipContent {
+  font-weight: $light;
+
+  & > div:first-child span:first-child {
+    margin-right: 28px;
+  }
+
+  & > div:nth-child(3) span:first-child {
+    font-weight: $bold;
+  }
+
+  & > div:not(:last-child) {
+    margin-bottom: 6px;
+  }
+
+  & > div:last-child {
+    margin-top: 28px;
+  }
+
+  .transcriptsCount {
+    margin-right: 1ch;
+  }
+}

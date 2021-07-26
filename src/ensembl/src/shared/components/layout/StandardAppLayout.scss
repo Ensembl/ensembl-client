@@ -1,15 +1,12 @@
 @import 'src/styles/common';
 
-$headerHeight: 84px; // launchbar height + topbar height
-$appbarHeight: 80px;
-$availableScreenHeight: calc(100vh - #{$headerHeight} - #{$appbarHeight});
 $sidebarContentWidth: 320px;
 $sidebarToolstripWidth: 46px;
 $topbarHeight: 38px;
 $drawerWindowWidth: 45px;
 
 .standardAppLayout {
-  height: $availableScreenHeight;
+  height: 100%;
   min-height: 550px; // based on the current interface of genome browser
   overflow: hidden;
 }
@@ -114,18 +111,7 @@ $drawerWindowWidth: 45px;
 }
 
 .sidebarModeToggle {
-  width: 22px;
-  height: 22px;
   margin-bottom: 55px;
-}
-
-.sidebarModeToggleChevron {
-  cursor: pointer;
-  fill: $blue;
-
-  &Open {
-    transform: rotate(180deg);
-  }
 }
 
 .sidebarTabs {

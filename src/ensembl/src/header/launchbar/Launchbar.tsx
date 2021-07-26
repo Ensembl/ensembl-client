@@ -63,7 +63,7 @@ const Launchbar = () => {
               app="genome-browser"
               description="Genome browser"
               icon={BrowserIcon}
-              enabled={committedSpecies.length > 0}
+              enabled={true}
             />
           </div>
           <div className={styles.category}>
@@ -71,31 +71,25 @@ const Launchbar = () => {
               app="entity-viewer"
               description="Entity Viewer"
               icon={EntityViewerIcon}
-              enabled={committedSpecies.length > 0}
+              enabled={true}
             />
           </div>
-          <div className={styles.category}>
-            <LaunchbarButton
-              app="custom-download"
-              description="Downloads"
-              icon={CustomDownloadIcon}
-              enabled={
-                isEnvironment([
-                  Environment.DEVELOPMENT,
-                  Environment.INTERNAL
-                ]) && committedSpecies.length > 0
-              }
-            />
-          </div>
+          {isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) && (
+            <div className={styles.category}>
+              <LaunchbarButton
+                app="custom-download"
+                description="Downloads"
+                icon={CustomDownloadIcon}
+                enabled={committedSpecies.length > 0}
+              />
+            </div>
+          )}
           <div className={styles.category}>
             <LaunchbarButton
               app="help"
               description="Help & documentation"
               icon={HelpIcon}
-              enabled={isEnvironment([
-                Environment.DEVELOPMENT,
-                Environment.INTERNAL
-              ])}
+              enabled={true}
             />
           </div>
         </div>

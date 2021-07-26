@@ -46,13 +46,6 @@ const start = async () => {
   webpackClientConfig.output.hotUpdateChunkFilename =
     'updates/[id].[hash].hot-update.js';
 
-  webpackClientConfig.output.publicPath = [
-    `${DEVSERVER_HOST}:${WEBPACK_PORT}`,
-    webpackClientConfig.output.publicPath
-  ]
-    .join('/')
-    .replace(/([^:+])\/+/g, '$1/');
-
   console.log('ABOUT TO COMPILE'); // eslint-disable-line no-console
 
   const multiCompiler = webpack([webpackClientConfig, webpackServerConfig]);
@@ -84,7 +77,13 @@ const start = async () => {
     return next();
   });
 
-  app.use(webpackDevMiddleware(clientCompiler));
+  app.use(
+    webpackDevMiddleware(clientCompiler, {
+      // according to the docs, the middleware should be able to pick the publicPath straight from the clientCompiler,
+      // but it refuses to do so, hence the manually passed option – TODO: investigate
+      publicPath: '/static/'
+    })
+  );
 
   app.use(webpackHotMiddleware(clientCompiler));
 

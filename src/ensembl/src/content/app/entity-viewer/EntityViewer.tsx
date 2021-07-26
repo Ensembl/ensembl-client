@@ -45,7 +45,7 @@ import EntityViewerAppBar from './shared/components/entity-viewer-app-bar/Entity
 import EntityViewerSidebarToolstrip from './shared/components/entity-viewer-sidebar/entity-viewer-sidebar-toolstrip/EntityViewerSidebarToolstrip';
 import EntityViewerSidebarModal from 'src/content/app/entity-viewer/shared/components/entity-viewer-sidebar/entity-viewer-sidebar-modal/EntityViewerSidebarModal';
 import EntityViewerTopbar from './shared/components/entity-viewer-topbar/EntityViewerTopbar';
-import ExampleLinks from './components/example-links/ExampleLinks';
+import EntityViewerInterstitial from './interstitial/EntityViewerInterstitial';
 import GeneView from './gene-view/GeneView';
 import GeneViewSidebar from './gene-view/components/gene-view-sidebar/GeneViewSideBar';
 import GeneViewSidebarTabs from './gene-view/components/gene-view-sidebar-tabs/GeneViewSidebarTabs';
@@ -104,7 +104,7 @@ const EntityViewer = () => {
             viewportWidth={viewportWidth}
           />
         ) : (
-          <ExampleLinks />
+          <EntityViewerInterstitial />
         )}
       </div>
     </ApolloProvider>
