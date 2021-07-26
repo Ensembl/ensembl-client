@@ -90,8 +90,7 @@ const Home = () => {
           </div>
 
           <div className={styles.homeTopRight}>
-            {/* <Link to="/help">{helpButton}</Link> */}
-            <HelpPopupButton text="Help using Ensembl" slug={homeSlug} />
+            <HelpPopupButton text="About using Ensembl" slug={homeSlug} />
           </div>
         </div>
 
