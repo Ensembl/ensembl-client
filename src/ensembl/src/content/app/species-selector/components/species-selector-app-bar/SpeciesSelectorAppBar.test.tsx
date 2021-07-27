@@ -37,6 +37,11 @@ jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
 
+jest.mock(
+  'src/content/app/contact-us/components/ContactUsIcon/ContactUsIcon',
+  () => () => <div>ContactUsIcon</div>
+);
+
 const defaultProps = {
   selectedSpecies: times(5, () => createSelectedSpecies()),
   push
