@@ -11,10 +11,11 @@
 .panelWrapper {
   position: fixed;
   right: 0;
-  top: 90px;
+  top: 110px;
   z-index: 11; /* Need to go above the top bar */
   height: calc(100% - 150px);
   max-height: 750px;
+  animation: .3s ease-out 0s 1 slideInFromRight;
 }
 
 .panel {
@@ -59,4 +60,15 @@
 .overlay {
   background-color: rgba(0, 0, 0, 0.1);
   position: fixed;
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
