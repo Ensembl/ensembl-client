@@ -86,28 +86,14 @@
   position: absolute;
   top: 0;
   right: 30px;
-  color: $blue;
-  font-weight: $bold;
   display: grid;
   grid-template-columns: auto auto;
   height: 40px;
-  cursor: pointer;
+}
 
-  .wrapper {
-    display: grid;
-    grid-template-columns: 130px auto;
-  }
-
-  .text {
-    margin-top: 10px;
-  }
-
-  .helpIcon {
-    width: 32px;
-    height: 32px;
-    fill: $white;
-    background-color: $blue;
-  }
+.helpLabel {
+  color: $blue;
+  font-weight: $bold;
 }
 
 .speciesContainer {

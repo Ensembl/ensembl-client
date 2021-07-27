@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -28,7 +29,13 @@ import { SlugReference } from './types';
 
 import styles from './HelpPopupButton.scss';
 
+type ClassNames = Partial<{
+  label: string;
+  button: string;
+}>;
+
 type Props = {
+  classNames?: ClassNames;
   text: string;
   slug: SlugReference;
 };
@@ -48,11 +55,14 @@ const HelpPopupButton = (props: Props) => {
     return <HelpAndDocumentation />;
   }
 
+  const labelClasses = classNames(styles.label, props.classNames?.label);
+  const buttonClasses = classNames(styles.button, props.classNames?.button);
+
   return (
     <>
       <div className={styles.wrapper} onClick={openModal}>
-        <span className={styles.label}>{props.text}</span>
-        <div className={styles.button}>
+        <span className={labelClasses}>{props.text}</span>
+        <div className={buttonClasses}>
           <HelpIcon className={styles.icon} />
         </div>
       </div>
