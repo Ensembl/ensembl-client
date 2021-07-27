@@ -20,10 +20,16 @@ import { useDispatch } from 'react-redux';
 import { toggleContactUs } from 'ensemblRoot/src/global/globalActions';
 import { ReactComponent as ConversationIcon } from 'static/img/shared/icon_conversation.svg';
 
+import { Environment, isEnvironment } from 'src/shared/helpers/environment';
+
 import styles from './ContactUsIcon.scss';
 
 const ContactUsIcon = () => {
   const dispatch = useDispatch();
+
+  if (isEnvironment([Environment.PRODUCTION])) {
+    return null;
+  }
 
   const onClick = () => {
     dispatch(toggleContactUs());
