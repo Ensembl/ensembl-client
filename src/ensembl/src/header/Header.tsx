@@ -20,7 +20,7 @@ import { Link } from 'react-router-dom';
 import useHasMounted from 'src/shared/hooks/useHasMounted';
 
 import Launchbar from './launchbar/Launchbar';
-import ContactUs from 'ensemblRoot/src/content/app/contact-us/ContactUs';
+import CommunicationPanel from 'ensemblRoot/src/shared/components/communication-panel/CommunicationPanel';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as HomeIcon } from 'static/img/header/home.svg';
@@ -76,7 +76,7 @@ export const Header = () => {
     <header>
       <Topbar />
       <Launchbar />
-      <ContactUs />
+      <CommunicationPanel />
     </header>
   );
 };

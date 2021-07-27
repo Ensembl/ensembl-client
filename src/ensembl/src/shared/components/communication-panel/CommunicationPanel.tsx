@@ -20,27 +20,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import Overlay from 'src/shared/components/overlay/Overlay';
 import Panel from 'src/shared/components/panel/Panel';
 
-import { toggleContactUs } from 'ensemblRoot/src/global/globalActions';
-import { isContactUsOpen } from 'ensemblRoot/src/global/globalSelectors';
+import { toggleCommunicationPanel } from 'ensemblRoot/src/global/globalActions';
+import { isCommunicationPanelOpen } from 'ensemblRoot/src/global/globalSelectors';
 import { ReactComponent as ConversationIcon } from 'static/img/shared/icon_conversation.svg';
 
-import styles from './ContactUs.scss';
+import styles from './CommunicationPanel.scss';
 
-const ContactUs = () => {
-  const showContactUs = useSelector(isContactUsOpen);
+const CommunicationPanel = () => {
+  const showCommunicationPanel = useSelector(isCommunicationPanelOpen);
 
   const dispatch = useDispatch();
-  if (!showContactUs) {
+  if (!showCommunicationPanel) {
     return null;
   }
 
   const onClose = () => {
-    dispatch(toggleContactUs());
+    dispatch(toggleCommunicationPanel());
   };
 
   return (
     <div className={styles.wrapper}>
-      <Overlay className={styles.overlay} onClick={onClose} />
+      <Overlay className={styles.overlay} />
       <div className={styles.panelWrapper}>
         <Panel
           onClose={onClose}
@@ -60,4 +60,4 @@ const ContactUs = () => {
   );
 };
 
-export default ContactUs;
+export default CommunicationPanel;

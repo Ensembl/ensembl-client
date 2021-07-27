@@ -19,7 +19,7 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import ContactUsIcon from 'ensemblRoot/src/content/app/contact-us/components/ContactUsIcon/ContactUsIcon';
+import CommunicationPanelIcon from 'ensemblRoot/src/shared/components/communication-panel/CommunicationPanelIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
 import HelpLanding from './components/help-landing/HelpLanding';
 import {
@@ -70,8 +70,8 @@ const AppBar = () => {
   return (
     <div className={styles.appBar}>
       Help
-      <div className={styles.contactUsIcon}>
-        <ContactUsIcon />
+      <div className={styles.CommunicationPanelIcon}>
+        <CommunicationPanelIcon />
       </div>
     </div>
   );

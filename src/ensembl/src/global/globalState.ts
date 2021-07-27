@@ -19,11 +19,11 @@ import { BreakpointWidth, ScrollPosition } from './globalConfig';
 export type GlobalState = Readonly<{
   breakpointWidth: BreakpointWidth;
   scrollPosition: ScrollPosition;
-  isContactUsOpen: boolean;
+  isCommunicationPanelOpen: boolean;
 }>;
 
 export const defaultState: GlobalState = {
   breakpointWidth: BreakpointWidth.DESKTOP,
   scrollPosition: {},
-  isContactUsOpen: false
+  isCommunicationPanelOpen: false
 };

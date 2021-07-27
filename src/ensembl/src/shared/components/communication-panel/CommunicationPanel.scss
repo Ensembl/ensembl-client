@@ -1,0 +1,43 @@
+.wrapper {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 1px;
+  z-index: 11; /* Need to go above the top bar */
+}
+
+.panelWrapper {
+  position: absolute;
+  right: 0;
+  top: 90px;
+  bottom: 140px;
+  z-index: 11; /* Need to go above the top bar */
+}
+
+.panel {
+  height: 100%;
+  z-index: 2;
+  width: 750px;
+  border-top-right-radius: unset;
+  border-bottom-right-radius: unset;
+}
+
+.panelCloseButton {
+  top: 15px;
+  right: 30px;
+}
+
+.panelContent {
+  display: grid;
+  grid-template-columns: 70px auto;
+
+  .conversationIcon {
+    width: 50px;
+    height: 50px;
+    margin-top: 15px;
+    margin-left: 15px;
+  }
+}
+.overlay {
+  background-color: rgba(0, 0, 0, 0.1);
+}

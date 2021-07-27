@@ -17,14 +17,14 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import { toggleContactUs } from 'ensemblRoot/src/global/globalActions';
+import { toggleCommunicationPanel } from 'ensemblRoot/src/global/globalActions';
 import { ReactComponent as ConversationIcon } from 'static/img/shared/icon_conversation.svg';
 
 import { Environment, isEnvironment } from 'src/shared/helpers/environment';
 
-import styles from './ContactUsIcon.scss';
+import styles from './CommunicationPanelIcon.scss';
 
-const ContactUsIcon = () => {
+const CommunicationPanelIcon = () => {
   const dispatch = useDispatch();
 
   if (isEnvironment([Environment.PRODUCTION])) {
@@ -32,11 +32,11 @@ const ContactUsIcon = () => {
   }
 
   const onClick = () => {
-    dispatch(toggleContactUs());
+    dispatch(toggleCommunicationPanel());
   };
   return (
     <ConversationIcon onClick={onClick} className={styles.conversationIcon} />
   );
 };
 
-export default ContactUsIcon;
+export default CommunicationPanelIcon;

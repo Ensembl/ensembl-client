@@ -17,7 +17,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import ContactUsIcon from 'ensemblRoot/src/content/app/contact-us/components/ContactUsIcon/ContactUsIcon';
+import CommunicationPanelIcon from 'ensemblRoot/src/shared/components/communication-panel/CommunicationPanelIcon';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
@@ -95,8 +95,8 @@ const Home = () => {
 
           <div className={styles.homeTopRight}>
             <Link to="/help">{helpButton}</Link>
-            <div className={styles.contactUsIcon}>
-              <ContactUsIcon />
+            <div className={styles.CommunicationPanelIcon}>
+              <CommunicationPanelIcon />
             </div>
           </div>
         </div>
