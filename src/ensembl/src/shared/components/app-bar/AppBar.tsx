@@ -16,6 +16,7 @@
 
 import React from 'react';
 
+import ContactUsIcon from 'ensemblRoot/src/content/app/contact-us/components/ContactUsIcon/ContactUsIcon';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import styles from './AppBar.scss';
@@ -30,7 +31,12 @@ export const AppBar = (props: AppBarProps) => (
   <section className={styles.appBar}>
     <div className={styles.appBarTop}>{props.appName}</div>
     <div className={styles.appBarMain}>{props.mainContent}</div>
-    <div className={styles.appBarAside}>{props.aside}</div>
+    <div className={styles.appBarAside}>
+      {props.aside}
+      <div className={styles.contactUsIcon}>
+        <ContactUsIcon />
+      </div>
+    </div>
   </section>
 );
 

@@ -105,4 +105,11 @@ describe('<Tabs />', () => {
       true
     );
   });
+
+  it('hides the heaer when there is no header', () => {
+    const { container } = renderPanel({ header: undefined });
+    const header = container.querySelector('.header') as HTMLElement;
+
+    expect(header).toBeFalsy();
+  });
 });

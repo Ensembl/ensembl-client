@@ -22,3 +22,6 @@ export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
 
 export const getScrollPosition = (state: RootState): ScrollPosition =>
   state.global.scrollPosition;
+
+export const isContactUsOpen = (state: RootState): boolean =>
+  state.global.isContactUsOpen;

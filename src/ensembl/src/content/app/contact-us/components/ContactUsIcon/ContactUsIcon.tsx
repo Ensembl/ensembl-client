@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import { BreakpointWidth, ScrollPosition } from './globalConfig';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 
-export type GlobalState = Readonly<{
-  breakpointWidth: BreakpointWidth;
-  scrollPosition: ScrollPosition;
-  isContactUsOpen: boolean;
-}>;
+import { toggleContactUs } from 'ensemblRoot/src/global/globalActions';
+import { ReactComponent as ConversationIcon } from 'static/img/shared/icon_conversation.svg';
 
-export const defaultState: GlobalState = {
-  breakpointWidth: BreakpointWidth.DESKTOP,
-  scrollPosition: {},
-  isContactUsOpen: false
+import styles from './ContactUsIcon.scss';
+
+const ContactUsIcon = () => {
+  const dispatch = useDispatch();
+
+  const onClick = () => {
+    dispatch(toggleContactUs());
+  };
+  return (
+    <ConversationIcon onClick={onClick} className={styles.conversationIcon} />
+  );
 };
+
+export default ContactUsIcon;

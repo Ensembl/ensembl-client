@@ -37,6 +37,12 @@
   grid-area: right;
   display: flex;
   justify-content: flex-end;
+
+  .contactUsIcon {
+    width: 29px;
+    margin-left: 15px;
+    height: 19px;
+  }
 }
 
 .helpLink {

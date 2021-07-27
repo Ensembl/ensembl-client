@@ -31,6 +31,11 @@ export default function globalReducer(
         ...state,
         scrollPosition: { ...state.scrollPosition, ...action.payload }
       };
+    case getType(global.toggleContactUs):
+      return {
+        ...state,
+        isContactUsOpen: !state.isContactUsOpen
+      };
     default:
       return state;
   }

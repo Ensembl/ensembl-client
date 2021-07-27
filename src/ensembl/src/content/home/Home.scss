@@ -93,7 +93,7 @@
   height: 40px;
   cursor: pointer;
 
-  .wrapper {
+  .howToUse {
     display: grid;
     grid-template-columns: 130px auto;
   }
@@ -107,6 +107,11 @@
     height: 32px;
     fill: $white;
     background-color: $blue;
+  }
+
+  .contactUsIcon {
+    width: 46px;
+    margin-left: 20px;
   }
 }
 

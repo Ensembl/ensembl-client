@@ -27,23 +27,21 @@ export const setBreakpointWidth = createAction(
   'browser/update-breakpoint-width'
 )<BreakpointWidth>();
 
-export const saveScrollPosition = createAction('update-scroll-position')<
-  ScrollPosition
->();
+export const saveScrollPosition = createAction(
+  'update-scroll-position'
+)<ScrollPosition>();
 
-export const updateBreakpointWidth: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (viewportWidth: BreakpointWidth) => async (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const currentBreakpointWidth = getBreakpointWidth(state);
+export const updateBreakpointWidth: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> =
+  (viewportWidth: BreakpointWidth) =>
+  async (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const currentBreakpointWidth = getBreakpointWidth(state);
 
-  if (viewportWidth !== currentBreakpointWidth) {
-    dispatch(setBreakpointWidth(viewportWidth));
-  }
-};
+    if (viewportWidth !== currentBreakpointWidth) {
+      dispatch(setBreakpointWidth(viewportWidth));
+    }
+  };
+
+export const toggleContactUs = createAction('toggle-contact-us-overlay')();

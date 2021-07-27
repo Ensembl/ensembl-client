@@ -5,10 +5,17 @@
 }
 
 .appBar {
-  display: flex;
+  display: grid;
   align-items: center;
   height: 80px;
   padding: 0 44px; 
+
+  grid-template-columns: 100px auto;
+
+  .contactUsIcon{
+    justify-self: end;
+    width: 29px;
+  }
 }
 
 .main {
