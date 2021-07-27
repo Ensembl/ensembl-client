@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import CommunicationPanelIcon from 'ensemblRoot/src/shared/components/communication-panel/CommunicationPanelIcon';
+import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import styles from './AppBar.scss';
@@ -33,8 +33,8 @@ export const AppBar = (props: AppBarProps) => (
     <div className={styles.appBarMain}>{props.mainContent}</div>
     <div className={styles.appBarAside}>
       {props.aside}
-      <div className={styles.CommunicationPanelIcon}>
-        <CommunicationPanelIcon />
+      <div className={styles.conversationIcon}>
+        <ConversationIcon />
       </div>
     </div>
   </section>

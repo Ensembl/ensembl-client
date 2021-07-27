@@ -43,7 +43,3 @@ export const updateBreakpointWidth: ActionCreator<
       dispatch(setBreakpointWidth(viewportWidth));
     }
   };
-
-export const toggleCommunicationPanel = createAction(
-  'toggle-contact-us-overlay'
-)();

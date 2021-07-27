@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { RootState } from '../store';
-import { BreakpointWidth, ScrollPosition } from './globalConfig';
+import type { RootState } from 'src/store';
 
-export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
-  state.global.breakpointWidth;
-
-export const getScrollPosition = (state: RootState): ScrollPosition =>
-  state.global.scrollPosition;
+export const isCommunicationPanelOpen = (state: RootState) => {
+  return state.communication.isCommunicationPanelOpen;
+};

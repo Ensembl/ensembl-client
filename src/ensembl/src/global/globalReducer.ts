@@ -31,11 +31,6 @@ export default function globalReducer(
         ...state,
         scrollPosition: { ...state.scrollPosition, ...action.payload }
       };
-    case getType(global.toggleCommunicationPanel):
-      return {
-        ...state,
-        isCommunicationPanelOpen: !state.isCommunicationPanelOpen
-      };
     default:
       return state;
   }

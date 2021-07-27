@@ -38,8 +38,8 @@ jest.mock('connected-react-router', () => ({
 }));
 
 jest.mock(
-  'ensemblRoot/src/shared/components/communication-panel/CommunicationPanelIcon',
-  () => () => <div>CommunicationPanelIcon</div>
+  'ensemblRoot/src/shared/components/communication-panel/ConversationIcon',
+  () => () => <div>ConversationIcon</div>
 );
 
 const defaultProps = {

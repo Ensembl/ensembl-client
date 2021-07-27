@@ -18,10 +18,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Overlay from 'src/shared/components/overlay/Overlay';
-import Panel from 'src/shared/components/panel/Panel';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { toggleCommunicationPanel } from 'ensemblRoot/src/global/globalActions';
-import { isCommunicationPanelOpen } from 'ensemblRoot/src/global/globalSelectors';
+import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
+import { isCommunicationPanelOpen } from 'src/shared/state/communication/communicationSelector';
 import { ReactComponent as ConversationIcon } from 'static/img/shared/icon_conversation.svg';
 
 import styles from './CommunicationPanel.scss';
@@ -42,19 +42,16 @@ const CommunicationPanel = () => {
     <div className={styles.wrapper}>
       <Overlay className={styles.overlay} />
       <div className={styles.panelWrapper}>
-        <Panel
-          onClose={onClose}
-          classNames={{
-            closeButton: styles.panelCloseButton,
-            panel: styles.panel
-          }}
-        >
-          <div className={styles.panelContent}>
-            <div className={styles.conversationIcon}>
-              <ConversationIcon />
+        <div className={styles.panel}>
+          <CloseButton className={styles.panelCloseButton} onClick={onClose} />
+          <div className={styles.panelBody}>
+            <div className={styles.panelContent}>
+              <div className={styles.conversationIcon}>
+                <ConversationIcon />
+              </div>
             </div>
           </div>
-        </Panel>
+        </div>
       </div>
     </div>
   );

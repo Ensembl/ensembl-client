@@ -106,7 +106,7 @@ describe('<Tabs />', () => {
     );
   });
 
-  it('hides the heaer when there is no header', () => {
+  it('hides the header when there is no header', () => {
     const { container } = renderPanel({ header: undefined });
     const header = container.querySelector('.header') as HTMLElement;
 

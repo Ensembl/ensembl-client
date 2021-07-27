@@ -25,6 +25,7 @@ import global from '../global/globalReducer';
 import header from '../header/headerReducer';
 import ensObjects from '../shared/state/ens-object/ensObjectReducer';
 import inAppSearch from '../shared/state/in-app-search/inAppSearchSlice';
+import communication from '../shared/state/communication/communicationSlice';
 import speciesSelector from '../content/app/species-selector/state/speciesSelectorReducer';
 import entityViewer from 'src/content/app/entity-viewer/state/entityViewerReducer';
 import speciesPage from 'src/content/app/species/state/index';
@@ -34,6 +35,7 @@ const createRootReducer = (history: any) =>
     browser,
     drawer,
     customDownload,
+    communication,
     ensObjects,
     inAppSearch,
     genome,

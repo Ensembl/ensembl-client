@@ -1,0 +1,62 @@
+@import 'src/styles/common';
+
+.wrapper {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 1px;
+  z-index: 11; /* Need to go above the top bar */
+}
+
+.panelWrapper {
+  position: fixed;
+  right: 0;
+  top: 90px;
+  z-index: 11; /* Need to go above the top bar */
+  height: calc(100% - 150px);
+  max-height: 750px;
+}
+
+.panel {
+  position: relative;
+  min-height: 100px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  max-width: 100%;
+  background: $white;
+  box-shadow: 1px 1px 4px $shadow-color;
+  height: 100%;
+  z-index: 2;
+  width: 750px;
+  
+}
+
+.panelBody { 
+  position: relative;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  overflow: auto;
+  height: 100%;
+}
+
+.panelCloseButton {
+  position: absolute;
+  right: 25px;
+  top: 20px;
+  z-index: 1;
+}
+
+.panelContent {
+  display: grid;
+  grid-template-columns: 95px auto;
+  height: 100%;
+
+  .conversationIcon {
+    width: 40px;
+    margin: 17px 0 0 27px;
+  }
+}
+.overlay {
+  background-color: rgba(0, 0, 0, 0.1);
+  position: fixed;
+}

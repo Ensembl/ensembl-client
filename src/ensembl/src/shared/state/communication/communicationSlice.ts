@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-import { RootState } from '../store';
-import { BreakpointWidth, ScrollPosition } from './globalConfig';
+import { createSlice } from '@reduxjs/toolkit';
 
-export const getBreakpointWidth = (state: RootState): BreakpointWidth =>
-  state.global.breakpointWidth;
+type State = {
+  isCommunicationPanelOpen: boolean;
+};
 
-export const getScrollPosition = (state: RootState): ScrollPosition =>
-  state.global.scrollPosition;
+const initialState: State = {
+  isCommunicationPanelOpen: false
+};
+
+const communicationSlice = createSlice({
+  name: 'communication',
+  initialState,
+  reducers: {
+    toggleCommunicationPanel(state) {
+      state.isCommunicationPanelOpen = !state.isCommunicationPanelOpen;
+    }
+  }
+});
+
+export const { toggleCommunicationPanel } = communicationSlice.actions;
+
+export default communicationSlice.reducer;

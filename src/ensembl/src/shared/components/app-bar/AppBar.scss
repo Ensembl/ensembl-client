@@ -3,13 +3,14 @@
 .appBar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, auto);
+  grid-template-rows: auto 40px;
   align-content: start;
   grid-template-areas:
     'top top'
     'main right';
   align-items: center;
   padding: 8px 20px;
-  min-height: 80px;
+  min-height: 86px;
   width: 100%;
 
   // nesting to increase specificity to override child's styles
@@ -31,6 +32,7 @@
   grid-area: main;
   margin-left: 2em;
   max-width: 100%;
+  align-self: start;
 }
 
 .appBarAside {
@@ -38,10 +40,10 @@
   display: flex;
   justify-content: flex-end;
 
-  .CommunicationPanelIcon {
-    width: 29px;
+  .conversationIcon {
+    width: 40px;
     margin-left: 15px;
-    height: 19px;
+    height: 25px;
   }
 }
 
