@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Sequence } from './product';
+import { Sequence } from './sequence';
 
 export type CDNA = {
   start: number;

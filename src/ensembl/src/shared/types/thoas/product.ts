@@ -16,6 +16,7 @@
 
 import { ExternalReference } from './externalReference';
 import { LocationWithinRegion } from './location';
+import { Sequence } from './sequence';
 
 export type ProteinDomainsResources = {
   [name_of_resource: string]: {
@@ -41,10 +42,6 @@ export type ProteinDomainsResources = {
 export enum ProductType {
   PROTEIN = 'Protein'
 }
-
-export type Sequence = {
-  checksum: string;
-};
 
 // TODO: have at least two types of products:
 // one for protein, the other for RNA

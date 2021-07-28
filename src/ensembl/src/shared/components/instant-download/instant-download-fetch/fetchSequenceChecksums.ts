@@ -15,7 +15,7 @@
  */
 
 import { gql } from '@apollo/client';
-import { Sequence } from 'ensemblRoot/src/shared/types/thoas/product';
+import { Sequence } from 'ensemblRoot/src/shared/types/thoas/sequence';
 
 import { client } from 'src/gql-client';
 
