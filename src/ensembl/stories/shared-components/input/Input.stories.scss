@@ -1,3 +1,21 @@
+@import 'src/styles/common';
+
+.wrapper {
+  max-width: 500px;
+}
+
+.stage {
+  padding: 50px;
+
+  & + .stage {
+    margin-top: 4ch;
+  }
+}
+
+.greyStage {
+  background-color: $light-grey;
+}
+
 .customizedInput {
   color: rosybrown;
   font-size: 36px;
