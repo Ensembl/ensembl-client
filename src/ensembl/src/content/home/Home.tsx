@@ -17,6 +17,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
+
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
@@ -33,7 +35,7 @@ import styles from './Home.scss';
 
 const Home = () => {
   const helpButton = (
-    <div className={styles.wrapper}>
+    <div className={styles.howToUse}>
       <div className={styles.text}>How to use Ensembl</div>
       <HelpIcon className={styles.helpIcon} />
     </div>
@@ -93,6 +95,9 @@ const Home = () => {
 
           <div className={styles.homeTopRight}>
             <Link to="/help">{helpButton}</Link>
+            <div className={styles.conversationIcon}>
+              <ConversationIcon />
+            </div>
           </div>
         </div>
 

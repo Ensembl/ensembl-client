@@ -37,6 +37,11 @@ jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
 
+jest.mock(
+  'ensemblRoot/src/shared/components/communication-framework/ConversationIcon',
+  () => () => <div>ConversationIcon</div>
+);
+
 const defaultProps = {
   selectedSpecies: times(5, () => createSelectedSpecies()),
   push

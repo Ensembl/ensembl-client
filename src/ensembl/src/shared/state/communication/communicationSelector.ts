@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
-import styles from './Overlay.scss';
+import type { RootState } from 'src/store';
 
-type OverlayProps = {
-  className?: string;
-  onClick?: () => void;
+export const isCommunicationPanelOpen = (state: RootState) => {
+  return state.communication.isCommunicationPanelOpen;
 };
-
-const Overlay = (props: OverlayProps) => {
-  const overlayClassNames = classNames(styles.overlayDefault, props.className);
-  return <div className={overlayClassNames} onClick={props.onClick}></div>;
-};
-
-export default Overlay;

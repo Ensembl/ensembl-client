@@ -3,6 +3,7 @@
 .appBar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, auto);
+  grid-template-rows: auto 40px;
   align-content: start;
   grid-template-areas:
     'top top'
@@ -31,12 +32,19 @@
   grid-area: main;
   margin-left: 2em;
   max-width: 100%;
+  align-self: start;
 }
 
 .appBarAside {
   grid-area: right;
   display: flex;
   justify-content: flex-end;
+
+  .conversationIcon {
+    width: 40px;
+    margin-left: 15px;
+    height: 25px;
+  }
 }
 
 .helpLink {

@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
-import styles from './Overlay.scss';
+import { createSlice } from '@reduxjs/toolkit';
 
-type OverlayProps = {
-  className?: string;
-  onClick?: () => void;
+type State = {
+  isCommunicationPanelOpen: boolean;
 };
 
-const Overlay = (props: OverlayProps) => {
-  const overlayClassNames = classNames(styles.overlayDefault, props.className);
-  return <div className={overlayClassNames} onClick={props.onClick}></div>;
+const initialState: State = {
+  isCommunicationPanelOpen: false
 };
 
-export default Overlay;
+const communicationSlice = createSlice({
+  name: 'communication',
+  initialState,
+  reducers: {
+    toggleCommunicationPanel(state) {
+      state.isCommunicationPanelOpen = !state.isCommunicationPanelOpen;
+    }
+  }
+});
+
+export const { toggleCommunicationPanel } = communicationSlice.actions;
+
+export default communicationSlice.reducer;
