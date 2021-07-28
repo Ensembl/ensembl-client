@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Overlay from 'src/shared/components/overlay/Overlay';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import ContactUs from './contact-us/ContactUs';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 import { isCommunicationPanelOpen } from 'src/shared/state/communication/communicationSelector';
@@ -49,6 +50,7 @@ const CommunicationPanel = () => {
               <div className={styles.conversationIcon}>
                 <ConversationIcon />
               </div>
+              <ContactUs />
             </div>
           </div>
         </div>
