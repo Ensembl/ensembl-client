@@ -52,15 +52,11 @@ export const SpeciesSelectorAppBar = (props: Props) => {
       <PlaceholderMessage />
     );
 
-  const speciesSelectorSlug = {
-    slug: 'species-selector'
-  };
-
   return (
     <AppBar
       appName="Species Selector"
       mainContent={mainContent}
-      aside={<HelpPopupButton slug={speciesSelectorSlug} />}
+      aside={<HelpPopupButton slug="species-selector" />}
     />
   );
 };

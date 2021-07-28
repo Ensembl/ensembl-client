@@ -33,10 +33,6 @@ import blogIconUrl from 'static/img/home/blog.svg';
 import styles from './Home.scss';
 
 const Home = () => {
-  const homeSlug = {
-    slug: 'ensembl-website-basics'
-  };
-
   return (
     <div className={styles.home}>
       <div className={styles.main}>
@@ -92,8 +88,8 @@ const Home = () => {
           <div className={styles.homeTopRight}>
             <HelpPopupButton
               text="About using Ensembl"
-              slug={homeSlug}
-              classNames={{ label: styles.helpLabel }}
+              slug="ensembl-website-basics"
+              labelClass={styles.helpLabel}
             />
           </div>
         </div>

@@ -25,19 +25,12 @@ import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 
-import { SlugReference } from './types';
-
 import styles from './HelpPopupButton.scss';
 
-type ClassNames = Partial<{
-  label: string;
-  button: string;
-}>;
-
 type Props = {
-  classNames?: ClassNames;
+  labelClass?: string;
   text: string;
-  slug: SlugReference;
+  slug: string;
 };
 
 const HelpPopupButton = (props: Props) => {
@@ -55,20 +48,19 @@ const HelpPopupButton = (props: Props) => {
     return <HelpAndDocumentation />;
   }
 
-  const labelClasses = classNames(styles.label, props.classNames?.label);
-  const buttonClasses = classNames(styles.button, props.classNames?.button);
+  const labelClasses = classNames(styles.label, props.labelClass);
 
   return (
     <>
       <div className={styles.wrapper} onClick={openModal}>
         <span className={labelClasses}>{props.text}</span>
-        <div className={buttonClasses}>
+        <div className={styles.button}>
           <HelpIcon className={styles.icon} />
         </div>
       </div>
       {shouldShowModal && (
         <Modal classNames={{ body: styles.helpPopup }} onClose={closeModal}>
-          <HelpPopupBody {...props.slug} />
+          <HelpPopupBody slug={props.slug} />
         </Modal>
       )}
     </>
