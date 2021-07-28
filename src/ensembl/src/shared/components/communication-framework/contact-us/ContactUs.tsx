@@ -17,6 +17,13 @@
 import React, { useState } from 'react';
 
 import { SecondaryButton } from 'src/shared/components/button/Button';
+import ExternalLink from 'src/shared/components/external-link/ExternalLink';
+
+import { ReactComponent as BlogIcon } from 'static/img/home/blog.svg';
+import { ReactComponent as FacebookIcon } from 'static/img/home/facebook.svg';
+import { ReactComponent as TwitterIcon } from 'static/img/home/twitter.svg';
+
+import styles from './ContactUs.scss';
 
 const ContactUs = () => {
   const [shouldShowForm, setShouldShowForm] = useState(false);
@@ -29,13 +36,63 @@ const ContactUs = () => {
     @Imran: update the below accordingly
   */
   return (
-    <div>
-      <p>
-        Please contact us if you have a problem with the website or need help
-      </p>
-      <SecondaryButton onClick={() => setShouldShowForm(!shouldShowForm)}>
-        Contact us
-      </SecondaryButton>
+    <div className={styles.wrapper}>
+      <div>
+        <p>
+          Please contact us if you have a problem with the website or need help
+        </p>
+        <SecondaryButton onClick={() => setShouldShowForm(!shouldShowForm)}>
+          Contact us
+        </SecondaryButton>
+      </div>
+      <div>
+        <section className={styles.socialMediaInfo}>
+          <p>
+            Visit the blog for details of releases, workshops and other tidbits
+            of information about the Ensembl project.
+          </p>
+          <p>
+            Visit Facebook or Twitter for the latest breaking Ensembl news and
+            service status updates.
+          </p>
+          <p>
+            Ensembl Blog <BlogIcon className={styles.icon} />{' '}
+            <FacebookIcon className={styles.icon} />{' '}
+            <TwitterIcon className={styles.icon} />
+          </p>
+        </section>
+        <section>
+          <h4>Online Help</h4>
+          <p>
+            Each app has a Help icon (top right) that will show
+            context-sensitive help for that view.
+          </p>
+          <p>All Help articles and videos can be found in the Help app.</p>
+        </section>
+        <section>
+          <h4>Mailing lists</h4>
+          <p> We have two public mailing lists: </p>
+          <dl>
+            <dt>
+              <ExternalLink
+                linkText="announce"
+                to="https://www.ensembl.info/category/01-release/"
+              />
+            </dt>
+            <dd>
+              a low-traffic list for release announcements and web status
+              updates
+            </dd>
+            <dt>
+              <ExternalLink linkText="dev" to="" />
+            </dt>
+            <dd>
+              programming help from the Ensembl development team and other
+              Ensembl power users
+            </dd>
+          </dl>
+        </section>
+      </div>
     </div>
   );
 };
