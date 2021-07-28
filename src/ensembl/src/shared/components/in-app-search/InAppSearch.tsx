@@ -82,11 +82,14 @@ const InAppSearch = (props: Props) => {
     dispatch(clearSearch({ app, genomeId }));
   };
 
+  const questionButtonHint =
+    'Find a gene using a stable ID (versioned or un-versioned), symbol or synonym; wildcards are also supported';
+
   const rightCorner = query ? (
     <CloseButton onClick={clear} />
   ) : (
     <QuestionButton
-      helpText="This is a hint"
+      helpText={questionButtonHint}
       styleOption={QuestionButtonOption.INPUT}
     />
   );
