@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Sequence } from './product';
+
 export type FullCDS = {
   start: number;
   end: number;
@@ -21,5 +23,5 @@ export type FullCDS = {
   relative_end: number;
   protein_length: number;
   nucleotide_length: number;
-  sequence_checksum?: string;
+  sequence?: Sequence;
 };

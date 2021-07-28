@@ -42,6 +42,10 @@ export enum ProductType {
   PROTEIN = 'Protein'
 }
 
+export type Sequence = {
+  checksum: string;
+};
+
 // TODO: have at least two types of products:
 // one for protein, the other for RNA
 export type Product = {
@@ -52,7 +56,7 @@ export type Product = {
   length: number;
   protein_domains: ProteinDomain[];
   external_references: ExternalReference[];
-  sequence_checksum?: string;
+  sequence?: Sequence;
 };
 
 export type ProteinDomain = {
