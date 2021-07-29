@@ -25,6 +25,7 @@
           'conversation tabs close'
           '. main main';
   grid-template-columns: 67px 1fr 46px;
+  grid-template-rows: auto 1fr;
   padding-top: 17px;
   color: $body-font-color;
   min-height: 100px;
