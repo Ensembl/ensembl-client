@@ -20,6 +20,12 @@
 
 .panel {
   position: relative;
+  display: grid;
+  grid-template-areas:
+          'conversation tabs close'
+          '. main main';
+  grid-template-columns: 67px 1fr 46px;
+  padding-top: 17px;
   color: $body-font-color;
   min-height: 100px;
   border-top-left-radius: 5px;
@@ -37,28 +43,24 @@
 }
 
 .panelBody {
-  padding-left: 95px;
+  grid-area: main;
+  padding-top: 30px;
+  padding-left: 28px;
   overflow: auto;
   height: 100%;
 }
 
 .panelCloseButton {
-  position: absolute;
-  right: 25px;
-  top: 20px;
-  z-index: 1;
-}
-
-.panelContent {
-  display: grid;
-  grid-template-columns: 95px auto;
-  height: 100%;
-
+  grid-area: close;
+  align-self: center;
+  margin-bottom: 3px;
 }
 
 .conversationIcon {
+  grid-area: conversation;
   width: 40px;
-  margin: 17px 0 0 27px;
+  align-self: center;
+  justify-self: right;
 }
 
 .overlay {

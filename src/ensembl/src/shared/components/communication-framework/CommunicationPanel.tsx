@@ -44,13 +44,8 @@ const CommunicationPanel = () => {
       <Overlay className={styles.overlay} />
       <div className={styles.panelWrapper}>
         <div className={styles.panel}>
-          <nav className={styles.panelHeader}>
-            <ConversationIcon className={styles.conversationIcon} />
-            <CloseButton
-              className={styles.panelCloseButton}
-              onClick={onClose}
-            />
-          </nav>
+          <ConversationIcon className={styles.conversationIcon} />
+          <CloseButton className={styles.panelCloseButton} onClick={onClose} />
           <div className={styles.panelBody}>
             <ContactUs />
           </div>
