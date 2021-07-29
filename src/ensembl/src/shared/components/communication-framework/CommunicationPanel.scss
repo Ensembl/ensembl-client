@@ -1,5 +1,7 @@
 @import 'src/styles/common';
 
+$offsetTop: 110px; // the distance between the top of the window and the top border of the panel
+
 .wrapper {
   position: fixed;
   width: 100%;
@@ -11,10 +13,9 @@
 .panelWrapper {
   position: fixed;
   right: 0;
-  top: 110px;
+  top: $offsetTop;
   z-index: 11; /* Need to go above the top bar */
-  height: calc(100% - 150px);
-  max-height: 750px;
+  min-height: 100px;
   animation: .3s ease-out 0s 1 slideInFromRight;
 }
 
@@ -26,15 +27,15 @@
           '. main main';
   grid-template-columns: 67px 1fr 46px;
   grid-template-rows: auto 1fr;
+  max-height: calc(100vh - 110px - 5vh);
+  height: auto;
   padding-top: 17px;
   color: $body-font-color;
-  min-height: 100px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  max-width: 100%;
   background: $white;
   box-shadow: 1px 1px 4px $shadow-color;
-  height: 100%;
+  padding-bottom: 90px;
   z-index: 2;
   width: 750px;
 }
