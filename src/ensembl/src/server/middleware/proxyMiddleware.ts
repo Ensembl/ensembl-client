@@ -59,7 +59,7 @@ genomeBrowserRouter.get(
  * while directing requests for help&docs api to your locally running server,
  * use the following configuraiton:
 
-const proxyMiddleware = createProxyMiddleware(['/api/**', '!/api/docs/**'], {
+const apiProxyMiddleware = createProxyMiddleware(['/api/**', '!/api/docs/**'], {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
@@ -74,16 +74,28 @@ const docsProxyMiddleware = createProxyMiddleware('/api/docs/**', {
   secure: false
 });
 
-const devMiddleware = [genomeBrowserRouter, proxyMiddleware, docsProxyMiddleware];
+const proxyMiddleware = [apiProxyMiddleware, docsProxyMiddleware];
 
 */
 
-const proxyMiddleware = createProxyMiddleware('/api', {
+// proxy all requests for static assets to the server that runs webpack dev middleware
+const staticAssetsMiddleware = createProxyMiddleware('/static', {
+  target: 'http://localhost:8081'
+});
+
+const apiProxyMiddleware = createProxyMiddleware('/api', {
   target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-const devMiddleware = [genomeBrowserRouter, proxyMiddleware];
+let proxyMiddleware = [apiProxyMiddleware];
 
-export default devMiddleware;
+if (process.env.NODE_ENV === 'development') {
+  proxyMiddleware = proxyMiddleware.concat([
+    genomeBrowserRouter, // NOTE: this middleware should have priority over staticAssetsMiddleware
+    staticAssetsMiddleware
+  ]);
+}
+
+export default proxyMiddleware;

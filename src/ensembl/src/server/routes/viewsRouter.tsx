@@ -93,7 +93,6 @@ const viewRouter = async (req: Request, res: Response) => {
       <base href="/">
       ${helmet.title.toString()}
       ${helmet.meta.toString()}
-      <link rel="manifest" href="/static/manifest.json">
 
       ${extractor.getLinkTags()}
       ${extractor.getStyleTags()}

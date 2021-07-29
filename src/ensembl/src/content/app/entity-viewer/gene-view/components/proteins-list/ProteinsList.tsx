@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'react-router';
 import { Pick3 } from 'ts-multipick';
@@ -27,11 +27,8 @@ import {
   getLongestProteinLength,
   isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import {
-  transcriptSortingFunctions,
-  defaultSort
-} from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
-import { filterTranscriptsBySOTerm } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
+import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
 import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
@@ -46,8 +43,7 @@ import { Exon } from 'src/shared/types/thoas/exon';
 
 import styles from './ProteinsList.scss';
 
-type Transcript = Pick<FullTranscript, 'so_term'> &
-  ProteinListItemProps['transcript'] &
+type Transcript = ProteinListItemProps['transcript'] &
   Pick3<FullTranscript, 'slice', 'location', 'length'> & {
     spliced_exons: Array<{
       exon: Pick3<Exon, 'slice', 'location', 'length'>;
@@ -67,22 +63,19 @@ const ProteinsList = (props: ProteinsListProps) => {
   const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
-  const defaultTranscriptId = useMemo(() => {
-    const defaultTranscripts = defaultSort(props.gene.transcripts);
-    return defaultTranscripts[0].stable_id;
-  }, [props.gene.stable_id]);
 
   const sortingRule = useSelector(getSortingRule);
 
-  const sortingFunction = transcriptSortingFunctions[sortingRule];
-  const sortedTranscripts = sortingFunction(props.gene.transcripts);
-
   const filters = useSelector(getFilters);
-  const filteredTranscripts = Object.values(filters).some(Boolean)
-    ? (filterTranscriptsBySOTerm(sortedTranscripts, filters) as Transcript[])
-    : sortedTranscripts;
+  const filteredTranscripts = filterTranscripts(
+    props.gene.transcripts,
+    filters
+  );
 
-  const proteinCodingTranscripts = filteredTranscripts.filter(
+  const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
+  const sortedTranscripts = sortingFunction(filteredTranscripts);
+
+  const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
   ) as Transcript[];
 
@@ -109,7 +102,6 @@ const ProteinsList = (props: ProteinsListProps) => {
       {proteinCodingTranscripts.map((transcript) => (
         <ProteinsListItem
           key={transcript.stable_id}
-          isDefault={transcript.stable_id === defaultTranscriptId}
           transcript={transcript}
           trackLength={longestProteinLength}
         />

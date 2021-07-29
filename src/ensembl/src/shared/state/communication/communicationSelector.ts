@@ -14,31 +14,8 @@
  * limitations under the License.
  */
 
-export type ValueSetMetadata = {
-  value: string;
-  label: string;
-  definition: string;
-};
+import type { RootState } from 'src/store';
 
-type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
-
-type NCBITranscriptMetadata = {
-  id: string;
-  url: string;
-};
-type MANEMetadata = ValueSetMetadata & {
-  ncbi_transcript: NCBITranscriptMetadata;
-};
-
-export type TranscriptMetadata = {
-  tsl: ValueSetMetadata | null;
-  appris: ValueSetMetadata | null;
-  biotype: ValueSetMetadata;
-  mane: MANEMetadata | null;
-  canonical: CanonicalMetadata | null;
-  gencode_basic: ValueSetMetadata | null;
-};
-
-export type GeneMetadata = {
-  biotype: ValueSetMetadata;
+export const isCommunicationPanelOpen = (state: RootState) => {
+  return state.communication.isCommunicationPanelOpen;
 };

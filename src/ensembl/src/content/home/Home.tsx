@@ -18,6 +18,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { HelpPopupButton } from 'ensemblRoot/src/shared/components/help-popup';
+import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
@@ -91,6 +92,9 @@ const Home = () => {
               slug="ensembl-website-basics"
               labelClass={styles.helpLabel}
             />
+            <div className={styles.conversationIcon}>
+              <ConversationIcon />
+            </div>
           </div>
         </div>
 

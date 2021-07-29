@@ -25,12 +25,17 @@ import styles from './InstantDownload.stories.scss';
 
 const buildProteinCodingGene = () => {
   const transcript = createTranscript({
-    unversioned_stable_id: 'ENST00000496384',
-    so_term: 'protein_coding'
+    unversioned_stable_id: 'ENST00000496384'
   });
   const gene = createGene({
     unversioned_stable_id: 'ENSG00000157764',
-    so_term: 'protein_coding',
+    metadata: {
+      biotype: {
+        label: 'Protein coding',
+        value: 'protein_coding',
+        definition: 'Protein coding'
+      }
+    },
     transcripts: [transcript]
   });
   return gene;
@@ -45,9 +50,8 @@ type TranscriptType = 'coding' | 'non-coding';
 
 export const InstantDownloadTranscriptStory = () => {
   const [layout, setLayout] = useState<Layout>('horizontal');
-  const [transcriptType, setTranscriptType] = useState<TranscriptType>(
-    'coding'
-  );
+  const [transcriptType, setTranscriptType] =
+    useState<TranscriptType>('coding');
 
   const gene =
     transcriptType === 'coding'
@@ -80,7 +84,7 @@ export const InstantDownloadTranscriptStory = () => {
           gene={{ id: gene.unversioned_stable_id }}
           transcript={{
             id: transcript.unversioned_stable_id,
-            so_term: transcript.so_term
+            biotype: transcript.metadata.biotype?.value as string
           }}
         />
       </div>

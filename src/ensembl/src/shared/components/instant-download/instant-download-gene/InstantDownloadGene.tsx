@@ -33,7 +33,7 @@ type Theme = 'light' | 'dark';
 
 type GeneFields = {
   id: string;
-  so_term: string;
+  biotype: string;
 };
 
 export type InstantDownloadGeneEntityProps = {
@@ -83,10 +83,10 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
 const InstantDownloadGene = (props: Props) => {
   const {
     genomeId,
-    gene: { id: geneId, so_term }
+    gene: { id: geneId, biotype }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
-    filterTranscriptOptions(so_term)
+    filterTranscriptOptions(biotype)
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
 

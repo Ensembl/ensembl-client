@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import faker from 'faker';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
@@ -25,7 +26,11 @@ import {
 } from './TranscriptsListItemInfo';
 
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
-import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
+import {
+  createTranscript,
+  createTranscriptMetadata
+} from 'tests/fixtures/entity-viewer/transcript';
+import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/external-reference';
 
 jest.mock('src/shared/components/view-in-app/ViewInApp', () => () => (
   <div data-test-id="viewInApp">ViewInApp</div>
@@ -43,6 +48,50 @@ const transcript = createTranscript();
 const gene = createGene({ transcripts: [transcript] });
 const expandDownload = false;
 const expandMoreInfo = false;
+
+const createGencodeBasicTranscript = () => {
+  const metadata = createTranscriptMetadata({
+    gencode_basic: {
+      label: 'gencode basic',
+      value: faker.lorem.word(),
+      definition: faker.lorem.sentence()
+    }
+  });
+
+  const transcript = createTranscript({ metadata });
+  return transcript;
+};
+
+const createMANETranscript = () => {
+  const metadata = createTranscriptMetadata({
+    mane: {
+      label: 'MANE Select',
+      value: 'select',
+      definition: faker.lorem.sentence(),
+      ncbi_transcript: {
+        id: faker.lorem.word(),
+        url: faker.lorem.sentence()
+      }
+    }
+  });
+
+  const transcript = createTranscript({ metadata });
+  return transcript;
+};
+
+const createCCDSXrefTranscript = () => {
+  const xref = {
+    source: {
+      name: 'CCDS',
+      id: faker.datatype.uuid(),
+      url: faker.internet.url()
+    }
+  };
+  const transcript = createTranscript({
+    external_references: [createExternalReference(xref)]
+  });
+  return transcript;
+};
 
 const defaultProps = {
   gene,
@@ -106,5 +155,41 @@ describe('<TranscriptsListItemInfo /', () => {
 
     userEvent.click(proteinLink);
     expect(defaultProps.onProteinLinkClick).toHaveBeenCalled();
+  });
+
+  it('displays metadata when it is available', () => {
+    const { queryByText } = renderComponent({
+      transcript: createGencodeBasicTranscript(),
+      expandMoreInfo: true
+    });
+    const metadataLabel = queryByText('gencode basic');
+    expect(metadataLabel).toBeTruthy();
+  });
+
+  it('displays CCDS when it is available in external references', () => {
+    const { queryByText } = renderComponent({
+      transcript: createCCDSXrefTranscript(),
+      expandMoreInfo: true
+    });
+    const CCDSLabel = queryByText('CCDS');
+    expect(CCDSLabel).toBeTruthy();
+  });
+
+  it('displays the Refseq with a link', () => {
+    const MANETranscript = createMANETranscript();
+    const refseqId = MANETranscript.metadata.mane?.ncbi_transcript?.id;
+    const refseqUrl = MANETranscript.metadata.mane?.ncbi_transcript?.url;
+    const { container, queryByText } = renderComponent({
+      transcript: MANETranscript,
+      expandMoreInfo: true
+    });
+    const refseqLabel = queryByText('RefSeq match');
+    expect(refseqLabel).toBeTruthy();
+
+    const refseqLink = [...container.querySelectorAll('a')].find(
+      (link) => link.textContent === refseqId
+    ) as HTMLElement;
+
+    expect(refseqLink.getAttribute('href')).toBe(refseqUrl);
   });
 });

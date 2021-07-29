@@ -62,7 +62,6 @@ export function defaultSort<
   T extends Array<
     IsProteinCodingTranscriptParam & {
       slice: SliceWithOnlyLength;
-      so_term: string;
     } & Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>
   >
 >(transcripts: T): T {
@@ -126,16 +125,19 @@ export function sortByExonCountAsc<
 
 type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
   GetSplicedRNALengthParam & {
-    so_term: string;
     slice: SliceWithOnlyLength;
     spliced_exons: unknown[];
-  } & Pick2<FullTranscript, 'metadata', 'canonical' | 'mane'>;
+  } & Pick2<
+    FullTranscript,
+    'metadata',
+    'canonical' | 'mane' | 'biotype' | 'appris' | 'tsl'
+  >;
 
 type SortingFunction<T extends GeneViewSortableTranscript> = (
   transcript: T[]
 ) => T[];
 
-export const transcriptSortingFunctions: Record<
+const transcriptSortingFunctions: Record<
   SortingRule,
   SortingFunction<GeneViewSortableTranscript>
 > = {
@@ -144,4 +146,12 @@ export const transcriptSortingFunctions: Record<
   spliced_length_asc: sortBySplicedLengthAsc,
   exon_count_desc: sortByExonCountDesc,
   exon_count_asc: sortByExonCountAsc
+};
+
+export const getTranscriptSortingFunction = <
+  T extends GeneViewSortableTranscript
+>(
+  rule: SortingRule
+): SortingFunction<T> => {
+  return transcriptSortingFunctions[rule] as SortingFunction<T>;
 };

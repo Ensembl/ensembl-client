@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-export type ValueSetMetadata = {
-  value: string;
-  label: string;
-  definition: string;
+import { createSlice } from '@reduxjs/toolkit';
+
+type State = {
+  isCommunicationPanelOpen: boolean;
 };
 
-type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
-
-type NCBITranscriptMetadata = {
-  id: string;
-  url: string;
-};
-type MANEMetadata = ValueSetMetadata & {
-  ncbi_transcript: NCBITranscriptMetadata;
+const initialState: State = {
+  isCommunicationPanelOpen: false
 };
 
-export type TranscriptMetadata = {
-  tsl: ValueSetMetadata | null;
-  appris: ValueSetMetadata | null;
-  biotype: ValueSetMetadata;
-  mane: MANEMetadata | null;
-  canonical: CanonicalMetadata | null;
-  gencode_basic: ValueSetMetadata | null;
-};
+const communicationSlice = createSlice({
+  name: 'communication',
+  initialState,
+  reducers: {
+    toggleCommunicationPanel(state) {
+      state.isCommunicationPanelOpen = !state.isCommunicationPanelOpen;
+    }
+  }
+});
 
-export type GeneMetadata = {
-  biotype: ValueSetMetadata;
-};
+export const { toggleCommunicationPanel } = communicationSlice.actions;
+
+export default communicationSlice.reducer;

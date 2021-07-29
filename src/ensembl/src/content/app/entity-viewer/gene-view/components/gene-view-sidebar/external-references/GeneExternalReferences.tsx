@@ -60,7 +60,6 @@ const QUERY = gql`
       }
       transcripts {
         stable_id
-        so_term
         slice {
           location {
             length
@@ -106,7 +105,6 @@ const QUERY = gql`
 
 type Transcript = {
   stable_id: string;
-  so_term: string;
   slice: Pick2<Slice, 'location', 'length'>;
   product_generating_contexts: Array<
     Pick<FullProductGeneratingContext, 'product_type'> & {

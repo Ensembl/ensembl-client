@@ -16,15 +16,14 @@
 
 import faker from 'faker';
 import times from 'lodash/times';
-import merge from 'lodash/merge';
+
+import { createExternalReference } from './external-reference';
 
 import {
   ProteinDomain,
   Product,
   ProductType
 } from 'src/shared/types/thoas/product';
-
-import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 
 export const createProduct = (fragment: Partial<Product> = {}): Product => {
   const length =
@@ -38,34 +37,11 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
     stable_id: stableId,
     unversioned_stable_id: unversionedStableId,
     version,
-    so_term: faker.lorem.word(),
     length: length,
     protein_domains: createProteinDomains(length),
     external_references: times(2, () => createExternalReference()),
     ...fragment
   };
-};
-
-export const createExternalReference = (
-  fragment?: Partial<
-    Omit<ExternalReference, 'source'> & {
-      source: Partial<ExternalReference['source']>;
-    }
-  >
-): ExternalReference => {
-  const xref = {
-    accession_id: faker.lorem.word(),
-    name: faker.lorem.word(),
-    description: faker.lorem.word(),
-    url: faker.lorem.word(),
-    source: {
-      name: faker.lorem.word(),
-      id: faker.lorem.word(),
-      url: faker.lorem.word()
-    }
-  };
-
-  return merge(xref, fragment);
 };
 
 const createProteinDomains = (proteinLength: number): ProteinDomain[] => {

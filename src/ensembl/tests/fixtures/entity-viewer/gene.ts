@@ -39,11 +39,17 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
     version,
     symbol: faker.lorem.word(),
     name: faker.lorem.words(),
-    so_term: faker.lorem.word(),
     slice: geneSlice,
     transcripts: [transcript],
     alternative_symbols: [],
     external_references: [],
+    metadata: {
+      biotype: {
+        label: faker.lorem.words(),
+        value: faker.lorem.word(),
+        definition: faker.lorem.sentence()
+      }
+    },
     ...fragment
   };
 };

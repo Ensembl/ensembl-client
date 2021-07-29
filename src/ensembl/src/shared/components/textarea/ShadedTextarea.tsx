@@ -14,31 +14,19 @@
  * limitations under the License.
  */
 
-export type ValueSetMetadata = {
-  value: string;
-  label: string;
-  definition: string;
+import React from 'react';
+import classNames from 'classnames';
+
+import Textarea, { Props as TextareaProps } from './Textarea';
+
+import styles from './Textarea.scss';
+
+const ShadedTextarea = (props: TextareaProps) => {
+  const { className, ...otherProps } = props;
+
+  const inputClasses = classNames(styles.shadedTextarea, className);
+
+  return <Textarea className={inputClasses} {...otherProps} />;
 };
 
-type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
-
-type NCBITranscriptMetadata = {
-  id: string;
-  url: string;
-};
-type MANEMetadata = ValueSetMetadata & {
-  ncbi_transcript: NCBITranscriptMetadata;
-};
-
-export type TranscriptMetadata = {
-  tsl: ValueSetMetadata | null;
-  appris: ValueSetMetadata | null;
-  biotype: ValueSetMetadata;
-  mane: MANEMetadata | null;
-  canonical: CanonicalMetadata | null;
-  gencode_basic: ValueSetMetadata | null;
-};
-
-export type GeneMetadata = {
-  biotype: ValueSetMetadata;
-};
+export default ShadedTextarea;

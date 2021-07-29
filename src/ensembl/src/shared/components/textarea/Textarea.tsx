@@ -36,7 +36,7 @@ type PropsForRespondingWithData = {
 
 type OnChangeProps = PropsForRespondingWithEvents | PropsForRespondingWithData;
 
-type Props = {
+export type Props = {
   value: string | number;
   id?: string;
   name?: string;
@@ -50,21 +50,23 @@ type Props = {
 } & OnChangeProps;
 
 const Textarea = (props: Props) => {
-  const eventHandler = (eventName: string) => (
-    e:
-      | React.ChangeEvent<HTMLTextAreaElement>
-      | React.FocusEvent<HTMLTextAreaElement>
-  ) => {
-    const value = e.target.value;
+  const eventHandler =
+    (eventName: string) =>
+    (
+      e:
+        | React.ChangeEvent<HTMLTextAreaElement>
+        | React.FocusEvent<HTMLTextAreaElement>
+    ) => {
+      const value = e.target.value;
 
-    if (eventName === 'change') {
-      props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
-    } else if (eventName === 'focus') {
-      props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
-    } else if (eventName === 'blur') {
-      props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
-    }
-  };
+      if (eventName === 'change') {
+        props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
+      } else if (eventName === 'focus') {
+        props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
+      } else if (eventName === 'blur') {
+        props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
+      }
+    };
 
   const className = classNames(styles.textarea, props.className, {
     [styles.disableResize]: !props.resizable

@@ -19,9 +19,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Pick2, Pick3 } from 'ts-multipick';
 
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
-import { transcriptSortingFunctions } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
-import { filterTranscriptsBySOTerm } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
+import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
 import {
   getExpandedTranscriptIds,
@@ -51,7 +51,6 @@ type ProductGeneratingContext = {
   cds: Pick<FullCDS, 'relative_start' | 'relative_end'>;
 };
 type Transcript = DefaultTranscriptListItemProps['transcript'] & {
-  so_term: FullTranscript['so_term'];
   product_generating_contexts: ProductGeneratingContext[];
 } & {
   spliced_exons: Array<Pick3<SplicedExon, 'exon', 'slice', 'location'>>;
@@ -82,18 +81,17 @@ const DefaultTranscriptslist = (props: Props) => {
 
   const { gene } = props;
 
-  const sortingFunction = transcriptSortingFunctions[sortingRule];
-  const sortedTranscripts = sortingFunction(gene.transcripts) as Transcript[];
-  const filteredTranscripts = Object.values(filters).some(Boolean)
-    ? (filterTranscriptsBySOTerm(sortedTranscripts, filters) as Transcript[])
-    : sortedTranscripts;
+  const filteredTranscripts = filterTranscripts(gene.transcripts, filters);
+
+  const sortingFunction = getTranscriptSortingFunction<Transcript>(sortingRule);
+  const sortedTranscripts = sortingFunction(filteredTranscripts);
 
   useEffect(() => {
     const hasExpandedTranscripts = !!expandedTranscriptIds.length;
 
     // Expand the first transcript by default
     if (!hasExpandedTranscripts) {
-      dispatch(toggleTranscriptInfo(filteredTranscripts[0].stable_id));
+      dispatch(toggleTranscriptInfo(sortedTranscripts[0].stable_id));
     }
   }, []);
 
@@ -106,7 +104,7 @@ const DefaultTranscriptslist = (props: Props) => {
       </div>
       <div className={styles.content}>
         <StripedBackground {...props} />
-        {filteredTranscripts.map((transcript, index) => {
+        {sortedTranscripts.map((transcript, index) => {
           const expandTranscript = expandedTranscriptIds.includes(
             transcript.stable_id
           );

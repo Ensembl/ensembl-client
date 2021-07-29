@@ -14,31 +14,19 @@
  * limitations under the License.
  */
 
-export type ValueSetMetadata = {
-  value: string;
-  label: string;
-  definition: string;
+import React from 'react';
+import classNames from 'classnames';
+
+import Input, { Props as InputProps } from './Input';
+
+import styles from './Input.scss';
+
+const ShadedInput = (props: InputProps) => {
+  const { className, ...otherProps } = props;
+
+  const inputClasses = classNames(styles.shadedInput, className);
+
+  return <Input className={inputClasses} {...otherProps} />;
 };
 
-type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
-
-type NCBITranscriptMetadata = {
-  id: string;
-  url: string;
-};
-type MANEMetadata = ValueSetMetadata & {
-  ncbi_transcript: NCBITranscriptMetadata;
-};
-
-export type TranscriptMetadata = {
-  tsl: ValueSetMetadata | null;
-  appris: ValueSetMetadata | null;
-  biotype: ValueSetMetadata;
-  mane: MANEMetadata | null;
-  canonical: CanonicalMetadata | null;
-  gencode_basic: ValueSetMetadata | null;
-};
-
-export type GeneMetadata = {
-  biotype: ValueSetMetadata;
-};
+export default ShadedInput;

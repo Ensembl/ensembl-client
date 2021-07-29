@@ -5,10 +5,20 @@
 }
 
 .appBar {
-  display: flex;
+  display: grid;
   align-items: center;
-  height: 80px;
-  padding: 0 44px; 
+  height: 86px;
+  padding-left: 44px; 
+
+  grid-template-columns: 100px auto;
+
+  .conversationIcon{
+    justify-self: end;
+    width: 40px;
+    height: 24px;
+    margin-right: 20px;
+    margin-top: 29px;
+  }
 }
 
 .main {
