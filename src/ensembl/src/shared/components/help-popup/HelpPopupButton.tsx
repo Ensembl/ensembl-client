@@ -29,7 +29,7 @@ import styles from './HelpPopupButton.scss';
 
 type Props = {
   labelClass?: string;
-  text: string;
+  label: string;
   slug: string;
 };
 
@@ -53,7 +53,7 @@ const HelpPopupButton = (props: Props) => {
   return (
     <>
       <div className={styles.wrapper} onClick={openModal}>
-        <span className={labelClasses}>{props.text}</span>
+        <span className={labelClasses}>{props.label}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />
         </div>
@@ -68,7 +68,7 @@ const HelpPopupButton = (props: Props) => {
 };
 
 HelpPopupButton.defaultProps = {
-  text: 'Help'
+  label: 'Help'
 };
 
 export default HelpPopupButton;
