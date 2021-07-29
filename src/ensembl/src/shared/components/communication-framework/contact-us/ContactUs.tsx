@@ -32,9 +32,8 @@ const ContactUs = () => {
     return <div>Will display the form</div>;
   }
 
-  /*
-    @Imran: update the below accordingly
-  */
+  const externalLinkClass = { link: styles.externalLink };
+
   return (
     <div className={styles.wrapper}>
       <div>
@@ -56,13 +55,20 @@ const ContactUs = () => {
             service status updates.
           </p>
           <p>
-            Ensembl Blog <BlogIcon className={styles.icon} />{' '}
-            <FacebookIcon className={styles.icon} />{' '}
-            <TwitterIcon className={styles.icon} />
+            <a href="https://www.ensembl.info/">
+              <span className={styles.socialMediaLinkText}>Ensembl Blog</span>{' '}
+              <BlogIcon className={styles.icon} />{' '}
+            </a>
+            <a href="https://www.facebook.com/Ensembl.org/">
+              <FacebookIcon className={styles.icon} />{' '}
+            </a>
+            <a href="https://twitter.com/ensembl">
+              <TwitterIcon className={styles.icon} />
+            </a>
           </p>
         </section>
         <section>
-          <h4>Online Help</h4>
+          <h2>Online Help</h2>
           <p>
             Each app has a Help icon (top right) that will show
             context-sensitive help for that view.
@@ -70,13 +76,14 @@ const ContactUs = () => {
           <p>All Help articles and videos can be found in the Help app.</p>
         </section>
         <section>
-          <h4>Mailing lists</h4>
+          <h2>Mailing lists</h2>
           <p> We have two public mailing lists: </p>
           <dl>
             <dt>
               <ExternalLink
                 linkText="announce"
                 to="https://www.ensembl.info/category/01-release/"
+                classNames={externalLinkClass}
               />
             </dt>
             <dd>
@@ -84,7 +91,11 @@ const ContactUs = () => {
               updates
             </dd>
             <dt>
-              <ExternalLink linkText="dev" to="" />
+              <ExternalLink
+                linkText="dev"
+                to=""
+                classNames={externalLinkClass}
+              />
             </dt>
             <dd>
               programming help from the Ensembl development team and other
