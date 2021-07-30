@@ -191,7 +191,10 @@ const createCDS = (transcriptSlice: Slice): FullCDS => {
     relative_start: 1,
     relative_end: nucleotideLength,
     nucleotide_length: nucleotideLength,
-    protein_length: proteinLength
+    protein_length: proteinLength,
+    sequence: {
+      checksum: faker.datatype.uuid()
+    }
   };
 };
 
@@ -201,7 +204,10 @@ const createCDNA = (transcriptSlice: Slice): CDNA => {
   return {
     start,
     end,
-    length: end - start + 1
+    length: end - start + 1,
+    sequence: {
+      checksum: faker.datatype.uuid()
+    }
   };
 };
 

@@ -23,5 +23,5 @@ export type FullCDS = {
   relative_end: number;
   protein_length: number;
   nucleotide_length: number;
-  sequence?: Sequence;
+  sequence: Sequence;
 };

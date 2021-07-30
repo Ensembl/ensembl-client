@@ -20,5 +20,5 @@ export type CDNA = {
   start: number;
   end: number;
   length: number;
-  sequence?: Sequence;
+  sequence: Sequence;
 };
