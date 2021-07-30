@@ -15,9 +15,10 @@
  */
 
 import { gql } from '@apollo/client';
-import { Sequence } from 'ensemblRoot/src/shared/types/thoas/sequence';
 
 import { client } from 'src/gql-client';
+
+import { Sequence } from 'ensemblRoot/src/shared/types/thoas/sequence';
 
 export type TranscriptSequenceMetadata = {
   stable_id: string;
