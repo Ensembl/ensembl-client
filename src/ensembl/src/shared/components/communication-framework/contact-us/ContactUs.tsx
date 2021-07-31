@@ -32,8 +32,6 @@ const ContactUs = () => {
     return <div>Will display the form</div>;
   }
 
-  const externalLinkClass = { link: styles.externalLink };
-
   return (
     <div className={styles.wrapper}>
       <section>
@@ -82,7 +80,6 @@ const ContactUs = () => {
             <ExternalLink
               linkText="announce"
               to="https://lists.ensembl.org/mailman/listinfo/announce_ensembl.org"
-              classNames={externalLinkClass}
             />
           </dt>
           <dd>
@@ -92,7 +89,6 @@ const ContactUs = () => {
             <ExternalLink
               linkText="dev"
               to="https://lists.ensembl.org/mailman/listinfo/dev_ensembl.org"
-              classNames={externalLinkClass}
             />
           </dt>
           <dd>
