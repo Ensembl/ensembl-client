@@ -37,13 +37,7 @@ const buildProteinCodingGene = () => {
       },
       name: {
         accession_id: 'HGNC:1097',
-        value: 'B-Raf proto-oncogene, serine/threonine kinase',
-        url: 'https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1097',
-        source: {
-          name: 'HGNC',
-          id: 'HGNC Symbol',
-          url: 'https://www.genenames.org/'
-        }
+        url: 'https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1097'
       }
     },
     transcripts: [transcript]

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { Source } from './source';
-
 export type ValueSetMetadata = {
   value: string;
   label: string;
@@ -24,9 +22,7 @@ export type ValueSetMetadata = {
 
 export type XrefMetadata = {
   accession_id: string;
-  value: string;
   url: string;
-  source: Source;
 };
 
 type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };

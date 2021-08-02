@@ -51,13 +51,7 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
       },
       name: {
         accession_id: faker.lorem.word(),
-        url: faker.internet.url(),
-        value: faker.lorem.words(),
-        source: {
-          name: faker.lorem.words(),
-          id: faker.lorem.word(),
-          url: faker.internet.url()
-        }
+        url: faker.internet.url()
       }
     },
     ...fragment
