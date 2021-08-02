@@ -155,20 +155,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, [genomeBrowser]);
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.READY],
-      () =>
-        // listenBpaneOut(action.payload as BpaneOutPayload)
-        props.updateBrowserActivated(true)
-    );
-
-    return () => {
-      subscription?.unsubscribe();
-      props.updateBrowserActivated(false);
-    };
-  }, [genomeBrowser]);
-
-  useEffect(() => {
     activateGenomeBrowser();
     props.updateBrowserActivated(true);
     return () => {

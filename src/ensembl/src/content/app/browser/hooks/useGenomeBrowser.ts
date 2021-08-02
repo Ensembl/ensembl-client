@@ -35,6 +35,7 @@ import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfi
 import { Status } from 'src/shared/types/status';
 import { ChrLocation } from 'src/content/app/browser/browserState';
 import { parseEnsObjectId } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
+import { getChrLocationFromStr } from 'ensemblRoot/src/content/app/browser/browserHelper';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();
@@ -97,8 +98,20 @@ const useGenomeBrowser = () => {
     }
   };
 
-  const changeFocusObject = (focus: string) => {
+  const changeFocusObject = (focusObjectId: string) => {
     if (!activeGenomeId || !genomeBrowser) {
+      return;
+    }
+
+    const { genomeId, type, objectId } = parseEnsObjectId(focusObjectId);
+
+    if (type === 'region') {
+      changeBrowserLocation({
+        genomeId: genomeId,
+        ensObjectId: null,
+        chrLocation: getChrLocationFromStr(objectId)
+      });
+
       return;
     }
 
@@ -106,7 +119,7 @@ const useGenomeBrowser = () => {
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
-        focus
+        focus: objectId
       }
     };
 
