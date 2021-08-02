@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Overlay from 'src/shared/components/overlay/Overlay';
@@ -29,25 +29,52 @@ import styles from './CommunicationPanel.scss';
 
 const CommunicationPanel = () => {
   const showCommunicationPanel = useSelector(isCommunicationPanelOpen);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const panelWrapperRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useDispatch();
-  if (!showCommunicationPanel) {
-    return null;
-  }
+
+  useEffect(() => {
+    if (showCommunicationPanel) {
+      wrapperRef.current?.addEventListener('wheel', preventScroll, {
+        passive: false
+      });
+    }
+  }, [showCommunicationPanel]);
 
   const onClose = () => {
     dispatch(toggleCommunicationPanel());
   };
 
+  const preventScroll = (e: Event) => {
+    const eventTarget = e.target as HTMLElement;
+    if (!panelWrapperRef.current?.contains(eventTarget)) {
+      // prevent possible window scrolling
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  if (!showCommunicationPanel) {
+    return null;
+  }
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={wrapperRef}>
       <Overlay className={styles.overlay} />
-      <div className={styles.panelWrapper}>
+      <div ref={panelWrapperRef} className={styles.panelWrapper}>
         <div className={styles.panel}>
           <ConversationIcon
             className={styles.conversationIcon}
             onClick={onClose}
           />
+          {/* TODO: switch to the proper Tabs component when the tabs become functional */}
+          <nav className={styles.panelTabs}>
+            <span className={`${styles.tab} ${styles.tabDisabled}`}>
+              Messages
+            </span>
+            <span className={styles.tab}>Contact us</span>
+          </nav>
           <CloseButton className={styles.panelCloseButton} onClick={onClose} />
           <div className={styles.panelBody}>
             <ContactUs />

@@ -149,9 +149,10 @@ const ContactUsInitialForm = () => {
     <div className={commonStyles.container}>
       <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
-          <span>All fields are required unless marked optional</span>
-          <span>Second line</span>
-          <span>Third line</span>
+          <span>All fields are required</span>
+          <span>
+            The size of your combined attachments should be no more than 10 MB
+          </span>
         </p>
       </div>
       <form
@@ -201,6 +202,7 @@ const ContactUsInitialForm = () => {
             label="Click or drag a file here to upload"
             callbackWithFiles={true}
             allowMultiple={false}
+            disabled={!isFormValid}
             onChange={onFileChange}
           />
         </div>

@@ -33,7 +33,6 @@ const ContactUs = () => {
   if (shouldShowForm) {
     return (
       <div>
-        <Invitation />
         <Header
           title="Send us a message"
           onClick={() => setShouldShowForm(false)}

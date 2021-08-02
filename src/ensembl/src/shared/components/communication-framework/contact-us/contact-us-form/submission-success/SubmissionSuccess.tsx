@@ -15,13 +15,20 @@
  */
 
 import React from 'react';
+import { useDispatch } from 'react-redux';
+
+import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
 import styles from './SubmissionSuccess.scss';
 
 const SubmissionSuccess = () => {
-  const onButtonClick = () => {}; // eslint-disable-line
+  const dispatch = useDispatch();
+
+  const onButtonClick = () => {
+    dispatch(toggleCommunicationPanel());
+  };
 
   return (
     <div className={styles.submissionSuccess}>
