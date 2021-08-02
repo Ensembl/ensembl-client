@@ -22,6 +22,7 @@ import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -40,12 +41,25 @@ export const GENE_OVERVIEW_QUERY = gql`
       name
       stable_id
       symbol
+      metadata {
+        name {
+          accession_id
+          url
+          value
+          source {
+            name
+          }
+        }
+      }
     }
   }
 `;
 
 type Gene = Required<
-  Pick<FullGene, 'stable_id' | 'symbol' | 'name' | 'alternative_symbols'>
+  Pick<
+    FullGene,
+    'stable_id' | 'symbol' | 'name' | 'alternative_symbols' | 'metadata'
+  >
 >;
 
 const GeneOverview = () => {
@@ -81,8 +95,18 @@ const GeneOverview = () => {
       </div>
 
       <div className={styles.sectionHead}>Gene name</div>
-      <div className={styles.geneName}>{getGeneName(gene.name)}</div>
-
+      {gene.metadata.name ? (
+        <>
+          <div className={styles.geneName}>{getGeneName(gene.name)}</div>
+          <ExternalReference
+            label={gene.metadata.name.source.name}
+            to={gene.metadata.name.url}
+            linkText={gene.metadata.name.accession_id}
+          />
+        </>
+      ) : (
+        <div className={styles.geneName}>None</div>
+      )}
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>
         {gene.alternative_symbols.length

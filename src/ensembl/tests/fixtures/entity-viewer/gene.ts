@@ -48,6 +48,16 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
         label: faker.lorem.words(),
         value: faker.lorem.word(),
         definition: faker.lorem.sentence()
+      },
+      name: {
+        accession_id: faker.lorem.word(),
+        url: faker.internet.url(),
+        value: faker.lorem.words(),
+        source: {
+          name: faker.lorem.words(),
+          id: faker.lorem.word(),
+          url: faker.internet.url()
+        }
       }
     },
     ...fragment

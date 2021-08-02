@@ -17,19 +17,21 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
-import { Pick2, Pick3 } from 'ts-multipick';
+import { Pick3 } from 'ts-multipick';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
+
 import {
   buildFocusIdForUrl,
   getDisplayStableId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
+import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
@@ -63,6 +65,14 @@ const GENE_QUERY = gql`
           label
           value
         }
+        name {
+          accession_id
+          url
+          value
+          source {
+            name
+          }
+        }
       }
     }
   }
@@ -75,8 +85,8 @@ type Gene = Pick<
   | 'symbol'
   | 'name'
   | 'alternative_symbols'
+  | 'metadata'
 > &
-  Pick2<FullGene, 'metadata', 'biotype'> &
   Pick3<FullGene, 'slice', 'strand', 'code'> &
   Pick3<FullGene, 'slice', 'location', 'length'> & {
     transcripts: { stable_id: string }[];
@@ -136,7 +146,18 @@ const GeneSummary = () => {
 
       <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{getGeneName(gene.name)}</div>
+        {gene.metadata.name ? (
+          <div className={styles.geneName}>
+            {getGeneName(gene.name)}
+            <ExternalReference
+              label={gene.metadata.name.source.name}
+              to={gene.metadata.name.url}
+              linkText={gene.metadata.name.accession_id}
+            />
+          </div>
+        ) : (
+          <div className={styles.geneName}>None</div>
+        )}
       </div>
 
       {gene.alternative_symbols.length > 0 && (

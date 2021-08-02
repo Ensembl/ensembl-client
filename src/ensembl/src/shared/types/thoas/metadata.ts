@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
+import { Source } from './source';
+
 export type ValueSetMetadata = {
   value: string;
   label: string;
   definition: string;
+};
+
+export type XrefMetadata = {
+  accession_id: string;
+  value: string;
+  url: string;
+  source: Source;
 };
 
 type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
@@ -41,4 +50,5 @@ export type TranscriptMetadata = {
 
 export type GeneMetadata = {
   biotype: ValueSetMetadata;
+  name: XrefMetadata | null;
 };
