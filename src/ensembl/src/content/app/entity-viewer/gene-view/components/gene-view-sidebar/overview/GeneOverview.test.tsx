@@ -45,11 +45,25 @@ const alternativeSymbols = [
   'gene_synonym_3'
 ];
 
+const metadata = {
+  name: {
+    accession_id: 'name_accession_id',
+    url: 'name_url',
+    value: 'name_value',
+    source: {
+      name: 'source_name',
+      id: 'source_id',
+      url: 'source_url'
+    }
+  }
+};
+
 const completeGeneData = {
   name: geneName,
   stable_id: stableId,
   symbol: geneSymbol,
-  alternative_symbols: alternativeSymbols
+  alternative_symbols: alternativeSymbols,
+  metadata: metadata
 };
 
 describe('<GeneOverview />', () => {
@@ -110,6 +124,7 @@ describe('<GeneOverview />', () => {
       const geneDetailsElement = container.querySelector('.geneDetails');
       const geneNameElement = container.querySelector('.geneName');
       const synonymsElement = container.querySelector('.synonyms');
+      const xrefElement = container.querySelector('.label');
 
       // child components
       const genePublications = container.querySelector('.genePublications');
@@ -117,6 +132,7 @@ describe('<GeneOverview />', () => {
       expect(geneDetailsElement?.textContent).toMatch(geneSymbol);
       expect(geneDetailsElement?.textContent).toMatch(stableId);
       expect(geneNameElement?.textContent).toMatch(geneName);
+      expect(xrefElement?.textContent).toMatch(metadata.name.source.name);
       expect(synonymsElement?.textContent).toMatch(
         alternativeSymbols.join(', ')
       );
