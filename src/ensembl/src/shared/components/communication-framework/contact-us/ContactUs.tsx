@@ -16,10 +16,10 @@
 
 import React, { useState } from 'react';
 
-import { ContactUsInitialForm } from 'src/shared/components/contact-us-form';
+import { ContactUsInitialForm } from './contact-us-form';
+import { Invitation, Header } from './preform-header/PreformHeader';
 import { SecondaryButton } from 'src/shared/components/button/Button';
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
-import { Invitation, Header } from './preform-header/PreformHeader';
 
 import { ReactComponent as BlogIcon } from 'static/img/home/blog.svg';
 import { ReactComponent as FacebookIcon } from 'static/img/home/facebook.svg';
