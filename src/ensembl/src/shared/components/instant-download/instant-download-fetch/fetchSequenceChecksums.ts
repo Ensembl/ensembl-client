@@ -18,6 +18,8 @@ import { gql } from '@apollo/client';
 
 import { client } from 'src/gql-client';
 
+import { Sequence } from 'ensemblRoot/src/shared/types/thoas/sequence';
+
 export type TranscriptSequenceMetadata = {
   stable_id: string;
   unversioned_stable_id: string;
@@ -46,14 +48,14 @@ type TranscriptInResponse = {
   unversioned_stable_id: string;
   product_generating_contexts: Array<{
     cdna: {
-      sequence_checksum: string;
+      sequence: Sequence;
     };
     cds: {
-      sequence_checksum: string;
+      sequence: Sequence;
     };
     product: {
       stable_id: string;
-      sequence_checksum: string;
+      sequence: Sequence;
     };
   }>;
 };
@@ -87,14 +89,20 @@ const transcriptChecksumsQuery = gql`
       unversioned_stable_id
       product_generating_contexts {
         cds {
-          sequence_checksum
+          sequence {
+            checksum
+          }
         }
         cdna {
-          sequence_checksum
+          sequence {
+            checksum
+          }
         }
         product {
           stable_id
-          sequence_checksum
+          sequence {
+            checksum
+          }
         }
       }
     }
@@ -120,14 +128,20 @@ const geneChecksumsQuery = gql`
         unversioned_stable_id
         product_generating_contexts {
           cds {
-            sequence_checksum
+            sequence {
+              checksum
+            }
           }
           cdna {
-            sequence_checksum
+            sequence {
+              checksum
+            }
           }
           product {
             stable_id
-            sequence_checksum
+            sequence {
+              checksum
+            }
           }
         }
       }
@@ -151,15 +165,15 @@ const processTranscriptData = (transcript: TranscriptInResponse) => {
     stable_id,
     unversioned_stable_id,
     cdna: {
-      checksum: productGeneratingContext.cdna.sequence_checksum,
+      checksum: productGeneratingContext.cdna.sequence.checksum,
       label: `${stable_id} cdna`
     },
     cds: {
-      checksum: productGeneratingContext.cds.sequence_checksum,
+      checksum: productGeneratingContext.cds.sequence.checksum,
       label: `${stable_id} cds`
     },
     protein: {
-      checksum: productGeneratingContext.product.sequence_checksum,
+      checksum: productGeneratingContext.product.sequence.checksum,
       label: `${productGeneratingContext.product.stable_id} pep`
     }
   };

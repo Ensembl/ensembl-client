@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import { Sequence } from './sequence';
-
-export type FullCDS = {
-  start: number;
-  end: number;
-  relative_start: number;
-  relative_end: number;
-  protein_length: number;
-  nucleotide_length: number;
-  sequence: Sequence;
+export type Sequence = {
+  checksum: string;
 };

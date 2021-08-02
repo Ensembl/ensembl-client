@@ -16,6 +16,7 @@
 
 import { ExternalReference } from './externalReference';
 import { LocationWithinRegion } from './location';
+import { Sequence } from './sequence';
 
 export type ProteinDomainsResources = {
   [name_of_resource: string]: {
@@ -52,7 +53,7 @@ export type Product = {
   length: number;
   protein_domains: ProteinDomain[];
   external_references: ExternalReference[];
-  sequence_checksum?: string;
+  sequence: Sequence;
 };
 
 export type ProteinDomain = {

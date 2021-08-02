@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { Sequence } from './sequence';
+
 export type CDNA = {
   start: number;
   end: number;
   length: number;
-  sequence_checksum?: string;
+  sequence: Sequence;
 };
