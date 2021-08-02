@@ -40,10 +40,10 @@ export const createProduct = (fragment: Partial<Product> = {}): Product => {
     length: length,
     protein_domains: createProteinDomains(length),
     external_references: times(2, () => createExternalReference()),
-    ...fragment,
     sequence: {
       checksum: faker.datatype.uuid()
-    }
+    },
+    ...fragment
   };
 };
 
