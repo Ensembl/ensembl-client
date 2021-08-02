@@ -82,11 +82,15 @@
   }
 }
 
+.helpLabel {
+  color: $blue;
+  font-weight: $bold;
+}
+
 .homeTopRight {
   position: absolute;
   top: 7px;
   right: 20px;
-  color: $blue;
   display: grid;
   grid-template-columns: auto auto;
   height: 28px;

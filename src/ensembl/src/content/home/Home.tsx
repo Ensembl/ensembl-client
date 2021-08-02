@@ -17,13 +17,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { HelpPopupButton } from 'ensemblRoot/src/shared/components/help-popup';
 import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
 import { ReactComponent as BrowserIcon } from 'static/img/launchbar/browser.svg';
 import { ReactComponent as EntityViewerIcon } from 'static/img/launchbar/entity-viewer.svg';
-import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 import speciesStripUrl from 'static/img/home/species-strip.svg';
 import ebiLogoUrl from 'static/img/home/EMBLEBI-logo.svg';
 import elixirLogoUrl from 'static/img/home/elixir-logo.svg';
@@ -34,13 +34,6 @@ import blogIconUrl from 'static/img/home/blog.svg';
 import styles from './Home.scss';
 
 const Home = () => {
-  const helpButton = (
-    <div className={styles.howToUse}>
-      <div className={styles.text}>How to use Ensembl</div>
-      <HelpIcon className={styles.helpIcon} />
-    </div>
-  );
-
   return (
     <div className={styles.home}>
       <div className={styles.main}>
@@ -94,7 +87,11 @@ const Home = () => {
           </div>
 
           <div className={styles.homeTopRight}>
-            <Link to="/help">{helpButton}</Link>
+            <HelpPopupButton
+              label="About using Ensembl"
+              slug="ensembl-website-basics"
+              labelClass={styles.helpLabel}
+            />
             <div className={styles.conversationIcon}>
               <ConversationIcon />
             </div>
