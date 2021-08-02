@@ -95,17 +95,13 @@ const GeneOverview = () => {
       </div>
 
       <div className={styles.sectionHead}>Gene name</div>
-      {gene.metadata.name ? (
-        <>
-          <div className={styles.geneName}>{getGeneName(gene.name)}</div>
-          <ExternalReference
-            label={gene.metadata.name.source.name}
-            to={gene.metadata.name.url}
-            linkText={gene.metadata.name.accession_id}
-          />
-        </>
-      ) : (
-        <div className={styles.geneName}>None</div>
+      <div className={styles.geneName}>{getGeneName(gene.name)}</div>
+      {gene.metadata.name && (
+        <ExternalReference
+          label={gene.metadata.name.source.name}
+          to={gene.metadata.name.url}
+          linkText={gene.metadata.name.accession_id}
+        />
       )}
       <div className={styles.sectionHead}>Synonyms</div>
       <div className={styles.synonyms}>

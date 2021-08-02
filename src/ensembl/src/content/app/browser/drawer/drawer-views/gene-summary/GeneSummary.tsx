@@ -146,18 +146,16 @@ const GeneSummary = () => {
 
       <div className={rowClasses}>
         <div className={styles.label}>Gene name</div>
-        {gene.metadata.name ? (
-          <div className={styles.geneName}>
-            {getGeneName(gene.name)}
+        <div className={styles.geneName}>
+          {getGeneName(gene.name)}
+          {gene.metadata.name && (
             <ExternalReference
               label={gene.metadata.name.source.name}
               to={gene.metadata.name.url}
               linkText={gene.metadata.name.accession_id}
             />
-          </div>
-        ) : (
-          <div className={styles.geneName}>None</div>
-        )}
+          )}
+        </div>
       </div>
 
       {gene.alternative_symbols.length > 0 && (
