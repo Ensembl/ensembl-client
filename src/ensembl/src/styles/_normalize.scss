@@ -29,6 +29,7 @@ body {
   font-family: $body-font-family;
   font-weight: $global-weight-normal;
   line-height: $global-lineheight;
+  text-size-adjust: none; // prevent automatic text size inflation on smartphones running Chromium-based browsers
   color: $body-font-color;
 
   @if ($body-antialiased) {
