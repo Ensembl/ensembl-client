@@ -1,5 +1,7 @@
 @import 'src/styles/common';
 
+$offsetTop: 110px; // the distance between the top of the window and the top border of the panel
+
 .wrapper {
   position: fixed;
   width: 100%;
@@ -11,52 +13,59 @@
 .panelWrapper {
   position: fixed;
   right: 0;
-  top: 110px;
+  top: $offsetTop;
   z-index: 11; /* Need to go above the top bar */
-  height: calc(100% - 150px);
-  max-height: 750px;
+  min-height: 100px;
   animation: .3s ease-out 0s 1 slideInFromRight;
 }
 
 .panel {
   position: relative;
-  min-height: 100px;
+  display: grid;
+  grid-template-areas:
+          'conversation tabs close'
+          '. main main';
+  grid-template-columns: 67px 1fr 46px;
+  grid-template-rows: auto 1fr;
+  max-height: calc(100vh - 110px - 5vh);
+  height: auto;
+  padding-top: 17px;
+  color: $body-font-color;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  max-width: 100%;
   background: $white;
   box-shadow: 1px 1px 4px $shadow-color;
-  height: 100%;
+  padding-bottom: 90px;
   z-index: 2;
   width: 750px;
-  
 }
 
-.panelBody { 
-  position: relative;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
+.panelHeader {
+  margin-bottom: 20px;
+}
+
+.panelBody {
+  grid-area: main;
+  padding-top: 30px;
+  padding-left: 28px;
   overflow: auto;
   height: 100%;
 }
 
 .panelCloseButton {
-  position: absolute;
-  right: 25px;
-  top: 20px;
-  z-index: 1;
+  grid-area: close;
+  align-self: center;
+  margin-bottom: 3px;
 }
 
-.panelContent {
-  display: grid;
-  grid-template-columns: 95px auto;
-  height: 100%;
-
-  .conversationIcon {
-    width: 40px;
-    margin: 17px 0 0 27px;
-  }
+.conversationIcon {
+  grid-area: conversation;
+  width: 40px;
+  align-self: center;
+  justify-self: right;
+  cursor: pointer;
 }
+
 .overlay {
   background-color: rgba(0, 0, 0, 0.1);
   position: fixed;
