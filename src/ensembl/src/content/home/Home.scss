@@ -92,8 +92,8 @@
   top: 7px;
   right: 20px;
   display: grid;
-  grid-template-columns: auto auto;
-  height: 28px;
+  grid-template-columns: repeat(2, auto);
+  align-items: start;
 
   .howToUse {
     display: grid;
@@ -115,7 +115,7 @@
 
   .conversationIcon {
     width: 40px;
-    margin-left: 15px;
+    margin-left: 20px;
     height: 25px;
   }
 }
