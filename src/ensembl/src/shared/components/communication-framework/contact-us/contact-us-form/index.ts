@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import classNames from 'classnames';
+/**
+ * The intention is to eventually have multiple forms
+ * designed to address different problems. This index file
+ * will list the multiple forms.
+ */
 
-import Input, { Props as InputProps } from './Input';
-
-import styles from './Input.scss';
-
-const ShadedInput = (props: InputProps) => {
-  const { className, ...otherProps } = props;
-
-  const inputClasses = classNames(styles.shadedInput, className);
-
-  return <Input className={inputClasses} {...otherProps} />;
-};
-
-ShadedInput.defaultProps = {
-  callbackWithEvent: false
-};
-
-export default ShadedInput;
+export { default as ContactUsInitialForm } from './initial/ContactUsInitialForm';

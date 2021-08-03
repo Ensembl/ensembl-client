@@ -16,21 +16,20 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import noop from 'lodash/noop';
 
 import styles from './Textarea.scss';
 
 type PropsForRespondingWithEvents = {
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onFocus: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
-  onBlur: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onFocus?: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
   callbackWithEvent: true;
 };
 
 type PropsForRespondingWithData = {
-  onChange: (value: string) => void;
-  onFocus: (value?: string) => void;
-  onBlur: (value?: string) => void;
+  onChange?: (value: string) => void;
+  onFocus?: (value?: string) => void;
+  onBlur?: (value?: string) => void;
   callbackWithEvent: false;
 };
 
@@ -44,9 +43,9 @@ export type Props = {
   placeholder?: string;
   resizable: boolean;
   className?: string; // to customize textarea styling when using CSS modules
-  onKeyUp: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onKeyPress: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 } & OnChangeProps;
 
 const Textarea = (props: Props) => {
@@ -60,10 +59,19 @@ const Textarea = (props: Props) => {
       const value = e.target.value;
 
       if (eventName === 'change') {
+        if (!props.onChange) {
+          return;
+        }
         props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
       } else if (eventName === 'focus') {
+        if (!props.onFocus) {
+          return;
+        }
         props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
       } else if (eventName === 'blur') {
+        if (!props.onBlur) {
+          return;
+        }
         props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
       }
     };
@@ -92,11 +100,6 @@ const Textarea = (props: Props) => {
 
 Textarea.defaultProps = {
   callbackWithEvent: false,
-  onFocus: noop,
-  onBlur: noop,
-  onKeyUp: noop,
-  onKeyDown: noop,
-  onKeyPress: noop,
   resizable: true
 };
 

@@ -15,22 +15,26 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import Input, { Props as InputProps } from './Input';
+import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './Input.scss';
+import styles from './SubmissionSuccess.scss';
 
-const ShadedInput = (props: InputProps) => {
-  const { className, ...otherProps } = props;
+const SubmissionSuccess = () => {
+  const onButtonClick = () => {}; // eslint-disable-line
 
-  const inputClasses = classNames(styles.shadedInput, className);
-
-  return <Input className={inputClasses} {...otherProps} />;
+  return (
+    <div className={styles.submissionSuccess}>
+      <p>Your message has been sent to our HelpDesk</p>
+      <p>
+        You should receive an auto-reply with a ticket number within 24 hours
+        <br />
+        If you do not get this, please try again, checking your email address
+      </p>
+      <p className={styles.thankyou}>Thank you</p>
+      <PrimaryButton onClick={onButtonClick}>Close</PrimaryButton>
+    </div>
+  );
 };
 
-ShadedInput.defaultProps = {
-  callbackWithEvent: false
-};
-
-export default ShadedInput;
+export default SubmissionSuccess;

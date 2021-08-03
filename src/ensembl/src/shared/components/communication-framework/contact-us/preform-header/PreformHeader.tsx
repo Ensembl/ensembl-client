@@ -15,22 +15,25 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import Input, { Props as InputProps } from './Input';
+import styles from './PreformHeader.scss';
 
-import styles from './Input.scss';
+export const Invitation = () => (
+  <p>Please contact us if you have a problem with the website or need help</p>
+);
 
-const ShadedInput = (props: InputProps) => {
-  const { className, ...otherProps } = props;
-
-  const inputClasses = classNames(styles.shadedInput, className);
-
-  return <Input className={inputClasses} {...otherProps} />;
+type HeaderProps = {
+  title: string;
+  onClick: () => void;
 };
 
-ShadedInput.defaultProps = {
-  callbackWithEvent: false
+export const Header = (props: HeaderProps) => {
+  return (
+    <div className={styles.header}>
+      <span className={styles.title}>{props.title}</span>
+      <span className={styles.control} onClick={props.onClick}>
+        Back
+      </span>
+    </div>
+  );
 };
-
-export default ShadedInput;

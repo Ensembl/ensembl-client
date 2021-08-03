@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 import styles from './Button.scss';
 
-type Props = {
+type Props = Omit<
+  React.HTMLProps<HTMLButtonElement>,
+  'disabled' | 'onClick'
+> & {
   onClick: () => void;
   isDisabled?: boolean;
-  className?: string;
-  children: ReactNode;
 };
 
 export const PrimaryButton = (props: Props) => {

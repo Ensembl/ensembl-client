@@ -45,6 +45,7 @@
     "dotenv": "10.0.0",
     "ensembl-genome-browser": "https://raw.githubusercontent.com/Ensembl/ensembl-genome-browser-assets/master/assets-80f51620ed443c640cdfd6b5aebd505b.tar.gz",
     "express": "4.17.1",
+    "filesize": "7.0.0",
     "graphql": "15.5.1",
     "http-proxy-middleware": "2.0.1",
     "lodash": "4.17.21",
