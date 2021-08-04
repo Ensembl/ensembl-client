@@ -18,12 +18,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 
+import { OutgoingAction, IncomingAction } from 'ensembl-genome-browser';
+
 import {
   OutgoingActionType,
-  OutgoingAction,
-  IncomingActionType,
-  IncomingAction
-} from 'ensembl-genome-browser';
+  IncomingActionType
+} from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 

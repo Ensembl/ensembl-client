@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { OutgoingActionType } from 'ensembl-genome-browser';
-
 import { ReactComponent as zoomInIcon } from 'static/img/browser/zoom-in.svg';
 import { ReactComponent as zoomOutIcon } from 'static/img/browser/zoom-out.svg';
 import { ReactComponent as navigateUpIcon } from 'static/img/browser/navigate-up.svg';
@@ -28,6 +26,7 @@ import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tr
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
 import { BrowserNavAction } from 'src/content/app/browser/browserState';
+import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 export type BrowserNavItem = {
   description: string;

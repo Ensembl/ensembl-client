@@ -28,6 +28,10 @@ jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: mockGenomeBrowser
 }));
 
+jest.mock('ensembl-genome-browser', () => {
+  return;
+});
+
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
 describe('<BrowserCogList />', () => {

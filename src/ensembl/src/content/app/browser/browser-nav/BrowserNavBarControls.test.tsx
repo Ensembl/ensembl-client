@@ -18,12 +18,11 @@ import React from 'react';
 import { screen, render } from '@testing-library/react';
 import faker from 'faker';
 
-import { OutgoingActionType } from 'ensembl-genome-browser';
-
 import { BrowserNavBarControls } from './BrowserNavBarControls';
 
 import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
+import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 jest.mock(
   './BrowserNavIcon',
@@ -41,13 +40,17 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
 
+jest.mock('ensembl-genome-browser', () => {
+  return;
+});
+
 const browserNavIconStates: BrowserNavIconStates = {
-  [OutgoingActionType.MOVE_UP]: faker.random.boolean(),
-  [OutgoingActionType.MOVE_RIGHT]: faker.random.boolean(),
-  [OutgoingActionType.MOVE_DOWN]: faker.random.boolean(),
-  [OutgoingActionType.MOVE_LEFT]: faker.random.boolean(),
-  [OutgoingActionType.ZOOM_OUT]: faker.random.boolean(),
-  [OutgoingActionType.ZOOM_IN]: faker.random.boolean()
+  [OutgoingActionType.MOVE_UP]: faker.datatype.boolean(),
+  [OutgoingActionType.MOVE_RIGHT]: faker.datatype.boolean(),
+  [OutgoingActionType.MOVE_DOWN]: faker.datatype.boolean(),
+  [OutgoingActionType.MOVE_LEFT]: faker.datatype.boolean(),
+  [OutgoingActionType.ZOOM_OUT]: faker.datatype.boolean(),
+  [OutgoingActionType.ZOOM_IN]: faker.datatype.boolean()
 };
 
 describe('BrowserNavBarControls', () => {

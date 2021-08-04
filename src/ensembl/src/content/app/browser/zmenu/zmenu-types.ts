@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { OutgoingActionType, IncomingActionType } from 'ensembl-genome-browser';
+import {
+  OutgoingActionType,
+  IncomingActionType
+} from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 // relation of the point of interest to the central point of the canvas;
 // a gentle hint by genome browser about where there is the most available space

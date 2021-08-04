@@ -18,7 +18,8 @@ import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { OutgoingAction, OutgoingActionType } from 'ensembl-genome-browser';
+import { OutgoingAction } from 'ensembl-genome-browser';
+import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 

@@ -45,7 +45,7 @@ import { browserTrackConfig } from '../browserConfig';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 import { Status } from 'src/shared/types/status';
-import { OutgoingActionType } from 'ensembl-genome-browser';
+import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 import styles from './BrowserTrackConfig.scss';
 

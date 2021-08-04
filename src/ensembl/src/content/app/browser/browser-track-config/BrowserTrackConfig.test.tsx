@@ -29,6 +29,10 @@ import {
   createCogTrackList
 } from 'tests/fixtures/browser';
 
+jest.mock('ensembl-genome-browser', () => {
+  return;
+});
+
 describe('<BrowserTrackConfig />', () => {
   beforeEach(() => {
     jest.resetAllMocks();

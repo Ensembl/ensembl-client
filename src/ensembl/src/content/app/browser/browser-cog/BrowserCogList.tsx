@@ -17,7 +17,8 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
+import { IncomingAction } from 'ensembl-genome-browser';
+import { IncomingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
