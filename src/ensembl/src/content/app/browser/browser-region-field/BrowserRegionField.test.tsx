@@ -42,6 +42,15 @@ jest.mock('../browserHelper', () => {
   };
 });
 
+jest.mock('ensembl-genome-browser', () => {
+  const originalModule = jest.requireActual('ensembl-genome-browser');
+
+  return {
+    ...originalModule,
+    OutgoingActionType: {}
+  };
+});
+
 const mockChangeBrowserLocation = jest.fn();
 const mockChangeFocusObject = jest.fn();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({

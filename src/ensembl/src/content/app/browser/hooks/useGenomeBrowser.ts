@@ -111,7 +111,7 @@ const useGenomeBrowser = () => {
         ensObjectId: null,
         chrLocation: getChrLocationFromStr(objectId)
       });
-
+      dispatch(updatePreviouslyViewedObjectsAndSave());
       return;
     }
 
@@ -131,10 +131,11 @@ const useGenomeBrowser = () => {
     ensObjectId: string | null;
     chrLocation: ChrLocation;
   }) => {
-    const [chromosome, startBp, endBp] = locationData.chrLocation;
+    const { genomeId, ensObjectId, chrLocation } = locationData;
 
-    const currentActiveEnsObjectId =
-      locationData.ensObjectId || activeEnsObjectId;
+    const [chromosome, startBp, endBp] = chrLocation;
+
+    const currentActiveEnsObjectId = ensObjectId || activeEnsObjectId;
     parseEnsObjectId;
     if (!genomeBrowser) {
       return;
@@ -148,11 +149,9 @@ const useGenomeBrowser = () => {
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS_LOCATION,
       payload: {
-        stick: `${activeGenomeId}:${chromosome}`,
-        // goto: `${startBp}-${endBp}`,
+        stick: `${genomeId}:${chromosome}`,
         startBp,
         endBp
-        // ...focusInstruction
       }
     };
 

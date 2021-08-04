@@ -17,12 +17,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import {
-  IncomingAction,
-  IncomingActionType,
-  OutgoingAction,
-  OutgoingActionType
-} from 'ensembl-genome-browser';
+import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -30,8 +25,6 @@ import {
   getBrowserActivated,
   getBrowserCogList,
   getBrowserCogTrackList,
-  getTrackConfigNames,
-  getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
 import {
@@ -44,6 +37,10 @@ import BrowserCog from './BrowserCog';
 
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
+import {
+  TrackSummaryList,
+  TrackSummary
+} from 'ensembl-genome-browser/dist/types';
 
 import styles from './BrowserCogList.scss';
 
@@ -51,28 +48,35 @@ type BrowserCogListProps = {
   browserActivated: boolean;
   browserCogList: number;
   browserCogTrackList: CogList;
-  trackConfigNames: { [key: string]: boolean };
-  trackConfigLabel: { [key: string]: boolean };
   selectedCog: string | null;
   updateCogList: (cogList: number) => void;
   updateCogTrackList: (track_y: CogList) => void;
   updateSelectedCog: (trackId: string | null) => void;
 };
 
-type BpaneScrollPayload = {
-  delta_y?: number;
-  track_y?: CogList;
-};
+// type BpaneScrollPayload = {
+//   delta_y?: number;
+//   cogList?: CogList;
+// };
 
 export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
-  const listenBpaneScroll = (payload: BpaneScrollPayload) => {
-    const { delta_y, track_y } = payload;
-    if (delta_y !== undefined) {
-      props.updateCogList(delta_y);
-    }
-    if (track_y) {
-      props.updateCogTrackList(track_y);
+
+  const listenBpaneScroll = (trackSummaryList: TrackSummaryList) => {
+    // const { delta_y, cogList } = payload;
+
+    // if (delta_y !== undefined) {
+    //   props.updateCogList(delta_y);
+    // }
+
+    const cogList: CogList = {};
+
+    trackSummaryList.forEach((trackSummary: TrackSummary) => {
+      cogList[trackSummary['switch-id']] = Number(trackSummary.offset);
+    });
+
+    if (cogList) {
+      props.updateCogTrackList(cogList);
     }
   };
 
@@ -80,52 +84,13 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.UPDATE_SCROLL_POSITION],
+      [IncomingActionType.UPDATE_TRACK_SUMMARY],
       (action: IncomingAction) =>
-        listenBpaneScroll(action.payload as BpaneScrollPayload)
+        listenBpaneScroll(action.payload as TrackSummaryList)
     );
 
     return () => subscription?.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (props.browserCogTrackList) {
-      const ons: string[] = [];
-      const offs: string[] = [];
-
-      Object.keys(props.browserCogTrackList).forEach((name) => {
-        // TODO: notice how we generate strings with suffix ":label" for track names,
-        // and strings with suffix ":names" for track label? That's because the frontend code
-        // and the backend code refer to these things by opposite terms. We will need to unify
-        // the terminology at some point.
-        if (props.trackConfigNames[name]) {
-          ons.push(`${name}:label`);
-        } else {
-          offs.push(`${name}:label`); // by default, track names are not shown
-        }
-
-        if (props.trackConfigLabel[name] !== false) {
-          ons.push(`${name}:names`);
-        } else {
-          offs.push(`${name}:names`); // by default, track label is not shown
-        }
-      });
-
-      const action: OutgoingAction = {
-        type: OutgoingActionType.TOGGLE_TRACKS,
-        payload: {
-          off: offs,
-          on: ons
-        }
-      };
-
-      genomeBrowser?.send(action);
-    }
-  }, [
-    props.trackConfigNames,
-    props.trackConfigLabel,
-    props.browserCogTrackList
-  ]);
+  }, [genomeBrowser]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
@@ -160,8 +125,6 @@ const mapStateToProps = (state: RootState) => ({
   browserActivated: getBrowserActivated(state),
   browserCogList: getBrowserCogList(state),
   browserCogTrackList: getBrowserCogTrackList(state),
-  trackConfigLabel: getTrackConfigLabel(state),
-  trackConfigNames: getTrackConfigNames(state),
   selectedCog: getBrowserSelectedCog(state)
 });
 

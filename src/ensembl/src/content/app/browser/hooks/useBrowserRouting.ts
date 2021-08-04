@@ -121,14 +121,14 @@ const useBrowserRouting = () => {
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
 
-      if (!isSameLocationAsInRedux || isFirstRender) {
+      if ((!isSameLocationAsInRedux || isFirstRender) && genomeBrowser) {
         changeBrowserLocation({
           genomeId,
           ensObjectId: newFocusId,
           chrLocation
         });
+        firstRenderRef.current = false;
       }
-      firstRenderRef.current = false;
     }
     dispatch(setDataFromUrlAndSave(payload));
   }, [genomeId, focus, location, genomeBrowser]);

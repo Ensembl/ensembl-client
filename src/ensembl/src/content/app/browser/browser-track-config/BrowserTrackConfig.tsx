@@ -34,6 +34,7 @@ import {
 import analyticsTracking from 'src/services/analytics-service';
 
 import useOutsideClick from 'src/shared/hooks/useOutsideClick';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -44,6 +45,7 @@ import { browserTrackConfig } from '../browserConfig';
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 import { Status } from 'src/shared/types/status';
+import { OutgoingActionType } from 'ensembl-genome-browser';
 
 import styles from './BrowserTrackConfig.scss';
 
@@ -74,21 +76,36 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
 
   const ref = useRef(null);
+
+  const { genomeBrowser } = useGenomeBrowser();
+
   useOutsideClick(ref, props.onClose);
 
   const toggleName = useCallback(() => {
+    const tracksToUpdate = [];
     if (applyToAll) {
       Object.keys(browserCogTrackList).forEach((name) => {
         props.updateTrackConfigNames(name, !shouldShowTrackName);
+        tracksToUpdate.push(name);
       });
     } else {
       props.updateTrackConfigNames(selectedCog, !shouldShowTrackName);
+      tracksToUpdate.push(selectedCog);
     }
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
       action: 'track_name_' + (shouldShowTrackName ? 'off' : 'on')
+    });
+
+    genomeBrowser?.send({
+      type: shouldShowTrackLabels
+        ? OutgoingActionType.TURN_ON_LABELS
+        : OutgoingActionType.TURN_OFF_LABELS,
+      payload: {
+        track_ids: tracksToUpdate
+      }
     });
   }, [
     selectedCog,
@@ -99,18 +116,31 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   ]);
 
   const toggleLabel = useCallback(() => {
+    const tracksToUpdate = [];
+
     if (applyToAll) {
       Object.keys(browserCogTrackList).forEach((name) => {
         props.updateTrackConfigLabel(name, !shouldShowTrackLabels);
+        tracksToUpdate.push(name);
       });
     } else {
       props.updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels);
+      tracksToUpdate.push(selectedCog);
     }
 
     analyticsTracking.trackEvent({
       category: 'track_settings',
       label: selectedCog,
       action: 'feature_label_' + (shouldShowTrackLabels ? 'off' : 'on')
+    });
+
+    genomeBrowser?.send({
+      type: shouldShowTrackLabels
+        ? OutgoingActionType.TURN_ON_LABELS
+        : OutgoingActionType.TURN_OFF_LABELS,
+      payload: {
+        track_ids: tracksToUpdate
+      }
     });
   }, [
     selectedCog,
