@@ -29,17 +29,6 @@ const buildProteinCodingGene = () => {
   });
   const gene = createGene({
     unversioned_stable_id: 'ENSG00000157764',
-    metadata: {
-      biotype: {
-        label: 'Protein coding',
-        value: 'protein_coding',
-        definition: 'Protein coding'
-      },
-      name: {
-        accession_id: 'HGNC:1097',
-        url: 'https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/HGNC:1097'
-      }
-    },
     transcripts: [transcript]
   });
   return gene;

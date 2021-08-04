@@ -68,10 +68,6 @@ const GENE_QUERY = gql`
         name {
           accession_id
           url
-          value
-          source {
-            name
-          }
         }
       }
     }
