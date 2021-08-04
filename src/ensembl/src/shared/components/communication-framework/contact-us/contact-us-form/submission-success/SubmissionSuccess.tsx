@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useDispatch } from 'react-redux';
+
+import CommunicationPanelContext from 'src/shared/components/communication-framework/communicationPanelContext';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 
@@ -25,6 +27,14 @@ import styles from './SubmissionSuccess.scss';
 
 const SubmissionSuccess = () => {
   const dispatch = useDispatch();
+  const communicationPanelContext = useContext(CommunicationPanelContext);
+
+  useEffect(() => {
+    const { panelBody } = communicationPanelContext;
+    if (panelBody?.current) {
+      panelBody.current.scrollTop = 0;
+    }
+  }, []);
 
   const onButtonClick = () => {
     dispatch(toggleCommunicationPanel());

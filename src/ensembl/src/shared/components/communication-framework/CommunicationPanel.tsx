@@ -17,6 +17,8 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { CommunicationPanelContextProvider } from './communicationPanelContext';
+
 import Overlay from 'src/shared/components/overlay/Overlay';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ContactUs from './contact-us/ContactUs';
@@ -31,6 +33,7 @@ const CommunicationPanel = () => {
   const showCommunicationPanel = useSelector(isCommunicationPanelOpen);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const panelWrapperRef = useRef<HTMLDivElement>(null);
+  const panelBodyRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useDispatch();
 
@@ -60,28 +63,33 @@ const CommunicationPanel = () => {
   }
 
   return (
-    <div className={styles.wrapper} ref={wrapperRef}>
-      <Overlay className={styles.overlay} />
-      <div ref={panelWrapperRef} className={styles.panelWrapper}>
-        <div className={styles.panel}>
-          <ConversationIcon
-            className={styles.conversationIcon}
-            onClick={onClose}
-          />
-          {/* TODO: switch to the proper Tabs component when the tabs become functional */}
-          <nav className={styles.panelTabs}>
-            <span className={`${styles.tab} ${styles.tabDisabled}`}>
-              Messages
-            </span>
-            <span className={styles.tab}>Contact us</span>
-          </nav>
-          <CloseButton className={styles.panelCloseButton} onClick={onClose} />
-          <div className={styles.panelBody}>
-            <ContactUs />
+    <CommunicationPanelContextProvider value={{ panelBody: panelBodyRef }}>
+      <div className={styles.wrapper} ref={wrapperRef}>
+        <Overlay className={styles.overlay} />
+        <div ref={panelWrapperRef} className={styles.panelWrapper}>
+          <div className={styles.panel}>
+            <ConversationIcon
+              className={styles.conversationIcon}
+              onClick={onClose}
+            />
+            {/* TODO: switch to the proper Tabs component when the tabs become functional */}
+            <nav className={styles.panelTabs}>
+              <span className={`${styles.tab} ${styles.tabDisabled}`}>
+                Messages
+              </span>
+              <span className={styles.tab}>Contact us</span>
+            </nav>
+            <CloseButton
+              className={styles.panelCloseButton}
+              onClick={onClose}
+            />
+            <div className={styles.panelBody} ref={panelBodyRef}>
+              <ContactUs />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </CommunicationPanelContextProvider>
   );
 };
 
