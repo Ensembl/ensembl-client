@@ -125,8 +125,10 @@ const ContactUsInitialForm = () => {
     dispatch({ type: 'update-message', payload: value });
   }, []);
 
-  const onFileChange = useCallback((file: File) => {
-    dispatch({ type: 'add-file', payload: file });
+  const onFileChange = useCallback((fileList: FileList) => {
+    for (const file of fileList) {
+      dispatch({ type: 'add-file', payload: file });
+    }
   }, []);
 
   const deleteFile = (index: number) => {
@@ -201,7 +203,6 @@ const ContactUsInitialForm = () => {
           <Upload
             label="Click or drag a file here to upload"
             callbackWithFiles={true}
-            allowMultiple={false}
             disabled={!isFormValid}
             onChange={onFileChange}
           />
