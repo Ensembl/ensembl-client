@@ -54,9 +54,7 @@ jest.mock('./track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
   <div className="trackPanelTabs">TrackPanelTabs</div>
 ));
 jest.mock('./drawer/Drawer', () => () => <div className="drawer">Drawer</div>);
-jest.mock('ensembl-genome-browser', () => {
-  return;
-});
+
 jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 const defaultProps: BrowserProps = {

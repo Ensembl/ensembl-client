@@ -17,7 +17,8 @@ import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 
-import GenomeBrowser, {
+import {
+  EnsemblGenomeBrowser,
   OutgoingAction,
   OutgoingActionType
 } from 'ensembl-genome-browser';
@@ -88,7 +89,7 @@ const useGenomeBrowser = () => {
   };
 
   const activateGenomeBrowser = async () => {
-    const genomeBrowserService = new GenomeBrowser();
+    const genomeBrowserService = new EnsemblGenomeBrowser();
     await genomeBrowserService.init();
     if (setGenomeBrowser) {
       genomeBrowserService.send({

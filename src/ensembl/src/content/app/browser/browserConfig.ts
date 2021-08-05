@@ -26,7 +26,7 @@ import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tr
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
 import { BrowserNavAction } from 'src/content/app/browser/browserState';
-import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
+import { OutgoingActionType } from 'ensembl-genome-browser';
 
 export type BrowserNavItem = {
   description: string;

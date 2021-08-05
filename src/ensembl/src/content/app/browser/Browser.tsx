@@ -19,7 +19,7 @@ import { ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import GenomeBrowser from 'ensembl-genome-browser';
+import { EnsemblGenomeBrowser } from 'ensembl-genome-browser';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
@@ -201,13 +201,13 @@ const ReduxConnectedBrowser = connect(
 )(Browser);
 
 export const GenomeBrowserContext = React.createContext<{
-  genomeBrowser?: GenomeBrowser | null;
-  setGenomeBrowser?: (genomeBrowser: GenomeBrowser) => void;
+  genomeBrowser?: EnsemblGenomeBrowser | null;
+  setGenomeBrowser?: (genomeBrowser: EnsemblGenomeBrowser) => void;
 }>({});
 
 const GenomeBrowserInitContainer = () => {
   const [genomeBrowser, setGenomeBrowser] =
-    useState<GenomeBrowser | null>(null);
+    useState<EnsemblGenomeBrowser | null>(null);
 
   return (
     <GenomeBrowserContext.Provider value={{ genomeBrowser, setGenomeBrowser }}>

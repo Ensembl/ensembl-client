@@ -17,8 +17,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { IncomingAction } from 'ensembl-genome-browser';
-import { IncomingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
+import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -38,10 +37,7 @@ import BrowserCog from './BrowserCog';
 
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
-import {
-  TrackSummaryList,
-  TrackSummary
-} from 'ensembl-genome-browser/dist/types';
+import { TrackSummaryList, TrackSummary } from 'ensembl-genome-browser';
 
 import styles from './BrowserCogList.scss';
 

@@ -29,9 +29,13 @@ import {
   createCogTrackList
 } from 'tests/fixtures/browser';
 
-jest.mock('ensembl-genome-browser', () => {
-  return;
-});
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser
+}));
 
 describe('<BrowserTrackConfig />', () => {
   beforeEach(() => {

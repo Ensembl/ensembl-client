@@ -22,7 +22,7 @@ import { BrowserNavBarControls } from './BrowserNavBarControls';
 
 import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
-import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
+import { OutgoingActionType } from 'ensembl-genome-browser';
 
 jest.mock(
   './BrowserNavIcon',
@@ -39,10 +39,6 @@ jest.mock(
 jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
-
-jest.mock('ensembl-genome-browser', () => {
-  return;
-});
 
 const browserNavIconStates: BrowserNavIconStates = {
   [OutgoingActionType.MOVE_UP]: faker.datatype.boolean(),

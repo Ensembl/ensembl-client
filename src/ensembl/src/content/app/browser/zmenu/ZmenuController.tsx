@@ -20,10 +20,7 @@ import pickBy from 'lodash/pickBy';
 
 import { OutgoingAction, IncomingAction } from 'ensembl-genome-browser';
 
-import {
-  OutgoingActionType,
-  IncomingActionType
-} from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
+import { OutgoingActionType, IncomingActionType } from 'ensembl-genome-browser';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 

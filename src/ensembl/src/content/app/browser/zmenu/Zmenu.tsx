@@ -18,7 +18,7 @@ import React from 'react';
 
 import { OutgoingAction } from 'ensembl-genome-browser';
 
-import { OutgoingActionType } from 'ensemblRoot/src/shared/types/genome-browser/genomeBrowser';
+import { OutgoingActionType } from 'ensembl-genome-browser';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
 
