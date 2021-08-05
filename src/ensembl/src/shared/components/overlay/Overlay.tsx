@@ -20,11 +20,12 @@ import styles from './Overlay.scss';
 
 type OverlayProps = {
   className?: string;
+  onClick?: () => void;
 };
 
 const Overlay = (props: OverlayProps) => {
   const overlayClassNames = classNames(styles.overlayDefault, props.className);
-  return <div className={overlayClassNames}></div>;
+  return <div className={overlayClassNames} onClick={props.onClick}></div>;
 };
 
 export default Overlay;

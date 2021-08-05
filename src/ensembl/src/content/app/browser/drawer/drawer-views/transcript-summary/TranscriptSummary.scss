@@ -13,6 +13,12 @@
     font-size: 12px;
   }
 
+  .questionButton {
+    padding-left: 10px;
+    position: relative;
+    top: 2px;
+  }
+
   .value {
     grid-column: value;
 
@@ -48,8 +54,11 @@
   flex-wrap: nowrap;
   overflow: hidden;
 
-  & > span:not(:first-child) {
-    margin-left: 30px;
+  & > span:not(:nth-child(1)) {
+    margin-left: 40px;
+  }
+  & > span:nth-child(2) {
+    margin-left: 10px;
   }
 }
 

@@ -19,6 +19,7 @@ import times from 'lodash/times';
 
 import { createSlice } from './slice';
 import { createProduct } from './product';
+import { createExternalReference } from './external-reference';
 import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -60,7 +61,6 @@ export const createTranscript = (
     unversioned_stable_id: unversionedStableId,
     version,
     symbol: faker.lorem.word(),
-    so_term: faker.lorem.word(),
     slice: transcriptSlice,
     external_references: createExternalReferences(),
     relative_location: {
@@ -77,32 +77,28 @@ export const createTranscript = (
   };
 };
 
-const createTranscriptMetadata = (): TranscriptMetadata => {
+export const createTranscriptMetadata = (
+  fragment?: Partial<TranscriptMetadata>
+): TranscriptMetadata => {
   return {
+    biotype: {
+      label: faker.lorem.word(),
+      value: faker.lorem.word(),
+      definition: faker.lorem.sentence()
+    },
     canonical: null,
     mane: null,
     gencode_basic: null,
     tsl: null,
-    appris: null
+    appris: null,
+    ...fragment
   };
 };
 
 const createExternalReferences = (): ExternalReference[] => {
   const numberOfExternalReferences = faker.datatype.number({ min: 1, max: 10 });
 
-  return times(numberOfExternalReferences, () => {
-    return {
-      accession_id: faker.datatype.uuid(),
-      name: faker.random.words(),
-      description: faker.random.words(),
-      url: faker.internet.url(),
-      source: {
-        name: faker.random.words(),
-        id: faker.datatype.uuid(),
-        url: faker.internet.url()
-      }
-    };
-  });
+  return times(numberOfExternalReferences, () => createExternalReference());
 };
 
 const createSplicedExons = (
@@ -195,7 +191,10 @@ const createCDS = (transcriptSlice: Slice): FullCDS => {
     relative_start: 1,
     relative_end: nucleotideLength,
     nucleotide_length: nucleotideLength,
-    protein_length: proteinLength
+    protein_length: proteinLength,
+    sequence: {
+      checksum: faker.datatype.uuid()
+    }
   };
 };
 
@@ -205,7 +204,10 @@ const createCDNA = (transcriptSlice: Slice): CDNA => {
   return {
     start,
     end,
-    length: end - start + 1
+    length: end - start + 1,
+    sequence: {
+      checksum: faker.datatype.uuid()
+    }
   };
 };
 

@@ -22,7 +22,7 @@ import CloseButton from 'src/shared/components/close-button/CloseButton';
 import styles from './Panel.scss';
 
 export type PanelProps = {
-  header: ReactNode;
+  header?: ReactNode;
   children: ReactNode;
   classNames?: {
     panel?: string;
@@ -55,7 +55,7 @@ const Panel = (props: PanelProps) => {
       {onClose && (
         <CloseButton className={closeButtonClassNames} onClick={onClose} />
       )}
-      <div className={headerClassNames}>{header}</div>
+      {props.header && <div className={headerClassNames}>{header}</div>}
       <div className={bodyClassNames}>
         <div>{props.children}</div>
       </div>

@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .textarea {
   border: none;
   padding: 7px;
@@ -7,8 +9,19 @@
   &:active {
     outline: none;
   }
+
+  &::placeholder {
+    color: $black;
+    font-weight: $light;
+  }
 }
 
 .disableResize {
   resize: none;
+}
+
+.shadedTextarea {
+  box-shadow: $form-field-shadow;
+  padding: 7px 15px;
+  border: none;
 }

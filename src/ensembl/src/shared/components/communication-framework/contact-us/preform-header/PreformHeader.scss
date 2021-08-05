@@ -1,0 +1,15 @@
+@import 'src/styles/common';
+
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  font-weight: $bold;
+  margin: 0 30px 0 40px;
+}
+
+.control {
+  cursor: pointer;
+  color: $blue;
+}

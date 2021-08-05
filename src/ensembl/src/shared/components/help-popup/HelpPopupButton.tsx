@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
@@ -24,11 +25,13 @@ import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 
-import { SlugReference } from './types';
-
 import styles from './HelpPopupButton.scss';
 
-type Props = SlugReference;
+type Props = {
+  labelClass?: string;
+  label: string;
+  slug: string;
+};
 
 const HelpPopupButton = (props: Props) => {
   const [shouldShowModal, setShouldShowModal] = useState(false);
@@ -45,21 +48,27 @@ const HelpPopupButton = (props: Props) => {
     return <HelpAndDocumentation />;
   }
 
+  const labelClasses = classNames(styles.label, props.labelClass);
+
   return (
     <>
       <div className={styles.wrapper} onClick={openModal}>
-        <span className={styles.label}>Help</span>
+        <span className={labelClasses}>{props.label}</span>
         <div className={styles.button}>
           <HelpIcon className={styles.icon} />
         </div>
       </div>
       {shouldShowModal && (
         <Modal classNames={{ body: styles.helpPopup }} onClose={closeModal}>
-          <HelpPopupBody {...props} />
+          <HelpPopupBody slug={props.slug} />
         </Modal>
       )}
     </>
   );
+};
+
+HelpPopupButton.defaultProps = {
+  label: 'Help'
 };
 
 export default HelpPopupButton;

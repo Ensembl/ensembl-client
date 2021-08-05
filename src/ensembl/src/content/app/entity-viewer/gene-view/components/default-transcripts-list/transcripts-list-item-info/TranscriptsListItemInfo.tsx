@@ -56,14 +56,9 @@ import styles from './TranscriptsListItemInfo.scss';
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
 type Transcript = Pick<
   FullTranscript,
-  'stable_id' | 'unversioned_stable_id' | 'so_term' | 'external_references'
+  'stable_id' | 'unversioned_stable_id' | 'external_references' | 'metadata'
 > &
   Pick2<FullTranscript, 'slice', 'location'> &
-  Pick2<
-    FullTranscript,
-    'metadata',
-    'canonical' | 'mane' | 'gencode_basic' | 'appris' | 'tsl'
-  > &
   Pick3<FullTranscript, 'slice', 'region', 'name'> & {
     spliced_exons: Array<
       Pick2<SplicedExon, 'exon', 'stable_id'> &
@@ -126,6 +121,7 @@ export const TranscriptsListItemInfo = (
   const transcriptCCDS = transcript.external_references.find(
     (xref) => xref.source.name === 'CCDS'
   );
+  const transcriptNCBI = transcript.metadata.mane?.ncbi_transcript;
 
   const hasRelevantMetadata = (
     ['gencode_basic', 'tsl', 'appris'] as const
@@ -172,14 +168,24 @@ export const TranscriptsListItemInfo = (
             )}
           </div>
         )}
-        {!!transcriptCCDS && (
+        {(!!transcriptCCDS || !!transcriptNCBI) && (
           <div className={styles.moreInfoColumn}>
-            <ExternalReference
-              classNames={{ label: styles.normalText }}
-              label={'CCDS'}
-              to={transcriptCCDS.url}
-              linkText={transcriptCCDS.accession_id}
-            />
+            {!!transcriptNCBI && (
+              <ExternalReference
+                classNames={{ label: styles.normalText }}
+                label={'RefSeq match'}
+                to={transcriptNCBI.url}
+                linkText={transcriptNCBI.id}
+              />
+            )}
+            {!!transcriptCCDS && (
+              <ExternalReference
+                classNames={{ label: styles.normalText }}
+                label={'CCDS'}
+                to={transcriptCCDS.url}
+                linkText={transcriptCCDS.accession_id}
+              />
+            )}
           </div>
         )}
       </>
@@ -192,7 +198,7 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
-            <strong>{transcript.so_term}</strong>
+            <strong>{transcript.metadata.biotype.label}</strong>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
@@ -261,7 +267,7 @@ const renderInstantDownload = ({
         genomeId={genomeId}
         transcript={{
           id: transcript.stable_id,
-          so_term: transcript.so_term
+          biotype: transcript.metadata.biotype.value
         }}
         gene={{ id: gene.stable_id }}
       />

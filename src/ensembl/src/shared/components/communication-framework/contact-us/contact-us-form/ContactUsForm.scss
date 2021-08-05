@@ -1,0 +1,64 @@
+@import 'src/styles/common';
+
+$maxFormWidth: 520px;
+$leftColumnWidth: 135px;
+$columnGapWidth: 12px;
+
+.container {
+  background: $light-grey;
+  padding: 12px 0 52px 30px;
+  min-height: 570px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: [left] $leftColumnWidth [right] 1fr;
+  column-gap: 12px;
+  row-gap: 6px;
+  width: 100%;
+  max-width: $maxFormWidth;
+}
+
+.advisory {
+  font-size: 12px;
+  font-weight: $light;
+  grid-column: right;
+
+  span {
+    display: block;
+  }
+}
+
+.label {
+  justify-self: right;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: $light;
+}
+
+.textarea {
+  height: 150px;
+}
+
+.upload {
+  grid-column: right;
+  margin-top: 18px;
+  max-width: calc(#{$maxFormWidth} - #{$leftColumnWidth} - #{$columnGapWidth});
+}
+
+.uploadedFile {
+  margin-bottom: 12px;
+}
+
+.submit {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  grid-column: right;
+  justify-self: right;
+  margin-top: 30px;
+}
+
+.errorText {
+  color: $red;
+}

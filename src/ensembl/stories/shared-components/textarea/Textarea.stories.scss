@@ -12,3 +12,15 @@
   padding: 40px;
   background: $light-grey;
 }
+
+.stage {
+  padding: 30px;
+
+  & + .stage {
+    margin-top: 3ch;
+  }
+}
+
+.greyStage {
+  background: $light-grey;
+}

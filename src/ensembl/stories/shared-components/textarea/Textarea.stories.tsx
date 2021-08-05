@@ -17,6 +17,7 @@
 import React, { useState } from 'react';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
+import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 
 import styles from './Textarea.stories.scss';
 
@@ -27,21 +28,27 @@ type DefaultArgs = {
 
 const Wrapper = (props: any) => {
   const [value, setValue] = useState('');
-  const { textarea: Textarea, ...otherProps } = props;
+  const { textarea: Textarea, wrapperClassName, ...otherProps } = props;
 
   return (
-    <div className={styles.defaultWrapper}>
+    <div className={wrapperClassName}>
       <Textarea value={value} onChange={setValue} {...otherProps} />
     </div>
   );
 };
 
-export const DefaultStory = () => <Wrapper textarea={Textarea} />;
+export const DefaultStory = () => (
+  <Wrapper textarea={Textarea} wrapperClassName={styles.defaultWrapper} />
+);
 
 DefaultStory.storyName = 'default';
 
 export const WithPlaceholderStory = () => (
-  <Wrapper textarea={Textarea} placeholder="Enter something..." />
+  <Wrapper
+    textarea={Textarea}
+    placeholder="Enter something..."
+    wrapperClassName={styles.defaultWrapper}
+  />
 );
 
 WithPlaceholderStory.storyName = 'with placeholder';
@@ -50,6 +57,7 @@ export const NoResizeStory = () => (
   <Wrapper
     textarea={Textarea}
     placeholder="Enter something..."
+    wrapperClassName={styles.defaultWrapper}
     resizable={false}
   />
 );
@@ -60,6 +68,7 @@ export const FocusBlurStory = (args: DefaultArgs) => (
   <Wrapper
     textarea={Textarea}
     placeholder="Enter something..."
+    wrapperClassName={styles.defaultWrapper}
     onFocus={args.onFocus()}
     onBlur={args.onBlur()}
   />
@@ -67,10 +76,36 @@ export const FocusBlurStory = (args: DefaultArgs) => (
 
 FocusBlurStory.storyName = 'with onFocus and onBlur';
 
+export const ShadedTextareaStory = (args: DefaultArgs) => (
+  <>
+    <div className={styles.stage}>
+      <p>Against a white background</p>
+      <Wrapper
+        textarea={ShadedTextarea}
+        placeholder="Enter something..."
+        onFocus={args.onFocus()}
+        onBlur={args.onBlur()}
+      />
+    </div>
+    <div className={`${styles.stage} ${styles.greyStage}`}>
+      <p>Against a grey background</p>
+      <Wrapper
+        textarea={ShadedTextarea}
+        placeholder="Enter something..."
+        onFocus={args.onFocus()}
+        onBlur={args.onBlur()}
+      />
+    </div>
+  </>
+);
+
+ShadedTextareaStory.storyName = 'shaded textarea';
+
 export const CustomStyledStory = () => (
   <Wrapper
     textarea={Textarea}
     placeholder="Enter something..."
+    wrapperClassName={styles.defaultWrapper}
     className={styles.customizedTextarea}
   />
 );

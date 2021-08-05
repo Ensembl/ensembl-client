@@ -19,6 +19,7 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
+import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
 import HelpLanding from './components/help-landing/HelpLanding';
 import {
@@ -66,7 +67,14 @@ const Help = () => {
 };
 
 const AppBar = () => {
-  return <div className={styles.appBar}>Help</div>;
+  return (
+    <div className={styles.appBar}>
+      Help
+      <div className={styles.conversationIcon}>
+        <ConversationIcon />
+      </div>
+    </div>
+  );
 };
 
 const MainContent = (props: { article: ArticleData }) => {

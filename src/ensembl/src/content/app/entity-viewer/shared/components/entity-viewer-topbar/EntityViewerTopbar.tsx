@@ -22,6 +22,7 @@ import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 import { Slice } from 'src/shared/types/thoas/slice';
 
 import styles from './EntityViewerTopbar.scss';
+import { GeneMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
 
 export type EntityViewerTopbarProps = {
   genomeId: string;
@@ -34,7 +35,6 @@ const QUERY = gql`
       stable_id
       unversioned_stable_id
       symbol
-      so_term
       slice {
         location {
           start
@@ -47,6 +47,11 @@ const QUERY = gql`
           name
         }
       }
+      metadata {
+        biotype {
+          label
+        }
+      }
     }
   }
 `;
@@ -55,7 +60,7 @@ type Gene = {
   stable_id: string;
   unversioned_stable_id: string;
   symbol: string;
-  so_term: string;
+  metadata: GeneMetadata;
   slice: Slice;
 };
 
@@ -81,7 +86,7 @@ const geneToEnsObjectFields = (gene: Gene) => {
     stable_id: gene.unversioned_stable_id,
     versioned_stable_id: gene.stable_id,
     label: gene.symbol,
-    bio_type: gene.so_term,
+    bio_type: gene.metadata.biotype.label,
     strand: gene.slice.strand.code,
     location: {
       chromosome: gene.slice.region.name,

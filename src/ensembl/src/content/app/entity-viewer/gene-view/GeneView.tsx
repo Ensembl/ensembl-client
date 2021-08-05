@@ -92,7 +92,6 @@ const QUERY = gql`
       transcripts {
         stable_id
         unversioned_stable_id
-        so_term
         slice {
           location {
             start
@@ -164,6 +163,19 @@ const QUERY = gql`
           }
         }
         metadata {
+          biotype {
+            label
+            value
+            definition
+          }
+          tsl {
+            label
+            value
+          }
+          appris {
+            label
+            value
+          }
           canonical {
             value
             label
@@ -173,6 +185,10 @@ const QUERY = gql`
             value
             label
             definition
+            ncbi_transcript {
+              id
+              url
+            }
           }
           gencode_basic {
             label
@@ -237,7 +253,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const gbUrl = urlFor.browser({ genomeId, focus: focusId });
 
   const shouldShowFilterIndicator =
-    sortingRule !== SortingRule.DEFAULT || Object.values(filters).some(Boolean);
+    sortingRule !== SortingRule.DEFAULT ||
+    Object.values(filters).some((filter) => filter.selected);
 
   const filterLabel = (
     <span

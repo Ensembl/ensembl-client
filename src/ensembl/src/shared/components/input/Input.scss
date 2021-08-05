@@ -1,3 +1,5 @@
+@import 'src/styles/common';
+
 .input {
   display: inline-block;
   width: 100%;
@@ -6,4 +8,16 @@
   &:active {
     outline: none;
   }
+
+  &::placeholder {
+    color: $black;
+    font-weight: $light;
+  }
+}
+
+.shadedInput {
+  box-shadow: $form-field-shadow;
+  border: none;
+  padding: 0 15px;
+  height: 30px;
 }

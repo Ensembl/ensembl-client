@@ -23,12 +23,13 @@
   align-items: center;
   justify-content: center;
   z-index: 1;
-}
 
-.spinner {
-  width: 20px;
-  height: 20px;
-  border-width: 2px;
+  // increase specificity to override own styles of the loader component
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
 }
 
 .checkmark {

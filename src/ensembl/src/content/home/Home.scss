@@ -82,31 +82,41 @@
   }
 }
 
-.homeTopRight {
-  position: absolute;
-  top: 0;
-  right: 30px;
+.helpLabel {
   color: $blue;
   font-weight: $bold;
+}
+
+.homeTopRight {
+  position: absolute;
+  top: 7px;
+  right: 20px;
   display: grid;
   grid-template-columns: auto auto;
-  height: 40px;
-  cursor: pointer;
+  height: 28px;
 
-  .wrapper {
+  .howToUse {
     display: grid;
     grid-template-columns: 130px auto;
   }
 
   .text {
-    margin-top: 10px;
+    font-weight: $bold;
+    align-self: center;
   }
 
   .helpIcon {
-    width: 32px;
-    height: 32px;
+    width: 25px;
+    height: 22px;
+    border-radius: 5px;
     fill: $white;
     background-color: $blue;
+  }
+
+  .conversationIcon {
+    width: 40px;
+    margin-left: 15px;
+    height: 25px;
   }
 }
 

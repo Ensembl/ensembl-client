@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
-import { Pick3 } from 'ts-multipick';
+import { Pick2, Pick3 } from 'ts-multipick';
 import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -47,7 +47,6 @@ const GENE_QUERY = gql`
       stable_id
       unversioned_stable_id
       symbol
-      so_term
       transcripts {
         stable_id
       }
@@ -57,6 +56,12 @@ const GENE_QUERY = gql`
         }
         location {
           length
+        }
+      }
+      metadata {
+        biotype {
+          label
+          value
         }
       }
     }
@@ -70,8 +75,8 @@ type Gene = Pick<
   | 'symbol'
   | 'name'
   | 'alternative_symbols'
-  | 'so_term'
 > &
+  Pick2<FullGene, 'metadata', 'biotype'> &
   Pick3<FullGene, 'slice', 'strand', 'code'> &
   Pick3<FullGene, 'slice', 'location', 'length'> & {
     transcripts: { stable_id: string }[];
@@ -122,7 +127,7 @@ const GeneSummary = () => {
               <span className={styles.featureSymbol}>{gene.symbol}</span>
             )}
             <span className={styles.stableId}>{stableId}</span>
-            <div>{gene.so_term.toLowerCase()}</div>
+            <div>{gene.metadata.biotype.label}</div>
             <div>{getStrandDisplayName(gene.slice.strand.code)}</div>
             <div>{getFormattedLocation(ensObjectGene.location)}</div>
           </div>
@@ -161,7 +166,10 @@ const GeneSummary = () => {
             <div className={styles.downloadWrapper}>
               <InstantDownloadGene
                 genomeId={ensObjectGene.genome_id}
-                gene={{ id: gene.stable_id, so_term: gene.so_term }}
+                gene={{
+                  id: gene.stable_id,
+                  biotype: gene.metadata.biotype.value
+                }}
               />
               <CloseButton
                 className={styles.closeButton}
