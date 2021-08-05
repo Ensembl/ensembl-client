@@ -60,14 +60,26 @@ const ContactUs = () => {
           service status updates.
         </p>
         <p>
-          <a href="https://www.ensembl.info/">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.ensembl.info/"
+          >
             <span className={styles.socialMediaLinkText}>Ensembl Blog</span>{' '}
             <BlogIcon className={styles.icon} />{' '}
           </a>
-          <a href="https://www.facebook.com/Ensembl.org/">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.facebook.com/Ensembl.org/"
+          >
             <FacebookIcon className={styles.icon} />{' '}
           </a>
-          <a href="https://twitter.com/ensembl">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://twitter.com/ensembl"
+          >
             <TwitterIcon className={styles.icon} />
           </a>
         </p>
