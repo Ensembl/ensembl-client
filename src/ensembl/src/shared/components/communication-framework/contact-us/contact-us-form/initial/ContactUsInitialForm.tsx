@@ -233,7 +233,7 @@ const validate = (formState: State) => {
 
 const areMandatoryFieldsFilled = (formState: State) => {
   return (['name', 'email', 'subject', 'message'] as const).every(
-    (field) => formState[field]
+    (field) => formState[field].trim().length > 0
   );
 };
 
