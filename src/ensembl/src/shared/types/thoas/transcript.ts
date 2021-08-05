@@ -33,4 +33,6 @@ export type FullTranscript = {
   product_generating_contexts: FullProductGeneratingContext[];
   external_references: ExternalReference[];
   metadata: TranscriptMetadata;
+  name?: string;
+  so_term?: string;
 };

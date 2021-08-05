@@ -63,5 +63,6 @@ export type BrowserTrackStates = {
 };
 
 export enum TrackId {
-  GENE = 'track:gene-feat'
+  GENE = 'track:gene-feat',
+  CANONICAL_TRANSCRIPT = 'track:gene-feat-1'
 }

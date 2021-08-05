@@ -53,7 +53,6 @@ export type EnsObjectTrack = {
   child_tracks?: EnsObjectTrack[];
   colour?: string;
   label: string;
-  ensembl_object_id?: string;
   support_level?: string | null;
   track_id: string;
   stable_id: string | null;

@@ -32,4 +32,5 @@ export type FullGene = {
   alternative_symbols: string[];
   external_references: ExternalReference[];
   metadata: GeneMetadata;
+  so_term?: string;
 };

@@ -51,7 +51,6 @@ export const createMainTrackInfo = (): EnsObjectTrack => ({
     }
   ],
   description: faker.lorem.words(),
-  ensembl_object_id: faker.lorem.words(),
   label: faker.lorem.words(),
   track_id: 'gene-feat',
   stable_id: faker.lorem.words()

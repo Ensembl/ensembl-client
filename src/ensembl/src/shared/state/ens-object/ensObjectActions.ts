@@ -17,22 +17,25 @@
 import { createAsyncAction } from 'typesafe-actions';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import apiService from 'src/services/api-service';
+import { gql } from '@apollo/client';
+
+import { client } from 'src/gql-client';
 
 import { shouldFetch } from 'src/shared/helpers/fetchHelper';
 import {
   parseEnsObjectId,
   buildEnsObjectId,
   buildRegionObject,
-  EnsObjectIdConstituents
+  EnsObjectIdConstituents,
+  buildEnsObject
 } from './ensObjectHelpers';
 
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getEnsObjectLoadingStatus } from 'src/shared/state/ens-object/ensObjectSelectors';
 
-import { TrackId } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { EnsObject, EnsObjectResponse } from './ensObjectTypes';
+import { EnsObject } from './ensObjectTypes';
 import { RootState } from 'src/store';
+import { FullGene } from 'src/shared/types/thoas/gene';
 
 export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_request',
@@ -40,84 +43,109 @@ export const fetchEnsObjectAsyncActions = createAsyncAction(
   'ens-object/fetch_ens_object_failure'
 )<string, { id: string; data: EnsObject }, Error>();
 
-export const fetchEnsObject = (
-  payload: string | EnsObjectIdConstituents
-): ThunkAction<void, any, null, Action<string>> => async (
-  dispatch,
-  getState: () => RootState
-) => {
-  if (typeof payload === 'string') {
-    payload = parseEnsObjectId(payload);
+const geneQuery = gql`
+  query Gene($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      name
+      stable_id
+      unversioned_stable_id
+      symbol
+      so_term
+      slice {
+        region {
+          name
+        }
+        location {
+          start
+          end
+        }
+        strand {
+          code
+        }
+      }
+      metadata {
+        biotype {
+          label
+        }
+      }
+      transcripts {
+        stable_id
+        so_term
+        metadata {
+          biotype {
+            label
+          }
+          canonical {
+            value
+            label
+          }
+        }
+      }
+    }
   }
-  const state = getState();
-  const ensObjectId = buildEnsObjectId(payload);
-  const ensObjectLoadingStatus = getEnsObjectLoadingStatus(state, ensObjectId);
-  if (!shouldFetch(ensObjectLoadingStatus)) {
-    return;
-  }
+`;
 
-  if (payload.type === 'region') {
-    const regionObject = buildRegionObject(payload);
-    dispatch(
-      fetchEnsObjectAsyncActions.success({
-        id: ensObjectId,
-        data: regionObject
-      })
+export const fetchEnsObject =
+  (
+    payload: string | EnsObjectIdConstituents
+  ): ThunkAction<void, any, null, Action<string>> =>
+  async (dispatch, getState: () => RootState) => {
+    if (typeof payload === 'string') {
+      payload = parseEnsObjectId(payload);
+    }
+    const state = getState();
+    const ensObjectId = buildEnsObjectId(payload);
+    const ensObjectLoadingStatus = getEnsObjectLoadingStatus(
+      state,
+      ensObjectId
     );
-    return;
-  }
-
-  try {
-    dispatch(fetchEnsObjectAsyncActions.request(ensObjectId));
-    const { genomeId, objectId, type } = payload;
-
-    const objectInfoUrl = `/api/genomesearch/object/info?genome_id=${genomeId}&type=${type}&stable_id=${objectId}`;
-    const objectTracksUrl = `/api/genomesearch/object/track_list?genome_id=${genomeId}&type=${type}&stable_id=${objectId}`;
-    const response: EnsObjectResponse = await apiService.fetch(objectInfoUrl);
-    response.object_id = buildEnsObjectId(payload);
-
-    try {
-      response.track = await apiService.fetch(objectTracksUrl);
-    } catch {
-      // FIXME: this is a temporary solution
-      response.track = builtTrackList(response);
+    if (!shouldFetch(ensObjectLoadingStatus)) {
+      return;
     }
 
-    dispatch(
-      fetchEnsObjectAsyncActions.success({
-        id: ensObjectId,
-        data: response
-      })
-    );
-  } catch (error) {
-    dispatch(fetchEnsObjectAsyncActions.failure(error));
-  }
-};
+    if (payload.type === 'region') {
+      const regionObject = buildRegionObject(payload);
+      dispatch(
+        fetchEnsObjectAsyncActions.success({
+          id: ensObjectId,
+          data: regionObject
+        })
+      );
+      return;
+    }
 
-export const fetchExampleEnsObjects = (
-  genomeId: string
-): ThunkAction<void, any, null, Action<string>> => async (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const exampleFocusObjects = getGenomeExampleFocusObjects(state, genomeId);
+    try {
+      dispatch(fetchEnsObjectAsyncActions.request(ensObjectId));
+      const { genomeId } = payload;
 
-  exampleFocusObjects.forEach(({ id, type }) => {
-    dispatch(fetchEnsObject({ genomeId, type, objectId: id }));
-  });
-};
-
-// FIXME: this is a temporary solution, until the backend
-// fixes the api/object/track_list endpoint
-const builtTrackList = (ensObject: EnsObjectResponse) => {
-  return {
-    additional_info: ensObject.bio_type || undefined,
-    description: ensObject.description,
-    ensembl_object_id: ensObject.object_id, // we don't use this field
-    label: ensObject.label,
-    track_id: TrackId.GENE,
-    child_tracks: [],
-    stable_id: ensObject.stable_id
+      client
+        .query<{ gene: Partial<FullGene> }>({
+          query: geneQuery,
+          variables: {
+            genomeId,
+            stableId: ensObjectId
+          }
+        })
+        .then(({ data }) => {
+          dispatch(
+            fetchEnsObjectAsyncActions.success({
+              id: ensObjectId,
+              data: buildEnsObject(data.gene, genomeId)
+            })
+          );
+        });
+    } catch (error) {
+      dispatch(fetchEnsObjectAsyncActions.failure(error));
+    }
   };
-};
+
+export const fetchExampleEnsObjects =
+  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  async (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const exampleFocusObjects = getGenomeExampleFocusObjects(state, genomeId);
+
+    exampleFocusObjects.forEach(({ id, type }) => {
+      dispatch(fetchEnsObject({ genomeId, type, objectId: id }));
+    });
+  };

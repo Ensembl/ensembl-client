@@ -15,10 +15,18 @@
  */
 
 import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
+
 import {
   EnsObjectRegion,
-  EnsObjectGene
+  EnsObjectGene,
+  EnsObject
 } from 'src/shared/state/ens-object/ensObjectTypes';
+import { FullGene } from 'src/shared/types/thoas/gene';
+import { Slice } from 'src/shared/types/thoas/slice';
+import {
+  TrackId,
+  TrackItemColour
+} from 'src/content/app/browser/track-panel/trackPanelConfig';
 
 export type EnsObjectIdConstituents = {
   genomeId: string;
@@ -106,6 +114,62 @@ export const buildRegionObject = (
       start,
       end
     }
+  };
+};
+
+export const buildEnsObject = (
+  gene: Partial<FullGene>,
+  genomeId: string
+): EnsObject => {
+  const slice = gene.slice as Slice;
+
+  return {
+    type: 'gene',
+    genome_id: genomeId,
+    object_id: gene.stable_id as string,
+    stable_id: gene.unversioned_stable_id as string,
+    versioned_stable_id: gene.stable_id as string,
+    bio_type: gene.so_term as string,
+    location: {
+      chromosome: slice.region.name,
+      start: slice.location.start,
+      end: slice.location.end
+    },
+    strand: slice.strand.code,
+    label: gene.symbol as string,
+    description: gene.name || null,
+    track: buildTrackList(gene)
+  };
+};
+
+// FIXME: this is a temporary solution, until the backend
+// fixes the api/object/track_list endpoint
+const buildTrackList = (gene: Partial<FullGene>) => {
+  const canonicalTranscript = gene.transcripts?.filter(
+    (transcript) => !!transcript.metadata.canonical
+  )[0];
+
+  const childTracks = canonicalTranscript
+    ? [
+        {
+          additional_info: (canonicalTranscript.so_term as string) || undefined,
+          colour: TrackItemColour.BLUE,
+          description: canonicalTranscript.name || null,
+          label: canonicalTranscript.stable_id as string,
+          support_level: canonicalTranscript.metadata.canonical?.label,
+          track_id: TrackId.CANONICAL_TRANSCRIPT,
+          stable_id: canonicalTranscript.stable_id as string
+        }
+      ]
+    : [];
+
+  return {
+    additional_info: gene.so_term || undefined,
+    description: gene.name || null,
+    label: gene.symbol as string,
+    track_id: TrackId.GENE,
+    stable_id: gene.stable_id as string,
+    child_tracks: childTracks
   };
 };
 
