@@ -25,8 +25,6 @@ import ImageButton from 'ensemblRoot/src/shared/components/image-button/ImageBut
 
 import { ReactComponent as cogIcon } from 'static/img/shared/cog.svg';
 
-import { Status } from 'src/shared/types/status';
-
 export type BrowserCogProps = {
   cogActivated: boolean;
   trackId: string;
@@ -70,11 +68,6 @@ const BrowserCog = (props: BrowserCogProps) => {
     icon: cogIcon
   };
 
-  const getCogIconStatus = () => {
-    const { cogActivated } = props;
-    return cogActivated ? Status.SELECTED : Status.UNSELECTED;
-  };
-
   const [showTrackConfig, setTrackConfigAnimation] = useState(cogActivated);
   useEffect(() => {
     if (cogActivated) {
@@ -98,7 +91,6 @@ const BrowserCog = (props: BrowserCogProps) => {
           <CloseButton onClick={toggleCog} />
         ) : (
           <ImageButton
-            status={getCogIconStatus()}
             description={cogIconConfig.description}
             onClick={toggleCog}
             image={cogIconConfig.icon}

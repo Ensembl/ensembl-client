@@ -47,7 +47,7 @@ describe('<BrowserTrackConfig />', () => {
   };
 
   describe('behaviour', () => {
-    it('sets all tracks to be updated when the all tracks is selected', () => {
+    it('can update all tracks', () => {
       const { container } = render(<BrowserTrackConfig {...defaultProps} />);
       const allTracksLabel = [...container.querySelectorAll('label')].find(
         (el) => el.textContent === 'All tracks'
