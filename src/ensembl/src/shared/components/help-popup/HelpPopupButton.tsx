@@ -17,11 +17,8 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-
 import Modal from 'src/shared/components/modal/Modal';
 import HelpPopupBody from './HelpPopupBody';
-import { HelpAndDocumentation } from 'src/shared/components/app-bar/AppBar';
 
 import { ReactComponent as HelpIcon } from 'static/img/launchbar/help.svg';
 
@@ -43,10 +40,6 @@ const HelpPopupButton = (props: Props) => {
   const closeModal = () => {
     setShouldShowModal(false);
   };
-
-  if (isEnvironment([Environment.PRODUCTION])) {
-    return <HelpAndDocumentation />;
-  }
 
   const labelClasses = classNames(styles.label, props.labelClass);
 
