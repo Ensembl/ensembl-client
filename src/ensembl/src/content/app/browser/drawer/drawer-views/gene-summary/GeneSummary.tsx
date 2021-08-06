@@ -146,6 +146,7 @@ const GeneSummary = () => {
           {getGeneName(gene.name)}
           {gene.metadata.name && (
             <ExternalReference
+              classNames={{ container: styles.marginTop }}
               to={gene.metadata.name.url}
               linkText={gene.metadata.name.accession_id}
             />

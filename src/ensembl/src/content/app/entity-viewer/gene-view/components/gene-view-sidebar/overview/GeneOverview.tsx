@@ -94,6 +94,7 @@ const GeneOverview = () => {
       <div className={styles.geneName}>{getGeneName(gene.name)}</div>
       {gene.metadata.name && (
         <ExternalReference
+          classNames={{ container: styles.marginTop }}
           to={gene.metadata.name.url}
           linkText={gene.metadata.name.accession_id}
         />
