@@ -47,13 +47,16 @@ describe('<BrowserTrackConfig />', () => {
   };
 
   describe('behaviour', () => {
-    it('sets all tracks to be updated when the all tracks checkbox is selected', () => {
+    it('can update all tracks', () => {
       const { container } = render(<BrowserTrackConfig {...defaultProps} />);
-      const checkbox = container.querySelector(
-        'input[type="checkbox"]'
-      ) as HTMLInputElement;
+      const allTracksLabel = [...container.querySelectorAll('label')].find(
+        (el) => el.textContent === 'All tracks'
+      );
+      const allTracksInputElement = allTracksLabel?.querySelector(
+        'input'
+      ) as HTMLElement;
 
-      userEvent.click(checkbox);
+      userEvent.click(allTracksInputElement);
 
       expect(defaultProps.updateApplyToAll).toHaveBeenCalledTimes(1);
     });
