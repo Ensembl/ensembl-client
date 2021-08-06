@@ -51,11 +51,6 @@ type BrowserCogListProps = {
   updateSelectedCog: (trackId: string | null) => void;
 };
 
-// type BpaneScrollPayload = {
-//   delta_y?: number;
-//   cogList?: CogList;
-// };
-
 export const BrowserCogList = (props: BrowserCogListProps) => {
   const { browserCogTrackList } = props;
 
@@ -81,7 +76,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.UPDATE_TRACK_SUMMARY],
+      [IncomingActionType.TRACK_SUMMARY],
       (action: IncomingAction) =>
         listenBpaneScroll(action.payload as TrackSummaryList)
     );

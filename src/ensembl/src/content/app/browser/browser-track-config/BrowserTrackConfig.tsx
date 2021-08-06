@@ -100,7 +100,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     });
 
     genomeBrowser?.send({
-      type: shouldShowTrackLabels
+      type: !shouldShowTrackLabels
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {
@@ -135,7 +135,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     });
 
     genomeBrowser?.send({
-      type: shouldShowTrackLabels
+      type: !shouldShowTrackLabels
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {

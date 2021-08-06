@@ -92,13 +92,6 @@ export type BumperPayload = [
 //   'is-focus-position'?: boolean;
 // };
 
-const parseLocation = (location: ChrLocation) => {
-  // FIXME: is there any reason to receive genome and chromosome in the same string?
-  const [genomeAndChromosome, start, end] = location;
-  const [, chromosome] = genomeAndChromosome.split(':');
-  return [chromosome, start, end] as ChrLocation;
-};
-
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
 
@@ -139,12 +132,16 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.CURRENT, IncomingActionType.TARGET],
+      [IncomingActionType.CURRENT_POSITION, IncomingActionType.TARGET_POSITION],
       (action: IncomingAction) => {
-        if (action.type === IncomingActionType.CURRENT) {
-          props.setActualChrLocation(parseLocation(action.payload));
-        } else if (action.type === IncomingActionType.TARGET) {
-          props.setChrLocation(parseLocation(action.payload));
+        if (action.type === IncomingActionType.CURRENT_POSITION) {
+          const { stick, start, end } = action.payload;
+          const chromosome = stick.split(':')[1];
+          props.setActualChrLocation([chromosome, start, end]);
+        } else if (action.type === IncomingActionType.TARGET_POSITION) {
+          const { stick, start, end } = action.payload;
+          const chromosome = stick.split(':')[1];
+          props.setChrLocation([chromosome, start, end]);
         }
       }
     );
