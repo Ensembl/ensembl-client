@@ -20,6 +20,11 @@ export type ValueSetMetadata = {
   definition: string;
 };
 
+export type XrefMetadata = {
+  accession_id: string;
+  url: string;
+};
+
 type CanonicalMetadata = Omit<ValueSetMetadata, 'value'> & { value: boolean };
 
 type NCBITranscriptMetadata = {
@@ -41,4 +46,5 @@ export type TranscriptMetadata = {
 
 export type GeneMetadata = {
   biotype: ValueSetMetadata;
+  name: XrefMetadata | null;
 };
