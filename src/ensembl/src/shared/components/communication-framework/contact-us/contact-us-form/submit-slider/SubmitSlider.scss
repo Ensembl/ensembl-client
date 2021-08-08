@@ -1,0 +1,53 @@
+@import 'src/styles/common';
+
+$trackWidth: 220px;
+$sliderHeight: 30px;
+
+.container {
+  width: $trackWidth;
+  position: relative;
+}
+
+.track {
+  position: relative;
+  width: $trackWidth;
+  height: $sliderHeight;
+  background-color: white;
+  border: 1px solid $grey;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.slider {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 90px;
+  height: 30px;
+  background-color: $blue;
+  border-radius: 4px;
+  cursor: grab;
+
+  &Dragged {
+    cursor: grabbing;
+  }
+
+  &Disabled {
+    background-color: $grey;
+    cursor: default;
+  }
+}
+
+.submitButton {
+  position: absolute;
+  right: 0;
+  height: $sliderHeight;
+}
+
+.chevron {
+  fill: white;
+}

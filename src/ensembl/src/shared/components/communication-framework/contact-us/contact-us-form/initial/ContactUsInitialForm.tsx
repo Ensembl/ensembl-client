@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState, useReducer, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+  useRef
+} from 'react';
 import noop from 'lodash/noop';
 
 import { submitForm } from '../submitForm';
@@ -25,6 +31,7 @@ import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 import Upload from 'src/shared/components/upload/Upload';
 import UploadedFile from 'src/shared/components/uploaded-file/UploadedFile';
 import { PrimaryButton } from 'src/shared/components/button/Button';
+import SubmitSlider from '../submit-slider/SubmitSlider';
 
 import commonStyles from '../ContactUsForm.scss';
 
@@ -105,9 +112,23 @@ const reducer = (state: State, action: Action): State => {
 
 const ContactUsInitialForm = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [isChallengeCompleted, setIsChallengeCompleted] = useState(false);
+  const [emailFieldValid, setEmailFieldValid] = useState(true);
+  const [emailFieldFocussed, setEmailFieldFocussed] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
+
+  useEffect(() => {
+    // TODO: this useEffect will be unnecessary when the Input is refactored to include forwardRef
+    const emailInput = formRef.current?.querySelector('#email');
+    if (emailInput) {
+      emailFieldRef.current = emailInput as HTMLInputElement;
+    }
+  }, [formRef.current]);
 
   const onNameChange = useCallback((value: string) => {
     dispatch({ type: 'update-name', payload: value });
@@ -115,6 +136,15 @@ const ContactUsInitialForm = () => {
 
   const onEmailChange = useCallback((value: string) => {
     dispatch({ type: 'update-email', payload: value });
+    validateEmail();
+  }, []);
+
+  const onEmailFocus = useCallback(() => {
+    setEmailFieldFocussed(true);
+  }, []);
+
+  const onEmailBlur = useCallback(() => {
+    setEmailFieldFocussed(false);
   }, []);
 
   const onSubjectChange = useCallback((value: string) => {
@@ -131,6 +161,12 @@ const ContactUsInitialForm = () => {
     }
   }, []);
 
+  const validateEmail = useCallback(() => {
+    if (emailFieldRef.current) {
+      setEmailFieldValid(emailFieldRef.current?.checkValidity());
+    }
+  }, [emailFieldRef.current]);
+
   const deleteFile = (index: number) => {
     dispatch({ type: 'remove-file', payload: index });
   };
@@ -141,7 +177,7 @@ const ContactUsInitialForm = () => {
     setIsSubmitted(true);
   }, []);
 
-  const isFormValid = validate(state);
+  const isFormValid = validate(state) && emailFieldValid;
 
   if (isSubmitted) {
     return <SubmissionSuccess />;
@@ -158,6 +194,7 @@ const ContactUsInitialForm = () => {
         </p>
       </div>
       <form
+        ref={formRef}
         className={commonStyles.grid}
         autoComplete="off"
         onSubmit={handleSubmit}
@@ -170,7 +207,15 @@ const ContactUsInitialForm = () => {
         <label htmlFor="email" className={commonStyles.label}>
           Your email
         </label>
-        <ShadedInput id="email" value={state.email} onChange={onEmailChange} />
+        <ShadedInput
+          id="email"
+          type="email"
+          className={commonStyles.emailField}
+          value={state.email}
+          onChange={onEmailChange}
+          onFocus={onEmailFocus}
+          onBlur={onEmailBlur}
+        />
 
         <label htmlFor="subject" className={commonStyles.label}>
           Subject
@@ -209,15 +254,40 @@ const ContactUsInitialForm = () => {
         </div>
 
         <div className={commonStyles.submit}>
-          {exceedsAttachmentsSizeLimit(state) && (
-            <span className={commonStyles.errorText}>
-              Attachment(s) exceed 10 MB
-            </span>
+          {!isFormValid && (
+            <div className={commonStyles.formErrors}>
+              {!emailFieldValid && !emailFieldFocussed && (
+                <div className={commonStyles.errorText}>
+                  Please check the email address
+                </div>
+              )}
+              {exceedsAttachmentsSizeLimit(state) && (
+                <div className={commonStyles.errorText}>
+                  Attachment(s) exceed 10 MB
+                </div>
+              )}
+            </div>
           )}
 
-          <PrimaryButton type="submit" isDisabled={!isFormValid} onClick={noop}>
-            Submit
-          </PrimaryButton>
+          {isChallengeCompleted ? (
+            <PrimaryButton
+              type="submit"
+              className={commonStyles.submitButton}
+              isDisabled={!isFormValid}
+              onClick={noop}
+            >
+              Submit
+            </PrimaryButton>
+          ) : (
+            <>
+              <span className={commonStyles.sliderLabel}>Slide, then send</span>
+              <SubmitSlider
+                className={commonStyles.submitSlider}
+                isDisabled={!isFormValid}
+                onSlideCompleted={() => setIsChallengeCompleted(true)}
+              />
+            </>
+          )}
         </div>
       </form>
     </div>
