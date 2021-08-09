@@ -7,12 +7,21 @@
   position: relative;
   padding: 15px 27px;
   cursor: pointer;
-  transition: background-color 0.4s;
+  transition: color 0.4s, border-color 0.4s, background-color 0.4s;
 }
 
 .defaultUploadActive {
   transition: background-color 0.4s;
   background-color: rgba(51, 173, 255, 0.2);
+}
+
+.disabledUpload {
+  border: 1px dashed $grey;
+  color: $grey;
+  display: inline-block;
+  padding: 15px 27px;
+  user-select: none;
+  transition: color 0.4s, border-color 0.4s;
 }
 
 .fileInput {
