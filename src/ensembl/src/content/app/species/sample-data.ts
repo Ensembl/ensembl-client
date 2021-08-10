@@ -31,7 +31,7 @@ export const sampleData: RawSpeciesStats = {
     assembly_stats: {
       contig_n50: 56413054,
       total_genome_length: 3272116950,
-      total_coding_sequence_length: 34317174,
+      total_coding_sequence_length: 34378305,
       total_gap_length: 161368351,
       spanned_gaps: 661,
       chromosomes: 25,
@@ -40,66 +40,66 @@ export const sampleData: RawSpeciesStats = {
       gc_percentage: 38.87
     },
     coding_stats: {
-      coding_genes: 20420,
-      average_genomic_span: 66885.16,
-      average_sequence_length: 3443.15,
-      average_cds_length: 1139.02,
+      coding_genes: 20424,
+      average_genomic_span: 67123.2,
+      average_sequence_length: 3538.93,
+      average_cds_length: 1160.33,
       shortest_gene_length: 8,
       longest_gene_length: 2473539,
-      total_transcripts: 153909,
-      coding_transcripts: 100607,
-      transcripts_per_gene: 7.54,
-      coding_transcripts_per_gene: 4.93,
-      total_exons: 1150521,
-      total_coding_exons: 764520,
-      average_exon_length: 243.09,
-      average_coding_exon_length: 149.87,
-      average_exons_per_transcript: 7.48,
-      average_coding_exons_per_coding_transcript: 7.6,
-      total_introns: 996612,
-      average_intron_length: 6367.19
+      total_transcripts: 162478,
+      coding_transcripts: 106190,
+      transcripts_per_gene: 7.96,
+      coding_transcripts_per_gene: 5.2,
+      total_exons: 1268315,
+      total_coding_exons: 825666,
+      average_exon_length: 246.94,
+      average_coding_exon_length: 149.22,
+      average_exons_per_transcript: 7.81,
+      average_coding_exons_per_coding_transcript: 7.78,
+      total_introns: 1105837,
+      average_intron_length: 6237.5
     },
     non_coding_stats: {
-      non_coding_genes: 23985,
-      small_non_coding_genes: 4870,
-      long_non_coding_genes: 16895,
+      non_coding_genes: 23967,
+      small_non_coding_genes: 4863,
+      long_non_coding_genes: 16884,
       misc_non_coding_genes: 2220,
-      average_genomic_span: 22904.09,
-      average_sequence_length: 1084.17,
+      average_genomic_span: 23077.19,
+      average_sequence_length: 940.34,
       shortest_gene_length: 41,
       longest_gene_length: 1375317,
-      total_transcripts: 54482,
-      transcripts_per_gene: 2.27,
-      total_exons: 183012,
-      average_exon_length: 347.07,
-      average_exons_per_transcript: 3.36,
-      total_introns: 128530,
-      average_intron_length: 15929.64
+      total_transcripts: 54748,
+      transcripts_per_gene: 2.28,
+      total_exons: 184477,
+      average_exon_length: 347.04,
+      average_exons_per_transcript: 3.37,
+      total_introns: 129729,
+      average_intron_length: 15993.77
     },
     pseudogene_stats: {
       pseudogenes: 15217,
-      average_genomic_span: 4124.33,
-      average_sequence_length: 802.62,
+      average_genomic_span: 4218.48,
+      average_sequence_length: 726.42,
       shortest_gene_length: 23,
       longest_gene_length: 909387,
-      total_transcripts: 18474,
-      transcripts_per_gene: 1.21,
-      total_exons: 43639,
-      average_exon_length: 356.59,
-      average_exons_per_transcript: 2.36,
-      total_introns: 25165,
-      average_intron_length: 4336.85
+      total_transcripts: 18617,
+      transcripts_per_gene: 1.22,
+      total_exons: 44532,
+      average_exon_length: 353.34,
+      average_exons_per_transcript: 2.39,
+      total_introns: 25915,
+      average_intron_length: 4372.89
     },
     homology_stats: {
-      coverage: 98.8
+      coverage: 86
     },
     variation_stats: {
-      short_variants: 713730678,
-      structural_variants: 32132047,
-      short_variants_with_phenotype_assertions: 13336864,
-      short_variants_with_publications: 303288,
+      short_variants: 713749788,
+      structural_variants: 32170052,
+      short_variants_with_phenotype_assertions: 13365325,
+      short_variants_with_publications: 429376,
       short_variants_frequency_studies: 8,
-      structural_variants_with_phenotype_assertions: 1921150
+      structural_variants_with_phenotype_assertions: 320417
     },
     regulation_stats: {
       enhancers: 132592,
@@ -122,7 +122,7 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 20787,
       average_genomic_span: 63989.1,
       average_sequence_length: 3136.38,
-      average_CDS_length: 1141.09,
+      average_cds_length: 1141.09,
       shortest_gene_length: 8,
       longest_gene_length: 2304638,
       total_transcripts: 146152,
@@ -157,7 +157,7 @@ export const sampleData: RawSpeciesStats = {
     },
     pseudogene_stats: {
       pseudogenes: 14170,
-      average_genomic_span: 3525.3,
+      average_genomic_span: 3525.6,
       average_sequence_length: 809.46,
       shortest_gene_length: 23,
       longest_gene_length: 586570,
@@ -169,11 +169,11 @@ export const sampleData: RawSpeciesStats = {
       total_introns: 22805,
       average_intron_length: 3049.46
     },
+
     homology_stats: {
       coverage: 0
     },
     variation_stats: {
-      short_variants: 677181182,
       structural_variants: 36348512,
       short_variants_with_phenotype_assertions: 10233814,
       short_variants_with_publications: 328161,
@@ -201,19 +201,19 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 4240,
       average_genomic_span: 939.92,
       average_sequence_length: 939.92,
-      average_CDS_length: 938.55,
+      average_cds_length: 938.55,
       shortest_gene_length: 42,
       longest_gene_length: 7077,
       total_transcripts: 4242,
       coding_transcripts: 4239,
-      transcripts_per_gene: 1,
-      coding_transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
+      coding_transcripts_per_gene: 1.0,
       total_exons: 4245,
       total_coding_exons: 4242,
       average_exon_length: 939.17,
       average_coding_exon_length: 937.89,
-      average_exons_per_transcript: 1,
-      average_coding_exons_per_coding_transcript: 1,
+      average_exons_per_transcript: 1.0,
+      average_coding_exons_per_coding_transcript: 1.0,
       total_introns: 3,
       average_intron_length: 1.67
     },
@@ -227,10 +227,10 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 53,
       longest_gene_length: 2905,
       total_transcripts: 179,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 179,
       average_exon_length: 269.83,
-      average_exons_per_transcript: 1,
+      average_exons_per_transcript: 1.0,
       total_introns: 0,
       average_intron_length: null
     },
@@ -241,7 +241,7 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 51,
       longest_gene_length: 8622,
       total_transcripts: 115,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 134,
       average_exon_length: 783.57,
       average_exons_per_transcript: 1.17,
@@ -268,14 +268,14 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 20191,
       average_genomic_span: 3149.75,
       average_sequence_length: 1402.22,
-      average_CDS_length: 1425.34,
+      average_cds_length: 1425.34,
       shortest_gene_length: 30,
       longest_gene_length: 102626,
       total_transcripts: 34214,
       coding_transcripts: 33552,
       transcripts_per_gene: 1.69,
       coding_transcripts_per_gene: 1.66,
-      total_exons: 240183,
+      total_exons: 240193,
       total_coding_exons: 225661,
       average_exon_length: 236.95,
       average_coding_exon_length: 211.92,
@@ -316,7 +316,7 @@ export const sampleData: RawSpeciesStats = {
       average_intron_length: 203.57
     },
     homology_stats: {
-      coverage: 51.8
+      coverage: 87.3
     }
   },
   plasmodium_falciparum_GCA_000002765_2: {
@@ -327,7 +327,7 @@ export const sampleData: RawSpeciesStats = {
       total_gap_length: 0,
       spanned_gaps: 0,
       chromosomes: 14,
-      toplevel_sequences: 14,
+      toplevel_sequences: 0,
       component_sequences: 14,
       gc_percentage: 19.34
     },
@@ -335,13 +335,13 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 5362,
       average_genomic_span: 2569.88,
       average_sequence_length: 2296.23,
-      average_CDS_length: 2297.48,
+      average_cds_length: 2297.48,
       shortest_gene_length: 90,
       longest_gene_length: 30864,
       total_transcripts: 5362,
       coding_transcripts: 5358,
-      transcripts_per_gene: 1,
-      coding_transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
+      coding_transcripts_per_gene: 1.0,
       total_exons: 14146,
       total_coding_exons: 14139,
       average_exon_length: 870.38,
@@ -361,10 +361,10 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 68,
       longest_gene_length: 6175,
       total_transcripts: 252,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 252,
       average_exon_length: 553.68,
-      average_exons_per_transcript: 1,
+      average_exons_per_transcript: 1.0,
       total_introns: 0,
       average_intron_length: null
     },
@@ -375,7 +375,7 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 72,
       longest_gene_length: 11291,
       total_transcripts: 153,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 461,
       average_exon_length: 520.4,
       average_exons_per_transcript: 3.01,
@@ -402,13 +402,13 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 6600,
       average_genomic_span: 1344.37,
       average_sequence_length: 1327.58,
-      average_CDS_length: 1327.58,
+      average_cds_length: 1327.58,
       shortest_gene_length: 51,
       longest_gene_length: 14733,
       total_transcripts: 6600,
       coding_transcripts: 6600,
-      transcripts_per_gene: 1,
-      coding_transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
+      coding_transcripts_per_gene: 1.0,
       total_exons: 6913,
       total_coding_exons: 6913,
       average_exon_length: 1267.47,
@@ -416,7 +416,7 @@ export const sampleData: RawSpeciesStats = {
       average_exons_per_transcript: 1.05,
       average_coding_exons_per_coding_transcript: 1.05,
       total_introns: 313,
-      average_intron_length: 354.08
+      average_intron_length: 348.08
     },
     non_coding_stats: {
       non_coding_genes: 424,
@@ -428,7 +428,7 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 58,
       longest_gene_length: 5947,
       total_transcripts: 424,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 491,
       average_exon_length: 171.64,
       average_exons_per_transcript: 1.16,
@@ -442,20 +442,20 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 228,
       longest_gene_length: 3147,
       total_transcripts: 12,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 12,
       average_exon_length: 863.25,
-      average_exons_per_transcript: 1,
+      average_exons_per_transcript: 1.0,
       total_introns: 0,
       average_intron_length: null
     },
     variation_stats: {
       short_variants: 263537,
-      structural_variants: null,
-      short_variants_with_phenotype_assertions: null,
-      short_variants_with_publications: null,
-      short_variants_frequency_studies: null,
-      structural_variants_with_phenotype_assertions: null
+      structural_variants: 0,
+      short_variants_with_phenotype_assertions: 0,
+      short_variants_with_publications: 0,
+      short_variants_frequency_studies: 0,
+      structural_variants_with_phenotype_assertions: 0
     },
     homology_stats: {
       coverage: 57.7
@@ -477,7 +477,7 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 107891,
       average_genomic_span: 3488.91,
       average_sequence_length: 1570.98,
-      average_CDS_length: 1332.42,
+      average_cds_length: 1332.42,
       shortest_gene_length: 54,
       longest_gene_length: 124945,
       total_transcripts: 133744,
@@ -503,10 +503,10 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 42,
       longest_gene_length: 5792,
       total_transcripts: 12853,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 12853,
       average_exon_length: 149.42,
-      average_exons_per_transcript: 1,
+      average_exons_per_transcript: 1.0,
       total_introns: 0,
       average_intron_length: null
     },
@@ -526,14 +526,14 @@ export const sampleData: RawSpeciesStats = {
     },
     variation_stats: {
       short_variants: 18093911,
-      structural_variants: null,
-      short_variants_with_phenotype_assertions: null,
-      short_variants_with_publications: null,
+      structural_variants: 0,
       short_variants_frequency_studies: 1,
-      structural_variants_with_phenotype_assertions: null
+      short_variants_with_phenotype_assertions: 0,
+      short_variants_with_publications: 0,
+      structural_variants_with_phenotype_assertions: 0
     },
     homology_stats: {
-      coverage: 98.7
+      coverage: 98.8
     }
   },
   actinobacillus: {
@@ -552,19 +552,19 @@ export const sampleData: RawSpeciesStats = {
       coding_genes: 2012,
       average_genomic_span: 976.42,
       average_sequence_length: 976.42,
-      average_CDS_length: 976.42,
+      average_cds_length: 976.42,
       shortest_gene_length: 114,
       longest_gene_length: 10044,
       total_transcripts: 2012,
       coding_transcripts: 2012,
-      transcripts_per_gene: 1,
-      coding_transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
+      coding_transcripts_per_gene: 1.0,
       total_exons: 2012,
       total_coding_exons: 2012,
       average_exon_length: 976.42,
       average_coding_exon_length: 976.42,
-      average_exons_per_transcript: 1,
-      average_coding_exons_per_coding_transcript: 1,
+      average_exons_per_transcript: 1.0,
+      average_coding_exons_per_coding_transcript: 1.0,
       total_introns: 0,
       average_intron_length: null
     },
@@ -578,10 +578,10 @@ export const sampleData: RawSpeciesStats = {
       shortest_gene_length: 74,
       longest_gene_length: 2896,
       total_transcripts: 80,
-      transcripts_per_gene: 1,
+      transcripts_per_gene: 1.0,
       total_exons: 80,
       average_exon_length: 412.6,
-      average_exons_per_transcript: 1,
+      average_exons_per_transcript: 1.0,
       total_introns: 0,
       average_intron_length: null
     },
@@ -630,8 +630,7 @@ export const sidebarData: SpeciesSidebarData = {
     notes: [
       {
         heading: 'Pseudoautosomal regions',
-        body:
-          'The Y chromosome in this assembly contains two psuedoautosomal regions (PARs) that were taken from the corresponding X chromosoles and are exact duplicates:\nchrX:10,000-2,781,479 = chrY:10,000-2,781,479\nchrX:155,701,382-156,030,895 = chrY:56,887,02-57,217,415'
+        body: 'The Y chromosome in this assembly contains two psuedoautosomal regions (PARs) that were taken from the corresponding X chromosoles and are exact duplicates:\nchrX:10,000-2,781,479 = chrY:10,000-2,781,479\nchrX:155,701,382-156,030,895 = chrY:56,887,02-57,217,415'
       }
     ]
   },

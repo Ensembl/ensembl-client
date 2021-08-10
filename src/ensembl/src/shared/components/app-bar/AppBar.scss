@@ -38,11 +38,12 @@
 .appBarAside {
   grid-area: right;
   display: flex;
+  align-items: flex-start;
   justify-content: flex-end;
 
   .conversationIcon {
     width: 40px;
-    margin-left: 15px;
+    margin-left: 20px;
     height: 25px;
   }
 }

@@ -29,13 +29,6 @@ const buildProteinCodingGene = () => {
   });
   const gene = createGene({
     unversioned_stable_id: 'ENSG00000157764',
-    metadata: {
-      biotype: {
-        label: 'Protein coding',
-        value: 'protein_coding',
-        definition: 'Protein coding'
-      }
-    },
     transcripts: [transcript]
   });
   return gene;

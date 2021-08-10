@@ -125,8 +125,10 @@ const ContactUsInitialForm = () => {
     dispatch({ type: 'update-message', payload: value });
   }, []);
 
-  const onFileChange = useCallback((file: File) => {
-    dispatch({ type: 'add-file', payload: file });
+  const onFileChange = useCallback((fileList: FileList) => {
+    for (const file of fileList) {
+      dispatch({ type: 'add-file', payload: file });
+    }
   }, []);
 
   const deleteFile = (index: number) => {
@@ -149,9 +151,10 @@ const ContactUsInitialForm = () => {
     <div className={commonStyles.container}>
       <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
-          <span>All fields are required unless marked optional</span>
-          <span>Second line</span>
-          <span>Third line</span>
+          <span>All fields are required</span>
+          <span>
+            The size of your combined attachments should be no more than 10 MB
+          </span>
         </p>
       </div>
       <form
@@ -200,7 +203,7 @@ const ContactUsInitialForm = () => {
           <Upload
             label="Click or drag a file here to upload"
             callbackWithFiles={true}
-            allowMultiple={false}
+            disabled={!isFormValid}
             onChange={onFileChange}
           />
         </div>
@@ -230,7 +233,7 @@ const validate = (formState: State) => {
 
 const areMandatoryFieldsFilled = (formState: State) => {
   return (['name', 'email', 'subject', 'message'] as const).every(
-    (field) => formState[field]
+    (field) => formState[field].trim().length > 0
   );
 };
 

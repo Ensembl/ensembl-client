@@ -73,8 +73,10 @@ export type UploadProps = {
   classNames?: {
     default?: string;
     active?: string;
+    disabled?: string;
   };
   allowMultiple?: boolean;
+  disabled?: boolean;
 } & OnChangeProps;
 
 const Upload = (props: UploadProps) => {
@@ -112,12 +114,12 @@ const Upload = (props: UploadProps) => {
     const files: FileList | null =
       get(e, 'target.files') || get(e, 'dataTransfer.files') || null;
 
-    if (!files) {
+    if (!files?.length) {
       return;
     }
 
     if (props.callbackWithFiles) {
-      // Just consider the first file if allowMultiple is true
+      // Just pass the first file to the callback if allowMultiple is true
       if (!props.allowMultiple) {
         props.onChange(files[0]);
         return;
@@ -168,6 +170,16 @@ const Upload = (props: UploadProps) => {
 
     return classNames(styles.defaultUploadActive, props.classNames.active);
   };
+
+  if (props.disabled) {
+    const elementClasses = classNames(
+      styles.disabledUpload,
+      props.classNames?.disabled
+    );
+    // using the label html tag even though there is no input
+    // to keep it the same as the label element of the enabled component (to support animations)
+    return <label className={elementClasses}>{props.label}</label>;
+  }
 
   return (
     <label

@@ -56,7 +56,7 @@ export const SpeciesSelectorAppBar = (props: Props) => {
     <AppBar
       appName="Species Selector"
       mainContent={mainContent}
-      aside={<HelpPopupButton slug="species-selector" />}
+      aside={<HelpPopupButton slug="species-selector-intro" />}
     />
   );
 };
