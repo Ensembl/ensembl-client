@@ -193,12 +193,6 @@ const QUERY = gql`
           gencode_basic {
             label
           }
-          appris {
-            label
-          }
-          tsl {
-            label
-          }
         }
       }
     }

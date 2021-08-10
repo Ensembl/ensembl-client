@@ -27,6 +27,9 @@ import {
   TrackId,
   TrackItemColour
 } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
 export type EnsObjectIdConstituents = {
   genomeId: string;
@@ -129,7 +132,7 @@ export const buildEnsObject = (
     object_id: gene.stable_id as string,
     stable_id: gene.unversioned_stable_id as string,
     versioned_stable_id: gene.stable_id as string,
-    bio_type: gene.so_term as string,
+    bio_type: gene.metadata?.biotype.label as string,
     location: {
       chromosome: slice.region.name,
       start: slice.location.start,
@@ -145,26 +148,29 @@ export const buildEnsObject = (
 // FIXME: this is a temporary solution, until the backend
 // fixes the api/object/track_list endpoint
 const buildTrackList = (gene: Partial<FullGene>) => {
-  const canonicalTranscript = gene.transcripts?.filter(
-    (transcript) => !!transcript.metadata.canonical
-  )[0];
+  const sortingFunction = getTranscriptSortingFunction(SortingRule.DEFAULT);
+  const sortedTranscripts = sortingFunction(
+    gene.transcripts as FullTranscript[]
+  );
+  const mainTranscript = sortedTranscripts[0];
 
-  const childTracks = canonicalTranscript
+  const childTracks = mainTranscript
     ? [
         {
-          additional_info: (canonicalTranscript.so_term as string) || undefined,
+          additional_info:
+            (mainTranscript.metadata?.biotype.label as string) || undefined,
           colour: TrackItemColour.BLUE,
-          description: canonicalTranscript.name || null,
-          label: canonicalTranscript.stable_id as string,
-          support_level: canonicalTranscript.metadata.canonical?.label,
+          description: mainTranscript.name || null,
+          label: mainTranscript.stable_id as string,
+          support_level: mainTranscript.metadata.canonical?.label,
           track_id: TrackId.CANONICAL_TRANSCRIPT,
-          stable_id: canonicalTranscript.stable_id as string
+          stable_id: mainTranscript.stable_id as string
         }
       ]
     : [];
 
   return {
-    additional_info: gene.so_term || undefined,
+    additional_info: (gene.metadata?.biotype.label as string) || undefined,
     description: gene.name || null,
     label: gene.symbol as string,
     track_id: TrackId.GENE,

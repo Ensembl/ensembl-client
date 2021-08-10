@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import fetch from 'cross-fetch';
 
 export const client = new ApolloClient({
-  uri: '/api/thoas',
+  link: new HttpLink({ uri: 'api/thoas', fetch }),
   cache: new InMemoryCache({
     typePolicies: {
       Gene: {

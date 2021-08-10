@@ -50,7 +50,6 @@ const geneQuery = gql`
       stable_id
       unversioned_stable_id
       symbol
-      so_term
       slice {
         region {
           name
@@ -70,13 +69,28 @@ const geneQuery = gql`
       }
       transcripts {
         stable_id
-        so_term
+        slice {
+          location {
+            length
+          }
+        }
         metadata {
           biotype {
             label
           }
           canonical {
             value
+            label
+          }
+          mane {
+            value
+            label
+            ncbi_transcript {
+              id
+              url
+            }
+          }
+          gencode_basic {
             label
           }
         }
@@ -116,14 +130,14 @@ export const fetchEnsObject =
 
     try {
       dispatch(fetchEnsObjectAsyncActions.request(ensObjectId));
-      const { genomeId } = payload;
+      const { genomeId, objectId } = payload;
 
       client
         .query<{ gene: Partial<FullGene> }>({
           query: geneQuery,
           variables: {
             genomeId,
-            stableId: ensObjectId
+            geneId: objectId
           }
         })
         .then(({ data }) => {

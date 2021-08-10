@@ -34,5 +34,4 @@ export type FullTranscript = {
   external_references: ExternalReference[];
   metadata: TranscriptMetadata;
   name?: string;
-  so_term?: string;
 };

@@ -54,21 +54,17 @@ export const getFeatureLength = (feature: GetFeatureLengthParams) => {
 };
 
 export type IsProteinCodingTranscriptParam = {
-  product_generating_contexts: Array<{
-    product_type: ProductType;
-  }>;
+  metadata: {
+    biotype: {
+      value: string;
+    };
+  };
 };
 
 export const isProteinCodingTranscript = (
   transcript: IsProteinCodingTranscriptParam
 ) => {
-  const { product_generating_contexts } = transcript;
-  const firstProductGeneratingContext = product_generating_contexts[0];
-
-  return (
-    firstProductGeneratingContext &&
-    firstProductGeneratingContext.product_type === ProductType.PROTEIN
-  );
+  return transcript.metadata.biotype.value === 'protein_coding';
 };
 
 export type GetNumberOfCodingExonsParam = {
@@ -87,7 +83,7 @@ export type GetNumberOfCodingExonsParam = {
       stable_id: string;
     };
   }>;
-};
+} & IsProteinCodingTranscriptParam;
 
 export const getNumberOfCodingExons = (
   transcript: GetNumberOfCodingExonsParam
@@ -121,7 +117,7 @@ export type GetProductAminoAcidLengthParam = {
       length: number;
     };
   }>;
-};
+} & IsProteinCodingTranscriptParam;
 
 export const getProductAminoAcidLength = (
   transcript: GetProductAminoAcidLengthParam
