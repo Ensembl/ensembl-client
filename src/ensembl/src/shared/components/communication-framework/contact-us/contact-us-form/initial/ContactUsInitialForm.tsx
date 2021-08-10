@@ -21,6 +21,7 @@ import React, {
   useCallback,
   useRef
 } from 'react';
+import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import { submitForm } from '../submitForm';
@@ -276,11 +277,17 @@ const ContactUsInitialForm = () => {
               isDisabled={!isFormValid}
               onClick={noop}
             >
-              Submit
+              Send
             </PrimaryButton>
           ) : (
             <>
-              <span className={commonStyles.sliderLabel}>Slide, then send</span>
+              <span
+                className={classNames(commonStyles.sliderLabel, {
+                  [commonStyles.sliderLabelDisabled]: !isFormValid
+                })}
+              >
+                Slide, then send
+              </span>
               <SubmitSlider
                 className={commonStyles.submitSlider}
                 isDisabled={!isFormValid}

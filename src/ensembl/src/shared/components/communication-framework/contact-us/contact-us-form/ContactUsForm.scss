@@ -75,6 +75,10 @@ $columnGapWidth: 12px;
   .sliderLabel {
     grid-area: submit-left;
     justify-self: end;
+
+    &Disabled {
+      color: $grey;
+    }
   }
 
   .submitSlider {
@@ -83,6 +87,8 @@ $columnGapWidth: 12px;
 }
 
 .submitButton {
+  grid-column: submit-right;
+  justify-self: end;
   height: 30px;
   width: 90px;
 }
