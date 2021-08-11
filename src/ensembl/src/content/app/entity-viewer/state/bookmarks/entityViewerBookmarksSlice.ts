@@ -70,7 +70,7 @@ const bookmarksSlice = createSlice({
       const updatedEntites = [
         newEntity,
         ...savedEntitiesWithoutCurrentEntity
-      ].slice(0, 20);
+      ].slice(0, 21);
       state.previouslyViewed[genomeId] = updatedEntites;
 
       entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
