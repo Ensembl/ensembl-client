@@ -25,12 +25,12 @@ import {
   EnsObject
 } from 'src/shared/state/ens-object/ensObjectTypes';
 import { RootState } from 'src/store';
-import { getIsDrawerOpened } from '../../drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
 import {
   getBrowserActiveEnsObject,
   getBrowserTrackStates,
   getBrowserActiveGenomeId
-} from '../../browserSelectors';
+} from 'src/content/app/browser/browserSelectors';
 import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 

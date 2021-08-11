@@ -74,6 +74,9 @@ const geneQuery = gql`
             length
           }
         }
+        product_generating_contexts {
+          product_type
+        }
         metadata {
           biotype {
             label

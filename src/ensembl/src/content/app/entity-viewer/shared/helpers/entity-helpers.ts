@@ -16,15 +16,16 @@
 
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import { Slice } from 'src/shared/types/thoas/slice';
-import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
-import { Product, ProductType } from 'src/shared/types/thoas/product';
-import { ExternalReference } from 'src/shared/types/thoas/externalReference';
-
 import {
   SWISSPROT_SOURCE,
   SPTREMBL_SOURCE
 } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
+
+import { Slice } from 'src/shared/types/thoas/slice';
+import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
+import { Product, ProductType } from 'src/shared/types/thoas/product';
+import { ExternalReference } from 'src/shared/types/thoas/externalReference';
+import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
 
 type GetFeatureCoordinatesParams = {
   slice: Pick2<Slice, 'location', 'start' | 'end'>;
@@ -54,17 +55,21 @@ export const getFeatureLength = (feature: GetFeatureLengthParams) => {
 };
 
 export type IsProteinCodingTranscriptParam = {
-  metadata: {
-    biotype: {
-      value: string;
-    };
-  };
+  product_generating_contexts: Array<{
+    product_type: ProductType;
+  }>;
 };
 
 export const isProteinCodingTranscript = (
   transcript: IsProteinCodingTranscriptParam
 ) => {
-  return transcript.metadata.biotype.value === 'protein_coding';
+  const { product_generating_contexts } = transcript;
+  const firstProductGeneratingContext = product_generating_contexts[0];
+
+  return (
+    firstProductGeneratingContext &&
+    firstProductGeneratingContext.product_type === ProductType.PROTEIN
+  );
 };
 
 export type GetNumberOfCodingExonsParam = {
@@ -83,7 +88,7 @@ export type GetNumberOfCodingExonsParam = {
       stable_id: string;
     };
   }>;
-} & IsProteinCodingTranscriptParam;
+};
 
 export const getNumberOfCodingExons = (
   transcript: GetNumberOfCodingExonsParam
@@ -117,7 +122,7 @@ export type GetProductAminoAcidLengthParam = {
       length: number;
     };
   }>;
-} & IsProteinCodingTranscriptParam;
+};
 
 export const getProductAminoAcidLength = (
   transcript: GetProductAminoAcidLengthParam
@@ -186,4 +191,26 @@ export const getProteinXrefs = <
   }
 
   return proteinXrefs;
+};
+
+export const getTranscriptMetadata = (
+  metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>
+) => {
+  const { canonical, mane } = metadata;
+  if (canonical && mane) {
+    return {
+      label: mane.label,
+      definition: mane.definition
+    };
+  } else if (canonical) {
+    return {
+      label: canonical.label,
+      definition: canonical.definition
+    };
+  } else if (mane) {
+    return {
+      label: mane.label,
+      definition: mane.definition
+    };
+  }
 };

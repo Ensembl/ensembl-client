@@ -18,7 +18,9 @@ import React from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+import { getTranscriptMetadata } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
+import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 import styles from './TranscriptQualityLabel.scss';
 
@@ -26,28 +28,8 @@ type Props = {
   metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
 };
 
-const getTranscriptMetadata = (props: Props) => {
-  const { canonical, mane } = props.metadata;
-  if (canonical && mane) {
-    return {
-      label: mane.label,
-      definition: mane.definition
-    };
-  } else if (canonical) {
-    return {
-      label: canonical.label,
-      definition: canonical.definition
-    };
-  } else if (mane) {
-    return {
-      label: mane.label,
-      definition: mane.definition
-    };
-  }
-};
-
 export const TranscriptQualityLabel = (props: Props) => {
-  const metadata = getTranscriptMetadata(props);
+  const metadata = getTranscriptMetadata(props.metadata);
   if (!metadata) {
     return null;
   }

@@ -16,6 +16,9 @@
 
 import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
 
+import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { getTranscriptMetadata } from 'ensemblRoot/src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
 import {
   EnsObjectRegion,
   EnsObjectGene,
@@ -23,11 +26,7 @@ import {
 } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { Slice } from 'src/shared/types/thoas/slice';
-import {
-  TrackId,
-  TrackItemColour
-} from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
+import { TrackId } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
@@ -157,16 +156,17 @@ const buildTrackList = (gene: Partial<FullGene>) => {
     gene.transcripts as FullTranscript[]
   );
   const mainTranscript = sortedTranscripts[0];
+  const metadata = getTranscriptMetadata(mainTranscript.metadata);
 
   const childTracks = mainTranscript
     ? [
         {
           additional_info:
             (mainTranscript.metadata?.biotype.label as string) || undefined,
-          colour: TrackItemColour.BLUE,
+          colour: 'BLUE',
           description: mainTranscript.name || null,
           label: mainTranscript.stable_id as string,
-          support_level: mainTranscript.metadata.canonical?.label,
+          support_level: metadata?.label,
           track_id: TrackId.CANONICAL_TRANSCRIPT,
           stable_id: mainTranscript.stable_id as string
         }
