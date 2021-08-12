@@ -27,7 +27,10 @@ type LoadingButtonProps = {
   onSuccess?: (x?: unknown) => void;
   onError?: (x?: unknown) => void;
   isDisabled?: boolean;
-  className?: string;
+  classNames?: {
+    wrapper?: string;
+    button?: string;
+  };
   children: ReactNode;
 };
 
@@ -98,7 +101,7 @@ const LoadingButton = (props: LoadingButtonProps) => {
     <ControlledLoadingButton
       status={loadingState}
       onClick={onClick}
-      className={props.className}
+      classNames={props.classNames}
       isDisabled={props.isDisabled}
     >
       {props.children}

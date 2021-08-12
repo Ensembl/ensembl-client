@@ -18,9 +18,22 @@ type FormFieldType = string | File | File[] | null;
 
 type Form = Record<string, FormFieldType>;
 
-export const submitForm = (form: Form) => {
+type TokenSuccessResponse = {
+  token: string;
+};
+
+export const submitForm = async (form: Form) => {
   const formData = buildFormData(form);
-  console.log('formData', formData); // eslint-disable-line no-console
+  const url = '/api/support/ticket';
+  const token = await getToken();
+
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: formData
+  });
 };
 
 const buildFormData = (form: Form) => {
@@ -48,4 +61,12 @@ const addToFormData = (
   } else {
     formData.append(fieldName, value);
   }
+};
+
+const getToken = async () => {
+  const url = '/api/support/token';
+  const { token } = (await fetch(url).then((response) =>
+    response.json()
+  )) as TokenSuccessResponse;
+  return token;
 };

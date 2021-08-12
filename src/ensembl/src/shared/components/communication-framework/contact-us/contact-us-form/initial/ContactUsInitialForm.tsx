@@ -25,14 +25,17 @@ import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import { submitForm } from '../submitForm';
+import noEarlierThan from 'src/shared/utils/noEarlierThan';
 
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 import Upload from 'src/shared/components/upload/Upload';
 import UploadedFile from 'src/shared/components/uploaded-file/UploadedFile';
-import { PrimaryButton } from 'src/shared/components/button/Button';
 import SubmitSlider from '../submit-slider/SubmitSlider';
+import { ControlledLoadingButton } from 'src/shared/components/loading-button';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import commonStyles from '../ContactUsForm.scss';
 
@@ -111,12 +114,16 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+const FORM_NAME = 'contact-us-general';
+
 const ContactUsInitialForm = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isChallengeCompleted, setIsChallengeCompleted] = useState(false);
   const [emailFieldValid, setEmailFieldValid] = useState(true);
   const [emailFieldFocussed, setEmailFieldFocussed] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submissionState, setSubmissionState] = useState<LoadingState>(
+    LoadingState.NOT_REQUESTED
+  );
 
   const formRef = useRef<HTMLFormElement>(null);
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
@@ -174,13 +181,30 @@ const ContactUsInitialForm = () => {
 
   const handleSubmit = useCallback((e: React.SyntheticEvent) => {
     e.preventDefault();
-    stateRef.current && submitForm(stateRef.current);
-    setIsSubmitted(true);
+    if (!stateRef.current) {
+      return; // shouldn't happen, but makes Typescript happy
+    }
+
+    setSubmissionState(LoadingState.LOADING);
+
+    const submitPromise = submitForm({
+      ...stateRef.current,
+      form_type: FORM_NAME
+    });
+
+    noEarlierThan(submitPromise, 1000)
+      .then(() => {
+        setSubmissionState(LoadingState.SUCCESS);
+      })
+      .catch(() => {
+        setSubmissionState(LoadingState.ERROR);
+        setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 1000);
+      });
   }, []);
 
   const isFormValid = validate(state) && emailFieldValid;
 
-  if (isSubmitted) {
+  if (submissionState === LoadingState.SUCCESS) {
     return <SubmissionSuccess />;
   }
 
@@ -271,14 +295,17 @@ const ContactUsInitialForm = () => {
           )}
 
           {isChallengeCompleted ? (
-            <PrimaryButton
-              type="submit"
-              className={commonStyles.submitButton}
+            <ControlledLoadingButton
+              status={submissionState}
+              classNames={{
+                wrapper: commonStyles.submitButtonWrapper,
+                button: commonStyles.submitButton
+              }}
               isDisabled={!isFormValid}
               onClick={noop}
             >
               Send
-            </PrimaryButton>
+            </ControlledLoadingButton>
           ) : (
             <>
               <span
