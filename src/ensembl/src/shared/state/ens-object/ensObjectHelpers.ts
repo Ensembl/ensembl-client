@@ -131,7 +131,7 @@ export const buildEnsObject = (
     object_id: buildEnsObjectId({
       genomeId,
       type: 'gene',
-      objectId: gene.stable_id as string
+      objectId: gene.unversioned_stable_id as string
     }),
     stable_id: gene.unversioned_stable_id as string,
     versioned_stable_id: gene.stable_id as string,
