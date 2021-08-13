@@ -21,6 +21,7 @@ import useApiService from 'src/shared/hooks/useApiService';
 
 import {
   TextArticle,
+  RelatedArticles,
   HelpArticleGrid
 } from 'src/shared/components/help-article';
 import {
@@ -59,11 +60,19 @@ const About = () => {
           </div>
         )}
         <aside className={styles.aside}>
-          {menu && (
-            <>
-              <div className={styles.asideTitle}>More about...</div>
-              <SideMenu menu={menu} currentUrl={location.pathname} />
-            </>
+          {article?.related_articles.length ? (
+            <RelatedArticles
+              title="More about…"
+              articles={article.related_articles}
+              highlightActiveArticle={true}
+            />
+          ) : (
+            menu && (
+              <>
+                <div className={styles.asideTitle}>More about…</div>
+                <SideMenu menu={menu} currentUrl={location.pathname} />
+              </>
+            )
           )}
         </aside>
       </HelpArticleGrid>
