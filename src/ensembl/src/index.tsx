@@ -20,6 +20,8 @@ import { Provider } from 'react-redux';
 import { CookiesProvider } from 'react-cookie';
 import { ConnectedRouter } from 'connected-react-router';
 import { HelmetProvider } from 'react-helmet-async';
+
+import { Provider as IndexedDBProvider } from 'src/shared/contexts/IndexedDBContext';
 import configureStore, { history } from './store';
 import Root from './root/Root';
 
@@ -32,13 +34,15 @@ const store = configureStore();
 hydrate(
   <StrictMode>
     <CookiesProvider>
-      <Provider store={store}>
-        <ConnectedRouter history={history}>
-          <HelmetProvider>
-            <Root />
-          </HelmetProvider>
-        </ConnectedRouter>
-      </Provider>
+      <IndexedDBProvider>
+        <Provider store={store}>
+          <ConnectedRouter history={history}>
+            <HelmetProvider>
+              <Root />
+            </HelmetProvider>
+          </ConnectedRouter>
+        </Provider>
+      </IndexedDBProvider>
     </CookiesProvider>
   </StrictMode>,
   document.getElementById('ens-app')
