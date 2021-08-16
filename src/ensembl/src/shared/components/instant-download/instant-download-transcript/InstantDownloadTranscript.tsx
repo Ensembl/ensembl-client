@@ -98,7 +98,7 @@ export const filterTranscriptOptions = (
 ): Partial<TranscriptOptions> => {
   return biotype === 'protein_coding'
     ? defaultTranscriptOptions
-    : pick(defaultTranscriptOptions, ['genomicSequence']);
+    : pick(defaultTranscriptOptions, ['genomicSequence', 'cdna']);
 };
 
 const InstantDownloadTranscript = (props: Props) => {
