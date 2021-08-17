@@ -128,7 +128,6 @@ const SidebarModeToggle = (props: SidebarModeToggleProps) => {
         direction={
           props.showAction === SidebarModeToggleAction.OPEN ? 'left' : 'right'
         }
-        classNames={{ svg: styles.sidebarModeToggleChevron }}
         onClick={props.onClick}
       />
     </div>

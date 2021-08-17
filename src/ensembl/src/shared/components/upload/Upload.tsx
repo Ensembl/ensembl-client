@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
@@ -81,6 +81,7 @@ export type UploadProps = {
 
 const Upload = (props: UploadProps) => {
   const [drag, setDrag] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -114,10 +115,14 @@ const Upload = (props: UploadProps) => {
     const files: FileList | null =
       get(e, 'target.files') || get(e, 'dataTransfer.files') || null;
 
-    if (!files?.length) {
-      return;
+    if (files?.length) {
+      await processFiles(files);
     }
 
+    clearInput();
+  };
+
+  const processFiles = async (files: FileList) => {
     if (props.callbackWithFiles) {
       // Just pass the first file to the callback if allowMultiple is true
       if (!props.allowMultiple) {
@@ -149,6 +154,13 @@ const Upload = (props: UploadProps) => {
 
     const results = await Promise.all(promises);
     props.onChange(results);
+  };
+
+  const clearInput = () => {
+    const inputElement = inputRef.current;
+    if (inputElement) {
+      inputElement.value = '';
+    }
   };
 
   const getDefaultClassNames = () => {
@@ -191,6 +203,7 @@ const Upload = (props: UploadProps) => {
     >
       <input
         type="file"
+        ref={inputRef}
         name={props.name}
         className={styles.fileInput}
         onChange={(e) => handleSelectedFiles(e)}
