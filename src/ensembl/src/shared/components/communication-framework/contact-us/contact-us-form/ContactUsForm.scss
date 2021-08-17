@@ -69,7 +69,10 @@ $columnGapWidth: 12px;
 
   .formErrors {
     grid-area: form-errors;
-    margin-bottom: 12px;
+
+    &:not(:empty) {
+      margin-bottom: 12px;
+    }
   }
 
   .sliderLabel {
