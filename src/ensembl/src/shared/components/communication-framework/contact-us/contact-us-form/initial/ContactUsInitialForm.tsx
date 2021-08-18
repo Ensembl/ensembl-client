@@ -198,7 +198,7 @@ const ContactUsInitialForm = () => {
       })
       .catch(() => {
         setSubmissionState(LoadingState.ERROR);
-        setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 1000);
+        setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 2000);
       });
   }, []);
 

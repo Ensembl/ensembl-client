@@ -33,6 +33,18 @@ export const submitForm = async (form: Form) => {
       Authorization: `Bearer ${token}`
     },
     body: formData
+  }).then(async (response) => {
+    let responseMessage;
+    try {
+      responseMessage = await response.json();
+    } catch {
+      throw new Error();
+    }
+    if (!response.ok) {
+      throw new Error(responseMessage);
+    } else {
+      return responseMessage;
+    }
   });
 };
 
