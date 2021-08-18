@@ -27,7 +27,7 @@ import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './LoadingButton.scss';
 
-export type Props = {
+type Props = {
   onClick: () => unknown;
   status: LoadingState;
   isDisabled?: boolean;
