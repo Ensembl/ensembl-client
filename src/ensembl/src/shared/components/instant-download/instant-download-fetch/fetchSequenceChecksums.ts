@@ -52,11 +52,11 @@ type TranscriptInResponse = {
     };
     cds: {
       sequence: Sequence;
-    };
+    } | null;
     product: {
       stable_id: string;
       sequence: Sequence;
-    };
+    } | null;
   }>;
 };
 
@@ -168,14 +168,18 @@ const processTranscriptData = (transcript: TranscriptInResponse) => {
       checksum: productGeneratingContext.cdna.sequence.checksum,
       label: `${stable_id} cdna`
     },
-    cds: {
-      checksum: productGeneratingContext.cds.sequence.checksum,
-      label: `${stable_id} cds`
-    },
-    protein: {
-      checksum: productGeneratingContext.product.sequence.checksum,
-      label: `${productGeneratingContext.product.stable_id} pep`
-    }
+    cds: productGeneratingContext.cds
+      ? {
+          checksum: productGeneratingContext.cds.sequence.checksum,
+          label: `${stable_id} cds`
+        }
+      : undefined,
+    protein: productGeneratingContext.product
+      ? {
+          checksum: productGeneratingContext.product.sequence.checksum,
+          label: `${productGeneratingContext.product.stable_id} pep`
+        }
+      : undefined
   };
 };
 
