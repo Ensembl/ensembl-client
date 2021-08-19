@@ -86,7 +86,7 @@ type RemoveFileAction = {
   payload: number; // index of the file in the array of files
 };
 
-type ReplaceeStateAction = {
+type ReplaceStateAction = {
   type: 'replace-state';
   payload: State;
 };
@@ -98,7 +98,7 @@ type Action =
   | UpdateMessageAction
   | AddFileAction
   | RemoveFileAction
-  | ReplaceeStateAction;
+  | ReplaceStateAction;
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -140,7 +140,7 @@ const ContactUsInitialForm = () => {
   stateRef.current = state;
 
   const { clearSavedForm } = useSavedForm({
-    formName: 'initial-form',
+    formName: FORM_NAME,
     currentState: state,
     updateState: (savedState) =>
       dispatch({ type: 'replace-state', payload: savedState })

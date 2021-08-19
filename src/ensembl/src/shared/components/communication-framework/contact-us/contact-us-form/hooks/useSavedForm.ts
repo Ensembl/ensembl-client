@@ -79,7 +79,7 @@ const useSavedForm: UseSavedForm = (params) => {
     if (isEmptyForm(stateRef.current)) {
       return;
     }
-    indexedDB.set('contact-forms', 'initial-form', stateRef.current);
+    indexedDB.set(STORE_NAME, params.formName, stateRef.current);
   };
 
   const clearSavedForm = () => {
