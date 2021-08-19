@@ -21,16 +21,10 @@ import { toggleCommunicationPanel } from 'src/shared/state/communication/communi
 import { ReactComponent as ConversationImageIcon } from 'static/img/shared/icon_conversation.svg';
 import CommunicationPanel from 'ensemblRoot/src/shared/components/communication-framework/CommunicationPanel';
 
-import { Environment, isEnvironment } from 'src/shared/helpers/environment';
-
 import styles from './ConversationIcon.scss';
 
 const ConversationIcon = () => {
   const dispatch = useDispatch();
-
-  if (isEnvironment([Environment.PRODUCTION])) {
-    return null;
-  }
 
   const onClick = () => {
     dispatch(toggleCommunicationPanel());
