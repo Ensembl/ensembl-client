@@ -127,8 +127,6 @@ type GeneViewSortableTranscript = IsProteinCodingTranscriptParam &
   GetSplicedRNALengthParam & {
     slice: SliceWithOnlyLength;
     spliced_exons: unknown[];
-    stable_id?: string;
-    name?: string;
   } & Pick2<
     FullTranscript,
     'metadata',

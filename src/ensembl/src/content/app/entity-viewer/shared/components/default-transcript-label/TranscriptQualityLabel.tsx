@@ -18,7 +18,7 @@ import React from 'react';
 
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
-import { getTranscriptMetadata } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getTranscriptLabelFromMetadata } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
@@ -29,7 +29,8 @@ type Props = {
 };
 
 export const TranscriptQualityLabel = (props: Props) => {
-  const metadata = getTranscriptMetadata(props.metadata);
+  const metadata = getTranscriptLabelFromMetadata(props.metadata);
+
   if (!metadata) {
     return null;
   }

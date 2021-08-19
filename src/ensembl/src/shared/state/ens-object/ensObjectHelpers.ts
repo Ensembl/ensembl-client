@@ -17,7 +17,7 @@
 import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
 
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
-import { getTranscriptMetadata } from 'ensemblRoot/src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getTranscriptLabelFromMetadata } from 'ensemblRoot/src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import {
   EnsObjectRegion,
@@ -40,6 +40,8 @@ export type UrlFocusIdConstituents = {
   type: string;
   objectId: string;
 };
+
+type TranscriptForTrackPanel = FullTranscript & { name: string };
 
 // NOTE: it's possible that we will prefer to omit type from the id
 // if focus objects of different type are saved into different slots in the state
@@ -155,8 +157,8 @@ const buildTrackList = (gene: Partial<FullGene>) => {
   const sortedTranscripts = sortingFunction(
     gene.transcripts as FullTranscript[]
   );
-  const mainTranscript = sortedTranscripts[0];
-  const metadata = getTranscriptMetadata(mainTranscript.metadata);
+  const mainTranscript = sortedTranscripts[0] as TranscriptForTrackPanel;
+  const metadata = getTranscriptLabelFromMetadata(mainTranscript.metadata);
 
   const childTracks = mainTranscript
     ? [

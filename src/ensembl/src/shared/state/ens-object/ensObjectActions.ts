@@ -93,9 +93,6 @@ const geneQuery = gql`
               url
             }
           }
-          gencode_basic {
-            label
-          }
         }
       }
     }

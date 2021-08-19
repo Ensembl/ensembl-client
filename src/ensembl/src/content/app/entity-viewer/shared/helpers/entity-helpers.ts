@@ -25,7 +25,7 @@ import { Slice } from 'src/shared/types/thoas/slice';
 import { PhasedExon, Exon } from 'src/shared/types/thoas/exon';
 import { Product, ProductType } from 'src/shared/types/thoas/product';
 import { ExternalReference } from 'src/shared/types/thoas/externalReference';
-import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 type GetFeatureCoordinatesParams = {
   slice: Pick2<Slice, 'location', 'start' | 'end'>;
@@ -193,11 +193,11 @@ export const getProteinXrefs = <
   return proteinXrefs;
 };
 
-export const getTranscriptMetadata = (
+export const getTranscriptLabelFromMetadata = (
   metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>
 ) => {
   const { canonical, mane } = metadata;
-  if (canonical && mane) {
+  if (mane) {
     return {
       label: mane.label,
       definition: mane.definition
@@ -206,11 +206,6 @@ export const getTranscriptMetadata = (
     return {
       label: canonical.label,
       definition: canonical.definition
-    };
-  } else if (mane) {
-    return {
-      label: mane.label,
-      definition: mane.definition
     };
   }
 };
