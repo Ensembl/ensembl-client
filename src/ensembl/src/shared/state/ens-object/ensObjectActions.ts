@@ -27,7 +27,7 @@ import {
   buildEnsObjectId,
   buildRegionObject,
   EnsObjectIdConstituents,
-  buildEnsObject
+  buildGeneObject
 } from './ensObjectHelpers';
 
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
@@ -144,7 +144,7 @@ export const fetchEnsObject =
           dispatch(
             fetchEnsObjectAsyncActions.success({
               id: ensObjectId,
-              data: buildEnsObject(data.gene, genomeId)
+              data: buildGeneObject(data.gene, genomeId)
             })
           );
         });

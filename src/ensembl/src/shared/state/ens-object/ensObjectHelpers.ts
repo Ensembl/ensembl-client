@@ -121,7 +121,7 @@ export const buildRegionObject = (
   };
 };
 
-export const buildEnsObject = (
+export const buildGeneObject = (
   gene: Partial<FullGene>,
   genomeId: string
 ): EnsObject => {

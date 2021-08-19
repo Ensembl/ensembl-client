@@ -91,9 +91,6 @@ const QUERY = gql`
           }
         }
         metadata {
-          biotype {
-            value
-          }
           canonical {
             value
           }
@@ -115,7 +112,7 @@ type Transcript = {
     }
   >;
   external_references: ExternalReferenceType[];
-  metadata: Pick<TranscriptMetadata, 'biotype' | 'canonical' | 'mane'>;
+  metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
 };
 
 type Gene = {
