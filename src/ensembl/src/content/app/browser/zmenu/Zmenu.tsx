@@ -27,7 +27,7 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuData, ZmenuAction } from './zmenu-types';
+import { ZmenuData, ZmenuAction, ZmenuContentFeature } from './zmenu-types';
 
 import styles from './Zmenu.scss';
 
@@ -44,7 +44,6 @@ export type ZmenuProps = ZmenuData & {
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
-
   const onOutsideClick = () =>
     browserMessagingService.send('bpane', {
       id: props.id,
@@ -68,7 +67,7 @@ const Zmenu = (props: ZmenuProps) => {
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={getToolboxFooterContent(props.id)}
+            footerContent={getToolboxFooterContent(props.content)}
           />
         </Toolbox>
       )}
@@ -94,9 +93,9 @@ const chooseDirection = (params: ZmenuProps) => {
   return x > width / 2 ? Direction.LEFT : Direction.RIGHT;
 };
 
-const getToolboxFooterContent = (id: string) => (
+const getToolboxFooterContent = (content: ZmenuContentFeature[]) => (
   <div className={styles.zmenuFooterContent}>
-    <ZmenuInstantDownload id={id} />
+    <ZmenuInstantDownload features={content} />
   </div>
 );
 
