@@ -90,12 +90,3 @@
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
-
-// For disabling temporarily the about Ensembl link in production
-.aboutEnsemblDisabled {
-  color: $medium-dark-grey;
-
-  .logotype {
-    fill: $medium-dark-grey;
-  }
-}

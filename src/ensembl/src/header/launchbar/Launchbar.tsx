@@ -99,20 +99,12 @@ const Launchbar = () => {
   );
 };
 
-// Temporarily disable the link to About Ensembl in production
-const AboutEnsembl = () =>
-  isEnvironment([Environment.DEVELOPMENT, Environment.INTERNAL]) ? (
-    <Link to="/about" className={styles.aboutEnsembl}>
-      About the
-      <Logotype className={styles.logotype} />
-      team & its work
-    </Link>
-  ) : (
-    <div className={styles.aboutEnsemblDisabled}>
-      About the
-      <Logotype className={styles.logotype} />
-      team & its work
-    </div>
-  );
+const AboutEnsembl = () => (
+  <Link to="/about" className={styles.aboutEnsembl}>
+    About the
+    <Logotype className={styles.logotype} />
+    team & its work
+  </Link>
+);
 
 export default Launchbar;
