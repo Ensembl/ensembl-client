@@ -195,12 +195,14 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const updateGenomeBrowser = (status: Status) => {
     const isTurnedOn = status === Status.SELECTED;
 
+    const track_id = track.track_id.replace('track:', '');
+
     const action: OutgoingAction = {
       type: isTurnedOn
         ? OutgoingActionType.TURN_ON_TRACKS
         : OutgoingActionType.TURN_OFF_TRACKS,
       payload: {
-        track_ids: [`${track.track_id}`.replace('track:', '')]
+        track_ids: [track_id === 'gene-feat' ? 'focus' : track_id]
       }
     };
 
