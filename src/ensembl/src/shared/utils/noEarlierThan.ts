@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { getGeneName } from './geneFormatter';
+import { from, timer, combineLatest, firstValueFrom } from 'rxjs';
+import { take } from 'rxjs/operators';
 
-describe('getGeneName', () => {
-  it('returns the correct gene display name', () => {
-    expect(getGeneName('novel transcript')).toBe('None');
-    expect(getGeneName('')).toBe('None');
-    expect(getGeneName(null)).toBe('None');
-  });
-});
+const noEarlierThan = async <P extends Promise<any>>(
+  promise: P,
+  minimumTime: number
+) => {
+  const source$ = combineLatest([
+    timer(minimumTime).pipe(take(1)),
+    from(promise)
+  ]);
+
+  const [, result] = await firstValueFrom(source$);
+  return result;
+};
+
+export default noEarlierThan;

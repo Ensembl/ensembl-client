@@ -70,10 +70,20 @@ export default (env: Record<string, unknown>): Configuration => {
           ]
         },
 
+        {
+          test: /\.svg$/i,
+          issuer: /\.scss$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'images/[name].[hash][ext]'
+          }
+        },
+
         // use file-loader on svg's (to be able to require them as a path to the image),
         // but also use @svgr/webpack to be able to require svg's directly as React components
         {
           test: /\.svg$/,
+          issuer: { not: [/\.scss$/s] },
           use: ['@svgr/webpack', 'file-loader']
         }
       ]

@@ -2,37 +2,33 @@
 
 .trackConfig {
   display: grid;
-  grid-template-columns: 146px 343px 1fr;
+  grid-template-columns: 140px 250px 1fr;
   background: #f1f2f4;
   box-shadow: 1px 1px 10px #6f8190;
   position: absolute;
-  left: -614px;
+  right: 25px;
   top: -12px;
-  height: 45px;
-  width: 614px;
 
   .section {
     display: flex;
-    align-items: center;
     margin: 8px 0px;
     padding: 0px 18px;
 
+    .subLabel {
+      line-height: 30px;
+      font-size: 12px;
+      font-weight: 300;
+      padding-right: 4px;
+    }
+    
     &:not(:last-child) {
       border-right: 1px solid $grey;
-    }
-
-    &:first-child {
-      justify-content: center;
-    }
-
-    &:last-child {
-      justify-content: space-between;
-      padding-right: 34px;
     }
   }
 
   .toggleWrapper {
     margin: 0 6px;
+    line-height: 30px;
 
     svg {
       margin: 0 10px;
@@ -46,31 +42,9 @@
   /* button styling */
 
   .slideToggle {
-    height: 12px;
+    height: 10px;
     margin-left: 2px;
     display: inline-block;
     vertical-align: middle;
   }
-
-  .trackHeightIcon {
-    margin-left: auto;
-    height: 12px;
-    width: 50px;
-  }
-
-  .trackHighlightIcon,
-  .trackConfigIcon,
-  .trackLockIcon {
-    height: 18px;
-    width: 18px;
-  }
-
-  .trackMoveIcon {
-    height: 28px;
-    width: 14px;
-  }
-}
-
-.checkboxHolder {
-  width: 100%;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -33,18 +33,16 @@ import {
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
-import ImageButton from 'src/shared/components/image-button/ImageButton';
-import Checkbox from 'src/shared/components/checkbox/Checkbox';
-
-import { browserTrackConfig } from '../browserConfig';
+import RadioGroup, {
+  OptionValue,
+  RadioOptions
+} from 'ensemblRoot/src/shared/components/radio-group/RadioGroup';
 
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';
-import { Status } from 'src/shared/types/status';
 import { OutgoingActionType } from 'ensembl-genome-browser';
 
 import styles from './BrowserTrackConfig.scss';
@@ -75,11 +73,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   const shouldShowTrackLabels =
     selectedCog in trackConfigLabel ? trackConfigLabel[selectedCog] : true;
 
-  const ref = useRef(null);
-
   const { genomeBrowser } = useGenomeBrowser();
-
-  useOutsideClick(ref, props.onClose);
 
   const toggleName = useCallback(() => {
     const tracksToUpdate = [];
@@ -150,72 +144,58 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     browserCogTrackList
   ]);
 
-  const applyToAllToggle = useCallback(() => {
-    props.updateApplyToAll(!applyToAll);
+  const handleRadioChange = useCallback(
+    (value: OptionValue) => {
+      props.updateApplyToAll(value === 'all_tracks');
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
-    });
-  }, [applyToAll, updateApplyToAll]);
+      analyticsTracking.trackEvent({
+        category: 'track_settings',
+        label: selectedCog,
+        action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
+      });
+    },
+    [applyToAll, updateApplyToAll]
+  );
+
+  const radioOptions: RadioOptions = [
+    {
+      value: 'this_track',
+      label: 'This track'
+    },
+    {
+      value: 'all_tracks',
+      label: 'All tracks'
+    }
+  ];
 
   return (
-    <div className={styles.trackConfig} ref={ref}>
+    <div className={styles.trackConfig}>
       <div className={styles.section}>
-        <Checkbox
-          label="All tracks"
-          checked={applyToAll}
-          onChange={applyToAllToggle}
-          classNames={{ checkboxHolder: styles.checkboxHolder }}
+        <RadioGroup
+          options={radioOptions}
+          onChange={handleRadioChange}
+          selectedOption={applyToAll ? 'all_tracks' : 'this_track'}
         />
       </div>
       <div className={styles.section}>
-        <div className={styles.toggleWrapper}>
-          <label>Track name</label>
-          <SlideToggle
-            isOn={shouldShowTrackName}
-            onChange={toggleName}
-            className={styles.slideToggle}
-          />
-        </div>
-        <div className={styles.toggleWrapper}>
-          <label>Feature labels</label>
-          <SlideToggle
-            isOn={shouldShowTrackLabels}
-            onChange={toggleLabel}
-            className={styles.slideToggle}
-          />
-        </div>
-        <div className={styles.trackHeightIcon}>
-          <ImageButton
-            status={Status.DISABLED}
-            image={browserTrackConfig.trackHeightIcon.icon}
-            description={browserTrackConfig.trackHeightIcon.description}
-          />
-        </div>
-      </div>
-      <div className={styles.section}>
-        <div className={styles.trackLockIcon}>
-          <ImageButton
-            status={Status.DISABLED}
-            image={browserTrackConfig.trackLockIcon.icon}
-            description={browserTrackConfig.trackLockIcon.description}
-          />
-        </div>
-        <div className={styles.trackHighlightIcon}>
-          <ImageButton
-            status={Status.DISABLED}
-            image={browserTrackConfig.trackHighlightIcon.icon}
-            description={browserTrackConfig.trackHighlightIcon.description}
-          />
-        </div>
-        <div className={styles.trackMoveIcon}>
-          <ImageButton
-            status={Status.DISABLED}
-            image={browserTrackConfig.trackMoveIcon.icon}
-            description={browserTrackConfig.trackMoveIcon.description}
-          />
+        <div className={styles.subLabel}>Show</div>
+        <div>
+          <div className={styles.toggleWrapper}>
+            <label>Track name</label>
+            <SlideToggle
+              isOn={shouldShowTrackName}
+              onChange={toggleName}
+              className={styles.slideToggle}
+            />
+          </div>
+          <div className={styles.toggleWrapper}>
+            <label>Feature labels</label>
+            <SlideToggle
+              isOn={shouldShowTrackLabels}
+              onChange={toggleLabel}
+              className={styles.slideToggle}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -20,11 +20,10 @@ import { useTransition, animated } from 'react-spring';
 import analyticsTracking from 'src/services/analytics-service';
 import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 
-import ImageButton from 'src/shared/components/image-button/ImageButton';
+import CloseButton from 'ensemblRoot/src/shared/components/close-button/CloseButton';
+import ImageButton from 'ensemblRoot/src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as cogIcon } from 'static/img/shared/cog.svg';
-
-import { Status } from 'src/shared/types/status';
 
 export type BrowserCogProps = {
   cogActivated: boolean;
@@ -69,11 +68,6 @@ const BrowserCog = (props: BrowserCogProps) => {
     icon: cogIcon
   };
 
-  const getCogIconStatus = () => {
-    const { cogActivated } = props;
-    return cogActivated ? Status.SELECTED : Status.UNSELECTED;
-  };
-
   const [showTrackConfig, setTrackConfigAnimation] = useState(cogActivated);
   useEffect(() => {
     if (cogActivated) {
@@ -93,12 +87,15 @@ const BrowserCog = (props: BrowserCogProps) => {
   return (
     <>
       <div style={imgInline}>
-        <ImageButton
-          status={getCogIconStatus()}
-          description={cogIconConfig.description}
-          onClick={toggleCog}
-          image={cogIconConfig.icon}
-        />
+        {cogActivated ? (
+          <CloseButton onClick={toggleCog} />
+        ) : (
+          <ImageButton
+            description={cogIconConfig.description}
+            onClick={toggleCog}
+            image={cogIconConfig.icon}
+          />
+        )}
       </div>
       {transition((style, item) => {
         return (

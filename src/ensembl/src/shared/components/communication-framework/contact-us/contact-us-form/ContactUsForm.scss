@@ -40,6 +40,12 @@ $columnGapWidth: 12px;
   height: 150px;
 }
 
+.emailField {
+  &:invalid:not(:focus) {
+    color: $red;
+  }
+}
+
 .upload {
   grid-column: right;
   margin-top: 18px;
@@ -51,12 +57,46 @@ $columnGapWidth: 12px;
 }
 
 .submit {
-  display: flex;
+  display: grid;
+  grid-template-areas:
+    'form-errors form-errors'
+    'submit-left submit-right';
+  grid-template-columns: 1fr auto;
+  column-gap: 1.5rem;
   align-items: center;
-  gap: 1rem;
   grid-column: right;
-  justify-self: right;
   margin-top: 30px;
+
+  .formErrors {
+    grid-area: form-errors;
+
+    &:not(:empty) {
+      margin-bottom: 12px;
+    }
+  }
+
+  .sliderLabel {
+    grid-area: submit-left;
+    justify-self: end;
+
+    &Disabled {
+      color: $grey;
+    }
+  }
+
+  .submitSlider {
+    grid-area: submit-right;
+  }
+}
+
+.submitButtonWrapper {
+  grid-column: submit-right;
+  justify-self: end;
+}
+
+.submitButton {
+  height: 30px;
+  width: 90px;
 }
 
 .errorText {

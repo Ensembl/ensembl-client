@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-import React, { useState, useReducer, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+  useRef
+} from 'react';
+import classNames from 'classnames';
 import noop from 'lodash/noop';
 
 import { submitForm } from '../submitForm';
+import noEarlierThan from 'src/shared/utils/noEarlierThan';
 
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
 import ShadedTextarea from 'src/shared/components/textarea/ShadedTextarea';
 import Upload from 'src/shared/components/upload/Upload';
 import UploadedFile from 'src/shared/components/uploaded-file/UploadedFile';
-import { PrimaryButton } from 'src/shared/components/button/Button';
+import SubmitSlider from '../submit-slider/SubmitSlider';
+import { ControlledLoadingButton } from 'src/shared/components/loading-button';
+
+import { LoadingState } from 'src/shared/types/loading-state';
 
 import commonStyles from '../ContactUsForm.scss';
 
@@ -103,11 +114,29 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+const FORM_NAME = 'contact-us-general';
+
 const ContactUsInitialForm = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isChallengeCompleted, setIsChallengeCompleted] = useState(false);
+  const [emailFieldValid, setEmailFieldValid] = useState(true);
+  const [emailFieldFocussed, setEmailFieldFocussed] = useState(false);
+  const [submissionState, setSubmissionState] = useState<LoadingState>(
+    LoadingState.NOT_REQUESTED
+  );
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
+
+  useEffect(() => {
+    // TODO: this useEffect will be unnecessary when the Input is refactored to include forwardRef
+    const emailInput = formRef.current?.querySelector('#email');
+    if (emailInput) {
+      emailFieldRef.current = emailInput as HTMLInputElement;
+    }
+  }, [formRef.current]);
 
   const onNameChange = useCallback((value: string) => {
     dispatch({ type: 'update-name', payload: value });
@@ -115,6 +144,15 @@ const ContactUsInitialForm = () => {
 
   const onEmailChange = useCallback((value: string) => {
     dispatch({ type: 'update-email', payload: value });
+    validateEmail();
+  }, []);
+
+  const onEmailFocus = useCallback(() => {
+    setEmailFieldFocussed(true);
+  }, []);
+
+  const onEmailBlur = useCallback(() => {
+    setEmailFieldFocussed(false);
   }, []);
 
   const onSubjectChange = useCallback((value: string) => {
@@ -125,9 +163,17 @@ const ContactUsInitialForm = () => {
     dispatch({ type: 'update-message', payload: value });
   }, []);
 
-  const onFileChange = useCallback((file: File) => {
-    dispatch({ type: 'add-file', payload: file });
+  const onFileChange = useCallback((fileList: FileList) => {
+    for (const file of fileList) {
+      dispatch({ type: 'add-file', payload: file });
+    }
   }, []);
+
+  const validateEmail = useCallback(() => {
+    if (emailFieldRef.current) {
+      setEmailFieldValid(emailFieldRef.current?.checkValidity());
+    }
+  }, [emailFieldRef.current]);
 
   const deleteFile = (index: number) => {
     dispatch({ type: 'remove-file', payload: index });
@@ -135,13 +181,30 @@ const ContactUsInitialForm = () => {
 
   const handleSubmit = useCallback((e: React.SyntheticEvent) => {
     e.preventDefault();
-    stateRef.current && submitForm(stateRef.current);
-    setIsSubmitted(true);
+    if (!stateRef.current) {
+      return; // shouldn't happen, but makes Typescript happy
+    }
+
+    setSubmissionState(LoadingState.LOADING);
+
+    const submitPromise = submitForm({
+      ...stateRef.current,
+      form_type: FORM_NAME
+    });
+
+    noEarlierThan(submitPromise, 1000)
+      .then(() => {
+        setSubmissionState(LoadingState.SUCCESS);
+      })
+      .catch(() => {
+        setSubmissionState(LoadingState.ERROR);
+        setTimeout(() => setSubmissionState(LoadingState.NOT_REQUESTED), 2000);
+      });
   }, []);
 
-  const isFormValid = validate(state);
+  const isFormValid = validate(state) && emailFieldValid;
 
-  if (isSubmitted) {
+  if (submissionState === LoadingState.SUCCESS) {
     return <SubmissionSuccess />;
   }
 
@@ -149,12 +212,14 @@ const ContactUsInitialForm = () => {
     <div className={commonStyles.container}>
       <div className={commonStyles.grid}>
         <p className={commonStyles.advisory}>
-          <span>All fields are required unless marked optional</span>
-          <span>Second line</span>
-          <span>Third line</span>
+          <span>All fields are required</span>
+          <span>
+            The size of your combined attachments should be no more than 10 MB
+          </span>
         </p>
       </div>
       <form
+        ref={formRef}
         className={commonStyles.grid}
         autoComplete="off"
         onSubmit={handleSubmit}
@@ -167,7 +232,15 @@ const ContactUsInitialForm = () => {
         <label htmlFor="email" className={commonStyles.label}>
           Your email
         </label>
-        <ShadedInput id="email" value={state.email} onChange={onEmailChange} />
+        <ShadedInput
+          id="email"
+          type="email"
+          className={commonStyles.emailField}
+          value={state.email}
+          onChange={onEmailChange}
+          onFocus={onEmailFocus}
+          onBlur={onEmailBlur}
+        />
 
         <label htmlFor="subject" className={commonStyles.label}>
           Subject
@@ -200,21 +273,55 @@ const ContactUsInitialForm = () => {
           <Upload
             label="Click or drag a file here to upload"
             callbackWithFiles={true}
-            allowMultiple={false}
+            disabled={!isFormValid}
             onChange={onFileChange}
           />
         </div>
 
         <div className={commonStyles.submit}>
-          {exceedsAttachmentsSizeLimit(state) && (
-            <span className={commonStyles.errorText}>
-              Attachment(s) exceed 10 MB
-            </span>
+          {!isFormValid && (
+            <div className={commonStyles.formErrors}>
+              {!emailFieldValid && !emailFieldFocussed && (
+                <div className={commonStyles.errorText}>
+                  Please check the email address
+                </div>
+              )}
+              {exceedsAttachmentsSizeLimit(state) && (
+                <div className={commonStyles.errorText}>
+                  Attachment(s) exceed 10 MB
+                </div>
+              )}
+            </div>
           )}
 
-          <PrimaryButton type="submit" isDisabled={!isFormValid} onClick={noop}>
-            Submit
-          </PrimaryButton>
+          {isChallengeCompleted ? (
+            <ControlledLoadingButton
+              status={submissionState}
+              classNames={{
+                wrapper: commonStyles.submitButtonWrapper,
+                button: commonStyles.submitButton
+              }}
+              isDisabled={!isFormValid}
+              onClick={noop}
+            >
+              Send
+            </ControlledLoadingButton>
+          ) : (
+            <>
+              <span
+                className={classNames(commonStyles.sliderLabel, {
+                  [commonStyles.sliderLabelDisabled]: !isFormValid
+                })}
+              >
+                Slide, then send
+              </span>
+              <SubmitSlider
+                className={commonStyles.submitSlider}
+                isDisabled={!isFormValid}
+                onSlideCompleted={() => setIsChallengeCompleted(true)}
+              />
+            </>
+          )}
         </div>
       </form>
     </div>
@@ -230,7 +337,7 @@ const validate = (formState: State) => {
 
 const areMandatoryFieldsFilled = (formState: State) => {
   return (['name', 'email', 'subject', 'message'] as const).every(
-    (field) => formState[field]
+    (field) => formState[field].trim().length > 0
   );
 };
 

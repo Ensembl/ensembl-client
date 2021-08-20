@@ -31,20 +31,28 @@ type Props = {
   onClick: () => unknown;
   status: LoadingState;
   isDisabled?: boolean;
-  className?: string;
+  classNames?: {
+    wrapper?: string;
+    button?: string;
+  };
   children: ReactNode;
 };
 
 const ControlledLoadingButton = (props: Props) => {
-  const { status: loadingState, className, ...otherProps } = props;
+  const {
+    status: loadingState,
+    classNames: { wrapper: wrapperClassName, button: buttonClassName } = {},
+    ...otherProps
+  } = props;
 
+  const wrapperClass = classNames(styles.buttonWrapper, wrapperClassName);
   const buttonClass =
     loadingState !== LoadingState.NOT_REQUESTED
-      ? classNames(className, styles.invisible)
-      : className;
+      ? classNames(buttonClassName, styles.invisible)
+      : buttonClassName;
 
   return (
-    <div className={styles.buttonWrapper}>
+    <div className={wrapperClass}>
       {loadingState === LoadingState.LOADING && <Loading />}
       {loadingState === LoadingState.SUCCESS && <Success />}
       {loadingState === LoadingState.ERROR && <ErrorIndicator />}

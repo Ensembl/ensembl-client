@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { getGeneName } from './geneFormatter';
+import { createContext, RefObject } from 'react';
 
-describe('getGeneName', () => {
-  it('returns the correct gene display name', () => {
-    expect(getGeneName('novel transcript')).toBe('None');
-    expect(getGeneName('')).toBe('None');
-    expect(getGeneName(null)).toBe('None');
-  });
-});
+type CommunicationPanelContextType = {
+  panelBody: RefObject<HTMLDivElement> | null;
+};
+
+const initialContext: CommunicationPanelContextType = {
+  panelBody: null
+};
+
+const CommunicationPanelContext =
+  createContext<CommunicationPanelContextType>(initialContext);
+
+export const { Provider: CommunicationPanelContextProvider } =
+  CommunicationPanelContext;
+
+export default CommunicationPanelContext;

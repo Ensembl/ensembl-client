@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
@@ -73,12 +73,15 @@ export type UploadProps = {
   classNames?: {
     default?: string;
     active?: string;
+    disabled?: string;
   };
   allowMultiple?: boolean;
+  disabled?: boolean;
 } & OnChangeProps;
 
 const Upload = (props: UploadProps) => {
   const [drag, setDrag] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -112,12 +115,16 @@ const Upload = (props: UploadProps) => {
     const files: FileList | null =
       get(e, 'target.files') || get(e, 'dataTransfer.files') || null;
 
-    if (!files) {
-      return;
+    if (files?.length) {
+      await processFiles(files);
     }
 
+    clearInput();
+  };
+
+  const processFiles = async (files: FileList) => {
     if (props.callbackWithFiles) {
-      // Just consider the first file if allowMultiple is true
+      // Just pass the first file to the callback if allowMultiple is true
       if (!props.allowMultiple) {
         props.onChange(files[0]);
         return;
@@ -149,6 +156,13 @@ const Upload = (props: UploadProps) => {
     props.onChange(results);
   };
 
+  const clearInput = () => {
+    const inputElement = inputRef.current;
+    if (inputElement) {
+      inputElement.value = '';
+    }
+  };
+
   const getDefaultClassNames = () => {
     if (!props.classNames || !props.classNames.default) {
       return styles.defaultUpload;
@@ -169,6 +183,16 @@ const Upload = (props: UploadProps) => {
     return classNames(styles.defaultUploadActive, props.classNames.active);
   };
 
+  if (props.disabled) {
+    const elementClasses = classNames(
+      styles.disabledUpload,
+      props.classNames?.disabled
+    );
+    // using the label html tag even though there is no input
+    // to keep it the same as the label element of the enabled component (to support animations)
+    return <label className={elementClasses}>{props.label}</label>;
+  }
+
   return (
     <label
       className={`${getDefaultClassNames()} ${getActiveClassNames()}`}
@@ -179,6 +203,7 @@ const Upload = (props: UploadProps) => {
     >
       <input
         type="file"
+        ref={inputRef}
         name={props.name}
         className={styles.fileInput}
         onChange={(e) => handleSelectedFiles(e)}

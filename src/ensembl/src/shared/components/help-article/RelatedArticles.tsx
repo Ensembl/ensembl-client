@@ -16,7 +16,9 @@
 
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { push } from 'connected-react-router';
+import classNames from 'classnames';
 
 import { ReactComponent as VideoIcon } from 'static/img/shared/video.svg';
 
@@ -27,10 +29,12 @@ import styles from './HelpArticle.scss';
 type Props = {
   articles: RelatedArticleData[];
   title?: string;
+  highlightActiveArticle?: boolean;
   onArticleClick?: (article: RelatedArticleData) => void;
 };
 
 const RelatedArticles = (props: Props) => {
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const onArticleClick = (article: RelatedArticleData) => {
@@ -42,10 +46,13 @@ const RelatedArticles = (props: Props) => {
   };
 
   const relatedArticles = props.articles.map((relatedArticle) => {
-    const relatedItemClassName =
-      relatedArticle.type === 'article'
-        ? styles.relatedArticle
-        : styles.relatedVideo;
+    const relatedItemClassName = classNames({
+      [styles.relatedArticle]: relatedArticle.type === 'article',
+      [styles.relatedVideo]: relatedArticle.type === 'video',
+      [styles.relatedArticleActive]:
+        props.highlightActiveArticle && relatedArticle.url === location.pathname
+    });
+
     return (
       <a
         href={relatedArticle.url}

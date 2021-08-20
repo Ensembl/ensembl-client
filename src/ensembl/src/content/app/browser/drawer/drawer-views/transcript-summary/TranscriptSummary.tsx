@@ -282,7 +282,6 @@ const TranscriptSummary = () => {
             )}
             {uniprotXref && (
               <ExternalReference
-                classNames={{ label: styles.lightText }}
                 label={'UniProtKB/Swiss-Prot'}
                 to={uniprotXref.url}
                 linkText={uniprotXref.accession_id}
