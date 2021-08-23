@@ -223,7 +223,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
               {track.additional_info}
             </span>
           )}
-          {track.child_tracks && (
+          {props.children && (
             <Chevron
               onClick={toggleExpand}
               direction={isCollapsed ? 'down' : 'up'}
