@@ -24,6 +24,7 @@
 .button {
   padding: 7px 18px;
   border-radius: 4px;
+  user-select: none;
   &:active,
   &:focus {
     outline: none;

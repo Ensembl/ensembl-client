@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { from, timer, combineLatest, firstValueFrom } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { of, from, timer, combineLatest, firstValueFrom } from 'rxjs';
+import { take, catchError } from 'rxjs/operators';
 
 const noEarlierThan = async <P extends Promise<any>>(
   promise: P,
@@ -23,11 +23,15 @@ const noEarlierThan = async <P extends Promise<any>>(
 ) => {
   const source$ = combineLatest([
     timer(minimumTime).pipe(take(1)),
-    from(promise)
+    from(promise).pipe(catchError((error) => of(error)))
   ]);
 
   const [, result] = await firstValueFrom(source$);
-  return result;
+  if (result instanceof Error) {
+    throw result;
+  } else {
+    return result;
+  }
 };
 
 export default noEarlierThan;
