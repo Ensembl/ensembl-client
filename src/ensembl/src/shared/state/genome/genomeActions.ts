@@ -41,26 +41,23 @@ export const fetchGenomeInfoAsyncActions = createAsyncAction(
   'genome/fetch_genome_info_failure'
 )<undefined, GenomeInfoData, Error>();
 
-export const fetchGenomeData = (
-  genomeId: string
-): ThunkAction<void, any, null, Action<string>> => async (dispatch) => {
-  await Promise.all([
-    dispatch(fetchGenomeInfo(genomeId)),
-    dispatch(fetchGenomeTrackCategories(genomeId)),
-    dispatch(fetchGenomeKaryotype(genomeId))
-  ]);
+export const fetchGenomeData =
+  (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
+  async (dispatch) => {
+    await Promise.all([
+      dispatch(fetchGenomeInfo(genomeId)),
+      dispatch(fetchGenomeTrackCategories(genomeId)),
+      dispatch(fetchGenomeKaryotype(genomeId))
+    ]);
 
-  dispatch(ensureSpeciesIsCommitted(genomeId));
+    dispatch(ensureSpeciesIsCommitted(genomeId));
 
-  dispatch(fetchExampleEnsObjects(genomeId));
-};
+    dispatch(fetchExampleEnsObjects(genomeId));
+  };
 
-export const fetchGenomeInfo: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchGenomeInfo: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const genomeInfo = getGenomeInfoById(state, genomeId);
   if (genomeInfo) {
@@ -87,16 +84,12 @@ export const fetchGenomeTrackCategoriesAsyncActions = createAsyncAction(
   'genome/fetch_genome_track_categories_failure'
 )<string, GenomeTrackCategories, Error>();
 
-export const fetchGenomeTrackCategories: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchGenomeTrackCategories: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
-    const currentGenomeTrackCategories: GenomeTrackCategories = getGenomeTrackCategories(
-      getState()
-    );
+    const currentGenomeTrackCategories: GenomeTrackCategories =
+      getGenomeTrackCategories(getState());
 
     if (currentGenomeTrackCategories[genomeId]) {
       return;
@@ -108,10 +101,11 @@ export const fetchGenomeTrackCategories: ActionCreator<ThunkAction<
 
     dispatch(fetchGenomeTrackCategoriesAsyncActions.request(genomeId));
 
-    const url = `/api/genomesearch/genome/track_categories?genome_id=${genomeId}`;
+    const url = `/api/tracks/track_categories/${genomeId}`;
     const response = await apiService.fetch(url);
-    updatedGenomeTrackCategories[genomeId] = response.track_categories;
 
+    updatedGenomeTrackCategories[genomeId] =
+      response.track_categories.reverse();
     dispatch(
       fetchGenomeTrackCategoriesAsyncActions.success(
         updatedGenomeTrackCategories
@@ -128,16 +122,12 @@ export const fetchGenomeKaryotypeAsyncActions = createAsyncAction(
   'genome/fetch_genome_karyotype_failure'
 )<string, any, Error>();
 
-export const fetchGenomeKaryotype: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
+export const fetchGenomeKaryotype: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (genomeId: string) => async (dispatch, getState: () => RootState) => {
   try {
-    const currentGenomeKaryotype:
-      | GenomeKaryotypeItem[]
-      | null = getGenomeKaryotype(getState());
+    const currentGenomeKaryotype: GenomeKaryotypeItem[] | null =
+      getGenomeKaryotype(getState());
 
     if (currentGenomeKaryotype) {
       return;
