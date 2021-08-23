@@ -54,11 +54,8 @@ It's possible that later we will switch to using UTRs for this purpose
 */
 
 const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
-  const {
-    spliced_exons,
-    product_generating_contexts,
-    slice
-  } = props.transcript;
+  const { spliced_exons, product_generating_contexts, slice } =
+    props.transcript;
   const cds = product_generating_contexts[0]?.cds;
   const {
     location: { length: transcriptLength }
@@ -108,12 +105,7 @@ const Backbone = (
 ) => {
   let intervals: [number, number][] = [];
   const {
-    transcript: {
-      spliced_exons,
-      slice: {
-        location: { length: transcriptLength }
-      }
-    },
+    transcript: { spliced_exons },
     scale
   } = props;
   const backboneClasses = props.classNames?.backbone || undefined;
@@ -132,20 +124,14 @@ const Backbone = (
 
   for (let i = 0; i < spliced_exons.length; i++) {
     const {
-      relative_location: { start: exonStart, end: exonEnd }
+      relative_location: { end: exonEnd }
     } = spliced_exons[i];
-    if (i === 0) {
-      intervals.push([1, exonStart]);
-    } else {
-      const previousExon = spliced_exons[i - 1];
-      const {
-        relative_location: { end: previousExonEnd }
-      } = previousExon;
-      intervals.push([previousExonEnd, exonStart]);
-    }
 
-    if (i === spliced_exons.length - 1) {
-      intervals.push([exonEnd, transcriptLength]);
+    if (i < spliced_exons.length - 1) {
+      const {
+        relative_location: { start: nextExonStart }
+      } = spliced_exons[i + 1];
+      intervals.push([exonEnd, nextExonStart]);
     }
   }
 
@@ -163,8 +149,8 @@ const Backbone = (
           className={backboneClasses}
           y={0}
           height={1}
-          x={scale(start)}
-          width={Math.max(0, (scale(end - start) as number) - 2)}
+          x={scale(start) + 1}
+          width={Math.max(0, scale(end - start) - 2)}
         />
       ))}
     </g>

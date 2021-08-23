@@ -84,6 +84,7 @@ const QUERY = gql`
         location {
           start
           end
+          length
         }
         strand {
           code
