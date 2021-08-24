@@ -344,6 +344,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   );
 };
 
+const ensureGeneViewExists = (view: string) =>
+  !!Object.values(View).find((value) => value === view);
+
 const useGeneViewRouting = () => {
   const dispatch = useDispatch();
   const params: { [key: string]: string } = useParams();
@@ -361,7 +364,7 @@ const useGeneViewRouting = () => {
 
   useEffect(() => {
     if (view && viewInRedux !== view) {
-      if (view in View) {
+      if (ensureGeneViewExists(view)) {
         dispatch(updateView(view as View));
       } else {
         const url = urlFor.entityViewer({
