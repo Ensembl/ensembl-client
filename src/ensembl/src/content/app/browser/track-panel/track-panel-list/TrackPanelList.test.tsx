@@ -25,6 +25,8 @@ import { TrackSet } from '../trackPanelConfig';
 import { createGenomeCategories } from 'tests/fixtures/genomes';
 import { createTrackStates } from 'tests/fixtures/track-panel';
 
+jest.mock('./TrackPanelGene', () => () => <div className="trackPanelGene" />);
+
 jest.mock('./TrackPanelListItem', () => () => (
   <div className="trackPanelListItem" />
 ));
@@ -47,11 +49,9 @@ describe('<TrackPanelList />', () => {
     render(<TrackPanelList {...defaultProps} {...props} />);
 
   describe('rendering', () => {
-    it('renders track panel items', () => {
+    it('renders gene tracks', () => {
       const { container } = mountTrackPanelList();
-      expect(
-        container.querySelectorAll('.trackPanelListItem').length
-      ).toBeGreaterThan(0);
+      expect(container.querySelectorAll('.trackPanelGene').length).toBe(1);
     });
 
     it('does not render main track if the focus feature is a region', () => {
