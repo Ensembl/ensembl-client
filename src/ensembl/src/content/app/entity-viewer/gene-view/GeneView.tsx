@@ -361,7 +361,17 @@ const useGeneViewRouting = () => {
 
   useEffect(() => {
     if (view && viewInRedux !== view) {
-      dispatch(updateView(view as View));
+      if (view in View) {
+        dispatch(updateView(view as View));
+      } else {
+        const url = urlFor.entityViewer({
+          genomeId,
+          entityId,
+          view: View.TRANSCRIPTS,
+          proteinId
+        });
+        dispatch(replace(url));
+      }
     } else {
       const url = urlFor.entityViewer({
         genomeId,
