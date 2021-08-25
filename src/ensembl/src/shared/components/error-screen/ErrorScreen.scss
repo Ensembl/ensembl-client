@@ -36,23 +36,97 @@ $generalErrorImagesTotalWidth: calc(
   flex: 0 0 auto;
 }
 
+.generalErrorTopMessage {
+  font-weight: bold;
+  font-size: 13px;
+}
+
 .generalErrorBody {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
+  padding-top: 100px;
 }
 
-.generalErrorImages {
+.generalErrorBottomMessage {
+  font-size: 12px;
+}
+
+.reloadButton {
+  padding-top: 20px;
+}
+
+.moreOptions {
+  padding: 50px 0 20px 0;
+  a {
+    padding: 0 10px;
+    cursor: pointer;
+  }
+  svg {
+    width: 10px;
+  }
+}
+.resetOption {
+  color: $red;
+  button {
+    margin-top: 24px;
+  }
+}
+.generalErrorImage {
+  display: flex;
+  font-size: 12px;
+  .vennCircle1 {
+    width: 195px;
+    height: 195px;
+    border-radius: 50%;
+    background-color: rgba(183, 192, 200, 0.24);
+    left: 32px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      margin-right: 74px;
+      margin-left: 28px;
+    }
+  }
+  .vennCircle2 {
+    width: 195px;
+    height: 195px;
+    border-radius: 50%;
+    background-color: rgba(183, 192, 200, 0.24);
+    right: 32px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      margin-right: 12px;
+      margin-left: 30px;
+    }
+  }
+
+  .infoIcon {
+    padding-left: 19px;
+    svg {
+      fill: $red;
+      width: 24px;
+      height: 24px;
+    }
+  }
+
   img {
     width: 170px;
     height: 170px;
   }
 
   @media screen and (min-width: $generalErrorImagesTotalWidth) {
-    margin-top: 10vh;
+    // margin-top: 10vh;
     margin-bottom: calc(#{$generalErrorImageGap} / 2);
 
     img:not(:last-child) {

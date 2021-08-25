@@ -14,34 +14,93 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import storageService from 'ensemblRoot/src/services/storage-service';
+
+import React, { useState } from 'react';
+import { replace } from 'connected-react-router';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { Topbar } from 'src/header/Header';
 
-import generalErrorImage1 from './images/general-error-1.jpg';
-import generalErrorImage2 from './images/general-error-2.jpg';
-import generalErrorImage3 from './images/general-error-3.jpg';
+import { ReactComponent as InfoIcon } from 'static/img/shared/icon_alert_circle.svg';
+import { PrimaryButton } from '../button/Button';
+import Chevron from '../chevron/Chevron';
 
 import styles from './ErrorScreen.scss';
+import { useDispatch } from 'react-redux';
 
-const GeneralErrorScreen = () => (
-  <section className={styles.generalErrorScreen}>
-    <Topbar />
-    <div className={styles.generalErrorBody}>
-      <p className={styles.generalErrorTopMessage}>
-        Sorry, something seems to have gone wrong
-      </p>
-      <div className={styles.generalErrorImages}>
-        <img src={generalErrorImage1} />
-        <img src={generalErrorImage2} />
-        <img src={generalErrorImage3} />
+const GeneralErrorScreen = () => {
+  const dispatch = useDispatch();
+
+  const [moreOptionExpanded, setMoreOptionExpanded] = useState(false);
+
+  const toggleChevron = () => {
+    setMoreOptionExpanded(!moreOptionExpanded);
+  };
+
+  const chevronDirection = () => {
+    return moreOptionExpanded ? 'up' : 'down';
+  };
+
+  const reloadPage = () => {
+    window.location.reload();
+  };
+
+  const resetPage = () => {
+    storageService.clearAll();
+    dispatch(replace(urlFor.home()));
+    reloadPage();
+  };
+
+  return (
+    <section className={styles.generalErrorScreen}>
+      <Topbar />
+      <div className={styles.generalErrorBody}>
+        <p className={styles.generalErrorTopMessage}>
+          Venn of the current issue
+        </p>
+        <div className={styles.generalErrorImage}>
+          <div className={styles.vennCircle1}>
+            <span>We've made some changes...</span>
+          </div>
+          <div className={styles.vennCircle2}>
+            <div className={styles.infoIcon}>
+              <InfoIcon />
+            </div>
+            <span>...now we need you to do something</span>
+          </div>
+        </div>
+        <div className={styles.reloadButton}>
+          <PrimaryButton isDisabled={moreOptionExpanded} onClick={reloadPage}>
+            Reload
+          </PrimaryButton>
+        </div>
+        <div className={styles.generalErrorBottomMessage}>
+          <div className={styles.moreOptions}>
+            <a onClick={toggleChevron}>If the site still fails to load</a>
+            <Chevron
+              direction={chevronDirection()}
+              animate={true}
+              onClick={toggleChevron}
+            ></Chevron>
+          </div>
+          {moreOptionExpanded && (
+            <div className={styles.resetOption}>
+              <div>Unfortunately we need to reset everything</div>
+              <div>
+                All your species, configuration if views &amp; history will be
+                lost
+              </div>
+              <PrimaryButton isDisabled={false} onClick={resetPage}>
+                Reset the site
+              </PrimaryButton>
+            </div>
+          )}
+        </div>
       </div>
-      <div className={styles.generalErrorBottomMessage}>
-        <p>We‘re trying to fix it right now</p>
-        <p>Please try again later...</p>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default GeneralErrorScreen;
