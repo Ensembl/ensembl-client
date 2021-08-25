@@ -25,7 +25,6 @@ import {
   getDisplayStableId,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
@@ -34,6 +33,9 @@ import {
   getNumberOfCodingExons,
   getSplicedRNALength
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
+import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
+import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -156,10 +158,16 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
 
 const TranscriptSummary = () => {
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
-
-  const transcriptTrack = ensObjectGene?.track?.child_tracks?.[0];
-
   const [shouldShowDownload, showDownload] = useState(false);
+
+  const { data: geneData } = useGetTrackPanelGeneQuery({
+    genomeId: ensObjectGene.genome_id,
+    geneId: ensObjectGene.stable_id
+  });
+
+  const canonicalTranscript = geneData?.gene.transcripts.find(
+    (transcript) => transcript.metadata.canonical
+  );
 
   const { data, loading } = useQuery<{
     gene: Gene;
@@ -167,10 +175,10 @@ const TranscriptSummary = () => {
   }>(GENE_AND_TRANSCRIPT_QUERY, {
     variables: {
       geneId: ensObjectGene.stable_id,
-      transcriptId: transcriptTrack?.stable_id,
+      transcriptId: canonicalTranscript?.stable_id,
       genomeId: ensObjectGene.genome_id
     },
-    skip: !transcriptTrack?.stable_id
+    skip: !canonicalTranscript?.stable_id
   });
 
   if (loading) {

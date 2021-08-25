@@ -38,8 +38,6 @@ export type EnsObjectGene = BasicEnsObject & {
   versioned_stable_id: string;
   bio_type: string;
   strand: Strand;
-  description: string | null;
-  track: EnsObjectTrack | null;
 };
 
 export type EnsObjectRegion = BasicEnsObject & {

@@ -133,8 +133,6 @@ const buildGeneObject = (params: any): EnsObjectGene => {
     stable_id: params.gene.unversioned_stable_id,
     versioned_stable_id: params.gene.stable_id,
     bio_type: '',
-    strand,
-    description: null,
-    track: null
+    strand
   };
 };
