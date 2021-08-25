@@ -345,7 +345,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
 };
 
 const ensureGeneViewExists = (view: string) =>
-  !!Object.values(View).some((value) => value === view);
+  Object.values(View).some((value) => value === view);
 
 const useGeneViewRouting = () => {
   const dispatch = useDispatch();
