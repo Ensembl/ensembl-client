@@ -19,10 +19,7 @@ import intersection from 'lodash/intersection';
 import classNames from 'classnames';
 
 import { fetchForGene } from '../instant-download-fetch/fetchForGene';
-import {
-  filterTranscriptOptions,
-  defaultTranscriptOptions
-} from '../instant-download-transcript/InstantDownloadTranscript';
+import { filterTranscriptOptions } from '../instant-download-transcript/InstantDownloadTranscript';
 
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 import InstantDownloadButton from '../instant-download-button/InstantDownloadButton';
@@ -105,7 +102,7 @@ const InstantDownloadGene = (props: Props) => {
 
   const resetCheckboxes = () => {
     setIsGeneSequenceSelected(false);
-    setTranscriptOptions(defaultTranscriptOptions);
+    setTranscriptOptions(filterTranscriptOptions(biotype));
   };
 
   const onSubmit = async () => {
