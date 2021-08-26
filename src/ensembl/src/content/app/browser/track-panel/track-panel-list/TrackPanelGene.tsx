@@ -21,6 +21,8 @@ import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeB
 
 import { getBrowserTrackStates } from 'src/content/app/browser/browserSelectors';
 
+import { getTranscriptMetadata as getTranscriptSupportLevel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+
 import TrackPanelListItem from './TrackPanelListItem';
 
 import { Status } from 'src/shared/types/status';
@@ -94,7 +96,8 @@ const prepareGeneTrackData = (gene: TrackPanelGeneType): EnsObjectTrack => {
     label: gene.symbol ?? gene.stable_id,
     track_id: GENE_TRACK_ID,
     stable_id: gene.stable_id,
-    description: null // FIXME: why do we need this field?
+    additional_info: gene.metadata.biotype.label,
+    description: null // FIXME: remove this field from EnsObjectTrack
   };
 };
 
@@ -110,7 +113,8 @@ const prepareTranscriptsTrackData = (
     stable_id: canonicalTranscript.stable_id,
     description: null,
     colour: 'BLUE',
-    additional_info: canonicalTranscript.metadata.biotype.label
+    additional_info: canonicalTranscript.metadata.biotype.label,
+    support_level: getTranscriptSupportLevel(canonicalTranscript)?.label
   };
   return [canonicalTranscriptTrackData];
 };

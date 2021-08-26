@@ -26,7 +26,7 @@ type Props = {
   metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
 };
 
-const getTranscriptMetadata = (props: Props) => {
+export const getTranscriptMetadata = (props: Props) => {
   const { canonical, mane } = props.metadata;
   if (canonical && mane) {
     return {
