@@ -15,7 +15,13 @@ $backgroundColor: $black;
   color: $white;
   display: grid;
   background-color: $backgroundColor;
-  grid-template-columns: 178px max-content;
+
+  grid-template-areas:
+  'feature-image feature-image view-in'
+  'tabs-and-filters tabs-and-filters tabs-and-filters'
+  'tab-content tab-content tab-content';
+
+  grid-template-columns: 178px 902px 1fr;
   grid-template-rows: min-content minmax(76px, auto) minmax(0, 1fr);  
   padding: 60px 20px 10px;
   height: 100%; // may need to change this later
@@ -24,11 +30,11 @@ $backgroundColor: $black;
 }
 
 .featureImage {
-  grid-area: 1 / 1 / 2 / 3;
+  grid-area: feature-image;
 }
 
 .viewInLinks {
-  grid-area: 1 / 3 / 2 / 4;
+  grid-area: view-in;
   display: grid;
   grid-template-rows: 1fr 1fr;
   align-items: end;
@@ -36,7 +42,7 @@ $backgroundColor: $black;
 }
 
 .geneViewTabs {
-  grid-area: 2 / 1 / 3 / 4;
+  grid-area: tabs-and-filters;
   display: grid;
   grid-template-areas:
                   "filter-toggle tabs"
@@ -63,7 +69,7 @@ $backgroundColor: $black;
 }
 
 .geneViewTabContent {
-  grid-area: 3 / 1 / 4 / 4;
+  grid-area: tab-content;
 }
 
 .filterLabelContainer {
