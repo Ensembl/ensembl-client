@@ -117,7 +117,7 @@ export const Browser = (props: BrowserProps) => {
 
   return (
     <ApolloProvider client={client}>
-      <div>
+      <div className={styles.genomeBrowser}>
         <BrowserAppBar onSpeciesSelect={changeGenomeId} />
         {props.activeGenomeId && props.browserQueryParams.focus ? (
           <StandardAppLayout

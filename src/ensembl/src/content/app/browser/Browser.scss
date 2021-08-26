@@ -1,5 +1,12 @@
 @import 'src/styles/common';
 
+.genomeBrowser{
+  height: 100%;
+  display: grid;
+  align-items: start;
+  grid-template-rows: auto 1fr;
+}
+
 .exampleLinks {
   margin-top: 50px;
   padding-left: 80px;
