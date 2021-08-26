@@ -15,7 +15,7 @@ $backgroundColor: $black;
   color: $white;
   display: grid;
   background-color: $backgroundColor;
-  grid-template-columns: 178px 902px 1fr;
+  grid-template-columns: 178px max-content;
   grid-template-rows: min-content minmax(76px, auto) minmax(0, 1fr);  
   padding: 60px 20px 10px;
   height: 100%; // may need to change this later

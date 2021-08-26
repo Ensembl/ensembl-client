@@ -25,7 +25,7 @@
 
 .resourceGroup {
   display: grid;
-  grid-template-columns: [type] 178px [images] 902px;
+  grid-template-columns: [type] 178px [images] max-content;
   margin-bottom: 10px;
 
   & .resourceName {
