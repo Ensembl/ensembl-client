@@ -6,19 +6,17 @@ $rightCornerWidth: 40px;
   display: inline-flex;
   align-items: center;
   position: relative;
-  padding: 4px;
   width: 100%;
   max-width: 485px;
-  height: 36px;
-  box-shadow: inset 2px 2px 4px -2px $dark-grey;
-  background: white;
 
   // nesting to increase specificity of the selector (needs to override child rules)
   .speciesSearchField {
     width: 100%;
     background: $white;
-    padding-left: 18px;
     border: none;
+    height: 36px;
+    padding-left: 22px;
+    padding-right: 12px;
   
     input {
       &::placeholder {
