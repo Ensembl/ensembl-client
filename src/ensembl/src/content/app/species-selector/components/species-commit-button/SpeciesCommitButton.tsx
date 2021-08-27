@@ -17,27 +17,36 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import useAnalyticsService from 'ensemblRoot/src/shared/hooks/useAnalyticsService';
+
 import {
   hasCurrentSpecies,
-  canCommitSpecies
+  canCommitSpecies,
+  getSelectedItem
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './SpeciesCommitButton.scss';
-
+import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
 import { RootState } from 'src/store';
+
+import styles from './SpeciesCommitButton.scss';
 
 type Props = {
   hasCurrentSpecies: boolean; // tells whether a species has been selected and can be committed
+  selectedItem: CurrentItem | null;
   disabled: boolean;
   onCommit: () => void;
 };
 
 export const SpeciesCommitButton = (props: Props) => {
+  const analyticsService = useAnalyticsService();
+
   const handleClick = () => {
     props.onCommit();
+    props.selectedItem &&
+      analyticsService.trackCommitedSpecies(props.selectedItem);
   };
 
   return props.hasCurrentSpecies ? (
@@ -51,6 +60,7 @@ export const SpeciesCommitButton = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
   hasCurrentSpecies: hasCurrentSpecies(state),
+  selectedItem: getSelectedItem(state),
   disabled: !canCommitSpecies(state)
 });
 

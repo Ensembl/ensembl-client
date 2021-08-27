@@ -23,6 +23,7 @@ import { SpeciesCommitButton } from './SpeciesCommitButton';
 const onCommit = jest.fn();
 const defaultProps = {
   hasCurrentSpecies: true,
+  selectedItem: null,
   disabled: false,
   onCommit
 };

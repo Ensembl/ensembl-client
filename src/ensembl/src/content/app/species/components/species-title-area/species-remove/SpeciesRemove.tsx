@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import useAnalyticsService from 'ensemblRoot/src/shared/hooks/useAnalyticsService';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -39,6 +40,8 @@ const SpeciesRemove = () => {
   );
   const dispatch = useDispatch();
 
+  const { trackDeletedSpecies } = useAnalyticsService();
+
   if (!genomeId || !species) {
     return null;
   }
@@ -50,6 +53,7 @@ const SpeciesRemove = () => {
   const onRemove = () => {
     dispatch(push(urlFor.speciesSelector()));
     dispatch(deleteSpeciesAndSave(genomeId));
+    trackDeletedSpecies(species);
   };
 
   return (

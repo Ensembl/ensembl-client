@@ -43,8 +43,7 @@ import {
   SearchMatches
 } from 'src/content/app/species-selector/types/species-search';
 
-import analyticsTracking from 'src/services/analytics-service';
-import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
+import useAnalyticsService from 'src/shared/hooks/useAnalyticsService';
 
 import { RootState } from 'src/store';
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
@@ -81,18 +80,11 @@ export const SpeciesSearchField = (props: Props) => {
     return () => clear();
   }, []);
 
+  const { trackAutocompleteSpeciesSelect } = useAnalyticsService();
+
   const onMatchSelected = (match: SearchMatch) => {
     props.onMatchSelected(match);
-
-    const speciesName = getSpeciesAnalyticsName(match);
-
-    analyticsTracking.setSpeciesDimension(match.genome_id);
-
-    analyticsTracking.trackEvent({
-      category: 'species_search',
-      action: 'preselect',
-      label: speciesName
-    });
+    trackAutocompleteSpeciesSelect(match);
   };
 
   const canShowSuggesions =
