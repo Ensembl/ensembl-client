@@ -78,7 +78,9 @@ const SelectedSpeciesList = (props: Props) => {
     />
   ));
 
-  return <SpeciesTabsWrapper speciesTabs={selectedSpecies} />;
+  return (
+    <SpeciesTabsWrapper isWrappable={false} speciesTabs={selectedSpecies} />
+  );
 };
 
 const mapStateToProps = (state: RootState) => ({
