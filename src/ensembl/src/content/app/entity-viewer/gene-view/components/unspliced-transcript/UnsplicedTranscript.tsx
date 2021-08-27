@@ -62,17 +62,13 @@ const UnsplicedTranscript = (props: UnsplicedTranscriptProps) => {
   } = slice;
   const scale = scaleLinear()
     .domain([1, transcriptLength])
-    .rangeRound([1, props.width])
+    .range([1, props.width])
+    .interpolate(interpolateFloor)
     .clamp(true);
 
   const transcriptClasses = props.classNames?.transcript;
 
-  const exonRectangles = calculateExonRectangles({
-    availableWidth: props.width,
-    splicedExons: spliced_exons,
-    cds,
-    scale
-  });
+  const exonRectangles = calculateExonRectangles({ spliced_exons, cds, scale });
 
   const renderedExons = exonRectangles.map((tuple, index) => (
     <ExonBlock
@@ -201,8 +197,7 @@ const ExonBlock = (props: ExonBlockProps) => {
 const getLength = (start: number, end: number) => end - start + 1;
 
 type CalculateExonRectanglesParams = {
-  availableWidth: number;
-  splicedExons: Pick<SplicedExon, 'relative_location'>[];
+  spliced_exons: Pick<SplicedExon, 'relative_location'>[];
   cds?: {
     relative_start: number;
     relative_end: number;
@@ -211,10 +206,9 @@ type CalculateExonRectanglesParams = {
 };
 
 const calculateExonRectangles = (params: CalculateExonRectanglesParams) => {
-  const { splicedExons, cds, scale, availableWidth } = params;
-  const clampToAvailableWidth = getClampToAvailableWidth(availableWidth, scale);
+  const { spliced_exons, cds, scale } = params;
 
-  return splicedExons.map((exon) => {
+  return spliced_exons.map((exon) => {
     const { start: exonStart, end: exonEnd } = exon.relative_location;
     const isCompletelyNonCoding =
       cds && (exonEnd < cds.relative_start || exonStart > cds.relative_end);
@@ -227,59 +221,41 @@ const calculateExonRectangles = (params: CalculateExonRectanglesParams) => {
       const nonCodingRect = {
         filled: false,
         x: scale(exonStart),
-        width: clampToAvailableWidth(exonStart, cds.relative_start)
+        width: scale(getLength(exonStart, cds.relative_start))
       };
       const codingRect = {
         filled: true,
         x: scale(cds.relative_start),
-        width: clampToAvailableWidth(cds.relative_start, exonEnd)
+        width: scale(getLength(cds.relative_start, exonEnd))
       };
       return [nonCodingRect, codingRect];
     } else if (cds && isNonCodingRight) {
       const codingRect = {
         filled: true,
         x: scale(exonStart),
-        width: clampToAvailableWidth(exonStart, cds.relative_end)
+        width: scale(getLength(exonStart, cds.relative_end))
       };
       const nonCodingRect = {
         filled: false,
         x: scale(cds.relative_end),
-        width: clampToAvailableWidth(cds.relative_end, exonEnd)
+        width: scale(getLength(cds.relative_end, exonEnd))
       };
       return [codingRect, nonCodingRect];
     } else {
       const rect = {
         filled: !isCompletelyNonCoding,
         x: scale(exonStart),
-        width: clampToAvailableWidth(exonStart, exonEnd)
+        width: scale(getLength(exonStart, exonEnd))
       };
       return [rect];
     }
   });
 };
 
-const getClampToAvailableWidth =
-  <P extends Parameters<typeof clampToAvailableWidth>>(
-    width: number,
-    scale: ScaleLinear<number, number>
-  ) =>
-  (...args: [P[0], P[1]]) =>
-    clampToAvailableWidth(...args, scale, width);
-
-// Avoids rounding errors when calculating the width of an exon rectangle.
-// Makes sure that the right border of the exon (x-coordinate + width)
-// will never be greater than the available width
-const clampToAvailableWidth = (
-  start: number,
-  end: number,
-  scale: ScaleLinear<number, number>,
-  totalWidth: number
-) => {
-  const genomicLength = getLength(start, end);
-  const x = scale(start);
-  const scaledWidth = scale(genomicLength);
-  const availableWidth = totalWidth - x;
-  return Math.min(scaledWidth, availableWidth);
-};
+// d3 has an interpolator for rounding numbers to the neares integer (https://github.com/d3/d3-interpolate/blob/main/src/round.js)
+// but does not seem to have an interpolator for always using the smallest integer
+// so here's the custom one
+const interpolateFloor = (a: number, b: number) => (t: number) =>
+  Math.floor(a * (1 - t) + b * t);
 
 export default UnsplicedTranscript;
