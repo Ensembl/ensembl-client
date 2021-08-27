@@ -41,12 +41,11 @@ type Props = {
 };
 
 export const SpeciesCommitButton = (props: Props) => {
-  const analyticsService = useAnalyticsService();
+  const { trackCommitedSpecies } = useAnalyticsService();
 
   const handleClick = () => {
     props.onCommit();
-    props.selectedItem &&
-      analyticsService.trackCommitedSpecies(props.selectedItem);
+    props.selectedItem && trackCommitedSpecies(props.selectedItem);
   };
 
   return props.hasCurrentSpecies ? (

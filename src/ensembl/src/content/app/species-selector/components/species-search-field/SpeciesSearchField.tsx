@@ -17,6 +17,8 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
+import useAnalyticsService from 'src/shared/hooks/useAnalyticsService';
+
 import {
   updateSearch,
   handleSelectedSpecies,
@@ -42,8 +44,6 @@ import {
   SearchMatch,
   SearchMatches
 } from 'src/content/app/species-selector/types/species-search';
-
-import useAnalyticsService from 'src/shared/hooks/useAnalyticsService';
 
 import { RootState } from 'src/store';
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';

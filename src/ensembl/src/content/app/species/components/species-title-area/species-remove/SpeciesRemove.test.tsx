@@ -39,6 +39,11 @@ jest.mock(
     deleteSpeciesAndSave: jest.fn(() => ({ type: 'deleteSpeciesAndSave' }))
   })
 );
+jest.mock('src/shared/hooks/useAnalyticsService', () =>
+  jest.fn(() => ({
+    trackDeletedSpecies: jest.fn()
+  }))
+);
 
 const selectedSpecies = createSelectedSpecies();
 

@@ -40,6 +40,12 @@ jest.mock('src/shared/components/slide-toggle/SlideToggle', () =>
   jest.fn(() => null)
 );
 
+jest.mock('src/shared/hooks/useAnalyticsService', () =>
+  jest.fn(() => ({
+    trackSpeciesUse: jest.fn()
+  }))
+);
+
 const selectedSpecies = createSelectedSpecies();
 const disabledSpecies = {
   ...selectedSpecies,
