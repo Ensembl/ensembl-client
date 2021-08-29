@@ -79,7 +79,25 @@ const useSavedForm: UseSavedForm = (params) => {
     if (isEmptyForm(stateRef.current)) {
       return;
     }
-    indexedDB.set(STORE_NAME, params.formName, stateRef.current);
+    const formWithoutHugeFiles = withoutHugeFiles(stateRef.current);
+    indexedDB.set(STORE_NAME, params.formName, formWithoutHugeFiles);
+  };
+
+  const withoutHugeFiles = (state: Form) => {
+    // the user isn't allowed to submit files larger than 10MB anyway;
+    // so there is no point is saving such files to IndexedDB
+    const fileSizeLimit = 10e6;
+    const clonedState = { ...state };
+    for (const [fieldName, fieldValue] of Object.entries(clonedState)) {
+      if (fieldValue instanceof File && fieldValue.size > fileSizeLimit) {
+        clonedState[fieldName] = null;
+      } else if (Array.isArray(fieldValue)) {
+        clonedState[fieldName] = fieldValue.filter(
+          (file) => file.size <= fileSizeLimit
+        );
+      }
+    }
+    return clonedState;
   };
 
   const clearSavedForm = () => {
