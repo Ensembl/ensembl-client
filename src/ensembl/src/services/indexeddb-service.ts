@@ -22,7 +22,9 @@ const DB_VERSION = 1;
 const getDbPromise = () => {
   return openDB(DB_NAME, DB_VERSION, {
     upgrade(db) {
-      db.createObjectStore('contact-forms');
+      if (!db.objectStoreNames.contains('contact-forms')) {
+        db.createObjectStore('contact-forms');
+      }
     }
   });
 };
