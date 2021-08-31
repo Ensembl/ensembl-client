@@ -344,7 +344,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   );
 };
 
-const ensureGeneViewExists = (view: string) =>
+const isViewParameterValid = (view: string) =>
   Object.values(View).some((value) => value === view);
 
 const useGeneViewRouting = () => {
@@ -363,18 +363,8 @@ const useGeneViewRouting = () => {
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
-    if (view && viewInRedux !== view) {
-      if (ensureGeneViewExists(view)) {
-        dispatch(updateView(view as View));
-      } else {
-        const url = urlFor.entityViewer({
-          genomeId,
-          entityId,
-          view: View.TRANSCRIPTS,
-          proteinId
-        });
-        dispatch(replace(url));
-      }
+    if (view && isViewParameterValid(view) && viewInRedux !== view) {
+      dispatch(updateView(view as View));
     } else {
       const url = urlFor.entityViewer({
         genomeId,
