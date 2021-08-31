@@ -209,10 +209,4 @@ const WasmLoadingBrowserContainer = () => {
   return <ReduxConnectedBrowser />;
 };
 
-const ErrorWrappedBrowser = () => {
-  // if an error happens during loading of the browser,
-  // we will be able to show custom error string
-  return <WasmLoadingBrowserContainer />;
-};
-
-export default ErrorWrappedBrowser;
+export default WasmLoadingBrowserContainer;
