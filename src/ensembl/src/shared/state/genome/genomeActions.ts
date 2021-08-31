@@ -104,8 +104,7 @@ export const fetchGenomeTrackCategories: ActionCreator<
     const url = `/api/tracks/track_categories/${genomeId}`;
     const response = await apiService.fetch(url);
 
-    updatedGenomeTrackCategories[genomeId] =
-      response.track_categories.reverse();
+    updatedGenomeTrackCategories[genomeId] = response.track_categories;
     dispatch(
       fetchGenomeTrackCategoriesAsyncActions.success(
         updatedGenomeTrackCategories
