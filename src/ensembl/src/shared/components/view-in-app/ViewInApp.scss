@@ -1,8 +1,8 @@
 @import 'src/styles/common';
 
-.viewInLabel {
+.label {
   color: $grey;
-  width: 50px;
+  white-space: nowrap;
   font-size: 12px;
 }
 .viewInAppLinkButtons {

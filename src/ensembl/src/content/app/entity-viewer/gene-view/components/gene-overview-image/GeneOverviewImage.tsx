@@ -18,7 +18,10 @@ import React from 'react';
 import { scaleLinear } from 'd3';
 import { Pick3 } from 'ts-multipick';
 
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import {
+  getFeatureCoordinates,
+  getFeatureLength
+} from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 
@@ -35,11 +38,11 @@ import styles from './GeneOverviewImage.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
 type Gene = Pick<FullGene, 'stable_id'> &
-  Pick3<FullGene, 'slice', 'location', 'start' | 'end'> &
+  Pick3<FullGene, 'slice', 'location', 'start' | 'end' | 'length'> &
   Pick3<FullGene, 'slice', 'strand', 'code'> & {
     transcripts: Array<
       UnsplicedTranscriptProps['transcript'] &
-        Pick3<FullTranscript, 'slice', 'location', 'start' | 'end'>
+        Pick3<FullTranscript, 'slice', 'location', 'start' | 'end' | 'length'>
     >;
   };
 
@@ -51,8 +54,7 @@ export type GeneOverviewImageProps = {
 const gene_image_width = Number(settings.gene_image_width);
 
 const GeneOverviewImage = (props: GeneOverviewImageProps) => {
-  const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene); // FIXME: use gene length further on
-  const length = geneEnd - geneStart;
+  const length = getFeatureLength(props.gene);
 
   return (
     <div className={styles.container}>
@@ -84,12 +86,10 @@ export const GeneImage = (props: GeneOverviewImageProps) => {
 
   const renderedTranscripts = props.gene.transcripts.map(
     (transcript, index) => {
-      const {
-        start: transcriptStart,
-        end: transcriptEnd
-      } = getFeatureCoordinates(transcript);
-      const startX = scale(transcriptStart) as number;
-      const endX = scale(transcriptEnd) as number;
+      const { start: transcriptStart, end: transcriptEnd } =
+        getFeatureCoordinates(transcript);
+      const startX = scale(transcriptStart);
+      const endX = scale(transcriptEnd);
       const y = 10;
       const width = Math.floor(endX - startX);
       return (
@@ -126,7 +126,6 @@ const DirectionIndicator = () => {
   );
 };
 
-// FIXME translating response into display name (forward strand, reverse strand) should be a shared function
 const StrandIndicator = (props: GeneOverviewImageProps) => {
   const {
     gene: {

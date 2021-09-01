@@ -18,7 +18,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Pick2, Pick3 } from 'ts-multipick';
 
-import { getFeatureCoordinates } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
@@ -59,7 +59,7 @@ type Transcript = DefaultTranscriptListItemProps['transcript'] & {
 type Gene = DefaultTranscriptListItemProps['gene'] & {
   stable_id: FullGene['stable_id'];
   transcripts: Array<Transcript>;
-  slice: Pick2<Slice, 'location', 'start' | 'end'>;
+  slice: Pick2<Slice, 'location', 'length'>;
 };
 
 export type Props = {
@@ -134,8 +134,7 @@ const DefaultTranscriptslist = (props: Props) => {
 
 const StripedBackground = (props: Props) => {
   const { scale, ticks } = props.rulerTicks;
-  const { start: geneStart, end: geneEnd } = getFeatureCoordinates(props.gene);
-  const geneLength = geneEnd - geneStart; // FIXME should use gene length property
+  const geneLength = getFeatureLength(props.gene);
   const extendedTicks = [1, ...ticks, geneLength];
 
   const stripes = extendedTicks.map((tick) => {
