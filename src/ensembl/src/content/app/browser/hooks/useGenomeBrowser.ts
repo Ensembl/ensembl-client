@@ -120,7 +120,8 @@ const useGenomeBrowser = () => {
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
-        focus: objectId
+        focus: objectId,
+        genomeId
       }
     };
 
