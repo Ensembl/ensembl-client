@@ -13,10 +13,8 @@ $rightCornerWidth: 40px;
   .speciesSearchField {
     width: 100%;
     background: $white;
-    border: none;
     height: 36px;
     padding-left: 22px;
-    padding-right: 12px;
   
     input {
       &::placeholder {
