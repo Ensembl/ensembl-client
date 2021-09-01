@@ -39,7 +39,7 @@ jest.mock(
     deleteSpeciesAndSave: jest.fn(() => ({ type: 'deleteSpeciesAndSave' }))
   })
 );
-jest.mock('src/shared/hooks/useAnalyticsService', () =>
+jest.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
   jest.fn(() => ({
     trackDeletedSpecies: jest.fn()
   }))

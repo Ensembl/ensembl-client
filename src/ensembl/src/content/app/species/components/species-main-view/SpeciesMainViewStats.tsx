@@ -18,7 +18,7 @@ import React, { useEffect, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
-import useAnalyticsService from 'ensemblRoot/src/shared/hooks/useAnalyticsService';
+import useSpeciesAnalytics from '../../hooks/useSpeciesAnalytics';
 
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
@@ -182,7 +182,7 @@ const SpeciesMainViewStats = (props: Props) => {
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
   const { trackSpeciesPageExampleLink, trackSpeciesStatsSectionOpen } =
-    useAnalyticsService();
+    useSpeciesAnalytics();
 
   const expandedSections = props.genomeUIState
     ? props.genomeUIState.expandedSections

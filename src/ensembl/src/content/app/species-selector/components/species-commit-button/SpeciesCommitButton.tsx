@@ -17,7 +17,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import useAnalyticsService from 'ensemblRoot/src/shared/hooks/useAnalyticsService';
+import useSpeciesSelectorAnalytics from 'ensemblRoot/src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import {
   hasCurrentSpecies,
@@ -41,7 +41,7 @@ type Props = {
 };
 
 export const SpeciesCommitButton = (props: Props) => {
-  const { trackCommitedSpecies } = useAnalyticsService();
+  const { trackCommitedSpecies } = useSpeciesSelectorAnalytics();
 
   const handleClick = () => {
     props.onCommit();

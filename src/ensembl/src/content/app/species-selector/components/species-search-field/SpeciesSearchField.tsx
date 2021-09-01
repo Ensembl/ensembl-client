@@ -17,7 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import useAnalyticsService from 'src/shared/hooks/useAnalyticsService';
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import {
   updateSearch,
@@ -80,7 +80,7 @@ export const SpeciesSearchField = (props: Props) => {
     return () => clear();
   }, []);
 
-  const { trackAutocompleteSpeciesSelect } = useAnalyticsService();
+  const { trackAutocompleteSpeciesSelect } = useSpeciesSelectorAnalytics();
 
   const onMatchSelected = (match: SearchMatch) => {
     props.onMatchSelected(match);

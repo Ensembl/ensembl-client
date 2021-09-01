@@ -17,7 +17,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import useAnalyticsService from 'src/shared/hooks/useAnalyticsService';
+import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalytics';
 
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -43,7 +43,7 @@ const SpeciesUsageToggle = () => {
   );
   const dispatch = useDispatch();
 
-  const { trackSpeciesUse } = useAnalyticsService();
+  const { trackSpeciesUse } = useSpeciesAnalytics();
 
   if (!genomeId || !species) {
     return null;

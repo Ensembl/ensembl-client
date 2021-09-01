@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import find from 'lodash/find';
 import { push } from 'connected-react-router';
 
-import useAnalyticsService from 'src/shared/hooks/useAnalyticsService';
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 import useHover from 'src/shared/hooks/useHover';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -63,7 +63,7 @@ export const PopularSpeciesButton = (props: Props) => {
   const { isSelected, isCommitted, species } = props;
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
-  const { trackPopularSpeciesSelect } = useAnalyticsService();
+  const { trackPopularSpeciesSelect } = useSpeciesSelectorAnalytics();
 
   const handleClick = () => {
     const { is_available } = species;

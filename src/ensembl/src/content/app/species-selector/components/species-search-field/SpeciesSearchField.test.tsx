@@ -28,10 +28,12 @@ import {
   MatchedFieldName
 } from 'src/content/app/species-selector/types/species-search';
 
-jest.mock('src/shared/hooks/useAnalyticsService', () =>
-  jest.fn(() => ({
-    trackAutocompleteSpeciesSelect: jest.fn()
-  }))
+jest.mock(
+  'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
+  () =>
+    jest.fn(() => ({
+      trackAutocompleteSpeciesSelect: jest.fn()
+    }))
 );
 
 const buildSearchMatch = (): SearchMatch => ({

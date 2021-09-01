@@ -20,10 +20,12 @@ import userEvent from '@testing-library/user-event';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
 
-jest.mock('src/shared/hooks/useAnalyticsService', () =>
-  jest.fn(() => ({
-    trackCommitedSpecies: jest.fn()
-  }))
+jest.mock(
+  'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
+  () =>
+    jest.fn(() => ({
+      trackCommitedSpecies: jest.fn()
+    }))
 );
 
 const onCommit = jest.fn();

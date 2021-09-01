@@ -40,7 +40,7 @@ jest.mock('src/shared/components/slide-toggle/SlideToggle', () =>
   jest.fn(() => null)
 );
 
-jest.mock('src/shared/hooks/useAnalyticsService', () =>
+jest.mock('src/content/app/species/hooks/useSpeciesAnalytics', () =>
   jest.fn(() => ({
     trackSpeciesUse: jest.fn()
   }))
