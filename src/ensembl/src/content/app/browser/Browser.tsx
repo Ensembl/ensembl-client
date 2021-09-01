@@ -58,8 +58,6 @@ import TrackPanelTabs from './track-panel/track-panel-tabs/TrackPanelTabs';
 import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
-import ErrorBoundary from 'src/shared/components/error-boundary/ErrorBoundary';
-import { NewTechError } from 'src/shared/components/error-screen';
 import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
 import { RootState } from 'src/store';
@@ -211,14 +209,4 @@ const WasmLoadingBrowserContainer = () => {
   return <ReduxConnectedBrowser />;
 };
 
-const ErrorWrappedBrowser = () => {
-  // if an error happens during loading of the browser,
-  // we will be able to show custom error string
-  return (
-    <ErrorBoundary fallbackComponent={NewTechError}>
-      <WasmLoadingBrowserContainer />
-    </ErrorBoundary>
-  );
-};
-
-export default ErrorWrappedBrowser;
+export default WasmLoadingBrowserContainer;
