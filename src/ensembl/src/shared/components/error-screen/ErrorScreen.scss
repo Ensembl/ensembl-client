@@ -32,7 +32,6 @@
 
 .generalErrorTopMessage {
   font-weight: bold;
-  font-size: 13px;
 }
 
 .generalErrorBody {
@@ -55,13 +54,6 @@
 
 .moreOptions {
   padding: 50px 0 20px 0;
-  a {
-    padding: 0 10px;
-    cursor: pointer;
-  }
-  svg {
-    width: 10px;
-  }
 }
 .resetOption {
   color: $red;
@@ -72,47 +64,49 @@
 .generalErrorImage {
   display: flex;
   font-size: 12px;
-  .vennCircle1 {
+
+  .vennCircle {
+    display: flex;
     width: 195px;
     height: 195px;
-    border-radius: 50%;
-    background-color: rgba(183, 192, 200, 0.24);
-    left: 32px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
-    span {
-      margin-right: 74px;
-      margin-left: 28px;
+    .vennCircleLeft {
+      display: flex;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(183, 192, 200, 0.24);
+      position: relative;
+      left: 32px;
+      text-align: right;
+
+      span {
+        margin-right: 83px;
+        margin-left: 30px;
+      }
+    }
+    .vennCircleRight {
+      display: flex;
+      align-items: center;
+      border-radius: 50%;
+      background-color: rgba(183, 192, 200, 0.24);
+      position: relative;
+      right: 32px;
+      text-align: left;
+      span {
+        margin-right: 15px;
+        margin-left: 30px;
+      }
+    }
+    .infoIcon {
+      padding-left: 19px;
+      svg {
+        fill: $red;
+        width: 24px;
+        height: 24px;
+      }
     }
   }
-  .vennCircle2 {
-    width: 195px;
-    height: 195px;
-    border-radius: 50%;
-    background-color: rgba(183, 192, 200, 0.24);
-    right: 32px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    span {
-      margin-right: 12px;
-      margin-left: 30px;
-    }
-  }
-
-  .infoIcon {
-    padding-left: 19px;
-    svg {
-      fill: $red;
-      width: 24px;
-      height: 24px;
-    }
-  }
+  
 
   img {
     width: 170px;

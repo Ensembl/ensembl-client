@@ -17,7 +17,6 @@
 import storageService from 'ensemblRoot/src/services/storage-service';
 
 import React, { useState } from 'react';
-import { replace } from 'connected-react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -25,22 +24,15 @@ import { Topbar } from 'src/header/Header';
 
 import { ReactComponent as InfoIcon } from 'static/img/shared/icon_alert_circle.svg';
 import { PrimaryButton } from '../button/Button';
-import Chevron from '../chevron/Chevron';
+import ShowHide from '../show-hide/ShowHide';
 
 import styles from './ErrorScreen.scss';
-import { useDispatch } from 'react-redux';
 
 const GeneralErrorScreen = () => {
-  const dispatch = useDispatch();
-
   const [moreOptionExpanded, setMoreOptionExpanded] = useState(false);
 
   const toggleChevron = () => {
     setMoreOptionExpanded(!moreOptionExpanded);
-  };
-
-  const chevronDirection = () => {
-    return moreOptionExpanded ? 'up' : 'down';
   };
 
   const reloadPage = () => {
@@ -49,8 +41,7 @@ const GeneralErrorScreen = () => {
 
   const resetPage = () => {
     storageService.clearAll();
-    dispatch(replace(urlFor.home()));
-    reloadPage();
+    window.location.replace(urlFor.home());
   };
 
   return (
@@ -61,14 +52,18 @@ const GeneralErrorScreen = () => {
           Venn of the current issue
         </p>
         <div className={styles.generalErrorImage}>
-          <div className={styles.vennCircle1}>
-            <span>We've made some changes...</span>
-          </div>
-          <div className={styles.vennCircle2}>
-            <div className={styles.infoIcon}>
-              <InfoIcon />
+          <div className={styles.vennCircle}>
+            <div className={styles.vennCircleLeft}>
+              <span> We've made some changes...</span>
             </div>
-            <span>...now we need you to do something</span>
+          </div>
+          <div className={styles.vennCircle}>
+            <div className={styles.vennCircleRight}>
+              <div className={styles.infoIcon}>
+                <InfoIcon />
+              </div>
+              <span>...now we need you to do something</span>
+            </div>
           </div>
         </div>
         <div className={styles.reloadButton}>
@@ -78,23 +73,20 @@ const GeneralErrorScreen = () => {
         </div>
         <div className={styles.generalErrorBottomMessage}>
           <div className={styles.moreOptions}>
-            <a onClick={toggleChevron}>If the site still fails to load</a>
-            <Chevron
-              direction={chevronDirection()}
-              animate={true}
+            <ShowHide
               onClick={toggleChevron}
-            ></Chevron>
+              isExpanded={moreOptionExpanded}
+              label="If the site still fails to load"
+            />
           </div>
           {moreOptionExpanded && (
             <div className={styles.resetOption}>
               <div>Unfortunately we need to reset everything</div>
               <div>
-                All your species, configuration if views &amp; history will be
+                All your species, configuration of views &amp; history will be
                 lost
               </div>
-              <PrimaryButton isDisabled={false} onClick={resetPage}>
-                Reset the site
-              </PrimaryButton>
+              <PrimaryButton onClick={resetPage}>Reset the site</PrimaryButton>
             </div>
           )}
         </div>
