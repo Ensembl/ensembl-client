@@ -26,7 +26,7 @@ import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/component
 
 export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
   const geneSlice = createSlice();
-  const transcript = createTranscript();
+  const transcripts = fragment.transcripts || [createTranscript()];
 
   const unversionedStableId = faker.datatype.uuid();
   const version = 1;
@@ -40,7 +40,7 @@ export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
     symbol: faker.lorem.word(),
     name: faker.lorem.words(),
     slice: geneSlice,
-    transcripts: [transcript],
+    transcripts: transcripts,
     alternative_symbols: [],
     external_references: [],
     metadata: {

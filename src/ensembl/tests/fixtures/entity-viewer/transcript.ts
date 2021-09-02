@@ -31,6 +31,7 @@ import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGene
 import { ProductType } from 'src/shared/types/thoas/product';
 import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+import { createGene } from './gene';
 
 type ProteinCodingProductGeneratingContext = Omit<
   FullProductGeneratingContext,
@@ -38,7 +39,7 @@ type ProteinCodingProductGeneratingContext = Omit<
 > & { cds: FullCDS };
 
 type ProteinCodingTranscript = Omit<
-  Omit<FullTranscript, 'gene'>,
+  FullTranscript,
   'product_generating_contexts'
 > & {
   product_generating_contexts: ProteinCodingProductGeneratingContext[];
@@ -73,6 +74,7 @@ export const createTranscript = (
       createProductGeneratingContext(transcriptSlice, exons)
     ],
     metadata: createTranscriptMetadata(),
+    gene: createGene({ transcripts: [] }),
     ...fragment
   };
 };
