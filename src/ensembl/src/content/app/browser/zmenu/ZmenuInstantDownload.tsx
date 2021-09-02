@@ -18,16 +18,17 @@ import React from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { Pick2 } from 'ts-multipick';
 
+import { parseFeatureId } from '../browserHelper';
+
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
-import styles from './Zmenu.scss';
 import { FullTranscript } from 'ensemblRoot/src/shared/types/thoas/transcript';
-import { ZmenuContentFeature } from './zmenu-types';
-import { parseFeatureId } from '../browserHelper';
+
+import styles from './Zmenu.scss';
 
 type Props = {
-  features: ZmenuContentFeature[];
+  id: string;
 };
 
 const TRANSCRIPT_QUERY = gql`
@@ -38,14 +39,18 @@ const TRANSCRIPT_QUERY = gql`
           value
         }
       }
+      gene {
+        stable_id
+      }
     }
   }
 `;
 
-type Transcript = Pick2<FullTranscript, 'metadata', 'biotype'>;
+type Transcript = Pick2<FullTranscript, 'metadata', 'biotype'> &
+  Pick2<FullTranscript, 'gene', 'stable_id'>;
 
 const ZmenuInstantDownload = (props: Props) => {
-  const { genomeId, geneId, transcriptId } = getFeatureIds(props.features);
+  const { genomeId, objectId: transcriptId } = parseFeatureId(props.id);
 
   const { data, loading } = useQuery<{
     transcript: Transcript;
@@ -65,7 +70,7 @@ const ZmenuInstantDownload = (props: Props) => {
     );
   }
 
-  if (!data || !geneId || !transcriptId) {
+  if (!data || !transcriptId) {
     return null;
   }
 
@@ -75,7 +80,7 @@ const ZmenuInstantDownload = (props: Props) => {
       biotype: data.transcript.metadata.biotype.value
     },
     gene: {
-      id: geneId
+      id: data.transcript.gene.stable_id
     }
   };
 
@@ -86,28 +91,6 @@ const ZmenuInstantDownload = (props: Props) => {
       layout="vertical"
     />
   );
-};
-
-const getFeatureIds = (content: ZmenuContentFeature[]) => {
-  const featureObject = {
-    genomeId: '',
-    geneId: '',
-    transcriptId: ''
-  };
-  if (content?.length === 2) {
-    content.forEach((feature) => {
-      const { genomeId, type, objectId } = parseFeatureId(feature.id);
-      if (type === 'gene' || type === 'transcript') {
-        featureObject.genomeId = genomeId;
-        if (type === 'gene') {
-          featureObject.geneId = objectId;
-        } else if (type === 'transcript') {
-          featureObject.transcriptId = objectId;
-        }
-      }
-    });
-  }
-  return featureObject;
 };
 
 export default ZmenuInstantDownload;
