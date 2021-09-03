@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import storageService from 'src/services/storage-service';
-
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import storageService from 'src/services/storage-service';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
