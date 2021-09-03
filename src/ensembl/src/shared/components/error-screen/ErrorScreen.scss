@@ -67,47 +67,38 @@
     display: flex;
     width: 195px;
     height: 195px;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    background-color: rgba(183, 192, 200, 0.24);
+    position: relative;
+  }
 
-    .vennCircleLeft {
-      display: flex;
-      align-items: center;
-      border-radius: 50%;
-      background-color: rgba(183, 192, 200, 0.24);
-      position: relative;
-      left: 32px;
-      text-align: right;
+  .vennCircleLeft {
+    left: 32px;
+    text-align: right;
 
-      span {
-        margin-right: 83px;
-        margin-left: 30px;
-      }
+    span {
+      margin-right: 83px;
+      margin-left: 30px;
     }
-    .vennCircleRight {
-      display: flex;
-      align-items: center;
-      border-radius: 50%;
-      background-color: rgba(183, 192, 200, 0.24);
-      position: relative;
-      right: 32px;
-      text-align: left;
-      span {
-        margin-right: 15px;
-        margin-left: 30px;
-      }
-    }
-    .infoIcon {
-      padding-left: 19px;
-      svg {
-        fill: $red;
-        width: 24px;
-        height: 24px;
-      }
+  }
+
+  .vennCircleRight {
+    right: 32px;
+    text-align: left;
+    span {
+      margin-right: 15px;
+      margin-left: 30px;
     }
   }
   
-
-  img {
-    width: 170px;
-    height: 170px;
+  .infoIcon {
+    padding-left: 19px;
+    svg {
+      fill: $red;
+      width: 24px;
+      height: 24px;
+    }
   }
 }

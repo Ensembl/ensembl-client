@@ -27,6 +27,7 @@ import { PrimaryButton } from '../button/Button';
 import ShowHide from '../show-hide/ShowHide';
 
 import styles from './ErrorScreen.scss';
+import classNames from 'classnames';
 
 const GeneralErrorScreen = () => {
   const [moreOptionExpanded, setMoreOptionExpanded] = useState(false);
@@ -52,18 +53,16 @@ const GeneralErrorScreen = () => {
           Venn of the current issue
         </p>
         <div className={styles.generalErrorImage}>
-          <div className={styles.vennCircle}>
-            <div className={styles.vennCircleLeft}>
-              <span> We've made some changes...</span>
-            </div>
+          <div className={classNames(styles.vennCircle, styles.vennCircleLeft)}>
+            <span> We've made some changes...</span>
           </div>
-          <div className={styles.vennCircle}>
-            <div className={styles.vennCircleRight}>
-              <div className={styles.infoIcon}>
-                <InfoIcon />
-              </div>
-              <span>...now we need you to do something</span>
+          <div
+            className={classNames(styles.vennCircle, styles.vennCircleRight)}
+          >
+            <div className={styles.infoIcon}>
+              <InfoIcon />
             </div>
+            <span>...now we need you to do something</span>
           </div>
         </div>
         <div className={styles.reloadButton}>
