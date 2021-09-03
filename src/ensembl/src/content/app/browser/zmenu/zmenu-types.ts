@@ -40,19 +40,50 @@ export enum Markup {
   LIGHT = 'light'
 }
 
+export enum ZmenuFeatureType {
+  GENE = 'gene',
+  TRANSCRIPT = 'transcript'
+}
+
 export type ZmenuContentItem = {
   text: string;
   markup: Markup[];
 };
 
-export type ZmenuContentBlock = ZmenuContentItem[];
+export type ZmenuContentBlock = {
+  type: 'block';
+  items: ZmenuContentItem[];
+};
 
-export type ZmenuContentLine = ZmenuContentBlock[];
+export type ZmenuContentLineBreak = {
+  type: 'line-break';
+};
+
+export type ZmenuContentLine = ZmenuContentBlock | ZmenuContentLineBreak;
+
+export type ZmenuContentTranscriptMetadata = {
+  designation: string;
+  strand: string;
+  transcript_biotype: string;
+  transcript_id: string;
+  track: string;
+  type: ZmenuFeatureType.TRANSCRIPT;
+};
+
+export type ZmenuContentGeneMetadata = {
+  id: string;
+  symbol: string;
+  track: string;
+  type: ZmenuFeatureType.GENE;
+};
+
+export type ZmenuContentMetadata =
+  | ZmenuContentTranscriptMetadata
+  | ZmenuContentGeneMetadata;
 
 export type ZmenuContentFeature = {
-  id: string;
-  track_id: string;
-  lines: ZmenuContentLine[];
+  data: ZmenuContentLine[];
+  metadata: ZmenuContentMetadata;
 };
 
 // data that is sufficient to describe an instance of Zmenu

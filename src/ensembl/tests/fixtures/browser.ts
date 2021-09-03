@@ -17,7 +17,11 @@
 import faker from 'faker';
 
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
-import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
+import {
+  Markup,
+  ZmenuContentFeature,
+  ZmenuFeatureType
+} from 'src/content/app/browser/zmenu/zmenu-types';
 import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
 import {
   getChrLocationStr,
@@ -57,20 +61,52 @@ export const createTrackConfigNames = () => ({
   'track:variant': true
 });
 
-export const createZmenuContent = () => [
+export const createZmenuContent = (): ZmenuContentFeature[] => [
   {
-    id: faker.lorem.words(),
-    lines: [
-      [
-        [
-          { markup: [Markup.LIGHT], text: faker.lorem.words() },
+    data: [
+      {
+        items: [
+          { markup: [Markup.LIGHT], text: 'Transcript' },
           { markup: [], text: ' ' },
-          { markup: [], text: faker.lorem.words() }
+          { markup: [], text: 'transcript_id' }
         ],
-        [{ markup: [Markup.LIGHT, Markup.FOCUS], text: faker.lorem.words() }]
-      ]
+        type: 'block'
+      },
+      {
+        type: 'line-break'
+      },
+      {
+        items: [{ markup: [Markup.LIGHT, Markup.FOCUS], text: 'foo' }],
+        type: 'block'
+      }
     ],
-    track_id: faker.lorem.words()
+    metadata: {
+      transcript_id: 'transcript_id',
+      designation: 'designation',
+      strand: 'forward',
+      transcript_biotype: 'protein_coding',
+      track: 'track',
+      type: ZmenuFeatureType.TRANSCRIPT
+    }
+  },
+
+  {
+    data: [
+      {
+        items: [
+          { markup: [Markup.LIGHT], text: 'Gene' },
+          { markup: [], text: ' ' },
+          { markup: [], text: 'gene_id' }
+        ],
+        type: 'block'
+      }
+    ],
+    metadata: {
+      id: 'gene_id',
+      symbol: 'symbol',
+      track: 'track_id',
+      type: ZmenuFeatureType.GENE
+    }
   }
 ];
 

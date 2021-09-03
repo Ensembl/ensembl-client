@@ -55,18 +55,19 @@ const ZmenuController = (props: Props) => {
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       [
-        IncomingActionType.ZMENU_CREATE,
-        IncomingActionType.ZMENU_DESTROY,
-        IncomingActionType.ZMENU_REPOSITION
+        IncomingActionType.ZMENU_CREATE
+        // IncomingActionType.ZMENU_DESTROY,
+        // IncomingActionType.ZMENU_REPOSITION
       ],
       handleBpaneEvent
     );
 
     return () => subscription?.unsubscribe();
-  }, []);
+  }, [genomeBrowser]);
 
   const handleBpaneEvent = (action: IncomingAction) => {
     const { type, payload } = action;
+
     if (type === IncomingActionType.ZMENU_CREATE) {
       handleZmenuCreate(payload as ZmenuCreatePayload);
     } else if (type === IncomingActionType.ZMENU_DESTROY) {
@@ -83,7 +84,8 @@ const ZmenuController = (props: Props) => {
       content: payload.content
     };
 
-    props.changeHighlightedTrackId(payload.content[0].track_id);
+    payload.content[0].metadata.type === 'transcript' &&
+      props.changeHighlightedTrackId(payload.content[0].metadata.transcript_id);
 
     setZmenus({
       ...zmenus,

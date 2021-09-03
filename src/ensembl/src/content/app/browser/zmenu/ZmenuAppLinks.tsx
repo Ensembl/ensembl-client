@@ -41,7 +41,7 @@ const ZmenuAppLinks = (props: Props) => {
   const activeFeatureId = useSelector(getBrowserActiveEnsObjectId);
   const isInDefaultPosition = useSelector(isFocusObjectPositionDefault);
 
-  const parsedFeatureId = parseFeatureId(props.featureId);
+  const parsedFeatureId = parseFeatureId(`${genomeId}:${props.featureId}`);
 
   if (parsedFeatureId.type !== 'gene') {
     return null;
