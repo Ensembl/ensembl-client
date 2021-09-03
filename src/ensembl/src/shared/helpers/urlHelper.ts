@@ -16,6 +16,7 @@
 
 import queryString from 'query-string';
 
+export const home = () => '/';
 export const speciesSelector = () => '/species-selector';
 export const customDownload = () => '/custom-download';
 

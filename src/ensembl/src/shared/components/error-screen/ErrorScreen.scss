@@ -1,11 +1,5 @@
 @import 'src/styles/common';
 
-$generalErrorImageWidth: 170px;
-$generalErrorImageGap: 60px;
-$generalErrorImagesTotalWidth: calc(
-  3 * #{$generalErrorImageWidth} + 2 * #{$generalErrorImageGap}
-);
-
 .newTechErrorWrapper {
   padding-top: 10vh;
   display: flex;
@@ -36,36 +30,74 @@ $generalErrorImagesTotalWidth: calc(
   flex: 0 0 auto;
 }
 
-.generalErrorBody {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+.generalErrorTopMessage {
+  font-weight: bold;
 }
 
-.generalErrorImages {
-  img {
-    width: 170px;
-    height: 170px;
+.generalErrorBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 100px;
+}
+
+.generalErrorBottomMessage {
+  font-size: 12px;
+}
+
+.reloadButton {
+  padding-top: 40px;
+}
+
+.moreOptions {
+  padding: 50px 0 20px 0;
+}
+.resetOption {
+  color: $red;
+  button {
+    margin-top: 24px;
+  }
+}
+.generalErrorImage {
+  display: flex;
+  font-size: 12px;
+
+  .vennCircle {
+    display: flex;
+    width: 195px;
+    height: 195px;
+    align-items: center;
+    border-radius: 50%;
+    background-color: rgba(183, 192, 200, 0.24);
+    position: relative;
   }
 
-  @media screen and (min-width: $generalErrorImagesTotalWidth) {
-    margin-top: 10vh;
-    margin-bottom: calc(#{$generalErrorImageGap} / 2);
+  .vennCircleLeft {
+    left: 32px;
+    text-align: right;
 
-    img:not(:last-child) {
-      margin-right: $generalErrorImageGap;
+    span {
+      margin-right: 83px;
+      margin-left: 30px;
     }
   }
 
-  @media screen and (max-width: $generalErrorImagesTotalWidth) {
-    display: inline-flex;
-    flex-direction: column;
-
-    img:not(:last-child) {
-      margin-bottom: calc(#{$generalErrorImageGap} / 2);
+  .vennCircleRight {
+    right: 32px;
+    text-align: left;
+    span {
+      margin-right: 15px;
+      margin-left: 30px;
+    }
+  }
+  
+  .infoIcon {
+    padding-left: 19px;
+    svg {
+      fill: $red;
+      width: 24px;
+      height: 24px;
     }
   }
 }
