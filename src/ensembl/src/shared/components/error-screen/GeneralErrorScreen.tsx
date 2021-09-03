@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import storageService from 'ensemblRoot/src/services/storage-service';
+import storageService from 'src/services/storage-service';
 
 import React, { useState } from 'react';
 import classNames from 'classnames';
