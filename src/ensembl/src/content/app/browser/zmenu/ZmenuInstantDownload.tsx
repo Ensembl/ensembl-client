@@ -23,7 +23,7 @@ import { parseFeatureId } from '../browserHelper';
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader/Loader';
 
-import { FullTranscript } from 'ensemblRoot/src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
 import styles from './Zmenu.scss';
 
@@ -58,8 +58,7 @@ const ZmenuInstantDownload = (props: Props) => {
     variables: {
       genomeId,
       transcriptId
-    },
-    skip: !transcriptId
+    }
   });
 
   if (loading) {
@@ -70,7 +69,7 @@ const ZmenuInstantDownload = (props: Props) => {
     );
   }
 
-  if (!data || !transcriptId) {
+  if (!data) {
     return null;
   }
 
