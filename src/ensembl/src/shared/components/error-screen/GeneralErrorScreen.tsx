@@ -17,6 +17,7 @@
 import storageService from 'ensemblRoot/src/services/storage-service';
 
 import React, { useState } from 'react';
+import classNames from 'classnames';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -27,7 +28,6 @@ import { PrimaryButton } from '../button/Button';
 import ShowHide from '../show-hide/ShowHide';
 
 import styles from './ErrorScreen.scss';
-import classNames from 'classnames';
 
 const GeneralErrorScreen = () => {
   const [moreOptionExpanded, setMoreOptionExpanded] = useState(false);
