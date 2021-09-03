@@ -19,12 +19,18 @@ import times from 'lodash/times';
 import { scaleLinear } from 'd3';
 
 import { createSlice } from './slice';
-import { createTranscript } from './transcript';
+import { createTranscript, ProteinCodingTranscript } from './transcript';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 
-export const createGene = (fragment: Partial<FullGene> = {}): FullGene => {
+type GeneFixture = Omit<FullGene, 'transcripts'> & {
+  transcripts: ProteinCodingTranscript[];
+};
+
+export const createGene = (
+  fragment: Partial<GeneFixture> = {}
+): GeneFixture => {
   const geneSlice = createSlice();
   const transcripts = fragment.transcripts || [createTranscript()];
 
