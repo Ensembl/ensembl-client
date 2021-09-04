@@ -32,6 +32,7 @@ import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSele
 import { getEnsObjectLoadingStatus } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 import { EnsObject, EnsObjectGene } from './ensObjectTypes';
+import type { TrackPanelGene } from 'src/content/app/browser/state/types/track-panel-gene';
 import { RootState } from 'src/store';
 
 export const fetchEnsObjectAsyncActions = createAsyncAction(
@@ -85,7 +86,7 @@ export const fetchEnsObject =
       const geneEnsObject = buildGeneObject({
         objectId: buildEnsObjectId(payload),
         genomeId,
-        gene: result.data?.gene
+        gene: result.data?.gene as TrackPanelGene
       });
 
       dispatch(
@@ -110,8 +111,14 @@ export const fetchExampleEnsObjects =
     });
   };
 
+type BuildGeneObjectParams = {
+  genomeId: string;
+  objectId: string;
+  gene: TrackPanelGene;
+};
+
 // FIXME: many fields here are unnecessary for an ensObject
-const buildGeneObject = (params: any): EnsObjectGene => {
+const buildGeneObject = (params: BuildGeneObjectParams): EnsObjectGene => {
   const {
     slice: {
       location: { start, end },
@@ -124,7 +131,7 @@ const buildGeneObject = (params: any): EnsObjectGene => {
     type: 'gene',
     object_id: params.objectId,
     genome_id: params.genomeId,
-    label: params.gene.symbol,
+    label: params.gene.symbol || params.gene.stable_id,
     location: {
       chromosome,
       start,
@@ -132,7 +139,7 @@ const buildGeneObject = (params: any): EnsObjectGene => {
     },
     stable_id: params.gene.unversioned_stable_id,
     versioned_stable_id: params.gene.stable_id,
-    bio_type: '',
+    bio_type: params.gene.metadata.biotype.label,
     strand
   };
 };
