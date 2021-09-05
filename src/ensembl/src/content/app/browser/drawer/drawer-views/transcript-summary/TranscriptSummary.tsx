@@ -232,22 +232,31 @@ const TranscriptSummary = () => {
         <div className={styles.label}>Transcript</div>
         <div className={styles.value}>
           <div className={styles.featureDetails}>
-            <span className={styles.featureSymbol}>{stableId}</span>
-            <span className={styles.label}>
-              <TranscriptQualityLabel metadata={metadata} />
-            </span>
+            <div className={styles.featureDetail}>
+              <span className={styles.featureSymbol}>{stableId}</span>
+              <div className={styles.transcriptQuality}>
+                <TranscriptQualityLabel metadata={metadata} />
+              </div>
+            </div>
+
             {metadata.biotype && (
-              <>
+              <div className={styles.featureDetail}>
                 <span>{metadata.biotype.label}</span>
                 <div className={styles.questionButton}>
                   <QuestionButton helpText={metadata.biotype.definition} />
                 </div>
-              </>
+              </div>
             )}
             {transcript.slice.strand.code && (
-              <span>{getStrandDisplayName(transcript.slice.strand.code)}</span>
+              <div className={styles.featureDetail}>
+                <span>
+                  {getStrandDisplayName(transcript.slice.strand.code)}
+                </span>
+              </div>
             )}
-            <span>{getFormattedLocation(ensObjectGene.location)}</span>
+            <div className={styles.featureDetail}>
+              <span>{getFormattedLocation(ensObjectGene.location)}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -330,6 +339,7 @@ const TranscriptSummary = () => {
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"
+                layout="vertical"
               />
               <CloseButton
                 className={styles.closeButton}
