@@ -28,9 +28,9 @@ import {
   ZmenuContentItemProps
 } from './ZmenuContent';
 
-import { createZmenuContent } from 'tests/fixtures/browser';
+import { Markup } from 'ensembl-genome-browser';
 
-import { Markup, ZmenuContentBlock } from './zmenu-types';
+import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
@@ -65,45 +65,62 @@ describe('<ZmenuContent />', () => {
   describe('rendering', () => {
     it('renders the correct zmenu content information', () => {
       const { container } = renderZmenuContent();
-      const zmenuContentLines = defaultProps.content[0].data;
+      const zmenuContent = defaultProps.content;
+
+      const renderedContentFeatures = container.querySelectorAll(
+        '.zmenuContentFeature'
+      );
+
+      expect(renderedContentFeatures.length).toBe(zmenuContent.length);
 
       const renderedContentBlocks =
         container.querySelectorAll('.zmenuContentBlock');
 
-      const totalBlocks = zmenuContentLines
-        .filter((line) => line.type === 'block')
-        .reduce(
-          (total, lines) => total + (lines as ZmenuContentBlock).items.length,
-          0
-        );
-      // check that the number of lines of text is correct
-      expect(renderedContentBlocks.length).toBe(totalBlocks);
+      const expectedData: { blockText: string[]; totalBlocks: number } = {
+        blockText: [],
+        totalBlocks: 0
+      };
 
-      // check that the text from each block of text has been rendered
-      zmenuContentLines.forEach((line, index) => {
-        const blockText =
-          line.type === 'block'
-            ? line.items.reduce((acc, { text }) => acc + text, '')
-            : '';
-        expect(renderedContentBlocks[index].textContent).toBe(blockText);
+      defaultProps.content.forEach((feature) => {
+        expectedData.totalBlocks += feature.data.filter(
+          (line) => line.type === 'block'
+        ).length;
       });
 
-      zmenuContentLines.forEach((line, blockIndex) => {
-        line.type === 'block' &&
-          line.items.forEach((item, index) => {
-            const renderedElement =
-              renderedContentBlocks[blockIndex].querySelectorAll('span')[index];
-            if (item.markup.includes(Markup.LIGHT)) {
-              expect(
-                renderedElement.classList.contains('markupLight')
-              ).toBeTruthy();
-            }
-            if (item.markup.includes(Markup.STRONG)) {
-              expect(
-                renderedElement.classList.contains('markupStrong')
-              ).toBeTruthy();
-            }
-          });
+      // check that the number of blocks of text is correct
+      expect(renderedContentBlocks.length).toBe(expectedData.totalBlocks);
+
+      zmenuContent.forEach((feature) => {
+        feature.data.forEach((block) => {
+          if (block.type === 'block') {
+            const blockText = block.items.reduce(
+              (acc, { text }) => acc + text,
+              ''
+            );
+
+            const blockIndex = expectedData.blockText.push(blockText) - 1;
+            expect(renderedContentBlocks[blockIndex].textContent).toBe(
+              blockText
+            );
+
+            block.items.forEach((item, index) => {
+              const renderedElement =
+                renderedContentBlocks[blockIndex].querySelectorAll('span')[
+                  index
+                ];
+              if (item.markup.includes(Markup.LIGHT)) {
+                expect(
+                  renderedElement.classList.contains('markupLight')
+                ).toBeTruthy();
+              }
+              if (item.markup.includes(Markup.STRONG)) {
+                expect(
+                  renderedElement.classList.contains('markupStrong')
+                ).toBeTruthy();
+              }
+            });
+          }
+        });
       });
     });
   });

@@ -22,12 +22,12 @@ import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import ZmenuAppLinks from './ZmenuAppLinks';
 
 import {
+  ZmenuContentGeneMetadata,
   ZmenuContentFeature as ZmenuContentFeatureType,
-  ZmenuContentLine as ZmenuContentLineType,
   ZmenuContentItem as ZmenuContentItemType,
-  Markup,
-  ZmenuContentGeneMetadata
-} from './zmenu-types';
+  ZmenuContentBlock as ZmenuContentBlockType,
+  Markup
+} from 'ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
@@ -39,15 +39,21 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
   const { content } = props;
 
   const { id } = content[1].metadata as ZmenuContentGeneMetadata;
-  const featureId = `gene:${id}`;
+  const unversionedId = id.split('.')[0];
+  const featureId = `gene:${unversionedId}`;
 
-  const renderedContent = content.map((feature: any, index) => (
-    <div key={index}>
-      <ZmenuContentFeature id={featureId} feature={feature} />
+  const renderedContent = (
+    <>
+      {content.map((feature: any, index) => (
+        <p key={index} className={styles.zmenuContentFeature}>
+          <ZmenuContentFeature id={featureId} feature={feature} />
+        </p>
+      ))}
       <ZmenuAppLinks featureId={featureId} />
-    </div>
-  ));
-  return <>{renderedContent}</>;
+    </>
+  );
+
+  return renderedContent;
 };
 
 type ZmenuContentFeatureProps = {
@@ -55,32 +61,35 @@ type ZmenuContentFeatureProps = {
   feature: ZmenuContentFeatureType;
 };
 export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
-  return (
-    <p className={styles.zmenuContentFeature}>
-      {props.feature.data.map((line, index) => (
-        <ZmenuContentLine key={index} id={props.id} line={line} />
-      ))}
-    </p>
-  );
-};
+  let lineIndex = 0;
 
-type ZmenuContentLineProps = {
-  line: ZmenuContentLineType;
-  id: string;
-};
-export const ZmenuContentLine = (props: ZmenuContentLineProps) => {
-  if (props.line.type === 'line-break') {
-    return (
-      <span className={styles.zmenuContentBlock}>
-        <br />
-      </span>
-    );
-  }
+  const linesAndBlocks: [ZmenuContentBlockType[]] = [[]];
+
+  props.feature.data.map((block) => {
+    if (block.type === 'line-break') {
+      lineIndex++;
+    } else {
+      if (!linesAndBlocks[lineIndex]) {
+        linesAndBlocks[lineIndex] = [];
+      }
+      linesAndBlocks[lineIndex].push(block);
+    }
+  });
 
   return (
-    <span className={styles.zmenuContentLine}>
-      <ZmenuContentBlock id={props.id} items={props.line.items} />
-    </span>
+    <>
+      {linesAndBlocks.map((blocks, index) => {
+        return (
+          <span className={styles.zmenuContentLine} key={index}>
+            {blocks.map((block, blockIndex) => (
+              <span key={blockIndex} className={styles.zmenuContentBlock}>
+                <ZmenuContentBlock items={block.items} id={props.id} />
+              </span>
+            ))}
+          </span>
+        );
+      })}
+    </>
   );
 };
 
@@ -91,11 +100,11 @@ type ZmenuContentBlockProps = {
 
 export const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
-    <span className={styles.zmenuContentBlock}>
+    <>
       {props.items.map((item, index) => (
         <ZmenuContentItem key={index} id={props.id} {...item} />
       ))}
-    </span>
+    </>
   );
 };
 

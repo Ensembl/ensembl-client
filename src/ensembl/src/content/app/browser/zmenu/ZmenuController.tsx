@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
-import pickBy from 'lodash/pickBy';
 
-import { OutgoingAction, IncomingAction } from 'ensembl-genome-browser';
-
-import { OutgoingActionType, IncomingActionType } from 'ensembl-genome-browser';
+import {
+  OutgoingAction,
+  IncomingAction,
+  OutgoingActionType,
+  IncomingActionType,
+  ZmenuPayload
+} from 'ensembl-genome-browser';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 import Zmenu from './Zmenu';
 
 import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
-
-import {
-  ZmenuData,
-  ZmenuCreatePayload,
-  ZmenuDestroyPayload,
-  ZmenuRepositionPayload
-} from './zmenu-types';
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
@@ -43,69 +39,33 @@ type Props = {
 // when a zmenu is created, it’s assigned an id,
 // and its data is saved in the state keyed by this id
 // (just in case we need to show more than one zmenu at a time)
-type StateZmenu = {
-  [key: string]: ZmenuData;
+export type StateZmenu = {
+  [key: string]: ZmenuPayload;
 };
 
 const ZmenuController = (props: Props) => {
-  const [zmenus, setZmenus] = useState<StateZmenu>({});
-
-  const { genomeBrowser } = useContext(GenomeBrowserContext);
+  const { genomeBrowser, zmenus, setZmenus } = useContext(GenomeBrowserContext);
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [
-        IncomingActionType.ZMENU_CREATE
-        // IncomingActionType.ZMENU_DESTROY,
-        // IncomingActionType.ZMENU_REPOSITION
-      ],
-      handleBpaneEvent
+      [IncomingActionType.ZMENU_CREATE],
+      handleZmenuCreate
     );
 
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
-  const handleBpaneEvent = (action: IncomingAction) => {
-    const { type, payload } = action;
-
-    if (type === IncomingActionType.ZMENU_CREATE) {
-      handleZmenuCreate(payload as ZmenuCreatePayload);
-    } else if (type === IncomingActionType.ZMENU_DESTROY) {
-      handleZmenuDestroy(payload as ZmenuDestroyPayload);
-    } else if (type === IncomingActionType.ZMENU_REPOSITION) {
-      handleZmenuReposition(payload as ZmenuRepositionPayload);
-    }
-  };
-
-  const handleZmenuCreate = (payload: ZmenuCreatePayload) => {
-    const newZmenu = {
-      id: payload.id,
-      anchor_coordinates: payload.anchor_coordinates,
-      content: payload.content
-    };
+  const handleZmenuCreate = (action: IncomingAction) => {
+    const payload = action.payload as ZmenuPayload;
 
     payload.content[0].metadata.type === 'transcript' &&
       props.changeHighlightedTrackId(payload.content[0].metadata.transcript_id);
 
-    setZmenus({
-      ...zmenus,
-      [payload.id]: newZmenu
-    });
-  };
-
-  const handleZmenuDestroy = (payload: ZmenuDestroyPayload) => {
-    props.changeHighlightedTrackId('');
-    setZmenus(pickBy(zmenus, (value, key) => key !== payload.id));
-  };
-
-  const handleZmenuReposition = (payload: ZmenuRepositionPayload) => {
-    setZmenus({
-      ...zmenus,
-      [payload.id]: {
-        ...zmenus[payload.id],
-        anchor_coordinates: payload.anchor_coordinates
-      }
-    });
+    setZmenus &&
+      setZmenus({
+        ...zmenus,
+        [payload.id]: payload
+      });
   };
 
   const handleZmenuEnter = (id: string) => {
@@ -126,6 +86,9 @@ const ZmenuController = (props: Props) => {
     genomeBrowser?.send(action);
   };
 
+  if (!zmenus) {
+    return null;
+  }
   const zmenuElements = Object.keys(zmenus).map((id) => (
     <Zmenu
       key={id}

@@ -17,8 +17,7 @@ import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
 
-import {
-  EnsemblGenomeBrowser,
+import EnsemblGenomeBrowser, {
   OutgoingAction,
   OutgoingActionType
 } from 'ensembl-genome-browser';
@@ -44,7 +43,8 @@ const useGenomeBrowser = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
 
-  const { genomeBrowser, setGenomeBrowser } = useContext(GenomeBrowserContext);
+  const { genomeBrowser, setGenomeBrowser, setZmenus, zmenus } =
+    useContext(GenomeBrowserContext);
 
   const restoreBrowserTrackStates = () => {
     if (!activeGenomeId || !activeEnsObjectId || !genomeBrowser) {
@@ -165,7 +165,9 @@ const useGenomeBrowser = () => {
     restoreBrowserTrackStates,
     changeFocusObject,
     changeBrowserLocation,
-    genomeBrowser
+    genomeBrowser,
+    zmenus,
+    setZmenus
   };
 };
 

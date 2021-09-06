@@ -15,12 +15,13 @@
  */
 
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { pickBy } from 'lodash';
 
-import { OutgoingAction } from 'ensembl-genome-browser';
-
-import { OutgoingActionType } from 'ensembl-genome-browser';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
+
+import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
   Toolbox,
@@ -30,7 +31,7 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuData } from './zmenu-types';
+import { ZmenuPayload } from 'ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
@@ -39,7 +40,7 @@ enum Direction {
   RIGHT = 'right'
 }
 
-export type ZmenuProps = ZmenuData & {
+export type ZmenuProps = ZmenuPayload & {
   browserRef: React.RefObject<HTMLDivElement>;
   onEnter: (id: string) => void;
   onLeave: (id: string) => void;
@@ -47,14 +48,12 @@ export type ZmenuProps = ZmenuData & {
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
-  const { genomeBrowser } = useGenomeBrowser();
+  const { zmenus, setZmenus } = useGenomeBrowser();
+  const dispatch = useDispatch();
 
   const onOutsideClick = () => {
-    const action: OutgoingAction = {
-      payload: { id: props.id },
-      type: OutgoingActionType.ZMENU_ACTIVITY_OUTSIDE
-    };
-    genomeBrowser?.send(action);
+    dispatch(changeHighlightedTrackId(''));
+    setZmenus && setZmenus(pickBy(zmenus, (value, key) => key !== props.id));
   };
 
   const direction = chooseDirection(props);
@@ -74,7 +73,7 @@ const Zmenu = (props: ZmenuProps) => {
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={getToolboxFooterContent(props.id)}
+            footerContent={getToolboxFooterContent(props.unversioned_id)}
           />
         </Toolbox>
       )}

@@ -23,7 +23,7 @@ import Zmenu, { ZmenuProps } from './Zmenu';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { createZmenuContent } from 'tests/fixtures/browser';
-import { ZmenuContentFeature } from 'src/content/app/browser/zmenu/zmenu-types';
+import { ZmenuContentFeature } from 'ensembl-genome-browser';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
@@ -50,6 +50,7 @@ describe('<Zmenu />', () => {
     },
     content: createZmenuContent() as ZmenuContentFeature[],
     id: faker.lorem.words(),
+    unversioned_id: faker.lorem.words(),
     onEnter: jest.fn(),
     onLeave: jest.fn()
   };

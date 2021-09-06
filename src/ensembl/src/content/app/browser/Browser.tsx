@@ -19,7 +19,7 @@ import { ApolloProvider } from '@apollo/client';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { EnsemblGenomeBrowser } from 'ensembl-genome-browser';
+import EnsemblGenomeBrowser from 'ensembl-genome-browser';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
@@ -65,6 +65,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+import { StateZmenu } from 'ensemblRoot/src/content/app/browser/zmenu/ZmenuController';
 
 import styles from './Browser.scss';
 
@@ -203,14 +204,20 @@ const ReduxConnectedBrowser = connect(
 export const GenomeBrowserContext = React.createContext<{
   genomeBrowser?: EnsemblGenomeBrowser | null;
   setGenomeBrowser?: (genomeBrowser: EnsemblGenomeBrowser) => void;
+  zmenus?: StateZmenu;
+  setZmenus?: (zmenus: StateZmenu) => void;
 }>({});
 
 const GenomeBrowserInitContainer = () => {
   const [genomeBrowser, setGenomeBrowser] =
     useState<EnsemblGenomeBrowser | null>(null);
 
+  const [zmenus, setZmenus] = useState<StateZmenu>({});
+
   return (
-    <GenomeBrowserContext.Provider value={{ genomeBrowser, setGenomeBrowser }}>
+    <GenomeBrowserContext.Provider
+      value={{ genomeBrowser, setGenomeBrowser, zmenus, setZmenus }}
+    >
       <ReduxConnectedBrowser /> ;
     </GenomeBrowserContext.Provider>
   );

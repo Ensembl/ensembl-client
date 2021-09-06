@@ -21,7 +21,7 @@ import {
   Markup,
   ZmenuContentFeature,
   ZmenuFeatureType
-} from 'src/content/app/browser/zmenu/zmenu-types';
+} from 'ensembl-genome-browser';
 import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
 import {
   getChrLocationStr,
