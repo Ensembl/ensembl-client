@@ -44,10 +44,9 @@ import {
   updateBrowserActiveEnsObjectIdsAndSave,
   updateDefaultPositionFlag
 } from '../browserActions';
-import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-// import { parseFeatureId } from 'src/content/app/browser/browserHelper';
-// import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getDefaultChrLocation } from 'src/content/app/browser/browserSelectors';
+import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
@@ -62,6 +61,7 @@ export type BrowserImageProps = {
   browserActivated: boolean;
   isDisabled: boolean;
   activeGenomeId: string | null;
+  defaultChrLocation: ChrLocation | null;
   updateBrowserNavIconStates: (payload: {
     activeGenomeId: string;
     navStates: BrowserNavIconStates;
@@ -74,61 +74,31 @@ export type BrowserImageProps = {
   changeHighlightedTrackId: (trackId: string) => void;
 };
 
-export type BumperPayload = [
-  top: boolean,
-  right: boolean,
-  bottom: boolean,
-  left: boolean,
-  zoomOut: boolean,
-  zoomIn: boolean
-];
-
-// type BpaneOutPayload = {
-//   bumper?: BumperPayload;
-//   focus?: string;
-//   'message-counter'?: number;
-//   'intended-location'?: ChrLocation;
-//   'actual-location'?: ChrLocation;
-//   'is-focus-position'?: boolean;
-// };
-
 export const BrowserImage = (props: BrowserImageProps) => {
   const browserRef = useRef<HTMLDivElement>(null);
 
   const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
 
-  // const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
-  //   const ensObjectId = payload.focus;
+  const checkAndUpdateDefaultPositionFlag = (start: number, end: number) => {
+    const [, defaultStart, defaultEnd] = props.defaultChrLocation || ['', 0, 0];
 
-  //   const isFocusObjectInDefaultPosition = payload['is-focus-position'];
+    const BP_CORRECTION = 5;
 
-  //   if (payload.bumper && props.activeGenomeId) {
-  //     // Invert the flags to make it appropriate for the react side
-  //     const navIconStates = payload.bumper.map((a) => !a);
+    const positions = [
+      defaultStart - BP_CORRECTION,
+      start,
+      defaultStart + BP_CORRECTION,
+      defaultEnd - BP_CORRECTION,
+      end,
+      defaultEnd + BP_CORRECTION
+    ].sort();
 
-  //     const navStates = {
-  //       [OutgoingActionType.MOVE_UP]: navIconStates[0],
-  //       [OutgoingActionType.MOVE_DOWN]: navIconStates[1],
-  //       [OutgoingActionType.ZOOM_OUT]: navIconStates[2],
-  //       [OutgoingActionType.ZOOM_IN]: navIconStates[3],
-  //       [OutgoingActionType.MOVE_LEFT]: navIconStates[4],
-  //       [OutgoingActionType.MOVE_RIGHT]: navIconStates[5]
-  //     };
-  //     props.updateBrowserNavIconStates({
-  //       activeGenomeId: props.activeGenomeId,
-  //       navStates
-  //     });
-  //   }
-
-  //   if (ensObjectId) {
-  //     const parsedId = parseFeatureId(ensObjectId);
-  //     props.updateBrowserActiveEnsObject(buildEnsObjectId(parsedId));
-  //   }
-
-  //   if (typeof isFocusObjectInDefaultPosition === 'boolean') {
-  //     props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
-  //   }
-  // }, []);
+    if (positions[1] === start && positions[4] === end) {
+      props.updateDefaultPositionFlag(true);
+    } else {
+      props.updateDefaultPositionFlag(false);
+    }
+  };
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -142,6 +112,8 @@ export const BrowserImage = (props: BrowserImageProps) => {
           const { stick, start, end } = action.payload;
           const chromosome = stick.split(':')[1];
           props.setChrLocation([chromosome, start, end]);
+
+          checkAndUpdateDefaultPositionFlag(start, end);
         }
       }
     );
@@ -149,7 +121,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [genomeBrowser]);
+  }, [genomeBrowser, props.defaultChrLocation]);
 
   useEffect(() => {
     activateGenomeBrowser();
@@ -190,6 +162,7 @@ const mapStateToProps = (state: RootState) => ({
   isNavbarOpen: getBrowserNavOpenState(state),
   browserActivated: getBrowserActivated(state),
   activeGenomeId: getBrowserActiveGenomeId(state),
+  defaultChrLocation: getDefaultChrLocation(state),
   isDisabled: getRegionEditorActive(state) || getRegionFieldActive(state)
 });
 

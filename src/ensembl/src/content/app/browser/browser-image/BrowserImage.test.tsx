@@ -54,6 +54,7 @@ describe('<BrowserImage />', () => {
     isNavbarOpen: false,
     activeGenomeId: '',
     isDisabled: false,
+    defaultChrLocation: ['', 0, 0],
     browserActivated: false,
     updateBrowserActivated: jest.fn(),
     updateBrowserNavIconStates: jest.fn(),
