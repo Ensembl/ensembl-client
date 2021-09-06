@@ -26,6 +26,7 @@ import entityViewerStorageService from 'src/content/app/entity-viewer/services/e
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { clearFilterSorting } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -89,6 +90,9 @@ export const setDataFromUrl =
             entityId
           })
         );
+      }
+      if (activeGenomeId === genomeIdFromUrl && entityId !== activeEntityId) {
+        dispatch(clearFilterSorting());
       }
 
       entityViewerStorageService.updateGeneralState({
