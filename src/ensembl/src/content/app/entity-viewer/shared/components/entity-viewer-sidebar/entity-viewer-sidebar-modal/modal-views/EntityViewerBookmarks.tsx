@@ -31,6 +31,7 @@ import {
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+import { clearFilterSorting } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
@@ -46,6 +47,11 @@ type PreviouslyViewedLinksProps = {
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   const dispatch = useDispatch();
+
+  const onClick = () => {
+    dispatch(clearFilterSorting());
+    dispatch(closeSidebarModal());
+  };
 
   const activeEntityStableId = parseEnsObjectId(props.activeEntityId).objectId;
   const previouslyViewedEntitiesWithoutActiveEntity =
@@ -67,7 +73,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
           return (
             <div key={index} className={styles.linkHolder}>
-              <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
+              <Link to={path} onClick={onClick}>
                 <TextLine
                   text={previouslyViewedEntity.label}
                   className={styles.label}

@@ -109,6 +109,31 @@ export const setSortingRule =
     );
   };
 
+export const clearFilterSorting =
+  (): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.updateFilters({
+        activeGenomeId,
+        activeEntityId,
+        filters: defaultStatePerGene.filters
+      })
+    );
+    dispatch(
+      transcriptsSlice.actions.updateSortingRule({
+        activeGenomeId,
+        activeEntityId,
+        sortingRule: defaultStatePerGene.sortingRule
+      })
+    );
+  };
+
 export const toggleTranscriptInfo =
   (transcriptId: string): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
