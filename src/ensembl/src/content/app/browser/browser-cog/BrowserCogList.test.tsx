@@ -18,9 +18,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import faker from 'faker';
 
-import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
-
 import { BrowserCogList } from './BrowserCogList';
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 

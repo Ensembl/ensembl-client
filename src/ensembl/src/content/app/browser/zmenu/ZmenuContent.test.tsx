@@ -27,9 +27,6 @@ import {
   ZmenuContentItem,
   ZmenuContentItemProps
 } from './ZmenuContent';
-
-import { Markup } from 'ensembl-genome-browser';
-
 import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
@@ -38,6 +35,13 @@ const mockChangeFocusObject = jest.fn();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   changeFocusObject: mockChangeFocusObject
 }));
+
+enum Markup {
+  STRONG = 'strong',
+  EMPHASIS = 'emphasis',
+  FOCUS = 'focus',
+  LIGHT = 'light'
+}
 
 const mockReduxState = {};
 const mockStoreCreator = configureMockStore();
