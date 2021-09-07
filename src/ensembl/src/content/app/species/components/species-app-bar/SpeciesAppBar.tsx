@@ -46,9 +46,7 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
     />
   ));
 
-  const wrappedSpecies = (
-    <SpeciesTabsWrapper isWrappable={true} speciesTabs={speciesTabs} />
-  );
+  const wrappedSpecies = <SpeciesTabsWrapper speciesTabs={speciesTabs} />;
 
   return (
     <AppBar

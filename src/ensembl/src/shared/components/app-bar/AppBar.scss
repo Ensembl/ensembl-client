@@ -3,7 +3,6 @@
 .appBar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(250px, auto);
-  grid-template-rows: auto 40px;
   align-content: start;
   grid-template-areas:
     'top top'
@@ -40,6 +39,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
+  position: relative;
+  top: 2px;
 
   .conversationIcon {
     width: 40px;

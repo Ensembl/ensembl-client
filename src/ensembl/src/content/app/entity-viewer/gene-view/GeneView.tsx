@@ -345,6 +345,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   );
 };
 
+const isViewParameterValid = (view: string) =>
+  Object.values(View).some((value) => value === view);
+
 const useGeneViewRouting = () => {
   const dispatch = useDispatch();
   const params: { [key: string]: string } = useParams();
@@ -361,7 +364,7 @@ const useGeneViewRouting = () => {
   const selectedTabs = useSelector(getSelectedGeneViewTabs);
 
   useEffect(() => {
-    if (view && viewInRedux !== view) {
+    if (view && isViewParameterValid(view) && viewInRedux !== view) {
       dispatch(updateView(view as View));
     } else {
       const url = urlFor.entityViewer({
