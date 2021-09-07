@@ -90,3 +90,4 @@ There exists a small library, [idb-keyval](https://www.npmjs.com/package/idb-key
 
 ### Other resources
 - [MDN article on IndexedDB API](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+- [Working with IndexedDB](https://www.youtube.com/watch?v=vCumk1sXHcY) — a video by Google for web developers
