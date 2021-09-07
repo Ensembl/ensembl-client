@@ -17,6 +17,7 @@
 import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import isEqual from 'lodash/isEqual';
+import { List } from 'react-content-loader';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
@@ -45,6 +46,8 @@ export const TrackPanel = (props: TrackPanelProps) => {
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
+  const Loader = () => <List />;
+
   useEffect(() => {
     props.restoreBrowserTrackStates();
   }, [props.activeEnsObject]);
@@ -55,7 +58,9 @@ export const TrackPanel = (props: TrackPanelProps) => {
     ) : (
       <TrackPanelList />
     )
-  ) : null;
+  ) : (
+    <Loader />
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
