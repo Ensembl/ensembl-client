@@ -17,11 +17,10 @@
 import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import isEqual from 'lodash/isEqual';
-import { List } from 'react-content-loader';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import { RootState } from 'src/store';
+import { ListLoader } from 'src/shared/components/loader/Loader';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
@@ -32,6 +31,7 @@ import {
 
 import { restoreBrowserTrackStates } from '../browserActions';
 
+import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type TrackPanelProps = {
@@ -46,8 +46,6 @@ export const TrackPanel = (props: TrackPanelProps) => {
   const shouldRenderContent =
     props.activeGenomeId && props.browserActivated && props.activeEnsObject;
 
-  const Loader = () => <List />;
-
   useEffect(() => {
     props.restoreBrowserTrackStates();
   }, [props.activeEnsObject]);
@@ -59,7 +57,7 @@ export const TrackPanel = (props: TrackPanelProps) => {
       <TrackPanelList />
     )
   ) : (
-    <Loader />
+    <ListLoader />
   );
 };
 

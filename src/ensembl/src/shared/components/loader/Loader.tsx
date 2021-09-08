@@ -28,3 +28,33 @@ export const CircleLoader = (props: Props) => {
 
   return <div className={className} />;
 };
+
+export const ListLoader = (props: Props) => {
+  const className = classNames(styles.listLoader, props.className);
+
+  return (
+    <div className={className}>
+      <div className={styles.listHeading}></div>
+      <section>
+        <div className={styles.shortItem}></div>
+        <div className={styles.shortItem}></div>
+        <div className={styles.shortItem}></div>
+        <div className={styles.shortItem}></div>
+      </section>
+      <section>
+        <div className={styles.shortItem}></div>
+        <div className={styles.shortItem}></div>
+      </section>
+      <section>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+        <div className={styles.longItem}></div>
+      </section>
+    </div>
+  );
+};
