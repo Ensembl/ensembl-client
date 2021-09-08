@@ -286,4 +286,8 @@ const transcriptsSlice = createSlice({
   }
 });
 
+export { transcriptsSlice };
+
+export const { updateExpandedTranscripts } = transcriptsSlice.actions;
+
 export default transcriptsSlice.reducer;
