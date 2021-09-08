@@ -63,7 +63,7 @@ const useSpeciesSelectorAnalytics = () => {
     });
   };
 
-  const trackCommitedSpecies = (species: CurrentItem) => {
+  const trackCommittedSpecies = (species: CurrentItem) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     analyticsTracking.trackEvent({
@@ -93,7 +93,7 @@ const useSpeciesSelectorAnalytics = () => {
   };
 
   return {
-    trackCommitedSpecies,
+    trackCommittedSpecies,
     trackPopularSpeciesSelect,
     trackAutocompleteSpeciesSelect
   };
