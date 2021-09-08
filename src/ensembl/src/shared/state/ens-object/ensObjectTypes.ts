@@ -34,12 +34,10 @@ type BasicEnsObject = {
 
 export type EnsObjectGene = BasicEnsObject & {
   type: 'gene';
-  stable_id: string | null;
-  versioned_stable_id: string | null;
+  stable_id: string;
+  versioned_stable_id: string;
   bio_type: string;
   strand: Strand;
-  description: string | null;
-  track: EnsObjectTrack | null;
 };
 
 export type EnsObjectRegion = BasicEnsObject & {
@@ -60,11 +58,4 @@ export type EnsObjectTrack = {
   description: string | null;
 };
 
-/*
-TODO: discuss with BE whether they want to put ensObject data inside
-a root-level namespace key, so the response type becomes:
-{
-  ens_object: EnsObject
-}
-*/
 export type EnsObjectResponse = EnsObjectGene;
