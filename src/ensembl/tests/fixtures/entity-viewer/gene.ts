@@ -46,7 +46,7 @@ export const createGene = (
     symbol: faker.lorem.word(),
     name: faker.lorem.words(),
     slice: geneSlice,
-    transcripts: transcripts,
+    transcripts,
     alternative_symbols: [],
     external_references: [],
     metadata: {
