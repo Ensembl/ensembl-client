@@ -18,6 +18,7 @@ import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
 import browser from '../content/app/browser/browserReducer';
+import { genomeBrowserApiSlice } from '../content/app/browser/state/genomeBrowserApiSlice';
 import drawer from '../content/app/browser/drawer/drawerReducer';
 import genome from '../shared/state/genome/genomeReducer';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
@@ -44,7 +45,9 @@ const createRootReducer = (history: any) =>
     router: connectRouter(history),
     speciesSelector,
     speciesPage,
-    entityViewer
+    entityViewer,
+
+    [genomeBrowserApiSlice.reducerPath]: genomeBrowserApiSlice.reducer
   });
 
 export const createServerSideRootReducer = () =>

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware } from 'connected-react-router';
 import { StateType } from 'typesafe-actions';
 import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
+
+import { genomeBrowserApiSlice } from './content/app/browser/state/genomeBrowserApiSlice';
 
 import createRootReducer from './root/rootReducer';
 import { analyticsMiddleWare } from './analyticsMiddleware';
@@ -35,10 +37,10 @@ const rootReducer = createRootReducer(history);
 export type RootState = StateType<typeof rootReducer>;
 
 const middleware = [
-  ...getDefaultMiddleware(),
   routerMiddleware(history),
   epicMiddleware,
-  analyticsMiddleWare
+  analyticsMiddleWare,
+  genomeBrowserApiSlice.middleware
 ];
 
 const preloadedState = (window as any).__PRELOADED_STATE__ || {};
@@ -46,7 +48,8 @@ const preloadedState = (window as any).__PRELOADED_STATE__ || {};
 export default function getReduxStore() {
   const store = configureStore({
     reducer: rootReducer,
-    middleware,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(middleware),
     devTools: config.isDevelopment,
     preloadedState
   });

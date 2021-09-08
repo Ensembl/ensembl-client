@@ -21,6 +21,7 @@
 
   .value {
     grid-column: value;
+    // width: calc(100vw - 320px - 45px - 46px - 220px); // FIXME: decide whether we want to explicitly set the max-width
 
     & > span + span {
       margin-left: 10px;
@@ -47,19 +48,24 @@
 }
 
 
-.value .featureDetails {
+.transcriptQuality {
+  margin-left: 10px;
+  font-weight: $light;
+}
+
+.featureDetails {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.featureDetail {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  white-space: nowrap;
   flex-wrap: nowrap;
-  overflow: hidden;
-
-  & > span:not(:nth-child(1)) {
-    margin-left: 40px;
-  }
-  & > span:nth-child(2) {
-    margin-left: 10px;
-  }
+  padding-right: 30px;
 }
 
 .featureSymbol {
@@ -87,7 +93,7 @@
 .downloadWrapper{
   display: inline-block;
   margin-left: 40px;
-  min-width: 600px;
+  min-width: 300px;
   position: relative;
 }
 

@@ -35,6 +35,7 @@ import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 
 import TrackPanelListItem from './TrackPanelListItem';
+import TrackPanelGene from './TrackPanelGene';
 
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
@@ -115,13 +116,17 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
 
   return (
     <div className={styles.trackPanelList}>
-      {activeEnsObject && activeEnsObject.type === 'region' ? null : (
+      {activeEnsObject?.type === 'gene' &&
+      activeGenomeId &&
+      activeEnsObject.stable_id ? (
         <section className="mainTrackItem">
-          <dl>
-            {getTrackListItem('main', activeEnsObject && activeEnsObject.track)}
-          </dl>
+          <TrackPanelGene
+            ensObjectId={activeEnsObject.object_id}
+            genomeId={activeGenomeId}
+            geneId={activeEnsObject.stable_id}
+          />
         </section>
-      )}
+      ) : null}
       {currentTrackCategories.map((category: GenomeTrackCategory) => (
         <section key={category.track_category_id}>
           <h4>{category.label}</h4>

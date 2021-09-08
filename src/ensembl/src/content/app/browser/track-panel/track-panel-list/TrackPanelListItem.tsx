@@ -66,7 +66,7 @@ import styles from './TrackPanelListItem.scss';
 // the types have been separated since the component's own props is used in the mapStateToProps function (see at the bottom)
 export type TrackPanelListItemProps = {
   categoryName: string;
-  children?: ReactNode[];
+  children?: ReactNode;
   trackStatus: TrackActivityStatus;
   defaultTrackStatus: TrackActivityStatus;
   track: EnsObjectTrack;
@@ -223,7 +223,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
               {track.additional_info}
             </span>
           )}
-          {track.child_tracks && (
+          {props.children && (
             <Chevron
               onClick={toggleExpand}
               direction={isCollapsed ? 'down' : 'up'}
