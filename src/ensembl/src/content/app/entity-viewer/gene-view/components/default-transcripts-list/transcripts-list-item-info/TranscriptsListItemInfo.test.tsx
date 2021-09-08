@@ -147,10 +147,9 @@ describe('<TranscriptsListItemInfo /', () => {
 
   it('calls correct callback when protein link is clicked', () => {
     const { container } = renderComponent();
-    const proteinId =
-      defaultProps.transcript.product_generating_contexts[0].product?.stable_id;
+    const transcriptId = defaultProps.transcript.stable_id;
     const proteinLink = [...container.querySelectorAll('a')].find(
-      (link) => link.textContent === proteinId
+      (link) => link.textContent === transcriptId
     ) as HTMLElement;
 
     userEvent.click(proteinLink);

@@ -24,8 +24,8 @@ import { Pick2 } from 'ts-multipick';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
-import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
+import { getExpandedTranscriptIds } from '../../../../state/gene-view/transcripts/geneViewTranscriptsSelectors';
+import { toggleTranscriptInfo } from '../../../../state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import ProteinsListItemInfo, {
   Props as ProteinsListItemInfoProps
@@ -89,7 +89,7 @@ const ProteinsListItem = (props: Props) => {
       dispatch(replace(url));
     }
 
-    dispatch(toggleExpandedProtein(product.stable_id));
+    dispatch(toggleTranscriptInfo(transcript.stable_id));
   };
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
@@ -103,8 +103,8 @@ const ProteinsListItem = (props: Props) => {
         });
       }, 100);
 
-      if (!expandedTranscriptIds.includes(proteinIdToFocus)) {
-        dispatch(toggleExpandedProtein(product.stable_id));
+      if (!expandedTranscriptIds.includes(transcript.stable_id)) {
+        dispatch(toggleTranscriptInfo(transcript.stable_id));
       }
     }
   }, [proteinIdToFocus]);
@@ -137,7 +137,7 @@ const ProteinsListItem = (props: Props) => {
           <span className={styles.transcriptId}>{transcript.stable_id}</span>
         </div>
       </div>
-      {expandedTranscriptIds.includes(product.stable_id) ? (
+      {expandedTranscriptIds.includes(transcript.stable_id) ? (
         <ProteinsListItemInfo
           transcript={transcript}
           trackLength={trackLength}

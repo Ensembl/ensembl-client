@@ -15,6 +15,8 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -38,7 +40,13 @@ jest.mock(
   () => () => <div data-test-id="unsplicedTranscript">UnsplicedTranscript</div>
 );
 
-const toggleTranscriptInfo = jest.fn();
+const toggleTranscriptInfo = jest.fn(() => () => {
+  return {
+    type: 'toggleTranscriptInfoAction'
+  };
+});
+
+const mockStore = configureMockStore();
 
 describe('<DefaultTranscriptListItem />', () => {
   beforeEach(() => {
@@ -55,16 +63,25 @@ describe('<DefaultTranscriptListItem />', () => {
     toggleTranscriptInfo: toggleTranscriptInfo
   };
 
-  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) =>
-    render(<DefaultTranscriptListItem {...defaultProps} {...props} />);
+  const wrapInRedux = (props?: Partial<DefaultTranscriptListItemProps>) => {
+    return render(
+      <Provider store={mockStore()}>
+        <DefaultTranscriptListItem {...defaultProps} {...props} />
+      </Provider>
+    );
+  };
+
+  // const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) =>
+  //   render(<DefaultTranscriptListItem {...defaultProps} {...props} />);
 
   it('displays unspliced transcript', () => {
-    const { queryByTestId } = renderComponent();
+    // const { queryByTestId } = renderComponent();
+    const { queryByTestId } = wrapInRedux();
     expect(queryByTestId('unsplicedTranscript')).toBeTruthy();
   });
 
   it('toggles transcript item info onClick', () => {
-    const { container } = renderComponent();
+    const { container } = wrapInRedux();
     const clickableArea = container.querySelector(
       '.clickableTranscriptArea'
     ) as HTMLElement;
@@ -78,13 +95,13 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   it('hides transcript info by default', () => {
-    const { queryByTestId } = renderComponent();
+    const { queryByTestId } = wrapInRedux();
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeFalsy();
   });
 
   it('displays transcript info if expandTranscript is true', () => {
-    const { queryByTestId } = renderComponent({ expandTranscript: true });
+    const { queryByTestId } = wrapInRedux({ expandTranscript: true });
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });
