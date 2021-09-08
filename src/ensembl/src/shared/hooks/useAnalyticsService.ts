@@ -20,13 +20,11 @@ import analyticsTracking from 'src/services/analytics-service';
 import { getCurrentApp } from 'ensemblRoot/src/header/headerSelectors';
 
 const useAnalyticsService = () => {
-  const { trackEvent } = analyticsTracking;
-
   const currentAppName = useSelector(getCurrentApp);
 
   /* Contextual Help */
   const trackContextualHelpOpened = () => {
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: currentAppName,
       action: 'open_contextual_help'
     });

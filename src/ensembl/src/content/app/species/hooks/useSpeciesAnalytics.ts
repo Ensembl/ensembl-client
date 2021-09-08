@@ -25,12 +25,10 @@ enum AnalyticsCategories {
 }
 
 const useSpeciesAnalytics = () => {
-  const { trackEvent } = analyticsTracking;
-
   const trackDeletedSpecies = (species: CommittedItem) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_PAGE,
       label: speciesNameForAnalytics,
       action: 'remove',
@@ -43,7 +41,7 @@ const useSpeciesAnalytics = () => {
 
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_PAGE,
       label: speciesNameForAnalytics,
       action: updatedStatus,
@@ -55,7 +53,7 @@ const useSpeciesAnalytics = () => {
     species: CommittedItem,
     sectionName: string
   ) => {
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_PAGE,
       action: 'open_section',
       label: sectionName,
@@ -67,7 +65,7 @@ const useSpeciesAnalytics = () => {
     species: CommittedItem,
     exampleLinkType: string
   ) => {
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_PAGE,
       action: 'example_link_selected',
       label: exampleLinkType,

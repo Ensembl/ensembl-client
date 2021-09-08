@@ -35,15 +35,13 @@ enum AnalyticsCategories {
 }
 
 const useSpeciesSelectorAnalytics = () => {
-  const { trackEvent } = analyticsTracking;
-
   const committedSpecies = useSelector(getCommittedSpecies);
 
   /*  Species Selector Page Events */
   const trackAutocompleteSpeciesSelect = (species: SearchMatch) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_SEARCH,
       action: 'preselect',
       label: speciesNameForAnalytics,
@@ -57,7 +55,7 @@ const useSpeciesSelectorAnalytics = () => {
   ) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.POPULAR_SPECIES,
       action: action,
       label: speciesNameForAnalytics,
@@ -68,7 +66,7 @@ const useSpeciesSelectorAnalytics = () => {
   const trackCommitedSpecies = (species: CurrentItem) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_SELECTOR,
       label: speciesNameForAnalytics,
       action: 'add',
@@ -85,7 +83,7 @@ const useSpeciesSelectorAnalytics = () => {
       .map((species) => getSpeciesAnalyticsName(species))
       .sort();
 
-    trackEvent({
+    analyticsTracking.trackEvent({
       category: AnalyticsCategories.SPECIES_SELECTOR,
       action: 'select_multiple',
       label: committedSpeciesNames.join(','),
