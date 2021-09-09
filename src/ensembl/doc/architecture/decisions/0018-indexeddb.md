@@ -76,7 +76,7 @@ Once a database has been created, the only way to add or remove an object store 
 
 When the database version is incremented, IndexedDB will run an appropriate callback, in which the state of the database before the upgrade can be inspected, and appropriate steps can be taken to migrate the currently stored data. By default, if no specific actions are taken during a version bump, the already saved records will remain, unmodified, in the new version of the database.
 
-The update of the database version provides an opportunity for the developer to migrate the already saved data to a new shape as required by the updates to the code. It is important to remember, however, is that it is impossible to predict which database version any given user will already have; so the migration strategy can get complicated.
+The update of the database version provides an opportunity for the developer to migrate the already saved data to a new shape as required by the updates to the code. It is important to remember, however, that it is impossible to predict which database version any given user will already have; so the migration strategy can get complicated.
 
 ## An option to consider
 There exists a small library, [idb-keyval](https://www.npmjs.com/package/idb-keyval), which provides a simple API to use IndexedDB just as a key-value storage, combining the simplicity of LocalStorage with the power of IndexedDB (asynchronicity and different data types). It removes the complexity of managing IndexedDB; however, in our case that would return us to the question of how to handle updates to the schemas of stored data, which can otherwise be solved through IndexedDB versioning. 
