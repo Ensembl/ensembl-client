@@ -627,12 +627,7 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
     assembly_date: '2019-02-01',
-    notes: [
-      {
-        heading: 'Pseudoautosomal regions',
-        body: 'The Y chromosome in this assembly contains two psuedoautosomal regions (PARs) that were taken from the corresponding X chromosoles and are exact duplicates:\nchrX:10,000-2,781,479 = chrY:10,000-2,781,479\nchrX:155,701,382-156,030,895 = chrY:56,887,02-57,217,415'
-      }
-    ]
+    notes: []
   },
   homo_sapiens_GCA_000001405_14: {
     id: 'GCA_000001405.14',
