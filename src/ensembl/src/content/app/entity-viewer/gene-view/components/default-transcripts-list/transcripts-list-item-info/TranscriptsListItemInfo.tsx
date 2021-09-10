@@ -67,11 +67,7 @@ type Transcript = Pick<
   } & {
     product_generating_contexts: Array<
       Pick<FullProductGeneratingContext, 'product_type'> &
-        Pick2<
-          FullProductGeneratingContext,
-          'product',
-          'length' | 'stable_id'
-        > & {
+        Pick<FullProductGeneratingContext, 'product'> & {
           phased_exons: Array<
             Pick<PhasedExon, 'start_phase' | 'end_phase'> &
               Pick2<PhasedExon, 'exon', 'stable_id'>
@@ -192,6 +188,7 @@ export const TranscriptsListItemInfo = (
     );
   };
 
+  const product = transcript.product_generating_contexts[0].product;
   return (
     <div className={mainStyles}>
       <div className={transcriptsListStyles.left}></div>
@@ -208,9 +205,7 @@ export const TranscriptsListItemInfo = (
               <div>
                 <strong>{aminoAcidLength} aa</strong>
               </div>
-              {getLinkToProteinView(
-                transcript.product_generating_contexts[0]?.product.stable_id
-              )}
+              {product && getLinkToProteinView(product?.stable_id)}
             </>
           )}
         </div>

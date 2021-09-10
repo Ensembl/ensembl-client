@@ -119,7 +119,7 @@ export type GetProductAminoAcidLengthParam = {
     product_type: ProductType.PROTEIN;
     product: {
       length: number;
-    };
+    } | null;
   }>;
 };
 

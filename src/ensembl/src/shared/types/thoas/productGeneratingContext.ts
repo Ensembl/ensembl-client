@@ -28,7 +28,7 @@ export type FullProductGeneratingContext = {
   cds: FullCDS | null;
   five_prime_utr: UTR | null;
   three_prime_utr: UTR | null;
-  product: Product;
+  product: Product | null;
   phased_exons: PhasedExon[];
   cdna: CDNA;
 };
