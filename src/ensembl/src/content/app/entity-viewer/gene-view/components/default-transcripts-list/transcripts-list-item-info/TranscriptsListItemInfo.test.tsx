@@ -20,6 +20,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
+import { MemoryRouter } from 'react-router';
 
 import {
   TranscriptsListItemInfo,
@@ -131,7 +132,9 @@ const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
   store = mockStore(mockState);
   return render(
     <Provider store={store}>
-      <TranscriptsListItemInfo {...defaultProps} {...props} />
+      <MemoryRouter>
+        <TranscriptsListItemInfo {...defaultProps} {...props} />
+      </MemoryRouter>
     </Provider>
   );
 };
