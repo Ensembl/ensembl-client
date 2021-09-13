@@ -1,21 +1,5 @@
 @import 'src/styles/common';
 
-.circleLoader {
-  display: inline-block;
-  border: 3px solid $grey;
-  border-top-color: $red;
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  animation: loader-spin 1.3s linear infinite;
-}
-
-@keyframes loader-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .listLoader {
   box-sizing: border-box;
   display: flex;

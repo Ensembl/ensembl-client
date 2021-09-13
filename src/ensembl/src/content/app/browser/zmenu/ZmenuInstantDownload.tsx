@@ -19,7 +19,7 @@ import React from 'react';
 import useApiService from 'src/shared/hooks/useApiService';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
 import { TranscriptInResponse } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
 import { LoadingState } from 'src/shared/types/loading-state';

@@ -18,7 +18,7 @@ import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import { ReactComponent as Checkmark } from './checkmark.svg';
 import { ReactComponent as Cross } from './cross.svg';

@@ -21,7 +21,7 @@ import isEqual from 'lodash/isEqual';
 
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';

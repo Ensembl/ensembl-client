@@ -14,20 +14,5 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
-
-import styles from './Loader.stories.scss';
-
-export default {
-  title: 'Components/Shared Components/Loader'
-};
-
-export const FullPageLoader = () => (
-  <div className={styles.fullPageWrapper}>
-    <CircleLoader />
-  </div>
-);
-
-FullPageLoader.storyName = 'full-page';
+export { default as CircleLoader } from './CircleLoader';
+export { default as SidebarLoader } from './SidebarLoader';

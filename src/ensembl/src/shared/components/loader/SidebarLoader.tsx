@@ -17,19 +17,13 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import styles from './Loader.scss';
+import styles from './SidebarLoader.scss';
 
 type Props = {
   className?: string;
 };
 
-export const CircleLoader = (props: Props) => {
-  const className = classNames(styles.circleLoader, props.className);
-
-  return <div className={className} />;
-};
-
-export const ListLoader = (props: Props) => {
+const SidebarLoader = (props: Props) => {
   const className = classNames(styles.listLoader, props.className);
 
   return (
@@ -58,3 +52,5 @@ export const ListLoader = (props: Props) => {
     </div>
   );
 };
+
+export default SidebarLoader;

@@ -20,7 +20,7 @@ import isEqual from 'lodash/isEqual';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import { ListLoader } from 'src/shared/components/loader/Loader';
+import { SidebarLoader } from 'ensemblRoot/src/shared/components/loader';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
@@ -57,7 +57,7 @@ export const TrackPanel = (props: TrackPanelProps) => {
       <TrackPanelList />
     )
   ) : (
-    <ListLoader />
+    <SidebarLoader />
   );
 };
 
