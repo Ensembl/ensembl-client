@@ -23,6 +23,8 @@ import { useParams, useLocation } from 'react-router-dom';
 
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import usePrevious from 'src/shared/hooks/usePrevious';
+import { setFilterPanel } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
+import { getFilterPanelOpen } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
   getSelectedGeneViewTabs,
   getCurrentView
@@ -235,8 +237,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
-  const [isFilterOpen, setFilterOpen] = useState(false);
-
+  const isFilterOpen = useSelector(getFilterPanelOpen) || false;
   const sortingRule = useSelector(getSortingRule);
   const filters = useSelector(getFilters);
   const dispatch = useDispatch();
@@ -268,7 +269,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   );
 
   const toggleFilter = () => {
-    setFilterOpen(!isFilterOpen);
+    dispatch(setFilterPanel(!isFilterOpen));
   };
 
   useEffect(() => {
@@ -314,7 +315,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         <div className={styles.tabWrapper}>
           <GeneViewTabs isFilterOpen={isFilterOpen} />
         </div>
-        {isFilterOpen && (
+        {props.gene.transcripts.length > 5 && isFilterOpen && (
           <div className={styles.filtersWrapper}>
             <TranscriptsFilter
               toggleFilter={toggleFilter}
