@@ -68,13 +68,12 @@ export const ToggleButton = (props: ToggleButtonProps) => {
   };
 
   return (
-    <span className={styles.toggleButton}>
+    <span className={styles.toggleButton} onClick={handleClick}>
       <span className={styles.label}>{props.label}</span>
       <Chevron
         direction={isExpanded ? 'up' : 'down'}
         animate={true}
         classNames={{ svg: styles.chevron }}
-        onClick={handleClick}
       />
     </span>
   );
