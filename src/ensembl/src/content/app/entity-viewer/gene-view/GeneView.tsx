@@ -237,7 +237,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
-  const isFilterOpen = useSelector(getFilterPanelOpen) || false;
+  const isFilterOpen = useSelector(getFilterPanelOpen);
   const sortingRule = useSelector(getSortingRule);
   const filters = useSelector(getFilters);
   const dispatch = useDispatch();
