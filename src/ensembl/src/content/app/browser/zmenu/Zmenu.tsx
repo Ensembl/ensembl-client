@@ -44,7 +44,6 @@ export type ZmenuProps = ZmenuData & {
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
-
   const onOutsideClick = () =>
     browserMessagingService.send('bpane', {
       id: props.id,

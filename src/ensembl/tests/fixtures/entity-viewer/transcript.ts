@@ -37,8 +37,8 @@ type ProteinCodingProductGeneratingContext = Omit<
   'cds'
 > & { cds: FullCDS };
 
-type ProteinCodingTranscript = Omit<
-  FullTranscript,
+export type ProteinCodingTranscript = Omit<
+  Omit<FullTranscript, 'gene'>,
   'product_generating_contexts'
 > & {
   product_generating_contexts: ProteinCodingProductGeneratingContext[];
