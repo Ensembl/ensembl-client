@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
+import { gql, useQuery } from '@apollo/client';
+import { Pick2 } from 'ts-multipick';
 
-import useApiService from 'src/shared/hooks/useApiService';
+import { parseFeatureId } from '../browserHelper';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
-import { TranscriptInResponse } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/transcriptData';
 
-import { LoadingState } from 'src/shared/types/loading-state';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
 import styles from './Zmenu.scss';
 
@@ -30,20 +31,37 @@ type Props = {
   id: string;
 };
 
-const ZmenuInstantDownload = (props: Props) => {
-  const genomeId = getGenomeId(props.id);
-  const transcriptId = getStableId(props.id);
-  const params = {
-    endpoint: `/lookup/id/${transcriptId}?content-type=application/json;expand=1`,
-    host: 'https://rest.ensembl.org'
-  };
-  const { loadingState, data, error } =
-    useApiService<TranscriptInResponse>(params);
+const TRANSCRIPT_QUERY = gql`
+  query Transcript($genomeId: String!, $transcriptId: String!) {
+    transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
+      metadata {
+        biotype {
+          value
+        }
+      }
+      gene {
+        stable_id
+      }
+    }
+  }
+`;
 
-  if (
-    loadingState === LoadingState.NOT_REQUESTED ||
-    loadingState === LoadingState.LOADING
-  ) {
+type Transcript = Pick2<FullTranscript, 'metadata', 'biotype'> &
+  Pick2<FullTranscript, 'gene', 'stable_id'>;
+
+const ZmenuInstantDownload = (props: Props) => {
+  const { genomeId, objectId: transcriptId } = parseFeatureId(props.id);
+
+  const { data, loading } = useQuery<{
+    transcript: Transcript;
+  }>(TRANSCRIPT_QUERY, {
+    variables: {
+      genomeId,
+      transcriptId
+    }
+  });
+
+  if (loading) {
     return (
       <div className={styles.zmenuInstantDowloadLoading}>
         <CircleLoader />
@@ -51,38 +69,27 @@ const ZmenuInstantDownload = (props: Props) => {
     );
   }
 
-  if (error) {
-    // TODO: decide how we handle errors in this case
+  if (!data) {
     return null;
   }
+
+  const payload = {
+    transcript: {
+      id: transcriptId,
+      biotype: data.transcript.metadata.biotype.value
+    },
+    gene: {
+      id: data.transcript.gene.stable_id
+    }
+  };
 
   return (
     <InstantDownloadTranscript
       genomeId={genomeId}
-      {...preparePayload(data as TranscriptInResponse)}
+      {...payload}
       layout="vertical"
     />
   );
-};
-
-// TODO: we may want to move this to a common helper file that deals with messaging with Genome Browser
-const getGenomeId = (id: string) => id.split(':').shift();
-const getStableId = (id: string) => id.split(':').pop();
-
-const preparePayload = (transcript: TranscriptInResponse) => {
-  const geneId = transcript.Parent;
-  const transcriptId = transcript.id;
-  const biotype = transcript.biotype;
-
-  return {
-    transcript: {
-      id: transcriptId,
-      biotype
-    },
-    gene: {
-      id: geneId
-    }
-  };
 };
 
 export default ZmenuInstantDownload;

@@ -20,6 +20,7 @@ import { FullProductGeneratingContext } from './productGeneratingContext';
 import { LocationWithinRegion } from './location';
 import { ExternalReference } from './externalReference';
 import { TranscriptMetadata } from './metadata';
+import { FullGene } from './gene';
 
 export type FullTranscript = {
   type: 'Transcript';
@@ -33,4 +34,5 @@ export type FullTranscript = {
   product_generating_contexts: FullProductGeneratingContext[];
   external_references: ExternalReference[];
   metadata: TranscriptMetadata;
+  gene: FullGene;
 };

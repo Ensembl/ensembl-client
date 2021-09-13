@@ -35,9 +35,7 @@ export const createEnsObject = (objectType?: EnsObjectType): EnsObject => {
     type,
     stable_id: faker.lorem.word(),
     versioned_stable_id: faker.lorem.word(),
-    strand: Strand.FORWARD,
-    description: faker.lorem.words(),
-    track: createTrackInfo()
+    strand: Strand.FORWARD
   };
 };
 
@@ -51,12 +49,3 @@ const createLocation = () => {
     end: endPosition
   };
 };
-
-const createTrackInfo = () => ({
-  label: faker.lorem.word(),
-  object_id: faker.lorem.word(),
-  support_level: null,
-  track_id: faker.lorem.word(),
-  description: null,
-  stable_id: faker.lorem.words()
-});
