@@ -30,7 +30,7 @@ import {
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
-import { toggleTranscriptInfo } from '../../../state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import {
   getExpandedTranscriptIds,
   getFilters,

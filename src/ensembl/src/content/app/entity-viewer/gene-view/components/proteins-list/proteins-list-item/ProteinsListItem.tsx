@@ -24,8 +24,8 @@ import { Pick2 } from 'ts-multipick';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import { getExpandedTranscriptIds } from '../../../../state/gene-view/transcripts/geneViewTranscriptsSelectors';
-import { toggleTranscriptInfo } from '../../../../state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import ProteinsListItemInfo, {
   Props as ProteinsListItemInfoProps

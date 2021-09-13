@@ -83,7 +83,7 @@ describe('<DefaultTranscriptListItem />', () => {
 
   let store: ReturnType<typeof mockStore>;
 
-  const wrapInRedux = (props?: Partial<DefaultTranscriptListItemProps>) => {
+  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) => {
     store = mockStore(mockState);
     return render(
       <Provider store={store}>
@@ -93,12 +93,12 @@ describe('<DefaultTranscriptListItem />', () => {
   };
 
   it('displays unspliced transcript', () => {
-    const { queryByTestId } = wrapInRedux();
+    const { queryByTestId } = renderComponent();
     expect(queryByTestId('unsplicedTranscript')).toBeTruthy();
   });
 
   it('toggles transcript item info onClick', () => {
-    const { container } = wrapInRedux();
+    const { container } = renderComponent();
     const clickableArea = container.querySelector(
       '.clickableTranscriptArea'
     ) as HTMLElement;
@@ -121,13 +121,13 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   it('hides transcript info by default', () => {
-    const { queryByTestId } = wrapInRedux();
+    const { queryByTestId } = renderComponent();
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeFalsy();
   });
 
   it('displays transcript info if expandTranscript is true', () => {
-    const { queryByTestId } = wrapInRedux({ expandTranscript: true });
+    const { queryByTestId } = renderComponent({ expandTranscript: true });
 
     expect(queryByTestId('transcriptsListItemInfo')).toBeTruthy();
   });

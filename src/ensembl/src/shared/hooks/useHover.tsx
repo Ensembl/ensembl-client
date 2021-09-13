@@ -44,7 +44,7 @@ export default function useHover<T extends HTMLElement>(): UseHoverType<T> {
       element.addEventListener('mouseenter', handleMouseEnter);
       element.addEventListener('mouseleave', handleMouseLeave);
       element.addEventListener('click', handleMouseLeave);
-      element.addEventListener('touchstart', handleTouch, { passive: true });
+      element.addEventListener('touchstart', handleTouch);
 
       // cancel hover state if user switches to a different tab
       document.addEventListener('visibilitychange', handleMouseLeave);
