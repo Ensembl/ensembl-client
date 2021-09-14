@@ -611,7 +611,7 @@ export const sidebarData: SpeciesSidebarData = {
     id: 'GCA_000001405.28',
     taxonomy_id: '9606',
     strain: null,
-    database_version: '100.38',
+    database_version: '104.38',
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     gencode_version: 'GENCODE 34',
@@ -627,18 +627,13 @@ export const sidebarData: SpeciesSidebarData = {
     assembly_level: 'complete genome',
     annotation_method: 'full genebuild',
     assembly_date: '2019-02-01',
-    notes: [
-      {
-        heading: 'Pseudoautosomal regions',
-        body: 'The Y chromosome in this assembly contains two psuedoautosomal regions (PARs) that were taken from the corresponding X chromosoles and are exact duplicates:\nchrX:10,000-2,781,479 = chrY:10,000-2,781,479\nchrX:155,701,382-156,030,895 = chrY:56,887,02-57,217,415'
-      }
-    ]
+    notes: []
   },
   homo_sapiens_GCA_000001405_14: {
     id: 'GCA_000001405.14',
     taxonomy_id: '9606',
     strain: null,
-    database_version: '101.37',
+    database_version: '104.37',
     common_name: 'Human',
     scientific_name: 'Homo sapiens',
     gencode_version: 'GENCODE 19',
@@ -660,7 +655,7 @@ export const sidebarData: SpeciesSidebarData = {
     id: 'GCA_000005845.2',
     taxonomy_id: '511145',
     strain: null,
-    database_version: '101.1',
+    database_version: '104.1',
     common_name: null,
     scientific_name: 'Escherichia coli str. K-12 substr. MG1655',
     gencode_version: null,
@@ -685,7 +680,7 @@ export const sidebarData: SpeciesSidebarData = {
       type: 'Strain',
       value: 'N2'
     },
-    database_version: '101.269',
+    database_version: '104.269',
     common_name: null,
     scientific_name: 'Caenorhabditis elegans',
     gencode_version: null,
@@ -707,7 +702,7 @@ export const sidebarData: SpeciesSidebarData = {
     id: 'GCA_000002765.2',
     taxonomy_id: '36329',
     strain: null,
-    database_version: '101.1',
+    database_version: '104.1',
     common_name: null,
     scientific_name: 'Plasmodium falciparum 3D7',
     gencode_version: null,
@@ -732,7 +727,7 @@ export const sidebarData: SpeciesSidebarData = {
       type: 'Strain',
       value: 'S288C'
     },
-    database_version: '101.4',
+    database_version: '104.4',
     common_name: 'Brewers yeast',
     scientific_name: 'Saccharomyces cerevisiae',
     gencode_version: null,
@@ -757,7 +752,7 @@ export const sidebarData: SpeciesSidebarData = {
       type: 'Cultivar',
       value: 'Chinese spring'
     },
-    database_version: '101.4',
+    database_version: '104.4',
     common_name: 'Wheat',
     scientific_name: 'Triticum aestivum',
     gencode_version: null,

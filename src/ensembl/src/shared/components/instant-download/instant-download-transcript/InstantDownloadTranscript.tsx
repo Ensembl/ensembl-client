@@ -199,6 +199,7 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
     transcriptOptionsOrder,
     Object.keys(options)
   );
+
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}

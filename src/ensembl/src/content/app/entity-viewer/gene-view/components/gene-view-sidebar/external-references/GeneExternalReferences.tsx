@@ -108,7 +108,7 @@ type Transcript = {
   slice: Pick2<Slice, 'location', 'length'>;
   product_generating_contexts: Array<
     Pick<FullProductGeneratingContext, 'product_type'> & {
-      product: { external_references: ExternalReferenceType[] };
+      product: { external_references: ExternalReferenceType[] } | null;
     }
   >;
   external_references: ExternalReferenceType[];
@@ -223,9 +223,10 @@ const TranscriptXrefs = (props: { transcript: Transcript }) => {
   // Add protein level xrefs
   transcript.product_generating_contexts.forEach(
     (product_generating_context) => {
-      unsortedXrefs.push(
-        ...product_generating_context.product.external_references
-      );
+      product_generating_context.product &&
+        unsortedXrefs.push(
+          ...product_generating_context.product.external_references
+        );
     }
   );
 
