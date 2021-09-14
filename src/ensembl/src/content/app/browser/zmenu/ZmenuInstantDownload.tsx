@@ -21,7 +21,7 @@ import { Pick2 } from 'ts-multipick';
 import { parseFeatureId } from '../browserHelper';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 

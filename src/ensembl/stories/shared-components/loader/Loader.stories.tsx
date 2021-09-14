@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './Loader.stories.scss';
 

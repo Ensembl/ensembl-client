@@ -20,7 +20,7 @@ import isEqual from 'lodash/isEqual';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import { SidebarLoader } from 'ensemblRoot/src/shared/components/loader';
+import { SidebarLoader } from 'src/shared/components/loader';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {

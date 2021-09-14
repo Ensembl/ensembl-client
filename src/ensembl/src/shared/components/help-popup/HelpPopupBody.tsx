@@ -27,7 +27,7 @@ import {
   VideoArticle,
   RelatedArticles
 } from 'src/shared/components/help-article';
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
 import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';

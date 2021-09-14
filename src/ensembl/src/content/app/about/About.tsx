@@ -28,7 +28,7 @@ import {
   TopMenu,
   SideMenu
 } from 'src/content/app/about/components/about-menu/AboutMenu';
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import { TextArticleData } from 'src/shared/types/help-and-docs/article';

@@ -19,7 +19,7 @@ import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
 import { Pick2 } from 'ts-multipick';
 
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
+import { CircleLoader } from 'src/shared/components/loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';

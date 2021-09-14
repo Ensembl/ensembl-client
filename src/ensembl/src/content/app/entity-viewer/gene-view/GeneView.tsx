@@ -55,7 +55,7 @@ import GeneFunction, {
 } from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import { CircleLoader } from 'ensemblRoot/src/shared/components/loader';
+import { CircleLoader } from 'src/shared/components/loader';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
