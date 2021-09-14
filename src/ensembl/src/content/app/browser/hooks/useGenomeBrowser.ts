@@ -16,11 +16,12 @@
 import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import get from 'lodash/get';
-
 import EnsemblGenomeBrowser, {
   OutgoingAction,
   OutgoingActionType
 } from 'ensembl-genome-browser';
+
+import config from 'config';
 
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
@@ -96,11 +97,10 @@ const useGenomeBrowser = () => {
 
   const activateGenomeBrowser = async () => {
     const genomeBrowserService = new EnsemblGenomeBrowser();
-    await genomeBrowserService.init();
+    await genomeBrowserService.init({
+      backend_url: config.genomeBrowserBackendBaseUrl
+    });
     if (setGenomeBrowser) {
-      genomeBrowserService.send({
-        type: OutgoingActionType.ACTIVATE_BROWSER
-      });
       setGenomeBrowser(genomeBrowserService);
     }
   };
