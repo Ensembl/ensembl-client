@@ -65,9 +65,15 @@ const useGenomeBrowser = () => {
 
     Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
+        // FIXME: RUST uses `gene-nonpc` & track categories endpoint uses `gene-other`
+        const track_id =
+          trackId === 'track:gene-feat'
+            ? 'focus'
+            : trackId.replace('track:', '').replace('other', 'nonpc');
+
         trackStates[trackId] === Status.SELECTED
-          ? tracksToTurnOn.push(trackId.replace('track:', ''))
-          : tracksToTurnOff.push(trackId.replace('track:', ''));
+          ? tracksToTurnOn.push(track_id)
+          : tracksToTurnOff.push(track_id);
       });
     });
 
