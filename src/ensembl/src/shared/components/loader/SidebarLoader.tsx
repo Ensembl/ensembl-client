@@ -24,7 +24,7 @@ type Props = {
 };
 
 const SidebarLoader = (props: Props) => {
-  const className = classNames(styles.listLoader, props.className);
+  const className = classNames(styles.sidebarLoader, props.className);
 
   return (
     <div className={className}>

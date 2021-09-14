@@ -22,8 +22,8 @@ import { TrackPanel, TrackPanelProps } from './TrackPanel';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
 
-jest.mock('src/shared/components/loader/Loader', () => ({
-  ListLoader: () => <div className="listLoader" />
+jest.mock('src/shared/components/loader', () => ({
+  SidebarLoader: () => <div className="sidebarLoader" />
 }));
 
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
@@ -58,7 +58,7 @@ describe('<TrackPanel />', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
       const { container } = renderTrackPanel();
-      expect(container.querySelector('.listLoader')).toBeTruthy();
+      expect(container.querySelector('.sidebarLoader')).toBeTruthy();
     });
 
     it('renders TrackPanelList when necessary requirements are satisfied', () => {
