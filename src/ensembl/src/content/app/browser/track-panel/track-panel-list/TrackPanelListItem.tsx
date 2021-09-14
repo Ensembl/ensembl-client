@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent, ReactNode, useCallback } from 'react';
+import React, { MouseEvent, ReactNode, useCallback, useEffect } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -192,7 +192,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     }
   }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
 
-  const updateGenomeBrowser = (status: Status) => {
+  useEffect(() => {
+    updateGenomeBrowser(trackStatus);
+  }, []);
+
+  const updateGenomeBrowser = (status?: Status) => {
     const isTurnedOn = status === Status.SELECTED;
 
     const track_id = track.track_id
