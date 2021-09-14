@@ -16,17 +16,17 @@
 
 import React from 'react';
 
-import { CircleLoader } from 'src/shared/components/loader';
+import { SidebarLoader } from 'src/shared/components/loader';
 
-import styles from './Loader.stories.scss';
+import styles from './SidebarLoader.stories.scss';
 
 export default {
-  title: 'Components/Shared Components/Loader'
+  title: 'Components/Shared Components/SidebarLoader'
 };
 
 export const FullPageLoader = () => (
   <div className={styles.fullPageWrapper}>
-    <CircleLoader />
+    <SidebarLoader />
   </div>
 );
 
