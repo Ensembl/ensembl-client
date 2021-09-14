@@ -58,8 +58,7 @@ const ZmenuController = (props: Props) => {
   const handleZmenuCreate = (action: IncomingAction) => {
     const payload = action.payload as ZmenuPayload;
 
-    payload.content[0].metadata.type === 'transcript' &&
-      props.changeHighlightedTrackId(payload.content[0].metadata.transcript_id);
+    props.changeHighlightedTrackId(payload.content[0].metadata.track);
 
     setZmenus &&
       setZmenus({
