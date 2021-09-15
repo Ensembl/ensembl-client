@@ -49,6 +49,7 @@
     "graphql": "15.5.1",
     "graphql-request": "3.5.0",
     "http-proxy-middleware": "2.0.1",
+    "idb": "6.1.2",
     "lodash": "4.17.21",
     "query-string": "7.0.1",
     "react": "17.0.2",
