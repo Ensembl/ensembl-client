@@ -3,6 +3,7 @@
 .sidebarLoader {
   box-sizing: border-box;
   display: flex;
+  margin: 12px 0 0 10px;
   flex-direction: column;
   height: 100%;
 
@@ -11,11 +12,11 @@
   }
 
   div {
-    background-color: $medium-light-grey;
+    background-color: $light-grey;
     border-radius: 20px;
     height: 9px;
     margin-bottom: 10px;
-    animation: blinking-background 0.15s linear;
+    animation: fading 0.5s ease-in;
   }
 
   .listHeading {
@@ -27,16 +28,16 @@
   }
 
   .longItem {
-    width: 100%;
+    width: 85%;
   }
 }
 
-@keyframes blinking-background {
-  0%, 50%, 100% {
-    background-color: $light-grey;
+@keyframes fading {
+  0%{
+    opacity: 0.1;
   }
 
-  25%, 75% {
-    background-color: $medium-light-grey;
+  100% {
+    opacity: 1;
   }
 }
