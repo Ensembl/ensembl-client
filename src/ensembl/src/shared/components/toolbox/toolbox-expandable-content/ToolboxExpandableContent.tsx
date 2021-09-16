@@ -17,7 +17,7 @@
 import React, { useState, useContext, ReactNode } from 'react';
 import noop from 'lodash/noop';
 
-import Chevron from 'src/shared/components/chevron/Chevron';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import styles from './ToolboxExpandableContent.scss';
 
@@ -68,14 +68,11 @@ export const ToggleButton = (props: ToggleButtonProps) => {
   };
 
   return (
-    <span className={styles.toggleButton} onClick={handleClick}>
-      <span className={styles.label}>{props.label}</span>
-      <Chevron
-        direction={isExpanded ? 'up' : 'down'}
-        animate={true}
-        classNames={{ svg: styles.chevron }}
-      />
-    </span>
+    <ShowHide
+      label={props.label}
+      onClick={handleClick}
+      isExpanded={isExpanded}
+    />
   );
 };
 
