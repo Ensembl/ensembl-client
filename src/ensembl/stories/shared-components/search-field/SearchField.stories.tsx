@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 
 import SearchField from 'src/shared/components/search-field/SearchField';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import styles from './SearchField.stories.scss';
 
