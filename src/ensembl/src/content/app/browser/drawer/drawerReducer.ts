@@ -42,6 +42,14 @@ export default function drawer(
           ...action.payload
         }
       };
+    case getType(drawerActions.setActiveDrawerTranscriptId):
+      return {
+        ...state,
+        activeDrawerTranscriptIds: {
+          ...state.activeDrawerTranscriptIds,
+          ...action.payload
+        }
+      };
     default:
       return state;
   }

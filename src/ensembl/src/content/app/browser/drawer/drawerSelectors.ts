@@ -35,3 +35,10 @@ export const getActiveDrawerTrackId = (state: RootState) => {
     ? state.drawer.activeDrawerTrackIds[activeGenomeId]
     : null;
 };
+
+export const getActiveDrawerTranscriptId = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? state.drawer.activeDrawerTranscriptIds[activeGenomeId]
+    : null;
+};

@@ -25,10 +25,12 @@ export type DrawerState = Readonly<{
   isDrawerOpened: { [genomeId: string]: boolean };
   drawerView: { [genomeId: string]: DrawerView | null };
   activeDrawerTrackIds: { [genomeId: string]: string | null };
+  activeDrawerTranscriptIds: { [genomeId: string]: string | null };
 }>;
 
 export const defaultDrawerState = {
   isDrawerOpened: {},
   drawerView: {},
-  activeDrawerTrackIds: {}
+  activeDrawerTrackIds: {},
+  activeDrawerTranscriptIds: {}
 };

@@ -22,6 +22,7 @@ import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeB
 import { getBrowserTrackStates } from 'src/content/app/browser/browserSelectors';
 
 import { getTranscriptMetadata as getTranscriptSupportLevel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import TrackPanelListItem from './TrackPanelListItem';
 
@@ -32,6 +33,7 @@ import type {
   TrackPanelGene as TrackPanelGeneType,
   TrackPanelTranscript as TrackPanelTranscriptType
 } from 'src/content/app/browser/state/types/track-panel-gene';
+import { ProductType } from 'src/shared/types/thoas/product';
 
 type TrackPanelGeneProps = {
   genomeId: string;
@@ -41,7 +43,7 @@ type TrackPanelGeneProps = {
 
 // TODO: change track ids
 const GENE_TRACK_ID = 'track:gene-feat';
-const TRANSCRIPT_TRACK_ID = 'track:gene-feat-1';
+const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
 
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, ensObjectId } = props;
@@ -63,7 +65,23 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
 
   const { gene } = data;
   const geneTrackStatus = trackStatusGetter(GENE_TRACK_ID);
-  const transcriptTrackStatus = trackStatusGetter(TRANSCRIPT_TRACK_ID);
+
+  const getTranscriptTracks = () =>
+    prepareTranscriptsTrackData(gene).map((transcriptTrackData) => {
+      const transcriptTrackStatus = trackStatusGetter(
+        transcriptTrackData.track_id
+      );
+
+      return (
+        <TrackPanelListItem
+          key={transcriptTrackData.label}
+          categoryName="main"
+          trackStatus={transcriptTrackStatus}
+          defaultTrackStatus={Status.SELECTED}
+          track={transcriptTrackData}
+        />
+      );
+    });
 
   return (
     <div>
@@ -73,15 +91,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         defaultTrackStatus={Status.SELECTED}
         track={prepareGeneTrackData(gene)}
       >
-        {prepareTranscriptsTrackData(gene).map((transcriptTrackData) => (
-          <TrackPanelListItem
-            key={transcriptTrackData.label}
-            categoryName="main"
-            trackStatus={transcriptTrackStatus}
-            defaultTrackStatus={Status.SELECTED}
-            track={transcriptTrackData}
-          />
-        ))}
+        {getTranscriptTracks()}
       </TrackPanelListItem>
     </div>
   );
@@ -101,22 +111,36 @@ const prepareGeneTrackData = (gene: TrackPanelGeneType): EnsObjectTrack => {
   };
 };
 
+const getTranscriptTrackColour = (transcript: TrackPanelTranscriptType) => {
+  const { product_generating_contexts, metadata } = transcript;
+
+  if (metadata.canonical?.value || metadata.mane?.value) {
+    return 'BLUE';
+  } else if (
+    product_generating_contexts[0].product_type === ProductType.PROTEIN
+  ) {
+    return 'DARK_GREY';
+  } else {
+    return 'GREY';
+  }
+};
+
 const prepareTranscriptsTrackData = (
   gene: TrackPanelGeneType
 ): EnsObjectTrack[] => {
-  const canonicalTranscript = gene.transcripts.find(
-    (transcript) => transcript.metadata.canonical
-  ) as TrackPanelTranscriptType;
-  const canonicalTranscriptTrackData = {
-    label: canonicalTranscript.stable_id,
-    track_id: TRANSCRIPT_TRACK_ID,
-    stable_id: canonicalTranscript.stable_id,
+  const sortedTranscripts = defaultSort(
+    gene.transcripts
+  ) as TrackPanelTranscriptType[];
+
+  return sortedTranscripts.map((transcript, index) => ({
+    label: transcript.stable_id,
+    track_id: getTranscriptTrackId(index),
+    stable_id: transcript.stable_id,
     description: null,
-    colour: 'BLUE',
-    additional_info: canonicalTranscript.metadata.biotype.label,
-    support_level: getTranscriptSupportLevel(canonicalTranscript)?.label
-  };
-  return [canonicalTranscriptTrackData];
+    colour: getTranscriptTrackColour(transcript),
+    additional_info: transcript.metadata.biotype.label,
+    support_level: getTranscriptSupportLevel(transcript)?.label
+  }));
 };
 
 type GetTrackStatusParams = {

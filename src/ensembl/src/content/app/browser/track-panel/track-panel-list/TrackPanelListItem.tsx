@@ -36,8 +36,9 @@ import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/tra
 import {
   changeDrawerView,
   setActiveDrawerTrackId,
+  setActiveDrawerTranscriptId,
   toggleDrawer
-} from '../../drawer/drawerActions';
+} from 'src/content/app/browser/drawer/drawerActions';
 
 import {
   getHighlightedTrackId,
@@ -48,11 +49,11 @@ import {
   getIsDrawerOpened,
   getDrawerView,
   getActiveDrawerTrackId
-} from '../../drawer/drawerSelectors';
+} from 'src/content/app/browser/drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId
-} from '../../browserSelectors';
+} from 'src/content/app/browser/browserSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import Chevron from 'src/shared/components/chevron/Chevron';
@@ -91,7 +92,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     let drawerViewToSet = DrawerView.TRACK_DETAILS;
     if (trackId === 'track:gene-feat') {
       drawerViewToSet = DrawerView.GENE_SUMMARY;
-    } else if (trackId === 'track:gene-feat-1') {
+    } else if (trackId.includes('track:transcript')) {
       drawerViewToSet = DrawerView.TRANSCRIPT_SUMMARY;
     }
     dispatch(changeDrawerView(drawerViewToSet));
@@ -109,6 +110,24 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     });
   };
 
+  const dispatchDrawerActions = () => {
+    if (activeGenomeId) {
+      dispatch(
+        setActiveDrawerTrackId({
+          [activeGenomeId]: trackId
+        })
+      );
+
+      if (trackId.includes('track:transcript')) {
+        dispatch(
+          setActiveDrawerTranscriptId({
+            [activeGenomeId]: track.stable_id
+          })
+        );
+      }
+    }
+  };
+
   const drawerViewListHandler = (event: MouseEvent) => {
     event.preventDefault();
 
@@ -116,13 +135,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       return;
     }
 
-    if (activeGenomeId) {
-      dispatch(
-        setActiveDrawerTrackId({
-          [activeGenomeId]: trackId
-        })
-      );
-    }
+    dispatchDrawerActions();
   };
 
   const drawerViewButtonHandler = useCallback(() => {
@@ -134,13 +147,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       });
     }
 
-    if (activeGenomeId) {
-      dispatch(
-        setActiveDrawerTrackId({
-          [activeGenomeId]: trackId
-        })
-      );
-    }
+    dispatchDrawerActions();
 
     updateDrawerView();
   }, [track.track_id, drawerView, isDrawerOpened, activeGenomeId]);
@@ -160,7 +167,10 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       return;
     }
     // FIXME: Temporary hack until we have a set of proper track names
-    if (track.track_id.startsWith('track:gene')) {
+    if (
+      track.track_id.startsWith('track:gene') ||
+      track.track_id.startsWith('track:transcript')
+    ) {
       dispatch(
         updateTrackStatesAndSave({
           [activeGenomeId]: {
