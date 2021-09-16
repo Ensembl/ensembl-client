@@ -43,20 +43,6 @@
   justify-content: space-between;
 }
 
-.zmenuAppButton {
-  flex: 0 0 auto;
-  height: 20px;
-  width: 20px;
-  margin-left: 16px;
-
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: $white;
-    background-color: $blue;
-  }
-}
-
 .zmenuToggleFooter {
   margin-left: auto;
   color: $blue;

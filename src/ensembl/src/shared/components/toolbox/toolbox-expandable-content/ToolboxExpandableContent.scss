@@ -1,23 +1,5 @@
 @import 'src/styles/common';
 
-$toggleButtonHeight: 14px;
-
 .main {
   position: relative;
 }
-
-.toggleButton {
-  display: inline-block;
-  user-select: none;
-  cursor: pointer;
-
-  .label {
-    color: $blue;
-  }
-
-  .chevron {
-    margin-left: 5px;
-  }
-  
-}
-
