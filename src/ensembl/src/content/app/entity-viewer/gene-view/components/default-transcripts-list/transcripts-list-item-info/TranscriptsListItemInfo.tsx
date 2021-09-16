@@ -142,6 +142,10 @@ export const TranscriptsListItemInfo = (
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
   };
 
+  const handleDownloadLinkClick = () => {
+    dispatch(toggleTranscriptDownload(transcript.stable_id));
+  };
+
   const moreInfoContent = () => {
     return (
       <>
@@ -229,9 +233,7 @@ export const TranscriptsListItemInfo = (
         )}
 
         <ShowHide
-          onClick={() =>
-            dispatch(toggleTranscriptDownload(transcript.stable_id))
-          }
+          onClick={handleDownloadLinkClick}
           label="Download"
           isExpanded={props.expandDownload}
           classNames={{ wrapper: styles.downloadLink }}

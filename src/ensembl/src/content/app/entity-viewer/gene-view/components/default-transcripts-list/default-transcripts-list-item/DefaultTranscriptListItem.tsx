@@ -64,7 +64,7 @@ export const DefaultTranscriptListItem = (
 
   const dispatch = useDispatch();
 
-  const handleToggle = () => {
+  const handleTranscriptClick = () => {
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
   };
 
@@ -76,7 +76,7 @@ export const DefaultTranscriptListItem = (
         <div className={transcriptsListStyles.middle}>
           <div
             className={styles.clickableTranscriptArea}
-            onClick={handleToggle}
+            onClick={handleTranscriptClick}
           >
             <div
               className={styles.transcriptWrapper}
@@ -90,7 +90,10 @@ export const DefaultTranscriptListItem = (
             </div>
           </div>
         </div>
-        <div className={transcriptsListStyles.right} onClick={handleToggle}>
+        <div
+          className={transcriptsListStyles.right}
+          onClick={handleTranscriptClick}
+        >
           <span className={styles.transcriptId}>
             {props.transcript.stable_id}
           </span>
