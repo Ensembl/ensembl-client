@@ -29,12 +29,15 @@ import {
   buildFocusIdForUrl,
   getDisplayStableId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import QuestionButton from 'ensemblRoot/src/shared/components/question-button/QuestionButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -129,13 +132,26 @@ const GeneSummary = () => {
         <div className={styles.label}>Gene</div>
         <div className={styles.value}>
           <div className={styles.featureDetails}>
-            {gene.symbol && (
-              <span className={styles.featureSymbol}>{gene.symbol}</span>
+            <div className={styles.featureDetail}>
+              {gene.symbol && (
+                <span className={styles.featureSymbol}>{gene.symbol}</span>
+              )}
+              <span className={styles.stableId}>{stableId}</span>
+            </div>
+            <div className={styles.featureDetail}>
+              <span>{gene.metadata.biotype.label}</span>
+              <div className={styles.questionButton}>
+                <QuestionButton helpText={gene.metadata.biotype.definition} />
+              </div>
+            </div>
+            {gene.slice.strand.code && (
+              <div className={styles.featureDetail}>
+                <span>{getStrandDisplayName(gene.slice.strand.code)}</span>
+              </div>
             )}
-            <span className={styles.stableId}>{stableId}</span>
-            <div>{gene.metadata.biotype.label}</div>
-            <div>{getStrandDisplayName(gene.slice.strand.code)}</div>
-            <div>{getFormattedLocation(ensObjectGene.location)}</div>
+            <div className={styles.featureDetail}>
+              <span>{getFormattedLocation(ensObjectGene.location)}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -165,18 +181,18 @@ const GeneSummary = () => {
 
       <div className={rowClasses}>
         <div className={styles.value}>
-          {`${gene.transcripts.length} transcripts`}
+          {gene.transcripts.length}{' '}
+          {pluralise('transcript', gene.transcripts.length)}
         </div>
       </div>
 
       <div className={classNames(rowClasses, styles.downloadRow)}>
         <div className={styles.value}>
-          <div
-            className={styles.downloadLink}
+          <ShowHide
+            label="Download"
+            isExpanded={shouldShowDownload}
             onClick={() => showDownload(!shouldShowDownload)}
-          >
-            Download
-          </div>
+          />
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadGene

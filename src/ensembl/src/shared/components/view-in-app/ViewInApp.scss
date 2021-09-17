@@ -1,7 +1,8 @@
 @import 'src/styles/common';
 
 .label {
-  color: $grey;
+  color: $black;
+  font-weight: 300;
   white-space: nowrap;
   font-size: 12px;
 }

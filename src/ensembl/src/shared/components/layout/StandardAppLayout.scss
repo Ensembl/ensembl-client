@@ -146,6 +146,6 @@ $drawerWindowWidth: 45px;
 
 .drawerClose {
   position: absolute;
-  right: calc(#{$drawerWindowWidth} + 10px);
-  top: 10px;
+  right: calc(#{$drawerWindowWidth} + 30px);
+  top: 15px;
 }
