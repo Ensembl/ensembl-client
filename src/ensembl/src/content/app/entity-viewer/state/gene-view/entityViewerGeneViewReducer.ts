@@ -18,10 +18,8 @@ import { combineReducers } from 'redux';
 
 import geneViewViewReducer from './view/geneViewViewSlice';
 import geneViewTranscriptsReducer from './transcripts/geneViewTranscriptsSlice';
-import geneViewProteinsReducer from './proteins/geneViewProteinsSlice';
 
 export default combineReducers({
   view: geneViewViewReducer,
-  transcripts: geneViewTranscriptsReducer,
-  proteins: geneViewProteinsReducer
+  transcripts: geneViewTranscriptsReducer
 });
