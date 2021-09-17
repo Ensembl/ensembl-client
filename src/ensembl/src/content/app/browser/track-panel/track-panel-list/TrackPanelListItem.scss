@@ -52,31 +52,23 @@
   }
 
   .box {
-    border: 1px solid;
     display: inline-block;
-    height: 11px;
+    height: 12px;
     margin-right: 10px;
     position: relative;
     top: 1px;
-    width: 11px;
+    width: 12px;
 
     &.blue {
       background: $blue;
-      border-color: $blue;
     }
 
     &.darkGrey {
       background: $dark-grey;
-      border-color: $dark-grey;
     }
 
-    &.grey {
-      background: $grey;
-      border-color: $grey;
-    }
-
-    &.white {
-      background: $white;
+    &.lightGrey {
+      background: $medium-light-grey;
     }
   }
 }

@@ -111,17 +111,20 @@ const prepareGeneTrackData = (gene: TrackPanelGeneType): EnsObjectTrack => {
   };
 };
 
-const getTranscriptTrackColour = (transcript: TrackPanelTranscriptType) => {
-  const { product_generating_contexts, metadata } = transcript;
+const getTranscriptTrackColour = (
+  transcript: TrackPanelTranscriptType,
+  index: number
+) => {
+  const { product_generating_contexts } = transcript;
 
-  if (metadata.canonical?.value || metadata.mane?.value) {
+  if (index === 0) {
     return 'BLUE';
   } else if (
     product_generating_contexts[0].product_type === ProductType.PROTEIN
   ) {
     return 'DARK_GREY';
   } else {
-    return 'GREY';
+    return 'LIGHT_GREY';
   }
 };
 
@@ -137,7 +140,7 @@ const prepareTranscriptsTrackData = (
     track_id: getTranscriptTrackId(index),
     stable_id: transcript.stable_id,
     description: null,
-    colour: getTranscriptTrackColour(transcript),
+    colour: getTranscriptTrackColour(transcript, index),
     additional_info: transcript.metadata.biotype.label,
     support_level: getTranscriptSupportLevel(transcript)?.label
   }));
