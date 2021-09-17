@@ -66,11 +66,10 @@ const useGenomeBrowser = () => {
 
     Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
-        // FIXME: RUST uses `gene-nonpc` & track categories endpoint uses `gene-other`
         const track_id =
-          trackId === 'track:gene-feat'
+          trackId === 'track:gene-feat' || trackId === 'track:gene-feat-1'
             ? 'focus'
-            : trackId.replace('track:', '').replace('other', 'nonpc');
+            : trackId.replace('track:', '');
 
         trackStates[trackId] === Status.SELECTED
           ? tracksToTurnOn.push(track_id)
@@ -78,21 +77,26 @@ const useGenomeBrowser = () => {
       });
     });
 
-    const turnOffAction: OutgoingAction = {
-      type: OutgoingActionType.TURN_OFF_TRACKS,
-      payload: {
-        track_ids: tracksToTurnOff
-      }
-    };
+    if (tracksToTurnOn.length) {
+      const turnOnAction: OutgoingAction = {
+        type: OutgoingActionType.TURN_ON_TRACKS,
+        payload: {
+          track_ids: tracksToTurnOn
+        }
+      };
+      genomeBrowser.send(turnOnAction);
+    }
 
-    const turnOnAction: OutgoingAction = {
-      type: OutgoingActionType.TURN_ON_TRACKS,
-      payload: {
-        track_ids: tracksToTurnOn
-      }
-    };
-    genomeBrowser.send(turnOffAction);
-    genomeBrowser.send(turnOnAction);
+    if (tracksToTurnOff.length) {
+      const turnOffAction: OutgoingAction = {
+        type: OutgoingActionType.TURN_OFF_TRACKS,
+        payload: {
+          track_ids: tracksToTurnOff
+        }
+      };
+
+      genomeBrowser.send(turnOffAction);
+    }
   };
 
   const activateGenomeBrowser = async () => {
