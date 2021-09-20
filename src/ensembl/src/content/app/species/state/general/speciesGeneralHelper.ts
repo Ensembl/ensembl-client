@@ -175,7 +175,8 @@ export const sectionGroupsMap: SpeciesStatsSectionGroups = {
   },
   [SpeciesStatsSection.ASSEMBLY]: {
     title: 'Assembly',
-    exampleLinkText: 'Example region',
+    // TODO: Uncomment me when we need to re-enable example region links
+    // exampleLinkText: 'Example region',
     groups: [Groups.ASSEMBLY, Groups.ASSEMBLY_ANALYSIS],
     summaryStatsKeys: [Stats.CHROMOSOMES]
   },
@@ -677,29 +678,31 @@ const getExampleLinks = (props: {
         }
       };
     }
-  } else if (section === SpeciesStatsSection.ASSEMBLY) {
-    const regionExample = exampleFocusObjects.find(
-      (object) => object.type === 'region'
-    );
-
-    const focusId = regionExample?.id
-      ? buildFocusIdForUrl({
-          type: 'region',
-          objectId: regionExample.id
-        })
-      : undefined;
-
-    if (focusId) {
-      exampleLinks = {
-        genomeBrowser: {
-          url: urlFor.browser({
-            genomeId: genome_id,
-            focus: focusId
-          })
-        }
-      };
-    }
   }
+  // TODO: Uncomment me when we need to re-enable example region links
+  // else if (section === SpeciesStatsSection.ASSEMBLY) {
+  //   const regionExample = exampleFocusObjects.find(
+  //     (object) => object.type === 'region'
+  //   );
+
+  //   const focusId = regionExample?.id
+  //     ? buildFocusIdForUrl({
+  //         type: 'region',
+  //         objectId: regionExample.id
+  //       })
+  //     : undefined;
+
+  //   if (focusId) {
+  //     exampleLinks = {
+  //       genomeBrowser: {
+  //         url: urlFor.browser({
+  //           genomeId: genome_id,
+  //           focus: focusId
+  //         })
+  //       }
+  //     };
+  //   }
+  // }
 
   return exampleLinks;
 };
@@ -729,9 +732,8 @@ export const getStatsForSection = (props: {
     }
   });
 
-  const { groups, summaryStatsKeys, exampleLinkText } = sectionGroupsMap[
-    section
-  ];
+  const { groups, summaryStatsKeys, exampleLinkText } =
+    sectionGroupsMap[section];
 
   if (!filteredData || !groups) {
     return;
