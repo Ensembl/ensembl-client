@@ -19,7 +19,7 @@ import analyticsTracking from 'src/services/analytics-service';
 
 import { getCurrentApp } from 'ensemblRoot/src/header/headerSelectors';
 
-const useAnalyticsService = () => {
+const useCommonAnalytics = () => {
   const currentAppName = useSelector(getCurrentApp);
 
   /* Contextual Help */
@@ -34,4 +34,4 @@ const useAnalyticsService = () => {
     trackContextualHelpOpened
   };
 };
-export default useAnalyticsService;
+export default useCommonAnalytics;

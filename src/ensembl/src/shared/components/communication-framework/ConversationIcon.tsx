@@ -17,7 +17,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import useAnalyticsService from 'ensemblRoot/src/shared/hooks/useAnalyticsService';
+import useCommonAnalytics from 'ensemblRoot/src/shared/hooks/useCommonAnalytics';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 import { ReactComponent as ConversationImageIcon } from 'static/img/shared/icon_conversation.svg';
@@ -28,7 +28,7 @@ import styles from './ConversationIcon.scss';
 const ConversationIcon = () => {
   const dispatch = useDispatch();
 
-  const { trackContextualHelpOpened } = useAnalyticsService();
+  const { trackContextualHelpOpened } = useCommonAnalytics();
 
   const onClick = () => {
     trackContextualHelpOpened();

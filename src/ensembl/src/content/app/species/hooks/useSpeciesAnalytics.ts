@@ -16,20 +16,16 @@
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { getSpeciesAnalyticsName } from 'ensemblRoot/src/content/app/species-selector/speciesSelectorHelper';
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-
-enum AnalyticsCategories {
-  SPECIES_PAGE = 'species_page'
-}
 
 const useSpeciesAnalytics = () => {
   const trackDeletedSpecies = (species: CommittedItem) => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_PAGE,
+      category: 'species_page',
       label: speciesNameForAnalytics,
       action: 'remove',
       species: speciesNameForAnalytics
@@ -42,7 +38,7 @@ const useSpeciesAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_PAGE,
+      category: 'species_page',
       label: speciesNameForAnalytics,
       action: updatedStatus,
       species: speciesNameForAnalytics
@@ -54,7 +50,7 @@ const useSpeciesAnalytics = () => {
     sectionName: string
   ) => {
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_PAGE,
+      category: 'species_page',
       action: 'open_section',
       label: sectionName,
       species: getSpeciesAnalyticsName(species)
@@ -66,7 +62,7 @@ const useSpeciesAnalytics = () => {
     exampleLinkType: string
   ) => {
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_PAGE,
+      category: 'species_page',
       action: 'example_link_selected',
       label: exampleLinkType,
       species: getSpeciesAnalyticsName(species)

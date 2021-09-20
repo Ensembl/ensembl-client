@@ -17,22 +17,15 @@ import { useSelector } from 'react-redux';
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { getSpeciesAnalyticsName } from 'ensemblRoot/src/content/app/species-selector/speciesSelectorHelper';
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
-import { getCommittedSpecies } from 'ensemblRoot/src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import {
   PopularSpecies,
   SearchMatch
 } from 'src/content/app/species-selector/types/species-search';
 import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
-
-enum AnalyticsCategories {
-  SELECTED_SPECIES = 'selected_species',
-  SPECIES_SELECTOR = 'species_selector',
-  POPULAR_SPECIES = 'popular_species',
-  SPECIES_SEARCH = 'species_search'
-}
 
 const useSpeciesSelectorAnalytics = () => {
   const committedSpecies = useSelector(getCommittedSpecies);
@@ -42,7 +35,7 @@ const useSpeciesSelectorAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_SEARCH,
+      category: 'species_search',
       action: 'preselect',
       label: speciesNameForAnalytics,
       species: speciesNameForAnalytics
@@ -56,7 +49,7 @@ const useSpeciesSelectorAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.POPULAR_SPECIES,
+      category: 'popular_species',
       action: action,
       label: speciesNameForAnalytics,
       species: speciesNameForAnalytics
@@ -67,7 +60,7 @@ const useSpeciesSelectorAnalytics = () => {
     const speciesNameForAnalytics = getSpeciesAnalyticsName(species);
 
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_SELECTOR,
+      category: 'species_selector',
       label: speciesNameForAnalytics,
       action: 'add',
       species: speciesNameForAnalytics
@@ -84,7 +77,7 @@ const useSpeciesSelectorAnalytics = () => {
       .sort();
 
     analyticsTracking.trackEvent({
-      category: AnalyticsCategories.SPECIES_SELECTOR,
+      category: 'species_selector',
       action: 'select_multiple',
       label: committedSpeciesNames.join(','),
       value: committedSpeciesNames.length,
