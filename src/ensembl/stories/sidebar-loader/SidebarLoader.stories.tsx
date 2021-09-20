@@ -15,16 +15,19 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 
-import styles from './Loader.scss';
+import { SidebarLoader } from 'src/shared/components/loader';
 
-type Props = {
-  className?: string;
+import styles from './SidebarLoader.stories.scss';
+
+export default {
+  title: 'Components/Shared Components/SidebarLoader'
 };
 
-export const CircleLoader = (props: Props) => {
-  const className = classNames(styles.circleLoader, props.className);
+export const FullPageLoader = () => (
+  <div className={styles.fullPageWrapper}>
+    <SidebarLoader />
+  </div>
+);
 
-  return <div className={className} />;
-};
+FullPageLoader.storyName = 'full-page';

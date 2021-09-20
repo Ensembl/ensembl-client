@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
-
-import geneViewViewReducer from './view/geneViewViewSlice';
-import geneViewTranscriptsReducer from './transcripts/geneViewTranscriptsSlice';
-
-export default combineReducers({
-  view: geneViewViewReducer,
-  transcripts: geneViewTranscriptsReducer
-});
+export { default as CircleLoader } from './CircleLoader';
+export { default as SidebarLoader } from './SidebarLoader';

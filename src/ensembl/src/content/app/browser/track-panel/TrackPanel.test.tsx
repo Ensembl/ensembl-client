@@ -30,6 +30,10 @@ jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   restoreBrowserTrackStates: jest.fn()
 }));
 
+jest.mock('src/shared/components/loader', () => ({
+  SidebarLoader: () => <div className="sidebarLoader" />
+}));
+
 jest.mock('./track-panel-bar/TrackPanelBar', () => () => (
   <div className="trackPanel" />
 ));
@@ -61,7 +65,7 @@ describe('<TrackPanel />', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
       const { container } = renderTrackPanel();
-      expect(container.firstChild).toBeFalsy();
+      expect(container.querySelector('.sidebarLoader')).toBeTruthy();
     });
 
     it('renders TrackPanelList when necessary requirements are satisfied', () => {

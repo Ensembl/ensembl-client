@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import UnsplicedTranscript, {
   UnsplicedTranscriptProps
@@ -47,7 +47,6 @@ export type DefaultTranscriptListItemProps = {
   expandTranscript: boolean;
   expandDownload: boolean;
   expandMoreInfo: boolean;
-  toggleTranscriptInfo: (id: string) => void;
 };
 
 export const DefaultTranscriptListItem = (
@@ -63,6 +62,12 @@ export const DefaultTranscriptListItem = (
   const transcriptStartX = scale(relativeTranscriptStart) as number;
   const transcriptWidth = scale(transcriptLength) as number;
 
+  const dispatch = useDispatch();
+
+  const handleTranscriptClick = () => {
+    dispatch(toggleTranscriptInfo(props.transcript.stable_id));
+  };
+
   return (
     <div className={styles.defaultTranscriptListItem}>
       <div className={transcriptsListStyles.row}>
@@ -71,9 +76,7 @@ export const DefaultTranscriptListItem = (
         <div className={transcriptsListStyles.middle}>
           <div
             className={styles.clickableTranscriptArea}
-            onClick={() =>
-              props.toggleTranscriptInfo(props.transcript.stable_id)
-            }
+            onClick={handleTranscriptClick}
           >
             <div
               className={styles.transcriptWrapper}
@@ -89,7 +92,7 @@ export const DefaultTranscriptListItem = (
         </div>
         <div
           className={transcriptsListStyles.right}
-          onClick={() => props.toggleTranscriptInfo(props.transcript.stable_id)}
+          onClick={handleTranscriptClick}
         >
           <span className={styles.transcriptId}>
             {props.transcript.stable_id}
@@ -108,8 +111,4 @@ export const DefaultTranscriptListItem = (
   );
 };
 
-const mapDispatchToProps = {
-  toggleTranscriptInfo
-};
-
-export default connect(null, mapDispatchToProps)(DefaultTranscriptListItem);
+export default DefaultTranscriptListItem;

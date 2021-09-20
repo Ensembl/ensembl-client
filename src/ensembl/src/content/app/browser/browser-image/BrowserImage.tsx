@@ -25,7 +25,7 @@ import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import {

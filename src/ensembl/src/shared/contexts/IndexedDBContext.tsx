@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React, { createContext, ReactNode } from 'react';
 
-import geneViewViewReducer from './view/geneViewViewSlice';
-import geneViewTranscriptsReducer from './transcripts/geneViewTranscriptsSlice';
+import IndexedDB from 'src/services/indexeddb-service';
 
-export default combineReducers({
-  view: geneViewViewReducer,
-  transcripts: geneViewTranscriptsReducer
-});
+const IndexedDBContext = createContext<typeof IndexedDB>(IndexedDB);
+
+const Provider = ({ children }: { children: ReactNode }) => {
+  return (
+    <IndexedDBContext.Provider value={IndexedDB}>
+      {children}
+    </IndexedDBContext.Provider>
+  );
+};
+
+export { Provider };
+export default IndexedDBContext;

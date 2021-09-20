@@ -32,15 +32,13 @@ export const DefaultStory = () => {
     setIsShowing(!isShowing);
   };
 
-  const downloadElement = <span className={styles.download}>Download</span>;
-
   const mainToolboxContent = (
     <div className={styles.mainToolboxContent}>
       <p>This is main toolbox content</p>
       <p>
         This is the second paragraph
         <span className={styles.toggleButton}>
-          <ToolboxToggleButton openElement={downloadElement} />
+          <ToolboxToggleButton label="Download" />
         </span>
       </p>
     </div>

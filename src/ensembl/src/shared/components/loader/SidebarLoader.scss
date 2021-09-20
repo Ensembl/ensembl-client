@@ -1,0 +1,43 @@
+@import 'src/styles/common';
+
+.sidebarLoader {
+  box-sizing: border-box;
+  display: flex;
+  margin: 12px 0 0 10px;
+  flex-direction: column;
+  height: 100%;
+
+  section {
+    margin-top: 45px;
+  }
+
+  div {
+    background-color: $light-grey;
+    border-radius: 20px;
+    height: 9px;
+    margin-bottom: 10px;
+    animation: fade-in 0.5s ease-in;
+  }
+
+  .listHeading {
+    width: 50%;
+  }
+
+  .shortItem {
+    width: 70%;
+  }
+
+  .longItem {
+    width: 85%;
+  }
+}
+
+@keyframes fade-in {
+  0%{
+    opacity: 0.1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

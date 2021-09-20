@@ -21,11 +21,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId,
-  isFocusObjectPositionDefault
-} from '../browserSelectors';
+import { getBrowserActiveGenomeId } from '../browserSelectors';
 
 import { ToggleButton as ToolboxToggleButton } from 'src/shared/components/toolbox';
 import ViewInApp, { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
@@ -38,8 +34,6 @@ type Props = {
 
 const ZmenuAppLinks = (props: Props) => {
   const genomeId = useSelector(getBrowserActiveGenomeId);
-  const activeFeatureId = useSelector(getBrowserActiveEnsObjectId);
-  const isInDefaultPosition = useSelector(isFocusObjectPositionDefault);
 
   const parsedFeatureId = parseFeatureId(`${genomeId}:${props.featureId}`);
 
@@ -52,33 +46,26 @@ const ZmenuAppLinks = (props: Props) => {
   const getBrowserLink = () =>
     urlFor.browser({ genomeId, focus: featureIdForUrl });
 
-  const getEntityViewerLink = () =>
-    urlFor.entityViewer({
-      genomeId,
-      entityId: featureIdForUrl
-    });
-
-  const shouldShowBrowserButton =
-    props.featureId !== activeFeatureId || !isInDefaultPosition;
-
-  const links: UrlObj = {};
-
-  if (shouldShowBrowserButton) {
-    links['genomeBrowser'] = {
+  const links: UrlObj = {
+    genomeBrowser: {
       url: getBrowserLink(),
       replaceState: true
-    };
-  }
-
-  links['entityViewer'] = { url: getEntityViewerLink() };
+    },
+    entityViewer: {
+      url: urlFor.entityViewer({
+        genomeId,
+        entityId: featureIdForUrl
+      })
+    }
+  };
 
   return (
     <div className={styles.zmenuAppLinks}>
-      <ViewInApp links={links} />
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
-        openElement={<span>Download</span>}
+        label="Download"
       />
+      <ViewInApp links={links} />
     </div>
   );
 };

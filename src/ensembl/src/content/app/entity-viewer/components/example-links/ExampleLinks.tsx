@@ -25,7 +25,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import { RootState } from 'src/store';
 

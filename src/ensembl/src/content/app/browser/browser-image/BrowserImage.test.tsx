@@ -36,7 +36,7 @@ jest.mock('src/content/app/browser/zmenu', () => ({
   ZmenuController: () => <div id="zmenuController" />
 }));
 
-jest.mock('src/shared/components/loader/Loader', () => ({
+jest.mock('src/shared/components/loader', () => ({
   CircleLoader: () => <div id="circleLoader" />
 }));
 

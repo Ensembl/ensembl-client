@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+import React from 'react';
 
-import geneViewViewReducer from './view/geneViewViewSlice';
-import geneViewTranscriptsReducer from './transcripts/geneViewTranscriptsSlice';
+import { CircleLoader } from 'src/shared/components/loader';
 
-export default combineReducers({
-  view: geneViewViewReducer,
-  transcripts: geneViewTranscriptsReducer
-});
+import styles from './CircleLoader.stories.scss';
+
+export default {
+  title: 'Components/Shared Components/CircleLoader'
+};
+
+export const FullPageLoader = () => (
+  <div className={styles.fullPageWrapper}>
+    <CircleLoader />
+  </div>
+);
+
+FullPageLoader.storyName = 'full-page';

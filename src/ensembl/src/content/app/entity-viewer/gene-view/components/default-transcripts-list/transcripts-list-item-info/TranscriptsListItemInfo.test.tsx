@@ -17,7 +17,9 @@
 import React from 'react';
 import faker from 'faker';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router';
 
 import {
@@ -97,17 +99,43 @@ const defaultProps = {
   gene,
   transcript,
   expandDownload,
-  expandMoreInfo,
-  toggleTranscriptDownload: jest.fn(),
-  toggleTranscriptMoreInfo: jest.fn(),
-  onProteinLinkClick: jest.fn()
+  expandMoreInfo
 };
 
+const mockStore = configureMockStore([thunk]);
+let store: ReturnType<typeof mockStore>;
+
+const mockState = {
+  entityViewer: {
+    general: {
+      activeGenomeId: 'human',
+      activeEntityIds: {
+        human: 'gene:brca2'
+      }
+    },
+    geneView: {
+      transcripts: {
+        human: {
+          'gene:brca2': {
+            expandedIds: [],
+            expandedDownloadIds: [],
+            expandedMoreInfoIds: [],
+            filters: [],
+            sortingRule: 'default'
+          }
+        }
+      }
+    }
+  }
+};
 const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
+  store = mockStore(mockState);
   return render(
-    <MemoryRouter>
-      <TranscriptsListItemInfo {...defaultProps} {...props} />
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter>
+        <TranscriptsListItemInfo {...defaultProps} {...props} />
+      </MemoryRouter>
+    </Provider>
   );
 };
 
@@ -143,18 +171,6 @@ describe('<TranscriptsListItemInfo /', () => {
       expandDownload: true
     });
     expect(queryByTestId('instantDownloadTranscript')).toBeTruthy();
-  });
-
-  it('calls correct callback when protein link is clicked', () => {
-    const { container } = renderComponent();
-    const proteinId =
-      defaultProps.transcript.product_generating_contexts[0].product?.stable_id;
-    const proteinLink = [...container.querySelectorAll('a')].find(
-      (link) => link.textContent === proteinId
-    ) as HTMLElement;
-
-    userEvent.click(proteinLink);
-    expect(defaultProps.onProteinLinkClick).toHaveBeenCalled();
   });
 
   it('displays metadata when it is available', () => {

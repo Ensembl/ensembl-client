@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
+import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -28,6 +31,7 @@ import {
   createGene,
   createRulerTicks
 } from 'tests/fixtures/entity-viewer/gene';
+import { updateExpandedTranscripts } from 'ensemblRoot/src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 jest.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
   <div data-test-id="transcriptsListItemInfo">TranscriptsListItemInfo</div>
@@ -38,7 +42,30 @@ jest.mock(
   () => () => <div data-test-id="unsplicedTranscript">UnsplicedTranscript</div>
 );
 
-const toggleTranscriptInfo = jest.fn();
+const mockStore = configureMockStore([thunk]);
+
+const mockState = {
+  entityViewer: {
+    general: {
+      activeGenomeId: 'human',
+      activeEntityIds: {
+        human: 'gene:brca2'
+      }
+    },
+    geneView: {
+      transcripts: {
+        human: {
+          'gene:brca2': {
+            expandedIds: [],
+            expandedDownloadIds: [],
+            filters: [],
+            sortingRule: 'default'
+          }
+        }
+      }
+    }
+  }
+};
 
 describe('<DefaultTranscriptListItem />', () => {
   beforeEach(() => {
@@ -51,12 +78,19 @@ describe('<DefaultTranscriptListItem />', () => {
     rulerTicks: createRulerTicks(),
     expandTranscript: false,
     expandDownload: false,
-    expandMoreInfo: false,
-    toggleTranscriptInfo: toggleTranscriptInfo
+    expandMoreInfo: false
   };
 
-  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) =>
-    render(<DefaultTranscriptListItem {...defaultProps} {...props} />);
+  let store: ReturnType<typeof mockStore>;
+
+  const renderComponent = (props?: Partial<DefaultTranscriptListItemProps>) => {
+    store = mockStore(mockState);
+    return render(
+      <Provider store={store}>
+        <DefaultTranscriptListItem {...defaultProps} {...props} />
+      </Provider>
+    );
+  };
 
   it('displays unspliced transcript', () => {
     const { queryByTestId } = renderComponent();
@@ -71,10 +105,19 @@ describe('<DefaultTranscriptListItem />', () => {
     const transcriptLabel = container.querySelector('.right') as HTMLElement;
 
     userEvent.click(clickableArea);
-    expect(toggleTranscriptInfo).toHaveBeenCalledTimes(1);
+
+    expect(
+      store
+        .getActions()
+        .filter((action) => action.type === updateExpandedTranscripts.type)
+    ).toHaveLength(1);
 
     userEvent.click(transcriptLabel);
-    expect(toggleTranscriptInfo).toHaveBeenCalledTimes(2);
+    expect(
+      store
+        .getActions()
+        .filter((action) => action.type === updateExpandedTranscripts.type)
+    ).toHaveLength(2);
   });
 
   it('hides transcript info by default', () => {
