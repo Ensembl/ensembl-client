@@ -33,7 +33,7 @@ import { RootState } from 'src/store';
 import styles from './SpeciesCommitButton.scss';
 
 type Props = {
-  currentSpecies: CurrentItem | null;
+  currentSpecies?: CurrentItem;
   disabled: boolean;
   onCommit: () => void;
 };
