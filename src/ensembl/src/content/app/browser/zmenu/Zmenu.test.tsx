@@ -51,9 +51,7 @@ const defaultProps: ZmenuProps = {
   },
   content: createZmenuContent() as ZmenuContentFeature[],
   id: faker.lorem.words(),
-  unversioned_id: faker.lorem.words(),
-  onEnter: jest.fn(),
-  onLeave: jest.fn()
+  unversioned_id: faker.lorem.words()
 };
 
 const mockStore = configureMockStore();

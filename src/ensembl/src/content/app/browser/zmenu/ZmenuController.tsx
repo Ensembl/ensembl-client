@@ -18,9 +18,7 @@ import React, { useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 
 import {
-  OutgoingAction,
   IncomingAction,
-  OutgoingActionType,
   IncomingActionType,
   ZmenuPayload
 } from 'ensembl-genome-browser';
@@ -67,35 +65,11 @@ const ZmenuController = (props: Props) => {
       });
   };
 
-  const handleZmenuEnter = (id: string) => {
-    const action: OutgoingAction = {
-      payload: {
-        id
-      },
-      type: OutgoingActionType.ZMENU_ENTER
-    };
-    genomeBrowser?.send(action);
-  };
-
-  const handleZmenuLeave = (id: string) => {
-    const action: OutgoingAction = {
-      payload: { id },
-      type: OutgoingActionType.ZMENU_LEAVE
-    };
-    genomeBrowser?.send(action);
-  };
-
   if (!zmenus) {
     return null;
   }
   const zmenuElements = Object.keys(zmenus).map((id) => (
-    <Zmenu
-      key={id}
-      browserRef={props.browserRef}
-      onEnter={handleZmenuEnter}
-      onLeave={handleZmenuLeave}
-      {...zmenus[id]}
-    />
+    <Zmenu key={id} browserRef={props.browserRef} {...zmenus[id]} />
   ));
 
   return <>{zmenuElements}</>;

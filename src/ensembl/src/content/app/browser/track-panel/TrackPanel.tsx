@@ -33,7 +33,6 @@ import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-import { RootState } from 'src/store';
 
 export type TrackPanelProps = {
   activeGenomeId: string | null;

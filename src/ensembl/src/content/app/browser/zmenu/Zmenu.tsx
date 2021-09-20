@@ -42,8 +42,6 @@ enum Direction {
 
 export type ZmenuProps = ZmenuPayload & {
   browserRef: React.RefObject<HTMLDivElement>;
-  onEnter: (id: string) => void;
-  onLeave: (id: string) => void;
 };
 
 const Zmenu = (props: ZmenuProps) => {
