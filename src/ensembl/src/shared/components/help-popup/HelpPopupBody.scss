@@ -35,13 +35,6 @@ $heading-outdent: 16px;
   position: relative;
 }
 
-.historyButtons {
-  position: absolute;
-  top: 16px;
-  line-height: 0;
-  right: 70px;
-}
-
 .historyButton {
   width: 18px;
   height: 18px;
@@ -58,5 +51,15 @@ $heading-outdent: 16px;
 
   &Inactive {
     fill: $grey;
+  }
+}
+
+.aside {
+  grid-column: aside;
+
+  h2 {
+    font-size: 13px;
+    font-weight: $light;
+    margin: 1.5rem 0;
   }
 }

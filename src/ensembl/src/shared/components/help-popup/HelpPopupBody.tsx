@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
-import classNames from 'classnames';
+import React, { useState, useEffect, useRef } from 'react';
 
 import HelpPopupHistory from './helpPopupHistory';
 
@@ -28,9 +27,7 @@ import {
   RelatedArticles
 } from 'src/shared/components/help-article';
 import { CircleLoader } from 'src/shared/components/loader';
-
-import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
-import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
+import HistoryButtons from '../help-article/HistoryButtons';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import { SlugReference } from './types';
@@ -68,21 +65,12 @@ const HelpPopupBody = (props: Props) => {
     }
   };
 
-  const historyButtons = (
-    <HistoryButtons
-      historyRef={historyRef}
-      onHistoryBack={onHistoryBack}
-      onHistoryForward={onHistoryForward}
-    />
-  );
-
   if (loadingState === LoadingState.LOADING) {
     return (
       <>
         <div className={styles.spinnerContainer}>
           <CircleLoader />
         </div>
-        {historyButtons}
       </>
     );
   }
@@ -97,49 +85,24 @@ const HelpPopupBody = (props: Props) => {
             <VideoArticle video={article} />
           )}
           {article.related_articles.length > 0 && (
-            <RelatedArticles
-              articles={article.related_articles}
-              onArticleClick={onRelatedItemClick}
-            />
+            <aside className={styles.aside}>
+              <HistoryButtons
+                historyRef={historyRef}
+                onHistoryBack={onHistoryBack}
+                onHistoryForward={onHistoryForward}
+              />
+              <RelatedArticles
+                articles={article.related_articles}
+                onArticleClick={onRelatedItemClick}
+              />
+            </aside>
           )}
         </HelpArticleGrid>
-        {historyButtons}
       </>
     );
   } else {
     return null;
   }
-};
-
-type HistoryButtonsProps = {
-  historyRef: MutableRefObject<HelpPopupHistory | null>;
-  onHistoryBack: () => void;
-  onHistoryForward: () => void;
-};
-const HistoryButtons = (props: HistoryButtonsProps) => {
-  const { historyRef, onHistoryBack, onHistoryForward } = props;
-  const historyForwardClasses = classNames(
-    styles.historyButton,
-    historyRef.current?.hasNext()
-      ? styles.historyButtonActive
-      : styles.historyButtonInactive
-  );
-  const historyBackClasses = classNames(
-    styles.historyButton,
-    historyRef.current?.hasPrevious()
-      ? styles.historyButtonActive
-      : styles.historyButtonInactive
-  );
-
-  return (
-    <div className={styles.historyButtons}>
-      <BackIcon className={historyBackClasses} onClick={onHistoryBack} />
-      <ForwardIcon
-        className={historyForwardClasses}
-        onClick={onHistoryForward}
-      />
-    </div>
-  );
 };
 
 export default HelpPopupBody;
