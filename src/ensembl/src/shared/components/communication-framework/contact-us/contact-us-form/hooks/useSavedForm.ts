@@ -65,8 +65,10 @@ const useSavedForm: UseSavedForm = (params) => {
   const isEmptyForm = (state: typeof currentState) => {
     let isEmpty = true;
     for (const value of Object.values(state)) {
-      if (Array.isArray(value) && value.length) {
-        isEmpty = false;
+      if (Array.isArray(value)) {
+        if (value.length) {
+          isEmpty = false;
+        }
       } else if (value !== null && value !== '') {
         isEmpty = false;
       }
