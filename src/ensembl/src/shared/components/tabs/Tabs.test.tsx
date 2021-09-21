@@ -32,11 +32,11 @@ const createTabGroup = (): Tab[] => {
 
   // Make sure we have atleast one enabled and one disabled entry
   options.push({
-    title: faker.random.words(),
+    title: faker.datatype.uuid(),
     isDisabled: true
   });
   options.push({
-    title: faker.random.words(),
+    title: faker.datatype.uuid(),
     isDisabled: false
   });
 
@@ -100,9 +100,8 @@ describe('<Tabs />', () => {
     const unselectedTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && !tab.isDisabled
     );
-    const unselectedTab = container.querySelectorAll('.tab')[
-      unselectedTabIndex
-    ];
+    const unselectedTab =
+      container.querySelectorAll('.tab')[unselectedTabIndex];
 
     userEvent.click(unselectedTab);
 
@@ -114,9 +113,8 @@ describe('<Tabs />', () => {
     const unselectedDisabledTabIndex = tabsData.findIndex(
       (tab) => tab.title !== defaultProps.selectedTab && tab.isDisabled
     );
-    const disabledTab = container.querySelectorAll('.tab')[
-      unselectedDisabledTabIndex
-    ];
+    const disabledTab =
+      container.querySelectorAll('.tab')[unselectedDisabledTabIndex];
 
     userEvent.click(disabledTab);
 
