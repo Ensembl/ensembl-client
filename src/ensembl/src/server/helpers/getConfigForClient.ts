@@ -36,7 +36,6 @@ const getEnvironment = () => {
   };
 };
 
-// TODO: Revert the following change before merging
 const getKeys = () => {
   return {
     googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY ?? ''
