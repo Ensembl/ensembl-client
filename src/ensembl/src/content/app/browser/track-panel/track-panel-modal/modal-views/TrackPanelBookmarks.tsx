@@ -24,7 +24,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { closeTrackPanelModal } from '../../trackPanelActions';
 import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
@@ -37,7 +36,6 @@ export const PreviouslyViewedLinks = () => {
   const previouslyViewedObjects = useSelector(
     getActiveGenomePreviouslyViewedObjects
   ).slice(0, 20);
-  const dispatch = useDispatch();
 
   const onLinkClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -46,8 +44,6 @@ export const PreviouslyViewedLinks = () => {
       action: 'clicked',
       value: index + 1
     });
-
-    dispatch(closeTrackPanelModal());
   };
 
   return (
