@@ -43,7 +43,7 @@ import {
   AccordionItemHeading,
   AccordionItemButton,
   AccordionItemPanel
-} from 'ensemblRoot/src/shared/components/accordion';
+} from 'src/shared/components/accordion';
 
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
