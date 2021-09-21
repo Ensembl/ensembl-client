@@ -22,3 +22,45 @@
   margin-left: 0;
   padding: 4px 10px;
 }
+
+
+
+.accordionContainer {
+  width: 100%;
+
+  .trackPanelAccordion {
+    border: none;
+    margin-top: 30px;
+  }
+  
+  .trackPanelAccordionHeader {
+    background-color: $light-grey;
+    border-radius: 5px;
+  }
+  
+  .trackPanelAccordionButton {
+    color: $blue;
+    padding: 5px 15px 5px 17px;
+    border-radius: 5px;
+    font-size: 12px;
+    &:before,
+    &:after {
+      margin-top: -3px;
+    }
+  
+    &Disabled {
+      color: $grey;
+    }
+  }
+  
+  .trackPanelAccordionItem:not(:first-child) {
+    border-color: transparent;
+  }
+  
+  .trackPanelAccordionItemContent {
+    background-color: transparent;
+    border: none;
+    padding: 10px 0 20px;
+  }
+
+}

@@ -17,6 +17,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
+import classNames from 'classnames';
 
 import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
@@ -36,6 +37,13 @@ import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSele
 
 import TrackPanelListItem from './TrackPanelListItem';
 import TrackPanelGene from './TrackPanelGene';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel
+} from 'ensemblRoot/src/shared/components/accordion';
 
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
@@ -127,20 +135,50 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
           />
         </section>
       ) : null}
-      {currentTrackCategories.map((category: GenomeTrackCategory) => (
-        <section key={category.track_category_id}>
-          <h4>{category.label}</h4>
-          <dl>
-            {category.track_list.length ? (
-              category.track_list.map((track: EnsObjectTrack) =>
-                getTrackListItem(category.track_category_id, track)
-              )
-            ) : (
-              <dd className={styles.emptyListMsg}>No data available</dd>
-            )}
-          </dl>
-        </section>
-      ))}
+      <div className={styles.accordionContainer}>
+        <Accordion
+          className={styles.trackPanelAccordion}
+          allowMultipleExpanded={true}
+        >
+          {currentTrackCategories.map((category: GenomeTrackCategory) => {
+            const accordionButtonClassNames = classNames(
+              styles.trackPanelAccordionButton,
+              {
+                [styles.trackPanelAccordionButtonDisabled]:
+                  !category.track_list.length
+              }
+            );
+
+            return (
+              <AccordionItem
+                className={styles.trackPanelAccordionItem}
+                uuid={category.track_category_id}
+                key={category.track_category_id}
+              >
+                <AccordionItemHeading
+                  className={styles.trackPanelAccordionHeader}
+                >
+                  <AccordionItemButton
+                    className={accordionButtonClassNames}
+                    disabled={!category.track_list.length}
+                  >
+                    {category.label}
+                  </AccordionItemButton>
+                </AccordionItemHeading>
+                <AccordionItemPanel
+                  className={styles.trackPanelAccordionItemContent}
+                >
+                  <dl>
+                    {category.track_list.map((track: EnsObjectTrack) =>
+                      getTrackListItem(category.track_category_id, track)
+                    )}
+                  </dl>
+                </AccordionItemPanel>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </div>
     </div>
   );
 };
