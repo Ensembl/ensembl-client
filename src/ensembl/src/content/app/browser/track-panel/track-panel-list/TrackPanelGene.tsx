@@ -131,9 +131,7 @@ const getTranscriptTrackColour = (
 const prepareTranscriptsTrackData = (
   gene: TrackPanelGeneType
 ): EnsObjectTrack[] => {
-  const sortedTranscripts = defaultSort(
-    gene.transcripts
-  ) as TrackPanelTranscriptType[];
+  const sortedTranscripts = defaultSort(gene.transcripts);
 
   return sortedTranscripts.map((transcript, index) => ({
     label: transcript.stable_id,

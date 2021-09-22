@@ -18,6 +18,7 @@ import { Pick2, Pick3 } from 'ts-multipick';
 
 import type { FullGene } from 'src/shared/types/thoas/gene';
 import type { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 type GeneFields = Pick<
   FullGene,
@@ -29,12 +30,12 @@ type GeneSlice = Pick3<FullGene, 'slice', 'region', 'name'> &
   Pick3<FullGene, 'slice', 'strand', 'code'>;
 type TranscriptFields = Pick<FullTranscript, 'stable_id'>;
 type TranscriptSlice = Pick3<FullTranscript, 'slice', 'location', 'length'>;
-type TranscriptPGCs = Pick3<
-  FullTranscript,
-  'product_generating_contexts',
-  number,
-  'product_type'
->;
+type TranscriptPGCs = {
+  product_generating_contexts: Pick<
+    FullProductGeneratingContext,
+    'product_type'
+  >[];
+};
 type TranscriptMetadata = Pick3<
   FullTranscript,
   'metadata',
