@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
-import useHover from 'src/shared/hooks/useHover';
-
-import { TOOLTIP_TIMEOUT } from 'src/shared/components/tooltip/tooltip-constants';
+import { useQuestionButtonBehavior } from './useQuestionButtonBehavior';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ReactComponent as QuestionIcon } from './question_circle.svg';
@@ -39,36 +37,12 @@ type Props = {
 };
 
 const QuestionButton = (props: Props) => {
-  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
-  const [shouldShowTooltip, setShouldShowTooltip] = useState(isHovered);
-  let timeoutId: number | null = null;
-
-  useEffect(() => {
-    if (isHovered) {
-      timeoutId = window.setTimeout(() => {
-        setShouldShowTooltip(isHovered);
-      }, TOOLTIP_TIMEOUT);
-    }
-
-    return () => {
-      timeoutId && clearTimeout(timeoutId);
-    };
-  }, [isHovered]);
-
-  const handleClick = () => {
-    timeoutId && clearTimeout(timeoutId); // overrides the timer started by hover
-    timeoutId = null;
-    setShouldShowTooltip(!shouldShowTooltip);
-  };
-
-  const hideTooltip = () => {
-    // tooltip will detect when user starts scrolling
-    // and will send a signal to the parent component so that it can be removed
-    setTimeout(() => {
-      // bump this to the next event loop to give the click event time to register and call the click handler
-      shouldShowTooltip && setShouldShowTooltip(false);
-    }, 0);
-  };
+  const {
+    questionButtonRef,
+    onClick,
+    onTooltipCloseSignal,
+    shouldShowTooltip
+  } = useQuestionButtonBehavior();
 
   const className = classNames(
     defaultStyles.questionButton,
@@ -79,13 +53,13 @@ const QuestionButton = (props: Props) => {
   );
 
   return (
-    <div ref={hoverRef} className={className} onClick={handleClick}>
+    <div ref={questionButtonRef} className={className} onClick={onClick}>
       <QuestionIcon />
       {shouldShowTooltip && (
         <Tooltip
-          anchor={hoverRef.current}
+          anchor={questionButtonRef.current}
           autoAdjust={true}
-          onClose={hideTooltip}
+          onClose={onTooltipCloseSignal}
           delay={0}
         >
           {props.helpText}

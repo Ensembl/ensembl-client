@@ -46,6 +46,24 @@ describe('<QuestionButton />', () => {
       });
       expect(queryByText(helpMessage)).toBeTruthy();
     });
+
+    it('hides the tooltip on mouseleave', async () => {
+      const { container, queryByText } = render(
+        <QuestionButton helpText={helpText} />
+      );
+      const questionButton = container.querySelector(
+        '.questionButton'
+      ) as HTMLElement;
+
+      userEvent.hover(questionButton);
+
+      act(() => {
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
+      });
+
+      userEvent.unhover(questionButton);
+      expect(queryByText(helpMessage)).toBeFalsy();
+    });
   });
 
   describe('on click', () => {
@@ -85,6 +103,25 @@ describe('<QuestionButton />', () => {
         // give the Tooltip component a little time to complete its async tasks
         jest.advanceTimersByTime(10);
       });
+      expect(queryByText(helpMessage)).toBeTruthy();
+    });
+
+    it('does not hide the tooltip on mouseleave', () => {
+      const { container, queryByText } = render(
+        <QuestionButton helpText={helpText} />
+      );
+      const questionButton = container.querySelector(
+        '.questionButton'
+      ) as HTMLElement;
+
+      userEvent.click(questionButton);
+
+      act(() => {
+        // give the Tooltip component a little time to complete its async tasks
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
+      });
+
+      userEvent.unhover(questionButton); // <-- should have no effect on the tooltip
       expect(queryByText(helpMessage)).toBeTruthy();
     });
   });
