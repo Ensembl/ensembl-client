@@ -1,19 +1,23 @@
 @import 'src/styles/common';
 
 .label {
-  color: $grey;
+  color: $white;
   white-space: nowrap;
   font-size: 12px;
 }
+
 .viewInAppLinkButtons {
   display: flex;
   align-items: center;
 }
+
 .viewInAppLink {
-  margin-left: 1.1em;
+  margin-left: 20px;
+
   &:first-of-type {
-    margin-left: 0.6em;
+    margin-left: 15px;
   }
+
   svg {
     width: 25px;
     height: 25px;

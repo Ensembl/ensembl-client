@@ -195,7 +195,9 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
-            <strong>{transcript.metadata.biotype.label}</strong>
+            <span className={styles.normalText}>
+              {transcript.metadata.biotype.label}
+            </span>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
@@ -203,18 +205,24 @@ export const TranscriptsListItemInfo = (
           {isProteinCodingTranscript(transcript) && (
             <>
               <div>
-                <strong>{aminoAcidLength} aa</strong>
+                <span className={styles.normalText}>{aminoAcidLength} aa</span>
               </div>
-              {product && getLinkToProteinView(product?.stable_id)}
+              <div className={styles.normalText}>
+                {product && getLinkToProteinView(product?.stable_id)}
+              </div>
             </>
           )}
         </div>
         <div className={styles.topRight}>
           <div>
-            Combined exon length <strong>{splicedRNALength}</strong> bp
+            Combined exon length{' '}
+            <span className={styles.normalText}>{splicedRNALength}</span> bp
           </div>
           <div>
-            Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong>{' '}
+            Coding exons{' '}
+            <span className={styles.normalText}>
+              {getNumberOfCodingExons(transcript)}
+            </span>{' '}
             of {transcript.spliced_exons.length}
           </div>
         </div>
@@ -224,7 +232,10 @@ export const TranscriptsListItemInfo = (
             onClick={() => props.toggleTranscriptMoreInfo(transcript.stable_id)}
             label="More information"
             isExpanded={props.expandMoreInfo}
-            classNames={{ wrapper: styles.moreInformationLink }}
+            classNames={{
+              wrapper: styles.moreInformationLink,
+              label: styles.normalText
+            }}
           />
         )}
 
@@ -236,7 +247,10 @@ export const TranscriptsListItemInfo = (
           onClick={() => props.toggleTranscriptDownload(transcript.stable_id)}
           label="Download"
           isExpanded={props.expandDownload}
-          classNames={{ wrapper: styles.downloadLink }}
+          classNames={{
+            wrapper: styles.downloadLink,
+            label: styles.normalText
+          }}
         />
         {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>

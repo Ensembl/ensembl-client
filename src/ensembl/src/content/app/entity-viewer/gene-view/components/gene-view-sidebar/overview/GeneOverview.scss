@@ -4,12 +4,16 @@
   font-size: 13px;
 }
 
-.marginTop {
+.externalRefContainer {
   margin-top: 6px;
 }
 
+.externalRefLink {
+  font-size: 12px;
+}
+
 .sectionHead {
-  color: $dark-grey;
+  color: $black;
   font-size: 12px;
   font-weight: $light;
   border-bottom: 1px solid $grey;
