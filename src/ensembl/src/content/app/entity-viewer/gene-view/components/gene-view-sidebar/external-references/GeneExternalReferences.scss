@@ -1,8 +1,5 @@
 @import 'src/styles/common';
 
-.xrefsContainer {
-  font-size: 13px;
-}
 .sectionHead {
   font-weight: $light;
   font-size: 12px;
@@ -12,57 +9,24 @@
   margin-top: 20px;
 }
 
-.geneDetails {
-  .geneSymbol {
-    font-weight: $bold;
-    margin-right: 10px;
-  }
-}
-
-.accordionContainer {
-  width: 100%;
-}
-
-.xrefAccordion {
-  border: none;
-  margin-top: 0px;
-  margin-bottom: 10px;
-}
-
-.xrefAccordionHeader {
-  background-color: transparent;
-  border-radius: 0px;
-}
-
-.xrefAccordionButton {
-  color: $blue;
-  padding: 0px;
-  width: auto;
-  padding-right: 60px;
-  grid-template-columns: max-content max-content;
+.listContainer {
   margin-left: 20px;
 }
 
-.xrefAccordionItem:not(:first-child) {
-  border-color: transparent;
+.geneSymbol {
+  font-weight: $bold;
+  margin-right: 10px;
 }
 
-.xrefAccordionItemContent {
-  background-color: transparent;
-  border: none;
-  padding: 5px 0px 5px 20px;
-}
-
-.transcriptId {
-  color: $blue;
-  cursor: pointer;
-}
-.transcriptXrefs {
+.transcriptExternalReferences {
   margin: 10px 0 20px 0;
 }
 
-.externalReferenceContainer{
-  margin-bottom:10px;
-  margin-left: 20px;
+.showHideWrapper,
+.externalReferenceContainer {
+  margin-bottom: 10px;
 }
 
+.externalReferenceContainer {
+  font-size: 13px;
+}
