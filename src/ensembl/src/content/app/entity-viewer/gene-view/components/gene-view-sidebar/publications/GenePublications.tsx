@@ -52,7 +52,13 @@ const GenePublications = (props: Props) => {
     <>
       <div className={geneOverviewStyles.sectionHead}>Publications</div>
 
-      <ExternalReference to={linkToEuroPMC} linkText="Europe PMC" />
+      <ExternalReference
+        to={linkToEuroPMC}
+        linkText="Europe PMC"
+        classNames={{
+          link: geneOverviewStyles.externalRefLink
+        }}
+      />
     </>
   );
 };

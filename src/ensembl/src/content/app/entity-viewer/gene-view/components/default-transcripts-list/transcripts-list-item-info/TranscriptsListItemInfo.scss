@@ -81,6 +81,11 @@
   font-weight: $normal;
 }
 
+.externalRefLink {
+  @extend .normalText;
+  font-size: 12px;
+}
+
 .downloadLink {
   grid-area: downloadLink;
   padding-top: 6px;

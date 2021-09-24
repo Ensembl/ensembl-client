@@ -168,7 +168,10 @@ export const TranscriptsListItemInfo = (
           <div className={styles.moreInfoColumn}>
             {!!transcriptNCBI && (
               <ExternalReference
-                classNames={{ label: styles.normalText }}
+                classNames={{
+                  label: styles.normalText,
+                  link: styles.externalRefLink
+                }}
                 label={'RefSeq match'}
                 to={transcriptNCBI.url}
                 linkText={transcriptNCBI.id}
@@ -176,7 +179,10 @@ export const TranscriptsListItemInfo = (
             )}
             {!!transcriptCCDS && (
               <ExternalReference
-                classNames={{ label: styles.normalText }}
+                classNames={{
+                  label: styles.normalText,
+                  link: styles.externalRefLink
+                }}
                 label={'CCDS'}
                 to={transcriptCCDS.url}
                 linkText={transcriptCCDS.accession_id}
@@ -204,8 +210,8 @@ export const TranscriptsListItemInfo = (
         <div className={styles.topMiddle}>
           {isProteinCodingTranscript(transcript) && (
             <>
-              <div>
-                <span className={styles.normalText}>{aminoAcidLength} aa</span>
+              <div className={styles.normalText} data-test-id="proteinLength">
+                {aminoAcidLength} aa
               </div>
               <div className={styles.normalText}>
                 {product && getLinkToProteinView(product?.stable_id)}
