@@ -239,7 +239,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
           <div className={styles.ellipsisHolder}>
             <ImageButton
               status={Status.DEFAULT}
-              description={`Go to ${track.label}`}
+              description="More information"
               onClick={drawerViewButtonHandler}
               image={Ellipsis}
             />
@@ -247,7 +247,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
           <div className={styles.eyeHolder}>
             <VisibilityIcon
               status={trackStatus}
-              description={'enable/disable track'}
+              description={getVisibilityIconHelpText(trackStatus)}
               onClick={toggleTrack}
             />
           </div>
@@ -256,6 +256,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       {!isCollapsed && props.children}
     </>
   );
+};
+
+const getVisibilityIconHelpText = (status: TrackActivityStatus) => {
+  // TODO: check whether the message is still correct after the half-highlighted eye icon is introduced
+  return status === Status.SELECTED ? 'Hide this track' : 'Show this track';
 };
 
 export default TrackPanelListItem;
