@@ -19,17 +19,27 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
+import { createSelectedSpecies } from 'ensemblRoot/tests/fixtures/selected-species';
+import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
+
+jest.mock(
+  'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
+  () =>
+    jest.fn(() => ({
+      trackCommittedSpecies: jest.fn()
+    }))
+);
 
 const onCommit = jest.fn();
 const defaultProps = {
-  hasCurrentSpecies: true,
+  currentSpecies: createSelectedSpecies() as CurrentItem,
   disabled: false,
   onCommit
 };
 
 describe('<SpeciesCommitButton />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('shows PrimaryButton if a species has been selected', () => {
@@ -39,7 +49,7 @@ describe('<SpeciesCommitButton />', () => {
 
   it('does not show any button if no species has been selected', () => {
     const { container } = render(
-      <SpeciesCommitButton {...defaultProps} hasCurrentSpecies={false} />
+      <SpeciesCommitButton {...defaultProps} currentSpecies={undefined} />
     );
     expect(container.querySelector('button')).toBeFalsy();
   });

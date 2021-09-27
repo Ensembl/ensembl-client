@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useSelector } from 'react-redux';
 
-import faker from 'faker';
+import analyticsTracking from 'src/services/analytics-service';
 
-export const createSelectedSpecies = () => ({
-  genome_id: faker.datatype.uuid(),
-  reference_genome_id: null,
-  common_name: null,
-  scientific_name: faker.lorem.words(),
-  assembly_name: faker.lorem.word(),
-  isEnabled: true,
-  selectedStrainId: null,
-  strains: []
-});
+import { getCurrentApp } from 'ensemblRoot/src/header/headerSelectors';
+
+const useCommonAnalytics = () => {
+  const currentAppName = useSelector(getCurrentApp);
+
+  /* Contextual Help */
+  const trackContextualHelpOpened = () => {
+    analyticsTracking.trackEvent({
+      category: currentAppName,
+      action: 'open_contextual_help'
+    });
+  };
+
+  return {
+    trackContextualHelpOpened
+  };
+};
+export default useCommonAnalytics;
