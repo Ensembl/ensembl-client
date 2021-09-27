@@ -48,6 +48,7 @@ export type TranscriptsStatePerGene = {
   expandedMoreInfoIds: string[];
   filters: Filters;
   sortingRule: SortingRule;
+  filterPanelOpen: filterPanelOpen;
 };
 
 export type GeneViewTranscriptsState = {
@@ -64,13 +65,54 @@ export type Filter = {
 
 export type Filters = Record<string, Filter>;
 
+export type filterPanelOpen = boolean;
+
 const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedIds: [],
   expandedDownloadIds: [],
   expandedMoreInfoIds: [],
   filters: {},
-  sortingRule: SortingRule.DEFAULT
+  sortingRule: SortingRule.DEFAULT,
+  filterPanelOpen: false
 };
+
+export const resetFilterPanel =
+  (): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.updateFilterPanel({
+        activeGenomeId,
+        activeEntityId,
+        filterPanelOpen: defaultStatePerGene.filterPanelOpen
+      })
+    );
+  };
+
+export const setFilterPanel =
+  (
+    filterPanelOpen: filterPanelOpen
+  ): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.updateFilterPanel({
+        activeGenomeId,
+        activeEntityId,
+        filterPanelOpen
+      })
+    );
+  };
 
 export const setFilters =
   (filters: Filters): ThunkAction<void, any, null, Action<string>> =>
@@ -231,6 +273,12 @@ type UpdateSortingRulePayload = {
   sortingRule: SortingRule;
 };
 
+type UpdateFilterPanelOpenPayload = {
+  activeGenomeId: string;
+  activeEntityId: string;
+  filterPanelOpen: filterPanelOpen;
+};
+
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
   initialState: {} as GeneViewTranscriptsState,
@@ -262,6 +310,19 @@ const transcriptsSlice = createSlice({
       return set(
         `${activeGenomeId}.${activeEntityId}.expandedMoreInfoIds`,
         expandedIds,
+        updatedState
+      );
+    },
+    updateFilterPanel(
+      state,
+      action: PayloadAction<UpdateFilterPanelOpenPayload>
+    ) {
+      const { activeGenomeId, activeEntityId, filterPanelOpen } =
+        action.payload;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeEntityId}.filterPanelOpen`,
+        filterPanelOpen,
         updatedState
       );
     },

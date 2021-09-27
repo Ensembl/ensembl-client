@@ -26,6 +26,7 @@ import entityViewerStorageService from 'src/content/app/entity-viewer/services/e
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { resetFilterPanel } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -40,16 +41,12 @@ import { RootState } from 'src/store';
 export type EntityViewerGeneralState = Readonly<{
   activeGenomeId: string | null;
   activeEntityIds: { [genomeId: string]: string };
-  filterPanelOpen: filterPanelOpen;
 }>;
 
 export const initialState: EntityViewerGeneralState = {
   activeGenomeId: null, // FIXME add entity viewer storage service
-  activeEntityIds: {},
-  filterPanelOpen: false
+  activeEntityIds: {}
 };
-
-export type filterPanelOpen = boolean;
 
 export const setDataFromUrl =
   (params: EntityViewerParams): ThunkAction<void, any, null, Action<string>> =>
@@ -95,6 +92,10 @@ export const setDataFromUrl =
         );
       }
 
+      if (activeGenomeId === genomeIdFromUrl && entityId !== activeEntityId) {
+        dispatch(resetFilterPanel());
+      }
+
       entityViewerStorageService.updateGeneralState({
         activeGenomeId: genomeIdFromUrl
       });
@@ -103,19 +104,6 @@ export const setDataFromUrl =
         activeEntityIds: { [genomeIdFromUrl]: entityId }
       });
     }
-  };
-
-export const setFilterPanel =
-  (
-    filterPanelOpen: filterPanelOpen
-  ): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const activeGenomeId = getEntityViewerActiveGenomeId(getState());
-
-    if (!activeGenomeId) {
-      return;
-    }
-    dispatch(updateFilterPanel(filterPanelOpen));
   };
 
 export const setDefaultActiveGenomeId =
@@ -140,9 +128,6 @@ const entityViewerGeneralSlice = createSlice({
     setActiveGenomeId(state, action: PayloadAction<string>) {
       state.activeGenomeId = action.payload;
     },
-    updateFilterPanel(state, action: PayloadAction<boolean>) {
-      state.filterPanelOpen = action.payload;
-    },
     updateActiveEntityForGenome(
       state,
       action: PayloadAction<{ genomeId: string; entityId: string }>
@@ -165,7 +150,6 @@ export const {
   loadInitialState,
   setActiveGenomeId,
   updateActiveEntityForGenome,
-  updateFilterPanel,
   deleteGenome
 } = entityViewerGeneralSlice.actions;
 

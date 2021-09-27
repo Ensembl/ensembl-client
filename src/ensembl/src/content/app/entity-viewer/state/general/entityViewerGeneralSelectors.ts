@@ -33,6 +33,3 @@ export const getEntityViewerActiveEntityId = (state: RootState) => {
 export const getEntityViewerQueryParams = (
   state: RootState
 ): { [key: string]: string } => getQueryParamsMap(state.router.location.search);
-
-export const getFilterPanelOpen = (state: RootState) =>
-  state.entityViewer.general.filterPanelOpen || false;

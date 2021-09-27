@@ -23,7 +23,8 @@ import { RootState } from 'src/store';
 import {
   TranscriptsStatePerGene,
   Filters,
-  SortingRule
+  SortingRule,
+  filterPanelOpen
 } from './geneViewTranscriptsSlice';
 
 const getSliceForGene = (
@@ -66,4 +67,9 @@ export const getFilters = (state: RootState): Filters => {
 export const getSortingRule = (state: RootState): SortingRule => {
   const transcriptsSlice = getSliceForGene(state);
   return transcriptsSlice?.sortingRule ?? SortingRule.DEFAULT;
+};
+
+export const getFilterPanelOpen = (state: RootState): filterPanelOpen => {
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.filterPanelOpen ?? false;
 };
