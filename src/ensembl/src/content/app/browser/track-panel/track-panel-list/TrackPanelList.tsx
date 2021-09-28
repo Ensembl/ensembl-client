@@ -122,6 +122,9 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
     );
   };
 
+  const trackCategoryIds = currentTrackCategories.map(
+    (category) => category.track_category_id
+  );
   return (
     <div className={styles.trackPanelList}>
       {activeEnsObject?.type === 'gene' &&
@@ -139,6 +142,7 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
         <Accordion
           className={styles.trackPanelAccordion}
           allowMultipleExpanded={true}
+          preExpanded={trackCategoryIds}
         >
           {currentTrackCategories.map((category: GenomeTrackCategory) => {
             const accordionButtonClassNames = classNames(
