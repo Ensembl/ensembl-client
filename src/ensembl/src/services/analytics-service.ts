@@ -15,12 +15,11 @@
  */
 
 import ReactGA from 'react-ga';
-import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 
+import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 import config from 'config';
 
-const { googleAnalyticsKey } = config;
-
+const { googleAnalyticsKey, isDevelopment } = config;
 class AnalyticsTracking {
   private reactGA: typeof ReactGA;
 
@@ -49,6 +48,10 @@ class AnalyticsTracking {
       transport: 'xhr',
       value: ga.value
     });
+
+    // eslint-disable-next-line no-console
+    isDevelopment &&
+      console.log(`Analytics event: ${JSON.stringify(ga, undefined, 2)}`);
   }
 
   // Set app custom dimension
