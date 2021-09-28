@@ -26,6 +26,8 @@ import sampleSize from 'lodash/sampleSize';
 
 import { ViewInApp, AppName, Apps, ViewInAppProps, UrlObj } from './ViewInApp';
 
+jest.mock('connected-react-router');
+
 const mockStore = configureMockStore([thunk]);
 const store: ReturnType<typeof mockStore> = mockStore({});
 
@@ -122,6 +124,12 @@ describe('<ViewInApp />', () => {
   });
 
   describe('onClick behaviour', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(router, 'push')
+        .mockImplementation((link) => ({ type: 'push', link } as any));
+    });
+
     it('calls a click handler associated with a single app', () => {
       const links = {
         entityViewer: { url: 'http://foo.com' },
