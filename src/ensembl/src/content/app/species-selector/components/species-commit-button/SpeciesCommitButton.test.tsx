@@ -49,7 +49,7 @@ describe('<SpeciesCommitButton />', () => {
 
   it('does not show any button if no species has been selected', () => {
     const { container } = render(
-      <SpeciesCommitButton {...defaultProps} currentSpecies={undefined} />
+      <SpeciesCommitButton {...defaultProps} currentSpecies={null} />
     );
     expect(container.querySelector('button')).toBeFalsy();
   });
