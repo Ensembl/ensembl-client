@@ -16,18 +16,30 @@
 
 import ReactGA from 'react-ga';
 
+import storageService, {
+  StorageServiceInterface,
+  StorageType
+} from 'src/services/storage-service';
 import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 import config from 'config';
 
-const { googleAnalyticsKey, isDevelopment } = config;
+const options = {
+  storage: StorageType.SESSION_STORAGE
+};
+
+const { googleAnalyticsKey } = config;
+
 class AnalyticsTracking {
   private reactGA: typeof ReactGA;
+  private storageService: StorageServiceInterface;
+  private isTestModeEnabled: boolean | undefined;
 
-  public constructor() {
+  public constructor(storageService: StorageServiceInterface) {
     ReactGA.initialize(googleAnalyticsKey, {
       titleCase: false
     });
     this.reactGA = ReactGA;
+    this.storageService = storageService;
   }
 
   // Track a pageview
@@ -37,6 +49,17 @@ class AnalyticsTracking {
 
   // Track an event
   public trackEvent(ga: AnalyticsOptions) {
+    if (this.isTestModeEnabled === undefined) {
+      this.isTestModeEnabled =
+        this.storageService.get('analytics_test_mode', options) || false;
+    }
+
+    if (this.isTestModeEnabled) {
+      // eslint-disable-next-line no-console
+      console.log(`Analytics event: ${JSON.stringify(ga, undefined, 2)}`);
+      return;
+    }
+
     typeof ga.species === 'string' && this.setSpeciesDimension(ga.species);
     typeof ga.app === 'string' && this.setAppDimension(ga.app);
 
@@ -48,10 +71,6 @@ class AnalyticsTracking {
       transport: 'xhr',
       value: ga.value
     });
-
-    // eslint-disable-next-line no-console
-    isDevelopment &&
-      console.log(`Analytics event: ${JSON.stringify(ga, undefined, 2)}`);
   }
 
   // Set app custom dimension
@@ -65,6 +84,6 @@ class AnalyticsTracking {
   }
 }
 
-const analyticsTracking = new AnalyticsTracking();
+const analyticsTracking = new AnalyticsTracking(storageService);
 
 export default analyticsTracking;
