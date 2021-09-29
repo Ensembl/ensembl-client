@@ -96,14 +96,16 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
           classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
           onOutsideClick={hideTooltip}
         >
-          <MatchDetails {...props} />
+          <MatchDetails {...props} onClick={onClick} />
         </PointerBox>
       )}
     </>
   );
 };
 
-const MatchDetails = (props: InAppSearchMatchProps) => {
+const MatchDetails = (
+  props: InAppSearchMatchProps & { onClick: () => void }
+) => {
   const { match } = props;
   const { genome_id: genomeId, unversioned_stable_id } = match;
 
@@ -154,7 +156,7 @@ const MatchDetails = (props: InAppSearchMatchProps) => {
       </div>
 
       <div>
-        <ViewInApp links={links} />
+        <ViewInApp links={links} onAnyAppClick={props.onClick} />
       </div>
     </div>
   );
