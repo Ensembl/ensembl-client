@@ -48,7 +48,7 @@ export type TranscriptsStatePerGene = {
   expandedMoreInfoIds: string[];
   filters: Filters;
   sortingRule: SortingRule;
-  filterPanelOpen: filterPanelOpen;
+  filterPanelOpen: boolean;
 };
 
 export type GeneViewTranscriptsState = {
@@ -64,8 +64,6 @@ export type Filter = {
 };
 
 export type Filters = Record<string, Filter>;
-
-export type filterPanelOpen = boolean;
 
 const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedIds: [],
@@ -95,9 +93,7 @@ export const resetFilterPanel =
   };
 
 export const setFilterPanel =
-  (
-    filterPanelOpen: filterPanelOpen
-  ): ThunkAction<void, any, null, Action<string>> =>
+  (filterPanelOpen: boolean): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getEntityViewerActiveGenomeId(state);
@@ -276,7 +272,7 @@ type UpdateSortingRulePayload = {
 type UpdateFilterPanelOpenPayload = {
   activeGenomeId: string;
   activeEntityId: string;
-  filterPanelOpen: filterPanelOpen;
+  filterPanelOpen: boolean;
 };
 
 const transcriptsSlice = createSlice({
