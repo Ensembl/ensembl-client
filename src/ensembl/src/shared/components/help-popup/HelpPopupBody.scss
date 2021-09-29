@@ -53,13 +53,3 @@ $heading-outdent: 16px;
     fill: $grey;
   }
 }
-
-.aside {
-  grid-column: aside;
-
-  h2 {
-    font-size: 13px;
-    font-weight: $light;
-    margin: 1.5rem 0;
-  }
-}
