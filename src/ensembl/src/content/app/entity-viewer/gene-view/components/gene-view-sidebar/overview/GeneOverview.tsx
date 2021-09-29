@@ -83,31 +83,42 @@ const GeneOverview = () => {
 
   return (
     <div className={styles.overviewContainer}>
-      <div className={styles.geneDetails}>
-        {!!gene.symbol && (
-          <span className={styles.geneSymbol}>{gene.symbol}</span>
-        )}
-        <span>{gene.stable_id}</span>
-      </div>
+      <section>
+        <div className={styles.sectionContent}>
+          {!!gene.symbol && (
+            <span className={styles.geneSymbol}>{gene.symbol}</span>
+          )}
+          <span>{gene.stable_id}</span>
+        </div>
+      </section>
 
-      <div className={styles.sectionHead}>Gene name</div>
-      <div className={styles.geneName}>{getGeneName(gene.name)}</div>
-      {gene.metadata.name && (
-        <ExternalReference
-          classNames={{
-            container: styles.externalRefContainer,
-            link: styles.externalRefLink
-          }}
-          to={gene.metadata.name.url}
-          linkText={gene.metadata.name.accession_id}
-        />
-      )}
-      <div className={styles.sectionHead}>Synonyms</div>
-      <div className={styles.synonyms}>
-        {gene.alternative_symbols.length
-          ? gene.alternative_symbols.join(', ')
-          : 'None'}
-      </div>
+      <section>
+        <div className={styles.sectionHead}>Gene name</div>
+        <div className={styles.sectionContent}>
+          <div className={styles.geneName}>{getGeneName(gene.name)}</div>
+          {gene.metadata.name && (
+            <ExternalReference
+              classNames={{
+                container: styles.externalRefContainer,
+                link: styles.externalRefLink
+              }}
+              to={gene.metadata.name.url}
+              linkText={gene.metadata.name.accession_id}
+            />
+          )}
+        </div>
+      </section>
+
+      <section>
+        <div className={styles.sectionHead}>Synonyms</div>
+        <div className={styles.sectionContent}>
+          <div className={styles.synonyms}>
+            {gene.alternative_symbols.length
+              ? gene.alternative_symbols.join(', ')
+              : 'None'}
+          </div>
+        </div>
+      </section>
 
       <MainAccordion />
 

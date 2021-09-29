@@ -147,20 +147,24 @@ const GeneExternalReferences = () => {
 
   return (
     <div>
-      <div>
-        <span className={styles.geneSymbol}>{data.gene.symbol}</span>
-        <span>{data.gene.stable_id}</span>
-      </div>
-      <div className={styles.sectionHead}>Gene</div>
-      {data.gene.external_references && (
-        <div className={styles.listContainer}>
-          {renderExternalReferencesGroups(externalReferencesGroups)}
+      <section>
+        <div className={styles.sectionContent}>
+          <span className={styles.geneSymbol}>{data.gene.symbol}</span>
+          <span>{data.gene.stable_id}</span>
         </div>
-      )}
+      </section>
+      <section>
+        <div className={styles.sectionHead}>Gene</div>
+        {data.gene.external_references && (
+          <div className={styles.sectionContent}>
+            {renderExternalReferencesGroups(externalReferencesGroups)}
+          </div>
+        )}
+      </section>
       {sortedTranscripts.length && (
-        <>
+        <section>
           <div className={styles.sectionHead}>Transcripts</div>
-          <div className={styles.listContainer}>
+          <div className={styles.sectionContent}>
             {sortedTranscripts.map((transcript, key) => {
               return (
                 <div key={key}>
@@ -169,7 +173,7 @@ const GeneExternalReferences = () => {
               );
             })}
           </div>
-        </>
+        </section>
       )}
     </div>
   );

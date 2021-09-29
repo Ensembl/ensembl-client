@@ -22,11 +22,13 @@
   margin-top: 20px;
 }
 
-.geneDetails {
-  .geneSymbol {
+.sectionContent {
+  margin-left: 15px;
+}
+
+.geneSymbol {
     font-weight: $bold;
     margin-right: 10px;
-  }
 }
 
 .accordionContainer {
@@ -44,7 +46,7 @@
   
   .entityViewerAccordionButton {
     color: $blue;
-    padding: 5px 0 5px 20px;
+    padding: 5px 0 5px 15px;
     border-radius: 5px;
   
     &:before,
@@ -64,7 +66,7 @@
   .entityViewerAccordionItemContent {
     background-color: transparent;
     border: none;
-    padding: 20px;
+    padding: 15px;
   }
 
 }
