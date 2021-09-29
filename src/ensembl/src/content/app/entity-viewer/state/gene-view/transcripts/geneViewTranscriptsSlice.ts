@@ -269,7 +269,7 @@ type UpdateSortingRulePayload = {
   sortingRule: SortingRule;
 };
 
-type UpdateFilterPanelOpenPayload = {
+type UpdateFilterPanelPayload = {
   activeGenomeId: string;
   activeEntityId: string;
   filterPanelOpen: boolean;
@@ -309,10 +309,7 @@ const transcriptsSlice = createSlice({
         updatedState
       );
     },
-    updateFilterPanel(
-      state,
-      action: PayloadAction<UpdateFilterPanelOpenPayload>
-    ) {
+    updateFilterPanel(state, action: PayloadAction<UpdateFilterPanelPayload>) {
       const { activeGenomeId, activeEntityId, filterPanelOpen } =
         action.payload;
       const updatedState = ensureGenePresence(state, action.payload);
