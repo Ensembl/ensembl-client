@@ -1,6 +1,12 @@
 @import 'src/styles/common';
 @import 'src/content/app/entity-viewer/gene-view/styles/constants';
 
+.transcriptsList {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
 .header {
   border-bottom: 1px solid $orange;
   padding: 0;
