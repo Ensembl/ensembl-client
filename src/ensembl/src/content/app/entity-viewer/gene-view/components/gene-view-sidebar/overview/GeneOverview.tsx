@@ -88,7 +88,7 @@ const GeneOverview = () => {
           {!!gene.symbol && (
             <span className={styles.geneSymbol}>{gene.symbol}</span>
           )}
-          <span>{gene.stable_id}</span>
+          <span data-test-id="stableId">{gene.stable_id}</span>
         </div>
       </section>
 
