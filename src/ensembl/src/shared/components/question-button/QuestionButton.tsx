@@ -17,7 +17,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { useQuestionButtonBehavior } from './useQuestionButtonBehavior';
+import { useQuestionButtonBehaviour } from './useQuestionButtonBehaviour';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ReactComponent as QuestionIcon } from './question_circle.svg';
@@ -42,7 +42,7 @@ const QuestionButton = (props: Props) => {
     onClick,
     onTooltipCloseSignal,
     shouldShowTooltip
-  } = useQuestionButtonBehavior();
+  } = useQuestionButtonBehaviour();
 
   const className = classNames(
     defaultStyles.questionButton,

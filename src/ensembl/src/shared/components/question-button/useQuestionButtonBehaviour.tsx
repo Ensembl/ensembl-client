@@ -57,7 +57,7 @@ const initialState: State = {
   isTooltipShown: false
 };
 
-export const useQuestionButtonBehavior = () => {
+export const useQuestionButtonBehaviour = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
