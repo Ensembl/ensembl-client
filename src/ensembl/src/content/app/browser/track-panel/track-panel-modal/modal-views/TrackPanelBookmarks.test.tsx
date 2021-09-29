@@ -28,7 +28,6 @@ import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { PreviouslyViewedObject } from '../../trackPanelState';
-import * as trackPanelActions from '../../trackPanelActions';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -169,18 +168,6 @@ describe('<TrackPanelBookmarks />', () => {
 
     expect(geneLink.getAttribute('href')).toBe(expectedGeneHref);
     expect(regionLink.getAttribute('href')).toBe(expectedRegionHref);
-  });
-
-  it('closes the bookmarks modal when a bookmark link is clicked', () => {
-    jest.spyOn(trackPanelActions, 'closeTrackPanelModal');
-    const { container } = wrapInRedux();
-    const firstLink = container.querySelector('a');
-
-    userEvent.click(firstLink as HTMLElement);
-
-    expect(trackPanelActions.closeTrackPanelModal).toHaveBeenCalled();
-
-    (trackPanelActions.closeTrackPanelModal as any).mockRestore();
   });
 
   it('shows link to view more only when there are more than 20 objects', () => {

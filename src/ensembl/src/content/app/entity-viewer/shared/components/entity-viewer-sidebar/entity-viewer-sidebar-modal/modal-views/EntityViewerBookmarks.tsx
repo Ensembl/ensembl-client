@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -29,8 +29,6 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
-
-import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
@@ -45,8 +43,6 @@ type PreviouslyViewedLinksProps = {
 };
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
-  const dispatch = useDispatch();
-
   const activeEntityStableId = parseEnsObjectId(props.activeEntityId).objectId;
   const previouslyViewedEntitiesWithoutActiveEntity =
     props.previouslyViewedEntities.filter(
@@ -67,7 +63,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
           return (
             <div key={index} className={styles.linkHolder}>
-              <Link to={path} onClick={() => dispatch(closeSidebarModal())}>
+              <Link to={path}>
                 <TextLine
                   text={previouslyViewedEntity.label}
                   className={styles.label}
