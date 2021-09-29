@@ -27,7 +27,7 @@ import {
   RelatedArticles
 } from 'src/shared/components/help-article';
 import { CircleLoader } from 'src/shared/components/loader';
-import HistoryButtons from '../help-article/HistoryButtons';
+import HistoryButtons from './HistoryButtons';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 import { SlugReference } from './types';
