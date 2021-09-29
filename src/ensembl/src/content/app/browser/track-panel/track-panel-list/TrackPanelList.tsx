@@ -122,9 +122,9 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
     );
   };
 
-  const trackCategoryIds = currentTrackCategories.map(
-    (category) => category.track_category_id
-  );
+  const trackCategoryIds = currentTrackCategories
+    .filter((category) => category.track_list.length)
+    .map((category) => category.track_category_id);
   return (
     <div className={styles.trackPanelList}>
       {activeEnsObject?.type === 'gene' &&
