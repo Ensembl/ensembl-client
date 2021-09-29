@@ -111,6 +111,19 @@ $textColumnWidth: 450px;
   justify-content: center;
 }
 
+.aside {
+  grid-column: aside;
+  position: sticky;
+  top: 0;
+  align-self: start;
+
+  h2 {
+    font-size: 13px;
+    font-weight: $light;
+    margin: 0 0 1rem;
+  }
+}
+
 .relatedArticles {
   display: flex;
   flex-direction: column;
