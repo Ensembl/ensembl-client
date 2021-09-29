@@ -35,7 +35,6 @@ import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelect
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import QuestionButton from 'ensemblRoot/src/shared/components/question-button/QuestionButton';
 
@@ -202,10 +201,6 @@ const GeneSummary = () => {
                   biotype: gene.metadata.biotype.value
                 }}
               />
-              <CloseButton
-                className={styles.closeButton}
-                onClick={() => showDownload(false)}
-              />
             </div>
           )}
         </div>
@@ -213,7 +208,10 @@ const GeneSummary = () => {
 
       <div className={rowClasses}>
         <div className={styles.value}>
-          <ViewInApp links={{ entityViewer: { url: entityViewerUrl } }} />
+          <ViewInApp
+            links={{ entityViewer: { url: entityViewerUrl } }}
+            classNames={{ label: styles.darkText }}
+          />
         </div>
       </div>
     </div>

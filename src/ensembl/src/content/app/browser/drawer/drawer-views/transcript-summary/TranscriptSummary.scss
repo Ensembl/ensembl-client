@@ -33,6 +33,12 @@
   }
 }
 
+.downloadRow {
+  > .value {
+    display: flex;
+  }
+}
+
 .spaceAbove{
   margin-top: 30px;
 }
