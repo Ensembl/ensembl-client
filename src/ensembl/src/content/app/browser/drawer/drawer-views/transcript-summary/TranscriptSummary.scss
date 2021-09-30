@@ -36,6 +36,7 @@
 .downloadRow {
   > .value {
     display: flex;
+    font-size: 12px;
   }
 }
 
@@ -45,6 +46,11 @@
 
 .lightText{
   font-weight: $light;
+}
+
+.darkText {
+  color: $black;
+  font-weight: 300;
 }
 
 .unit{

@@ -372,7 +372,7 @@ const TranscriptSummary = () => {
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           <ViewInApp
-            classNames={{ label: styles.lightText }}
+            classNames={{ label: styles.darkText }}
             links={{ entityViewer: { url: entityViewerUrl } }}
           />
         </div>
