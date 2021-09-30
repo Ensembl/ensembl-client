@@ -1,54 +1,21 @@
 @import 'src/styles/common';
 
 .track {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr [controls] auto;
+  align-items: center;
   font-size: 12px;
   margin-left: 0;
   padding: 4px 10px;
+  white-space: nowrap;
 
-  img {
-    height: 16px;
-    width: 16px;
-  }
-
-  .chevron {
-    margin-left: 8px;
-    height: 6px;
+  &WithChildren {
+    grid-template-columns: auto 1fr [controls] auto;
   }
 
   &:hover,
   &.trackHighlighted {
     background: $ice-blue;
-  }
-
-  &.main {
-    font-weight: $bold;
-  }
-
-  label {
-    width: calc(100% - 50px);
-
-    button {
-      margin-left: 0;
-    }
-
-    .mainText {
-      margin-right: 10px;
-    }
-
-    .selectedInfo {
-      color: $black;
-      display: inline-block;
-      font-size: 10px;
-      font-weight: $normal;
-      margin-right: 10px;
-    }
-
-    .additionalInfo {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: $light;
-    }
   }
 
   .box {
@@ -79,6 +46,54 @@
       background: $white;
     }
   }
+}
+
+.labelTextPrimary {
+  margin-right: 10px;
+}
+
+.main {
+  .labelTextPrimary {
+    font-weight: $bold;
+  }
+}
+
+// TODO: would sure be nice to rename this class
+.selectedInfo {
+  color: $black;
+  font-size: 11px;
+  font-weight: $normal;
+  margin-right: 10px;
+}
+
+// TODO: would sure be nice to rename this class
+.additionalInfo {
+  font-size: 11px;
+  font-weight: $light;
+}
+
+.controls {
+  display: flex;
+  grid-column: controls;
+  margin-left: 15px;
+
+  & > * {
+    flex: 0 0 auto;
+  }
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chevronWrapper {
+  justify-self: start;
+}
+
+.chevron {
+  margin-left: 8px;
+  height: 6px;
 }
 
 .ellipsisHolder {
