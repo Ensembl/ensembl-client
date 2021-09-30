@@ -63,7 +63,7 @@ import { BreakpointWidth } from 'src/global/globalConfig';
 import { RootState } from 'src/store';
 import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-import { StateZmenu } from 'ensemblRoot/src/content/app/browser/zmenu/ZmenuController';
+import { StateZmenu } from 'src/content/app/browser/zmenu/ZmenuController';
 
 import styles from './Browser.scss';
 

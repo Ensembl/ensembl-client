@@ -39,7 +39,7 @@ import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import RadioGroup, {
   OptionValue,
   RadioOptions
-} from 'ensemblRoot/src/shared/components/radio-group/RadioGroup';
+} from 'src/shared/components/radio-group/RadioGroup';
 
 import { RootState } from 'src/store';
 import { CogList } from '../browserState';

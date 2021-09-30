@@ -40,14 +40,14 @@ import { InstantDownloadTranscript } from 'src/shared/components/instant-downloa
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
-import QuestionButton from 'ensemblRoot/src/shared/components/question-button/QuestionButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './TranscriptSummary.scss';
-import { TranscriptQualityLabel } from 'ensemblRoot/src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 // TODO: narrow down the types for spliced exons and product-generating_contexts
 type Transcript = Pick<

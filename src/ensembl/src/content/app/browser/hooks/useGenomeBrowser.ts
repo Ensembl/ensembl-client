@@ -22,6 +22,7 @@ import EnsemblGenomeBrowser, {
 } from 'ensembl-genome-browser';
 
 import config from 'config';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
@@ -35,8 +36,8 @@ import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
 import { ChrLocation } from 'src/content/app/browser/browserState';
-import { parseEnsObjectId } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
-import { getChrLocationFromStr } from 'ensemblRoot/src/content/app/browser/browserHelper';
+import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();
@@ -102,7 +103,8 @@ const useGenomeBrowser = () => {
   const activateGenomeBrowser = async () => {
     const genomeBrowserService = new EnsemblGenomeBrowser();
     await genomeBrowserService.init({
-      backend_url: config.genomeBrowserBackendBaseUrl
+      backend_url: config.genomeBrowserBackendBaseUrl,
+      target_element_id: BROWSER_CONTAINER_ID
     });
     if (setGenomeBrowser) {
       setGenomeBrowser(genomeBrowserService);
