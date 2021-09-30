@@ -36,7 +36,7 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
-import QuestionButton from 'ensemblRoot/src/shared/components/question-button/QuestionButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
@@ -210,7 +210,7 @@ const GeneSummary = () => {
         <div className={styles.value}>
           <ViewInApp
             links={{ entityViewer: { url: entityViewerUrl } }}
-            classNames={{ label: styles.darkText }}
+            classNames={{ label: styles.viewInAppLabel }}
           />
         </div>
       </div>

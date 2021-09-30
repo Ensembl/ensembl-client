@@ -31,6 +31,9 @@
       margin-top: 3px;
     }
   }
+  .geneName {
+    width: 60ch;
+  }
 }
 
 .downloadRow {
@@ -48,7 +51,7 @@
   font-weight: $light;
 }
 
-.darkText {
+.viewInAppLabel {
   color: $black;
   font-weight: 300;
 }

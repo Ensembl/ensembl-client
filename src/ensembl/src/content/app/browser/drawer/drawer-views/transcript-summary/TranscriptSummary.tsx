@@ -41,7 +41,7 @@ import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelect
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import QuestionButton from 'ensemblRoot/src/shared/components/question-button/QuestionButton';
+import QuestionButton from 'src/shared/components/question-button/QuestionButton';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
@@ -366,13 +366,15 @@ const TranscriptSummary = () => {
 
       <div className={styles.row}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{getGeneName(gene.name)}</div>
+        <div className={`${styles.value} ${styles.geneName}`}>
+          {getGeneName(gene.name)}
+        </div>
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           <ViewInApp
-            classNames={{ label: styles.darkText }}
+            classNames={{ label: styles.viewInAppLabel }}
             links={{ entityViewer: { url: entityViewerUrl } }}
           />
         </div>
