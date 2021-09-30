@@ -64,7 +64,7 @@ export const useQuestionButtonBehaviour = () => {
   let timeoutId: number | null = null;
 
   useEffect(() => {
-    if (isHovered) {
+    if (isHovered && state.event === null) {
       timeoutId = window.setTimeout(() => {
         dispatch({ type: 'showTooltipOnHover' });
       }, TOOLTIP_TIMEOUT);

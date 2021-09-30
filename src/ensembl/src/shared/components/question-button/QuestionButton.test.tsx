@@ -117,7 +117,26 @@ describe('<QuestionButton />', () => {
       userEvent.click(questionButton);
 
       act(() => {
-        // give the Tooltip component a little time to complete its async tasks
+        jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
+      });
+
+      userEvent.unhover(questionButton); // <-- should have no effect on the tooltip
+      expect(queryByText(helpMessage)).toBeTruthy();
+    });
+
+    it('prevents a new hover from registering', () => {
+      const { container, queryByText } = render(
+        <QuestionButton helpText={helpText} />
+      );
+      const questionButton = container.querySelector(
+        '.questionButton'
+      ) as HTMLElement;
+
+      userEvent.click(questionButton);
+
+      userEvent.hover(questionButton); // <-- notice that the hover starts after a click; we expect it not to have any effect
+
+      act(() => {
         jest.advanceTimersByTime(TOOLTIP_TIMEOUT + 10);
       });
 
