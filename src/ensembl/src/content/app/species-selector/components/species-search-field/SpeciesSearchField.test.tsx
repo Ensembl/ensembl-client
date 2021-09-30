@@ -28,6 +28,14 @@ import {
   MatchedFieldName
 } from 'src/content/app/species-selector/types/species-search';
 
+jest.mock(
+  'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
+  () =>
+    jest.fn(() => ({
+      trackAutocompleteSpeciesSelect: jest.fn()
+    }))
+);
+
 const buildSearchMatch = (): SearchMatch => ({
   genome_id: faker.lorem.word(),
   reference_genome_id: null,
@@ -72,7 +80,7 @@ describe('<SpeciesSearchField />', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('rendering', () => {

@@ -18,6 +18,8 @@ import React, { useEffect, ReactNode } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 
+import useSpeciesAnalytics from '../../hooks/useSpeciesAnalytics';
+
 import ViewInAppPopup from 'src/shared/components/view-in-app-popup/ViewInAppPopup';
 import SpeciesStats from 'src/content/app/species/components/species-stats/SpeciesStats';
 import ExpandableSection from 'src/shared/components/expandable-section/ExpandableSection';
@@ -77,12 +79,20 @@ const ExampleLinkWithPopup = (props: ExampleLinkPopupProps) => {
 type ContentProps = {
   statsSection: StatsSection;
   species: CommittedItem;
+  trackSpeciesPageExampleLink: (
+    species: CommittedItem,
+    linkText: string
+  ) => void;
 };
 
 const getCollapsedContent = (props: ContentProps) => {
   const { species, statsSection } = props;
   const { summaryStats, section, exampleLinks } = statsSection;
   const { title, helpText, exampleLinkText } = sectionGroupsMap[section];
+
+  const onExampleLinkClick = () => {
+    props.trackSpeciesPageExampleLink(props.species, exampleLinkText as string);
+  };
 
   return (
     <div className={styles.collapsedContent}>
@@ -107,7 +117,7 @@ const getCollapsedContent = (props: ContentProps) => {
 
       {exampleLinks && species.isEnabled && (
         <ExampleLinkWithPopup links={exampleLinks}>
-          {exampleLinkText}
+          <span onClick={onExampleLinkClick}>{exampleLinkText}</span>
         </ExampleLinkWithPopup>
       )}
     </div>
@@ -118,6 +128,10 @@ const getExpandedContent = (props: ContentProps) => {
   const { species, statsSection } = props;
   const { groups, exampleLinks, section } = statsSection;
   const { exampleLinkText } = sectionGroupsMap[section];
+
+  const onExampleLinkClick = () => {
+    props.trackSpeciesPageExampleLink(props.species, exampleLinkText as string);
+  };
 
   const expandedContent = groups
     .map((group, group_index) => {
@@ -143,7 +157,9 @@ const getExpandedContent = (props: ContentProps) => {
                   exampleLinks &&
                   species.isEnabled && (
                     <ExampleLinkWithPopup links={exampleLinks}>
-                      {exampleLinkText}
+                      <span onClick={onExampleLinkClick}>
+                        {exampleLinkText}
+                      </span>
                     </ExampleLinkWithPopup>
                   )}
               </div>
@@ -165,6 +181,9 @@ const SpeciesMainViewStats = (props: Props) => {
     }
   }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
 
+  const { trackSpeciesPageExampleLink, trackSpeciesStatsSectionOpen } =
+    useSpeciesAnalytics();
+
   const expandedSections = props.genomeUIState
     ? props.genomeUIState.expandedSections
     : [];
@@ -182,6 +201,7 @@ const SpeciesMainViewStats = (props: Props) => {
     isExpanded: boolean
   ) => {
     if (isExpanded) {
+      props.species && trackSpeciesStatsSectionOpen(props.species, section);
       props.setExpandedSections([...expandedSections, section]);
     } else {
       props.setExpandedSections(expandedSections.filter((s) => s !== section));
@@ -193,7 +213,8 @@ const SpeciesMainViewStats = (props: Props) => {
       {props.genomeStats.map((statsSection, key) => {
         const contentProps = {
           statsSection,
-          species: props.species as CommittedItem
+          species: props.species as CommittedItem,
+          trackSpeciesPageExampleLink
         };
         return (
           <ExpandableSection

@@ -20,7 +20,7 @@ import isEqual from 'lodash/isEqual';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
-import { RootState } from 'src/store';
+import { SidebarLoader } from 'src/shared/components/loader';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
@@ -31,6 +31,7 @@ import {
 
 import { restoreBrowserTrackStates } from '../browserActions';
 
+import { RootState } from 'src/store';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export type TrackPanelProps = {
@@ -55,7 +56,9 @@ export const TrackPanel = (props: TrackPanelProps) => {
     ) : (
       <TrackPanelList />
     )
-  ) : null;
+  ) : (
+    <SidebarLoader />
+  );
 };
 
 const mapStateToProps = (state: RootState) => {

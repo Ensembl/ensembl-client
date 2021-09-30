@@ -26,6 +26,7 @@ import noop from 'lodash/noop';
 
 import { submitForm } from '../submitForm';
 import noEarlierThan from 'src/shared/utils/noEarlierThan';
+import useSavedForm from '../hooks/useSavedForm';
 
 import SubmissionSuccess from '../submission-success/SubmissionSuccess';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
@@ -85,13 +86,19 @@ type RemoveFileAction = {
   payload: number; // index of the file in the array of files
 };
 
+type ReplaceStateAction = {
+  type: 'replace-state';
+  payload: State;
+};
+
 type Action =
   | UpdateNameAction
   | UpdateEmailAction
   | UpdateSubjectAction
   | UpdateMessageAction
   | AddFileAction
-  | RemoveFileAction;
+  | RemoveFileAction
+  | ReplaceStateAction;
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -109,6 +116,8 @@ const reducer = (state: State, action: Action): State => {
       const newFiles = [...state.files];
       newFiles.splice(action.payload, 1);
       return { ...state, files: newFiles };
+    case 'replace-state':
+      return action.payload;
     default:
       return state;
   }
@@ -129,6 +138,13 @@ const ContactUsInitialForm = () => {
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
+
+  const { clearSavedForm } = useSavedForm({
+    formName: FORM_NAME,
+    currentState: state,
+    updateState: (savedState) =>
+      dispatch({ type: 'replace-state', payload: savedState })
+  });
 
   useEffect(() => {
     // TODO: this useEffect will be unnecessary when the Input is refactored to include forwardRef
@@ -194,6 +210,7 @@ const ContactUsInitialForm = () => {
 
     noEarlierThan(submitPromise, 1000)
       .then(() => {
+        clearSavedForm();
         setSubmissionState(LoadingState.SUCCESS);
       })
       .catch(() => {

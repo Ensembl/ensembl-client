@@ -27,7 +27,7 @@ import {
   VideoArticle,
   RelatedArticles
 } from 'src/shared/components/help-article';
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import { CircleLoader } from 'src/shared/components/loader';
 
 import { ReactComponent as BackIcon } from 'static/img/browser/navigate-left.svg';
 import { ReactComponent as ForwardIcon } from 'static/img/browser/navigate-right.svg';
@@ -40,9 +40,8 @@ import styles from './HelpPopupBody.scss';
 type Props = SlugReference;
 
 const HelpPopupBody = (props: Props) => {
-  const [currentReference, setCurrentReference] = useState<SlugReference>(
-    props
-  );
+  const [currentReference, setCurrentReference] =
+    useState<SlugReference>(props);
   const { article, loadingState } = useHelpArticle(currentReference);
   const historyRef = useRef<HelpPopupHistory | null>(null);
 

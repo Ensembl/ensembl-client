@@ -15,19 +15,18 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
-import { CircleLoader } from 'src/shared/components/loader/Loader';
+import styles from './CircleLoader.scss';
 
-import styles from './Loader.stories.scss';
-
-export default {
-  title: 'Components/Shared Components/Loader'
+type Props = {
+  className?: string;
 };
 
-export const FullPageLoader = () => (
-  <div className={styles.fullPageWrapper}>
-    <CircleLoader />
-  </div>
-);
+const CircleLoader = (props: Props) => {
+  const className = classNames(styles.circleLoader, props.className);
 
-FullPageLoader.storyName = 'full-page';
+  return <div className={className} />;
+};
+
+export default CircleLoader;

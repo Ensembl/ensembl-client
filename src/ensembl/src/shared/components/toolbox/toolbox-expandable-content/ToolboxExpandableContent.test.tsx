@@ -25,7 +25,7 @@ import ToolboxExpandableContent, {
 const MainContent = () => (
   <div data-test-id="main content">
     <span>This is main content</span>
-    <ToggleButton openElement={<span>Click me!</span>} />
+    <ToggleButton label="Click me!" />
   </div>
 );
 const FooterContent = () => (
@@ -51,7 +51,7 @@ describe('<ToolboxExpandableContent />', () => {
     render(<ToolboxExpandableContent {...minimalProps} />);
     const toggleButton = screen.getByText('Click me!');
 
-    userEvent.click(toggleButton);
+    userEvent.click(toggleButton as HTMLElement);
 
     const footerContent = screen.queryByTestId('footer content');
     expect(footerContent).toBeTruthy();

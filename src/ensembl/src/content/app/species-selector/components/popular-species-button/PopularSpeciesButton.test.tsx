@@ -31,6 +31,14 @@ jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
 
+jest.mock(
+  'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
+  () =>
+    jest.fn(() => ({
+      trackPopularSpeciesSelect: jest.fn()
+    }))
+);
+
 const handleSelectedSpecies = jest.fn();
 const clearSelectedSpecies = jest.fn();
 
@@ -45,7 +53,7 @@ const commonProps = {
 
 describe('<PopularSpeciesButton />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('not available', () => {

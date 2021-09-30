@@ -45,8 +45,12 @@ export type LinkObj = { url: string; replaceState?: boolean };
 
 export type UrlObj = Partial<Record<AppName, LinkObj>>;
 
+type AppClickHandlers = Partial<Record<AppName, () => void>>;
+
 export type ViewInAppProps = {
   links: UrlObj;
+  onAppClick?: AppClickHandlers;
+  onAnyAppClick?: () => void;
   classNames?: {
     label?: string;
   };
@@ -59,9 +63,10 @@ export const ViewInApp = (props: ViewInAppProps) => {
 
   const labelClass = classNames(styles.label, props.classNames?.label);
 
-  return Object.keys(props.links) ? (
+  return (
     <div className={styles.viewInAppLinkButtons}>
       <span className={labelClass}>View in</span>
+
       {(Object.keys(props.links) as AppName[]).map((appId) => {
         const currentLinkObj = props.links[appId] as LinkObj;
 
@@ -71,17 +76,30 @@ export const ViewInApp = (props: ViewInAppProps) => {
             appId={appId}
             url={currentLinkObj.url}
             replaceState={currentLinkObj.replaceState}
+            onClick={createClickHandler({ ...props, appName: appId })}
           />
         );
       })}
     </div>
-  ) : null;
+  );
+};
+
+const createClickHandler = (params: ViewInAppProps & { appName: AppName }) => {
+  const clickHandlers = [
+    params.onAppClick?.[params.appName],
+    params.onAnyAppClick
+  ].filter(Boolean) as Array<() => void>;
+
+  return clickHandlers.length
+    ? () => clickHandlers.forEach((fn) => fn())
+    : undefined;
 };
 
 type AppButtonProps = {
   appId: AppName;
   url: string;
   replaceState?: boolean;
+  onClick?: () => void;
 };
 
 export const AppButton = (props: AppButtonProps) => {
@@ -93,6 +111,7 @@ export const AppButton = (props: AppButtonProps) => {
     } else {
       dispatch(push(props.url));
     }
+    props.onClick?.();
   };
 
   return (

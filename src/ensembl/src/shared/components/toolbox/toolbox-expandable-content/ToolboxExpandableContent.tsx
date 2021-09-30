@@ -15,10 +15,9 @@
  */
 
 import React, { useState, useContext, ReactNode } from 'react';
-import classNames from 'classnames';
 import noop from 'lodash/noop';
 
-import CloseButton from 'src/shared/components/close-button/CloseButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import styles from './ToolboxExpandableContent.scss';
 
@@ -34,12 +33,11 @@ type ToolboxExpandableContentProps = {
 
 type ToggleButtonProps = {
   className?: string;
-  openElement: ReactNode;
+  label: string;
 };
 
-const ToolboxExpandableContentContext = React.createContext<ToolboxContext | null>(
-  null
-);
+const ToolboxExpandableContentContext =
+  React.createContext<ToolboxContext | null>(null);
 
 const ToolboxExpandableContent = (props: ToolboxExpandableContentProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -69,13 +67,12 @@ export const ToggleButton = (props: ToggleButtonProps) => {
     toggleExpanded();
   };
 
-  const buttonClasses = classNames(styles.toggleButton, props.className);
-  return isExpanded ? (
-    <CloseButton className={buttonClasses} onClick={handleClick} />
-  ) : (
-    <span className={buttonClasses} onClick={handleClick}>
-      {props.openElement}
-    </span>
+  return (
+    <ShowHide
+      label={props.label}
+      onClick={handleClick}
+      isExpanded={isExpanded}
+    />
   );
 };
 
