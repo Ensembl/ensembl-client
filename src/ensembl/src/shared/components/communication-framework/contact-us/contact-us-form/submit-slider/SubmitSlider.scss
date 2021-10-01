@@ -6,6 +6,7 @@ $sliderHeight: 30px;
 .container {
   width: $trackWidth;
   position: relative;
+  user-select: none;
 }
 
 .track {
