@@ -24,8 +24,8 @@ const defaultProps: ExternalLinkProps = {
   linkText: faker.random.words(),
   to: faker.internet.url(),
   classNames: {
-    icon: faker.random.word(),
-    link: faker.random.word()
+    icon: faker.lorem.word(),
+    link: faker.lorem.word()
   }
 };
 
