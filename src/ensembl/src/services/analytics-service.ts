@@ -40,6 +40,7 @@ class AnalyticsTracking {
   public trackEvent(ga: AnalyticsOptions) {
     typeof ga.species === 'string' && this.setSpeciesDimension(ga.species);
     typeof ga.app === 'string' && this.setAppDimension(ga.app);
+    typeof ga.feature === 'string' && this.setFeatureDimension(ga.feature);
 
     this.reactGA.event({
       action: ga.action,
@@ -59,6 +60,11 @@ class AnalyticsTracking {
   // Set species custom dimension
   public setSpeciesDimension(speciesAnalyticsName: string) {
     this.reactGA.ga('set', CustomDimensions.SPECIES, speciesAnalyticsName);
+  }
+
+  // Set feature custom dimension
+  public setFeatureDimension(featureType: string) {
+    this.reactGA.ga('set', CustomDimensions.FEATURE, featureType);
   }
 }
 

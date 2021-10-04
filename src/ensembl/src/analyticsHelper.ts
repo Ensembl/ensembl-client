@@ -22,6 +22,7 @@ export type AnalyticsOptions = {
   value?: number;
   species?: string;
   app?: string;
+  feature?: string;
 };
 
 /*
