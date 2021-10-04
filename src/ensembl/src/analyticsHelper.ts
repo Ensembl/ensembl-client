@@ -30,7 +30,8 @@ export type AnalyticsOptions = {
 */
 export enum CustomDimensions {
   SPECIES = 'dimension1',
-  APP = 'dimension2'
+  APP = 'dimension2',
+  FEATURE = 'dimension3'
 }
 
 export type AnalyticsType = {
