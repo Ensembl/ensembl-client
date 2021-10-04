@@ -66,6 +66,7 @@ const GENE_QUERY = gql`
         biotype {
           label
           value
+          definition
         }
         name {
           accession_id
