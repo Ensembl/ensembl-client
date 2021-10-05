@@ -15,13 +15,14 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
 import { Pick2 } from 'ts-multipick';
 
-import { parseFeatureId } from '../browserHelper';
-
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader';
+
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
@@ -50,7 +51,9 @@ type Transcript = Pick2<FullTranscript, 'metadata', 'biotype'> &
   Pick2<FullTranscript, 'gene', 'stable_id'>;
 
 const ZmenuInstantDownload = (props: Props) => {
-  const { genomeId, objectId: transcriptId } = parseFeatureId(props.id);
+  const transcriptId = props.id;
+
+  const genomeId = useSelector(getBrowserActiveGenomeId);
 
   const { data, loading } = useQuery<{
     transcript: Transcript;
@@ -69,7 +72,7 @@ const ZmenuInstantDownload = (props: Props) => {
     );
   }
 
-  if (!data) {
+  if (!data || !genomeId) {
     return null;
   }
 
