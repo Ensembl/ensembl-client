@@ -131,3 +131,85 @@ export const createChrLocationValues = () => {
 
   return { stringValue, tupleValue };
 };
+
+export const createMockBrowserState = () => {
+  return {
+    browser: {
+      browserInfo: {
+        browserActivated: false
+      },
+      browserEntity: {
+        activeGenomeId: 'fake_genome_id_1',
+        activeEnsObjectIds: {
+          fake_genome_id_1: 'fake_genome_id_1:gene:ENSG00000139618'
+        },
+        trackStates: {}
+      },
+      browserLocation: {
+        chrLocations: {
+          fake_genome_id_1: ['13', 32304804, 32384454]
+        },
+        actualChrLocations: {},
+        regionEditorActive: false,
+        regionFieldActive: false,
+        isObjectInDefaultPosition: false
+      },
+      browserNav: {
+        browserNavOpenState: {},
+        browserNavIconStates: {
+          'navigate-up': false,
+          'navigate-right': false,
+          'navigate-down': false,
+          'navigate-left': false,
+          'zoom-out': false,
+          'zoom-in': false
+        }
+      },
+      trackConfig: {
+        applyToAll: false,
+        browserCogList: 0,
+        browserCogTrackList: {},
+        selectedCog: null,
+        trackConfigLabel: {},
+        trackConfigNames: {}
+      },
+      trackPanel: {
+        fake_genome_id_2: {
+          isTrackPanelModalOpened: false,
+          bookmarks: [],
+          previouslyViewedObjects: [
+            {
+              genome_id: 'fake_genome_id_2',
+              object_id: 'fake_genome_id_2:gene:TraesCS3D02G273600',
+              type: 'gene',
+              label: 'TraesCS3D02G273600'
+            }
+          ],
+          selectedTrackPanelTab: 'Genomic',
+          trackPanelModalView: '',
+          highlightedTrackId: '',
+          isTrackPanelOpened: true,
+          collapsedTrackIds: []
+        }
+      }
+    },
+    drawer: {
+      isDrawerOpened: {},
+      drawerView: {},
+      activeDrawerTrackIds: {}
+    },
+    router: {
+      location: {
+        pathname: '/species/fake_genome_id_1',
+        search: '',
+        hash: '',
+        key: '9vnz4q',
+        query: {}
+      },
+      action: 'PUSH'
+    },
+    global: {
+      breakpointWidth: 1200
+    }
+  };
+};

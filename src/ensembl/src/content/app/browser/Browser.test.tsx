@@ -15,16 +15,16 @@
  */
 
 import React from 'react';
-import { MemoryRouter } from 'react-router';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
-
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import faker from 'faker';
+import set from 'lodash/fp/set';
 
-import { BreakpointWidth } from 'src/global/globalConfig';
+import { Browser } from './Browser';
 
-import { Browser, BrowserProps } from './Browser';
-
-import { createChrLocationValues } from 'tests/fixtures/browser';
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
 jest.mock('./hooks/useBrowserRouting', () => () => ({
   changeGenomeId: jest.fn()
@@ -59,19 +59,19 @@ jest.mock('ensembl-genome-browser', () => {
 });
 jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
-const defaultProps: BrowserProps = {
-  activeGenomeId: faker.lorem.words(),
-  activeEnsObjectId: faker.lorem.words(),
-  browserActivated: false,
-  browserNavOpenState: false,
-  browserQueryParams: {},
-  chrLocation: createChrLocationValues().tupleValue,
-  isDrawerOpened: false,
-  isTrackPanelOpened: false,
-  exampleEnsObjects: [],
-  toggleTrackPanel: jest.fn(),
-  toggleDrawer: jest.fn(),
-  viewportWidth: BreakpointWidth.DESKTOP
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <Browser />
+    </Provider>
+  );
 };
 
 describe('<Browser />', () => {
@@ -79,65 +79,75 @@ describe('<Browser />', () => {
     jest.resetAllMocks();
   });
 
-  const mountBrowserComponent = (props?: Partial<BrowserProps>) =>
-    render(
-      <MemoryRouter>
-        <Browser {...defaultProps} {...props} />
-      </MemoryRouter>
-    );
-
   describe('rendering', () => {
     it('renders an interstitial if no species is selected', () => {
-      const { container } = mountBrowserComponent({ activeGenomeId: null });
+      const { container } = wrapInRedux(
+        set('browser.browserEntity.activeGenomeId', null, mockState)
+      );
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
     it('renders an interstitial if no feature has been selected', () => {
-      const { container } = mountBrowserComponent();
+      const { container } = wrapInRedux();
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
     it('renders the genome browser and track panel only when there is a selected focus feature', () => {
-      const { container, rerender } = mountBrowserComponent();
+      let { container } = wrapInRedux();
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(0);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(0);
 
-      rerender(
-        <Browser
-          {...defaultProps}
-          browserQueryParams={{ focus: faker.lorem.words() }}
-        />
-      );
+      container = wrapInRedux(
+        set(
+          'router.location.search',
+          `?focus=${faker.lorem.words()}`,
+          mockState
+        )
+      ).container;
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(1);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);
     });
 
     describe('BrowserNavBar', () => {
-      const props = {
-        ...defaultProps,
-        browserActivated: true,
-        browserQueryParams: { focus: 'foo' }
-      };
+      let updatedState = set(
+        'browser.browserInfo.browserActivated',
+        true,
+        mockState
+      );
+      updatedState = set(
+        'router.location.search',
+        `?focus=${faker.lorem.words()}`,
+        updatedState
+      );
+      const stateWithBrowserNavOpen = set(
+        'browser.browserNav.browserNavOpenState.fake_genome_id_1',
+        true,
+        updatedState
+      );
 
       it('is rendered when props.browserNavOpenState is true', () => {
-        const { container, rerender } = mountBrowserComponent(props);
+        let { container } = wrapInRedux(updatedState);
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
 
-        rerender(<Browser {...props} browserNavOpenState={true} />);
+        container = wrapInRedux(stateWithBrowserNavOpen).container;
+
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
       });
 
       it('is not rendered if drawer is opened', () => {
-        const { container, rerender } = mountBrowserComponent({
-          ...props,
-          browserNavOpenState: true
-        });
+        let { container } = wrapInRedux(stateWithBrowserNavOpen);
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
 
-        rerender(<Browser {...defaultProps} isDrawerOpened={true} />);
+        const stateWithDrawerOpen = set(
+          'drawer.isDrawerOpened.fake_genome_id_1',
+          true,
+          stateWithBrowserNavOpen
+        );
+
+        container = wrapInRedux(stateWithDrawerOpen).container;
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
       });

@@ -16,7 +16,7 @@
 
 import React, { useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
@@ -24,7 +24,6 @@ import useBrowserRouting from './hooks/useBrowserRouting';
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { BreakpointWidth } from 'src/global/globalConfig';
 
 import {
   parseEnsObjectId,
@@ -36,17 +35,13 @@ import { toggleDrawer } from './drawer/drawerActions';
 
 import {
   getBrowserNavOpenState,
-  getChrLocation,
   getBrowserActivated,
   getBrowserActiveGenomeId,
-  getBrowserQueryParams,
-  getBrowserActiveEnsObjectId,
-  getBrowserActiveEnsObjectIds
+  getBrowserQueryParams
 } from './browserSelectors';
 
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from './drawer/drawerSelectors';
-import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import BrowserBar from './browser-bar/BrowserBar';
@@ -60,51 +55,41 @@ import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
-import { RootState } from 'src/store';
-import { ChrLocation } from './browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
 
-export type BrowserProps = {
-  activeGenomeId: string | null;
-  activeEnsObjectId: string | null;
-  browserActivated: boolean;
-  browserNavOpenState: boolean;
-  browserQueryParams: { [key: string]: string };
-  chrLocation: ChrLocation | null;
-  isDrawerOpened: boolean;
-  isTrackPanelOpened: boolean;
-  exampleEnsObjects: EnsObject[];
-  viewportWidth: BreakpointWidth;
-  toggleTrackPanel: (isOpen: boolean) => void;
-  toggleDrawer: (isDrawerOpened: boolean) => void;
-};
+export const Browser = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const browserActivated = useSelector(getBrowserActivated);
+  const browserNavOpenState = useSelector(getBrowserNavOpenState);
+  const browserQueryParams = useSelector(getBrowserQueryParams);
+  const isDrawerOpened = useSelector(getIsDrawerOpened);
+  const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
+  const viewportWidth = useSelector(getBreakpointWidth);
 
-export const Browser = (props: BrowserProps) => {
+  const dispatch = useDispatch();
+
   const { changeGenomeId } = useBrowserRouting();
 
-  const { isDrawerOpened } = props;
-
   useEffect(() => {
-    const { activeGenomeId } = props;
     if (!activeGenomeId) {
       return;
     }
 
     analyticsTracking.setSpeciesDimension(activeGenomeId);
-  }, [props.activeGenomeId]);
+  }, [activeGenomeId]);
 
   const onSidebarToggle = () => {
-    props.toggleTrackPanel(!props.isTrackPanelOpened); // FIXME
+    dispatch(toggleTrackPanel(!isTrackPanelOpened)); // FIXME
   };
 
-  const toggleDrawer = () => {
-    props.toggleDrawer(!props.isDrawerOpened);
+  const onDrawerClose = () => {
+    dispatch(toggleDrawer(!isDrawerOpened));
   };
 
   const shouldShowNavBar =
-    props.browserActivated && props.browserNavOpenState && !isDrawerOpened;
+    browserActivated && browserNavOpenState && !isDrawerOpened;
 
   const mainContent = (
     <>
@@ -117,7 +102,7 @@ export const Browser = (props: BrowserProps) => {
     <ApolloProvider client={client}>
       <div className={styles.genomeBrowser}>
         <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-        {props.activeGenomeId && props.browserQueryParams.focus ? (
+        {activeGenomeId && browserQueryParams.focus ? (
           <StandardAppLayout
             mainContent={mainContent}
             sidebarContent={<TrackPanel />}
@@ -125,11 +110,11 @@ export const Browser = (props: BrowserProps) => {
             sidebarToolstripContent={<TrackPanelBar />}
             onSidebarToggle={onSidebarToggle}
             topbarContent={<BrowserBar />}
-            isSidebarOpen={props.isTrackPanelOpened}
-            isDrawerOpen={props.isDrawerOpened}
+            isSidebarOpen={isTrackPanelOpened}
+            isDrawerOpen={isDrawerOpened}
             drawerContent={<Drawer />}
-            onDrawerClose={toggleDrawer}
-            viewportWidth={props.viewportWidth}
+            onDrawerClose={onDrawerClose}
+            viewportWidth={viewportWidth}
           />
         ) : (
           <BrowserInterstitial />
@@ -139,14 +124,18 @@ export const Browser = (props: BrowserProps) => {
   );
 };
 
-export const ExampleObjectLinks = (props: BrowserProps) => {
-  const { activeGenomeId } = props;
+type ExampleObjectLinksProps = {
+  activeGenomeId: string;
+  exampleEnsObjects: EnsObject[];
+};
+export const ExampleObjectLinks = (props: ExampleObjectLinksProps) => {
+  const { activeGenomeId, exampleEnsObjects } = props;
 
   if (!activeGenomeId) {
     return null;
   }
 
-  const links = props.exampleEnsObjects.map((exampleObject: EnsObject) => {
+  const links = exampleEnsObjects.map((exampleObject: EnsObject) => {
     const parsedEnsObjectId = parseEnsObjectId(exampleObject.object_id);
     const focusId = buildFocusIdForUrl(parsedEnsObjectId);
     const path = urlFor.browser({
@@ -171,33 +160,6 @@ export const ExampleObjectLinks = (props: BrowserProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return {
-    activeGenomeId,
-    activeEnsObjectId: getBrowserActiveEnsObjectId(state),
-    allActiveEnsObjectIds: getBrowserActiveEnsObjectIds(state),
-    browserActivated: getBrowserActivated(state),
-    browserNavOpenState: getBrowserNavOpenState(state),
-    browserQueryParams: getBrowserQueryParams(state),
-    chrLocation: getChrLocation(state),
-    isDrawerOpened: getIsDrawerOpened(state),
-    isTrackPanelOpened: getIsTrackPanelOpened(state),
-    exampleEnsObjects: getExampleEnsObjects(state),
-    viewportWidth: getBreakpointWidth(state)
-  };
-};
-
-const mapDispatchToProps = {
-  toggleDrawer,
-  toggleTrackPanel
-};
-
-const ReduxConnectedBrowser = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Browser);
-
 const WasmLoadingBrowserContainer = () => {
   useEffect(() => {
     /* eslint-disable */
@@ -206,7 +168,7 @@ const WasmLoadingBrowserContainer = () => {
     /* eslint-enable */
   });
 
-  return <ReduxConnectedBrowser />;
+  return <Browser />;
 };
 
 export default WasmLoadingBrowserContainer;
