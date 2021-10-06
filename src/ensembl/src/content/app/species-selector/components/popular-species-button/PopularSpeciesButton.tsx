@@ -34,7 +34,6 @@ import {
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
 import { RootState } from 'src/store';
 import {
@@ -100,7 +99,7 @@ export const PopularSpeciesButton = (props: Props) => {
   return (
     <div className={styles.popularSpeciesButtonWrapper}>
       <div className={className} onClick={handleClick} ref={hoverRef}>
-        <InlineSVG src={species.image} />
+        <img src={species.image} />
       </div>
       {isHovered && speciesDisplayName && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
