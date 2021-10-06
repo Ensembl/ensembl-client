@@ -30,7 +30,7 @@ type Theme = 'light' | 'dark';
 
 type GeneFields = {
   id: string;
-  biotype: string;
+  isProteinCoding: boolean;
 };
 
 export type InstantDownloadGeneEntityProps = {
@@ -80,10 +80,10 @@ const transcriptOptionLabels: Record<keyof TranscriptOptions, string> = {
 const InstantDownloadGene = (props: Props) => {
   const {
     genomeId,
-    gene: { id: geneId, biotype }
+    gene: { id: geneId, isProteinCoding }
   } = props;
   const [transcriptOptions, setTranscriptOptions] = useState(
-    filterTranscriptOptions(biotype)
+    filterTranscriptOptions(isProteinCoding)
   );
   const [isGeneSequenceSelected, setIsGeneSequenceSelected] = useState(false);
 
@@ -102,7 +102,7 @@ const InstantDownloadGene = (props: Props) => {
 
   const resetCheckboxes = () => {
     setIsGeneSequenceSelected(false);
-    setTranscriptOptions(filterTranscriptOptions(biotype));
+    setTranscriptOptions(filterTranscriptOptions(isProteinCoding));
   };
 
   const onSubmit = async () => {
