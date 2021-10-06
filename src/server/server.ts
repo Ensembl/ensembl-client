@@ -19,7 +19,9 @@ import express from 'express';
 import proxyMiddleware from './middleware/proxyMiddleware';
 import staticMiddleware from './middleware/staticMiddleware';
 import redirectMiddleware from './middleware/redirectMiddleware';
+
 import viewsRouter from './routes/viewsRouter';
+import unsupportedBrowserRouter from './routes/unsupportedBrowserRouter';
 
 const app = express();
 
@@ -34,6 +36,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use('/static', staticMiddleware);
 }
 
+app.get('/unsupported-browser', unsupportedBrowserRouter);
 // All GET requests not covered by the middleware above will be handled by the viewsRouter
 app.get('*', viewsRouter);
 

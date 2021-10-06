@@ -41,7 +41,7 @@ const viewRouter = async (req: Request, res: Response) => {
   // and needs to be initialized at every request
   const extractor = new ChunkExtractor({
     statsFile,
-    entrypoints: ['client']
+    entrypoints: ['client', 'browserSupport']
   });
 
   const reduxStore = getServerSideReduxStore();
@@ -89,6 +89,9 @@ const viewRouter = async (req: Request, res: Response) => {
         window.${CONFIG_FIELD_ON_WINDOW} = ${JSON.stringify(
     getConfigForClient()
   )}
+      </script>
+      <script nomodule>
+        window.location.replace("/unsupported-browser");
       </script>
     </head>
     <body>  
