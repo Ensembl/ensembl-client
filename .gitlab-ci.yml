@@ -114,9 +114,7 @@ variables:
   script:
   - git clone https://gitlab.ebi.ac.uk/ensembl-web/ensembl-k8s-manifests.git
   - git -C ensembl-k8s-manifests/ checkout wp-k8s
-  - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
   - sed -i "s#<DOCKER_IMAGE>#${CONTAINER_NODE_IMAGE}#g" ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
-  - kubectl apply -f ensembl-k8s-manifests/ensembl_client_nginx_deployment.yaml
   - kubectl apply -f ensembl-k8s-manifests/ensembl_client_node_deployment.yaml
 
 # Template to deploy review-app to WP k8s cluster
@@ -206,32 +204,12 @@ Test_N_Build:review:
   - master
   - /^nodeploy\/.*$/
 
-# Job to build nginx docker image for staging environment
-# dev branch -> Staging
-Nginx:Staging:
-  extends: .build-nginx
-  only:
-  - dev
-  needs:
-    - Test_N_Build
-
 # Job to build node docker image for staging environment
 # dev branch -> Staging
 Node:Staging:
   extends: .build-node
   only:
   - dev
-  needs:
-    - Test_N_Build
-
-# Job to build nginx docker image for live environment
-# master branch -> Live
-Nginx:Live:
-  extends: .build-nginx
-  variables:
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-prod
-  only:
-  - master
   needs:
     - Test_N_Build
 
@@ -245,18 +223,6 @@ Node:Live:
   - master
   needs:
     - Test_N_Build
-
-# Job to build nginx docker image for internal environment at WP
-# master branch -> internal
-Nginx:Internal:
-  extends: .build-nginx
-  variables:
-    DEPLOYENV: internal
-    CONTAINER_IMAGE: ${CI_REGISTRY_IMAGE}:nginx-${CI_COMMIT_SHORT_SHA}-internal
-  only:
-  - master
-  needs:
-    - Test_N_Build:internal
 
 # Job to build node docker image for internal environment at WP
 # master branch -> internal
@@ -309,7 +275,6 @@ Staging:HX:
   - dev
   needs:
     - Test_N_Build
-    - Nginx:Staging
     - Node:Staging
 
 Pub:Staging-HX:
@@ -333,7 +298,6 @@ Staging:HL:
   - dev
   needs:
     - Test_N_Build
-    - Nginx:Staging
     - Node:Staging
 
 Pub:Staging-HL:
@@ -360,7 +324,6 @@ Live:HX:
   - master
   needs:
     - Test_N_Build
-    - Nginx:Live
     - Node:Live
 
 Pub:Live-HX:
@@ -387,7 +350,6 @@ Live:HL:
   - master
   needs:
     - Test_N_Build
-    - Nginx:Live
     - Node:Live
 
 Pub:Live-HL:
@@ -414,7 +376,6 @@ Internal:HX:
   - master
   needs:
     - Test_N_Build:internal
-    - Nginx:Internal
     - Node:Internal
 
 Pub:Internal-HX:
@@ -441,7 +402,6 @@ Internal:HL:
   - master
   needs:
     - Test_N_Build:internal
-    - Nginx:Internal
     - Node:Internal
 
 Pub:Internal-HL:
