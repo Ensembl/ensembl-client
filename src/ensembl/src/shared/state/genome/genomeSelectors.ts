@@ -49,11 +49,14 @@ export const getGenomeExampleFocusObjects = (
   );
 };
 
-export const getGenomeTrackCategoriesById = (
-  state: RootState,
-  genomeId: string
-) =>
-  state.genome.genomeTrackCategories.genomeTrackCategoriesData[genomeId] || [];
+export const getGenomeTrackCategoriesById = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? state.genome.genomeTrackCategories.genomeTrackCategoriesData[
+        activeGenomeId
+      ]
+    : null;
+};
 
 export const getGenomeTrackCategoriesFetching = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesFetching;

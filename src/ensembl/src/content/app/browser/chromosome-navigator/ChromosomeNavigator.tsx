@@ -15,7 +15,7 @@
  */
 
 import React, { useRef } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
@@ -37,7 +37,7 @@ import { RootState } from 'src/store';
 
 import styles from './ChromosomeNavigator.scss';
 
-type WrapperProps = {
+export type ChromosomeNavigatorProps = {
   length: number; // total number of nucleotides
   viewportStart: number; // nucleotide position corresponding to the left border of genome browser
   viewportEnd: number; // nucleotide position corresponding to the right border of genome browser
@@ -49,22 +49,51 @@ type WrapperProps = {
     start: number; // start position of the centromere
     end: number; // end position of the centromere
   } | null;
-};
-
-export type ChromosomeNavigatorProps = WrapperProps & {
   containerWidth: number; // width of the container, in pixels
 };
 
-export const ChromosomeNavigatorWrapper = (props: WrapperProps) => {
+export const ChromosomeNavigatorWrapper = () => {
+  const [chromosomeName = '', viewportStart = 0, viewportEnd = 0] =
+    useSelector(getActualChrLocation) || [];
+  const defaultChrLocation = useSelector(getDefaultChrLocation);
+  const focusRegion = defaultChrLocation
+    ? {
+        start: defaultChrLocation[1],
+        end: defaultChrLocation[2]
+      }
+    : null;
+
+  const karyotypeItemLength = useSelector((state: RootState) =>
+    getKaryotypeItemLength(chromosomeName, state)
+  );
+
+  const length = karyotypeItemLength || 0;
+
+  // the code below is naughty and temporary (see ENSWBSITES-385):
+  // we are peeking at the string that represents genome id — something which we are not supposed to do
+  const genomeId = useSelector(getBrowserActiveGenomeId);
+  let centromere = null;
+  if (chromosomeName && genomeId && genomeId.startsWith('homo_sapiens')) {
+    centromere = centromeres.humanCentromeres[chromosomeName] || null;
+  }
+
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  const props = {
+    length,
+    centromere,
+    viewportStart,
+    viewportEnd,
+    focusRegion
+  };
 
   return (
     <div
       ref={containerRef as React.RefObject<HTMLDivElement>}
       className={styles.chromosomeNavigator}
     >
-      {containerWidth && props.length ? (
+      {containerWidth && length ? (
         <ChromosomeNavigator {...{ ...props, containerWidth }} />
       ) : null}
     </div>
@@ -129,34 +158,4 @@ export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const [chromosomeName = null, start = 0, end = 0] =
-    getActualChrLocation(state) || [];
-  const defaultChrLocation = getDefaultChrLocation(state);
-  const focusRegion = defaultChrLocation
-    ? {
-        start: defaultChrLocation[1],
-        end: defaultChrLocation[2]
-      }
-    : null;
-  const length =
-    (chromosomeName && getKaryotypeItemLength(chromosomeName, state)) || 0;
-
-  // the code below is naughty and temporary (see ENSWBSITES-385):
-  // we are peeking at the string that represents genome id — something which we are not supposed to do
-  const genomeId = getBrowserActiveGenomeId(state);
-  let centromere = null;
-  if (chromosomeName && genomeId && genomeId.startsWith('homo_sapiens')) {
-    centromere = centromeres.humanCentromeres[chromosomeName] || null;
-  }
-
-  return {
-    length,
-    viewportStart: start,
-    viewportEnd: end,
-    focusRegion,
-    centromere
-  };
-};
-
-export default connect(mapStateToProps)(ChromosomeNavigatorWrapper);
+export default ChromosomeNavigatorWrapper;

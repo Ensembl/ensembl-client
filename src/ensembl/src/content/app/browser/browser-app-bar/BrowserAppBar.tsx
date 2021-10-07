@@ -15,7 +15,7 @@
  */
 
 import React, { memo, useMemo } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import isEqual from 'lodash/isEqual';
 
@@ -30,7 +30,6 @@ import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
-import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 type BrowserAppBarProps = {
@@ -40,12 +39,15 @@ type BrowserAppBarProps = {
 };
 
 const BrowserAppBar = (props: BrowserAppBarProps) => {
+  const species = useSelector(getEnabledCommittedSpecies);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+
   const speciesTabs = useMemo(() => {
-    return props.species.map((species, index) => (
+    return species.map((species, index) => (
       <SelectedSpecies
         key={index}
         species={species}
-        isActive={species.genome_id === props.activeGenomeId}
+        isActive={species.genome_id === activeGenomeId}
         onClick={() => props.onSpeciesSelect(species.genome_id)}
       />
     ));
@@ -62,7 +64,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
     />
   );
 
-  const mainContent = props.activeGenomeId
+  const mainContent = activeGenomeId
     ? wrappedSpecies
     : 'To start using this app...';
 
@@ -75,9 +77,4 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  species: getEnabledCommittedSpecies(state),
-  activeGenomeId: getBrowserActiveGenomeId(state)
-});
-
-export default connect(mapStateToProps)(memo(BrowserAppBar, isEqual));
+export default memo(BrowserAppBar, isEqual);

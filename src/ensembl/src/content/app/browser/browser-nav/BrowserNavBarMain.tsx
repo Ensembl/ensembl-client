@@ -15,9 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { RootState } from 'src/store';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -36,7 +35,8 @@ export type BrowserNavBarMainProps = {
   viewportWidth: BreakpointWidth;
 };
 
-export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
+export const BrowserNavBarMain = () => {
+  const viewportWidth = useSelector(getBreakpointWidth);
   const [view, changeView] = useState<Content>(Content.CHROMOSOME);
 
   const handleViewChange = (newView: Content) => {
@@ -44,8 +44,7 @@ export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
   };
 
   const shouldShowChromosomeNavigator =
-    props.viewportWidth >= BreakpointWidth.LAPTOP &&
-    view === Content.CHROMOSOME;
+    viewportWidth >= BreakpointWidth.LAPTOP && view === Content.CHROMOSOME;
 
   return (
     <div className={styles.browserNavBarMain}>
@@ -58,7 +57,7 @@ export const BrowserNavBarMain = (props: BrowserNavBarMainProps) => {
           <BrowserNavBarRegionSwitcher />
         )}
       </div>
-      {props.viewportWidth >= BreakpointWidth.LAPTOP && (
+      {viewportWidth >= BreakpointWidth.LAPTOP && (
         <ContentSwitcher currentView={view} onSwitch={handleViewChange} />
       )}
     </div>
@@ -91,8 +90,4 @@ const ContentSwitcher = (props: ContentSwitcherProps) => {
   return <div className={styles.contentSwitcherArea}>{switcherContent}</div>;
 };
 
-const mapStateToProps = (state: RootState) => ({
-  viewportWidth: getBreakpointWidth(state)
-});
-
-export default connect(mapStateToProps)(BrowserNavBarMain);
+export default BrowserNavBarMain;

@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import BrowserCog from './BrowserCog';
@@ -24,7 +24,7 @@ import {
   updateCogTrackList,
   updateSelectedCog
 } from '../browserActions';
-import { RootState } from 'src/store';
+
 import { CogList } from '../browserState';
 import {
   getBrowserActivated,
@@ -37,32 +37,28 @@ import {
 
 import styles from './BrowserCogList.scss';
 
-type BrowserCogListProps = {
-  browserActivated: boolean;
-  browserCogList: number;
-  browserCogTrackList: CogList;
-  trackConfigNames: { [key: string]: boolean };
-  trackConfigLabel: { [key: string]: boolean };
-  selectedCog: string | null;
-  updateCogList: (cogList: number) => void;
-  updateCogTrackList: (track_y: CogList) => void;
-  updateSelectedCog: (trackId: string | null) => void;
-};
-
 type BpaneScrollPayload = {
   delta_y?: number;
   track_y?: CogList;
 };
 
-export const BrowserCogList = (props: BrowserCogListProps) => {
-  const { browserCogTrackList } = props;
+export const BrowserCogList = () => {
+  const browserActivated = useSelector(getBrowserActivated);
+  const browserCogList = useSelector(getBrowserCogList);
+  const browserCogTrackList = useSelector(getBrowserCogTrackList);
+  const trackConfigLabel = useSelector(getTrackConfigLabel);
+  const trackConfigNames = useSelector(getTrackConfigNames);
+  const selectedCog = useSelector(getBrowserSelectedCog);
+
+  const dispatch = useDispatch();
+
   const listenBpaneScroll = (payload: BpaneScrollPayload) => {
     const { delta_y, track_y } = payload;
     if (delta_y !== undefined) {
-      props.updateCogList(delta_y);
+      dispatch(updateCogList(delta_y));
     }
     if (track_y) {
-      props.updateCogTrackList(track_y);
+      dispatch(updateCogTrackList(track_y));
     }
   };
 
@@ -76,22 +72,22 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
   }, []);
 
   useEffect(() => {
-    if (props.browserCogTrackList) {
+    if (browserCogTrackList) {
       const ons: string[] = [];
       const offs: string[] = [];
 
-      Object.keys(props.browserCogTrackList).forEach((name) => {
+      Object.keys(browserCogTrackList).forEach((name) => {
         // TODO: notice how we generate strings with suffix ":label" for track names,
         // and strings with suffix ":names" for track label? That's because the frontend code
         // and the backend code refer to these things by opposite terms. We will need to unify
         // the terminology at some point.
-        if (props.trackConfigNames[name]) {
+        if (trackConfigNames[name]) {
           ons.push(`${name}:label`);
         } else {
           offs.push(`${name}:label`); // by default, track names are not shown
         }
 
-        if (props.trackConfigLabel[name] !== false) {
+        if (trackConfigLabel[name] !== false) {
           ons.push(`${name}:names`);
         } else {
           offs.push(`${name}:names`); // by default, track label is not shown
@@ -102,11 +98,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
         on: ons
       });
     }
-  }, [
-    props.trackConfigNames,
-    props.trackConfigLabel,
-    props.browserCogTrackList
-  ]);
+  }, [trackConfigNames, trackConfigLabel, browserCogTrackList]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
@@ -114,19 +106,19 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     return (
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
-          cogActivated={props.selectedCog === name}
+          cogActivated={selectedCog === name}
           trackId={name}
-          updateSelectedCog={props.updateSelectedCog}
+          updateSelectedCog={() => dispatch(updateSelectedCog)}
         />
       </div>
     );
   });
 
   const transformStyle = {
-    transform: 'translate(0,' + props.browserCogList + 'px)'
+    transform: 'translate(0,' + browserCogList + 'px)'
   };
 
-  return props.browserActivated ? (
+  return browserActivated ? (
     <div className={styles.browserTrackConfigOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>
@@ -137,19 +129,4 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
   ) : null;
 };
 
-const mapStateToProps = (state: RootState) => ({
-  browserActivated: getBrowserActivated(state),
-  browserCogList: getBrowserCogList(state),
-  browserCogTrackList: getBrowserCogTrackList(state),
-  trackConfigLabel: getTrackConfigLabel(state),
-  trackConfigNames: getTrackConfigNames(state),
-  selectedCog: getBrowserSelectedCog(state)
-});
-
-const mapDispatchToProps = {
-  updateCogList,
-  updateCogTrackList,
-  updateSelectedCog
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BrowserCogList);
+export default BrowserCogList;

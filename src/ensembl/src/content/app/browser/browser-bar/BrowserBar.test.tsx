@@ -15,56 +15,62 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
-import { BrowserBar, BrowserBarProps } from './BrowserBar';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { ChrLocation } from '../browserState';
-
-import { createEnsObject } from 'tests/fixtures/ens-object';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+import { BrowserBar } from './BrowserBar';
 
 jest.mock('src/content/app/browser/browser-reset/BrowserReset', () => () => (
   <div id="browserReset">BrowserReset</div>
 ));
 jest.mock(
   'src/content/app/browser/browser-location-indicator/BrowserLocationIndicator',
-  () => () => (
+  () => () =>
     <div id="browserLocationIndicator">Browser Location Indicator</div>
-  )
 );
 jest.mock(
   'src/shared/components/feature-summary-strip/FeatureSummaryStrip',
   () => () => <div id="featureSummaryStrip">Feature Summary Strip</div>
 );
 
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserBar />
+    </Provider>
+  );
+};
+
 describe('<BrowserBar />', () => {
-  const defaultProps = {
-    chrLocation: ['13', 32275301, 32433493] as ChrLocation,
-    defaultChrLocation: ['13', 32271473, 32437359] as ChrLocation,
-    ensObject: createEnsObject(),
-    isDrawerOpened: false
-  };
-
-  const renderBrowserBar = (props?: Partial<BrowserBarProps>) =>
-    render(<BrowserBar {...defaultProps} {...props} />);
-
   describe('rendering', () => {
     it('contains BrowserReset button', () => {
-      const { container } = renderBrowserBar();
+      const { container } = wrapInRedux();
       expect(container.querySelector('#browserReset')).toBeTruthy();
     });
 
     it('contains BrowserLocationIndicator', () => {
-      const { container } = renderBrowserBar();
+      const { container } = wrapInRedux();
       expect(container.querySelector('#browserLocationIndicator')).toBeTruthy();
     });
 
     it('contains FeatureSummaryStrip when ensObject is not null', () => {
-      const { container } = renderBrowserBar();
+      const { container } = wrapInRedux();
       expect(container.querySelector('#featureSummaryStrip')).toBeTruthy();
     });
 
     it('does not contain FeatureSummaryStrip when ensObject is null', () => {
-      const { container } = renderBrowserBar({ ensObject: null });
+      const { container } = wrapInRedux(set('ensObjects', null, mockState));
       expect(container.querySelector('#featureSummaryStrip')).toBeFalsy();
     });
   });
