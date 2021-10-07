@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import faker from 'faker';
 import times from 'lodash/times';
 
@@ -22,6 +21,7 @@ import {
   GenomeTrackCategory,
   GenomeKaryotypeItemType
 } from 'src/shared/state/genome/genomeTypes';
+import { EnsObjectTrack } from 'ensemblRoot/src/shared/state/ens-object/ensObjectTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {
@@ -33,14 +33,7 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {
     label: faker.lorem.words(),
     track_category_id: faker.lorem.words(),
-    track_list: [
-      {
-        description: faker.lorem.words(),
-        label: faker.lorem.words(),
-        track_id: faker.lorem.words(),
-        stable_id: faker.lorem.words()
-      }
-    ],
+    track_list: [createTrack()],
     types: [TrackSet.VARIATION]
   },
   {
@@ -51,6 +44,16 @@ export const createGenomeCategories = (): GenomeTrackCategory[] => [
   }
 ];
 
+const createTrack = (): EnsObjectTrack => {
+  return {
+    additional_info: faker.lorem.words(),
+    colour: 'DARK_GREY',
+    label: faker.lorem.words(),
+    track_id: 'track:gene-pc-fwd',
+    stable_id: faker.lorem.word(),
+    description: faker.lorem.words()
+  };
+};
 export const createGenomeKaryotype = () =>
   times(25, () => ({
     is_chromosome: true,

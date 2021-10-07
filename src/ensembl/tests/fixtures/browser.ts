@@ -17,12 +17,23 @@
 import faker from 'faker';
 
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
-import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
-import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
+
 import {
   getChrLocationStr,
   RegionValidationMessages
 } from 'src/content/app/browser/browserHelper';
+import {
+  createGenomeCategories,
+  createGenomeKaryotype
+} from 'tests/fixtures/genomes';
+
+import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
+import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
+import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { Strand } from 'src/shared/types/thoas/strand';
+import { LoadingState } from 'src/shared/types/loading-state';
+import { createTrackStates } from 'tests/fixtures/track-panel';
+import { BreakpointWidth } from 'ensemblRoot/src/global/globalConfig';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),
@@ -141,9 +152,9 @@ export const createMockBrowserState = () => {
       browserEntity: {
         activeGenomeId: 'fake_genome_id_1',
         activeEnsObjectIds: {
-          fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id'
+          fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'
         },
-        trackStates: {}
+        trackStates: createTrackStates()
       },
       browserLocation: {
         chrLocations: {
@@ -159,8 +170,8 @@ export const createMockBrowserState = () => {
         browserNavIconStates: {
           'navigate-up': false,
           'navigate-right': false,
-          'navigate-down': false,
-          'navigate-left': false,
+          'navigate-down': true,
+          'navigate-left': true,
           'zoom-out': false,
           'zoom-in': false
         }
@@ -168,25 +179,25 @@ export const createMockBrowserState = () => {
       trackConfig: {
         applyToAll: false,
         browserCogList: 0,
-        browserCogTrackList: { 'track:gc': faker.datatype.number() },
-        selectedCog: null,
-        trackConfigLabel: {},
-        trackConfigNames: {}
+        browserCogTrackList: createCogTrackList(),
+        selectedCog: 'track:gc',
+        trackConfigLabel: createTrackConfigLabel(),
+        trackConfigNames: createTrackConfigNames()
       },
       trackPanel: {
-        fake_genome_id_2: {
+        fake_genome_id_1: {
           isTrackPanelModalOpened: false,
           bookmarks: [],
           previouslyViewedObjects: [
             {
-              genome_id: 'fake_genome_id_2',
-              object_id: 'fake_genome_id_2:gene:TraesCS3D02G273600',
+              genome_id: 'fake_genome_id_1',
+              object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_2',
               type: 'gene',
-              label: 'TraesCS3D02G273600'
+              label: 'Fake Gene Stable ID 2'
             }
           ],
-          selectedTrackPanelTab: 'Genomic',
-          trackPanelModalView: '',
+          selectedTrackPanelTab: TrackSet.GENOMIC,
+          trackPanelModalView: 'search',
           highlightedTrackId: '',
           isTrackPanelOpened: true,
           collapsedTrackIds: []
@@ -194,28 +205,32 @@ export const createMockBrowserState = () => {
       }
     },
     drawer: {
-      isDrawerOpened: {},
+      isDrawerOpened: {
+        fake_genome_id_1: false
+      },
       drawerView: {},
       activeDrawerTrackIds: {}
     },
     router: {
       location: {
         pathname: '/species/fake_genome_id_1',
+        query: {},
+        state: {},
         search: '',
         hash: '',
-        key: '9vnz4q',
-        query: {}
+        key: '9vnz4q'
       },
       action: 'PUSH'
     },
     global: {
-      breakpointWidth: 1200
+      breakpointWidth: BreakpointWidth.DESKTOP,
+      scrollPosition: {}
     },
     ensObjects: {
-      'fake_genome_id_1:gene:fake_gene_stable_id': {
+      'fake_genome_id_1:gene:fake_gene_stable_id_1': {
         data: {
           type: 'gene',
-          object_id: 'fake_genome_id_1:gene:fake_gene_stable_id',
+          object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_1',
           genome_id: 'fake_genome_id_1',
           label: 'BRCA2',
           location: {
@@ -226,9 +241,21 @@ export const createMockBrowserState = () => {
           stable_id: 'fake_gene_stable_id',
           versioned_stable_id: 'fake_gene_stable_id.17',
           bio_type: 'Protein coding',
-          strand: 'forward'
+          strand: Strand.FORWARD
         },
-        loadingStatus: 'success'
+        loadingStatus: LoadingState.SUCCESS
+      }
+    },
+    genome: {
+      genomeKaryotype: {
+        genomeKaryotypeData: {
+          fake_genome_id_1: createGenomeKaryotype()
+        }
+      },
+      genomeTrackCategories: {
+        genomeTrackCategoriesData: {
+          fake_genome_id_1: createGenomeCategories()
+        }
       }
     }
   };

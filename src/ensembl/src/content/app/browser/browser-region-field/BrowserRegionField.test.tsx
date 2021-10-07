@@ -15,14 +15,15 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 
-import {
-  BrowserRegionField,
-  BrowserRegionFieldProps
-} from './BrowserRegionField';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+import { BrowserRegionField } from './BrowserRegionField';
 
 import {
   createChrLocationValues,
@@ -30,8 +31,7 @@ import {
 } from 'tests/fixtures/browser';
 
 import * as browserHelper from '../browserHelper';
-
-import { ChrLocation } from '../browserState';
+import * as browserActions from '../browserActions';
 
 jest.mock('../browserHelper', () => {
   const originalModule = jest.requireActual('../browserHelper');
@@ -42,47 +42,55 @@ jest.mock('../browserHelper', () => {
   };
 });
 
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserRegionField />
+    </Provider>
+  );
+};
+
+const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+
 describe('<BrowserRegionField />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    jest.spyOn(browserActions, 'toggleRegionFieldActive');
   });
-
-  const defaultProps: BrowserRegionFieldProps = {
-    activeGenomeId: faker.lorem.words(),
-    chrLocation: createChrLocationValues().tupleValue,
-    isActive: false,
-    isGhosted: false,
-    changeBrowserLocation: jest.fn(),
-    changeFocusObject: jest.fn(),
-    toggleRegionFieldActive: jest.fn()
-  };
 
   describe('rendering', () => {
     it('contains an input', () => {
-      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const { container } = wrapInRedux();
       expect(container.querySelectorAll('input').length).toBe(1);
     });
 
     it('contains submit button', () => {
-      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const { container } = wrapInRedux();
       expect(container.querySelector('button[type="submit"]')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
     it('is set to active when focussed', () => {
-      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const { container } = wrapInRedux();
       const input = container.querySelector('input') as HTMLInputElement;
 
       fireEvent.focus(input);
 
       // the activateForm function which fires on focus should call toggleRegionFieldActive
-      expect(defaultProps.toggleRegionFieldActive).toHaveBeenCalledWith(true);
+      expect(browserActions.toggleRegionFieldActive).toHaveBeenCalledWith(true);
     });
 
     it('validates region input on submit', () => {
       const locationString = createChrLocationValues().stringValue;
-      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const { container } = wrapInRedux();
       const input = container.querySelector('input') as HTMLInputElement;
 
       userEvent.clear(input);
@@ -91,7 +99,7 @@ describe('<BrowserRegionField />', () => {
 
       expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: locationString,
-        genomeId: defaultProps.activeGenomeId,
+        genomeId: activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
       });
@@ -116,7 +124,7 @@ describe('<BrowserRegionField />', () => {
           }): Promise<void> => onError(mockErrorMessages)
         );
 
-      const { container } = render(<BrowserRegionField {...defaultProps} />);
+      const { container } = wrapInRedux();
       const input = container.querySelector('input') as HTMLInputElement;
 
       userEvent.clear(input);
@@ -140,14 +148,22 @@ describe('<BrowserRegionField />', () => {
               onSuccess: (arg: string) => void;
             }): Promise<void> => onSuccess(regionId)
           );
+
+        jest
+          .spyOn(browserActions, 'changeFocusObject')
+          .mockImplementation(() => () => ({ type: 'change-focus-object' }));
+
+        jest
+          .spyOn(browserActions, 'changeBrowserLocation')
+          .mockImplementation(() => () => ({
+            type: 'change-browser-location'
+          }));
       });
 
       it('switches to a different chromosome if it exists in the input', () => {
-        const oldChrLocation = ['13', 1, 1000] as ChrLocation;
         const newChrLocation = ['12', 1, 1000];
-        const { container } = render(
-          <BrowserRegionField {...defaultProps} chrLocation={oldChrLocation} />
-        );
+        const { container } = wrapInRedux();
+
         const input = container.querySelector('input') as HTMLInputElement;
 
         userEvent.type(
@@ -155,16 +171,14 @@ describe('<BrowserRegionField />', () => {
           `${newChrLocation[0]}:${newChrLocation[1]}-${newChrLocation[2]}{enter}`
         );
 
-        expect(defaultProps.changeFocusObject).toHaveBeenCalledWith(regionId);
+        expect(browserActions.changeFocusObject).toHaveBeenCalledWith(regionId);
       });
 
       it('preserves the same chromosome if input contains only new start and end coordinates', () => {
-        const oldChrLocation = ['13', 1, 1000] as ChrLocation;
         const newChrLocation = ['13', 500, 1000];
 
-        const { container } = render(
-          <BrowserRegionField {...defaultProps} chrLocation={oldChrLocation} />
-        );
+        const { container } = wrapInRedux();
+
         const input = container.querySelector('input') as HTMLInputElement;
 
         userEvent.clear(input);
@@ -173,8 +187,8 @@ describe('<BrowserRegionField />', () => {
           `${newChrLocation[1]}-${newChrLocation[2]}{enter}`
         );
 
-        expect(defaultProps.changeBrowserLocation).toHaveBeenCalledWith({
-          genomeId: defaultProps.activeGenomeId,
+        expect(browserActions.changeBrowserLocation).toHaveBeenCalledWith({
+          genomeId: activeGenomeId,
           ensObjectId: null,
           chrLocation: newChrLocation
         });

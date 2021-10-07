@@ -15,78 +15,82 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 
-import {
-  BrowserTrackConfig,
-  BrowserTrackConfigProps
-} from './BrowserTrackConfig';
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import {
-  createTrackConfigLabel,
-  createTrackConfigNames,
-  createCogTrackList
-} from 'tests/fixtures/browser';
+import * as browserActions from '../browserActions';
+
+import { BrowserTrackConfig } from './BrowserTrackConfig';
+
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = () => {
+  store = mockStore(mockState);
+  return render(
+    <Provider store={store}>
+      <BrowserTrackConfig />
+    </Provider>
+  );
+};
 
 describe('<BrowserTrackConfig />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: BrowserTrackConfigProps = {
-    applyToAll: false,
-    browserCogTrackList: createCogTrackList(),
-    selectedCog: 'track:gc',
-    trackConfigLabel: createTrackConfigLabel(),
-    trackConfigNames: createTrackConfigNames(),
-    updateApplyToAll: jest.fn(),
-    updateTrackConfigLabel: jest.fn(),
-    updateTrackConfigNames: jest.fn(),
-    onClose: jest.fn()
-  };
-
   describe('behaviour', () => {
     it('can update all tracks', () => {
-      const { container } = render(<BrowserTrackConfig {...defaultProps} />);
+      const { container } = wrapInRedux();
       const allTracksLabel = [...container.querySelectorAll('label')].find(
         (el) => el.textContent === 'All tracks'
       );
       const allTracksInputElement = allTracksLabel?.querySelector(
         'input'
       ) as HTMLElement;
-
+      jest.spyOn(browserActions, 'updateApplyToAll');
       userEvent.click(allTracksInputElement);
 
-      expect(defaultProps.updateApplyToAll).toHaveBeenCalledTimes(1);
+      expect(browserActions.updateApplyToAll).toHaveBeenCalledTimes(1);
     });
 
     it('toggles track name', () => {
-      const { container } = render(<BrowserTrackConfig {...defaultProps} />);
+      const { container } = wrapInRedux();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
+      jest.spyOn(browserActions, 'updateTrackConfigNames');
+
       userEvent.click(toggle);
 
-      expect(defaultProps.updateTrackConfigNames).toHaveBeenCalledTimes(1);
-      expect(defaultProps.updateTrackConfigNames).toHaveBeenCalledWith(
-        defaultProps.selectedCog,
+      expect(browserActions.updateTrackConfigNames).toHaveBeenCalledTimes(1);
+      expect(browserActions.updateTrackConfigNames).toHaveBeenCalledWith(
+        mockState.browser.trackConfig.selectedCog,
         false
       );
     });
 
     it('toggles feature labels on the track', () => {
-      const { container } = render(<BrowserTrackConfig {...defaultProps} />);
+      const { container } = wrapInRedux();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;
 
+      jest.spyOn(browserActions, 'updateTrackConfigLabel');
       userEvent.click(toggle);
 
-      expect(defaultProps.updateTrackConfigLabel).toHaveBeenCalledTimes(1);
-      expect(defaultProps.updateTrackConfigLabel).toHaveBeenCalledWith(
-        defaultProps.selectedCog,
+      expect(browserActions.updateTrackConfigLabel).toHaveBeenCalledTimes(1);
+      expect(browserActions.updateTrackConfigLabel).toHaveBeenCalledWith(
+        mockState.browser.trackConfig.selectedCog,
         false
       );
     });

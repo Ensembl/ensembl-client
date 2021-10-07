@@ -15,29 +15,56 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
+
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+import { BrowserNavBar } from './BrowserNavBar';
 
 jest.mock('./BrowserNavBarControls', () => () => (
   <div>BrowserNavBarControls</div>
 ));
 jest.mock('./BrowserNavBarMain', () => () => <div>BrowserNavBarMain</div>);
 
-import { BrowserNavBar } from './BrowserNavBar';
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserNavBar />
+    </Provider>
+  );
+};
 
 describe('<BrowserNavBar />', () => {
   describe('rendering', () => {
     it('correctly interprets the "expanded" prop', () => {
-      const { container, rerender } = render(
-        <BrowserNavBar expanded={false} />
+      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      let { container } = wrapInRedux(
+        set(
+          `browser.trackPanel.${activeGenomeId}.isTrackPanelOpened`,
+          false,
+          mockState
+        )
       );
-      const browserNavBar = container.firstChild as HTMLDivElement;
-      expect(browserNavBar.classList.contains('browserNavBarExpanded')).toBe(
-        false
-      );
-
-      rerender(<BrowserNavBar expanded={true} />);
+      let browserNavBar = container.firstChild as HTMLDivElement;
       expect(browserNavBar.classList.contains('browserNavBarExpanded')).toBe(
         true
+      );
+
+      container = wrapInRedux().container;
+      browserNavBar = container.firstChild as HTMLDivElement;
+      expect(browserNavBar.classList.contains('browserNavBarExpanded')).toBe(
+        false
       );
     });
   });

@@ -15,10 +15,17 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { TrackPanelModal, TrackPanelModalProps } from './TrackPanelModal';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+import * as trackPanelActions from '../trackPanelActions';
+
+import { TrackPanelModal } from './TrackPanelModal';
 
 jest.mock('./modal-views/TrackPanelSearch', () => () => (
   <div className="trackPanelSearch" />
@@ -30,31 +37,45 @@ jest.mock('./modal-views/TrackPanelDownloads', () => () => (
 
 jest.mock(
   'src/shared/components/close-button/CloseButton',
-  () => (props: { onClick: () => void }) => (
+  () => (props: { onClick: () => void }) =>
     <button className="closeButton" onClick={props.onClick}></button>
-  )
 );
+
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <TrackPanelModal />
+    </Provider>
+  );
+};
 
 describe('<TrackPanelModal />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: TrackPanelModalProps = {
-    trackPanelModalView: 'search',
-    closeTrackPanelModal: jest.fn(),
-    closeDrawer: jest.fn()
-  };
-
   describe('rendering', () => {
     it('displays track pane modal view for search', () => {
-      const { container } = render(<TrackPanelModal {...defaultProps} />);
+      const { container } = wrapInRedux();
       expect(container.querySelector('.trackPanelSearch')).toBeTruthy();
     });
 
     it('displays track pane modal view for downloads', () => {
-      const { container } = render(
-        <TrackPanelModal {...defaultProps} trackPanelModalView="downloads" />
+      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+
+      const { container } = wrapInRedux(
+        set(
+          `browser.trackPanel.${activeGenomeId}.trackPanelModalView`,
+          'downloads',
+          mockState
+        )
       );
       expect(container.querySelector('.trackPanelDownloads')).toBeTruthy();
     });
@@ -62,11 +83,13 @@ describe('<TrackPanelModal />', () => {
 
   describe('behaviour', () => {
     it('closes modal when close button is clicked', () => {
-      const { container } = render(<TrackPanelModal {...defaultProps} />);
+      const { container } = wrapInRedux();
       const closeButton = container.querySelector('button.closeButton');
 
+      jest.spyOn(trackPanelActions, 'closeTrackPanelModal');
+
       userEvent.click(closeButton as HTMLElement);
-      expect(defaultProps.closeTrackPanelModal).toHaveBeenCalledTimes(1);
+      expect(trackPanelActions.closeTrackPanelModal).toHaveBeenCalledTimes(1);
     });
   });
 });

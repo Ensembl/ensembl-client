@@ -15,9 +15,15 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { BrowserImage, BrowserImageProps } from './BrowserImage';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+import { BrowserImage } from './BrowserImage';
 
 jest.mock('../browser-cog/BrowserCogList', () => () => (
   <div id="browserCogList" />
@@ -35,56 +41,47 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div id="overlay" />
 ));
 
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserImage />
+    </Provider>
+  );
+};
+
 describe('<BrowserImage />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: BrowserImageProps = {
-    browserCogTrackList: {},
-    isNavbarOpen: false,
-    activeGenomeId: '',
-    isDisabled: false,
-    browserActivated: false,
-    activateBrowser: jest.fn(),
-    updateBrowserNavIconStates: jest.fn(),
-    updateBrowserActivated: jest.fn(),
-    updateBrowserActiveEnsObject: jest.fn(),
-    setChrLocation: jest.fn(),
-    setActualChrLocation: jest.fn(),
-    updateDefaultPositionFlag: jest.fn(),
-    changeHighlightedTrackId: jest.fn()
-  };
-
-  const renderBrowserImage = (props?: Partial<BrowserImageProps>) =>
-    render(<BrowserImage {...defaultProps} {...props} />);
-
   describe('rendering', () => {
     it('renders loader if browser is not activated', () => {
-      const { container } = renderBrowserImage();
+      const { container } = wrapInRedux();
       expect(container.querySelector('#circleLoader')).toBeTruthy();
     });
 
     it('renders browser cog list', () => {
-      const { container } = renderBrowserImage();
+      const { container } = wrapInRedux();
       expect(container.querySelector('#browserCogList')).toBeTruthy();
     });
 
     it('renders zmenu controller', () => {
-      const { container } = renderBrowserImage();
+      const { container } = wrapInRedux();
       expect(container.querySelector('#zmenuController')).toBeTruthy();
     });
 
     it('has an overlay on top when disabled', () => {
-      const { container } = renderBrowserImage({ isDisabled: true });
+      const { container } = wrapInRedux(
+        set('browser.browserLocation.regionEditorActive', true, mockState)
+      );
       expect(container.querySelector('#overlay')).toBeTruthy();
-    });
-  });
-
-  describe('behaviour', () => {
-    it('activates browser on mount', () => {
-      renderBrowserImage();
-      expect(defaultProps.activateBrowser).toHaveBeenCalled();
     });
   });
 });

@@ -21,7 +21,7 @@ import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPan
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const createTrackStates = (): BrowserTrackStates => ({
-  triticum_aestivum_GCA_900519105_1: {
+  fake_genome_id_1: {
     [faker.lorem.words()]: {
       [faker.lorem.words()]: Status.SELECTED,
       [faker.lorem.words()]: Status.UNSELECTED

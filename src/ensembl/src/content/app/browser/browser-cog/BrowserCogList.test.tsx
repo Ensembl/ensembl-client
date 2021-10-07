@@ -28,7 +28,16 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
-const mockState = createMockBrowserState();
+let mockState = createMockBrowserState();
+mockState = set('browser.trackConfig.trackConfigNames', {}, mockState);
+mockState = set('browser.trackConfig.trackConfigLabel', {}, mockState);
+mockState = set(
+  'browser.trackConfig.browserCogTrackList',
+  {
+    'track:gc': 100
+  },
+  mockState
+);
 
 const mockStore = configureMockStore([thunk]);
 
@@ -44,8 +53,8 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
 };
 
 describe('<BrowserCogList />', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('rendering', () => {
@@ -89,7 +98,7 @@ describe('<BrowserCogList />', () => {
           { 'track:gc': false },
           mockState
         )
-      ).container;
+      );
 
       expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
         off: ['track:gc:label'],
@@ -119,14 +128,14 @@ describe('<BrowserCogList />', () => {
       // We expect this to be fixed later on.
       wrapInRedux(
         set(
-          'browser.trackConfig.trackConfigLabel',
+          'browser.trackConfig.trackConfigNames',
           { 'track:gc': false },
           mockState
         )
       );
       expect(browserMessagingService.send).toHaveBeenLastCalledWith('bpane', {
-        off: ['track:gc:label', 'track:gc:names'],
-        on: []
+        off: ['track:gc:label'],
+        on: ['track:gc:names']
       });
     });
   });

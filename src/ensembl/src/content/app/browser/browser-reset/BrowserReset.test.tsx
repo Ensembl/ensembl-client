@@ -15,46 +15,64 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { BrowserReset, BrowserResetProps } from './BrowserReset';
+import * as browserActions from './../browserActions';
+import { BrowserReset } from './BrowserReset';
+
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserReset />
+    </Provider>
+  );
+};
 
 describe('<BrowserReset />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: BrowserResetProps = {
-    focusObjectId: `${faker.lorem.word()}:gene:${faker.lorem.word()}`,
-    changeFocusObject: jest.fn(),
-    isActive: true
-  };
-
   describe('rendering', () => {
     it('renders image button when focus feature exists', () => {
-      const { container } = render(<BrowserReset {...defaultProps} />);
+      const { container } = wrapInRedux();
       expect(container.querySelector('button')).toBeTruthy();
     });
 
     it('renders nothing when focus feature does not exist', () => {
-      const { container } = render(
-        <BrowserReset {...defaultProps} focusObjectId={null} />
+      const { container } = wrapInRedux(
+        set('browser.browserEntity.activeEnsObjectIds', {}, mockState)
       );
+
       expect(container.firstChild).toBeFalsy();
     });
   });
 
   describe('behaviour', () => {
     it('changes focus object when clicked', () => {
-      const { container } = render(<BrowserReset {...defaultProps} />);
+      const { container } = wrapInRedux();
       const button = container.querySelector('button') as HTMLButtonElement;
-
+      jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(button);
 
-      expect(defaultProps.changeFocusObject).toHaveBeenCalledWith(
-        defaultProps.focusObjectId
+      expect(browserActions.changeFocusObject).toHaveBeenCalledWith(
+        (mockState.browser.browserEntity.activeEnsObjectIds as any)[
+          mockState.browser.browserEntity.activeGenomeId
+        ]
       );
     });
   });

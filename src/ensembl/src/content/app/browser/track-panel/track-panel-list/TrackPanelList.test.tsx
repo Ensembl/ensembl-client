@@ -15,15 +15,17 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { TrackPanelList, TrackPanelListProps } from './TrackPanelList';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+import { TrackPanelList } from './TrackPanelList';
 
 import { createEnsObject } from 'tests/fixtures/ens-object';
-import { TrackSet } from '../trackPanelConfig';
-import { createGenomeCategories } from 'tests/fixtures/genomes';
-import { createTrackStates } from 'tests/fixtures/track-panel';
 
 jest.mock('./TrackPanelGene', () => () => <div className="trackPanelGene" />);
 
@@ -31,33 +33,45 @@ jest.mock('./TrackPanelListItem', () => () => (
   <div className="trackPanelListItem" />
 ));
 
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <TrackPanelList />
+    </Provider>
+  );
+};
+
 describe('<TrackPanelList />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: TrackPanelListProps = {
-    activeGenomeId: faker.lorem.words(),
-    isDrawerOpened: true,
-    activeEnsObject: createEnsObject(),
-    selectedTrackPanelTab: TrackSet.GENOMIC,
-    genomeTrackCategories: createGenomeCategories(),
-    trackStates: createTrackStates()
-  };
-
-  const mountTrackPanelList = (props?: Partial<TrackPanelListProps>) =>
-    render(<TrackPanelList {...defaultProps} {...props} />);
-
   describe('rendering', () => {
     it('renders gene tracks', () => {
-      const { container } = mountTrackPanelList();
+      const { container } = wrapInRedux();
+
       expect(container.querySelectorAll('.trackPanelGene').length).toBe(1);
     });
 
     it('does not render main track if the focus feature is a region', () => {
-      const { container } = mountTrackPanelList({
-        activeEnsObject: createEnsObject('region')
-      });
+      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const activeEnsObjectId = (
+        mockState.browser.browserEntity.activeEnsObjectIds as any
+      )[activeGenomeId];
+      const { container } = wrapInRedux(
+        set(
+          `ensObjects.${activeEnsObjectId}.data`,
+          createEnsObject('region'),
+          mockState
+        )
+      );
       expect(container.querySelector('.mainTrackItem')).toBeFalsy();
     });
   });

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { changeFocusObject } from 'src/content/app/browser/browserActions';
 
@@ -52,7 +52,6 @@ type ZmenuContentBlockProps = {
 };
 
 export type ZmenuContentItemProps = ZmenuContentItemType & {
-  changeFocusObject: (objectId: string) => void;
   id: string;
 };
 
@@ -91,13 +90,15 @@ export const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
     <span className={styles.zmenuContentBlock}>
       {props.items.map((item, index) => (
-        <ConnectedZmenuContentItem key={index} id={props.id} {...item} />
+        <ZmenuContentItem key={index} id={props.id} {...item} />
       ))}
     </span>
   );
 };
 
 export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
+  const dispatch = useDispatch();
+
   const { text, markup, id } = props;
   const isFocusable = markup.includes(Markup.FOCUS);
 
@@ -109,7 +110,7 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   });
 
   const handleClick = () => {
-    props.changeFocusObject(id);
+    dispatch(changeFocusObject(id));
   };
 
   const itemProps = {
@@ -120,13 +121,4 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   return <span {...itemProps}>{text}</span>;
 };
 
-const mapDispatchToProps = {
-  changeFocusObject
-};
-
-const ConnectedZmenuContentItem = connect(
-  null,
-  mapDispatchToProps
-)(ZmenuContentItem);
-
-export default ZmenuContent;
+export default ZmenuContentItem;

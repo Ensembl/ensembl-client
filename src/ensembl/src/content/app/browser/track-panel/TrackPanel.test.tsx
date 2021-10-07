@@ -15,12 +15,15 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { TrackPanel, TrackPanelProps } from './TrackPanel';
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import { createEnsObject } from 'tests/fixtures/ens-object';
+import { TrackPanel } from './TrackPanel';
 
 jest.mock('src/shared/components/loader', () => ({
   SidebarLoader: () => <div className="sidebarLoader" />
@@ -37,46 +40,57 @@ jest.mock('./track-panel-modal/TrackPanelModal', () => () => (
 ));
 jest.mock('../drawer/Drawer', () => () => <div className="drawer" />);
 
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const wrapInRedux = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <TrackPanel />
+    </Provider>
+  );
+};
+
 describe('<TrackPanel />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: TrackPanelProps = {
-    activeGenomeId: null,
-    browserActivated: false,
-    activeEnsObject: null,
-    isTrackPanelModalOpened: false,
-    restoreBrowserTrackStates: jest.fn()
-  };
-
-  const renderTrackPanel = (props?: Partial<TrackPanelProps>) =>
-    render(<TrackPanel {...defaultProps} {...props} />);
-
   describe('rendering', () => {
     it('does not render anything when not all rendering requirements are satisfied', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
-      const { container } = renderTrackPanel();
+      const { container } = wrapInRedux();
       expect(container.querySelector('.sidebarLoader')).toBeTruthy();
     });
 
     it('renders TrackPanelList when necessary requirements are satisfied', () => {
-      const { container } = renderTrackPanel({
-        browserActivated: true,
-        activeEnsObject: createEnsObject(),
-        activeGenomeId: faker.lorem.words()
-      });
+      const { container } = wrapInRedux(
+        set('browser.browserInfo.browserActivated', true, mockState)
+      );
+
       expect(container.querySelector('.trackPanelList')).toBeTruthy();
     });
 
     it('renders track panel modal when necessary requirements are satisfied', () => {
-      const { container } = renderTrackPanel({
-        activeGenomeId: faker.lorem.words(),
-        browserActivated: true,
-        activeEnsObject: createEnsObject(),
-        isTrackPanelModalOpened: true
-      });
+      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+
+      const { container } = wrapInRedux(
+        set(
+          'browser.browserInfo.browserActivated',
+          true,
+          set(
+            `browser.trackPanel.${activeGenomeId}.isTrackPanelModalOpened`,
+            true,
+            mockState
+          )
+        )
+      );
+
       expect(container.querySelector('.trackPanelModal')).toBeTruthy();
     });
   });
