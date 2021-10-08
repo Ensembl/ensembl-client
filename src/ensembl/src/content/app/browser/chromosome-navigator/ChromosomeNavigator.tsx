@@ -89,10 +89,7 @@ export const ChromosomeNavigatorWrapper = () => {
   };
 
   return (
-    <div
-      ref={containerRef as React.RefObject<HTMLDivElement>}
-      className={styles.chromosomeNavigator}
-    >
+    <div ref={containerRef as React.RefObject<HTMLDivElement>}>
       {containerWidth && length ? (
         <ChromosomeNavigator {...{ ...props, containerWidth }} />
       ) : null}
@@ -104,7 +101,7 @@ export const ChromosomeNavigator = (props: ChromosomeNavigatorProps) => {
   const calculatedStyles = calculateStyles(props);
 
   return (
-    <div>
+    <div className={styles.chromosomeNavigator}>
       <svg height={constants.TOTAL_HEIGHT} width={props.containerWidth}>
         <rect
           y={constants.STICK_MARGIN_TOP}

@@ -13,51 +13,6 @@
 }
 
 
-.chromosomeNavigator {
-  svg {
-    width: 100%;
-    overflow: visible;
-  }
-
-  .stick {
-    height: 4px;
-    fill: $light-grey;
-    stroke: $grey;
-  }
-
-  .viewport {
-    fill: white;
-  }
-
-  .viewportBorder {
-    fill: none;
-    stroke: $dark-grey;
-  }
-
-  .focusPointer {
-    fill: $orange;
-
-    line {
-      stroke: $orange;
-    }
-  }
-
-  .centromereRegion {
-    fill: $light-grey;
-    stroke: $light-grey;
-  }
-
-  .centromereCentre {
-    fill: $dark-grey;
-  }
-
-  .label {
-    font-family: $font-family-monospace;
-    font-size: 11px;
-  }
-}
-
-
 .controls {
   padding: 5em 4em;
 
