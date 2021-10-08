@@ -50,6 +50,9 @@ class AnalyticsTracking {
       transport: 'xhr',
       value: ga.value
     });
+
+    typeof ga.species === 'string' && this.setSpeciesDimension('');
+    typeof ga.feature === 'string' && this.setFeatureDimension('');
   }
 
   // Set app custom dimension
