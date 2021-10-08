@@ -30,11 +30,7 @@ import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
-
 type BrowserAppBarProps = {
-  species: CommittedItem[];
-  activeGenomeId: string | null;
   onSpeciesSelect: (genomeId: string) => void;
 };
 
@@ -51,7 +47,7 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
         onClick={() => props.onSpeciesSelect(species.genome_id)}
       />
     ));
-  }, [props.species]);
+  }, [species]);
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);

@@ -33,7 +33,6 @@ import {
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
-  changeHighlightedTrackId: (trackId: string) => void;
 };
 
 // when a zmenu is created, it’s assigned an id,

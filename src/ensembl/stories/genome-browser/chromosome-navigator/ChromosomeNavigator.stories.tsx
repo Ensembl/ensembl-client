@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
-import { ChromosomeNavigatorWrapper as ChromosomeNavigator } from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
+import useResizeObserver from 'src/shared/hooks/useResizeObserver';
+
+import { ChromosomeNavigator } from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 
 import styles from './ChromosomeNavigator.stories.scss';
 
@@ -29,30 +31,37 @@ export const ChromosomeNavigatorStory = () => {
   const [centromereStart, setCentromereStart] = useState(150000);
   const [centromereEnd, setCentromereEnd] = useState(160000);
 
-  const updateValue = (updater: (...args: any) => void) => (
-    e: React.FormEvent<HTMLInputElement>
-  ) => {
-    const value = parseInt(e.currentTarget.value);
-    updater(value);
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width: containerWidth } = useResizeObserver({ ref: containerRef });
+
+  const updateValue =
+    (updater: (...args: any) => void) =>
+    (e: React.FormEvent<HTMLInputElement>) => {
+      const value = parseInt(e.currentTarget.value);
+      updater(value);
+    };
 
   return (
     <>
       <div className={styles.chromosomeNavigatorContainer}>
-        <ChromosomeNavigator
-          length={1000000}
-          viewportStart={viewportStart}
-          viewportEnd={viewportEnd}
-          focusRegion={{
-            start: focusRegionStart,
-            end: focusRegionEnd
-          }}
-          centromere={{
-            start: centromereStart,
-            end: centromereEnd
-          }}
-        />
+        <div ref={containerRef} className={styles.chromosomeNavigator}>
+          <ChromosomeNavigator
+            length={1000000}
+            viewportStart={viewportStart}
+            viewportEnd={viewportEnd}
+            focusRegion={{
+              start: focusRegionStart,
+              end: focusRegionEnd
+            }}
+            centromere={{
+              start: centromereStart,
+              end: centromereEnd
+            }}
+            containerWidth={containerWidth}
+          />
+        </div>
       </div>
+
       <div className={styles.controls}>
         <div className={styles.controlsGroup}>
           <div>Viewport</div>

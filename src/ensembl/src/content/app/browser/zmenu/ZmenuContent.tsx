@@ -121,4 +121,4 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   return <span {...itemProps}>{text}</span>;
 };
 
-export default ZmenuContentItem;
+export default ZmenuContent;
