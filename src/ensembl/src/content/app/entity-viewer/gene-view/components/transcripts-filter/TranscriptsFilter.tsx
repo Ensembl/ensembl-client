@@ -53,7 +53,7 @@ type Transcript = Pick2<
 
 type Props = {
   transcripts: Transcript[];
-  toggleFilter: () => void;
+  toggleFilterPanel: () => void;
 };
 
 type OptionValue = string | number | boolean;
@@ -181,7 +181,7 @@ const TranscriptsFilter = (props: Props) => {
           <div className={styles.header}>Filter by</div>
           <div className={styles.filterContent}>{filterColumns}</div>
         </div>
-        <CloseButton onClick={props.toggleFilter} />
+        <CloseButton onClick={props.toggleFilterPanel} />
       </div>
     </div>
   );

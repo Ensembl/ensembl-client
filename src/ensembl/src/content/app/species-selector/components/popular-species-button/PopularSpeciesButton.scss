@@ -25,16 +25,10 @@ $button-gap: 1.4rem;
   padding: 3px;
   cursor: pointer;
 
-  svg {
+  img {
     width: 100%;
     height: 100%;
-    fill: white;
-
-    // selecting by a part of the class name, because svgr apparently modifies the original value
-    // of the class attribute of svg elements
-    *[class*='text'] {
-      fill: black;
-    }
+    filter: #{"invert()"};  // <-- unfortunate consequence of CSS and SCSS keyword collision
   }
 }
 
@@ -46,14 +40,8 @@ $button-gap: 1.4rem;
   background: white;
   border: 1px solid $blue;
 
-  svg {
-    fill: black;
-
-    // selecting by a part of the class name, because svgr apparently modifies the original value
-    // of the class attribute of svg elements
-    *[class*='text'] {
-      fill: white;
-    }
+  img {
+    filter: none;
   }
 }
 

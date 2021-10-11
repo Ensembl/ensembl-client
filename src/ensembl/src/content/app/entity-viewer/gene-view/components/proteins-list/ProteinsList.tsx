@@ -30,9 +30,9 @@ import {
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 import { filterTranscripts } from 'src/content/app/entity-viewer/shared/helpers/transcripts-filter';
 
-import { toggleExpandedProtein } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
-import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSelectors';
+import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import {
+  getExpandedTranscriptIds,
   getFilters,
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
@@ -59,7 +59,7 @@ export type ProteinsListProps = {
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
-  const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
+  const expandedProteinIds = useSelector(getExpandedTranscriptIds);
   const dispatch = useDispatch();
   const { search } = useLocation();
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
@@ -83,13 +83,10 @@ const ProteinsList = (props: ProteinsListProps) => {
     if (!proteinCodingTranscripts.length) {
       return;
     }
-    const hasExpandedTranscripts = !!expandedTranscriptIds.length;
-    const firstProteinId =
-      proteinCodingTranscripts[0].product_generating_contexts[0].product
-        .stable_id;
+    const hasExpandedTranscripts = !!expandedProteinIds.length;
     // Expand the first transcript by default
     if (!hasExpandedTranscripts && !proteinIdToFocus) {
-      dispatch(toggleExpandedProtein(firstProteinId));
+      dispatch(toggleTranscriptInfo(proteinCodingTranscripts[0].stable_id));
     }
   }, []);
 

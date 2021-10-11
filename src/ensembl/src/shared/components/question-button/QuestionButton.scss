@@ -3,6 +3,8 @@
 .questionButton {
   position: relative;
   display: inline-block;
+  user-select: none;
+  cursor: pointer;
   padding: 2px;
   font-size: 0;
 

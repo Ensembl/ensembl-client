@@ -33,9 +33,11 @@ import {
   GeneViewTabName
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 import { updatePreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
+import { setFilterPanel } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import {
   getFilters,
-  getSortingRule
+  getSortingRule,
+  getFilterPanelOpen
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -235,8 +237,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const [basePairsRulerTicks, setBasePairsRulerTicks] =
     useState<TicksAndScale | null>(null);
 
-  const [isFilterOpen, setFilterOpen] = useState(false);
-
+  const isFilterPanelOpen = useSelector(getFilterPanelOpen);
   const sortingRule = useSelector(getSortingRule);
   const filters = useSelector(getFilters);
   const dispatch = useDispatch();
@@ -267,11 +268,11 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     </span>
   );
 
-  const toggleFilter = () => {
-    setFilterOpen(!isFilterOpen);
+  const toggleFilterPanel = () => {
+    dispatch(setFilterPanel(!isFilterPanelOpen));
   };
 
-  const filterLabelClass = isFilterOpen ? styles.openFilterLabel : '';
+  const filterLabelClass = isFilterPanelOpen ? styles.openFilterLabel : '';
 
   useEffect(() => {
     if (!genomeId || !props.gene) {
@@ -300,7 +301,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       <div className={styles.geneViewTabs}>
         <div
           className={classNames([styles.filterLabelContainer], {
-            [styles.openFilterLabelContainer]: isFilterOpen
+            [styles.openFilterLabelContainer]: isFilterPanelOpen
           })}
         >
           {props.gene.transcripts.length > 5 && (
@@ -309,20 +310,20 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
                 classNames={{
                   label: filterLabelClass
                 }}
-                onClick={toggleFilter}
-                isExpanded={isFilterOpen}
+                onClick={toggleFilterPanel}
+                isExpanded={isFilterPanelOpen}
                 label={filterLabel}
               />
             </div>
           )}
         </div>
         <div className={styles.tabWrapper}>
-          <GeneViewTabs isFilterOpen={isFilterOpen} />
+          <GeneViewTabs isFilterPanelOpen={isFilterPanelOpen} />
         </div>
-        {isFilterOpen && (
+        {isFilterPanelOpen && (
           <div className={styles.filtersWrapper}>
             <TranscriptsFilter
-              toggleFilter={toggleFilter}
+              toggleFilterPanel={toggleFilterPanel}
               transcripts={props.gene.transcripts}
             />
           </div>

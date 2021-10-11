@@ -59,8 +59,10 @@ const GeneralErrorScreen = () => {
           <div
             className={classNames(styles.vennCircle, styles.vennCircleRight)}
           >
-            <div className={styles.infoIcon}>
-              <InfoIcon />
+            <div className={styles.vennIntersection}>
+              <div className={styles.infoIcon}>
+                <InfoIcon />
+              </div>
             </div>
             <span>...now we need you to do something</span>
           </div>

@@ -29,7 +29,6 @@ import { fetchPopularSpecies } from 'src/content/app/species-selector/state/spec
 
 import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 import SpeciesRemove from './species-remove/SpeciesRemove';
-import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
 import { RootState } from 'src/store';
 
@@ -72,7 +71,7 @@ const SpeciesTitleArea = () => {
   return species && iconUrl ? (
     <div className={blockClasses}>
       <div className={styles.speciesIcon}>
-        <InlineSVG src={iconUrl} />
+        <img src={iconUrl} />
       </div>
       <div className={styles.speciesNameWrapper}>
         <h1 className={styles.speciesName}>{getDisplayName(species)}</h1>

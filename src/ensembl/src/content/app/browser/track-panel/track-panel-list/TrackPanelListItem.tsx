@@ -200,6 +200,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   };
 
   const trackClassNames = classNames(styles.track, {
+    [styles.trackWithChildren]: props.children,
     [styles.main]: track.track_id === TrackId.GENE,
     [styles.trackHighlighted]:
       track.track_id === drawerView || track.track_id === highlightedTrackId
@@ -207,49 +208,59 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   return (
     <>
-      <dd className={trackClassNames} onClick={drawerViewListHandler}>
-        <label>
+      <div className={trackClassNames} onClick={drawerViewListHandler}>
+        <div className={styles.label}>
           {track.colour && (
             <span
               className={getBoxClasses(track.colour as TrackItemColourKey)}
             />
           )}
-          <span className={styles.mainText}>{track.label}</span>
-          {track.support_level && (
-            <span className={styles.selectedInfo}>{track.support_level}</span>
-          )}
-          {track.additional_info && (
-            <span className={styles.additionalInfo}>
-              {track.additional_info}
-            </span>
-          )}
-          {props.children && (
-            <Chevron
-              onClick={toggleExpand}
-              direction={isCollapsed ? 'down' : 'up'}
-              classNames={{ svg: styles.chevron }}
+          <span>
+            <span className={styles.labelTextPrimary}>{track.label}</span>
+            {track.support_level ? (
+              <span className={styles.selectedInfo}>{track.support_level}</span>
+            ) : (
+              track.additional_info && (
+                <span className={styles.additionalInfo}>
+                  {track.additional_info}
+                </span>
+              )
+            )}
+          </span>
+        </div>
+        {props.children && (
+          <Chevron
+            onClick={toggleExpand}
+            direction={isCollapsed ? 'down' : 'up'}
+            classNames={{ wrapper: styles.chevronWrapper, svg: styles.chevron }}
+          />
+        )}
+        <div className={styles.controls}>
+          <div className={styles.ellipsisHolder}>
+            <ImageButton
+              status={Status.DEFAULT}
+              description="More information"
+              onClick={drawerViewButtonHandler}
+              image={Ellipsis}
             />
-          )}
-        </label>
-        <div className={styles.ellipsisHolder}>
-          <ImageButton
-            status={Status.DEFAULT}
-            description={`Go to ${track.label}`}
-            onClick={drawerViewButtonHandler}
-            image={Ellipsis}
-          />
+          </div>
+          <div className={styles.eyeHolder}>
+            <VisibilityIcon
+              status={trackStatus}
+              description={getVisibilityIconHelpText(trackStatus)}
+              onClick={toggleTrack}
+            />
+          </div>
         </div>
-        <div className={styles.eyeHolder}>
-          <VisibilityIcon
-            status={trackStatus}
-            description={'enable/disable track'}
-            onClick={toggleTrack}
-          />
-        </div>
-      </dd>
+      </div>
       {!isCollapsed && props.children}
     </>
   );
+};
+
+const getVisibilityIconHelpText = (status: TrackActivityStatus) => {
+  // TODO: check whether the message is still correct after the half-highlighted eye icon is introduced
+  return status === Status.SELECTED ? 'Hide this track' : 'Show this track';
 };
 
 export default TrackPanelListItem;

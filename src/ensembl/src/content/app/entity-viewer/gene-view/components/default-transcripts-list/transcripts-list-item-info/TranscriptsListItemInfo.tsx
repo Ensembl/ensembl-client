@@ -17,7 +17,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import classNames from 'classnames';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Pick2, Pick3, Pick4 } from 'ts-multipick';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
@@ -42,7 +42,6 @@ import {
   toggleTranscriptDownload,
   toggleTranscriptMoreInfo
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
-import { clearExpandedProteins } from 'src/content/app/entity-viewer/state/gene-view/proteins/geneViewProteinsSlice';
 
 import { FullGene } from 'src/shared/types/thoas/gene';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
@@ -81,9 +80,6 @@ export type TranscriptsListItemInfoProps = {
   transcript: Transcript;
   expandDownload: boolean;
   expandMoreInfo: boolean;
-  toggleTranscriptDownload: (id: string) => void;
-  toggleTranscriptMoreInfo: (id: string) => void;
-  onProteinLinkClick: () => void;
 };
 
 export const TranscriptsListItemInfo = (
@@ -92,6 +88,8 @@ export const TranscriptsListItemInfo = (
   const { transcript } = props;
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
+
+  const dispatch = useDispatch();
 
   const getTranscriptLocation = () => {
     const { start, end } = getFeatureCoordinates(transcript);
@@ -136,16 +134,16 @@ export const TranscriptsListItemInfo = (
       proteinId: proteinStableId
     });
 
-    return (
-      <Link onClick={() => props.onProteinLinkClick()} to={proteinViewUrl}>
-        {proteinStableId}
-      </Link>
-    );
+    return <Link to={proteinViewUrl}>{proteinStableId}</Link>;
   };
 
   const getBrowserLink = () => {
     const { genomeId } = params;
     return urlFor.browser({ genomeId: genomeId, focus: focusIdForUrl });
+  };
+
+  const handleDownloadLinkClick = () => {
+    dispatch(toggleTranscriptDownload(transcript.stable_id));
   };
 
   const moreInfoContent = () => {
@@ -235,7 +233,9 @@ export const TranscriptsListItemInfo = (
 
         {(hasRelevantMetadata || !!transcriptCCDS) && (
           <ShowHide
-            onClick={() => props.toggleTranscriptMoreInfo(transcript.stable_id)}
+            onClick={() =>
+              dispatch(toggleTranscriptMoreInfo(transcript.stable_id))
+            }
             label="More information"
             isExpanded={props.expandMoreInfo}
             classNames={{
@@ -250,7 +250,7 @@ export const TranscriptsListItemInfo = (
         )}
 
         <ShowHide
-          onClick={() => props.toggleTranscriptDownload(transcript.stable_id)}
+          onClick={handleDownloadLinkClick}
           label="Download"
           isExpanded={props.expandDownload}
           classNames={{
@@ -290,10 +290,4 @@ const renderInstantDownload = ({
   );
 };
 
-const mapDispatchToProps = {
-  toggleTranscriptDownload,
-  toggleTranscriptMoreInfo,
-  onProteinLinkClick: clearExpandedProteins
-};
-
-export default connect(null, mapDispatchToProps)(TranscriptsListItemInfo);
+export default TranscriptsListItemInfo;

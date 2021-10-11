@@ -67,3 +67,8 @@ export const getSortingRule = (state: RootState): SortingRule => {
   const transcriptsSlice = getSliceForGene(state);
   return transcriptsSlice?.sortingRule ?? SortingRule.DEFAULT;
 };
+
+export const getFilterPanelOpen = (state: RootState): boolean => {
+  const transcriptsSlice = getSliceForGene(state);
+  return transcriptsSlice?.filterPanelOpen ?? false;
+};

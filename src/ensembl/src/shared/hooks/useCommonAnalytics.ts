@@ -13,13 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useSelector } from 'react-redux';
 
-import { combineReducers } from 'redux';
+import analyticsTracking from 'src/services/analytics-service';
 
-import geneViewViewReducer from './view/geneViewViewSlice';
-import geneViewTranscriptsReducer from './transcripts/geneViewTranscriptsSlice';
+import { getCurrentApp } from 'ensemblRoot/src/header/headerSelectors';
 
-export default combineReducers({
-  view: geneViewViewReducer,
-  transcripts: geneViewTranscriptsReducer
-});
+const useCommonAnalytics = () => {
+  const currentAppName = useSelector(getCurrentApp);
+
+  /* Contextual Help */
+  const trackContextualHelpOpened = () => {
+    analyticsTracking.trackEvent({
+      category: currentAppName,
+      action: 'open_contextual_help'
+    });
+  };
+
+  return {
+    trackContextualHelpOpened
+  };
+};
+export default useCommonAnalytics;

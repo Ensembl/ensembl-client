@@ -48,6 +48,7 @@ export type TranscriptsStatePerGene = {
   expandedMoreInfoIds: string[];
   filters: Filters;
   sortingRule: SortingRule;
+  filterPanelOpen: boolean;
 };
 
 export type GeneViewTranscriptsState = {
@@ -69,8 +70,45 @@ const defaultStatePerGene: TranscriptsStatePerGene = {
   expandedDownloadIds: [],
   expandedMoreInfoIds: [],
   filters: {},
-  sortingRule: SortingRule.DEFAULT
+  sortingRule: SortingRule.DEFAULT,
+  filterPanelOpen: false
 };
+
+export const resetFilterPanel =
+  (): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.updateFilterPanel({
+        activeGenomeId,
+        activeEntityId,
+        filterPanelOpen: defaultStatePerGene.filterPanelOpen
+      })
+    );
+  };
+
+export const setFilterPanel =
+  (filterPanelOpen: boolean): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getEntityViewerActiveGenomeId(state);
+    const activeEntityId = getEntityViewerActiveEntityId(state);
+    if (!activeGenomeId || !activeEntityId) {
+      return;
+    }
+    dispatch(
+      transcriptsSlice.actions.updateFilterPanel({
+        activeGenomeId,
+        activeEntityId,
+        filterPanelOpen
+      })
+    );
+  };
 
 export const setFilters =
   (filters: Filters): ThunkAction<void, any, null, Action<string>> =>
@@ -231,6 +269,12 @@ type UpdateSortingRulePayload = {
   sortingRule: SortingRule;
 };
 
+type UpdateFilterPanelPayload = {
+  activeGenomeId: string;
+  activeEntityId: string;
+  filterPanelOpen: boolean;
+};
+
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
   initialState: {} as GeneViewTranscriptsState,
@@ -265,6 +309,16 @@ const transcriptsSlice = createSlice({
         updatedState
       );
     },
+    updateFilterPanel(state, action: PayloadAction<UpdateFilterPanelPayload>) {
+      const { activeGenomeId, activeEntityId, filterPanelOpen } =
+        action.payload;
+      const updatedState = ensureGenePresence(state, action.payload);
+      return set(
+        `${activeGenomeId}.${activeEntityId}.filterPanelOpen`,
+        filterPanelOpen,
+        updatedState
+      );
+    },
     updateFilters(state, action: PayloadAction<UpdateFiltersPayload>) {
       const { activeGenomeId, activeEntityId, filters } = action.payload;
       const updatedState = ensureGenePresence(state, action.payload);
@@ -285,5 +339,7 @@ const transcriptsSlice = createSlice({
     }
   }
 });
+
+export const { updateExpandedTranscripts } = transcriptsSlice.actions;
 
 export default transcriptsSlice.reducer;

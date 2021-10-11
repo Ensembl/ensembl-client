@@ -38,6 +38,9 @@ class AnalyticsTracking {
 
   // Track an event
   public trackEvent(ga: AnalyticsOptions) {
+    typeof ga.species === 'string' && this.setSpeciesDimension(ga.species);
+    typeof ga.app === 'string' && this.setAppDimension(ga.app);
+
     this.reactGA.event({
       action: ga.action,
       category: ga.category,
@@ -49,13 +52,13 @@ class AnalyticsTracking {
   }
 
   // Set app custom dimension
-  public setAppDimension(page: string) {
-    this.reactGA.ga('set', CustomDimensions.APP, page);
+  public setAppDimension(app: string) {
+    this.reactGA.ga('set', CustomDimensions.APP, app);
   }
 
   // Set species custom dimension
-  public setSpeciesDimension(genomeId: string) {
-    this.reactGA.ga('set', CustomDimensions.SPECIES, genomeId);
+  public setSpeciesDimension(speciesAnalyticsName: string) {
+    this.reactGA.ga('set', CustomDimensions.SPECIES, speciesAnalyticsName);
   }
 }
 

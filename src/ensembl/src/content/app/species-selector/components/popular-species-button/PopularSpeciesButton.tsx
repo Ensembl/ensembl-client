@@ -20,7 +20,7 @@ import classNames from 'classnames';
 import find from 'lodash/find';
 import { push } from 'connected-react-router';
 
-import analyticsTracking from 'src/services/analytics-service';
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 import useHover from 'src/shared/hooks/useHover';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -32,10 +32,8 @@ import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
-import InlineSVG from 'src/shared/components/inline-svg/InlineSvg';
 
 import { RootState } from 'src/store';
 import {
@@ -64,23 +62,18 @@ export const PopularSpeciesButton = (props: Props) => {
   const { isSelected, isCommitted, species } = props;
   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
+  const { trackPopularSpeciesSelect } = useSpeciesSelectorAnalytics();
+
   const handleClick = () => {
-    const { genome_id, is_available } = species;
-    const speciesName = getSpeciesAnalyticsName(species);
+    const { is_available } = species;
 
     if (!is_available) {
       return;
     }
 
-    analyticsTracking.setSpeciesDimension(genome_id);
-
     if (isSelected) {
       props.clearSelectedSpecies();
-      analyticsTracking.trackEvent({
-        category: 'popular_species',
-        action: 'unpreselect',
-        label: speciesName
-      });
+      trackPopularSpeciesSelect(species, 'unpreselect');
     } else if (isCommitted) {
       props.push(
         urlFor.speciesPage({
@@ -91,12 +84,7 @@ export const PopularSpeciesButton = (props: Props) => {
       // the species is available, not selected and not committed;
       // go ahead and select it
       props.handleSelectedSpecies(props.species);
-
-      analyticsTracking.trackEvent({
-        category: 'popular_species',
-        action: 'preselect',
-        label: speciesName
-      });
+      trackPopularSpeciesSelect(species, 'preselect');
     }
   };
 
@@ -111,7 +99,7 @@ export const PopularSpeciesButton = (props: Props) => {
   return (
     <div className={styles.popularSpeciesButtonWrapper}>
       <div className={className} onClick={handleClick} ref={hoverRef}>
-        <InlineSVG src={species.image} />
+        <img src={species.image} />
       </div>
       {isHovered && speciesDisplayName && (
         <Tooltip anchor={hoverRef.current} autoAdjust={true}>

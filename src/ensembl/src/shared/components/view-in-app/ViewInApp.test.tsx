@@ -122,4 +122,64 @@ describe('<ViewInApp />', () => {
 
     expect(router.replace).toHaveBeenCalledWith(links.genomeBrowser.url);
   });
+
+  describe('onClick behaviour', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(router, 'push')
+        .mockImplementation((link) => ({ type: 'push', link } as any));
+    });
+
+    it('calls a click handler associated with a single app', () => {
+      const links = {
+        entityViewer: { url: 'http://foo.com' },
+        genomeBrowser: { url: 'http://bar.com' }
+      };
+      const clickHandlerMock = jest.fn();
+      const { getByTestId } = renderComponent({
+        links,
+        onAppClick: { genomeBrowser: clickHandlerMock }
+      });
+      const genomeBrowserButtonWrapper = getByTestId('genomeBrowser');
+      const genomeBrowserButton = genomeBrowserButtonWrapper.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const entityViewerButtonWrapper = getByTestId('entityViewer');
+      const entityViewerButton = entityViewerButtonWrapper.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+
+      userEvent.click(entityViewerButton);
+      expect(clickHandlerMock).not.toHaveBeenCalled(); // <-- because click handler is associated with genome browser button
+
+      userEvent.click(genomeBrowserButton);
+      expect(clickHandlerMock).toHaveBeenCalled();
+    });
+
+    it('calls a click handler associated with any app', () => {
+      const links = {
+        entityViewer: { url: 'http://foo.com' },
+        genomeBrowser: { url: 'http://bar.com' }
+      };
+      const clickHandlerMock = jest.fn();
+      const { getByTestId } = renderComponent({
+        links,
+        onAnyAppClick: clickHandlerMock
+      });
+      const genomeBrowserButtonWrapper = getByTestId('genomeBrowser');
+      const genomeBrowserButton = genomeBrowserButtonWrapper.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const entityViewerButtonWrapper = getByTestId('entityViewer');
+      const entityViewerButton = entityViewerButtonWrapper.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+
+      userEvent.click(entityViewerButton);
+      expect(clickHandlerMock).toHaveBeenCalledTimes(1);
+
+      userEvent.click(genomeBrowserButton);
+      expect(clickHandlerMock).toHaveBeenCalledTimes(2);
+    });
+  });
 });
