@@ -22,7 +22,5 @@ export const createSelectedSpecies = () => ({
   common_name: null,
   scientific_name: faker.lorem.words(),
   assembly_name: faker.lorem.word(),
-  isEnabled: true,
-  selectedStrainId: null,
-  strains: []
+  isEnabled: true
 });
