@@ -75,7 +75,7 @@ const defaultTranscripts = [
   nonCodingTranscript2
 ];
 
-const mockToggleFilter = jest.fn();
+const mockToggleFilterPanel = jest.fn();
 let store: ReturnType<typeof mockStore>;
 
 const wrapInRedux = (
@@ -87,7 +87,7 @@ const wrapInRedux = (
     <Provider store={store}>
       <TranscriptsFilter
         transcripts={transcripts}
-        toggleFilter={mockToggleFilter}
+        toggleFilterPanel={mockToggleFilterPanel}
       />
     </Provider>
   );

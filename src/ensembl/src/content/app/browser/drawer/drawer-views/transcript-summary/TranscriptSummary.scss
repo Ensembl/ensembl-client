@@ -31,6 +31,15 @@
       margin-top: 3px;
     }
   }
+  .geneName {
+    width: 60ch;
+  }
+}
+
+.downloadRow {
+  > .value {
+    display: flex;
+  }
 }
 
 .spaceAbove{
@@ -39,6 +48,11 @@
 
 .lightText{
   font-weight: $light;
+}
+
+.viewInAppLabel {
+  color: $black;
+  font-weight: 300;
 }
 
 .unit{

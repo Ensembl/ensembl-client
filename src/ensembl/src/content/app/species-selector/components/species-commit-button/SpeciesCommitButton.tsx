@@ -17,30 +17,36 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
+
 import {
-  hasCurrentSpecies,
-  canCommitSpecies
+  canCommitSpecies,
+  getSelectedItem
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import styles from './SpeciesCommitButton.scss';
-
+import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
 import { RootState } from 'src/store';
 
+import styles from './SpeciesCommitButton.scss';
+
 type Props = {
-  hasCurrentSpecies: boolean; // tells whether a species has been selected and can be committed
+  currentSpecies: CurrentItem | null;
   disabled: boolean;
   onCommit: () => void;
 };
 
 export const SpeciesCommitButton = (props: Props) => {
+  const { trackCommittedSpecies } = useSpeciesSelectorAnalytics();
+
   const handleClick = () => {
     props.onCommit();
+    props.currentSpecies && trackCommittedSpecies(props.currentSpecies);
   };
 
-  return props.hasCurrentSpecies ? (
+  return props.currentSpecies ? (
     <div className={styles.speciesCommitButton}>
       <PrimaryButton onClick={handleClick} isDisabled={props.disabled}>
         Add
@@ -50,7 +56,7 @@ export const SpeciesCommitButton = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  hasCurrentSpecies: hasCurrentSpecies(state),
+  currentSpecies: getSelectedItem(state),
   disabled: !canCommitSpecies(state)
 });
 

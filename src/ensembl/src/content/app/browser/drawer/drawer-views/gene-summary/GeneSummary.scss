@@ -2,7 +2,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: [label] 120px [value] auto;
+  grid-template-columns: [label] 130px [value] auto;
   grid-column-gap: 10px;
   margin-bottom: 3px;
 
@@ -10,10 +10,29 @@
     grid-column: label;
     font-weight: $light;
     text-align: right;
+    font-size: 12px;
   }
 
   .value {
     grid-column: value;
+
+    & > span + span {
+      margin-left: 10px;
+    }
+
+    & > div + div{
+      margin-top: 3px;
+    }
+  }
+
+  .questionButton {
+    padding-left: 10px;
+    position: relative;
+    top: 2px;
+  }
+
+  .geneName {
+    width: 60ch;
   }
 }
 
@@ -27,14 +46,17 @@
 
 .featureDetails {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  white-space: nowrap;
-  flex-wrap: nowrap;
-  overflow: hidden;
+  gap: 10px;
+}
 
-  & > div:not(:first-child) {
-    margin-left: 30px;
-  }
+.featureDetail {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding-right: 30px;
 }
 
 .featureSymbol {
@@ -68,4 +90,9 @@
   position: absolute;
   right: 0;
   top: 0;
+}
+
+.viewInAppLabel {
+  color: $black;
+  font-weight: 300;
 }

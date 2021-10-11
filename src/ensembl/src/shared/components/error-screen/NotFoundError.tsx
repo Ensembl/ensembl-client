@@ -15,30 +15,43 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
+
+import { PrimaryButton } from '../button/Button';
+
+import styles from './ErrorScreen.scss';
 
 const NotFoundErrorScreen = () => {
-  const containerStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh'
-  } as const;
+  // TODO: 404s should be logged in the service monitoring system being developed by BE.
 
-  const firstLineStyles = {
-    fontSize: '72px',
-    margin: 0
-  };
-
-  const secondLineStyles = {
-    fontSize: '32px'
+  const goToHomePage = () => {
+    window.location.replace(urlFor.home());
   };
 
   return (
-    <div style={containerStyles}>
-      <p style={firstLineStyles}>404</p>
-      <p style={secondLineStyles}>page not found</p>
-    </div>
+    <section className={styles.generalErrorScreen}>
+      <div className={styles.generalErrorBody}>
+        <p className={styles.generalErrorTopMessage}>Venn of the not found</p>
+        <div className={styles.generalErrorImage}>
+          <div className={classNames(styles.vennCircle, styles.vennCircleLeft)}>
+            <span> We may have moved this page...</span>
+          </div>
+          <div
+            className={classNames(styles.vennCircle, styles.vennCircleRight)}
+          >
+            <div className={styles.vennIntersection}>
+              <div className={styles.infoText}>404</div>
+            </div>
+            <span>...or your link has changed or gone</span>
+          </div>
+        </div>
+        <div className={styles.homeButton}>
+          <PrimaryButton onClick={goToHomePage}>Home page</PrimaryButton>
+        </div>
+      </div>
+    </section>
   );
 };
 

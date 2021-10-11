@@ -31,7 +31,6 @@ $textColumnWidth: 450px;
   }
 
   p, ul {
-    line-height: $line-height;
     margin: $line-height 0;
   }
 
@@ -120,7 +119,7 @@ $textColumnWidth: 450px;
   h2 {
     font-size: 13px;
     font-weight: $light;
-    margin: 0 0 1rem;
+    margin: 1.5rem 0;
   }
 }
 

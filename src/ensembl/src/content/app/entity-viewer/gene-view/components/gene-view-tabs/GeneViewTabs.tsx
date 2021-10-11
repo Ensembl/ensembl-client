@@ -49,7 +49,7 @@ type Props = {
   selectedTab: string;
   selectedTabViews?: SelectedTabViews;
   push: Push;
-  isFilterOpen: boolean;
+  isFilterPanelOpen: boolean;
 };
 
 const GeneViewTabs = (props: Props) => {
@@ -57,7 +57,7 @@ const GeneViewTabs = (props: Props) => {
   const tabClassNames = {
     default: styles.geneTab,
     selected: classNames(styles.selectedGeneTab, {
-      [styles.withOpenFilter]: props.isFilterOpen
+      [styles.withOpenFilter]: props.isFilterPanelOpen
     }),
     disabled: styles.disabledGeneTab,
     tabsContainer: styles.geneViewTabs //FIXME: Pass this as a props so that it can be styled from the parent

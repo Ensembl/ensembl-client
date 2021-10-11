@@ -20,7 +20,7 @@
 }
 
 .generalErrorScreen {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -46,7 +46,7 @@
   font-size: 12px;
 }
 
-.reloadButton {
+.reloadButton, .homeButton {
   padding-top: 40px;
 }
 
@@ -78,8 +78,8 @@
     text-align: right;
 
     span {
-      margin-right: 83px;
-      margin-left: 30px;
+      margin-right: 77px;
+      margin-left: 25px;
     }
   }
 
@@ -88,16 +88,24 @@
     text-align: left;
     span {
       margin-right: 15px;
-      margin-left: 30px;
+      margin-left: 25px;
     }
   }
   
-  .infoIcon {
+  .vennIntersection{
     padding-left: 19px;
-    svg {
-      fill: $red;
-      width: 24px;
-      height: 24px;
+    .infoText{
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .infoIcon {
+      svg {
+        fill: $red;
+        width: 24px;
+        height: 24px;
+      }
     }
   }
+  
 }

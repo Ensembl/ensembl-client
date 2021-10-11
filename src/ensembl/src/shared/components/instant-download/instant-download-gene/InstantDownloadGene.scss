@@ -7,7 +7,7 @@
 
   .featureId {
     margin-left: 0.5em;
-    font-weight: $bold;
+    font-weight: $normal;
   }
 }
 
@@ -38,11 +38,11 @@
 
 .themeLight {
   .label {
-    color: $dark-grey;
+    color: $black;
   }
 
   .checkboxLabel {
-    color: $dark-grey;
+    color: $black;
   }
 }
 
@@ -66,5 +66,6 @@
   .downloadButton {
     margin: 35px 20px 0 0;
     float: right;
+    font-size: 12px;
   }
 }

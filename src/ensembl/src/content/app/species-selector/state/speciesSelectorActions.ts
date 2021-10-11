@@ -17,12 +17,10 @@
 import { createAsyncAction, createAction } from 'typesafe-actions';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import find from 'lodash/find';
 import pickBy from 'lodash/pickBy';
 import apiService from 'src/services/api-service';
 
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
-import analyticsTracking from 'src/services/analytics-service';
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/browser/browserActions';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
@@ -33,7 +31,6 @@ import {
   getSearchText
 } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 import {
   SearchMatch,
   SearchMatches,
@@ -53,12 +50,6 @@ const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
   assembly_name: data.assembly_name as string,
   isEnabled: true
 });
-
-enum categories {
-  POPULAR_SPECIES = 'popular_species',
-  ADD_SPECIES = 'add_species',
-  SELECTED_SPECIES = 'selected_Species'
-}
 
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
 
@@ -230,16 +221,6 @@ export const commitSelectedSpeciesAndSave =
       buildCommittedItem(selectedItem)
     ];
 
-    const speciesName = getSpeciesAnalyticsName(selectedItem);
-
-    analyticsTracking.setSpeciesDimension(selectedItem.genome_id);
-
-    analyticsTracking.trackEvent({
-      category: categories.ADD_SPECIES,
-      label: speciesName,
-      action: 'select'
-    });
-
     dispatch(updateCommittedSpecies(newCommittedSpecies));
     dispatch(clearSelectedSearchResult());
 
@@ -255,9 +236,6 @@ export const toggleSpeciesUseAndSave =
     if (!currentSpecies) {
       return; // should never happen
     }
-    const speciesNameForAnalytics = getSpeciesAnalyticsName(currentSpecies);
-    const updatedStatus = currentSpecies.isEnabled ? 'do_not_use' : 'use';
-
     const updatedCommittedSpecies = committedSpecies.map((item) => {
       return item.genome_id === genomeId
         ? {
@@ -265,12 +243,6 @@ export const toggleSpeciesUseAndSave =
             isEnabled: !item.isEnabled
           }
         : item;
-    });
-
-    analyticsTracking.trackEvent({
-      category: categories.SELECTED_SPECIES,
-      label: speciesNameForAnalytics,
-      action: updatedStatus
     });
 
     dispatch(updateCommittedSpecies(updatedCommittedSpecies));
@@ -281,22 +253,6 @@ export const deleteSpeciesAndSave =
   (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState) => {
     const committedSpecies = getCommittedSpecies(getState());
-    const deletedSpecies = find(
-      committedSpecies,
-      ({ genome_id }) => genome_id === genomeId
-    );
-
-    if (deletedSpecies) {
-      const deletedSpeciesName = getSpeciesAnalyticsName(deletedSpecies);
-
-      analyticsTracking.setSpeciesDimension(deletedSpecies.genome_id);
-
-      analyticsTracking.trackEvent({
-        category: categories.SELECTED_SPECIES,
-        label: deletedSpeciesName,
-        action: 'unselect'
-      });
-    }
     const updatedCommittedSpecies = committedSpecies.filter(
       ({ genome_id }) => genome_id !== genomeId
     );

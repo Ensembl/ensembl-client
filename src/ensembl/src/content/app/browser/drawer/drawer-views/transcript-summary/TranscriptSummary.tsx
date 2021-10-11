@@ -17,6 +17,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
+import classNames from 'classnames';
 
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
@@ -39,15 +40,15 @@ import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelect
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
+import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
 
 import styles from './TranscriptSummary.scss';
-import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 // TODO: narrow down the types for spliced exons and product-generating_contexts
 type Transcript = Pick<
@@ -320,14 +321,19 @@ const TranscriptSummary = () => {
         </div>
       )}
 
-      <div className={`${styles.row} ${styles.spaceAbove}`}>
+      <div
+        className={classNames(
+          styles.row,
+          styles.spaceAbove,
+          styles.downloadRow
+        )}
+      >
         <div className={styles.value}>
-          <span
-            className={styles.downloadLink}
+          <ShowHide
+            label="Download"
+            isExpanded={shouldShowDownload}
             onClick={() => showDownload(!shouldShowDownload)}
-          >
-            Download
-          </span>
+          />
           {shouldShowDownload && (
             <div className={styles.downloadWrapper}>
               <InstantDownloadTranscript
@@ -339,10 +345,6 @@ const TranscriptSummary = () => {
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"
                 layout="vertical"
-              />
-              <CloseButton
-                className={styles.closeButton}
-                onClick={() => showDownload(false)}
               />
             </div>
           )}
@@ -363,13 +365,15 @@ const TranscriptSummary = () => {
 
       <div className={styles.row}>
         <div className={styles.label}>Gene name</div>
-        <div className={styles.value}>{getGeneName(gene.name)}</div>
+        <div className={`${styles.value} ${styles.geneName}`}>
+          {getGeneName(gene.name)}
+        </div>
       </div>
 
       <div className={`${styles.row} ${styles.spaceAbove}`}>
         <div className={styles.value}>
           <ViewInApp
-            classNames={{ label: styles.lightText }}
+            classNames={{ label: styles.viewInAppLabel }}
             links={{ entityViewer: { url: entityViewerUrl } }}
           />
         </div>
