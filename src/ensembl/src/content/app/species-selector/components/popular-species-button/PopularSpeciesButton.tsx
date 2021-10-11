@@ -42,15 +42,6 @@ export type Props = {
   species: PopularSpecies;
 };
 
-// type Props = {
-//   species: PopularSpecies;
-//   isSelected: boolean;
-//   isCommitted: boolean;
-//   handleSelectedSpecies: (species: PopularSpecies) => void;
-//   clearSelectedSpecies: () => void;
-//   push: (url: string) => void;
-// };
-
 const PopularSpeciesButton = (props: Props) => {
   const { species } = props;
   const { genome_id: genomeIdFromProps, is_available: isSpeciesAvailable } =
@@ -113,59 +104,5 @@ const PopularSpeciesButton = (props: Props) => {
     </div>
   );
 };
-
-// named export is for testing purposes
-// use default export for development
-// export const PopularSpeciesButton = (props: Props) => {
-//   const { isSelected, isCommitted, species } = props;
-//   const [hoverRef, isHovered] = useHover<HTMLDivElement>();
-
-//   const { trackPopularSpeciesSelect } = useSpeciesSelectorAnalytics();
-
-//   const handleClick = () => {
-//     const { is_available } = species;
-
-//     if (!is_available) {
-//       return;
-//     }
-
-//     if (isSelected) {
-//       props.clearSelectedSpecies();
-//       trackPopularSpeciesSelect(species, 'unpreselect');
-//     } else if (isCommitted) {
-//       props.push(
-//         urlFor.speciesPage({
-//           genomeId: species.genome_id
-//         })
-//       );
-//     } else {
-//       // the species is available, not selected and not committed;
-//       // go ahead and select it
-//       props.handleSelectedSpecies(species);
-//       trackPopularSpeciesSelect(species, 'preselect');
-//     }
-//   };
-
-//   const className = classNames(styles.popularSpeciesButton, {
-//     [styles.popularSpeciesButtonDisabled]: !species.is_available,
-//     [styles.popularSpeciesButtonSelected]: isSelected,
-//     [styles.popularSpeciesButtonCommitted]: isCommitted
-//   });
-
-//   const speciesDisplayName = species.common_name || species.scientific_name;
-
-//   return (
-//     <div className={styles.popularSpeciesButtonWrapper}>
-//       <div className={className} onClick={handleClick} ref={hoverRef}>
-//         <img src={species.image} />
-//       </div>
-//       {isHovered && speciesDisplayName && (
-//         <Tooltip anchor={hoverRef.current} autoAdjust={true}>
-//           {speciesDisplayName}
-//         </Tooltip>
-//       )}
-//     </div>
-//   );
-// };
 
 export default PopularSpeciesButton;

@@ -15,12 +15,17 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import configureMockStore from 'redux-mock-store';
+import merge from 'lodash/merge';
+
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
 import { createSelectedSpecies } from 'ensemblRoot/tests/fixtures/selected-species';
-import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
 
 jest.mock(
   'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
@@ -30,11 +35,26 @@ jest.mock(
     }))
 );
 
-const onCommit = jest.fn();
-const defaultProps = {
-  currentSpecies: createSelectedSpecies() as CurrentItem,
-  disabled: false,
-  onCommit
+const committedHuman: ReturnType<typeof createSelectedSpecies> = {
+  ...createSelectedSpecies(),
+  genome_id: 'human'
+};
+
+const defaultReduxState = {
+  speciesSelector: {
+    currentItem: committedHuman
+  }
+};
+
+const mockStore = configureMockStore([thunk]);
+
+const renderComponent = (state?: unknown) => {
+  state = merge({}, defaultReduxState, state);
+  return render(
+    <Provider store={mockStore(state)}>
+      <SpeciesCommitButton />
+    </Provider>
+  );
 };
 
 describe('<SpeciesCommitButton />', () => {
@@ -43,32 +63,27 @@ describe('<SpeciesCommitButton />', () => {
   });
 
   it('shows PrimaryButton if a species has been selected', () => {
-    const { container } = render(<SpeciesCommitButton {...defaultProps} />);
+    const { container } = renderComponent();
     expect(container.querySelector('button.primaryButton')).toBeTruthy();
   });
 
   it('does not show any button if no species has been selected', () => {
-    const { container } = render(
-      <SpeciesCommitButton {...defaultProps} currentSpecies={null} />
-    );
+    const stateFragment = { speciesSelector: { currentItem: null } };
+    const { container } = renderComponent(stateFragment);
     expect(container.querySelector('button')).toBeFalsy();
   });
 
-  it('does not register clicks if disabled', () => {
-    const { container } = render(
-      <SpeciesCommitButton {...defaultProps} disabled={true} />
-    );
-    const disabledButton = container.querySelector('button') as HTMLElement;
-    userEvent.click(disabledButton);
-
-    expect(onCommit).not.toHaveBeenCalled();
-  });
-
-  it('calls the onCommit prop if clicked when enabled', () => {
-    const { container } = render(<SpeciesCommitButton {...defaultProps} />);
+  it('calls the onCommit prop if clicked', () => {
+    jest
+      .spyOn(speciesSelectorActions, 'commitSelectedSpeciesAndSave')
+      .mockImplementation(() => jest.fn());
+    const { container } = renderComponent();
     const button = container.querySelector('button') as HTMLElement;
+
     userEvent.click(button);
 
-    expect(onCommit).toHaveBeenCalled();
+    expect(
+      speciesSelectorActions.commitSelectedSpeciesAndSave
+    ).toHaveBeenCalled();
   });
 });
