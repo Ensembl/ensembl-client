@@ -22,6 +22,7 @@ import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
+import { browserNavIconActionMap } from 'src/content/app/browser/browserState';
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
 
@@ -42,10 +43,11 @@ export const BrowserNavIcon = (props: BrowserNavIconProps) => {
   const { browserNavItem, enabled } = props;
   const { icon } = browserNavItem;
 
-  const action: OutgoingAction = {
-    type: browserNavItem.name as any,
+  const action = {
+    type: browserNavIconActionMap[browserNavItem.name],
     payload: browserNavItem.detail
-  };
+  } as OutgoingAction;
+
   const navigateBrowser = () => {
     if (enabled) {
       genomeBrowser.send(action);

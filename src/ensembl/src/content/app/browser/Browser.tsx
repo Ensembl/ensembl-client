@@ -199,22 +199,32 @@ const ReduxConnectedBrowser = connect(
   mapDispatchToProps
 )(Browser);
 
-export const GenomeBrowserContext = React.createContext<{
-  genomeBrowser?: EnsemblGenomeBrowser | null;
-  setGenomeBrowser?: (genomeBrowser: EnsemblGenomeBrowser) => void;
-  zmenus?: StateZmenu;
-  setZmenus?: (zmenus: StateZmenu) => void;
-}>({});
+type GenomeBrowserContextType = {
+  genomeBrowser: EnsemblGenomeBrowser;
+  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser) => void;
+  zmenus: StateZmenu;
+  setZmenus: (zmenus: StateZmenu) => void;
+};
+
+export const GenomeBrowserContext = React.createContext<
+  GenomeBrowserContextType | undefined
+>(undefined);
 
 const GenomeBrowserInitContainer = () => {
-  const [genomeBrowser, setGenomeBrowser] =
-    useState<EnsemblGenomeBrowser | null>(null);
+  const [genomeBrowser, setGenomeBrowser] = useState<EnsemblGenomeBrowser>();
 
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
   return (
     <GenomeBrowserContext.Provider
-      value={{ genomeBrowser, setGenomeBrowser, zmenus, setZmenus }}
+      value={
+        {
+          genomeBrowser,
+          setGenomeBrowser,
+          zmenus,
+          setZmenus
+        } as GenomeBrowserContextType
+      }
     >
       <ReduxConnectedBrowser /> ;
     </GenomeBrowserContext.Provider>

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
   IncomingAction,
   IncomingActionType,
   ZmenuPayload
 } from 'ensembl-genome-browser';
-
-import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 
 import Zmenu from './Zmenu';
 
@@ -42,7 +42,7 @@ export type StateZmenu = {
 };
 
 const ZmenuController = (props: Props) => {
-  const { genomeBrowser, zmenus, setZmenus } = useContext(GenomeBrowserContext);
+  const { genomeBrowser, zmenus, setZmenus } = useGenomeBrowser();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(

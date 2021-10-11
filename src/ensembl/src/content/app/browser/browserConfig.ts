@@ -26,7 +26,6 @@ import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tr
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
 
 import { BrowserNavAction } from 'src/content/app/browser/browserState';
-import { OutgoingActionType } from 'ensembl-genome-browser';
 
 export type BrowserNavItem = {
   description: string;
@@ -44,7 +43,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_up_px: 50
     },
     icon: navigateUpIcon,
-    name: OutgoingActionType.MOVE_UP
+    name: BrowserNavAction.MOVE_UP
   },
   {
     description: 'navigate down',
@@ -52,7 +51,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_down_px: 50
     },
     icon: navigateDownIcon,
-    name: OutgoingActionType.MOVE_DOWN
+    name: BrowserNavAction.MOVE_DOWN
   },
   {
     description: 'zoom out',
@@ -60,7 +59,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: -0.3
     },
     icon: zoomOutIcon,
-    name: OutgoingActionType.ZOOM_OUT
+    name: BrowserNavAction.ZOOM_OUT
   },
   {
     description: 'zoom in',
@@ -68,7 +67,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       zoom_by: 0.3
     },
     icon: zoomInIcon,
-    name: OutgoingActionType.ZOOM_IN
+    name: BrowserNavAction.ZOOM_IN
   },
   {
     description: 'navigate left',
@@ -76,7 +75,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_left_px: 50
     },
     icon: navigateLeftIcon,
-    name: OutgoingActionType.MOVE_LEFT
+    name: BrowserNavAction.MOVE_LEFT
   },
   {
     description: 'navigate right',
@@ -84,7 +83,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_right_px: 50
     },
     icon: navigateRightIcon,
-    name: OutgoingActionType.MOVE_RIGHT
+    name: BrowserNavAction.MOVE_RIGHT
   }
 ];
 

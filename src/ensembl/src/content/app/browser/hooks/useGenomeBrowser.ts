@@ -45,8 +45,15 @@ const useGenomeBrowser = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
 
+  const genomeBrowserContext = useContext(GenomeBrowserContext);
+  if (!genomeBrowserContext) {
+    throw new Error(
+      'useGenomeBrowser must be used with GenomeBrowserContext Provider'
+    );
+  }
+
   const { genomeBrowser, setGenomeBrowser, setZmenus, zmenus } =
-    useContext(GenomeBrowserContext);
+    genomeBrowserContext;
 
   const restoreBrowserTrackStates = () => {
     if (!activeGenomeId || !activeEnsObjectId || !genomeBrowser) {
@@ -145,27 +152,18 @@ const useGenomeBrowser = () => {
     ensObjectId: string | null;
     chrLocation: ChrLocation;
   }) => {
-    const { genomeId, ensObjectId, chrLocation } = locationData;
+    const { genomeId, chrLocation, ensObjectId } = locationData;
 
     const [chromosome, startBp, endBp] = chrLocation;
-
-    const currentActiveEnsObjectId = ensObjectId || activeEnsObjectId;
-    parseEnsObjectId;
-    if (!genomeBrowser) {
-      return;
-    }
-
-    const focusInstruction: { focus?: string } = {};
-    if (currentActiveEnsObjectId) {
-      focusInstruction.focus = currentActiveEnsObjectId;
-    }
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS_LOCATION,
       payload: {
         stick: `${genomeId}:${chromosome}`,
         startBp,
-        endBp
+        endBp,
+        focus: ensObjectId,
+        genomeId
       }
     };
 

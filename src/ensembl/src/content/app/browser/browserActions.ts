@@ -25,7 +25,6 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import analyticsTracking from 'src/services/analytics-service';
 import browserStorageService from './browser-storage-service';
 import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
@@ -146,20 +145,9 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const openBrowserNav = createAction(
-  'browser/open-browser-navigation',
-  (activeGenomeId: string) => {
-    analyticsTracking.trackEvent({
-      category: 'browser_navigation',
-      label: 'open_browser_navigation',
-      action: 'clicked'
-    });
-
-    return {
-      activeGenomeId
-    };
-  }
-)<{ activeGenomeId: string }>();
+export const openBrowserNav = createAction('browser/open-browser-navigation')<{
+  activeGenomeId: string;
+}>();
 
 export const closeBrowserNav = createAction(
   'browser/close-browser-navigation'
@@ -179,7 +167,7 @@ export const toggleBrowserNav: ActionCreator<
     if (isBrowserNavOpenState) {
       dispatch(closeBrowserNav({ activeGenomeId }));
     } else {
-      dispatch(openBrowserNav(activeGenomeId));
+      dispatch(openBrowserNav({ activeGenomeId }));
     }
   };
 };

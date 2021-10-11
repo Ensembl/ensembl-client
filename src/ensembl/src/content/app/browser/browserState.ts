@@ -30,13 +30,23 @@ const activeEnsObjectIds = !isServer
 const trackStates = !isServer ? browserStorageService.getTrackStates() : {};
 const chrLocations = !isServer ? browserStorageService.getChrLocation() : [];
 
-export type BrowserNavAction =
-  | OutgoingActionType.MOVE_UP
-  | OutgoingActionType.MOVE_DOWN
-  | OutgoingActionType.MOVE_LEFT
-  | OutgoingActionType.MOVE_RIGHT
-  | OutgoingActionType.ZOOM_IN
-  | OutgoingActionType.ZOOM_OUT;
+export enum BrowserNavAction {
+  MOVE_UP = 'move_up',
+  MOVE_DOWN = 'move_down',
+  MOVE_LEFT = 'move_left',
+  MOVE_RIGHT = 'move_right',
+  ZOOM_IN = 'zoom_in',
+  ZOOM_OUT = 'zoom_out'
+}
+
+export const browserNavIconActionMap = {
+  [BrowserNavAction.MOVE_UP]: OutgoingActionType.MOVE_UP,
+  [BrowserNavAction.MOVE_DOWN]: OutgoingActionType.MOVE_DOWN,
+  [BrowserNavAction.MOVE_LEFT]: OutgoingActionType.MOVE_LEFT,
+  [BrowserNavAction.MOVE_RIGHT]: OutgoingActionType.MOVE_RIGHT,
+  [BrowserNavAction.ZOOM_OUT]: OutgoingActionType.ZOOM_OUT,
+  [BrowserNavAction.ZOOM_IN]: OutgoingActionType.ZOOM_IN
+};
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
 export type BrowserNavIconStates = {
@@ -44,12 +54,12 @@ export type BrowserNavIconStates = {
 };
 
 export const defaultBrowserNavIconsState = {
-  [OutgoingActionType.MOVE_UP]: false,
-  [OutgoingActionType.MOVE_DOWN]: false,
-  [OutgoingActionType.MOVE_LEFT]: false,
-  [OutgoingActionType.MOVE_RIGHT]: false,
-  [OutgoingActionType.ZOOM_OUT]: false,
-  [OutgoingActionType.ZOOM_IN]: false
+  [BrowserNavAction.MOVE_UP]: false,
+  [BrowserNavAction.MOVE_DOWN]: false,
+  [BrowserNavAction.MOVE_LEFT]: false,
+  [BrowserNavAction.MOVE_RIGHT]: false,
+  [BrowserNavAction.ZOOM_OUT]: false,
+  [BrowserNavAction.ZOOM_IN]: false
 };
 
 export type ChrLocation = [string, number, number];

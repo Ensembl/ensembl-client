@@ -61,24 +61,22 @@ type ZmenuContentFeatureProps = {
   feature: ZmenuContentFeatureType;
 };
 export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
-  let lineIndex = 0;
-
-  const linesAndBlocks: [ZmenuContentBlockType[]] = [[]];
-
-  props.feature.data.map((block) => {
-    if (block.type === 'line-break') {
-      lineIndex++;
-    } else {
-      if (!linesAndBlocks[lineIndex]) {
-        linesAndBlocks[lineIndex] = [];
+  const lines = props.feature.data.reduce(
+    (lines, block) => {
+      if (block.type === 'line-break') {
+        lines.push([]);
+      } else {
+        const lastLine = lines[lines.length - 1];
+        lastLine.push(block);
       }
-      linesAndBlocks[lineIndex].push(block);
-    }
-  });
+      return lines;
+    },
+    [[]] as ZmenuContentBlockType[][]
+  );
 
   return (
     <>
-      {linesAndBlocks.map((blocks, index) => {
+      {lines.map((blocks, index) => {
         return (
           <span className={styles.zmenuContentLine} key={index}>
             {blocks.map((block, blockIndex) => (

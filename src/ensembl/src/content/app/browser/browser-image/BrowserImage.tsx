@@ -79,27 +79,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
 
   const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
 
-  const checkAndUpdateDefaultPositionFlag = (start: number, end: number) => {
-    const [, defaultStart, defaultEnd] = props.defaultChrLocation || ['', 0, 0];
-
-    const BP_CORRECTION = 5;
-
-    const positions = [
-      defaultStart - BP_CORRECTION,
-      start,
-      defaultStart + BP_CORRECTION,
-      defaultEnd - BP_CORRECTION,
-      end,
-      defaultEnd + BP_CORRECTION
-    ].sort();
-
-    if (positions[1] === start && positions[4] === end) {
-      props.updateDefaultPositionFlag(true);
-    } else {
-      props.updateDefaultPositionFlag(false);
-    }
-  };
-
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       [IncomingActionType.CURRENT_POSITION, IncomingActionType.TARGET_POSITION],
@@ -112,8 +91,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
           const { stick, start, end } = action.payload;
           const chromosome = stick.split(':')[1];
           props.setChrLocation([chromosome, start, end]);
-
-          checkAndUpdateDefaultPositionFlag(start, end);
         }
       }
     );
