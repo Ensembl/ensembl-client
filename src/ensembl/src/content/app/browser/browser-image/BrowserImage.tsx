@@ -125,7 +125,6 @@ export const BrowserImage = (props: BrowserImageProps) => {
           className={browserContainerClassNames}
           ref={browserRef}
         />
-        <div id={'other'} />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
         {props.isDisabled ? <Overlay /> : null}
