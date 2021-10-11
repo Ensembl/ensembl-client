@@ -15,8 +15,8 @@
  */
 
 import { createAction } from 'typesafe-actions';
-import { batch } from 'react-redux';
 import { Action } from 'redux';
+import { batch } from 'react-redux';
 import { ThunkAction } from 'redux-thunk';
 
 import { getBrowserActiveGenomeId } from '../browserSelectors';
@@ -25,13 +25,15 @@ import { RootState } from 'src/store';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 export const changeDrawerViewForGenome = createAction(
-  'drawer/update-drawer-view',
-  (drawerViewForGenome: { [genomeId: string]: DrawerView | null }) =>
-    drawerViewForGenome
+  'drawer/change-drawer-view',
+  (payload: { activeGenomeId: string; activeDrawerView: DrawerView | null }) =>
+    payload
 )();
 
 export const changeDrawerView =
-  (drawerView: DrawerView): ThunkAction<void, any, null, Action<string>> =>
+  (
+    activeDrawerView: DrawerView
+  ): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
@@ -41,23 +43,28 @@ export const changeDrawerView =
 
     dispatch(
       changeDrawerViewForGenome({
-        [activeGenomeId]: drawerView
+        activeGenomeId,
+        activeDrawerView
       })
     );
   };
 
 export const changeDrawerViewAndOpen =
-  (drawerView: DrawerView): ThunkAction<void, any, null, Action<string>> =>
+  (
+    activeDrawerView: DrawerView
+  ): ThunkAction<void, any, null, Action<string>> =>
   (dispatch, getState: () => RootState) => {
     const activeGenomeId = getBrowserActiveGenomeId(getState());
 
     if (!activeGenomeId) {
       return;
     }
+
     batch(() => {
       dispatch(
         changeDrawerViewForGenome({
-          [activeGenomeId]: drawerView
+          activeGenomeId,
+          activeDrawerView
         })
       );
 
@@ -67,8 +74,7 @@ export const changeDrawerViewAndOpen =
 
 export const toggleDrawerForGenome = createAction(
   'drawer/toggle-drawer',
-  (isDrawerOpenedForGenome: { [genomeId: string]: boolean }) =>
-    isDrawerOpenedForGenome
+  (payload: { activeGenomeId: string; isDrawerOpened: boolean }) => payload
 )();
 
 export const toggleDrawer =
@@ -82,7 +88,8 @@ export const toggleDrawer =
 
     dispatch(
       toggleDrawerForGenome({
-        [activeGenomeId]: isDrawerOpened
+        activeGenomeId,
+        isDrawerOpened
       })
     );
   };
@@ -99,22 +106,62 @@ export const closeDrawer =
     batch(() => {
       dispatch(
         toggleDrawerForGenome({
-          [activeGenomeId]: false
+          activeGenomeId,
+          isDrawerOpened: false
         })
       );
 
       dispatch(
         changeDrawerViewForGenome({
-          [activeGenomeId]: null
+          activeGenomeId,
+          activeDrawerView: null
         })
       );
     });
   };
 
-export const setActiveDrawerTrackId = createAction(
+export const setActiveDrawerTrackIdForGenome = createAction(
   'browser/set-active-drawer-track-id'
-)<{ [genomeId: string]: string | null }>();
+)<{ activeGenomeId: string; activeDrawerTrackId: string | null }>();
 
-export const setActiveDrawerTranscriptId = createAction(
+export const setActiveDrawerTrackId =
+  (
+    activeDrawerTrackId: string | null
+  ): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+    if (!activeGenomeId) {
+      return;
+    }
+
+    dispatch(
+      setActiveDrawerTrackIdForGenome({
+        activeGenomeId,
+        activeDrawerTrackId
+      })
+    );
+  };
+
+export const setActiveDrawerTranscriptIdForGenome = createAction(
   'browser/set-active-drawer-transcript-id'
-)<{ [genomeId: string]: string | null }>();
+)<{ activeGenomeId: string; activeDrawerTranscriptId: string | null }>();
+
+export const setActiveDrawerTranscriptId =
+  (
+    activeDrawerTranscriptId: string | null
+  ): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+    if (!activeGenomeId) {
+      return;
+    }
+
+    dispatch(
+      setActiveDrawerTranscriptIdForGenome({
+        activeGenomeId,
+        activeDrawerTranscriptId
+      })
+    );
+  };

@@ -22,7 +22,7 @@ import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 import GeneSummary from './drawer-views/gene-summary/GeneSummary';
 import TranscriptSummary from './drawer-views/transcript-summary/TranscriptSummary';
 
-import { getDrawerView } from './drawerSelectors';
+import { getActiveDrawerView } from './drawerSelectors';
 import { getBrowserActiveEnsObject } from '../browserSelectors';
 
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
@@ -30,7 +30,7 @@ import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import styles from './Drawer.scss';
 
 export const Drawer = () => {
-  const drawerView = useSelector(getDrawerView);
+  const activeDrawerView = useSelector(getActiveDrawerView);
   const ensObject = useSelector(getBrowserActiveEnsObject);
 
   if (!ensObject) {
@@ -38,7 +38,7 @@ export const Drawer = () => {
   }
 
   const getDrawerViewComponent = () => {
-    switch (drawerView) {
+    switch (activeDrawerView) {
       case DrawerView.TRACK_DETAILS:
         return <TrackDetails />;
       case DrawerView.GENE_SUMMARY:

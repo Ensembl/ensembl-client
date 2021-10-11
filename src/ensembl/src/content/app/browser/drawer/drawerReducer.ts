@@ -16,38 +16,48 @@
 
 import { ActionType, getType } from 'typesafe-actions';
 
-import { DrawerState, defaultDrawerState } from './drawerState';
+import { DrawerState, defaultDrawerStateForGenome } from './drawerState';
 import * as drawerActions from './drawerActions';
 
 export default function drawer(
-  state: DrawerState = defaultDrawerState,
+  state: DrawerState = {},
   action: ActionType<typeof drawerActions>
 ): DrawerState {
   switch (action.type) {
     case getType(drawerActions.changeDrawerViewForGenome):
       return {
         ...state,
-        drawerView: { ...state.drawerView, ...action.payload }
+        [action.payload.activeGenomeId]: {
+          ...(state[action.payload.activeGenomeId] ||
+            defaultDrawerStateForGenome),
+          activeDrawerView: action.payload.activeDrawerView
+        }
       };
     case getType(drawerActions.toggleDrawerForGenome):
       return {
         ...state,
-        isDrawerOpened: { ...state.isDrawerOpened, ...action.payload }
-      };
-    case getType(drawerActions.setActiveDrawerTrackId):
-      return {
-        ...state,
-        activeDrawerTrackIds: {
-          ...state.activeDrawerTrackIds,
-          ...action.payload
+        [action.payload.activeGenomeId]: {
+          ...(state[action.payload.activeGenomeId] ||
+            defaultDrawerStateForGenome),
+          isDrawerOpened: action.payload.isDrawerOpened
         }
       };
-    case getType(drawerActions.setActiveDrawerTranscriptId):
+    case getType(drawerActions.setActiveDrawerTrackIdForGenome):
       return {
         ...state,
-        activeDrawerTranscriptIds: {
-          ...state.activeDrawerTranscriptIds,
-          ...action.payload
+        [action.payload.activeGenomeId]: {
+          ...(state[action.payload.activeGenomeId] ||
+            defaultDrawerStateForGenome),
+          activeDrawerTrackId: action.payload.activeDrawerTrackId
+        }
+      };
+    case getType(drawerActions.setActiveDrawerTranscriptIdForGenome):
+      return {
+        ...state,
+        [action.payload.activeGenomeId]: {
+          ...(state[action.payload.activeGenomeId] ||
+            defaultDrawerStateForGenome),
+          activeDrawerTranscriptId: action.payload.activeDrawerTranscriptId
         }
       };
     default:

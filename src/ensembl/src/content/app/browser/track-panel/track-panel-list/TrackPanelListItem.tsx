@@ -47,7 +47,7 @@ import {
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
   getIsDrawerOpened,
-  getDrawerView,
+  getActiveDrawerView,
   getActiveDrawerTrackId
 } from 'src/content/app/browser/drawer/drawerSelectors';
 import {
@@ -79,7 +79,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
-  const drawerView = useSelector(getDrawerView);
+  const drawerView = useSelector(getActiveDrawerView);
   const highlightedTrackId = useSelector(getHighlightedTrackId);
   const isCollapsed = useSelector((state: RootState) =>
     isTrackCollapsed(state, trackId)
@@ -112,18 +112,10 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   const dispatchDrawerActions = () => {
     if (activeGenomeId) {
-      dispatch(
-        setActiveDrawerTrackId({
-          [activeGenomeId]: trackId
-        })
-      );
+      dispatch(setActiveDrawerTrackId(trackId));
 
       if (trackId.includes('track:transcript')) {
-        dispatch(
-          setActiveDrawerTranscriptId({
-            [activeGenomeId]: track.stable_id
-          })
-        );
+        dispatch(setActiveDrawerTranscriptId(track.stable_id));
       }
     }
   };

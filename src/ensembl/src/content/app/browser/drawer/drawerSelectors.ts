@@ -16,29 +16,23 @@
 
 import { RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from '../browserSelectors';
+import { defaultDrawerStateForGenome } from './drawerState';
 
-export const getDrawerView = (state: RootState) => {
+export const getActiveDrawer = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
-  return (activeGenomeId && state.drawer.drawerView[activeGenomeId]) || null;
+  const activeDrawer = activeGenomeId && state.drawer[activeGenomeId];
+
+  return activeDrawer || defaultDrawerStateForGenome;
 };
 
-export const getIsDrawerOpened = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return (
-    (activeGenomeId && state.drawer.isDrawerOpened[activeGenomeId]) || false
-  );
-};
+export const getActiveDrawerView = (state: RootState) =>
+  getActiveDrawer(state).activeDrawerView;
 
-export const getActiveDrawerTrackId = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId
-    ? state.drawer.activeDrawerTrackIds[activeGenomeId]
-    : null;
-};
+export const getIsDrawerOpened = (state: RootState) =>
+  getActiveDrawer(state).isDrawerOpened;
 
-export const getActiveDrawerTranscriptId = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId
-    ? state.drawer.activeDrawerTranscriptIds[activeGenomeId]
-    : null;
-};
+export const getActiveDrawerTrackId = (state: RootState) =>
+  getActiveDrawer(state).activeDrawerTrackId;
+
+export const getActiveDrawerTranscriptId = (state: RootState) =>
+  getActiveDrawer(state).activeDrawerTranscriptId;
