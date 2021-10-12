@@ -17,8 +17,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { push, Push } from 'connected-react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { push } from 'connected-react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
@@ -29,11 +29,9 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
-import { RootState } from 'src/store';
 import {
   GeneViewTabName,
-  View,
-  SelectedTabViews
+  View
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import styles from './GeneViewTabs.scss';
@@ -47,15 +45,16 @@ const tabsData: Tab[] = [
 const DEFAULT_TAB = tabsData[0].title;
 
 type Props = {
-  selectedTab: string;
-  selectedTabViews?: SelectedTabViews;
-  push: Push;
   isFilterPanelOpen: boolean;
 };
 
 const GeneViewTabs = (props: Props) => {
   const { genomeId, entityId } = useParams() as { [key: string]: string };
+  const selectedTab = useSelector(getSelectedGeneViewTabs).primaryTab;
+  const selectedTabViews = useSelector(getSelectedTabViews);
+  const dispatch = useDispatch();
   const { trackTabChange } = useEntityViewerAnalytics();
+
   const tabClassNames = {
     default: styles.geneTab,
     selected: classNames(styles.selectedGeneTab, {
@@ -68,9 +67,9 @@ const GeneViewTabs = (props: Props) => {
   const onTabChange = (selectedTabName: string) => {
     let view = View.TRANSCRIPTS;
     if (selectedTabName === GeneViewTabName.GENE_FUNCTION) {
-      view = props.selectedTabViews?.geneFunctionTab || View.PROTEIN;
+      view = selectedTabViews?.geneFunctionTab || View.PROTEIN;
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
-      view = props.selectedTabViews?.geneRelationshipsTab || View.ORTHOLOGUES;
+      view = selectedTabViews?.geneRelationshipsTab || View.ORTHOLOGUES;
     }
 
     trackTabChange(selectedTabName);
@@ -79,26 +78,17 @@ const GeneViewTabs = (props: Props) => {
       entityId,
       view
     });
-    props.push(url);
+    dispatch(push(url));
   };
 
   return (
     <Tabs
       classNames={tabClassNames}
       tabs={tabsData}
-      selectedTab={props.selectedTab || DEFAULT_TAB}
+      selectedTab={selectedTab || DEFAULT_TAB}
       onTabChange={onTabChange}
     />
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  selectedTab: getSelectedGeneViewTabs(state).primaryTab,
-  selectedTabViews: getSelectedTabViews(state)
-});
-
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(GeneViewTabs);
+export default GeneViewTabs;
