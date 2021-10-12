@@ -15,10 +15,13 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import times from 'lodash/times';
 import { push } from 'connected-react-router';
+import configureMockStore from 'redux-mock-store';
+import times from 'lodash/times';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
@@ -42,46 +45,61 @@ jest.mock(
   () => () => <div>ConversationIcon</div>
 );
 
-const defaultProps = {
-  selectedSpecies: times(5, () => createSelectedSpecies()),
-  push
+const selectedSpecies = times(5, () => createSelectedSpecies());
+
+const defaultReduxState = {
+  speciesSelector: {
+    committedItems: selectedSpecies
+  }
+};
+
+const mockStore = configureMockStore([thunk]);
+
+const renderComponent = (state?: any) => {
+  state = Object.assign({}, defaultReduxState, state);
+  return render(
+    <Provider store={mockStore(state)}>
+      <SpeciesSelectorAppBar />
+    </Provider>
+  );
 };
 
 describe('<SpeciesSelectorAppBar />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   it('shows placeholder message if no species are selected', () => {
-    const props = { ...defaultProps, selectedSpecies: [] };
-    const { container } = render(<SpeciesSelectorAppBar {...props} />);
+    const { container } = renderComponent({
+      speciesSelector: { committedItems: [] }
+    });
     expect(container.querySelector('.placeholderMessage')?.textContent).toBe(
       placeholderMessage
     );
   });
 
   it('does not show placeholder message if there are selected species', () => {
-    const { container } = render(<SpeciesSelectorAppBar {...defaultProps} />);
+    const { container } = renderComponent();
     expect(container.querySelector('.placeholderMessage')).toBeFalsy();
   });
 
   it('renders the list of selected species if there are some', () => {
-    const { container } = render(<SpeciesSelectorAppBar {...defaultProps} />);
+    const { container } = renderComponent();
 
     expect(container.querySelectorAll('.species').length).toBe(
-      defaultProps.selectedSpecies.length
+      selectedSpecies.length
     );
   });
 
   it('opens the species page when a SelectedSpecies tab button is clicked', () => {
-    const { container } = render(<SpeciesSelectorAppBar {...defaultProps} />);
+    const { container } = renderComponent();
     const firstSelectedSpecies = container.querySelector(
       '.species'
     ) as HTMLElement;
 
     userEvent.click(firstSelectedSpecies);
 
-    const firstSpeciesGenomeId = defaultProps.selectedSpecies[0].genome_id;
+    const firstSpeciesGenomeId = selectedSpecies[0].genome_id;
     const speciesPageUrl = urlFor.speciesPage({
       genomeId: firstSpeciesGenomeId
     });
