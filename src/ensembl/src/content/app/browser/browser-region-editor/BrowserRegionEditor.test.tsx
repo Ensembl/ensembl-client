@@ -41,7 +41,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -67,22 +67,22 @@ describe('<BrowserRegionEditor />', () => {
 
   describe('rendering', () => {
     it('contains Select', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('.select')).toBeTruthy();
     });
 
     it('contains two input elements', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelectorAll('input').length).toBe(2);
     });
 
     it('contains submit and close buttons', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('button[type="submit"]')).toBeTruthy();
     });
 
     it('has an overlay on top when disabled', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set('browser.browserLocation.regionFieldActive', true, mockState)
       );
 
@@ -92,7 +92,7 @@ describe('<BrowserRegionEditor />', () => {
 
   describe('behaviour', () => {
     it('shows form buttons when focussed', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const form = container.querySelector('form') as HTMLFormElement;
       fireEvent.focus(form);
 
@@ -109,7 +109,7 @@ describe('<BrowserRegionEditor />', () => {
       );
       const locationEndInput = getCommaSeparatedNumber(faker.datatype.number());
 
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const [firstInput, secondInput] = container.querySelectorAll('input');
       const submitButton = container.querySelector(
         'button[type="submit"]'
@@ -163,7 +163,7 @@ describe('<BrowserRegionEditor />', () => {
             }): Promise<void> => onError(mockErrorMessages)
           );
 
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
         const [firstInput, secondInput] = container.querySelectorAll('input');
         const submitButton = container.querySelector(
           'button[type="submit"]'
@@ -198,7 +198,7 @@ describe('<BrowserRegionEditor />', () => {
             }): Promise<void> => onError(mockErrorMessages)
           );
 
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
         const [firstInput, secondInput] = container.querySelectorAll('input');
         const submitButton = container.querySelector(
           'button[type="submit"]'
@@ -242,7 +242,7 @@ describe('<BrowserRegionEditor />', () => {
       // Test focus object change on submission. This can be done if <Select /> value can be changed.
 
       it('changes the browser location in same region if stick is the same', () => {
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
         jest
           .spyOn(browserActions, 'changeBrowserLocation')
           .mockImplementation(() => () => ({

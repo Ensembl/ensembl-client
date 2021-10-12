@@ -36,7 +36,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -49,7 +49,7 @@ describe('<BrowserNavBar />', () => {
   describe('rendering', () => {
     it('correctly interprets the "expanded" prop', () => {
       const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
-      let { container } = wrapInRedux(
+      let { container } = renderComponent(
         set(
           `browser.trackPanel.${activeGenomeId}.isTrackPanelOpened`,
           false,
@@ -61,7 +61,7 @@ describe('<BrowserNavBar />', () => {
         true
       );
 
-      container = wrapInRedux().container;
+      container = renderComponent().container;
       browserNavBar = container.firstChild as HTMLDivElement;
       expect(browserNavBar.classList.contains('browserNavBarExpanded')).toBe(
         false

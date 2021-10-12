@@ -47,7 +47,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -63,22 +63,22 @@ describe('<BrowserImage />', () => {
 
   describe('rendering', () => {
     it('renders loader if browser is not activated', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#circleLoader')).toBeTruthy();
     });
 
     it('renders browser cog list', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#browserCogList')).toBeTruthy();
     });
 
     it('renders zmenu controller', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#zmenuController')).toBeTruthy();
     });
 
     it('has an overlay on top when disabled', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set('browser.browserLocation.regionEditorActive', true, mockState)
       );
       expect(container.querySelector('#overlay')).toBeTruthy();

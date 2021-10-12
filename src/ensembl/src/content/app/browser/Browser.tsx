@@ -17,18 +17,11 @@
 import React, { useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
-import * as urlFor from 'src/shared/helpers/urlHelper';
-
-import {
-  parseEnsObjectId,
-  buildFocusIdForUrl
-} from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
@@ -54,8 +47,6 @@ import BrowserAppBar from './browser-app-bar/BrowserAppBar';
 import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import BrowserInterstitial from './interstitial/BrowserInterstitial';
-
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
 import styles from './Browser.scss';
 
@@ -121,42 +112,6 @@ export const Browser = () => {
         )}
       </div>
     </ApolloProvider>
-  );
-};
-
-type ExampleObjectLinksProps = {
-  activeGenomeId: string;
-  exampleEnsObjects: EnsObject[];
-};
-export const ExampleObjectLinks = (props: ExampleObjectLinksProps) => {
-  const { activeGenomeId, exampleEnsObjects } = props;
-
-  if (!activeGenomeId) {
-    return null;
-  }
-
-  const links = exampleEnsObjects.map((exampleObject: EnsObject) => {
-    const parsedEnsObjectId = parseEnsObjectId(exampleObject.object_id);
-    const focusId = buildFocusIdForUrl(parsedEnsObjectId);
-    const path = urlFor.browser({
-      genomeId: activeGenomeId,
-      focus: focusId
-    });
-
-    return (
-      <div key={exampleObject.object_id} className={styles.exampleLink}>
-        <Link to={path} replace>
-          Example {exampleObject.type}
-        </Link>
-      </div>
-    );
-  });
-
-  return (
-    <div>
-      <div className={styles.exampleLinks__emptyTopbar} />
-      <div className={styles.exampleLinks}>{links}</div>
-    </div>
   );
 };
 

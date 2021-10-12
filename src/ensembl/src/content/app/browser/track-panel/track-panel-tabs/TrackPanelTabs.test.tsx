@@ -37,7 +37,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -53,7 +53,7 @@ describe('<TrackPanelTabs />', () => {
 
   describe('rendering', () => {
     it('contains all track panel tabs', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const tabValues = Object.values(TrackSet);
       const tabs = [...container.querySelectorAll('.trackPanelTab')];
 
@@ -66,7 +66,7 @@ describe('<TrackPanelTabs />', () => {
   describe('behaviour', () => {
     describe('on track panel tab click', () => {
       it('selects track panel tab', () => {
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
         const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(trackPanelActions, 'selectTrackPanelTab');
@@ -78,7 +78,7 @@ describe('<TrackPanelTabs />', () => {
       });
 
       it('opens track panel if it is closed', () => {
-        let { container } = wrapInRedux();
+        let { container } = renderComponent();
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
         jest.spyOn(trackPanelActions, 'toggleTrackPanel');
@@ -86,7 +86,7 @@ describe('<TrackPanelTabs />', () => {
         userEvent.click(tab);
         expect(trackPanelActions.toggleTrackPanel).not.toHaveBeenCalled();
 
-        container = wrapInRedux(
+        container = renderComponent(
           set(
             `browser.trackPanel.${activeGenomeId}.isTrackPanelOpened`,
             false,
@@ -100,7 +100,7 @@ describe('<TrackPanelTabs />', () => {
       });
 
       it('closes drawer if it is opened', () => {
-        let { container } = wrapInRedux();
+        let { container } = renderComponent();
 
         let tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
@@ -109,7 +109,7 @@ describe('<TrackPanelTabs />', () => {
         userEvent.click(tab);
         expect(drawerActions.closeDrawer).not.toHaveBeenCalled();
 
-        container = wrapInRedux(
+        container = renderComponent(
           set(`drawer.isDrawerOpened.${activeGenomeId}`, true, mockState)
         ).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;

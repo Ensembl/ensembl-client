@@ -29,6 +29,7 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
 
 let mockState = createMockBrowserState();
+
 mockState = set('browser.trackConfig.trackConfigNames', {}, mockState);
 mockState = set('browser.trackConfig.trackConfigLabel', {}, mockState);
 mockState = set(
@@ -43,7 +44,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -53,20 +54,20 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
 };
 
 describe('<BrowserCogList />', () => {
-  beforeEach(() => {
-    jest.restoreAllMocks();
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   describe('rendering', () => {
     it('contains <BrowserCog /> when browser is activated', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set('browser.browserInfo.browserActivated', true, mockState)
       );
       expect(container.querySelector('#browserCog')).toBeTruthy();
     });
 
     it('does not contain <BrowserCog /> when browser is not activated', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#browserCog')).toBeFalsy();
     });
   });
@@ -75,7 +76,7 @@ describe('<BrowserCogList />', () => {
     it('sends navigation message when track name setting in browser cog is updated', () => {
       jest.spyOn(browserMessagingService, 'send');
       (browserMessagingService.send as any).mockReset();
-      wrapInRedux(
+      renderComponent(
         set(
           'browser.trackConfig.trackConfigNames',
           { 'track:gc': true },
@@ -92,7 +93,7 @@ describe('<BrowserCogList />', () => {
       // See a comment in BrowserCogList for explanation
       // We expect this to be fixed later on.
 
-      wrapInRedux(
+      renderComponent(
         set(
           'browser.trackConfig.trackConfigNames',
           { 'track:gc': false },
@@ -110,7 +111,7 @@ describe('<BrowserCogList />', () => {
       jest.spyOn(browserMessagingService, 'send');
       (browserMessagingService.send as any).mockReset();
 
-      wrapInRedux(
+      renderComponent(
         set(
           'browser.trackConfig.trackConfigLabel',
           { 'track:gc': true },
@@ -126,7 +127,7 @@ describe('<BrowserCogList />', () => {
       // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
       // See a comment in BrowserCogList for explanation
       // We expect this to be fixed later on.
-      wrapInRedux(
+      renderComponent(
         set(
           'browser.trackConfig.trackConfigNames',
           { 'track:gc': false },

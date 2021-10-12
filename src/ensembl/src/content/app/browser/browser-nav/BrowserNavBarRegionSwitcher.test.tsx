@@ -43,7 +43,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -59,14 +59,14 @@ describe('BrowserNavBarRegionSwitcher', () => {
 
   describe('rendering', () => {
     it('renders only region field on smaller screens', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
 
       expect(container.querySelector('.browserRegionField')).toBeTruthy();
       expect(container.querySelector('.browserRegionEditor')).toBeFalsy();
     });
 
     it('renders both region field and region editor on big desktop screens', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set('global.breakpointWidth', BreakpointWidth.BIG_DESKTOP, mockState)
       );
 
@@ -76,7 +76,7 @@ describe('BrowserNavBarRegionSwitcher', () => {
   });
 
   it('calls cleanup functions on unmount', () => {
-    const { unmount } = wrapInRedux();
+    const { unmount } = renderComponent();
 
     jest.spyOn(browserActions, 'toggleRegionEditorActive');
     jest.spyOn(browserActions, 'toggleRegionFieldActive');

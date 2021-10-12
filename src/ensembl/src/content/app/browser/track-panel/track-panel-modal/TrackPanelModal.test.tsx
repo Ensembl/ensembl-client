@@ -47,7 +47,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -63,14 +63,14 @@ describe('<TrackPanelModal />', () => {
 
   describe('rendering', () => {
     it('displays track pane modal view for search', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('.trackPanelSearch')).toBeTruthy();
     });
 
     it('displays track pane modal view for downloads', () => {
       const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
 
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set(
           `browser.trackPanel.${activeGenomeId}.trackPanelModalView`,
           'downloads',
@@ -83,7 +83,7 @@ describe('<TrackPanelModal />', () => {
 
   describe('behaviour', () => {
     it('closes modal when close button is clicked', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const closeButton = container.querySelector('button.closeButton');
 
       jest.spyOn(trackPanelActions, 'closeTrackPanelModal');

@@ -43,7 +43,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -55,22 +55,22 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
 describe('<BrowserBar />', () => {
   describe('rendering', () => {
     it('contains BrowserReset button', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#browserReset')).toBeTruthy();
     });
 
     it('contains BrowserLocationIndicator', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#browserLocationIndicator')).toBeTruthy();
     });
 
     it('contains FeatureSummaryStrip when ensObject is not null', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('#featureSummaryStrip')).toBeTruthy();
     });
 
     it('does not contain FeatureSummaryStrip when ensObject is null', () => {
-      const { container } = wrapInRedux(set('ensObjects', null, mockState));
+      const { container } = renderComponent(set('ensObjects', null, mockState));
       expect(container.querySelector('#featureSummaryStrip')).toBeFalsy();
     });
   });

@@ -42,7 +42,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -57,14 +57,14 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('does not render chromosome visualization by default for screens smaller than laptops', () => {
-    const { container } = wrapInRedux(
+    const { container } = renderComponent(
       set('global.breakpointWidth', BreakpointWidth.TABLET, mockState)
     );
     expect(container.querySelector('.chromosomeNavigator')).toBeFalsy();
   });
 
   it('renders chromosome visualization by default for laptops or bigger screens', () => {
-    const { container } = wrapInRedux(
+    const { container } = renderComponent(
       set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
 
@@ -73,7 +73,7 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('renders RegionSwitcher when user clicks on Change', () => {
-    const { container } = wrapInRedux(
+    const { container } = renderComponent(
       set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
 
@@ -89,7 +89,7 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('renders chromosome visualization when user closes RegionSwitcher', () => {
-    const { container } = wrapInRedux(
+    const { container } = renderComponent(
       set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
 

@@ -39,7 +39,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -55,7 +55,7 @@ describe('<TrackPanelList />', () => {
 
   describe('rendering', () => {
     it('renders gene tracks', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
 
       expect(container.querySelectorAll('.trackPanelGene').length).toBe(1);
     });
@@ -65,7 +65,7 @@ describe('<TrackPanelList />', () => {
       const activeEnsObjectId = (
         mockState.browser.browserEntity.activeEnsObjectIds as any
       )[activeGenomeId];
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set(
           `ensObjects.${activeEnsObjectId}.data`,
           createEnsObject('region'),

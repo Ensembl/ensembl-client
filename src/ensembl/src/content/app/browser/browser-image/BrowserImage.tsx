@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useCallback, memo } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import isEqual from 'lodash/isEqual';
 
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
@@ -175,4 +174,4 @@ export const BrowserImage = () => {
   );
 };
 
-export default memo(BrowserImage, isEqual);
+export default BrowserImage;

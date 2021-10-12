@@ -48,7 +48,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -67,19 +67,19 @@ describe('<BrowserRegionField />', () => {
 
   describe('rendering', () => {
     it('contains an input', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelectorAll('input').length).toBe(1);
     });
 
     it('contains submit button', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('button[type="submit"]')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
     it('is set to active when focussed', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const input = container.querySelector('input') as HTMLInputElement;
 
       fireEvent.focus(input);
@@ -90,7 +90,7 @@ describe('<BrowserRegionField />', () => {
 
     it('validates region input on submit', () => {
       const locationString = createChrLocationValues().stringValue;
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const input = container.querySelector('input') as HTMLInputElement;
 
       userEvent.clear(input);
@@ -124,7 +124,7 @@ describe('<BrowserRegionField />', () => {
           }): Promise<void> => onError(mockErrorMessages)
         );
 
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const input = container.querySelector('input') as HTMLInputElement;
 
       userEvent.clear(input);
@@ -162,7 +162,7 @@ describe('<BrowserRegionField />', () => {
 
       it('switches to a different chromosome if it exists in the input', () => {
         const newChrLocation = ['12', 1, 1000];
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
 
         const input = container.querySelector('input') as HTMLInputElement;
 
@@ -177,7 +177,7 @@ describe('<BrowserRegionField />', () => {
       it('preserves the same chromosome if input contains only new start and end coordinates', () => {
         const newChrLocation = ['13', 500, 1000];
 
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
 
         const input = container.querySelector('input') as HTMLInputElement;
 

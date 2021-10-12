@@ -49,7 +49,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -60,14 +60,14 @@ const wrapInRedux = (state: typeof mockState = mockState) => {
 
 describe('BrowserNavBarControls', () => {
   it('has an overlay on top when browser nav bar controls are disabled', () => {
-    const { container } = wrapInRedux(
+    const { container } = renderComponent(
       set('browser.browserLocation.regionEditorActive', true, mockState)
     );
     expect(container.querySelector('.overlay')).toBeTruthy();
   });
 
   it('disables buttons if corresponding actions are not possible', () => {
-    wrapInRedux();
+    renderComponent();
 
     const { browserNavIconStates } = mockState.browser.browserNav;
     Object.keys(browserNavIconStates).forEach((icon) => {

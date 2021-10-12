@@ -33,7 +33,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -49,12 +49,12 @@ describe('<BrowserReset />', () => {
 
   describe('rendering', () => {
     it('renders image button when focus feature exists', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('button')).toBeTruthy();
     });
 
     it('renders nothing when focus feature does not exist', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set('browser.browserEntity.activeEnsObjectIds', {}, mockState)
       );
 
@@ -64,7 +64,7 @@ describe('<BrowserReset />', () => {
 
   describe('behaviour', () => {
     it('changes focus object when clicked', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const button = container.querySelector('button') as HTMLButtonElement;
       jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(button);

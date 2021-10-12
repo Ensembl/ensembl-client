@@ -58,7 +58,7 @@ const mockState = {
 const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -74,12 +74,12 @@ describe('<TrackPanelBar />', () => {
 
   describe('rendering', () => {
     it('displays correct number of buttons', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelectorAll('button').length).toBe(6);
     });
 
     it('passes correct data to callbacks when buttons are clicked', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set(
           `browser.trackPanel.${fakeGenomeId}.trackPanelModalView`,
           '',
@@ -112,7 +112,7 @@ describe('<TrackPanelBar />', () => {
     });
 
     it('opens the track panel if it is closed when a button is clicked', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set(
           `browser.trackPanel.${fakeGenomeId}.isTrackPanelOpened`,
           false,
@@ -143,7 +143,7 @@ describe('<TrackPanelBar />', () => {
     });
 
     it('causes track panel modal to close if a pressed button is clicked again', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === 'Previously viewed'
       ) as HTMLButtonElement;
@@ -171,7 +171,7 @@ describe('<TrackPanelBar />', () => {
     });
 
     it('closes drawer view when the modal view changes', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(

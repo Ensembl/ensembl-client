@@ -33,7 +33,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = () => {
+const renderComponent = () => {
   store = mockStore(mockState);
   return render(
     <Provider store={store}>
@@ -49,7 +49,7 @@ describe('<BrowserTrackConfig />', () => {
 
   describe('behaviour', () => {
     it('can update all tracks', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const allTracksLabel = [...container.querySelectorAll('label')].find(
         (el) => el.textContent === 'All tracks'
       );
@@ -63,7 +63,7 @@ describe('<BrowserTrackConfig />', () => {
     });
 
     it('toggles track name', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Track name')
         ?.parentElement?.querySelector('svg') as SVGElement;
@@ -80,7 +80,7 @@ describe('<BrowserTrackConfig />', () => {
     });
 
     it('toggles feature labels on the track', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const toggle = [...container.querySelectorAll('label')]
         .find((element) => element.textContent === 'Feature labels')
         ?.parentElement?.querySelector('svg') as SVGElement;

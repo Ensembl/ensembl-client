@@ -46,7 +46,7 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -64,12 +64,12 @@ describe('<TrackPanel />', () => {
     it('does not render anything when not all rendering requirements are satisfied', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       expect(container.querySelector('.sidebarLoader')).toBeTruthy();
     });
 
     it('renders TrackPanelList when necessary requirements are satisfied', () => {
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set('browser.browserInfo.browserActivated', true, mockState)
       );
 
@@ -79,7 +79,7 @@ describe('<TrackPanel />', () => {
     it('renders track panel modal when necessary requirements are satisfied', () => {
       const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
 
-      const { container } = wrapInRedux(
+      const { container } = renderComponent(
         set(
           'browser.browserInfo.browserActivated',
           true,

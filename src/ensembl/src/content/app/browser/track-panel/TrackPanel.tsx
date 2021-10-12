@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { memo, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import isEqual from 'lodash/isEqual';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
@@ -57,4 +56,4 @@ export const TrackPanel = () => {
   );
 };
 
-export default memo(TrackPanel, isEqual);
+export default TrackPanel;

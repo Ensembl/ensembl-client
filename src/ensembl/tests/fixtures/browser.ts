@@ -213,14 +213,9 @@ export const createMockBrowserState = () => {
     },
     router: {
       location: {
-        pathname: '/species/fake_genome_id_1',
         query: {},
-        state: {},
-        search: '',
-        hash: '',
-        key: '9vnz4q'
-      },
-      action: 'PUSH'
+        search: ''
+      }
     },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
