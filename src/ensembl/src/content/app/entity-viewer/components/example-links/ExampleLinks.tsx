@@ -52,7 +52,8 @@ const ExampleLinks = () => {
   const exampleEntities = useSelector((state: RootState) =>
     getGenomeExampleFocusObjects(state, activeGenomeId || '')
   );
-  const exampleGeneId = exampleEntities.find(({ type }) => type === 'gene')?.id;
+  const exampleGeneId =
+    exampleEntities && exampleEntities.find(({ type }) => type === 'gene')?.id;
   const { loading, data, error } = useQuery<{ gene: ExampleGene }>(QUERY, {
     variables: { geneId: exampleGeneId, genomeId: activeGenomeId },
     skip: !exampleGeneId || !activeGenomeId

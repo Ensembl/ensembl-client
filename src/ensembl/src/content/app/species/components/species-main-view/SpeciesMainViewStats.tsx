@@ -45,6 +45,8 @@ import {
   SpeciesStatsSection
 } from '../../state/general/speciesGeneralHelper';
 
+import { RootState } from 'src/store';
+
 import styles from './SpeciesMainView.scss';
 
 type ExampleLinkPopupProps = {
@@ -162,10 +164,12 @@ const getExpandedContent = (props: ContentProps) => {
 
 const SpeciesMainViewStats = () => {
   const dispatch = useDispatch();
-  const activeGenomeId = useSelector(getActiveGenomeId);
+  const activeGenomeId = useSelector(getActiveGenomeId) || '';
   const genomeStats = useSelector(getActiveGenomeStats);
   const genomeUIState = useSelector(getActiveGenomeUIState);
-  const exampleFocusObjects = useSelector(getGenomeExampleFocusObjects);
+  const exampleFocusObjects = useSelector((state: RootState) =>
+    getGenomeExampleFocusObjects(state, activeGenomeId)
+  );
   const species = useSelector(getCommittedSpeciesById);
 
   useEffect(() => {

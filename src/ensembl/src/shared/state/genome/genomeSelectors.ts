@@ -38,13 +38,15 @@ export const getGenomeInfoFetchFailed = (state: RootState) =>
 export const getGenomeTrackCategories = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesData;
 
-export const getGenomeExampleFocusObjects = (state: RootState) => {
+export const getGenomeExampleFocusObjects = (
+  state: RootState,
+  genomeId: string
+) => {
   const emptyObjects: never[] = [];
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return activeGenomeId
-    ? state.genome.genomeInfo.genomeInfoData[activeGenomeId]?.example_objects ||
-        emptyObjects
-    : null;
+  return (
+    state.genome.genomeInfo.genomeInfoData[genomeId]?.example_objects ||
+    emptyObjects
+  );
 };
 
 export const getGenomeTrackCategoriesById = (
