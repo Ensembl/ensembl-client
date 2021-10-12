@@ -24,9 +24,19 @@ const build = async () => {
   });
 
   // the arguments of the callback function are error and webpack stats
-  webpack([webpackClientConfig, webpackServerConfig], (err) => {
+  webpack([webpackClientConfig, webpackServerConfig], (err, stats) => {
     if (err) {
+      // This branch will contain fatal webpack errors (wrong configuration, etc.)
       console.log('error!', err); // eslint-disable-line no-console
+      process.exit(1);
+    } else if (stats.hasErrors()) {
+      // This branch will contain compilation errors (including typescript type checking errors from ForkTsCheckerPlugin)
+      const info = stats.toJson();
+      info.errors.forEach(({ file, message }) => {
+        console.error('Error in', file); // eslint-disable-line no-console
+        console.error(message); // eslint-disable-line no-console
+      });
+      process.exit(1);
     }
     console.log('The production build is ready'); // eslint-disable-line no-console
   });

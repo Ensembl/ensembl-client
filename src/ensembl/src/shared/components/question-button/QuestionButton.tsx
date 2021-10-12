@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
-import useHover from 'src/shared/hooks/useHover';
+import { useQuestionButtonBehaviour } from './useQuestionButtonBehaviour';
 
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import { ReactComponent as QuestionIcon } from './question_circle.svg';
@@ -37,18 +37,12 @@ type Props = {
 };
 
 const QuestionButton = (props: Props) => {
-  const [hoverRef, isHovered] = useHover<HTMLDivElement>();
-  const [shouldShowTooltip, setShouldShowTooltip] = useState(isHovered);
-
-  useEffect(() => {
-    setShouldShowTooltip(isHovered);
-  }, [isHovered]);
-
-  const hideTooltip = () => {
-    // tooltip will detect when user starts scrolling
-    // and will send a signal to the parent component so that it can be removed
-    setShouldShowTooltip(false);
-  };
+  const {
+    questionButtonRef,
+    onClick,
+    onTooltipCloseSignal,
+    shouldShowTooltip
+  } = useQuestionButtonBehaviour();
 
   const className = classNames(
     defaultStyles.questionButton,
@@ -59,13 +53,14 @@ const QuestionButton = (props: Props) => {
   );
 
   return (
-    <div ref={hoverRef} className={className}>
+    <div ref={questionButtonRef} className={className} onClick={onClick}>
       <QuestionIcon />
       {shouldShowTooltip && (
         <Tooltip
-          anchor={hoverRef.current}
+          anchor={questionButtonRef.current}
           autoAdjust={true}
-          onClose={hideTooltip}
+          onClose={onTooltipCloseSignal}
+          delay={0}
         >
           {props.helpText}
         </Tooltip>
