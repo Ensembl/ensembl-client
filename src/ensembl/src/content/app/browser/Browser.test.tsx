@@ -64,10 +64,15 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const renderComponent = (state: typeof mockState = mockState, search = '') => {
-  store = mockStore(state);
+const renderComponent = (
+  params: { state: typeof mockState; url: string } = {
+    state: mockState,
+    url: '/'
+  }
+) => {
+  store = mockStore(params.state);
   return render(
-    <MemoryRouter initialEntries={[search]}>
+    <MemoryRouter initialEntries={[params.url]}>
       <Provider store={store}>
         <Browser />
       </Provider>
@@ -84,9 +89,10 @@ describe('<Browser />', () => {
 
   describe('rendering', () => {
     it('renders an interstitial if no species is selected', () => {
-      const { container } = renderComponent(
-        set('browser.browserEntity.activeGenomeId', null, mockState)
-      );
+      const { container } = renderComponent({
+        state: set('browser.browserEntity.activeGenomeId', null, mockState),
+        url: '/'
+      });
       expect(container.querySelector('.browserInterstitial')).toBeTruthy();
     });
 
@@ -101,7 +107,10 @@ describe('<Browser />', () => {
       expect(container.querySelectorAll('.browserImage')).toHaveLength(0);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(0);
 
-      container = renderComponent(undefined, '?focus=foo').container;
+      container = renderComponent({
+        state: mockState,
+        url: '/genome-browser?focus=foo'
+      }).container;
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(1);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);
@@ -120,22 +129,25 @@ describe('<Browser />', () => {
       );
 
       it('is rendered when the nav bar is open', () => {
-        let { container } = renderComponent(updatedState, '?focus=foo');
+        let { container } = renderComponent({
+          state: updatedState,
+          url: '/genome-browser?focus=foo'
+        });
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
 
-        container = renderComponent(
-          stateWithBrowserNavOpen,
-          '?focus=foo'
-        ).container;
+        container = renderComponent({
+          state: stateWithBrowserNavOpen,
+          url: '/genome-browser?focus=foo'
+        }).container;
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
       });
 
       it('is not rendered if drawer is opened', () => {
-        let { container } = renderComponent(
-          stateWithBrowserNavOpen,
-          '?focus=foo'
-        );
+        let { container } = renderComponent({
+          state: stateWithBrowserNavOpen,
+          url: '/genome-browser?focus=foo'
+        });
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
 
@@ -145,7 +157,10 @@ describe('<Browser />', () => {
           stateWithBrowserNavOpen
         );
 
-        container = renderComponent(stateWithDrawerOpen).container;
+        container = renderComponent({
+          state: stateWithDrawerOpen,
+          url: '/'
+        }).container;
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
       });

@@ -23,7 +23,6 @@ import useBrowserRouting from './hooks/useBrowserRouting';
 
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
-import { getQueryParamsMap } from 'src/global/globalHelper';
 
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
@@ -60,7 +59,8 @@ export const Browser = () => {
   const viewportWidth = useSelector(getBreakpointWidth);
 
   const { search } = useLocation(); // from document.location provided by the router
-  const { focus = null } = getQueryParamsMap(search);
+  const urlSearchParams = new URLSearchParams(search);
+  const focus = urlSearchParams.get('focus') || null;
 
   const dispatch = useDispatch();
   const { changeGenomeId } = useBrowserRouting();
