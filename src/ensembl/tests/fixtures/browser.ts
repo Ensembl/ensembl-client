@@ -211,12 +211,6 @@ export const createMockBrowserState = () => {
       drawerView: {},
       activeDrawerTrackIds: {}
     },
-    router: {
-      location: {
-        query: {},
-        search: ''
-      }
-    },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,
       scrollPosition: {}
