@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
+import { MemoryRouter } from 'react-router';
 import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import faker from 'faker';
 import set from 'lodash/fp/set';
 
 import { Browser } from './Browser';
@@ -64,12 +64,14 @@ const mockStore = configureMockStore([thunk]);
 
 let store: ReturnType<typeof mockStore>;
 
-const renderComponent = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState, search = '') => {
   store = mockStore(state);
   return render(
-    <Provider store={store}>
-      <Browser />
-    </Provider>
+    <MemoryRouter initialEntries={[search]}>
+      <Provider store={store}>
+        <Browser />
+      </Provider>
+    </MemoryRouter>
   );
 };
 
@@ -99,30 +101,18 @@ describe('<Browser />', () => {
       expect(container.querySelectorAll('.browserImage')).toHaveLength(0);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(0);
 
-      container = renderComponent(
-        set(
-          'router.location.search',
-          `?focus=${faker.lorem.words()}`,
-          mockState
-        )
-      ).container;
+      container = renderComponent(undefined, '?focus=foo').container;
 
       expect(container.querySelectorAll('.browserImage')).toHaveLength(1);
       expect(container.querySelectorAll('.trackPanel')).toHaveLength(1);
     });
 
     describe('BrowserNavBar', () => {
-      let updatedState = set(
+      const updatedState = set(
         'browser.browserInfo.browserActivated',
         true,
         mockState
       );
-      updatedState = set(
-        'router.location.search',
-        `?focus=${faker.lorem.words()}`,
-        updatedState
-      );
-
       const stateWithBrowserNavOpen = set(
         `browser.browserNav.browserNavOpenState.${activeGenomeId}`,
         true,
@@ -130,16 +120,22 @@ describe('<Browser />', () => {
       );
 
       it('is rendered when the nav bar is open', () => {
-        let { container } = renderComponent(updatedState);
+        let { container } = renderComponent(updatedState, '?focus=foo');
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);
 
-        container = renderComponent(stateWithBrowserNavOpen).container;
+        container = renderComponent(
+          stateWithBrowserNavOpen,
+          '?focus=foo'
+        ).container;
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
       });
 
       it('is not rendered if drawer is opened', () => {
-        let { container } = renderComponent(stateWithBrowserNavOpen);
+        let { container } = renderComponent(
+          stateWithBrowserNavOpen,
+          '?focus=foo'
+        );
 
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(1);
 

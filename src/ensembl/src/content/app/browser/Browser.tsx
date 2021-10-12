@@ -17,11 +17,13 @@
 import React, { useEffect } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
 
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
+import { getQueryParamsMap } from 'ensemblRoot/src/global/globalHelper';
 
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';
@@ -29,8 +31,7 @@ import { toggleDrawer } from './drawer/drawerActions';
 import {
   getBrowserNavOpenState,
   getBrowserActivated,
-  getBrowserActiveGenomeId,
-  getBrowserQueryParams
+  getBrowserActiveGenomeId
 } from './browserSelectors';
 
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
@@ -54,13 +55,14 @@ export const Browser = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const browserActivated = useSelector(getBrowserActivated);
   const browserNavOpenState = useSelector(getBrowserNavOpenState);
-  const browserQueryParams = useSelector(getBrowserQueryParams);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
   const viewportWidth = useSelector(getBreakpointWidth);
 
-  const dispatch = useDispatch();
+  const { search } = useLocation(); // from document.location provided by the router
+  const { focus = null } = getQueryParamsMap(search);
 
+  const dispatch = useDispatch();
   const { changeGenomeId } = useBrowserRouting();
 
   useEffect(() => {
@@ -93,7 +95,7 @@ export const Browser = () => {
     <ApolloProvider client={client}>
       <div className={styles.genomeBrowser}>
         <BrowserAppBar onSpeciesSelect={changeGenomeId} />
-        {activeGenomeId && browserQueryParams.focus ? (
+        {activeGenomeId && focus ? (
           <StandardAppLayout
             mainContent={mainContent}
             sidebarContent={<TrackPanel />}
