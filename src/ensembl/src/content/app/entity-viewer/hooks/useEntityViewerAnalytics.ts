@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import analyticsTracking from 'src/services/analytics-service';
-import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 
+import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
 import { parseEnsObjectId } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
+
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
@@ -26,15 +28,14 @@ import {
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import { RootState } from 'src/store';
-import { useEffect } from 'react';
 
 const useEntityViewerAnalytics = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId) || '';
-  const commitedSpecies = useSelector((state: RootState) =>
+  const committedSpecies = useSelector((state: RootState) =>
     getCommittedSpeciesById(state, activeGenomeId)
   );
-  const speciesNameForAnalytics = commitedSpecies
-    ? getSpeciesAnalyticsName(commitedSpecies)
+  const speciesNameForAnalytics = committedSpecies
+    ? getSpeciesAnalyticsName(committedSpecies)
     : '';
 
   const activeEntityId = useSelector(getEntityViewerActiveEntityId);
