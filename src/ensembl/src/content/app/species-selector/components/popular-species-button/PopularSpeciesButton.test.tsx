@@ -26,7 +26,6 @@ import { PopularSpeciesButton } from './PopularSpeciesButton';
 
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
 
-jest.mock('src/shared/components/inline-svg/InlineSvg', () => () => <div />);
 jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
