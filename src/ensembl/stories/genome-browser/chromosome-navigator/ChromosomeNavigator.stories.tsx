@@ -43,23 +43,21 @@ export const ChromosomeNavigatorStory = () => {
 
   return (
     <>
-      <div className={styles.chromosomeNavigatorContainer}>
-        <div ref={containerRef} className={styles.chromosomeNavigator}>
-          <ChromosomeNavigator
-            length={1000000}
-            viewportStart={viewportStart}
-            viewportEnd={viewportEnd}
-            focusRegion={{
-              start: focusRegionStart,
-              end: focusRegionEnd
-            }}
-            centromere={{
-              start: centromereStart,
-              end: centromereEnd
-            }}
-            containerWidth={containerWidth}
-          />
-        </div>
+      <div ref={containerRef} className={styles.chromosomeNavigatorContainer}>
+        <ChromosomeNavigator
+          length={1000000}
+          viewportStart={viewportStart}
+          viewportEnd={viewportEnd}
+          focusRegion={{
+            start: focusRegionStart,
+            end: focusRegionEnd
+          }}
+          centromere={{
+            start: centromereStart,
+            end: centromereEnd
+          }}
+          containerWidth={containerWidth}
+        />
       </div>
 
       <div className={styles.controls}>
