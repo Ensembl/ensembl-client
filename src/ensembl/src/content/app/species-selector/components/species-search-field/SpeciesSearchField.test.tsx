@@ -15,10 +15,16 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import configureMockStore from 'redux-mock-store';
 import faker from 'faker';
 import times from 'lodash/times';
+import merge from 'lodash/merge';
+
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 
@@ -57,19 +63,24 @@ const buildSearchMatchGroup = (matches = 2): SearchMatches =>
 const buildSearchMatchGroups = (groups = 2): SearchMatches[] =>
   times(groups, () => buildSearchMatchGroup());
 
-const onSearchChange = jest.fn();
-const onMatchSelected = jest.fn();
-const clearSelectedSearchResult = jest.fn();
-const clearSearch = jest.fn();
+const defaultReduxState = {
+  speciesSelector: {
+    search: {
+      text: '',
+      results: null
+    }
+  }
+};
 
-const defaultProps = {
-  onSearchChange,
-  onMatchSelected,
-  clearSelectedSearchResult,
-  clearSearch,
-  searchText: '',
-  selectedItemText: null,
-  matches: []
+const mockStore = configureMockStore([thunk]);
+
+const renderComponent = (state?: any) => {
+  state = merge({}, defaultReduxState, state);
+  return render(
+    <Provider store={mockStore(state)}>
+      <SpeciesSearchField />
+    </Provider>
+  );
 };
 
 describe('<SpeciesSearchField />', () => {
@@ -85,7 +96,7 @@ describe('<SpeciesSearchField />', () => {
 
   describe('rendering', () => {
     it('contains AutosuggestSearchField', () => {
-      const { container } = render(<SpeciesSearchField {...defaultProps} />);
+      const { container } = renderComponent();
 
       expect(
         container.querySelector('.autosuggestionSearchField')
@@ -93,19 +104,21 @@ describe('<SpeciesSearchField />', () => {
     });
 
     it('does not show clear button for empty field', () => {
-      const { container } = render(<SpeciesSearchField {...defaultProps} />);
+      const { container } = renderComponent();
 
       expect(container.querySelector('.closeButton')).toBeFalsy();
     });
 
     it('displays suggested matches', () => {
       const matches = buildSearchMatchGroups();
-      const props = {
-        ...defaultProps,
-        searchText,
-        matches
-      };
-      const { container } = render(<SpeciesSearchField {...props} />);
+      const { container } = renderComponent({
+        speciesSelector: {
+          search: {
+            text: searchText,
+            results: matches
+          }
+        }
+      });
       const renderedMatches = container.querySelectorAll('.speciesSearchMatch');
 
       expect(renderedMatches.length).toBe(matches.flat().length);
@@ -115,21 +128,20 @@ describe('<SpeciesSearchField />', () => {
   describe('behaviour', () => {
     let matches: SearchMatches[];
 
-    const renderSpeciesSearchField = () =>
-      render(
-        <SpeciesSearchField
-          {...defaultProps}
-          searchText={searchText}
-          matches={matches}
-        />
-      );
-
     beforeEach(() => {
       matches = buildSearchMatchGroups();
     });
 
     it('triggers the onMatchSelected function when a match is clicked', () => {
-      const { container } = renderSpeciesSearchField();
+      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      const { container } = renderComponent({
+        speciesSelector: {
+          search: {
+            text: searchText,
+            results: matches
+          }
+        }
+      });
       const firstMatchData = matches.flat()[0];
       const firstMatchElement = container.querySelector(
         '.speciesSearchMatch'
@@ -137,25 +149,44 @@ describe('<SpeciesSearchField />', () => {
 
       userEvent.click(firstMatchElement);
 
-      expect(onMatchSelected).toHaveBeenCalledWith(firstMatchData);
+      expect(speciesSelectorActions.handleSelectedSpecies).toHaveBeenCalledWith(
+        firstMatchData
+      );
     });
 
     it('shows a button for clearing field contents in a non-empty field', () => {
-      const { container } = renderSpeciesSearchField();
+      jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
+      jest.spyOn(speciesSelectorActions, 'clearSearch');
+      const { container } = renderComponent({
+        speciesSelector: {
+          search: {
+            text: searchText,
+            results: matches
+          }
+        }
+      });
       const clearButton = container.querySelector(
         '.closeButton'
       ) as HTMLElement;
 
       userEvent.click(clearButton);
 
-      expect(clearSelectedSearchResult).toHaveBeenCalled();
-      expect(clearSearch).toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.clearSelectedSearchResult
+      ).toHaveBeenCalled();
+      expect(speciesSelectorActions.clearSearch).toHaveBeenCalled();
     });
   });
 
   describe('no matches found', () => {
     it('shows "not found" message', () => {
-      const { container } = render(<SpeciesSearchField {...defaultProps} />);
+      const { container } = renderComponent({
+        speciesSelector: {
+          search: {
+            results: []
+          }
+        }
+      });
       const messagePanel = container.querySelector('.autosuggestionPlate');
 
       expect(messagePanel).toBeTruthy();
