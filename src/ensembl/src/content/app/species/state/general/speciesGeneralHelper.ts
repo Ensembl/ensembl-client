@@ -644,16 +644,16 @@ const buildHeaderStat = (
 const getExampleLinks = (props: {
   section: SpeciesStatsSection;
   genome_id: string;
-  exampleFocusObjects: ExampleFocusObject[];
+  exampleFocusObjects: ExampleFocusObject[] | null;
 }) => {
   const { section, genome_id, exampleFocusObjects } = props;
 
   let exampleLinks: UrlObj = {};
 
   if (section === SpeciesStatsSection.CODING_STATS) {
-    const geneExample = exampleFocusObjects.find(
-      (object) => object.type === 'gene'
-    );
+    const geneExample =
+      exampleFocusObjects &&
+      exampleFocusObjects.find((object) => object.type === 'gene');
 
     const focusId = geneExample?.id
       ? buildFocusIdForUrl({
@@ -710,7 +710,7 @@ const getExampleLinks = (props: {
 export const getStatsForSection = (props: {
   genome_id: string;
   section: SpeciesStatsSection;
-  exampleFocusObjects: ExampleFocusObject[];
+  exampleFocusObjects: ExampleFocusObject[] | null;
 }): StatsSection | undefined => {
   const { section, genome_id, exampleFocusObjects } = props;
 

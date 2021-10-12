@@ -66,10 +66,7 @@ export const fetchStatsForActiveGenome =
       return;
     }
 
-    const exampleFocusObjects = getGenomeExampleFocusObjects(
-      state,
-      activeGenomeId
-    );
+    const exampleFocusObjects = getGenomeExampleFocusObjects(state);
 
     const speciesStats = Object.values(SpeciesStatsSection)
       .map((section) =>

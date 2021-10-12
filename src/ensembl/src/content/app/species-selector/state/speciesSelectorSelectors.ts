@@ -19,6 +19,7 @@ import find from 'lodash/find';
 
 import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
+import { getActiveGenomeId } from '../../species/state/general/speciesGeneralSelectors';
 
 export const getSearchText = (state: RootState) =>
   state.speciesSelector.search.text;
@@ -61,9 +62,10 @@ export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
 
 export const getCommittedSpeciesById = (
   state: RootState,
-  genomeId: string
+  genomeId: string | null
 ): CommittedItem | null => {
   const allCommittedSpecies = getCommittedSpecies(state);
+  genomeId ||= getActiveGenomeId(state);
   return (
     find(allCommittedSpecies, (species) => genomeId === species.genome_id) ||
     null

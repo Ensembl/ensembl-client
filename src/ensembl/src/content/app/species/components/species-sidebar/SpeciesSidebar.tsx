@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
@@ -23,31 +23,24 @@ import ExternalReference from 'src/shared/components/external-reference/External
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getActiveGenomeSidebarPayload } from 'src/content/app/species/state/sidebar/speciesSidebarSelectors';
 
-import { RootState } from 'src/store';
-import {
-  SpeciesSidebarPayload,
-  fetchSidebarPayload
-} from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
+import { fetchSidebarPayload } from 'src/content/app/species/state/sidebar/speciesSidebarSlice';
 
 import styles from './SpeciesSidebar.scss';
 
-type Props = {
-  activeGenomeId: string | null;
-  sidebarPayload?: SpeciesSidebarPayload | null;
-  fetchSidebarPayload: () => void;
-};
-
-const SpeciesSidebar = (props: Props) => {
+const SpeciesSidebar = () => {
+  const dispatch = useDispatch();
+  const activeGenomeId = useSelector(getActiveGenomeId);
+  const sidebarPayload = useSelector(getActiveGenomeSidebarPayload);
   useEffect(() => {
-    if (!props.sidebarPayload) {
-      props.fetchSidebarPayload();
+    if (!sidebarPayload) {
+      dispatch(fetchSidebarPayload);
     }
-  }, [props.sidebarPayload, props.activeGenomeId]);
+  }, [sidebarPayload, activeGenomeId]);
 
-  if (!props.sidebarPayload) {
+  if (!sidebarPayload) {
     return <div>No data to display</div>;
   }
-  const payload = props.sidebarPayload;
+  const payload = sidebarPayload;
 
   type AnnotationEntry = {
     label: string;
@@ -163,13 +156,4 @@ const SpeciesSidebar = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  activeGenomeId: getActiveGenomeId(state),
-  sidebarPayload: getActiveGenomeSidebarPayload(state)
-});
-
-const mapDispatchToProps = {
-  fetchSidebarPayload
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SpeciesSidebar);
+export default SpeciesSidebar;
