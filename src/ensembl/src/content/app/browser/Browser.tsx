@@ -23,7 +23,7 @@ import useBrowserRouting from './hooks/useBrowserRouting';
 
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
-import { getQueryParamsMap } from 'ensemblRoot/src/global/globalHelper';
+import { getQueryParamsMap } from 'src/global/globalHelper';
 
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
 import { toggleDrawer } from './drawer/drawerActions';

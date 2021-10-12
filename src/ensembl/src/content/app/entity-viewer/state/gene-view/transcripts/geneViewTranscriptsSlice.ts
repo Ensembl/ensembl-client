@@ -24,7 +24,7 @@ import {
   getEntityViewerActiveEntityId
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
-import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 import {
   getExpandedTranscriptIds,

@@ -19,7 +19,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
-import { createSelectedSpecies } from 'ensemblRoot/tests/fixtures/selected-species';
+import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
 
 jest.mock(

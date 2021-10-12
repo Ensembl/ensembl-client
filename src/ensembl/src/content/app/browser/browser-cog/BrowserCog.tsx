@@ -20,8 +20,8 @@ import { useTransition, animated } from 'react-spring';
 import analyticsTracking from 'src/services/analytics-service';
 import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
 
-import CloseButton from 'ensemblRoot/src/shared/components/close-button/CloseButton';
-import ImageButton from 'ensemblRoot/src/shared/components/image-button/ImageButton';
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { ReactComponent as cogIcon } from 'static/img/shared/cog.svg';
 

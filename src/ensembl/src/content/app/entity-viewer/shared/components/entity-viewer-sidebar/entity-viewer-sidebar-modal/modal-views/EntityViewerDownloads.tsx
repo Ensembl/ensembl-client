@@ -28,7 +28,7 @@ import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
 import styles from './EntityViewerDownloads.scss';
-import { GeneMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+import { GeneMetadata } from 'src/shared/types/thoas/metadata';
 
 const QUERY = gql`
   query Gene($genomeId: String!, $entityId: String!) {
