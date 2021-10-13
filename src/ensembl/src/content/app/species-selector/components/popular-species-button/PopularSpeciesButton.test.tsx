@@ -140,12 +140,11 @@ describe('<PopularSpeciesButton />', () => {
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
-      const speciesData = defaultProps.species;
 
       userEvent.click(button);
 
       expect(speciesSelectorActions.handleSelectedSpecies).toHaveBeenCalledWith(
-        speciesData
+        defaultProps.species
       );
     });
   });
