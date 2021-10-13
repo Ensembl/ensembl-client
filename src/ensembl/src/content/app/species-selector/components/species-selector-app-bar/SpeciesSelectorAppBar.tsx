@@ -17,7 +17,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
-import { Dispatch } from 'redux';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import * as urlFor from 'src/shared/helpers/urlHelper';
@@ -41,14 +40,10 @@ const PlaceholderMessage = () => (
 
 export const SpeciesSelectorAppBar = () => {
   const selectedSpecies = useSelector(getCommittedSpecies);
-  const dispatch = useDispatch();
 
   const mainContent =
     selectedSpecies.length > 0 ? (
-      <SelectedSpeciesList
-        selectedSpecies={selectedSpecies}
-        dispatch={dispatch}
-      />
+      <SelectedSpeciesList selectedSpecies={selectedSpecies} />
     ) : (
       <PlaceholderMessage />
     );
@@ -62,16 +57,15 @@ export const SpeciesSelectorAppBar = () => {
   );
 };
 
-const SelectedSpeciesList = (props: {
-  selectedSpecies: CommittedItem[];
-  dispatch: Dispatch<any>;
-}) => {
+const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
+  const dispatch = useDispatch();
+
   const showSpeciesPage = (genome_id: string) => {
     const speciesPageUrl = urlFor.speciesPage({
       genomeId: genome_id
     });
 
-    props.dispatch(push(speciesPageUrl));
+    dispatch(push(speciesPageUrl));
   };
 
   const selectedSpecies = props.selectedSpecies.map((species) => (
