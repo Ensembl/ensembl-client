@@ -211,7 +211,7 @@ const calculateExonRectangles = (params: CalculateExonRectanglesParams) => {
   return spliced_exons.map((exon) => {
     const { start: exonStart, end: exonEnd } = exon.relative_location;
     const isCompletelyNonCoding =
-      cds && (exonEnd < cds.relative_start || exonStart > cds.relative_end);
+      !cds || exonEnd < cds.relative_start || exonStart > cds.relative_end;
     const isNonCodingLeft =
       cds && exonStart < cds.relative_start && exonEnd > cds.relative_start;
     const isNonCodingRight =
