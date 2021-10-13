@@ -65,8 +65,10 @@ const useSavedForm: UseSavedForm = (params) => {
   const isEmptyForm = (state: typeof currentState) => {
     let isEmpty = true;
     for (const value of Object.values(state)) {
-      if (Array.isArray(value) && value.length) {
-        isEmpty = false;
+      if (Array.isArray(value)) {
+        if (value.length) {
+          isEmpty = false;
+        }
       } else if (value !== null && value !== '') {
         isEmpty = false;
       }
@@ -74,13 +76,20 @@ const useSavedForm: UseSavedForm = (params) => {
     return isEmpty;
   };
 
-  const saveFormState = () => {
-    // only save the form if it is not empty
-    if (isEmptyForm(stateRef.current)) {
+  const hasSavedForm = async () => {
+    const savedForm = await indexedDB.get(STORE_NAME, formName);
+    return Boolean(savedForm);
+  };
+
+  const saveFormState = async () => {
+    // do not save the form if it is currently empty and has not been saved before
+    // (if it has been saved, then saving an empty form to overwrite the previously saved one is fine)
+    const hasPreviouslySavedForm = await hasSavedForm();
+    if (!hasPreviouslySavedForm && isEmptyForm(stateRef.current)) {
       return;
     }
     const formWithoutHugeFiles = withoutHugeFiles(stateRef.current);
-    indexedDB.set(STORE_NAME, params.formName, formWithoutHugeFiles);
+    indexedDB.set(STORE_NAME, formName, formWithoutHugeFiles);
   };
 
   const withoutHugeFiles = (state: Form) => {

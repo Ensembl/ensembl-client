@@ -25,6 +25,7 @@ import {
   getSelectedGeneViewTabs,
   getSelectedTabViews
 } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 
@@ -49,15 +50,16 @@ type Props = {
   selectedTab: string;
   selectedTabViews?: SelectedTabViews;
   push: Push;
-  isFilterOpen: boolean;
+  isFilterPanelOpen: boolean;
 };
 
 const GeneViewTabs = (props: Props) => {
   const { genomeId, entityId } = useParams() as { [key: string]: string };
+  const { trackTabChange } = useEntityViewerAnalytics();
   const tabClassNames = {
     default: styles.geneTab,
     selected: classNames(styles.selectedGeneTab, {
-      [styles.withOpenFilter]: props.isFilterOpen
+      [styles.withOpenFilter]: props.isFilterPanelOpen
     }),
     disabled: styles.disabledGeneTab,
     tabsContainer: styles.geneViewTabs //FIXME: Pass this as a props so that it can be styled from the parent
@@ -70,6 +72,8 @@ const GeneViewTabs = (props: Props) => {
     } else if (selectedTabName === GeneViewTabName.GENE_RELATIONSHIPS) {
       view = props.selectedTabViews?.geneRelationshipsTab || View.ORTHOLOGUES;
     }
+
+    trackTabChange(selectedTabName);
     const url = urlFor.entityViewer({
       genomeId,
       entityId,

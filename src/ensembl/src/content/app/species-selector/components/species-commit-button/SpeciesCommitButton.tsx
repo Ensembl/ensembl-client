@@ -33,7 +33,7 @@ import { RootState } from 'src/store';
 import styles from './SpeciesCommitButton.scss';
 
 type Props = {
-  currentSpecies?: CurrentItem;
+  currentSpecies: CurrentItem | null;
   disabled: boolean;
   onCommit: () => void;
 };
@@ -56,7 +56,7 @@ export const SpeciesCommitButton = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  selectedItem: getSelectedItem(state),
+  currentSpecies: getSelectedItem(state),
   disabled: !canCommitSpecies(state)
 });
 

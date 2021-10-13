@@ -71,16 +71,24 @@ class AnalyticsTracking {
       transport: 'xhr',
       value: ga.value
     });
+
+    ga.species && this.setSpeciesDimension(null);
+    ga.feature && this.setFeatureDimension(null);
   }
 
   // Set app custom dimension
-  public setAppDimension(app: string) {
+  public setAppDimension(app: string | null) {
     this.reactGA.ga('set', CustomDimensions.APP, app);
   }
 
   // Set species custom dimension
-  public setSpeciesDimension(speciesAnalyticsName: string) {
+  public setSpeciesDimension(speciesAnalyticsName: string | null) {
     this.reactGA.ga('set', CustomDimensions.SPECIES, speciesAnalyticsName);
+  }
+
+  // Set feature custom dimension
+  public setFeatureDimension(featureType: string | null) {
+    this.reactGA.ga('set', CustomDimensions.FEATURE, featureType);
   }
 }
 

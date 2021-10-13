@@ -91,6 +91,10 @@ type ReplaceStateAction = {
   payload: State;
 };
 
+type ClearFormAction = {
+  type: 'clear-form';
+};
+
 type Action =
   | UpdateNameAction
   | UpdateEmailAction
@@ -98,7 +102,8 @@ type Action =
   | UpdateMessageAction
   | AddFileAction
   | RemoveFileAction
-  | ReplaceStateAction;
+  | ReplaceStateAction
+  | ClearFormAction;
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -118,6 +123,8 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, files: newFiles };
     case 'replace-state':
       return action.payload;
+    case 'clear-form':
+      return initialState;
     default:
       return state;
   }
@@ -210,6 +217,7 @@ const ContactUsInitialForm = () => {
 
     noEarlierThan(submitPromise, 1000)
       .then(() => {
+        dispatch({ type: 'clear-form' });
         clearSavedForm();
         setSubmissionState(LoadingState.SUCCESS);
       })
