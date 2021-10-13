@@ -170,7 +170,9 @@ const SpeciesMainViewStats = () => {
   const exampleFocusObjects = useSelector((state: RootState) =>
     getGenomeExampleFocusObjects(state, activeGenomeId)
   );
-  const species = useSelector(getCommittedSpeciesById);
+  const species = useSelector((state: RootState) =>
+    getCommittedSpeciesById(state, activeGenomeId)
+  );
 
   useEffect(() => {
     if (!genomeStats && exampleFocusObjects?.length) {
