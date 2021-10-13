@@ -27,6 +27,8 @@ import * as speciesSelectorActions from 'src/content/app/species-selector/state/
 import { SpeciesCommitButton } from './SpeciesCommitButton';
 import { createSelectedSpecies } from 'ensemblRoot/tests/fixtures/selected-species';
 
+import { RootState } from 'src/store';
+
 jest.mock(
   'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
   () =>
@@ -42,13 +44,15 @@ const committedHuman: ReturnType<typeof createSelectedSpecies> = {
 
 const defaultReduxState = {
   speciesSelector: {
-    currentItem: committedHuman
+    currentItem: committedHuman as RootState['speciesSelector']['currentItem']
   }
 };
 
 const mockStore = configureMockStore([thunk]);
 
-const renderComponent = (state?: unknown) => {
+const renderComponent = (state?: {
+  speciesSelector: Partial<typeof defaultReduxState['speciesSelector']>;
+}) => {
   state = merge({}, defaultReduxState, state);
   return render(
     <Provider store={mockStore(state)}>

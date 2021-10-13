@@ -33,6 +33,7 @@ import {
   SearchMatches,
   MatchedFieldName
 } from 'src/content/app/species-selector/types/species-search';
+import { RootState } from 'src/store';
 
 jest.mock(
   'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics',
@@ -68,13 +69,17 @@ const defaultReduxState = {
     search: {
       text: '',
       results: null
-    }
+    } as RootState['speciesSelector']['search']
   }
 };
 
 const mockStore = configureMockStore([thunk]);
 
-const renderComponent = (state?: any) => {
+const renderComponent = (state?: {
+  speciesSelector: {
+    search: Partial<typeof defaultReduxState['speciesSelector']['search']>;
+  };
+}) => {
   state = merge({}, defaultReduxState, state);
   return render(
     <Provider store={mockStore(state)}>

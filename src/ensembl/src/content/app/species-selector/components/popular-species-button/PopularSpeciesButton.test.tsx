@@ -34,6 +34,8 @@ import PopularSpeciesButton, {
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
+import { RootState } from 'src/store';
+
 jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
@@ -61,8 +63,8 @@ const committedWheat: ReturnType<typeof createSelectedSpecies> = {
 
 const defaultReduxState = {
   speciesSelector: {
-    currentItem: null,
-    committedItems: []
+    currentItem: null as RootState['speciesSelector']['currentItem'],
+    committedItems: [] as RootState['speciesSelector']['committedItems']
   }
 };
 
@@ -74,7 +76,9 @@ const mockStore = configureMockStore([thunk]);
 
 type RenderComponentParams = {
   props?: Partial<PopularSpeciesButtonProps>;
-  state?: any; // <-- for ease of testing
+  state?: {
+    speciesSelector: Partial<typeof defaultReduxState['speciesSelector']>;
+  };
 };
 
 const renderComponent = (params: RenderComponentParams) => {
