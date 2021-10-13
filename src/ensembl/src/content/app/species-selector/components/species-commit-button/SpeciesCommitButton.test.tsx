@@ -25,7 +25,7 @@ import merge from 'lodash/merge';
 import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
-import { createSelectedSpecies } from 'ensemblRoot/tests/fixtures/selected-species';
+import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
 import { RootState } from 'src/store';
 
