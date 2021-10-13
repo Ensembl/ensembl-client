@@ -174,7 +174,7 @@ const SpeciesMainViewStats = () => {
 
   useEffect(() => {
     if (!genomeStats && exampleFocusObjects?.length) {
-      dispatch(fetchStatsForActiveGenome);
+      dispatch(fetchStatsForActiveGenome());
     }
   }, [genomeStats, activeGenomeId, exampleFocusObjects]);
 

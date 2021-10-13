@@ -62,7 +62,7 @@ export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
 
 export const getCommittedSpeciesById = (
   state: RootState,
-  genomeId?: string | null
+  genomeId: string | null
 ): CommittedItem | null => {
   const allCommittedSpecies = getCommittedSpecies(state);
   genomeId ||= getActiveGenomeId(state);
