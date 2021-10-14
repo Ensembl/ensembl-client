@@ -15,18 +15,27 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import set from 'lodash/fp/set';
 import { push } from 'connected-react-router';
+import configureMockStore from 'redux-mock-store';
+import set from 'lodash/fp/set';
+import merge from 'lodash/merge';
 
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { PopularSpeciesButton } from './PopularSpeciesButton';
+import PopularSpeciesButton, {
+  Props as PopularSpeciesButtonProps
+} from './PopularSpeciesButton';
 
 import { createPopularSpecies } from 'tests/fixtures/popular-species';
+import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
-jest.mock('src/shared/components/inline-svg/InlineSvg', () => () => <div />);
+import { RootState } from 'src/store';
+
 jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
@@ -39,16 +48,46 @@ jest.mock(
     }))
 );
 
-const handleSelectedSpecies = jest.fn();
-const clearSelectedSpecies = jest.fn();
+const humanFromProps: ReturnType<typeof createPopularSpecies> = {
+  ...createPopularSpecies(),
+  genome_id: 'human'
+};
+const committedHuman: ReturnType<typeof createSelectedSpecies> = {
+  ...createSelectedSpecies(),
+  genome_id: 'human'
+};
+const committedWheat: ReturnType<typeof createSelectedSpecies> = {
+  ...createSelectedSpecies(),
+  genome_id: 'wheat'
+};
 
-const commonProps = {
-  species: createPopularSpecies(),
-  isSelected: false,
-  isCommitted: false,
-  handleSelectedSpecies,
-  clearSelectedSpecies,
-  push
+const defaultReduxState = {
+  speciesSelector: {
+    currentItem: null as RootState['speciesSelector']['currentItem'],
+    committedItems: [] as RootState['speciesSelector']['committedItems']
+  }
+};
+
+const defaultProps = {
+  species: humanFromProps
+};
+
+const mockStore = configureMockStore([thunk]);
+
+type RenderComponentParams = {
+  props?: Partial<PopularSpeciesButtonProps>;
+  state?: {
+    speciesSelector: Partial<typeof defaultReduxState['speciesSelector']>;
+  };
+};
+
+const renderComponent = (params: RenderComponentParams) => {
+  const state = merge({}, defaultReduxState, params.state);
+  return render(
+    <Provider store={mockStore(state)}>
+      <PopularSpeciesButton {...defaultProps} {...params.props} />
+    </Provider>
+  );
 };
 
 describe('<PopularSpeciesButton />', () => {
@@ -58,8 +97,8 @@ describe('<PopularSpeciesButton />', () => {
 
   describe('not available', () => {
     it('has appropriate class', () => {
-      const props = set('species.is_available', false, commonProps);
-      const { container } = render(<PopularSpeciesButton {...props} />);
+      const props = set('species.is_available', false, defaultProps);
+      const { container } = renderComponent({ props });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
@@ -68,45 +107,59 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('does not call handleSelectedSpecies prop when clicked', () => {
-      const props = set('species.is_available', false, commonProps);
-      const { container } = render(<PopularSpeciesButton {...props} />);
+    it('does not select a species when clicked', () => {
+      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+
+      const props = set('species.is_available', false, defaultProps);
+      const { container } = renderComponent({ props });
+
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
       userEvent.click(button);
 
-      expect(handleSelectedSpecies).not.toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.handleSelectedSpecies
+      ).not.toHaveBeenCalled();
     });
   });
 
   describe('not selected', () => {
     it('has appropriate class', () => {
-      const { container } = render(<PopularSpeciesButton {...commonProps} />);
+      const { container } = renderComponent({ props: defaultProps });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
       expect(button.classList.length).toBe(1); // has only .popularSpeciesButton class
     });
 
-    it('calls handleSelectedSpecies prop when clicked', () => {
-      const { container } = render(<PopularSpeciesButton {...commonProps} />);
+    it('selects the species received from props when clicked', () => {
+      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+
+      const { container } = renderComponent({ props: defaultProps });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
-      const speciesData = commonProps.species;
 
       userEvent.click(button);
 
-      expect(handleSelectedSpecies).toHaveBeenCalledWith(speciesData);
+      expect(speciesSelectorActions.handleSelectedSpecies).toHaveBeenCalledWith(
+        defaultProps.species
+      );
     });
   });
 
   describe('selected', () => {
+    const reduxFragmentWithSelectedSpecies = {
+      speciesSelector: {
+        currentItem: committedHuman
+      }
+    };
+
     it('has appropriate class', () => {
-      const { container } = render(
-        <PopularSpeciesButton {...commonProps} isSelected={true} />
-      );
+      const { container } = renderComponent({
+        state: reduxFragmentWithSelectedSpecies
+      });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
@@ -116,26 +169,39 @@ describe('<PopularSpeciesButton />', () => {
     });
 
     it('clears selected species when clicked', () => {
-      const { container } = render(
-        <PopularSpeciesButton {...commonProps} isSelected={true} />
-      );
+      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
+
+      const { container } = renderComponent({
+        state: reduxFragmentWithSelectedSpecies
+      });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
 
       userEvent.click(button);
 
-      expect(clearSelectedSpecies).toHaveBeenCalled();
-      expect(handleSelectedSpecies).not.toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.clearSelectedSearchResult
+      ).toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.handleSelectedSpecies
+      ).not.toHaveBeenCalled();
       expect(push).not.toHaveBeenCalled();
     });
   });
 
   describe('committed', () => {
+    const reduxFragmentWithCommittedSpecies = {
+      speciesSelector: {
+        committedItems: [committedWheat, committedHuman]
+      }
+    };
+
     it('has appropriate class', () => {
-      const { container } = render(
-        <PopularSpeciesButton {...commonProps} isCommitted={true} />
-      );
+      const { container } = renderComponent({
+        state: reduxFragmentWithCommittedSpecies
+      });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
@@ -144,10 +210,13 @@ describe('<PopularSpeciesButton />', () => {
       );
     });
 
-    it('opens species page when it is clicked', () => {
-      const { container } = render(
-        <PopularSpeciesButton {...commonProps} isCommitted={true} />
-      );
+    it('opens species page when clicked', () => {
+      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
+
+      const { container } = renderComponent({
+        state: reduxFragmentWithCommittedSpecies
+      });
       const button = container.querySelector(
         '.popularSpeciesButton'
       ) as HTMLElement;
@@ -156,12 +225,16 @@ describe('<PopularSpeciesButton />', () => {
 
       expect(push).toHaveBeenCalledWith(
         urlFor.speciesPage({
-          genomeId: commonProps.species.genome_id
+          genomeId: defaultProps.species.genome_id
         })
       );
 
-      expect(clearSelectedSpecies).not.toHaveBeenCalled();
-      expect(handleSelectedSpecies).not.toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.clearSelectedSearchResult
+      ).not.toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.handleSelectedSpecies
+      ).not.toHaveBeenCalled();
     });
   });
 });

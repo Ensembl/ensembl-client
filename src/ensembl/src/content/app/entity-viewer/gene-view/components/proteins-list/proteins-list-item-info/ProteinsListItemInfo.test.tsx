@@ -19,9 +19,10 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import times from 'lodash/times';
 
-import { ProteinExternalReferenceGroup } from './ProteinsListItemInfo';
-import { createExternalReference } from 'ensemblRoot/tests/fixtures/entity-viewer/external-reference';
+import { createExternalReference } from 'tests/fixtures/entity-viewer/external-reference';
+
 import { ExternalSource } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import { ProteinExternalReferenceGroup } from './ProteinsListItemInfo';
 
 jest.mock(
   'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein',

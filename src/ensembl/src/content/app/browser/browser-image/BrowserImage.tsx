@@ -101,12 +101,19 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, [genomeBrowser, props.defaultChrLocation]);
 
   useEffect(() => {
-    activateGenomeBrowser();
-    props.updateBrowserActivated(true);
-    return () => {
-      props.updateBrowserActivated(false);
+    const activateBrowser = async () => {
+      if (!genomeBrowser) {
+        await activateGenomeBrowser();
+      }
     };
-  }, []);
+
+    activateBrowser();
+
+    // TODO: Check if this is required
+    // return () => {
+    //   props.updateBrowserActivated(false);
+    // };
+  }, [genomeBrowser]);
 
   const browserContainerClassNames = classNames(styles.browserStage, {
     [styles.shorter]: props.isNavbarOpen
@@ -125,6 +132,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
           className={browserContainerClassNames}
           ref={browserRef}
         />
+        <div id="other"></div>
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
         {props.isDisabled ? <Overlay /> : null}

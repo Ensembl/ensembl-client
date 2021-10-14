@@ -13,28 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+import configureMockStore from 'redux-mock-store';
+import { render, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 import faker from 'faker';
+import set from 'lodash/fp/set';
 
-import {
-  BrowserRegionEditor,
-  BrowserRegionEditorProps
-} from './BrowserRegionEditor';
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
-import { createGenomeKaryotype } from 'tests/fixtures/genomes';
-import {
-  createChrLocationValues,
-  createRegionValidationMessages
-} from 'tests/fixtures/browser';
+import * as browserActions from '../browserActions';
+
+import { BrowserRegionEditor } from './BrowserRegionEditor';
+
+import { createRegionValidationMessages } from 'tests/fixtures/browser';
 
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/formatters/numberFormatter';
 import * as browserHelper from '../browserHelper';
+
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserRegionEditor />
+    </Provider>
+  );
+};
 
 jest.mock('src/shared/components/select/Select', () => () => (
   <div className="select" />
@@ -51,62 +66,56 @@ jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
 jest.mock('../browserHelper');
 
 describe('<BrowserRegionEditor />', () => {
-  const initialChrLocation = createChrLocationValues().tupleValue;
-  const defaultProps: BrowserRegionEditorProps = {
-    activeGenomeId: faker.lorem.words(),
-    chrLocation: initialChrLocation,
-    genomeKaryotype: createGenomeKaryotype(),
-    isActive: true,
-    isDisabled: false,
-    toggleRegionEditorActive: jest.fn()
-  };
-
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    jest.spyOn(browserActions, 'toggleRegionEditorActive');
   });
 
   describe('rendering', () => {
     it('contains Select', () => {
-      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const { container } = renderComponent();
       expect(container.querySelector('.select')).toBeTruthy();
     });
 
     it('contains two input elements', () => {
-      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const { container } = renderComponent();
       expect(container.querySelectorAll('input').length).toBe(2);
     });
 
     it('contains submit and close buttons', () => {
-      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const { container } = renderComponent();
       expect(container.querySelector('button[type="submit"]')).toBeTruthy();
     });
 
     it('has an overlay on top when disabled', () => {
-      const { container } = render(
-        <BrowserRegionEditor {...defaultProps} isDisabled={true} />
+      const { container } = renderComponent(
+        set('browser.browserLocation.regionFieldActive', true, mockState)
       );
+
       expect(container.querySelector('.overlay')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
     it('shows form buttons when focussed', () => {
-      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const { container } = renderComponent();
       const form = container.querySelector('form') as HTMLFormElement;
-
       fireEvent.focus(form);
 
-      expect(defaultProps.toggleRegionEditorActive).toHaveBeenCalledTimes(1);
+      expect(browserActions.toggleRegionEditorActive).toHaveBeenCalledTimes(1);
     });
 
     it('validates region input on submit', () => {
-      const [stick] = initialChrLocation;
+      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const [stick] = (mockState.browser.browserLocation.chrLocations as any)[
+        activeGenomeId
+      ];
       const locationStartInput = getCommaSeparatedNumber(
         faker.datatype.number()
       );
       const locationEndInput = getCommaSeparatedNumber(faker.datatype.number());
 
-      const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+      const { container } = renderComponent();
       const [firstInput, secondInput] = container.querySelectorAll('input');
       const submitButton = container.querySelector(
         'button[type="submit"]'
@@ -122,7 +131,7 @@ describe('<BrowserRegionEditor />', () => {
 
       expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: `${stick}:${locationStartInput}-${locationEndInput}`,
-        genomeId: defaultProps.activeGenomeId,
+        genomeId: mockState.browser.browserEntity.activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
       });
@@ -131,7 +140,7 @@ describe('<BrowserRegionEditor />', () => {
     // TODO: Test if the form is reset when clicked outside the form. Need to be able to mock useOutsideClick for this.
 
     describe('on validation failure', () => {
-      afterEach(() => {
+      beforeEach(() => {
         jest.restoreAllMocks();
       });
 
@@ -160,7 +169,7 @@ describe('<BrowserRegionEditor />', () => {
             }): Promise<void> => onError(mockErrorMessages)
           );
 
-        const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+        const { container } = renderComponent();
         const [firstInput, secondInput] = container.querySelectorAll('input');
         const submitButton = container.querySelector(
           'button[type="submit"]'
@@ -195,7 +204,7 @@ describe('<BrowserRegionEditor />', () => {
             }): Promise<void> => onError(mockErrorMessages)
           );
 
-        const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+        const { container } = renderComponent();
         const [firstInput, secondInput] = container.querySelectorAll('input');
         const submitButton = container.querySelector(
           'button[type="submit"]'
@@ -223,7 +232,7 @@ describe('<BrowserRegionEditor />', () => {
       const regionId = faker.lorem.words();
 
       beforeEach(() => {
-        jest.resetAllMocks();
+        jest.restoreAllMocks();
         jest
           .spyOn(browserHelper, 'validateRegion')
           .mockImplementation(
@@ -239,7 +248,13 @@ describe('<BrowserRegionEditor />', () => {
       // Test focus object change on submission. This can be done if <Select /> value can be changed.
 
       it('changes the browser location in same region if stick is the same', () => {
-        const { container } = render(<BrowserRegionEditor {...defaultProps} />);
+        const { container } = renderComponent();
+        jest
+          .spyOn(browserActions, 'changeBrowserLocation')
+          .mockImplementation(() => () => ({
+            type: 'change-browser-location'
+          }));
+
         const [firstInput, secondInput] = container.querySelectorAll('input');
 
         const submitButton = container.querySelector(

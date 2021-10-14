@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -31,7 +31,6 @@ import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/tr
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
-  changeHighlightedTrackId: (trackId: string) => void;
 };
 
 // when a zmenu is created, it’s assigned an id,
@@ -43,6 +42,7 @@ export type StateZmenu = {
 
 const ZmenuController = (props: Props) => {
   const { genomeBrowser, zmenus, setZmenus } = useGenomeBrowser();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -56,7 +56,7 @@ const ZmenuController = (props: Props) => {
   const handleZmenuCreate = (action: IncomingAction) => {
     const payload = action.payload as ZmenuPayload;
 
-    props.changeHighlightedTrackId(payload.content[0].metadata.track);
+    dispatch(changeHighlightedTrackId(payload.content[0].metadata.track));
 
     setZmenus &&
       setZmenus({
@@ -74,8 +74,5 @@ const ZmenuController = (props: Props) => {
 
   return <>{zmenuElements}</>;
 };
-const mapDispatchToProps = {
-  changeHighlightedTrackId
-};
 
-export default connect(undefined, mapDispatchToProps)(ZmenuController);
+export default ZmenuController;

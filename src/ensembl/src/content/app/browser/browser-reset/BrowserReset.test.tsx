@@ -15,11 +15,33 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { BrowserReset, BrowserResetProps } from './BrowserReset';
+import * as browserActions from './../browserActions';
+
+import { BrowserReset } from './BrowserReset';
+
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserReset />
+    </Provider>
+  );
+};
 
 const mockChangeFocusObject = jest.fn();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
@@ -31,30 +53,26 @@ describe('<BrowserReset />', () => {
     jest.resetAllMocks();
   });
 
-  const defaultProps: BrowserResetProps = {
-    focusObjectId: `${faker.lorem.word()}:gene:${faker.lorem.word()}`,
-    isActive: true
-  };
-
   describe('rendering', () => {
     it('renders image button when focus feature exists', () => {
-      const { container } = render(<BrowserReset {...defaultProps} />);
+      const { container } = renderComponent();
       expect(container.querySelector('button')).toBeTruthy();
     });
 
     it('renders nothing when focus feature does not exist', () => {
-      const { container } = render(
-        <BrowserReset {...defaultProps} focusObjectId={null} />
+      const { container } = renderComponent(
+        set('browser.browserEntity.activeEnsObjectIds', {}, mockState)
       );
+
       expect(container.firstChild).toBeFalsy();
     });
   });
 
   describe('behaviour', () => {
     it('changes focus object when clicked', () => {
-      const { container } = render(<BrowserReset {...defaultProps} />);
+      const { container } = renderComponent();
       const button = container.querySelector('button') as HTMLButtonElement;
-
+      jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(button);
 
       expect(mockChangeFocusObject).toHaveBeenCalledWith(

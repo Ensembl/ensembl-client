@@ -16,7 +16,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { TrackSet } from '../trackPanelConfig';
 
@@ -34,50 +34,44 @@ import {
 import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
 import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
 
-import { RootState } from 'src/store';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
-
 import styles from './TrackPanelTabs.scss';
 
-export type TrackPanelTabsProps = {
-  closeDrawer: () => void;
-  ensObject: EnsObject | null;
-  isDrawerOpened: boolean;
-  selectTrackPanelTab: (selectedTrackPanelTab: TrackSet) => void;
-  selectedTrackPanelTab: TrackSet;
-  toggleTrackPanel: (isTrackPanelOpened: boolean) => void;
-  isTrackPanelModalOpened: boolean;
-  isTrackPanelOpened: boolean;
-};
+export const TrackPanelTabs = () => {
+  const ensObject = useSelector(getBrowserActiveEnsObject);
+  const isDrawerOpened = useSelector(getIsDrawerOpened);
+  const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
+  const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
+  const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
 
-export const TrackPanelTabs = (props: TrackPanelTabsProps) => {
+  const dispatch = useDispatch();
+
   const handleTabClick = (value: TrackSet) => {
-    if (!props.ensObject?.genome_id) {
+    if (!ensObject?.genome_id) {
       return;
     }
 
-    if (!props.isTrackPanelOpened) {
-      props.toggleTrackPanel(true);
+    if (!isTrackPanelOpened) {
+      dispatch(toggleTrackPanel(true));
     }
 
-    if (props.isDrawerOpened) {
-      props.closeDrawer();
+    if (isDrawerOpened) {
+      dispatch(closeDrawer());
     }
 
-    props.selectTrackPanelTab(value);
+    dispatch(selectTrackPanelTab(value));
   };
 
   const getTrackPanelTabClassNames = (trackSet: TrackSet) => {
     const isTrackPanelTabActive =
-      props.isTrackPanelOpened &&
-      props.ensObject?.genome_id &&
-      props.selectedTrackPanelTab === trackSet &&
-      !props.isDrawerOpened &&
-      !props.isTrackPanelModalOpened;
+      isTrackPanelOpened &&
+      ensObject?.genome_id &&
+      selectedTrackPanelTab === trackSet &&
+      !isDrawerOpened &&
+      !isTrackPanelModalOpened;
 
     return classNames(styles.trackPanelTab, {
       [styles.trackPanelTabActive]: isTrackPanelTabActive,
-      [styles.trackPanelTabDisabled]: !props.ensObject?.genome_id
+      [styles.trackPanelTabDisabled]: !ensObject?.genome_id
     });
   };
 
@@ -96,18 +90,4 @@ export const TrackPanelTabs = (props: TrackPanelTabsProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  ensObject: getBrowserActiveEnsObject(state),
-  isDrawerOpened: getIsDrawerOpened(state),
-  selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-  isTrackPanelOpened: getIsTrackPanelOpened(state),
-  isTrackPanelModalOpened: getIsTrackPanelModalOpened(state)
-});
-
-const mapDispatchToProps = {
-  closeDrawer,
-  selectTrackPanelTab,
-  toggleTrackPanel
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelTabs);
+export default TrackPanelTabs;

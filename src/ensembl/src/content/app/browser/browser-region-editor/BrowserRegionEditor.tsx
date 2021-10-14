@@ -15,7 +15,7 @@
  */
 
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
@@ -27,7 +27,6 @@ import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import {
-  getRegionEditorActive,
   getBrowserActiveGenomeId,
   getChrLocation,
   getRegionFieldActive
@@ -44,7 +43,6 @@ import { validateRegion, RegionValidationErrors } from '../browserHelper';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { ChrLocation } from '../browserState';
-import { RootState } from 'src/store';
 import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
 import { Position } from 'src/shared/components/pointer-box/PointerBox';
 
@@ -53,18 +51,17 @@ import applyIcon from 'static/img/shared/apply.svg';
 import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-export type BrowserRegionEditorProps = {
-  activeGenomeId: string | null;
-  chrLocation: ChrLocation | null;
-  genomeKaryotype: GenomeKaryotypeItem[] | null;
-  isActive: boolean;
-  isDisabled: boolean;
-  toggleRegionEditorActive: (regionEditorActive: boolean) => void;
-};
+export const BrowserRegionEditor = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const chrLocation = useSelector(getChrLocation);
+  const genomeKaryotype = useSelector(
+    getGenomeKaryotype
+  ) as GenomeKaryotypeItem[];
+  const isDisabled = useSelector(getRegionFieldActive);
 
-export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
-  const genomeKaryotype = props.genomeKaryotype as GenomeKaryotypeItem[];
-  const [stick, locationStart, locationEnd] = props.chrLocation as ChrLocation;
+  const dispatch = useDispatch();
+
+  const [stick, locationStart, locationEnd] = chrLocation as ChrLocation;
   const [stickInput, setStickInput] = useState(stick);
   const [locationStartInput, setLocationStartInput] = useState(
     getCommaSeparatedNumber(locationStart)
@@ -101,12 +98,14 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
   useEffect(() => {
     updateAllInputs();
-  }, [props.chrLocation]);
+  }, [chrLocation]);
 
-  const [locationStartErrorMessage, setLocationStartErrorMessage] =
-    useState<string | null>(null);
-  const [locationEndErrorMessage, setLocationEndErrorMessage] =
-    useState<string | null>(null);
+  const [locationStartErrorMessage, setLocationStartErrorMessage] = useState<
+    string | null
+  >(null);
+  const [locationEndErrorMessage, setLocationEndErrorMessage] = useState<
+    string | null
+  >(null);
 
   const getKaryotypeOptions = () =>
     genomeKaryotype.map(({ name }) => ({
@@ -144,21 +143,23 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
   };
 
   const handleFocus = () => {
-    if (!props.isDisabled) {
-      props.toggleRegionEditorActive(true);
+    if (!isDisabled) {
+      dispatch(toggleRegionEditorActive(true));
     }
   };
 
   const changeLocation = (newChrLocation: ChrLocation) =>
-    changeBrowserLocation({
-      genomeId: props.activeGenomeId as string,
-      ensObjectId: null,
-      chrLocation: newChrLocation
-    });
+    dispatch(
+      changeBrowserLocation({
+        genomeId: activeGenomeId as string,
+        ensObjectId: null,
+        chrLocation: newChrLocation
+      })
+    );
 
   const hideForm = () => {
     updateErrorMessages(null, null);
-    props.toggleRegionEditorActive(false);
+    dispatch(toggleRegionEditorActive(false));
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -166,7 +167,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
 
     validateRegion({
       regionInput: `${stickInput}:${locationStartInput}-${locationEndInput}`,
-      genomeId: props.activeGenomeId,
+      genomeId: activeGenomeId,
       onSuccess: onValidationSuccess,
       onError: onValidationError
     });
@@ -189,7 +190,7 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
     if (stickInput === stick) {
       changeLocation(newChrLocation);
     } else {
-      changeFocusObject(regionId);
+      dispatch(changeFocusObject(regionId));
     }
 
     analyticsTracking.trackEvent({
@@ -275,26 +276,9 @@ export const BrowserRegionEditor = (props: BrowserRegionEditorProps) => {
           </button>
         </span>
       </form>
-      {props.isDisabled && <Overlay className={styles.overlay} />}
+      {isDisabled && <Overlay className={styles.overlay} />}
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeGenomeId: getBrowserActiveGenomeId(state),
-    chrLocation: getChrLocation(state),
-    genomeKaryotype: getGenomeKaryotype(state),
-    isActive: getRegionEditorActive(state),
-    isDisabled: getRegionFieldActive(state)
-  };
-};
-
-const mpaDispatchToProps = {
-  toggleRegionEditorActive
-};
-
-export default connect(
-  mapStateToProps,
-  mpaDispatchToProps
-)(BrowserRegionEditor);
+export default BrowserRegionEditor;

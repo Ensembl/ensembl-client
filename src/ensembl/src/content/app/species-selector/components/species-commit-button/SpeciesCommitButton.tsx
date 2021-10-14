@@ -15,56 +15,33 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
-import {
-  canCommitSpecies,
-  getSelectedItem
-} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+import { getSelectedItem } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 
-import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
-import { RootState } from 'src/store';
-
 import styles from './SpeciesCommitButton.scss';
 
-type Props = {
-  currentSpecies: CurrentItem | null;
-  disabled: boolean;
-  onCommit: () => void;
-};
+export const SpeciesCommitButton = () => {
+  const currentSpecies = useSelector(getSelectedItem);
+  const dispatch = useDispatch();
 
-export const SpeciesCommitButton = (props: Props) => {
   const { trackCommittedSpecies } = useSpeciesSelectorAnalytics();
 
   const handleClick = () => {
-    props.onCommit();
-    props.currentSpecies && trackCommittedSpecies(props.currentSpecies);
+    dispatch(commitSelectedSpeciesAndSave());
+    currentSpecies && trackCommittedSpecies(currentSpecies);
   };
 
-  return props.currentSpecies ? (
+  return currentSpecies ? (
     <div className={styles.speciesCommitButton}>
-      <PrimaryButton onClick={handleClick} isDisabled={props.disabled}>
-        Add
-      </PrimaryButton>
+      <PrimaryButton onClick={handleClick}>Add</PrimaryButton>
     </div>
   ) : null;
 };
 
-const mapStateToProps = (state: RootState) => ({
-  currentSpecies: getSelectedItem(state),
-  disabled: !canCommitSpecies(state)
-});
-
-const mapDispatchToProps = {
-  onCommit: commitSelectedSpeciesAndSave
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SpeciesCommitButton);
+export default SpeciesCommitButton;

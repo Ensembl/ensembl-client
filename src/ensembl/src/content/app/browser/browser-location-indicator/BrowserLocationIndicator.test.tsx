@@ -51,7 +51,7 @@ const mockState = {
 };
 
 const mockStore = configureMockStore();
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   return render(
     <Provider store={mockStore(state)}>
       <BrowserLocationIndicator />
@@ -66,13 +66,13 @@ describe('BrowserLocationIndicator', () => {
 
   describe('rendering', () => {
     it('displays chromosome name', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const renderedName = container.querySelector('.chrCode');
       expect(renderedName?.textContent).toBe(chrName);
     });
 
     it('displays location', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const renderedLocation = container.querySelector('.chrRegion');
       expect(renderedLocation?.textContent).toBe(
         `${getCommaSeparatedNumber(startPosition)}-${getCommaSeparatedNumber(
@@ -82,7 +82,7 @@ describe('BrowserLocationIndicator', () => {
     });
 
     it('adds disabled class when component is disabled', () => {
-      const { container, rerender } = wrapInRedux();
+      const { container, rerender } = renderComponent();
       const element = container.firstChild as HTMLDivElement;
       expect(
         element.classList.contains('browserLocationIndicatorDisabled')
@@ -104,7 +104,7 @@ describe('BrowserLocationIndicator', () => {
 
   describe('behaviour', () => {
     it('calls toggleBrowserNav when clicked', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const indicator = container.querySelector('.chrLocationView');
 
       userEvent.click(indicator as HTMLDivElement);
@@ -112,7 +112,7 @@ describe('BrowserLocationIndicator', () => {
     });
 
     it('does not call toggleBrowserNav if disabled', () => {
-      const { container, rerender } = wrapInRedux();
+      const { container, rerender } = renderComponent();
       const indicator = container.querySelector('.chrLocationView');
 
       const wrappedComponent = (

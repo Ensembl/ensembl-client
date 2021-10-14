@@ -15,14 +15,18 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { screen, render } from '@testing-library/react';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
+
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserNavBarControls } from './BrowserNavBarControls';
 
-import { BrowserNavAction, BrowserNavIconStates } from '../browserState';
+import { BrowserNavAction } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
-import { OutgoingActionType } from 'ensembl-genome-browser';
 
 jest.mock(
   './BrowserNavIcon',
@@ -40,34 +44,33 @@ jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
 
-const browserNavIconStates: BrowserNavIconStates = {
-  [OutgoingActionType.MOVE_UP]: faker.datatype.boolean(),
-  [OutgoingActionType.MOVE_RIGHT]: faker.datatype.boolean(),
-  [OutgoingActionType.MOVE_DOWN]: faker.datatype.boolean(),
-  [OutgoingActionType.MOVE_LEFT]: faker.datatype.boolean(),
-  [OutgoingActionType.ZOOM_OUT]: faker.datatype.boolean(),
-  [OutgoingActionType.ZOOM_IN]: faker.datatype.boolean()
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserNavBarControls />
+    </Provider>
+  );
 };
 
 describe('BrowserNavBarControls', () => {
   it('has an overlay on top when browser nav bar controls are disabled', () => {
-    const { container } = render(
-      <BrowserNavBarControls
-        browserNavIconStates={browserNavIconStates}
-        isDisabled={true}
-      />
+    const { container } = renderComponent(
+      set('browser.browserLocation.regionEditorActive', true, mockState)
     );
     expect(container.querySelector('.overlay')).toBeTruthy();
   });
 
   it('disables buttons if corresponding actions are not possible', () => {
-    render(
-      <BrowserNavBarControls
-        browserNavIconStates={browserNavIconStates}
-        isDisabled={false}
-      />
-    );
+    renderComponent();
 
+    const { browserNavIconStates } = mockState.browser.browserNav;
     Object.keys(browserNavIconStates).forEach((icon) => {
       const navIcon = screen.getByTestId(icon);
       expect(navIcon.classList.contains('enabled')).toBe(

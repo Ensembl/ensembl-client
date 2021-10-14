@@ -23,7 +23,6 @@ import isEqual from 'lodash/isEqual';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getQueryParamsMap } from 'src/global/globalHelper';
 import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 import {
   buildFocusIdForUrl,
@@ -63,7 +62,9 @@ const useBrowserRouting = () => {
   const dispatch = useDispatch();
 
   const { genomeId } = params;
-  const { focus = null, location = null } = getQueryParamsMap(search);
+  const urlSearchParams = new URLSearchParams(search);
+  const focus = urlSearchParams.get('focus') || null;
+  const location = urlSearchParams.get('location') || null;
 
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const committedSpecies = useSelector(getEnabledCommittedSpecies);

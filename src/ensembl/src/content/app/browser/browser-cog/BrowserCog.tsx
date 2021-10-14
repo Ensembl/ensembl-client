@@ -101,9 +101,7 @@ const BrowserCog = (props: BrowserCogProps) => {
         return (
           item && (
             <animated.div key="browserTrackConfig" style={style}>
-              <BrowserTrackConfig
-                onClose={() => props.updateSelectedCog(null)}
-              />
+              <BrowserTrackConfig />
             </animated.div>
           )
         );

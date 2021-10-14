@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   updateTrackConfigNames,
@@ -40,34 +40,18 @@ import RadioGroup, {
   OptionValue,
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
-
-import { RootState } from 'src/store';
-import { CogList } from '../browserState';
 import { OutgoingActionType } from 'ensembl-genome-browser';
 
 import styles from './BrowserTrackConfig.scss';
 
-export type BrowserTrackConfigProps = {
-  applyToAll: boolean;
-  browserCogTrackList: CogList;
-  selectedCog: string | null;
-  trackConfigLabel: { [key: string]: boolean };
-  trackConfigNames: { [key: string]: boolean };
-  updateApplyToAll: (yn: boolean) => void;
-  updateTrackConfigLabel: (selectedCog: string, sense: boolean) => void;
-  updateTrackConfigNames: (selectedCog: string, sense: boolean) => void;
-  onClose: () => void;
-};
+export const BrowserTrackConfig = () => {
+  const applyToAll = useSelector(getApplyToAll);
+  const browserCogTrackList = useSelector(getBrowserCogTrackList);
+  const selectedCog = useSelector(getBrowserSelectedCog) || '';
+  const trackConfigLabel = useSelector(getTrackConfigLabel);
+  const trackConfigNames = useSelector(getTrackConfigNames);
 
-export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
-  const {
-    applyToAll,
-    browserCogTrackList,
-    trackConfigNames,
-    trackConfigLabel
-  } = props;
-
-  const selectedCog = props.selectedCog || '';
+  const dispatch = useDispatch();
 
   const shouldShowTrackName = trackConfigNames[selectedCog] || false;
   const shouldShowTrackLabels =
@@ -79,11 +63,11 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     const tracksToUpdate = [];
     if (applyToAll) {
       Object.keys(browserCogTrackList).forEach((name) => {
-        props.updateTrackConfigNames(name, !shouldShowTrackName);
+        dispatch(updateTrackConfigNames(name, !shouldShowTrackName));
         tracksToUpdate.push(name);
       });
     } else {
-      props.updateTrackConfigNames(selectedCog, !shouldShowTrackName);
+      dispatch(updateTrackConfigNames(selectedCog, !shouldShowTrackName));
       tracksToUpdate.push(selectedCog);
     }
 
@@ -103,7 +87,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
     });
   }, [
     selectedCog,
-    props.updateTrackConfigNames,
+    updateTrackConfigNames,
     shouldShowTrackName,
     applyToAll,
     browserCogTrackList
@@ -114,11 +98,11 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
 
     if (applyToAll) {
       Object.keys(browserCogTrackList).forEach((name) => {
-        props.updateTrackConfigLabel(name, !shouldShowTrackLabels);
+        dispatch(updateTrackConfigLabel(name, !shouldShowTrackLabels));
         tracksToUpdate.push(name);
       });
     } else {
-      props.updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels);
+      dispatch(updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels));
       tracksToUpdate.push(selectedCog);
     }
 
@@ -146,7 +130,7 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
 
   const handleRadioChange = useCallback(
     (value: OptionValue) => {
-      props.updateApplyToAll(value === 'all_tracks');
+      dispatch(updateApplyToAll(value === 'all_tracks'));
 
       analyticsTracking.trackEvent({
         category: 'track_settings',
@@ -202,18 +186,4 @@ export const BrowserTrackConfig = (props: BrowserTrackConfigProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  applyToAll: getApplyToAll(state),
-  browserCogTrackList: getBrowserCogTrackList(state),
-  selectedCog: getBrowserSelectedCog(state),
-  trackConfigLabel: getTrackConfigLabel(state),
-  trackConfigNames: getTrackConfigNames(state)
-});
-
-const mapDispatchToProps = {
-  updateApplyToAll,
-  updateTrackConfigLabel,
-  updateTrackConfigNames
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BrowserTrackConfig);
+export default BrowserTrackConfig;

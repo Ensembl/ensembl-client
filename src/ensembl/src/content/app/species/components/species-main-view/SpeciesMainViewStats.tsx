@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, ReactNode } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
 import useSpeciesAnalytics from '../../hooks/useSpeciesAnalytics';
@@ -34,13 +34,10 @@ import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSele
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   fetchStatsForActiveGenome,
-  setActiveGenomeExpandedSections,
-  GenomeUIState
+  setActiveGenomeExpandedSections
 } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
 import { RootState } from 'src/store';
-import { ExampleFocusObject } from 'src/shared/state/genome/genomeTypes';
-import { GenomeStats } from '../../state/general/speciesGeneralSlice';
 import { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
@@ -50,16 +47,6 @@ import {
 } from '../../state/general/speciesGeneralHelper';
 
 import styles from './SpeciesMainView.scss';
-
-type Props = {
-  activeGenomeId: string | null;
-  genomeStats: GenomeStats | undefined;
-  genomeUIState: GenomeUIState | undefined;
-  exampleFocusObjects: ExampleFocusObject[];
-  species: CommittedItem | null;
-  fetchStatsForActiveGenome: () => void;
-  setExpandedSections: (expandedSections: SpeciesStatsSection[]) => void;
-};
 
 type ExampleLinkPopupProps = {
   links: UrlObj;
@@ -91,7 +78,7 @@ const getCollapsedContent = (props: ContentProps) => {
   const { title, helpText, exampleLinkText } = sectionGroupsMap[section];
 
   const onExampleLinkClick = () => {
-    props.trackSpeciesPageExampleLink(props.species, exampleLinkText as string);
+    props.trackSpeciesPageExampleLink(species, exampleLinkText as string);
   };
 
   return (
@@ -130,7 +117,7 @@ const getExpandedContent = (props: ContentProps) => {
   const { exampleLinkText } = sectionGroupsMap[section];
 
   const onExampleLinkClick = () => {
-    props.trackSpeciesPageExampleLink(props.species, exampleLinkText as string);
+    props.trackSpeciesPageExampleLink(species, exampleLinkText as string);
   };
 
   const expandedContent = groups
@@ -174,25 +161,30 @@ const getExpandedContent = (props: ContentProps) => {
   ) : null;
 };
 
-const SpeciesMainViewStats = (props: Props) => {
+const SpeciesMainViewStats = () => {
+  const dispatch = useDispatch();
+  const activeGenomeId = useSelector(getActiveGenomeId);
+  const genomeStats = useSelector(getActiveGenomeStats);
+  const genomeUIState = useSelector(getActiveGenomeUIState);
+  const exampleFocusObjects = useSelector((state: RootState) =>
+    getGenomeExampleFocusObjects(state, activeGenomeId)
+  );
+  const species = useSelector((state: RootState) =>
+    getCommittedSpeciesById(state, activeGenomeId)
+  );
+
   useEffect(() => {
-    if (!props.genomeStats && props.exampleFocusObjects?.length) {
-      props.fetchStatsForActiveGenome();
+    if (!genomeStats && exampleFocusObjects?.length) {
+      dispatch(fetchStatsForActiveGenome());
     }
-  }, [props.genomeStats, props.activeGenomeId, props.exampleFocusObjects]);
+  }, [genomeStats, activeGenomeId, exampleFocusObjects]);
 
   const { trackSpeciesPageExampleLink, trackSpeciesStatsSectionOpen } =
     useSpeciesAnalytics();
 
-  const expandedSections = props.genomeUIState
-    ? props.genomeUIState.expandedSections
-    : [];
+  const expandedSections = genomeUIState ? genomeUIState.expandedSections : [];
 
-  if (
-    !props.genomeStats ||
-    !props.exampleFocusObjects?.length ||
-    !props.species
-  ) {
+  if (!genomeStats || !exampleFocusObjects?.length || !species) {
     return null;
   }
 
@@ -201,19 +193,23 @@ const SpeciesMainViewStats = (props: Props) => {
     isExpanded: boolean
   ) => {
     if (isExpanded) {
-      props.species && trackSpeciesStatsSectionOpen(props.species, section);
-      props.setExpandedSections([...expandedSections, section]);
+      species && trackSpeciesStatsSectionOpen(species, section);
+      dispatch(setActiveGenomeExpandedSections([...expandedSections, section]));
     } else {
-      props.setExpandedSections(expandedSections.filter((s) => s !== section));
+      dispatch(
+        setActiveGenomeExpandedSections(
+          expandedSections.filter((s) => s !== section)
+        )
+      );
     }
   };
 
   return (
     <div className={styles.statsWrapper}>
-      {props.genomeStats.map((statsSection, key) => {
+      {genomeStats.map((statsSection, key) => {
         const contentProps = {
           statsSection,
-          species: props.species as CommittedItem,
+          species: species as CommittedItem,
           trackSpeciesPageExampleLink
         };
         return (
@@ -237,28 +233,4 @@ const SpeciesMainViewStats = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getActiveGenomeId(state);
-
-  return {
-    activeGenomeId,
-    genomeStats: getActiveGenomeStats(state),
-    genomeUIState: getActiveGenomeUIState(state),
-    exampleFocusObjects: activeGenomeId
-      ? getGenomeExampleFocusObjects(state, activeGenomeId)
-      : [],
-    species: activeGenomeId
-      ? getCommittedSpeciesById(state, activeGenomeId)
-      : null
-  };
-};
-
-const mapDispatchToProps = {
-  fetchStatsForActiveGenome,
-  setExpandedSections: setActiveGenomeExpandedSections
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SpeciesMainViewStats);
+export default SpeciesMainViewStats;

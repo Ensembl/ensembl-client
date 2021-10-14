@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { getTrackPanelModalView } from '../trackPanelSelectors';
 import { closeTrackPanelModal } from '../trackPanelActions';
@@ -29,19 +29,14 @@ import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
-import { RootState } from 'src/store';
-
 import styles from './TrackPanelModal.scss';
 
-export type TrackPanelModalProps = {
-  trackPanelModalView: string;
-  closeTrackPanelModal: () => void;
-  closeDrawer: () => void;
-};
+export const TrackPanelModal = () => {
+  const trackPanelModalView = useSelector(getTrackPanelModalView);
+  const dispatch = useDispatch();
 
-export const TrackPanelModal = (props: TrackPanelModalProps) => {
   const getModalView = () => {
-    switch (props.trackPanelModalView) {
+    switch (trackPanelModalView) {
       case 'search':
         return <TrackPanelSearch />;
       case 'tracks-manager':
@@ -60,8 +55,8 @@ export const TrackPanelModal = (props: TrackPanelModalProps) => {
   };
 
   const onClose = () => {
-    props.closeDrawer();
-    props.closeTrackPanelModal();
+    dispatch(closeDrawer());
+    dispatch(closeTrackPanelModal());
   };
   return (
     <section className={styles.trackPanelModal}>
@@ -73,13 +68,4 @@ export const TrackPanelModal = (props: TrackPanelModalProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  trackPanelModalView: getTrackPanelModalView(state)
-});
-
-const mapDispatchToProps = {
-  closeTrackPanelModal,
-  closeDrawer
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(TrackPanelModal);
+export default TrackPanelModal;

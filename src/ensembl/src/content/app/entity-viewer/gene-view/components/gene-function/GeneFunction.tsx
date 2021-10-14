@@ -29,6 +29,7 @@ import {
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
@@ -63,6 +64,7 @@ const GeneFunction = (props: Props) => {
   const {
     gene: { transcripts }
   } = props;
+  const { trackTabChange } = useEntityViewerAnalytics();
 
   const changeTab = (tab: string) => {
     const match = [...GeneViewTabMap.entries()].find(
@@ -72,7 +74,7 @@ const GeneFunction = (props: Props) => {
     if (!match) {
       return;
     }
-
+    trackTabChange(tab);
     const [view] = match;
     const url = urlFor.entityViewer({
       genomeId,

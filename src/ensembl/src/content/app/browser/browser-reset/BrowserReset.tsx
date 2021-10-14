@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -26,24 +26,21 @@ import {
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
-
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';
 
 import { Status } from 'src/shared/types/status';
-import { RootState } from 'src/store';
 
 import styles from './BrowserReset.scss';
 
-export type BrowserResetProps = {
-  focusObjectId: string | null;
-  isActive: boolean;
-};
+export const BrowserReset = () => {
+  const isFocusObjectInDefaultPosition = useSelector(
+    isFocusObjectPositionDefault
+  );
+  const isDrawerOpened = useSelector(getIsDrawerOpened);
+  const focusObjectId = useSelector(getBrowserActiveEnsObjectId);
+  const isActive = !isFocusObjectInDefaultPosition && !isDrawerOpened;
 
-export const BrowserReset: FunctionComponent<BrowserResetProps> = (
-  props: BrowserResetProps
-) => {
-  const { focusObjectId } = props;
-
+  const dispatch = useDispatch();
   const { changeFocusObject } = useGenomeBrowser();
 
   if (!focusObjectId) {
@@ -51,11 +48,11 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   }
 
   const getResetIconStatus = () => {
-    return props.isActive ? Status.UNSELECTED : Status.DISABLED;
+    return isActive ? Status.UNSELECTED : Status.DISABLED;
   };
 
   const handleClick = () => {
-    changeFocusObject(focusObjectId);
+    dispatch(changeFocusObject(focusObjectId));
   };
 
   return (
@@ -70,13 +67,4 @@ export const BrowserReset: FunctionComponent<BrowserResetProps> = (
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const isFocusObjectInDefaultPosition = isFocusObjectPositionDefault(state);
-  const isDrawerOpened = getIsDrawerOpened(state);
-  return {
-    focusObjectId: getBrowserActiveEnsObjectId(state),
-    isActive: !isFocusObjectInDefaultPosition && !isDrawerOpened
-  };
-};
-
-export default connect(mapStateToProps)(BrowserReset);
+export default BrowserReset;

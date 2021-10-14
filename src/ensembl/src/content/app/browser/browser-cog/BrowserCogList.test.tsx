@@ -15,8 +15,11 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
-import faker from 'faker';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
 import { BrowserCogList } from './BrowserCogList';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
@@ -26,35 +29,120 @@ const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: mockGenomeBrowser
 }));
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
 jest.mock('./BrowserCog', () => () => <div id="browserCog" />);
+
+let mockState = createMockBrowserState();
+
+mockState = set('browser.trackConfig.trackConfigNames', {}, mockState);
+mockState = set('browser.trackConfig.trackConfigLabel', {}, mockState);
+mockState = set(
+  'browser.trackConfig.browserCogTrackList',
+  {
+    'track:gc': 100
+  },
+  mockState
+);
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserCogList />
+    </Provider>
+  );
+};
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  const defaultProps = {
-    browserActivated: true,
-    browserCogList: 0,
-    browserCogTrackList: { 'track:gc': faker.datatype.number() },
-    selectedCog: faker.lorem.words(),
-    updateCogList: jest.fn(),
-    updateCogTrackList: jest.fn(),
-    updateSelectedCog: jest.fn()
-  };
-
   describe('rendering', () => {
     it('contains <BrowserCog /> when browser is activated', () => {
-      const { container } = render(<BrowserCogList {...defaultProps} />);
+      const { container } = renderComponent(
+        set('browser.browserInfo.browserActivated', true, mockState)
+      );
       expect(container.querySelector('#browserCog')).toBeTruthy();
     });
 
     it('does not contain <BrowserCog /> when browser is not activated', () => {
-      const { container } = render(
-        <BrowserCogList {...defaultProps} browserActivated={false} />
-      );
+      const { container } = renderComponent();
       expect(container.querySelector('#browserCog')).toBeFalsy();
+    });
+  });
+
+  describe('behaviour', () => {
+    it('sends navigation message when track name setting in browser cog is updated', () => {
+      jest.spyOn(mockGenomeBrowser, 'send');
+      (mockGenomeBrowser.send as any).mockReset();
+      renderComponent(
+        set(
+          'browser.trackConfig.trackConfigNames',
+          { 'track:gc': true },
+          mockState
+        )
+      );
+
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
+        off: [],
+        on: ['track:gc:label', 'track:gc:names']
+      });
+
+      // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
+      // See a comment in BrowserCogList for explanation
+      // We expect this to be fixed later on.
+
+      renderComponent(
+        set(
+          'browser.trackConfig.trackConfigNames',
+          { 'track:gc': false },
+          mockState
+        )
+      );
+
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
+        off: ['track:gc:label'],
+        on: ['track:gc:names']
+      });
+    });
+
+    it('sends navigation message when track label setting in browser cog is updated', () => {
+      jest.spyOn(mockGenomeBrowser, 'send');
+      (mockGenomeBrowser.send as any).mockReset();
+
+      renderComponent(
+        set(
+          'browser.trackConfig.trackConfigLabel',
+          { 'track:gc': true },
+          mockState
+        )
+      );
+
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
+        off: ['track:gc:label'],
+        on: ['track:gc:names']
+      });
+
+      // Notice that the ":names" and ":label" suffixes, counterintuitively, mean the opposite
+      // See a comment in BrowserCogList for explanation
+      // We expect this to be fixed later on.
+      renderComponent(
+        set(
+          'browser.trackConfig.trackConfigNames',
+          { 'track:gc': false },
+          mockState
+        )
+      );
+      expect(mockGenomeBrowser.send).toHaveBeenLastCalledWith('bpane', {
+        off: ['track:gc:label'],
+        on: ['track:gc:names']
+      });
     });
   });
 });

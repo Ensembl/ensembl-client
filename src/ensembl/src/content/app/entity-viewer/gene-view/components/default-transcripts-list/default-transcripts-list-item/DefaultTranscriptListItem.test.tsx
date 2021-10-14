@@ -31,7 +31,7 @@ import {
   createGene,
   createRulerTicks
 } from 'tests/fixtures/entity-viewer/gene';
-import { updateExpandedTranscripts } from 'ensemblRoot/src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import { updateExpandedTranscripts } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 jest.mock('../transcripts-list-item-info/TranscriptsListItemInfo', () => () => (
   <div data-test-id="transcriptsListItemInfo">TranscriptsListItemInfo</div>

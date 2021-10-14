@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
@@ -27,15 +27,10 @@ import {
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
-import {
-  updateCogList,
-  updateCogTrackList,
-  updateSelectedCog
-} from '../browserActions';
+import { updateSelectedCog } from '../browserActions';
 
 import BrowserCog from './BrowserCog';
 
-import { RootState } from 'src/store';
 import { CogList } from '../browserState';
 import { TrackSummaryList, TrackSummary } from 'ensembl-genome-browser';
 
@@ -52,7 +47,14 @@ type BrowserCogListProps = {
 };
 
 export const BrowserCogList = (props: BrowserCogListProps) => {
-  const { browserCogTrackList } = props;
+  const browserActivated = useSelector(getBrowserActivated);
+  const browserCogList = useSelector(getBrowserCogList);
+  const browserCogTrackList = useSelector(getBrowserCogTrackList);
+  const selectedCog = useSelector(getBrowserSelectedCog);
+
+  const dispatch = useDispatch();
+
+  const { genomeBrowser } = useGenomeBrowser();
 
   const listenBpaneScroll = (trackSummaryList: TrackSummaryList) => {
     // const { delta_y, cogList } = payload;
@@ -72,8 +74,6 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     }
   };
 
-  const { genomeBrowser } = useGenomeBrowser();
-
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       [IncomingActionType.TRACK_SUMMARY],
@@ -90,19 +90,19 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     return (
       <div key={name} className={styles.browserCogOuter} style={posStyle}>
         <BrowserCog
-          cogActivated={props.selectedCog === name}
+          cogActivated={selectedCog === name}
           trackId={name}
-          updateSelectedCog={props.updateSelectedCog}
+          updateSelectedCog={() => dispatch(updateSelectedCog)}
         />
       </div>
     );
   });
 
   const transformStyle = {
-    transform: 'translate(0,' + props.browserCogList + 'px)'
+    transform: 'translate(0,' + browserCogList + 'px)'
   };
 
-  return props.browserActivated ? (
+  return browserActivated ? (
     <div className={styles.browserTrackConfigOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>
@@ -113,17 +113,4 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
   ) : null;
 };
 
-const mapStateToProps = (state: RootState) => ({
-  browserActivated: getBrowserActivated(state),
-  browserCogList: getBrowserCogList(state),
-  browserCogTrackList: getBrowserCogTrackList(state),
-  selectedCog: getBrowserSelectedCog(state)
-});
-
-const mapDispatchToProps = {
-  updateCogList,
-  updateCogTrackList,
-  updateSelectedCog
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BrowserCogList);
+export default BrowserCogList;
