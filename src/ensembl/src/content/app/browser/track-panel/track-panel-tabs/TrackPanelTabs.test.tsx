@@ -15,33 +15,45 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { TrackPanelTabs, TrackPanelTabsProps } from './TrackPanelTabs';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+import * as drawerActions from 'src/content/app/browser/drawer/drawerActions';
+
+import { TrackPanelTabs } from './TrackPanelTabs';
 
 import { TrackSet } from '../trackPanelConfig';
-import { createEnsObject } from 'tests/fixtures/ens-object';
+
+const mockState = createMockBrowserState();
+const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <TrackPanelTabs />
+    </Provider>
+  );
+};
 
 describe('<TrackPanelTabs />', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    jest.restoreAllMocks();
   });
-
-  const defaultProps: TrackPanelTabsProps = {
-    closeDrawer: jest.fn(),
-    ensObject: createEnsObject(),
-    isDrawerOpened: true,
-    selectTrackPanelTab: jest.fn(),
-    selectedTrackPanelTab: TrackSet.GENOMIC,
-    toggleTrackPanel: jest.fn(),
-    isTrackPanelModalOpened: false,
-    isTrackPanelOpened: false
-  };
 
   describe('rendering', () => {
     it('contains all track panel tabs', () => {
-      const { container } = render(<TrackPanelTabs {...defaultProps} />);
+      const { container } = renderComponent();
       const tabValues = Object.values(TrackSet);
       const tabs = [...container.querySelectorAll('.trackPanelTab')];
 
@@ -54,43 +66,56 @@ describe('<TrackPanelTabs />', () => {
   describe('behaviour', () => {
     describe('on track panel tab click', () => {
       it('selects track panel tab', () => {
-        const { container } = render(<TrackPanelTabs {...defaultProps} />);
+        const { container } = renderComponent();
         const tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
+        jest.spyOn(trackPanelActions, 'selectTrackPanelTab');
+
         userEvent.click(tab);
-        expect(defaultProps.selectTrackPanelTab).toHaveBeenCalledWith(
+        expect(trackPanelActions.selectTrackPanelTab).toHaveBeenCalledWith(
           Object.values(TrackSet)[0]
         );
       });
 
       it('opens track panel if it is closed', () => {
-        const { container, rerender } = render(
-          <TrackPanelTabs {...defaultProps} isTrackPanelOpened={true} />
-        );
-        const tab = container.querySelector('.trackPanelTab') as HTMLElement;
+        let { container } = renderComponent();
+        let tab = container.querySelector('.trackPanelTab') as HTMLElement;
+
+        jest.spyOn(trackPanelActions, 'toggleTrackPanel');
 
         userEvent.click(tab);
-        expect(defaultProps.toggleTrackPanel).not.toHaveBeenCalled();
+        expect(trackPanelActions.toggleTrackPanel).not.toHaveBeenCalled();
 
-        rerender(
-          <TrackPanelTabs {...defaultProps} isTrackPanelOpened={false} />
-        );
+        container = renderComponent(
+          set(
+            `browser.trackPanel.${activeGenomeId}.isTrackPanelOpened`,
+            false,
+            mockState
+          )
+        ).container;
+        tab = container.querySelector('.trackPanelTab') as HTMLElement;
+
         userEvent.click(tab);
-        expect(defaultProps.toggleTrackPanel).toHaveBeenCalledWith(true);
+        expect(trackPanelActions.toggleTrackPanel).toHaveBeenCalledWith(true);
       });
 
       it('closes drawer if it is opened', () => {
-        const { container, rerender } = render(
-          <TrackPanelTabs {...defaultProps} isDrawerOpened={false} />
-        );
-        const tab = container.querySelector('.trackPanelTab') as HTMLElement;
+        let { container } = renderComponent();
+
+        let tab = container.querySelector('.trackPanelTab') as HTMLElement;
+
+        jest.spyOn(drawerActions, 'closeDrawer');
 
         userEvent.click(tab);
-        expect(defaultProps.closeDrawer).not.toHaveBeenCalled();
+        expect(drawerActions.closeDrawer).not.toHaveBeenCalled();
 
-        rerender(<TrackPanelTabs {...defaultProps} isDrawerOpened={true} />);
+        container = renderComponent(
+          set(`drawer.isDrawerOpened.${activeGenomeId}`, true, mockState)
+        ).container;
+        tab = container.querySelector('.trackPanelTab') as HTMLElement;
+
         userEvent.click(tab);
-        expect(defaultProps.closeDrawer).toHaveBeenCalledTimes(1);
+        expect(drawerActions.closeDrawer).toHaveBeenCalledTimes(1);
       });
     });
   });

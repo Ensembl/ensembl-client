@@ -15,19 +15,17 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { push, Push } from 'connected-react-router';
+import { push } from 'connected-react-router';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getSelectedGeneViewTabs } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSelectors';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
 
-import { RootState } from 'src/store';
 import {
   GeneViewTabMap,
   GeneViewTabName,
@@ -49,15 +47,11 @@ const tabClassNames = {
   selected: styles.selectedTabName
 };
 
-type Props = {
-  isSidebarOpen: boolean;
-  selectedTabName: GeneRelationshipsTabName | null;
-  push: Push;
-};
-
-const GeneRelationships = (props: Props) => {
+const GeneRelationships = () => {
   const { genomeId, entityId } = useParams() as { [key: string]: string };
-  let { selectedTabName } = props;
+  const selectedTabNameFromRedux = useSelector(getSelectedGeneViewTabs)
+    .secondaryTab as GeneRelationshipsTabName;
+  const dispatch = useDispatch();
 
   const changeTab = (tab: string) => {
     const match = [...GeneViewTabMap.entries()].find(
@@ -72,20 +66,16 @@ const GeneRelationships = (props: Props) => {
       entityId,
       view
     });
-    props.push(url);
+
+    dispatch(push(url));
   };
 
   // If the selectedTab is disabled or if there is no selectedtab, pick the first available tab
-  const selectedTabIndex = tabsData.findIndex(
-    (tab) => tab.title === selectedTabName
-  );
-
-  if (selectedTabIndex === -1 || tabsData[selectedTabIndex].isDisabled) {
-    const nextAvailableTab = tabsData.find((tab) => !tab.isDisabled);
-
-    selectedTabName =
-      (nextAvailableTab?.title as GeneRelationshipsTabName) || null;
-  }
+  const selectedTab =
+    tabsData.find(
+      (tab) => tab.title === selectedTabNameFromRedux && !tab.isDisabled
+    ) || tabsData.find((tab) => !tab.isDisabled);
+  const selectedTabName = selectedTab?.title || null;
 
   const TabWrapper = () => {
     return (
@@ -120,14 +110,4 @@ const GeneRelationships = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  isSidebarOpen: isEntityViewerSidebarOpen(state),
-  selectedTabName: getSelectedGeneViewTabs(state)
-    .secondaryTab as GeneRelationshipsTabName
-});
-
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(GeneRelationships);
+export default GeneRelationships;

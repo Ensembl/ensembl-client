@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 
 import { getCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
@@ -26,15 +26,9 @@ import { HelpPopupButton } from 'src/shared/components/help-popup';
 import SelectedSpecies from 'src/shared/components/selected-species/SelectedSpecies';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
-import { RootState } from 'src/store';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 
 import styles from './SpeciesSelectorAppBar.scss';
-
-type Props = {
-  selectedSpecies: CommittedItem[];
-  push: (url: string) => void;
-};
 
 export const placeholderMessage = `
 Search for a species, select from popular species or browse species by data
@@ -44,10 +38,12 @@ const PlaceholderMessage = () => (
   <div className={styles.placeholderMessage}>{placeholderMessage}</div>
 );
 
-export const SpeciesSelectorAppBar = (props: Props) => {
+export const SpeciesSelectorAppBar = () => {
+  const selectedSpecies = useSelector(getCommittedSpecies);
+
   const mainContent =
-    props.selectedSpecies.length > 0 ? (
-      <SelectedSpeciesList {...props} />
+    selectedSpecies.length > 0 ? (
+      <SelectedSpeciesList selectedSpecies={selectedSpecies} />
     ) : (
       <PlaceholderMessage />
     );
@@ -61,13 +57,15 @@ export const SpeciesSelectorAppBar = (props: Props) => {
   );
 };
 
-const SelectedSpeciesList = (props: Props) => {
+const SelectedSpeciesList = (props: { selectedSpecies: CommittedItem[] }) => {
+  const dispatch = useDispatch();
+
   const showSpeciesPage = (genome_id: string) => {
     const speciesPageUrl = urlFor.speciesPage({
       genomeId: genome_id
     });
 
-    props.push(speciesPageUrl);
+    dispatch(push(speciesPageUrl));
   };
 
   const selectedSpecies = props.selectedSpecies.map((species) => (
@@ -81,15 +79,4 @@ const SelectedSpeciesList = (props: Props) => {
   return <SpeciesTabsWrapper speciesTabs={selectedSpecies} />;
 };
 
-const mapStateToProps = (state: RootState) => ({
-  selectedSpecies: getCommittedSpecies(state)
-});
-
-const mapDispatchToProps = {
-  push
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SpeciesSelectorAppBar);
+export default SpeciesSelectorAppBar;

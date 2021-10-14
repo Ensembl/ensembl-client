@@ -16,13 +16,23 @@
 
 import faker from 'faker';
 
-import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
-import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
-import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
 import {
   getChrLocationStr,
   RegionValidationMessages
 } from 'src/content/app/browser/browserHelper';
+import {
+  createGenomeCategories,
+  createGenomeKaryotype
+} from 'tests/fixtures/genomes';
+import { createTrackStates } from 'tests/fixtures/track-panel';
+
+import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
+import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
+import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
+import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { Strand } from 'src/shared/types/thoas/strand';
+import { LoadingState } from 'src/shared/types/loading-state';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),
@@ -130,4 +140,111 @@ export const createChrLocationValues = () => {
   const stringValue = getChrLocationStr(tupleValue);
 
   return { stringValue, tupleValue };
+};
+
+export const createMockBrowserState = () => {
+  return {
+    browser: {
+      browserInfo: {
+        browserActivated: false
+      },
+      browserEntity: {
+        activeGenomeId: 'fake_genome_id_1',
+        activeEnsObjectIds: {
+          fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'
+        },
+        trackStates: createTrackStates()
+      },
+      browserLocation: {
+        chrLocations: {
+          fake_genome_id_1: ['13', 32304804, 32384454]
+        },
+        actualChrLocations: {},
+        regionEditorActive: false,
+        regionFieldActive: false,
+        isObjectInDefaultPosition: false
+      },
+      browserNav: {
+        browserNavOpenState: {},
+        browserNavIconStates: {
+          'navigate-up': false,
+          'navigate-right': false,
+          'navigate-down': true,
+          'navigate-left': true,
+          'zoom-out': false,
+          'zoom-in': false
+        }
+      },
+      trackConfig: {
+        applyToAll: false,
+        browserCogList: 0,
+        browserCogTrackList: createCogTrackList(),
+        selectedCog: 'track:gc',
+        trackConfigLabel: createTrackConfigLabel(),
+        trackConfigNames: createTrackConfigNames()
+      },
+      trackPanel: {
+        fake_genome_id_1: {
+          isTrackPanelModalOpened: false,
+          bookmarks: [],
+          previouslyViewedObjects: [
+            {
+              genome_id: 'fake_genome_id_1',
+              object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_2',
+              type: 'gene',
+              label: 'Fake Gene Stable ID 2'
+            }
+          ],
+          selectedTrackPanelTab: TrackSet.GENOMIC,
+          trackPanelModalView: 'search',
+          highlightedTrackId: '',
+          isTrackPanelOpened: true,
+          collapsedTrackIds: []
+        }
+      }
+    },
+    drawer: {
+      isDrawerOpened: {
+        fake_genome_id_1: false
+      },
+      drawerView: {},
+      activeDrawerTrackIds: {}
+    },
+    global: {
+      breakpointWidth: BreakpointWidth.DESKTOP,
+      scrollPosition: {}
+    },
+    ensObjects: {
+      'fake_genome_id_1:gene:fake_gene_stable_id_1': {
+        data: {
+          type: 'gene',
+          object_id: 'fake_genome_id_1:gene:fake_gene_stable_id_1',
+          genome_id: 'fake_genome_id_1',
+          label: 'BRCA2',
+          location: {
+            chromosome: '13',
+            start: 32315086,
+            end: 32400268
+          },
+          stable_id: 'fake_gene_stable_id',
+          versioned_stable_id: 'fake_gene_stable_id.17',
+          bio_type: 'Protein coding',
+          strand: Strand.FORWARD
+        },
+        loadingStatus: LoadingState.SUCCESS
+      }
+    },
+    genome: {
+      genomeKaryotype: {
+        genomeKaryotypeData: {
+          fake_genome_id_1: createGenomeKaryotype()
+        }
+      },
+      genomeTrackCategories: {
+        genomeTrackCategoriesData: {
+          fake_genome_id_1: createGenomeCategories()
+        }
+      }
+    }
+  };
 };

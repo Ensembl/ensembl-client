@@ -15,7 +15,14 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
+
+import { createMockBrowserState } from 'tests/fixtures/browser';
+import * as browserActions from '../browserActions';
 
 import { BrowserNavBarRegionSwitcher } from './BrowserNavBarRegionSwitcher';
 
@@ -30,10 +37,19 @@ jest.mock(
   () => () => <div className="browserRegionField" />
 );
 
-const props = {
-  viewportWidth: BreakpointWidth.TABLET,
-  toggleRegionEditorActive: jest.fn(),
-  toggleRegionFieldActive: jest.fn()
+let mockState = createMockBrowserState();
+mockState = set('global.breakpointWidth', BreakpointWidth.TABLET, mockState);
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserNavBarRegionSwitcher />
+    </Provider>
+  );
 };
 
 describe('BrowserNavBarRegionSwitcher', () => {
@@ -43,18 +59,15 @@ describe('BrowserNavBarRegionSwitcher', () => {
 
   describe('rendering', () => {
     it('renders only region field on smaller screens', () => {
-      const { container } = render(<BrowserNavBarRegionSwitcher {...props} />);
+      const { container } = renderComponent();
 
       expect(container.querySelector('.browserRegionField')).toBeTruthy();
       expect(container.querySelector('.browserRegionEditor')).toBeFalsy();
     });
 
     it('renders both region field and region editor on big desktop screens', () => {
-      const { container } = render(
-        <BrowserNavBarRegionSwitcher
-          {...props}
-          viewportWidth={BreakpointWidth.BIG_DESKTOP}
-        />
+      const { container } = renderComponent(
+        set('global.breakpointWidth', BreakpointWidth.BIG_DESKTOP, mockState)
       );
 
       expect(container.querySelector('.browserRegionField')).toBeTruthy();
@@ -63,14 +76,17 @@ describe('BrowserNavBarRegionSwitcher', () => {
   });
 
   it('calls cleanup functions on unmount', () => {
-    const { unmount } = render(<BrowserNavBarRegionSwitcher {...props} />);
+    const { unmount } = renderComponent();
 
-    expect(props.toggleRegionEditorActive).not.toHaveBeenCalled();
-    expect(props.toggleRegionFieldActive).not.toHaveBeenCalled();
+    jest.spyOn(browserActions, 'toggleRegionEditorActive');
+    jest.spyOn(browserActions, 'toggleRegionFieldActive');
+
+    expect(browserActions.toggleRegionEditorActive).not.toHaveBeenCalled();
+    expect(browserActions.toggleRegionFieldActive).not.toHaveBeenCalled();
 
     unmount();
 
-    expect(props.toggleRegionEditorActive).toHaveBeenCalledWith(false);
-    expect(props.toggleRegionFieldActive).toHaveBeenCalledWith(false);
+    expect(browserActions.toggleRegionEditorActive).toHaveBeenCalledWith(false);
+    expect(browserActions.toggleRegionFieldActive).toHaveBeenCalledWith(false);
   });
 });

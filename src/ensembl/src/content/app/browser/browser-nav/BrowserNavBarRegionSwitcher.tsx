@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import BrowserRegionEditor from '../browser-region-editor/BrowserRegionEditor';
 import BrowserRegionField from '../browser-region-field/BrowserRegionField';
@@ -28,22 +28,18 @@ import {
 } from '../browserActions';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { RootState } from 'src/store';
 
 import styles from './BrowserNavBarRegionSwitcher.scss';
 
-type Props = {
-  viewportWidth: BreakpointWidth;
-  toggleRegionEditorActive: (isActive: boolean) => void;
-  toggleRegionFieldActive: (isActive: boolean) => void;
-};
+export const BrowserNavBarRegionSwitcher = () => {
+  const viewportWidth = useSelector(getBreakpointWidth);
+  const dispatch = useDispatch();
 
-export const BrowserNavBarRegionSwitcher = (props: Props) => {
   // cleanup on unmount
   useEffect(
     () => () => {
-      props.toggleRegionEditorActive(false);
-      props.toggleRegionFieldActive(false);
+      dispatch(toggleRegionEditorActive(false));
+      dispatch(toggleRegionFieldActive(false));
     },
     []
   );
@@ -53,7 +49,7 @@ export const BrowserNavBarRegionSwitcher = (props: Props) => {
       <div className={styles.regionFieldWrapper}>
         <BrowserRegionField />
       </div>
-      {props.viewportWidth >= BreakpointWidth.BIG_DESKTOP && (
+      {viewportWidth >= BreakpointWidth.BIG_DESKTOP && (
         <div className={styles.regionEditorWrapper}>
           <BrowserRegionEditor />
         </div>
@@ -62,16 +58,4 @@ export const BrowserNavBarRegionSwitcher = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  viewportWidth: getBreakpointWidth(state)
-});
-
-const mapDispatchToProps = {
-  toggleRegionEditorActive,
-  toggleRegionFieldActive
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(BrowserNavBarRegionSwitcher);
+export default BrowserNavBarRegionSwitcher;

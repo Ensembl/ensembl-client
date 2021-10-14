@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import BrowserNavIcon from './BrowserNavIcon';
 import Overlay from 'src/shared/components/overlay/Overlay';
@@ -26,38 +26,27 @@ import {
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
-import { BrowserNavIconStates } from '../browserState';
-
-import { RootState } from 'src/store';
 
 import styles from './BrowserNavBarControls.scss';
 
-type Props = {
-  browserNavIconStates: BrowserNavIconStates;
-  isDisabled: boolean;
+export const BrowserNavBarControls = () => {
+  const isRegionEditorActive = useSelector(getRegionEditorActive);
+  const isRegionFieldActive = useSelector(getRegionFieldActive);
+  const browserNavIconStates = useSelector(getBrowserNavIconStates);
+  const isDisabled = isRegionEditorActive || isRegionFieldActive;
+
+  return (
+    <div className={styles.browserNavBarControls}>
+      {browserNavConfig.map((item: BrowserNavItem) => (
+        <BrowserNavIcon
+          key={item.name}
+          browserNavItem={item}
+          enabled={browserNavIconStates[item.name]}
+        />
+      ))}
+      {isDisabled && <Overlay className={styles.overlay} />}
+    </div>
+  );
 };
 
-export const BrowserNavBarControls = (props: Props) => (
-  <div className={styles.browserNavBarControls}>
-    {browserNavConfig.map((item: BrowserNavItem) => (
-      <BrowserNavIcon
-        key={item.name}
-        browserNavItem={item}
-        enabled={props.browserNavIconStates[item.name]}
-      />
-    ))}
-    {props.isDisabled && <Overlay className={styles.overlay} />}
-  </div>
-);
-
-const mapStateToProps = (state: RootState) => {
-  const isDisabled =
-    getRegionEditorActive(state) || getRegionFieldActive(state);
-
-  return {
-    browserNavIconStates: getBrowserNavIconStates(state),
-    isDisabled
-  };
-};
-
-export default connect(mapStateToProps)(BrowserNavBarControls);
+export default BrowserNavBarControls;

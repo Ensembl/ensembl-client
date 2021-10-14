@@ -19,7 +19,7 @@ import { useLocation } from 'react-router';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
-import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
+import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import HelpMenu from './components/help-menu/HelpMenu';
 import HelpLanding from './components/help-landing/HelpLanding';
 import {

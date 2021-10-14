@@ -17,7 +17,7 @@
 import React from 'react';
 import upperFirst from 'lodash/upperFirst';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
@@ -31,19 +31,13 @@ import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
-import { PreviouslyViewedObject } from 'src/content/app/browser/track-panel/trackPanelState';
-import { RootState } from 'src/store';
-
 import styles from './DrawerBookmarks.scss';
 
-export type DrawerBookmarksProps = {
-  previouslyViewedObjects: PreviouslyViewedObject[];
-  closeTrackPanelModal: () => void;
-  closeDrawer: () => void;
-};
-
-const DrawerBookmarks = (props: DrawerBookmarksProps) => {
-  const previouslyViewedObjects = props.previouslyViewedObjects.slice(20);
+const DrawerBookmarks = () => {
+  const previouslyViewedObjects = useSelector(
+    getActiveGenomePreviouslyViewedObjects
+  ).slice(20);
+  const dispatch = useDispatch();
 
   const onClick = (objectType: string, index: number) => {
     analyticsTracking.trackEvent({
@@ -53,8 +47,8 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
       value: index + 1
     });
 
-    props.closeTrackPanelModal();
-    props.closeDrawer();
+    dispatch(closeTrackPanelModal());
+    dispatch(closeDrawer());
   };
 
   return (
@@ -91,13 +85,4 @@ const DrawerBookmarks = (props: DrawerBookmarksProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  previouslyViewedObjects: getActiveGenomePreviouslyViewedObjects(state)
-});
-
-const mapDispatchToProps = {
-  closeTrackPanelModal,
-  closeDrawer
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(DrawerBookmarks);
+export default DrawerBookmarks;
