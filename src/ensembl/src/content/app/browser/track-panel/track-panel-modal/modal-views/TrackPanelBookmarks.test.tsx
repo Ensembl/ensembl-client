@@ -143,7 +143,7 @@ const mockState = {
 const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
 
   return render(
@@ -159,7 +159,7 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('renders previously viewed links', () => {
-    wrapInRedux();
+    renderComponent();
     const geneLink = screen.getByText(geneId).closest('a') as HTMLElement;
     const regionLink = screen.getByText(region).closest('a') as HTMLElement;
 
@@ -171,7 +171,7 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('shows link to view more only when there are more than 20 objects', () => {
-    let wrapper = wrapInRedux(
+    let wrapper = renderComponent(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
         times(20, () => createRandomPreviouslyViewedObject()),
@@ -184,7 +184,7 @@ describe('<TrackPanelBookmarks />', () => {
     ).toBeFalsy();
 
     // Add 21 links to see if ellipsis is shown
-    wrapper = wrapInRedux(
+    wrapper = renderComponent(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
         times(21, () => createRandomPreviouslyViewedObject()),
@@ -198,7 +198,7 @@ describe('<TrackPanelBookmarks />', () => {
   });
 
   it('changes drawer view and toggles drawer when the "more" link is clicked', () => {
-    const { container } = wrapInRedux(
+    const { container } = renderComponent(
       set(
         `browser.trackPanel.${genomeId}.previouslyViewedObjects`,
         times(21, () => createRandomPreviouslyViewedObject()),

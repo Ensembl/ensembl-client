@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import pickBy from 'lodash/pickBy';
 import Zmenu from './Zmenu';
 
@@ -33,7 +33,6 @@ import {
 
 type Props = {
   browserRef: React.RefObject<HTMLDivElement>;
-  changeHighlightedTrackId: (trackId: string) => void;
 };
 
 // when a zmenu is created, it’s assigned an id,
@@ -44,6 +43,8 @@ type StateZmenu = {
 };
 
 const ZmenuController = (props: Props) => {
+  const dispatch = useDispatch();
+
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
   useEffect(() => {
@@ -72,7 +73,7 @@ const ZmenuController = (props: Props) => {
       content: payload.content
     };
 
-    props.changeHighlightedTrackId(payload.content[0].track_id);
+    dispatch(changeHighlightedTrackId(payload.content[0].track_id));
 
     setZmenus({
       ...zmenus,
@@ -81,7 +82,7 @@ const ZmenuController = (props: Props) => {
   };
 
   const handleZmenuDestroy = (payload: ZmenuDestroyPayload) => {
-    props.changeHighlightedTrackId('');
+    dispatch(changeHighlightedTrackId(''));
     setZmenus(pickBy(zmenus, (value, key) => key !== payload.id));
   };
 
@@ -123,8 +124,5 @@ const ZmenuController = (props: Props) => {
 
   return <>{zmenuElements}</>;
 };
-const mapDispatchToProps = {
-  changeHighlightedTrackId
-};
 
-export default connect(undefined, mapDispatchToProps)(ZmenuController);
+export default ZmenuController;

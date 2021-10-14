@@ -21,7 +21,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getQueryParamsMap } from 'src/global/globalHelper';
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
@@ -64,7 +63,9 @@ const useBrowserRouting = () => {
   const dispatch = useDispatch();
 
   const { genomeId } = params;
-  const { focus = null, location = null } = getQueryParamsMap(search);
+  const urlSearchParams = new URLSearchParams(search);
+  const focus = urlSearchParams.get('focus') || null;
+  const location = urlSearchParams.get('location') || null;
 
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
@@ -160,7 +161,7 @@ const useBrowserRouting = () => {
       // back to the page from which they have navigated to the current one. If the `push` method is used,
       // the user will not be able to get back past this page, because the url without genome id will remain
       // in the history, and the user will be forcefully redirected to the url with the genome id.
-      // 
+      //
       // NOTE: the logic will likely change in the future when /genome-browser without the selected genome id
       // becomes a valid searchable page in its own right.
       const historyMethod = params.genomeId ? push : replace;

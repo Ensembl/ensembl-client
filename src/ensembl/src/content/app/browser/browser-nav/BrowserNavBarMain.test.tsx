@@ -15,10 +15,16 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import set from 'lodash/fp/set';
 
-import { BrowserNavBarMain, BrowserNavBarMainProps } from './BrowserNavBarMain';
+import { createMockBrowserState } from 'tests/fixtures/browser';
+
+import { BrowserNavBarMain } from './BrowserNavBarMain';
 
 import { BreakpointWidth } from 'src/global/globalConfig';
 
@@ -30,8 +36,19 @@ jest.mock('./BrowserNavBarRegionSwitcher', () => () => (
   <div className="browserNavBarRegionSwitcher" />
 ));
 
-const props: BrowserNavBarMainProps = {
-  viewportWidth: BreakpointWidth.TABLET
+const mockState = createMockBrowserState();
+
+const mockStore = configureMockStore([thunk]);
+
+let store: ReturnType<typeof mockStore>;
+
+const renderComponent = (state: typeof mockState = mockState) => {
+  store = mockStore(state);
+  return render(
+    <Provider store={store}>
+      <BrowserNavBarMain />
+    </Provider>
+  );
 };
 
 describe('BrowserNavBarMain', () => {
@@ -40,13 +57,15 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('does not render chromosome visualization by default for screens smaller than laptops', () => {
-    const { container } = render(<BrowserNavBarMain {...props} />);
+    const { container } = renderComponent(
+      set('global.breakpointWidth', BreakpointWidth.TABLET, mockState)
+    );
     expect(container.querySelector('.chromosomeNavigator')).toBeFalsy();
   });
 
   it('renders chromosome visualization by default for laptops or bigger screens', () => {
-    const { container } = render(
-      <BrowserNavBarMain {...props} viewportWidth={BreakpointWidth.LAPTOP} />
+    const { container } = renderComponent(
+      set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
 
     expect(container.querySelector('.chromosomeNavigator')).toBeTruthy();
@@ -54,8 +73,8 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('renders RegionSwitcher when user clicks on Change', () => {
-    const { container } = render(
-      <BrowserNavBarMain {...props} viewportWidth={BreakpointWidth.LAPTOP} />
+    const { container } = renderComponent(
+      set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
 
     const changeButton = container.querySelector(
@@ -70,8 +89,8 @@ describe('BrowserNavBarMain', () => {
   });
 
   it('renders chromosome visualization when user closes RegionSwitcher', () => {
-    const { container } = render(
-      <BrowserNavBarMain {...props} viewportWidth={BreakpointWidth.LAPTOP} />
+    const { container } = renderComponent(
+      set('global.breakpointWidth', BreakpointWidth.LAPTOP, mockState)
     );
 
     const changeButton = container.querySelector(

@@ -17,7 +17,6 @@
 import { RootState } from 'src/store';
 import { ChrLocation, defaultBrowserNavIconsState } from './browserState';
 
-import { getQueryParamsMap } from 'src/global/globalHelper';
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
@@ -60,10 +59,6 @@ export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
     ? state.browser.browserEntity.trackStates[activeGenomeId]
     : null;
 };
-
-export const getBrowserQueryParams = (
-  state: RootState
-): { [key: string]: string } => getQueryParamsMap(state.router.location.search);
 
 export const getBrowserNavOpenState = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);

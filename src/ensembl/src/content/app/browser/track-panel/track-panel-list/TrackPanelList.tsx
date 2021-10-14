@@ -15,18 +15,12 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
-import { TrackSet, BrowserTrackStates } from '../trackPanelConfig';
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
-import {
-  EnsObjectTrack,
-  EnsObject
-} from 'src/shared/state/ens-object/ensObjectTypes';
-import { RootState } from 'src/store';
-import { getIsDrawerOpened } from '../../drawer/drawerSelectors';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
   getBrowserActiveEnsObject,
   getBrowserTrackStates,
@@ -50,23 +44,14 @@ import { Status } from 'src/shared/types/status';
 
 import styles from './TrackPanelList.scss';
 
-export type TrackPanelListProps = {
-  activeGenomeId: string | null;
-  isDrawerOpened: boolean;
-  activeEnsObject: EnsObject | null;
-  selectedTrackPanelTab: TrackSet;
-  genomeTrackCategories: GenomeTrackCategory[];
-  trackStates: BrowserTrackStates;
-};
+export const TrackPanelList = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
+  const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
+  const genomeTrackCategories = useSelector(getGenomeTrackCategoriesById);
+  const trackStates = useSelector(getBrowserTrackStates);
 
-export const TrackPanelList = (props: TrackPanelListProps) => {
-  const {
-    activeGenomeId,
-    activeEnsObject,
-    selectedTrackPanelTab,
-    genomeTrackCategories
-  } = props;
-  const currentTrackCategories = genomeTrackCategories.filter(
+  const currentTrackCategories = genomeTrackCategories?.filter(
     (category: GenomeTrackCategory) =>
       category.types.includes(selectedTrackPanelTab)
   );
@@ -93,13 +78,13 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
       // FIXME: Temporary hack until we have a set of proper track names
       if (track_id.startsWith('track:gene')) {
         trackStatus = get(
-          props.trackStates,
+          trackStates,
           `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
           trackStatus
         ) as TrackActivityStatus;
       } else {
         trackStatus = get(
-          props.trackStates,
+          trackStates,
           `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
           trackStatus
         ) as TrackActivityStatus;
@@ -123,8 +108,9 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
   };
 
   const trackCategoryIds = currentTrackCategories
-    .filter((category) => category.track_list.length)
-    .map((category) => category.track_category_id);
+    ?.filter((category: GenomeTrackCategory) => category.track_list.length)
+    .map((category: GenomeTrackCategory) => category.track_category_id);
+
   return (
     <div className={styles.trackPanelList}>
       {activeEnsObject?.type === 'gene' &&
@@ -144,7 +130,7 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
           allowMultipleExpanded={true}
           preExpanded={trackCategoryIds}
         >
-          {currentTrackCategories.map((category: GenomeTrackCategory) => {
+          {currentTrackCategories?.map((category: GenomeTrackCategory) => {
             const accordionButtonClassNames = classNames(
               styles.trackPanelAccordionButton,
               {
@@ -187,18 +173,4 @@ export const TrackPanelList = (props: TrackPanelListProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  return {
-    activeGenomeId,
-    isDrawerOpened: getIsDrawerOpened(state),
-    activeEnsObject: getBrowserActiveEnsObject(state),
-    selectedTrackPanelTab: getSelectedTrackPanelTab(state),
-    genomeTrackCategories: activeGenomeId
-      ? getGenomeTrackCategoriesById(state, activeGenomeId)
-      : [],
-    trackStates: getBrowserTrackStates(state)
-  };
-};
-
-export default connect(mapStateToProps)(TrackPanelList);
+export default TrackPanelList;

@@ -28,7 +28,7 @@ import {
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import { Slice } from 'src/shared/types/thoas/slice';
-import { FullTranscript } from 'ensemblRoot/src/shared/types/thoas/transcript';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
 
 type SliceWithOnlyLength = Pick2<Slice, 'location', 'length'>;
 

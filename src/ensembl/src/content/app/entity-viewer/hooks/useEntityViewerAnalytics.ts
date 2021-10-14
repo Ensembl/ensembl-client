@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { getSpeciesAnalyticsName } from 'src/content/app/species-selector/speciesSelectorHelper';
-import { parseEnsObjectId } from 'ensemblRoot/src/shared/state/ens-object/ensObjectHelpers';
+import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import {
   getEntityViewerActiveGenomeId,

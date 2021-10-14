@@ -73,7 +73,7 @@ const defaultProps: TrackPanelListItemProps = {
   track: createMainTrackInfo()
 };
 
-const wrapInRedux = (state: typeof mockState = mockState) => {
+const renderComponent = (state: typeof mockState = mockState) => {
   store = mockStore(state);
   return render(
     <Provider store={store}>
@@ -89,7 +89,7 @@ describe('<TrackPanelListItem />', () => {
 
   describe('rendering', () => {
     it('renders the track buttons', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
 
       expect(container.querySelector('.ellipsisHolder')).toBeTruthy();
       expect(container.querySelector('.eyeHolder')).toBeTruthy();
@@ -99,7 +99,7 @@ describe('<TrackPanelListItem />', () => {
   describe('behaviour', () => {
     describe('when clicked', () => {
       it('updates the active track id if the drawer is opened', () => {
-        const { container } = wrapInRedux(
+        const { container } = renderComponent(
           set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
         );
 
@@ -119,7 +119,7 @@ describe('<TrackPanelListItem />', () => {
       });
 
       it('does not update the active track id if the drawer is closed', () => {
-        const { container } = wrapInRedux();
+        const { container } = renderComponent();
         const track = container.querySelector('.track') as HTMLElement;
 
         userEvent.click(track);
@@ -160,7 +160,7 @@ describe('<TrackPanelListItem />', () => {
     });
 
     it('opens/updates drawer view when clicked on the open track button', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const ellipsisButton = container.querySelector(
         '.ellipsisHolder button'
       ) as HTMLElement;
@@ -178,7 +178,7 @@ describe('<TrackPanelListItem />', () => {
     });
 
     it('toggles the track when clicked on the toggle track button', () => {
-      const { container } = wrapInRedux();
+      const { container } = renderComponent();
       const eyeButton = container.querySelector(
         '.eyeHolder button'
       ) as HTMLElement;
