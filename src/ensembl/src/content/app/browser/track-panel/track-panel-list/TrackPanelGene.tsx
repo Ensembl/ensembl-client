@@ -17,6 +17,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
+
 import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
 
 import { getBrowserTrackStates } from 'src/content/app/browser/browserSelectors';
@@ -131,17 +133,34 @@ const getTranscriptTrackColour = (
 const prepareTranscriptsTrackData = (
   gene: TrackPanelGeneType
 ): EnsObjectTrack[] => {
-  const sortedTranscripts = defaultSort(gene.transcripts);
+  if (isEnvironment([Environment.PRODUCTION])) {
+    const canonicalTranscript = gene.transcripts.find(
+      (transcript) => transcript.metadata.canonical
+    ) as TrackPanelTranscriptType;
+    const canonicalTranscriptTrackData = {
+      label: canonicalTranscript.stable_id,
+      track_id: 'track:gene-feat-1',
+      stable_id: canonicalTranscript.stable_id,
+      description: null,
+      colour: 'BLUE',
+      additional_info: canonicalTranscript.metadata.biotype.label,
+      support_level: getTranscriptSupportLevel(canonicalTranscript)?.label
+    };
 
-  return sortedTranscripts.map((transcript, index) => ({
-    label: transcript.stable_id,
-    track_id: getTranscriptTrackId(index),
-    stable_id: transcript.stable_id,
-    description: null,
-    colour: getTranscriptTrackColour(transcript, index),
-    additional_info: transcript.metadata.biotype.label,
-    support_level: getTranscriptSupportLevel(transcript)?.label
-  }));
+    return [canonicalTranscriptTrackData];
+  } else {
+    const sortedTranscripts = defaultSort(gene.transcripts);
+
+    return sortedTranscripts.map((transcript, index) => ({
+      label: transcript.stable_id,
+      track_id: getTranscriptTrackId(index),
+      stable_id: transcript.stable_id,
+      description: null,
+      colour: getTranscriptTrackColour(transcript, index),
+      additional_info: transcript.metadata.biotype.label,
+      support_level: getTranscriptSupportLevel(transcript)?.label
+    }));
+  }
 };
 
 type GetTrackStatusParams = {
