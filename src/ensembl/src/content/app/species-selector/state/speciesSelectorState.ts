@@ -17,7 +17,6 @@
 import { LoadingState } from 'src/shared/types/loading-state';
 import {
   SearchMatches,
-  Strain,
   CommittedItem,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
@@ -28,8 +27,6 @@ export type CurrentItem = {
   common_name: string | null;
   scientific_name: string;
   assembly_name: string | null; // name of the selected assembly
-  selectedStrainId: string | null; // genome_id of selected strain
-  strains: Strain[];
 };
 
 export type SpeciesSelectorState = {
