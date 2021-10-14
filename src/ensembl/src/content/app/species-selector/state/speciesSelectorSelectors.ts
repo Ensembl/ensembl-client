@@ -61,8 +61,11 @@ export const getCommittedSpecies = (state: RootState): CommittedItem[] => {
 
 export const getCommittedSpeciesById = (
   state: RootState,
-  genomeId: string
+  genomeId: string | null
 ): CommittedItem | null => {
+  if (!genomeId) {
+    return null;
+  }
   const allCommittedSpecies = getCommittedSpecies(state);
   return (
     find(allCommittedSpecies, (species) => genomeId === species.genome_id) ||

@@ -35,9 +35,7 @@ const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
     reference_genome_id: data.reference_genome_id,
     common_name: data.common_name,
     scientific_name: data.scientific_name,
-    assembly_name: data.assembly_name,
-    selectedStrainId: null,
-    strains: []
+    assembly_name: data.assembly_name
   };
 };
 

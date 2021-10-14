@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useCallback, memo } from 'react';
-import { connect } from 'react-redux';
+import React, { useRef, useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import isEqual from 'lodash/isEqual';
 
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
@@ -28,7 +27,6 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 import { parseFeatureId } from 'src/content/app/browser/browserHelper';
 import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
-  getBrowserCogTrackList,
   getBrowserNavOpenState,
   getBrowserActivated,
   getRegionEditorActive,
@@ -45,37 +43,10 @@ import {
   updateDefaultPositionFlag
 } from '../browserActions';
 
-import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
-
-import {
-  BrowserNavAction,
-  BrowserNavIconStates,
-  ChrLocation,
-  CogList
-} from '../browserState';
-import { RootState } from 'src/store';
+import { BrowserNavAction, ChrLocation } from '../browserState';
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
-
-export type BrowserImageProps = {
-  browserCogTrackList: CogList;
-  isNavbarOpen: boolean;
-  browserActivated: boolean;
-  isDisabled: boolean;
-  activeGenomeId: string | null;
-  activateBrowser: () => void;
-  updateBrowserNavIconStates: (payload: {
-    activeGenomeId: string;
-    navStates: BrowserNavIconStates;
-  }) => void;
-  updateBrowserActivated: (browserActivated: boolean) => void;
-  updateBrowserActiveEnsObject: (objectId: string) => void;
-  setChrLocation: (chrLocation: ChrLocation) => void;
-  setActualChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultPositionFlag: (isDefaultPosition: boolean) => void;
-  changeHighlightedTrackId: (trackId: string) => void;
-};
 
 export type BumperPayload = [
   top: boolean,
@@ -102,7 +73,16 @@ const parseLocation = (location: ChrLocation) => {
   return [chromosome, start, end] as ChrLocation;
 };
 
-export const BrowserImage = (props: BrowserImageProps) => {
+export const BrowserImage = () => {
+  const isNavbarOpen = useSelector(getBrowserNavOpenState);
+  const browserActivated = useSelector(getBrowserActivated);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const isRegionEditorActive = useSelector(getRegionEditorActive);
+  const isRegionFieldActive = useSelector(getRegionFieldActive);
+  const isDisabled = isRegionEditorActive || isRegionFieldActive;
+
+  const dispatch = useDispatch();
+
   const browserRef = useRef<HTMLDivElement>(null);
   const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
     const ensObjectId = payload.focus;
@@ -110,7 +90,7 @@ export const BrowserImage = (props: BrowserImageProps) => {
     const actualLocation = payload['actual-location'] || intendedLocation;
     const isFocusObjectInDefaultPosition = payload['is-focus-position'];
 
-    if (payload.bumper && props.activeGenomeId) {
+    if (payload.bumper && activeGenomeId) {
       // Invert the flags to make it appropriate for the react side
       const navIconStates = payload.bumper.map((a) => !a);
 
@@ -122,27 +102,31 @@ export const BrowserImage = (props: BrowserImageProps) => {
         [BrowserNavAction.NAVIGATE_LEFT]: navIconStates[4],
         [BrowserNavAction.NAVIGATE_RIGHT]: navIconStates[5]
       };
-      props.updateBrowserNavIconStates({
-        activeGenomeId: props.activeGenomeId,
-        navStates
-      });
+      dispatch(
+        updateBrowserNavIconStates({
+          activeGenomeId,
+          navStates
+        })
+      );
     }
 
     if (intendedLocation) {
-      props.setChrLocation(parseLocation(intendedLocation));
+      dispatch(setChrLocation(parseLocation(intendedLocation)));
     }
 
     if (actualLocation) {
-      props.setActualChrLocation(parseLocation(actualLocation));
+      dispatch(setActualChrLocation(parseLocation(actualLocation)));
     }
 
     if (ensObjectId) {
       const parsedId = parseFeatureId(ensObjectId);
-      props.updateBrowserActiveEnsObject(buildEnsObjectId(parsedId));
+      dispatch(
+        updateBrowserActiveEnsObjectIdsAndSave(buildEnsObjectId(parsedId))
+      );
     }
 
     if (typeof isFocusObjectInDefaultPosition === 'boolean') {
-      props.updateDefaultPositionFlag(isFocusObjectInDefaultPosition);
+      dispatch(updateDefaultPositionFlag(isFocusObjectInDefaultPosition));
     }
   }, []);
 
@@ -158,20 +142,20 @@ export const BrowserImage = (props: BrowserImageProps) => {
   }, []);
 
   useEffect(() => {
-    props.activateBrowser();
+    dispatch(activateBrowser());
 
     return function cleanup() {
-      props.updateBrowserActivated(false);
+      dispatch(updateBrowserActivated(false));
     };
   }, []);
 
   const browserContainerClassNames = classNames(styles.browserStage, {
-    [styles.shorter]: props.isNavbarOpen
+    [styles.shorter]: isNavbarOpen
   });
 
   return (
     <>
-      {!props.browserActivated && (
+      {!browserActivated && (
         <div className={styles.loaderWrapper}>
           <CircleLoader />
         </div>
@@ -184,32 +168,10 @@ export const BrowserImage = (props: BrowserImageProps) => {
         />
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
-        {props.isDisabled ? <Overlay /> : null}
+        {isDisabled ? <Overlay /> : null}
       </div>
     </>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  browserCogTrackList: getBrowserCogTrackList(state),
-  isNavbarOpen: getBrowserNavOpenState(state),
-  browserActivated: getBrowserActivated(state),
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  isDisabled: getRegionEditorActive(state) || getRegionFieldActive(state)
-});
-
-const mapDispatchToProps = {
-  activateBrowser,
-  updateBrowserActivated,
-  updateBrowserNavIconStates,
-  updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
-  setChrLocation,
-  setActualChrLocation,
-  updateDefaultPositionFlag,
-  changeHighlightedTrackId
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(BrowserImage, isEqual));
+export default BrowserImage;

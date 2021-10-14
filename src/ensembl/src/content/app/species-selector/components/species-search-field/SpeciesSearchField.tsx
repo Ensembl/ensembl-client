@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
@@ -45,22 +45,11 @@ import {
   SearchMatches
 } from 'src/content/app/species-selector/types/species-search';
 
-import { RootState } from 'src/store';
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
 
 import styles from './SpeciesSearchField.scss';
 
 export const NOT_FOUND_TEXT = 'Sorry, we have no data for this species';
-
-type Props = {
-  onSearchChange: (search: string) => void;
-  onMatchSelected: (match: SearchMatch) => void;
-  clearSelectedSearchResult: () => void;
-  clearSearch: () => void;
-  matches: SearchMatches[] | null;
-  searchText: string;
-  selectedItemText: string | null;
-};
 
 enum RightCornerStatus {
   INFO,
@@ -73,8 +62,12 @@ type RightCornerProps = {
   clear: () => void;
 };
 
-export const SpeciesSearchField = (props: Props) => {
+export const SpeciesSearchField = () => {
   const [isFocused, setIsFocused] = useState(false);
+  const searchText = useSelector(getSearchText);
+  const matches = useSelector(getSearchResults);
+  const selectedItemText = useSelector(getSelectedItemText);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     return () => clear();
@@ -83,22 +76,26 @@ export const SpeciesSearchField = (props: Props) => {
   const { trackAutocompleteSpeciesSelect } = useSpeciesSelectorAnalytics();
 
   const onMatchSelected = (match: SearchMatch) => {
-    props.onMatchSelected(match);
+    dispatch(handleSelectedSpecies(match));
     trackAutocompleteSpeciesSelect(match);
   };
 
-  const canShowSuggesions =
-    props.selectedItemText === null &&
-    props.searchText.trim().length >= MINIMUM_SEARCH_LENGTH;
-
-  const matchGroups = props.matches ? buildMatchGroups(props.matches) : [];
-
-  const clear = () => {
-    props.clearSearch();
-    props.clearSelectedSearchResult();
+  const onSearchChange = (search: string) => {
+    dispatch(updateSearch(search));
   };
 
-  const hasText = Boolean(props.selectedItemText || props.searchText);
+  const canShowSuggesions =
+    selectedItemText === null &&
+    searchText.trim().length >= MINIMUM_SEARCH_LENGTH;
+
+  const matchGroups = matches ? buildMatchGroups(matches) : [];
+
+  const clear = () => {
+    dispatch(clearSearch());
+    dispatch(clearSelectedSearchResult());
+  };
+
+  const hasText = Boolean(selectedItemText || searchText);
 
   const rightCornerStatus = hasText
     ? RightCornerStatus.CLEAR
@@ -106,14 +103,14 @@ export const SpeciesSearchField = (props: Props) => {
     ? RightCornerStatus.EMPTY
     : RightCornerStatus.INFO;
 
-  const isNotFound = Boolean(props.matches && props.matches.length === 0);
+  const isNotFound = Boolean(matches && matches.length === 0);
 
   return (
     <AutosuggestSearchField
-      search={props.selectedItemText || props.searchText}
+      search={selectedItemText || searchText}
       placeholder="Common or scientific name..."
       className={styles.speciesSearchFieldWrapper}
-      onChange={props.onSearchChange}
+      onChange={onSearchChange}
       onSelect={onMatchSelected}
       matchGroups={matchGroups}
       searchFieldClassName={styles.speciesSearchField}
@@ -163,17 +160,4 @@ const buildMatchGroups = (groups: SearchMatches[]) => {
   });
 };
 
-const mapStateToProps = (state: RootState) => ({
-  searchText: getSearchText(state),
-  matches: getSearchResults(state),
-  selectedItemText: getSelectedItemText(state)
-});
-
-const mapDispatchToProps = {
-  onSearchChange: updateSearch,
-  onMatchSelected: handleSelectedSpecies,
-  clearSelectedSearchResult,
-  clearSearch
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SpeciesSearchField);
+export default SpeciesSearchField;

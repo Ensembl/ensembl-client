@@ -15,29 +15,24 @@
  */
 
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
 import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { RootState } from 'src/store';
-import { PopularSpecies } from 'src/content/app/species-selector/types/species-search';
-
 import styles from './PopularSpeciesPanel.scss';
 
-type Props = {
-  fetchPopularSpecies: () => void;
-  popularSpecies: PopularSpecies[];
-};
+const PopularSpeciesPanel = () => {
+  const popularSpecies = useSelector(getPopularSpecies);
+  const dispatch = useDispatch();
 
-const PopularSpeciesPanel = (props: Props) => {
   useEffect(() => {
-    props.fetchPopularSpecies();
+    dispatch(fetchPopularSpecies());
   }, []);
 
-  const renderedPopularSpecies = props.popularSpecies.map((species) => (
+  const renderedPopularSpecies = popularSpecies.map((species) => (
     <PopularSpeciesButton key={species.genome_id} species={species} />
   ));
   return (
@@ -47,15 +42,4 @@ const PopularSpeciesPanel = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  popularSpecies: getPopularSpecies(state)
-});
-
-const mapDispatchToProps = {
-  fetchPopularSpecies
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(PopularSpeciesPanel);
+export default PopularSpeciesPanel;

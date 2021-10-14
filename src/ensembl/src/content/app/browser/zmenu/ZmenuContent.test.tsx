@@ -18,8 +18,16 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import thunk from 'redux-thunk';
 import faker from 'faker';
 import configureMockStore from 'redux-mock-store';
+
+import * as browserActions from 'src/content/app/browser/browserActions';
+
+import {
+  createMockBrowserState,
+  createZmenuContent
+} from 'tests/fixtures/browser';
 
 import {
   ZmenuContent,
@@ -27,39 +35,47 @@ import {
   ZmenuContentItem,
   ZmenuContentItemProps
 } from './ZmenuContent';
-
 import { Markup } from './zmenu-types';
-import { createZmenuContent } from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
-const mockReduxState = {};
-const mockStoreCreator = configureMockStore();
-const mockStore = mockStoreCreator(() => mockReduxState);
+const mockState = createMockBrowserState();
+const mockStoreCreator = configureMockStore([thunk]);
+const mockStore = mockStoreCreator(() => mockState);
 
-const defaultProps: ZmenuContentProps = {
+const defaultZmenuContentProps: ZmenuContentProps = {
   content: createZmenuContent()
 };
 
-const renderZmenuContent = (
-  props: Partial<ZmenuContentProps> = {},
-  store = mockStore
-) =>
+const renderZmenuContent = (store = mockStore) =>
   render(
     <Provider store={store}>
-      <ZmenuContent {...defaultProps} {...props} />
+      <ZmenuContent {...defaultZmenuContentProps} />
+    </Provider>
+  );
+
+const defaultZmenuContentItemProps: ZmenuContentItemProps = {
+  id: faker.lorem.words(),
+  markup: [Markup.FOCUS],
+  text: faker.lorem.words()
+};
+
+const renderZmenuContentItem = (store = mockStore) =>
+  render(
+    <Provider store={store}>
+      <ZmenuContentItem {...defaultZmenuContentItemProps} />
     </Provider>
   );
 
 describe('<ZmenuContent />', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('rendering', () => {
     it('renders the correct zmenu content information', () => {
       const { container } = renderZmenuContent();
-      const zmenuContentLine = defaultProps.content[0].lines[0];
+      const zmenuContentLine = defaultZmenuContentProps.content[0].lines[0];
 
       const renderedContentBlocks =
         container.querySelectorAll('.zmenuContentBlock');
@@ -96,17 +112,12 @@ describe('<ZmenuContent />', () => {
 
   describe('<ZmenuContentItem />', () => {
     it('calls function to change focus feature when feature link is clicked', () => {
-      const props: ZmenuContentItemProps = {
-        id: faker.lorem.words(),
-        markup: [Markup.FOCUS],
-        text: faker.lorem.words(),
-        changeFocusObject: jest.fn()
-      };
-      const { container } = render(<ZmenuContentItem {...props} />);
+      const { container } = renderZmenuContentItem();
 
+      jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(container.firstChild as HTMLDivElement);
 
-      expect(props.changeFocusObject).toHaveBeenCalledTimes(1);
+      expect(browserActions.changeFocusObject).toHaveBeenCalledTimes(1);
     });
   });
 });

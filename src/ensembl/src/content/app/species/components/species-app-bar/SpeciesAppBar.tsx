@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { AppName } from 'src/global/globalConfig';
 
@@ -26,22 +26,21 @@ import AppBar from 'src/shared/components/app-bar/AppBar';
 import { SelectedSpecies } from 'src/shared/components/selected-species';
 import SpeciesTabsWrapper from 'src/shared/components/species-tabs-wrapper/SpeciesTabsWrapper';
 
-import { RootState } from 'src/store';
-import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import { HelpPopupButton } from 'src/shared/components/help-popup';
 
 type SpeciesAppBarProps = {
-  species: CommittedItem[];
-  activeGenomeId: string | null;
   onSpeciesSelect: (genomeId: string) => void;
 };
 
 const SpeciesAppBar = (props: SpeciesAppBarProps) => {
-  const speciesTabs = props.species.map((species, index) => (
+  const activeGenomeId = useSelector(getActiveGenomeId);
+  const species = useSelector(getCommittedSpecies);
+
+  const speciesTabs = species.map((species, index) => (
     <SelectedSpecies
       key={index}
       species={species}
-      isActive={species.genome_id === props.activeGenomeId}
+      isActive={species.genome_id === activeGenomeId}
       onClick={() => props.onSpeciesSelect(species.genome_id)}
     />
   ));
@@ -57,9 +56,4 @@ const SpeciesAppBar = (props: SpeciesAppBarProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  species: getCommittedSpecies(state),
-  activeGenomeId: getActiveGenomeId(state)
-});
-
-export default connect(mapStateToProps)(SpeciesAppBar);
+export default SpeciesAppBar;

@@ -15,14 +15,13 @@
  */
 
 import React, { useState, FormEvent, useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 
 import { ChrLocation } from '../browserState';
-import { RootState } from 'src/store';
 import {
   changeBrowserLocation,
   changeFocusObject,
@@ -30,9 +29,9 @@ import {
 } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
-  getRegionFieldActive,
   getChrLocation,
-  getRegionEditorActive
+  getRegionEditorActive,
+  getRegionFieldActive
 } from '../browserSelectors';
 import {
   getChrLocationFromStr,
@@ -47,28 +46,20 @@ import applyIcon from 'static/img/shared/apply.svg';
 import styles from './BrowserRegionField.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
 
-export type BrowserRegionFieldProps = {
-  activeGenomeId: string | null;
-  chrLocation: ChrLocation | null;
-  isActive: boolean;
-  isGhosted: boolean;
-  changeBrowserLocation: (locationData: {
-    genomeId: string;
-    ensObjectId: string | null;
-    chrLocation: ChrLocation;
-  }) => void;
-  changeFocusObject: (objectId: string) => void;
-  toggleRegionFieldActive: (regionFieldActive: boolean) => void;
-};
+export const BrowserRegionField = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const chrLocation = useSelector(getChrLocation);
+  const isActive = useSelector(getRegionEditorActive);
+  const isGhosted = useSelector(getRegionFieldActive);
 
-export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
-  const { activeGenomeId, chrLocation } = props;
+  const dispatch = useDispatch();
+
   const [regionFieldInput, setRegionFieldInput] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputGroupRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLElement>(null);
 
-  const handleFocus = () => props.toggleRegionFieldActive(true);
+  const handleFocus = () => dispatch(toggleRegionFieldActive(true));
 
   const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
 
@@ -81,7 +72,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   const resetForm = () => {
     setRegionFieldInput('');
     setErrorMessage(null);
-    props.toggleRegionFieldActive(false);
+    dispatch(toggleRegionFieldActive(false));
   };
 
   const onValidationError = (errorMessages: RegionValidationErrors) => {
@@ -104,13 +95,15 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
         getRegionInputWithStick(regionFieldInput)
       );
 
-      props.changeBrowserLocation({
-        genomeId: props.activeGenomeId as string,
-        ensObjectId: null,
-        chrLocation: newChrLocation
-      });
+      dispatch(
+        changeBrowserLocation({
+          genomeId: activeGenomeId as string,
+          ensObjectId: null,
+          chrLocation: newChrLocation
+        })
+      );
     } else {
-      props.changeFocusObject(regionId);
+      dispatch(changeFocusObject(regionId));
     }
 
     analyticsTracking.trackEvent({
@@ -145,7 +138,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
 
       validateRegion({
         regionInput: getRegionInputWithStick(regionFieldInput),
-        genomeId: props.activeGenomeId,
+        genomeId: activeGenomeId,
         onSuccess: onValidationSuccess,
         onError: onValidationError
       });
@@ -153,7 +146,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   };
 
   const regionFieldClassNames = classNames(styles.browserRegionField, {
-    [browserNavBarStyles.semiOpaque]: props.isGhosted
+    [browserNavBarStyles.semiOpaque]: isGhosted
   });
 
   const inputClassNames = classNames(styles.inputText, {
@@ -164,7 +157,7 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
     browserNavBarStyles.browserNavBarButtons,
     {
       [browserNavBarStyles.browserNavBarButtonsVisible]:
-        props.isActive && regionFieldInput.length
+        isActive && regionFieldInput.length
     }
   );
 
@@ -197,19 +190,4 @@ export const BrowserRegionField = (props: BrowserRegionFieldProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    activeGenomeId: getBrowserActiveGenomeId(state),
-    chrLocation: getChrLocation(state),
-    isActive: getRegionFieldActive(state),
-    isGhosted: getRegionEditorActive(state)
-  };
-};
-
-const mapDispatchToProps = {
-  changeBrowserLocation,
-  changeFocusObject,
-  toggleRegionFieldActive
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(BrowserRegionField);
+export default BrowserRegionField;

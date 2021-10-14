@@ -16,8 +16,6 @@
 
 import { RootState } from 'src/store';
 
-import { getQueryParamsMap } from 'src/global/globalHelper';
-
 export const getEntityViewerActiveGenomeId = (state: RootState) =>
   state.entityViewer.general.activeGenomeId;
 
@@ -29,7 +27,3 @@ export const getEntityViewerActiveEntityId = (state: RootState) => {
   const activeGenomeId = getEntityViewerActiveGenomeId(state);
   return activeGenomeId ? activeEntityIds[activeGenomeId] : null;
 };
-
-export const getEntityViewerQueryParams = (
-  state: RootState
-): { [key: string]: string } => getQueryParamsMap(state.router.location.search);

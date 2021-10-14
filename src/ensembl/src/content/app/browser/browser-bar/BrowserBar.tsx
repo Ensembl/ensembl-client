@@ -15,20 +15,15 @@
  */
 
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import {
-  getChrLocation,
-  getDefaultChrLocation,
-  getBrowserActiveEnsObject
-} from '../browserSelectors';
+import { getChrLocation, getBrowserActiveEnsObject } from '../browserSelectors';
 import { getIsDrawerOpened } from '../drawer/drawerSelectors';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
-import { RootState } from 'src/store';
 import { ChrLocation } from '../browserState';
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
 
@@ -42,10 +37,14 @@ export type BrowserBarProps = {
   ensObject: EnsObject | null;
 };
 
-export const BrowserBar = (props: BrowserBarProps) => {
+export const BrowserBar = () => {
+  const chrLocation = useSelector(getChrLocation);
+  const ensObject = useSelector(getBrowserActiveEnsObject);
+  const isDrawerOpened = useSelector(getIsDrawerOpened);
+
   // return empty div instead of null, so that the dedicated slot in the CSS grid of StandardAppLayout
   // always contains a child DOM element
-  if (!(props.chrLocation && props.ensObject)) {
+  if (!(chrLocation && ensObject)) {
     return <div />;
   }
 
@@ -54,28 +53,16 @@ export const BrowserBar = (props: BrowserBarProps) => {
       <div className={styles.browserResetWrapper}>
         <BrowserReset />
       </div>
-      {props.ensObject && (
-        <FeatureSummaryStrip
-          ensObject={props.ensObject}
-          isGhosted={props.isDrawerOpened}
-        />
+      {ensObject && (
+        <FeatureSummaryStrip ensObject={ensObject} isGhosted={isDrawerOpened} />
       )}
       <div className={styles.browserLocationIndicatorWrapper}>
         <BrowserLocationIndicator
-          disabled={
-            props.isDrawerOpened || isEnvironment([Environment.PRODUCTION])
-          }
+          disabled={isDrawerOpened || isEnvironment([Environment.PRODUCTION])}
         />
       </div>
     </div>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  chrLocation: getChrLocation(state),
-  defaultChrLocation: getDefaultChrLocation(state),
-  ensObject: getBrowserActiveEnsObject(state),
-  isDrawerOpened: getIsDrawerOpened(state)
-});
-
-export default connect(mapStateToProps)(BrowserBar);
+export default BrowserBar;

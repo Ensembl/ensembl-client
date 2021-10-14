@@ -40,20 +40,26 @@ export const getGenomeTrackCategories = (state: RootState) =>
 
 export const getGenomeExampleFocusObjects = (
   state: RootState,
-  genomeId: string
+  genomeId: string | null
 ) => {
   const emptyObjects: never[] = [];
+  if (!genomeId) {
+    return emptyObjects;
+  }
   return (
     state.genome.genomeInfo.genomeInfoData[genomeId]?.example_objects ||
     emptyObjects
   );
 };
 
-export const getGenomeTrackCategoriesById = (
-  state: RootState,
-  genomeId: string
-) =>
-  state.genome.genomeTrackCategories.genomeTrackCategoriesData[genomeId] || [];
+export const getGenomeTrackCategoriesById = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  return activeGenomeId
+    ? state.genome.genomeTrackCategories.genomeTrackCategoriesData[
+        activeGenomeId
+      ]
+    : null;
+};
 
 export const getGenomeTrackCategoriesFetching = (state: RootState) =>
   state.genome.genomeTrackCategories.genomeTrackCategoriesFetching;

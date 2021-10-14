@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { memo, useEffect } from 'react';
-import { connect } from 'react-redux';
-import isEqual from 'lodash/isEqual';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
@@ -31,27 +30,23 @@ import {
 
 import { restoreBrowserTrackStates } from '../browserActions';
 
-import { RootState } from 'src/store';
-import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';
+export const TrackPanel = () => {
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const browserActivated = useSelector(getBrowserActivated);
+  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
+  const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
 
-export type TrackPanelProps = {
-  activeGenomeId: string | null;
-  browserActivated: boolean;
-  activeEnsObject: EnsObject | null;
-  isTrackPanelModalOpened: boolean;
-  restoreBrowserTrackStates: () => void;
-};
+  const dispatch = useDispatch();
 
-export const TrackPanel = (props: TrackPanelProps) => {
   const shouldRenderContent =
-    props.activeGenomeId && props.browserActivated && props.activeEnsObject;
+    activeGenomeId && browserActivated && activeEnsObject;
 
   useEffect(() => {
-    props.restoreBrowserTrackStates();
-  }, [props.activeEnsObject]);
+    dispatch(restoreBrowserTrackStates());
+  }, [activeEnsObject]);
 
   return shouldRenderContent ? (
-    props.isTrackPanelModalOpened ? (
+    isTrackPanelModalOpened ? (
       <TrackPanelModal />
     ) : (
       <TrackPanelList />
@@ -61,22 +56,4 @@ export const TrackPanel = (props: TrackPanelProps) => {
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-
-  return {
-    activeGenomeId,
-    browserActivated: getBrowserActivated(state),
-    activeEnsObject: getBrowserActiveEnsObject(state),
-    isTrackPanelModalOpened: getIsTrackPanelModalOpened(state)
-  };
-};
-
-const mapDispatchToProps = {
-  restoreBrowserTrackStates
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(TrackPanel, isEqual));
+export default TrackPanel;
