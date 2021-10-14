@@ -26,6 +26,14 @@ import { Status } from 'src/shared/types/status';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 import TranscriptsFilter from './TranscriptsFilter';
 
+jest.mock(
+  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
+  () => () => ({
+    trackAppliedFilters: jest.fn(),
+    trackAppliedSorting: jest.fn()
+  })
+);
+
 const mockState = {
   entityViewer: {
     general: {
