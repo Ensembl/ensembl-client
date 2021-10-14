@@ -19,6 +19,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { Pick2 } from 'ts-multipick';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import { isEntityViewerSidebarOpen } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { getEntityViewerActiveEntityId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import {
@@ -100,6 +102,8 @@ const TranscriptsFilter = (props: Props) => {
   const sortingRule = useSelector(getSortingRule);
   const isSidebarOpen = useSelector(isEntityViewerSidebarOpen);
   const activeEntityId = useSelector(getEntityViewerActiveEntityId);
+  const { trackAppliedFilters, trackAppliedSorting } =
+    useEntityViewerAnalytics();
 
   const dispatch = useDispatch();
 
@@ -117,6 +121,7 @@ const TranscriptsFilter = (props: Props) => {
 
   const onSortingRuleChange = (value: OptionValue) => {
     dispatch(setSortingRule(value as SortingRule));
+    trackAppliedSorting(value as SortingRule);
   };
 
   const onFilterChange = (
@@ -131,6 +136,7 @@ const TranscriptsFilter = (props: Props) => {
     };
 
     dispatch(setFilters(updatedFilters));
+    trackAppliedFilters(updatedFilters);
   };
 
   const filtersArray = Object.entries(filters);

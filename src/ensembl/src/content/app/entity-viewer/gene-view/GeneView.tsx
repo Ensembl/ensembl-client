@@ -44,6 +44,8 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { parseFocusIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import GeneOverviewImage, {
   GeneOverviewImageProps
 } from './components/gene-overview-image/GeneOverviewImage';
@@ -242,6 +244,7 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   const filters = useSelector(getFilters);
   const dispatch = useDispatch();
   const { search } = useLocation();
+  const { trackFiltersPanelOpen } = useEntityViewerAnalytics();
   const view = new URLSearchParams(search).get('view');
 
   const uniqueScrollReferenceId = `${COMPONENT_ID}_${props.gene.stable_id}_${view}`;
@@ -269,6 +272,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
   );
 
   const toggleFilterPanel = () => {
+    if (!isFilterPanelOpen) {
+      trackFiltersPanelOpen();
+    }
     dispatch(setFilterPanel(!isFilterPanelOpen));
   };
 

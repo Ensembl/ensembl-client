@@ -27,6 +27,10 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import {
+  Filters,
+  SortingRule
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { RootState } from 'src/store';
 
 const useEntityViewerAnalytics = () => {
@@ -56,8 +60,43 @@ const useEntityViewerAnalytics = () => {
     });
   };
 
+  const trackFiltersPanelOpen = () => {
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_filters',
+      action: 'opened'
+    });
+  };
+
+  const trackAppliedFilters = (filters: Filters) => {
+    const appliedFilters = Object.entries(filters)
+      .filter(([, { selected }]) => selected)
+      .map(([filterId]) => filterId)
+      .join(','); // <-- comma-separated filter ids
+
+    if (!appliedFilters) {
+      return;
+    }
+
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_filters',
+      action: 'filter_applied',
+      label: appliedFilters
+    });
+  };
+
+  const trackAppliedSorting = (sortingRule: SortingRule) => {
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_filters',
+      action: 'sort_applied',
+      label: sortingRule
+    });
+  };
+
   return {
-    trackTabChange
+    trackTabChange,
+    trackFiltersPanelOpen,
+    trackAppliedFilters,
+    trackAppliedSorting
   };
 };
 export default useEntityViewerAnalytics;
