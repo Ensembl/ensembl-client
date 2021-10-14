@@ -38,7 +38,8 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations
+  getAllChrLocations,
+  getBrowserActivated
 } from '../browserSelectors';
 
 /*
@@ -68,6 +69,7 @@ const useBrowserRouting = () => {
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
+  const browserActivated = useSelector(getBrowserActivated);
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
@@ -132,7 +134,7 @@ const useBrowserRouting = () => {
       }
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, location, genomeBrowser]);
+  }, [genomeId, focus, location, genomeBrowser, browserActivated]);
 
   useEffect(() => {
     if (genomeId) {

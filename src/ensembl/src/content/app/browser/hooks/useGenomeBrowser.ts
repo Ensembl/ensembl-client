@@ -26,10 +26,7 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants'
 
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
-import {
-  getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId
-} from 'src/content/app/browser/browserSelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
@@ -37,13 +34,13 @@ import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfi
 import { Status } from 'src/shared/types/status';
 import { ChrLocation } from 'src/content/app/browser/browserState';
 import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getChrLocationFromStr } from 'src/content/app/browser/browserHelper';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();
 
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
+  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
+  const activeGenomeId = activeEnsObject?.genome_id;
+  const activeEnsObjectId = activeEnsObject?.object_id;
 
   const genomeBrowserContext = useContext(GenomeBrowserContext);
   if (!genomeBrowserContext) {
@@ -54,9 +51,8 @@ const useGenomeBrowser = () => {
 
   const { genomeBrowser, setGenomeBrowser, setZmenus, zmenus } =
     genomeBrowserContext;
-
   const restoreBrowserTrackStates = () => {
-    if (!activeGenomeId || !activeEnsObjectId || !genomeBrowser) {
+    if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
 
@@ -113,34 +109,25 @@ const useGenomeBrowser = () => {
       backend_url: config.genomeBrowserBackendBaseUrl,
       target_element_id: BROWSER_CONTAINER_ID
     });
-    if (setGenomeBrowser) {
-      setGenomeBrowser(genomeBrowserService);
-    }
+
+    setGenomeBrowser(genomeBrowserService);
   };
 
   const changeFocusObject = (focusObjectId: string) => {
-    if (!activeGenomeId || !genomeBrowser) {
+    if (!activeGenomeId || !activeEnsObject || !genomeBrowser) {
       return;
     }
 
-    const { genomeId, type, objectId } = parseEnsObjectId(focusObjectId);
-
-    if (type === 'region') {
-      changeBrowserLocation({
-        genomeId: genomeId,
-        ensObjectId: null,
-        chrLocation: getChrLocationFromStr(objectId)
-      });
-      dispatch(updatePreviouslyViewedObjectsAndSave());
-      return;
-    }
+    const { genomeId, objectId } = parseEnsObjectId(focusObjectId);
 
     dispatch(updatePreviouslyViewedObjectsAndSave());
+
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
         focus: objectId,
-        genomeId
+        genomeId,
+        stick: `${genomeId}:${activeEnsObject.location.chromosome}`
       }
     };
 

@@ -194,7 +194,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
   useEffect(() => {
     updateGenomeBrowser(trackStatus);
-  }, []);
+  }, [genomeBrowser]);
 
   const updateGenomeBrowser = (status?: Status) => {
     const isTurnedOn = status === Status.SELECTED;
@@ -213,7 +213,6 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         ]
       }
     };
-
     genomeBrowser?.send(action);
   };
 
