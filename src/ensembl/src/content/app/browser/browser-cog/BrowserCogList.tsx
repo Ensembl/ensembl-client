@@ -18,14 +18,14 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
 import BrowserCog from './BrowserCog';
+
 import {
   updateCogList,
   updateCogTrackList,
   updateSelectedCog
 } from '../browserActions';
-
-import { CogList } from '../browserState';
 import {
   getBrowserActivated,
   getBrowserCogList,
@@ -34,6 +34,8 @@ import {
   getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
+
+import { CogList } from '../browserState';
 
 import styles from './BrowserCogList.scss';
 

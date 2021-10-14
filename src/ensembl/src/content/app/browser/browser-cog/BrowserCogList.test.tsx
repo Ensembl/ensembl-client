@@ -22,6 +22,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { BrowserCogList } from './BrowserCogList';
+
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';

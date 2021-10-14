@@ -22,6 +22,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
+
 import { BrowserBar } from './BrowserBar';
 
 jest.mock('src/content/app/browser/browser-reset/BrowserReset', () => () => (
