@@ -18,11 +18,12 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { getBreakpointWidth } from 'src/global/globalSelectors';
-import { BreakpointWidth } from 'src/global/globalConfig';
 
 import ChromosomeNavigator from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
 import BrowserNavBarRegionSwitcher from './BrowserNavBarRegionSwitcher';
 import CloseButton from 'src/shared/components/close-button/CloseButton';
+
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 import styles from './BrowserNavBarMain.scss';
 

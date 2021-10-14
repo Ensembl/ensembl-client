@@ -25,17 +25,17 @@ import configureMockStore from 'redux-mock-store';
 import * as browserActions from 'src/content/app/browser/browserActions';
 
 import {
+  createMockBrowserState,
+  createZmenuContent
+} from 'tests/fixtures/browser';
+
+import {
   ZmenuContent,
   ZmenuContentProps,
   ZmenuContentItem,
   ZmenuContentItemProps
 } from './ZmenuContent';
-
 import { Markup } from './zmenu-types';
-import {
-  createMockBrowserState,
-  createZmenuContent
-} from 'tests/fixtures/browser';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 

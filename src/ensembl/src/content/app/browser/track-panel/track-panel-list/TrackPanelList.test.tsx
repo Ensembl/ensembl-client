@@ -22,10 +22,9 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
+import { createEnsObject } from 'tests/fixtures/ens-object';
 
 import { TrackPanelList } from './TrackPanelList';
-
-import { createEnsObject } from 'tests/fixtures/ens-object';
 
 jest.mock('./TrackPanelGene', () => () => <div className="trackPanelGene" />);
 

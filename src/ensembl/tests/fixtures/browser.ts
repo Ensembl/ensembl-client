@@ -16,8 +16,6 @@
 
 import faker from 'faker';
 
-import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
-
 import {
   getChrLocationStr,
   RegionValidationMessages
@@ -26,14 +24,15 @@ import {
   createGenomeCategories,
   createGenomeKaryotype
 } from 'tests/fixtures/genomes';
+import { createTrackStates } from 'tests/fixtures/track-panel';
 
+import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
 import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
 import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
 import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
-import { createTrackStates } from 'tests/fixtures/track-panel';
-import { BreakpointWidth } from 'ensemblRoot/src/global/globalConfig';
+import { BreakpointWidth } from 'src/global/globalConfig';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),

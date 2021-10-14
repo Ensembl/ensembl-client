@@ -23,6 +23,7 @@ import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
 import * as browserActions from './../browserActions';
+
 import { BrowserReset } from './BrowserReset';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';

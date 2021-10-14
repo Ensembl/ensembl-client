@@ -21,7 +21,7 @@ import {
   GenomeTrackCategory,
   GenomeKaryotypeItemType
 } from 'src/shared/state/genome/genomeTypes';
-import { EnsObjectTrack } from 'ensemblRoot/src/shared/state/ens-object/ensObjectTypes';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const createGenomeCategories = (): GenomeTrackCategory[] => [
   {
