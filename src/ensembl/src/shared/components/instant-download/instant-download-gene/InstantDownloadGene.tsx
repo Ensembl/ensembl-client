@@ -144,12 +144,14 @@ const InstantDownloadGene = (props: Props) => {
         theme={props.theme}
         onChange={onTranscriptOptionChange}
       />
-      <div className={styles.downloadButton}>
-        <InstantDownloadButton
-          isDisabled={isButtonDisabled}
-          onClick={onSubmit}
-        />
-      </div>
+      <InstantDownloadButton
+        isDisabled={isButtonDisabled}
+        onClick={onSubmit}
+        classNames={{
+          wrapper: styles.downloadButtonWrapper,
+          button: styles.downloadButton
+        }}
+      />
     </div>
   );
 };

@@ -54,9 +54,14 @@
   }
 }
 
-.downloadButton {
+.downloadButtonWrapper {
   text-align: right;
   font-size: 12px;
+}
+
+.downloadButton {
+  border-color: $dark-grey;
+  color: $dark-grey;
 }
 
 .layout {

@@ -20,7 +20,10 @@ import LoadingButton from '../../loading-button';
 
 type Props = {
   isDisabled?: boolean;
-  className?: string;
+  classNames?: {
+    wrapper?: string;
+    button?: string;
+  };
   onClick: () => Promise<unknown>;
 };
 

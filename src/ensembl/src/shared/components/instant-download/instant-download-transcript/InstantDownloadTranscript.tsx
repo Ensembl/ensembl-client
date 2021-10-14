@@ -178,12 +178,14 @@ const InstantDownloadTranscript = (props: Props) => {
         isGenomicSequenceSelected={isGeneSequenceSelected}
         onChange={onGeneOptionChange}
       />
-      <div className={styles.downloadButton}>
-        <InstantDownloadButton
-          isDisabled={isButtonDisabled}
-          onClick={onSubmit}
-        />
-      </div>
+      <InstantDownloadButton
+        isDisabled={isButtonDisabled}
+        onClick={onSubmit}
+        classNames={{
+          wrapper: styles.downloadButtonWrapper,
+          button: styles.downloadButton
+        }}
+      />
     </div>
   );
 };

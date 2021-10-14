@@ -63,9 +63,14 @@
     }
   }
 
-  .downloadButton {
+  .downloadButtonWrapper {
     margin: 35px 20px 0 0;
     float: right;
     font-size: 12px;
+  }
+
+  .downloadButton {
+    border-color: $dark-grey;
+    color: $dark-grey;
   }
 }
