@@ -37,6 +37,7 @@ import {
   setActiveGenomeExpandedSections
 } from 'src/content/app/species/state/general/speciesGeneralSlice';
 
+import { RootState } from 'src/store';
 import { UrlObj } from 'src/shared/components/view-in-app/ViewInApp';
 import { CommittedItem } from 'src/content/app/species-selector/types/species-search';
 import {
@@ -44,8 +45,6 @@ import {
   sectionGroupsMap,
   SpeciesStatsSection
 } from '../../state/general/speciesGeneralHelper';
-
-import { RootState } from 'src/store';
 
 import styles from './SpeciesMainView.scss';
 
@@ -164,7 +163,7 @@ const getExpandedContent = (props: ContentProps) => {
 
 const SpeciesMainViewStats = () => {
   const dispatch = useDispatch();
-  const activeGenomeId = useSelector(getActiveGenomeId) || '';
+  const activeGenomeId = useSelector(getActiveGenomeId);
   const genomeStats = useSelector(getActiveGenomeStats);
   const genomeUIState = useSelector(getActiveGenomeUIState);
   const exampleFocusObjects = useSelector((state: RootState) =>

@@ -40,9 +40,12 @@ export const getGenomeTrackCategories = (state: RootState) =>
 
 export const getGenomeExampleFocusObjects = (
   state: RootState,
-  genomeId: string
+  genomeId: string | null
 ) => {
   const emptyObjects: never[] = [];
+  if (!genomeId) {
+    return emptyObjects;
+  }
   return (
     state.genome.genomeInfo.genomeInfoData[genomeId]?.example_objects ||
     emptyObjects
