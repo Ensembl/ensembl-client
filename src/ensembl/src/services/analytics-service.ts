@@ -18,6 +18,7 @@ import ReactGA from 'react-ga';
 import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 
 import config from 'config';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 const { googleAnalyticsKey } = config;
 
@@ -29,6 +30,18 @@ class AnalyticsTracking {
       titleCase: false
     });
     this.reactGA = ReactGA;
+    this.setReporting();
+  }
+
+  private setReporting() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    // don't send analytics other than in production deployment
+    if (!isEnvironment([Environment.PRODUCTION])) {
+      this.reactGA.ga('set', 'sendHitTask', null);
+    }
   }
 
   // Track a pageview
