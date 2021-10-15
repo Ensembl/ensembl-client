@@ -181,9 +181,9 @@ const InstantDownloadTranscript = (props: Props) => {
       <InstantDownloadButton
         isDisabled={isButtonDisabled}
         onClick={onSubmit}
+        theme={props.theme}
         classNames={{
-          wrapper: styles.downloadButtonWrapper,
-          button: styles.downloadButton
+          wrapper: styles.downloadButtonWrapper
         }}
       />
     </div>

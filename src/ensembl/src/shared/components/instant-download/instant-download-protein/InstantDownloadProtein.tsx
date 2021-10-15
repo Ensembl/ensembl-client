@@ -91,6 +91,7 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
       <InstantDownloadButton
         isDisabled={isDownloadDisabled()}
         onClick={onSubmit}
+        theme="light"
       />
     </div>
   );
