@@ -32,7 +32,8 @@ import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 // TODO: check if this can be moved to a common place
 import {
   getNumberOfCodingExons,
-  getSplicedRNALength
+  getSplicedRNALength,
+  isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
@@ -70,7 +71,7 @@ type ProductGeneratingContext =
 
 type Gene = Pick<
   FullGene,
-  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name'
+  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name' | 'transcripts'
 >;
 
 const GENE_AND_TRANSCRIPT_QUERY = gql`
@@ -343,7 +344,7 @@ const TranscriptSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 transcript={{
                   id: transcript.unversioned_stable_id,
-                  biotype: metadata.biotype.value
+                  isProteinCoding: isProteinCodingTranscript(transcript)
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"

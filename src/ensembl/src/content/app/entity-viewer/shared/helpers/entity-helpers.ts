@@ -59,6 +59,15 @@ export type IsProteinCodingTranscriptParam = {
   }>;
 };
 
+type IsProteinCodingGeneParam = {
+  transcripts: IsProteinCodingTranscriptParam[];
+};
+export const isProteinCodingGene = (gene: IsProteinCodingGeneParam) => {
+  return gene.transcripts.some((transcript) =>
+    isProteinCodingTranscript(transcript)
+  );
+};
+
 export const isProteinCodingTranscript = (
   transcript: IsProteinCodingTranscriptParam
 ) => {

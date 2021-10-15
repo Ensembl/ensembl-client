@@ -24,6 +24,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
+import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import {
   buildFocusIdForUrl,
@@ -40,6 +41,8 @@ import QuestionButton from 'src/shared/components/question-button/QuestionButton
 
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullGene } from 'src/shared/types/thoas/gene';
+import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './GeneSummary.scss';
 
@@ -53,6 +56,9 @@ const GENE_QUERY = gql`
       symbol
       transcripts {
         stable_id
+        product_generating_contexts {
+          product_type
+        }
       }
       slice {
         strand {
@@ -77,6 +83,13 @@ const GENE_QUERY = gql`
   }
 `;
 
+type Transcript = Pick<FullTranscript, 'stable_id'> & {
+  product_generating_contexts: Pick<
+    FullProductGeneratingContext,
+    'product_type'
+  >[];
+};
+
 type Gene = Pick<
   FullGene,
   | 'stable_id'
@@ -88,13 +101,12 @@ type Gene = Pick<
 > &
   Pick3<FullGene, 'slice', 'strand', 'code'> &
   Pick3<FullGene, 'slice', 'location', 'length'> & {
-    transcripts: { stable_id: string }[];
+    transcripts: Transcript[];
   };
 
 const GeneSummary = () => {
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
   const [shouldShowDownload, showDownload] = useState(false);
-
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_QUERY, {
     variables: {
       geneId: ensObjectGene.stable_id,
@@ -199,7 +211,7 @@ const GeneSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 gene={{
                   id: gene.stable_id,
-                  biotype: gene.metadata.biotype.value
+                  isProteinCoding: isProteinCodingGene(gene)
                 }}
               />
             </div>
