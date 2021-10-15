@@ -43,9 +43,11 @@ const fakeGenomeId = 'human';
 
 const mockState = {
   drawer: {
-    isDrawerOpened: { [fakeGenomeId]: false },
-    drawerView: { [fakeGenomeId]: DrawerView.BOOKMARKS },
-    activeDrawerTrackIds: {}
+    [fakeGenomeId]: {
+      isDrawerOpened: false,
+      activeDrawerView: DrawerView.BOOKMARKS,
+      activeDrawerTrackId: null
+    }
   },
   browser: {
     browserEntity: {
@@ -100,7 +102,7 @@ describe('<TrackPanelListItem />', () => {
     describe('when clicked', () => {
       it('updates the active track id if the drawer is opened', () => {
         const { container } = renderComponent(
-          set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
+          set(`drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
         );
 
         const track = container.querySelector('.track') as HTMLElement;
@@ -111,10 +113,12 @@ describe('<TrackPanelListItem />', () => {
           .getActions()
           .find(
             (action) =>
-              action.type === getType(drawerActions.setActiveDrawerTrackId)
+              action.type ===
+              getType(drawerActions.setActiveDrawerTrackIdForGenome)
           );
-        expect(drawerAction.payload).toEqual({
-          [fakeGenomeId]: defaultProps.track.track_id
+        expect(drawerAction.payload).toMatchObject({
+          activeGenomeId: fakeGenomeId,
+          activeDrawerTrackId: defaultProps.track.track_id
         });
       });
 
@@ -128,7 +132,8 @@ describe('<TrackPanelListItem />', () => {
           .getActions()
           .find(
             (action) =>
-              action.type === getType(drawerActions.setActiveDrawerTrackId)
+              action.type ===
+              getType(drawerActions.setActiveDrawerTrackIdForGenome)
           );
         expect(drawerAction).toBeFalsy();
       });
@@ -172,8 +177,9 @@ describe('<TrackPanelListItem />', () => {
           (action) =>
             action.type === getType(drawerActions.changeDrawerViewForGenome)
         );
-      expect(drawerToggleAction.payload).toEqual({
-        [fakeGenomeId]: DrawerView.TRACK_DETAILS
+      expect(drawerToggleAction.payload).toMatchObject({
+        activeGenomeId: fakeGenomeId,
+        activeDrawerView: DrawerView.TRACK_DETAILS
       });
     });
 

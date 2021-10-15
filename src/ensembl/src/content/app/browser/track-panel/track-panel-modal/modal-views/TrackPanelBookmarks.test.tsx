@@ -94,9 +94,11 @@ const mockState = {
     }
   },
   drawer: {
-    isDrawerOpened: { [genomeId]: false },
-    drawerView: { [genomeId]: DrawerView.BOOKMARKS },
-    activeDrawerTrackIds: {}
+    [genomeId]: {
+      isDrawerOpened: false,
+      activeDrawerView: DrawerView.BOOKMARKS,
+      activeDrawerTrackIds: {}
+    }
   },
   ensObjects: {
     [geneObjectId]: {
@@ -215,15 +217,15 @@ describe('<TrackPanelBookmarks />', () => {
     const dispatchedDrawerActions = store.getActions();
 
     const updateDrawerViewAction = dispatchedDrawerActions.find(
-      (action) => action.type === 'drawer/update-drawer-view'
+      (action) => action.type === 'drawer/change-drawer-view'
     );
     const toggleDrawerAction = dispatchedDrawerActions.find(
       (action) => action.type === 'drawer/toggle-drawer'
     );
 
-    expect(updateDrawerViewAction.payload[genomeId]).toEqual(
+    expect(updateDrawerViewAction.payload.activeDrawerView).toEqual(
       DrawerView.BOOKMARKS
     );
-    expect(toggleDrawerAction.payload[genomeId]).toEqual(true);
+    expect(toggleDrawerAction.payload.isDrawerOpened).toEqual(true);
   });
 });

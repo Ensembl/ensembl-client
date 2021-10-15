@@ -21,14 +21,20 @@ export enum DrawerView {
   TRANSCRIPT_SUMMARY = 'transcript_summary'
 }
 
-export type DrawerState = Readonly<{
-  isDrawerOpened: { [genomeId: string]: boolean };
-  drawerView: { [genomeId: string]: DrawerView | null };
-  activeDrawerTrackIds: { [genomeId: string]: string | null };
+export type DrawerStateForGenome = Readonly<{
+  isDrawerOpened: boolean;
+  activeDrawerView: DrawerView | null;
+  activeDrawerTrackId: string | null;
+  activeDrawerTranscriptId: string | null;
 }>;
 
-export const defaultDrawerState = {
-  isDrawerOpened: {},
-  drawerView: {},
-  activeDrawerTrackIds: {}
+export type DrawerState = Readonly<{
+  [genomeId: string]: DrawerStateForGenome;
+}>;
+
+export const defaultDrawerStateForGenome = {
+  isDrawerOpened: false,
+  activeDrawerView: null,
+  activeDrawerTrackId: null,
+  activeDrawerTranscriptId: null
 };

@@ -39,8 +39,10 @@ const fakeGenomeId = 'human';
 
 const mockState = {
   drawer: {
-    isDrawerOpened: { [fakeGenomeId]: false },
-    drawerView: { [fakeGenomeId]: DrawerView.BOOKMARKS }
+    [fakeGenomeId]: {
+      isDrawerOpened: false,
+      activeDrawerView: DrawerView.BOOKMARKS
+    }
   },
   browser: {
     browserEntity: {
@@ -172,7 +174,7 @@ describe('<TrackPanelBar />', () => {
 
     it('closes drawer view when the modal view changes', () => {
       const { container } = renderComponent(
-        set(`drawer.isDrawerOpened.${fakeGenomeId}`, true, mockState)
+        set(`drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === 'Previously viewed'
@@ -187,7 +189,8 @@ describe('<TrackPanelBar />', () => {
             action.type === getType(drawerActions.toggleDrawerForGenome)
         );
       expect(drawerToggleAction.payload).toEqual({
-        [fakeGenomeId]: false
+        activeGenomeId: fakeGenomeId,
+        isDrawerOpened: false
       });
     });
   });
