@@ -87,11 +87,14 @@ export const Browser = () => {
   const shouldShowNavBar =
     genomeBrowser && browserNavOpenState && !isDrawerOpened;
 
-  const mainContent = (
-    <>
-      {shouldShowNavBar && <BrowserNavBar />}
-      <BrowserImage />
-    </>
+  const mainContent = useMemo(
+    () => (
+      <>
+        {shouldShowNavBar && <BrowserNavBar />}
+        <BrowserImage />
+      </>
+    ),
+    [shouldShowNavBar]
   );
 
   return (

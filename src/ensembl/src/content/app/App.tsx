@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, ReactNode } from 'react';
+import React, { useEffect, ReactNode, memo } from 'react';
 import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -31,7 +31,7 @@ type AppProps = {
   changeCurrentApp: (name: string) => void;
 };
 
-const App = (props: AppProps) => {
+const AppContainer = (props: AppProps) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -44,6 +44,10 @@ const App = (props: AppProps) => {
     };
   }, [location.pathname]);
 
+  return <App />;
+};
+
+const App = memo(() => {
   return (
     <>
       <Header />
@@ -61,7 +65,7 @@ const App = (props: AppProps) => {
       </Switch>
     </>
   );
-};
+});
 
 const Status = ({ code, children }: { code: number; children: ReactNode }) => {
   return (
@@ -88,4 +92,4 @@ const mapDispatchToProps = {
   changeCurrentApp
 };
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(AppContainer);
