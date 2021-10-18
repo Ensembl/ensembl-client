@@ -78,9 +78,9 @@ export const BrowserTrackConfig = () => {
     });
 
     genomeBrowser?.send({
-      type: !shouldShowTrackLabels
-        ? OutgoingActionType.TURN_ON_LABELS
-        : OutgoingActionType.TURN_OFF_LABELS,
+      type: !shouldShowTrackName
+        ? OutgoingActionType.TURN_ON_NAMES
+        : OutgoingActionType.TURN_OFF_NAMES,
       payload: {
         track_ids: tracksToUpdate
       }

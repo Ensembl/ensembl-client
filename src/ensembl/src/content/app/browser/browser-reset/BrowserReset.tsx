@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -40,7 +40,6 @@ export const BrowserReset = () => {
   const focusObjectId = useSelector(getBrowserActiveEnsObjectId);
   const isActive = !isFocusObjectInDefaultPosition && !isDrawerOpened;
 
-  const dispatch = useDispatch();
   const { changeFocusObject } = useGenomeBrowser();
 
   if (!focusObjectId) {
@@ -52,7 +51,7 @@ export const BrowserReset = () => {
   };
 
   const handleClick = () => {
-    dispatch(changeFocusObject(focusObjectId));
+    changeFocusObject(focusObjectId);
   };
 
   return (

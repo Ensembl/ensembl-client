@@ -38,7 +38,7 @@ import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
   getAllChrLocations,
-  getBrowserActivated
+  getBrowserActiveEnsObject
 } from '../browserSelectors';
 
 /*
@@ -70,8 +70,8 @@ const useBrowserRouting = () => {
   const committedSpecies = useSelector(getEnabledCommittedSpecies);
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
-  const browserActivated = useSelector(getBrowserActivated);
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
+  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
@@ -124,6 +124,8 @@ const useBrowserRouting = () => {
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
 
+      changeFocusObject(newFocusId as string);
+
       if ((!isSameLocationAsInRedux || isFirstRender) && genomeBrowser) {
         changeBrowserLocation({
           genomeId,
@@ -135,7 +137,7 @@ const useBrowserRouting = () => {
       }
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, location, genomeBrowser, browserActivated]);
+  }, [genomeId, focus, activeEnsObject]);
 
   useEffect(() => {
     if (genomeId) {

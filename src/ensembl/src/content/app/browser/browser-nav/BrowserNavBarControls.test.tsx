@@ -71,7 +71,7 @@ describe('BrowserNavBarControls', () => {
     renderComponent();
 
     const { browserNavIconStates } = mockState.browser.browserNav;
-    Object.keys(browserNavIconStates).forEach((icon) => {
+    Object.keys(browserNavIconStates).forEach((icon: string) => {
       const navIcon = screen.getByTestId(icon);
       expect(navIcon.classList.contains('enabled')).toBe(
         browserNavIconStates[icon as BrowserNavAction]

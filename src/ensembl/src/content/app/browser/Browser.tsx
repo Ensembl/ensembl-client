@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import isEqual from 'lodash/isEqual';
 
 import EnsemblGenomeBrowser from 'ensembl-genome-browser';
 
 import useBrowserRouting from './hooks/useBrowserRouting';
+import useGenomeBrowser from './hooks/useGenomeBrowser';
 
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
@@ -30,7 +32,6 @@ import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanel
 import { toggleDrawer } from './drawer/drawerActions';
 import {
   getBrowserNavOpenState,
-  getBrowserActivated,
   getBrowserActiveGenomeId
 } from './browserSelectors';
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
@@ -54,7 +55,6 @@ import styles from './Browser.scss';
 
 export const Browser = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const browserActivated = useSelector(getBrowserActivated);
   const browserNavOpenState = useSelector(getBrowserNavOpenState);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
@@ -66,6 +66,7 @@ export const Browser = () => {
 
   const dispatch = useDispatch();
   const { changeGenomeId } = useBrowserRouting();
+  const { genomeBrowser } = useGenomeBrowser();
 
   useEffect(() => {
     if (!activeGenomeId) {
@@ -84,7 +85,7 @@ export const Browser = () => {
   };
 
   const shouldShowNavBar =
-    browserActivated && browserNavOpenState && !isDrawerOpened;
+    genomeBrowser && browserNavOpenState && !isDrawerOpened;
 
   const mainContent = (
     <>
@@ -135,6 +136,10 @@ const GenomeBrowserInitContainer = () => {
 
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
+  const browser = useMemo(() => {
+    return <Browser />;
+  }, []);
+
   return (
     <GenomeBrowserContext.Provider
       value={
@@ -146,9 +151,9 @@ const GenomeBrowserInitContainer = () => {
         } as GenomeBrowserContextType
       }
     >
-      <Browser /> ;
+      {browser}
     </GenomeBrowserContext.Provider>
   );
 };
 
-export default GenomeBrowserInitContainer;
+export default memo(GenomeBrowserInitContainer, isEqual);

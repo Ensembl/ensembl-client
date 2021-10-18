@@ -22,8 +22,6 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
-import * as browserActions from './../browserActions';
-
 import { BrowserReset } from './BrowserReset';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
@@ -72,11 +70,12 @@ describe('<BrowserReset />', () => {
     it('changes focus object when clicked', () => {
       const { container } = renderComponent();
       const button = container.querySelector('button') as HTMLButtonElement;
-      jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(button);
 
       expect(mockChangeFocusObject).toHaveBeenCalledWith(
-        defaultProps.focusObjectId
+        (mockState.browser.browserEntity.activeEnsObjectIds as any)[
+          mockState.browser.browserEntity.activeGenomeId
+        ]
       );
     });
   });

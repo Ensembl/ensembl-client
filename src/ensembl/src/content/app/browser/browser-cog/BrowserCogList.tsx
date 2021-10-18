@@ -22,12 +22,11 @@ import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
-  getBrowserActivated,
   getBrowserCogList,
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
-import { updateSelectedCog } from '../browserActions';
+import { updateSelectedCog, updateCogTrackList } from '../browserActions';
 
 import BrowserCog from './BrowserCog';
 
@@ -36,18 +35,7 @@ import { TrackSummaryList, TrackSummary } from 'ensembl-genome-browser';
 
 import styles from './BrowserCogList.scss';
 
-type BrowserCogListProps = {
-  browserActivated: boolean;
-  browserCogList: number;
-  browserCogTrackList: CogList;
-  selectedCog: string | null;
-  updateCogList: (cogList: number) => void;
-  updateCogTrackList: (track_y: CogList) => void;
-  updateSelectedCog: (trackId: string | null) => void;
-};
-
-export const BrowserCogList = (props: BrowserCogListProps) => {
-  const browserActivated = useSelector(getBrowserActivated);
+export const BrowserCogList = () => {
   const browserCogList = useSelector(getBrowserCogList);
   const browserCogTrackList = useSelector(getBrowserCogTrackList);
   const selectedCog = useSelector(getBrowserSelectedCog);
@@ -57,20 +45,20 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
   const { genomeBrowser } = useGenomeBrowser();
 
   const listenBpaneScroll = (trackSummaryList: TrackSummaryList) => {
-    // const { delta_y, cogList } = payload;
-
-    // if (delta_y !== undefined) {
-    //   props.updateCogList(delta_y);
-    // }
-
     const cogList: CogList = {};
 
     trackSummaryList.forEach((trackSummary: TrackSummary) => {
-      cogList[trackSummary['switch-id']] = Number(trackSummary.offset);
+      if (
+        trackSummary.offset &&
+        trackSummary['switch-id'] &&
+        !cogList[trackSummary['switch-id']]
+      ) {
+        cogList[trackSummary['switch-id']] = Number(trackSummary.offset);
+      }
     });
 
     if (cogList) {
-      props.updateCogTrackList(cogList);
+      dispatch(updateCogTrackList(cogList));
     }
   };
 
@@ -82,7 +70,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     );
 
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser]);
+  }, [genomeBrowser, browserCogTrackList]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
@@ -92,7 +80,9 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
         <BrowserCog
           cogActivated={selectedCog === name}
           trackId={name}
-          updateSelectedCog={() => dispatch(updateSelectedCog)}
+          updateSelectedCog={(trackId: string | null) =>
+            dispatch(updateSelectedCog(trackId))
+          }
         />
       </div>
     );
@@ -102,7 +92,7 @@ export const BrowserCogList = (props: BrowserCogListProps) => {
     transform: 'translate(0,' + browserCogList + 'px)'
   };
 
-  return browserActivated ? (
+  return genomeBrowser ? (
     <div className={styles.browserTrackConfigOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>

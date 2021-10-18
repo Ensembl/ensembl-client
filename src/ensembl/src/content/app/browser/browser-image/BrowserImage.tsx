@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, memo } from 'react';
-import { connect } from 'react-redux';
+import React, { useRef, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import isEqual from 'lodash/isEqual';
 
 import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
@@ -29,55 +28,36 @@ import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
 import {
-  getBrowserCogTrackList,
   getBrowserNavOpenState,
-  getBrowserActivated,
   getRegionEditorActive,
-  getRegionFieldActive,
-  getBrowserActiveGenomeId
+  getRegionFieldActive
 } from '../browserSelectors';
-import {
-  updateBrowserActivated,
-  updateBrowserNavIconStates,
-  setChrLocation,
-  setActualChrLocation,
-  updateBrowserActiveEnsObjectIdsAndSave,
-  updateDefaultPositionFlag
-} from '../browserActions';
-
-import { getDefaultChrLocation } from 'src/content/app/browser/browserSelectors';
-import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { setChrLocation, setActualChrLocation } from '../browserActions';
 
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
-import { BrowserNavIconStates, ChrLocation, CogList } from '../browserState';
-import { RootState } from 'src/store';
-
 import styles from './BrowserImage.scss';
 
-export type BrowserImageProps = {
-  browserCogTrackList: CogList;
-  isNavbarOpen: boolean;
-  browserActivated: boolean;
-  isDisabled: boolean;
-  activeGenomeId: string | null;
-  defaultChrLocation: ChrLocation | null;
-  updateBrowserNavIconStates: (payload: {
-    activeGenomeId: string;
-    navStates: BrowserNavIconStates;
-  }) => void;
-  updateBrowserActivated: (browserActivated: boolean) => void;
-  updateBrowserActiveEnsObject: (objectId: string) => void;
-  setChrLocation: (chrLocation: ChrLocation) => void;
-  setActualChrLocation: (chrLocation: ChrLocation) => void;
-  updateDefaultPositionFlag: (isDefaultPosition: boolean) => void;
-  changeHighlightedTrackId: (trackId: string) => void;
-};
+export type BumperPayload = [
+  top: boolean,
+  right: boolean,
+  bottom: boolean,
+  left: boolean,
+  zoomOut: boolean,
+  zoomIn: boolean
+];
 
-export const BrowserImage = (props: BrowserImageProps) => {
+export const BrowserImage = () => {
   const browserRef = useRef<HTMLDivElement>(null);
 
   const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
+
+  const isNavbarOpen = useSelector(getBrowserNavOpenState);
+  const isRegionEditorActive = useSelector(getRegionEditorActive);
+  const isRegionFieldActive = useSelector(getRegionFieldActive);
+  const isDisabled = isRegionEditorActive || isRegionFieldActive;
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -86,11 +66,11 @@ export const BrowserImage = (props: BrowserImageProps) => {
         if (action.type === IncomingActionType.CURRENT_POSITION) {
           const { stick, start, end } = action.payload;
           const chromosome = stick.split(':')[1];
-          props.setActualChrLocation([chromosome, start, end]);
+          dispatch(setActualChrLocation([chromosome, start, end]));
         } else if (action.type === IncomingActionType.TARGET_POSITION) {
           const { stick, start, end } = action.payload;
           const chromosome = stick.split(':')[1];
-          props.setChrLocation([chromosome, start, end]);
+          dispatch(setChrLocation([chromosome, start, end]));
         }
       }
     );
@@ -98,69 +78,41 @@ export const BrowserImage = (props: BrowserImageProps) => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [genomeBrowser, props.defaultChrLocation]);
-
-  useEffect(() => {
-    const activateBrowser = async () => {
-      if (!genomeBrowser) {
-        await activateGenomeBrowser();
-      }
-    };
-
-    activateBrowser();
-
-    // TODO: Check if this is required
-    // return () => {
-    //   props.updateBrowserActivated(false);
-    // };
   }, [genomeBrowser]);
 
+  useEffect(() => {
+    activateGenomeBrowser();
+  }, []);
+
   const browserContainerClassNames = classNames(styles.browserStage, {
-    [styles.shorter]: props.isNavbarOpen
+    [styles.shorter]: isNavbarOpen
   });
 
-  return (
-    <>
-      {!props.browserActivated && (
-        <div className={styles.loaderWrapper}>
-          <CircleLoader />
-        </div>
-      )}
+  const browserImageContents = useMemo(() => {
+    return (
       <div className={styles.browserImagePlus}>
         <div
           id={BROWSER_CONTAINER_ID}
           className={browserContainerClassNames}
           ref={browserRef}
         />
-        <div id="other"></div>
         <BrowserCogList />
         <ZmenuController browserRef={browserRef} />
-        {props.isDisabled ? <Overlay /> : null}
+        {isDisabled ? <Overlay /> : null}
       </div>
+    );
+  }, []);
+
+  return (
+    <>
+      {!genomeBrowser && (
+        <div className={styles.loaderWrapper}>
+          <CircleLoader />
+        </div>
+      )}
+      {browserImageContents}
     </>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  browserCogTrackList: getBrowserCogTrackList(state),
-  isNavbarOpen: getBrowserNavOpenState(state),
-  browserActivated: getBrowserActivated(state),
-  activeGenomeId: getBrowserActiveGenomeId(state),
-  defaultChrLocation: getDefaultChrLocation(state),
-  isDisabled: getRegionEditorActive(state) || getRegionFieldActive(state)
-});
-
-const mapDispatchToProps = {
-  updateBrowserActivated,
-  updateBrowserNavIconStates,
-  updateBrowserActiveEnsObject: updateBrowserActiveEnsObjectIdsAndSave,
-  setChrLocation,
-  setActualChrLocation,
-  updateDefaultPositionFlag,
-  changeHighlightedTrackId
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(memo(BrowserImage, isEqual));
+export default BrowserImage;

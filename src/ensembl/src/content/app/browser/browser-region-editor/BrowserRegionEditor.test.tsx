@@ -249,11 +249,6 @@ describe('<BrowserRegionEditor />', () => {
 
       it('changes the browser location in same region if stick is the same', () => {
         const { container } = renderComponent();
-        jest
-          .spyOn(browserActions, 'changeBrowserLocation')
-          .mockImplementation(() => () => ({
-            type: 'change-browser-location'
-          }));
 
         const [firstInput, secondInput] = container.querySelectorAll('input');
 

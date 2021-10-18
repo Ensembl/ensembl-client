@@ -26,7 +26,11 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants'
 
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
-import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
+import {
+  getBrowserActiveEnsObject,
+  getBrowserActiveEnsObjectId,
+  getBrowserActiveGenomeId
+} from 'src/content/app/browser/browserSelectors';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
@@ -39,8 +43,8 @@ const useGenomeBrowser = () => {
   const dispatch = useDispatch();
 
   const activeEnsObject = useSelector(getBrowserActiveEnsObject);
-  const activeGenomeId = activeEnsObject?.genome_id;
-  const activeEnsObjectId = activeEnsObject?.object_id;
+  const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
   const genomeBrowserContext = useContext(GenomeBrowserContext);
   if (!genomeBrowserContext) {
@@ -109,7 +113,6 @@ const useGenomeBrowser = () => {
       backend_url: config.genomeBrowserBackendBaseUrl,
       target_element_id: BROWSER_CONTAINER_ID
     });
-
     setGenomeBrowser(genomeBrowserService);
   };
 
