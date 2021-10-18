@@ -25,10 +25,10 @@ const defaultProps: ExternalReferenceProps = {
   linkText: faker.random.word(),
   to: faker.internet.url(),
   classNames: {
-    container: faker.random.word(),
-    label: faker.random.word(),
-    icon: faker.random.word(),
-    link: faker.random.word()
+    container: faker.lorem.word(),
+    label: faker.lorem.word(),
+    icon: faker.lorem.word(),
+    link: faker.lorem.word()
   }
 };
 
