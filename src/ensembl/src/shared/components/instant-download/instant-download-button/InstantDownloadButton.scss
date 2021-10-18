@@ -1,10 +1,10 @@
 @import 'src/styles/common';
 
-.themeDarkDisabled {
-  border-color: $dark-grey;
-  color: $dark-grey;
-}
-
-.themeDarkEnabled {
+.themeDark {
   color: $white;
+
+  &Disabled {
+    border-color: $dark-grey;
+    color: $dark-grey;
+  }
 }

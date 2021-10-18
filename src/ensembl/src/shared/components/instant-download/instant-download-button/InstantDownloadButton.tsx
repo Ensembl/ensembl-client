@@ -15,6 +15,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import LoadingButton from '../../loading-button';
 
@@ -32,12 +33,12 @@ type Props = {
 };
 
 const InstantDownloadButton = (props: Props) => {
-  const themeClass =
-    props.theme === 'dark'
-      ? { disabled: styles.themeDarkDisabled, enabled: styles.themeDarkEnabled }
-      : undefined;
-  const classNames = { ...props.classNames, button: themeClass };
-  const propsToPass = { ...props, classNames };
+  const buttonClass = classNames({
+    [styles.themeDark]: props.theme === 'dark',
+    [styles.themeDarkDisabled]: props.isDisabled
+  });
+  const allClassNames = { ...props.classNames, button: buttonClass };
+  const propsToPass = { ...props, classNames: allClassNames };
 
   return <LoadingButton {...propsToPass}>Download</LoadingButton>;
 };

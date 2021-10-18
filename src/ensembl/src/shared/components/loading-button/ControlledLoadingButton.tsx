@@ -27,20 +27,13 @@ import { LoadingState } from 'src/shared/types/loading-state';
 
 import styles from './LoadingButton.scss';
 
-type ButtonClassNames =
-  | {
-      disabled: string;
-      enabled: string;
-    }
-  | string;
-
 type Props = {
   onClick: () => unknown;
   status: LoadingState;
   isDisabled?: boolean;
   classNames?: {
     wrapper?: string;
-    button?: ButtonClassNames;
+    button?: string;
   };
   children: ReactNode;
 };
@@ -54,26 +47,17 @@ const ControlledLoadingButton = (props: Props) => {
 
   const wrapperClass = classNames(styles.buttonWrapper, wrapperClassName);
 
-  const getButtonClass = () => {
-    if (loadingState !== LoadingState.NOT_REQUESTED) {
-      return classNames(buttonClassName, styles.invisible);
-    } else {
-      if (typeof buttonClassName === 'string') {
-        return buttonClassName;
-      } else {
-        return props.isDisabled
-          ? buttonClassName?.disabled
-          : buttonClassName?.enabled;
-      }
-    }
-  };
+  const buttonClass =
+    loadingState !== LoadingState.NOT_REQUESTED
+      ? classNames(buttonClassName, styles.invisible)
+      : buttonClassName;
 
   return (
     <div className={wrapperClass}>
       {loadingState === LoadingState.LOADING && <Loading />}
       {loadingState === LoadingState.SUCCESS && <Success />}
       {loadingState === LoadingState.ERROR && <ErrorIndicator />}
-      <PrimaryButton className={getButtonClass()} {...otherProps} />
+      <PrimaryButton className={buttonClass} {...otherProps} />
     </div>
   );
 };

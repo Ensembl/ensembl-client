@@ -22,13 +22,6 @@ import ControlledLoadingButton from './ControlledLoadingButton';
 
 import { LoadingState } from 'src/shared/types/loading-state';
 
-type ButtonClassNames =
-  | {
-      disabled: string;
-      enabled: string;
-    }
-  | string;
-
 type LoadingButtonProps = {
   onClick: () => Promise<unknown>;
   onSuccess?: (x?: unknown) => void;
@@ -36,7 +29,7 @@ type LoadingButtonProps = {
   isDisabled?: boolean;
   classNames?: {
     wrapper?: string;
-    button?: ButtonClassNames;
+    button?: string;
   };
   children: ReactNode;
 };
