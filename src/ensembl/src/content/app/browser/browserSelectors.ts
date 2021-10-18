@@ -20,9 +20,6 @@ import { ChrLocation, defaultBrowserNavIconsState } from './browserState';
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
-export const getBrowserActivated = (state: RootState) =>
-  state.browser.browserInfo.browserActivated;
-
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserEntity.activeGenomeId;
 

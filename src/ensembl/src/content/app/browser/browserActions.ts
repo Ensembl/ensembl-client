@@ -62,10 +62,6 @@ export type ParsedUrlPayload = {
   chrLocation: ChrLocation | null;
 };
 
-export const updateBrowserActivated = createAction(
-  'browser/update-browser-activated'
-)<boolean>();
-
 export const setDataFromUrl = createAction(
   'browser/set-data-from-url'
 )<ParsedUrlPayload>();

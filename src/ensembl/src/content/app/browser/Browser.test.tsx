@@ -22,12 +22,15 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
-import { Browser } from './Browser';
+import Browser from './Browser';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
 jest.mock('./hooks/useBrowserRouting', () => () => ({
   changeGenomeId: jest.fn()
+}));
+jest.mock('./hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: {}
 }));
 jest.mock('./browser-bar/BrowserBar', () => () => (
   <div className="browserBar">BrowserBar</div>
@@ -115,20 +118,15 @@ describe('<Browser />', () => {
     });
 
     describe('BrowserNavBar', () => {
-      const updatedState = set(
-        'browser.browserInfo.browserActivated',
-        true,
-        mockState
-      );
       const stateWithBrowserNavOpen = set(
         `browser.browserNav.browserNavOpenState.${activeGenomeId}`,
         true,
-        updatedState
+        mockState
       );
 
       it('is rendered when the nav bar is open', () => {
         let { container } = renderComponent({
-          state: updatedState,
+          state: mockState,
           url: '/genome-browser?focus=foo'
         });
         expect(container.querySelectorAll('.browserNavBar')).toHaveLength(0);

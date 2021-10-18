@@ -29,7 +29,8 @@ import { TrackPanel } from './TrackPanel';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowser: mockGenomeBrowser
+  genomeBrowser: mockGenomeBrowser,
+  restoreBrowserTrackStates: jest.fn()
 }));
 
 jest.mock('src/shared/components/loader', () => ({
@@ -71,14 +72,14 @@ describe('<TrackPanel />', () => {
     it('does not render anything when not all rendering requirements are satisfied', () => {
       // defaultProps are insufficient for rendering anything useful
       // TODO: in the future, it might be a good idea to at least render a spinner here
-      const { container } = renderComponent();
+      const { container } = renderComponent(
+        set('browser.browserEntity.activeGenomeId', null, mockState)
+      );
       expect(container.querySelector('.sidebarLoader')).toBeTruthy();
     });
 
     it('renders TrackPanelList when necessary requirements are satisfied', () => {
-      const { container } = renderComponent(
-        set('browser.browserInfo.browserActivated', true, mockState)
-      );
+      const { container } = renderComponent();
 
       expect(container.querySelector('.trackPanelList')).toBeTruthy();
     });
@@ -88,13 +89,9 @@ describe('<TrackPanel />', () => {
 
       const { container } = renderComponent(
         set(
-          'browser.browserInfo.browserActivated',
+          `browser.trackPanel.${activeGenomeId}.isTrackPanelModalOpened`,
           true,
-          set(
-            `browser.trackPanel.${activeGenomeId}.isTrackPanelModalOpened`,
-            true,
-            mockState
-          )
+          mockState
         )
       );
 

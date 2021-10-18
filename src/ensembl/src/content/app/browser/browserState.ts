@@ -70,14 +70,6 @@ export type CogList = {
   [key: string]: number;
 };
 
-export type BrowserState = Readonly<{
-  browserActivated: boolean;
-}>;
-
-export const defaultBrowserState: BrowserState = {
-  browserActivated: false
-};
-
 export type BrowserEntityState = Readonly<{
   activeGenomeId: string | null;
   activeEnsObjectIds: { [genomeId: string]: string };

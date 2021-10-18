@@ -27,10 +27,10 @@ import { BrowserImage } from './BrowserImage';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-const mockGenomeBrowser = new MockGenomeBrowser();
+const mockGenomeBrowser = jest.fn();
 
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
-  genomeBrowser: mockGenomeBrowser,
+  genomeBrowser: mockGenomeBrowser(),
   activateGenomeBrowser: jest.fn()
 }));
 
@@ -67,11 +67,13 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<BrowserImage />', () => {
   afterEach(() => {
+    mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
     jest.resetAllMocks();
   });
 
   describe('rendering', () => {
     it('renders loader if browser is not activated', () => {
+      mockGenomeBrowser.mockReturnValueOnce(undefined);
       const { container } = renderComponent();
       expect(container.querySelector('#circleLoader')).toBeTruthy();
     });
