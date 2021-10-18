@@ -23,6 +23,7 @@
     - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_ingress.yaml
     - sed -i "s#<THOAS_SERVICE_SLUG>#${THOAS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_cm.yaml
+    - sed -i "s#<GA_KEY>#${GA_KEY}#g" ensembl_client_node_cm.yaml
 
     # ensembl-2020-server
     - sed -i "s#<DEPLOYMENT_ENV>#${BROWSER_SERVICE_SLUG}#g" ensembl_server_service.yaml
