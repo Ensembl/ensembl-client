@@ -32,7 +32,10 @@ type Props = {
 };
 
 const InstantDownloadButton = (props: Props) => {
-  const themeClass = props.theme === 'dark' ? styles.themeDark : '';
+  const themeClass =
+    props.theme === 'dark'
+      ? { disabled: styles.themeDarkDisabled, enabled: styles.themeDarkEnabled }
+      : undefined;
   const classNames = { ...props.classNames, button: themeClass };
   const propsToPass = { ...props, classNames };
 
