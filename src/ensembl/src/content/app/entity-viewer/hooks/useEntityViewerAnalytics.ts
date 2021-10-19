@@ -131,6 +131,31 @@ const useEntityViewerAnalytics = () => {
     });
   };
 
+  const trackTranscriptListViewToggle = (
+    transcriptLabel: string,
+    toggleAction: string,
+    position: number
+  ) => {
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_list',
+      label: transcriptLabel, //open or close
+      action: toggleAction,
+      value: position
+    });
+  };
+
+  const trackTranscriptMoreInfoToggle = (transcriptLabel: string) => {
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_list',
+      label: transcriptLabel,
+      action: 'more_information'
+    });
+  };
+
+  // "Category: gene_view_transcript_list
+  // Actions: sequence_download
+  // Label: gene_symbol + checkboxes & transcript + checkboxes"
+
   const trackDownload = (params: TrackDownloadPayload) => {
     const selectedOptions = params.options
       .sort()
@@ -155,6 +180,12 @@ const useEntityViewerAnalytics = () => {
     params: Omit<TrackDownloadPayload, 'category'>
   ) => {
     trackDownload({ ...params, category: 'gene_view_proteins_list' });
+  }
+  
+  const trackInstantDownloadTranscriptList = (
+    params: Omit<TrackDownloadPayload, 'category'>
+  ) => {
+    trackDownload({ ...params, category: 'gene_view_transcript_list' });
   };
 
   return {
@@ -164,7 +195,11 @@ const useEntityViewerAnalytics = () => {
     trackAppliedSorting,
     trackProteinInfoToggle,
     trackProteinDownload,
-    trackExternalLinkClickInProteinsList
+    trackExternalLinkClickInProteinsList,
+    trackTranscriptListViewToggle,
+    trackTranscriptMoreInfoToggle,
+    trackExternalLinkClick,
+    trackInstantDownloadTranscriptList
   };
 };
 export default useEntityViewerAnalytics;

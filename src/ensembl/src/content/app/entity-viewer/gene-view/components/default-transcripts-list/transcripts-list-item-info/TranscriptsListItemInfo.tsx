@@ -49,10 +49,14 @@ import { SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
+import useEntityViewerAnalytics from '../../../../hooks/useEntityViewerAnalytics';
+
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
+import { getTranscriptMetadata } from '../../../../shared/components/default-transcript-label/TranscriptQualityLabel';
+import { TrackTranscriptDownloadPayload } from 'ensemblRoot/src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 
-type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id'>;
+type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id' | 'symbol'>;
 type Transcript = Pick<
   FullTranscript,
   'stable_id' | 'unversioned_stable_id' | 'external_references' | 'metadata'
@@ -90,6 +94,46 @@ export const TranscriptsListItemInfo = (
   const { genomeId, entityId } = params;
 
   const dispatch = useDispatch();
+
+  const {
+    trackTranscriptMoreInfoToggle,
+    trackExternalLinkClick,
+    trackInstantDownloadTranscriptList
+  } = useEntityViewerAnalytics();
+
+  const handleTranscriptMoreInfoClick = () => {
+    dispatch(toggleTranscriptMoreInfo(transcript.stable_id));
+
+    const qualityLabel = getTranscriptMetadata(transcript)?.label;
+    const gaTranscriptLabel = [qualityLabel, transcript.stable_id]
+      .filter(Boolean)
+      .join(' ');
+    trackTranscriptMoreInfoToggle(gaTranscriptLabel);
+  };
+
+  const onDownload = (
+    payload: TrackTranscriptDownloadPayload,
+    downloadStatus: 'success' | 'failure'
+  ) => {
+    const geneDownloadOptions = Object.entries(payload.options.gene)
+      .filter(([, isSelected]) => isSelected)
+      .map(([key]) => `gene_${key}`);
+
+    const transcriptDownloadOptions = Object.entries(payload.options.transcript)
+      .filter(([, isSelected]) => isSelected)
+      .map(([key]) => `transcript_${key}`);
+
+    trackInstantDownloadTranscriptList({
+      geneSymbol: props.gene.symbol ?? props.gene.stable_id,
+      transcriptId: payload.transcriptId,
+      options: [...geneDownloadOptions, ...transcriptDownloadOptions],
+      downloadStatus
+    });
+  };
+
+  const handleExternalReferenceClick = (linkLabel: string) => {
+    trackExternalLinkClick(linkLabel);
+  };
 
   const getTranscriptLocation = () => {
     const { start, end } = getFeatureCoordinates(transcript);
@@ -170,6 +214,7 @@ export const TranscriptsListItemInfo = (
                 label={'RefSeq match'}
                 to={transcriptNCBI.url}
                 linkText={transcriptNCBI.id}
+                onClick={() => handleExternalReferenceClick('RefSeq match')}
               />
             )}
             {!!transcriptCCDS && (
@@ -178,6 +223,7 @@ export const TranscriptsListItemInfo = (
                 label={'CCDS'}
                 to={transcriptCCDS.url}
                 linkText={transcriptCCDS.accession_id}
+                onClick={() => handleExternalReferenceClick('CCDS')}
               />
             )}
           </div>
@@ -219,9 +265,7 @@ export const TranscriptsListItemInfo = (
 
         {(hasRelevantMetadata || !!transcriptCCDS) && (
           <ShowHide
-            onClick={() =>
-              dispatch(toggleTranscriptMoreInfo(transcript.stable_id))
-            }
+            onClick={handleTranscriptMoreInfoClick}
             label="More information"
             isExpanded={props.expandMoreInfo}
             classNames={{ wrapper: styles.moreInformationLink }}
@@ -238,34 +282,26 @@ export const TranscriptsListItemInfo = (
           isExpanded={props.expandDownload}
           classNames={{ wrapper: styles.downloadLink }}
         />
-        {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
+        {props.expandDownload && (
+          <div className={styles.download}>
+            <InstantDownloadTranscript
+              genomeId={genomeId}
+              transcript={{
+                id: transcript.stable_id,
+                isProteinCoding: isProteinCodingTranscript(transcript)
+              }}
+              gene={{ id: props.gene.stable_id }}
+              onDownloadSuccess={(payload) => onDownload(payload, 'success')}
+              onDownloadFailure={(payload) => onDownload(payload, 'failure')}
+            />
+          </div>
+        )}
       </div>
       <div className={transcriptsListStyles.right}>
         <div className={styles.viewInApp}>
           <ViewInApp links={{ genomeBrowser: { url: getBrowserLink() } }} />
         </div>
       </div>
-    </div>
-  );
-};
-
-const renderInstantDownload = ({
-  transcript,
-  gene,
-  genomeId
-}: TranscriptsListItemInfoProps & {
-  genomeId: string;
-}) => {
-  return (
-    <div className={styles.download}>
-      <InstantDownloadTranscript
-        genomeId={genomeId}
-        transcript={{
-          id: transcript.stable_id,
-          isProteinCoding: isProteinCodingTranscript(transcript)
-        }}
-        gene={{ id: gene.stable_id }}
-      />
     </div>
   );
 };

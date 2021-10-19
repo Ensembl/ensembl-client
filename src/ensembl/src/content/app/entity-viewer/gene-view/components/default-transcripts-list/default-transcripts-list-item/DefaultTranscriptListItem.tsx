@@ -26,9 +26,14 @@ import TranscriptsListItemInfo, {
 
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import {
+  getTranscriptMetadata,
+  TranscriptQualityLabel
+} from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
@@ -41,6 +46,7 @@ type Transcript = Pick<
   UnsplicedTranscriptProps['transcript'];
 
 export type DefaultTranscriptListItemProps = {
+  transcriptPosition?: number;
   gene: TranscriptsListItemInfoProps['gene'];
   transcript: Transcript;
   rulerTicks: TicksAndScale;
@@ -63,9 +69,30 @@ export const DefaultTranscriptListItem = (
   const transcriptWidth = scale(transcriptLength) as number;
 
   const dispatch = useDispatch();
+  const { trackTranscriptListViewToggle } = useEntityViewerAnalytics();
+
+  let transcriptExpandStatus = props.expandTranscript;
 
   const handleTranscriptClick = () => {
+    transcriptExpandStatus = !transcriptExpandStatus;
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
+
+    if (!props.transcriptPosition) {
+      return;
+    }
+
+    const qualityLabel = getTranscriptMetadata(props.transcript)?.label;
+    const gatranscriptLabel = [qualityLabel, props.transcript.stable_id]
+      .filter(Boolean)
+      .join(' ');
+    const gaToggleAction = transcriptExpandStatus
+      ? 'open_accordion'
+      : 'close_accordion';
+    trackTranscriptListViewToggle(
+      gatranscriptLabel,
+      gaToggleAction,
+      props.transcriptPosition
+    );
   };
 
   return (
