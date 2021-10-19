@@ -31,6 +31,7 @@ export type ExternalReferenceProps = {
     icon?: string;
     link?: string;
   };
+  onClick?: () => void;
 };
 
 const ExternalReference = (props: ExternalReferenceProps) => {
@@ -55,6 +56,7 @@ const ExternalReference = (props: ExternalReferenceProps) => {
             icon: props.classNames?.icon,
             link: props.classNames?.link
           }}
+          onClick={props.onClick}
         />
       ) : (
         <span className={styles.noLink}>{props.linkText}</span>
