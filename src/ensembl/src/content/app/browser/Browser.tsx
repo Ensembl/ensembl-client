@@ -66,8 +66,8 @@ export const Browser = () => {
 
   const dispatch = useDispatch();
   const { changeGenomeId } = useBrowserRouting();
-  const { genomeBrowser } = useGenomeBrowser();
 
+  const { genomeBrowser } = useGenomeBrowser();
   useEffect(() => {
     if (!activeGenomeId) {
       return;

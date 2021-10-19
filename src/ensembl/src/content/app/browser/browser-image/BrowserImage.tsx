@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
+import debounce from 'lodash/debounce';
 
 import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
@@ -32,7 +33,9 @@ import {
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
+
 import { setChrLocation, setActualChrLocation } from '../browserActions';
+import { ChrLocation } from 'ensemblRoot/src/content/app/browser/browserState';
 
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
@@ -59,6 +62,13 @@ export const BrowserImage = () => {
 
   const dispatch = useDispatch();
 
+  const updateChrLocation = useCallback(
+    debounce((chrLocation) => dispatch(setChrLocation(chrLocation)), 500, {
+      trailing: true
+    }),
+    []
+  );
+
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       [IncomingActionType.CURRENT_POSITION, IncomingActionType.TARGET_POSITION],
@@ -70,7 +80,8 @@ export const BrowserImage = () => {
         } else if (action.type === IncomingActionType.TARGET_POSITION) {
           const { stick, start, end } = action.payload;
           const chromosome = stick.split(':')[1];
-          dispatch(setChrLocation([chromosome, start, end]));
+          const chrLocation = [chromosome, start, end] as ChrLocation;
+          updateChrLocation(chrLocation);
         }
       }
     );

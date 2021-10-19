@@ -124,9 +124,9 @@ const useBrowserRouting = () => {
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
 
-      changeFocusObject(newFocusId as string);
-
       if ((!isSameLocationAsInRedux || isFirstRender) && genomeBrowser) {
+        changeFocusObject(newFocusId as string);
+
         changeBrowserLocation({
           genomeId,
           ensObjectId: newFocusId,
@@ -175,9 +175,6 @@ const useBrowserRouting = () => {
   );
 
   return {
-    genomeId,
-    focusId: newFocusId,
-    chrLocation,
     changeGenomeId
   };
 };
