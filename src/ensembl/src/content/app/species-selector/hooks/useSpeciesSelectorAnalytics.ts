@@ -66,13 +66,15 @@ const useSpeciesSelectorAnalytics = () => {
       species: speciesNameForAnalytics
     });
 
-    if (committedSpecies.length > 1) {
-      trackFinalSetOfSpecies(species);
+    const updatedCommittedSpecies = [...committedSpecies, species];
+
+    if (updatedCommittedSpecies.length > 1) {
+      trackFinalSetOfSpecies(updatedCommittedSpecies);
     }
   };
 
-  const trackFinalSetOfSpecies = (newlyCommittedSpecies: CurrentItem) => {
-    const committedSpeciesNames = [newlyCommittedSpecies, ...committedSpecies]
+  const trackFinalSetOfSpecies = (updatedCommittedSpecies: CurrentItem[]) => {
+    const committedSpeciesNames = updatedCommittedSpecies
       .map((species) => getSpeciesAnalyticsName(species))
       .sort();
 
