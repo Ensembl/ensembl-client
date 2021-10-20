@@ -55,6 +55,37 @@ const useGenomeBrowser = () => {
 
   const { genomeBrowser, setGenomeBrowser, setZmenus, zmenus } =
     genomeBrowserContext;
+
+  const activateGenomeBrowser = async () => {
+    const genomeBrowserService = new EnsemblGenomeBrowser();
+    await genomeBrowserService.init({
+      backend_url: config.genomeBrowserBackendBaseUrl,
+      target_element_id: BROWSER_CONTAINER_ID
+    });
+    setGenomeBrowser(genomeBrowserService);
+  };
+
+  const changeFocusObject = (focusObjectId: string) => {
+    if (!activeGenomeId || !activeEnsObject || !genomeBrowser) {
+      return;
+    }
+
+    const { genomeId, objectId } = parseEnsObjectId(focusObjectId);
+
+    dispatch(updatePreviouslyViewedObjectsAndSave());
+
+    const action: OutgoingAction = {
+      type: OutgoingActionType.SET_FOCUS,
+      payload: {
+        focus: objectId,
+        genomeId,
+        stick: `${genomeId}:${activeEnsObject.location.chromosome}`
+      }
+    };
+
+    genomeBrowser.send(action);
+  };
+
   const restoreBrowserTrackStates = () => {
     if (!activeGenomeId || !activeEnsObjectId) {
       return;
@@ -105,36 +136,6 @@ const useGenomeBrowser = () => {
 
       genomeBrowser.send(turnOffAction);
     }
-  };
-
-  const activateGenomeBrowser = async () => {
-    const genomeBrowserService = new EnsemblGenomeBrowser();
-    await genomeBrowserService.init({
-      backend_url: config.genomeBrowserBackendBaseUrl,
-      target_element_id: BROWSER_CONTAINER_ID
-    });
-    setGenomeBrowser(genomeBrowserService);
-  };
-
-  const changeFocusObject = (focusObjectId: string) => {
-    if (!activeGenomeId || !activeEnsObject || !genomeBrowser) {
-      return;
-    }
-
-    const { genomeId, objectId } = parseEnsObjectId(focusObjectId);
-
-    dispatch(updatePreviouslyViewedObjectsAndSave());
-
-    const action: OutgoingAction = {
-      type: OutgoingActionType.SET_FOCUS,
-      payload: {
-        focus: objectId,
-        genomeId,
-        stick: `${genomeId}:${activeEnsObject.location.chromosome}`
-      }
-    };
-
-    genomeBrowser.send(action);
   };
 
   const changeBrowserLocation = (locationData: {

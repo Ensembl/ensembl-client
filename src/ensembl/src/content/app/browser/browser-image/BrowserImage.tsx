@@ -92,7 +92,9 @@ export const BrowserImage = () => {
   }, [genomeBrowser]);
 
   useEffect(() => {
-    activateGenomeBrowser();
+    if (!genomeBrowser) {
+      activateGenomeBrowser();
+    }
   }, []);
 
   const browserContainerClassNames = classNames(styles.browserStage, {

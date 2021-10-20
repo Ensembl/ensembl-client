@@ -112,7 +112,7 @@ const useBrowserRouting = () => {
     if (!focus && activeEnsObjectId) {
       const newFocus = buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId));
       dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
-    } else if (focus && !chrLocation) {
+    } else if (focus && !chrLocation && activeEnsObject) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
@@ -123,21 +123,21 @@ const useBrowserRouting = () => {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
+      if (genomeBrowser && activeEnsObject) {
+        if (!isSameLocationAsInRedux || isFirstRender) {
+          changeFocusObject(newFocusId as string);
+          changeBrowserLocation({
+            genomeId,
+            ensObjectId: newFocusId,
+            chrLocation
+          });
 
-      if ((!isSameLocationAsInRedux || isFirstRender) && genomeBrowser) {
-        changeFocusObject(newFocusId as string);
-
-        changeBrowserLocation({
-          genomeId,
-          ensObjectId: newFocusId,
-          chrLocation
-        });
-
-        firstRenderRef.current = false;
+          firstRenderRef.current = false;
+        }
       }
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, activeEnsObject]);
+  }, [genomeId, focus, activeEnsObject, genomeBrowser, location]);
 
   useEffect(() => {
     if (genomeId) {
@@ -158,6 +158,10 @@ const useBrowserRouting = () => {
         focus: focusIdForUrl,
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
+
+      dispatch(setActiveGenomeId(genomeId));
+      // Consider it as first render when we change genome
+      firstRenderRef.current = true;
 
       // In case the url is simply /genome-browser, use the `replace` history method to redirect the user further.
       // This will allow the user to return from the next page (genome browser with genome id selected)

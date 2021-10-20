@@ -70,7 +70,7 @@ export const BrowserCogList = () => {
     );
 
     return () => subscription?.unsubscribe();
-  }, [genomeBrowser, browserCogTrackList]);
+  }, [genomeBrowser]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
