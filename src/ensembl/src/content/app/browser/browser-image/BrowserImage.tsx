@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-import debounce from 'lodash/debounce';
 
 import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
 
@@ -41,15 +40,6 @@ import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
 
-export type BumperPayload = [
-  top: boolean,
-  right: boolean,
-  bottom: boolean,
-  left: boolean,
-  zoomOut: boolean,
-  zoomIn: boolean
-];
-
 export const BrowserImage = () => {
   const browserRef = useRef<HTMLDivElement>(null);
 
@@ -61,13 +51,6 @@ export const BrowserImage = () => {
   const isDisabled = isRegionEditorActive || isRegionFieldActive;
 
   const dispatch = useDispatch();
-
-  const updateChrLocation = useCallback(
-    debounce((chrLocation) => dispatch(setChrLocation(chrLocation)), 500, {
-      trailing: true
-    }),
-    []
-  );
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
@@ -81,7 +64,7 @@ export const BrowserImage = () => {
           const { stick, start, end } = action.payload;
           const chromosome = stick.split(':')[1];
           const chrLocation = [chromosome, start, end] as ChrLocation;
-          updateChrLocation(chrLocation);
+          dispatch(setChrLocation(chrLocation));
         }
       }
     );
