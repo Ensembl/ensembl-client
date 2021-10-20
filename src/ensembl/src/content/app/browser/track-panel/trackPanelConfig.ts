@@ -19,8 +19,7 @@ import { Status } from 'src/shared/types/status';
 export enum TrackItemColour {
   BLUE = 'blue',
   DARK_GREY = 'darkGrey',
-  GREY = 'grey',
-  WHITE = 'white'
+  LIGHT_GREY = 'lightGrey'
 }
 
 export type TrackItemColourKey = keyof typeof TrackItemColour;

@@ -19,6 +19,8 @@ import React, { useState } from 'react';
 import { createGene } from 'tests/fixtures/entity-viewer/gene';
 import { createTranscript } from 'tests/fixtures/entity-viewer/transcript';
 
+import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
+
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 
 import styles from './InstantDownload.stories.scss';
@@ -77,7 +79,7 @@ export const InstantDownloadTranscriptStory = () => {
           gene={{ id: gene.unversioned_stable_id }}
           transcript={{
             id: transcript.unversioned_stable_id,
-            biotype: transcript.metadata.biotype?.value as string
+            isProteinCoding: isProteinCodingTranscript(transcript)
           }}
         />
       </div>

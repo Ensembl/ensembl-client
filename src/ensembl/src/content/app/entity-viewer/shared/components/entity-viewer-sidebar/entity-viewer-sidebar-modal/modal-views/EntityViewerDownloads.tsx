@@ -24,10 +24,11 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 
 import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
-import { GeneMetadata } from 'src/shared/types/thoas/metadata';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './EntityViewerDownloads.scss';
 
@@ -35,15 +36,21 @@ const QUERY = gql`
   query Gene($genomeId: String!, $entityId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
       stable_id
-      metadata {
-        biotype {
-          label
-          value
+      transcripts {
+        product_generating_contexts {
+          product_type
         }
       }
     }
   }
 `;
+
+type Transcript = {
+  product_generating_contexts: Pick<
+    FullProductGeneratingContext,
+    'product_type'
+  >[];
+};
 
 const EntityViewerSidebarDownloads = () => {
   const genomeId = useSelector(getEntityViewerActiveGenomeId);
@@ -52,7 +59,7 @@ const EntityViewerSidebarDownloads = () => {
   const entityId = geneId ? parseEnsObjectId(geneId).objectId : null;
 
   const { data } = useQuery<{
-    gene: { stable_id: string; metadata: GeneMetadata };
+    gene: { stable_id: string; transcripts: Transcript[] };
   }>(QUERY, {
     variables: { genomeId, entityId }
   });
@@ -68,7 +75,7 @@ const EntityViewerSidebarDownloads = () => {
         genomeId={genomeId as string}
         gene={{
           id: data.gene.stable_id,
-          biotype: data.gene.metadata.biotype.value
+          isProteinCoding: isProteinCodingGene(data.gene)
         }}
       />
     </section>

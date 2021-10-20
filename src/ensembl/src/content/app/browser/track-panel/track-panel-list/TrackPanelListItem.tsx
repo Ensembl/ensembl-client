@@ -29,21 +29,24 @@ import { updateCollapsedTrackIds } from 'src/content/app/browser/track-panel/tra
 import {
   changeDrawerView,
   setActiveDrawerTrackId,
+  setActiveDrawerTranscriptId,
   toggleDrawer
 } from 'src/content/app/browser/drawer/drawerActions';
+
+import {
+  getHighlightedTrackId,
+  isTrackCollapsed
+} from 'src/content/app/browser/track-panel/trackPanelSelectors';
+import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
   getIsDrawerOpened,
-  getDrawerView,
+  getActiveDrawerView,
   getActiveDrawerTrackId
 } from 'src/content/app/browser/drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId
 } from 'src/content/app/browser/browserSelectors';
-import {
-  getHighlightedTrackId,
-  isTrackCollapsed
-} from 'src/content/app/browser/track-panel/trackPanelSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon';
@@ -78,7 +81,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
-  const drawerView = useSelector(getDrawerView);
+  const drawerView = useSelector(getActiveDrawerView);
   const highlightedTrackId = useSelector(getHighlightedTrackId);
   const isCollapsed = useSelector((state: RootState) =>
     isTrackCollapsed(state, trackId)
@@ -93,7 +96,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     let drawerViewToSet = DrawerView.TRACK_DETAILS;
     if (trackId === 'track:gene-feat') {
       drawerViewToSet = DrawerView.GENE_SUMMARY;
-    } else if (trackId === 'track:gene-feat-1') {
+    } else if (trackId.includes('track:transcript')) {
       drawerViewToSet = DrawerView.TRANSCRIPT_SUMMARY;
     }
     dispatch(changeDrawerView(drawerViewToSet));
@@ -111,6 +114,16 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     });
   };
 
+  const dispatchDrawerActions = () => {
+    if (activeGenomeId) {
+      dispatch(setActiveDrawerTrackId(trackId));
+
+      if (trackId.includes('track:transcript')) {
+        dispatch(setActiveDrawerTranscriptId(track.stable_id));
+      }
+    }
+  };
+
   const drawerViewListHandler = (event: MouseEvent) => {
     event.preventDefault();
 
@@ -118,13 +131,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       return;
     }
 
-    if (activeGenomeId) {
-      dispatch(
-        setActiveDrawerTrackId({
-          [activeGenomeId]: trackId
-        })
-      );
-    }
+    dispatchDrawerActions();
   };
 
   const drawerViewButtonHandler = useCallback(() => {
@@ -136,13 +143,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       });
     }
 
-    if (activeGenomeId) {
-      dispatch(
-        setActiveDrawerTrackId({
-          [activeGenomeId]: trackId
-        })
-      );
-    }
+    dispatchDrawerActions();
 
     updateDrawerView();
   }, [track.track_id, drawerView, isDrawerOpened, activeGenomeId]);
@@ -162,7 +163,10 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       return;
     }
     // FIXME: Temporary hack until we have a set of proper track names
-    if (track.track_id.startsWith('track:gene')) {
+    if (
+      track.track_id.startsWith('track:gene') ||
+      track.track_id.startsWith('track:transcript')
+    ) {
       dispatch(
         updateTrackStatesAndSave({
           [activeGenomeId]: {

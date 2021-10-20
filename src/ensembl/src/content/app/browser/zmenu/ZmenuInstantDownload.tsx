@@ -19,12 +19,15 @@ import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
 import { Pick2 } from 'ts-multipick';
 
+import { isProteinCodingTranscript } from '../../entity-viewer/shared/helpers/entity-helpers';
+
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
+import { FullProductGeneratingContext } from 'ensemblRoot/src/shared/types/thoas/productGeneratingContext';
 
 import styles from './Zmenu.scss';
 
@@ -35,10 +38,8 @@ type Props = {
 const TRANSCRIPT_QUERY = gql`
   query Transcript($genomeId: String!, $transcriptId: String!) {
     transcript(byId: { genome_id: $genomeId, stable_id: $transcriptId }) {
-      metadata {
-        biotype {
-          value
-        }
+      product_generating_contexts {
+        product_type
       }
       gene {
         stable_id
@@ -47,8 +48,12 @@ const TRANSCRIPT_QUERY = gql`
   }
 `;
 
-type Transcript = Pick2<FullTranscript, 'metadata', 'biotype'> &
-  Pick2<FullTranscript, 'gene', 'stable_id'>;
+type Transcript = Pick2<FullTranscript, 'gene', 'stable_id'> & {
+  product_generating_contexts: Pick<
+    FullProductGeneratingContext,
+    'product_type'
+  >[];
+};
 
 const ZmenuInstantDownload = (props: Props) => {
   const transcriptId = props.id;
@@ -79,7 +84,7 @@ const ZmenuInstantDownload = (props: Props) => {
   const payload = {
     transcript: {
       id: transcriptId,
-      biotype: data.transcript.metadata.biotype.value
+      isProteinCoding: isProteinCodingTranscript(data.transcript)
     },
     gene: {
       id: data.transcript.gene.stable_id

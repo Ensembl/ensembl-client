@@ -31,11 +31,13 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getNumberOfCodingExons,
-  getSplicedRNALength
+  getSplicedRNALength,
+  isProteinCodingTranscript
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
+import { getActiveDrawerTranscriptId } from 'src/content/app/browser/drawer/drawerSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -68,7 +70,7 @@ type ProductGeneratingContext =
 
 type Gene = Pick<
   FullGene,
-  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name'
+  'stable_id' | 'unversioned_stable_id' | 'symbol' | 'name' | 'transcripts'
 >;
 
 const GENE_AND_TRANSCRIPT_QUERY = gql`
@@ -158,6 +160,7 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
 
 const TranscriptSummary = () => {
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
+  const activeDrawerTranscriptId = useSelector(getActiveDrawerTranscriptId);
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({
@@ -165,8 +168,8 @@ const TranscriptSummary = () => {
     geneId: ensObjectGene.stable_id
   });
 
-  const canonicalTranscript = geneData?.gene.transcripts.find(
-    (transcript) => transcript.metadata.canonical
+  const activeDrawerTranscript = geneData?.gene.transcripts.find(
+    (transcript) => transcript.stable_id === activeDrawerTranscriptId
   );
 
   const { data, loading } = useQuery<{
@@ -175,10 +178,10 @@ const TranscriptSummary = () => {
   }>(GENE_AND_TRANSCRIPT_QUERY, {
     variables: {
       geneId: ensObjectGene.stable_id,
-      transcriptId: canonicalTranscript?.stable_id,
+      transcriptId: activeDrawerTranscript?.stable_id,
       genomeId: ensObjectGene.genome_id
     },
-    skip: !canonicalTranscript?.stable_id
+    skip: !activeDrawerTranscript?.stable_id
   });
 
   if (loading) {
@@ -340,7 +343,7 @@ const TranscriptSummary = () => {
                 genomeId={ensObjectGene.genome_id}
                 transcript={{
                   id: transcript.unversioned_stable_id,
-                  biotype: metadata.biotype.value
+                  isProteinCoding: isProteinCodingTranscript(transcript)
                 }}
                 gene={{ id: gene.unversioned_stable_id }}
                 theme="light"
