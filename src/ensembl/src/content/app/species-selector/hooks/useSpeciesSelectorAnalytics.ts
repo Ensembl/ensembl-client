@@ -82,8 +82,7 @@ const useSpeciesSelectorAnalytics = () => {
       category: 'species_selector',
       action: 'select_multiple',
       label: committedSpeciesNames.join(','),
-      value: committedSpeciesNames.length,
-      species: ''
+      value: committedSpeciesNames.length
     });
   };
 
