@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/useSpeciesSelectorAnalytics';
 
 import { getSelectedItem } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { commitSelectedSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 

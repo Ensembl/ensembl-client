@@ -24,7 +24,7 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { PrimaryButton } from 'src/shared/components/button/Button';
 

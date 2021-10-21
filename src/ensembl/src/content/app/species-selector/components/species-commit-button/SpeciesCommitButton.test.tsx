@@ -22,7 +22,7 @@ import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import merge from 'lodash/merge';
 
-import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
+import * as speciesSelectorSlice from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
@@ -79,7 +79,7 @@ describe('<SpeciesCommitButton />', () => {
 
   it('calls the onCommit prop if clicked', () => {
     jest
-      .spyOn(speciesSelectorActions, 'commitSelectedSpeciesAndSave')
+      .spyOn(speciesSelectorSlice, 'commitSelectedSpeciesAndSave')
       .mockImplementation(() => jest.fn());
     const { container } = renderComponent();
     const button = container.querySelector('button') as HTMLElement;
@@ -87,7 +87,7 @@ describe('<SpeciesCommitButton />', () => {
     userEvent.click(button);
 
     expect(
-      speciesSelectorActions.commitSelectedSpeciesAndSave
+      speciesSelectorSlice.commitSelectedSpeciesAndSave
     ).toHaveBeenCalled();
   });
 });

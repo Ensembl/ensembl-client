@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import PopularSpeciesButton from 'src/content/app/species-selector/components/popular-species-button/PopularSpeciesButton';
 
-import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
 import styles from './PopularSpeciesPanel.scss';

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import { createAsyncAction, createAction } from 'typesafe-actions';
-import { Action } from 'redux';
-import { ThunkAction } from 'redux-thunk';
+import {
+  createSlice,
+  createAction,
+  createAsyncThunk,
+  PayloadAction,
+  ThunkAction,
+  Action
+} from '@reduxjs/toolkit';
 import pickBy from 'lodash/pickBy';
-import apiService from 'src/services/api-service';
 
+import apiService from 'src/services/api-service';
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
+
 import { deleteSpeciesInGenomeBrowser } from 'src/content/app/browser/browserActions';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
@@ -29,35 +35,47 @@ import {
   getCommittedSpeciesById,
   getSelectedItem,
   getSearchText
-} from 'src/content/app/species-selector/state/speciesSelectorSelectors';
-
-import {
-  SearchMatch,
-  SearchMatches,
-  PopularSpecies,
-  CommittedItem
-} from 'src/content/app/species-selector/types/species-search';
-
+} from './speciesSelectorSelectors';
 import { getGenomeInfoById } from 'src/shared/state/genome/genomeSelectors';
-
-import { CurrentItem } from './speciesSelectorState';
-
-const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
-  genome_id: data.genome_id,
-  reference_genome_id: data.reference_genome_id,
-  common_name: data.common_name,
-  scientific_name: data.scientific_name,
-  assembly_name: data.assembly_name as string,
-  isEnabled: true
-});
 
 import { MINIMUM_SEARCH_LENGTH } from 'src/content/app/species-selector/constants/speciesSelectorConstants';
 
+import { LoadingState } from 'src/shared/types/loading-state';
+import {
+  SearchMatch,
+  SearchMatches,
+  CommittedItem,
+  PopularSpecies
+} from 'src/content/app/species-selector/types/species-search';
 import { RootState } from 'src/store';
 
-export const setSearchText = createAction(
-  'species_selector/set_search_text'
-)<string>();
+export type CurrentItem = {
+  genome_id: string; // changes every time we update strain or assembly
+  reference_genome_id: string | null;
+  common_name: string | null;
+  scientific_name: string;
+  assembly_name: string | null; // name of the selected assembly
+};
+
+export type SpeciesSelectorState = {
+  loadingStates: {
+    search: LoadingState;
+  };
+  ui: {
+    isSelectingStrain: boolean;
+  };
+  search: {
+    text: string;
+    results: SearchMatches[] | null;
+  };
+  currentItem: CurrentItem | null;
+  committedItems: CommittedItem[];
+  popularSpecies: PopularSpecies[];
+};
+
+export const fetchSpeciesSearchResults = createAction<string>(
+  'species-selector/fetchSpeciesSearchResults'
+);
 
 export const updateSearch =
   (text: string): ThunkAction<void, any, null, Action<string>> =>
@@ -76,60 +94,20 @@ export const updateSearch =
     }
 
     if (trimmedText.length >= MINIMUM_SEARCH_LENGTH) {
-      dispatch(fetchSpeciesSearchResults.request(trimmedText));
+      dispatch(fetchSpeciesSearchResults(trimmedText));
     }
 
     dispatch(setSearchText(text));
   };
 
-export const fetchSpeciesSearchResults = createAsyncAction(
-  'species_selector/species_search_request',
-  'species_selector/species_search_success',
-  'species_selector/species_search_failure'
-)<string, { results: SearchMatches[] }, Error>();
-
-// TODO: wait for strains
-// export const fetchStrainsAsyncActions = createAsyncAction(
-//   'species_selector/strains_request',
-//   'species_selector/strains_success',
-//   'species_selector/strains_failure'
-// )<undefined, { strains: Strain[] }, Error>();
-
-export const fetchPopularSpeciesAsyncActions = createAsyncAction(
-  'species_selector/popular_species_request',
-  'species_selector/popular_species_success',
-  'species_selector/popular_species_failure'
-)<undefined, { popularSpecies: PopularSpecies[] }, Error>();
-
-export const setSelectedSpecies = createAction(
-  'species_selector/species_selected'
-)<SearchMatch | PopularSpecies>();
-
-export const clearSearchResults = createAction(
-  'species_selector/clear_search_results'
-)();
-
-export const clearSearch = createAction('species_selector/clear_search')();
-
-export const clearSelectedSearchResult = createAction(
-  'species_selector/clear_selected_search_result'
-)();
-
-// TODO: wait for strains
-// export const fetchStrains: ActionCreator<
-//   ThunkAction<void, any, null, Action<string>>
-// > = (genomeId: string) => async (dispatch) => {
-//   try {
-//     dispatch(fetchStrainsAsyncActions.request());
-
-//     // FIXME: using mock data here
-//     dispatch(
-//       fetchStrainsAsyncActions.success({ strains: mouseStrainsResult.strains })
-//     );
-//   } catch (error) {
-//     dispatch(fetchStrainsAsyncActions.failure(error));
-//   }
-// };
+export const fetchPopularSpecies = createAsyncThunk(
+  'species-selector/fetchPopularSpecies',
+  async () => {
+    const url = '/api/genomesearch/popular_genomes';
+    const response = await apiService.fetch(url);
+    return response.popular_species as PopularSpecies[];
+  }
+);
 
 export const ensureSpeciesIsCommitted =
   (genomeId: string): ThunkAction<void, any, null, Action<string>> =>
@@ -173,39 +151,6 @@ export const loadStoredSpecies =
     const storedSpecies = speciesSelectorStorageService.getSelectedSpecies();
     dispatch(updateCommittedSpecies(storedSpecies));
   };
-
-export const fetchPopularSpecies =
-  (): ThunkAction<void, any, null, Action<string>> => async (dispatch) => {
-    try {
-      dispatch(fetchPopularSpeciesAsyncActions.request());
-
-      const url = '/api/genomesearch/popular_genomes';
-      const response = await apiService.fetch(url);
-
-      dispatch(
-        fetchPopularSpeciesAsyncActions.success({
-          popularSpecies: response.popular_species
-        })
-      );
-    } catch (error) {
-      dispatch(fetchPopularSpeciesAsyncActions.failure(error));
-    }
-  };
-
-export const handleSelectedSpecies =
-  (
-    item: SearchMatch | PopularSpecies
-  ): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch) => {
-    dispatch(setSelectedSpecies(item));
-
-    // TODO: fetch strains when they are ready
-    // dispatch(fetchStrains(genome_id));
-  };
-
-export const updateCommittedSpecies = createAction(
-  'species_selector/update_committed_species'
-)<CommittedItem[]>();
 
 export const commitSelectedSpeciesAndSave =
   (): ThunkAction<void, any, null, Action<string>> => (dispatch, getState) => {
@@ -262,3 +207,88 @@ export const deleteSpeciesAndSave =
     dispatch(deleteSpeciesInEntityViewer(genomeId));
     speciesSelectorStorageService.saveSelectedSpecies(updatedCommittedSpecies);
   };
+
+const initialState: SpeciesSelectorState = {
+  loadingStates: {
+    search: LoadingState.NOT_REQUESTED
+  },
+  ui: {
+    isSelectingStrain: false
+  },
+  search: {
+    text: '',
+    results: null
+  },
+  currentItem: null,
+  committedItems: [],
+  popularSpecies: []
+};
+
+const speciesSelectorSlice = createSlice({
+  name: 'species-selector',
+  initialState,
+  reducers: {
+    setSearchText(state, action: PayloadAction<string>) {
+      state.search.text = action.payload;
+    },
+    updateCommittedSpecies(state, action: PayloadAction<CommittedItem[]>) {
+      state.committedItems = action.payload;
+    },
+    setSelectedSpecies(
+      state,
+      action: PayloadAction<SearchMatch | PopularSpecies>
+    ) {
+      state.currentItem = buildCurrentItem(action.payload);
+      state.search = { ...initialState.search };
+    },
+    setSearchResults(state, action: PayloadAction<SearchMatches[]>) {
+      state.search.results = action.payload;
+    },
+    clearSearch(state) {
+      state.search = { ...initialState.search };
+    },
+    clearSearchResults(state) {
+      state.search.results = null;
+    },
+    clearSelectedSearchResult(state) {
+      state.currentItem = null;
+    }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchPopularSpecies.fulfilled, (state, action) => {
+      state.popularSpecies = action.payload;
+    });
+  }
+});
+
+// NOTE: CurrentItem can be built from a search match or from a popular species
+const buildCurrentItem = (data: SearchMatch | PopularSpecies): CurrentItem => {
+  return {
+    genome_id: data.genome_id,
+    reference_genome_id: data.reference_genome_id,
+    common_name: data.common_name,
+    scientific_name: data.scientific_name,
+    assembly_name: data.assembly_name
+  };
+};
+
+const buildCommittedItem = (data: CurrentItem): CommittedItem => ({
+  genome_id: data.genome_id,
+  reference_genome_id: data.reference_genome_id,
+  common_name: data.common_name,
+  scientific_name: data.scientific_name,
+  assembly_name: data.assembly_name as string,
+  isEnabled: true
+});
+
+export const {
+  setSearchText,
+  updateCommittedSpecies,
+  setSelectedSpecies,
+  setSearchResults,
+  clearSearch,
+  clearSearchResults,
+  clearSelectedSearchResult
+} = speciesSelectorSlice.actions;
+
+export default speciesSelectorSlice.reducer;

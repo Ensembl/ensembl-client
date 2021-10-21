@@ -25,7 +25,7 @@ import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { fetchPopularSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import SpeciesUsageToggle from './species-usage-toggle/SpeciesUsageToggle';
 import SpeciesRemove from './species-remove/SpeciesRemove';
