@@ -26,7 +26,7 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   handleSelectedSpecies,
   clearSelectedSearchResult
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies

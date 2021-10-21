@@ -24,7 +24,7 @@ import {
   handleSelectedSpecies,
   clearSelectedSearchResult,
   clearSearch
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import {
   getSearchText,

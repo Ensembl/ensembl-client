@@ -31,7 +31,7 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 import browserStorageService from './browser-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,
@@ -94,16 +94,13 @@ export const activateBrowser = () => {
   };
 };
 
-export const setDataFromUrl = createAction('browser/set-data-from-url')<
-  ParsedUrlPayload
->();
+export const setDataFromUrl = createAction(
+  'browser/set-data-from-url'
+)<ParsedUrlPayload>();
 
-export const setDataFromUrlAndSave: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (payload: ParsedUrlPayload) => (dispatch) => {
+export const setDataFromUrlAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (payload: ParsedUrlPayload) => (dispatch) => {
   dispatch(setDataFromUrl(payload));
 
   const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
@@ -120,16 +117,13 @@ export const setDataFromUrlAndSave: ActionCreator<ThunkAction<
   }
 };
 
-export const setActiveGenomeId = createAction('browser/set-active-genome-id')<
-  string
->();
+export const setActiveGenomeId = createAction(
+  'browser/set-active-genome-id'
+)<string>();
 
-export const fetchDataForLastVisitedObjects: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => async (dispatch, getState: () => RootState) => {
+export const fetchDataForLastVisitedObjects: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => async (dispatch, getState: () => RootState) => {
   const state = getState();
   const activeEnsObjectIdsMap = getBrowserActiveEnsObjectIds(state);
   Object.values(activeEnsObjectIdsMap).forEach((objectId) =>
@@ -167,27 +161,21 @@ export const updateDefaultPositionFlag = createAction(
   'browser/update-default-position-flag'
 )<boolean>();
 
-export const updateTrackStates = createAction('browser/update-tracks-state')<
-  BrowserTrackStates
->();
+export const updateTrackStates = createAction(
+  'browser/update-tracks-state'
+)<BrowserTrackStates>();
 
-export const updateTrackStatesAndSave: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
+export const updateTrackStatesAndSave: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (payload: BrowserTrackStates) => (dispatch, getState: () => RootState) => {
   dispatch(updateTrackStates(payload));
   const trackStates = getBrowserTrackStates(getState());
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const restoreBrowserTrackStates: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (_, getState: () => RootState) => {
+export const restoreBrowserTrackStates: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (_, getState: () => RootState) => {
   const state = getState();
   const activeGenomeId = getBrowserActiveGenomeId(state);
   const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
@@ -241,12 +229,9 @@ export const closeBrowserNav = createAction(
   'browser/close-browser-navigation'
 )<{ activeGenomeId: string }>();
 
-export const toggleBrowserNav: ActionCreator<ThunkAction<
-  any,
-  any,
-  null,
-  Action<string>
->> = () => {
+export const toggleBrowserNav: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = () => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const isBrowserNavOpenState = getBrowserNavOpenState(state);
@@ -275,12 +260,9 @@ export const updateActualChrLocation = createAction(
   'browser/update-actual-chromosome-location'
 )<ChrLocations>();
 
-export const setActualChrLocation: ActionCreator<ThunkAction<
-  any,
-  any,
-  null,
-  Action<string>
->> = (chrLocation: ChrLocation) => {
+export const setActualChrLocation: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -295,12 +277,9 @@ export const setActualChrLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const setChrLocation: ActionCreator<ThunkAction<
-  any,
-  any,
-  null,
-  Action<string>
->> = (chrLocation: ChrLocation) => {
+export const setChrLocation: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (chrLocation: ChrLocation) => {
   return (dispatch: Dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -327,12 +306,9 @@ export const setChrLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const changeBrowserLocation: ActionCreator<ThunkAction<
-  any,
-  any,
-  null,
-  Action<string>
->> = (locationData: {
+export const changeBrowserLocation: ActionCreator<
+  ThunkAction<any, any, null, Action<string>>
+> = (locationData: {
   genomeId: string;
   ensObjectId: string | null;
   chrLocation: ChrLocation;
@@ -357,31 +333,28 @@ export const changeBrowserLocation: ActionCreator<ThunkAction<
   };
 };
 
-export const changeFocusObject = (
-  objectId: string
-): ThunkAction<any, any, null, Action<string>> => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const activeGenomeId = getBrowserActiveGenomeId(state);
+export const changeFocusObject =
+  (objectId: string): ThunkAction<any, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const state = getState();
+    const activeGenomeId = getBrowserActiveGenomeId(state);
 
-  if (!activeGenomeId) {
-    return;
-  }
+    if (!activeGenomeId) {
+      return;
+    }
 
-  dispatch(updatePreviouslyViewedObjectsAndSave());
+    dispatch(updatePreviouslyViewedObjectsAndSave());
 
-  browserMessagingService.send('bpane', {
-    focus: objectId
-  });
-};
+    browserMessagingService.send('bpane', {
+      focus: objectId
+    });
+  };
 
 export const updateCogList = createAction('browser/update-cog-list')<number>();
 
-export const updateCogTrackList = createAction('browser/update-cog-track-list')<
-  CogList
->();
+export const updateCogTrackList = createAction(
+  'browser/update-cog-track-list'
+)<CogList>();
 
 export const updateSelectedCog = createAction('browser/update-selected-cog')<
   string | null
@@ -399,9 +372,9 @@ export const updateTrackConfigLabel = createAction(
     [selectedCog, sense] as [string, boolean]
 )();
 
-export const updateApplyToAll = createAction('browser/update-apply-to-all')<
-  boolean
->();
+export const updateApplyToAll = createAction(
+  'browser/update-apply-to-all'
+)<boolean>();
 
 export const toggleRegionEditorActive = createAction(
   'browser/toggle-region-editor-active'
