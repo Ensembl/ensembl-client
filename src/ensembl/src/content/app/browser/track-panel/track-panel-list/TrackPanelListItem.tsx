@@ -18,8 +18,6 @@ import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { RootState } from 'src/store';
-
 import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
@@ -62,6 +60,8 @@ import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
+import { RootState } from 'src/store';
+
 import styles from './TrackPanelListItem.scss';
 
 export type TrackPanelListItemProps = {
@@ -91,7 +91,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     let drawerViewToSet = DrawerView.TRACK_DETAILS;
     if (trackId === 'track:gene-feat') {
       drawerViewToSet = DrawerView.GENE_SUMMARY;
-    } else if (trackId.includes('track:transcript')) {
+      // TODO: Remove `trackId === 'track:gene-feat-1'` form the if below when we enable multiple transcripts on production
+    } else if (
+      trackId.includes('track:transcript') ||
+      trackId === 'track:gene-feat-1'
+    ) {
       drawerViewToSet = DrawerView.TRANSCRIPT_SUMMARY;
     }
     dispatch(changeDrawerView(drawerViewToSet));
@@ -113,7 +117,11 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     if (activeGenomeId) {
       dispatch(setActiveDrawerTrackId(trackId));
 
-      if (trackId.includes('track:transcript')) {
+      // TODO: Remove `trackId === 'track:gene-feat-1'` form the if below when we enable multiple transcripts on production
+      if (
+        trackId.includes('track:transcript') ||
+        trackId === 'track:gene-feat-1'
+      ) {
         dispatch(setActiveDrawerTranscriptId(track.stable_id));
       }
     }
