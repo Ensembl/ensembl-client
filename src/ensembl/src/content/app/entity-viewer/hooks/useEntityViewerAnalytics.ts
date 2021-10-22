@@ -39,7 +39,7 @@ type TrackDownloadPayload = {
   geneSymbol: string;
   transcriptId: string;
   options: string[];
-  downloadResult: 'success' | 'failure';
+  downloadStatus: 'success' | 'failure';
 };
 
 const useEntityViewerAnalytics = () => {
@@ -140,7 +140,7 @@ const useEntityViewerAnalytics = () => {
     const transcriptLabel = `Transcript: ${params.transcriptId}`;
     const label = `${geneLabel}, ${transcriptLabel}, ${selectedOptions}`;
     const action =
-      params.downloadResult === 'success'
+      params.downloadStatus === 'success'
         ? 'sequence_download'
         : 'sequence_download_failure';
 

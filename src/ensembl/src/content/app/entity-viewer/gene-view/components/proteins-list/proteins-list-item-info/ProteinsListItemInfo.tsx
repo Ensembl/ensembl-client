@@ -186,7 +186,7 @@ const ProteinsListItemInfo = (props: Props) => {
 
   const onDownload = (
     payload: OnDownloadPayload,
-    downloadResult: 'success' | 'failure'
+    downloadStatus: 'success' | 'failure'
   ) => {
     const downloadOptions = Object.entries(payload.options)
       .filter(([, isSelected]) => isSelected)
@@ -196,7 +196,7 @@ const ProteinsListItemInfo = (props: Props) => {
       geneSymbol: gene.symbol ?? gene.stable_id,
       transcriptId: payload.transcriptId,
       options: downloadOptions,
-      downloadResult
+      downloadStatus
     });
   };
 
