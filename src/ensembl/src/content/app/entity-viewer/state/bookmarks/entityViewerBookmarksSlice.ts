@@ -57,25 +57,25 @@ const bookmarksSlice = createSlice({
       action: PayloadAction<UpdatePreviouslyViewedPayload>
     ) {
       const { genomeId, gene } = action.payload;
-      const savedEntitiesWithoutCurrentEntity =
-        state.previouslyViewed[genomeId]?.filter(
-          (entity) => entity.entity_id !== gene.unversioned_stable_id
-        ) || [];
+      const isCurrentEntityPreviouslyViewed = state.previouslyViewed[
+        genomeId
+      ]?.some((entity) => entity.entity_id === gene.unversioned_stable_id);
+      if (!isCurrentEntityPreviouslyViewed) {
+        const newEntity = {
+          entity_id: gene.unversioned_stable_id,
+          label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
+          type: 'gene' as const
+        };
+        const updatedEntites = [
+          newEntity,
+          ...state.previouslyViewed[genomeId]
+        ].slice(0, 21);
+        state.previouslyViewed[genomeId] = updatedEntites;
 
-      const newEntity = {
-        entity_id: gene.unversioned_stable_id,
-        label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
-        type: 'gene' as const
-      };
-      const updatedEntites = [
-        newEntity,
-        ...savedEntitiesWithoutCurrentEntity
-      ].slice(0, 21);
-      state.previouslyViewed[genomeId] = updatedEntites;
-
-      entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
-        [genomeId]: updatedEntites
-      });
+        entityViewerBookmarksStorageService.updatePreviouslyViewedEntities({
+          [genomeId]: updatedEntites
+        });
+      }
     }
   }
 });
