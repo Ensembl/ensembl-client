@@ -24,7 +24,7 @@ import faker from 'faker';
 import times from 'lodash/times';
 import merge from 'lodash/merge';
 
-import * as speciesSelectorSlice from 'src/content/app/species-selector/state/speciesSelectorSlice';
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 
@@ -138,7 +138,7 @@ describe('<SpeciesSearchField />', () => {
     });
 
     it('triggers the onMatchSelected function when a match is clicked', () => {
-      jest.spyOn(speciesSelectorSlice, 'setSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       const { container } = renderComponent({
         speciesSelector: {
           search: {
@@ -154,14 +154,14 @@ describe('<SpeciesSearchField />', () => {
 
       userEvent.click(firstMatchElement);
 
-      expect(speciesSelectorSlice.setSelectedSpecies).toHaveBeenCalledWith(
+      expect(speciesSelectorActions.setSelectedSpecies).toHaveBeenCalledWith(
         firstMatchData
       );
     });
 
     it('shows a button for clearing field contents in a non-empty field', () => {
-      jest.spyOn(speciesSelectorSlice, 'clearSelectedSearchResult');
-      jest.spyOn(speciesSelectorSlice, 'clearSearch');
+      jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
+      jest.spyOn(speciesSelectorActions, 'clearSearch');
       const { container } = renderComponent({
         speciesSelector: {
           search: {
@@ -176,8 +176,10 @@ describe('<SpeciesSearchField />', () => {
 
       userEvent.click(clearButton);
 
-      expect(speciesSelectorSlice.clearSelectedSearchResult).toHaveBeenCalled();
-      expect(speciesSelectorSlice.clearSearch).toHaveBeenCalled();
+      expect(
+        speciesSelectorActions.clearSelectedSearchResult
+      ).toHaveBeenCalled();
+      expect(speciesSelectorActions.clearSearch).toHaveBeenCalled();
     });
   });
 
