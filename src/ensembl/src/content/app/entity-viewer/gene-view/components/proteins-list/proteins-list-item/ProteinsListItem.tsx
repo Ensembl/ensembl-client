@@ -24,13 +24,18 @@ import { Pick2 } from 'ts-multipick';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import ProteinsListItemInfo, {
   Props as ProteinsListItemInfoProps
 } from '../proteins-list-item-info/ProteinsListItemInfo';
-import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import {
+  TranscriptQualityLabel,
+  getTranscriptMetadata as getTranscriptQualityMetadata
+} from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { Product as FullProduct } from 'src/shared/types/thoas/product';
@@ -62,14 +67,17 @@ type Transcript = Pick<FullTranscript, 'stable_id' | 'metadata'> &
   };
 
 export type Props = {
+  gene: ProteinsListItemInfoProps['gene'];
   transcript: Transcript;
   trackLength: number;
+  index: number; // <-- ranking in the list created by the parent component, 0-based
 };
 
 const ProteinsListItem = (props: Props) => {
-  const { transcript, trackLength } = props;
+  const { gene, transcript, trackLength } = props;
   const expandedTranscriptIds = useSelector(getExpandedTranscriptIds);
   const dispatch = useDispatch();
+  const { trackProteinInfoToggle } = useEntityViewerAnalytics();
 
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
@@ -77,6 +85,10 @@ const ProteinsListItem = (props: Props) => {
   const proteinIdToFocus = new URLSearchParams(search).get('protein_id');
 
   const { product } = transcript.product_generating_contexts[0];
+
+  const isInfoPanelExpanded = expandedTranscriptIds.includes(
+    transcript.stable_id
+  );
 
   const toggleListItemInfo = () => {
     if (proteinIdToFocus) {
@@ -90,6 +102,13 @@ const ProteinsListItem = (props: Props) => {
     }
 
     dispatch(toggleTranscriptInfo(transcript.stable_id));
+    trackProteinInfoToggle({
+      transcriptQuality:
+        getTranscriptQualityMetadata(transcript)?.label ?? null,
+      transcriptId: transcript.stable_id,
+      action: isInfoPanelExpanded ? 'close_accordion' : 'open_accordion',
+      transcriptPosition: props.index
+    });
   };
 
   const midStyles = classNames(transcriptsListStyles.middle, styles.middle);
@@ -137,8 +156,9 @@ const ProteinsListItem = (props: Props) => {
           <span className={styles.transcriptId}>{transcript.stable_id}</span>
         </div>
       </div>
-      {expandedTranscriptIds.includes(transcript.stable_id) ? (
+      {isInfoPanelExpanded ? (
         <ProteinsListItemInfo
+          gene={gene}
           transcript={transcript}
           trackLength={trackLength}
         />

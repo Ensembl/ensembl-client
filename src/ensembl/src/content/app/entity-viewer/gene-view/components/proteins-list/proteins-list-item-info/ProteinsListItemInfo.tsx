@@ -19,12 +19,16 @@ import { useParams } from 'react-router-dom';
 import set from 'lodash/fp/set';
 import { Pick2 } from 'ts-multipick';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import { CircleLoader } from 'src/shared/components/loader';
 import ProteinDomainImage from 'src/content/app/entity-viewer/gene-view/components/protein-domain-image/ProteinDomainImage';
 import ProteinImage from 'src/content/app/entity-viewer/gene-view/components/protein-image/ProteinImage';
 import ProteinFeaturesCount from 'src/content/app/entity-viewer/gene-view/components/protein-features-count/ProteinFeaturesCount';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
-import InstantDownloadProtein from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
+import InstantDownloadProtein, {
+  OnDownloadPayload
+} from 'src/shared/components/instant-download/instant-download-protein/InstantDownloadProtein';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import {
@@ -38,6 +42,7 @@ import {
   ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
+import { FullGene } from 'src/shared/types/thoas/gene';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { Product } from 'src/shared/types/thoas/product';
@@ -63,6 +68,8 @@ type ProductWithDomains = ProductWithoutDomains & {
   protein_domains: ProteinDomain[];
 };
 
+type Gene = Pick<FullGene, 'symbol' | 'stable_id'>;
+
 type Transcript = Pick<FullTranscript, 'unversioned_stable_id'> & {
   product_generating_contexts: Array<{
     product: ProductWithoutDomains;
@@ -78,6 +85,7 @@ type TranscriptWithProteinDomains = Transcript & {
 };
 
 export type Props = {
+  gene: Gene;
   transcript: Transcript;
   trackLength: number;
 };
@@ -96,7 +104,7 @@ const addProteinDomains = (
 };
 
 const ProteinsListItemInfo = (props: Props) => {
-  const { transcript, trackLength } = props;
+  const { gene, transcript, trackLength } = props;
   const params: { [key: string]: string } = useParams();
   const { genomeId } = params;
 
@@ -113,6 +121,8 @@ const ProteinsListItemInfo = (props: Props) => {
 
   const [summaryStatsLoadingState, setSummaryStatsLoadingState] =
     useState<LoadingState>(LoadingState.LOADING);
+
+  const { trackProteinDownload } = useEntityViewerAnalytics();
 
   const proteinId =
     transcript.product_generating_contexts[0].product.unversioned_stable_id;
@@ -174,6 +184,22 @@ const ProteinsListItemInfo = (props: Props) => {
     };
   }, [summaryStatsLoadingState, displayXref]);
 
+  const onDownload = (
+    payload: OnDownloadPayload,
+    downloadStatus: 'success' | 'failure'
+  ) => {
+    const downloadOptions = Object.entries(payload.options)
+      .filter(([, isSelected]) => isSelected)
+      .map(([key]) => `transcript_${key}`);
+
+    trackProteinDownload({
+      geneSymbol: gene.symbol ?? gene.stable_id,
+      transcriptId: payload.transcriptId,
+      options: downloadOptions,
+      downloadStatus
+    });
+  };
+
   const showLoadingIndicator =
     domainsLoadingState === LoadingState.LOADING ||
     summaryStatsLoadingState === LoadingState.LOADING;
@@ -224,6 +250,12 @@ const ProteinsListItemInfo = (props: Props) => {
                 <InstantDownloadProtein
                   genomeId={genomeId}
                   transcriptId={transcript.unversioned_stable_id}
+                  onDownloadSuccess={(payload) =>
+                    onDownload(payload, 'success')
+                  }
+                  onDownloadFailure={(payload) =>
+                    onDownload(payload, 'failure')
+                  }
                 />
               </div>
             )}
@@ -261,12 +293,19 @@ type ProteinExternalReferenceProps = {
 const ProteinExternalReference = (props: ProteinExternalReferenceProps) => {
   const url = `${externalSourceLinks[props.source]}${props.accessionId}`;
 
+  const { trackExternalLinkClickInProteinsList } = useEntityViewerAnalytics();
+
+  const onClick = () => {
+    trackExternalLinkClickInProteinsList(props.source);
+  };
+
   return (
     <div className={styles.proteinExternalReference}>
       <ExternalReference
         label={props.source}
         to={url}
         linkText={props.accessionId}
+        onClick={onClick}
       />
     </div>
   );
