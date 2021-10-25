@@ -1,0 +1,23 @@
+@import 'src/styles/common';
+
+.breadcrumbs {
+  color: $black;
+  font-weight: $light;
+
+  &Item{
+    margin-right: 15px;
+  }
+
+  &Item::after { 
+    content: ">";
+    margin-left: 7px;
+  }
+
+  &Item:last-child{
+    font-weight: $normal;
+  }
+
+  &Item:last-child::after{
+    content: none;
+  }
+}

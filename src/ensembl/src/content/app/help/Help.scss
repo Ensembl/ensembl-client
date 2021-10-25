@@ -23,9 +23,23 @@
 
 .main {
   height: 100%;
-  padding-left: 80px;
-  padding-top: 44px;
+  display: grid;
+  padding-left: 44px;
+  padding-top: 25px;
+  grid-template-areas: "breadcrumbs breadcrumbs navigation"
+                       "space  article  article";
+  grid-template-rows: 40px auto;
+  grid-template-columns: 36px 1fr;
+
+  .breadcrumbsContainer{
+    grid-area: breadcrumbs;
+  }
+
+  .articleContainer{
+    grid-area: article;
+  }
 }
+
 
 .articleGrid {
   grid-row: article-grid;
