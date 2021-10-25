@@ -139,7 +139,7 @@ const prepareTranscriptsTrackData = (
     ) as TrackPanelTranscriptType;
     const canonicalTranscriptTrackData = {
       label: canonicalTranscript.stable_id,
-      track_id: 'track:gene-feat-1',
+      track_id: 'track:transcript-feat-1',
       stable_id: canonicalTranscript.stable_id,
       description: null,
       colour: 'BLUE',

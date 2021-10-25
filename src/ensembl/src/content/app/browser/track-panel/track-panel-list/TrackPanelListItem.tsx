@@ -91,11 +91,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     let drawerViewToSet = DrawerView.TRACK_DETAILS;
     if (trackId === 'track:gene-feat') {
       drawerViewToSet = DrawerView.GENE_SUMMARY;
-      // TODO: Remove `trackId === 'track:gene-feat-1'` form the if below when we enable multiple transcripts on production
-    } else if (
-      trackId.includes('track:transcript') ||
-      trackId === 'track:gene-feat-1'
-    ) {
+    } else if (trackId.includes('track:transcript')) {
       drawerViewToSet = DrawerView.TRANSCRIPT_SUMMARY;
     }
     dispatch(changeDrawerView(drawerViewToSet));
@@ -116,12 +112,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const dispatchDrawerActions = () => {
     if (activeGenomeId) {
       dispatch(setActiveDrawerTrackId(trackId));
-
-      // TODO: Remove `trackId === 'track:gene-feat-1'` form the if below when we enable multiple transcripts on production
-      if (
-        trackId.includes('track:transcript') ||
-        trackId === 'track:gene-feat-1'
-      ) {
+      if (trackId.includes('track:transcript')) {
         dispatch(setActiveDrawerTranscriptId(track.stable_id));
       }
     }
