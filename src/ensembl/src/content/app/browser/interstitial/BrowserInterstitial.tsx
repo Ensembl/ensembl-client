@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
-import { getExampleEnsObjects } from 'src/shared/state/ens-object/ensObjectSelectors';
+import { getExampleGenes } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 import {
   parseEnsObjectId,
@@ -55,7 +55,7 @@ const BrowserInterstitial = () => {
 
 const ExampleLinks = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const ensObjects = useSelector(getExampleEnsObjects);
+  const ensObjects = useSelector(getExampleGenes);
 
   const links = ensObjects.map((exampleObject) => {
     const parsedEnsObjectId = parseEnsObjectId(exampleObject.object_id);
