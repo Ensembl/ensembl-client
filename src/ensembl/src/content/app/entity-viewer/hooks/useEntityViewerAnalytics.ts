@@ -33,6 +33,7 @@ import {
   SortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { RootState } from 'src/store';
+import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
 
 type TrackDownloadPayload = {
   category: string;
@@ -157,6 +158,43 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_proteins_list' });
   };
 
+  const trackXrefsTabSelection = (tabName: string) => {
+    analyticsTracking.trackEvent({
+      category: 'entity_viewer_sidebar',
+      action: 'change_tab',
+      label: tabName
+    });
+  };
+
+  const trackXrefLinkClick = (params: {
+    tabName: string;
+    linkLabel: string;
+  }) => {
+    const sidebarCategoryMap = {
+      [SidebarTabName.OVERVIEW as string]: 'overview',
+      [SidebarTabName.EXTERNAL_REFERENCES as string]: 'external_references'
+    };
+
+    const { tabName, linkLabel } = params;
+    const categoryName = `entity_viewer_sidebar_${sidebarCategoryMap[tabName]}`;
+
+    analyticsTracking.trackEvent({
+      category: categoryName,
+      action: 'external_reference_clicked',
+      label: linkLabel
+    });
+  };
+
+  const trackGeneDownload = (
+    params: Omit<TrackDownloadPayload, 'category' | 'transcriptId'>
+  ) => {
+    trackDownload({
+      ...params,
+      transcriptId: 'all',
+      category: 'entity_viewer_sidebar'
+    });
+  };
+
   return {
     trackTabChange,
     trackFiltersPanelOpen,
@@ -164,7 +202,11 @@ const useEntityViewerAnalytics = () => {
     trackAppliedSorting,
     trackProteinInfoToggle,
     trackProteinDownload,
-    trackExternalLinkClickInProteinsList
+    trackExternalLinkClickInProteinsList,
+    trackXrefsTabSelection,
+    trackXrefLinkClick,
+    trackGeneDownload
   };
 };
+
 export default useEntityViewerAnalytics;

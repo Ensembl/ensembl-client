@@ -17,8 +17,11 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
+
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
+
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
@@ -26,6 +29,7 @@ import ExternalReference from 'src/shared/components/external-reference/External
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { FullGene } from 'src/shared/types/thoas/gene';
+import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneOverview.scss';
 
@@ -63,6 +67,8 @@ const GeneOverview = () => {
   const { entityId, genomeId } = params;
   const geneId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
 
+  const { trackXrefLinkClick } = useEntityViewerAnalytics();
+
   const { data, loading } = useQuery<{ gene: Gene }>(GENE_OVERVIEW_QUERY, {
     variables: {
       geneId,
@@ -81,6 +87,17 @@ const GeneOverview = () => {
 
   const { gene } = data;
 
+  const trackLink = () => {
+    if (!gene.metadata.name) {
+      return;
+    }
+
+    trackXrefLinkClick({
+      tabName: SidebarTabName.OVERVIEW,
+      linkLabel: gene.metadata.name.accession_id
+    });
+  };
+
   return (
     <div className={styles.overviewContainer}>
       <div className={styles.geneDetails}>
@@ -97,6 +114,7 @@ const GeneOverview = () => {
           classNames={{ container: styles.marginTop }}
           to={gene.metadata.name.url}
           linkText={gene.metadata.name.accession_id}
+          onClick={trackLink}
         />
       )}
       <div className={styles.sectionHead}>Synonyms</div>

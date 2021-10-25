@@ -29,6 +29,8 @@ import {
   getEntityViewerSidebarModalView
 } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
@@ -53,6 +55,7 @@ const GeneViewSidebarTabs = () => {
   );
 
   const dispatch = useDispatch();
+  const { trackXrefsTabSelection } = useEntityViewerAnalytics();
 
   if (!selectedTabName) {
     return null;
@@ -64,6 +67,9 @@ const GeneViewSidebarTabs = () => {
     }
     if (isSidebarModalViewOpen) {
       dispatch(closeSidebarModal());
+    }
+    if (name === SidebarTabName.EXTERNAL_REFERENCES) {
+      trackXrefsTabSelection(name);
     }
     dispatch(setSidebarTabName(name as SidebarTabName));
   };
