@@ -23,7 +23,7 @@ $backgroundColor: $black;
 
   grid-template-columns: 178px 902px 1fr;
   grid-template-rows: min-content minmax(76px, auto) minmax(0, 1fr);
-  padding: 60px 20px 10px;
+  padding: 60px 20px 0;
   height: 100%; // may need to change this later
   width: 100%;
   overflow: auto;
@@ -118,4 +118,8 @@ $backgroundColor: $black;
     right: -10px;
     top: -2px;
   }
+}
+
+.viewInAppLabel {
+  font-weight: 300;
 }
