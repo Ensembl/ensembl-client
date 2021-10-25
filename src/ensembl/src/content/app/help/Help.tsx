@@ -125,7 +125,7 @@ const MainContent = (props: {
   return <main className={styles.main}>{content}</main>;
 };
 
-const getBreadcrumbsFromMenu = (menu: MenuType, url: string) => {
+export const getBreadcrumbsFromMenu = (menu: MenuType, url: string) => {
   const getAllUrlKeysPaths = (menu: JSONValue, path = ''): string[] => {
     if (!menu || typeof menu !== 'object') {
       return [path];
@@ -169,7 +169,7 @@ const getBreadcrumbsFromMenu = (menu: MenuType, url: string) => {
   return breadcrumbs;
 };
 
-const isIndexRoute = (pathname: string) => {
+export const isIndexRoute = (pathname: string) => {
   // handle both /help and /help/
   return pathname.replaceAll('/', '') === 'help';
 };
