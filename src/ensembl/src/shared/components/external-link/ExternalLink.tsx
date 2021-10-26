@@ -28,6 +28,7 @@ export type ExternalLinkProps = {
     icon?: string;
     link?: string;
   };
+  onClick?: () => void;
 };
 
 const ExternalLink = (props: ExternalLinkProps) => {
@@ -43,6 +44,7 @@ const ExternalLink = (props: ExternalLinkProps) => {
         href={props.to}
         target="_blank"
         rel="nofollow noreferrer"
+        onClick={props.onClick}
       >
         {props.linkText}
       </a>

@@ -29,6 +29,12 @@ jest.mock(
   () => jest.fn()
 );
 
+jest.mock('src/content/app/entity-viewer/hooks/useEntityViewerAnalytics', () =>
+  jest.fn(() => ({
+    trackExternalLinkClickInProteinsList: jest.fn()
+  }))
+);
+
 const swissprotXref = createExternalReference({
   accession_id: 'SWISS123',
   source: {

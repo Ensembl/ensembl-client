@@ -25,9 +25,11 @@ import { TranscriptOptions } from '../instant-download-transcript/InstantDownloa
 
 import styles from './InstantDownloadProtein.scss';
 
-type InstantDownloadProteinProps = {
+export type InstantDownloadProteinProps = {
   genomeId: string;
   transcriptId: string;
+  onDownloadSuccess?: (params: OnDownloadPayload) => void;
+  onDownloadFailure?: (params: OnDownloadPayload) => void;
 };
 
 export type ProteinOptions = Pick<TranscriptOptions, 'proteinSequence' | 'cds'>;
@@ -35,6 +37,15 @@ export type ProteinOptions = Pick<TranscriptOptions, 'proteinSequence' | 'cds'>;
 export type ProteinOption = keyof Partial<ProteinOptions>;
 
 export const proteinOptionsOrder: ProteinOption[] = ['proteinSequence', 'cds'];
+
+export type OnDownloadPayload = {
+  genomeId: string;
+  transcriptId: string;
+  options: {
+    proteinSequence: boolean;
+    cds: boolean;
+  };
+};
 
 const proteinOptionLabels: Record<keyof ProteinOptions, string> = {
   proteinSequence: 'Protein sequence',
@@ -67,6 +78,9 @@ const InstantDownloadProtein = (props: InstantDownloadProteinProps) => {
 
     try {
       await fetchForProtein(payload);
+      props.onDownloadSuccess?.(payload);
+    } catch {
+      props.onDownloadFailure?.(payload);
     } finally {
       resetCheckboxes();
     }

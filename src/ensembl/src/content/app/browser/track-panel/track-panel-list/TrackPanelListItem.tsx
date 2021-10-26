@@ -21,7 +21,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { OutgoingAction, OutgoingActionType } from 'ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
-
 import analyticsTracking from 'src/services/analytics-service';
 
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
@@ -63,6 +62,8 @@ import {
   TrackActivityStatus
 } from '../trackPanelConfig';
 import { Status } from 'src/shared/types/status';
+
+import { RootState } from 'src/store';
 
 import styles from './TrackPanelListItem.scss';
 
@@ -116,7 +117,6 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const dispatchDrawerActions = () => {
     if (activeGenomeId) {
       dispatch(setActiveDrawerTrackId(trackId));
-
       if (trackId.includes('track:transcript')) {
         dispatch(setActiveDrawerTranscriptId(track.stable_id));
       }

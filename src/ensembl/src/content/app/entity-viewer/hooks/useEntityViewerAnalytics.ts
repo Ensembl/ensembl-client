@@ -15,6 +15,7 @@
  */
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import snakeCase from 'lodash/snakeCase';
 
 import analyticsTracking from 'src/services/analytics-service';
 
@@ -27,7 +28,19 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
+import {
+  Filters,
+  SortingRule
+} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { RootState } from 'src/store';
+
+type TrackDownloadPayload = {
+  category: string;
+  geneSymbol: string;
+  transcriptId: string;
+  options: string[];
+  downloadStatus: 'success' | 'failure';
+};
 
 const useEntityViewerAnalytics = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId) || '';
@@ -56,8 +69,102 @@ const useEntityViewerAnalytics = () => {
     });
   };
 
+  const trackFiltersPanelOpen = () => {
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_filters',
+      action: 'opened'
+    });
+  };
+
+  const trackAppliedFilters = (filters: Filters) => {
+    const appliedFilters = Object.entries(filters)
+      .filter(([, { selected }]) => selected)
+      .map(([filterId]) => filterId)
+      .join(','); // <-- comma-separated filter ids
+
+    if (!appliedFilters) {
+      return;
+    }
+
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_filters',
+      action: 'filter_applied',
+      label: appliedFilters
+    });
+  };
+
+  const trackAppliedSorting = (sortingRule: SortingRule) => {
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_filters',
+      action: 'sort_applied',
+      label: sortingRule
+    });
+  };
+
+  const trackExternalLinkClick = (category: string, label: string) => {
+    analyticsTracking.trackEvent({
+      category,
+      label,
+      action: 'external_link_click'
+    });
+  };
+
+  const trackExternalLinkClickInProteinsList = (label: string) => {
+    trackExternalLinkClick('gene_view_proteins_list', label);
+  };
+
+  const trackProteinInfoToggle = (params: {
+    transcriptQuality: string | null;
+    transcriptId: string;
+    action: 'open_accordion' | 'close_accordion';
+    transcriptPosition: number;
+  }) => {
+    const { transcriptId, transcriptQuality } = params;
+    const label = transcriptQuality
+      ? `${transcriptQuality} ${transcriptId}` // "MANE Plus Clinical ENST00000380152.8"
+      : transcriptId;
+    analyticsTracking.trackEvent({
+      category: 'gene_view_proteins_list',
+      label,
+      action: params.action,
+      value: params.transcriptPosition + 1
+    });
+  };
+
+  const trackDownload = (params: TrackDownloadPayload) => {
+    const selectedOptions = params.options
+      .sort()
+      .map((option) => snakeCase(option))
+      .join(', ');
+    const geneLabel = `Gene: ${params.geneSymbol}`;
+    const transcriptLabel = `Transcript: ${params.transcriptId}`;
+    const label = `${geneLabel}, ${transcriptLabel}, ${selectedOptions}`;
+    const action =
+      params.downloadStatus === 'success'
+        ? 'sequence_download'
+        : 'sequence_download_failure';
+
+    analyticsTracking.trackEvent({
+      category: params.category,
+      action,
+      label
+    });
+  };
+
+  const trackProteinDownload = (
+    params: Omit<TrackDownloadPayload, 'category'>
+  ) => {
+    trackDownload({ ...params, category: 'gene_view_proteins_list' });
+  };
+
   return {
-    trackTabChange
+    trackTabChange,
+    trackFiltersPanelOpen,
+    trackAppliedFilters,
+    trackAppliedSorting,
+    trackProteinInfoToggle,
+    trackProteinDownload,
+    trackExternalLinkClickInProteinsList
   };
 };
 export default useEntityViewerAnalytics;

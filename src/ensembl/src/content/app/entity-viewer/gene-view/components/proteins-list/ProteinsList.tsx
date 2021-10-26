@@ -50,7 +50,7 @@ type Transcript = ProteinListItemProps['transcript'] &
     }>;
   };
 
-type Gene = Pick<FullGene, 'stable_id'> & {
+type Gene = Pick<FullGene, 'stable_id' | 'symbol'> & {
   transcripts: Transcript[];
 };
 
@@ -96,11 +96,13 @@ const ProteinsList = (props: ProteinsListProps) => {
     <div>No transcripts to show with the filters selected</div>
   ) : (
     <div className={styles.proteinsList}>
-      {proteinCodingTranscripts.map((transcript) => (
+      {proteinCodingTranscripts.map((transcript, index) => (
         <ProteinsListItem
           key={transcript.stable_id}
+          gene={props.gene}
           transcript={transcript}
           trackLength={longestProteinLength}
+          index={index}
         />
       ))}
     </div>
