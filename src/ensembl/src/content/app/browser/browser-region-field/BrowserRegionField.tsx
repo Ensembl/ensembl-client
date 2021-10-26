@@ -164,7 +164,13 @@ export const BrowserRegionField = () => {
 
   return (
     <div className={regionFieldClassNames}>
-      <form onSubmit={handleSubmit} onFocus={handleFocus}>
+      <form
+        onSubmit={handleSubmit}
+        onFocus={handleFocus}
+        onKeyUp={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        onKeyPress={(e) => e.stopPropagation()}
+      >
         <span ref={inputGroupRef}>
           <label htmlFor="region-field-input-btn">Region or location</label>
           <Input

@@ -214,7 +214,13 @@ export const BrowserRegionEditor = () => {
 
   return (
     <div className={styles.browserRegionEditor}>
-      <form onSubmit={handleSubmit} onFocus={handleFocus}>
+      <form
+        onSubmit={handleSubmit}
+        onFocus={handleFocus}
+        onKeyUp={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        onKeyPress={(e) => e.stopPropagation()}
+      >
         <div className={styles.inputGroup} ref={stickRef}>
           <label>Chr</label>
           <Select
