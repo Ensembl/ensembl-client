@@ -17,7 +17,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { loadStoredSpecies } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { loadStoredSpecies } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { loadPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 import { restoreUI as restoreSpeciesPageUI } from 'src/content/app/species/state/general/speciesGeneralSlice';
 import { loadInitialState as loadEntityViewerGeneralState } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';

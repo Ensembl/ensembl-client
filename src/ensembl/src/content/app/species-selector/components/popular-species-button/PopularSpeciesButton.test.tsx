@@ -24,7 +24,7 @@ import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 import merge from 'lodash/merge';
 
-import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import PopularSpeciesButton, {
@@ -108,7 +108,7 @@ describe('<PopularSpeciesButton />', () => {
     });
 
     it('does not select a species when clicked', () => {
-      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
 
       const props = set('species.is_available', false, defaultProps);
       const { container } = renderComponent({ props });
@@ -118,9 +118,7 @@ describe('<PopularSpeciesButton />', () => {
       ) as HTMLElement;
       userEvent.click(button);
 
-      expect(
-        speciesSelectorActions.handleSelectedSpecies
-      ).not.toHaveBeenCalled();
+      expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
     });
   });
 
@@ -134,7 +132,7 @@ describe('<PopularSpeciesButton />', () => {
     });
 
     it('selects the species received from props when clicked', () => {
-      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
 
       const { container } = renderComponent({ props: defaultProps });
       const button = container.querySelector(
@@ -143,7 +141,7 @@ describe('<PopularSpeciesButton />', () => {
 
       userEvent.click(button);
 
-      expect(speciesSelectorActions.handleSelectedSpecies).toHaveBeenCalledWith(
+      expect(speciesSelectorActions.setSelectedSpecies).toHaveBeenCalledWith(
         defaultProps.species
       );
     });
@@ -169,7 +167,7 @@ describe('<PopularSpeciesButton />', () => {
     });
 
     it('clears selected species when clicked', () => {
-      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
 
       const { container } = renderComponent({
@@ -184,9 +182,7 @@ describe('<PopularSpeciesButton />', () => {
       expect(
         speciesSelectorActions.clearSelectedSearchResult
       ).toHaveBeenCalled();
-      expect(
-        speciesSelectorActions.handleSelectedSpecies
-      ).not.toHaveBeenCalled();
+      expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
       expect(push).not.toHaveBeenCalled();
     });
   });
@@ -211,7 +207,7 @@ describe('<PopularSpeciesButton />', () => {
     });
 
     it('opens species page when clicked', () => {
-      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       jest.spyOn(speciesSelectorActions, 'clearSelectedSearchResult');
 
       const { container } = renderComponent({
@@ -232,9 +228,7 @@ describe('<PopularSpeciesButton />', () => {
       expect(
         speciesSelectorActions.clearSelectedSearchResult
       ).not.toHaveBeenCalled();
-      expect(
-        speciesSelectorActions.handleSelectedSpecies
-      ).not.toHaveBeenCalled();
+      expect(speciesSelectorActions.setSelectedSpecies).not.toHaveBeenCalled();
     });
   });
 });

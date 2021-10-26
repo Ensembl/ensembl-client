@@ -18,7 +18,7 @@ import {
   CommittedItem,
   PopularSpecies
 } from 'src/content/app/species-selector/types/species-search';
-import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorState';
+import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { SearchMatch } from 'src/content/app/species-selector/types/species-search';
 
 export const getSpeciesAnalyticsName = (

@@ -22,7 +22,7 @@ import useSpeciesAnalytics from 'src/content/app/species/hooks/useSpeciesAnalyti
 import { getActiveGenomeId } from 'src/content/app/species/state/general/speciesGeneralSelectors';
 import { getCommittedSpeciesById } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 
-import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 import QuestionButton from 'src/shared/components/question-button/QuestionButton';
