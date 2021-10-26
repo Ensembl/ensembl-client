@@ -52,7 +52,6 @@ import Chevron from 'src/shared/components/chevron/Chevron';
 
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 
-import { RootState } from 'src/store';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
@@ -62,7 +61,6 @@ import {
   TrackActivityStatus
 } from '../trackPanelConfig';
 import { Status } from 'src/shared/types/status';
-
 import { RootState } from 'src/store';
 
 import styles from './TrackPanelListItem.scss';
