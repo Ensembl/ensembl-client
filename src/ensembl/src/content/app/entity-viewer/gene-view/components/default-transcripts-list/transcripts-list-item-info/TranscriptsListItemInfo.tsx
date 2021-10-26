@@ -97,7 +97,7 @@ export const TranscriptsListItemInfo = (
 
   const {
     trackTranscriptMoreInfoToggle,
-    trackExternalLinkClick,
+    trackExternalLinkClickInTranscriptList,
     trackInstantDownloadTranscriptList
   } = useEntityViewerAnalytics();
 
@@ -132,7 +132,7 @@ export const TranscriptsListItemInfo = (
   };
 
   const handleExternalReferenceClick = (linkLabel: string) => {
-    trackExternalLinkClick(linkLabel);
+    trackExternalLinkClickInTranscriptList(linkLabel);
   };
 
   const getTranscriptLocation = () => {

@@ -113,6 +113,10 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick('gene_view_proteins_list', label);
   };
 
+  const trackExternalLinkClickInTranscriptList = (label: string) => {
+    trackExternalLinkClick('gene_view_transcript_list', label);
+  };
+
   const trackProteinInfoToggle = (params: {
     transcriptQuality: string | null;
     transcriptId: string;
@@ -180,8 +184,8 @@ const useEntityViewerAnalytics = () => {
     params: Omit<TrackDownloadPayload, 'category'>
   ) => {
     trackDownload({ ...params, category: 'gene_view_proteins_list' });
-  }
-  
+  };
+
   const trackInstantDownloadTranscriptList = (
     params: Omit<TrackDownloadPayload, 'category'>
   ) => {
@@ -196,6 +200,7 @@ const useEntityViewerAnalytics = () => {
     trackProteinInfoToggle,
     trackProteinDownload,
     trackExternalLinkClickInProteinsList,
+    trackExternalLinkClickInTranscriptList,
     trackTranscriptListViewToggle,
     trackTranscriptMoreInfoToggle,
     trackExternalLinkClick,
