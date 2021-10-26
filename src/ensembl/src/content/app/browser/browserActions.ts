@@ -29,7 +29,7 @@ import browserStorageService from './browser-storage-service';
 import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
-import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId,

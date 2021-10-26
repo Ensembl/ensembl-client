@@ -32,7 +32,7 @@ import {
   getGenomeTrackCategories,
   getGenomeKaryotype
 } from 'src/shared/state/genome/genomeSelectors';
-import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { ensureSpeciesIsCommitted } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 export const fetchGenomeInfoAsyncActions = createAsyncAction(

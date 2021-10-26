@@ -24,7 +24,7 @@ import faker from 'faker';
 import times from 'lodash/times';
 import merge from 'lodash/merge';
 
-import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { SpeciesSearchField, NOT_FOUND_TEXT } from './SpeciesSearchField';
 
@@ -138,7 +138,7 @@ describe('<SpeciesSearchField />', () => {
     });
 
     it('triggers the onMatchSelected function when a match is clicked', () => {
-      jest.spyOn(speciesSelectorActions, 'handleSelectedSpecies');
+      jest.spyOn(speciesSelectorActions, 'setSelectedSpecies');
       const { container } = renderComponent({
         speciesSelector: {
           search: {
@@ -154,7 +154,7 @@ describe('<SpeciesSearchField />', () => {
 
       userEvent.click(firstMatchElement);
 
-      expect(speciesSelectorActions.handleSelectedSpecies).toHaveBeenCalledWith(
+      expect(speciesSelectorActions.setSelectedSpecies).toHaveBeenCalledWith(
         firstMatchData
       );
     });
