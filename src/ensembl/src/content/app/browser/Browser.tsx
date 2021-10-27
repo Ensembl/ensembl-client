@@ -18,7 +18,6 @@ import React, { useEffect, useState, memo, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import isEqual from 'lodash/isEqual';
 
 import EnsemblGenomeBrowser from 'ensembl-genome-browser';
 
@@ -87,14 +86,11 @@ export const Browser = () => {
   const shouldShowNavBar =
     genomeBrowser && browserNavOpenState && !isDrawerOpened;
 
-  const mainContent = useMemo(
-    () => (
-      <>
-        {shouldShowNavBar && <BrowserNavBar />}
-        <BrowserImage />
-      </>
-    ),
-    [shouldShowNavBar]
+  const mainContent = (
+    <>
+      {shouldShowNavBar && <BrowserNavBar />}
+      <BrowserImage />
+    </>
   );
 
   return (
@@ -159,4 +155,4 @@ const GenomeBrowserInitContainer = () => {
   );
 };
 
-export default memo(GenomeBrowserInitContainer, isEqual);
+export default memo(GenomeBrowserInitContainer);

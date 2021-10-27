@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
@@ -64,11 +64,10 @@ export const BrowserCogList = () => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.TRACK_SUMMARY],
+      IncomingActionType.TRACK_SUMMARY,
       (action: IncomingAction) =>
         listenBpaneScroll(action.payload as TrackSummaryList)
     );
-
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
@@ -103,4 +102,4 @@ export const BrowserCogList = () => {
   ) : null;
 };
 
-export default BrowserCogList;
+export default memo(BrowserCogList);

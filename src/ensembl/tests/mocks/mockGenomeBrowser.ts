@@ -15,14 +15,33 @@
  */
 
 class MockGenomeBrowser {
+  private subscriptions = new Map<string, Set<any>>();
+
   public send() {
     return jest.fn();
   }
 
-  public subscribe() {
-    return {
-      unsubscribe: jest.fn()
-    };
+  public subscribe = (actionType: string, callback: any) => {
+    const subscriptionsToAction = this.subscriptions.get(actionType);
+    if (subscriptionsToAction) {
+      subscriptionsToAction.add(callback);
+    } else {
+      this.subscriptions.set(actionType, new Set([callback]));
+    }
+  };
+
+  public simulateBrowserMessage(message: { type: string; payload: any }) {
+    const subscriptionsToAction = this.subscriptions.get(message.type);
+
+    if (subscriptionsToAction) {
+      [...subscriptionsToAction.values()].forEach((subscription) => {
+        subscription(message);
+      });
+    }
+  }
+
+  public clear() {
+    this.subscriptions.clear();
   }
 }
 

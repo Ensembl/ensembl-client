@@ -37,8 +37,7 @@ import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/sta
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
-  getAllChrLocations,
-  getBrowserActiveEnsObject
+  getAllChrLocations
 } from '../browserSelectors';
 
 /*
@@ -71,7 +70,6 @@ const useBrowserRouting = () => {
   const allChrLocations = useSelector(getAllChrLocations);
   const allActiveEnsObjectIds = useSelector(getBrowserActiveEnsObjectIds);
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
-  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
   const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
@@ -112,20 +110,20 @@ const useBrowserRouting = () => {
     if (!focus && activeEnsObjectId) {
       const newFocus = buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId));
       dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
-    } else if (focus && !chrLocation && activeEnsObject) {
+    } else if (newFocusId && !chrLocation) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
        before it gets changed by setDataFromUrlAndSave
       */
-      changeFocusObject(newFocusId as string);
-    } else if (chrLocation) {
+      changeFocusObject(newFocusId);
+    } else if (newFocusId && chrLocation) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
-      if (genomeBrowser && activeEnsObject) {
+      if (genomeBrowser) {
         if (!isSameLocationAsInRedux || isFirstRender) {
-          changeFocusObject(newFocusId as string);
+          changeFocusObject(newFocusId);
           changeBrowserLocation({
             genomeId,
             ensObjectId: newFocusId,
@@ -137,7 +135,7 @@ const useBrowserRouting = () => {
       }
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, activeEnsObject, genomeBrowser, location]);
+  }, [genomeId, focus, genomeBrowser, location]);
 
   useEffect(() => {
     if (genomeId) {

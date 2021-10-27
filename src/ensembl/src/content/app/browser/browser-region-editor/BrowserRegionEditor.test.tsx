@@ -265,8 +265,8 @@ describe('<BrowserRegionEditor />', () => {
         userEvent.click(submitButton);
         expect(mockChangeBrowserLocation).toHaveBeenCalled();
 
-        const { ensObjectId, chrLocation } = (mockChangeBrowserLocation as any)
-          .mock.calls[0][0];
+        const { ensObjectId, chrLocation } =
+          mockChangeBrowserLocation.mock.calls[0][0];
         const [, start, end] = chrLocation;
         expect(ensObjectId).toBe(null);
         expect(start).toBe(getNumberWithoutCommas(locationStartInput));

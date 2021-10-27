@@ -24,9 +24,11 @@ import set from 'lodash/fp/set';
 import { BrowserCogList } from './BrowserCogList';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
+import { IncomingActionType } from 'ensembl-genome-browser';
+
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
-const mockGenomeBrowser = jest.fn(); //new MockGenomeBrowser();
+const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: mockGenomeBrowser()
@@ -61,13 +63,11 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<BrowserCogList />', () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('rendering', () => {
     it('contains <BrowserCog /> when browser is activated', () => {
-      mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
-
       const { container } = renderComponent();
       expect(container.querySelector('#browserCog')).toBeTruthy();
     });
@@ -77,6 +77,37 @@ describe('<BrowserCogList />', () => {
 
       const { container } = renderComponent();
       expect(container.querySelector('#browserCog')).toBeFalsy();
+    });
+
+    it('calls updateCogTrackList when genome browser sends track summary updates', () => {
+      mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
+
+      renderComponent();
+
+      mockGenomeBrowser().simulateBrowserMessage({
+        type: IncomingActionType.TRACK_SUMMARY,
+        payload: [
+          {
+            'switch-id': 'track-1',
+            offset: 100
+          },
+          {
+            'switch-id': 'track-2',
+            offset: 200
+          }
+        ]
+      });
+
+      const dispatchedActions = store.getActions();
+
+      const updateCogTrackListAction = dispatchedActions.find(
+        (action) => action.type === 'browser/update-cog-track-list'
+      );
+
+      expect(updateCogTrackListAction.payload).toEqual({
+        'track-1': 100,
+        'track-2': 200
+      });
     });
   });
 });

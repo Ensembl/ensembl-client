@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
@@ -46,7 +46,7 @@ const ZmenuController = (props: Props) => {
 
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.ZMENU_CREATE],
+      IncomingActionType.ZMENU_CREATE,
       handleZmenuCreate
     );
 
@@ -75,4 +75,4 @@ const ZmenuController = (props: Props) => {
   return <>{zmenuElements}</>;
 };
 
-export default ZmenuController;
+export default memo(ZmenuController);

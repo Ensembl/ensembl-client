@@ -27,7 +27,7 @@ import { BrowserImage } from './BrowserImage';
 
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
-const mockGenomeBrowser = jest.fn();
+const mockGenomeBrowser = jest.fn(() => new MockGenomeBrowser() as any);
 
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: mockGenomeBrowser(),
@@ -67,7 +67,6 @@ const renderComponent = (state: typeof mockState = mockState) => {
 
 describe('<BrowserImage />', () => {
   afterEach(() => {
-    mockGenomeBrowser.mockReturnValue(new MockGenomeBrowser());
     jest.resetAllMocks();
   });
 

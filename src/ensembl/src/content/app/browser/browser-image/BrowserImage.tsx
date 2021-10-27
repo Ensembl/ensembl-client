@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
@@ -53,24 +53,31 @@ export const BrowserImage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const subscription = genomeBrowser?.subscribe(
-      [IncomingActionType.CURRENT_POSITION, IncomingActionType.TARGET_POSITION],
-      (action: IncomingAction) => {
-        if (action.type === IncomingActionType.CURRENT_POSITION) {
-          const { stick, start, end } = action.payload;
-          const chromosome = stick.split(':')[1];
-          dispatch(setActualChrLocation([chromosome, start, end]));
-        } else if (action.type === IncomingActionType.TARGET_POSITION) {
-          const { stick, start, end } = action.payload;
-          const chromosome = stick.split(':')[1];
-          const chrLocation = [chromosome, start, end] as ChrLocation;
-          dispatch(setChrLocation(chrLocation));
-        }
+    const positionUpdate = (action: IncomingAction) => {
+      if (action.type === IncomingActionType.CURRENT_POSITION) {
+        const { stick, start, end } = action.payload;
+        const chromosome = stick.split(':')[1];
+        dispatch(setActualChrLocation([chromosome, start, end]));
+      } else if (action.type === IncomingActionType.TARGET_POSITION) {
+        const { stick, start, end } = action.payload;
+        const chromosome = stick.split(':')[1];
+        const chrLocation = [chromosome, start, end] as ChrLocation;
+        dispatch(setChrLocation(chrLocation));
       }
+    };
+
+    const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
+      IncomingActionType.CURRENT_POSITION,
+      positionUpdate
+    );
+    const subscriptionToTargetPotitionMessages = genomeBrowser?.subscribe(
+      IncomingActionType.TARGET_POSITION,
+      positionUpdate
     );
 
     return () => {
-      subscription?.unsubscribe();
+      subscriptionToActualPotitionMessages?.unsubscribe();
+      subscriptionToTargetPotitionMessages?.unsubscribe();
     };
   }, [genomeBrowser]);
 
@@ -84,20 +91,18 @@ export const BrowserImage = () => {
     [styles.shorter]: isNavbarOpen
   });
 
-  const browserImageContents = useMemo(() => {
-    return (
-      <div className={styles.browserImagePlus}>
-        <div
-          id={BROWSER_CONTAINER_ID}
-          className={browserContainerClassNames}
-          ref={browserRef}
-        />
-        <BrowserCogList />
-        <ZmenuController browserRef={browserRef} />
-        {isDisabled ? <Overlay /> : null}
-      </div>
-    );
-  }, []);
+  const browserImageContents = (
+    <div className={styles.browserImagePlus}>
+      <div
+        id={BROWSER_CONTAINER_ID}
+        className={browserContainerClassNames}
+        ref={browserRef}
+      />
+      <BrowserCogList />
+      <ZmenuController browserRef={browserRef} />
+      {isDisabled ? <Overlay /> : null}
+    </div>
+  );
 
   return (
     <>
@@ -111,4 +116,4 @@ export const BrowserImage = () => {
   );
 };
 
-export default BrowserImage;
+export default memo(BrowserImage);

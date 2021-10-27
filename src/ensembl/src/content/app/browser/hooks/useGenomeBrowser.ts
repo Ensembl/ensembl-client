@@ -27,7 +27,6 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants'
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
 import {
-  getBrowserActiveEnsObject,
   getBrowserActiveEnsObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/browser/browserSelectors';
@@ -42,7 +41,6 @@ import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();
 
-  const activeEnsObject = useSelector(getBrowserActiveEnsObject);
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
@@ -66,7 +64,7 @@ const useGenomeBrowser = () => {
   };
 
   const changeFocusObject = (focusObjectId: string) => {
-    if (!activeGenomeId || !activeEnsObject || !genomeBrowser) {
+    if (!activeGenomeId || !genomeBrowser) {
       return;
     }
 
@@ -78,8 +76,7 @@ const useGenomeBrowser = () => {
       type: OutgoingActionType.SET_FOCUS,
       payload: {
         focus: objectId,
-        genomeId,
-        stick: `${genomeId}:${activeEnsObject.location.chromosome}`
+        genomeId
       }
     };
 
@@ -106,7 +103,7 @@ const useGenomeBrowser = () => {
     Object.values(mergedTrackStates).forEach((trackStates) => {
       Object.keys(trackStates).forEach((trackId) => {
         const track_id =
-          trackId === 'track:gene-feat' || trackId === 'track:gene-feat-1'
+          trackId === 'track:gene-feat' || trackId === 'track:transcript-feat-1'
             ? 'focus'
             : trackId.replace('track:', '');
 
@@ -145,12 +142,11 @@ const useGenomeBrowser = () => {
   }) => {
     const { genomeId, chrLocation, ensObjectId } = locationData;
 
-    const [chromosome, startBp, endBp] = chrLocation;
+    const [, startBp, endBp] = chrLocation;
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS_LOCATION,
       payload: {
-        stick: `${genomeId}:${chromosome}`,
         startBp,
         endBp,
         focus: ensObjectId,
