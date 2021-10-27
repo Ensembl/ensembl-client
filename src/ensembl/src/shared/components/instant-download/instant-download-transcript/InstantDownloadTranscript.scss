@@ -25,16 +25,23 @@
   margin-bottom: 9px;
 }
 
+.checkboxUnchecked,
+.checkboxChecked {
+  margin-top: 9px;
+  height: 12px;
+  width: 12px;
+}
+
 .checkboxUnchecked {
   background-color: transparent;
-  border-color: $grey;
+  border-color: $dark-grey;
 }
 
 .checkboxLabel {
-  font-size: 13px;
+  font-size: 12px;
 }
 
-.themeDark{
+.themeDark {
   .label {
     color: $white;
   }
@@ -44,7 +51,7 @@
   }
 }
 
-.themeLight{
+.themeLight {
   .label {
     color: $black;
   }

@@ -205,7 +205,10 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
-      classNames={{ unchecked: styles.checkboxUnchecked }}
+      classNames={{
+        unchecked: styles.checkboxUnchecked,
+        checked: styles.checkboxChecked
+      }}
       labelClassName={styles.checkboxLabel}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}
