@@ -69,6 +69,10 @@ const getKeys = (): PublicKeys => {
   return defaultKeys;
 };
 
+const shouldReportAnalytics = () =>
+  isClient() &&
+  (window as any)[CONFIG_FIELD_ON_WINDOW]?.environment.shouldReportAnalytics;
+
 const buildEnvironment = readEnvironment().buildEnvironment;
 
 export default {
@@ -78,6 +82,8 @@ export default {
   // build environment
   isDevelopment: buildEnvironment === 'development',
   isProduction: buildEnvironment !== 'development',
+
+  shouldReportAnalytics: shouldReportAnalytics(),
 
   // TODO: remove this from the config in the future (will require refactoring of the apiService)
   // We will instead be passing base urls for differeent microservices individually
