@@ -46,7 +46,7 @@ type Transcript = Pick<
   UnsplicedTranscriptProps['transcript'];
 
 export type DefaultTranscriptListItemProps = {
-  transcriptPosition?: number;
+  transcriptPosition: number;
   gene: TranscriptsListItemInfoProps['gene'];
   transcript: Transcript;
   rulerTicks: TicksAndScale;
@@ -71,25 +71,20 @@ export const DefaultTranscriptListItem = (
   const dispatch = useDispatch();
   const { trackTranscriptListViewToggle } = useEntityViewerAnalytics();
 
-  let transcriptExpandStatus = props.expandTranscript;
-
   const handleTranscriptClick = () => {
-    transcriptExpandStatus = !transcriptExpandStatus;
+    // let transcriptExpandStatus = props.expandTranscript;
+    // transcriptExpandStatus = !transcriptExpandStatus;
+    const transcriptExpandStatus = !props.expandTranscript;
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
 
-    if (!props.transcriptPosition) {
-      return;
-    }
-
     const qualityLabel = getTranscriptMetadata(props.transcript)?.label;
-    const gatranscriptLabel = [qualityLabel, props.transcript.stable_id]
-      .filter(Boolean)
-      .join(' ');
+
     const gaToggleAction = transcriptExpandStatus
       ? 'open_accordion'
       : 'close_accordion';
     trackTranscriptListViewToggle(
-      gatranscriptLabel,
+      qualityLabel,
+      props.transcript.stable_id,
       gaToggleAction,
       props.transcriptPosition
     );

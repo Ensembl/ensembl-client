@@ -136,29 +136,37 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackTranscriptListViewToggle = (
-    transcriptLabel: string,
+    qualityLabel: string | undefined,
+    transcriptId: string,
     toggleAction: string,
     position: number
   ) => {
+    const transcriptLabel = [qualityLabel, transcriptId]
+      .filter(Boolean)
+      .join(' ');
+
     analyticsTracking.trackEvent({
       category: 'gene_view_transcript_list',
-      label: transcriptLabel, //open or close
-      action: toggleAction,
+      label: transcriptLabel,
+      action: toggleAction, //open_accordion or close_accordion
       value: position
     });
   };
 
-  const trackTranscriptMoreInfoToggle = (transcriptLabel: string) => {
+  const trackTranscriptMoreInfoToggle = (
+    qualityLabel: string | undefined,
+    transcriptId: string
+  ) => {
+    const transcriptLabel = [qualityLabel, transcriptId]
+      .filter(Boolean)
+      .join(' ');
+
     analyticsTracking.trackEvent({
       category: 'gene_view_transcript_list',
       label: transcriptLabel,
       action: 'more_information'
     });
   };
-
-  // "Category: gene_view_transcript_list
-  // Actions: sequence_download
-  // Label: gene_symbol + checkboxes & transcript + checkboxes"
 
   const trackDownload = (params: TrackDownloadPayload) => {
     const selectedOptions = params.options

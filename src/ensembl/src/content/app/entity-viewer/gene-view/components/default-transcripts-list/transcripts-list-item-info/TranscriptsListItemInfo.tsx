@@ -49,12 +49,12 @@ import { SplicedExon, PhasedExon } from 'src/shared/types/thoas/exon';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
-import useEntityViewerAnalytics from '../../../../hooks/useEntityViewerAnalytics';
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './TranscriptsListItemInfo.scss';
-import { getTranscriptMetadata } from '../../../../shared/components/default-transcript-label/TranscriptQualityLabel';
-import { TrackTranscriptDownloadPayload } from 'ensemblRoot/src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
+import { getTranscriptMetadata } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
+import { TrackTranscriptDownloadPayload } from 'src/shared/components/instant-download/instant-download-transcript/InstantDownloadTranscript';
 
 type Gene = Pick<FullGene, 'unversioned_stable_id' | 'stable_id' | 'symbol'>;
 type Transcript = Pick<
@@ -105,10 +105,7 @@ export const TranscriptsListItemInfo = (
     dispatch(toggleTranscriptMoreInfo(transcript.stable_id));
 
     const qualityLabel = getTranscriptMetadata(transcript)?.label;
-    const gaTranscriptLabel = [qualityLabel, transcript.stable_id]
-      .filter(Boolean)
-      .join(' ');
-    trackTranscriptMoreInfoToggle(gaTranscriptLabel);
+    trackTranscriptMoreInfoToggle(qualityLabel, transcript.stable_id);
   };
 
   const onDownload = (
