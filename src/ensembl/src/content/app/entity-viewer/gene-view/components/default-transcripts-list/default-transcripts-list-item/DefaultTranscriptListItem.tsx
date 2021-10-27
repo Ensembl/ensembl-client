@@ -71,10 +71,10 @@ export const DefaultTranscriptListItem = (
   const dispatch = useDispatch();
   const { trackTranscriptListViewToggle } = useEntityViewerAnalytics();
 
+  let transcriptExpandStatus = props.expandTranscript;
+
   const handleTranscriptClick = () => {
-    // let transcriptExpandStatus = props.expandTranscript;
-    // transcriptExpandStatus = !transcriptExpandStatus;
-    const transcriptExpandStatus = !props.expandTranscript;
+    transcriptExpandStatus = !transcriptExpandStatus;
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
 
     const qualityLabel = getTranscriptMetadata(props.transcript)?.label;

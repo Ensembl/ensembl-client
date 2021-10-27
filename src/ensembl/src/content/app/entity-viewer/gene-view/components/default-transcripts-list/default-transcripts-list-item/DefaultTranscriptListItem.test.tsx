@@ -82,6 +82,7 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   const defaultProps = {
+    transcriptPosition: 1,
     gene: createGene(),
     transcript: createTranscript(),
     rulerTicks: createRulerTicks(),
