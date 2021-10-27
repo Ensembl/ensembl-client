@@ -33,6 +33,7 @@ import styles from './Zmenu.scss';
 
 export type ZmenuContentProps = {
   content: ZmenuContentFeatureType[];
+  destroyZmenu: () => void;
 };
 
 export const ZmenuContent = (props: ZmenuContentProps) => {
@@ -49,7 +50,7 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
           <ZmenuContentFeature id={featureId} feature={feature} />
         </p>
       ))}
-      <ZmenuAppLinks featureId={featureId} />
+      <ZmenuAppLinks featureId={featureId} destroyZmenu={props.destroyZmenu} />
     </>
   );
 

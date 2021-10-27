@@ -31,6 +31,7 @@ import {
   getBrowserActiveGenomeId
 } from 'src/content/app/browser/browserSelectors';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { updateBrowserActiveEnsObjectIdsAndSave } from 'ensemblRoot/src/content/app/browser/browserActions';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
@@ -71,6 +72,7 @@ const useGenomeBrowser = () => {
     const { genomeId, objectId } = parseEnsObjectId(focusObjectId);
 
     dispatch(updatePreviouslyViewedObjectsAndSave());
+    dispatch(updateBrowserActiveEnsObjectIdsAndSave(focusObjectId));
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS,

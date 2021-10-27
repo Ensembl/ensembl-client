@@ -49,7 +49,7 @@ const Zmenu = (props: ZmenuProps) => {
   const { zmenus, setZmenus } = useGenomeBrowser();
   const dispatch = useDispatch();
 
-  const onOutsideClick = () => {
+  const destroyZmenu = () => {
     dispatch(changeHighlightedTrackId(''));
     setZmenus && setZmenus(pickBy(zmenus, (value, key) => key !== props.id));
   };
@@ -58,14 +58,16 @@ const Zmenu = (props: ZmenuProps) => {
   const toolboxPosition =
     direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
-  const mainContent = <ZmenuContent content={props.content} />;
+  const mainContent = (
+    <ZmenuContent content={props.content} destroyZmenu={destroyZmenu} />
+  );
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
     <div ref={anchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
       {anchorRef.current && (
         <Toolbox
-          onOutsideClick={onOutsideClick}
+          onOutsideClick={destroyZmenu}
           anchor={anchorRef.current}
           position={toolboxPosition}
         >

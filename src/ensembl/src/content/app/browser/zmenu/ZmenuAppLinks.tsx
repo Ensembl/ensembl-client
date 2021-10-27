@@ -30,6 +30,7 @@ import styles from './Zmenu.scss';
 
 type Props = {
   featureId: string;
+  destroyZmenu: () => void;
 };
 
 const ZmenuAppLinks = (props: Props) => {
@@ -58,14 +59,13 @@ const ZmenuAppLinks = (props: Props) => {
       })
     }
   };
-
   return (
     <div className={styles.zmenuAppLinks}>
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         label="Download"
       />
-      <ViewInApp links={links} />
+      <ViewInApp links={links} onAnyAppClick={props.destroyZmenu} />
     </div>
   );
 };

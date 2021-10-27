@@ -53,7 +53,8 @@ const mockStoreCreator = configureMockStore([thunk]);
 const mockStore = mockStoreCreator(() => mockState);
 
 const defaultZmenuContentProps: ZmenuContentProps = {
-  content: createZmenuContent()
+  content: createZmenuContent(),
+  destroyZmenu: jest.fn()
 };
 
 const renderZmenuContent = (store = mockStore) =>
