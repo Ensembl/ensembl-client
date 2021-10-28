@@ -15,12 +15,10 @@
  */
 
 import React, { useEffect, ReactNode } from 'react';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import routes from 'src/routes/routesConfig';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 
@@ -48,14 +46,6 @@ const App = (props: AppProps) => {
     <>
       <Header />
       <Switch>
-        {/*
-            1) Redirect from /help/articles to /help needs to be either in this component
-            before other routes (to match before the rest of /help routes do),
-            or inside the HelpPage component.
-            2) Notice that when react-router v6 is released, the Redirect component will be removed;
-            so our redirect code will need refactoring (might actually be defined just entirely server-side)
-          */}
-        <Redirect exact from="/help/articles" to="/help" />
         {routes.map((route, index) => (
           <Route
             key={index}
@@ -64,7 +54,6 @@ const App = (props: AppProps) => {
             render={(props) => <route.component {...props} />}
           />
         ))}
-        <Redirect exact from="/species" to={urlFor.speciesSelector()} />
         <Route component={NotFound} />
       </Switch>
     </>
