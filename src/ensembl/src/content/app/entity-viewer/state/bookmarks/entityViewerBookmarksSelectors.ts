@@ -18,6 +18,7 @@ import { RootState } from 'src/store';
 
 export const getAllPreviouslyViewedEntities = (state: RootState) =>
   state.entityViewer.bookmarks.previouslyViewed;
+
 export const getPreviouslyViewedEntities = (
   state: RootState,
   genomeId: string

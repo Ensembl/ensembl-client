@@ -134,7 +134,7 @@ export const updatePreviouslyViewedObjectsAndSave =
       ...getActiveGenomePreviouslyViewedObjects(state)
     ];
 
-    const isCurrentEntityPreviouslyViewed = previouslyViewedObjects?.some(
+    const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
       (entity) => entity.object_id === activeEnsObject.object_id
     );
 
