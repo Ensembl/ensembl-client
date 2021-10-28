@@ -26,7 +26,7 @@ export default {
 
 export const DefaultBreadcrumbs = () => (
   <div className={styles.wrapper}>
-    <Breadcrumbs items={['Item 1', 'Item 2', 'Item 3', 'Item 4']} />
+    <Breadcrumbs breadcrumbs={['Item 1', 'Item 2', 'Item 3', 'Item 4']} />
   </div>
 );
 

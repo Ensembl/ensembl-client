@@ -61,7 +61,7 @@ const Help = () => {
   const main = isIndexPage ? (
     <main className={styles.main}>
       <div className={styles.breadcrumbsContainer}>
-        <Breadcrumbs items={['Overview']} />
+        <Breadcrumbs breadcrumbs={['Overview']} />
       </div>
       <div className={styles.articleContainer}>
         <HelpLanding />
