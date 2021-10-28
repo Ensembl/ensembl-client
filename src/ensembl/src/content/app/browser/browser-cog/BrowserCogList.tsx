@@ -17,7 +17,12 @@
 import React, { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
+import {
+  UpdateTrackSummaryAction,
+  IncomingActionType,
+  TrackSummaryList,
+  TrackSummary
+} from 'ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -31,7 +36,6 @@ import { updateSelectedCog, updateCogTrackList } from '../browserActions';
 import BrowserCog from './BrowserCog';
 
 import { CogList } from '../browserState';
-import { TrackSummaryList, TrackSummary } from 'ensembl-genome-browser';
 
 import styles from './BrowserCogList.scss';
 
@@ -44,7 +48,7 @@ export const BrowserCogList = () => {
 
   const { genomeBrowser } = useGenomeBrowser();
 
-  const listenBpaneScroll = (trackSummaryList: TrackSummaryList) => {
+  const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
     const cogList: CogList = {};
 
     trackSummaryList.forEach((trackSummary: TrackSummary) => {
@@ -65,8 +69,7 @@ export const BrowserCogList = () => {
   useEffect(() => {
     const subscription = genomeBrowser?.subscribe(
       IncomingActionType.TRACK_SUMMARY,
-      (action: IncomingAction) =>
-        listenBpaneScroll(action.payload as TrackSummaryList)
+      (action: UpdateTrackSummaryAction) => updateTrackSummary(action.payload)
     );
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);

@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
-  IncomingAction,
+  ZmenuAction,
   IncomingActionType,
   ZmenuPayload
 } from 'ensembl-genome-browser';
@@ -53,8 +53,8 @@ const ZmenuController = (props: Props) => {
     return () => subscription?.unsubscribe();
   }, [genomeBrowser]);
 
-  const handleZmenuCreate = (action: IncomingAction) => {
-    const payload = action.payload as ZmenuPayload;
+  const handleZmenuCreate = (action: ZmenuAction) => {
+    const payload = action.payload;
 
     dispatch(changeHighlightedTrackId(payload.content[0].metadata.track));
 

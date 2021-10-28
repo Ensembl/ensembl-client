@@ -18,7 +18,11 @@ import React, { useRef, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 
-import { IncomingAction, IncomingActionType } from 'ensembl-genome-browser';
+import {
+  BrowserCurrentLocationUpdateAction,
+  BrowserTargetLocationUpdateAction,
+  IncomingActionType
+} from 'ensembl-genome-browser';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
@@ -53,7 +57,11 @@ export const BrowserImage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const positionUpdate = (action: IncomingAction) => {
+    const positionUpdate = (
+      action:
+        | BrowserCurrentLocationUpdateAction
+        | BrowserTargetLocationUpdateAction
+    ) => {
       if (action.type === IncomingActionType.CURRENT_POSITION) {
         const { stick, start, end } = action.payload;
         const chromosome = stick.split(':')[1];

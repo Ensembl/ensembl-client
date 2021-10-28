@@ -56,7 +56,7 @@ const defaultProps: ZmenuProps = {
 
 const mockStore = configureMockStore();
 let store: ReturnType<typeof mockStore>;
-const wrapInRedux = () => {
+const renderComponent = () => {
   store = mockStore();
   return render(
     <Provider store={store}>
@@ -71,7 +71,7 @@ describe('<Zmenu />', () => {
 
   describe('rendering', () => {
     test('renders zmenu content', () => {
-      const { queryByTestId } = wrapInRedux();
+      const { queryByTestId } = renderComponent();
       expect(queryByTestId('zmenuContent')).toBeTruthy();
     });
   });

@@ -86,7 +86,7 @@ const useGenomeBrowser = () => {
   };
 
   const restoreBrowserTrackStates = () => {
-    if (!activeGenomeId || !activeEnsObjectId) {
+    if (!activeGenomeId || !activeEnsObjectId || !genomeBrowser) {
       return;
     }
 
@@ -142,6 +142,10 @@ const useGenomeBrowser = () => {
     ensObjectId: string | null;
     chrLocation: ChrLocation;
   }) => {
+    if (!genomeBrowser) {
+      return;
+    }
+
     const { genomeId, chrLocation, ensObjectId } = locationData;
 
     const [, startBp, endBp] = chrLocation;
