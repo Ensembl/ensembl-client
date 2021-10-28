@@ -3,7 +3,7 @@
 .themeDark {
   color: $white;
 
-  &Disabled {
+  &.disabled {
     border-color: $dark-grey;
     color: $dark-grey;
   }
