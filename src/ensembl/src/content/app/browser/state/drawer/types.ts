@@ -40,22 +40,8 @@ type GenericTrackView = {
   };
 };
 
-type DrawerView =
+export type DrawerView =
   | BookmarksDrawerView
   | GeneDrawerView
   | TranscriptDrawerView
   | GenericTrackView;
-
-export type DrawerStateForGenome = Readonly<{
-  isDrawerOpened: boolean;
-  drawerView: DrawerView | null;
-}>;
-
-export type DrawerState = Readonly<{
-  [genomeId: string]: DrawerStateForGenome;
-}>;
-
-export const defaultDrawerStateForGenome: DrawerStateForGenome = {
-  isDrawerOpened: false,
-  drawerView: null
-};
