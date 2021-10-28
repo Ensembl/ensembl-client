@@ -36,7 +36,7 @@ import {
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';
-import JSONValue from 'ensemblRoot/src/shared/types/JSON';
+import JSONValue from 'src/shared/types/JSON';
 
 import styles from './Help.scss';
 
