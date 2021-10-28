@@ -48,6 +48,14 @@ const App = (props: AppProps) => {
     <>
       <Header />
       <Switch>
+        {/*
+            1) Redirect from /help/articles to /help needs to be either in this component
+            before other routes (to match before the rest of /help routes do),
+            or inside the HelpPage component.
+            2) Notice that when react-router v6 is released, the Redirect component will be removed;
+            so our redirect code will need refactoring (might actually be defined just entirely server-side)
+          */}
+        <Redirect exact from="/help/articles" to="/help" />
         {routes.map((route, index) => (
           <Route
             key={index}
