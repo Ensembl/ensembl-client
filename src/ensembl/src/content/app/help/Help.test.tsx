@@ -25,9 +25,9 @@ const sampleMenu: Menu = {
       type: 'collection',
       items: [
         {
-          name: 'Two',
+          name: 'Duplicate article 1',
           type: 'article',
-          url: '/two'
+          url: '/duplicate'
         },
         {
           name: 'Three',
@@ -59,18 +59,36 @@ const sampleMenu: Menu = {
           name: 'Two',
           type: 'article',
           url: '/eight'
+        },
+        {
+          name: 'Duplicate article 2',
+          type: 'article',
+          url: '/duplicate'
         }
       ]
     }
   ]
 };
-describe('getBreadcrumbsFromMenu function', () => {
+describe('getBreadcrumbsFromMenu', () => {
   it('returns the correct set of breadcrumbs for the given url', () => {
-    expect(getBreadcrumbsFromMenu(sampleMenu, '/four').join(',')).toBe(
-      'One,Four'
-    );
-    expect(getBreadcrumbsFromMenu(sampleMenu, '/seven').join(',')).toBe(
-      'Five,Seven'
-    );
+    expect(getBreadcrumbsFromMenu(sampleMenu, '/four')).toEqual([
+      'One',
+      'Four'
+    ]);
+    expect(getBreadcrumbsFromMenu(sampleMenu, '/seven')).toEqual([
+      'Five',
+      'Seven'
+    ]);
+  });
+
+  it('returns null when there is no match', () => {
+    expect(getBreadcrumbsFromMenu(sampleMenu, '/blah')).toEqual(null);
+  });
+
+  it('returns first match when there are two matches', () => {
+    expect(getBreadcrumbsFromMenu(sampleMenu, '/duplicate')).toEqual([
+      'One',
+      'Duplicate article 1'
+    ]);
   });
 });

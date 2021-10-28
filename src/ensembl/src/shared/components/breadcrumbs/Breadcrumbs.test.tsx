@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import { Breadcrumbs } from './Breadcrumbs';
 
 const defaultProps = {
-  items: ['foo', 'bar']
+  breadcrumbs: ['foo', 'bar']
 };
 
 describe('Breadcrumbs', () => {
@@ -33,20 +33,20 @@ describe('Breadcrumbs', () => {
     expect(container.querySelector('.breadcrumbs')).toBeTruthy();
   });
 
-  it('renders the breadcrumb items', () => {
+  it('renders the correct number breadcrumbs', () => {
     const { container } = render(<Breadcrumbs {...defaultProps} />);
-    expect(container.querySelectorAll('.breadcrumbsItem')).toHaveLength(
-      defaultProps.items.length
+    expect(container.querySelectorAll('.breadcrumb')).toHaveLength(
+      defaultProps.breadcrumbs.length
     );
   });
 
-  it('renders the breadcrumb item value', () => {
+  it('renders the correct breadcrumb value', () => {
     const { container } = render(<Breadcrumbs {...defaultProps} />);
 
-    defaultProps.items.forEach((item, index) => {
-      expect(
-        container.querySelectorAll('.breadcrumbsItem')[index].textContent
-      ).toBe(item);
-    });
+    const renderedBreadcrumbs = [
+      ...container.querySelectorAll('.breadcrumb')
+    ].map((element) => element.textContent);
+
+    expect(renderedBreadcrumbs).toEqual(defaultProps.breadcrumbs);
   });
 });

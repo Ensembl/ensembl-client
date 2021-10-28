@@ -19,16 +19,16 @@ import React from 'react';
 import styles from './Breadcrumbs.scss';
 
 type Props = {
-  items: string[];
+  breadcrumbs: string[];
 };
 
 export const Breadcrumbs = (props: Props) => {
   return (
     <div className={styles.breadcrumbs}>
-      {props.items.map((item, index) => {
+      {props.breadcrumbs.map((breadcrumb, index) => {
         return (
-          <span key={index} className={styles.breadcrumbsItem}>
-            {item}
+          <span key={index} className={styles.breadcrumb}>
+            {breadcrumb}
           </span>
         );
       })}

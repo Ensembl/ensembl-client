@@ -29,7 +29,7 @@ import {
   HelpArticleGrid,
   VideoArticle
 } from 'src/shared/components/help-article';
-import Breadcrumbs from 'ensemblRoot/src/shared/components/breadcrumbs/Breadcrumbs';
+import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
 import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
 import {
@@ -53,7 +53,7 @@ const Help = () => {
     skip: isIndexPage
   });
 
-  let breadcrumbs: string[] = [];
+  let breadcrumbs: string[] | null = [];
   if (!isIndexPage && menu && article) {
     breadcrumbs = getBreadcrumbsFromMenu(menu, article.url);
   }
@@ -93,7 +93,7 @@ const AppBar = () => {
 
 const MainContent = (props: {
   article: ArticleData;
-  breadcrumbs: string[];
+  breadcrumbs: string[] | null;
 }) => {
   const { article, breadcrumbs } = props;
   if (article.type !== 'article' && article.type !== 'video') {
@@ -108,9 +108,11 @@ const MainContent = (props: {
 
   const content = (
     <>
-      <div className={styles.breadcrumbsContainer}>
-        <Breadcrumbs items={breadcrumbs} />
-      </div>
+      {breadcrumbs && (
+        <div className={styles.breadcrumbsContainer}>
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+        </div>
+      )}
       <div className={styles.articleContainer}>
         <HelpArticleGrid className={styles.articleGrid}>
           {renderedArticle}
@@ -148,6 +150,10 @@ export const getBreadcrumbsFromMenu = (menu: MenuType, url: string) => {
   // Find the path matching the current article URL
   // example matched path: 'items.1.items.0.items.1.url'
   const matchedPath = urlKeysPaths.find((path) => get(menu, path) === url);
+
+  if (!matchedPath) {
+    return null;
+  }
 
   // split the matched path using '.'
   const pathPortions = matchedPath?.split('.') || [];
