@@ -18,6 +18,7 @@ import express from 'express';
 
 import proxyMiddleware from './middleware/proxyMiddleware';
 import staticMiddleware from './middleware/staticMiddleware';
+import redirectMiddleware from './middleware/redirectMiddleware';
 import viewsRouter from './routes/viewsRouter';
 
 const app = express();
@@ -25,6 +26,7 @@ const app = express();
 app.disable('x-powered-by'); // no need to announce to the world that we are running on Express
 
 app.use(proxyMiddleware);
+app.use(redirectMiddleware);
 
 if (process.env.NODE_ENV === 'production') {
   // should be able to handle requests for the contents of /static directory by itself

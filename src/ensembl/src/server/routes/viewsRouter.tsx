@@ -79,7 +79,7 @@ const viewRouter = async (req: Request, res: Response) => {
   const reduxState = reduxStore.getState();
 
   if ('url' in routerContext) {
-    // a `url` field in filled router context indicates that somewhere a `<Redirect>` was rendered
+    // TODO: revisit after React 18 and react-router 6 are released
     const url = (routerContext as any).url as string;
     res.redirect(301, url);
     return;
