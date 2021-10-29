@@ -94,7 +94,7 @@ export const EntityViewerSidebarBookmarks = () => {
 
   return (
     <section>
-      <div className={styles.title}>Previously viewed</div>
+      <h3>Previously viewed</h3>
       {previouslyViewedEntities.length ? (
         <>
           <PreviouslyViewedLinks

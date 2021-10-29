@@ -278,6 +278,8 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
     dispatch(setFilterPanel(!isFilterPanelOpen));
   };
 
+  const filterLabelClass = isFilterPanelOpen ? styles.openFilterLabel : '';
+
   useEffect(() => {
     if (!genomeId || !props.gene) {
       return;
@@ -300,7 +302,10 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
         />
       </div>
       <div className={styles.viewInLinks}>
-        <ViewInApp links={{ genomeBrowser: { url: gbUrl } }} />
+        <ViewInApp
+          links={{ genomeBrowser: { url: gbUrl } }}
+          classNames={{ label: styles.viewInAppLabel }}
+        />
       </div>
       <div className={styles.geneViewTabs}>
         <div
@@ -311,6 +316,9 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
           {props.gene.transcripts.length > 5 && (
             <div className={styles.filterLabelWrapper}>
               <ShowHide
+                classNames={{
+                  label: filterLabelClass
+                }}
                 onClick={toggleFilterPanel}
                 isExpanded={isFilterPanelOpen}
                 label={filterLabel}

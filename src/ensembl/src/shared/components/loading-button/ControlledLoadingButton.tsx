@@ -46,6 +46,7 @@ const ControlledLoadingButton = (props: Props) => {
   } = props;
 
   const wrapperClass = classNames(styles.buttonWrapper, wrapperClassName);
+
   const buttonClass =
     loadingState !== LoadingState.NOT_REQUESTED
       ? classNames(buttonClassName, styles.invisible)

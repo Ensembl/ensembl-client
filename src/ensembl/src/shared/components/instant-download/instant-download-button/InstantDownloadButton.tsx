@@ -15,17 +15,32 @@
  */
 
 import React from 'react';
+import classNames from 'classnames';
 
 import LoadingButton from '../../loading-button';
 
+import styles from './InstantDownloadButton.scss';
+
+type Theme = 'light' | 'dark';
+
 type Props = {
   isDisabled?: boolean;
-  className?: string;
+  theme: Theme;
+  classNames?: {
+    wrapper: string;
+  };
   onClick: () => Promise<unknown>;
 };
 
 const InstantDownloadButton = (props: Props) => {
-  return <LoadingButton {...props}>Download</LoadingButton>;
+  const buttonClass = classNames({
+    [styles.themeDark]: props.theme === 'dark',
+    [styles.disabled]: props.isDisabled
+  });
+  const allClassNames = { ...props.classNames, button: buttonClass };
+  const propsToPass = { ...props, classNames: allClassNames };
+
+  return <LoadingButton {...propsToPass}>Download</LoadingButton>;
 };
 
 export default InstantDownloadButton;

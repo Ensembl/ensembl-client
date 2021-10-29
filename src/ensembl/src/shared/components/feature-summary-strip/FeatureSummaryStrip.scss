@@ -22,16 +22,17 @@
   color: $dark-grey;
 }
 
+.featureSummaryStripLabel,
+.featureNameEmphasized {
+  display: inline-block;
+  margin-right: 18px;
+}
+
 .featureSummaryStripLabel {
   font-size: 12px;
   font-weight: $light;
-  margin-right: 0.5em;
 }
 
 .featureNameEmphasized {
   font-weight: $bold;
-
-  & + span {
-    margin-left: 12px;
-  }
 }

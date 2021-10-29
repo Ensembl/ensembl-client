@@ -178,12 +178,14 @@ const InstantDownloadTranscript = (props: Props) => {
         isGenomicSequenceSelected={isGeneSequenceSelected}
         onChange={onGeneOptionChange}
       />
-      <div className={styles.downloadButton}>
-        <InstantDownloadButton
-          isDisabled={isButtonDisabled}
-          onClick={onSubmit}
-        />
-      </div>
+      <InstantDownloadButton
+        isDisabled={isButtonDisabled}
+        onClick={onSubmit}
+        theme={props.theme}
+        classNames={{
+          wrapper: styles.downloadButtonWrapper
+        }}
+      />
     </div>
   );
 };
@@ -203,7 +205,10 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
-      classNames={{ unchecked: styles.checkboxUnchecked }}
+      classNames={{
+        unchecked: styles.checkboxUnchecked,
+        checked: styles.checkboxChecked
+      }}
       labelClassName={styles.checkboxLabel}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}

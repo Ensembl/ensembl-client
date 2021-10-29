@@ -141,11 +141,10 @@ const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
 
 describe('<TranscriptsListItemInfo /', () => {
   it('displays amino acid length when transcript has a protein product', () => {
-    const { container } = renderComponent();
+    const { queryByTestId } = renderComponent();
     const expectedProteinLength =
       defaultProps.transcript.product_generating_contexts[0].product?.length;
-    const currentProteinLength = container
-      .querySelector('.topMiddle strong')
+    const currentProteinLength = queryByTestId('proteinLength')
       ?.textContent?.split(/\s/)[0]
       ?.replace(/,/g, '');
     expect(currentProteinLength).toMatch(`${expectedProteinLength}`);

@@ -166,7 +166,9 @@ export const TranscriptsListItemInfo = (
           <div className={styles.moreInfoColumn}>
             {!!transcriptNCBI && (
               <ExternalReference
-                classNames={{ label: styles.normalText }}
+                classNames={{
+                  link: styles.externalRefLink
+                }}
                 label={'RefSeq match'}
                 to={transcriptNCBI.url}
                 linkText={transcriptNCBI.id}
@@ -174,7 +176,9 @@ export const TranscriptsListItemInfo = (
             )}
             {!!transcriptCCDS && (
               <ExternalReference
-                classNames={{ label: styles.normalText }}
+                classNames={{
+                  link: styles.externalRefLink
+                }}
                 label={'CCDS'}
                 to={transcriptCCDS.url}
                 linkText={transcriptCCDS.accession_id}
@@ -193,26 +197,34 @@ export const TranscriptsListItemInfo = (
       <div className={midStyles}>
         <div className={styles.topLeft}>
           <div>
-            <strong>{transcript.metadata.biotype.label}</strong>
+            <span className={styles.normalText}>
+              {transcript.metadata.biotype.label}
+            </span>
           </div>
           <div>{getTranscriptLocation()}</div>
         </div>
         <div className={styles.topMiddle}>
           {isProteinCodingTranscript(transcript) && (
             <>
-              <div>
-                <strong>{aminoAcidLength} aa</strong>
+              <div className={styles.normalText} data-test-id="proteinLength">
+                {aminoAcidLength} aa
               </div>
-              {product && getLinkToProteinView(product?.stable_id)}
+              <div className={styles.normalText}>
+                {product && getLinkToProteinView(product?.stable_id)}
+              </div>
             </>
           )}
         </div>
         <div className={styles.topRight}>
           <div>
-            Combined exon length <strong>{splicedRNALength}</strong> bp
+            Combined exon length{' '}
+            <span className={styles.normalText}>{splicedRNALength}</span> bp
           </div>
           <div>
-            Coding exons <strong>{getNumberOfCodingExons(transcript)}</strong>{' '}
+            Coding exons{' '}
+            <span className={styles.normalText}>
+              {getNumberOfCodingExons(transcript)}
+            </span>{' '}
             of {transcript.spliced_exons.length}
           </div>
         </div>
@@ -224,7 +236,10 @@ export const TranscriptsListItemInfo = (
             }
             label="More information"
             isExpanded={props.expandMoreInfo}
-            classNames={{ wrapper: styles.moreInformationLink }}
+            classNames={{
+              wrapper: styles.moreInformationLink,
+              label: styles.normalText
+            }}
           />
         )}
 
@@ -236,7 +251,10 @@ export const TranscriptsListItemInfo = (
           onClick={handleDownloadLinkClick}
           label="Download"
           isExpanded={props.expandDownload}
-          classNames={{ wrapper: styles.downloadLink }}
+          classNames={{
+            wrapper: styles.downloadLink,
+            label: styles.normalText
+          }}
         />
         {props.expandDownload && renderInstantDownload({ ...props, genomeId })}
       </div>

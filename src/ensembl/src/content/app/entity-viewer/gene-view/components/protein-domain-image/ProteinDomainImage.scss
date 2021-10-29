@@ -27,12 +27,13 @@
   display: grid;
   grid-template-columns: [type] 178px [images] 902px;
   margin-bottom: 10px;
+  font-size: 12px;
 
   & .resourceName {
     grid-column: type;
     text-align: right;
     padding-right: 1em;
-    color: $dark-grey;
+    color: $black;
   }
 
   & .resourceImages {
@@ -52,6 +53,6 @@
   & .resourceDescription {
     grid-column: description;
     padding-left: 27px;
-    color: $dark-grey;
+    color: $black;
   }
 }
