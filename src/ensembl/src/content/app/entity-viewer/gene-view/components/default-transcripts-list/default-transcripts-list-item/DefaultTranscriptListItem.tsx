@@ -71,21 +71,15 @@ export const DefaultTranscriptListItem = (
   const dispatch = useDispatch();
   const { trackTranscriptListViewToggle } = useEntityViewerAnalytics();
 
-  let transcriptExpandStatus = props.expandTranscript;
-
   const handleTranscriptClick = () => {
-    transcriptExpandStatus = !transcriptExpandStatus;
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
 
     const qualityLabel = getTranscriptMetadata(props.transcript)?.label;
 
-    const gaToggleAction = transcriptExpandStatus
-      ? 'open_accordion'
-      : 'close_accordion';
     trackTranscriptListViewToggle(
       qualityLabel,
       props.transcript.stable_id,
-      gaToggleAction,
+      !props.expandTranscript ? 'open_accordion' : 'close_accordion',
       props.transcriptPosition
     );
   };
