@@ -74,14 +74,15 @@ export const DefaultTranscriptListItem = (
   const handleTranscriptClick = () => {
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
 
-    const qualityLabel = getTranscriptMetadata(props.transcript)?.label;
+    const transcriptQuality =
+      getTranscriptMetadata(props.transcript)?.label ?? null;
 
-    trackTranscriptListViewToggle(
-      qualityLabel,
-      props.transcript.stable_id,
-      !props.expandTranscript ? 'open_accordion' : 'close_accordion',
-      props.transcriptPosition
-    );
+    trackTranscriptListViewToggle({
+      transcriptQuality,
+      transcriptId: props.transcript.stable_id,
+      action: !props.expandTranscript ? 'open_accordion' : 'close_accordion',
+      transcriptPosition: props.transcriptPosition
+    });
   };
 
   return (

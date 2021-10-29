@@ -117,12 +117,16 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick('gene_view_transcript_list', label);
   };
 
-  const trackProteinInfoToggle = (params: {
+  type TrackTranscriptListViewToggleParam = {
     transcriptQuality: string | null;
     transcriptId: string;
     action: 'open_accordion' | 'close_accordion';
     transcriptPosition: number;
-  }) => {
+  };
+
+  const trackProteinInfoToggle = (
+    params: TrackTranscriptListViewToggleParam
+  ) => {
     const { transcriptId, transcriptQuality } = params;
     const label = transcriptQuality
       ? `${transcriptQuality} ${transcriptId}` // "MANE Plus Clinical ENST00000380152.8"
@@ -136,20 +140,17 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackTranscriptListViewToggle = (
-    qualityLabel: string | undefined,
-    transcriptId: string,
-    toggleAction: string,
-    position: number
+    params: TrackTranscriptListViewToggleParam
   ) => {
-    const transcriptLabel = [qualityLabel, transcriptId]
+    const transcriptLabel = [params.transcriptQuality, params.transcriptId]
       .filter(Boolean)
       .join(' ');
 
     analyticsTracking.trackEvent({
       category: 'gene_view_transcript_list',
       label: transcriptLabel,
-      action: toggleAction, //open_accordion or close_accordion
-      value: position
+      action: params.action,
+      value: params.transcriptPosition
     });
   };
 
