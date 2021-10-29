@@ -145,7 +145,7 @@ const InstantDownloadTranscript = (props: Props) => {
     try {
       await fetchForTranscript(payload);
       props.onDownloadSuccess?.(payload);
-    } catch (e) {
+    } catch {
       props.onDownloadFailure?.(payload);
     } finally {
       resetCheckboxes();
