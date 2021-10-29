@@ -118,7 +118,7 @@ const useEntityViewerAnalytics = () => {
   };
 
   type TrackTranscriptListViewToggleParam = {
-    transcriptQuality: string | null;
+    transcriptQuality?: string;
     transcriptId: string;
     action: 'open_accordion' | 'close_accordion';
     transcriptPosition: number;
