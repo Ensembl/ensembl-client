@@ -26,4 +26,8 @@ router.get('/help/articles', (_, res) => {
   res.redirect(301, '/help');
 });
 
+router.get('/about/articles', (_, res) => {
+  res.redirect(301, '/about');
+});
+
 export default router;
