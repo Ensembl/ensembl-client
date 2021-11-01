@@ -55,7 +55,7 @@ const GeneViewSidebarTabs = () => {
   );
 
   const dispatch = useDispatch();
-  const { trackXrefsTabSelection } = useEntityViewerAnalytics();
+  const { trackExternalReferencesTabSelection } = useEntityViewerAnalytics();
 
   if (!selectedTabName) {
     return null;
@@ -69,7 +69,7 @@ const GeneViewSidebarTabs = () => {
       dispatch(closeSidebarModal());
     }
     if (name === SidebarTabName.EXTERNAL_REFERENCES) {
-      trackXrefsTabSelection(name);
+      trackExternalReferencesTabSelection(name);
     }
     dispatch(setSidebarTabName(name as SidebarTabName));
   };
