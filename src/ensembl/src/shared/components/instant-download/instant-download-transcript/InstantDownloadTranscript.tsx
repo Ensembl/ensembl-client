@@ -39,10 +39,21 @@ type GeneFields = {
   id: string;
 };
 
+export type TrackTranscriptDownloadPayload = {
+  genomeId: string;
+  transcriptId: string;
+  options: {
+    transcript: Partial<TranscriptOptions>;
+    gene: { genomicSequence: boolean };
+  };
+};
+
 export type InstantDownloadTranscriptEntityProps = {
   genomeId: string;
   transcript: TranscriptFields;
   gene: GeneFields;
+  onDownloadSuccess?: (params: TrackTranscriptDownloadPayload) => void;
+  onDownloadFailure?: (params: TrackTranscriptDownloadPayload) => void;
 };
 
 type Props = InstantDownloadTranscriptEntityProps & {
@@ -131,9 +142,11 @@ const InstantDownloadTranscript = (props: Props) => {
         gene: { genomicSequence: isGeneSequenceSelected }
       }
     };
-
     try {
       await fetchForTranscript(payload);
+      props.onDownloadSuccess?.(payload);
+    } catch {
+      props.onDownloadFailure?.(payload);
     } finally {
       resetCheckboxes();
     }

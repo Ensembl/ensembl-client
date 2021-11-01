@@ -118,6 +118,7 @@ const DefaultTranscriptslist = (props: Props) => {
           return (
             <DefaultTranscriptsListItem
               key={index}
+              transcriptPosition={index + 1}
               gene={gene}
               transcript={transcript}
               rulerTicks={props.rulerTicks}

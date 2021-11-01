@@ -17,6 +17,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
+import {
+  getTranscriptMetadata,
+  TranscriptQualityLabel
+} from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import UnsplicedTranscript, {
   UnsplicedTranscriptProps
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
@@ -26,9 +30,10 @@ import TranscriptsListItemInfo, {
 
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
@@ -41,6 +46,7 @@ type Transcript = Pick<
   UnsplicedTranscriptProps['transcript'];
 
 export type DefaultTranscriptListItemProps = {
+  transcriptPosition: number;
   gene: TranscriptsListItemInfoProps['gene'];
   transcript: Transcript;
   rulerTicks: TicksAndScale;
@@ -63,9 +69,17 @@ export const DefaultTranscriptListItem = (
   const transcriptWidth = scale(transcriptLength) as number;
 
   const dispatch = useDispatch();
+  const { trackTranscriptListViewToggle } = useEntityViewerAnalytics();
 
   const handleTranscriptClick = () => {
     dispatch(toggleTranscriptInfo(props.transcript.stable_id));
+
+    trackTranscriptListViewToggle({
+      transcriptQuality: getTranscriptMetadata(props.transcript)?.label,
+      transcriptId: props.transcript.stable_id,
+      action: !props.expandTranscript ? 'open_accordion' : 'close_accordion',
+      transcriptPosition: props.transcriptPosition
+    });
   };
 
   return (
