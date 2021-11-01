@@ -17,6 +17,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
+import {
+  getTranscriptMetadata,
+  TranscriptQualityLabel
+} from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import UnsplicedTranscript, {
   UnsplicedTranscriptProps
 } from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
@@ -30,10 +34,6 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import {
-  getTranscriptMetadata,
-  TranscriptQualityLabel
-} from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
