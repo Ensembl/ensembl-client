@@ -18,7 +18,6 @@ import ReactGA from 'react-ga';
 import { AnalyticsOptions, CustomDimensions } from 'src/analyticsHelper';
 
 import config from 'config';
-import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 const { googleAnalyticsKey } = config;
 
@@ -39,7 +38,7 @@ class AnalyticsTracking {
     }
 
     // don't send analytics other than in production deployment
-    if (!isEnvironment([Environment.PRODUCTION])) {
+    if (!config.shouldReportAnalytics) {
       this.reactGA.ga('set', 'sendHitTask', null);
     }
   }

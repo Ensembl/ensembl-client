@@ -24,9 +24,9 @@ import useHover from 'src/shared/hooks/useHover';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import {
-  handleSelectedSpecies,
+  setSelectedSpecies,
   clearSelectedSearchResult
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 import {
   getCurrentSpeciesGenomeId,
   getCommittedSpecies
@@ -78,7 +78,7 @@ const PopularSpeciesButton = (props: Props) => {
     } else {
       // the species is available, not selected and not committed;
       // go ahead and select it
-      dispatch(handleSelectedSpecies(species));
+      dispatch(setSelectedSpecies(species));
       trackPopularSpeciesSelect(species, 'preselect');
     }
   };

@@ -18,8 +18,6 @@ import React, { MouseEvent, ReactNode, useCallback } from 'react';
 import classNames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { RootState } from 'src/store';
-
 import analyticsTracking from 'src/services/analytics-service';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
@@ -61,6 +59,8 @@ import VisibilityIcon from 'src/shared/components/visibility-icon/VisibilityIcon
 
 import { ReactComponent as Ellipsis } from 'static/img/track-panel/ellipsis.svg';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+
+import { RootState } from 'src/store';
 
 import styles from './TrackPanelListItem.scss';
 
@@ -112,7 +112,6 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const dispatchDrawerActions = () => {
     if (activeGenomeId) {
       dispatch(setActiveDrawerTrackId(trackId));
-
       if (trackId.includes('track:transcript')) {
         dispatch(setActiveDrawerTranscriptId(track.stable_id));
       }

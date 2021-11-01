@@ -24,7 +24,7 @@ import configureMockStore from 'redux-mock-store';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { deleteSpeciesAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
@@ -34,7 +34,7 @@ jest.mock('connected-react-router', () => ({
   push: jest.fn(() => ({ type: 'push' }))
 }));
 jest.mock(
-  'src/content/app/species-selector/state/speciesSelectorActions',
+  'src/content/app/species-selector/state/speciesSelectorSlice',
   () => ({
     deleteSpeciesAndSave: jest.fn(() => ({ type: 'deleteSpeciesAndSave' }))
   })

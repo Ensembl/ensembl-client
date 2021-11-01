@@ -114,12 +114,20 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick('gene_view_proteins_list', label);
   };
 
-  const trackProteinInfoToggle = (params: {
-    transcriptQuality: string | null;
+  const trackExternalLinkClickInTranscriptList = (label: string) => {
+    trackExternalLinkClick('gene_view_transcript_list', label);
+  };
+
+  type TrackTranscriptListViewToggleParam = {
+    transcriptQuality?: string;
     transcriptId: string;
     action: 'open_accordion' | 'close_accordion';
     transcriptPosition: number;
-  }) => {
+  };
+
+  const trackProteinInfoToggle = (
+    params: TrackTranscriptListViewToggleParam
+  ) => {
     const { transcriptId, transcriptQuality } = params;
     const label = transcriptQuality
       ? `${transcriptQuality} ${transcriptId}` // "MANE Plus Clinical ENST00000380152.8"
@@ -129,6 +137,36 @@ const useEntityViewerAnalytics = () => {
       label,
       action: params.action,
       value: params.transcriptPosition + 1
+    });
+  };
+
+  const trackTranscriptListViewToggle = (
+    params: TrackTranscriptListViewToggleParam
+  ) => {
+    const transcriptLabel = [params.transcriptQuality, params.transcriptId]
+      .filter(Boolean)
+      .join(' ');
+
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_list',
+      label: transcriptLabel,
+      action: params.action,
+      value: params.transcriptPosition
+    });
+  };
+
+  const trackTranscriptMoreInfoToggle = (
+    qualityLabel: string | undefined,
+    transcriptId: string
+  ) => {
+    const transcriptLabel = [qualityLabel, transcriptId]
+      .filter(Boolean)
+      .join(' ');
+
+    analyticsTracking.trackEvent({
+      category: 'gene_view_transcript_list',
+      label: transcriptLabel,
+      action: 'more_information'
     });
   };
 
@@ -158,7 +196,7 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_proteins_list' });
   };
 
-  const trackXrefsTabSelection = (tabName: string) => {
+  const trackExternalReferencesTabSelection = (tabName: string) => {
     analyticsTracking.trackEvent({
       category: 'entity_viewer_sidebar',
       action: 'change_tab',
@@ -166,7 +204,7 @@ const useEntityViewerAnalytics = () => {
     });
   };
 
-  const trackXrefLinkClick = (params: {
+  const trackExternalReferenceLinkClick = (params: {
     tabName: string;
     linkLabel: string;
   }) => {
@@ -195,6 +233,12 @@ const useEntityViewerAnalytics = () => {
     });
   };
 
+  const trackInstantDownloadTranscriptList = (
+    params: Omit<TrackDownloadPayload, 'category'>
+  ) => {
+    trackDownload({ ...params, category: 'gene_view_transcript_list' });
+  };
+
   return {
     trackTabChange,
     trackFiltersPanelOpen,
@@ -203,9 +247,14 @@ const useEntityViewerAnalytics = () => {
     trackProteinInfoToggle,
     trackProteinDownload,
     trackExternalLinkClickInProteinsList,
-    trackXrefsTabSelection,
-    trackXrefLinkClick,
-    trackGeneDownload
+    trackExternalLinkClickInTranscriptList,
+    trackExternalReferencesTabSelection,
+    trackExternalReferenceLinkClick,
+    trackGeneDownload,
+    trackTranscriptListViewToggle,
+    trackTranscriptMoreInfoToggle,
+    trackExternalLinkClick,
+    trackInstantDownloadTranscriptList
   };
 };
 

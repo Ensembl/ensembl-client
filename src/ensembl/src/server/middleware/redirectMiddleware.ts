@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  CommittedItem,
-  PopularSpecies
-} from 'src/content/app/species-selector/types/species-search';
-import { CurrentItem } from 'src/content/app/species-selector/state/speciesSelectorSlice';
-import { SearchMatch } from 'src/content/app/species-selector/types/species-search';
+import { Router } from 'express';
 
-export const getSpeciesAnalyticsName = (
-  species: CommittedItem | CurrentItem | PopularSpecies | SearchMatch
-) => {
-  return `${species.common_name || species.scientific_name} - ${
-    species.assembly_name
-  }`;
-};
+const router = Router();
+
+router.get('/species', (_, res) => {
+  res.redirect(301, '/species-selector');
+});
+
+router.get('/help/articles', (_, res) => {
+  res.redirect(301, '/help');
+});
+
+router.get('/about/articles', (_, res) => {
+  res.redirect(301, '/about');
+});
+
+export default router;

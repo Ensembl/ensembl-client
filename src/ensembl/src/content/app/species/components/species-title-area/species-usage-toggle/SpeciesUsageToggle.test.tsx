@@ -21,7 +21,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
-import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/speciesSelectorActions';
+import { toggleSpeciesUseAndSave } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';
 
@@ -29,7 +29,7 @@ import SpeciesUsageToggle from './SpeciesUsageToggle';
 import SlideToggle from 'src/shared/components/slide-toggle/SlideToggle';
 
 jest.mock(
-  'src/content/app/species-selector/state/speciesSelectorActions',
+  'src/content/app/species-selector/state/speciesSelectorSlice',
   () => ({
     toggleSpeciesUseAndSave: jest.fn(() => ({
       type: 'toggleSpeciesUseAndSave'

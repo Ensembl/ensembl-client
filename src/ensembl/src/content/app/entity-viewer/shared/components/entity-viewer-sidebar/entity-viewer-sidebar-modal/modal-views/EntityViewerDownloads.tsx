@@ -34,8 +34,6 @@ import InstantDownloadGene, {
 
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
-import styles from './EntityViewerDownloads.scss';
-
 const QUERY = gql`
   query Gene($genomeId: String!, $entityId: String!) {
     gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
@@ -96,7 +94,7 @@ const EntityViewerSidebarDownloads = () => {
   };
 
   return (
-    <section className={styles.container}>
+    <section>
       <h3>Download</h3>
       <InstantDownloadGene
         genomeId={genomeId as string}

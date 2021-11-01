@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
@@ -25,18 +25,12 @@ import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transc
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionItemHeading,
-  AccordionItemPanel,
-  AccordionItemButton
-} from 'src/shared/components/accordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
+import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
 import {
   ExternalReference as ExternalReferenceType,
-  ExternalReferencesGroup
+  ExternalReferencesGroup as ExternalReferencesGroupType
 } from 'src/shared/types/thoas/externalReference';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Slice } from 'src/shared/types/thoas/slice';
@@ -125,11 +119,179 @@ type Gene = {
   external_references: ExternalReferenceType[];
 };
 
+const GeneExternalReferences = () => {
+  const params: EntityViewerParams = useParams();
+  const { entityId, genomeId } = params;
+  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+
+  const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
+
+  const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
+    variables: {
+      stable_id: stableId,
+      genome_id: genomeId
+    },
+    skip: !stableId
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data || !data.gene) {
+    return <div>No data to display</div>;
+  }
+
+  const externalReferencesGroups = buildExternalReferencesGroups(
+    data.gene.external_references
+  );
+  const { transcripts } = data.gene;
+  const sortedTranscripts = defaultSort(transcripts);
+
+  const externalReferenceClickHandler = (linkLabel: string) => {
+    trackExternalReferenceLinkClick({
+      tabName: SidebarTabName.EXTERNAL_REFERENCES,
+      linkLabel
+    });
+  };
+
+  return (
+    <div>
+      <section>
+        <div className={styles.sectionContent}>
+          <span className={styles.geneSymbol}>{data.gene.symbol}</span>
+          <span>{data.gene.stable_id}</span>
+        </div>
+      </section>
+      <section>
+        <div className={styles.sectionHead}>Gene</div>
+        {data.gene.external_references && (
+          <div className={styles.sectionContent}>
+            {renderExternalReferencesGroups(
+              externalReferencesGroups,
+              externalReferenceClickHandler
+            )}
+          </div>
+        )}
+      </section>
+      {sortedTranscripts.length && (
+        <section>
+          <div className={styles.sectionHead}>Transcripts</div>
+          <div className={styles.sectionContent}>
+            {sortedTranscripts.map((transcript, key) => {
+              return (
+                <div key={key}>
+                  <TranscriptExternalReferencesGroups
+                    transcript={transcript}
+                    externalReferenceClickHandler={
+                      externalReferenceClickHandler
+                    }
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+const TranscriptExternalReferencesGroups = (props: {
+  transcript: Transcript;
+  externalReferenceClickHandler: (linkLabel: string) => void;
+}) => {
+  const { transcript } = props;
+  const unsortedExternalReferences = [...transcript.external_references];
+  const [isTranscriptOpen, setTranscriptOpen] = useState(false);
+
+  const toggleTranscript = () => setTranscriptOpen(!isTranscriptOpen);
+
+  // Add protein level external references
+  transcript.product_generating_contexts.forEach(
+    (product_generating_context) => {
+      product_generating_context.product &&
+        unsortedExternalReferences.push(
+          ...product_generating_context.product.external_references
+        );
+    }
+  );
+
+  const shouldRenderExternalReferences =
+    isTranscriptOpen && transcript.external_references;
+
+  const externalReferencesGroups = buildExternalReferencesGroups(
+    unsortedExternalReferences
+  );
+
+  return (
+    <>
+      <ShowHide
+        classNames={{ wrapper: styles.showHideWrapper }}
+        onClick={toggleTranscript}
+        isExpanded={isTranscriptOpen}
+        label={transcript.stable_id}
+      />
+      {shouldRenderExternalReferences && (
+        <div className={styles.listContainer}>
+          {renderExternalReferencesGroups(
+            externalReferencesGroups,
+            props.externalReferenceClickHandler
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+const ExternalReferencesGroup = (props: {
+  externalReferencesGroup: ExternalReferencesGroupType;
+}) => {
+  const [isExternalReferencesGroupOpen, setExternalReferencesGroupOpen] =
+    useState(false);
+
+  const toggleExternalReferencesGroup = () =>
+    setExternalReferencesGroupOpen(!isExternalReferencesGroupOpen);
+
+  const { references, source } = props.externalReferencesGroup;
+  const externalReferencesList = references.map((entry, key) => (
+    <ExternalReference
+      label={
+        entry.description === entry.accession_id ||
+        source.name === entry.description
+          ? ''
+          : entry.description
+      }
+      to={entry.url}
+      linkText={entry.accession_id}
+      key={key}
+      classNames={{
+        container: styles.externalReferenceContainer,
+        link: styles.externalReferenceLink
+      }}
+    />
+  ));
+
+  return (
+    <>
+      <ShowHide
+        classNames={{ wrapper: styles.showHideWrapper }}
+        onClick={toggleExternalReferencesGroup}
+        isExpanded={isExternalReferencesGroupOpen}
+        label={source.name}
+      />
+      {isExternalReferencesGroupOpen && (
+        <div className={styles.listContainer}>{externalReferencesList}</div>
+      )}
+    </>
+  );
+};
+
 const buildExternalReferencesGroups = (
   externalReferences: ExternalReferenceType[]
 ) => {
   const externalReferencesGroups: {
-    [key: string]: ExternalReferencesGroup;
+    [key: string]: ExternalReferencesGroupType;
   } = {};
 
   const sortedExternalReferences = sortBy(
@@ -155,7 +317,7 @@ const buildExternalReferencesGroups = (
     });
   });
 
-  // Sort the xrefs within each group based on description (or accession_id when description is empty)
+  // Sort the external references within each group based on description (or accession_id when description is empty)
   Object.keys(externalReferencesGroups).forEach((sourceId) => {
     externalReferencesGroups[sourceId].references = sortBy(
       externalReferencesGroups[sourceId].references,
@@ -166,181 +328,35 @@ const buildExternalReferencesGroups = (
   return externalReferencesGroups;
 };
 
-const GeneExternalReferences = () => {
-  const params: EntityViewerParams = useParams();
-  const { entityId, genomeId } = params;
-  const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
-
-  const { trackXrefLinkClick } = useEntityViewerAnalytics();
-
-  const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: {
-      stable_id: stableId,
-      genome_id: genomeId
-    },
-    skip: !stableId
-  });
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!data || !data.gene) {
-    return <div>No data to display</div>;
-  }
-
-  const externalReferencesGroups = buildExternalReferencesGroups(
-    data.gene.external_references
-  );
-  const { transcripts } = data.gene;
-  const sortedTranscripts = defaultSort(transcripts);
-
-  const xrefClickHandler = (linkLabel: string) => {
-    trackXrefLinkClick({
-      tabName: SidebarTabName.EXTERNAL_REFERENCES,
-      linkLabel
-    });
-  };
-
-  return (
-    <div className={styles.xrefsContainer}>
-      <div className={styles.geneDetails}>
-        <span className={styles.geneSymbol}>{data.gene.symbol}</span>
-        <span>{data.gene.stable_id}</span>
-      </div>
-      <div className={styles.sectionHead}>Gene</div>
-      {data.gene.external_references &&
-        renderXrefs(externalReferencesGroups, xrefClickHandler)}
-      {sortedTranscripts.length && (
-        <div>
-          <div className={styles.sectionHead}>Transcripts</div>
-          {sortedTranscripts.map((transcript, key) => {
-            return (
-              <div key={key}>
-                <TranscriptXrefs
-                  transcript={transcript}
-                  xrefClickHandler={xrefClickHandler}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const TranscriptXrefs = (props: {
-  transcript: Transcript;
-  xrefClickHandler: (linkLabel: string) => void;
-}) => {
-  const { transcript } = props;
-  const unsortedXrefs = [...transcript.external_references];
-
-  // Add protein level xrefs
-  transcript.product_generating_contexts.forEach(
-    (product_generating_context) => {
-      product_generating_context.product &&
-        unsortedXrefs.push(
-          ...product_generating_context.product.external_references
-        );
-    }
-  );
-
-  const xrefGroups = buildExternalReferencesGroups(unsortedXrefs);
-
-  return (
-    <Accordion className={styles.xrefAccordion}>
-      <AccordionItem className={styles.xrefAccordionItem}>
-        <AccordionItemHeading className={styles.xrefAccordionHeader}>
-          <AccordionItemButton className={styles.xrefAccordionButton}>
-            <div className={styles.transcriptId}>{transcript.stable_id}</div>
-          </AccordionItemButton>
-        </AccordionItemHeading>
-        <AccordionItemPanel className={styles.xrefAccordionItemContent}>
-          <div>
-            {transcript.external_references && (
-              <div className={styles.transcriptXrefs}>
-                {renderXrefs(xrefGroups, props.xrefClickHandler)}
-              </div>
-            )}
-          </div>
-        </AccordionItemPanel>
-      </AccordionItem>
-    </Accordion>
-  );
-};
-
-const renderXrefs = (
-  xrefGroups: {
-    [key: string]: ExternalReferencesGroup;
+const renderExternalReferencesGroups = (
+  externalReferencesGroups: {
+    [key: string]: ExternalReferencesGroupType;
   },
-  xrefClickHandler: (linkLabel: string) => void
+  externalReferenceClickHandler: (linkLabel: string) => void
 ) => {
-  return Object.values(xrefGroups).map((externalReferencesGroup, key) => {
-    if (externalReferencesGroup.references.length === 1) {
-      return (
-        <div key={key}>
+  return Object.values(externalReferencesGroups).map(
+    (externalReferencesGroup, key) => (
+      <div key={key}>
+        {externalReferencesGroup.references.length === 1 ? (
           <ExternalReference
             label={externalReferencesGroup.source.name}
             to={externalReferencesGroup.references[0].url}
             linkText={externalReferencesGroup.references[0].accession_id}
             onClick={() =>
-              xrefClickHandler(externalReferencesGroup.source.name)
+              externalReferenceClickHandler(externalReferencesGroup.source.name)
             }
             classNames={{
-              container: styles.externalReferenceContainer
+              container: styles.externalReferenceContainer,
+              link: styles.externalReferenceLink
             }}
           />
-        </div>
-      );
-    } else {
-      return renderXrefGroup(externalReferencesGroup, key, xrefClickHandler);
-    }
-  });
-};
-
-const renderXrefGroup = (
-  externalReferencesGroup: ExternalReferencesGroup,
-  key: number,
-  xrefClickHandler: (linkLabel: string) => void
-) => {
-  return (
-    <div className={styles.accordionContainer} key={key}>
-      <Accordion className={styles.xrefAccordion}>
-        <AccordionItem className={styles.xrefAccordionItem}>
-          <AccordionItemHeading className={styles.xrefAccordionHeader}>
-            <AccordionItemButton className={styles.xrefAccordionButton}>
-              {externalReferencesGroup.source.name}
-            </AccordionItemButton>
-          </AccordionItemHeading>
-          <AccordionItemPanel className={styles.xrefAccordionItemContent}>
-            <div>
-              {externalReferencesGroup.references.map((entry, key) => {
-                const label =
-                  entry.description === entry.accession_id ||
-                  externalReferencesGroup.source.name === entry.description
-                    ? ''
-                    : entry.description;
-
-                return (
-                  <ExternalReference
-                    label={label}
-                    to={entry.url}
-                    linkText={entry.accession_id}
-                    key={key}
-                    onClick={() => xrefClickHandler(label)}
-                    classNames={{
-                      container: styles.externalReferenceContainer
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </AccordionItemPanel>
-        </AccordionItem>
-      </Accordion>
-    </div>
+        ) : (
+          <ExternalReferencesGroup
+            externalReferencesGroup={externalReferencesGroup}
+          />
+        )}
+      </div>
+    )
   );
 };
 

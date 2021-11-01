@@ -29,10 +29,13 @@ $content-width: $gene_image_width;
   grid-column: download;
 }
 
-.proteinExternalReference {
-  &:first-child {
-    margin-right: 16px;
-  }
+.externalRefContainer {
+  font-weight: $normal;
+  margin-right: 16px;
+}
+
+.externalRefLink {
+  font-size: 12px;
 }
 
 .proteinFeaturesCountWrapper {

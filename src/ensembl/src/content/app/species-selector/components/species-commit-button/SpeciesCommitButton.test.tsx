@@ -22,7 +22,7 @@ import userEvent from '@testing-library/user-event';
 import configureMockStore from 'redux-mock-store';
 import merge from 'lodash/merge';
 
-import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorActions';
+import * as speciesSelectorActions from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import { SpeciesCommitButton } from './SpeciesCommitButton';
 import { createSelectedSpecies } from 'tests/fixtures/selected-species';

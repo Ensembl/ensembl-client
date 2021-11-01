@@ -21,10 +21,10 @@ import useSpeciesSelectorAnalytics from 'src/content/app/species-selector/hooks/
 
 import {
   updateSearch,
-  handleSelectedSpecies,
+  setSelectedSpecies,
   clearSelectedSearchResult,
   clearSearch
-} from 'src/content/app/species-selector/state/speciesSelectorActions';
+} from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import {
   getSearchText,
@@ -76,7 +76,7 @@ export const SpeciesSearchField = () => {
   const { trackAutocompleteSpeciesSelect } = useSpeciesSelectorAnalytics();
 
   const onMatchSelected = (match: SearchMatch) => {
-    dispatch(handleSelectedSpecies(match));
+    dispatch(setSelectedSpecies(match));
     trackAutocompleteSpeciesSelect(match);
   };
 

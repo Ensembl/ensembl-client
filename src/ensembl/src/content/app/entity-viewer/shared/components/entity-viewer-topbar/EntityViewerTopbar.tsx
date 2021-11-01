@@ -20,9 +20,9 @@ import { useQuery, gql } from '@apollo/client';
 import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 
 import { Slice } from 'src/shared/types/thoas/slice';
+import { GeneMetadata } from 'src/shared/types/thoas/metadata';
 
 import styles from './EntityViewerTopbar.scss';
-import { GeneMetadata } from 'src/shared/types/thoas/metadata';
 
 export type EntityViewerTopbarProps = {
   genomeId: string;

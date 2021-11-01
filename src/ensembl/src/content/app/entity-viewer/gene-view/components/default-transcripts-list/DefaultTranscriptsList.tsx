@@ -96,7 +96,7 @@ const DefaultTranscriptslist = (props: Props) => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.transcriptsList}>
       <div className={styles.header}>
         <div className={styles.row}>
           <div className={styles.right}>Transcript ID</div>
@@ -118,6 +118,7 @@ const DefaultTranscriptslist = (props: Props) => {
           return (
             <DefaultTranscriptsListItem
               key={index}
+              transcriptPosition={index + 1}
               gene={gene}
               transcript={transcript}
               rulerTicks={props.rulerTicks}

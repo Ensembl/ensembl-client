@@ -103,8 +103,7 @@ const ProteinsListItem = (props: Props) => {
 
     dispatch(toggleTranscriptInfo(transcript.stable_id));
     trackProteinInfoToggle({
-      transcriptQuality:
-        getTranscriptQualityMetadata(transcript)?.label ?? null,
+      transcriptQuality: getTranscriptQualityMetadata(transcript)?.label,
       transcriptId: transcript.stable_id,
       action: isInfoPanelExpanded ? 'close_accordion' : 'open_accordion',
       transcriptPosition: props.index
