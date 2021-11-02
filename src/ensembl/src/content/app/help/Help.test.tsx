@@ -15,7 +15,7 @@
  */
 
 import { Menu } from 'src/shared/types/help-and-docs/menu';
-import { getBreadcrumbsFromMenu } from './Help';
+import { buildBreadcrumbs } from './Help';
 
 const sampleMenu: Menu = {
   name: 'Zero',
@@ -71,22 +71,22 @@ const sampleMenu: Menu = {
 };
 describe('getBreadcrumbsFromMenu', () => {
   it('returns the correct set of breadcrumbs for the given url', () => {
-    expect(getBreadcrumbsFromMenu(sampleMenu, '/four')).toEqual([
+    expect(buildBreadcrumbs(sampleMenu, { url: '/four' })).toEqual([
       'One',
       'Four'
     ]);
-    expect(getBreadcrumbsFromMenu(sampleMenu, '/seven')).toEqual([
+    expect(buildBreadcrumbs(sampleMenu, { url: '/seven' })).toEqual([
       'Five',
       'Seven'
     ]);
   });
 
-  it('returns null when there is no match', () => {
-    expect(getBreadcrumbsFromMenu(sampleMenu, '/blah')).toEqual(null);
+  it('returns undefined when there is no match', () => {
+    expect(buildBreadcrumbs(sampleMenu, { url: '/blah' })).toEqual(undefined);
   });
 
   it('returns first match when there are two matches', () => {
-    expect(getBreadcrumbsFromMenu(sampleMenu, '/duplicate')).toEqual([
+    expect(buildBreadcrumbs(sampleMenu, { url: '/duplicate' })).toEqual([
       'One',
       'Duplicate article 1'
     ]);

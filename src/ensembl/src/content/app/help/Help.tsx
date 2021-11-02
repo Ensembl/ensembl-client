@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { useLocation } from 'react-router';
-import { get } from 'lodash';
 
 import useApiService from 'src/shared/hooks/useApiService';
 
@@ -29,14 +28,16 @@ import {
   HelpArticleGrid,
   VideoArticle
 } from 'src/shared/components/help-article';
-import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
+import Breadcrumbs from 'ensemblRoot/src/shared/components/breadcrumbs/Breadcrumbs';
 
-import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
+import {
+  Menu as MenuType,
+  MenuItem
+} from 'src/shared/types/help-and-docs/menu';
 import {
   TextArticleData,
   VideoArticleData
 } from 'src/shared/types/help-and-docs/article';
-import JSONValue from 'src/shared/types/JSON';
 
 import styles from './Help.scss';
 
@@ -53,9 +54,9 @@ const Help = () => {
     skip: isIndexPage
   });
 
-  let breadcrumbs: string[] | null = [];
+  let breadcrumbs: string[] | undefined = [];
   if (!isIndexPage && menu && article) {
-    breadcrumbs = getBreadcrumbsFromMenu(menu, article.url);
+    breadcrumbs = buildBreadcrumbs(menu, article);
   }
 
   const main = isIndexPage ? (
@@ -67,7 +68,7 @@ const Help = () => {
         <HelpLanding />
       </div>
     </main>
-  ) : article ? (
+  ) : article && breadcrumbs ? (
     <MainContent article={article} breadcrumbs={breadcrumbs} />
   ) : null;
 
@@ -93,7 +94,7 @@ const AppBar = () => {
 
 const MainContent = (props: {
   article: ArticleData;
-  breadcrumbs: string[] | null;
+  breadcrumbs: string[];
 }) => {
   const { article, breadcrumbs } = props;
   if (article.type !== 'article' && article.type !== 'video') {
@@ -108,11 +109,9 @@ const MainContent = (props: {
 
   const content = (
     <>
-      {breadcrumbs && (
-        <div className={styles.breadcrumbsContainer}>
-          <Breadcrumbs breadcrumbs={breadcrumbs} />
-        </div>
-      )}
+      <div className={styles.breadcrumbsContainer}>
+        <Breadcrumbs breadcrumbs={breadcrumbs} />
+      </div>
       <div className={styles.articleContainer}>
         <HelpArticleGrid className={styles.articleGrid}>
           {renderedArticle}
@@ -127,52 +126,37 @@ const MainContent = (props: {
   return <main className={styles.main}>{content}</main>;
 };
 
-export const getBreadcrumbsFromMenu = (menu: MenuType, url: string) => {
-  const getAllUrlKeysPaths = (menu: JSONValue, path = ''): string[] => {
-    if (!menu || typeof menu !== 'object') {
-      return [path];
+export const buildBreadcrumbs = (menu: MenuType, article: { url: string }) => {
+  for (const rootMenuItem of menu.items) {
+    const breadcrumbs = collectBreadcrumbs(rootMenuItem, article.url, []);
+    if (breadcrumbs) {
+      return breadcrumbs;
     }
+  }
+};
 
-    return Object.keys(menu)
-      .map((key) =>
-        getAllUrlKeysPaths(
-          menu[key] as JSONValue,
-          path ? [path, key].join('.') : key
-        )
-      )
-      .toString()
-      .split(',')
-      .filter((path) => path.includes('url'));
-  };
+// use depth-first search to traverse the menu tree
+const collectBreadcrumbs = (
+  menuItem: MenuItem,
+  url: string,
+  accumulator: string[]
+): string[] | null => {
+  accumulator = [...accumulator, menuItem.name];
 
-  const urlKeysPaths = getAllUrlKeysPaths(menu);
-
-  // Find the path matching the current article URL
-  // example matched path: 'items.1.items.0.items.1.url'
-  const matchedPath = urlKeysPaths.find((path) => get(menu, path) === url);
-
-  if (!matchedPath) {
-    return null;
+  if (menuItem.url === url) {
+    return accumulator;
+  } else {
+    if (menuItem.type === 'collection' && menuItem.items) {
+      for (const childItem of menuItem.items) {
+        const searchResult = collectBreadcrumbs(childItem, url, accumulator);
+        if (searchResult) {
+          return searchResult;
+        }
+      }
+    }
   }
 
-  // split the matched path using '.'
-  const pathPortions = matchedPath?.split('.') || [];
-  const breadcrumbs: string[] = [];
-
-  /*
-    The loop below does the following:
-    Example matched path: 'items.1.items.0.items.1.url'
-    iteration 1 gets `items.1.name` from menu
-    iteration 2 gets `items.1.items.0.name` from menu
-    iteration 3 gets `items.1.items.0.items.1.name` from menu
-  */
-  for (let i = 1; i <= pathPortions?.length / 2; i++) {
-    const slicedPath = [...pathPortions.slice(0, i * 2), 'name'];
-
-    breadcrumbs.push(get(menu, slicedPath));
-  }
-
-  return breadcrumbs;
+  return null;
 };
 
 export const isIndexRoute = (pathname: string) => {
