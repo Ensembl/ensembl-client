@@ -134,10 +134,13 @@ export const updatePreviouslyViewedObjectsAndSave =
       ...getActiveGenomePreviouslyViewedObjects(state)
     ];
 
-    const savedEntitiesWithoutCurrentEntity =
-      previouslyViewedObjects?.filter(
-        (entity) => entity.object_id !== activeEnsObject.object_id
-      ) || [];
+    const isCurrentEntityPreviouslyViewed = previouslyViewedObjects.some(
+      (entity) => entity.object_id === activeEnsObject.object_id
+    );
+
+    if (isCurrentEntityPreviouslyViewed) {
+      return;
+    }
 
     const stable_id =
       activeEnsObject.type === 'gene'
@@ -162,10 +165,7 @@ export const updatePreviouslyViewedObjectsAndSave =
       label: label
     };
 
-    const updatedEntitiesArray = [
-      newObject,
-      ...savedEntitiesWithoutCurrentEntity
-    ];
+    const updatedEntitiesArray = [newObject, ...previouslyViewedObjects];
 
     // Limit the total number of previously viewed objects to 250
     const previouslyViewedObjectsSlice = updatedEntitiesArray.slice(-250);
