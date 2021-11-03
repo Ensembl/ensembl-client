@@ -54,15 +54,15 @@ const Help = () => {
     skip: isIndexPage
   });
 
-  let breadcrumbs: string[] | undefined = [];
-  if (!isIndexPage && menu && article) {
-    breadcrumbs = buildBreadcrumbs(menu, article);
+  let breadcrumbs: string[] = [];
+  if (menu) {
+    breadcrumbs = buildBreadcrumbs(menu, { url: location.pathname });
   }
 
   const main = isIndexPage ? (
     <main className={styles.main}>
       <div className={styles.breadcrumbsContainer}>
-        <Breadcrumbs breadcrumbs={['Overview']} />
+        <Breadcrumbs breadcrumbs={breadcrumbs} />
       </div>
       <div className={styles.articleContainer}>
         <HelpLanding />
@@ -133,6 +133,8 @@ export const buildBreadcrumbs = (menu: MenuType, article: { url: string }) => {
       return breadcrumbs;
     }
   }
+
+  return [];
 };
 
 // use depth-first search to traverse the menu tree

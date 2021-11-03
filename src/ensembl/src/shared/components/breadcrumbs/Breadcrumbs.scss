@@ -8,16 +8,12 @@
     margin-right: 15px;
   }
 
-  .breadcrumb::after { 
+  .breadcrumb:not(:last-child)::after { 
     content: ">";
     margin-left: 7px;
   }
 
   .breadcrumb:last-child{
     font-weight: $normal;
-  }
-
-  .breadcrumb:last-child::after{
-    content: none;
   }
 }

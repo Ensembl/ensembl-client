@@ -33,13 +33,6 @@ describe('Breadcrumbs', () => {
     expect(container.querySelector('.breadcrumbs')).toBeTruthy();
   });
 
-  it('renders the correct number breadcrumbs', () => {
-    const { container } = render(<Breadcrumbs {...defaultProps} />);
-    expect(container.querySelectorAll('.breadcrumb')).toHaveLength(
-      defaultProps.breadcrumbs.length
-    );
-  });
-
   it('renders the correct breadcrumb value', () => {
     const { container } = render(<Breadcrumbs {...defaultProps} />);
 
