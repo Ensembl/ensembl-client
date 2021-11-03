@@ -17,6 +17,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';
+
 import { HelpPopupButton } from 'ensemblRoot/src/shared/components/help-popup';
 import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
 
@@ -34,6 +36,12 @@ import blogIconUrl from 'static/img/home/blog.svg';
 import styles from './Home.scss';
 
 const Home = () => {
+  const { trackButtonsOnScreen } = useHomeAnalytics();
+
+  const handleButtonClick = (label: string) => {
+    trackButtonsOnScreen(label);
+  };
+
   return (
     <div className={styles.home}>
       <div className={styles.main}>
@@ -44,7 +52,11 @@ const Home = () => {
             <div className={styles.appList}>
               <div className={styles.appListItem}>
                 <div className={styles.buttonsContainer}>
-                  <Link to="/species-selector" className={styles.button}>
+                  <Link
+                    to="/species-selector"
+                    className={styles.button}
+                    onClick={() => handleButtonClick('species-selector')}
+                  >
                     <span>Species selector</span>
                     <SpeciesSelectorIcon className={styles.icon} />
                   </Link>
@@ -58,7 +70,11 @@ const Home = () => {
 
               <div className={styles.appListItem}>
                 <div className={styles.buttonsContainer}>
-                  <Link to="/genome-browser" className={styles.button}>
+                  <Link
+                    to="/genome-browser"
+                    className={styles.button}
+                    onClick={() => handleButtonClick('genome-browser')}
+                  >
                     <span>Genome browser</span>
                     <BrowserIcon className={styles.icon} />
                   </Link>
@@ -72,7 +88,11 @@ const Home = () => {
 
               <div className={styles.appListItem}>
                 <div className={styles.buttonsContainer}>
-                  <Link to="/entity-viewer" className={styles.button}>
+                  <Link
+                    to="/entity-viewer"
+                    className={styles.button}
+                    onClick={() => handleButtonClick('entity-viewer')}
+                  >
                     <span>Entity viewer</span>
                     <EntityViewerIcon className={styles.icon} />
                   </Link>
