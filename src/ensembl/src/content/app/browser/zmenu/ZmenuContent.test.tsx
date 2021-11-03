@@ -65,9 +65,10 @@ const renderZmenuContent = (store = mockStore) =>
   );
 
 const defaultZmenuContentItemProps: ZmenuContentItemProps = {
-  id: faker.lorem.words(),
+  featureId: faker.lorem.words(),
   markup: [Markup.FOCUS],
-  text: faker.lorem.words()
+  text: faker.lorem.words(),
+  destroyZmenu: jest.fn()
 };
 
 const renderZmenuContentItem = (store = mockStore) =>

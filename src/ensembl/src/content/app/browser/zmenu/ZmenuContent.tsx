@@ -47,7 +47,11 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
     <>
       {content.map((feature: any, index) => (
         <p key={index} className={styles.zmenuContentFeature}>
-          <ZmenuContentFeature id={featureId} feature={feature} />
+          <ZmenuContentFeature
+            featureId={featureId}
+            feature={feature}
+            destroyZmenu={props.destroyZmenu}
+          />
         </p>
       ))}
       <ZmenuAppLinks featureId={featureId} destroyZmenu={props.destroyZmenu} />
@@ -58,8 +62,9 @@ export const ZmenuContent = (props: ZmenuContentProps) => {
 };
 
 type ZmenuContentFeatureProps = {
-  id: string;
+  featureId: string;
   feature: ZmenuContentFeatureType;
+  destroyZmenu: () => void;
 };
 export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
   const lines = props.feature.data.reduce(
@@ -82,7 +87,11 @@ export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
           <span className={styles.zmenuContentLine} key={index}>
             {blocks.map((block, blockIndex) => (
               <span key={blockIndex} className={styles.zmenuContentBlock}>
-                <ZmenuContentBlock items={block.items} id={props.id} />
+                <ZmenuContentBlock
+                  items={block.items}
+                  featureId={props.featureId}
+                  destroyZmenu={props.destroyZmenu}
+                />
               </span>
             ))}
           </span>
@@ -94,27 +103,34 @@ export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
 
 type ZmenuContentBlockProps = {
   items: ZmenuContentItemType[];
-  id: string;
+  featureId: string;
+  destroyZmenu: () => void;
 };
 
 export const ZmenuContentBlock = (props: ZmenuContentBlockProps) => {
   return (
     <>
       {props.items.map((item, index) => (
-        <ZmenuContentItem key={index} id={props.id} {...item} />
+        <ZmenuContentItem
+          key={index}
+          featureId={props.featureId}
+          destroyZmenu={props.destroyZmenu}
+          {...item}
+        />
       ))}
     </>
   );
 };
 
 export type ZmenuContentItemProps = ZmenuContentItemType & {
-  id: string;
+  featureId: string;
+  destroyZmenu: () => void;
 };
 
 export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
-  const { changeFocusObject } = useGenomeBrowser();
+  const { changeFocusObjectFromZmenu } = useGenomeBrowser();
 
-  const { text, markup, id } = props;
+  const { text, markup, featureId } = props;
   const isFocusable = markup.includes(Markup.FOCUS);
 
   const className = classNames({
@@ -125,7 +141,8 @@ export const ZmenuContentItem = (props: ZmenuContentItemProps) => {
   });
 
   const handleClick = () => {
-    changeFocusObject(id);
+    changeFocusObjectFromZmenu(featureId);
+    props.destroyZmenu();
   };
 
   const itemProps = {

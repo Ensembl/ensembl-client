@@ -85,6 +85,13 @@ const useGenomeBrowser = () => {
     genomeBrowser.send(action);
   };
 
+  const changeFocusObjectFromZmenu = (featureId: string) => {
+    if (!activeGenomeId) {
+      return;
+    }
+    changeFocusObject(`${activeGenomeId}:${featureId}`);
+  };
+
   const restoreBrowserTrackStates = () => {
     if (!activeGenomeId || !activeEnsObjectId || !genomeBrowser) {
       return;
@@ -167,6 +174,7 @@ const useGenomeBrowser = () => {
     activateGenomeBrowser,
     restoreBrowserTrackStates,
     changeFocusObject,
+    changeFocusObjectFromZmenu,
     changeBrowserLocation,
     genomeBrowser,
     zmenus,
