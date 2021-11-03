@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
-import set from 'lodash/fp/set';
+import cloneDeep from 'lodash/cloneDeep';
+
+import {
+  buildEnsObjectId,
+  parseEnsObjectId
+} from 'src/shared/state/ens-object/ensObjectHelpers';
+
+import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
+import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
+import { updatePreviouslyViewedEntity } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -126,6 +135,14 @@ export const setFilters =
         filters
       })
     );
+
+    dispatch(
+      storeFiltersAndSortingRules({
+        genomeId: activeGenomeId,
+        entityId: activeEntityId,
+        fragment: { filters }
+      })
+    );
   };
 
 export const setSortingRule =
@@ -143,6 +160,43 @@ export const setSortingRule =
         activeGenomeId,
         activeEntityId,
         sortingRule
+      })
+    );
+
+    dispatch(
+      storeFiltersAndSortingRules({
+        genomeId: activeGenomeId,
+        entityId: activeEntityId,
+        fragment: { sortingRule }
+      })
+    );
+  };
+
+const storeFiltersAndSortingRules =
+  (params: {
+    genomeId: string;
+    entityId: string;
+    fragment: {
+      filters?: Filters;
+      sortingRule?: SortingRule;
+    };
+  }): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const { genomeId, entityId, fragment } = params;
+    const state = getState();
+    const geneStableId = parseEnsObjectId(entityId).objectId;
+    const storedGene = getPreviouslyViewedEntities(state, genomeId).find(
+      (entity) => entity.entity_id === geneStableId
+    );
+    if (!storedGene) {
+      return;
+    }
+
+    dispatch(
+      updatePreviouslyViewedEntity({
+        genomeId,
+        previouslyViewedEntityId: geneStableId,
+        fragment
       })
     );
   };
@@ -229,25 +283,23 @@ export const toggleTranscriptMoreInfo =
     );
   };
 
+export const restoreTranscriptsFiltersAndSorting = createAsyncThunk(
+  'entity-viewer-gene-view-transcripts/restoreFiltersAndSorting',
+  () => {
+    return entityViewerBookmarksStorageService.getPreviouslyViewedEntities();
+  }
+);
+
 const ensureGenePresence = (
   state: GeneViewTranscriptsState,
   ids: { activeGenomeId: string; activeEntityId: string }
 ) => {
   const { activeGenomeId, activeEntityId } = ids;
+  const clonedDefaultStatePerGene = cloneDeep(defaultStatePerGene);
   if (!state[activeGenomeId]) {
-    return set(
-      activeGenomeId,
-      { [activeEntityId]: defaultStatePerGene },
-      state
-    );
+    state[activeGenomeId] = { [activeEntityId]: clonedDefaultStatePerGene };
   } else if (!state[activeGenomeId][activeEntityId]) {
-    return set(
-      `${activeGenomeId}.${activeEntityId}`,
-      defaultStatePerGene,
-      state
-    );
-  } else {
-    return state;
+    state[activeGenomeId][activeEntityId] = clonedDefaultStatePerGene;
   }
 };
 
@@ -284,59 +336,63 @@ const transcriptsSlice = createSlice({
       action: PayloadAction<ExpandedIdsPayload>
     ) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.expandedIds`,
-        expandedIds,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].expandedIds = expandedIds;
     },
     updateExpandedDownloads(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.expandedDownloadIds`,
-        expandedIds,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].expandedDownloadIds = expandedIds;
     },
     updateExpandedMoreInfo(state, action: PayloadAction<ExpandedIdsPayload>) {
       const { activeGenomeId, activeEntityId, expandedIds } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.expandedMoreInfoIds`,
-        expandedIds,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].expandedMoreInfoIds = expandedIds;
     },
     updateFilterPanel(state, action: PayloadAction<UpdateFilterPanelPayload>) {
       const { activeGenomeId, activeEntityId, filterPanelOpen } =
         action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.filterPanelOpen`,
-        filterPanelOpen,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].filterPanelOpen = filterPanelOpen;
     },
     updateFilters(state, action: PayloadAction<UpdateFiltersPayload>) {
       const { activeGenomeId, activeEntityId, filters } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.filters`,
-        filters,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].filters = filters;
     },
     updateSortingRule(state, action: PayloadAction<UpdateSortingRulePayload>) {
       const { activeGenomeId, activeEntityId, sortingRule } = action.payload;
-      const updatedState = ensureGenePresence(state, action.payload);
-      return set(
-        `${activeGenomeId}.${activeEntityId}.sortingRule`,
-        sortingRule,
-        updatedState
-      );
+      ensureGenePresence(state, action.payload);
+      state[activeGenomeId][activeEntityId].sortingRule = sortingRule;
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(
+      restoreTranscriptsFiltersAndSorting.fulfilled,
+      (state, action) => {
+        const restoredEntities = action.payload;
+        Object.keys(restoredEntities).forEach((genomeId) => {
+          const entitiesPerGenome = restoredEntities[genomeId];
+          entitiesPerGenome.forEach((entity) => {
+            const entityId = buildEnsObjectId({
+              genomeId,
+              type: entity.type,
+              objectId: entity.entity_id
+            });
+            ensureGenePresence(state, {
+              activeGenomeId: genomeId,
+              activeEntityId: entityId
+            });
+            if (entity.filters) {
+              state[genomeId][entityId].filters = entity.filters;
+            }
+            if (entity.sortingRule) {
+              state[genomeId][entityId].sortingRule = entity.sortingRule;
+            }
+          });
+        });
+      }
+    );
   }
 });
 
