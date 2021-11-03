@@ -118,11 +118,51 @@ const useEntityViewerAnalytics = () => {
     trackExternalLinkClick('gene_view_transcript_list', label);
   };
 
+  const trackPreviouslyViewedLinkClick = (params: {
+    geneSymbol: string;
+    geneId: string;
+    position: number;
+  }) => {
+    analyticsTracking.trackEvent({
+      category: 'entity_viewer_sidebar_previously_viewed',
+      action: 'link_clicked',
+      label: `${params.geneSymbol}: ${params.geneId}`,
+      value: params.position
+    });
+  };
+
   type TrackTranscriptListViewToggleParam = {
     transcriptQuality?: string;
     transcriptId: string;
     action: 'open_accordion' | 'close_accordion';
     transcriptPosition: number;
+  };
+
+  const trackExternalReferencesTabSelection = (tabName: string) => {
+    analyticsTracking.trackEvent({
+      category: 'entity_viewer_sidebar',
+      action: 'change_tab',
+      label: tabName
+    });
+  };
+
+  const trackExternalReferenceLinkClick = (params: {
+    tabName: string;
+    linkLabel: string;
+  }) => {
+    const sidebarCategoryMap = {
+      [SidebarTabName.OVERVIEW as string]: 'overview',
+      [SidebarTabName.EXTERNAL_REFERENCES as string]: 'external_references'
+    };
+
+    const { tabName, linkLabel } = params;
+    const categoryName = `entity_viewer_sidebar_${sidebarCategoryMap[tabName]}`;
+
+    analyticsTracking.trackEvent({
+      category: categoryName,
+      action: 'external_reference_clicked',
+      label: linkLabel
+    });
   };
 
   const trackProteinInfoToggle = (
@@ -196,33 +236,6 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_proteins_list' });
   };
 
-  const trackExternalReferencesTabSelection = (tabName: string) => {
-    analyticsTracking.trackEvent({
-      category: 'entity_viewer_sidebar',
-      action: 'change_tab',
-      label: tabName
-    });
-  };
-
-  const trackExternalReferenceLinkClick = (params: {
-    tabName: string;
-    linkLabel: string;
-  }) => {
-    const sidebarCategoryMap = {
-      [SidebarTabName.OVERVIEW as string]: 'overview',
-      [SidebarTabName.EXTERNAL_REFERENCES as string]: 'external_references'
-    };
-
-    const { tabName, linkLabel } = params;
-    const categoryName = `entity_viewer_sidebar_${sidebarCategoryMap[tabName]}`;
-
-    analyticsTracking.trackEvent({
-      category: categoryName,
-      action: 'external_reference_clicked',
-      label: linkLabel
-    });
-  };
-
   const trackGeneDownload = (
     params: Omit<TrackDownloadPayload, 'category' | 'transcriptId'>
   ) => {
@@ -239,22 +252,44 @@ const useEntityViewerAnalytics = () => {
     trackDownload({ ...params, category: 'gene_view_transcript_list' });
   };
 
+  const trackSidebarToolstripButtonClick = (
+    iconName: string,
+    genomeId: string
+  ) => {
+    analyticsTracking.trackEvent({
+      category: 'entity_viewer_sidebar_toolstrip',
+      action: 'modal_opened',
+      label: `${genomeId}: ${iconName}`
+    });
+  };
+
+  const trackSearchSubmission = (value: string) => {
+    analyticsTracking.trackEvent({
+      category: 'entity_viewer_sidebar_search',
+      action: 'submit_search',
+      label: value
+    });
+  };
+
   return {
     trackTabChange,
     trackFiltersPanelOpen,
     trackAppliedFilters,
     trackAppliedSorting,
     trackProteinInfoToggle,
+    trackTranscriptListViewToggle,
+    trackTranscriptMoreInfoToggle,
     trackProteinDownload,
+    trackGeneDownload,
+    trackInstantDownloadTranscriptList,
     trackExternalLinkClickInProteinsList,
     trackExternalLinkClickInTranscriptList,
     trackExternalReferencesTabSelection,
     trackExternalReferenceLinkClick,
-    trackGeneDownload,
-    trackTranscriptListViewToggle,
-    trackTranscriptMoreInfoToggle,
     trackExternalLinkClick,
-    trackInstantDownloadTranscriptList
+    trackPreviouslyViewedLinkClick,
+    trackSidebarToolstripButtonClick,
+    trackSearchSubmission
   };
 };
 

@@ -50,7 +50,7 @@ type AppClickHandlers = Partial<Record<AppName, () => void>>;
 export type ViewInAppProps = {
   links: UrlObj;
   onAppClick?: AppClickHandlers;
-  onAnyAppClick?: () => void;
+  onAnyAppClick?: (appName?: AppName) => void;
   classNames?: {
     label?: string;
   };
@@ -85,14 +85,19 @@ export const ViewInApp = (props: ViewInAppProps) => {
 };
 
 const createClickHandler = (params: ViewInAppProps & { appName: AppName }) => {
-  const clickHandlers = [
-    params.onAppClick?.[params.appName],
-    params.onAnyAppClick
-  ].filter(Boolean) as Array<() => void>;
+  const { onAppClick, onAnyAppClick: onAnyAppClickFn, appName } = params;
+  const onAppClickFn = onAppClick?.[appName];
+  const clickHandlers: Array<(appName?: AppName) => void> = [];
 
-  return clickHandlers.length
-    ? () => clickHandlers.forEach((fn) => fn())
-    : undefined;
+  if (onAnyAppClickFn) {
+    clickHandlers.push(() => onAnyAppClickFn(params.appName));
+  }
+
+  if (onAppClickFn) {
+    clickHandlers.push(() => onAppClickFn());
+  }
+
+  return clickHandlers ? () => clickHandlers.forEach((fn) => fn()) : undefined;
 };
 
 type AppButtonProps = {
