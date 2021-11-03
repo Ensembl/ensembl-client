@@ -69,7 +69,7 @@ const sampleMenu: Menu = {
     }
   ]
 };
-describe('getBreadcrumbsFromMenu', () => {
+describe('buildBreadcrumbs', () => {
   it('returns the correct set of breadcrumbs for the given url', () => {
     expect(buildBreadcrumbs(sampleMenu, { url: '/four' })).toEqual([
       'One',
