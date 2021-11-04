@@ -81,8 +81,8 @@ describe('buildBreadcrumbs', () => {
     ]);
   });
 
-  it('returns undefined when there is no match', () => {
-    expect(buildBreadcrumbs(sampleMenu, { url: '/blah' })).toEqual(undefined);
+  it('returns [] when there is no match', () => {
+    expect(buildBreadcrumbs(sampleMenu, { url: '/blah' })).toEqual([]);
   });
 
   it('returns first match when there are two matches', () => {
