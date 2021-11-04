@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import noop from 'lodash/noop';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
@@ -33,6 +32,7 @@ import { getBrowserTrackState } from 'src/content/app/browser/browserSelectors';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
 import TrackPanelTranscript from './TrackPanelTranscript';
+import TrackPanelItemsCount from './TrackPanelItemsCount';
 import GroupTrackPanelItemLayout from './track-panel-item-layout/GroupTrackPanelItemLayout';
 
 import { Status } from 'src/shared/types/status';
@@ -53,6 +53,7 @@ const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
 
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, ensObjectId } = props;
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const { data } = useGetTrackPanelGeneQuery({
     genomeId,
     geneId
@@ -71,6 +72,10 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   if (!data) {
     return null;
   }
+
+  const toggleExpand = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   const onShowMore = () => {
     dispatch(
@@ -130,20 +135,21 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   };
 
   const { gene } = data;
-  const sortedTranscripts = isEnvironment([Environment.PRODUCTION])
-    ? [defaultSort(gene.transcripts)[0]]
-    : defaultSort(gene.transcripts);
+  const sortedTranscripts =
+    isEnvironment([Environment.PRODUCTION]) || isCollapsed
+      ? [defaultSort(gene.transcripts)[0]]
+      : defaultSort(gene.transcripts);
 
   return (
     <>
       <GroupTrackPanelItemLayout
-        isCollapsed={false}
+        isCollapsed={isCollapsed}
         visibilityStatus={trackStatus}
         onChangeVisibility={() =>
           toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus })
         }
         onShowMore={onShowMore}
-        toggleExpand={noop}
+        toggleExpand={toggleExpand}
       >
         <div className={styles.label}>
           <span className={styles.labelTextStrong}>
@@ -169,30 +175,14 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           />
         );
       })}
+      {isCollapsed && gene.transcripts.length > 1 && (
+        <TrackPanelItemsCount
+          itemName="transcript"
+          count={gene.transcripts.length - 1}
+        />
+      )}
     </>
   );
 };
-
-// type GetTrackStatusParams = {
-//   trackStates: ReturnType<typeof getBrowserTrackStates>;
-//   genomeId: string;
-//   objectId: string;
-//   categoryName: string;
-//   trackId: string;
-// };
-
-// const prepareTrackStatusGetter =
-//   (params: Omit<GetTrackStatusParams, 'trackId'>) => (trackId: string) =>
-//     getTrackStatus({ ...params, trackId });
-
-// const getTrackStatus = (params: GetTrackStatusParams): TrackActivityStatus => {
-//   const { trackStates, genomeId, objectId, categoryName, trackId } = params;
-//   const defaultTrackStatus = Status.SELECTED;
-//   return (
-//     trackStates?.[genomeId]?.objectTracks?.[objectId]?.[categoryName]?.[
-//       trackId
-//     ] ?? defaultTrackStatus
-//   );
-// };
 
 export default TrackPanelGene;

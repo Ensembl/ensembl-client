@@ -8,7 +8,7 @@
   // gap: 10px;
 }
 
-.label > *:not(:last-child) {
+.label > *:not(:last-child):not(.itemsCount) {
   margin-right: 10px;
   // flex: 0 0 auto;
 }
@@ -36,4 +36,8 @@
   display: inline-block;
   width: 10px;
   height: 10px;
+}
+
+.itemsCount {
+  margin-right: 0.4rem;
 }
