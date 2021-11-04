@@ -1,0 +1,39 @@
+@import 'src/styles/common';
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // display: flex;
+  // align-items: baseline;
+  // gap: 10px;
+}
+
+.label > *:not(:last-child) {
+  margin-right: 10px;
+  // flex: 0 0 auto;
+}
+
+.labelText {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.labelTextStrong {
+  font-size: 12px;
+  font-weight: $bold;
+}
+
+.labelTextSecondary {
+  font-size: 11px;
+  font-weight: $light;
+}
+
+.labelTextSecondaryStrong {
+  font-size: 11px;
+}
+
+.colorMarker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}

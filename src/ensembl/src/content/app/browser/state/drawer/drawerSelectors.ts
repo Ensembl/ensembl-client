@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-type BookmarksDrawerView = {
-  name: 'bookmarks';
+import { RootState } from 'src/store';
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+import { defaultDrawerStateForGenome } from './drawerSlice';
+
+export const getActiveDrawer = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeDrawer = activeGenomeId && state.drawer[activeGenomeId];
+
+  return activeDrawer || defaultDrawerStateForGenome;
 };
 
-export type GeneDrawerView = {
-  name: 'gene_summary';
-  payload: {
-    geneId: string; // in ensObjectId format
-  };
-};
+export const getActiveDrawerView = (state: RootState) =>
+  getActiveDrawer(state).drawerView;
 
-export type TranscriptDrawerView = {
-  name: 'transcript_summary';
-  payload: {
-    transcriptId: string; // transcript stable id
-  };
-};
-
-export type GenericTrackView = {
-  name: 'track_details';
-  payload: {
-    trackId: string;
-  };
-};
-
-export type DrawerView =
-  | BookmarksDrawerView
-  | GeneDrawerView
-  | TranscriptDrawerView
-  | GenericTrackView;
+export const getIsDrawerOpened = (state: RootState) =>
+  getActiveDrawer(state).isDrawerOpened;

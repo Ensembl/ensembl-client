@@ -25,7 +25,7 @@ import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { toggleDrawer } from './drawer/drawerActions';
+import { toggleDrawerForGenome } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import {
   getBrowserNavOpenState,
@@ -78,7 +78,12 @@ export const Browser = () => {
   };
 
   const onDrawerClose = () => {
-    dispatch(toggleDrawer(!isDrawerOpened));
+    dispatch(
+      toggleDrawerForGenome({
+        genomeId: activeGenomeId as string,
+        isOpen: false
+      })
+    );
   };
 
   const shouldShowNavBar =

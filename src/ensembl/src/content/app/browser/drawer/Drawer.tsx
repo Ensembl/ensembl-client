@@ -22,30 +22,26 @@ import DrawerBookmarks from './drawer-views/DrawerBookmarks';
 import GeneSummary from './drawer-views/gene-summary/GeneSummary';
 import TranscriptSummary from './drawer-views/transcript-summary/TranscriptSummary';
 
-import { getActiveDrawerView } from './drawerSelectors';
-import { getBrowserActiveEnsObject } from '../browserSelectors';
-
-import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
+import { getActiveDrawerView } from 'src/content/app/browser/state/drawer/drawerSelectors';
 
 import styles from './Drawer.scss';
 
 export const Drawer = () => {
-  const activeDrawerView = useSelector(getActiveDrawerView);
-  const ensObject = useSelector(getBrowserActiveEnsObject);
+  const drawerView = useSelector(getActiveDrawerView);
 
-  if (!ensObject) {
+  if (!drawerView) {
     return null;
   }
 
   const getDrawerViewComponent = () => {
-    switch (activeDrawerView) {
-      case DrawerView.TRACK_DETAILS:
-        return <TrackDetails />;
-      case DrawerView.GENE_SUMMARY:
+    switch (drawerView.name) {
+      case 'track_details':
+        return <TrackDetails drawerView={drawerView} />;
+      case 'gene_summary':
         return <GeneSummary />;
-      case DrawerView.TRANSCRIPT_SUMMARY:
-        return <TranscriptSummary />;
-      case DrawerView.BOOKMARKS:
+      case 'transcript_summary':
+        return <TranscriptSummary drawerView={drawerView} />;
+      case 'bookmarks':
         return <DrawerBookmarks />;
     }
   };

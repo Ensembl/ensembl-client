@@ -42,6 +42,8 @@ const drawerSlice = createSlice({
   name: 'genome-browser-drawer',
   initialState: {} as DrawerState,
   reducers: {
+    // TODO: discuss whether we need this part of the state at all;
+    // isn't { drawerView: null } sufficient to represent a closed drawer?
     toggleDrawerForGenome(
       state,
       action: PayloadAction<{ genomeId: string; isOpen: boolean }>
