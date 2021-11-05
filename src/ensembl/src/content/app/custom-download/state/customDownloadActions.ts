@@ -44,12 +44,9 @@ export const updateActiveGenomeId = createAction(
   'custom-download/set-active-genome-id'
 )<string | null>();
 
-export const setActiveGenomeId: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (activeGenomeId: string) => (dispatch, getState: () => RootState) => {
+export const setActiveGenomeId: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (activeGenomeId: string) => (dispatch, getState: () => RootState) => {
   dispatch(updateActiveGenomeId(activeGenomeId));
 
   if (!getActiveConfigurations(getState())[activeGenomeId]) {
@@ -74,12 +71,9 @@ export const updateActiveConfigurationForGenome = createAction(
   }
 )();
 
-export const updateSelectedPreFilter: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (selectedPreFilter: boolean) => (dispatch, getState: () => RootState) => {
+export const updateSelectedPreFilter: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (selectedPreFilter: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -98,15 +92,9 @@ export const updateSelectedPreFilter: ActionCreator<ThunkAction<
   );
 };
 
-export const togglePreFiltersPanel: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (showPreFiltersPanel: boolean) => (
-  dispatch,
-  getState: () => RootState
-) => {
+export const togglePreFiltersPanel: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showPreFiltersPanel: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -131,12 +119,9 @@ export const setPreviewResult = createAsyncAction(
   'custom-download/preview-results-failure'
 )<undefined, JSONValue, Error>();
 
-export const fetchPreviewResult: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (endpointURL: string) => (dispatch) => {
+export const fetchPreviewResult: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (endpointURL: string) => (dispatch) => {
   try {
     apiService
       .fetch(endpointURL, {
@@ -149,7 +134,7 @@ export const fetchPreviewResult: ActionCreator<ThunkAction<
         dispatch(setPreviewResult.success(response));
       });
   } catch (error) {
-    dispatch(setPreviewResult.failure(error));
+    dispatch(setPreviewResult.failure(error as Error));
   }
 };
 
@@ -157,12 +142,9 @@ export const setIsLoadingResult = createAction(
   'custom-download/set-is-loading-result'
 )<boolean>();
 
-export const setShowPreview: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (showSummary: boolean) => (dispatch, getState: () => RootState) => {
+export const setShowPreview: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showSummary: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -181,12 +163,9 @@ export const setShowPreview: ActionCreator<ThunkAction<
   );
 };
 
-export const setShowExampleData: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (showExampleData: boolean) => (dispatch, getState: () => RootState) => {
+export const setShowExampleData: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showExampleData: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -205,12 +184,9 @@ export const setShowExampleData: ActionCreator<ThunkAction<
   );
 };
 
-export const setDownloadType: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (downloadType: string) => (dispatch, getState: () => RootState) => {
+export const setDownloadType: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (downloadType: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {

@@ -23,6 +23,7 @@ import {
   buildEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
+import JSONValue from 'src/shared/types/JSON';
 import { ChrLocation } from './browserState';
 
 type GenomeBrowserFocusIdConstituents = {
@@ -191,9 +192,14 @@ export const validateRegion = async (params: {
         onError
       );
     } catch (error) {
-      if (error.status === 400) {
+      const processibleError =
+        error &&
+        typeof error === 'object' &&
+        'status' in error &&
+        (error as JSONValue).status === 400;
+      if (processibleError) {
         processValidationMessages(
-          getRegionValidationMessages(error),
+          getRegionValidationMessages(error as RegionValidationResponse),
           onSuccess,
           onError
         );

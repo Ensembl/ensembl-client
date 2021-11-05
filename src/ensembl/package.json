@@ -160,7 +160,7 @@
     "stylelint-webpack-plugin": "3.0.1",
     "ts-multipick": "1.0.0",
     "ts-node": "10.1.0",
-    "typescript": "4.3.5",
+    "typescript": "4.4.4",
     "webpack": "5.46.0",
     "webpack-bundle-analyzer": "4.4.2",
     "webpack-cli": "4.7.2",
