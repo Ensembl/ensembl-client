@@ -29,6 +29,13 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
+jest.mock(
+  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
+  () => () => ({
+    trackPreviouslyViewedLinkClick: jest.fn()
+  })
+);
+
 const mockStore = configureMockStore();
 
 const exampleEntities = [

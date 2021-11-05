@@ -27,7 +27,7 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
-import useEntityViewerAnalytics from 'ensemblRoot/src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
 
