@@ -131,7 +131,8 @@ export const GenomeBrowserContext = React.createContext<
 >(undefined);
 
 const GenomeBrowserInitContainer = () => {
-  const [genomeBrowser, setGenomeBrowser] = useState<EnsemblGenomeBrowser>();
+  const [genomeBrowser, setGenomeBrowser] =
+    useState<EnsemblGenomeBrowser | null>(null);
 
   const [zmenus, setZmenus] = useState<StateZmenu>({});
 
@@ -141,14 +142,12 @@ const GenomeBrowserInitContainer = () => {
 
   return (
     <GenomeBrowserContext.Provider
-      value={
-        {
-          genomeBrowser,
-          setGenomeBrowser,
-          zmenus,
-          setZmenus
-        } as GenomeBrowserContextType
-      }
+      value={{
+        genomeBrowser,
+        setGenomeBrowser,
+        zmenus,
+        setZmenus
+      }}
     >
       {browser}
     </GenomeBrowserContext.Provider>
