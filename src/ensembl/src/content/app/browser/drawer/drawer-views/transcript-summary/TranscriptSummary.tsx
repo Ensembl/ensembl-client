@@ -170,7 +170,6 @@ const TranscriptSummary = (props: Props) => {
     }
   } = props;
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
-  // const activeDrawerTranscriptId = useSelector(getActiveDrawerTranscriptId);
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({

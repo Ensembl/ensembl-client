@@ -54,57 +54,6 @@ export const TrackPanelList = () => {
       category.types.includes(selectedTrackPanelTab)
   );
 
-  // TODO: get default track status properly if it can ever be inactive
-  // const getDefaultTrackStatus = (): TrackActivityStatus => {
-  //   return Status.SELECTED;
-  // };
-
-  // const getTrackListItem = (
-  //   categoryName: string,
-  //   track: EnsObjectTrack | null
-  // ) => {
-  //   if (!track) {
-  //     return;
-  //   }
-
-  //   const { track_id } = track;
-
-  //   const defaultTrackStatus = getDefaultTrackStatus();
-  //   let trackStatus = defaultTrackStatus;
-
-  //   if (activeEnsObject) {
-  //     // FIXME: Temporary hack until we have a set of proper track names
-  //     if (track_id.startsWith('track:gene')) {
-  //       trackStatus = get(
-  //         trackStates,
-  //         `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
-  //         trackStatus
-  //       ) as TrackActivityStatus;
-  //     } else {
-  //       trackStatus = get(
-  //         trackStates,
-  //         `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
-  //         trackStatus
-  //       ) as TrackActivityStatus;
-  //     }
-  //   }
-
-  //   return (
-  //     <TrackPanelListItem
-  //       categoryName={categoryName}
-  //       defaultTrackStatus={defaultTrackStatus}
-  //       trackStatus={trackStatus}
-  //       key={track.track_id}
-  //       track={track}
-  //     >
-  //       {track.child_tracks &&
-  //         track.child_tracks.map((childTrack: EnsObjectTrack) =>
-  //           getTrackListItem(categoryName, childTrack)
-  //         )}
-  //     </TrackPanelListItem>
-  //   );
-  // };
-
   const trackCategoryIds = currentTrackCategories
     ?.filter((category: GenomeTrackCategory) => category.track_list.length)
     .map((category: GenomeTrackCategory) => category.track_category_id);
@@ -165,7 +114,6 @@ export const TrackPanelList = () => {
                         key={track.track_id}
                       />
                     ))}
-                    {/* getTrackListItem(category.track_category_id, track) */}
                   </dl>
                 </AccordionItemPanel>
               </AccordionItem>

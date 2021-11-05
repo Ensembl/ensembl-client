@@ -34,7 +34,7 @@ import speciesPage from 'src/content/app/species/state/index';
 const createRootReducer = (history: any) =>
   combineReducers({
     browser,
-    drawer, // FIXME: this should be moved in the browser reducer
+    drawer, // TODO: this should be moved in the browser reducer
     customDownload,
     communication,
     ensObjects,
