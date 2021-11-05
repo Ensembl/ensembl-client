@@ -74,9 +74,9 @@ export const getBrowserTrackState = (
   const allBrowserTrackStates = getBrowserTrackStates(state);
   const savedTrackStatus =
     tracksGroup === 'objectTracks'
-      ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]?.[
-          categoryName
-        ]?.[trackId]
+      ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[
+          (params as any).objectId
+        ]?.[categoryName]?.[trackId] // <-- will remove the "as any" after upgrading typescript to version 4.4
       : allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[categoryName]?.[
           trackId
         ];
