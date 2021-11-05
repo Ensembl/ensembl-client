@@ -226,11 +226,11 @@ describe('<TrackPanelBookmarks />', () => {
       (action) => action.type === toggleDrawerForGenome.toString()
     );
 
-    expect(updateDrawerViewAction.payload.activeDrawerView).toEqual({
+    expect(updateDrawerViewAction.payload).toEqual({
       genomeId,
       drawerView: { name: 'bookmarks' }
     });
-    expect(toggleDrawerAction.payload.isDrawerOpened).toEqual({
+    expect(toggleDrawerAction.payload).toEqual({
       genomeId,
       isOpen: true
     });
