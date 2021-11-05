@@ -28,7 +28,7 @@ import {
   HelpArticleGrid,
   VideoArticle
 } from 'src/shared/components/help-article';
-import Breadcrumbs from 'ensemblRoot/src/shared/components/breadcrumbs/Breadcrumbs';
+import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
 import {
   Menu as MenuType,
@@ -68,7 +68,7 @@ const Help = () => {
         <HelpLanding />
       </div>
     </main>
-  ) : article && breadcrumbs ? (
+  ) : article ? (
     <MainContent article={article} breadcrumbs={breadcrumbs} />
   ) : null;
 

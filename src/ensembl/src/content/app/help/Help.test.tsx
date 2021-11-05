@@ -56,7 +56,7 @@ const sampleMenu: Menu = {
           url: '/seven'
         },
         {
-          name: 'Two',
+          name: 'Eight',
           type: 'article',
           url: '/eight'
         },
@@ -81,7 +81,7 @@ describe('buildBreadcrumbs', () => {
     ]);
   });
 
-  it('returns [] when there is no match', () => {
+  it('returns an empty array when there is no match', () => {
     expect(buildBreadcrumbs(sampleMenu, { url: '/blah' })).toEqual([]);
   });
 
