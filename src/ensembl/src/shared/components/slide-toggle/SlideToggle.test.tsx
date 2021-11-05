@@ -49,7 +49,7 @@ describe('SlideToggle', () => {
     });
 
     it('adds class received from parent', () => {
-      const externalClassName = faker.random.word();
+      const externalClassName = faker.lorem.word();
       const props = {
         ...defaultProps,
         className: externalClassName

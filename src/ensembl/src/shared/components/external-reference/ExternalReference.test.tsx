@@ -22,7 +22,7 @@ import ExternalReference, { ExternalReferenceProps } from './ExternalReference';
 
 const defaultProps: ExternalReferenceProps = {
   label: faker.random.word(),
-  linkText: faker.random.word(),
+  linkText: faker.lorem.word(),
   to: faker.internet.url(),
   classNames: {
     container: faker.lorem.word(),

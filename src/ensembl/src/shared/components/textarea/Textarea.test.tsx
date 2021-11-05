@@ -23,8 +23,8 @@ import Textarea from './Textarea';
 describe('<Textarea />', () => {
   const commonTextareaProps = {
     id: faker.random.word(),
-    name: faker.random.word(),
-    className: faker.random.word(),
+    name: faker.lorem.word(),
+    className: faker.lorem.word(),
     onChange: jest.fn(),
     onFocus: jest.fn(),
     onBlur: jest.fn()
