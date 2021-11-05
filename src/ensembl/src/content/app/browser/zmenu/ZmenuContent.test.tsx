@@ -38,7 +38,7 @@ jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
 const changeFocusObjectFromZmenu = jest.fn();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
-  changeFocusObject: changeFocusObjectFromZmenu
+  changeFocusObjectFromZmenu: changeFocusObjectFromZmenu
 }));
 
 enum Markup {
