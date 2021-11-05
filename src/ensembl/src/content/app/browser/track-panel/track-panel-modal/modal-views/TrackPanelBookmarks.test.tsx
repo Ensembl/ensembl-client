@@ -24,9 +24,13 @@ import faker from 'faker';
 import times from 'lodash/times';
 import set from 'lodash/fp/set';
 
+import {
+  toggleDrawerForGenome,
+  changeDrawerViewForGenome
+} from 'src/content/app/browser/state/drawer/drawerSlice';
+
 import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
-import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 import { PreviouslyViewedObject } from '../../trackPanelState';
 
 jest.mock('react-router-dom', () => ({
@@ -96,8 +100,7 @@ const mockState = {
   drawer: {
     [genomeId]: {
       isDrawerOpened: false,
-      activeDrawerView: DrawerView.BOOKMARKS,
-      activeDrawerTrackIds: {}
+      drawerView: null
     }
   },
   ensObjects: {
@@ -217,15 +220,19 @@ describe('<TrackPanelBookmarks />', () => {
     const dispatchedDrawerActions = store.getActions();
 
     const updateDrawerViewAction = dispatchedDrawerActions.find(
-      (action) => action.type === 'drawer/change-drawer-view'
+      (action) => action.type === changeDrawerViewForGenome.toString()
     );
     const toggleDrawerAction = dispatchedDrawerActions.find(
-      (action) => action.type === 'drawer/toggle-drawer'
+      (action) => action.type === toggleDrawerForGenome.toString()
     );
 
-    expect(updateDrawerViewAction.payload.activeDrawerView).toEqual(
-      DrawerView.BOOKMARKS
-    );
-    expect(toggleDrawerAction.payload.isDrawerOpened).toEqual(true);
+    expect(updateDrawerViewAction.payload.activeDrawerView).toEqual({
+      genomeId,
+      drawerView: { name: 'bookmarks' }
+    });
+    expect(toggleDrawerAction.payload.isDrawerOpened).toEqual({
+      genomeId,
+      isOpen: true
+    });
   });
 });

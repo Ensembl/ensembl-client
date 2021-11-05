@@ -25,9 +25,8 @@ import set from 'lodash/fp/set';
 
 import { TrackPanelBar } from './TrackPanelBar';
 
-import * as drawerActions from '../../drawer/drawerActions';
+import * as drawerActions from 'src/content/app/browser/state/drawer/drawerSlice';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
-import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 jest.mock(
   'src/shared/components/image-button/ImageButton',
@@ -41,7 +40,7 @@ const mockState = {
   drawer: {
     [fakeGenomeId]: {
       isDrawerOpened: false,
-      activeDrawerView: DrawerView.BOOKMARKS
+      drawerView: { name: 'bookmarks' }
     }
   },
   browser: {
@@ -173,6 +172,7 @@ describe('<TrackPanelBar />', () => {
     });
 
     it('closes drawer view when the modal view changes', () => {
+      jest.spyOn(drawerActions, 'closeDrawer');
       const { container } = renderComponent(
         set(`drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
       );
@@ -182,16 +182,7 @@ describe('<TrackPanelBar />', () => {
 
       userEvent.click(bookmarksButton);
 
-      const drawerToggleAction = store
-        .getActions()
-        .find(
-          (action) =>
-            action.type === getType(drawerActions.toggleDrawerForGenome)
-        );
-      expect(drawerToggleAction.payload).toEqual({
-        activeGenomeId: fakeGenomeId,
-        isDrawerOpened: false
-      });
+      expect(drawerActions.closeDrawer).toHaveBeenCalled();
     });
   });
 });

@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  Action,
+  PayloadAction,
+  ThunkAction
+} from '@reduxjs/toolkit';
+import { batch } from 'react-redux';
+
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import type { DrawerView } from './types';
+import type { RootState } from 'src/store';
 
 type DrawerStateForGenome = {
   isDrawerOpened: boolean;
@@ -26,6 +35,60 @@ type DrawerStateForGenome = {
 type DrawerState = {
   [genomeId: string]: DrawerStateForGenome;
 };
+
+export const closeDrawer =
+  (): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+    if (!activeGenomeId) {
+      return;
+    }
+
+    batch(() => {
+      dispatch(
+        toggleDrawerForGenome({
+          // <-- is this action even necessary?
+          genomeId: activeGenomeId,
+          isOpen: false
+        })
+      );
+
+      dispatch(
+        changeDrawerViewForGenome({
+          genomeId: activeGenomeId,
+          drawerView: null
+        })
+      );
+    });
+  };
+
+export const changeDrawerViewAndOpen =
+  (drawerView: DrawerView): ThunkAction<void, any, null, Action<string>> =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getBrowserActiveGenomeId(getState());
+
+    if (!activeGenomeId) {
+      return;
+    }
+
+    batch(() => {
+      dispatch(
+        toggleDrawerForGenome({
+          // <-- is this action even necessary?
+          genomeId: activeGenomeId,
+          isOpen: true
+        })
+      );
+
+      dispatch(
+        changeDrawerViewForGenome({
+          genomeId: activeGenomeId,
+          drawerView
+        })
+      );
+    });
+  };
 
 export const defaultDrawerStateForGenome: DrawerStateForGenome = {
   isDrawerOpened: false,
@@ -54,7 +117,7 @@ const drawerSlice = createSlice({
     },
     changeDrawerViewForGenome(
       state,
-      action: PayloadAction<{ genomeId: string; drawerView: DrawerView }>
+      action: PayloadAction<{ genomeId: string; drawerView: DrawerView | null }>
     ) {
       const { genomeId, drawerView } = action.payload;
       ensureDrawerStateForGenome(state, genomeId);

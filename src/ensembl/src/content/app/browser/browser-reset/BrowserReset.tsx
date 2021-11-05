@@ -21,7 +21,7 @@ import {
   getBrowserActiveEnsObjectId,
   isFocusObjectPositionDefault
 } from '../browserSelectors';
-import { getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 import { changeFocusObject } from '../browserActions';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';

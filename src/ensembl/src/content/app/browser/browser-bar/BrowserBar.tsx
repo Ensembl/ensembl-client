@@ -18,7 +18,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { getChrLocation, getBrowserActiveEnsObject } from '../browserSelectors';
-import { getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 
 import BrowserReset from '../browser-reset/BrowserReset';
 import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/FeatureSummaryStrip';

@@ -34,7 +34,7 @@ import {
 } from './browserSelectors';
 
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
-import { getIsDrawerOpened } from './drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import BrowserBar from './browser-bar/BrowserBar';

@@ -3,14 +3,10 @@
 .label {
   overflow: hidden;
   text-overflow: ellipsis;
-  // display: flex;
-  // align-items: baseline;
-  // gap: 10px;
 }
 
 .label > *:not(:last-child):not(.itemsCount) {
   margin-right: 10px;
-  // flex: 0 0 auto;
 }
 
 .labelText {
