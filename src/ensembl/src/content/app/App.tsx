@@ -15,12 +15,10 @@
  */
 
 import React, { useEffect, ReactNode, memo } from 'react';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import routes from 'src/routes/routesConfig';
-
-import * as urlFor from 'src/shared/helpers/urlHelper';
 
 import { changeCurrentApp } from 'src/header/headerActions';
 
@@ -60,7 +58,6 @@ const App = memo(() => {
             render={(props) => <route.component {...props} />}
           />
         ))}
-        <Redirect exact from="/species" to={urlFor.speciesSelector()} />
         <Route component={NotFound} />
       </Switch>
     </>

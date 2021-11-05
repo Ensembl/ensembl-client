@@ -342,10 +342,10 @@ const TranscriptSummary = () => {
               <InstantDownloadTranscript
                 genomeId={ensObjectGene.genome_id}
                 transcript={{
-                  id: transcript.unversioned_stable_id,
+                  id: transcript.stable_id,
                   isProteinCoding: isProteinCodingTranscript(transcript)
                 }}
-                gene={{ id: gene.unversioned_stable_id }}
+                gene={{ id: gene.stable_id }}
                 theme="light"
                 layout="vertical"
               />

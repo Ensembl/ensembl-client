@@ -49,13 +49,13 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEntityIds: {
-        human: 'gene:brca2'
+        human: 'human:gene:brca2'
       }
     },
     geneView: {
       transcripts: {
         human: {
-          'gene:brca2': {
+          'human:gene:brca2': {
             expandedIds: [],
             expandedDownloadIds: [],
             filters: [],
@@ -64,6 +64,15 @@ const mockState = {
         }
       }
     }
+  },
+  speciesSelector: {
+    committedItems: [
+      {
+        genome_id: 'human',
+        common_name: 'human',
+        assembly_name: 'grch38'
+      }
+    ]
   }
 };
 
@@ -73,6 +82,7 @@ describe('<DefaultTranscriptListItem />', () => {
   });
 
   const defaultProps = {
+    transcriptPosition: 1,
     gene: createGene(),
     transcript: createTranscript(),
     rulerTicks: createRulerTicks(),

@@ -113,9 +113,10 @@ describe('<GeneOverview />', () => {
     });
 
     it('renders all data correctly', () => {
-      const { container } = render(<GeneOverview />);
+      const { container, queryByTestId } = render(<GeneOverview />);
 
-      const geneDetailsElement = container.querySelector('.geneDetails');
+      const geneSymbolElement = container.querySelector('.geneSymbol');
+      const stableIdElement = queryByTestId('stableId');
       const geneNameElement = container.querySelector('.geneName');
       const synonymsElement = container.querySelector('.synonyms');
       const xrefElement = container.querySelector(
@@ -125,8 +126,8 @@ describe('<GeneOverview />', () => {
       // child components
       const genePublications = container.querySelector('.genePublications');
 
-      expect(geneDetailsElement?.textContent).toMatch(geneSymbol);
-      expect(geneDetailsElement?.textContent).toMatch(stableId);
+      expect(geneSymbolElement?.textContent).toMatch(geneSymbol);
+      expect(stableIdElement?.textContent).toMatch(stableId);
       expect(geneNameElement?.textContent).toMatch(geneName);
       expect(xrefElement?.textContent).toMatch(metadata.name.accession_id);
       expect(synonymsElement?.textContent).toMatch(
@@ -144,10 +145,10 @@ describe('<GeneOverview />', () => {
         loading: false
       }));
 
-      const { container } = render(<GeneOverview />);
+      const { queryByTestId } = render(<GeneOverview />);
 
-      const geneDetailsElement = container.querySelector('.geneDetails');
-      expect(geneDetailsElement?.textContent).toBe(stableId);
+      const stableIdElement = queryByTestId('stableId');
+      expect(stableIdElement?.textContent).toMatch(stableId);
     });
 
     it('shows that the gene does not have a name', () => {

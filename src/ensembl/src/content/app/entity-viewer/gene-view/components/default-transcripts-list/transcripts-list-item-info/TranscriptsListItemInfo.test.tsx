@@ -110,13 +110,13 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEntityIds: {
-        human: 'gene:brca2'
+        human: 'human:gene:brca2'
       }
     },
     geneView: {
       transcripts: {
         human: {
-          'gene:brca2': {
+          'human:gene:brca2': {
             expandedIds: [],
             expandedDownloadIds: [],
             expandedMoreInfoIds: [],
@@ -126,6 +126,15 @@ const mockState = {
         }
       }
     }
+  },
+  speciesSelector: {
+    committedItems: [
+      {
+        genome_id: 'human',
+        common_name: 'human',
+        assembly_name: 'grch38'
+      }
+    ]
   }
 };
 const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
@@ -141,11 +150,10 @@ const renderComponent = (props?: Partial<TranscriptsListItemInfoProps>) => {
 
 describe('<TranscriptsListItemInfo /', () => {
   it('displays amino acid length when transcript has a protein product', () => {
-    const { container } = renderComponent();
+    const { queryByTestId } = renderComponent();
     const expectedProteinLength =
       defaultProps.transcript.product_generating_contexts[0].product?.length;
-    const currentProteinLength = container
-      .querySelector('.topMiddle strong')
+    const currentProteinLength = queryByTestId('proteinLength')
       ?.textContent?.split(/\s/)[0]
       ?.replace(/,/g, '');
     expect(currentProteinLength).toMatch(`${expectedProteinLength}`);

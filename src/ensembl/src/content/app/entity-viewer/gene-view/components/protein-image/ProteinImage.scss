@@ -14,5 +14,6 @@
 
 .label {
   font-size: 13px; // to override the 12px font-size coming from DefaultTranscriptList.row
-  color: $dark-grey;
+  font-weight: $light;
+  color: $black;
 }

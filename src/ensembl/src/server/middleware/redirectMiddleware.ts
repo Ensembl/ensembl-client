@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
+import { Router } from 'express';
 
-export const getAllPreviouslyViewedEntities = (state: RootState) =>
-  state.entityViewer.bookmarks.previouslyViewed;
+const router = Router();
 
-export const getPreviouslyViewedEntities = (
-  state: RootState,
-  genomeId: string
-) => getAllPreviouslyViewedEntities(state)[genomeId] || [];
+router.get('/species', (_, res) => {
+  res.redirect(301, '/species-selector');
+});
+
+router.get('/help/articles', (_, res) => {
+  res.redirect(301, '/help');
+});
+
+router.get('/about/articles', (_, res) => {
+  res.redirect(301, '/about');
+});
+
+export default router;

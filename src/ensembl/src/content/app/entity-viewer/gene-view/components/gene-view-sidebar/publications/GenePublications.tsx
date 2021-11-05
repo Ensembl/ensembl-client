@@ -49,11 +49,19 @@ const GenePublications = (props: Props) => {
   const linkToEuroPMC = buildLinkToEuroPMC(symbol, species);
 
   return (
-    <>
+    <section>
       <div className={geneOverviewStyles.sectionHead}>Publications</div>
 
-      <ExternalReference to={linkToEuroPMC} linkText="Europe PMC" />
-    </>
+      <div className={geneOverviewStyles.sectionContent}>
+        <ExternalReference
+          to={linkToEuroPMC}
+          linkText="Europe PMC"
+          classNames={{
+            link: geneOverviewStyles.externalRefLink
+          }}
+        />
+      </div>
+    </section>
   );
 };
 

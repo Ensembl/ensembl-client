@@ -39,10 +39,21 @@ type GeneFields = {
   id: string;
 };
 
+export type TrackTranscriptDownloadPayload = {
+  genomeId: string;
+  transcriptId: string;
+  options: {
+    transcript: Partial<TranscriptOptions>;
+    gene: { genomicSequence: boolean };
+  };
+};
+
 export type InstantDownloadTranscriptEntityProps = {
   genomeId: string;
   transcript: TranscriptFields;
   gene: GeneFields;
+  onDownloadSuccess?: (params: TrackTranscriptDownloadPayload) => void;
+  onDownloadFailure?: (params: TrackTranscriptDownloadPayload) => void;
 };
 
 type Props = InstantDownloadTranscriptEntityProps & {
@@ -131,9 +142,11 @@ const InstantDownloadTranscript = (props: Props) => {
         gene: { genomicSequence: isGeneSequenceSelected }
       }
     };
-
     try {
       await fetchForTranscript(payload);
+      props.onDownloadSuccess?.(payload);
+    } catch {
+      props.onDownloadFailure?.(payload);
     } finally {
       resetCheckboxes();
     }
@@ -178,12 +191,14 @@ const InstantDownloadTranscript = (props: Props) => {
         isGenomicSequenceSelected={isGeneSequenceSelected}
         onChange={onGeneOptionChange}
       />
-      <div className={styles.downloadButton}>
-        <InstantDownloadButton
-          isDisabled={isButtonDisabled}
-          onClick={onSubmit}
-        />
-      </div>
+      <InstantDownloadButton
+        isDisabled={isButtonDisabled}
+        onClick={onSubmit}
+        theme={props.theme}
+        classNames={{
+          wrapper: styles.downloadButtonWrapper
+        }}
+      />
     </div>
   );
 };
@@ -203,7 +218,10 @@ const TranscriptSection = (props: TranscriptSectionProps) => {
   const checkboxes = orderedOptionKeys.map((key) => (
     <Checkbox
       key={key}
-      classNames={{ unchecked: styles.checkboxUnchecked }}
+      classNames={{
+        unchecked: styles.checkboxUnchecked,
+        checked: styles.checkboxChecked
+      }}
       labelClassName={styles.checkboxLabel}
       label={transcriptOptionLabels[key as TranscriptOption]}
       checked={options[key as TranscriptOption] as boolean}

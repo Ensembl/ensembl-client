@@ -34,7 +34,8 @@ const getBaseApiUrls = (): BaseApiUrls => {
 const getEnvironment = () => {
   return {
     buildEnvironment: process.env.NODE_ENV ?? 'production',
-    deploymentEnvironment: process.env.ENVIRONMENT ?? 'development'
+    deploymentEnvironment: process.env.ENVIRONMENT ?? 'development',
+    shouldReportAnalytics: shouldReportAnalytics()
   };
 };
 
@@ -43,6 +44,9 @@ const getKeys = () => {
     googleAnalyticsKey: process.env.GOOGLE_ANALYTICS_KEY ?? ''
   };
 };
+
+const shouldReportAnalytics = () =>
+  `${process.env.REPORT_ANALYTICS}`.toLowerCase() === 'true';
 
 export const getConfigForClient = () => {
   return {
