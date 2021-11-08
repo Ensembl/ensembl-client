@@ -42,8 +42,10 @@ jest.mock('../browserHelper', () => {
   };
 });
 
-const mockChangeBrowserLocation = jest.fn();
-const mockChangeFocusObject = jest.fn();
+const mockChangeBrowserLocation = jest.fn(() => ({
+  type: 'changeBrowserLocation'
+}));
+const mockChangeFocusObject = jest.fn(() => ({ type: 'changeFocusObject' }));
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
   changeBrowserLocation: mockChangeBrowserLocation,
   changeFocusObject: mockChangeFocusObject
