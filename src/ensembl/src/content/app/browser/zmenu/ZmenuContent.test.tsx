@@ -36,9 +36,9 @@ import {
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
 
-const changeFocusObjectFromZmenu = jest.fn();
+const mockChangeFocusObjectFromZmenu = jest.fn();
 jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
-  changeFocusObjectFromZmenu: changeFocusObjectFromZmenu
+  changeFocusObjectFromZmenu: mockChangeFocusObjectFromZmenu
 }));
 
 enum Markup {
@@ -152,7 +152,7 @@ describe('<ZmenuContent />', () => {
 
       userEvent.click(container.firstChild as HTMLDivElement);
 
-      expect(changeFocusObjectFromZmenu).toHaveBeenCalledTimes(1);
+      expect(mockChangeFocusObjectFromZmenu).toHaveBeenCalledTimes(1);
     });
   });
 });

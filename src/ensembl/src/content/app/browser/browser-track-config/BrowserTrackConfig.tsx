@@ -59,78 +59,94 @@ export const BrowserTrackConfig = () => {
 
   const { genomeBrowser } = useGenomeBrowser();
 
-  const toggleName = useCallback(() => {
-    const tracksToUpdate = [];
-    if (applyToAll) {
-      Object.keys(browserCogTrackList).forEach((name) => {
-        dispatch(updateTrackConfigNames(name, !shouldShowTrackName));
-        tracksToUpdate.push(name);
-      });
-    } else {
-      dispatch(updateTrackConfigNames(selectedCog, !shouldShowTrackName));
-      tracksToUpdate.push(selectedCog);
-    }
-
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'track_name_' + (shouldShowTrackName ? 'off' : 'on')
-    });
-
-    genomeBrowser?.send({
-      type: !shouldShowTrackName
-        ? OutgoingActionType.TURN_ON_NAMES
-        : OutgoingActionType.TURN_OFF_NAMES,
-      payload: {
-        track_ids: tracksToUpdate
+  const updateName = useCallback(
+    (isTrackNameShown: boolean) => {
+      const tracksToUpdate = [];
+      if (applyToAll) {
+        Object.keys(browserCogTrackList).forEach((name) => {
+          dispatch(updateTrackConfigNames(name, isTrackNameShown));
+          tracksToUpdate.push(name);
+        });
+      } else {
+        dispatch(updateTrackConfigNames(selectedCog, isTrackNameShown));
+        tracksToUpdate.push(selectedCog);
       }
-    });
-  }, [
-    selectedCog,
-    updateTrackConfigNames,
-    shouldShowTrackName,
-    applyToAll,
-    browserCogTrackList
-  ]);
 
-  const toggleLabel = useCallback(() => {
-    const tracksToUpdate = [];
-
-    if (applyToAll) {
-      Object.keys(browserCogTrackList).forEach((name) => {
-        dispatch(updateTrackConfigLabel(name, !shouldShowTrackLabels));
-        tracksToUpdate.push(name);
+      analyticsTracking.trackEvent({
+        category: 'track_settings',
+        label: selectedCog,
+        action: 'track_name_' + (isTrackNameShown ? 'on' : 'off')
       });
-    } else {
-      dispatch(updateTrackConfigLabel(selectedCog, !shouldShowTrackLabels));
-      tracksToUpdate.push(selectedCog);
-    }
 
-    analyticsTracking.trackEvent({
-      category: 'track_settings',
-      label: selectedCog,
-      action: 'feature_label_' + (shouldShowTrackLabels ? 'off' : 'on')
-    });
+      genomeBrowser?.send({
+        type: isTrackNameShown
+          ? OutgoingActionType.TURN_ON_NAMES
+          : OutgoingActionType.TURN_OFF_NAMES,
+        payload: {
+          track_ids: tracksToUpdate
+        }
+      });
+    },
+    [
+      selectedCog,
+      updateTrackConfigNames,
+      shouldShowTrackName,
+      applyToAll,
+      browserCogTrackList
+    ]
+  );
 
-    genomeBrowser?.send({
-      type: !shouldShowTrackLabels
-        ? OutgoingActionType.TURN_ON_LABELS
-        : OutgoingActionType.TURN_OFF_LABELS,
-      payload: {
-        track_ids: tracksToUpdate
+  const toggleName = () => {
+    updateName(!shouldShowTrackName);
+  };
+
+  const updateLabel = useCallback(
+    (isTrackLabelsShown: boolean) => {
+      const tracksToUpdate = [];
+
+      if (applyToAll) {
+        Object.keys(browserCogTrackList).forEach((name) => {
+          dispatch(updateTrackConfigLabel(name, isTrackLabelsShown));
+          tracksToUpdate.push(name);
+        });
+      } else {
+        dispatch(updateTrackConfigLabel(selectedCog, isTrackLabelsShown));
+        tracksToUpdate.push(selectedCog);
       }
-    });
-  }, [
-    selectedCog,
-    updateTrackConfigLabel,
-    shouldShowTrackLabels,
-    applyToAll,
-    browserCogTrackList
-  ]);
+
+      analyticsTracking.trackEvent({
+        category: 'track_settings',
+        label: selectedCog,
+        action: 'feature_label_' + (isTrackLabelsShown ? 'on' : 'off')
+      });
+
+      genomeBrowser?.send({
+        type: !isTrackLabelsShown
+          ? OutgoingActionType.TURN_ON_LABELS
+          : OutgoingActionType.TURN_OFF_LABELS,
+        payload: {
+          track_ids: tracksToUpdate
+        }
+      });
+    },
+    [
+      selectedCog,
+      updateTrackConfigLabel,
+      shouldShowTrackLabels,
+      applyToAll,
+      browserCogTrackList
+    ]
+  );
+
+  const toggleLabel = () => {
+    updateLabel(!shouldShowTrackLabels);
+  };
 
   const handleRadioChange = useCallback(
     (value: OptionValue) => {
       dispatch(updateApplyToAll(value === 'all_tracks'));
+      updateName(shouldShowTrackName);
+      updateLabel(shouldShowTrackLabels);
 
       analyticsTracking.trackEvent({
         category: 'track_settings',
