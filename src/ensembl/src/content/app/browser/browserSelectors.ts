@@ -121,8 +121,8 @@ export const getTrackConfigNames = (state: RootState) =>
 export const getTrackConfigLabel = (state: RootState) =>
   state.browser.trackConfig.trackConfigLabel;
 
-export const getApplyToAll = (state: RootState) =>
-  state.browser.trackConfig.applyToAll;
+export const getApplyToAllConfig = (state: RootState) =>
+  state.browser.trackConfig.applyToAllConfig;
 
 export const isFocusObjectPositionDefault = (state: RootState) =>
   state.browser.browserLocation.isObjectInDefaultPosition;

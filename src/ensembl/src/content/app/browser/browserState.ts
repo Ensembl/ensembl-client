@@ -109,7 +109,11 @@ export const defaultBrowserLocationState: BrowserLocationState = {
 };
 
 export type TrackConfigState = Readonly<{
-  applyToAll: boolean;
+  applyToAllConfig: {
+    isSelected: boolean;
+    allTrackNamesOn: boolean;
+    allTrackLabelsOn: boolean;
+  };
   browserCogList: number;
   browserCogTrackList: CogList;
   selectedCog: string | null;
@@ -118,7 +122,11 @@ export type TrackConfigState = Readonly<{
 }>;
 
 export const defaultTrackConfigState: TrackConfigState = {
-  applyToAll: false,
+  applyToAllConfig: {
+    isSelected: false,
+    allTrackNamesOn: false,
+    allTrackLabelsOn: true
+  },
   browserCogList: 0,
   browserCogTrackList: {},
   selectedCog: null,

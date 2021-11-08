@@ -43,7 +43,8 @@ import {
 } from 'src/content/app/browser/drawer/drawerSelectors';
 import {
   getBrowserActiveGenomeId,
-  getBrowserActiveEnsObjectId
+  getBrowserActiveEnsObjectId,
+  getApplyToAllConfig
 } from 'src/content/app/browser/browserSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -81,6 +82,9 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const drawerView = useSelector(getActiveDrawerView);
   const highlightedTrackId = useSelector(getHighlightedTrackId);
+  const { allTrackLabelsOn, allTrackNamesOn } =
+    useSelector(getApplyToAllConfig);
+
   const isCollapsed = useSelector((state: RootState) =>
     isTrackCollapsed(state, trackId)
   );
@@ -214,6 +218,24 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       }
     };
     genomeBrowser?.send(action);
+
+    if (allTrackLabelsOn) {
+      genomeBrowser?.send({
+        type: OutgoingActionType.TURN_ON_LABELS,
+        payload: {
+          track_ids: [track_id]
+        }
+      });
+    }
+
+    if (allTrackNamesOn) {
+      genomeBrowser?.send({
+        type: OutgoingActionType.TURN_ON_NAMES,
+        payload: {
+          track_ids: [track_id]
+        }
+      });
+    }
   };
 
   const trackClassNames = classNames(styles.track, {

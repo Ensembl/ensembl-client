@@ -193,7 +193,29 @@ export function trackConfig(
     case getType(browserActions.updateSelectedCog):
       return { ...state, selectedCog: action.payload };
     case getType(browserActions.updateApplyToAll):
-      return { ...state, applyToAll: action.payload };
+      return {
+        ...state,
+        applyToAllConfig: {
+          ...state.applyToAllConfig,
+          isSelected: action.payload
+        }
+      };
+    case getType(browserActions.updateApplyToAllTrackNames):
+      return {
+        ...state,
+        applyToAllConfig: {
+          ...state.applyToAllConfig,
+          allTrackNamesOn: action.payload
+        }
+      };
+    case getType(browserActions.updateApplyToAllTrackLabels):
+      return {
+        ...state,
+        applyToAllConfig: {
+          ...state.applyToAllConfig,
+          allTrackLabelsOn: action.payload
+        }
+      };
     case getType(browserActions.updateTrackConfigNames):
       return {
         ...state,

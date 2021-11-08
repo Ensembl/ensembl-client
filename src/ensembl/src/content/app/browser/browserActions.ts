@@ -252,6 +252,14 @@ export const updateApplyToAll = createAction(
   'browser/update-apply-to-all'
 )<boolean>();
 
+export const updateApplyToAllTrackNames = createAction(
+  'browser/update-apply-to-all-track-names'
+)<boolean>();
+
+export const updateApplyToAllTrackLabels = createAction(
+  'browser/update-apply-to-all-track-labels'
+)<boolean>();
+
 export const toggleRegionEditorActive = createAction(
   'browser/toggle-region-editor-active'
 )<boolean>();

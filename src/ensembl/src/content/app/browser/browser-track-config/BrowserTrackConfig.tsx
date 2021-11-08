@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
   updateTrackConfigNames,
   updateTrackConfigLabel,
-  updateApplyToAll
+  updateApplyToAll,
+  updateApplyToAllTrackLabels,
+  updateApplyToAllTrackNames
 } from '../browserActions';
 
 import {
   getTrackConfigNames,
   getTrackConfigLabel,
-  getApplyToAll,
+  getApplyToAllConfig,
   getBrowserCogTrackList,
   getBrowserSelectedCog
 } from '../browserSelectors';
@@ -45,7 +47,7 @@ import { OutgoingActionType } from 'ensembl-genome-browser';
 import styles from './BrowserTrackConfig.scss';
 
 export const BrowserTrackConfig = () => {
-  const applyToAll = useSelector(getApplyToAll);
+  const applyToAllConfig = useSelector(getApplyToAllConfig);
   const browserCogTrackList = useSelector(getBrowserCogTrackList);
   const selectedCog = useSelector(getBrowserSelectedCog) || '';
   const trackConfigLabel = useSelector(getTrackConfigLabel);
@@ -59,103 +61,113 @@ export const BrowserTrackConfig = () => {
 
   const { genomeBrowser } = useGenomeBrowser();
 
-  const updateName = useCallback(
-    (isTrackNameShown: boolean) => {
-      const tracksToUpdate = [];
-      if (applyToAll) {
-        Object.keys(browserCogTrackList).forEach((name) => {
-          dispatch(updateTrackConfigNames(name, isTrackNameShown));
-          tracksToUpdate.push(name);
-        });
-      } else {
-        dispatch(updateTrackConfigNames(selectedCog, isTrackNameShown));
-        tracksToUpdate.push(selectedCog);
+  const updateName = (options: {
+    isTrackNameShown: boolean;
+    applyToAll: boolean;
+  }) => {
+    const { isTrackNameShown, applyToAll } = options;
+
+    const tracksToUpdate = [];
+    if (applyToAll) {
+      dispatch(updateApplyToAllTrackNames(isTrackNameShown));
+
+      Object.keys(browserCogTrackList).forEach((name) => {
+        dispatch(updateTrackConfigNames(name, isTrackNameShown));
+        tracksToUpdate.push(name);
+      });
+    } else {
+      dispatch(updateTrackConfigNames(selectedCog, isTrackNameShown));
+      tracksToUpdate.push(selectedCog);
+    }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'track_name_' + (isTrackNameShown ? 'on' : 'off')
+    });
+
+    genomeBrowser?.send({
+      type: isTrackNameShown
+        ? OutgoingActionType.TURN_ON_NAMES
+        : OutgoingActionType.TURN_OFF_NAMES,
+      payload: {
+        track_ids: tracksToUpdate
       }
-
-      analyticsTracking.trackEvent({
-        category: 'track_settings',
-        label: selectedCog,
-        action: 'track_name_' + (isTrackNameShown ? 'on' : 'off')
-      });
-
-      genomeBrowser?.send({
-        type: isTrackNameShown
-          ? OutgoingActionType.TURN_ON_NAMES
-          : OutgoingActionType.TURN_OFF_NAMES,
-        payload: {
-          track_ids: tracksToUpdate
-        }
-      });
-    },
-    [
-      selectedCog,
-      updateTrackConfigNames,
-      shouldShowTrackName,
-      applyToAll,
-      browserCogTrackList
-    ]
-  );
+    });
+  };
 
   const toggleName = () => {
-    updateName(!shouldShowTrackName);
+    updateName({
+      isTrackNameShown: !shouldShowTrackName,
+      applyToAll: applyToAllConfig.isSelected
+    });
   };
 
-  const updateLabel = useCallback(
-    (isTrackLabelsShown: boolean) => {
-      const tracksToUpdate = [];
+  const updateLabel = (options: {
+    isTrackLabelsShown: boolean;
+    applyToAll: boolean;
+  }) => {
+    const { isTrackLabelsShown, applyToAll } = options;
 
-      if (applyToAll) {
-        Object.keys(browserCogTrackList).forEach((name) => {
-          dispatch(updateTrackConfigLabel(name, isTrackLabelsShown));
-          tracksToUpdate.push(name);
-        });
-      } else {
-        dispatch(updateTrackConfigLabel(selectedCog, isTrackLabelsShown));
-        tracksToUpdate.push(selectedCog);
+    const tracksToUpdate = [];
+
+    if (applyToAll) {
+      dispatch(updateApplyToAllTrackLabels(isTrackLabelsShown));
+
+      Object.keys(browserCogTrackList).forEach((name) => {
+        dispatch(updateTrackConfigLabel(name, isTrackLabelsShown));
+        tracksToUpdate.push(name);
+      });
+    } else {
+      dispatch(updateTrackConfigLabel(selectedCog, isTrackLabelsShown));
+      tracksToUpdate.push(selectedCog);
+    }
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action: 'feature_label_' + (isTrackLabelsShown ? 'on' : 'off')
+    });
+
+    genomeBrowser?.send({
+      type: !isTrackLabelsShown
+        ? OutgoingActionType.TURN_ON_LABELS
+        : OutgoingActionType.TURN_OFF_LABELS,
+      payload: {
+        track_ids: tracksToUpdate
       }
-
-      analyticsTracking.trackEvent({
-        category: 'track_settings',
-        label: selectedCog,
-        action: 'feature_label_' + (isTrackLabelsShown ? 'on' : 'off')
-      });
-
-      genomeBrowser?.send({
-        type: !isTrackLabelsShown
-          ? OutgoingActionType.TURN_ON_LABELS
-          : OutgoingActionType.TURN_OFF_LABELS,
-        payload: {
-          track_ids: tracksToUpdate
-        }
-      });
-    },
-    [
-      selectedCog,
-      updateTrackConfigLabel,
-      shouldShowTrackLabels,
-      applyToAll,
-      browserCogTrackList
-    ]
-  );
+    });
+  };
 
   const toggleLabel = () => {
-    updateLabel(!shouldShowTrackLabels);
+    updateLabel({
+      isTrackLabelsShown: !shouldShowTrackLabels,
+      applyToAll: applyToAllConfig.isSelected
+    });
   };
 
-  const handleRadioChange = useCallback(
-    (value: OptionValue) => {
-      dispatch(updateApplyToAll(value === 'all_tracks'));
-      updateName(shouldShowTrackName);
-      updateLabel(shouldShowTrackLabels);
+  const handleRadioChange = (value: OptionValue) => {
+    const shouldApplyToAll = value === 'all_tracks';
 
-      analyticsTracking.trackEvent({
-        category: 'track_settings',
-        label: selectedCog,
-        action: 'apply_to_all - ' + (applyToAll ? 'unselected' : 'selected')
-      });
-    },
-    [applyToAll, updateApplyToAll]
-  );
+    dispatch(updateApplyToAll(shouldApplyToAll));
+
+    updateName({
+      isTrackNameShown: shouldShowTrackName,
+      applyToAll: shouldApplyToAll
+    });
+    updateLabel({
+      isTrackLabelsShown: shouldShowTrackLabels,
+      applyToAll: shouldApplyToAll
+    });
+
+    analyticsTracking.trackEvent({
+      category: 'track_settings',
+      label: selectedCog,
+      action:
+        'apply_to_all - ' +
+        (applyToAllConfig.isSelected ? 'unselected' : 'selected')
+    });
+  };
 
   const radioOptions: RadioOptions = [
     {
@@ -174,7 +186,9 @@ export const BrowserTrackConfig = () => {
         <RadioGroup
           options={radioOptions}
           onChange={handleRadioChange}
-          selectedOption={applyToAll ? 'all_tracks' : 'this_track'}
+          selectedOption={
+            applyToAllConfig.isSelected ? 'all_tracks' : 'this_track'
+          }
         />
       </div>
       <div className={styles.section}>
