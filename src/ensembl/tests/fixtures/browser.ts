@@ -209,7 +209,11 @@ export const createMockBrowserState = () => {
         }
       },
       trackConfig: {
-        applyToAll: false,
+        applyToAllConfig: {
+          isSelected: false,
+          allTrackNamesOn: false,
+          allTrackLabelsOn: false
+        },
         browserCogList: 0,
         browserCogTrackList: createCogTrackList(),
         selectedCog: 'track:gc',

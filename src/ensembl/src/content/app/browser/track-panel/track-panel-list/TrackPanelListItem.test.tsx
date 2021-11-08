@@ -36,6 +36,7 @@ import { createMainTrackInfo } from 'tests/fixtures/track-panel';
 import * as drawerActions from '../../drawer/drawerActions';
 import * as browserActions from 'src/content/app/browser/browserActions';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
+import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { Status } from 'src/shared/types/status';
 import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
@@ -47,31 +48,8 @@ jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
 
 jest.mock('src/content/app/browser/browser-storage-service.ts'); // don't want to pollute localStorage
 
-const fakeGenomeId = 'human';
-
-const mockState = {
-  drawer: {
-    [fakeGenomeId]: {
-      isDrawerOpened: false,
-      activeDrawerView: DrawerView.BOOKMARKS,
-      activeDrawerTrackId: null
-    }
-  },
-  browser: {
-    browserEntity: {
-      activeGenomeId: fakeGenomeId,
-      activeEnsObjectIds: {
-        [fakeGenomeId]: faker.lorem.words()
-      }
-    },
-    trackPanel: {
-      [fakeGenomeId]: {
-        highlightedTrackId: faker.lorem.words(),
-        collapsedTrackIds: []
-      }
-    }
-  }
-};
+const mockState = createMockBrowserState();
+const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
 
 const mockStore = configureMockStore([thunk]);
 let store: ReturnType<typeof mockStore>;
@@ -110,7 +88,7 @@ describe('<TrackPanelListItem />', () => {
     describe('when clicked', () => {
       it('updates the active track id if the drawer is opened', () => {
         const { container } = renderComponent(
-          set(`drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
+          set(`drawer.${activeGenomeId}.isDrawerOpened`, true, mockState)
         );
 
         const track = container.querySelector('.track') as HTMLElement;
@@ -125,7 +103,7 @@ describe('<TrackPanelListItem />', () => {
               getType(drawerActions.setActiveDrawerTrackIdForGenome)
           );
         expect(drawerAction.payload).toMatchObject({
-          activeGenomeId: fakeGenomeId,
+          activeGenomeId: activeGenomeId,
           activeDrawerTrackId: defaultProps.track.track_id
         });
       });
@@ -166,7 +144,7 @@ describe('<TrackPanelListItem />', () => {
           (action) =>
             action.type === getType(trackPanelActions.updateTrackPanelForGenome)
         );
-      expect(collapseTrackAction.payload.activeGenomeId).toBe(fakeGenomeId);
+      expect(collapseTrackAction.payload.activeGenomeId).toBe(activeGenomeId);
       expect(collapseTrackAction.payload.data.collapsedTrackIds).toEqual([
         defaultProps.track.track_id
       ]);
@@ -186,7 +164,7 @@ describe('<TrackPanelListItem />', () => {
             action.type === getType(drawerActions.changeDrawerViewForGenome)
         );
       expect(drawerToggleAction.payload).toMatchObject({
-        activeGenomeId: fakeGenomeId,
+        activeGenomeId: activeGenomeId,
         activeDrawerView: DrawerView.TRACK_DETAILS
       });
     });
@@ -205,7 +183,7 @@ describe('<TrackPanelListItem />', () => {
           (action) => action.type === getType(browserActions.updateTrackStates)
         );
       const expectedPayload = {
-        [fakeGenomeId]: {
+        [activeGenomeId]: {
           commonTracks: {
             [defaultProps.categoryName]: {
               [defaultProps.track.track_id]: Status.UNSELECTED
