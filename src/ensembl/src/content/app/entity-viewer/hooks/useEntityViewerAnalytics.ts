@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import snakeCase from 'lodash/snakeCase';
 
@@ -34,6 +33,7 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
+import { AnalyticsOptions } from 'ensemblRoot/src/analyticsHelper';
 
 type TrackDownloadPayload = {
   category: string;
@@ -57,13 +57,16 @@ const useEntityViewerAnalytics = () => {
     ? parseEnsObjectId(activeEntityId).type
     : '';
 
-  useEffect(() => {
-    analyticsTracking.setSpeciesDimension(speciesNameForAnalytics);
-    analyticsTracking.setFeatureDimension(featureType);
-  }, []);
+  const sendTrackEvent = (ga: AnalyticsOptions) => {
+    analyticsTracking.trackEvent({
+      ...ga,
+      species: speciesNameForAnalytics,
+      feature: featureType
+    });
+  };
 
   const trackTabChange = (tabName: string) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'entity_viewer',
       label: tabName,
       action: 'change_tab'
@@ -71,7 +74,7 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackFiltersPanelOpen = () => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'gene_view_transcript_filters',
       action: 'opened'
     });
@@ -87,7 +90,7 @@ const useEntityViewerAnalytics = () => {
       return;
     }
 
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'gene_view_transcript_filters',
       action: 'filter_applied',
       label: appliedFilters
@@ -95,7 +98,7 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackAppliedSorting = (sortingRule: SortingRule) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'gene_view_transcript_filters',
       action: 'sort_applied',
       label: sortingRule
@@ -103,7 +106,7 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackExternalLinkClick = (category: string, label: string) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category,
       label,
       action: 'external_link_click'
@@ -123,7 +126,7 @@ const useEntityViewerAnalytics = () => {
     geneId: string;
     position: number;
   }) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'entity_viewer_sidebar_previously_viewed',
       action: 'link_clicked',
       label: `${params.geneSymbol}: ${params.geneId}`,
@@ -139,7 +142,7 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackExternalReferencesTabSelection = (tabName: string) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'entity_viewer_sidebar',
       action: 'change_tab',
       label: tabName
@@ -158,7 +161,7 @@ const useEntityViewerAnalytics = () => {
     const { tabName, linkLabel } = params;
     const categoryName = `entity_viewer_sidebar_${sidebarCategoryMap[tabName]}`;
 
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: categoryName,
       action: 'external_reference_clicked',
       label: linkLabel
@@ -172,7 +175,7 @@ const useEntityViewerAnalytics = () => {
     const label = transcriptQuality
       ? `${transcriptQuality} ${transcriptId}` // "MANE Plus Clinical ENST00000380152.8"
       : transcriptId;
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'gene_view_proteins_list',
       label,
       action: params.action,
@@ -187,7 +190,7 @@ const useEntityViewerAnalytics = () => {
       .filter(Boolean)
       .join(' ');
 
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'gene_view_transcript_list',
       label: transcriptLabel,
       action: params.action,
@@ -203,7 +206,7 @@ const useEntityViewerAnalytics = () => {
       .filter(Boolean)
       .join(' ');
 
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'gene_view_transcript_list',
       label: transcriptLabel,
       action: 'more_information'
@@ -223,7 +226,7 @@ const useEntityViewerAnalytics = () => {
         ? 'sequence_download'
         : 'sequence_download_failure';
 
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: params.category,
       action,
       label
@@ -256,7 +259,7 @@ const useEntityViewerAnalytics = () => {
     iconName: string,
     genomeId: string
   ) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'entity_viewer_sidebar_toolstrip',
       action: 'modal_opened',
       label: `${genomeId}: ${iconName}`
@@ -264,7 +267,7 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackSearchSubmission = (value: string) => {
-    analyticsTracking.trackEvent({
+    sendTrackEvent({
       category: 'entity_viewer_sidebar_search',
       action: 'submit_search',
       label: value
