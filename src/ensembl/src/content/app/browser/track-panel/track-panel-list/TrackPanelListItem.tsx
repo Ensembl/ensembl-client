@@ -194,7 +194,14 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
         })
       );
     }
-  }, [trackStatus, activeGenomeId, activeEnsObjectId, track.track_id]);
+  }, [
+    trackStatus,
+    activeGenomeId,
+    activeEnsObjectId,
+    track.track_id,
+    allTrackLabelsOn,
+    allTrackNamesOn
+  ]);
 
   useEffect(() => {
     updateGenomeBrowser(trackStatus);
@@ -219,7 +226,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
     };
     genomeBrowser?.send(action);
 
-    if (allTrackLabelsOn) {
+    if (allTrackLabelsOn && isTurnedOn) {
       genomeBrowser?.send({
         type: OutgoingActionType.TURN_ON_LABELS,
         payload: {
@@ -228,7 +235,7 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
       });
     }
 
-    if (allTrackNamesOn) {
+    if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
         type: OutgoingActionType.TURN_ON_NAMES,
         payload: {
