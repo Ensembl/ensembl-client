@@ -36,10 +36,10 @@ import blogIconUrl from 'static/img/home/blog.svg';
 import styles from './Home.scss';
 
 const Home = () => {
-  const { trackButtonsOnScreen } = useHomeAnalytics();
+  const { trackHomePageEntryButtons } = useHomeAnalytics();
 
   const handleButtonClick = (label: string) => {
-    trackButtonsOnScreen(label);
+    trackHomePageEntryButtons(label);
   };
 
   return (

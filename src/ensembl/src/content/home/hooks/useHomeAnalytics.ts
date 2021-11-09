@@ -17,7 +17,7 @@
 import analyticsTracking from 'src/services/analytics-service';
 
 const useHomeAnalytics = () => {
-  const trackButtonsOnScreen = (buttonText: string) => {
+  const trackHomePageEntryButtons = (buttonText: string) => {
     analyticsTracking.trackEvent({
       category: 'homepage-action-button',
       action: 'clicked',
@@ -26,7 +26,7 @@ const useHomeAnalytics = () => {
   };
 
   return {
-    trackButtonsOnScreen
+    trackHomePageEntryButtons
   };
 };
 
