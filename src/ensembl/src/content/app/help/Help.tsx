@@ -28,8 +28,12 @@ import {
   HelpArticleGrid,
   VideoArticle
 } from 'src/shared/components/help-article';
+import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
-import { Menu as MenuType } from 'src/shared/types/help-and-docs/menu';
+import {
+  Menu as MenuType,
+  MenuItem
+} from 'src/shared/types/help-and-docs/menu';
 import {
   TextArticleData,
   VideoArticleData
@@ -49,12 +53,23 @@ const Help = () => {
     endpoint: `/api/docs/article?url=${encodeURIComponent(location.pathname)}`,
     skip: isIndexPage
   });
+
+  let breadcrumbs: string[] = [];
+  if (menu) {
+    breadcrumbs = buildBreadcrumbs(menu, { url: location.pathname });
+  }
+
   const main = isIndexPage ? (
     <main className={styles.main}>
-      <HelpLanding />
+      <div className={styles.breadcrumbsContainer}>
+        <Breadcrumbs breadcrumbs={breadcrumbs} />
+      </div>
+      <div className={styles.articleContainer}>
+        <HelpLanding />
+      </div>
     </main>
   ) : article ? (
-    <MainContent article={article} />
+    <MainContent article={article} breadcrumbs={breadcrumbs} />
   ) : null;
 
   return (
@@ -77,8 +92,11 @@ const AppBar = () => {
   );
 };
 
-const MainContent = (props: { article: ArticleData }) => {
-  const { article } = props;
+const MainContent = (props: {
+  article: ArticleData;
+  breadcrumbs: string[];
+}) => {
+  const { article, breadcrumbs } = props;
   if (article.type !== 'article' && article.type !== 'video') {
     return null;
   }
@@ -90,18 +108,60 @@ const MainContent = (props: { article: ArticleData }) => {
     );
 
   const content = (
-    <HelpArticleGrid className={styles.articleGrid}>
-      {renderedArticle}
-      {!!article.related_articles.length && (
-        <RelatedArticles articles={article.related_articles} />
-      )}
-    </HelpArticleGrid>
+    <>
+      <div className={styles.breadcrumbsContainer}>
+        <Breadcrumbs breadcrumbs={breadcrumbs} />
+      </div>
+      <div className={styles.articleContainer}>
+        <HelpArticleGrid className={styles.articleGrid}>
+          {renderedArticle}
+          {!!article.related_articles.length && (
+            <RelatedArticles articles={article.related_articles} />
+          )}
+        </HelpArticleGrid>
+      </div>
+    </>
   );
 
   return <main className={styles.main}>{content}</main>;
 };
 
-const isIndexRoute = (pathname: string) => {
+export const buildBreadcrumbs = (menu: MenuType, article: { url: string }) => {
+  for (const rootMenuItem of menu.items) {
+    const breadcrumbs = collectBreadcrumbs(rootMenuItem, article.url, []);
+    if (breadcrumbs) {
+      return breadcrumbs;
+    }
+  }
+
+  return [];
+};
+
+// use depth-first search to traverse the menu tree
+const collectBreadcrumbs = (
+  menuItem: MenuItem,
+  url: string,
+  accumulator: string[]
+): string[] | null => {
+  accumulator = [...accumulator, menuItem.name];
+
+  if (menuItem.url === url) {
+    return accumulator;
+  } else {
+    if (menuItem.type === 'collection' && menuItem.items) {
+      for (const childItem of menuItem.items) {
+        const searchResult = collectBreadcrumbs(childItem, url, accumulator);
+        if (searchResult) {
+          return searchResult;
+        }
+      }
+    }
+  }
+
+  return null;
+};
+
+export const isIndexRoute = (pathname: string) => {
   // handle both /help and /help/
   return pathname.replaceAll('/', '') === 'help';
 };
