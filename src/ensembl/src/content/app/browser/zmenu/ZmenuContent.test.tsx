@@ -152,7 +152,9 @@ describe('<ZmenuContent />', () => {
 
       userEvent.click(container.firstChild as HTMLDivElement);
 
-      expect(mockChangeFocusObjectFromZmenu).toHaveBeenCalledTimes(1);
+      expect(mockChangeFocusObjectFromZmenu).toHaveBeenCalledWith(
+        defaultZmenuContentItemProps.featureId
+      );
     });
   });
 });

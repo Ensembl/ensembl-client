@@ -79,7 +79,7 @@ const useBrowserRouting = () => {
     if (!genomeId) {
       // handling navigation to /browser
       // select either the species that the user viewed during the previous visit,
-      // of the first selected species
+      // or the first selected species
       const selectedSpecies = committedSpecies.find(
         ({ genome_id }) => genome_id === activeGenomeId
       );
