@@ -148,7 +148,7 @@ const GeneExternalReferences = () => {
   const { transcripts } = data.gene;
   const sortedTranscripts = defaultSort(transcripts);
 
-  const externalReferenceClickHandler = (linkLabel: string) => {
+  const clickHandler = (linkLabel: string) => {
     trackExternalReferenceLinkClick({
       tabName: SidebarTabName.EXTERNAL_REFERENCES,
       linkLabel
@@ -169,7 +169,7 @@ const GeneExternalReferences = () => {
           <div className={styles.sectionContent}>
             {renderExternalReferencesGroups(
               externalReferencesGroups,
-              externalReferenceClickHandler
+              clickHandler
             )}
           </div>
         )}
@@ -183,9 +183,7 @@ const GeneExternalReferences = () => {
                 <div key={key}>
                   <TranscriptExternalReferencesGroups
                     transcript={transcript}
-                    externalReferenceClickHandler={
-                      externalReferenceClickHandler
-                    }
+                    onClick={clickHandler}
                   />
                 </div>
               );
@@ -199,7 +197,7 @@ const GeneExternalReferences = () => {
 
 const TranscriptExternalReferencesGroups = (props: {
   transcript: Transcript;
-  externalReferenceClickHandler: (linkLabel: string) => void;
+  onClick: (linkLabel: string) => void;
 }) => {
   const { transcript } = props;
   const unsortedExternalReferences = [...transcript.external_references];
@@ -236,7 +234,7 @@ const TranscriptExternalReferencesGroups = (props: {
         <div className={styles.listContainer}>
           {renderExternalReferencesGroups(
             externalReferencesGroups,
-            props.externalReferenceClickHandler
+            props.onClick
           )}
         </div>
       )}
@@ -332,7 +330,7 @@ const renderExternalReferencesGroups = (
   externalReferencesGroups: {
     [key: string]: ExternalReferencesGroupType;
   },
-  externalReferenceClickHandler: (linkLabel: string) => void
+  onClick: (linkLabel: string) => void
 ) => {
   return Object.values(externalReferencesGroups).map(
     (externalReferencesGroup, key) => (
@@ -342,9 +340,7 @@ const renderExternalReferencesGroups = (
             label={externalReferencesGroup.source.name}
             to={externalReferencesGroup.references[0].url}
             linkText={externalReferencesGroup.references[0].accession_id}
-            onClick={() =>
-              externalReferenceClickHandler(externalReferencesGroup.source.name)
-            }
+            onClick={() => onClick(externalReferencesGroup.source.name)}
             classNames={{
               container: styles.externalReferenceContainer,
               link: styles.externalReferenceLink
