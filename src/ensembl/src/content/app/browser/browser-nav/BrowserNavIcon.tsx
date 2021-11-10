@@ -23,6 +23,7 @@ import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { browserNavIconActionMap } from 'src/content/app/browser/browserState';
+
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
 

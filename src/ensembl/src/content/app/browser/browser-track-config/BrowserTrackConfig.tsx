@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { OutgoingActionType } from 'ensembl-genome-browser';
 
 import {
   updateTrackConfigNames,
@@ -42,7 +43,6 @@ import RadioGroup, {
   OptionValue,
   RadioOptions
 } from 'src/shared/components/radio-group/RadioGroup';
-import { OutgoingActionType } from 'ensembl-genome-browser';
 
 import styles from './BrowserTrackConfig.scss';
 

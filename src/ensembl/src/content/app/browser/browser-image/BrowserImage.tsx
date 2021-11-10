@@ -17,7 +17,6 @@
 import React, { useRef, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
-
 import {
   BrowserCurrentLocationUpdateAction,
   BrowserTargetLocationUpdateAction,
@@ -38,6 +37,7 @@ import {
 } from '../browserSelectors';
 
 import { setChrLocation, setActualChrLocation } from '../browserActions';
+
 import { ChrLocation } from 'ensemblRoot/src/content/app/browser/browserState';
 
 import { BROWSER_CONTAINER_ID } from '../browser-constants';

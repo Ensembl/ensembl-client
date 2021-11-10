@@ -16,8 +16,7 @@
 
 import React, { useEffect, ReactNode, memo } from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
-import { connect } from 'react-redux';
-
+import { useDispatch } from 'react-redux';
 import routes from 'src/routes/routesConfig';
 
 import { changeCurrentApp } from 'src/header/headerActions';
@@ -25,20 +24,17 @@ import { changeCurrentApp } from 'src/header/headerActions';
 import Header from 'src/header/Header';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';
 
-type AppProps = {
-  changeCurrentApp: (name: string) => void;
-};
-
-const AppContainer = (props: AppProps) => {
+const AppContainer = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
 
   useEffect(() => {
     const appName: string = location.pathname.split('/').filter(Boolean)[0];
 
-    props.changeCurrentApp(appName);
+    dispatch(changeCurrentApp(appName));
 
     return function unsetApp() {
-      props.changeCurrentApp('');
+      dispatch(changeCurrentApp(''));
     };
   }, [location.pathname]);
 
@@ -85,8 +81,4 @@ const NotFound = () => {
   );
 };
 
-const mapDispatchToProps = {
-  changeCurrentApp
-};
-
-export default connect(null, mapDispatchToProps)(AppContainer);
+export default AppContainer;

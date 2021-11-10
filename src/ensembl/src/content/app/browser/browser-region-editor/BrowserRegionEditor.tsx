@@ -212,14 +212,18 @@ export const BrowserRegionEditor = () => {
     [styles.submitButtonVisible]: shouldShowSubmitButton
   });
 
+  const stopPropagation = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    e.stopPropagation();
+  };
+
   return (
     <div className={styles.browserRegionEditor}>
       <form
         onSubmit={handleSubmit}
         onFocus={handleFocus}
-        onKeyUp={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        onKeyPress={(e) => e.stopPropagation()}
+        onKeyUp={stopPropagation}
+        onKeyDown={stopPropagation}
+        onKeyPress={stopPropagation}
       >
         <div className={styles.inputGroup} ref={stickRef}>
           <label>Chr</label>
