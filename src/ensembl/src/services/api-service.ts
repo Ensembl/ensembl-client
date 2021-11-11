@@ -116,8 +116,8 @@ class ApiService {
       }
       return processedResponse;
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        throw error;
+      if ((error as JSONValue).name !== 'AbortError') {
+        throw error as JSONValue;
       }
     }
   }

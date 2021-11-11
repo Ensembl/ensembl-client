@@ -63,6 +63,7 @@
     "react-spring": "9.2.4",
     "redux": "4.1.0",
     "redux-observable": "2.0.0-rc.1",
+    "redux-thunk": "2.4.0",
     "rxjs": "7.2.0",
     "typesafe-actions": "5.1.0",
     "what-input": "5.2.10"
@@ -158,16 +159,17 @@
     "stylelint-config-recommended-scss": "4.3.0",
     "stylelint-scss": "3.20.1",
     "stylelint-webpack-plugin": "3.0.1",
+    "terser-webpack-plugin": "5.2.5",
     "ts-multipick": "1.0.0",
     "ts-node": "10.1.0",
-    "typescript": "4.3.5",
-    "webpack": "5.46.0",
+    "typescript": "4.4.4",
+    "webpack": "5.63.0",
     "webpack-bundle-analyzer": "4.4.2",
-    "webpack-cli": "4.7.2",
-    "webpack-dev-server": "4.0.0-beta.2",
+    "webpack-cli": "4.9.1",
+    "webpack-dev-server": "4.4.0",
     "webpack-merge": "5.8.0",
     "webpack-node-externals": "3.0.0",
-    "workbox-webpack-plugin": "6.1.5"
+    "workbox-webpack-plugin": "6.3.0"
   },
   "browserslist": [
     "> 1% and last 2 versions",

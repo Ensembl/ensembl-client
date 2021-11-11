@@ -74,7 +74,7 @@ export const fetchGenomeInfo: ActionCreator<
       })
     );
   } catch (error) {
-    dispatch(fetchGenomeInfoAsyncActions.failure(error));
+    dispatch(fetchGenomeInfoAsyncActions.failure(error as Error));
   }
 };
 
@@ -111,7 +111,7 @@ export const fetchGenomeTrackCategories: ActionCreator<
       )
     );
   } catch (error) {
-    dispatch(fetchGenomeTrackCategoriesAsyncActions.failure(error));
+    dispatch(fetchGenomeTrackCategoriesAsyncActions.failure(error as Error));
   }
 };
 
@@ -144,6 +144,6 @@ export const fetchGenomeKaryotype: ActionCreator<
       })
     );
   } catch (error) {
-    dispatch(fetchGenomeKaryotypeAsyncActions.failure(error));
+    dispatch(fetchGenomeKaryotypeAsyncActions.failure(error as Error));
   }
 };

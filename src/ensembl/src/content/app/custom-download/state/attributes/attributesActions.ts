@@ -44,12 +44,9 @@ export const setAttributes = createAsyncAction(
   'custom-download/set-attributes-failure'
 )<undefined, Attributes, Error>();
 
-export const fetchAttributes: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (dispatch, getState: () => RootState) => {
+export const fetchAttributes: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -72,19 +69,13 @@ export const fetchAttributes: ActionCreator<ThunkAction<
       })
     );
   } catch (error) {
-    dispatch(setAttributes.failure(error));
+    dispatch(setAttributes.failure(error as Error));
   }
 };
 
-export const updateSelectedAttributes: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (selectedAttributes: JSONValue) => (
-  dispatch,
-  getState: () => RootState
-) => {
+export const updateSelectedAttributes: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (selectedAttributes: JSONValue) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -103,12 +94,9 @@ export const updateSelectedAttributes: ActionCreator<ThunkAction<
   );
 };
 
-export const resetSelectedAttributes: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = () => (dispatch, getState: () => RootState) => {
+export const resetSelectedAttributes: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = () => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -127,12 +115,9 @@ export const resetSelectedAttributes: ActionCreator<ThunkAction<
   );
 };
 
-export const updateUi: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (attributesUi: JSONValue) => (dispatch, getState: () => RootState) => {
+export const updateUi: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (attributesUi: JSONValue) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -151,39 +136,32 @@ export const updateUi: ActionCreator<ThunkAction<
   );
 };
 
-export const setOrthologueAttributes: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (orthologues: { [key: string]: AttributeWithOptions }) => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+export const setOrthologueAttributes: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> =
+  (orthologues: { [key: string]: AttributeWithOptions }) =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
-  if (!activeGenomeId) {
-    return;
-  }
+    if (!activeGenomeId) {
+      return;
+    }
 
-  dispatch(
-    updateActiveConfigurationForGenome({
-      activeGenomeId,
-      data: set(
-        'attributes.content.orthologueAttributes.orthologues',
-        orthologues,
-        getCustomDownloadActiveGenomeConfiguration(getState())
-      )
-    })
-  );
-};
+    dispatch(
+      updateActiveConfigurationForGenome({
+        activeGenomeId,
+        data: set(
+          'attributes.content.orthologueAttributes.orthologues',
+          orthologues,
+          getCustomDownloadActiveGenomeConfiguration(getState())
+        )
+      })
+    );
+  };
 
-export const setOrthologueShowBestMatches: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (showBestMatches: boolean) => (dispatch, getState: () => RootState) => {
+export const setOrthologueShowBestMatches: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showBestMatches: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -202,12 +180,9 @@ export const setOrthologueShowBestMatches: ActionCreator<ThunkAction<
   );
 };
 
-export const setOrthologueShowAll: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (showAll: boolean) => (dispatch, getState: () => RootState) => {
+export const setOrthologueShowAll: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (showAll: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -226,12 +201,9 @@ export const setOrthologueShowAll: ActionCreator<ThunkAction<
   );
 };
 
-export const setOrthologueApplyToAllSpecies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (applyToAllSpecies: boolean) => (dispatch, getState: () => RootState) => {
+export const setOrthologueApplyToAllSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (applyToAllSpecies: boolean) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -250,12 +222,9 @@ export const setOrthologueApplyToAllSpecies: ActionCreator<ThunkAction<
   );
 };
 
-export const setOrthologueSearchTerm: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (searchTerm: string) => (dispatch, getState: () => RootState) => {
+export const setOrthologueSearchTerm: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (searchTerm: string) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
@@ -280,104 +249,94 @@ export const setOrthologueSpecies = createAsyncAction(
   'custom-download/set-orthologue-species-failure'
 )<{ searchTerm: string }, void, Error>();
 
-export const updateOrthologueSpecies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (orthologueSpecies: CheckboxGridOption[]) => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+export const updateOrthologueSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> =
+  (orthologueSpecies: CheckboxGridOption[]) =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
-  if (!activeGenomeId) {
-    return;
-  }
+    if (!activeGenomeId) {
+      return;
+    }
 
-  dispatch(
-    updateActiveConfigurationForGenome({
-      activeGenomeId,
-      data: set(
-        'attributes.content.orthologue.species',
-        orthologueSpecies,
-        getCustomDownloadActiveGenomeConfiguration(getState())
-      )
-    })
-  );
-};
-
-export const fetchOrthologueSpecies: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) => (
-  dispatch,
-  getState: () => RootState
-) => {
-  const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
-
-  if (!activeGenomeId) {
-    return;
-  }
-
-  dispatch(setOrthologueSpecies.request({ searchTerm: searchTerm }));
-  try {
-    // This will be fetched from the API when we have one
-    const allSpecies = sampleOrthologueSpecies.species as Species[];
-
-    const filteredSpecies: CheckboxGridOption[] = orthologueSpecies.filter(
-      (species: CheckboxGridOption) => {
-        return species.isChecked;
-      }
-    );
-
-    allSpecies.forEach((species: Species) => {
-      if (
-        searchTerm &&
-        species.display_name.toLowerCase().indexOf(searchTerm.toLowerCase()) !==
-          -1
-      ) {
-        const speciesIndex = findIndex(
-          filteredSpecies,
-          (entry: CheckboxGridOption) => {
-            return species.name === entry.id;
-          }
-        );
-
-        if (speciesIndex === -1) {
-          filteredSpecies.push({
-            id: species.name,
-            label: species.display_name,
-            isChecked: false
-          });
-        }
-      }
-    });
-
-    dispatch(setOrthologueSpecies.success());
     dispatch(
       updateActiveConfigurationForGenome({
         activeGenomeId,
         data: set(
           'attributes.content.orthologue.species',
-          filteredSpecies,
+          orthologueSpecies,
           getCustomDownloadActiveGenomeConfiguration(getState())
         )
       })
     );
-  } catch (error) {
-    dispatch(setOrthologueSpecies.failure(error));
-  }
-};
+  };
 
-export const setAttributesAccordionExpandedPanel: ActionCreator<ThunkAction<
-  void,
-  any,
-  null,
-  Action<string>
->> = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
+export const fetchOrthologueSpecies: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> =
+  (searchTerm: string, orthologueSpecies: CheckboxGridOption[]) =>
+  (dispatch, getState: () => RootState) => {
+    const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
+
+    if (!activeGenomeId) {
+      return;
+    }
+
+    dispatch(setOrthologueSpecies.request({ searchTerm: searchTerm }));
+    try {
+      // This will be fetched from the API when we have one
+      const allSpecies = sampleOrthologueSpecies.species as Species[];
+
+      const filteredSpecies: CheckboxGridOption[] = orthologueSpecies.filter(
+        (species: CheckboxGridOption) => {
+          return species.isChecked;
+        }
+      );
+
+      allSpecies.forEach((species: Species) => {
+        if (
+          searchTerm &&
+          species.display_name
+            .toLowerCase()
+            .indexOf(searchTerm.toLowerCase()) !== -1
+        ) {
+          const speciesIndex = findIndex(
+            filteredSpecies,
+            (entry: CheckboxGridOption) => {
+              return species.name === entry.id;
+            }
+          );
+
+          if (speciesIndex === -1) {
+            filteredSpecies.push({
+              id: species.name,
+              label: species.display_name,
+              isChecked: false
+            });
+          }
+        }
+      });
+
+      dispatch(setOrthologueSpecies.success());
+      dispatch(
+        updateActiveConfigurationForGenome({
+          activeGenomeId,
+          data: set(
+            'attributes.content.orthologue.species',
+            filteredSpecies,
+            getCustomDownloadActiveGenomeConfiguration(getState())
+          )
+        })
+      );
+    } catch (error) {
+      dispatch(setOrthologueSpecies.failure(error as Error));
+    }
+  };
+
+export const setAttributesAccordionExpandedPanel: ActionCreator<
+  ThunkAction<void, any, null, Action<string>>
+> = (expandedPanels: string[]) => (dispatch, getState: () => RootState) => {
   const activeGenomeId = getCustomDownloadActiveGenomeId(getState());
 
   if (!activeGenomeId) {
