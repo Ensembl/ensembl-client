@@ -51,6 +51,7 @@
     "http-proxy-middleware": "2.0.1",
     "idb": "6.1.2",
     "lodash": "4.17.21",
+    "morgan": "1.10.0",
     "query-string": "7.0.1",
     "react": "17.0.2",
     "react-cookie": "4.0.3",
@@ -66,7 +67,8 @@
     "redux-thunk": "2.4.0",
     "rxjs": "7.2.0",
     "typesafe-actions": "5.1.0",
-    "what-input": "5.2.10"
+    "what-input": "5.2.10",
+    "winston": "3.3.3"
   },
   "devDependencies": {
     "@babel/core": "7.14.8",
@@ -98,6 +100,7 @@
     "@types/loadable__webpack-plugin": "5.7.3",
     "@types/lodash": "4.14.171",
     "@types/mini-css-extract-plugin": "2.0.1",
+    "@types/morgan": "1.9.3",
     "@types/node": "16.4.1",
     "@types/prettier": "2.3.2",
     "@types/react": "17.0.15",
