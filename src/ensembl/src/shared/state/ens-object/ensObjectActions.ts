@@ -96,7 +96,7 @@ export const fetchEnsObject =
         })
       );
     } catch (error) {
-      dispatch(fetchEnsObjectAsyncActions.failure(error));
+      dispatch(fetchEnsObjectAsyncActions.failure(error as Error));
     }
   };
 

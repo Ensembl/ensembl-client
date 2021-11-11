@@ -1,5 +1,5 @@
 # PRODUCTION IMAGE
-FROM node:14.17.0-alpine
+FROM node:16.13.0-alpine
 
 RUN apk add --no-cache git
 
@@ -9,7 +9,7 @@ ENV NODE_ENV=production
 COPY src/ensembl/package*.json ./
 COPY src/ensembl/dist ./dist/
 
-RUN npm ci --only=production
+RUN npm ci --only=production --ignore-scripts
 
 EXPOSE 8080
 CMD [ "node", "dist/server/server.js" ]

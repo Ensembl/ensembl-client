@@ -26,10 +26,12 @@ const leftSide = [Position.LEFT_TOP, Position.LEFT_BOTTOM];
 
 const rightSide = [Position.RIGHT_TOP, Position.RIGHT_BOTTOM];
 
+type SimpleDOMRect = Omit<DOMRect, 'toJSON'>;
+
 type FindOptimalPositionParams = {
-  pointerBoxBoundingRect: ClientRect;
-  rootBoundingRect: ClientRect;
-  anchorBoundingRect: ClientRect;
+  pointerBoxBoundingRect: SimpleDOMRect;
+  rootBoundingRect: SimpleDOMRect;
+  anchorBoundingRect: SimpleDOMRect;
   position: Position;
   pointerWidth: number;
   pointerHeight: number;
@@ -163,8 +165,8 @@ const getTooltipOutOfBoundsArea = (
 };
 
 const calculateOverflowArea = (params: {
-  tooltip: ClientRect;
-  root: ClientRect;
+  tooltip: Omit<SimpleDOMRect, 'x' | 'y'>;
+  root: SimpleDOMRect;
 }) => {
   const {
     tooltip: {

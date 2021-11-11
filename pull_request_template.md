@@ -24,7 +24,7 @@ _Using one or more sentences, describe the proposed changes and the reason for m
 
 ## Deployment URL
 <!--
-If applicable, follow instructions here: https://www.ebi.ac.uk/seqdb/confluence/display/ENSWEB/Review+Apps+for+feature+branches on how to deploy.
+If applicable, follow instructions here: https://www.ebi.ac.uk/seqdb/confluence/display/ENSWEB/Setting+Up+Review+Apps  on how to deploy.
 -->
 
 ## Views affected
