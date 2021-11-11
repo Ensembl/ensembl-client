@@ -109,9 +109,6 @@ const InAppSearch = (props: Props) => {
             onSubmit={onSearchSubmit}
             className={styles.searchField}
             rightCorner={rightCorner}
-            onKeyUp={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-            onKeyPress={(e) => e.stopPropagation()}
           />
         </div>
         <PrimaryButton

@@ -162,19 +162,9 @@ export const BrowserRegionField = () => {
     }
   );
 
-  const stopPropagation = (e: React.KeyboardEvent<HTMLFormElement>) => {
-    e.stopPropagation();
-  };
-
   return (
     <div className={regionFieldClassNames}>
-      <form
-        onSubmit={handleSubmit}
-        onFocus={handleFocus}
-        onKeyUp={stopPropagation}
-        onKeyDown={stopPropagation}
-        onKeyPress={stopPropagation}
-      >
+      <form onSubmit={handleSubmit} onFocus={handleFocus}>
         <span ref={inputGroupRef}>
           <label htmlFor="region-field-input-btn">Region or location</label>
           <Input

@@ -86,60 +86,36 @@ describe('<ZmenuContent />', () => {
   describe('rendering', () => {
     it('renders the correct zmenu content information', () => {
       const { container } = renderZmenuContent();
-      const zmenuContent = defaultZmenuContentProps.content;
+      const zmenuContentLine = defaultZmenuContentProps.content[0].data[0];
 
-      const renderedContentFeatures = container.querySelectorAll(
-        '.zmenuContentFeature'
-      );
-
-      expect(renderedContentFeatures.length).toBe(zmenuContent.length);
-
-      const renderedContentBlocks =
-        container.querySelectorAll('.zmenuContentBlock');
-
-      const expectedData: { blockText: string[]; totalBlocks: number } = {
-        blockText: [],
-        totalBlocks: 0
-      };
-
-      defaultZmenuContentProps.content.forEach((feature) => {
-        expectedData.totalBlocks += feature.data.filter(
-          (line) => line.type === 'block'
-        ).length;
-      });
+      const renderedContentBlocks = container
+        .querySelectorAll('.zmenuContentLine')[0]
+        .querySelectorAll('.zmenuContentBlock');
 
       // check that the number of blocks of text is correct
-      expect(renderedContentBlocks.length).toBe(expectedData.totalBlocks);
+      expect(renderedContentBlocks.length).toBe(zmenuContentLine.length);
 
-      zmenuContent.forEach((feature) => {
-        feature.data.forEach((block) => {
-          if (block.type === 'block') {
-            const blockText = block.items.reduce(
-              (acc, { text }) => acc + text,
-              ''
-            );
+      // check that the text from each block of text has been rendered
+      zmenuContentLine.forEach((block, index) => {
+        const blockText = block.items.reduce((acc, { text }) => acc + text, '');
+        expect(renderedContentBlocks[index].textContent).toBe(blockText);
+      });
 
-            const blockIndex = expectedData.blockText.push(blockText) - 1;
-            expect(renderedContentBlocks[blockIndex].textContent).toBe(
-              blockText
-            );
-
-            block.items.forEach((item, index) => {
-              const renderedElement =
-                renderedContentBlocks[blockIndex].querySelectorAll('span')[
-                  index
-                ];
-              if (item.markup.includes(Markup.LIGHT)) {
-                expect(
-                  renderedElement.classList.contains('markupLight')
-                ).toBeTruthy();
-              }
-              if (item.markup.includes(Markup.STRONG)) {
-                expect(
-                  renderedElement.classList.contains('markupStrong')
-                ).toBeTruthy();
-              }
-            });
+      zmenuContentLine.forEach((block, blockIndex) => {
+        block.items.forEach((blockItem, blockItemIndex) => {
+          const renderedElement =
+            renderedContentBlocks[blockIndex].querySelectorAll('span')[
+              blockItemIndex
+            ];
+          if (blockItem.markup.includes(Markup.LIGHT)) {
+            expect(
+              renderedElement.classList.contains('markupLight')
+            ).toBeTruthy();
+          }
+          if (blockItem.markup.includes(Markup.STRONG)) {
+            expect(
+              renderedElement.classList.contains('markupStrong')
+            ).toBeTruthy();
           }
         });
       });

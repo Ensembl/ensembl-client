@@ -25,6 +25,7 @@ import Zmenu, { ZmenuProps } from './Zmenu';
 import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { createZmenuContent } from 'tests/fixtures/browser';
+
 import { ZmenuContentFeature } from 'ensembl-genome-browser';
 
 const mockGenomeBrowser = new MockGenomeBrowser();

@@ -74,21 +74,20 @@ export const createTrackConfigNames = () => ({
 export const createZmenuContent = (): ZmenuContentFeature[] => [
   {
     data: [
-      {
-        items: [
-          { markup: [Markup.LIGHT], text: 'Transcript' },
-          { markup: [], text: ' ' },
-          { markup: [], text: 'transcript_id' }
-        ],
-        type: 'block'
-      },
-      {
-        type: 'line-break'
-      },
-      {
-        items: [{ markup: [Markup.LIGHT, Markup.FOCUS], text: 'foo' }],
-        type: 'block'
-      }
+      [
+        {
+          items: [
+            { markup: [Markup.LIGHT], text: 'Transcript' },
+            { markup: [], text: ' ' },
+            { markup: [], text: 'transcript_id' }
+          ],
+          type: 'block'
+        },
+        {
+          items: [{ markup: [Markup.LIGHT, Markup.FOCUS], text: 'foo' }],
+          type: 'block'
+        }
+      ]
     ],
     metadata: {
       transcript_id: 'transcript_id',
@@ -102,14 +101,16 @@ export const createZmenuContent = (): ZmenuContentFeature[] => [
 
   {
     data: [
-      {
-        items: [
-          { markup: [Markup.LIGHT], text: 'Gene' },
-          { markup: [], text: ' ' },
-          { markup: [], text: 'gene_id' }
-        ],
-        type: 'block'
-      }
+      [
+        {
+          items: [
+            { markup: [Markup.LIGHT], text: 'Gene' },
+            { markup: [], text: ' ' },
+            { markup: [], text: 'gene_id' }
+          ],
+          type: 'block'
+        }
+      ]
     ],
     metadata: {
       id: 'gene_id',

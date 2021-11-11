@@ -25,7 +25,6 @@ import {
   ZmenuContentGeneMetadata,
   ZmenuContentFeature as ZmenuContentFeatureType,
   ZmenuContentItem as ZmenuContentItemType,
-  ZmenuContentBlock as ZmenuContentBlockType,
   Markup
 } from 'ensembl-genome-browser';
 
@@ -67,18 +66,7 @@ type ZmenuContentFeatureProps = {
   destroyZmenu: () => void;
 };
 export const ZmenuContentFeature = (props: ZmenuContentFeatureProps) => {
-  const lines = props.feature.data.reduce(
-    (lines, block) => {
-      if (block.type === 'line-break') {
-        lines.push([]);
-      } else {
-        const lastLine = lines[lines.length - 1];
-        lastLine.push(block);
-      }
-      return lines;
-    },
-    [[]] as ZmenuContentBlockType[][]
-  );
+  const lines = props.feature.data;
 
   return (
     <>
