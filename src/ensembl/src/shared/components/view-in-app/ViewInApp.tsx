@@ -97,7 +97,9 @@ const createClickHandler = (params: ViewInAppProps & { appName: AppName }) => {
     clickHandlers.push(() => onAppClickFn());
   }
 
-  return clickHandlers ? () => clickHandlers.forEach((fn) => fn()) : undefined;
+  return clickHandlers.length
+    ? () => clickHandlers.forEach((fn) => fn())
+    : undefined;
 };
 
 type AppButtonProps = {

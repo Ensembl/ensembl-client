@@ -122,14 +122,13 @@ const useEntityViewerAnalytics = () => {
   };
 
   const trackPreviouslyViewedLinkClick = (params: {
-    geneSymbol: string;
-    geneId: string;
+    linkLabel: string;
     position: number;
   }) => {
     sendTrackEvent({
       category: 'entity_viewer_sidebar_previously_viewed',
       action: 'link_clicked',
-      label: `${params.geneSymbol}: ${params.geneId}`,
+      label: params.linkLabel,
       value: params.position
     });
   };

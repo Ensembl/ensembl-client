@@ -44,17 +44,10 @@ type PreviouslyViewedLinksProps = {
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
   const { trackPreviouslyViewedLinkClick } = useEntityViewerAnalytics();
 
-  const handleClick = (
-    entity: {
-      entity_id: string;
-      label: string | string[];
-    },
-    index: number
-  ) => {
-    const { entity_id, label } = entity;
+  const handleClick = (linkLabel: string | string[], index: number) => {
     trackPreviouslyViewedLinkClick({
-      geneId: entity_id,
-      geneSymbol: typeof label === 'string' ? label : label[0],
+      linkLabel:
+        typeof linkLabel === 'string' ? linkLabel : linkLabel.join(' '),
       position: index + 1
     });
   };
@@ -74,7 +67,7 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
           <div key={index} className={styles.linkHolder}>
             <Link
               to={path}
-              onClick={() => handleClick(previouslyViewedEntity, index)}
+              onClick={() => handleClick(previouslyViewedEntity.label, index)}
             >
               <TextLine
                 text={previouslyViewedEntity.label}
