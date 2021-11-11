@@ -36,9 +36,7 @@ jest.mock('../publications/GenePublications', () => () => (
 
 jest.mock(
   'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
-  () => () => ({
-    trackXrefLinkClick: jest.fn()
-  })
+  () => () => ({})
 );
 
 const genomeId = 'genome_id';
