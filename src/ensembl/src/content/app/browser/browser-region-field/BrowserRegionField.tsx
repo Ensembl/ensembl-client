@@ -96,15 +96,13 @@ export const BrowserRegionField = () => {
         getRegionInputWithStick(regionFieldInput)
       );
 
-      dispatch(
-        changeBrowserLocation({
-          genomeId: activeGenomeId as string,
-          ensObjectId: null,
-          chrLocation: newChrLocation
-        })
-      );
+      changeBrowserLocation({
+        genomeId: activeGenomeId as string,
+        ensObjectId: null,
+        chrLocation: newChrLocation
+      });
     } else {
-      dispatch(changeFocusObject(regionId));
+      changeFocusObject(regionId);
     }
 
     analyticsTracking.trackEvent({
