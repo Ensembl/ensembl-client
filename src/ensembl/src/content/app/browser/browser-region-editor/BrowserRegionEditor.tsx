@@ -149,13 +149,11 @@ export const BrowserRegionEditor = () => {
   };
 
   const changeLocation = (newChrLocation: ChrLocation) =>
-    dispatch(
-      changeBrowserLocation({
-        genomeId: activeGenomeId as string,
-        ensObjectId: null,
-        chrLocation: newChrLocation
-      })
-    );
+    changeBrowserLocation({
+      genomeId: activeGenomeId as string,
+      ensObjectId: null,
+      chrLocation: newChrLocation
+    });
 
   const hideForm = () => {
     updateErrorMessages(null, null);
@@ -190,7 +188,7 @@ export const BrowserRegionEditor = () => {
     if (stickInput === stick) {
       changeLocation(newChrLocation);
     } else {
-      dispatch(changeFocusObject(regionId));
+      changeFocusObject(regionId);
     }
 
     analyticsTracking.trackEvent({
