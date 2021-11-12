@@ -130,7 +130,7 @@ export const BrowserTrackConfig = () => {
     });
 
     genomeBrowser?.send({
-      type: !isTrackLabelsShown
+      type: isTrackLabelsShown
         ? OutgoingActionType.TURN_ON_LABELS
         : OutgoingActionType.TURN_OFF_LABELS,
       payload: {

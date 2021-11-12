@@ -228,7 +228,9 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
     if (allTrackLabelsOn && isTurnedOn) {
       genomeBrowser?.send({
-        type: OutgoingActionType.TURN_ON_LABELS,
+        type: allTrackLabelsOn
+          ? OutgoingActionType.TURN_ON_LABELS
+          : OutgoingActionType.TURN_OFF_LABELS,
         payload: {
           track_ids: [track_id]
         }
@@ -237,7 +239,9 @@ export const TrackPanelListItem = (props: TrackPanelListItemProps) => {
 
     if (allTrackNamesOn && isTurnedOn) {
       genomeBrowser?.send({
-        type: OutgoingActionType.TURN_ON_NAMES,
+        type: allTrackNamesOn
+          ? OutgoingActionType.TURN_ON_NAMES
+          : OutgoingActionType.TURN_OFF_NAMES,
         payload: {
           track_ids: [track_id]
         }
