@@ -40,6 +40,17 @@ export type InstantDownloadGeneEntityProps = {
 
 type Props = InstantDownloadGeneEntityProps & {
   theme: Theme;
+  onDownloadSuccess?: (params: OnDownloadPayload) => void;
+  onDownloadFailure?: (params: OnDownloadPayload) => void;
+};
+
+export type OnDownloadPayload = {
+  genomeId: string;
+  geneId: string;
+  options: {
+    transcript: Partial<TranscriptOptions>;
+    gene: { genomicSequence: boolean };
+  };
 };
 
 type TranscriptSectionProps = {
@@ -117,6 +128,9 @@ const InstantDownloadGene = (props: Props) => {
 
     try {
       await fetchForGene(payload);
+      props.onDownloadSuccess?.(payload);
+    } catch {
+      props.onDownloadFailure?.(payload);
     } finally {
       resetCheckboxes();
     }

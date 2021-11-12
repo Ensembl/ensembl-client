@@ -32,6 +32,8 @@ import {
 import { pluralise } from 'src/shared/helpers/formatters/pluralisationFormatter';
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import SearchField from 'src/shared/components/search-field/SearchField';
 import { PrimaryButton } from 'src/shared/components/button/Button';
 import QuestionButton, {
@@ -76,6 +78,14 @@ const InAppSearch = (props: Props) => {
       per_page: 50
     };
     dispatch(search(searchParams));
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'submit_search',
+        label: query
+      });
+    }
   };
 
   const clear = () => {
@@ -127,7 +137,9 @@ const InAppSearch = (props: Props) => {
           </div>
         )}
       </div>
-      {searchResult && <InAppSearchMatches {...searchResult} mode={mode} />}
+      {searchResult && (
+        <InAppSearchMatches {...searchResult} app={app} mode={mode} />
+      )}
     </div>
   );
 };
