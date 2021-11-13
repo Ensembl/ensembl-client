@@ -34,6 +34,11 @@ jest.mock('../publications/GenePublications', () => () => (
   <div className="genePublications" />
 ));
 
+jest.mock(
+  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
+  () => () => ({})
+);
+
 const genomeId = 'genome_id';
 const geneId = 'unversioned_gene_id';
 const geneName = 'gene_name';

@@ -27,6 +27,8 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import TextLine from 'src/shared/components/text-line/TextLine';
 
 import { RootState } from 'src/store';
@@ -40,6 +42,16 @@ type PreviouslyViewedLinksProps = {
 };
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
+  const { trackPreviouslyViewedLinkClick } = useEntityViewerAnalytics();
+
+  const handleClick = (linkLabel: string | string[], index: number) => {
+    trackPreviouslyViewedLinkClick({
+      linkLabel:
+        typeof linkLabel === 'string' ? linkLabel : linkLabel.join(' '),
+      position: index + 1
+    });
+  };
+
   return (
     <div data-test-id="previously viewed links">
       {props.previouslyViewedEntities.map((previouslyViewedEntity, index) => {
@@ -53,7 +65,10 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
         return (
           <div key={index} className={styles.linkHolder}>
-            <Link to={path}>
+            <Link
+              to={path}
+              onClick={() => handleClick(previouslyViewedEntity.label, index)}
+            >
               <TextLine
                 text={previouslyViewedEntity.label}
                 className={styles.label}

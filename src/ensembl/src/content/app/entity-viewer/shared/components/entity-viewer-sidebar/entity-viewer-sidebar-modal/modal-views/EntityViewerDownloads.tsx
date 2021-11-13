@@ -26,7 +26,11 @@ import {
 import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { isProteinCodingGene } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
-import InstantDownloadGene from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
+import InstantDownloadGene, {
+  OnDownloadPayload
+} from 'src/shared/components/instant-download/instant-download-gene/InstantDownloadGene';
 
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
@@ -53,6 +57,7 @@ type Transcript = {
 const EntityViewerSidebarDownloads = () => {
   const genomeId = useSelector(getEntityViewerActiveGenomeId);
   const geneId = useSelector(getEntityViewerActiveEntityId);
+  const { trackGeneDownload } = useEntityViewerAnalytics();
 
   const entityId = geneId ? parseEnsObjectId(geneId).objectId : null;
 
@@ -66,6 +71,28 @@ const EntityViewerSidebarDownloads = () => {
     return null;
   }
 
+  const onDownload = (
+    payload: OnDownloadPayload,
+    downloadStatus: 'success' | 'failure'
+  ) => {
+    const { transcript: transcriptOptions, gene: geneOptions } =
+      payload.options;
+
+    const downloadOptions = Object.entries(transcriptOptions)
+      .filter(([, isSelected]) => isSelected)
+      .map(([key]) => `transcript_${key}`);
+
+    if (geneOptions.genomicSequence) {
+      downloadOptions.unshift('gene_genomicSequence');
+    }
+
+    trackGeneDownload({
+      geneSymbol: data.gene.stable_id,
+      options: downloadOptions,
+      downloadStatus
+    });
+  };
+
   return (
     <section>
       <h3>Download</h3>
@@ -75,6 +102,8 @@ const EntityViewerSidebarDownloads = () => {
           id: data.gene.stable_id,
           isProteinCoding: isProteinCodingGene(data.gene)
         }}
+        onDownloadSuccess={(payload) => onDownload(payload, 'success')}
+        onDownloadFailure={(payload) => onDownload(payload, 'failure')}
       />
     </section>
   );
