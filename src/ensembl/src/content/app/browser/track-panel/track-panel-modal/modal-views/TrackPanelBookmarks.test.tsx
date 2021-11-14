@@ -24,10 +24,7 @@ import faker from 'faker';
 import times from 'lodash/times';
 import set from 'lodash/fp/set';
 
-import {
-  toggleDrawerForGenome,
-  changeDrawerViewForGenome
-} from 'src/content/app/browser/state/drawer/drawerSlice';
+import { changeDrawerViewForGenome } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import { TrackPanelBookmarks } from './TrackPanelBookmarks';
 
@@ -222,17 +219,10 @@ describe('<TrackPanelBookmarks />', () => {
     const updateDrawerViewAction = dispatchedDrawerActions.find(
       (action) => action.type === changeDrawerViewForGenome.toString()
     );
-    const toggleDrawerAction = dispatchedDrawerActions.find(
-      (action) => action.type === toggleDrawerForGenome.toString()
-    );
 
     expect(updateDrawerViewAction.payload).toEqual({
       genomeId,
       drawerView: { name: 'bookmarks' }
-    });
-    expect(toggleDrawerAction.payload).toEqual({
-      genomeId,
-      isOpen: true
     });
   });
 });

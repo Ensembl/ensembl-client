@@ -20,23 +20,17 @@ type BookmarksDrawerView = {
 
 export type GeneDrawerView = {
   name: 'gene_summary';
-  payload: {
-    geneId: string; // in ensObjectId format
-  };
+  geneId: string; // in ensObjectId format
 };
 
 export type TranscriptDrawerView = {
   name: 'transcript_summary';
-  payload: {
-    transcriptId: string; // transcript stable id
-  };
+  transcriptId: string; // transcript stable id
 };
 
 export type GenericTrackView = {
   name: 'track_details';
-  payload: {
-    trackId: string;
-  };
+  trackId: string;
 };
 
 export type DrawerView =

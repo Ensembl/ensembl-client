@@ -32,9 +32,7 @@ type Props = {
 };
 
 const TrackDetails = (props: Props) => {
-  const {
-    payload: { trackId }
-  } = props.drawerView;
+  const { trackId } = props.drawerView;
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
 
   if (!activeGenomeId) {

@@ -22,10 +22,7 @@ import browserMessagingService from 'src/content/app/browser/browser-messaging-s
 import { getBrowserTrackState } from 'src/content/app/browser/browserSelectors';
 
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
-import {
-  changeDrawerViewForGenome,
-  toggleDrawerForGenome
-} from 'src/content/app/browser/state/drawer/drawerSlice';
+import { changeDrawerViewForGenome } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import SimpleTrackPanelItemLayout from './track-panel-item-layout/SimpleTrackPanelItemLayout';
 
@@ -66,13 +63,10 @@ const TrackPanelRegularItem = (props: Props) => {
         genomeId,
         drawerView: {
           name: 'track_details',
-          payload: {
-            trackId: props.track_id
-          }
+          trackId: props.track_id
         }
       })
     );
-    dispatch(toggleDrawerForGenome({ genomeId, isOpen: true })); // FIXME - can this be deleted?
   };
 
   const toggleTrack = () => {

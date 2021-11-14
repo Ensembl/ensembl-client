@@ -21,10 +21,7 @@ import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
-import {
-  changeDrawerViewForGenome,
-  toggleDrawerForGenome
-} from 'src/content/app/browser/state/drawer/drawerSlice';
+import { changeDrawerViewForGenome } from 'src/content/app/browser/state/drawer/drawerSlice';
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
 
 import { getBrowserTrackState } from 'src/content/app/browser/browserSelectors';
@@ -83,13 +80,10 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         genomeId,
         drawerView: {
           name: 'gene_summary',
-          payload: {
-            geneId: geneId
-          }
+          geneId: geneId
         }
       })
     );
-    dispatch(toggleDrawerForGenome({ genomeId, isOpen: true })); // FIXME - can this be deleted?
   };
 
   const toggleTrack = ({

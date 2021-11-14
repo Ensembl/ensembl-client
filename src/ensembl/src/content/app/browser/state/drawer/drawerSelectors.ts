@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { RootState } from 'src/store';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 import { defaultDrawerStateForGenome } from './drawerSlice';
+
+import type { RootState } from 'src/store';
 
 export const getActiveDrawer = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
@@ -29,4 +30,4 @@ export const getActiveDrawerView = (state: RootState) =>
   getActiveDrawer(state).drawerView;
 
 export const getIsDrawerOpened = (state: RootState) =>
-  getActiveDrawer(state).isDrawerOpened;
+  getActiveDrawer(state).drawerView !== null;

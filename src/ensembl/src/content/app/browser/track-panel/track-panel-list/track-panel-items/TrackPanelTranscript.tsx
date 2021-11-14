@@ -22,10 +22,7 @@ import {
   getBrowserTrackState
 } from 'src/content/app/browser/browserSelectors';
 
-import {
-  changeDrawerViewForGenome,
-  toggleDrawerForGenome
-} from 'src/content/app/browser/state/drawer/drawerSlice';
+import { changeDrawerViewForGenome } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import { getTranscriptMetadata as getTranscriptSupportLevel } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
 import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -73,13 +70,10 @@ const TrackPanelTranscript = (props: Props) => {
         genomeId: activeGenomeId,
         drawerView: {
           name: 'transcript_summary',
-          payload: {
-            transcriptId: transcript.stable_id
-          }
+          transcriptId: transcript.stable_id
         }
       })
     );
-    dispatch(toggleDrawerForGenome({ genomeId: activeGenomeId, isOpen: true })); // FIXME - can this be deleted?
   };
 
   const secondaryLabel = isCanonicalTranscript ? (

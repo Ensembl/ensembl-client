@@ -164,11 +164,7 @@ type Props = {
 };
 
 const TranscriptSummary = (props: Props) => {
-  const {
-    drawerView: {
-      payload: { transcriptId }
-    }
-  } = props;
+  const { transcriptId } = props.drawerView;
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
   const [shouldShowDownload, showDownload] = useState(false);
 
