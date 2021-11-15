@@ -43,7 +43,7 @@
     "cross-fetch": "3.1.4",
     "d3": "6.7.0",
     "dotenv": "10.0.0",
-    "ensembl-genome-browser": "git+https://github.com/Ensembl/ensembl-genome-browser.git#523be6f7783df118efbd43bfad1fe16d807abb0b",
+    "ensembl-genome-browser": "git+https://github.com/Ensembl/ensembl-genome-browser.git#e58b289a391f73912fe21e287b8d44f1ef775751",
     "express": "4.17.1",
     "filesize": "7.0.0",
     "graphql": "15.5.1",
