@@ -25,8 +25,7 @@ const getBaseApiUrls = (): BaseApiUrls => {
     docsBaseUrl: process.env.BROWSER_DOCS_BASE_URL ?? '/api/docs',
     refgetBaseUrl: process.env.REFGET_BASE_URL ?? '/api/refget',
     genomeBrowserBackendBaseUrl:
-      process.env.GENOME_BROWSER_BACKEND_BASE_URL ??
-      'http://genome-browser-service.review.ensembl.org/api/data',
+      process.env.GENOME_BROWSER_BACKEND_BASE_URL ?? '/api/browser/data',
     customDownloadGeneSearch: process.env.GENESEARCH_API_ENDPOINT ?? ''
   };
 };
