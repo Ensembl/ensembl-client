@@ -34,8 +34,7 @@ const defaultApiUrls: BaseApiUrls = {
   thoasBaseUrl: 'https://2020.ensembl.org/api/thoas',
   genomeSearchBaseUrl: 'https://2020.ensembl.org/api/genomesearch',
   docsBaseUrl: 'https://2020.ensembl.org/api/docs',
-  genomeBrowserBackendBaseUrl:
-    'http://genome-browser-service.review.ensembl.org/api/data',
+  genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
   customDownloadGeneSearch: ''
 };
