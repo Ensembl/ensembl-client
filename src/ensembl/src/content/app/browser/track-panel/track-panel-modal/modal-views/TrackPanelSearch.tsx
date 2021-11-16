@@ -26,7 +26,6 @@ const TrackPanelSearch = () => {
 
   return (
     <section className="trackPanelSearch">
-      <h3>Search</h3>
       <div>
         {activeGenomeId && (
           <InAppSearch
