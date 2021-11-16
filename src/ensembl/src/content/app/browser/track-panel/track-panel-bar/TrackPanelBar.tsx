@@ -21,7 +21,7 @@ import {
   getIsTrackPanelOpened,
   getTrackPanelModalView
 } from '../trackPanelSelectors';
-import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import {
@@ -29,7 +29,7 @@ import {
   closeTrackPanelModal,
   openTrackPanelModal
 } from '../trackPanelActions';
-import { toggleDrawer } from 'src/content/app/browser/drawer/drawerActions';
+import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 import { clearSearch } from 'src/shared/state/in-app-search/inAppSearchSlice';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -58,7 +58,7 @@ export const TrackPanelBar = () => {
     }
 
     if (isDrawerOpened) {
-      dispatch(toggleDrawer(false));
+      dispatch(closeDrawer());
     }
 
     if (selectedItem === 'search') {

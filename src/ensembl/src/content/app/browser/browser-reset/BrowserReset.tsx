@@ -23,7 +23,7 @@ import {
   getBrowserActiveEnsObjectId,
   isFocusObjectPositionDefault
 } from '../browserSelectors';
-import { getIsDrawerOpened } from '../drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
 import { ReactComponent as resetIcon } from 'static/img/browser/track-reset.svg';

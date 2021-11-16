@@ -37,7 +37,6 @@ import {
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
 import { getBrowserActiveEnsObject } from 'src/content/app/browser/browserSelectors';
-import { getActiveDrawerTranscriptId } from 'src/content/app/browser/drawer/drawerSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
@@ -49,6 +48,7 @@ import { TranscriptQualityLabel } from 'src/content/app/entity-viewer/shared/com
 import { EnsObjectGene } from 'src/shared/state/ens-object/ensObjectTypes';
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullGene } from 'src/shared/types/thoas/gene';
+import { TranscriptDrawerView } from 'src/content/app/browser/state/drawer/types';
 
 import styles from './TranscriptSummary.scss';
 
@@ -158,9 +158,13 @@ const GENE_AND_TRANSCRIPT_QUERY = gql`
   }
 `;
 
-const TranscriptSummary = () => {
+type Props = {
+  drawerView: TranscriptDrawerView;
+};
+
+const TranscriptSummary = (props: Props) => {
+  const { transcriptId } = props.drawerView;
   const ensObjectGene = useSelector(getBrowserActiveEnsObject) as EnsObjectGene;
-  const activeDrawerTranscriptId = useSelector(getActiveDrawerTranscriptId);
   const [shouldShowDownload, showDownload] = useState(false);
 
   const { data: geneData } = useGetTrackPanelGeneQuery({
@@ -168,8 +172,9 @@ const TranscriptSummary = () => {
     geneId: ensObjectGene.stable_id
   });
 
+  // TODO: change this to a single transcript query
   const activeDrawerTranscript = geneData?.gene.transcripts.find(
-    (transcript) => transcript.stable_id === activeDrawerTranscriptId
+    (transcript) => transcript.stable_id === transcriptId
   );
 
   const { data, loading } = useQuery<{

@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import { RefObject, ReactEventHandler } from 'react';
-
-import * as headerActions from './header/headerActions';
-import * as browserActions from './content/app/browser/browserActions';
-import * as customDownloadActions from './content/app/custom-download/state/customDownloadActions';
-import * as trackPanelActions from './content/app/browser/track-panel/trackPanelActions';
-
-export type ReactRefs = {
-  [key: string]: RefObject<HTMLElement>;
+type BookmarksDrawerView = {
+  name: 'bookmarks';
 };
 
-export type EventHandlers = {
-  [key: string]: ReactEventHandler;
+export type GeneDrawerView = {
+  name: 'gene_summary';
+  geneId: string; // in ensObjectId format
 };
 
-export type RootAction =
-  | typeof headerActions
-  | typeof browserActions
-  | typeof customDownloadActions
-  | typeof trackPanelActions;
+export type TranscriptDrawerView = {
+  name: 'transcript_summary';
+  transcriptId: string; // transcript stable id
+};
+
+export type GenericTrackView = {
+  name: 'track_details';
+  trackId: string;
+};
+
+export type DrawerView =
+  | BookmarksDrawerView
+  | GeneDrawerView
+  | TranscriptDrawerView
+  | GenericTrackView;

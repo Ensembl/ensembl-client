@@ -20,6 +20,8 @@ import { ChrLocation, defaultBrowserNavIconsState } from './browserState';
 import { getGenomeInfo } from 'src/shared/state/genome/genomeSelectors';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
+import { Status } from 'src/shared/types/status';
+
 export const getBrowserActiveGenomeId = (state: RootState) =>
   state.browser.browserEntity.activeGenomeId;
 
@@ -48,6 +50,35 @@ export const getBrowserActiveEnsObject = (state: RootState) => {
 
 export const getBrowserTrackStates = (state: RootState) =>
   state.browser.browserEntity.trackStates;
+
+export const getBrowserTrackState = (
+  state: RootState,
+  params: {
+    genomeId: string;
+    categoryName: string;
+    trackId: string;
+  } & (
+    | {
+        objectId: string;
+        tracksGroup: 'objectTracks';
+      }
+    | {
+        tracksGroup: 'commonTracks';
+      }
+  )
+) => {
+  const { genomeId, tracksGroup, categoryName, trackId } = params;
+  const allBrowserTrackStates = getBrowserTrackStates(state);
+  const savedTrackStatus =
+    tracksGroup === 'objectTracks'
+      ? allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[params.objectId]?.[
+          categoryName
+        ]?.[trackId]
+      : allBrowserTrackStates?.[genomeId]?.[tracksGroup]?.[categoryName]?.[
+          trackId
+        ];
+  return savedTrackStatus ?? Status.SELECTED;
+};
 
 export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);

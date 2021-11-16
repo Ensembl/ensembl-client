@@ -30,6 +30,7 @@ import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants'
 import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import {
+  getApplyToAllConfig,
   getBrowserActiveEnsObjectId,
   getBrowserActiveGenomeId
 } from 'src/content/app/browser/browserSelectors';
@@ -46,6 +47,8 @@ const useGenomeBrowser = () => {
 
   const activeEnsObjectId = useSelector(getBrowserActiveEnsObjectId);
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+  const { allTrackLabelsOn, allTrackNamesOn } =
+    useSelector(getApplyToAllConfig);
 
   const genomeBrowserContext = useContext(GenomeBrowserContext);
   if (!genomeBrowserContext) {
@@ -172,15 +175,60 @@ const useGenomeBrowser = () => {
     genomeBrowser.send(action);
   };
 
+  const toggleTrack = (params: { trackId: string; status: Status }) => {
+    const { trackId, status } = params;
+    const isTurnedOn = status === Status.SELECTED;
+
+    const trackIdWithoutPrefix = trackId.replace('track:', '');
+    const trackIdToSend =
+      trackIdWithoutPrefix === 'gene-feat' ||
+      trackIdWithoutPrefix === 'gene-feat-1'
+        ? 'focus'
+        : trackIdWithoutPrefix;
+
+    const action: OutgoingAction = {
+      type: isTurnedOn
+        ? OutgoingActionType.TURN_ON_TRACKS
+        : OutgoingActionType.TURN_OFF_TRACKS,
+      payload: {
+        track_ids: [trackIdToSend]
+      }
+    };
+    genomeBrowser?.send(action);
+
+    if (allTrackLabelsOn && isTurnedOn) {
+      genomeBrowser?.send({
+        type: allTrackLabelsOn
+          ? OutgoingActionType.TURN_ON_LABELS
+          : OutgoingActionType.TURN_OFF_LABELS,
+        payload: {
+          track_ids: [trackIdToSend]
+        }
+      });
+    }
+
+    if (allTrackNamesOn && isTurnedOn) {
+      genomeBrowser?.send({
+        type: allTrackNamesOn
+          ? OutgoingActionType.TURN_ON_NAMES
+          : OutgoingActionType.TURN_OFF_NAMES,
+        payload: {
+          track_ids: [trackIdToSend]
+        }
+      });
+    }
+  };
+
   return {
     activateGenomeBrowser,
-    restoreBrowserTrackStates,
     changeFocusObject,
     changeFocusObjectFromZmenu,
     changeBrowserLocation,
+    restoreBrowserTrackStates,
+    setZmenus,
+    toggleTrack,
     genomeBrowser,
-    zmenus,
-    setZmenus
+    zmenus
   };
 };
 
