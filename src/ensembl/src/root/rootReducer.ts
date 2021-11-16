@@ -19,7 +19,7 @@ import { connectRouter } from 'connected-react-router';
 
 import browser from '../content/app/browser/browserReducer';
 import { genomeBrowserApiSlice } from '../content/app/browser/state/genomeBrowserApiSlice';
-import drawer from '../content/app/browser/drawer/drawerReducer';
+import drawer from '../content/app/browser/state/drawer/drawerSlice';
 import genome from '../shared/state/genome/genomeReducer';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
 import global from '../global/globalReducer';
@@ -34,7 +34,7 @@ import speciesPage from 'src/content/app/species/state/index';
 const createRootReducer = (history: any) =>
   combineReducers({
     browser,
-    drawer,
+    drawer, // TODO: this should be moved in the browser reducer
     customDownload,
     communication,
     ensObjects,

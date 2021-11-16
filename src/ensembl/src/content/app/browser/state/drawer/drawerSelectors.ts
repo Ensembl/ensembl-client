@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-export enum DrawerView {
-  BOOKMARKS = 'bookmarks',
-  TRACK_DETAILS = 'track_details',
-  GENE_SUMMARY = 'gene_summary',
-  TRANSCRIPT_SUMMARY = 'transcript_summary'
-}
+import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+import { defaultDrawerStateForGenome } from './drawerSlice';
 
-export type DrawerStateForGenome = Readonly<{
-  isDrawerOpened: boolean;
-  activeDrawerView: DrawerView | null;
-  activeDrawerTrackId: string | null;
-  activeDrawerTranscriptId: string | null;
-}>;
+import type { RootState } from 'src/store';
 
-export type DrawerState = Readonly<{
-  [genomeId: string]: DrawerStateForGenome;
-}>;
+export const getActiveDrawer = (state: RootState) => {
+  const activeGenomeId = getBrowserActiveGenomeId(state);
+  const activeDrawer = activeGenomeId && state.drawer[activeGenomeId];
 
-export const defaultDrawerStateForGenome = {
-  isDrawerOpened: false,
-  activeDrawerView: null,
-  activeDrawerTrackId: null,
-  activeDrawerTranscriptId: null
+  return activeDrawer || defaultDrawerStateForGenome;
 };
+
+export const getActiveDrawerView = (state: RootState) =>
+  getActiveDrawer(state).drawerView;
+
+export const getIsDrawerOpened = (state: RootState) =>
+  getActiveDrawer(state).drawerView !== null;

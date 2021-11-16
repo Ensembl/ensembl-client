@@ -19,7 +19,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { getTrackPanelModalView } from '../trackPanelSelectors';
 import { closeTrackPanelModal } from '../trackPanelActions';
-import { closeDrawer } from '../../drawer/drawerActions';
+import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import TrackPanelSearch from './modal-views/TrackPanelSearch';
 import TracksManager from './modal-views/TracksManager';

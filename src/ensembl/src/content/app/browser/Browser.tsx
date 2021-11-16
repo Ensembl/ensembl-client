@@ -25,7 +25,7 @@ import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 
 import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { toggleDrawer } from './drawer/drawerActions';
+import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import {
   getBrowserNavOpenState,
@@ -34,7 +34,7 @@ import {
 } from './browserSelectors';
 
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
-import { getIsDrawerOpened } from './drawer/drawerSelectors';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import BrowserBar from './browser-bar/BrowserBar';
@@ -78,7 +78,7 @@ export const Browser = () => {
   };
 
   const onDrawerClose = () => {
-    dispatch(toggleDrawer(!isDrawerOpened));
+    dispatch(closeDrawer());
   };
 
   const shouldShowNavBar =

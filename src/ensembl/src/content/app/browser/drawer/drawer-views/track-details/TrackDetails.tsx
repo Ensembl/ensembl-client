@@ -17,20 +17,25 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { getActiveDrawerTrackId } from 'src/content/app/browser/drawer/drawerSelectors';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 
 import { trackDetailsSampleData } from '../../sampleData';
 
+import { GenericTrackView } from 'src/content/app/browser/state/drawer/types';
+
 import styles from './TrackDetails.scss';
 
-const TrackDetails = () => {
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const trackId = useSelector(getActiveDrawerTrackId);
+type Props = {
+  drawerView: GenericTrackView;
+};
 
-  if (!activeGenomeId || !trackId) {
+const TrackDetails = (props: Props) => {
+  const { trackId } = props.drawerView;
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
+
+  if (!activeGenomeId) {
     return null;
   }
 
