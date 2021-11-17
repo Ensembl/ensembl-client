@@ -17,11 +17,11 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-import useCommonAnalytics from 'ensemblRoot/src/shared/hooks/useCommonAnalytics';
+import useCommonAnalytics from 'src/shared/hooks/useCommonAnalytics';
 
 import { toggleCommunicationPanel } from 'src/shared/state/communication/communicationSlice';
 import { ReactComponent as ConversationImageIcon } from 'static/img/shared/icon_conversation.svg';
-import CommunicationPanel from 'ensemblRoot/src/shared/components/communication-framework/CommunicationPanel';
+import CommunicationPanel from 'src/shared/components/communication-framework/CommunicationPanel';
 
 import styles from './ConversationIcon.scss';
 

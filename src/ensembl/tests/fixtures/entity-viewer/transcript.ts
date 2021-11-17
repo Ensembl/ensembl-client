@@ -30,7 +30,7 @@ import { CDNA } from 'src/shared/types/thoas/cdna';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { ProductType } from 'src/shared/types/thoas/product';
 import { ExternalReference } from 'src/shared/types/thoas/externalReference';
-import { TranscriptMetadata } from 'ensemblRoot/src/shared/types/thoas/metadata';
+import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 type ProteinCodingProductGeneratingContext = Omit<
   FullProductGeneratingContext,
