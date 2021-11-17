@@ -17,7 +17,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import faker from 'faker';
 
 import SidebarModal, { SidebarModalProps } from './SidebarModal';
 
@@ -27,17 +26,9 @@ const sidebarModalTitle = 'This content goes into the sidebarModal’s title';
 
 const onClose = jest.fn();
 
-const classNames = {
-  wrapper: faker.lorem.word(),
-  title: faker.lorem.word(),
-  content: faker.lorem.word(),
-  closeButton: faker.lorem.word()
-};
-
 const defaultProps: SidebarModalProps = {
   title: sidebarModalTitle,
   children: sidebarModalContent,
-  classNames: classNames,
   onClose: onClose
 };
 
@@ -64,20 +55,6 @@ describe('<SidebarModal />', () => {
     expect(content?.textContent).toBe(defaultProps.children);
   });
 
-  it('displays the close button only if onClose is set', () => {
-    const { container } = renderSidebarModal();
-    const closeButton = container.querySelector('.closeButton');
-
-    expect(closeButton).toBeTruthy();
-  });
-
-  it('does not display the close button if onClose is not set', () => {
-    const { container } = renderSidebarModal({ onClose: undefined });
-    const closeButton = container.querySelector('.closeButton');
-
-    expect(closeButton).toBeFalsy();
-  });
-
   it('calls the onClose function when the close button is clicked', () => {
     const { container } = renderSidebarModal();
     const closeButton = container.querySelector('.closeButton');
@@ -85,18 +62,5 @@ describe('<SidebarModal />', () => {
     userEvent.click(closeButton as HTMLElement);
 
     expect(onClose).toHaveBeenCalled();
-  });
-
-  it('applies the passed in classes', () => {
-    const { container } = renderSidebarModal();
-    const wrapper = container.querySelector('.wrapper') as HTMLElement;
-    const content = container.querySelector('.content') as HTMLElement;
-    const title = container.querySelector('.title') as HTMLElement;
-    const closeButton = container.querySelector('.closeButton') as HTMLElement;
-
-    expect(wrapper.classList.contains(classNames.wrapper)).toBe(true);
-    expect(content.classList.contains(classNames.content)).toBe(true);
-    expect(title.classList.contains(classNames.title)).toBe(true);
-    expect(closeButton.classList.contains(classNames.closeButton)).toBe(true);
   });
 });

@@ -22,7 +22,7 @@ import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/e
 
 import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
-import SidebarModal from 'ensemblRoot/src/shared/components/layout/components/sidebar-modal/SidebarModal';
+import SidebarModal from 'src/shared/components/layout/components/sidebar-modal/SidebarModal';
 
 import styles from './EntityViewerSidebarModal.scss';
 

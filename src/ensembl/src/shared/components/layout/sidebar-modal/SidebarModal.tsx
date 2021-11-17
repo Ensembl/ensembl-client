@@ -15,50 +15,25 @@
  */
 
 import React, { ReactNode } from 'react';
-import classNamesMerger from 'classnames';
 
 import CloseButton from 'src/shared/components/close-button/CloseButton';
 
 import styles from './SidebarModal.scss';
 
 export type SidebarModalProps = {
-  title: ReactNode;
+  title: string;
   children: ReactNode;
-  classNames?: {
-    wrapper?: string;
-    title?: string;
-    content?: string;
-    closeButton?: string;
-  };
-  onClose?: () => void;
+  onClose: () => void;
 };
 
 const SidebarModal = (props: SidebarModalProps) => {
-  const { title, onClose, classNames } = props;
-
-  const wrapperClassNames = classNames
-    ? classNamesMerger(styles.wrapper, classNames.wrapper)
-    : styles.wrapper;
-
-  const titleClassNames = classNames
-    ? classNamesMerger(styles.title, classNames.title)
-    : styles.title;
-
-  const contentClassNames = classNames
-    ? classNamesMerger(styles.content, classNames.content)
-    : styles.content;
-
-  const closeButtonClassNames = classNames
-    ? classNamesMerger(styles.closeButton, classNames.closeButton)
-    : styles.closeButton;
+  const { title, onClose } = props;
 
   return (
-    <div className={wrapperClassNames}>
-      {onClose && (
-        <CloseButton className={closeButtonClassNames} onClick={onClose} />
-      )}
-      <h3 className={titleClassNames}>{title}</h3>
-      <div className={contentClassNames}>
+    <div className={styles.wrapper}>
+      <CloseButton className={styles.closeButton} onClick={onClose} />
+      <h3 className={styles.title}>{title}</h3>
+      <div className={styles.content}>
         <div>{props.children}</div>
       </div>
     </div>
