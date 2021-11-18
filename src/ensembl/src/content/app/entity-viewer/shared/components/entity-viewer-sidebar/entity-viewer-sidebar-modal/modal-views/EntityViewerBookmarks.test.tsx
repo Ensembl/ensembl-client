@@ -45,6 +45,9 @@ const exampleEntities = [
   }
 ];
 
+const currentEntityId = `braf`;
+const currentEntityLabel = `BRAF`;
+
 const previouslyViewedEntities = [
   {
     entity_id: 'human-fry',
@@ -54,6 +57,11 @@ const previouslyViewedEntities = [
   {
     entity_id: 'human-tp53',
     label: 'TP53',
+    type: 'gene'
+  },
+  {
+    entity_id: currentEntityId,
+    label: currentEntityLabel,
     type: 'gene'
   }
 ];
@@ -72,7 +80,7 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEntityIds: {
-        human: 'human:gene:braf'
+        human: `human:gene:${currentEntityId}`
       }
     },
     bookmarks: {
@@ -103,6 +111,19 @@ describe('<EntityViewerSidebarBookmarks />', () => {
     );
     const links = previouslyViewedSection.querySelectorAll('a');
 
-    expect(links.length).toBe(previouslyViewedEntities.length);
+    // -1 is used here as we are ignoring the current entity
+    expect(links.length).toBe(previouslyViewedEntities.length - 1);
+  });
+
+  it('does not display the current entity as previously viewed', () => {
+    wrapInRedux();
+    const previouslyViewedSection = screen.getByTestId(
+      'previously viewed links'
+    );
+    const labels = previouslyViewedSection.querySelectorAll('.label span');
+
+    labels.forEach((label) => {
+      expect(label.textContent).not.toBe(currentEntityLabel);
+    });
   });
 });
