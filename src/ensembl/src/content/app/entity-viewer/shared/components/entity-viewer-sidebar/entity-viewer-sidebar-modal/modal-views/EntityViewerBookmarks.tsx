@@ -20,7 +20,10 @@ import { useSelector } from 'react-redux';
 import upperFirst from 'lodash/upperFirst';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import {
+  buildFocusIdForUrl,
+  parseEnsObjectId
+} from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getEntityViewerActiveGenomeId,
   getEntityViewerActiveEntityId
@@ -52,34 +55,42 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
     });
   };
 
+  const activeEntityStableId = parseEnsObjectId(props.activeEntityId).objectId;
+  const previouslyViewedEntitiesWithoutActiveEntity =
+    props.previouslyViewedEntities.filter(
+      (entity) => entity.entity_id !== activeEntityStableId
+    );
+
   return (
     <div data-test-id="previously viewed links">
-      {props.previouslyViewedEntities.map((previouslyViewedEntity, index) => {
-        const path = urlFor.entityViewer({
-          genomeId: props.activeGenomeId,
-          entityId: buildFocusIdForUrl({
-            type: 'gene',
-            objectId: previouslyViewedEntity.entity_id
-          })
-        });
+      {previouslyViewedEntitiesWithoutActiveEntity.map(
+        (previouslyViewedEntity, index) => {
+          const path = urlFor.entityViewer({
+            genomeId: props.activeGenomeId,
+            entityId: buildFocusIdForUrl({
+              type: 'gene',
+              objectId: previouslyViewedEntity.entity_id
+            })
+          });
 
-        return (
-          <div key={index} className={styles.linkHolder}>
-            <Link
-              to={path}
-              onClick={() => handleClick(previouslyViewedEntity.label, index)}
-            >
-              <TextLine
-                text={previouslyViewedEntity.label}
-                className={styles.label}
-              />
-            </Link>
-            <span className={styles.type}>
-              {upperFirst(previouslyViewedEntity.type)}
-            </span>
-          </div>
-        );
-      })}
+          return (
+            <div key={index} className={styles.linkHolder}>
+              <Link
+                to={path}
+                onClick={() => handleClick(previouslyViewedEntity.label, index)}
+              >
+                <TextLine
+                  text={previouslyViewedEntity.label}
+                  className={styles.label}
+                />
+              </Link>
+              <span className={styles.type}>
+                {upperFirst(previouslyViewedEntity.type)}
+              </span>
+            </div>
+          );
+        }
+      )}
     </div>
   );
 };
