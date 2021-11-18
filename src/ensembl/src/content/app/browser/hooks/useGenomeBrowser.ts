@@ -181,10 +181,7 @@ const useGenomeBrowser = () => {
 
     const trackIdWithoutPrefix = trackId.replace('track:', '');
     const trackIdToSend =
-      trackIdWithoutPrefix === 'gene-feat' ||
-      trackIdWithoutPrefix === 'gene-feat-1'
-        ? 'focus'
-        : trackIdWithoutPrefix;
+      trackIdWithoutPrefix === 'gene-feat' ? 'focus' : trackIdWithoutPrefix;
 
     const action: OutgoingAction = {
       type: isTurnedOn
