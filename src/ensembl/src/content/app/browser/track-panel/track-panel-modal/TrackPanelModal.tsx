@@ -51,7 +51,10 @@ export const TrackPanelModal = () => {
       case 'downloads':
         return { content: <TrackPanelDownloads />, title: 'Downloads' };
       default:
-        return {};
+        return {
+          content: null,
+          title: ''
+        };
     }
   };
 
