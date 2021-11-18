@@ -28,7 +28,7 @@ import PersonalData from './modal-views/PersonalData';
 import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
 
-import SidebarModal from 'src/shared/components/layout/components/sidebar-modal/SidebarModal';
+import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
 import styles from './TrackPanelModal.scss';
 
