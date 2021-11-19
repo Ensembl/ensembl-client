@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
@@ -64,9 +64,13 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       trackId: GENE_TRACK_ID
     })
   );
-  const { toggleTrack } = useGenomeBrowser();
+  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
+  }, [genomeBrowser]);
 
   if (!data) {
     return null;

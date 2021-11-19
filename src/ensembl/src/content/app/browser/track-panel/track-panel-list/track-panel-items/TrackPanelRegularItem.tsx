@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
@@ -55,7 +55,7 @@ const TrackPanelRegularItem = (props: Props) => {
       trackId: props.track_id
     })
   );
-  const { toggleTrack } = useGenomeBrowser();
+  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
   const dispatch = useDispatch();
 
   const onShowMore = () => {
@@ -89,6 +89,10 @@ const TrackPanelRegularItem = (props: Props) => {
       })
     );
   };
+
+  useEffect(() => {
+    toggleTrack({ trackId: track_id, status: trackVisibilityStatus });
+  }, [genomeBrowser]);
 
   const color = props.colour ? colorMap[props.colour] : undefined;
   const colorMarker = color ? (
