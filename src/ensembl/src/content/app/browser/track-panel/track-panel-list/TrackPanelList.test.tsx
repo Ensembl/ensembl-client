@@ -31,7 +31,7 @@ jest.mock('./track-panel-items/TrackPanelGene', () => () => (
 ));
 
 jest.mock('./track-panel-items/TrackPanelRegularItem', () => () => (
-  <div className="rrackPanelRegularItem" />
+  <div className="trackPanelRegularItem" />
 ));
 
 const mockState = createMockBrowserState();
