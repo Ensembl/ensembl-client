@@ -50,7 +50,8 @@ const getTranscriptTrackId = (num: number) => `track:transcript-feat-${num}`;
 
 const TrackPanelGene = (props: TrackPanelGeneProps) => {
   const { genomeId, geneId, ensObjectId } = props;
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const startWithCollapsed = !isEnvironment([Environment.PRODUCTION]); // TODO: remove after multiple transcripts are available
+  const [isCollapsed, setIsCollapsed] = useState(startWithCollapsed);
   const { data } = useGetTrackPanelGeneQuery({
     genomeId,
     geneId
@@ -119,10 +120,16 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   };
 
   const { gene } = data;
-  const sortedTranscripts =
-    isEnvironment([Environment.PRODUCTION]) || isCollapsed
+  let sortedTranscripts;
+
+  if (isEnvironment([Environment.PRODUCTION])) {
+    // TODO: remove this branch when multiple transcripts become available
+    sortedTranscripts = isCollapsed ? [] : [defaultSort(gene.transcripts)[0]];
+  } else {
+    sortedTranscripts = isCollapsed
       ? [defaultSort(gene.transcripts)[0]]
       : defaultSort(gene.transcripts);
+  }
 
   return (
     <>
@@ -159,12 +166,14 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
           />
         );
       })}
-      {isCollapsed && gene.transcripts.length > 1 && (
-        <TrackPanelItemsCount
-          itemName="transcript"
-          count={gene.transcripts.length - 1}
-        />
-      )}
+      {!isEnvironment([Environment.PRODUCTION]) &&
+        isCollapsed &&
+        gene.transcripts.length > 1 && (
+          <TrackPanelItemsCount
+            itemName="transcript"
+            count={gene.transcripts.length - 1}
+          />
+        )}
     </>
   );
 };

@@ -27,7 +27,7 @@ import { CircleLoader } from 'src/shared/components/loader';
 import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'ensemblRoot/src/shared/types/thoas/productGeneratingContext';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './Zmenu.scss';
 

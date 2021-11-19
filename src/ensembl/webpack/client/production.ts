@@ -15,31 +15,16 @@
  */
 
 import path from 'path';
-import webpack, { Configuration } from 'webpack';
+import { Configuration } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import CompressionPlugin from 'compression-webpack-plugin';
 import WorkboxPlugin from 'workbox-webpack-plugin';
-import dotenv from 'dotenv';
 
 import { getPaths } from '../paths';
 const paths = getPaths('production');
-
-// copy from the environment the same variables that are declared in .env.example
-// NOTE: if no environment variable with corresponding key is present, the value from .env.example will be used
-const dotenvConfig = dotenv.config({
-  path: paths.envTemplatePath
-});
-const getEnvironmentVariables = () =>
-  Object.keys(dotenvConfig.parsed).reduce(
-    (result, key) => ({
-      ...result,
-      [`process.env.${key}`]: JSON.stringify(process.env[key])
-    }),
-    {}
-  );
 
 // production config, to be merged with the common config
 export default (): Configuration => {
@@ -70,11 +55,6 @@ export default (): Configuration => {
       ]
     },
     plugins: [
-      // make environment variables available on the client-side
-      new webpack.DefinePlugin({
-        ...getEnvironmentVariables()
-      }),
-
       // plugin to extract css from the webpack javascript build files
       new MiniCssExtractPlugin({
         filename: '[name].[contenthash].css',
