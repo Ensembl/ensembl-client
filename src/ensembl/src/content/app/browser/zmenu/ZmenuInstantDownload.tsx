@@ -25,7 +25,7 @@ import { InstantDownloadTranscript } from 'src/shared/components/instant-downloa
 import { CircleLoader } from 'src/shared/components/loader';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'ensemblRoot/src/shared/types/thoas/productGeneratingContext';
+import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 
 import styles from './Zmenu.scss';
 

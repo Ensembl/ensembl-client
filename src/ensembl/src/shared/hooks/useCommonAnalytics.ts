@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 
 import analyticsTracking from 'src/services/analytics-service';
 
-import { getCurrentApp } from 'ensemblRoot/src/header/headerSelectors';
+import { getCurrentApp } from 'src/header/headerSelectors';
 
 const useCommonAnalytics = () => {
   const currentAppName = useSelector(getCurrentApp);

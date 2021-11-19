@@ -16,7 +16,7 @@
 
 import express, { Response } from 'express';
 
-import { getPaths } from 'ensemblRoot/webpack/paths';
+import { getPaths } from 'webpackDir/paths';
 
 const paths = getPaths();
 

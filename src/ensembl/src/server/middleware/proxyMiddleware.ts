@@ -18,7 +18,7 @@ import path from 'path';
 import { Router, Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import { getPaths } from 'ensemblRoot/webpack/paths';
+import { getPaths } from 'webpackDir/paths';
 
 const paths = getPaths();
 

@@ -33,7 +33,7 @@ import {
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { RootState } from 'src/store';
 import { SidebarTabName } from '../state/sidebar/entityViewerSidebarSlice';
-import { AnalyticsOptions } from 'ensemblRoot/src/analyticsHelper';
+import { AnalyticsOptions } from 'src/analyticsHelper';
 
 type TrackDownloadPayload = {
   category: string;

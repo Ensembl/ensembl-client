@@ -19,8 +19,8 @@ import { Link } from 'react-router-dom';
 
 import useHomeAnalytics from 'src/content/home/hooks/useHomeAnalytics';
 
-import { HelpPopupButton } from 'ensemblRoot/src/shared/components/help-popup';
-import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
+import { HelpPopupButton } from 'src/shared/components/help-popup';
+import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 
 import { ReactComponent as Logotype } from 'static/img/brand/logotype.svg';
 import { ReactComponent as SpeciesSelectorIcon } from 'static/img/launchbar/species-selector.svg';
