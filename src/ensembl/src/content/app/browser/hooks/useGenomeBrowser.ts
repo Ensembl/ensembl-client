@@ -35,7 +35,7 @@ import {
   getBrowserActiveGenomeId
 } from 'src/content/app/browser/browserSelectors';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { updateBrowserActiveEnsObjectIdsAndSave } from 'ensemblRoot/src/content/app/browser/browserActions';
+import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/browser/browserActions';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
 import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';

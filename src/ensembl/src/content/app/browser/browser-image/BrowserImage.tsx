@@ -38,7 +38,7 @@ import {
 
 import { setChrLocation, setActualChrLocation } from '../browserActions';
 
-import { ChrLocation } from 'ensemblRoot/src/content/app/browser/browserState';
+import { ChrLocation } from 'src/content/app/browser/browserState';
 
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
