@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, InputHTMLAttributes, ForwardedRef } from 'react';
-import classNames from 'classnames';
+import React, { useRef, MutableRefObject } from 'react';
+import { render } from '@testing-library/react';
 
-import styles from './Input.scss';
+import ShadedInput from './ShadedInput';
 
-export type Props = InputHTMLAttributes<HTMLInputElement>;
+describe('ShadedInput', () => {
+  it('forwards the ref to the input element', () => {
+    let inputRef = null as MutableRefObject<HTMLInputElement | null> | null;
+    const Wrapper = () => {
+      inputRef = useRef<HTMLInputElement | null>(null);
+      return <ShadedInput ref={inputRef} />;
+    };
+    render(<Wrapper />);
 
-const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
-  const { className: classNameFromProps, ...otherProps } = props;
-  const className = classNames(styles.input, classNameFromProps);
+    const inputElement = inputRef?.current;
 
-  return <input className={className} ref={ref} {...otherProps} />;
-};
-
-export default forwardRef(Input);
+    expect(inputElement?.tagName).toBe('INPUT');
+  });
+});
