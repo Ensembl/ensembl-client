@@ -1,9 +1,6 @@
 @import 'src/styles/common';
 
 .wrapper {
-  position: relative;
-  width: 100%;
-  background: $white;
   display: grid;
   grid-template-areas: "title close"
                        "content content";
@@ -27,5 +24,4 @@
   position: relative;
   right: 0px;
   top: 3px;
-  z-index: 1;
 }
