@@ -68,9 +68,12 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     }
   };
 
-  const onTextChange = useCallback((event: FormEvent<HTMLTextAreaElement>) => {
-    props.onTextChange(event.currentTarget.value);
-  }, []);
+  const onTextChange = useCallback(
+    (event: FormEvent<HTMLTextAreaElement>) => {
+      props.onTextChange(event.currentTarget.value);
+    },
+    [props.onTextChange]
+  );
 
   const handleRemove = (index: number) => {
     const newFiles = [...files];
