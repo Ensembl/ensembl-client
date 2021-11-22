@@ -22,6 +22,7 @@ import EnsemblGenomeBrowser, {
 } from 'ensembl-genome-browser';
 
 import config from 'config';
+import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import browserStorageService from 'src/content/app/browser/browser-storage-service';
 
@@ -64,7 +65,10 @@ const useGenomeBrowser = () => {
     const genomeBrowserService = new EnsemblGenomeBrowser();
     await genomeBrowserService.init({
       backend_url: config.genomeBrowserBackendBaseUrl,
-      target_element_id: BROWSER_CONTAINER_ID
+      target_element_id: BROWSER_CONTAINER_ID,
+      'debug.show-incoming-messages': isEnvironment([Environment.PRODUCTION])
+        ? 'false'
+        : 'true'
     });
     setGenomeBrowser(genomeBrowserService);
   };
