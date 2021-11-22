@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, ForwardedRef } from 'react';
-import classNames from 'classnames';
+import React, { useRef, MutableRefObject } from 'react';
+import { render } from '@testing-library/react';
 
-import Textarea, { Props as TextareaProps } from './Textarea';
+import ShadedTextarea from './ShadedTextarea';
 
-import styles from './Textarea.scss';
+describe('<ShadedTextarea />', () => {
+  it('forwards the ref to the textarea element', () => {
+    let textareaRef =
+      null as MutableRefObject<HTMLTextAreaElement | null> | null;
+    const Wrapper = () => {
+      textareaRef = useRef<HTMLTextAreaElement | null>(null);
+      return <ShadedTextarea ref={textareaRef} />;
+    };
+    render(<Wrapper />);
 
-const ShadedTextarea = (
-  props: TextareaProps,
-  ref: ForwardedRef<HTMLTextAreaElement>
-) => {
-  const { className, ...otherProps } = props;
+    const textareaElement = textareaRef?.current;
 
-  const inputClasses = classNames(styles.shadedTextarea, className);
-
-  return <Textarea ref={ref} className={inputClasses} {...otherProps} />;
-};
-
-export default forwardRef(ShadedTextarea);
+    expect(textareaElement?.tagName).toBe('TEXTAREA');
+  });
+});

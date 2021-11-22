@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent, useCallback } from 'react';
 import Checkbox from 'src/shared/components/checkbox/Checkbox';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
@@ -68,7 +68,11 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
     }
   };
 
-  const handleOnRemove = (index: number) => {
+  const onTextChange = useCallback((event: FormEvent<HTMLTextAreaElement>) => {
+    props.onTextChange(event.currentTarget.value);
+  }, []);
+
+  const handleRemove = (index: number) => {
     const newFiles = [...files];
     newFiles.splice(index, 1);
     props.onFilesChange(newFiles);
@@ -105,7 +109,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
 
               {isTextareaShown && (
                 <Textarea
-                  onChange={props.onTextChange}
+                  onChange={onTextChange}
                   placeholder={'Paste data'}
                   value={props.textValue || ''}
                   resizable={false}
@@ -144,7 +148,7 @@ const CheckboxWithTextfields = (props: CheckboxWithTextfieldsProps) => {
                     </span>
                     <div className={styles.removeFileIcon}>
                       <ImageButton
-                        onClick={() => handleOnRemove(key)}
+                        onClick={() => handleRemove(key)}
                         description={'Remove'}
                         image={RemoveIcon}
                       />

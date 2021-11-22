@@ -176,9 +176,13 @@ const ContactUsInitialForm = () => {
     dispatch({ type: 'update-subject', payload: subject });
   }, []);
 
-  const onMessageChange = useCallback((value: string) => {
-    dispatch({ type: 'update-message', payload: value });
-  }, []);
+  const onMessageChange = useCallback(
+    (event: FormEvent<HTMLTextAreaElement>) => {
+      const message = event.currentTarget.value;
+      dispatch({ type: 'update-message', payload: message });
+    },
+    []
+  );
 
   const onFileChange = useCallback((fileList: FileList) => {
     for (const file of fileList) {
