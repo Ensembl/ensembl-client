@@ -17,7 +17,7 @@
 import faker from 'faker';
 import merge from 'lodash/merge';
 
-import { ExternalReference } from 'ensemblRoot/src/shared/types/thoas/externalReference';
+import { ExternalReference } from 'src/shared/types/thoas/externalReference';
 
 export const createExternalReference = (
   fragment?: Partial<

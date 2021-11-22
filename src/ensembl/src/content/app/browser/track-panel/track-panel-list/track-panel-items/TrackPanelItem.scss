@@ -1,0 +1,39 @@
+@import 'src/styles/common';
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.label > *:not(:last-child):not(.itemsCount) {
+  margin-right: 10px;
+}
+
+.labelText {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.labelTextStrong {
+  font-size: 12px;
+  font-weight: $bold;
+}
+
+.labelTextSecondary {
+  font-size: 11px;
+  font-weight: $light;
+}
+
+.labelTextSecondaryStrong {
+  font-size: 11px;
+}
+
+.colorMarker {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}
+
+.itemsCount {
+  margin-right: 0.4rem;
+}

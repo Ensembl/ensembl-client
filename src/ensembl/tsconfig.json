@@ -12,9 +12,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-      "ensemblRoot/*": [
-        "./*"
-      ],
       "src/*": [
         "src/*"
       ],
@@ -30,6 +27,9 @@
       "config": [
         "config.ts"
       ],
+      "webpackDir/*": [
+        "webpack/*"
+      ]
     },
     "removeComments": true,
     "skipLibCheck": true,
@@ -41,6 +41,7 @@
     "./src/**/*",
     "./static/**/*",
     "stories/**/*",
+    "webpack/**/*",
     "./typings",
     "./tests/**/*"
   ]

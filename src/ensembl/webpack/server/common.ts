@@ -103,6 +103,7 @@ export default (): Configuration => {
         src: path.join(paths.rootPath, 'src'),
         tests: path.join(paths.rootPath, 'tests'),
         static: path.join(paths.rootPath, 'static'),
+        webpackDir: path.join(paths.rootPath, 'webpack'),
         fs: false,
         path: false
       }

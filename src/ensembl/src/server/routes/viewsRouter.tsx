@@ -24,7 +24,7 @@ import { HelmetProvider, FilledContext } from 'react-helmet-async';
 import { ChunkExtractor } from '@loadable/server';
 
 import routesConfig from 'src/routes/routesConfig';
-import { getPaths } from 'ensemblRoot/webpack/paths';
+import { getPaths } from 'webpackDir/paths';
 import { getConfigForClient } from '../helpers/getConfigForClient';
 import { CONFIG_FIELD_ON_WINDOW } from 'src/shared/constants/globals';
 
