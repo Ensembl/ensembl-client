@@ -39,9 +39,12 @@ const SearchField = (props: Props) => {
   const { rightCorner } = props;
   const className = classNames(styles.searchField, props.className);
 
-  const onChange = useCallback((event: FormEvent<HTMLInputElement>) => {
-    props.onChange(event.currentTarget.value);
-  }, []);
+  const onChange = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      props.onChange(event.currentTarget.value);
+    },
+    [props.onChange]
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
