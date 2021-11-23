@@ -20,7 +20,6 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
 import { EntityViewerSidebarBookmarks } from './EntityViewerBookmarks';
-import set from 'lodash/fp/set';
 
 jest.mock('react-router-dom', () => ({
   Link: (props: any) => (
@@ -113,19 +112,5 @@ describe('<EntityViewerSidebarBookmarks />', () => {
     const links = previouslyViewedSection.querySelectorAll('a');
 
     expect(links.length).toBe(previouslyViewedEntities.length);
-  });
-
-  it('does not display any link if there is only one previously viewed entity', () => {
-    const { container } = wrapInRedux(
-      set(
-        'entityViewer.bookmarks.previouslyViewed.human',
-        [previouslyViewedEntities[0]],
-        mockState
-      )
-    );
-
-    const links = container.querySelectorAll('a');
-
-    expect(links.length).toBe(0);
   });
 });
