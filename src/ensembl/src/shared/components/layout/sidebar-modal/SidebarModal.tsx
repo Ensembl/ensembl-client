@@ -14,15 +14,30 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-const PersonalData = () => {
+import CloseButton from 'src/shared/components/close-button/CloseButton';
+
+import styles from './SidebarModal.scss';
+
+export type SidebarModalProps = {
+  title: string;
+  children: ReactNode;
+  onClose: () => void;
+};
+
+const SidebarModal = (props: SidebarModalProps) => {
+  const { title, onClose } = props;
+
   return (
-    <section className="personaData">
-      <p>Upload your own data to be displayed in the browser</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
+    <div className={styles.wrapper}>
+      <CloseButton className={styles.closeButton} onClick={onClose} />
+      <h3 className={styles.title}>{title}</h3>
+      <div className={styles.content}>
+        <div>{props.children}</div>
+      </div>
+    </div>
   );
 };
 
-export default PersonalData;
+export default SidebarModal;

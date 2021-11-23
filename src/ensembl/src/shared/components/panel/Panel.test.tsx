@@ -44,7 +44,7 @@ const renderPanel = (props?: Partial<PanelProps>) => {
   return render(<Panel {...defaultProps} {...props} />);
 };
 
-describe('<Tabs />', () => {
+describe('<Panel />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });

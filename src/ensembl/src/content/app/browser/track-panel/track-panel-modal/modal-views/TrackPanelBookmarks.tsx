@@ -96,7 +96,6 @@ export const TrackPanelBookmarks = () => {
 
   return (
     <section className={styles.trackPanelBookmarks}>
-      <div className={styles.title}>Previously viewed</div>
       {previouslyViewedObjects.length ? (
         <>
           <PreviouslyViewedLinks />

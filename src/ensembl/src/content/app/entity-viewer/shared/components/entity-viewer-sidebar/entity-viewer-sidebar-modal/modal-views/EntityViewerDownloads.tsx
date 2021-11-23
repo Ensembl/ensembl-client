@@ -95,7 +95,6 @@ const EntityViewerSidebarDownloads = () => {
 
   return (
     <section>
-      <h3>Download</h3>
       <InstantDownloadGene
         genomeId={genomeId as string}
         gene={{

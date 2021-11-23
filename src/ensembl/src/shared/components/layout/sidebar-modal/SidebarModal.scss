@@ -1,0 +1,27 @@
+@import 'src/styles/common';
+
+.wrapper {
+  display: grid;
+  grid-template-areas: "title close"
+                       "content content";
+  grid-template-columns: 1fr 20px;
+  grid-template-rows: 38px auto;
+}
+
+.title {
+  grid-area: title;
+  font-size: 14px;
+  margin-top: 0;
+}
+
+.content { 
+  grid-area: content;
+  overflow: auto;
+}
+
+.closeButton {
+  grid-area: close;
+  position: relative;
+  right: 0px;
+  top: 3px;
+}

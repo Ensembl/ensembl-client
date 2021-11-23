@@ -27,7 +27,8 @@ import TrackPanelBookmarks from './modal-views/TrackPanelBookmarks';
 import PersonalData from './modal-views/PersonalData';
 import TrackPanelShare from './modal-views/TrackPanelShare';
 import TrackPanelDownloads from './modal-views/TrackPanelDownloads';
-import CloseButton from 'src/shared/components/close-button/CloseButton';
+
+import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
 import styles from './TrackPanelModal.scss';
 
@@ -35,22 +36,25 @@ export const TrackPanelModal = () => {
   const trackPanelModalView = useSelector(getTrackPanelModalView);
   const dispatch = useDispatch();
 
-  const getModalView = () => {
+  const getModalViewData = () => {
     switch (trackPanelModalView) {
       case 'search':
-        return <TrackPanelSearch />;
+        return { content: <TrackPanelSearch />, title: 'Search' };
       case 'tracks-manager':
-        return <TracksManager />;
+        return { content: <TracksManager />, title: 'Tracks manager' };
       case 'bookmarks':
-        return <TrackPanelBookmarks />;
+        return { content: <TrackPanelBookmarks />, title: 'Previously viewed' };
       case 'personal-data':
-        return <PersonalData />;
+        return { content: <PersonalData />, title: 'Personal data' };
       case 'share':
-        return <TrackPanelShare />;
+        return { content: <TrackPanelShare />, title: 'Share' };
       case 'downloads':
-        return <TrackPanelDownloads />;
+        return { content: <TrackPanelDownloads />, title: 'Downloads' };
       default:
-        return null;
+        return {
+          content: null,
+          title: ''
+        };
     }
   };
 
@@ -58,12 +62,13 @@ export const TrackPanelModal = () => {
     dispatch(closeDrawer());
     dispatch(closeTrackPanelModal());
   };
+
+  const { title, content } = getModalViewData();
   return (
     <section className={styles.trackPanelModal}>
-      <div className={styles.closeButton}>
-        <CloseButton onClick={onClose} />
-      </div>
-      <div className={styles.trackPanelModalView}>{getModalView()}</div>
+      <SidebarModal title={title} onClose={onClose}>
+        {content}
+      </SidebarModal>
     </section>
   );
 };
