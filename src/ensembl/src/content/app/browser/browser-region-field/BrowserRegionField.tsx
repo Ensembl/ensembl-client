@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, FormEvent, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -61,7 +61,10 @@ export const BrowserRegionField = () => {
 
   const handleFocus = () => dispatch(toggleRegionFieldActive(true));
 
-  const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
+  const changeRegionFieldInput = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setRegionFieldInput(value);
+  };
 
   const getRegionInputWithStick = (input: string) => {
     const [stick] = chrLocation as ChrLocation;
