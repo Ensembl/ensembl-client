@@ -25,7 +25,7 @@ import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers
 import analyticsTracking from 'src/services/analytics-service';
 
 import { closeTrackPanelModal } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
+import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
 

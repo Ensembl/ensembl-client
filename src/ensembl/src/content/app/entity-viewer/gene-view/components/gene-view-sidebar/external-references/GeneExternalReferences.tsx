@@ -23,6 +23,8 @@ import { Pick2 } from 'ts-multipick';
 import { parseEnsObjectIdFromUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
@@ -34,6 +36,7 @@ import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
 import { Slice } from 'src/shared/types/thoas/slice';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
 import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
+import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneExternalReferences.scss';
 
@@ -118,10 +121,10 @@ type Gene = {
 
 const GeneExternalReferences = () => {
   const params: EntityViewerParams = useParams();
-
   const { entityId, genomeId } = params;
-
   const stableId = entityId ? parseEnsObjectIdFromUrl(entityId).objectId : null;
+
+  const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
   const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
     variables: {
@@ -145,6 +148,13 @@ const GeneExternalReferences = () => {
   const { transcripts } = data.gene;
   const sortedTranscripts = defaultSort(transcripts);
 
+  const clickHandler = (linkLabel: string) => {
+    trackExternalReferenceLinkClick({
+      tabName: SidebarTabName.EXTERNAL_REFERENCES,
+      linkLabel
+    });
+  };
+
   return (
     <div>
       <section>
@@ -157,7 +167,10 @@ const GeneExternalReferences = () => {
         <div className={styles.sectionHead}>Gene</div>
         {data.gene.external_references && (
           <div className={styles.sectionContent}>
-            {renderExternalReferencesGroups(externalReferencesGroups)}
+            {renderExternalReferencesGroups(
+              externalReferencesGroups,
+              clickHandler
+            )}
           </div>
         )}
       </section>
@@ -168,7 +181,10 @@ const GeneExternalReferences = () => {
             {sortedTranscripts.map((transcript, key) => {
               return (
                 <div key={key}>
-                  <TranscriptExternalReferencesGroups transcript={transcript} />
+                  <TranscriptExternalReferencesGroups
+                    transcript={transcript}
+                    onClick={clickHandler}
+                  />
                 </div>
               );
             })}
@@ -181,6 +197,7 @@ const GeneExternalReferences = () => {
 
 const TranscriptExternalReferencesGroups = (props: {
   transcript: Transcript;
+  onClick: (linkLabel: string) => void;
 }) => {
   const { transcript } = props;
   const unsortedExternalReferences = [...transcript.external_references];
@@ -215,7 +232,10 @@ const TranscriptExternalReferencesGroups = (props: {
       />
       {shouldRenderExternalReferences && (
         <div className={styles.listContainer}>
-          {renderExternalReferencesGroups(externalReferencesGroups)}
+          {renderExternalReferencesGroups(
+            externalReferencesGroups,
+            props.onClick
+          )}
         </div>
       )}
     </>
@@ -306,9 +326,12 @@ const buildExternalReferencesGroups = (
   return externalReferencesGroups;
 };
 
-const renderExternalReferencesGroups = (externalReferencesGroups: {
-  [key: string]: ExternalReferencesGroupType;
-}) => {
+const renderExternalReferencesGroups = (
+  externalReferencesGroups: {
+    [key: string]: ExternalReferencesGroupType;
+  },
+  onClick: (linkLabel: string) => void
+) => {
   return Object.values(externalReferencesGroups).map(
     (externalReferencesGroup, key) => (
       <div key={key}>
@@ -317,6 +340,7 @@ const renderExternalReferencesGroups = (externalReferencesGroups: {
             label={externalReferencesGroup.source.name}
             to={externalReferencesGroup.references[0].url}
             linkText={externalReferencesGroup.references[0].accession_id}
+            onClick={() => onClick(externalReferencesGroup.source.name)}
             classNames={{
               container: styles.externalReferenceContainer,
               link: styles.externalReferenceLink

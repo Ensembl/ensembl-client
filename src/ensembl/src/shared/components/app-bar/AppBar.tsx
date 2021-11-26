@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import ConversationIcon from 'ensemblRoot/src/shared/components/communication-framework/ConversationIcon';
+import ConversationIcon from 'src/shared/components/communication-framework/ConversationIcon';
 import Chevron from 'src/shared/components/chevron/Chevron';
 
 import styles from './AppBar.scss';

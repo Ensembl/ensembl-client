@@ -24,11 +24,9 @@ import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { getActiveGenomePreviouslyViewedObjects } from 'src/content/app/browser/track-panel/trackPanelSelectors';
-import { changeDrawerViewAndOpen } from 'src/content/app/browser/drawer/drawerActions';
+import { changeDrawerViewAndOpen } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import TextLine from 'src/shared/components/text-line/TextLine';
-
-import { DrawerView } from 'src/content/app/browser/drawer/drawerState';
 
 import styles from './TrackPanelBookmarks.scss';
 
@@ -93,12 +91,11 @@ export const TrackPanelBookmarks = () => {
       value: previouslyViewedObjects.length
     });
 
-    dispatch(changeDrawerViewAndOpen(DrawerView.BOOKMARKS));
+    dispatch(changeDrawerViewAndOpen({ name: 'bookmarks' }));
   };
 
   return (
     <section className={styles.trackPanelBookmarks}>
-      <div className={styles.title}>Previously viewed</div>
       {previouslyViewedObjects.length ? (
         <>
           <PreviouslyViewedLinks />

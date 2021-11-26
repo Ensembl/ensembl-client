@@ -1,23 +1,6 @@
-@import 'src/styles/common';
-
 .trackPanelModal {
-  background: $white;
-  position: relative;
-  overflow: auto;
-  height: 100%;
-
-  h3 {
-    font-size: 14px;
-  }
-
   p {
     font-size: 13px;
     margin-bottom: 30px;
   }
-}
-
-.closeButton {
-  position: absolute;
-  right: 0;
-  top: 0;
 }

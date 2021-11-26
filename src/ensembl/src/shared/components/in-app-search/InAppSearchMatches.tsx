@@ -24,6 +24,8 @@ import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormat
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import PointerBox, {
   Position as PointerBoxPosition
 } from 'src/shared/components/pointer-box/PointerBox';
@@ -31,24 +33,28 @@ import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 
 import type {
   SearchResults,
-  SearchMatch
+  SearchMatch,
+  AppName
 } from 'src/shared/state/in-app-search/inAppSearchSlice';
 import type { InAppSearchMode } from './InAppSearch';
 
 import styles from './InAppSearch.scss';
 
 type InAppSearchMatchesProps = SearchResults & {
+  app: AppName;
   mode: InAppSearchMode;
 };
 
 const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
   return (
     <div className={styles.searchMatches}>
-      {props.matches.map((match) => (
+      {props.matches.map((match, index) => (
         <InAppSearchMatch
           key={match.stable_id}
           match={match}
+          app={props.app}
           mode={props.mode}
+          position={index + 1}
         />
       ))}
     </div>
@@ -57,17 +63,45 @@ const InAppSearchMatches = (props: InAppSearchMatchesProps) => {
 
 type InAppSearchMatchProps = {
   match: SearchMatch;
+  app: AppName;
   mode: InAppSearchMode;
+  position: number;
 };
 
 const InAppSearchMatch = (props: InAppSearchMatchProps) => {
-  const { symbol, stable_id } = props.match;
+  const {
+    app,
+    mode,
+    position,
+    match: { symbol, stable_id }
+  } = props;
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
 
   const anchorRef = useRef<HTMLSpanElement>(null);
 
-  const onClick = () => {
+  const onMatchClick = () => {
     setShouldShowTooltip(!shouldShowTooltip);
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'select_link',
+        label: `${symbol}: ${stable_id}`,
+        value: position
+      });
+    }
+  };
+
+  const onAppClick = (selectedAppName?: AppName) => {
+    setShouldShowTooltip(!shouldShowTooltip);
+
+    if (app === 'entityViewer') {
+      analyticsTracking.trackEvent({
+        category: `${app}_${mode}_search`,
+        action: 'select_app',
+        label: selectedAppName
+      });
+    }
   };
 
   const hideTooltip = () => setShouldShowTooltip(false);
@@ -77,7 +111,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
 
   return (
     <>
-      <div className={styles.searchMatch} onClick={onClick}>
+      <div className={styles.searchMatch} onClick={onMatchClick}>
         {symbolElement}
         {stableIdElement}
         <span
@@ -96,7 +130,7 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
           classNames={{ box: styles.tooltip, pointer: styles.tooltipTip }}
           onOutsideClick={hideTooltip}
         >
-          <MatchDetails {...props} onClick={onClick} />
+          <MatchDetails {...props} onClick={onAppClick} />
         </PointerBox>
       )}
     </>
@@ -104,7 +138,9 @@ const InAppSearchMatch = (props: InAppSearchMatchProps) => {
 };
 
 const MatchDetails = (
-  props: InAppSearchMatchProps & { onClick: () => void }
+  props: Pick<InAppSearchMatchProps, 'match' | 'mode'> & {
+    onClick: (appName?: AppName) => void;
+  }
 ) => {
   const { match } = props;
   const { genome_id: genomeId, unversioned_stable_id } = match;

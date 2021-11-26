@@ -285,12 +285,14 @@ const GeneViewWithData = (props: GeneViewWithDataProps) => {
       return;
     }
 
-    dispatch(
-      updatePreviouslyViewedEntities({
-        genomeId,
-        gene: props.gene
-      })
-    );
+    return () => {
+      dispatch(
+        updatePreviouslyViewedEntities({
+          genomeId,
+          gene: props.gene
+        })
+      );
+    };
   }, [genomeId, geneId]);
 
   return (

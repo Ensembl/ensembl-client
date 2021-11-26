@@ -29,6 +29,13 @@ jest.mock('react-router-dom', () => ({
   )
 }));
 
+jest.mock(
+  'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics',
+  () => () => ({
+    trackPreviouslyViewedLinkClick: jest.fn()
+  })
+);
+
 const mockStore = configureMockStore();
 
 const exampleEntities = [
@@ -37,6 +44,9 @@ const exampleEntities = [
     type: 'gene'
   }
 ];
+
+const currentEntityId = `braf`;
+const currentEntityLabel = `BRAF`;
 
 const previouslyViewedEntities = [
   {
@@ -47,6 +57,11 @@ const previouslyViewedEntities = [
   {
     entity_id: 'human-tp53',
     label: 'TP53',
+    type: 'gene'
+  },
+  {
+    entity_id: currentEntityId,
+    label: currentEntityLabel,
     type: 'gene'
   }
 ];
@@ -65,7 +80,7 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEntityIds: {
-        human: 'human:gene:braf'
+        human: `human:gene:${currentEntityId}`
       }
     },
     bookmarks: {

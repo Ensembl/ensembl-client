@@ -25,11 +25,11 @@ variables:
 # Template to build static assets
 .build-static:
   stage: test_build_static
-  image: node:14.17.0
+  image: node:16.13.0
 
   before_script:
   - cd src/ensembl
-  - npm install --global npm@7.12.1
+  - npm install --global npm@8.1.0
   - npm ci --loglevel warn
 
   script:
@@ -147,12 +147,12 @@ variables:
   - kubectl delete deploy ensembl-client-${CI_COMMIT_REF_SLUG}-node-deployment
 
 Test:
-  image: node:14.17.0
+  image: node:16.13.0
   stage: test
 
   before_script:
   - cd src/ensembl
-  - npm install --global npm@7.12.1
+  - npm install --global npm@8.1.0
   - npm ci --loglevel warn
 
   script:

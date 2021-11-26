@@ -27,6 +27,8 @@ import {
 } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
 import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
 
+import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+
 import TextLine from 'src/shared/components/text-line/TextLine';
 
 import { RootState } from 'src/store';
@@ -40,28 +42,33 @@ type PreviouslyViewedLinksProps = {
 };
 
 export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
+  const { trackPreviouslyViewedLinkClick } = useEntityViewerAnalytics();
+
+  const handleClick = (linkLabel: string | string[], index: number) => {
+    trackPreviouslyViewedLinkClick({
+      linkLabel:
+        typeof linkLabel === 'string' ? linkLabel : linkLabel.join(' '),
+      position: index + 1
+    });
+  };
+
   return (
     <div data-test-id="previously viewed links">
-      {props.previouslyViewedEntities.map((previouslyViewedEntity, index) => {
+      {props.previouslyViewedEntities.map((entity, index) => {
         const path = urlFor.entityViewer({
           genomeId: props.activeGenomeId,
           entityId: buildFocusIdForUrl({
             type: 'gene',
-            objectId: previouslyViewedEntity.entity_id
+            objectId: entity.entity_id
           })
         });
 
         return (
           <div key={index} className={styles.linkHolder}>
-            <Link to={path}>
-              <TextLine
-                text={previouslyViewedEntity.label}
-                className={styles.label}
-              />
+            <Link to={path} onClick={() => handleClick(entity.label, index)}>
+              <TextLine text={entity.label} className={styles.label} />
             </Link>
-            <span className={styles.type}>
-              {upperFirst(previouslyViewedEntity.type)}
-            </span>
+            <span className={styles.type}>{upperFirst(entity.type)}</span>
           </div>
         );
       })}
@@ -83,7 +90,6 @@ export const EntityViewerSidebarBookmarks = () => {
 
   return (
     <section>
-      <h3>Previously viewed</h3>
       {previouslyViewedEntities.length ? (
         <>
           <PreviouslyViewedLinks

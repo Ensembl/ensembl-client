@@ -26,10 +26,8 @@ import { createEnsObject } from 'tests/fixtures/ens-object';
 
 import { TrackPanelList } from './TrackPanelList';
 
-jest.mock('./TrackPanelGene', () => () => <div className="trackPanelGene" />);
-
-jest.mock('./TrackPanelListItem', () => () => (
-  <div className="trackPanelListItem" />
+jest.mock('./track-panel-items/TrackPanelGene', () => () => (
+  <div className="trackPanelGene" />
 ));
 
 const mockState = createMockBrowserState();

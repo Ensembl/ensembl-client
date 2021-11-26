@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-export enum DrawerView {
-  BOOKMARKS = 'bookmarks',
-  TRACK_DETAILS = 'track_details',
-  GENE_SUMMARY = 'gene_summary',
-  TRANSCRIPT_SUMMARY = 'transcript_summary'
-}
+import React from 'react';
 
-export type DrawerStateForGenome = Readonly<{
-  isDrawerOpened: boolean;
-  activeDrawerView: DrawerView | null;
-  activeDrawerTrackId: string | null;
-  activeDrawerTranscriptId: string | null;
-}>;
+import Breadcrumbs from 'src/shared/components/breadcrumbs/Breadcrumbs';
 
-export type DrawerState = Readonly<{
-  [genomeId: string]: DrawerStateForGenome;
-}>;
+import styles from './Breadcrumbs.stories.scss';
 
-export const defaultDrawerStateForGenome = {
-  isDrawerOpened: false,
-  activeDrawerView: null,
-  activeDrawerTrackId: null,
-  activeDrawerTranscriptId: null
+export default {
+  title: 'Components/Shared Components/Breadcrumbs'
 };
+
+export const DefaultBreadcrumbs = () => (
+  <div className={styles.wrapper}>
+    <Breadcrumbs breadcrumbs={['Item 1', 'Item 2', 'Item 3', 'Item 4']} />
+  </div>
+);
+
+DefaultBreadcrumbs.storyName = 'Breadcrumbs';

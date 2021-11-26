@@ -24,7 +24,7 @@ import set from 'lodash/fp/set';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
 import * as trackPanelActions from 'src/content/app/browser/track-panel/trackPanelActions';
-import * as drawerActions from 'src/content/app/browser/drawer/drawerActions';
+import * as drawerActions from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import { TrackPanelTabs } from './TrackPanelTabs';
 

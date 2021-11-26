@@ -16,21 +16,19 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
-import get from 'lodash/get';
 import classNames from 'classnames';
 
 import { GenomeTrackCategory } from 'src/shared/state/genome/genomeTypes';
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
   getBrowserActiveEnsObject,
-  getBrowserTrackStates,
   getBrowserActiveGenomeId
 } from '../../browserSelectors';
 import { getSelectedTrackPanelTab } from '../trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 
-import TrackPanelListItem from './TrackPanelListItem';
-import TrackPanelGene from './TrackPanelGene';
+import TrackPanelGene from './track-panel-items/TrackPanelGene';
+import TrackPanelRegularItem from './track-panel-items/TrackPanelRegularItem';
 import {
   Accordion,
   AccordionItem,
@@ -39,9 +37,6 @@ import {
   AccordionItemPanel
 } from 'src/shared/components/accordion';
 
-import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { Status } from 'src/shared/types/status';
-
 import styles from './TrackPanelList.scss';
 
 export const TrackPanelList = () => {
@@ -49,63 +44,15 @@ export const TrackPanelList = () => {
   const activeEnsObject = useSelector(getBrowserActiveEnsObject);
   const selectedTrackPanelTab = useSelector(getSelectedTrackPanelTab);
   const genomeTrackCategories = useSelector(getGenomeTrackCategoriesById);
-  const trackStates = useSelector(getBrowserTrackStates);
+
+  if (!activeGenomeId) {
+    return null; // will never happen, but makes typescript happy
+  }
 
   const currentTrackCategories = genomeTrackCategories?.filter(
     (category: GenomeTrackCategory) =>
       category.types.includes(selectedTrackPanelTab)
   );
-
-  // TODO: get default track status properly if it can ever be inactive
-  const getDefaultTrackStatus = (): TrackActivityStatus => {
-    return Status.SELECTED;
-  };
-
-  const getTrackListItem = (
-    categoryName: string,
-    track: EnsObjectTrack | null
-  ) => {
-    if (!track) {
-      return;
-    }
-
-    const { track_id } = track;
-
-    const defaultTrackStatus = getDefaultTrackStatus();
-    let trackStatus = defaultTrackStatus;
-
-    if (activeEnsObject) {
-      // FIXME: Temporary hack until we have a set of proper track names
-      if (track_id.startsWith('track:gene')) {
-        trackStatus = get(
-          trackStates,
-          `${activeGenomeId}.objectTracks.${activeEnsObject.object_id}.${categoryName}.${track_id}`,
-          trackStatus
-        ) as TrackActivityStatus;
-      } else {
-        trackStatus = get(
-          trackStates,
-          `${activeGenomeId}.commonTracks.${categoryName}.${track_id}`,
-          trackStatus
-        ) as TrackActivityStatus;
-      }
-    }
-
-    return (
-      <TrackPanelListItem
-        categoryName={categoryName}
-        defaultTrackStatus={defaultTrackStatus}
-        trackStatus={trackStatus}
-        key={track.track_id}
-        track={track}
-      >
-        {track.child_tracks &&
-          track.child_tracks.map((childTrack: EnsObjectTrack) =>
-            getTrackListItem(categoryName, childTrack)
-          )}
-      </TrackPanelListItem>
-    );
-  };
 
   const trackCategoryIds = currentTrackCategories
     ?.filter((category: GenomeTrackCategory) => category.track_list.length)
@@ -159,9 +106,14 @@ export const TrackPanelList = () => {
                   className={styles.trackPanelAccordionItemContent}
                 >
                   <dl>
-                    {category.track_list.map((track: EnsObjectTrack) =>
-                      getTrackListItem(category.track_category_id, track)
-                    )}
+                    {category.track_list.map((track: EnsObjectTrack) => (
+                      <TrackPanelRegularItem
+                        {...track}
+                        genomeId={activeGenomeId}
+                        category={category.track_category_id}
+                        key={track.track_id}
+                      />
+                    ))}
                   </dl>
                 </AccordionItemPanel>
               </AccordionItem>

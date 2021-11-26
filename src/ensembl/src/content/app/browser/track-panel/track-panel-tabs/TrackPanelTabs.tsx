@@ -31,8 +31,8 @@ import {
   toggleTrackPanel
 } from 'src/content/app/browser/track-panel/trackPanelActions';
 
-import { getIsDrawerOpened } from 'src/content/app/browser/drawer/drawerSelectors';
-import { closeDrawer } from 'src/content/app/browser/drawer/drawerActions';
+import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
+import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import styles from './TrackPanelTabs.scss';
 
