@@ -14,91 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, InputHTMLAttributes, ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './Input.scss';
 
-type PropsForRespondingWithEvents = {
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onFocus?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  callbackWithEvent: true;
+export type Props = InputHTMLAttributes<HTMLInputElement>;
+
+const Input = (props: Props, ref: ForwardedRef<HTMLInputElement>) => {
+  const { className: classNameFromProps, ...otherProps } = props;
+  const className = classNames(styles.input, classNameFromProps);
+
+  return <input className={className} ref={ref} {...otherProps} />;
 };
 
-type PropsForRespondingWithData = {
-  onChange?: (value: string) => void;
-  onFocus?: (value?: string) => void;
-  onBlur?: (value?: string) => void;
-  callbackWithEvent: false;
-};
-
-type OnChangeProps = PropsForRespondingWithEvents | PropsForRespondingWithData;
-
-export type Props = {
-  value: string | number;
-  id?: string;
-  name?: string;
-  type?: string;
-  autoFocus?: boolean;
-  placeholder?: string;
-  className?: string; // to customize input styling when using CSS modules
-  onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-} & OnChangeProps;
-
-const Input = (props: Props) => {
-  const eventHandler =
-    (eventName: string) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.FocusEvent<HTMLInputElement>
-    ) => {
-      const value = e.target.value;
-
-      if (eventName === 'change') {
-        if (!props.onChange) {
-          return;
-        }
-        props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
-      } else if (eventName === 'focus') {
-        if (!props.onFocus) {
-          return;
-        }
-        props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
-      } else if (eventName === 'blur') {
-        if (!props.onBlur) {
-          return;
-        }
-        props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
-      }
-    };
-
-  const className = classNames(styles.input, props.className);
-
-  return (
-    <input
-      id={props.id}
-      name={props.name}
-      type={props.type || 'text'}
-      autoFocus={props.autoFocus}
-      placeholder={props.placeholder}
-      className={className}
-      value={props.value}
-      onChange={eventHandler('change')}
-      onFocus={eventHandler('focus')}
-      onBlur={eventHandler('blur')}
-      onKeyUp={props.onKeyUp}
-      onKeyDown={props.onKeyDown}
-      onKeyPress={props.onKeyPress}
-    />
-  );
-};
-
-Input.defaultProps = {
-  callbackWithEvent: false
-};
-
-export default Input;
+export default forwardRef(Input);

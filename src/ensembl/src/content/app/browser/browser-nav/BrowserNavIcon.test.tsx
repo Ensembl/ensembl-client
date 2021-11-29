@@ -18,15 +18,24 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { OutgoingActionType } from 'ensembl-genome-browser';
+
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
 import { BrowserNavIcon } from './BrowserNavIcon';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+
 import { browserNavConfig } from '../browserConfig';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser
+}));
 
 describe('<BrowserNavAction />', () => {
   const browserNavItem = browserNavConfig[0];
 
   test('sends navigation message when clicked', () => {
-    jest.spyOn(browserMessagingService, 'send');
+    jest.spyOn(mockGenomeBrowser, 'send');
 
     const { container } = render(
       <BrowserNavIcon browserNavItem={browserNavItem} enabled={true} />
@@ -34,12 +43,12 @@ describe('<BrowserNavAction />', () => {
     const button = container.querySelector('button') as HTMLButtonElement;
 
     userEvent.click(button);
-    expect(browserMessagingService.send).toHaveBeenCalledTimes(1);
-    expect(browserMessagingService.send).toHaveBeenCalledWith(
-      'bpane',
-      browserNavItem.detail
-    );
+    expect(mockGenomeBrowser.send).toHaveBeenCalledTimes(1);
+    expect(mockGenomeBrowser.send).toHaveBeenCalledWith({
+      payload: { move_up_px: 50 },
+      type: OutgoingActionType.MOVE_UP
+    });
 
-    (browserMessagingService.send as any).mockRestore();
+    (mockGenomeBrowser.send as any).mockRestore();
   });
 });

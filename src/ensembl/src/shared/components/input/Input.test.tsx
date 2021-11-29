@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, MutableRefObject } from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
@@ -27,6 +27,7 @@ describe('<Input />', () => {
     id: 'testId',
     name: 'testInputName',
     className: 'testInputClass',
+    placeholder: 'type here',
     onChange: jest.fn(),
     onFocus: jest.fn(),
     onBlur: jest.fn(),
@@ -44,15 +45,10 @@ describe('<Input />', () => {
   });
 
   describe('rendering', () => {
-    const inputValue = 'foo';
-    const props = {
-      ...commonInputProps,
-      value: inputValue,
-      callbackWithEvent: false
-    };
+    const props = commonInputProps;
 
     it('passes relevant props to the input element', () => {
-      const { container } = getRenderedInputContainer(props);
+      const { container } = render(<Input {...props} />);
 
       const inputElement = container.querySelector('input') as HTMLInputElement;
 
@@ -79,47 +75,18 @@ describe('<Input />', () => {
 
       expect(inputElement.value).toBe(newValue);
     });
-  });
 
-  describe('responding with data', () => {
-    it('passes string value to onChange', () => {
-      const inputValue = 'foo';
-      const { container } = getRenderedInputContainer({
-        ...commonInputProps,
-        value: inputValue,
-        callbackWithEvent: false
-      });
-      const inputNode = container.querySelector('input') as HTMLInputElement;
+    it('forwards the ref to the input element', () => {
+      let inputRef = null as MutableRefObject<HTMLInputElement | null> | null;
+      const Wrapper = () => {
+        inputRef = useRef<HTMLInputElement | null>(null);
+        return <Input ref={inputRef} {...props} />;
+      };
+      render(<Wrapper />);
 
-      userEvent.type(inputNode, '1');
-      expect(commonInputProps.onChange).toHaveBeenLastCalledWith('foo1');
-    });
+      const inputElement = inputRef?.current;
 
-    it('passes string value to onFocus', () => {
-      const inputValue = 'foo';
-      const { container } = getRenderedInputContainer({
-        ...commonInputProps,
-        value: inputValue,
-        callbackWithEvent: false
-      });
-      const inputNode = container.querySelector('input') as HTMLInputElement;
-
-      fireEvent.focus(inputNode);
-      expect(commonInputProps.onFocus).toHaveBeenLastCalledWith(inputValue);
-    });
-
-    it('passes string value to onBlur', () => {
-      const inputValue = 'foo';
-      const { container } = getRenderedInputContainer({
-        ...commonInputProps,
-        value: inputValue,
-        callbackWithEvent: false
-      });
-      const inputNode = container.querySelector('input') as HTMLInputElement;
-
-      fireEvent.blur(inputNode);
-
-      expect(commonInputProps.onBlur).toHaveBeenLastCalledWith(inputValue);
+      expect(inputElement?.tagName).toBe('INPUT');
     });
   });
 
@@ -137,12 +104,7 @@ describe('<Input />', () => {
         };
 
         return (
-          <Input
-            {...commonInputProps}
-            onChange={onChange}
-            value={inputValue}
-            callbackWithEvent={true}
-          />
+          <Input {...commonInputProps} onChange={onChange} value={inputValue} />
         );
       };
 
@@ -160,8 +122,7 @@ describe('<Input />', () => {
       const inputValue = 'foo';
       const { container } = getRenderedInputContainer({
         ...commonInputProps,
-        value: inputValue,
-        callbackWithEvent: true
+        value: inputValue
       });
 
       const inputNode = container.querySelector('input') as HTMLInputElement;
@@ -176,8 +137,7 @@ describe('<Input />', () => {
       const inputValue = 'foo';
       const { container } = getRenderedInputContainer({
         ...commonInputProps,
-        value: inputValue,
-        callbackWithEvent: true
+        value: inputValue
       });
 
       const inputNode = container.querySelector('input') as HTMLInputElement;

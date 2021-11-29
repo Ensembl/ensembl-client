@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OutgoingActionType } from 'ensembl-genome-browser';
 import browserStorageService from './browser-storage-service';
 
 import { BrowserTrackStates } from './track-panel/trackPanelConfig';
@@ -30,13 +31,22 @@ const trackStates = !isServer ? browserStorageService.getTrackStates() : {};
 const chrLocations = !isServer ? browserStorageService.getChrLocation() : [];
 
 export enum BrowserNavAction {
-  NAVIGATE_UP = 'navigate-up',
-  NAVIGATE_RIGHT = 'navigate-right',
-  NAVIGATE_DOWN = 'navigate-down',
-  NAVIGATE_LEFT = 'navigate-left',
-  ZOOM_OUT = 'zoom-out',
-  ZOOM_IN = 'zoom-in'
+  MOVE_UP = 'move_up',
+  MOVE_DOWN = 'move_down',
+  MOVE_LEFT = 'move_left',
+  MOVE_RIGHT = 'move_right',
+  ZOOM_IN = 'zoom_in',
+  ZOOM_OUT = 'zoom_out'
 }
+
+export const browserNavIconActionMap = {
+  [BrowserNavAction.MOVE_UP]: OutgoingActionType.MOVE_UP,
+  [BrowserNavAction.MOVE_DOWN]: OutgoingActionType.MOVE_DOWN,
+  [BrowserNavAction.MOVE_LEFT]: OutgoingActionType.MOVE_LEFT,
+  [BrowserNavAction.MOVE_RIGHT]: OutgoingActionType.MOVE_RIGHT,
+  [BrowserNavAction.ZOOM_OUT]: OutgoingActionType.ZOOM_OUT,
+  [BrowserNavAction.ZOOM_IN]: OutgoingActionType.ZOOM_IN
+};
 
 // states are top, right, bottom, left (TRBL) and minus (zoom out) and plus (zoom in)
 export type BrowserNavIconStates = {
@@ -44,10 +54,10 @@ export type BrowserNavIconStates = {
 };
 
 export const defaultBrowserNavIconsState = {
-  [BrowserNavAction.NAVIGATE_UP]: false,
-  [BrowserNavAction.NAVIGATE_RIGHT]: false,
-  [BrowserNavAction.NAVIGATE_DOWN]: false,
-  [BrowserNavAction.NAVIGATE_LEFT]: false,
+  [BrowserNavAction.MOVE_UP]: false,
+  [BrowserNavAction.MOVE_DOWN]: false,
+  [BrowserNavAction.MOVE_LEFT]: false,
+  [BrowserNavAction.MOVE_RIGHT]: false,
   [BrowserNavAction.ZOOM_OUT]: false,
   [BrowserNavAction.ZOOM_IN]: false
 };
@@ -58,14 +68,6 @@ export type ChrLocations = { [genomeId: string]: ChrLocation };
 
 export type CogList = {
   [key: string]: number;
-};
-
-export type BrowserState = Readonly<{
-  browserActivated: boolean;
-}>;
-
-export const defaultBrowserState: BrowserState = {
-  browserActivated: false
 };
 
 export type BrowserEntityState = Readonly<{
@@ -107,7 +109,11 @@ export const defaultBrowserLocationState: BrowserLocationState = {
 };
 
 export type TrackConfigState = Readonly<{
-  applyToAll: boolean;
+  applyToAllConfig: {
+    isSelected: boolean;
+    allTrackNamesOn: boolean;
+    allTrackLabelsOn: boolean;
+  };
   browserCogList: number;
   browserCogTrackList: CogList;
   selectedCog: string | null;
@@ -116,7 +122,11 @@ export type TrackConfigState = Readonly<{
 }>;
 
 export const defaultTrackConfigState: TrackConfigState = {
-  applyToAll: false,
+  applyToAllConfig: {
+    isSelected: false,
+    allTrackNamesOn: false,
+    allTrackLabelsOn: true
+  },
   browserCogList: 0,
   browserCogTrackList: {},
   selectedCog: null,

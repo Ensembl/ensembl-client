@@ -1,6 +1,8 @@
 # PRODUCTION IMAGE
 FROM node:16.13.0-alpine
 
+RUN apk add --no-cache git
+
 WORKDIR /srv/ensembl-client/
 
 ENV NODE_ENV=production

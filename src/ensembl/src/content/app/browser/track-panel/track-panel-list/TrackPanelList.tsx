@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 
@@ -125,4 +125,4 @@ export const TrackPanelList = () => {
   );
 };
 
-export default TrackPanelList;
+export default memo(TrackPanelList);

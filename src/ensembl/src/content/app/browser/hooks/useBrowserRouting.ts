@@ -20,22 +20,20 @@ import { push, replace } from 'connected-react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+
 import * as urlFor from 'src/shared/helpers/urlHelper';
+import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
   buildEnsObjectId,
   parseEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
+
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  setActiveGenomeId,
-  setDataFromUrlAndSave
-} from '../browserActions';
+import { setActiveGenomeId, setDataFromUrlAndSave } from '../browserActions';
+import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
@@ -74,12 +72,14 @@ const useBrowserRouting = () => {
   const activeEnsObjectId = genomeId ? allActiveEnsObjectIds[genomeId] : null;
   const newFocusId = focus ? buildNewEnsObjectId(genomeId, focus) : null;
   const chrLocation = location ? getChrLocationFromStr(location) : null;
+  const { genomeBrowser, changeFocusObject, changeBrowserLocation } =
+    useGenomeBrowser();
 
   useEffect(() => {
     if (!genomeId) {
       // handling navigation to /browser
       // select either the species that the user viewed during the previous visit,
-      // of the first selected species
+      // or the first selected species
       const selectedSpecies = committedSpecies.find(
         ({ genome_id }) => genome_id === activeGenomeId
       );
@@ -110,31 +110,32 @@ const useBrowserRouting = () => {
     if (!focus && activeEnsObjectId) {
       const newFocus = buildFocusIdForUrl(parseEnsObjectId(activeEnsObjectId));
       dispatch(replace(urlFor.browser({ genomeId, focus: newFocus })));
-    } else if (focus && !chrLocation) {
+    } else if (newFocusId && !chrLocation) {
       /*
        changeFocusObject needs to be called before setDataFromUrlAndSave
        because it will also try to bookmark the Ensembl object that is stored in redux state
        before it gets changed by setDataFromUrlAndSave
       */
-      dispatch(changeFocusObject(newFocusId as string));
-    } else if (chrLocation) {
+      changeFocusObject(newFocusId);
+    } else if (newFocusId && chrLocation) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
-
-      if (!isSameLocationAsInRedux || isFirstRender) {
-        dispatch(
+      if (genomeBrowser) {
+        if (!isSameLocationAsInRedux || isFirstRender) {
+          changeFocusObject(newFocusId);
           changeBrowserLocation({
             genomeId,
             ensObjectId: newFocusId,
             chrLocation
-          })
-        );
+          });
+
+          firstRenderRef.current = false;
+        }
       }
-      firstRenderRef.current = false;
     }
     dispatch(setDataFromUrlAndSave(payload));
-  }, [genomeId, focus, location]);
+  }, [genomeId, focus, genomeBrowser, location]);
 
   useEffect(() => {
     if (genomeId) {
@@ -156,6 +157,10 @@ const useBrowserRouting = () => {
         location: chrLocation ? getChrLocationStr(chrLocation) : null
       };
 
+      dispatch(setActiveGenomeId(genomeId));
+      // Consider it as first render when we change genome
+      firstRenderRef.current = true;
+
       // In case the url is simply /genome-browser, use the `replace` history method to redirect the user further.
       // This will allow the user to return from the next page (genome browser with genome id selected)
       // back to the page from which they have navigated to the current one. If the `push` method is used,
@@ -172,9 +177,6 @@ const useBrowserRouting = () => {
   );
 
   return {
-    genomeId,
-    focusId: newFocusId,
-    chrLocation,
     changeGenomeId
   };
 };

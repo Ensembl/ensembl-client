@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import Input from 'src/shared/components/input/Input';
 import ShadedInput from 'src/shared/components/input/ShadedInput';
@@ -25,63 +25,48 @@ type DefaultArgs = {
   onChange: (...args: any) => void;
 };
 
-const Wrapper = (props: any) => {
-  const [value, setValue] = useState('');
-  const { input: Input, ...otherProps } = props;
-
-  const onChange = (value: string) => {
-    setValue(value);
-    props.onChange(value);
-  };
-
-  return (
-    <div className={styles.wrapper}>
-      <Input value={value} {...otherProps} onChange={onChange} />
-    </div>
-  );
-};
-
 export const DefaultInputStory = (args: DefaultArgs) => (
-  <Wrapper input={Input} {...args} />
+  <div className={styles.wrapper}>
+    <Input {...args} />
+  </div>
 );
 
 DefaultInputStory.storyName = 'default';
 
 export const InputWithPlaceholderStory = (args: DefaultArgs) => (
-  <Wrapper input={Input} placeholder="Enter something..." {...args} />
+  <div className={styles.wrapper}>
+    <Input placeholder="Enter something..." {...args} />
+  </div>
 );
 
 InputWithPlaceholderStory.storyName = 'with placeholder';
 
 export const FocusAndBlurStory = (args: DefaultArgs) => (
-  <Wrapper
-    input={Input}
-    placeholder="Enter something..."
-    onFocus={() => args.onChange('input-focus')}
-    onBlur={() => args.onChange('input-blur')}
-    {...args}
-  />
+  <div className={styles.wrapper}>
+    <Input
+      placeholder="Enter something..."
+      onFocus={() => args.onChange('input-focus')}
+      onBlur={() => args.onChange('input-blur')}
+      {...args}
+    />
+  </div>
 );
 
 FocusAndBlurStory.storyName = 'handling focus and blur';
 
-export const ShadedInputStory = (args: DefaultArgs) => (
+export const ShadedInputStory = () => (
   <>
     <div className={styles.stage}>
       <p>Against white background</p>
-      <Wrapper
-        input={ShadedInput}
-        placeholder="Placeholder for dev..."
-        {...args}
-      />
+      <div className={styles.wrapper}>
+        <ShadedInput placeholder="Placeholder for dev..." />
+      </div>
     </div>
     <div className={`${styles.stage} ${styles.greyStage}`}>
       <p>Against grey background</p>
-      <Wrapper
-        input={ShadedInput}
-        placeholder="Placeholder for dev..."
-        {...args}
-      />
+      <div className={styles.wrapper}>
+        <ShadedInput placeholder="Placeholder for dev..." />
+      </div>
     </div>
   </>
 );
@@ -89,12 +74,13 @@ export const ShadedInputStory = (args: DefaultArgs) => (
 ShadedInputStory.storyName = 'shaded input';
 
 export const CustomInputStory = (args: DefaultArgs) => (
-  <Wrapper
-    input={Input}
-    placeholder="Enter something..."
-    className={styles.customizedInput}
-    {...args}
-  />
+  <div className={styles.wrapper}>
+    <Input
+      placeholder="Enter something..."
+      className={styles.customizedInput}
+      {...args}
+    />
+  </div>
 );
 
 CustomInputStory.storyName = 'custom styling';

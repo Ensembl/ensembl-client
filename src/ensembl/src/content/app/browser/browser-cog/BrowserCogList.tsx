@@ -14,93 +14,65 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import {
+  UpdateTrackSummaryAction,
+  IncomingActionType,
+  TrackSummaryList,
+  TrackSummary
+} from 'ensembl-genome-browser';
 
-import BrowserCog from './BrowserCog';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
-  updateCogList,
-  updateCogTrackList,
-  updateSelectedCog
-} from '../browserActions';
-import {
-  getBrowserActivated,
   getBrowserCogList,
   getBrowserCogTrackList,
-  getTrackConfigNames,
-  getTrackConfigLabel,
   getBrowserSelectedCog
 } from '../browserSelectors';
+import { updateSelectedCog, updateCogTrackList } from '../browserActions';
+
+import BrowserCog from './BrowserCog';
 
 import { CogList } from '../browserState';
 
 import styles from './BrowserCogList.scss';
 
-type BpaneScrollPayload = {
-  delta_y?: number;
-  track_y?: CogList;
-};
-
 export const BrowserCogList = () => {
-  const browserActivated = useSelector(getBrowserActivated);
   const browserCogList = useSelector(getBrowserCogList);
   const browserCogTrackList = useSelector(getBrowserCogTrackList);
-  const trackConfigLabel = useSelector(getTrackConfigLabel);
-  const trackConfigNames = useSelector(getTrackConfigNames);
   const selectedCog = useSelector(getBrowserSelectedCog);
 
   const dispatch = useDispatch();
 
-  const listenBpaneScroll = (payload: BpaneScrollPayload) => {
-    const { delta_y, track_y } = payload;
-    if (delta_y !== undefined) {
-      dispatch(updateCogList(delta_y));
-    }
-    if (track_y) {
-      dispatch(updateCogTrackList(track_y));
+  const { genomeBrowser } = useGenomeBrowser();
+
+  const updateTrackSummary = (trackSummaryList: TrackSummaryList) => {
+    const cogList: CogList = {};
+
+    trackSummaryList.forEach((trackSummary: TrackSummary) => {
+      if (
+        trackSummary.offset &&
+        trackSummary['switch-id'] &&
+        !cogList[trackSummary['switch-id']]
+      ) {
+        cogList[trackSummary['switch-id']] = Number(trackSummary.offset);
+      }
+    });
+
+    if (cogList) {
+      dispatch(updateCogTrackList(cogList));
     }
   };
 
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
-      'bpane-scroll',
-      listenBpaneScroll
+    const subscription = genomeBrowser?.subscribe(
+      IncomingActionType.TRACK_SUMMARY,
+      (action: UpdateTrackSummaryAction) => updateTrackSummary(action.payload)
     );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (browserCogTrackList) {
-      const ons: string[] = [];
-      const offs: string[] = [];
-
-      Object.keys(browserCogTrackList).forEach((name) => {
-        // TODO: notice how we generate strings with suffix ":label" for track names,
-        // and strings with suffix ":names" for track label? That's because the frontend code
-        // and the backend code refer to these things by opposite terms. We will need to unify
-        // the terminology at some point.
-        if (trackConfigNames[name]) {
-          ons.push(`${name}:label`);
-        } else {
-          offs.push(`${name}:label`); // by default, track names are not shown
-        }
-
-        if (trackConfigLabel[name] !== false) {
-          ons.push(`${name}:names`);
-        } else {
-          offs.push(`${name}:names`); // by default, track label is not shown
-        }
-      });
-      browserMessagingService.send('bpane', {
-        off: offs,
-        on: ons
-      });
-    }
-  }, [trackConfigNames, trackConfigLabel, browserCogTrackList]);
+    return () => subscription?.unsubscribe();
+  }, [genomeBrowser]);
 
   const cogs = Object.entries(browserCogTrackList).map(([name, pos]) => {
     const posStyle = { top: pos + 'px' };
@@ -110,7 +82,9 @@ export const BrowserCogList = () => {
         <BrowserCog
           cogActivated={selectedCog === name}
           trackId={name}
-          updateSelectedCog={() => dispatch(updateSelectedCog)}
+          updateSelectedCog={(trackId: string | null) =>
+            dispatch(updateSelectedCog(trackId))
+          }
         />
       </div>
     );
@@ -120,7 +94,7 @@ export const BrowserCogList = () => {
     transform: 'translate(0,' + browserCogList + 'px)'
   };
 
-  return browserActivated ? (
+  return genomeBrowser ? (
     <div className={styles.browserTrackConfigOuter}>
       <div className={styles.browserCogListOuter}>
         <div className={styles.browserCogListInner} style={transformStyle}>
@@ -131,4 +105,4 @@ export const BrowserCogList = () => {
   ) : null;
 };
 
-export default BrowserCogList;
+export default memo(BrowserCogList);

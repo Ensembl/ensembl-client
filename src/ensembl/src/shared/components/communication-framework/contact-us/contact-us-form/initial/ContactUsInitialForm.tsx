@@ -16,10 +16,10 @@
 
 import React, {
   useState,
-  useEffect,
   useReducer,
   useCallback,
-  useRef
+  useRef,
+  FormEvent
 } from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
@@ -141,7 +141,6 @@ const ContactUsInitialForm = () => {
     LoadingState.NOT_REQUESTED
   );
 
-  const formRef = useRef<HTMLFormElement>(null);
   const emailFieldRef = useRef<HTMLInputElement | null>(null);
   const stateRef = useRef<typeof state>();
   stateRef.current = state;
@@ -153,20 +152,14 @@ const ContactUsInitialForm = () => {
       dispatch({ type: 'replace-state', payload: savedState })
   });
 
-  useEffect(() => {
-    // TODO: this useEffect will be unnecessary when the Input is refactored to include forwardRef
-    const emailInput = formRef.current?.querySelector('#email');
-    if (emailInput) {
-      emailFieldRef.current = emailInput as HTMLInputElement;
-    }
-  }, [formRef.current]);
-
-  const onNameChange = useCallback((value: string) => {
-    dispatch({ type: 'update-name', payload: value });
+  const onNameChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+    const name = event.currentTarget.value;
+    dispatch({ type: 'update-name', payload: name });
   }, []);
 
-  const onEmailChange = useCallback((value: string) => {
-    dispatch({ type: 'update-email', payload: value });
+  const onEmailChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+    const email = event.currentTarget.value;
+    dispatch({ type: 'update-email', payload: email });
     validateEmail();
   }, []);
 
@@ -178,13 +171,18 @@ const ContactUsInitialForm = () => {
     setEmailFieldFocussed(false);
   }, []);
 
-  const onSubjectChange = useCallback((value: string) => {
-    dispatch({ type: 'update-subject', payload: value });
+  const onSubjectChange = useCallback((event: FormEvent<HTMLInputElement>) => {
+    const subject = event.currentTarget.value;
+    dispatch({ type: 'update-subject', payload: subject });
   }, []);
 
-  const onMessageChange = useCallback((value: string) => {
-    dispatch({ type: 'update-message', payload: value });
-  }, []);
+  const onMessageChange = useCallback(
+    (event: FormEvent<HTMLTextAreaElement>) => {
+      const message = event.currentTarget.value;
+      dispatch({ type: 'update-message', payload: message });
+    },
+    []
+  );
 
   const onFileChange = useCallback((fileList: FileList) => {
     for (const file of fileList) {
@@ -244,7 +242,6 @@ const ContactUsInitialForm = () => {
         </p>
       </div>
       <form
-        ref={formRef}
         className={commonStyles.grid}
         autoComplete="off"
         onSubmit={handleSubmit}
@@ -260,6 +257,7 @@ const ContactUsInitialForm = () => {
         <ShadedInput
           id="email"
           type="email"
+          ref={emailFieldRef}
           className={commonStyles.emailField}
           value={state.email}
           onChange={onEmailChange}

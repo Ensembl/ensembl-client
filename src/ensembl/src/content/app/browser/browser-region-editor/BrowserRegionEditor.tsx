@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useState, FormEvent, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
+import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 import Select from 'src/shared/components/select/Select';
 import Input from 'src/shared/components/input/Input';
 import Tooltip from 'src/shared/components/tooltip/Tooltip';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import { ChrLocation } from '../browserState';
 import {
   getBrowserActiveGenomeId,
   getChrLocation,
   getRegionFieldActive
 } from '../browserSelectors';
 import { getGenomeKaryotype } from 'src/shared/state/genome/genomeSelectors';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  toggleRegionEditorActive
-} from '../browserActions';
-import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
-import { Position } from 'src/shared/components/pointer-box/PointerBox';
+import { toggleRegionEditorActive } from '../browserActions';
 
 import {
   getCommaSeparatedNumber,
@@ -46,11 +42,14 @@ import { validateRegion, RegionValidationErrors } from '../browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';
 
+import { ChrLocation } from '../browserState';
+import { GenomeKaryotypeItem } from 'src/shared/state/genome/genomeTypes';
+import { Position } from 'src/shared/components/pointer-box/PointerBox';
+
 import applyIcon from 'static/img/shared/apply.svg';
 
 import styles from './BrowserRegionEditor.scss';
 import browserNavBarStyles from '../browser-nav/BrowserNavBar.scss';
-import useOutsideClick from 'src/shared/hooks/useOutsideClick';
 
 export const BrowserRegionEditor = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
@@ -72,6 +71,7 @@ export const BrowserRegionEditor = () => {
   );
 
   const [shouldShowSubmitButton, showSubmitButton] = useState(false);
+  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
 
   useEffect(() => {
     const shouldShowButton =
@@ -149,13 +149,11 @@ export const BrowserRegionEditor = () => {
   };
 
   const changeLocation = (newChrLocation: ChrLocation) =>
-    dispatch(
-      changeBrowserLocation({
-        genomeId: activeGenomeId as string,
-        ensObjectId: null,
-        chrLocation: newChrLocation
-      })
-    );
+    changeBrowserLocation({
+      genomeId: activeGenomeId as string,
+      ensObjectId: null,
+      chrLocation: newChrLocation
+    });
 
   const hideForm = () => {
     updateErrorMessages(null, null);
@@ -171,6 +169,16 @@ export const BrowserRegionEditor = () => {
       onSuccess: onValidationSuccess,
       onError: onValidationError
     });
+  };
+
+  const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setLocationStartInput(value);
+  };
+
+  const onLocationEndChange = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setLocationEndInput(value);
   };
 
   const onValidationError = (errorMessages: RegionValidationErrors) => {
@@ -190,7 +198,7 @@ export const BrowserRegionEditor = () => {
     if (stickInput === stick) {
       changeLocation(newChrLocation);
     } else {
-      dispatch(changeFocusObject(regionId));
+      changeFocusObject(regionId);
     }
 
     analyticsTracking.trackEvent({
@@ -231,7 +239,7 @@ export const BrowserRegionEditor = () => {
           <Input
             id="region-editor-start"
             type="text"
-            onChange={setLocationStartInput}
+            onChange={onLocationStartChange}
             value={locationStartInput}
             className={locationStartClassNames}
           ></Input>
@@ -255,7 +263,7 @@ export const BrowserRegionEditor = () => {
           <Input
             id="region-editor-end"
             type="text"
-            onChange={setLocationEndInput}
+            onChange={onLocationEndChange}
             value={locationEndInput}
             className={locationEndClassNames}
           ></Input>

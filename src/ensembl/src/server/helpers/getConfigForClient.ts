@@ -23,8 +23,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
     genomeSearchBaseUrl:
       process.env.BROWSER_GENOME_SEARCH_BASE_URL ?? '/api/genomesearch',
     docsBaseUrl: process.env.BROWSER_DOCS_BASE_URL ?? '/api/docs',
-    genomeBrowserBaseUrl: process.env.GENOME_BROWSER_BASE_URL ?? '/api/browser',
     refgetBaseUrl: process.env.REFGET_BASE_URL ?? '/api/refget',
+    genomeBrowserBackendBaseUrl:
+      process.env.GENOME_BROWSER_BACKEND_BASE_URL ?? '/api/browser/data',
     customDownloadGeneSearch: process.env.GENESEARCH_API_ENDPOINT ?? ''
   };
 };

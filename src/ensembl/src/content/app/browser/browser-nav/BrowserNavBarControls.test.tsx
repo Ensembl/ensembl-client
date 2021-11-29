@@ -24,6 +24,7 @@ import set from 'lodash/fp/set';
 import { createMockBrowserState } from 'tests/fixtures/browser';
 
 import { BrowserNavBarControls } from './BrowserNavBarControls';
+
 import { BrowserNavAction } from '../browserState';
 import { BrowserNavItem } from 'src/content/app/browser/browserConfig';
 

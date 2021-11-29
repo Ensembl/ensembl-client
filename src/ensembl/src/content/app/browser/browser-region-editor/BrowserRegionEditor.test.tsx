@@ -28,11 +28,12 @@ import * as browserActions from '../browserActions';
 
 import { BrowserRegionEditor } from './BrowserRegionEditor';
 
+import { createRegionValidationMessages } from 'tests/fixtures/browser';
+
 import {
   getCommaSeparatedNumber,
   getNumberWithoutCommas
 } from 'src/shared/helpers/formatters/numberFormatter';
-import { createRegionValidationMessages } from 'tests/fixtures/browser';
 import * as browserHelper from '../browserHelper';
 
 const mockState = createMockBrowserState();
@@ -56,6 +57,11 @@ jest.mock('src/shared/components/select/Select', () => () => (
 jest.mock('src/shared/components/overlay/Overlay', () => () => (
   <div className="overlay" />
 ));
+
+const mockChangeBrowserLocation = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeBrowserLocation: mockChangeBrowserLocation
+}));
 
 jest.mock('../browserHelper');
 
@@ -243,13 +249,9 @@ describe('<BrowserRegionEditor />', () => {
 
       it('changes the browser location in same region if stick is the same', () => {
         const { container } = renderComponent();
-        jest
-          .spyOn(browserActions, 'changeBrowserLocation')
-          .mockImplementation(() => () => ({
-            type: 'change-browser-location'
-          }));
 
         const [firstInput, secondInput] = container.querySelectorAll('input');
+
         const submitButton = container.querySelector(
           'button[type="submit"]'
         ) as HTMLButtonElement;
@@ -261,13 +263,10 @@ describe('<BrowserRegionEditor />', () => {
         userEvent.type(secondInput, locationEndInput);
 
         userEvent.click(submitButton);
+        expect(mockChangeBrowserLocation).toHaveBeenCalled();
 
-        expect(browserActions.changeBrowserLocation).toHaveBeenCalled();
-
-        const { ensObjectId, chrLocation } = (
-          browserActions.changeBrowserLocation as any
-        ).mock.calls[0][0];
-
+        const { ensObjectId, chrLocation } =
+          mockChangeBrowserLocation.mock.calls[0][0];
         const [, start, end] = chrLocation;
         expect(ensObjectId).toBe(null);
         expect(start).toBe(getNumberWithoutCommas(locationStartInput));

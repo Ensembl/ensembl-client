@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import React, { useCallback, ReactNode, FormEvent } from 'react';
 import classNames from 'classnames';
 
 import styles from './SearchField.scss';
@@ -39,6 +39,13 @@ const SearchField = (props: Props) => {
   const { rightCorner } = props;
   const className = classNames(styles.searchField, props.className);
 
+  const onChange = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      props.onChange(event.currentTarget.value);
+    },
+    [props.onChange]
+  );
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -50,7 +57,7 @@ const SearchField = (props: Props) => {
       <Input
         value={props.search}
         placeholder={props.placeholder}
-        onChange={props.onChange}
+        onChange={onChange}
         onFocus={props.onFocus}
         onBlur={props.onBlur}
         onKeyUp={props.onKeyUp}

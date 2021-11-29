@@ -22,8 +22,6 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import set from 'lodash/fp/set';
 
-import * as browserActions from './../browserActions';
-
 import { BrowserReset } from './BrowserReset';
 
 import { createMockBrowserState } from 'tests/fixtures/browser';
@@ -42,6 +40,11 @@ const renderComponent = (state: typeof mockState = mockState) => {
     </Provider>
   );
 };
+
+const mockChangeFocusObject = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeFocusObject: mockChangeFocusObject
+}));
 
 describe('<BrowserReset />', () => {
   beforeEach(() => {
@@ -67,10 +70,9 @@ describe('<BrowserReset />', () => {
     it('changes focus object when clicked', () => {
       const { container } = renderComponent();
       const button = container.querySelector('button') as HTMLButtonElement;
-      jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(button);
 
-      expect(browserActions.changeFocusObject).toHaveBeenCalledWith(
+      expect(mockChangeFocusObject).toHaveBeenCalledWith(
         (mockState.browser.browserEntity.activeEnsObjectIds as any)[
           mockState.browser.browserEntity.activeGenomeId
         ]

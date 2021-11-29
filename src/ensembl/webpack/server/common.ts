@@ -110,6 +110,10 @@ export default (): Configuration => {
     },
 
     // ignore node_modules when bundling for the server
-    externals: [nodeExternals()]
+    externals: [
+      nodeExternals({
+        allowlist: ['ensembl-genome-browser']
+      })
+    ]
   };
 };

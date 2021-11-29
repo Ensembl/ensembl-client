@@ -16,9 +16,13 @@
 
 import React, { memo } from 'react';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import { OutgoingAction } from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import ImageButton from 'src/shared/components/image-button/ImageButton';
+
+import { browserNavIconActionMap } from 'src/content/app/browser/browserState';
 
 import { BrowserNavItem } from '../browserConfig';
 import { Status } from 'src/shared/types/status';
@@ -31,12 +35,23 @@ type BrowserNavIconProps = {
 };
 
 export const BrowserNavIcon = (props: BrowserNavIconProps) => {
+  const { genomeBrowser } = useGenomeBrowser();
+
+  if (!genomeBrowser) {
+    return null;
+  }
+
   const { browserNavItem, enabled } = props;
-  const { detail, icon } = browserNavItem;
+  const { icon } = browserNavItem;
+
+  const action = {
+    type: browserNavIconActionMap[browserNavItem.name],
+    payload: browserNavItem.detail
+  } as OutgoingAction;
 
   const navigateBrowser = () => {
     if (enabled) {
-      browserMessagingService.send('bpane', detail);
+      genomeBrowser.send(action);
     }
   };
 

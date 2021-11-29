@@ -19,17 +19,16 @@ import { useSelector } from 'react-redux';
 import { gql, useQuery } from '@apollo/client';
 import classNames from 'classnames';
 
-import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getFormattedLocation } from 'src/shared/helpers/formatters/regionFormatter';
 import { getStrandDisplayName } from 'src/shared/helpers/formatters/strandFormatter';
+import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
+import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
+
+import * as urlFor from 'src/shared/helpers/urlHelper';
 import {
   getDisplayStableId,
   buildFocusIdForUrl
 } from 'src/shared/state/ens-object/ensObjectHelpers';
-import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
-import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
-
-// TODO: check if this can be moved to a common place
 import {
   getNumberOfCodingExons,
   getSplicedRNALength,

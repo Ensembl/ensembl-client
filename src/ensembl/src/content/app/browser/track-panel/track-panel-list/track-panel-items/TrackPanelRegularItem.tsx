@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import { getBrowserTrackState } from 'src/content/app/browser/browserSelectors';
 
@@ -55,6 +55,7 @@ const TrackPanelRegularItem = (props: Props) => {
       trackId: props.track_id
     })
   );
+  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
   const dispatch = useDispatch();
 
   const onShowMore = () => {
@@ -69,12 +70,12 @@ const TrackPanelRegularItem = (props: Props) => {
     );
   };
 
-  const toggleTrack = () => {
+  const onChangeVisibility = () => {
     const newStatus =
       trackVisibilityStatus === Status.SELECTED
         ? Status.UNSELECTED
         : Status.SELECTED;
-    updateGenomeBrowser({ trackId: track_id, status: newStatus });
+    toggleTrack({ trackId: track_id, status: newStatus });
 
     dispatch(
       updateTrackStatesAndSave({
@@ -89,21 +90,9 @@ const TrackPanelRegularItem = (props: Props) => {
     );
   };
 
-  const updateGenomeBrowser = ({
-    trackId,
-    status
-  }: {
-    trackId: string;
-    status: Status;
-  }) => {
-    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
-
-    const payload = {
-      [currentTrackStatus]: trackId
-    };
-
-    browserMessagingService.send('bpane', payload);
-  };
+  useEffect(() => {
+    toggleTrack({ trackId: track_id, status: trackVisibilityStatus });
+  }, [genomeBrowser]);
 
   const color = props.colour ? colorMap[props.colour] : undefined;
   const colorMarker = color ? (
@@ -113,7 +102,7 @@ const TrackPanelRegularItem = (props: Props) => {
   return (
     <SimpleTrackPanelItemLayout
       visibilityStatus={trackVisibilityStatus}
-      onChangeVisibility={toggleTrack}
+      onChangeVisibility={onChangeVisibility}
       onShowMore={onShowMore}
     >
       <div className={styles.label}>

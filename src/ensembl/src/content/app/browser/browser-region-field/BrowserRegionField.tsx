@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useState, FormEvent, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
-import Input from 'src/shared/components/input/Input';
-import Tooltip from 'src/shared/components/tooltip/Tooltip';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
-import { ChrLocation } from '../browserState';
-import {
-  changeBrowserLocation,
-  changeFocusObject,
-  toggleRegionFieldActive
-} from '../browserActions';
+import { toggleRegionFieldActive } from '../browserActions';
 import {
   getBrowserActiveGenomeId,
   getChrLocation,
   getRegionEditorActive,
   getRegionFieldActive
 } from '../browserSelectors';
+
 import {
   getChrLocationFromStr,
   validateRegion,
@@ -40,6 +35,11 @@ import {
 } from '../browserHelper';
 
 import analyticsTracking from 'src/services/analytics-service';
+
+import Input from 'src/shared/components/input/Input';
+import Tooltip from 'src/shared/components/tooltip/Tooltip';
+
+import { ChrLocation } from '../browserState';
 
 import applyIcon from 'static/img/shared/apply.svg';
 
@@ -58,10 +58,14 @@ export const BrowserRegionField = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputGroupRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLElement>(null);
+  const { changeFocusObject, changeBrowserLocation } = useGenomeBrowser();
 
   const handleFocus = () => dispatch(toggleRegionFieldActive(true));
 
-  const changeRegionFieldInput = (value: string) => setRegionFieldInput(value);
+  const changeRegionFieldInput = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setRegionFieldInput(value);
+  };
 
   const getRegionInputWithStick = (input: string) => {
     const [stick] = chrLocation as ChrLocation;
@@ -95,15 +99,13 @@ export const BrowserRegionField = () => {
         getRegionInputWithStick(regionFieldInput)
       );
 
-      dispatch(
-        changeBrowserLocation({
-          genomeId: activeGenomeId as string,
-          ensObjectId: null,
-          chrLocation: newChrLocation
-        })
-      );
+      changeBrowserLocation({
+        genomeId: activeGenomeId as string,
+        ensObjectId: null,
+        chrLocation: newChrLocation
+      });
     } else {
-      dispatch(changeFocusObject(regionId));
+      changeFocusObject(regionId);
     }
 
     analyticsTracking.trackEvent({

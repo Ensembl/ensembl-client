@@ -24,6 +24,7 @@ import { ReactComponent as trackHeightIcon } from 'static/img/browser/icon_track
 import { ReactComponent as trackLockIcon } from 'static/img/browser/icon_tracks_lock_open.svg';
 import { ReactComponent as trackHighlightIcon } from 'static/img/browser/icon_tracks_highlight.svg';
 import { ReactComponent as trackMoveIcon } from 'static/img/browser/icon_tracks_move.svg';
+
 import { BrowserNavAction } from 'src/content/app/browser/browserState';
 
 export type BrowserNavItem = {
@@ -42,7 +43,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_up_px: 50
     },
     icon: navigateUpIcon,
-    name: BrowserNavAction.NAVIGATE_UP
+    name: BrowserNavAction.MOVE_UP
   },
   {
     description: 'navigate down',
@@ -50,7 +51,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_down_px: 50
     },
     icon: navigateDownIcon,
-    name: BrowserNavAction.NAVIGATE_DOWN
+    name: BrowserNavAction.MOVE_DOWN
   },
   {
     description: 'zoom out',
@@ -74,7 +75,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_left_px: 50
     },
     icon: navigateLeftIcon,
-    name: BrowserNavAction.NAVIGATE_LEFT
+    name: BrowserNavAction.MOVE_LEFT
   },
   {
     description: 'navigate right',
@@ -82,7 +83,7 @@ export const browserNavConfig: BrowserNavItem[] = [
       move_right_px: 50
     },
     icon: navigateRightIcon,
-    name: BrowserNavAction.NAVIGATE_RIGHT
+    name: BrowserNavAction.MOVE_RIGHT
   }
 ];
 
