@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import TrackPanelList from './track-panel-list/TrackPanelList';
 import TrackPanelModal from './track-panel-modal/TrackPanelModal';
@@ -23,26 +23,26 @@ import { SidebarLoader } from 'src/shared/components/loader';
 
 import { getIsTrackPanelModalOpened } from './trackPanelSelectors';
 import {
-  getBrowserActivated,
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
 
-import { restoreBrowserTrackStates } from '../browserActions';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 export const TrackPanel = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const browserActivated = useSelector(getBrowserActivated);
   const activeEnsObject = useSelector(getBrowserActiveEnsObject);
   const isTrackPanelModalOpened = useSelector(getIsTrackPanelModalOpened);
 
-  const dispatch = useDispatch();
+  const { genomeBrowser, restoreBrowserTrackStates } = useGenomeBrowser();
 
   const shouldRenderContent =
-    activeGenomeId && browserActivated && activeEnsObject;
+    activeGenomeId && genomeBrowser && activeEnsObject;
 
   useEffect(() => {
-    dispatch(restoreBrowserTrackStates());
+    if (genomeBrowser) {
+      restoreBrowserTrackStates();
+    }
   }, [activeEnsObject]);
 
   return shouldRenderContent ? (

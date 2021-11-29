@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import {
   getBrowserActiveGenomeId,
@@ -52,11 +54,16 @@ const TrackPanelTranscript = (props: Props) => {
       objectId: ensObjectId,
       tracksGroup: 'objectTracks',
       categoryName: 'main',
-      trackId: trackId
+      trackId
     })
   );
 
   const dispatch = useDispatch();
+  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
+
+  useEffect(() => {
+    toggleTrack({ trackId: trackId, status: trackVisibilityStatus });
+  }, [genomeBrowser]);
 
   if (!activeGenomeId) {
     return null;

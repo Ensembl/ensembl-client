@@ -22,8 +22,6 @@ import thunk from 'redux-thunk';
 import faker from 'faker';
 import configureMockStore from 'redux-mock-store';
 
-import * as browserActions from 'src/content/app/browser/browserActions';
-
 import {
   createMockBrowserState,
   createZmenuContent
@@ -35,16 +33,28 @@ import {
   ZmenuContentItem,
   ZmenuContentItemProps
 } from './ZmenuContent';
-import { Markup } from './zmenu-types';
 
 jest.mock('./ZmenuAppLinks', () => () => <div>ZmenuAppLinks</div>);
+
+const mockChangeFocusObjectFromZmenu = jest.fn();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  changeFocusObjectFromZmenu: mockChangeFocusObjectFromZmenu
+}));
+
+enum Markup {
+  STRONG = 'strong',
+  EMPHASIS = 'emphasis',
+  FOCUS = 'focus',
+  LIGHT = 'light'
+}
 
 const mockState = createMockBrowserState();
 const mockStoreCreator = configureMockStore([thunk]);
 const mockStore = mockStoreCreator(() => mockState);
 
 const defaultZmenuContentProps: ZmenuContentProps = {
-  content: createZmenuContent()
+  content: createZmenuContent(),
+  destroyZmenu: jest.fn()
 };
 
 const renderZmenuContent = (store = mockStore) =>
@@ -55,9 +65,10 @@ const renderZmenuContent = (store = mockStore) =>
   );
 
 const defaultZmenuContentItemProps: ZmenuContentItemProps = {
-  id: faker.lorem.words(),
+  featureId: faker.lorem.words(),
   markup: [Markup.FOCUS],
-  text: faker.lorem.words()
+  text: faker.lorem.words(),
+  destroyZmenu: jest.fn()
 };
 
 const renderZmenuContentItem = (store = mockStore) =>
@@ -75,22 +86,23 @@ describe('<ZmenuContent />', () => {
   describe('rendering', () => {
     it('renders the correct zmenu content information', () => {
       const { container } = renderZmenuContent();
-      const zmenuContentLine = defaultZmenuContentProps.content[0].lines[0];
+      const zmenuContentLine = defaultZmenuContentProps.content[0].data[0];
 
-      const renderedContentBlocks =
-        container.querySelectorAll('.zmenuContentBlock');
+      const renderedContentBlocks = container
+        .querySelectorAll('.zmenuContentLine')[0]
+        .querySelectorAll('.zmenuContentBlock');
 
       // check that the number of blocks of text is correct
       expect(renderedContentBlocks.length).toBe(zmenuContentLine.length);
 
       // check that the text from each block of text has been rendered
       zmenuContentLine.forEach((block, index) => {
-        const blockText = block.reduce((acc, { text }) => acc + text, '');
+        const blockText = block.items.reduce((acc, { text }) => acc + text, '');
         expect(renderedContentBlocks[index].textContent).toBe(blockText);
       });
 
       zmenuContentLine.forEach((block, blockIndex) => {
-        block.forEach((blockItem, blockItemIndex) => {
+        block.items.forEach((blockItem, blockItemIndex) => {
           const renderedElement =
             renderedContentBlocks[blockIndex].querySelectorAll('span')[
               blockItemIndex
@@ -114,10 +126,11 @@ describe('<ZmenuContent />', () => {
     it('calls function to change focus feature when feature link is clicked', () => {
       const { container } = renderZmenuContentItem();
 
-      jest.spyOn(browserActions, 'changeFocusObject');
       userEvent.click(container.firstChild as HTMLDivElement);
 
-      expect(browserActions.changeFocusObject).toHaveBeenCalledTimes(1);
+      expect(mockChangeFocusObjectFromZmenu).toHaveBeenCalledWith(
+        defaultZmenuContentItemProps.featureId
+      );
     });
   });
 });

@@ -21,7 +21,7 @@ export type BaseApiUrls = {
   thoasBaseUrl: string;
   genomeSearchBaseUrl: string;
   docsBaseUrl: string;
-  genomeBrowserBaseUrl: string;
+  genomeBrowserBackendBaseUrl: string;
   refgetBaseUrl: string;
   customDownloadGeneSearch: string;
 };
@@ -34,7 +34,7 @@ const defaultApiUrls: BaseApiUrls = {
   thoasBaseUrl: 'https://2020.ensembl.org/api/thoas',
   genomeSearchBaseUrl: 'https://2020.ensembl.org/api/genomesearch',
   docsBaseUrl: 'https://2020.ensembl.org/api/docs',
-  genomeBrowserBaseUrl: '/api/browser',
+  genomeBrowserBackendBaseUrl: '/api/browser/data',
   refgetBaseUrl: '/api/refget',
   customDownloadGeneSearch: ''
 };
@@ -53,9 +53,9 @@ const getBaseApiUrls = (): BaseApiUrls => {
     thoasBaseUrl: process.env.SSR_THOAS_BASE_URL ?? defaultApiUrls.thoasBaseUrl,
     genomeSearchBaseUrl:
       process.env.SSR_GENOME_SEARCH_BASE_URL ??
-      defaultApiUrls.genomeBrowserBaseUrl,
+      defaultApiUrls.genomeBrowserBackendBaseUrl,
     docsBaseUrl: process.env.SSR_DOCS_BASE_URL ?? defaultApiUrls.docsBaseUrl,
-    genomeBrowserBaseUrl: defaultApiUrls.genomeBrowserBaseUrl, // irrelevant for server-side rendering
+    genomeBrowserBackendBaseUrl: defaultApiUrls.genomeBrowserBackendBaseUrl, // irrelevant for server-side rendering
     refgetBaseUrl: defaultApiUrls.refgetBaseUrl, // irrelevant for server-side rendering
     customDownloadGeneSearch: defaultApiUrls.customDownloadGeneSearch // irrelevant for server-side rendering
   };

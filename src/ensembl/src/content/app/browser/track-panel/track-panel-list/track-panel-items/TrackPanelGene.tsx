@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import { useGetTrackPanelGeneQuery } from 'src/content/app/browser/state/genomeBrowserApiSlice';
 import { changeDrawerViewForGenome } from 'src/content/app/browser/state/drawer/drawerSlice';
 import { updateTrackStatesAndSave } from 'src/content/app/browser/browserActions';
@@ -65,7 +65,13 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
       trackId: GENE_TRACK_ID
     })
   );
+  const { toggleTrack, genomeBrowser } = useGenomeBrowser();
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus });
+  }, [genomeBrowser]);
 
   if (!data) {
     return null;
@@ -87,7 +93,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
     );
   };
 
-  const toggleTrack = ({
+  const onChangeVisibility = ({
     trackId,
     status
   }: {
@@ -96,7 +102,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
   }) => {
     const newStatus =
       status === Status.SELECTED ? Status.UNSELECTED : Status.SELECTED;
-    updateGenomeBrowser({ trackId, status: newStatus });
+    toggleTrack({ trackId, status: newStatus });
 
     dispatch(
       updateTrackStatesAndSave({
@@ -111,22 +117,6 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         }
       })
     );
-  };
-
-  const updateGenomeBrowser = ({
-    trackId,
-    status
-  }: {
-    trackId: string;
-    status: Status;
-  }) => {
-    const currentTrackStatus = status === Status.SELECTED ? 'on' : 'off';
-
-    const payload = {
-      [currentTrackStatus]: trackId
-    };
-
-    browserMessagingService.send('bpane', payload);
   };
 
   const { gene } = data;
@@ -147,7 +137,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
         isCollapsed={isCollapsed}
         visibilityStatus={trackStatus}
         onChangeVisibility={() =>
-          toggleTrack({ trackId: GENE_TRACK_ID, status: trackStatus })
+          onChangeVisibility({ trackId: GENE_TRACK_ID, status: trackStatus })
         }
         onShowMore={onShowMore}
         toggleExpand={toggleExpand}
@@ -170,7 +160,7 @@ const TrackPanelGene = (props: TrackPanelGeneProps) => {
             genomeId={genomeId}
             ensObjectId={ensObjectId}
             onChangeVisibility={(trackStatus: TrackActivityStatus) =>
-              toggleTrack({ trackId, status: trackStatus })
+              onChangeVisibility({ trackId, status: trackStatus })
             }
             key={transcript.stable_id}
           />

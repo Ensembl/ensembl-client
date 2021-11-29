@@ -30,12 +30,13 @@ import styles from './Zmenu.scss';
 
 type Props = {
   featureId: string;
+  destroyZmenu: () => void;
 };
 
 const ZmenuAppLinks = (props: Props) => {
   const genomeId = useSelector(getBrowserActiveGenomeId);
 
-  const parsedFeatureId = parseFeatureId(props.featureId);
+  const parsedFeatureId = parseFeatureId(`${genomeId}:${props.featureId}`);
 
   if (parsedFeatureId.type !== 'gene') {
     return null;
@@ -58,14 +59,13 @@ const ZmenuAppLinks = (props: Props) => {
       })
     }
   };
-
   return (
     <div className={styles.zmenuAppLinks}>
       <ToolboxToggleButton
         className={styles.zmenuToggleFooter}
         label="Download"
       />
-      <ViewInApp links={links} />
+      <ViewInApp links={links} onAnyAppClick={props.destroyZmenu} />
     </div>
   );
 };

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, memo, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
+import EnsemblGenomeBrowser from 'ensembl-genome-browser';
+
 import useBrowserRouting from './hooks/useBrowserRouting';
+import useGenomeBrowser from './hooks/useGenomeBrowser';
 
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
@@ -29,10 +32,8 @@ import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import {
   getBrowserNavOpenState,
-  getBrowserActivated,
   getBrowserActiveGenomeId
 } from './browserSelectors';
-
 import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
@@ -48,11 +49,12 @@ import Drawer from './drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
 import BrowserInterstitial from './interstitial/BrowserInterstitial';
 
+import { StateZmenu } from 'src/content/app/browser/zmenu/ZmenuController';
+
 import styles from './Browser.scss';
 
 export const Browser = () => {
   const activeGenomeId = useSelector(getBrowserActiveGenomeId);
-  const browserActivated = useSelector(getBrowserActivated);
   const browserNavOpenState = useSelector(getBrowserNavOpenState);
   const isDrawerOpened = useSelector(getIsDrawerOpened);
   const isTrackPanelOpened = useSelector(getIsTrackPanelOpened);
@@ -65,6 +67,7 @@ export const Browser = () => {
   const dispatch = useDispatch();
   const { changeGenomeId } = useBrowserRouting();
 
+  const { genomeBrowser } = useGenomeBrowser();
   useEffect(() => {
     if (!activeGenomeId) {
       return;
@@ -82,7 +85,7 @@ export const Browser = () => {
   };
 
   const shouldShowNavBar =
-    browserActivated && browserNavOpenState && !isDrawerOpened;
+    genomeBrowser && browserNavOpenState && !isDrawerOpened;
 
   const mainContent = (
     <>
@@ -117,15 +120,39 @@ export const Browser = () => {
   );
 };
 
-const WasmLoadingBrowserContainer = () => {
-  useEffect(() => {
-    /* eslint-disable */
-    // @ts-ignore ensembl-genome-browser does not have typescript definitions
-    import('ensembl-genome-browser');
-    /* eslint-enable */
-  });
-
-  return <Browser />;
+type GenomeBrowserContextType = {
+  genomeBrowser: EnsemblGenomeBrowser | null;
+  setGenomeBrowser: (genomeBrowser: EnsemblGenomeBrowser) => void;
+  zmenus: StateZmenu;
+  setZmenus: (zmenus: StateZmenu) => void;
 };
 
-export default WasmLoadingBrowserContainer;
+export const GenomeBrowserContext = React.createContext<
+  GenomeBrowserContextType | undefined
+>(undefined);
+
+const GenomeBrowserInitContainer = () => {
+  const [genomeBrowser, setGenomeBrowser] =
+    useState<EnsemblGenomeBrowser | null>(null);
+
+  const [zmenus, setZmenus] = useState<StateZmenu>({});
+
+  const browser = useMemo(() => {
+    return <Browser />;
+  }, []);
+
+  return (
+    <GenomeBrowserContext.Provider
+      value={{
+        genomeBrowser,
+        setGenomeBrowser,
+        zmenus,
+        setZmenus
+      }}
+    >
+      {browser}
+    </GenomeBrowserContext.Provider>
+  );
+};
+
+export default memo(GenomeBrowserInitContainer);

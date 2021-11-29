@@ -19,16 +19,14 @@ import { Dispatch, ActionCreator, Action } from 'redux';
 import { replace } from 'connected-react-router';
 import { ThunkAction } from 'redux-thunk';
 import isEqual from 'lodash/isEqual';
-import get from 'lodash/get';
 import pickBy from 'lodash/pickBy';
 
-import config from 'config';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getChrLocationStr } from './browserHelper';
 import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
 import browserStorageService from './browser-storage-service';
+import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 import { fetchEnsObject } from 'src/shared/state/ens-object/ensObjectActions';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
@@ -41,15 +39,8 @@ import {
   getBrowserNavOpenState
 } from './browserSelectors';
 
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
-
 import { RootState } from 'src/store';
-import {
-  BrowserTrackStates,
-  TrackStates
-} from './track-panel/trackPanelConfig';
-import { BROWSER_CONTAINER_ID } from './browser-constants';
-
+import { BrowserTrackStates } from './track-panel/trackPanelConfig';
 import {
   BrowserNavIconStates,
   ChrLocation,
@@ -57,9 +48,6 @@ import {
   ChrLocations
 } from './browserState';
 import { TrackActivityStatus } from 'src/content/app/browser/track-panel/trackPanelConfig';
-import { Status } from 'src/shared/types/status';
-import analyticsTracking from 'src/services/analytics-service';
-import trackPanelStorageService from 'src/content/app/browser/track-panel/track-panel-storage-service';
 
 export type UpdateTrackStatesPayload = {
   genomeId: string;
@@ -72,26 +60,6 @@ export type ParsedUrlPayload = {
   activeGenomeId: string;
   activeEnsObjectId: string | null;
   chrLocation: ChrLocation | null;
-};
-
-export const updateBrowserActivated = createAction(
-  'browser/update-browser-activated'
-)<boolean>();
-
-export const activateBrowser = () => {
-  return (dispatch: Dispatch) => {
-    const { protocol, host: currentHost } = location;
-    const host = config.apiHost || currentHost;
-
-    const payload = {
-      'config-url': `${protocol}${host}/api/browser/config`,
-      key: 'main', // TODO: remove this field after we confirmed that it is redundant
-      selector: `#${BROWSER_CONTAINER_ID}`
-    };
-    browserMessagingService.send('bpane-activate', payload);
-
-    dispatch(updateBrowserActivated(true));
-  };
 };
 
 export const setDataFromUrl = createAction(
@@ -173,57 +141,9 @@ export const updateTrackStatesAndSave: ActionCreator<
   browserStorageService.saveTrackStates(trackStates);
 };
 
-export const restoreBrowserTrackStates: ActionCreator<
-  ThunkAction<void, any, null, Action<string>>
-> = () => (_, getState: () => RootState) => {
-  const state = getState();
-  const activeGenomeId = getBrowserActiveGenomeId(state);
-  const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-
-  if (!activeGenomeId || !activeEnsObjectId) {
-    return;
-  }
-
-  const trackStatesFromStorage = browserStorageService.getTrackStates();
-  const mergedTrackStates = {
-    ...get(
-      trackStatesFromStorage,
-      `${activeGenomeId}.objectTracks.${activeEnsObjectId}`
-    ),
-    ...get(trackStatesFromStorage, `${activeGenomeId}.commonTracks`)
-  } as TrackStates;
-
-  const tracksToTurnOff: string[] = [];
-  const tracksToTurnOn: string[] = [];
-
-  Object.values(mergedTrackStates).forEach((trackStates) => {
-    Object.keys(trackStates).forEach((trackId) => {
-      trackStates[trackId] === Status.SELECTED
-        ? tracksToTurnOn.push(trackId)
-        : tracksToTurnOff.push(trackId);
-    });
-  });
-
-  browserMessagingService.send('bpane', {
-    off: tracksToTurnOff,
-    on: tracksToTurnOn
-  });
-};
-
-export const openBrowserNav = createAction(
-  'browser/open-browser-navigation',
-  (activeGenomeId: string) => {
-    analyticsTracking.trackEvent({
-      category: 'browser_navigation',
-      label: 'open_browser_navigation',
-      action: 'clicked'
-    });
-
-    return {
-      activeGenomeId
-    };
-  }
-)<{ activeGenomeId: string }>();
+export const openBrowserNav = createAction('browser/open-browser-navigation')<{
+  activeGenomeId: string;
+}>();
 
 export const closeBrowserNav = createAction(
   'browser/close-browser-navigation'
@@ -243,7 +163,7 @@ export const toggleBrowserNav: ActionCreator<
     if (isBrowserNavOpenState) {
       dispatch(closeBrowserNav({ activeGenomeId }));
     } else {
-      dispatch(openBrowserNav(activeGenomeId));
+      dispatch(openBrowserNav({ activeGenomeId }));
     }
   };
 };
@@ -306,50 +226,6 @@ export const setChrLocation: ActionCreator<
   };
 };
 
-export const changeBrowserLocation: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = (locationData: {
-  genomeId: string;
-  ensObjectId: string | null;
-  chrLocation: ChrLocation;
-}) => {
-  return (_, getState: () => RootState) => {
-    const state = getState();
-    const [chrCode, startBp, endBp] = locationData.chrLocation;
-
-    const activeEnsObjectId =
-      locationData.ensObjectId || getBrowserActiveEnsObjectId(state);
-
-    const focusInstruction: { focus?: string } = {};
-    if (activeEnsObjectId) {
-      focusInstruction.focus = activeEnsObjectId;
-    }
-
-    browserMessagingService.send('bpane', {
-      stick: `${locationData.genomeId}:${chrCode}`,
-      goto: `${startBp}-${endBp}`,
-      ...focusInstruction
-    });
-  };
-};
-
-export const changeFocusObject =
-  (objectId: string): ThunkAction<any, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const state = getState();
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-
-    dispatch(updatePreviouslyViewedObjectsAndSave());
-
-    browserMessagingService.send('bpane', {
-      focus: objectId
-    });
-  };
-
 export const updateCogList = createAction('browser/update-cog-list')<number>();
 
 export const updateCogTrackList = createAction(
@@ -374,6 +250,14 @@ export const updateTrackConfigLabel = createAction(
 
 export const updateApplyToAll = createAction(
   'browser/update-apply-to-all'
+)<boolean>();
+
+export const updateApplyToAllTrackNames = createAction(
+  'browser/update-apply-to-all-track-names'
+)<boolean>();
+
+export const updateApplyToAllTrackLabels = createAction(
+  'browser/update-apply-to-all-track-labels'
 )<boolean>();
 
 export const toggleRegionEditorActive = createAction(

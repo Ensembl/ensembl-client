@@ -15,9 +15,13 @@
  */
 
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { pickBy } from 'lodash';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 import useRefWithRerender from 'src/shared/hooks/useRefWithRerender';
+
+import { changeHighlightedTrackId } from 'src/content/app/browser/track-panel/trackPanelActions';
 
 import {
   Toolbox,
@@ -27,7 +31,7 @@ import {
 import ZmenuContent from './ZmenuContent';
 import ZmenuInstantDownload from './ZmenuInstantDownload';
 
-import { ZmenuData, ZmenuAction } from './zmenu-types';
+import { ZmenuPayload } from 'ensembl-genome-browser';
 
 import styles from './Zmenu.scss';
 
@@ -36,38 +40,40 @@ enum Direction {
   RIGHT = 'right'
 }
 
-export type ZmenuProps = ZmenuData & {
+export type ZmenuProps = ZmenuPayload & {
   browserRef: React.RefObject<HTMLDivElement>;
-  onEnter: (id: string) => void;
-  onLeave: (id: string) => void;
 };
 
 const Zmenu = (props: ZmenuProps) => {
   const anchorRef = useRefWithRerender<HTMLDivElement>(null);
-  const onOutsideClick = () =>
-    browserMessagingService.send('bpane', {
-      id: props.id,
-      action: ZmenuAction.ACTIVITY_OUTSIDE
-    });
+  const { zmenus, setZmenus } = useGenomeBrowser();
+  const dispatch = useDispatch();
+
+  const destroyZmenu = () => {
+    dispatch(changeHighlightedTrackId(''));
+    setZmenus && setZmenus(pickBy(zmenus, (value, key) => key !== props.id));
+  };
 
   const direction = chooseDirection(props);
   const toolboxPosition =
     direction === Direction.LEFT ? ToolboxPosition.LEFT : ToolboxPosition.RIGHT;
 
-  const mainContent = <ZmenuContent content={props.content} />;
+  const mainContent = (
+    <ZmenuContent content={props.content} destroyZmenu={destroyZmenu} />
+  );
   const anchorStyles = getAnchorInlineStyles(props);
 
   return (
     <div ref={anchorRef} className={styles.zmenuAnchor} style={anchorStyles}>
       {anchorRef.current && (
         <Toolbox
-          onOutsideClick={onOutsideClick}
+          onOutsideClick={destroyZmenu}
           anchor={anchorRef.current}
           position={toolboxPosition}
         >
           <ToolboxExpandableContent
             mainContent={mainContent}
-            footerContent={getToolboxFooterContent(props.id)}
+            footerContent={getToolboxFooterContent(props.unversioned_id)}
           />
         </Toolbox>
       )}

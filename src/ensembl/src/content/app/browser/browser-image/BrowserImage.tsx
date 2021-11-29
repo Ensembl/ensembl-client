@@ -14,164 +14,114 @@
  * limitations under the License.
  */
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
+import {
+  BrowserCurrentLocationUpdateAction,
+  BrowserTargetLocationUpdateAction,
+  IncomingActionType
+} from 'ensembl-genome-browser';
+
+import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import BrowserCogList from '../browser-cog/BrowserCogList';
 import { ZmenuController } from 'src/content/app/browser/zmenu';
 import { CircleLoader } from 'src/shared/components/loader';
 import Overlay from 'src/shared/components/overlay/Overlay';
 
-import browserMessagingService from 'src/content/app/browser/browser-messaging-service';
-import { parseFeatureId } from 'src/content/app/browser/browserHelper';
-import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 import {
   getBrowserNavOpenState,
-  getBrowserActivated,
   getRegionEditorActive,
-  getRegionFieldActive,
-  getBrowserActiveGenomeId
+  getRegionFieldActive
 } from '../browserSelectors';
-import {
-  activateBrowser,
-  updateBrowserActivated,
-  updateBrowserNavIconStates,
-  setChrLocation,
-  setActualChrLocation,
-  updateBrowserActiveEnsObjectIdsAndSave,
-  updateDefaultPositionFlag
-} from '../browserActions';
 
-import { BrowserNavAction, ChrLocation } from '../browserState';
+import { setChrLocation, setActualChrLocation } from '../browserActions';
+
+import { ChrLocation } from 'src/content/app/browser/browserState';
+
 import { BROWSER_CONTAINER_ID } from '../browser-constants';
 
 import styles from './BrowserImage.scss';
 
-export type BumperPayload = [
-  top: boolean,
-  right: boolean,
-  bottom: boolean,
-  left: boolean,
-  zoomOut: boolean,
-  zoomIn: boolean
-];
-
-type BpaneOutPayload = {
-  bumper?: BumperPayload;
-  focus?: string;
-  'message-counter'?: number;
-  'intended-location'?: ChrLocation;
-  'actual-location'?: ChrLocation;
-  'is-focus-position'?: boolean;
-};
-
-const parseLocation = (location: ChrLocation) => {
-  // FIXME: is there any reason to receive genome and chromosome in the same string?
-  const [genomeAndChromosome, start, end] = location;
-  const [, chromosome] = genomeAndChromosome.split(':');
-  return [chromosome, start, end] as ChrLocation;
-};
-
 export const BrowserImage = () => {
+  const browserRef = useRef<HTMLDivElement>(null);
+
+  const { activateGenomeBrowser, genomeBrowser } = useGenomeBrowser();
+
   const isNavbarOpen = useSelector(getBrowserNavOpenState);
-  const browserActivated = useSelector(getBrowserActivated);
-  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const isRegionEditorActive = useSelector(getRegionEditorActive);
   const isRegionFieldActive = useSelector(getRegionFieldActive);
   const isDisabled = isRegionEditorActive || isRegionFieldActive;
 
   const dispatch = useDispatch();
 
-  const browserRef = useRef<HTMLDivElement>(null);
-  const listenBpaneOut = useCallback((payload: BpaneOutPayload) => {
-    const ensObjectId = payload.focus;
-    const intendedLocation = payload['intended-location'];
-    const actualLocation = payload['actual-location'] || intendedLocation;
-    const isFocusObjectInDefaultPosition = payload['is-focus-position'];
-
-    if (payload.bumper && activeGenomeId) {
-      // Invert the flags to make it appropriate for the react side
-      const navIconStates = payload.bumper.map((a) => !a);
-
-      const navStates = {
-        [BrowserNavAction.NAVIGATE_UP]: navIconStates[0],
-        [BrowserNavAction.NAVIGATE_DOWN]: navIconStates[1],
-        [BrowserNavAction.ZOOM_OUT]: navIconStates[2],
-        [BrowserNavAction.ZOOM_IN]: navIconStates[3],
-        [BrowserNavAction.NAVIGATE_LEFT]: navIconStates[4],
-        [BrowserNavAction.NAVIGATE_RIGHT]: navIconStates[5]
-      };
-      dispatch(
-        updateBrowserNavIconStates({
-          activeGenomeId,
-          navStates
-        })
-      );
-    }
-
-    if (intendedLocation) {
-      dispatch(setChrLocation(parseLocation(intendedLocation)));
-    }
-
-    if (actualLocation) {
-      dispatch(setActualChrLocation(parseLocation(actualLocation)));
-    }
-
-    if (ensObjectId) {
-      const parsedId = parseFeatureId(ensObjectId);
-      dispatch(
-        updateBrowserActiveEnsObjectIdsAndSave(buildEnsObjectId(parsedId))
-      );
-    }
-
-    if (typeof isFocusObjectInDefaultPosition === 'boolean') {
-      dispatch(updateDefaultPositionFlag(isFocusObjectInDefaultPosition));
-    }
-  }, []);
-
   useEffect(() => {
-    const subscription = browserMessagingService.subscribe(
-      'bpane-out',
-      listenBpaneOut
+    const positionUpdate = (
+      action:
+        | BrowserCurrentLocationUpdateAction
+        | BrowserTargetLocationUpdateAction
+    ) => {
+      if (action.type === IncomingActionType.CURRENT_POSITION) {
+        const { stick, start, end } = action.payload;
+        const chromosome = stick.split(':')[1];
+        dispatch(setActualChrLocation([chromosome, start, end]));
+      } else if (action.type === IncomingActionType.TARGET_POSITION) {
+        const { stick, start, end } = action.payload;
+        const chromosome = stick.split(':')[1];
+        const chrLocation = [chromosome, start, end] as ChrLocation;
+        dispatch(setChrLocation(chrLocation));
+      }
+    };
+
+    const subscriptionToActualPotitionMessages = genomeBrowser?.subscribe(
+      IncomingActionType.CURRENT_POSITION,
+      positionUpdate
+    );
+    const subscriptionToTargetPotitionMessages = genomeBrowser?.subscribe(
+      IncomingActionType.TARGET_POSITION,
+      positionUpdate
     );
 
     return () => {
-      subscription.unsubscribe();
+      subscriptionToActualPotitionMessages?.unsubscribe();
+      subscriptionToTargetPotitionMessages?.unsubscribe();
     };
-  }, []);
+  }, [genomeBrowser]);
 
   useEffect(() => {
-    dispatch(activateBrowser());
-
-    return function cleanup() {
-      dispatch(updateBrowserActivated(false));
-    };
+    if (!genomeBrowser) {
+      activateGenomeBrowser();
+    }
   }, []);
 
   const browserContainerClassNames = classNames(styles.browserStage, {
     [styles.shorter]: isNavbarOpen
   });
 
+  const browserImageContents = (
+    <div className={styles.browserImagePlus}>
+      <div
+        id={BROWSER_CONTAINER_ID}
+        className={browserContainerClassNames}
+        ref={browserRef}
+      />
+      <BrowserCogList />
+      <ZmenuController browserRef={browserRef} />
+      {isDisabled ? <Overlay /> : null}
+    </div>
+  );
+
   return (
     <>
-      {!browserActivated && (
+      {!genomeBrowser && (
         <div className={styles.loaderWrapper}>
           <CircleLoader />
         </div>
       )}
-      <div className={styles.browserImagePlus}>
-        <div
-          id={BROWSER_CONTAINER_ID}
-          className={browserContainerClassNames}
-          ref={browserRef}
-        />
-        <BrowserCogList />
-        <ZmenuController browserRef={browserRef} />
-        {isDisabled ? <Overlay /> : null}
-      </div>
+      {browserImageContents}
     </>
   );
 };
 
-export default BrowserImage;
+export default memo(BrowserImage);

@@ -28,11 +28,15 @@ import { createTrackStates } from 'tests/fixtures/track-panel';
 
 import { CogList, ChrLocation } from 'src/content/app/browser/browserState';
 import { RegionValidationResponse } from 'src/content/app/browser/browserHelper';
-import { Markup } from 'src/content/app/browser/zmenu/zmenu-types';
 import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';
+import {
+  ZmenuContentFeature,
+  Markup,
+  ZmenuFeatureType
+} from 'ensembl-genome-browser';
 
 export const createCogTrackList = (): CogList => ({
   'track:contig': faker.datatype.number(),
@@ -67,20 +71,53 @@ export const createTrackConfigNames = () => ({
   'track:variant': true
 });
 
-export const createZmenuContent = () => [
+export const createZmenuContent = (): ZmenuContentFeature[] => [
   {
-    id: faker.lorem.words(),
-    lines: [
+    data: [
       [
-        [
-          { markup: [Markup.LIGHT], text: faker.lorem.words() },
-          { markup: [], text: ' ' },
-          { markup: [], text: faker.lorem.words() }
-        ],
-        [{ markup: [Markup.LIGHT, Markup.FOCUS], text: faker.lorem.words() }]
+        {
+          items: [
+            { markup: [Markup.LIGHT], text: 'Transcript' },
+            { markup: [], text: ' ' },
+            { markup: [], text: 'transcript_id' }
+          ],
+          type: 'block'
+        },
+        {
+          items: [{ markup: [Markup.LIGHT, Markup.FOCUS], text: 'foo' }],
+          type: 'block'
+        }
       ]
     ],
-    track_id: faker.lorem.words()
+    metadata: {
+      transcript_id: 'transcript_id',
+      designation: 'designation',
+      strand: 'forward',
+      transcript_biotype: 'protein_coding',
+      track: 'track',
+      type: ZmenuFeatureType.TRANSCRIPT
+    }
+  },
+
+  {
+    data: [
+      [
+        {
+          items: [
+            { markup: [Markup.LIGHT], text: 'Gene' },
+            { markup: [], text: ' ' },
+            { markup: [], text: 'gene_id' }
+          ],
+          type: 'block'
+        }
+      ]
+    ],
+    metadata: {
+      id: 'gene_id',
+      symbol: 'symbol',
+      track: 'track_id',
+      type: ZmenuFeatureType.GENE
+    }
   }
 ];
 
@@ -145,9 +182,6 @@ export const createChrLocationValues = () => {
 export const createMockBrowserState = () => {
   return {
     browser: {
-      browserInfo: {
-        browserActivated: false
-      },
       browserEntity: {
         activeGenomeId: 'fake_genome_id_1',
         activeEnsObjectIds: {
@@ -167,16 +201,20 @@ export const createMockBrowserState = () => {
       browserNav: {
         browserNavOpenState: {},
         browserNavIconStates: {
-          'navigate-up': false,
-          'navigate-right': false,
-          'navigate-down': true,
-          'navigate-left': true,
-          'zoom-out': false,
-          'zoom-in': false
+          move_up: false,
+          move_right: false,
+          move_down: true,
+          move_left: true,
+          zoom_out: false,
+          zoom_in: false
         }
       },
       trackConfig: {
-        applyToAll: false,
+        applyToAllConfig: {
+          isSelected: false,
+          allTrackNamesOn: false,
+          allTrackLabelsOn: false
+        },
         browserCogList: 0,
         browserCogTrackList: createCogTrackList(),
         selectedCog: 'track:gc',

@@ -15,12 +15,25 @@
  */
 
 import React from 'react';
+import configureMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
 import { render } from '@testing-library/react';
 import faker from 'faker';
 
 import Zmenu, { ZmenuProps } from './Zmenu';
 
+import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
+
 import { createZmenuContent } from 'tests/fixtures/browser';
+
+import { ZmenuContentFeature } from 'ensembl-genome-browser';
+
+const mockGenomeBrowser = new MockGenomeBrowser();
+jest.mock('src/content/app/browser/hooks/useGenomeBrowser', () => () => ({
+  genomeBrowser: mockGenomeBrowser
+}));
+
+jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 
 jest.mock('./ZmenuContent', () => () => (
   <div data-test-id="zmenuContent">ZmenuContent</div>
@@ -29,28 +42,37 @@ jest.mock('./ZmenuInstantDownload', () => () => (
   <div>ZmenuInstantDownload</div>
 ));
 
-describe('<Zmenu />', () => {
-  const defaultProps: ZmenuProps = {
-    anchor_coordinates: {
-      x: 490,
-      y: 80
-    },
-    browserRef: {
-      current: document.createElement('div')
-    },
-    content: createZmenuContent(),
-    id: faker.lorem.words(),
-    onEnter: jest.fn(),
-    onLeave: jest.fn()
-  };
+const defaultProps: ZmenuProps = {
+  anchor_coordinates: {
+    x: 490,
+    y: 80
+  },
+  browserRef: {
+    current: document.createElement('div')
+  },
+  content: createZmenuContent() as ZmenuContentFeature[],
+  id: faker.lorem.words(),
+  unversioned_id: faker.lorem.words()
+};
 
+const mockStore = configureMockStore();
+let store: ReturnType<typeof mockStore>;
+const renderComponent = () => {
+  store = mockStore();
+  return render(
+    <Provider store={store}>
+      <Zmenu {...defaultProps} />
+    </Provider>
+  );
+};
+describe('<Zmenu />', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   describe('rendering', () => {
     test('renders zmenu content', () => {
-      const { queryByTestId } = render(<Zmenu {...defaultProps} />);
+      const { queryByTestId } = renderComponent();
       expect(queryByTestId('zmenuContent')).toBeTruthy();
     });
   });

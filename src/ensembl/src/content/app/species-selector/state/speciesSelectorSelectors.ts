@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createSelector } from '@reduxjs/toolkit';
+
 import get from 'lodash/get';
 import find from 'lodash/find';
 
@@ -73,9 +75,10 @@ export const getCommittedSpeciesById = (
   );
 };
 
-export const getEnabledCommittedSpecies = (state: RootState) => {
-  return getCommittedSpecies(state).filter(({ isEnabled }) => isEnabled);
-};
+export const getEnabledCommittedSpecies = createSelector(
+  (state: RootState) => getCommittedSpecies(state),
+  (committedSpecies) => committedSpecies.filter(({ isEnabled }) => isEnabled)
+);
 
 export const getPopularSpecies = (state: RootState) => {
   return state.speciesSelector.popularSpecies;

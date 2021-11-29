@@ -47,7 +47,8 @@ const BrowserAppBar = (props: BrowserAppBarProps) => {
         onClick={() => props.onSpeciesSelect(species.genome_id)}
       />
     ));
-  }, [species]);
+  }, [species.length, activeGenomeId]);
+
   const speciesSelectorLink = useMemo(() => {
     return <Link to={urlFor.speciesSelector()}>Change</Link>;
   }, []);

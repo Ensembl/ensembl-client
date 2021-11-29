@@ -19,11 +19,8 @@ import { ActionType, getType } from 'typesafe-actions';
 import merge from 'lodash/merge';
 import pickBy from 'lodash/pickBy';
 
-import { RootAction } from 'src/objects';
 import * as browserActions from './browserActions';
 import {
-  BrowserState,
-  defaultBrowserState,
   BrowserLocationState,
   defaultBrowserLocationState,
   BrowserNavState,
@@ -34,18 +31,6 @@ import {
   defaultBrowserNavState
 } from './browserState';
 import trackPanelReducer from 'src/content/app/browser/track-panel/trackPanelReducer';
-
-export function browserInfo(
-  state: BrowserState = defaultBrowserState,
-  action: ActionType<RootAction>
-): BrowserState {
-  switch (action.type) {
-    case getType(browserActions.updateBrowserActivated):
-      return { ...state, browserActivated: action.payload };
-    default:
-      return state;
-  }
-}
 
 export function browserEntity(
   state: BrowserEntityState = defaultBrowserEntityState,
@@ -208,7 +193,29 @@ export function trackConfig(
     case getType(browserActions.updateSelectedCog):
       return { ...state, selectedCog: action.payload };
     case getType(browserActions.updateApplyToAll):
-      return { ...state, applyToAll: action.payload };
+      return {
+        ...state,
+        applyToAllConfig: {
+          ...state.applyToAllConfig,
+          isSelected: action.payload
+        }
+      };
+    case getType(browserActions.updateApplyToAllTrackNames):
+      return {
+        ...state,
+        applyToAllConfig: {
+          ...state.applyToAllConfig,
+          allTrackNamesOn: action.payload
+        }
+      };
+    case getType(browserActions.updateApplyToAllTrackLabels):
+      return {
+        ...state,
+        applyToAllConfig: {
+          ...state.applyToAllConfig,
+          allTrackLabelsOn: action.payload
+        }
+      };
     case getType(browserActions.updateTrackConfigNames):
       return {
         ...state,
@@ -231,7 +238,6 @@ export function trackConfig(
 }
 
 export default combineReducers({
-  browserInfo,
   browserEntity,
   browserLocation,
   browserNav,

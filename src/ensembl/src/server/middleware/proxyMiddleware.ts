@@ -14,37 +14,10 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import { getPaths } from 'webpackDir/paths';
-
-const paths = getPaths();
-
 const genomeBrowserRouter = Router();
-
-// This part of the middleware should become obsolete when we start packaging the genome browser module better.
-// Then it will be webpack dev middleware's responsibility to serve the wasm files
-genomeBrowserRouter.get(
-  '*wasm',
-  (req: Request, res: Response, next: NextFunction) => {
-    const requestUrl = req.url; // e.g. /static/browser/browser-80f51620ed443c640cdfd6b5aebd505b.wasm
-    const fileName = path.parse(requestUrl).base;
-    const options = {
-      root: path.join(paths.nodeModulesPath, 'ensembl-genome-browser'),
-      dotfiles: 'deny',
-      headers: {
-        'Content-Type': 'application/wasm'
-      }
-    };
-    res.sendFile(fileName, options, function (err) {
-      if (err) {
-        next(err);
-      }
-    });
-  }
-);
 
 /**
  * Below are the rules to proxying requests to api endpoints.

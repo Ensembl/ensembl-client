@@ -19,22 +19,23 @@ import { ThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
 import uniq from 'lodash/uniq';
 
-import { RootState } from 'src/store';
-import { TrackSet } from './trackPanelConfig';
 import trackPanelStorageService from './track-panel-storage-service';
 import browserStorageService from '../browser-storage-service';
+import analyticsTracking from 'src/services/analytics-service';
+
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
 } from '../browserSelectors';
 import { getActiveGenomePreviouslyViewedObjects } from './trackPanelSelectors';
-
-import analyticsTracking from 'src/services/analytics-service';
 import { getActiveTrackPanel } from './trackPanelSelectors';
 import {
   pickPersistentTrackPanelProperties,
   TrackPanelStateForGenome
 } from './trackPanelState';
+
+import { RootState } from 'src/store';
+import { TrackSet } from './trackPanelConfig';
 
 export const updateTrackPanelForGenome = createAction(
   'track-panel/update-track-panel',

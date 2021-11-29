@@ -56,6 +56,7 @@ const start = async () => {
     'StartServer',
     once(() => {
       // Not sure if this message is sufficiently visible
+
       setTimeout(
         () => console.log('Starting the server; please wait...'), // eslint-disable-line no-console
         1000
