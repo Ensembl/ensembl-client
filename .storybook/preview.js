@@ -5,7 +5,7 @@ export const parameters = {
     storySort: {
       order: [
         'Design Primitives',
-        'Components', [ 'Genome Browser', 'Entity Viewer', 'Shared Components' ],
+        'Components', [ 'Genome Browser', 'Entity Viewer', 'Species', 'Blast', 'Shared Components' ],
         'Hooks',
         'Other'
       ]

@@ -13,13 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import 'src/styles/main.scss';
-
-import './design-primitives/index.ts';
-import './shared-components/index.ts';
-import './static-images/index.ts';
-import './genome-browser/index.ts';
-import './entity-viewer/index.ts';
-import './species/index.ts';
-import './hooks/index.ts';

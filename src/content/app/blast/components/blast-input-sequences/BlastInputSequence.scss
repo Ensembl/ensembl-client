@@ -1,0 +1,20 @@
+@import 'src/styles/common';
+
+$border: 1px solid $grey;
+
+.header {
+  padding: 16px 26px 14px;
+  border: $border;
+  border-bottom: none;
+}
+
+.body {
+  padding: 16px 26px;
+  background-color: $light-grey;
+  border: $border;
+}
+
+.textarea {
+  border: $border;
+  font-family: $font-family-monospace;
+}
