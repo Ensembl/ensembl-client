@@ -56,22 +56,13 @@ const staticAssetsMiddleware = createProxyMiddleware('/static', {
   target: 'http://localhost:8081'
 });
 
-const apiProxyMiddleware = createProxyMiddleware(
-  ['/api/**', '!/api/browser/**'],
-  {
-    target: 'https://staging-2020.ensembl.org',
-    changeOrigin: true,
-    secure: false
-  }
-);
-
-const browserProxyMiddleware = createProxyMiddleware('/api/browser/**', {
-  target: 'http://genome-browser-service.review.ensembl.org/',
+const apiProxyMiddleware = createProxyMiddleware('/api', {
+  target: 'https://staging-2020.ensembl.org',
   changeOrigin: true,
   secure: false
 });
 
-let proxyMiddleware = [apiProxyMiddleware, browserProxyMiddleware];
+let proxyMiddleware = [apiProxyMiddleware];
 
 if (process.env.NODE_ENV === 'development') {
   proxyMiddleware = proxyMiddleware.concat([
