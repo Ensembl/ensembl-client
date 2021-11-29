@@ -82,6 +82,18 @@ export class EntityViewerStorageService {
       localStorageOptions
     );
   }
+
+  public clearGeneViewTranscriptsState(ids: {
+    genomeId: string;
+    entityId: string;
+  }) {
+    const { genomeId, entityId } = ids;
+    this.storageService.removeAt(
+      StorageKeys.GENE_VIEW_TRANSCRIPTS_STATE,
+      [genomeId, entityId],
+      localStorageOptions
+    );
+  }
 }
 
 export default new EntityViewerStorageService(storageService);

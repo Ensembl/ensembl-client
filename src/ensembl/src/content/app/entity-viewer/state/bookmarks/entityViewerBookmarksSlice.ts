@@ -20,6 +20,7 @@ import merge from 'lodash/merge';
 import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import {
   Filters,
@@ -153,6 +154,18 @@ const bookmarksSlice = createSlice({
           label: gene.symbol ? [gene.symbol, gene.stable_id] : gene.stable_id,
           type: 'gene' as const
         };
+
+        // clear the stored data for the oldest previously viewed entity
+        if (previouslyViewedEntities.length === 20) {
+          const oldestPreviouslyViewedEntity =
+            previouslyViewedEntities[previouslyViewedEntities.length - 1];
+
+          entityViewerStorageService.clearGeneViewTranscriptsState({
+            genomeId,
+            entityId: oldestPreviouslyViewedEntity.entity_id
+          });
+        }
+
         const updatedEntites = [newEntity, ...previouslyViewedEntities].slice(
           0,
           21
