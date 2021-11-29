@@ -19,14 +19,10 @@ import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import cloneDeep from 'lodash/cloneDeep';
 
-import {
-  buildEnsObjectId,
-  parseEnsObjectId
-} from 'src/shared/state/ens-object/ensObjectHelpers';
+import { buildEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
-import { getPreviouslyViewedEntities } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSelectors';
-import { updatePreviouslyViewedEntity } from 'src/content/app/entity-viewer/state/bookmarks/entityViewerBookmarksSlice';
+import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
 import {
   getEntityViewerActiveGenomeId,
@@ -63,6 +59,14 @@ export type TranscriptsStatePerGene = {
 export type GeneViewTranscriptsState = {
   [genomeId: string]: {
     [geneId: string]: TranscriptsStatePerGene;
+  };
+};
+
+export type StoredGeneViewTranscriptsState = {
+  [genomeId: string]: {
+    [geneId: string]: Partial<
+      Pick<TranscriptsStatePerGene, 'filters' | 'sortingRule'>
+    >;
   };
 };
 
@@ -136,13 +140,13 @@ export const setFilters =
       })
     );
 
-    dispatch(
-      storeFiltersAndSortingRules({
-        genomeId: activeGenomeId,
-        entityId: activeEntityId,
-        fragment: { filters }
-      })
-    );
+    entityViewerStorageService.updateGeneViewTranscriptsState({
+      [activeGenomeId]: {
+        [activeEntityId]: {
+          filters
+        }
+      }
+    });
   };
 
 export const setSortingRule =
@@ -163,42 +167,13 @@ export const setSortingRule =
       })
     );
 
-    dispatch(
-      storeFiltersAndSortingRules({
-        genomeId: activeGenomeId,
-        entityId: activeEntityId,
-        fragment: { sortingRule }
-      })
-    );
-  };
-
-const storeFiltersAndSortingRules =
-  (params: {
-    genomeId: string;
-    entityId: string;
-    fragment: {
-      filters?: Filters;
-      sortingRule?: SortingRule;
-    };
-  }): ThunkAction<void, any, null, Action<string>> =>
-  (dispatch, getState: () => RootState) => {
-    const { genomeId, entityId, fragment } = params;
-    const state = getState();
-    const geneStableId = parseEnsObjectId(entityId).objectId;
-    const storedGene = getPreviouslyViewedEntities(state, genomeId).find(
-      (entity) => entity.entity_id === geneStableId
-    );
-    if (!storedGene) {
-      return;
-    }
-
-    dispatch(
-      updatePreviouslyViewedEntity({
-        genomeId,
-        previouslyViewedEntityId: geneStableId,
-        fragment
-      })
-    );
+    entityViewerStorageService.updateGeneViewTranscriptsState({
+      [activeGenomeId]: {
+        [activeEntityId]: {
+          sortingRule
+        }
+      }
+    });
   };
 
 export const toggleTranscriptInfo =
@@ -327,9 +302,12 @@ type UpdateFilterPanelPayload = {
   filterPanelOpen: boolean;
 };
 
+const initialGeneViewTranscriptsState: StoredGeneViewTranscriptsState =
+  entityViewerStorageService.getGeneViewTranscriptsState() || {};
+
 const transcriptsSlice = createSlice({
   name: 'entity-viewer-gene-view-transcripts',
-  initialState: {} as GeneViewTranscriptsState,
+  initialState: initialGeneViewTranscriptsState as GeneViewTranscriptsState,
   reducers: {
     updateExpandedTranscripts(
       state,
