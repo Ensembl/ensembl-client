@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef, MutableRefObject } from 'react';
+import { render } from '@testing-library/react';
 
-const PersonalData = () => {
-  return (
-    <section className="personaData">
-      <p>Upload your own data to be displayed in the browser</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
-  );
-};
+import ShadedInput from './ShadedInput';
 
-export default PersonalData;
+describe('ShadedInput', () => {
+  it('forwards the ref to the input element', () => {
+    let inputRef = null as MutableRefObject<HTMLInputElement | null> | null;
+    const Wrapper = () => {
+      inputRef = useRef<HTMLInputElement | null>(null);
+      return <ShadedInput ref={inputRef} />;
+    };
+    render(<Wrapper />);
+
+    const inputElement = inputRef?.current;
+
+    expect(inputElement?.tagName).toBe('INPUT');
+  });
+});

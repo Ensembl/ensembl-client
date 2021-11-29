@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import Input, { Props as InputProps } from './Input';
 
 import styles from './Input.scss';
 
-const ShadedInput = (props: InputProps) => {
+const ShadedInput = (
+  props: InputProps,
+  ref: ForwardedRef<HTMLInputElement>
+) => {
   const { className, ...otherProps } = props;
 
   const inputClasses = classNames(styles.shadedInput, className);
 
-  return <Input className={inputClasses} {...otherProps} />;
+  return <Input ref={ref} className={inputClasses} {...otherProps} />;
 };
 
-ShadedInput.defaultProps = {
-  callbackWithEvent: false
-};
-
-export default ShadedInput;
+export default forwardRef(ShadedInput);

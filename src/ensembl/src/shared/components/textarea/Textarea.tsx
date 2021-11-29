@@ -14,93 +14,27 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, TextareaHTMLAttributes, ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './Textarea.scss';
 
-type PropsForRespondingWithEvents = {
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onFocus?: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
-  onBlur?: (e: React.SyntheticEvent<HTMLTextAreaElement>) => void;
-  callbackWithEvent: true;
+export type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  resizable?: boolean;
 };
 
-type PropsForRespondingWithData = {
-  onChange?: (value: string) => void;
-  onFocus?: (value?: string) => void;
-  onBlur?: (value?: string) => void;
-  callbackWithEvent: false;
-};
+const Textarea = (props: Props, ref: ForwardedRef<HTMLTextAreaElement>) => {
+  const {
+    className: classNameFromProps,
+    resizable = true,
+    ...otherProps
+  } = props;
 
-type OnChangeProps = PropsForRespondingWithEvents | PropsForRespondingWithData;
-
-export type Props = {
-  value: string | number;
-  id?: string;
-  name?: string;
-  autoFocus?: boolean;
-  placeholder?: string;
-  resizable: boolean;
-  className?: string; // to customize textarea styling when using CSS modules
-  onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-} & OnChangeProps;
-
-const Textarea = (props: Props) => {
-  const eventHandler =
-    (eventName: string) =>
-    (
-      e:
-        | React.ChangeEvent<HTMLTextAreaElement>
-        | React.FocusEvent<HTMLTextAreaElement>
-    ) => {
-      const value = e.target.value;
-
-      if (eventName === 'change') {
-        if (!props.onChange) {
-          return;
-        }
-        props.callbackWithEvent ? props.onChange(e) : props.onChange(value);
-      } else if (eventName === 'focus') {
-        if (!props.onFocus) {
-          return;
-        }
-        props.callbackWithEvent ? props.onFocus(e) : props.onFocus(value);
-      } else if (eventName === 'blur') {
-        if (!props.onBlur) {
-          return;
-        }
-        props.callbackWithEvent ? props.onBlur(e) : props.onBlur(value);
-      }
-    };
-
-  const className = classNames(styles.textarea, props.className, {
-    [styles.disableResize]: !props.resizable
+  const className = classNames(styles.textarea, classNameFromProps, {
+    [styles.disableResize]: !resizable
   });
 
-  return (
-    <textarea
-      id={props.id}
-      name={props.name}
-      autoFocus={props.autoFocus}
-      placeholder={props.placeholder}
-      className={className}
-      value={props.value}
-      onChange={eventHandler('change')}
-      onFocus={eventHandler('focus')}
-      onBlur={eventHandler('blur')}
-      onKeyUp={props.onKeyUp}
-      onKeyDown={props.onKeyDown}
-      onKeyPress={props.onKeyPress}
-    />
-  );
+  return <textarea ref={ref} className={className} {...otherProps} />;
 };
 
-Textarea.defaultProps = {
-  callbackWithEvent: false,
-  resizable: true
-};
-
-export default Textarea;
+export default forwardRef(Textarea);

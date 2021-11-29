@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, ForwardedRef } from 'react';
 import classNames from 'classnames';
 
 import Textarea, { Props as TextareaProps } from './Textarea';
 
 import styles from './Textarea.scss';
 
-const ShadedTextarea = (props: TextareaProps) => {
+const ShadedTextarea = (
+  props: TextareaProps,
+  ref: ForwardedRef<HTMLTextAreaElement>
+) => {
   const { className, ...otherProps } = props;
 
   const inputClasses = classNames(styles.shadedTextarea, className);
 
-  return <Textarea className={inputClasses} {...otherProps} />;
+  return <Textarea ref={ref} className={inputClasses} {...otherProps} />;
 };
 
-ShadedTextarea.defaultProps = {
-  callbackWithEvent: false,
-  resizable: false
-};
-
-export default ShadedTextarea;
+export default forwardRef(ShadedTextarea);

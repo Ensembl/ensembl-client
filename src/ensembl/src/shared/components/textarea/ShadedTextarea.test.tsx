@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useRef, MutableRefObject } from 'react';
+import { render } from '@testing-library/react';
 
-const PersonalData = () => {
-  return (
-    <section className="personaData">
-      <p>Upload your own data to be displayed in the browser</p>
-      <p>Not ready yet &hellip;</p>
-    </section>
-  );
-};
+import ShadedTextarea from './ShadedTextarea';
 
-export default PersonalData;
+describe('<ShadedTextarea />', () => {
+  it('forwards the ref to the textarea element', () => {
+    let textareaRef =
+      null as MutableRefObject<HTMLTextAreaElement | null> | null;
+    const Wrapper = () => {
+      textareaRef = useRef<HTMLTextAreaElement | null>(null);
+      return <ShadedTextarea ref={textareaRef} />;
+    };
+    render(<Wrapper />);
+
+    const textareaElement = textareaRef?.current;
+
+    expect(textareaElement?.tagName).toBe('TEXTAREA');
+  });
+});

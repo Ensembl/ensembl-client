@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, MutableRefObject } from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import faker from 'faker';
@@ -59,44 +59,19 @@ describe('<Textarea />', () => {
 
       expect(textarea.classList.contains('disableResize')).toBe(true);
     });
-  });
 
-  describe('responding with data', () => {
-    it('passes string value to onChange', () => {
-      const textareaValue = 'Hello worl';
-      const { container } = render(
-        <Textarea {...commonTextareaProps} value={textareaValue} />
-      );
-      const textarea = container.firstChild as HTMLElement;
+    it('forwards the ref to the textarea element', () => {
+      let textareaRef =
+        null as MutableRefObject<HTMLTextAreaElement | null> | null;
+      const Wrapper = () => {
+        textareaRef = useRef<HTMLTextAreaElement | null>(null);
+        return <Textarea ref={textareaRef} {...props} />;
+      };
+      render(<Wrapper />);
 
-      userEvent.type(textarea, 'd');
-      expect(commonTextareaProps.onChange).toHaveBeenLastCalledWith(
-        'Hello world'
-      );
-    });
+      const textareaElement = textareaRef?.current;
 
-    it('passes string value to onFocus', () => {
-      const { container } = render(
-        <Textarea {...commonTextareaProps} value={textareaValue} />
-      );
-      const textarea = container.firstChild as HTMLElement;
-
-      fireEvent.focus(textarea);
-      expect(commonTextareaProps.onFocus).toHaveBeenLastCalledWith(
-        textareaValue
-      );
-    });
-
-    it('passes string value to onBlur', () => {
-      const { container } = render(
-        <Textarea {...commonTextareaProps} value={textareaValue} />
-      );
-      const textarea = container.firstChild as HTMLElement;
-
-      fireEvent.blur(textarea);
-      expect(commonTextareaProps.onBlur).toHaveBeenLastCalledWith(
-        textareaValue
-      );
+      expect(textareaElement?.tagName).toBe('TEXTAREA');
     });
   });
 
@@ -115,29 +90,19 @@ describe('<Textarea />', () => {
         };
 
         return (
-          <Textarea
-            {...commonTextareaProps}
-            onChange={onChange}
-            value={text}
-            callbackWithEvent={true}
-          />
+          <Textarea {...commonTextareaProps} onChange={onChange} value={text} />
         );
       };
       const { container } = render(<StatefulTextareaWrapper />);
       const textarea = container.firstChild as HTMLElement;
 
-      // fireEvent.change(textarea, { target: { value: 'd' } });
       userEvent.type(textarea, 'd');
       expect(spy.mock.calls[0][0].target.value).toBe('Hello world');
     });
 
     it('passes event to onFocus', () => {
       const { container } = render(
-        <Textarea
-          {...commonTextareaProps}
-          value={textareaValue}
-          callbackWithEvent={true}
-        />
+        <Textarea {...commonTextareaProps} value={textareaValue} />
       );
       const textarea = container.firstChild as HTMLElement;
 
@@ -150,11 +115,7 @@ describe('<Textarea />', () => {
 
     it('passes event to onBlur', () => {
       const { container } = render(
-        <Textarea
-          {...commonTextareaProps}
-          value={textareaValue}
-          callbackWithEvent={true}
-        />
+        <Textarea {...commonTextareaProps} value={textareaValue} />
       );
       const textarea = container.firstChild as HTMLElement;
 

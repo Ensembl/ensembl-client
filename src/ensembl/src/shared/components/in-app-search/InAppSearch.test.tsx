@@ -137,7 +137,6 @@ describe('<InAppSearch />', () => {
         </Provider>
       );
 
-      userEvent.clear(searchField);
       userEvent.type(searchField, 'Traes');
 
       // also, let's try to submit the search by pressing on the button

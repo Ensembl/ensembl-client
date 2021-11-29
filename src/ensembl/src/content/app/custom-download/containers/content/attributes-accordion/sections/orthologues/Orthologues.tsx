@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, FormEvent } from 'react';
 import { connect } from 'react-redux';
 import set from 'lodash/fp/set';
 import findIndex from 'lodash/findIndex';
@@ -75,9 +75,11 @@ const Orthologue = (props: Props) => {
       }
     );
 
-    (newOrthologueAttributes[species].options[
-      modifiedSpeciesIndex
-    ] as CheckboxGridOption).isChecked = status;
+    (
+      newOrthologueAttributes[species].options[
+        modifiedSpeciesIndex
+      ] as CheckboxGridOption
+    ).isChecked = status;
 
     const path = ['orthologues', `${attributeId}(${species})`];
 
@@ -123,8 +125,9 @@ const Orthologue = (props: Props) => {
     props.setOrthologueAttributes(newOrthologueAttributes);
   };
 
-  const inputOnChangeHandler = useCallback(
-    (searchTerm: string) => {
+  const onInputChange = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      const searchTerm = event.currentTarget.value;
       props.setOrthologueSearchTerm(searchTerm);
       props.fetchOrthologueSpecies(searchTerm, props.orthologueSpecies);
     },
@@ -147,7 +150,7 @@ const Orthologue = (props: Props) => {
         <label>Find</label>
         <Input
           value={props.orthologueSearchTerm}
-          onChange={inputOnChangeHandler}
+          onChange={onInputChange}
           placeholder={'Species'}
         />
         {props.orthologueSearchTerm.length > 0 && (
@@ -178,9 +181,11 @@ const Orthologue = (props: Props) => {
                     attributesOnChangeHandler(status, species, id)
                   }
                   options={
-                    (props.orthologueAttributes[
-                      species
-                    ] as AttributeWithOptions).options as CheckboxGridOption[]
+                    (
+                      props.orthologueAttributes[
+                        species
+                      ] as AttributeWithOptions
+                    ).options as CheckboxGridOption[]
                   }
                   label={species}
                 />

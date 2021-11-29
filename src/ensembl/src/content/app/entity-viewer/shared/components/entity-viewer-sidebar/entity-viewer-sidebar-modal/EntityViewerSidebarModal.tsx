@@ -20,9 +20,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getEntityViewerSidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSelectors';
 import { closeSidebarModal } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
-import CloseButton from 'src/shared/components/close-button/CloseButton';
-
 import { SidebarModalView } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+
+import SidebarModal from 'src/shared/components/layout/sidebar-modal/SidebarModal';
 
 import styles from './EntityViewerSidebarModal.scss';
 
@@ -41,6 +41,12 @@ const entityViewerSidebarModals: Record<
   )
 };
 
+const entityViewerSidebarModalTitles = {
+  [SidebarModalView.SEARCH]: 'Search',
+  [SidebarModalView.BOOKMARKS]: 'Previously viewed',
+  [SidebarModalView.DOWNLOADS]: 'Downloads'
+};
+
 export const EntityViewerSidebarModal = () => {
   const dispatch = useDispatch();
 
@@ -53,15 +59,19 @@ export const EntityViewerSidebarModal = () => {
   }
 
   const ModalView = entityViewerSidebarModals[entityViewerSidebarModalView];
+  const modalViewTitle =
+    entityViewerSidebarModalTitles[entityViewerSidebarModalView];
 
   return (
     <section className={styles.entityViewerSidebarModal}>
-      <div className={styles.closeButton}>
-        <CloseButton onClick={() => dispatch(closeSidebarModal())} />
-      </div>
-      <div>
-        <Suspense fallback={<div>Loading...</div>}>{<ModalView />}</Suspense>
-      </div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SidebarModal
+          title={modalViewTitle}
+          onClose={() => dispatch(closeSidebarModal())}
+        >
+          {<ModalView />}
+        </SidebarModal>
+      </Suspense>
     </section>
   );
 };

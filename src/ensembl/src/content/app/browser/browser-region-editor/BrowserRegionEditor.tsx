@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, FormEvent, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, FormEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 
@@ -171,6 +171,16 @@ export const BrowserRegionEditor = () => {
     });
   };
 
+  const onLocationStartChange = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setLocationStartInput(value);
+  };
+
+  const onLocationEndChange = (event: FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    setLocationEndInput(value);
+  };
+
   const onValidationError = (errorMessages: RegionValidationErrors) => {
     const { startError = null, endError = null } = errorMessages;
     updateErrorMessages(startError, endError);
@@ -229,7 +239,7 @@ export const BrowserRegionEditor = () => {
           <Input
             id="region-editor-start"
             type="text"
-            onChange={setLocationStartInput}
+            onChange={onLocationStartChange}
             value={locationStartInput}
             className={locationStartClassNames}
           ></Input>
@@ -253,7 +263,7 @@ export const BrowserRegionEditor = () => {
           <Input
             id="region-editor-end"
             type="text"
-            onChange={setLocationEndInput}
+            onChange={onLocationEndChange}
             value={locationEndInput}
             className={locationEndClassNames}
           ></Input>

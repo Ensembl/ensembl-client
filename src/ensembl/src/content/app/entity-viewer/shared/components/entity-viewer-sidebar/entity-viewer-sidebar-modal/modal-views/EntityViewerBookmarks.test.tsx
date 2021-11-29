@@ -45,6 +45,9 @@ const exampleEntities = [
   }
 ];
 
+const currentEntityId = `braf`;
+const currentEntityLabel = `BRAF`;
+
 const previouslyViewedEntities = [
   {
     entity_id: 'human-fry',
@@ -54,6 +57,11 @@ const previouslyViewedEntities = [
   {
     entity_id: 'human-tp53',
     label: 'TP53',
+    type: 'gene'
+  },
+  {
+    entity_id: currentEntityId,
+    label: currentEntityLabel,
     type: 'gene'
   }
 ];
@@ -72,7 +80,7 @@ const mockState = {
     general: {
       activeGenomeId: 'human',
       activeEntityIds: {
-        human: 'human:gene:braf'
+        human: `human:gene:${currentEntityId}`
       }
     },
     bookmarks: {

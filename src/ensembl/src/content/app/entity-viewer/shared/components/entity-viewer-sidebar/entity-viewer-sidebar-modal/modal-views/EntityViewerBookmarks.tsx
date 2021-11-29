@@ -54,29 +54,21 @@ export const PreviouslyViewedLinks = (props: PreviouslyViewedLinksProps) => {
 
   return (
     <div data-test-id="previously viewed links">
-      {props.previouslyViewedEntities.map((previouslyViewedEntity, index) => {
+      {props.previouslyViewedEntities.map((entity, index) => {
         const path = urlFor.entityViewer({
           genomeId: props.activeGenomeId,
           entityId: buildFocusIdForUrl({
             type: 'gene',
-            objectId: previouslyViewedEntity.entity_id
+            objectId: entity.entity_id
           })
         });
 
         return (
           <div key={index} className={styles.linkHolder}>
-            <Link
-              to={path}
-              onClick={() => handleClick(previouslyViewedEntity.label, index)}
-            >
-              <TextLine
-                text={previouslyViewedEntity.label}
-                className={styles.label}
-              />
+            <Link to={path} onClick={() => handleClick(entity.label, index)}>
+              <TextLine text={entity.label} className={styles.label} />
             </Link>
-            <span className={styles.type}>
-              {upperFirst(previouslyViewedEntity.type)}
-            </span>
+            <span className={styles.type}>{upperFirst(entity.type)}</span>
           </div>
         );
       })}
@@ -98,7 +90,6 @@ export const EntityViewerSidebarBookmarks = () => {
 
   return (
     <section>
-      <h3>Previously viewed</h3>
       {previouslyViewedEntities.length ? (
         <>
           <PreviouslyViewedLinks
