@@ -14,11 +14,11 @@ The Ensembl client runs on Node.js, and is managed using NPM and webpack. All su
 
 2. Clone this repository
 
-3. In a terminal, cd to `src/ensembl` and run `npm install`. This will install all the necessary NPM packages for app development and the build.
+3. In a terminal, cd to `ensembl-client` and run `npm install`. This will install all the necessary NPM packages for app development and the build.
 
 4. Run `npm start` to launch the application.
 
-Further details on command-line options can be found in the application source code [README](/src/ensembl/README.md).
+Further details on command-line options can be found in the application source code [README](README.md).
 
 Detailed technical documentation (currently for the genome browser only) is available on our [GitHub Pages](https://ensembl.github.io/ensembl-client/).
 
