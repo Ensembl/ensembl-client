@@ -18,8 +18,6 @@ The Ensembl client runs on Node.js, and is managed using NPM and webpack. All su
 
 4. Run `npm start` to launch the application.
 
-Further details on command-line options can be found in the application source code [README](README.md).
-
 Detailed technical documentation (currently for the genome browser only) is available on our [GitHub Pages](https://ensembl.github.io/ensembl-client/).
 
 In addition to the main web frontend, the codebase includes an installation of [Storybook](https://storybook.js.org/) which can be used to examine individual components. This can be run locally, or you can [view our current deployment of Storybook](https://ensembl.github.io/ensembl-client/storybook/index.html) on GitHub Pages.
@@ -59,8 +57,6 @@ Similar to our current site-wide search, the Global Search will allow you to sea
 - `npm run storybook` - Starts the Storybook application
 
 ### Development and testing
-- `npm run copy-dotenv` - Makes a copy of `.env.example` file named as `.env` in case it doesn't exist. This command will always run before `serve:dev`.
-- `npm run serve:dev` - This does the same as `npm start`. The latter is actually an alias to this script.
 - `npm run lint` - Runs both `lint:scripts` and `lint:style`.
 - `npm run lint:scripts` - Runs ESLint against all typescript files to make sure they conform to the style guide.
 - `npm run lint:styles` - Runs `stylelint` against SCSS files to make sure they conform to the style guide.
@@ -71,9 +67,7 @@ Similar to our current site-wide search, the Global Search will allow you to sea
 
 ### Testing production build locally
 - `npm run prod:analyse` — Runs production build, and also uses `webpack-bundle-analyzer` to report the size of the bundle.
-- `npm run serve:prod` - Runs the server that serves the production build locally over `http`.
-- `npm run certify` - Runs `setup-ssl.js` to create a local SSL certificate to run the production build on `HTTPS`. There are two files that are created for this: `localhost.crt` and `localhost.key`.
-- `npm run serve:prod:secure` - Runs the server that serves the production build locally over `https`. You will need to run `certify` before running this, in case you already haven't generated an SSL certificate.
+- `npm run build` - Runs the server that serves the production build locally over `http`.
 
 ### Deployment (interal use only)
 - `npm run deploy-docs` — Builds the Storybook application and deploys it, along with the docs for Genome browser, to Github Pages ([link](https://ensembl.github.io/ensembl-client))
