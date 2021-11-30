@@ -1,7 +1,0 @@
-{
-  "name": "ensembl-genome-browser",
-  "version": "1.0.0",
-  "description": "Genome browser for Ensembl web site built as static assets.",
-  "main": "browser.js",
-  "license": "MIT"
-}
