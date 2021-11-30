@@ -5,7 +5,7 @@
   image: dockerhub.ebi.ac.uk/ensembl-web/deploy-tools:0.1
   variables:
     BROWSER_SERVICE_SLUG: dev
-    GENOME_SEARCH_SERVICE_SLUG: dev
+    NEW_GENOME_SEARCH_SERVICE_SLUG: dev
     THOAS_SERVICE_SLUG: dev
     REFGET_SERVICE_SLUG: dev
     HELP_DOCS_SERVICE_SLUG: dev
@@ -24,11 +24,13 @@
     - sed -i "s#<THOAS_SERVICE_SLUG>#${THOAS_SERVICE_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${CI_COMMIT_REF_SLUG}#g" ensembl_client_node_cm.yaml
     - sed -i "s#<GA_KEY>#${GA_KEY}#g" ensembl_client_node_cm.yaml
-
-    # ensembl-2020-server
-    - sed -i "s#<DEPLOYMENT_ENV>#${BROWSER_SERVICE_SLUG}#g" ensembl_server_service.yaml
-    - sed -i "s#<DEPLOYMENT_ENV>#${BROWSER_SERVICE_SLUG}#g" ensembl_server_ingress.yaml
-    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_server_ingress.yaml
+    # ensembl-new-genome-browser
+    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_new_gb_hi_service.yaml
+    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_new_gb_lo_service.yaml
+    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_new_gb_hi_ingress.yaml
+    - sed -i "s#<DEPLOYMENT_ENV>#${NEW_GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_new_gb_lo_ingress.yaml
+    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_new_gb_hi_ingress.yaml
+    - sed -i "s#<SUB_DOMAIN>#${CI_COMMIT_REF_SLUG}#g" ensembl_new_gb_lo_ingress.yaml
     # ensembl-2020-genome-search
     - sed -i "s#<DEPLOYMENT_ENV>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_genome_search_service.yaml
     - sed -i "s#<DEPLOYMENT_ENV>#${GENOME_SEARCH_SERVICE_SLUG}#g" ensembl_genome_search_ingress.yaml
@@ -55,9 +57,11 @@
     # ensembl-thoas
     - kubectl apply -f ensembl_thoas_service.yaml
     - kubectl apply -f ensembl_thoas_ingress.yaml
-    # ensembl-2020-server
-    - kubectl apply -f ensembl_server_service.yaml
-    - kubectl apply -f ensembl_server_ingress.yaml
+    # ensembl-new-genome-browser
+    - kubectl apply -f ensembl_new_gb_hi_service.yaml
+    - kubectl apply -f ensembl_new_gb_lo_service.yaml
+    - kubectl apply -f ensembl_new_gb_hi_ingress.yaml
+    - kubectl apply -f ensembl_new_gb_lo_ingress.yaml
     # ensembl-2020-genome-search
     - kubectl apply -f ensembl_genome_search_service.yaml
     - kubectl apply -f ensembl_genome_search_ingress.yaml
