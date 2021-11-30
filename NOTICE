@@ -6,7 +6,7 @@ This product includes software developed at:
 
 The following files are copyrighted to EMBL-European Bioinformatics Institute under the Creative Commons Attribution-ShareAlike 4.0 license. See https://creativecommons.org/licenses/by-sa/4.0/ for details of the license.
 
-- /src/ensembl/static/img/entity-viewer/icon_protein_annotations.svg
-- /src/ensembl/static/img/entity-viewer/icon_protein_interactions.svg
-- /src/ensembl/static/img/entity-viewer/icon_protein_ligands.svg
-- /src/ensembl/static/img/entity-viewer/icon_protein_structures.svg
+- /static/img/entity-viewer/icon_protein_annotations.svg
+- /static/img/entity-viewer/icon_protein_interactions.svg
+- /static/img/entity-viewer/icon_protein_ligands.svg
+- /static/img/entity-viewer/icon_protein_structures.svg
