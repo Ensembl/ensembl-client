@@ -13,7 +13,7 @@
   "author": "EMBL-EBI",
   "license": "MIT",
   "scripts": {
-    "prepare": "husky install ./.husky",
+    "prepare": "husky install",
     "prestart": "npm install --no-save",
     "start": "NODE_ENV=development TS_NODE_PROJECT=tsconfig.tooling.json ts-node --transpile-only scripts/start",
     "prebuild": "rimraf ./dist",
