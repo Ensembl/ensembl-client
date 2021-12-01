@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useState, useEffect } from 'react';
-import { useTransition, animated } from 'react-spring';
+import { useTransition, animated } from '@react-spring/web';
 
 import analyticsTracking from 'src/services/analytics-service';
 import BrowserTrackConfig from '../browser-track-config/BrowserTrackConfig';
