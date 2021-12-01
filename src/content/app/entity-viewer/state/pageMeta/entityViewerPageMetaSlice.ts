@@ -15,7 +15,7 @@
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import apiService, { HTTPMethod } from 'src/services/api-service';
+import { request, gql } from 'graphql-request';
 
 import config from 'config';
 
@@ -30,47 +30,47 @@ type FetchPageTitleInfoParams = {
   geneStableId: string;
 };
 
-export const fetchPageTitleInfo = createAsyncThunk(
+type GeneSummaryResponse = {
+  gene: {
+    symbol: string;
+    stable_id: string;
+  };
+};
+
+const geneSummaryQuery = gql`
+  query GeneSummary($genomeId: String!, $geneId: String!) {
+    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
+      stable_id
+      symbol
+    }
+  }
+`;
+
+export const fetchPageTitleInfo = createAsyncThunk<
+  PageMetaState,
+  FetchPageTitleInfoParams,
+  { rejectValue: { status: 404 } }
+>(
   'entity-viewer/fetchPageTitleInfo',
   async (params: FetchPageTitleInfoParams, thunkApi) => {
     const { genomeId, geneStableId } = params;
-    const query = `
-      query GeneSummary($genomeId: String!, $geneId: String!) {
-        gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-          stable_id
-          symbol
-        }
-      }
-    `;
-
     const url = config.thoasBaseUrl;
 
-    const response = await apiService.fetch(url, {
-      noCache: true,
-      preserveEndpoint: true,
-      method: HTTPMethod.POST,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          genomeId: genomeId,
-          geneId: geneStableId
-        }
-      })
-    });
-    const { gene } = response.data;
-    if (!gene) {
-      return thunkApi.rejectWithValue({ status: 404 });
+    try {
+      const data = await request<GeneSummaryResponse>(url, geneSummaryQuery, {
+        genomeId,
+        geneId: geneStableId
+      });
+      const { symbol, stable_id } = data.gene;
+      const title = `Gene: ${symbol ?? stable_id} — Ensembl`;
+      return {
+        title,
+        genomeId,
+        entityId: geneStableId
+      };
+    } catch {
+      throw thunkApi.rejectWithValue({ status: 404 });
     }
-    const { symbol, stable_id } = response.data.gene;
-    const title = `Gene: ${symbol ?? stable_id} — Ensembl`;
-    return {
-      title,
-      genomeId,
-      entityId: geneStableId
-    };
   }
 );
 
