@@ -22,18 +22,12 @@ import { getPreviouslyViewedEntities } from './entityViewerBookmarksSelectors';
 import entityViewerBookmarksStorageService from 'src/content/app/entity-viewer/services/bookmarks/entity-viewer-bookmarks-storage-service';
 import entityViewerStorageService from 'src/content/app/entity-viewer/services/entity-viewer-storage-service';
 
-import {
-  Filters,
-  SortingRule
-} from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 import { RootState } from 'src/store';
 
 type PreviouslyViewedEntity = {
   entity_id: string;
   label: string | string[];
   type: 'gene';
-  filters?: Filters;
-  sortingRule?: SortingRule;
 };
 
 export type PreviouslyViewedEntities = {
