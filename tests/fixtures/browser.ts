@@ -19,7 +19,7 @@ import faker from 'faker';
 import {
   getChrLocationStr,
   RegionValidationMessages
-} from 'src/content/app/browser/helpers/browserHelper';
+} from 'src/content/app/genome-browser/helpers/browserHelper';
 import {
   createGenomeCategories,
   createGenomeKaryotype
@@ -29,9 +29,9 @@ import { createTrackStates } from 'tests/fixtures/track-panel';
 import {
   CogList,
   ChrLocation
-} from 'src/content/app/browser/state/browserState';
-import { RegionValidationResponse } from 'src/content/app/browser/helpers/browserHelper';
-import { TrackSet } from 'src/content/app/browser/components/track-panel/trackPanelConfig';
+} from 'src/content/app/genome-browser/state/browserState';
+import { RegionValidationResponse } from 'src/content/app/genome-browser/helpers/browserHelper';
+import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { Strand } from 'src/shared/types/thoas/strand';
 import { LoadingState } from 'src/shared/types/loading-state';
 import { BreakpointWidth } from 'src/global/globalConfig';

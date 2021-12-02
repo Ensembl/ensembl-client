@@ -17,7 +17,7 @@
 import HomePage from 'src/content/home/HomePage';
 import SpeciesSelectorPage from 'src/content/app/species-selector/SpeciesSelectorPage';
 import SpeciesPage from 'src/content/app/species/SpeciesPage';
-import GenomeBrowserPage from 'src/content/app/browser/BrowserPage';
+import GenomeBrowserPage from 'src/content/app/genome-browser/BrowserPage';
 import EntityViewerPage, {
   serverFetch as entityViewerServerFetch
 } from 'src/content/app/entity-viewer/EntityViewerPage';

@@ -22,7 +22,7 @@ import { createEpicMiddleware } from 'redux-observable';
 
 import config from 'config';
 
-import { genomeBrowserApiSlice } from './content/app/browser/state/genomeBrowserApiSlice';
+import { genomeBrowserApiSlice } from './content/app/genome-browser/state/genomeBrowserApiSlice';
 
 import createRootReducer from './root/rootReducer';
 import { analyticsMiddleWare } from './analyticsMiddleware';

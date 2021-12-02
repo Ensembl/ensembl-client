@@ -26,13 +26,13 @@ import {
   EnsObjectIdConstituents
 } from './ensObjectHelpers';
 
-import { getTrackPanelGene } from 'src/content/app/browser/state/genomeBrowserApiSlice';
+import { getTrackPanelGene } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
 
 import { getGenomeExampleFocusObjects } from 'src/shared/state/genome/genomeSelectors';
 import { getEnsObjectLoadingStatus } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 import { EnsObject, EnsObjectGene } from './ensObjectTypes';
-import type { TrackPanelGene } from 'src/content/app/browser/state/types/track-panel-gene';
+import type { TrackPanelGene } from 'src/content/app/genome-browser/state/types/track-panel-gene';
 import { RootState } from 'src/store';
 
 export const fetchEnsObjectAsyncActions = createAsyncAction(

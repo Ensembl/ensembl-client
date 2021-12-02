@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getChrLocationFromStr } from 'src/content/app/browser/helpers/browserHelper';
+import { getChrLocationFromStr } from 'src/content/app/genome-browser/helpers/browserHelper';
 import {
   EnsObjectRegion,
   EnsObjectGene
