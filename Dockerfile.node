@@ -1,0 +1,14 @@
+# PRODUCTION IMAGE
+FROM node:16.13.0-alpine
+
+RUN apk add --no-cache git
+
+WORKDIR /srv/ensembl-client/
+
+ENV NODE_ENV=production
+COPY package*.json ./
+
+RUN npm ci --only=production --ignore-scripts
+
+EXPOSE 8080
+CMD [ "node", "dist/server/server.js" ]

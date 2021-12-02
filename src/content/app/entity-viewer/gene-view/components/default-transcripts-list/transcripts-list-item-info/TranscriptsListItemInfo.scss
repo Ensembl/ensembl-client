@@ -1,0 +1,101 @@
+@import 'src/styles/common';
+
+.listItemInfo {
+  color: $white;
+  font-weight: $light;
+  padding: 0 0 20px 0;
+}
+
+.middle {
+  display: grid;
+  grid-template-areas:
+    'left middle right'
+    'moreinformationLink . .'
+    'moreInformation moreInformation moreInformation'
+    'downloadLink . .'
+    'download download download';
+  column-gap: 10px;
+  background: $soft-black;
+  padding: 15px 30px;
+
+  strong {
+    color: $white;
+    font-weight: normal;
+  }
+}
+
+.transcriptName {
+  top: -8px;
+  position: relative;
+}
+
+.topLeft {
+  grid-area: left;
+  width: 190px;
+  margin-bottom: 12px;
+  div {
+    padding-bottom: 6px;
+  }
+}
+
+.topMiddle {
+  grid-area: middle;
+  width: 150px;
+  div {
+    padding-bottom: 6px;
+  }
+}
+
+.topRight {
+  grid-area: right;
+  width: 210px;
+  div {
+    padding-bottom: 6px;
+  }
+}
+
+.moreInformationLink {
+  padding-top: 6px;
+  color: $blue;
+  cursor: pointer;
+}
+
+.moreInformation {
+  grid-area: moreInformation;
+  display: grid;
+  grid-template-columns: 190px auto;
+  column-gap: 20px;
+  padding-top: 6px;
+  padding-left: 12px;
+  margin-bottom: 6px;
+}
+
+.moreInfoColumn {
+  width: 190px;
+  div {
+    padding-bottom: 6px;
+  }
+}
+
+.normalText {
+  font-weight: $normal;
+}
+
+.externalRefLink {
+  font-weight: $normal;
+  font-size: 12px;
+}
+
+.downloadLink {
+  grid-area: downloadLink;
+  padding-top: 6px;
+}
+
+.download {
+  grid-area: download;
+  padding-top: 6px;
+}
+
+.viewInApp {
+  padding-top: 12px;
+}
