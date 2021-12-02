@@ -24,7 +24,7 @@ import ImageButton from 'src/shared/components/image-button/ImageButton';
 
 import { browserNavIconActionMap } from 'src/content/app/genome-browser/state/browserState';
 
-import { BrowserNavItem } from 'src/content/app/genome-browser/helpers/browserConfig';
+import { BrowserNavItem } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
 import { Status } from 'src/shared/types/status';
 
 import iconStyles from './BrowserNavIcon.scss';

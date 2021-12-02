@@ -24,7 +24,7 @@ import MockGenomeBrowser from 'tests/mocks/mockGenomeBrowser';
 
 import { BrowserNavIcon } from './BrowserNavIcon';
 
-import { browserNavConfig } from 'src/content/app/genome-browser/components/browser-nav/BrowserNavConfig';
+import { browserNavConfig } from 'src/content/app/genome-browser/components/browser-nav/browserNavConfig';
 
 const mockGenomeBrowser = new MockGenomeBrowser();
 jest.mock(
