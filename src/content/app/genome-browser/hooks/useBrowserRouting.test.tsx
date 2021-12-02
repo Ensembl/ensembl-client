@@ -257,7 +257,7 @@ describe('useBrowserRouting', () => {
 
       expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
         genomeId: 'human',
-        focusId: 'gene:ENSG00000139618',
+        focusId: 'ENSG00000139618',
         chrLocation: ['13', 100, 200]
       });
     });

@@ -129,9 +129,11 @@ const useBrowserRouting = () => {
       const isFirstRender = firstRenderRef.current;
       if (genomeBrowser) {
         if (!isSameLocationAsInRedux || isFirstRender) {
+          const { objectId } = parseFocusIdFromUrl(focus);
+
           changeBrowserLocation({
             genomeId,
-            focusId: focus,
+            focusId: objectId,
             chrLocation
           });
 
