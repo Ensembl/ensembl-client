@@ -27,29 +27,29 @@ import useGenomeBrowser from './hooks/useGenomeBrowser';
 import { client } from 'src/gql-client';
 import analyticsTracking from 'src/services/analytics-service';
 
-import { toggleTrackPanel } from 'src/content/app/browser/track-panel/trackPanelActions';
+import { toggleTrackPanel } from 'src/content/app/browser/components/track-panel/state/trackPanelActions';
 import { closeDrawer } from 'src/content/app/browser/state/drawer/drawerSlice';
 
 import {
   getBrowserNavOpenState,
   getBrowserActiveGenomeId
-} from './browserSelectors';
-import { getIsTrackPanelOpened } from './track-panel/trackPanelSelectors';
+} from './state/browserSelectors';
+import { getIsTrackPanelOpened } from './components/track-panel/state/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
-import BrowserBar from './browser-bar/BrowserBar';
-import BrowserImage from './browser-image/BrowserImage';
-import BrowserNavBar from './browser-nav/BrowserNavBar';
-import TrackPanel from './track-panel/TrackPanel';
-import TrackPanelBar from './track-panel/track-panel-bar/TrackPanelBar';
-import TrackPanelTabs from './track-panel/track-panel-tabs/TrackPanelTabs';
-import BrowserAppBar from './browser-app-bar/BrowserAppBar';
-import Drawer from './drawer/Drawer';
+import BrowserBar from './components/browser-bar/BrowserBar';
+import BrowserImage from './components/browser-image/BrowserImage';
+import BrowserNavBar from './components/browser-nav/BrowserNavBar';
+import TrackPanel from './components/track-panel/TrackPanel';
+import TrackPanelBar from './components/track-panel/components/track-panel-bar/TrackPanelBar';
+import TrackPanelTabs from './components/track-panel/components/track-panel-tabs/TrackPanelTabs';
+import BrowserAppBar from './components/browser-app-bar/BrowserAppBar';
+import Drawer from './components/drawer/Drawer';
 import { StandardAppLayout } from 'src/shared/components/layout';
-import BrowserInterstitial from './interstitial/BrowserInterstitial';
+import BrowserInterstitial from './components/interstitial/BrowserInterstitial';
 
-import { StateZmenu } from 'src/content/app/browser/zmenu/ZmenuController';
+import { StateZmenu } from 'src/content/app/browser/components/zmenu/ZmenuController';
 
 import styles from './Browser.scss';
 

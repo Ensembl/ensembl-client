@@ -32,31 +32,35 @@ jest.mock('./hooks/useBrowserRouting', () => () => ({
 jest.mock('./hooks/useGenomeBrowser', () => () => ({
   genomeBrowser: {}
 }));
-jest.mock('./browser-bar/BrowserBar', () => () => (
+jest.mock('./components/browser-bar/BrowserBar', () => () => (
   <div className="browserBar">BrowserBar</div>
 ));
-jest.mock('./browser-image/BrowserImage', () => () => (
+jest.mock('./components/browser-image/BrowserImage', () => () => (
   <div className="browserImage">BrowserImage</div>
 ));
-jest.mock('./browser-nav/BrowserNavBar', () => () => (
+jest.mock('./components/browser-nav/BrowserNavBar', () => () => (
   <div className="browserNavBar">BrowserNavBar</div>
 ));
-jest.mock('./track-panel/TrackPanel', () => () => (
+jest.mock('./components/track-panel/TrackPanel', () => () => (
   <div className="trackPanel">TrackPanel</div>
 ));
-jest.mock('./browser-app-bar/BrowserAppBar', () => () => (
+jest.mock('./components/browser-app-bar/BrowserAppBar', () => () => (
   <div className="browserAppBar">BrowserAppBar</div>
 ));
-jest.mock('./interstitial/BrowserInterstitial', () => () => (
+jest.mock('./components/interstitial/BrowserInterstitial', () => () => (
   <div className="browserInterstitial">BrowserInterstitial</div>
 ));
-jest.mock('./track-panel/track-panel-bar/TrackPanelBar', () => () => (
-  <div className="trackPanelBar">TrackPanelBar</div>
+jest.mock(
+  './components/track-panel/components/track-panel-bar/TrackPanelBar',
+  () => () => <div className="trackPanelBar">TrackPanelBar</div>
+);
+jest.mock(
+  './components/track-panel/components/track-panel-tabs/TrackPanelTabs',
+  () => () => <div className="trackPanelTabs">TrackPanelTabs</div>
+);
+jest.mock('./components/drawer/Drawer', () => () => (
+  <div className="drawer">Drawer</div>
 ));
-jest.mock('./track-panel/track-panel-tabs/TrackPanelTabs', () => () => (
-  <div className="trackPanelTabs">TrackPanelTabs</div>
-));
-jest.mock('./drawer/Drawer', () => () => <div className="drawer">Drawer</div>);
 
 jest.mock('src/gql-client', () => ({ client: jest.fn() }));
 

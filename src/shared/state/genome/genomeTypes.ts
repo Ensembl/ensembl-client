@@ -15,7 +15,7 @@
  */
 
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
-import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { TrackSet } from 'src/content/app/browser/components/track-panel/trackPanelConfig';
 
 export type ExampleFocusObject = {
   id: string;

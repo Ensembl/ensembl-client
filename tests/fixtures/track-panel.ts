@@ -17,7 +17,7 @@
 import faker from 'faker';
 
 import { Status } from 'src/shared/types/status';
-import { BrowserTrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { BrowserTrackStates } from 'src/content/app/browser/components/track-panel/trackPanelConfig';
 import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 
 export const createTrackStates = (): BrowserTrackStates => ({

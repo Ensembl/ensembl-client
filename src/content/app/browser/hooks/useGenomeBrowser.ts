@@ -24,9 +24,9 @@ import EnsemblGenomeBrowser, {
 import config from 'config';
 import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
-import browserStorageService from 'src/content/app/browser/browser-storage-service';
+import browserStorageService from 'src/content/app/browser/services/browser-storage-service';
 
-import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/helpers/browser-constants';
 
 import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
@@ -34,14 +34,14 @@ import {
   getApplyToAllConfig,
   getBrowserActiveEnsObjectId,
   getBrowserActiveGenomeId
-} from 'src/content/app/browser/browserSelectors';
-import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/track-panel/trackPanelActions';
-import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/browser/browserActions';
+} from 'src/content/app/browser/state/browserSelectors';
+import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/browser/components/track-panel/state/trackPanelActions';
+import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/browser/state/browserActions';
 
 import { GenomeBrowserContext } from 'src/content/app/browser/Browser';
-import { TrackStates } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { TrackStates } from 'src/content/app/browser/components/track-panel/trackPanelConfig';
 import { Status } from 'src/shared/types/status';
-import { ChrLocation } from 'src/content/app/browser/browserState';
+import { ChrLocation } from 'src/content/app/browser/state/browserState';
 
 const useGenomeBrowser = () => {
   const dispatch = useDispatch();

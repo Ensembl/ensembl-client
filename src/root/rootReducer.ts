@@ -17,7 +17,7 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
-import browser from '../content/app/browser/browserReducer';
+import browser from '../content/app/browser/state/browserReducer';
 import { genomeBrowserApiSlice } from '../content/app/browser/state/genomeBrowserApiSlice';
 import drawer from '../content/app/browser/state/drawer/drawerSlice';
 import genome from '../shared/state/genome/genomeReducer';

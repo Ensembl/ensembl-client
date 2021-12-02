@@ -23,7 +23,7 @@ import { push, replace } from 'connected-react-router';
 import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 
-import * as browserActions from '../browserActions';
+import * as browserActions from '../state/browserActions';
 import * as genomeActions from 'src/shared/state/genome/genomeActions';
 
 import useBrowserRouting from './useBrowserRouting';
@@ -40,7 +40,7 @@ jest.mock('connected-react-router', () => ({
   replace: jest.fn(() => ({ type: 'replace' }))
 }));
 
-jest.mock('../browserActions', () => ({
+jest.mock('src/content/app/browser/state/browserActions', () => ({
   setActiveGenomeId: jest.fn(() => ({ type: 'setActiveGenomeId' })),
   setDataFromUrlAndSave: jest.fn(() => ({ type: 'setDataFromUrlAndSave' }))
 }));

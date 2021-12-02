@@ -23,7 +23,10 @@ import isEqual from 'lodash/isEqual';
 import useGenomeBrowser from 'src/content/app/browser/hooks/useGenomeBrowser';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
-import { getChrLocationFromStr, getChrLocationStr } from '../browserHelper';
+import {
+  getChrLocationFromStr,
+  getChrLocationStr
+} from '../helpers/browserHelper';
 import {
   buildFocusIdForUrl,
   parseFocusIdFromUrl,
@@ -32,13 +35,16 @@ import {
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
-import { setActiveGenomeId, setDataFromUrlAndSave } from '../browserActions';
+import {
+  setActiveGenomeId,
+  setDataFromUrlAndSave
+} from '../state/browserActions';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds,
   getAllChrLocations
-} from '../browserSelectors';
+} from '../state/browserSelectors';
 
 /*
  * Possible urls that the GenomeBrowser page has to deal with:
