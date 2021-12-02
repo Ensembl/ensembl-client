@@ -96,7 +96,6 @@ const ZmenuInstantDownload = (props: Props) => {
       genomeId={genomeId}
       {...payload}
       layout="vertical"
-      theme="dark"
     />
   );
 };
