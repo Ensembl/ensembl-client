@@ -16,7 +16,7 @@
 import faker from 'faker';
 import times from 'lodash/times';
 
-import { TrackSet } from 'src/content/app/browser/track-panel/trackPanelConfig';
+import { TrackSet } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import {
   GenomeTrackCategory,
   GenomeKaryotypeItemType

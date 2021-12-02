@@ -16,7 +16,7 @@
 
 import { RootState } from 'src/store';
 import { GenomeInfo, GenomeInfoData } from './genomeTypes';
-import { getBrowserActiveGenomeId } from 'src/content/app/browser/browserSelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browserSelectors';
 
 export const getGenomeInfo = (state: RootState) =>
   state.genome.genomeInfo.genomeInfoData as GenomeInfoData;
