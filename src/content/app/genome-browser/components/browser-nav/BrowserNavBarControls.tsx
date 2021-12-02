@@ -23,7 +23,7 @@ import Overlay from 'src/shared/components/overlay/Overlay';
 import {
   browserNavConfig,
   BrowserNavItem
-} from 'src/content/app/genome-browser/helpers/browserConfig';
+} from 'src/content/app/genome-browser/components/browser-nav/BrowserNavConfig';
 import {
   getBrowserNavIconStates,
   getRegionEditorActive,

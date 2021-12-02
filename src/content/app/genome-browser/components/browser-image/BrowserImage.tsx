@@ -43,7 +43,7 @@ import {
 
 import { ChrLocation } from 'src/content/app/genome-browser/state/browserState';
 
-import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/helpers/browser-constants';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
 
 import styles from './BrowserImage.scss';
 

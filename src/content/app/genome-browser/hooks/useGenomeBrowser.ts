@@ -26,7 +26,7 @@ import { isEnvironment, Environment } from 'src/shared/helpers/environment';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 
-import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/helpers/browser-constants';
+import { BROWSER_CONTAINER_ID } from 'src/content/app/genome-browser/constants/browser-constants';
 
 import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
 
