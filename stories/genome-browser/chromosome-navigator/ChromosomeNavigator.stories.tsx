@@ -18,7 +18,7 @@ import React, { useRef, useState } from 'react';
 
 import useResizeObserver from 'src/shared/hooks/useResizeObserver';
 
-import { ChromosomeNavigator } from 'src/content/app/browser/chromosome-navigator/ChromosomeNavigator';
+import { ChromosomeNavigator } from 'src/content/app/genome-browser/components/chromosome-navigator/ChromosomeNavigator';
 
 import styles from './ChromosomeNavigator.stories.scss';
 
