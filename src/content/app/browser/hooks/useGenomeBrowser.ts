@@ -28,7 +28,10 @@ import browserStorageService from 'src/content/app/browser/browser-storage-servi
 
 import { BROWSER_CONTAINER_ID } from 'src/content/app/browser/browser-constants';
 
-import { parseEnsObjectId } from 'src/shared/state/ens-object/ensObjectHelpers';
+import {
+  parseEnsObjectId,
+  parseFocusIdFromUrl
+} from 'src/shared/state/ens-object/ensObjectHelpers';
 
 import {
   getApplyToAllConfig,
@@ -155,23 +158,26 @@ const useGenomeBrowser = () => {
 
   const changeBrowserLocation = (locationData: {
     genomeId: string;
-    ensObjectId: string | null;
+    focusId?: string;
     chrLocation: ChrLocation;
   }) => {
     if (!genomeBrowser) {
       return;
     }
 
-    const { genomeId, chrLocation, ensObjectId } = locationData;
+    const { genomeId, chrLocation, focusId } = locationData;
 
-    const [, startBp, endBp] = chrLocation;
+    const { objectId = null } = focusId ? parseFocusIdFromUrl(focusId) : {};
+
+    const [chromosome, startBp, endBp] = chrLocation;
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS_LOCATION,
       payload: {
+        chromosome,
         startBp,
         endBp,
-        focus: ensObjectId,
+        focus: objectId,
         genomeId
       }
     };

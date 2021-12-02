@@ -101,7 +101,6 @@ export const BrowserRegionField = () => {
 
       changeBrowserLocation({
         genomeId: activeGenomeId as string,
-        ensObjectId: null,
         chrLocation: newChrLocation
       });
     } else {

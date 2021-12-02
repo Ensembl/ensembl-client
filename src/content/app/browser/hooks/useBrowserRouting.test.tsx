@@ -252,12 +252,9 @@ describe('useBrowserRouting', () => {
         path: '/genome-browser/human?focus=gene:ENSG00000139618&location=13:100-200'
       });
 
-      expect(mockChangeFocusObject).toHaveBeenCalledWith(
-        'human:gene:ENSG00000139618'
-      );
       expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
         genomeId: 'human',
-        ensObjectId: 'human:gene:ENSG00000139618',
+        focusId: 'gene:ENSG00000139618',
         chrLocation: ['13', 100, 200]
       });
     });
