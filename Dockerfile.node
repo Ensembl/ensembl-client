@@ -7,6 +7,7 @@ WORKDIR /srv/ensembl-client/
 
 ENV NODE_ENV=production
 COPY package*.json ./
+COPY dist ./dist/
 
 RUN npm ci --only=production --ignore-scripts
 
