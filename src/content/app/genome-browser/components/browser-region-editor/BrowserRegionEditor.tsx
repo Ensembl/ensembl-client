@@ -154,7 +154,6 @@ export const BrowserRegionEditor = () => {
   const changeLocation = (newChrLocation: ChrLocation) =>
     changeBrowserLocation({
       genomeId: activeGenomeId as string,
-      ensObjectId: null,
       chrLocation: newChrLocation
     });
 

@@ -155,23 +155,24 @@ const useGenomeBrowser = () => {
 
   const changeBrowserLocation = (locationData: {
     genomeId: string;
-    ensObjectId: string | null;
+    focusId?: string;
     chrLocation: ChrLocation;
   }) => {
     if (!genomeBrowser) {
       return;
     }
 
-    const { genomeId, chrLocation, ensObjectId } = locationData;
+    const { genomeId, chrLocation, focusId = null } = locationData;
 
-    const [, startBp, endBp] = chrLocation;
+    const [chromosome, startBp, endBp] = chrLocation;
 
     const action: OutgoingAction = {
       type: OutgoingActionType.SET_FOCUS_LOCATION,
       payload: {
+        chromosome,
         startBp,
         endBp,
-        focus: ensObjectId,
+        focus: focusId,
         genomeId
       }
     };

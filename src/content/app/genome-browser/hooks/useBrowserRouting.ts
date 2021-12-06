@@ -123,16 +123,17 @@ const useBrowserRouting = () => {
        before it gets changed by setDataFromUrlAndSave
       */
       changeFocusObject(newFocusId);
-    } else if (newFocusId && chrLocation) {
+    } else if (focus && chrLocation) {
       const isSameLocationAsInRedux =
         activeGenomeId && isEqual(chrLocation, allChrLocations[activeGenomeId]);
       const isFirstRender = firstRenderRef.current;
       if (genomeBrowser) {
         if (!isSameLocationAsInRedux || isFirstRender) {
-          changeFocusObject(newFocusId);
+          const { objectId } = parseFocusIdFromUrl(focus);
+
           changeBrowserLocation({
             genomeId,
-            ensObjectId: newFocusId,
+            focusId: objectId,
             chrLocation
           });
 

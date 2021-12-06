@@ -191,7 +191,6 @@ describe('<BrowserRegionField />', () => {
         );
         expect(mockChangeBrowserLocation).toHaveBeenCalledWith({
           genomeId: activeGenomeId,
-          ensObjectId: null,
           chrLocation: newChrLocation
         });
       });
