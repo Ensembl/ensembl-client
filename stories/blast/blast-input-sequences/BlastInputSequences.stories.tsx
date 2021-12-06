@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-import { BlastInputSequences } from 'src/content/app/blast/components/blast-input-sequences/BlastInputSequences';
+import { BlastInputSequences } from 'src/content/app/tools/blast/components/blast-input-sequences/BlastInputSequences';
 
 import commonStyles from '../../common.scss';
 import styles from './BlastInputSequences.stories.scss';

@@ -16,17 +16,17 @@
 
 import React, { useState } from 'react';
 
-import { parseFasta } from 'src/content/app/blast/utils/fastaParser';
+import { parseBlastInput } from 'src/content/app/tools/blast/utils/blastInputParser';
 
 import BlastInputSequence from './BlastInputSequence';
 
-import type { ParsedInputSequence } from 'src/content/app/blast/types/parsedInputSequence';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
 export const BlastInputSequences = () => {
   const [sequences, setSequences] = useState<ParsedInputSequence[]>([]);
 
   const onSequenceAdded = (input: string, index: number | null) => {
-    const parsedSequences = parseFasta(input)
+    const parsedSequences = parseBlastInput(input)
       .filter((result) => Boolean(result.value)) // <-- bad idea!
       .map((result) => ({
         ...result,

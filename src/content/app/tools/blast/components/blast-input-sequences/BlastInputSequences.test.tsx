@@ -61,6 +61,7 @@ describe('<BlastInputSequences />', () => {
      * WHAT SHOULD HAPPEN IF USER ADDS INADMISSIBLE SEQUECE?
      * - a sequence different from the predicted (and do we need this prediction at all?)
      * - a sequence with inadmissible characters?
+     * - a sequence with only a FASTA header
      * - too short a sequence?
      * 
      * WHAT SHOULD HAPPEN IF USER ADDS MORE SEQUENCES THAN WE ARE LIMITING THEM TO?

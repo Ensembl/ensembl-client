@@ -17,5 +17,4 @@
 export type ParsedInputSequence = {
   header?: string;
   value: string;
-  rawInput: string;
 };

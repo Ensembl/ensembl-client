@@ -18,7 +18,7 @@ import React, { FormEvent, ClipboardEvent } from 'react';
 
 import Textarea from 'src/shared/components/textarea/Textarea';
 
-import type { ParsedInputSequence } from 'src/content/app/blast/types/parsedInputSequence';
+import type { ParsedInputSequence } from 'src/content/app/tools/blast/types/parsedInputSequence';
 
 import styles from './BlastInputSequence.scss';
 
