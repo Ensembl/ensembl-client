@@ -33,7 +33,9 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 
 import Tabs, { Tab } from 'src/shared/components/tabs/Tabs';
 import Panel from 'src/shared/components/panel/Panel';
-import ProteinsList, { ProteinsListProps } from '../proteins-list/ProteinsList';
+import ProteinsList from '../proteins-list/ProteinsList';
+
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './GeneFunction.scss';
 
@@ -52,7 +54,7 @@ const tabClassNames = {
 };
 
 export type Props = {
-  gene: ProteinsListProps['gene'];
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
 };
 
 const GeneFunction = (props: Props) => {

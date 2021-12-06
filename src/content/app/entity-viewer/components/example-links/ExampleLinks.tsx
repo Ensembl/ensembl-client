@@ -17,9 +17,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useQuery, gql } from '@apollo/client';
 
 import * as urlHelper from 'src/shared/helpers/urlHelper';
+import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import { getEntityViewerActiveGenomeId } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSelectors';
@@ -31,21 +31,6 @@ import { RootState } from 'src/store';
 
 import styles from './ExampleLinks.scss';
 
-type ExampleGene = {
-  unversioned_stable_id: string;
-  symbol: string;
-};
-
-const QUERY = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      stable_id
-      unversioned_stable_id
-      symbol
-    }
-  }
-`;
-
 // NOTE: the component currently handles only example gene
 const ExampleLinks = () => {
   const activeGenomeId = useSelector(getEntityViewerActiveGenomeId);
@@ -53,12 +38,17 @@ const ExampleLinks = () => {
     getGenomeExampleFocusObjects(state, activeGenomeId || '')
   );
   const exampleGeneId = exampleEntities.find(({ type }) => type === 'gene')?.id;
-  const { loading, data, error } = useQuery<{ gene: ExampleGene }>(QUERY, {
-    variables: { geneId: exampleGeneId, genomeId: activeGenomeId },
-    skip: !exampleGeneId || !activeGenomeId
-  });
+  const { isLoading, data, error } = useGeneSummaryQuery(
+    {
+      geneId: exampleGeneId || '',
+      genomeId: activeGenomeId || ''
+    },
+    {
+      skip: !exampleGeneId || !activeGenomeId
+    }
+  );
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div>
         <div className={styles.exampleLinks__emptyTopbar} />

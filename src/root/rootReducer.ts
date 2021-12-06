@@ -18,7 +18,7 @@ import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
 import browser from 'src/content/app/genome-browser/state/genomeBrowserReducer';
-import { genomeBrowserApiSlice } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
+import thoasApiSlice from 'src/shared/state/api-slices/thoasSlice';
 import genome from 'src/shared/state/genome/genomeSlice';
 import customDownload from 'src/content/app/custom-download/state/customDownloadReducer';
 import global from 'src/global/globalSlice';
@@ -41,7 +41,7 @@ const createRootReducer = (history: any) =>
     speciesPage,
     entityViewer,
 
-    [genomeBrowserApiSlice.reducerPath]: genomeBrowserApiSlice.reducer
+    [thoasApiSlice.reducerPath]: thoasApiSlice.reducer
   });
 
 export const createServerSideRootReducer = () =>

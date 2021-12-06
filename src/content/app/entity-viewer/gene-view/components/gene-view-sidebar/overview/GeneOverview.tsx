@@ -16,51 +16,21 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery, gql } from '@apollo/client';
 
 import { parseFocusObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { getGeneName } from 'src/shared/helpers/formatters/geneFormatter';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
+import { useGeneOverviewQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import GenePublications from '../publications/GenePublications';
 import MainAccordion from './MainAccordion';
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { FullGene } from 'src/shared/types/thoas/gene';
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
 
 import styles from './GeneOverview.scss';
-
-/*  
-  TODO: When more data becomes available
-  Please refer to the PR https://github.com/Ensembl/ensembl-client/pull/422
-  and check if some of the deleted code segments can be reused to display the new data.
-*/
-export const GENE_OVERVIEW_QUERY = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      alternative_symbols
-      name
-      stable_id
-      symbol
-      metadata {
-        name {
-          accession_id
-          url
-        }
-      }
-    }
-  }
-`;
-
-type Gene = Required<
-  Pick<
-    FullGene,
-    'stable_id' | 'symbol' | 'name' | 'alternative_symbols' | 'metadata'
-  >
->;
 
 const GeneOverview = () => {
   const params: EntityViewerParams = useParams();
@@ -69,15 +39,17 @@ const GeneOverview = () => {
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
-  const { data, loading } = useQuery<{ gene: Gene }>(GENE_OVERVIEW_QUERY, {
-    variables: {
-      geneId,
-      genomeId
+  const { data, isLoading } = useGeneOverviewQuery(
+    {
+      geneId: geneId || '',
+      genomeId: genomeId as string
     },
-    skip: !geneId
-  });
+    {
+      skip: !geneId
+    }
+  );
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 

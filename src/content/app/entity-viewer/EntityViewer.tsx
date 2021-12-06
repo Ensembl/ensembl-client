@@ -15,12 +15,10 @@
  */
 
 import React, { useEffect } from 'react';
-import { ApolloProvider } from '@apollo/client';
 import { useSelector, useDispatch } from 'react-redux';
 import { replace } from 'connected-react-router';
 import { useParams } from 'react-router-dom';
 
-import { client } from 'src/gql-client';
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { buildFocusIdForUrl } from 'src/shared/helpers/focusObjectHelpers';
 
@@ -86,28 +84,26 @@ const EntityViewer = () => {
   );
 
   return (
-    <ApolloProvider client={client}>
-      <div className={styles.entityViewer}>
-        <EntityViewerAppBar />
-        {genomeId && entityId ? (
-          <StandardAppLayout
-            mainContent={<GeneView />}
-            topbarContent={
-              <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
-            }
-            sidebarContent={SideBarContent}
-            sidebarNavigation={<GeneViewSidebarTabs />}
-            sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
-            isSidebarOpen={isSidebarOpen}
-            onSidebarToggle={() => dispatch(toggleSidebar())}
-            isDrawerOpen={false}
-            viewportWidth={viewportWidth}
-          />
-        ) : (
-          <EntityViewerInterstitial />
-        )}
-      </div>
-    </ApolloProvider>
+    <div className={styles.entityViewer}>
+      <EntityViewerAppBar />
+      {genomeId && entityId ? (
+        <StandardAppLayout
+          mainContent={<GeneView />}
+          topbarContent={
+            <EntityViewerTopbar genomeId={genomeId} entityId={entityId} />
+          }
+          sidebarContent={SideBarContent}
+          sidebarNavigation={<GeneViewSidebarTabs />}
+          sidebarToolstripContent={<EntityViewerSidebarToolstrip />}
+          isSidebarOpen={isSidebarOpen}
+          onSidebarToggle={() => dispatch(toggleSidebar())}
+          isDrawerOpen={false}
+          viewportWidth={viewportWidth}
+        />
+      ) : (
+        <EntityViewerInterstitial />
+      )}
+    </div>
   );
 };
 

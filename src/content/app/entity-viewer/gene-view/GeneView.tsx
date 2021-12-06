@@ -18,11 +18,11 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { replace } from 'connected-react-router';
-import { useQuery, gql } from '@apollo/client';
 import { useParams, useLocation } from 'react-router-dom';
 
 import { useRestoreScrollPosition } from 'src/shared/hooks/useRestoreScrollPosition';
 import usePrevious from 'src/shared/hooks/usePrevious';
+import { useDefaultEntityViewerGeneQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import {
   getSelectedGeneViewTabs,
   getCurrentView
@@ -46,181 +46,38 @@ import { parseFocusIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
-import GeneOverviewImage, {
-  GeneOverviewImageProps
-} from './components/gene-overview-image/GeneOverviewImage';
-import DefaultTranscriptsList, {
-  Props as DefaultTranscriptsListProps
-} from './components/default-transcripts-list/DefaultTranscriptsList';
+import GeneOverviewImage from './components/gene-overview-image/GeneOverviewImage';
+import DefaultTranscriptsList from './components/default-transcripts-list/DefaultTranscriptsList';
 import GeneViewTabs from './components/gene-view-tabs/GeneViewTabs';
 import TranscriptsFilter from 'src/content/app/entity-viewer/gene-view/components/transcripts-filter/TranscriptsFilter';
-import GeneFunction, {
-  Props as GeneFunctionProps
-} from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
+import GeneFunction from 'src/content/app/entity-viewer/gene-view/components/gene-function/GeneFunction';
 import GeneRelationships from 'src/content/app/entity-viewer/gene-view/components/gene-relationships/GeneRelationships';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';
 import { CircleLoader } from 'src/shared/components/loader';
 import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import { FullGene } from 'src/shared/types/thoas/gene';
 import { SortingRule } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './GeneView.scss';
 
-type Gene = Pick<FullGene, 'symbol'> &
-  GeneOverviewImageProps['gene'] &
-  DefaultTranscriptsListProps['gene'] &
-  GeneFunctionProps['gene'];
-
 type GeneViewWithDataProps = {
-  gene: Gene;
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
 };
-
-const QUERY = gql`
-  query Gene($genomeId: String!, $geneId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $geneId }) {
-      stable_id
-      symbol
-      unversioned_stable_id
-      version
-      slice {
-        location {
-          start
-          end
-          length
-        }
-        strand {
-          code
-        }
-      }
-      transcripts {
-        stable_id
-        unversioned_stable_id
-        slice {
-          location {
-            start
-            end
-            length
-          }
-          region {
-            name
-          }
-          strand {
-            code
-          }
-        }
-        relative_location {
-          start
-          end
-        }
-        spliced_exons {
-          relative_location {
-            start
-            end
-          }
-          exon {
-            stable_id
-            slice {
-              location {
-                length
-              }
-            }
-          }
-        }
-        product_generating_contexts {
-          product_type
-          cds {
-            relative_start
-            relative_end
-          }
-          cdna {
-            length
-          }
-          phased_exons {
-            start_phase
-            end_phase
-            exon {
-              stable_id
-            }
-          }
-          product {
-            stable_id
-            unversioned_stable_id
-            length
-            external_references {
-              accession_id
-              name
-              description
-              source {
-                id
-              }
-            }
-          }
-        }
-        external_references {
-          accession_id
-          name
-          url
-          source {
-            id
-            name
-          }
-        }
-        metadata {
-          biotype {
-            label
-            value
-            definition
-          }
-          tsl {
-            label
-            value
-          }
-          appris {
-            label
-            value
-          }
-          canonical {
-            value
-            label
-            definition
-          }
-          mane {
-            value
-            label
-            definition
-            ncbi_transcript {
-              id
-              url
-            }
-          }
-          gencode_basic {
-            label
-          }
-          appris {
-            label
-          }
-          tsl {
-            label
-          }
-        }
-      }
-    }
-  }
-`;
 
 const GeneView = () => {
   const params: { [key: string]: string } = useParams();
   const { genomeId, entityId } = params;
   const { objectId: geneId } = parseFocusIdFromUrl(entityId);
 
-  const { loading, data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { geneId, genomeId }
+  const { data, isLoading } = useDefaultEntityViewerGeneQuery({
+    geneId,
+    genomeId
   });
 
   // TODO decide about error handling
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.geneViewLoadingContainer}>
         <CircleLoader />

@@ -42,58 +42,44 @@ import {
   ProteinStats
 } from 'src/content/app/entity-viewer/shared/rest/rest-data-fetchers/proteinData';
 
-import { FullGene } from 'src/shared/types/thoas/gene';
 import { LoadingState } from 'src/shared/types/loading-state';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { Product } from 'src/shared/types/thoas/product';
 import { ProteinDomain } from 'src/shared/types/thoas/product';
 import { ExternalReference as ExternalReferenceType } from 'src/shared/types/thoas/externalReference';
 
 import { SWISSPROT_SOURCE } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/protein-list-constants';
 
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
+
 import styles from './ProteinsListItemInfo.scss';
 import settings from 'src/content/app/entity-viewer/gene-view/styles/_constants.scss';
 
-export type ProductWithoutDomains = Pick<
-  Product,
-  'length' | 'unversioned_stable_id'
-> & {
-  external_references: Array<
-    Pick<ExternalReferenceType, 'accession_id' | 'name'> &
-      Pick2<ExternalReferenceType, 'source', 'id'>
-  >;
-};
+type ProductWithoutDomains = NonNullable<
+  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number]['product_generating_contexts'][number]['product']
+>;
 
 type ProductWithDomains = ProductWithoutDomains & {
   protein_domains: ProteinDomain[];
 };
 
-type Gene = Pick<FullGene, 'symbol' | 'stable_id'>;
-
-type Transcript = Pick<FullTranscript, 'unversioned_stable_id'> & {
-  product_generating_contexts: Array<{
-    product: ProductWithoutDomains;
-  }>;
-};
-
-type TranscriptWithProteinDomains = Transcript & {
+type TranscriptWithProteinDomains = ProteinCodingTranscript & {
   product_generating_contexts: Array<
-    Transcript['product_generating_contexts'][number] & {
+    ProteinCodingTranscript['product_generating_contexts'][number] & {
       product: ProductWithDomains;
     }
   >;
 };
 
 export type Props = {
-  gene: Gene;
-  transcript: Transcript;
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  transcript: ProteinCodingTranscript;
   trackLength: number;
 };
 
 const gene_image_width = Number(settings.gene_image_width);
 
 const addProteinDomains = (
-  transcript: Transcript,
+  transcript: ProteinCodingTranscript,
   proteinDomains: ProteinDomain[]
 ) => {
   return set(

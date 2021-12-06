@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+
+import { useGeneSummaryQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 
 import { GeneSummaryStrip } from 'src/shared/components/feature-summary-strip';
 
-import { Slice } from 'src/shared/types/thoas/slice';
-import { GeneMetadata } from 'src/shared/types/thoas/metadata';
+import type { GeneSummary } from 'src/content/app/entity-viewer/state/api/queries/geneSummaryQuery';
 
 import styles from './EntityViewerTopbar.scss';
 
@@ -29,47 +29,10 @@ export type EntityViewerTopbarProps = {
   entityId: string;
 };
 
-const QUERY = gql`
-  query Gene($genomeId: String!, $entityId: String!) {
-    gene(byId: { genome_id: $genomeId, stable_id: $entityId }) {
-      stable_id
-      unversioned_stable_id
-      symbol
-      slice {
-        location {
-          start
-          end
-        }
-        strand {
-          code
-        }
-        region {
-          name
-        }
-      }
-      metadata {
-        biotype {
-          label
-        }
-      }
-    }
-  }
-`;
-
-type Gene = {
-  stable_id: string;
-  unversioned_stable_id: string;
-  symbol: string;
-  metadata: GeneMetadata;
-  slice: Slice;
-};
-
 export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
   const { genomeId } = props;
-  const entityId = props.entityId.split(':').pop();
-  const { data } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: { entityId, genomeId }
-  });
+  const entityId = props.entityId.split(':').pop() as string;
+  const { data } = useGeneSummaryQuery({ geneId: entityId, genomeId });
 
   return (
     <div className={styles.container}>
@@ -81,11 +44,11 @@ export const EntityViewerTopbar = (props: EntityViewerTopbarProps) => {
 };
 
 // NOTE: temporary adaptor
-const geneToFocusObjectFields = (gene: Gene) => {
+const geneToFocusObjectFields = (gene: GeneSummary) => {
   return {
     stable_id: gene.unversioned_stable_id,
     versioned_stable_id: gene.stable_id,
-    label: gene.symbol,
+    label: gene.symbol ?? '',
     bio_type: gene.metadata.biotype.label,
     strand: gene.slice.strand.code,
     location: {

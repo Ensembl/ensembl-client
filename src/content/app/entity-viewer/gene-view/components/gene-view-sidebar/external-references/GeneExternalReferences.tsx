@@ -15,128 +15,50 @@
  */
 
 import React, { useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router';
 import sortBy from 'lodash/sortBy';
-import { Pick2 } from 'ts-multipick';
 
 import { parseFocusObjectIdFromUrl } from 'src/shared/helpers/focusObjectHelpers';
 import { defaultSort } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
 
+import { useGeneExternalReferencesQuery } from 'src/content/app/entity-viewer/state/api/entityViewerThoasSlice';
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
 import ExternalReference from 'src/shared/components/external-reference/ExternalReference';
 import ShowHide from 'src/shared/components/show-hide/ShowHide';
 
-import {
-  ExternalReference as ExternalReferenceType,
-  ExternalReferencesGroup as ExternalReferencesGroupType
-} from 'src/shared/types/thoas/externalReference';
 import { EntityViewerParams } from 'src/content/app/entity-viewer/EntityViewer';
-import { Slice } from 'src/shared/types/thoas/slice';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 import { SidebarTabName } from 'src/content/app/entity-viewer/state/sidebar/entityViewerSidebarSlice';
+import type {
+  QueriedExternalReference,
+  QueriedTranscript
+} from 'src/content/app/entity-viewer/state/api/queries/geneExternalReferencesQuery';
 
 import styles from './GeneExternalReferences.scss';
 
-const QUERY = gql`
-  query Gene($stable_id: String!, $genome_id: String!) {
-    gene(byId: { stable_id: $stable_id, genome_id: $genome_id }) {
-      stable_id
-      symbol
-      external_references {
-        accession_id
-        name
-        description
-        url
-        source {
-          id
-          name
-        }
-      }
-      transcripts {
-        stable_id
-        slice {
-          location {
-            length
-          }
-        }
-        external_references {
-          accession_id
-          name
-          description
-          url
-          source {
-            id
-            name
-          }
-        }
-        product_generating_contexts {
-          product_type
-          product {
-            external_references {
-              accession_id
-              name
-              description
-              url
-              source {
-                id
-                name
-              }
-            }
-          }
-        }
-        metadata {
-          canonical {
-            value
-          }
-          mane {
-            value
-          }
-        }
-      }
-    }
-  }
-`;
-
-type Transcript = {
-  stable_id: string;
-  slice: Pick2<Slice, 'location', 'length'>;
-  product_generating_contexts: Array<
-    Pick<FullProductGeneratingContext, 'product_type'> & {
-      product: { external_references: ExternalReferenceType[] } | null;
-    }
-  >;
-  external_references: ExternalReferenceType[];
-  metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
-};
-
-type Gene = {
-  symbol: string;
-  stable_id: string;
-  transcripts: Transcript[];
-  external_references: ExternalReferenceType[];
+type ExternalReferencesGroupType = {
+  source: QueriedExternalReference['source'];
+  references: Omit<QueriedExternalReference, 'source'>[];
 };
 
 const GeneExternalReferences = () => {
   const params: EntityViewerParams = useParams();
   const { entityId, genomeId } = params;
-  const stableId = entityId
-    ? parseFocusObjectIdFromUrl(entityId).objectId
-    : null;
+  const geneId = entityId ? parseFocusObjectIdFromUrl(entityId).objectId : null;
 
   const { trackExternalReferenceLinkClick } = useEntityViewerAnalytics();
 
-  const { data, loading } = useQuery<{ gene: Gene }>(QUERY, {
-    variables: {
-      stable_id: stableId,
-      genome_id: genomeId
+  const { data, isLoading } = useGeneExternalReferencesQuery(
+    {
+      geneId: geneId || '',
+      genomeId: genomeId || ''
     },
-    skip: !stableId
-  });
+    {
+      skip: !geneId || !genomeId
+    }
+  );
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -198,7 +120,7 @@ const GeneExternalReferences = () => {
 };
 
 const TranscriptExternalReferencesGroups = (props: {
-  transcript: Transcript;
+  transcript: QueriedTranscript;
   onClick: (linkLabel: string) => void;
 }) => {
   const { transcript } = props;
@@ -288,7 +210,7 @@ const ExternalReferencesGroup = (props: {
 };
 
 const buildExternalReferencesGroups = (
-  externalReferences: ExternalReferenceType[]
+  externalReferences: QueriedExternalReference[]
 ) => {
   const externalReferencesGroups: {
     [key: string]: ExternalReferencesGroupType;

@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import { scaleLinear, ScaleLinear } from 'd3';
-import { Pick3 } from 'ts-multipick';
+import { Pick2, Pick3 } from 'ts-multipick';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { SplicedExon } from 'src/shared/types/thoas/exon';
@@ -28,10 +28,12 @@ import styles from './UnsplicedTranscript.scss';
 const BLOCK_HEIGHT = 7;
 
 type ProductGeneratingContext = {
-  cds: Pick<FullCDS, 'relative_start' | 'relative_end'>;
+  cds: Pick<FullCDS, 'relative_start' | 'relative_end'> | null;
 };
 type Transcript = {
-  spliced_exons: Array<Pick<SplicedExon, 'relative_location'>>;
+  spliced_exons: Array<
+    Pick2<SplicedExon, 'relative_location', 'start' | 'end'>
+  >;
   product_generating_contexts: ProductGeneratingContext[];
 } & Pick3<FullTranscript, 'slice', 'location', 'length'>;
 
@@ -197,7 +199,7 @@ const ExonBlock = (props: ExonBlockProps) => {
 const getLength = (start: number, end: number) => end - start + 1;
 
 type CalculateExonRectanglesParams = {
-  spliced_exons: Pick<SplicedExon, 'relative_location'>[];
+  spliced_exons: Pick2<SplicedExon, 'relative_location', 'start' | 'end'>[];
   cds?: {
     relative_start: number;
     relative_end: number;

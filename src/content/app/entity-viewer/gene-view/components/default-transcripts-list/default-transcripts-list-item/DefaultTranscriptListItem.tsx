@@ -21,34 +21,23 @@ import {
   getTranscriptMetadata,
   TranscriptQualityLabel
 } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
-import UnsplicedTranscript, {
-  UnsplicedTranscriptProps
-} from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
-import TranscriptsListItemInfo, {
-  TranscriptsListItemInfoProps
-} from '../transcripts-list-item-info/TranscriptsListItemInfo';
+import UnsplicedTranscript from 'src/content/app/entity-viewer/gene-view/components/unspliced-transcript/UnsplicedTranscript';
+import TranscriptsListItemInfo from '../transcripts-list-item-info/TranscriptsListItemInfo';
 
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
 import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEntityViewerAnalytics';
 
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import type { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import transcriptsListStyles from '../DefaultTranscriptsList.scss';
 import styles from './DefaultTranscriptListItem.scss';
 
-type Transcript = Pick<
-  FullTranscript,
-  'stable_id' | 'relative_location' | 'metadata'
-> &
-  TranscriptsListItemInfoProps['transcript'] &
-  UnsplicedTranscriptProps['transcript'];
-
 export type DefaultTranscriptListItemProps = {
   transcriptPosition: number;
-  gene: TranscriptsListItemInfoProps['gene'];
-  transcript: Transcript;
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  transcript: DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
   rulerTicks: TicksAndScale;
   expandTranscript: boolean;
   expandDownload: boolean;

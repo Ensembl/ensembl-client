@@ -17,7 +17,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
-import { Pick3 } from 'ts-multipick';
 
 import {
   getLongestProteinLength,
@@ -33,29 +32,24 @@ import {
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
-import ProteinsListItem, {
-  Props as ProteinListItemProps
-} from './proteins-list-item/ProteinsListItem';
+import ProteinsListItem from './proteins-list-item/ProteinsListItem';
 
-import { FullGene } from 'src/shared/types/thoas/gene';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { Exon } from 'src/shared/types/thoas/exon';
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './ProteinsList.scss';
 
-type Transcript = ProteinListItemProps['transcript'] &
-  Pick3<FullTranscript, 'slice', 'location', 'length'> & {
-    spliced_exons: Array<{
-      exon: Pick3<Exon, 'slice', 'location', 'length'>;
-    }>;
-  };
-
-type Gene = Pick<FullGene, 'stable_id' | 'symbol'> & {
-  transcripts: Transcript[];
+type Transcript =
+  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
+export type ProteinCodingTranscript = Transcript & {
+  product_generating_contexts: {
+    product: NonNullable<
+      Transcript['product_generating_contexts'][number]['product']
+    >;
+  }[];
 };
 
 export type ProteinsListProps = {
-  gene: Gene;
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
 };
 
 const ProteinsList = (props: ProteinsListProps) => {
@@ -75,7 +69,7 @@ const ProteinsList = (props: ProteinsListProps) => {
 
   const proteinCodingTranscripts = sortedTranscripts.filter(
     isProteinCodingTranscript
-  ) as Transcript[];
+  ) as ProteinCodingTranscript[];
 
   useExpandedDefaultTranscript({
     geneStableId: props.gene.stable_id,

@@ -22,8 +22,17 @@ import { TranscriptMetadata } from 'src/shared/types/thoas/metadata';
 
 import styles from './TranscriptQualityLabel.scss';
 
-type Props = {
-  metadata: Pick<TranscriptMetadata, 'canonical' | 'mane'>;
+export type Props = {
+  metadata: {
+    canonical: Pick<
+      NonNullable<TranscriptMetadata['canonical']>,
+      'label' | 'definition'
+    > | null;
+    mane: Pick<
+      NonNullable<TranscriptMetadata['mane']>,
+      'label' | 'definition'
+    > | null;
+  };
 };
 
 export const getTranscriptMetadata = (props: Props) => {

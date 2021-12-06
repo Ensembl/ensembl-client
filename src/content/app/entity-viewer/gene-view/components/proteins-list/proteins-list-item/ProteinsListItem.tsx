@@ -19,7 +19,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { replace } from 'connected-react-router';
 import classNames from 'classnames';
-import { Pick2 } from 'ts-multipick';
 
 import * as urlFor from 'src/shared/helpers/urlHelper';
 import { getProductAminoAcidLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
@@ -29,46 +28,24 @@ import useEntityViewerAnalytics from 'src/content/app/entity-viewer/hooks/useEnt
 import { getExpandedTranscriptIds } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 import { toggleTranscriptInfo } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSlice';
 
-import ProteinsListItemInfo, {
-  Props as ProteinsListItemInfoProps
-} from '../proteins-list-item-info/ProteinsListItemInfo';
+import ProteinsListItemInfo from '../proteins-list-item-info/ProteinsListItemInfo';
 import {
   TranscriptQualityLabel,
   getTranscriptMetadata as getTranscriptQualityMetadata
 } from 'src/content/app/entity-viewer/shared/components/default-transcript-label/TranscriptQualityLabel';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import { Product as FullProduct } from 'src/shared/types/thoas/product';
-import { ExternalReference as FullExternalReference } from 'src/shared/types/thoas/externalReference';
 import { View } from 'src/content/app/entity-viewer/state/gene-view/view/geneViewViewSlice';
 
 import { SWISSPROT_SOURCE } from '../protein-list-constants';
 
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
+import type { ProteinCodingTranscript } from 'src/content/app/entity-viewer/gene-view/components/proteins-list/ProteinsList';
+
 import transcriptsListStyles from 'src/content/app/entity-viewer/gene-view/components/default-transcripts-list/DefaultTranscriptsList.scss';
 import styles from './ProteinsListItem.scss';
 
-type Product = Pick<
-  FullProduct,
-  'stable_id' | 'length' | 'unversioned_stable_id'
-> & {
-  external_references: Array<
-    Pick<FullExternalReference, 'accession_id' | 'name' | 'description'> &
-      Pick2<FullExternalReference, 'source', 'id'>
-  >;
-};
-
-type Transcript = Pick<FullTranscript, 'stable_id' | 'metadata'> &
-  ProteinsListItemInfoProps['transcript'] & {
-    product_generating_contexts: Array<
-      Pick<FullProductGeneratingContext, 'product_type'> & {
-        product: Product;
-      }
-    >;
-  };
-
 export type Props = {
-  gene: ProteinsListItemInfoProps['gene'];
-  transcript: Transcript;
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
+  transcript: ProteinCodingTranscript;
   trackLength: number;
   index: number; // <-- ranking in the list created by the parent component, 0-based
 };
@@ -114,7 +91,7 @@ const ProteinsListItem = (props: Props) => {
   const itemRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (product.stable_id === proteinIdToFocus) {
+    if (product?.stable_id === proteinIdToFocus) {
       setTimeout(() => {
         itemRef.current?.scrollIntoView({
           behavior: 'smooth'
@@ -128,9 +105,8 @@ const ProteinsListItem = (props: Props) => {
   }, [proteinIdToFocus]);
 
   const getProteinDescription = () => {
-    const swissprotReference = product.external_references.find(
-      (reference: Product['external_references'][number]) =>
-        reference.source.id === SWISSPROT_SOURCE
+    const swissprotReference = product?.external_references.find(
+      (reference) => reference.source.id === SWISSPROT_SOURCE
     );
 
     return swissprotReference?.description;

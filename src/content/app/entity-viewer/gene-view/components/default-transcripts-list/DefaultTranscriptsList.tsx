@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Pick2, Pick3 } from 'ts-multipick';
 
 import { getFeatureLength } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 import { getTranscriptSortingFunction } from 'src/content/app/entity-viewer/shared/helpers/transcripts-sorter';
@@ -32,38 +31,18 @@ import {
   getSortingRule
 } from 'src/content/app/entity-viewer/state/gene-view/transcripts/geneViewTranscriptsSelectors';
 
-import DefaultTranscriptsListItem, {
-  DefaultTranscriptListItemProps
-} from './default-transcripts-list-item/DefaultTranscriptListItem';
+import DefaultTranscriptsListItem from './default-transcripts-list-item/DefaultTranscriptListItem';
 
-import { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
-import { FullGene } from 'src/shared/types/thoas/gene';
-import { FullTranscript } from 'src/shared/types/thoas/transcript';
-import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';
-import { FullCDS } from 'src/shared/types/thoas/cds';
-import { SplicedExon } from 'src/shared/types/thoas/exon';
-import { Slice } from 'src/shared/types/thoas/slice';
+import type { TicksAndScale } from 'src/content/app/entity-viewer/gene-view/components/base-pairs-ruler/BasePairsRuler';
+import type { DefaultEntityViewerGeneQueryResult } from 'src/content/app/entity-viewer/state/api/queries/defaultGeneQuery';
 
 import styles from './DefaultTranscriptsList.scss';
 
-type ProductGeneratingContext = {
-  product_type: FullProductGeneratingContext['product_type'];
-  cds: Pick<FullCDS, 'relative_start' | 'relative_end'>;
-};
-type Transcript = DefaultTranscriptListItemProps['transcript'] & {
-  product_generating_contexts: ProductGeneratingContext[];
-} & {
-  spliced_exons: Array<Pick3<SplicedExon, 'exon', 'slice', 'location'>>;
-} & Pick2<FullTranscript, 'slice', 'location'>;
-
-type Gene = DefaultTranscriptListItemProps['gene'] & {
-  stable_id: FullGene['stable_id'];
-  transcripts: Array<Transcript>;
-  slice: Pick2<Slice, 'location', 'length'>;
-};
+type Transcript =
+  DefaultEntityViewerGeneQueryResult['gene']['transcripts'][number];
 
 export type Props = {
-  gene: Gene;
+  gene: DefaultEntityViewerGeneQueryResult['gene'];
   rulerTicks: TicksAndScale;
 };
 
