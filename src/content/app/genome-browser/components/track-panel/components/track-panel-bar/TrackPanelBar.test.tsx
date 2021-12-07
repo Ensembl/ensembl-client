@@ -36,13 +36,13 @@ jest.mock(
 const fakeGenomeId = 'human';
 
 const mockState = {
-  drawer: {
-    [fakeGenomeId]: {
-      isDrawerOpened: false,
-      drawerView: { name: 'bookmarks' }
-    }
-  },
   browser: {
+    drawer: {
+      [fakeGenomeId]: {
+        isDrawerOpened: false,
+        drawerView: { name: 'bookmarks' }
+      }
+    },
     browserEntity: {
       activeGenomeId: fakeGenomeId
     },
@@ -173,7 +173,7 @@ describe('<TrackPanelBar />', () => {
     it('closes drawer view when the modal view changes', () => {
       jest.spyOn(drawerActions, 'closeDrawer');
       const { container } = renderComponent(
-        set(`drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
+        set(`browser.drawer.${fakeGenomeId}.isDrawerOpened`, true, mockState)
       );
       const bookmarksButton = [...container.querySelectorAll('button')].find(
         (button) => button.innerHTML === 'Previously viewed'

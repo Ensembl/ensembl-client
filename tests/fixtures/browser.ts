@@ -240,14 +240,14 @@ export const createMockBrowserState = () => {
           isTrackPanelOpened: true,
           collapsedTrackIds: []
         }
-      }
-    },
-    drawer: {
-      isDrawerOpened: {
-        fake_genome_id_1: false
       },
-      drawerView: {},
-      activeDrawerTrackIds: {}
+      drawer: {
+        isDrawerOpened: {
+          fake_genome_id_1: false
+        },
+        drawerView: {},
+        activeDrawerTrackIds: {}
+      }
     },
     global: {
       breakpointWidth: BreakpointWidth.DESKTOP,

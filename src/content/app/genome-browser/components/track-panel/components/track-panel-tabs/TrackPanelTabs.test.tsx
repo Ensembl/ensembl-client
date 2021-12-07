@@ -110,7 +110,11 @@ describe('<TrackPanelTabs />', () => {
         expect(drawerActions.closeDrawer).not.toHaveBeenCalled();
 
         container = renderComponent(
-          set(`drawer.${activeGenomeId}.isDrawerOpened`, true, mockState)
+          set(
+            `browser.drawer.${activeGenomeId}.isDrawerOpened`,
+            true,
+            mockState
+          )
         ).container;
         tab = container.querySelector('.trackPanelTab') as HTMLElement;
 
