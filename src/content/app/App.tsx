@@ -19,6 +19,8 @@ import { Route, Switch, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import routes from 'src/routes/routesConfig';
 
+import analyticsTracking from 'src/services/analytics-service';
+
 import { changeCurrentApp } from 'src/global/globalSlice';
 
 import Header from 'src/header/Header';
@@ -32,6 +34,7 @@ const AppContainer = () => {
     const appName: string = location.pathname.split('/').filter(Boolean)[0];
 
     dispatch(changeCurrentApp(appName));
+    analyticsTracking.setAppDimension(appName);
 
     return function unsetApp() {
       dispatch(changeCurrentApp(''));

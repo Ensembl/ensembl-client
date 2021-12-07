@@ -22,8 +22,6 @@ import {
   ActionCreator
 } from '@reduxjs/toolkit';
 
-import analyticsTracking from 'src/services/analytics-service';
-
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 
 import { BreakpointWidth, ScrollPosition } from './globalConfig';
@@ -65,10 +63,7 @@ const globalSlice = createSlice({
       state.scrollPosition = { ...state.scrollPosition, ...action.payload };
     },
     changeCurrentApp(state, action: PayloadAction<string>) {
-      const appName = action.payload;
-
-      analyticsTracking.setAppDimension(appName);
-      state.currentApp = appName;
+      state.currentApp = action.payload;
     }
   }
 });
