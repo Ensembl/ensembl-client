@@ -70,7 +70,7 @@ const renderComponent = (state: typeof mockState = mockState) => {
   );
 };
 
-const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
 describe('<BrowserRegionField />', () => {
   beforeEach(() => {

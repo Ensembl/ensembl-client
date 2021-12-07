@@ -25,7 +25,7 @@ import { getIsTrackPanelModalOpened } from 'src/content/app/genome-browser/state
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObject
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import useGenomeBrowser from 'src/content/app/genome-browser/hooks/useGenomeBrowser';
 

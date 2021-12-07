@@ -34,9 +34,9 @@ import { getApplyToAllConfig } from 'src/content/app/genome-browser/state/track-
 import {
   getBrowserActiveEnsObjectId,
   getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { updatePreviouslyViewedObjectsAndSave } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
-import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
+import { updateBrowserActiveEnsObjectIdsAndSave } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
 import { GenomeBrowserContext } from 'src/content/app/genome-browser/Browser';
 import { TrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';

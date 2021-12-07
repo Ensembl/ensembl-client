@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { defaultDrawerStateForGenome } from './drawerSlice';
 
 import type { RootState } from 'src/store';

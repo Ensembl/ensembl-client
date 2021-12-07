@@ -18,26 +18,18 @@ import {
   Action,
   ActionCreator,
   createSlice,
-  Dispatch,
   PayloadAction,
   ThunkAction
 } from '@reduxjs/toolkit';
-import { replace } from 'connected-react-router';
-import { isEqual } from 'lodash';
-import pickBy from 'lodash/pickBy';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
-import * as urlFor from 'src/shared/helpers/urlHelper';
 
-import { getChrLocationStr } from 'src/content/app/genome-browser/helpers/browserHelper';
-import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
-import { buildFocusIdForUrl } from 'src/shared/state/ens-object/ensObjectHelpers';
+import { ParsedUrlPayload } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 
-import { getChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectId
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { RootState } from 'src/store';
 
@@ -67,7 +59,7 @@ export const defaultBrowserLocationState: BrowserLocationState = {
 export const setActualChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
+  return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     if (!activeGenomeId) {
@@ -84,11 +76,10 @@ export const setActualChrLocation: ActionCreator<
 export const setChrLocation: ActionCreator<
   ThunkAction<any, any, null, Action<string>>
 > = (chrLocation: ChrLocation) => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
+  return (dispatch, getState: () => RootState) => {
     const state = getState();
     const activeGenomeId = getBrowserActiveGenomeId(state);
     const activeEnsObjectId = getBrowserActiveEnsObjectId(state);
-    const savedChrLocation = getChrLocation(state);
     if (!activeGenomeId || !activeEnsObjectId) {
       return;
     }
@@ -98,15 +89,6 @@ export const setChrLocation: ActionCreator<
 
     dispatch(updateChrLocation(payload));
     browserStorageService.updateChrLocation(payload);
-
-    if (!isEqual(chrLocation, savedChrLocation)) {
-      const newUrl = urlFor.browser({
-        genomeId: activeGenomeId,
-        focus: buildFocusIdForUrl(activeEnsObjectId),
-        location: getChrLocationStr(chrLocation)
-      });
-      dispatch(replace(newUrl));
-    }
   };
 };
 
@@ -119,23 +101,17 @@ const browserLocationSlice = createSlice({
       if (chrLocation) {
         state.chrLocations[activeGenomeId] = chrLocation;
       } else {
-        state.chrLocations = pickBy(
-          state.chrLocations,
-          (value, key) => key !== activeGenomeId
-        );
+        delete state.chrLocations[activeGenomeId];
       }
     },
     updateChrLocation(state, action: PayloadAction<ChrLocations>) {
-      state.chrLocations = {
-        ...state.chrLocations,
-        ...action.payload
-      };
+      state.chrLocations = Object.assign(state.chrLocations, action.payload);
     },
     updateActualChrLocation(state, action: PayloadAction<ChrLocations>) {
-      state.actualChrLocations = {
-        ...state.actualChrLocations,
-        ...action.payload
-      };
+      state.actualChrLocations = Object.assign(
+        state.actualChrLocations,
+        action.payload
+      );
     },
     toggleRegionEditorActive(state, action: PayloadAction<boolean>) {
       state.regionEditorActive = action.payload;
@@ -148,14 +124,8 @@ const browserLocationSlice = createSlice({
     },
     deleteGenomeLocationData(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
-      state.chrLocations = pickBy(
-        state.chrLocations,
-        (value, key) => key !== genomeId
-      );
-      state.actualChrLocations = pickBy(
-        state.chrLocations,
-        (value, key) => key !== genomeId
-      );
+      delete state.chrLocations[genomeId];
+      delete state.actualChrLocations[genomeId];
     }
   }
 });

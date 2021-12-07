@@ -48,7 +48,7 @@ const mockState = {
         human: [chrName, startPosition, endPosition] as ChrLocation
       }
     },
-    browserEntity: {
+    browserGeneral: {
       activeGenomeId: 'human'
     }
   }

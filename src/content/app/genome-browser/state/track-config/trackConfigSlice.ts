@@ -24,8 +24,8 @@ import {
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 
-import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
-import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { updateTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
+import { getBrowserTrackStates } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { BrowserTrackStates } from 'src/content/app/genome-browser/components/track-panel/trackPanelConfig';
 import { RootState } from 'src/store';
@@ -78,9 +78,6 @@ const browserTrackConfigSlice = createSlice({
     updateCogTrackList(state, action: PayloadAction<CogList>) {
       state.browserCogTrackList = action.payload;
     },
-    updateChrLocation(state, action: PayloadAction<CogList>) {
-      state.browserCogTrackList = action.payload;
-    },
     updateSelectedCog(state, action: PayloadAction<string | null>) {
       state.selectedCog = action.payload;
     },
@@ -91,7 +88,7 @@ const browserTrackConfigSlice = createSlice({
       state.applyToAllConfig.allTrackNamesOn = action.payload;
     },
     updateApplyToAllTrackLabels(state, action: PayloadAction<boolean>) {
-      state.applyToAllConfig.allTrackNamesOn = action.payload;
+      state.applyToAllConfig.allTrackLabelsOn = action.payload;
     },
     updateTrackConfigNames(
       state,
@@ -113,7 +110,6 @@ const browserTrackConfigSlice = createSlice({
 export const {
   updateCogList,
   updateCogTrackList,
-  updateChrLocation,
   updateSelectedCog,
   updateApplyToAll,
   updateApplyToAllTrackNames,

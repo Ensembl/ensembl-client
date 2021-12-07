@@ -20,6 +20,7 @@ import classNames from 'classnames';
 
 import { getCommaSeparatedNumber } from 'src/shared/helpers/formatters/numberFormatter';
 
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getActualChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
 import { toggleBrowserNav } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
 
@@ -31,10 +32,11 @@ type Props = {
 
 export const BrowserLocationIndicator = (props: Props) => {
   const actualChrLocation = useSelector(getActualChrLocation);
+  const activeGenomeId = useSelector(getBrowserActiveGenomeId);
   const dispatch = useDispatch();
 
   const [chrCode, chrStart, chrEnd] = actualChrLocation || [];
-  if (!chrCode || !chrStart || !chrEnd) {
+  if (!chrCode || !chrStart || !chrEnd || !activeGenomeId) {
     return null;
   }
 
@@ -43,7 +45,7 @@ export const BrowserLocationIndicator = (props: Props) => {
   });
   const onClickProps = props.disabled
     ? {}
-    : { onClick: () => dispatch(toggleBrowserNav()) };
+    : { onClick: () => dispatch(toggleBrowserNav({ activeGenomeId })) };
 
   return (
     <div className={className}>

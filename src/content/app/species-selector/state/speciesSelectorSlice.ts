@@ -27,7 +27,7 @@ import pickBy from 'lodash/pickBy';
 import apiService from 'src/services/api-service';
 import speciesSelectorStorageService from 'src/content/app/species-selector/services/species-selector-storage-service';
 
-import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
+import { deleteSpeciesInGenomeBrowser } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { deleteGenome as deleteSpeciesInEntityViewer } from 'src/content/app/entity-viewer/state/general/entityViewerGeneralSlice';
 
 import {

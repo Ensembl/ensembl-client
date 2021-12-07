@@ -24,7 +24,7 @@ import { isProteinCodingTranscript } from 'src/content/app/entity-viewer/shared/
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import { CircleLoader } from 'src/shared/components/loader';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { FullTranscript } from 'src/shared/types/thoas/transcript';
 import { FullProductGeneratingContext } from 'src/shared/types/thoas/productGeneratingContext';

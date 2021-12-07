@@ -22,7 +22,7 @@ import {
   getTrackPanelModalView
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import {
   toggleTrackPanel,

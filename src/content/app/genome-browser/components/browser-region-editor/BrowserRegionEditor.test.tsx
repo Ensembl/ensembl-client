@@ -111,7 +111,7 @@ describe('<BrowserRegionEditor />', () => {
     });
 
     it('validates region input on submit', () => {
-      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
       const [stick] = (mockState.browser.browserLocation.chrLocations as any)[
         activeGenomeId
       ];
@@ -136,7 +136,7 @@ describe('<BrowserRegionEditor />', () => {
 
       expect(browserHelper.validateRegion).toHaveBeenCalledWith({
         regionInput: `${stick}:${locationStartInput}-${locationEndInput}`,
-        genomeId: mockState.browser.browserEntity.activeGenomeId,
+        genomeId: mockState.browser.browserGeneral.activeGenomeId,
         onSuccess: expect.any(Function),
         onError: expect.any(Function)
       });

@@ -21,7 +21,7 @@ import { Status } from 'src/shared/types/status';
 import { RootState } from 'src/store';
 
 export const getBrowserActiveGenomeId = (state: RootState) =>
-  state.browser.browserEntity.activeGenomeId;
+  state.browser.browserGeneral.activeGenomeId;
 
 export const getBrowserActiveGenomeInfo = (state: RootState) => {
   const allGenomesInfo = getGenomeInfo(state);
@@ -30,7 +30,7 @@ export const getBrowserActiveGenomeInfo = (state: RootState) => {
 };
 
 export const getBrowserActiveEnsObjectIds = (state: RootState) =>
-  state.browser.browserEntity.activeEnsObjectIds;
+  state.browser.browserGeneral.activeEnsObjectIds;
 
 export const getBrowserActiveEnsObjectId = (state: RootState) => {
   const activeEnsObjectIds = getBrowserActiveEnsObjectIds(state);
@@ -47,7 +47,7 @@ export const getBrowserActiveEnsObject = (state: RootState) => {
 };
 
 export const getBrowserTrackStates = (state: RootState) =>
-  state.browser.browserEntity.trackStates;
+  state.browser.browserGeneral.trackStates;
 
 export const getBrowserTrackState = (
   state: RootState,
@@ -82,6 +82,6 @@ export const getBrowserActiveGenomeTrackStates = (state: RootState) => {
   const activeGenomeId = getBrowserActiveGenomeId(state);
 
   return activeGenomeId
-    ? state.browser.browserEntity.trackStates[activeGenomeId]
+    ? state.browser.browserGeneral.trackStates[activeGenomeId]
     : null;
 };

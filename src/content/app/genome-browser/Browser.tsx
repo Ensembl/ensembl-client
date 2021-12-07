@@ -31,9 +31,8 @@ import { toggleTrackPanel } from 'src/content/app/genome-browser/state/track-pan
 import { closeDrawer } from 'src/content/app/genome-browser/state/drawer/drawerSlice';
 
 import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
-import { getBrowserActiveGenomeId } from './state/browser-entity/browserEntitySelectors';
-
-import { getIsTrackPanelOpened } from './state/track-panel/trackPanelSelectors';
+import { getBrowserActiveGenomeId } from './state/browser-general/browserGeneralSelectors';
+import { getIsTrackPanelOpened } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
 import { getBreakpointWidth } from 'src/global/globalSelectors';
 

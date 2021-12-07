@@ -24,7 +24,7 @@ import FeatureSummaryStrip from 'src/shared/components/feature-summary-strip/Fea
 import BrowserLocationIndicator from '../browser-location-indicator/BrowserLocationIndicator';
 
 import { getIsDrawerOpened } from 'src/content/app/genome-browser/state/drawer/drawerSelectors';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSelectors';
 
 import { EnsObject } from 'src/shared/state/ens-object/ensObjectTypes';

@@ -183,7 +183,7 @@ export const createChrLocationValues = () => {
 export const createMockBrowserState = () => {
   return {
     browser: {
-      browserEntity: {
+      browserGeneral: {
         activeGenomeId: 'fake_genome_id_1',
         activeEnsObjectIds: {
           fake_genome_id_1: 'fake_genome_id_1:gene:fake_gene_stable_id_1'

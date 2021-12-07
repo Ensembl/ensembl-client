@@ -17,7 +17,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import InAppSearch from 'src/shared/components/in-app-search/InAppSearch';
 

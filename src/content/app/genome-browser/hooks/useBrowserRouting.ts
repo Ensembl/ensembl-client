@@ -38,12 +38,12 @@ import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
 import {
   setActiveGenomeId,
   setDataFromUrlAndSave
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySlice';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSlice';
 import { getEnabledCommittedSpecies } from 'src/content/app/species-selector/state/speciesSelectorSelectors';
 import {
   getBrowserActiveGenomeId,
   getBrowserActiveEnsObjectIds
-} from '../state/browser-entity/browserEntitySelectors';
+} from '../state/browser-general/browserGeneralSelectors';
 
 import { getAllChrLocations } from '../state/browser-location/browserLocationSelectors';
 

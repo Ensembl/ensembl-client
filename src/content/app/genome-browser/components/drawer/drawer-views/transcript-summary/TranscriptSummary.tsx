@@ -36,7 +36,7 @@ import {
 } from 'src/content/app/entity-viewer/shared/helpers/entity-helpers';
 
 import { useGetTrackPanelGeneQuery } from 'src/content/app/genome-browser/state/genomeBrowserApiSlice';
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { InstantDownloadTranscript } from 'src/shared/components/instant-download';
 import ViewInApp from 'src/shared/components/view-in-app/ViewInApp';

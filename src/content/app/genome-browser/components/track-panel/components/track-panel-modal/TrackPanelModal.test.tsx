@@ -68,7 +68,7 @@ describe('<TrackPanelModal />', () => {
     });
 
     it('displays track pane modal view for downloads', () => {
-      const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+      const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
       const { container } = renderComponent(
         set(

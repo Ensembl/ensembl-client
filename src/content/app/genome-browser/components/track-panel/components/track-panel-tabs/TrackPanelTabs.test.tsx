@@ -31,7 +31,7 @@ import { TrackPanelTabs } from './TrackPanelTabs';
 import { TrackSet } from '../../trackPanelConfig';
 
 const mockState = createMockBrowserState();
-const activeGenomeId = mockState.browser.browserEntity.activeGenomeId;
+const activeGenomeId = mockState.browser.browserGeneral.activeGenomeId;
 
 const mockStore = configureMockStore([thunk]);
 

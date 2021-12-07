@@ -60,7 +60,7 @@ export function customDownload(
 
 function result(
   state: ResultState = defaultResultState,
-  action: ActionType<any>
+  action: ActionType<typeof customDownloadActions>
 ): ResultState {
   switch (action.type) {
     case getType(customDownloadActions.setIsLoadingResult):
@@ -81,7 +81,7 @@ function result(
 function activeConfigurations(
   state: CustomDownloadActiveConfigurations = getInitialCustomDownloadState()
     .activeConfigurations,
-  action: ActionType<any>
+  action: ActionType<typeof customDownloadActions>
 ): CustomDownloadActiveConfigurations {
   switch (action.type) {
     case getType(customDownloadActions.updateActiveConfigurationForGenome):

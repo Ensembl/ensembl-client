@@ -80,7 +80,7 @@ const example_objects = [
 
 const mockState = {
   browser: {
-    browserEntity: {
+    browserGeneral: {
       activeGenomeId: genomeId,
       activeEnsObjectIds: {
         [genomeId]: geneObjectId

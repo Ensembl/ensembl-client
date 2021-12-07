@@ -43,7 +43,7 @@ const mockState = {
         drawerView: { name: 'bookmarks' }
       }
     },
-    browserEntity: {
+    browserGeneral: {
       activeGenomeId: fakeGenomeId
     },
     trackPanel: {

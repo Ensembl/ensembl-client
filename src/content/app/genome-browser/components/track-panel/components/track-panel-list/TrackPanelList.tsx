@@ -23,7 +23,7 @@ import { EnsObjectTrack } from 'src/shared/state/ens-object/ensObjectTypes';
 import {
   getBrowserActiveEnsObject,
   getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getSelectedTrackPanelTab } from 'src/content/app/genome-browser/state/track-panel/trackPanelSelectors';
 import { getGenomeTrackCategoriesById } from 'src/shared/state/genome/genomeSelectors';
 

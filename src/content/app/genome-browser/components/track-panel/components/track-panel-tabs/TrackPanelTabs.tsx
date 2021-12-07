@@ -20,7 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { TrackSet } from '../../trackPanelConfig';
 
-import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveEnsObject } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import {
   getSelectedTrackPanelTab,
   getIsTrackPanelModalOpened,

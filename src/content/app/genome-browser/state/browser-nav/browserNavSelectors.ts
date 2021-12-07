@@ -15,7 +15,7 @@
  */
 
 import { defaultBrowserNavIconsState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSlice';
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import { RootState } from 'src/store';
 

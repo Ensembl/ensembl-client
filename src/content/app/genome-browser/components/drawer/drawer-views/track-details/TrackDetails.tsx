@@ -17,7 +17,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 
 import ExternalLink from 'src/shared/components/external-link/ExternalLink';
 

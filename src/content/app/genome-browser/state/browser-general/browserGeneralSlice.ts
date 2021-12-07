@@ -22,7 +22,6 @@ import {
   ThunkAction
 } from '@reduxjs/toolkit';
 import pickBy from 'lodash/pickBy';
-import merge from 'lodash/merge';
 
 import browserStorageService from 'src/content/app/genome-browser/services/browser-storage-service';
 import trackPanelStorageService from 'src/content/app/genome-browser/components/track-panel/services/track-panel-storage-service';
@@ -35,13 +34,13 @@ import {
 } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
 import {
   deleteGenomeTrackPanelData,
-  setTrackPanelDataFromUrl
+  setInitialTrackPanelDataForGenome
 } from 'src/content/app/genome-browser/state/track-panel/trackPanelSlice';
 import {
   getBrowserActiveEnsObjectIds,
   getBrowserTrackStates,
   getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { ensureSpeciesIsEnabled } from 'src/content/app/species-selector/state/speciesSelectorSlice';
 
 import {
@@ -108,7 +107,7 @@ export const setDataFromUrlAndSave: ActionCreator<
 > = (payload: ParsedUrlPayload) => (dispatch) => {
   dispatch(setEntityDataFromUrl(payload));
   dispatch(setLocationDataFromUrl(payload));
-  dispatch(setTrackPanelDataFromUrl(payload));
+  dispatch(setInitialTrackPanelDataForGenome(payload));
 
   const { activeGenomeId, activeEnsObjectId, chrLocation } = payload;
 
@@ -168,9 +167,9 @@ export const deleteSpeciesInGenomeBrowser = (
   };
 };
 
-const browserEntitySlice = createSlice({
+const browserGeneralSlice = createSlice({
   name: 'genome-browser-entity',
-  initialState: defaultBrowserEntityState as BrowserEntityState,
+  initialState: defaultBrowserEntityState,
   reducers: {
     setActiveGenomeId(state, action: PayloadAction<string>) {
       const genomeId = action.payload;
@@ -191,7 +190,7 @@ const browserEntitySlice = createSlice({
       state.activeEnsObjectIds = action.payload;
     },
     updateTrackStates(state, action: PayloadAction<BrowserTrackStates>) {
-      state.trackStates = merge({}, state.trackStates, action.payload);
+      state.trackStates = Object.assign(state.trackStates, action.payload);
     },
     deleteGenomeEntityData(state, action: PayloadAction<string>) {
       const genomeIdToRemove = action.payload;
@@ -199,10 +198,7 @@ const browserEntitySlice = createSlice({
 
       if (activeGenomeId === genomeIdToRemove) {
         state.activeGenomeId = null;
-        state.activeEnsObjectIds = pickBy(
-          state.activeEnsObjectIds,
-          (value, key) => key !== activeGenomeId
-        );
+        delete state.activeEnsObjectIds[activeGenomeId];
       }
     }
   }
@@ -214,6 +210,6 @@ export const {
   updateTrackStates,
   updateBrowserActiveEnsObjectIds,
   deleteGenomeEntityData
-} = browserEntitySlice.actions;
+} = browserGeneralSlice.actions;
 
-export default browserEntitySlice.reducer;
+export default browserGeneralSlice.reducer;

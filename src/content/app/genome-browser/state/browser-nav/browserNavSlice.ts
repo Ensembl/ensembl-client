@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Action,
-  ActionCreator,
-  createSlice,
-  Dispatch,
-  PayloadAction,
-  ThunkAction
-} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { OutgoingActionType } from 'ensembl-genome-browser';
-
-import { getBrowserActiveGenomeId } from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
-import { getBrowserNavOpenState } from 'src/content/app/genome-browser/state/browser-nav/browserNavSelectors';
-
-import { RootState } from 'src/store';
 
 export enum BrowserNavAction {
   MOVE_UP = 'move_up',
@@ -70,42 +58,21 @@ export const defaultBrowserNavState = {
   browserNavIconStates: defaultBrowserNavIconsState
 };
 
-export const toggleBrowserNav: ActionCreator<
-  ThunkAction<any, any, null, Action<string>>
-> = () => {
-  return (dispatch: Dispatch, getState: () => RootState) => {
-    const state = getState();
-    const isBrowserNavOpenState = getBrowserNavOpenState(state);
-    const activeGenomeId = getBrowserActiveGenomeId(state);
-
-    if (!activeGenomeId) {
-      return;
-    }
-    if (isBrowserNavOpenState) {
-      dispatch(closeBrowserNav({ activeGenomeId }));
-    } else {
-      dispatch(openBrowserNav({ activeGenomeId }));
-    }
-  };
-};
-
 const browserNavSlice = createSlice({
   name: 'genome-browser-nav',
   initialState: defaultBrowserNavState as BrowserNavState,
   reducers: {
-    openBrowserNav(
+    toggleBrowserNav(
       state,
       action: PayloadAction<{
         activeGenomeId: string;
       }>
     ) {
       const { activeGenomeId } = action.payload;
-      state.browserNavOpenState[activeGenomeId] = true;
+      const isBrowserNavOpenState = state.browserNavOpenState[activeGenomeId];
+      state.browserNavOpenState[activeGenomeId] = !isBrowserNavOpenState;
     },
-    closeBrowserNav(state, action: PayloadAction<{ activeGenomeId: string }>) {
-      const { activeGenomeId } = action.payload;
-      state.browserNavOpenState[activeGenomeId] = false;
-    },
+
     updateBrowserNavIconStates(
       state,
       action: PayloadAction<{
@@ -118,7 +85,7 @@ const browserNavSlice = createSlice({
   }
 });
 
-export const { openBrowserNav, closeBrowserNav, updateBrowserNavIconStates } =
+export const { toggleBrowserNav, updateBrowserNavIconStates } =
   browserNavSlice.actions;
 
 export default browserNavSlice.reducer;

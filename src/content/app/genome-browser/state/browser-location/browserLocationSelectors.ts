@@ -17,7 +17,7 @@
 import {
   getBrowserActiveEnsObjectId,
   getBrowserActiveGenomeId
-} from 'src/content/app/genome-browser/state/browser-entity/browserEntitySelectors';
+} from 'src/content/app/genome-browser/state/browser-general/browserGeneralSelectors';
 import { getEnsObjectById } from 'src/shared/state/ens-object/ensObjectSelectors';
 
 import { ChrLocation } from 'src/content/app/genome-browser/state/browser-location/browserLocationSlice';
