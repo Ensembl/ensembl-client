@@ -34,7 +34,7 @@ import {
   parseEnsObjectId
 } from 'src/shared/state/ens-object/ensObjectHelpers';
 
-import { fetchGenomeData } from 'src/shared/state/genome/genomeActions';
+import { fetchGenomeData } from 'src/shared/state/genome/genomeSlice';
 import {
   setActiveGenomeId,
   setDataFromUrlAndSave

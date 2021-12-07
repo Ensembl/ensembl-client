@@ -20,7 +20,7 @@ import { connectRouter } from 'connected-react-router';
 import browser from '../content/app/genome-browser/state/browserReducer';
 import { genomeBrowserApiSlice } from '../content/app/genome-browser/state/genomeBrowserApiSlice';
 import drawer from '../content/app/genome-browser/state/drawer/drawerSlice';
-import genome from '../shared/state/genome/genomeReducer';
+import genome from '../shared/state/genome/genomeSlice';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
 import global from 'src/global/globalSlice';
 import ensObjects from '../shared/state/ens-object/ensObjectReducer';

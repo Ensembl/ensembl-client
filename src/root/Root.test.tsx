@@ -35,7 +35,7 @@ jest.mock('../content/app/App', () => () => <div id="app" />);
 jest.mock('../shared/components/privacy-banner/PrivacyBanner', () => () => (
   <div className="privacyBanner">PrivacyBanner</div>
 ));
-jest.mock('../global/globalActions', () => ({
+jest.mock('../global/globalSlice', () => ({
   updateBreakpointWidth: jest.fn(() => ({ type: 'updateBreakpointWidth' }))
 }));
 jest.mock('./useRestoredReduxState', () => jest.fn());

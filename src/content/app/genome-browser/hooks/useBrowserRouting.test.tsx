@@ -24,7 +24,7 @@ import configureMockStore from 'redux-mock-store';
 import set from 'lodash/fp/set';
 
 import * as browserActions from '../state/browserActions';
-import * as genomeActions from 'src/shared/state/genome/genomeActions';
+import * as genomeActions from 'src/shared/state/genome/genomeSlice';
 
 import useBrowserRouting from './useBrowserRouting';
 
@@ -45,7 +45,7 @@ jest.mock('src/content/app/genome-browser/state/browserActions', () => ({
   setDataFromUrlAndSave: jest.fn(() => ({ type: 'setDataFromUrlAndSave' }))
 }));
 
-jest.mock('src/shared/state/genome/genomeActions', () => ({
+jest.mock('src/shared/state/genome/genomeSlice', () => ({
   fetchGenomeData: jest.fn(() => ({ type: 'fetchGenomeData' }))
 }));
 
