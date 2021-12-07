@@ -19,7 +19,7 @@ import { Route, Switch, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import routes from 'src/routes/routesConfig';
 
-import { changeCurrentApp } from 'src/header/headerActions';
+import { changeCurrentApp } from 'src/global/globalSlice';
 
 import Header from 'src/header/Header';
 import { NotFoundErrorScreen } from 'src/shared/components/error-screen';

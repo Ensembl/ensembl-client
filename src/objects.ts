@@ -16,7 +16,6 @@
 
 import { RefObject, ReactEventHandler } from 'react';
 
-import * as headerActions from './header/headerActions';
 import * as browserActions from './content/app/genome-browser/state/browserActions';
 import * as customDownloadActions from './content/app/custom-download/state/customDownloadActions';
 import * as trackPanelActions from './content/app/genome-browser/components/track-panel/state/trackPanelActions';
@@ -30,7 +29,6 @@ export type EventHandlers = {
 };
 
 export type RootAction =
-  | typeof headerActions
   | typeof browserActions
   | typeof customDownloadActions
   | typeof trackPanelActions;

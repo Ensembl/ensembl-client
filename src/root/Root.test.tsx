@@ -20,7 +20,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
 import useRestoredReduxState from './useRestoredReduxState';
-import { updateBreakpointWidth } from '../global/globalActions';
+import { updateBreakpointWidth } from 'src/global/globalSlice';
 
 import { Root } from './Root';
 import privacyBannerService from '../shared/components/privacy-banner/privacy-banner-service';

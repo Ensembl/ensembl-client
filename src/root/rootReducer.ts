@@ -22,8 +22,7 @@ import { genomeBrowserApiSlice } from '../content/app/genome-browser/state/genom
 import drawer from '../content/app/genome-browser/state/drawer/drawerSlice';
 import genome from '../shared/state/genome/genomeReducer';
 import customDownload from '../content/app/custom-download/state/customDownloadReducer';
-import global from '../global/globalReducer';
-import header from '../header/headerReducer';
+import global from 'src/global/globalSlice';
 import ensObjects from '../shared/state/ens-object/ensObjectReducer';
 import inAppSearch from '../shared/state/in-app-search/inAppSearchSlice';
 import communication from '../shared/state/communication/communicationSlice';
@@ -41,7 +40,6 @@ const createRootReducer = (history: any) =>
     inAppSearch,
     genome,
     global,
-    header,
     router: connectRouter(history),
     speciesSelector,
     speciesPage,
